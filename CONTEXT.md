@@ -137,18 +137,51 @@ rather than blocking. The premium seam is an explanation, not a wall.
 
 ### Destination
 
-A configured endpoint a captured Lead is pushed to — WSMS, Mailchimp, a webhook,
-or the local Lead log. Destinations are the *only* way a Lead leaves WConvert.
+A configured endpoint a captured [[Lead]] is pushed to — WSMS, an email service
+provider, a webhook, or the lead-magnet delivery email.
 
-Data flow through a Destination is strictly one-way: **WConvert → Destination**.
-WConvert never reads Contact state back, so it never has an opinion about who is
-subscribed.
+A Destination is **outbound and fallible**: it is configured, it is optional, it
+can be one of several, and it can fail without the capture failing. Anything that
+is none of those is not a Destination — so **the local Lead log is not one**. The
+log is where a Lead is *stored*: written first and always, not configurable, not
+optional, and if it fails the capture itself failed. Naming it a Destination
+would put a member in the set that satisfies none of the set's invariants.
+
+Destinations are the only way a Lead is pushed out of WConvert **automatically**.
+CSV export is a manual admin action, not a Destination.
+
+A Destination is configured once, site-wide, and *includes whatever selects the
+target inside the remote system* — the Mailchimp audience, the WSMS list. An
+[[Optin]] holds Destination ids and nothing more, so two Optins feeding one
+audience reference one Destination. Where several Destinations share credentials,
+those live on a [[Connection]] underneath them.
+
+Data flow through a Destination is **one-way at capture time**: WConvert →
+Destination. WConvert never reads [[Contact]] state back — not subscription
+status, list membership, or suppression — so it never has an opinion about who is
+subscribed, and it reads nothing at all on the capture path. Admin-time metadata
+reads are permitted and expected: listing a provider's audiences or custom fields
+to populate the configuration UI, and testing a connection. Those are reads of
+the provider's *shape*, never of a person's state.
+
+### Connection
+
+Stored credentials for one remote account — a Mailchimp API key, a Brevo key. One
+Connection backs one or more [[Destination]]s, so two Mailchimp audiences are two
+Destinations over one Connection and the merchant pastes the key once.
+
+Not every Destination has one. A webhook's URL is its whole configuration, and
+the lead-magnet delivery email and the WSMS push authenticate against nothing.
 
 ### Standalone
 
-WConvert with no Destination configured other than the local Lead log. This must
-be a fully working install — capture works, leads are recorded, CSV export
-works. WSMS is never a runtime requirement of the capture path.
+WConvert running with no [[Destination]] that depends on another system — no
+WSMS, no email service provider, no webhook. Capture works, [[Lead]]s are
+recorded, CSV export works, and the lead-magnet delivery email still sends,
+because none of that leaves the WordPress install.
+
+This must be a fully working install. WSMS is never a runtime requirement of the
+capture path.
 
 ## Boundary with WSMS
 
