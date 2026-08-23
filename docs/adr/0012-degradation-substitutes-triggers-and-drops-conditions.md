@@ -1,5 +1,12 @@
 # Degradation substitutes triggers and drops conditions
 
+Amended by [ADR 0015](0015-enforcement-is-by-non-registration.md): the enqueue call
+site below is grounded on **Pro's absence**, not on a lapsed licence. A licence never
+gated features, so the licence-lapse framing this ADR originally used described an
+event that does not occur. The call site itself is unchanged and better justified —
+plugin absence is a fact, where a licence lapse was a business decision we were free
+to reverse.
+
 When a Playbook asks for a rule the install is not entitled to, the fallback is
 declared **in #3's rule manifest**, beside the `tier` and device-applicability
 fields already there, and applied by a thin resolver at **two call sites**:
@@ -51,15 +58,17 @@ They exist for different failures.
 showing a real control `disabled`, so a free user must be given a working rule
 they can configure, not a locked one they cannot.
 
-**Enqueue** exists for runtime correctness of Optins authored *while* entitled and
-later downgraded. #2 and #9 keep entitlement out of the stored projection and
-apply it at enqueue, so the premium rule is still in `config` when the licence
-lapses. Stripping it there without substituting reintroduces the zero-trigger bug
-above, on a live Optin, with no human present.
+**Enqueue** exists for runtime correctness of Optins authored *while Pro was
+installed* and running after it is gone — deactivated, deleted, or the site
+restored from a backup that predates it. #2 and #9 keep entitlement out of the
+stored projection and apply it at enqueue, so the premium rule is still sitting in
+`config` when Pro stops being loaded. Stripping it there without substituting
+reintroduces the zero-trigger bug above, on a live Optin, with no human present.
 
-The two never touch the same Optin: prefill covers those authored without
-entitlement, enqueue covers those authored with it. Together they mean **a lapsed
-licence degrades rather than stops**, and capture keeps working.
+The two never touch the same Optin: prefill covers those authored on an install
+without Pro, enqueue covers those authored with it and now running without it.
+Together they mean **losing Pro degrades rather than stops**, and capture keeps
+working.
 
 ## Consequences
 
@@ -75,6 +84,7 @@ licence degrades rather than stops**, and capture keeps working.
   dismissed once and leaves the Optin carrying an invisible substitution forever.
 - **#14 inherits the mechanism and owns only the entitlement primitive it calls
   and the upsell destination.** Its "do optins stop, degrade, or keep running?"
-  question is answered here: they degrade.
+  question is answered here: they degrade. #14 resolved that primitive to
+  "is Pro loaded" and nothing else — see [ADR 0015](0015-enforcement-is-by-non-registration.md).
 - **`click_element` never appears to degrade**, because #3 already made its
   selector author-only and blank in any Playbook-prefilled Optin.

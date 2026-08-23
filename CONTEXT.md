@@ -247,6 +247,41 @@ because none of that leaves the WordPress install.
 This must be a fully working install. WSMS is never a runtime requirement of the
 capture path.
 
+### Pro
+
+The separately-distributed add-on plugin, installed **alongside** the free plugin
+rather than replacing it. Pro does not *unlock* premium features — it **supplies**
+them. The code for exit intent, A/B testing, `floating_bar`, `slide_in` and the ESP
+[[Destination]]s exists only inside Pro, and a free install has never contained it.
+
+A licence buys **updates and support, never the features themselves**. An expired
+licence stops the updater; it does not change what a running site does.
+
+> Counterpart to [[Standalone]]: both name an install shape by what is *absent*, and
+> both must be a fully working install. A free install is not a crippled Pro install —
+> it is the whole product minus features it never carried.
+
+### Availability
+
+Whether a member of a registry — a [[Trigger]] or [[Condition]] type, a
+[[Display Type]], a [[Template]], a [[Destination]] type — can be used on this install
+right now. Three states, and the distinction between the last two is load-bearing:
+
+- **`ready`** — present and usable.
+- **`locked`** — absent because the install does not have [[Pro]]. Buyable from us, so
+  it renders as an upsell.
+- **`unavailable`** — absent because something the *site* would need is missing: no
+  WooCommerce, no WSMS. Not buyable from us, so it renders as an explanation and never
+  as an upsell.
+
+> **A paying customer is never shown an upsell.** Collapsing `locked` and
+> `unavailable` into a single "not available" is exactly what breaks that — it shows a
+> Pro customer an advertisement for Pro, and it offers to sell a merchant a WooCommerce
+> licence we do not have.
+
+Availability is a property of the registry member, declared as data beside it. There is
+no separate list of premium capabilities to keep in step.
+
 ## Boundary with WSMS
 
 WSMS already owns contacts, lists, tags, segments, subscription forms, ESP
