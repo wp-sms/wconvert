@@ -141,18 +141,63 @@ One Template serves exactly one Display Type. An Optin **takes a copy** of its
 Template rather than a link to it, so improving a Template never restyles an Optin
 already running on it.
 
+A Template declares its slots as [[Slot Role]]s, which is what lets a [[Playbook]]
+carry copy without being bound to one design.
+
 ### Playbook
 
-A ready-to-run bundle serving one [[Goal]] — [[Template]], copy, [[Display Type]],
-display rules, and destination hints, packaged with notes on why it works. One
-Goal has many Playbooks.
+A ready-to-run bundle serving one [[Goal]] — a [[Template]], copy, a
+[[Display Type]], display rules and destination hints, packaged with notes on why
+it works. One Goal has many Playbooks.
 
-A Playbook is **data, not code**: a registry entry, so third parties can add
-them and the library can update independently of a plugin release.
+A Playbook is **data, not code**: a registry entry, so third parties can add them
+and the library can update independently of a plugin release. It carries **no
+markup** — copy is plain text, and the one case needing a link inside a sentence
+expresses it as structure.
 
-A Playbook requiring a feature the install does not have (exit intent on a free
-site) **degrades visibly** — it substitutes the best available rule and says so,
-rather than blocking. The premium seam is an explanation, not a wall.
+Picking a Playbook **prefills a new Optin by snapshot**: its values are copied
+into the Optin and the two never speak again. Improving a Playbook never rewrites
+the words on a running Optin, and deleting one leaves every Optin it started
+untouched — so `playbook_id` is *provenance*, exactly as `template_id` is.
+
+> **Provenance is not performance.** Two Optins from one Playbook may have been
+> edited into unrecognisably different things, so rolling their [[Conversion]]s up
+> measures the edits, not the Playbook. The metric is "Optins started from this
+> Playbook", never "this Playbook's conversion rate".
+
+Because copy is snapshotted separately from design, a Playbook keys its words to
+[[Slot Role]]s rather than to one Template's structure — so the words survive
+switching Template, and a Playbook is not married to a single design.
+
+A Playbook cannot name anything that only exists on a particular site: no post or
+term ids in its targeting, no [[Destination]] ids. A destination hint names
+Destination *types* and the [[Lead]] fields the Playbook needs, and prefill never
+binds a Destination invisibly.
+
+**Degradation is visible, and it applies to rules — not to shape.** A Playbook
+wanting a feature the install lacks substitutes the best available rule and says
+so, rather than blocking; the premium seam is an explanation, not a wall. A
+[[Trigger]] is substituted, because an Optin with none can never fire. A
+[[Condition]] is dropped, because there is no honest substitute for one and
+inventing it fabricates targeting nobody asked for. A Playbook whose *Display
+Type* is unavailable does not degrade at all — it is shown as an upsell, since a
+floating bar reshaped into a popup is a different design badly made.
+
+A Playbook whose requirements are simply **absent from the site** — a
+cart-abandonment Playbook with no store — is hidden rather than degraded. You can
+buy a licence from us; you cannot buy WooCommerce from us.
+
+### Slot Role
+
+The semantic name of a slot in a [[Template]] — `headline`, `cta_label`,
+`fine_print`, `success_headline` — drawn from a closed vocabulary and unique
+across the Template's whole tree.
+
+Slot Roles are the seam between the two halves of a designed Optin: a Template
+declares which Roles it offers, a [[Playbook]] supplies copy against them, and
+neither needs to know the other's internals. A Role a Template does not declare is
+dropped when a Playbook prefills it — a case prevented at authoring time, since a
+Playbook's default Template is validated to declare every Role it fills.
 
 ### Destination
 
