@@ -1,0 +1,54 @@
+site locale: fa_IR
+
+reference render (no theme):
+  ltr  modal x=420  close btn x=816
+  rtl  modal x=420  close btn x=432
+
+DOES dir="rtl" REACH INSIDE THE CONTAINER?
+
+THEME             MODE           modal dir  close btn  verdict
+--------------------------------------------------------------------------
+twentytwentyfive  shadow         rtl        left       ok
+twentytwentyfive  shadow-dir     rtl        left       ok
+twentytwentyfive  shadow-fixed   rtl        left       ok
+twentytwentyfive  shadow-armour  rtl        left       ok
+twentytwentyfive  shadow-bare    rtl        left       ok
+twentytwentyfive  shadow-open    rtl        left       ok
+twentytwentyfive  scoped         rtl        left       ok
+twentytwentyfive  scoped-imp     rtl        left       ok
+twentytwentyfive  iframe         rtl        left       ok
+twentytwentyfive  shadow-html    rtl        left       ok
+twentytwentyfive  dialog         rtl        left       ok
+astra             shadow         rtl        left       ok
+astra             shadow-dir     rtl        left       ok
+astra             shadow-fixed   rtl        left       ok
+astra             shadow-armour  rtl        left       ok
+astra             shadow-bare    rtl        left       ok
+astra             shadow-open    rtl        left       ok
+astra             scoped         rtl        left       ok
+astra             scoped-imp     rtl        left       ok
+astra             iframe         rtl        left       ok
+astra             shadow-html    rtl        left       ok
+astra             dialog         rtl        left       ok
+oceanwp           shadow         rtl        left       ok
+oceanwp           shadow-dir     rtl        left       ok
+oceanwp           shadow-fixed   rtl        left       ok
+oceanwp           shadow-armour  rtl        left       ok
+oceanwp           shadow-bare    rtl        left       ok
+oceanwp           shadow-open    rtl        left       ok
+oceanwp           scoped         rtl        left       ok
+oceanwp           scoped-imp     rtl        left       ok
+oceanwp           iframe         rtl        left       ok
+oceanwp           shadow-html    rtl        left       ok
+oceanwp           dialog         rtl        left       ok
+kadence           shadow         rtl        left       ok
+kadence           shadow-dir     rtl        left       ok
+kadence           shadow-fixed   rtl        left       ok
+kadence           shadow-armour  rtl        left       ok
+kadence           shadow-bare    rtl        left       ok
+kadence           shadow-open    rtl        left       ok
+kadence           scoped         rtl        left       ok
+kadence           scoped-imp     rtl        left       ok
+kadence           iframe         rtl        left       ok
+kadence           shadow-html    rtl        left       ok
+kadence           dialog         rtl        left       ok

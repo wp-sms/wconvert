@@ -1,0 +1,158 @@
+synthetic hostile theme, on top of twentytwentyfive
+
+COMPUTED-STYLE PROPERTIES DIFFERING FROM THE REFERENCE
+
+LEVEL              sh       sh-dir     sh-fixed    sh-armour      sh-bare      sh-open       scoped   scoped-imp       iframe      sh-html       dialog
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+1                   0            0            0            0            0            0            0            0            0            0            0
+2                   0            0            0            0            0            0           65            0            0            0            0
+3                   0            0            0            0            0            0           96            0            0            0            0
+4                   1            1            1            1            1            1           96            1            0            0            0
+5                   1            1            1            1            1            1           96            1            0            0            0
+6                   1            1            1            1            1            1           96            1            0            1            0
+
+OTHER FAILURES   z = something else is on top   f = webfont lost   p = fixed positioning broken
+
+LEVEL              sh       sh-dir     sh-fixed    sh-armour      sh-bare      sh-open       scoped   scoped-imp       iframe      sh-html       dialog
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+1                   f            f           ok           ok            f            f           ok           ok           ok           ok           ok
+2                   f            f           ok           ok            f            f            f           ok           ok           ok           ok
+3                   f            f           ok           ok            f            f            f           ok           ok           ok           ok
+4                   f            f           ok           ok            f            f           zf           ok           ok           ok           ok
+5                   f            f           ok           ok            f            f           zf           ok           ok           ok           ok
+6                   f            f           ok           ok            f            f           zf           ok           ok           ok           ok
+
+WHAT LEAKED AT EACH LEVEL
+
+  level 2  scoped  (65)
+      .wcv-modal height                want 284.438px                got 898.734px
+      .wcv-close font-size             want 20px                     got 22px
+      .wcv-close letter-spacing        want normal                   got 4px
+      .wcv-close text-transform        want none                     got uppercase
+      .wcv-close color                 want rgb(120, 126, 138)       got rgb(0, 34, 0)
+      .wcv-close background-color      want rgba(0, 0, 0, 0)         got rgb(255, 0, 212)
+      .wcv-close border-top-width      want 0px                      got 6px
+      .wcv-close border-top-style      want solid                    got dotted
+      .wcv-close border-top-color      want rgba(0, 0, 0, 0)         got rgb(0, 229, 255)
+      .wcv-close border-radius         want 8px                      got 0px
+      ... and 55 more
+  level 3  scoped  (96)
+      .wcv-overlay font-family         want -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif got "Comic Sans MS", cursive
+      .wcv-overlay letter-spacing      want normal                   got 3px
+      .wcv-overlay text-transform      want none                     got uppercase
+      .wcv-overlay box-sizing          want border-box               got content-box
+      .wcv-overlay width               want 1280px                   got 1232px
+      .wcv-overlay height              want 900px                    got 852px
+      .wcv-modal font-family           want -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif got "Comic Sans MS", cursive
+      .wcv-modal letter-spacing        want normal                   got 3px
+      .wcv-modal text-transform        want none                     got uppercase
+      .wcv-modal border-radius         want 14px                     got 0px
+      ... and 86 more
+  level 4  shadow  (1)
+      .wcv-overlay height              want 900px                    got 1336.59px
+  level 4  shadow-dir  (1)
+      .wcv-overlay height              want 900px                    got 1336.59px
+  level 4  shadow-fixed  (1)
+      .wcv-overlay height              want 900px                    got 1336.59px
+  level 4  shadow-armour  (1)
+      .wcv-overlay height              want 900px                    got 1336.59px
+  level 4  shadow-bare  (1)
+      .wcv-overlay height              want 900px                    got 1336.59px
+  level 4  shadow-open  (1)
+      .wcv-overlay height              want 900px                    got 1336.59px
+  level 4  scoped  (96)
+      .wcv-overlay font-family         want -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif got "Comic Sans MS", cursive
+      .wcv-overlay letter-spacing      want normal                   got 3px
+      .wcv-overlay text-transform      want none                     got uppercase
+      .wcv-overlay box-sizing          want border-box               got content-box
+      .wcv-overlay width               want 1280px                   got 1232px
+      .wcv-overlay height              want 900px                    got 1288.59px
+      .wcv-modal font-family           want -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif got "Comic Sans MS", cursive
+      .wcv-modal letter-spacing        want normal                   got 3px
+      .wcv-modal text-transform        want none                     got uppercase
+      .wcv-modal border-radius         want 14px                     got 0px
+      ... and 86 more
+  level 4  scoped-imp  (1)
+      .wcv-overlay height              want 900px                    got 1336.59px
+  level 5  shadow  (1)
+      .wcv-overlay height              want 900px                    got 1336.59px
+  level 5  shadow-dir  (1)
+      .wcv-overlay height              want 900px                    got 1336.59px
+  level 5  shadow-fixed  (1)
+      .wcv-overlay height              want 900px                    got 1336.59px
+  level 5  shadow-armour  (1)
+      .wcv-overlay height              want 900px                    got 1336.59px
+  level 5  shadow-bare  (1)
+      .wcv-overlay height              want 900px                    got 1336.59px
+  level 5  shadow-open  (1)
+      .wcv-overlay height              want 900px                    got 1336.59px
+  level 5  scoped  (96)
+      .wcv-overlay font-family         want -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif got "Comic Sans MS", cursive
+      .wcv-overlay letter-spacing      want normal                   got 3px
+      .wcv-overlay text-transform      want none                     got uppercase
+      .wcv-overlay box-sizing          want border-box               got content-box
+      .wcv-overlay width               want 1280px                   got 1232px
+      .wcv-overlay height              want 900px                    got 1288.59px
+      .wcv-modal font-family           want -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif got "Comic Sans MS", cursive
+      .wcv-modal letter-spacing        want normal                   got 3px
+      .wcv-modal text-transform        want none                     got uppercase
+      .wcv-modal border-radius         want 14px                     got 0px
+      ... and 86 more
+  level 5  scoped-imp  (1)
+      .wcv-overlay height              want 900px                    got 1336.59px
+  level 6  shadow  (1)
+      .wcv-overlay height              want 900px                    got 1336.59px
+  level 6  shadow-dir  (1)
+      .wcv-overlay height              want 900px                    got 1336.59px
+  level 6  shadow-fixed  (1)
+      .wcv-overlay height              want 900px                    got 1336.59px
+  level 6  shadow-armour  (1)
+      .wcv-overlay height              want 900px                    got 1336.59px
+  level 6  shadow-bare  (1)
+      .wcv-overlay height              want 900px                    got 1336.59px
+  level 6  shadow-open  (1)
+      .wcv-overlay height              want 900px                    got 1336.59px
+  level 6  scoped  (96)
+      .wcv-overlay font-family         want -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif got "Comic Sans MS", cursive
+      .wcv-overlay letter-spacing      want normal                   got 3px
+      .wcv-overlay text-transform      want none                     got uppercase
+      .wcv-overlay box-sizing          want border-box               got content-box
+      .wcv-overlay width               want 1280px                   got 1232px
+      .wcv-overlay height              want 900px                    got 1288.59px
+      .wcv-modal font-family           want -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif got "Comic Sans MS", cursive
+      .wcv-modal letter-spacing        want normal                   got 3px
+      .wcv-modal text-transform        want none                     got uppercase
+      .wcv-modal border-radius         want 14px                     got 0px
+      ... and 86 more
+  level 6  scoped-imp  (1)
+      .wcv-overlay height              want 900px                    got 1336.59px
+  level 6  shadow-html  (1)
+      .wcv-overlay height              want 900px                    got 1336.59px
+
+STACKING AT LEVEL 5 (what is on top of the submit button)
+
+  shadow         ours
+  shadow-dir     ours
+  shadow-fixed   ours
+  shadow-armour  ours
+  shadow-bare    ours
+  shadow-open    ours
+  scoped         BLOCKED by null
+  scoped-imp     ours
+  iframe         ours
+  shadow-html    ours
+  dialog         ours
+
+OVERLAY GEOMETRY AT LEVEL 4 (viewport 1280x900)
+
+  shadow         overlay {"x":0,"y":0,"w":1280,"h":1337}
+  shadow-dir     overlay {"x":0,"y":0,"w":1280,"h":1337}
+  shadow-fixed   overlay {"x":0,"y":0,"w":1280,"h":1337}
+  shadow-armour  overlay {"x":0,"y":0,"w":1280,"h":1337}
+  shadow-bare    overlay {"x":0,"y":0,"w":1280,"h":1337}
+  shadow-open    overlay {"x":0,"y":0,"w":1280,"h":1337}
+  scoped         overlay {"x":0,"y":0,"w":1280,"h":1337}
+  scoped-imp     overlay {"x":0,"y":0,"w":1280,"h":1337}
+  iframe         overlay {"x":0,"y":0,"w":1280,"h":900}
+  shadow-html    overlay {"x":0,"y":0,"w":1280,"h":900}
+  dialog         overlay {"x":0,"y":0,"w":1280,"h":900}

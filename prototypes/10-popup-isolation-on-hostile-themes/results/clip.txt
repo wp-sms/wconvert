@@ -1,0 +1,15 @@
+MOUNTED INSIDE overflow:hidden; height:120px; transform:translateZ(0)
+
+MODE            parent box            modal box                 visible at its own centre
+--------------------------------------------------------------------------------------------
+shadow          0,1086 304x124        26,962 252x372            NO -- clipped away
+shadow-dir      0,1086 304x124        26,962 252x372            NO -- clipped away
+shadow-fixed    0,1086 304x124        26,962 252x372            NO -- clipped away
+shadow-armour   0,1086 304x124        26,962 252x372            NO -- clipped away
+shadow-bare     0,1086 304x124        26,962 252x372            NO -- clipped away
+shadow-open     0,1086 304x124        26,962 252x372            NO -- clipped away
+scoped          0,1086 304x124        26,962 252x372            NO -- clipped away
+scoped-imp      0,1086 304x124        26,962 252x372            NO -- clipped away
+iframe          0,1086 304x124        420,308 440x284           NO -- clipped away
+shadow-html     0,1086 304x124        26,962 252x372            NO -- clipped away
+dialog          0,1086 304x124        26,962 252x372            NO -- clipped away

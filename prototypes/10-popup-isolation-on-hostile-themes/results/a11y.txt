@@ -1,0 +1,31 @@
+FOCUS AND SEMANTICS
+
+MODE            role    modal  IDREFs  tab-trapped  Esc   inerted  still reachable outside
+----------------------------------------------------------------------------------------------------
+shadow          dialog  true   yes     yes          yes   8        0
+shadow-dir      dialog  true   yes     yes          yes   8        0
+shadow-fixed    dialog  true   yes     yes          yes   8        0
+shadow-armour   dialog  true   yes     yes          yes   8        0
+shadow-bare     dialog  true   yes     yes          yes   8        0
+shadow-open     dialog  true   yes     yes          yes   8        0
+scoped          dialog  true   yes     yes          yes   8        0
+scoped-imp      dialog  true   yes     yes          yes   8        0
+iframe          dialog  true   yes     yes          yes   8        0
+shadow-html     dialog  true   yes     yes          yes   8        0
+dialog          dialog  true   yes     yes          yes   8        0
+
+WHAT OUTSIDE CODE SEES AS THE FOCUSED ELEMENT
+
+MODE            document.activeElement            actually focused
+------------------------------------------------------------------------------------------
+shadow          div                               button.wcv-close   <- differs
+shadow-dir      div                               button.wcv-close   <- differs
+shadow-fixed    div                               button.wcv-close   <- differs
+shadow-armour   div                               button.wcv-close   <- differs
+shadow-bare     div                               button.wcv-close   <- differs
+shadow-open     div                               button.wcv-close   <- differs
+scoped          button.wcv-close                  button.wcv-close
+scoped-imp      button.wcv-close                  button.wcv-close
+iframe          iframe                            button.wcv-close   <- differs
+shadow-html     div                               button.wcv-close   <- differs
+dialog          div                               button.wcv-close   <- differs

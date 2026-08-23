@@ -1,0 +1,32 @@
+
+our container at z-index 2147483646, banner and sticky header at 2147483647
+
+MODE               CLICKABLE    ON TOP   what is painting over us
+------------------------------------------------------------------------------
+shadow                   yes        NO   div#wcv10-banner
+shadow-dir               yes        NO   div#wcv10-banner
+shadow-fixed             yes        NO   div#wcv10-banner
+shadow-armour            yes        NO   div#wcv10-banner
+shadow-bare              yes        NO   div#wcv10-banner
+shadow-open              yes        NO   div#wcv10-banner
+scoped                    no        NO   null
+scoped-imp               yes        NO   div#wcv10-banner
+iframe                   yes        NO   div#wcv10-banner
+shadow-html              yes       yes   -
+dialog                   yes       yes   -
+
+our container at z-index 2147483647, banner and sticky header at 2147483647
+
+MODE               CLICKABLE    ON TOP   what is painting over us
+------------------------------------------------------------------------------
+shadow                   yes       yes   -
+shadow-dir               yes       yes   -
+shadow-fixed             yes       yes   -
+shadow-armour            yes       yes   -
+shadow-bare              yes       yes   -
+shadow-open              yes       yes   -
+scoped                    no        NO   null
+scoped-imp               yes       yes   -
+iframe                   yes       yes   -
+shadow-html              yes       yes   -
+dialog                   yes       yes   -

@@ -1,0 +1,45 @@
+reference: modal {"x":420,"y":308,"w":440,"h":284}  title text 360.97px
+
+COMPUTED-STYLE PROPERTIES DIFFERING FROM THE REFERENCE (0 = perfect)
+
+SCENARIO                         sh       sh-dir     sh-fixed    sh-armour      sh-bare      sh-open       scoped   scoped-imp       iframe      sh-html       dialog
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+twentytwentyfive                  0            0            0            0            0            0            0            0            0            0            0
+twentytwentyfour                  0            0            0            0            0            0            0            0            0            0            0
+astra                             0            0            0            0            0            0            0            0            0            0            0
+oceanwp                           0            0            0            0            0            0            0            0            0            0            0
+generatepress                     0            0            0            0            0            0            0            0            0            0            0
+kadence                           0            0            0            0            0            0            0            0            0            0            0
+storefront                        0            0            0            0            0            0            0            0            0            0            0
+hello + elementor                 0            0            0            0            0            0            0            0            0            0            0
+tt5 + cookie-notice               0            0            0            0            0            0            0            0            0            0            0
+tt5 + cookieyes                   0            0            0            0            0            0            0            0            0            0            0
+
+OTHER FAILURES   z = something else is on top   f = webfont lost   p = fixed positioning broken
+
+SCENARIO                         sh       sh-dir     sh-fixed    sh-armour      sh-bare      sh-open       scoped   scoped-imp       iframe      sh-html       dialog
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+twentytwentyfive                  f            f           ok           ok            f            f           ok           ok           ok           ok           ok
+twentytwentyfour                  f            f           ok           ok            f            f           ok           ok           ok           ok           ok
+astra                             f            f           ok           ok            f            f           ok           ok           ok           ok           ok
+oceanwp                           f            f           ok           ok            f            f           ok           ok           ok           ok           ok
+generatepress                     f            f           ok           ok            f            f           ok           ok           ok           ok           ok
+kadence                           f            f           ok           ok            f            f           ok           ok           ok           ok           ok
+storefront                        f            f           ok           ok            f            f           ok           ok           ok           ok           ok
+hello + elementor                 f            f           ok           ok            f            f           ok           ok           ok           ok           ok
+tt5 + cookie-notice               f            f           ok           ok            f            f           ok           ok           ok           ok           ok
+tt5 + cookieyes                   f            f           ok           ok            f            f           ok           ok           ok           ok           ok
+
+WHAT LEAKED (first scenario that shows each property, per mode)
+
+  shadow: nothing
+  shadow-dir: nothing
+  shadow-fixed: nothing
+  shadow-armour: nothing
+  shadow-bare: nothing
+  shadow-open: nothing
+  scoped: nothing
+  scoped-imp: nothing
+  iframe: nothing
+  shadow-html: nothing
+  dialog: nothing

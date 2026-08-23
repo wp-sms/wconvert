@@ -1,0 +1,15 @@
+NO HAND-WRITTEN FOCUS TRAP, Esc HANDLER, OR inert -- what the container does by itself
+
+MODE              tab escapes  Esc closes  page inert   where Tab went
+------------------------------------------------------------------------------------------
+shadow                      4          no          no   body.home, a#wp-skip-link.skip-link, a
+shadow-dir                  4          no          no   body.home, a#wp-skip-link.skip-link, a
+shadow-fixed                4          no          no   body.home, a#wp-skip-link.skip-link, a
+shadow-armour               4          no          no   body.home, a#wp-skip-link.skip-link, a
+shadow-bare                 4          no          no   body.home, a#wp-skip-link.skip-link, a
+shadow-open                 4          no          no   body.home, a#wp-skip-link.skip-link, a
+scoped                      4          no          no   body.home, a#wp-skip-link.skip-link, a
+scoped-imp                  4          no          no   body.home, a#wp-skip-link.skip-link, a
+iframe                      4          no          no   body.home, a#wp-skip-link.skip-link, a
+shadow-html                 4          no          no   body.home, a#wp-skip-link.skip-link, a
+dialog                      1         yes          no   body.home

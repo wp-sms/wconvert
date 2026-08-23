@@ -1,0 +1,17 @@
+
+STRATEGY (container + a11y + CSS)   MINIFIED      GZIP    BROTLI
+---------------------------------- --------- --------- ---------
+dialog                                  5994      2098      1644
+shadow                                  5907      2097      1631
+scoped                                  6070      2189      1720
+iframe                                  6246      2225      1737
+
+CSS ONLY                            MINIFIED      GZIP    BROTLI
+---------------------------------- --------- --------- ---------
+reference (no isolation)                2977       869       694
+shadow  (:host + all:initial)           3023       888       708
+scoped  (ns + all:revert)               3099       899       728
+scoped  (+ !important on all)           4584       954       767
+iframe  (html, srcdoc-escaped)          2977       869       694
+
+harness bundle: dist/proto.js (27570 bytes, unminified)

@@ -1,0 +1,6 @@
+focus the opener -> open -> close -> where did focus go?
+
+IMPLEMENTATION                    opener            after close       restored
+--------------------------------------------------------------------------------
+dialog + shadow (native restore)  a#the-opener      a#the-opener      yes   (native)
+closed shadow (hand-written)      a#the-opener      a#the-opener      yes   (written by hand)

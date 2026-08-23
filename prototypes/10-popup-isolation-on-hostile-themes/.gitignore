@@ -1,0 +1,4 @@
+dist/*.gz
+dist/*.br
+harness/node_modules
+dist/.t-*.js
