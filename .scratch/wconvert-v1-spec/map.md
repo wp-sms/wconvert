@@ -64,12 +64,21 @@ map, not from tickets. Ticket resolutions append here._
 - **Front-end delivery** — small deferred loader + per-URL campaign JSON in the
   page; all rule evaluation client-side; per-visitor state in cookies and
   localStorage. Chosen because full-page caching is non-negotiable. Hard budget:
-  **<15KB gzipped**.
+  **<15KB gzipped**. *Constrained by [wp.org rules for freemium and remote
+  libraries](issues/06-wporg-rules-for-freemium-and-remote-libraries.md): the
+  directory is silent on cookies — the constraint is ePrivacy, not policy — but
+  the readme must never claim GDPR compliance, and the stored value stays
+  non-identifying with a site-owner switch to defer it.*
 - **Builder** — curated template gallery + constrained settings panel. No canvas
   in v1; the data model must let one land later without a migration.
 - **Free / premium** — free: popup + inline, page targeting, time delay, scroll
   depth, local lead log, CSV export, WSMS integration. Premium: exit intent, A/B
   testing, advanced targeting, floating bar + slide-in, third-party ESPs.
+  *Constrained by [wp.org rules for freemium and remote libraries](issues/06-wporg-rules-for-freemium-and-remote-libraries.md):
+  the split must stay a **feature** split, never a usage cap — no "up to N
+  leads/month", which would make it trialware. Premium code must be **absent**
+  from the free ZIP, not present-and-disabled, and the premium SDK, licence
+  field and update-checker ship **only** in the premium plugin.*
 - **Codebase relationship** — fresh repo, WSMS conventions copied, no shared code
   and no shared release cycle.
 - **Naming** — the unit of work is an `Optin`, not a `Campaign`. WSMS's `Campaign`
@@ -81,9 +90,40 @@ map, not from tickets. Ticket resolutions append here._
   abandoned carts · Promote a sale or offer · Deliver a lead magnet. "Announce
   something" and "Reduce bounce" held back.
 - **Playbook** — the Goal→Optin bundle is a `Playbook`, shipped as a local
-  registry with remote fetch designed in but not built.
+  registry with remote fetch designed in but not built. *Constrained by [wp.org
+  rules for freemium and remote libraries](issues/06-wporg-rules-for-freemium-and-remote-libraries.md):
+  "data, not code" must be **enforced**, not described — **content, never
+  capability**, a closed rule vocabulary with no expression evaluation, `wp_kses`
+  with a custom allowlist, and server-side fetch cached locally. The exposure is
+  Guideline 3 (distributing behaviour outside the directory) more than
+  Guideline 8.*
 - **Admin IA** — conventional nav in v1, with a per-goal breakdown on the
   dashboard as the seed for a goal-centric IA later.
+
+- [WSMS integration surface](issues/04-wsms-integration-surface.md) — couple to the
+  PHP repository (`contact.repository` → `ContactRepositoryInterface`) behind one
+  adapter. REST is an *admin console* API, not an ingestion API: its permission
+  callback fails for an anonymous capture even via `rest_do_request()`. WSMS has no
+  third-party ingestion surface and disclaims back-compat, so the instability is
+  accepted and isolated, not engineered around. Local Lead row first, WSMS push as a
+  post-write side effect; default contact status `pending`. Worth asking WSMS for a
+  named `wsms_capture_contact()`.
+- [ESP landscape for v1](issues/05-esp-landscape-for-v1.md) — v1: Mailchimp,
+  MailerLite, Brevo, Kit + a generic Webhook, **no OAuth**. Ranked on WP-specific
+  evidence (wp.org installs cross-checked against what Elementor/WPForms/Fluent
+  Forms/Popup Maker/Hustle actually ship). Pushes must be **queued**, not
+  synchronous. Kit is the booked risk: it disclaims API-key support for public
+  integrations.
+- [wp.org rules for freemium and remote libraries](issues/06-wporg-rules-for-freemium-and-remote-libraries.md)
+  — **nothing on the map is invalidated**; three decisions gained constraints
+  (above). Biggest risk is Guideline 3, not 8. Visible degradation and the remote
+  library are one design: degradation is what keeps the library on the data side.
+- [Premium SDK and build split](issues/07-premium-sdk-and-build-split.md) — copy
+  WSMS's distribution boundary (premium overlay dir, `sed` strip fences, fail-closed
+  pre-zip leak guard, React slot registry); entitlement is one memoized
+  non-autoloaded option read. **Move the gating boundary from module boot to asset
+  enqueue** — WConvert's premium features are browser-evaluated on cached pages.
+  Never share one output path between two Vite configs that both `emptyOutDir`.
 
 ## Not yet specified
 
@@ -102,11 +142,6 @@ map, not from tickets. Ticket resolutions append here._
 - **WooCommerce coupling depth.** "Recover abandoned carts" is a v1 Goal and
   cart state is a WooCommerce concept. How deep that hook goes — and what the
   Goal degrades to without WooCommerce — sharpens after *Display rule engine*.
-- **Behaviour when WSMS and WConvert both capture the same person.** Two forms,
-  one visitor, one phone number. Not a data-ownership question (that is settled)
-  but a UX and dedupe one.
-- **Performance budget enforcement.** The <15KB figure is decided; how it is
-  *held* — CI gate, bundle analysis, what fails a build — is not.
 
 ## Out of scope
 
