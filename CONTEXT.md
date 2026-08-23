@@ -122,9 +122,28 @@ off the Optin, but it can be corrected.
 > Goal that cannot be counted is decoration — it collapses Goal back into a
 > disposable onboarding answer.
 
+### Template
+
+The design of an [[Optin]] — its structure and its look, with no words in it.
+
+A Template declares which slots exist (a heading, an image, fields, a button), how
+they are arranged, and how they are styled. It does **not** carry copy: the words
+come from the [[Playbook]] that prefilled the Optin, or from the user. Whatever
+placeholder text a Template carries exists so the gallery has something to show, and
+is never copied into an Optin.
+
+> **That boundary is what keeps the library small.** Copy is what makes an Optin
+> serve a particular [[Goal]], so with the copy held elsewhere a Template is
+> **goal-agnostic** — the library is a set of designs per [[Display Type]], not a
+> design for every pairing of Display Type and Goal.
+
+One Template serves exactly one Display Type. An Optin **takes a copy** of its
+Template rather than a link to it, so improving a Template never restyles an Optin
+already running on it.
+
 ### Playbook
 
-A ready-to-run bundle serving one [[Goal]] — template, copy, [[Display Type]],
+A ready-to-run bundle serving one [[Goal]] — [[Template]], copy, [[Display Type]],
 display rules, and destination hints, packaged with notes on why it works. One
 Goal has many Playbooks.
 

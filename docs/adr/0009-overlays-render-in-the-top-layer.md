@@ -86,6 +86,11 @@ top layer does not enter the auction.
   identically across all eleven modes. That is a placement question, not a rendering
   primitive one.
 
+**Amended by [ADR 0011](0011-non-modal-overlays-use-the-popover-top-layer.md):** this
+decision was measured on a popup only. `floating_bar` and `slide_in` must not be
+modal, and `dialog.show()` is not in the top layer, so they use `[popover=manual]`
+instead.
+
 `<dialog>` and `showModal()` are Baseline since March 2022 (Safari 15.4). Everything
 here was measured in Chromium only; the three load-bearing behaviours are specified
 rather than Chromium quirks, but Firefox and Safari are unverified.
