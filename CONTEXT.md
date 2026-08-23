@@ -60,6 +60,47 @@ Display Type is **not** the primary axis of the product. Users arrive via a
 [[Goal]], and the type is prefilled by the chosen [[Playbook]] — selectable as
 an override and a filter, never the first question asked.
 
+Three of the four are **overlays** — `popup`, `floating_bar`, `slide_in` — which
+compete for the visitor's screen, so at most one is shown per page view.
+`inline` is not an overlay: it renders where it was embedded and never competes.
+
+### Targeting
+
+*Where* an [[Optin]] is allowed to appear: the set of pages it may show on, as
+an include list and an exclude list, with exclude winning.
+
+Targeting is the one part of an Optin's rules evaluated on the **server**, at
+asset-enqueue time — so it never reaches the browser, and an Optin that does not
+match the current page costs the page nothing. Every other rule is a
+[[Trigger]] or a [[Condition]] and is evaluated client-side.
+
+> **Why not "Placement":** in adtech that means position on the page, which is
+> what [[Display Type]] already covers. **Why not "Audience":** WSMS's
+> `Campaign` has an audience resolver, and both plugins share one wp-admin.
+
+### Trigger
+
+*When* an [[Optin]] fires — time on page, scroll depth, exit intent.
+
+An Optin fires when **any one** of its Triggers fires. Every Optin has at least
+one; "shows immediately" is the explicit `page_load` Trigger, never an empty
+list.
+
+### Condition
+
+*Whether* a visitor is eligible to see an [[Optin]] — device, referrer, cart
+state, time of day.
+
+**All** Conditions must hold at the instant a [[Trigger]] fires. They are not
+evaluated ahead of time and held: an Optin whose cart emptied while its ten
+second timer ran does not show.
+
+> **The distinction is load-bearing and fixed per rule.** A rule type is a
+> Trigger or a Condition, never both — `scroll_depth` means "when they reach
+> half way", and there is no second spelling meaning "if they already had".
+> Without the split, an engine holding several eligible Optins cannot tell
+> "waiting" from "ineligible".
+
 ### Goal
 
 The outcome an Optin exists to produce, chosen *before* anything else is
