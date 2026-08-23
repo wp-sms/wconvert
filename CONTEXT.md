@@ -10,10 +10,22 @@ pushes captured leads onward. It runs standalone and integrates with WP SMS
 ### Lead
 
 A single capture **event** — one person submitted one form, at one time, on one
-page, into one campaign. A Lead has no lifecycle: it is never "unsubscribed",
+page, into one [[Optin]]. A Lead has no lifecycle: it is never "unsubscribed",
 "bounced", or "re-engaged". It is a row in a log, not a record under management.
 
+Not every [[Conversion]] is a Lead. An Optin whose success is a click-through
+captures no form, so it produces a Conversion and no Lead.
+
 WConvert owns Leads.
+
+### Conversion
+
+A visitor doing the thing an [[Optin]] exists to make them do — the countable
+act its [[Goal]] names. Submitting a form is one kind of Conversion; clicking
+through to an offer is another.
+
+Every [[Lead]] is a Conversion; the reverse does not hold. Assuming it does
+makes any Goal measured by clicks report zero forever.
 
 ### Contact
 
@@ -56,6 +68,13 @@ configured, and **kept** on the Optin for its whole life.
 A Goal is first-class, not a setup-wizard answer that evaporates: it sets the
 Optin's headline success metric, decides what the analytics screen reports, and
 is the seam where later versions can recommend improvements.
+
+Each Goal **declares the metric that counts it** — which [[Conversion]] is the
+one that matters, and whether that Conversion is a [[Lead]] or not. That
+declaration is what makes a Goal more than a filter at creation time.
+
+"Kept for its whole life" means persistent, not frozen: a Goal never evaporates
+off the Optin, but it can be corrected.
 
 > **The test a Goal must pass:** it names an outcome WConvert can *count*.
 > "Grow my email list" is countable. "Increase brand awareness" is not, and a
