@@ -34,6 +34,37 @@ through to an offer is another.
 Every [[Lead]] is a Conversion; the reverse does not hold. Assuming it does
 makes any Goal measured by clicks report zero forever.
 
+**One Optin has exactly one converting act**, and its [[Goal]] decides which:
+where the Goal is measured by submissions the form's submit is the Conversion,
+and where it is measured by click-throughs the CTA is. A [[Template]] offering
+both is rejected when it is registered, not disambiguated at runtime — an Optin
+with two candidate Conversions has no honest number to report.
+
+### Impression
+
+One [[Optin]] appearing to one visitor, once.
+
+For the three overlays this is the moment it is shown, because they render in the
+top layer and being rendered *is* being on screen. For `inline` it is the moment
+it enters the viewport, since an inline Optin renders where it was embedded and
+may sit far below the fold. One name, two moments — a single definition would
+mean different things for different [[Display Type]]s while pretending not to.
+
+An Impression is the denominator of conversion rate, and nothing else in the
+system records one, which is why it is counted rather than derived.
+
+### Dismissal
+
+A visitor closing an [[Optin]] **deliberately** — the close button, `Esc`, the
+backdrop, or the browser's own light-dismiss.
+
+Leaving without converting is not a Dismissal. It is not an act at all, and it is
+already `impressions − conversions − dismissals`; naming it would invite a screen
+that reports two numbers where one is the arithmetic of the other.
+
+The four ways of dismissing are one thing, not four. No merchant acts differently
+on "closed with Escape" than on "clicked the X".
+
 ### Contact
 
 A person as a **managed entity**, with a consent lifecycle (opted in, opted out,
@@ -153,6 +184,11 @@ is the seam where later versions can recommend improvements.
 Each Goal **declares the metric that counts it** — which [[Conversion]] is the
 one that matters, and whether that Conversion is a [[Lead]] or not. That
 declaration is what makes a Goal more than a filter at creation time.
+
+The declaration is applied when the analytics screen is *read*, never stamped on
+each Conversion as it happens. So correcting a Goal restates the Optin's whole
+history rather than splitting it at the moment of the edit — which is what makes
+"persistent, not frozen" below safe to mean literally.
 
 "Kept for its whole life" means persistent, not frozen: a Goal never evaporates
 off the Optin, but it can be corrected.
