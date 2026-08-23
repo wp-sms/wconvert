@@ -10,8 +10,15 @@ pushes captured leads onward. It runs standalone and integrates with WP SMS
 ### Lead
 
 A single capture **event** — one person submitted one form, at one time, on one
-page, into one [[Optin]]. A Lead has no lifecycle: it is never "unsubscribed",
-"bounced", or "re-engaged". It is a row in a log, not a record under management.
+page, into one [[Optin]]. A Lead has no lifecycle: it is never "confirmed",
+"unsubscribed", "bounced", or "re-engaged". It is a row in a log, not a record
+under management.
+
+"Never confirmed" is the sharpest case, because it is the one every competitor
+gets wrong: **WConvert has no double opt-in and never will.** Confirming an
+opt-in means reading and mutating [[Contact]] state, which the [[Destination]]
+contract forbids outright. Where double opt-in is wanted it belongs to whoever
+owns the Contact — WSMS's own subscription form, or the ESP's audience setting.
 
 Not every [[Conversion]] is a Lead. An Optin whose success is a click-through
 captures no form, so it produces a Conversion and no Lead.
@@ -39,6 +46,39 @@ via a [[Destination]].
 > **The line to hold:** a Lead is an event, a Contact is an entity. Any feature
 > that wants to give a Lead a lifecycle is a signal that WConvert is drifting
 > into being a second contact database.
+
+### Consent Record
+
+What the visitor agreed to at the moment they submitted — the consent text
+**exactly as it was shown to them**, snapshotted onto the [[Lead]].
+
+A snapshot rather than a pointer to the template that produced it, because the
+merchant will edit that wording, and consent evidence that silently rewrites
+itself to match the current copy is evidence of nothing. The Lead's `created_at`
+is the consent timestamp; there is no second one.
+
+A Consent Record is not a consent *lifecycle*. It records one act at one instant
+and is never revisited — the opposite of the [[Contact]] state above, and the
+reason the two must not share a word.
+
+### Storage Consent
+
+Permission to write to or read from the **visitor's device** — cookies,
+`localStorage`, `sessionStorage`. Nothing to do with the [[Consent Record]]: this
+is ePrivacy, not marketing, and it is asked of every visitor rather than captured
+from one who converted.
+
+WConvert reads it through the WP Consent API, whose five categories it adopts
+verbatim rather than mapping onto names of its own. Where no consent plugin is
+installed the API reports consent for everything, so an install with no such
+plugin behaves exactly as it did before — a site that has made no consent
+determination has none for WConvert to honour.
+
+Every [[Trigger]] and [[Condition]] declares the category its storage falls under,
+beside the tier flag on the same registry entry. Storage that records a choice
+the visitor themselves made — that they dismissed this [[Optin]] — is
+`functional` and never withheld, because withholding it means the popup reappears
+after they closed it.
 
 ### Optin
 
@@ -170,7 +210,10 @@ Because copy is snapshotted separately from design, a Playbook keys its words to
 switching Template, and a Playbook is not married to a single design.
 
 A Playbook cannot name anything that only exists on a particular site: no post or
-term ids in its targeting, no [[Destination]] ids. A destination hint names
+term ids in its targeting, no [[Destination]] ids, and no privacy-policy link —
+the consent *wording* is generic copy a Playbook supplies like any other, but the
+link is resolved by the renderer from the site's own configured policy, so it is
+correct everywhere without any Playbook knowing where it is. A destination hint names
 Destination *types* and the [[Lead]] fields the Playbook needs, and prefill never
 binds a Destination invisibly.
 
@@ -190,8 +233,8 @@ buy a licence from us; you cannot buy WooCommerce from us.
 ### Slot Role
 
 The semantic name of a slot in a [[Template]] — `headline`, `cta_label`,
-`fine_print`, `success_headline` — drawn from a closed vocabulary and unique
-across the Template's whole tree.
+`fine_print`, `consent_text`, `success_headline` — drawn from a closed vocabulary
+and unique across the Template's whole tree.
 
 Slot Roles are the seam between the two halves of a designed Optin: a Template
 declares which Roles it offers, a [[Playbook]] supplies copy against them, and
@@ -246,6 +289,11 @@ because none of that leaves the WordPress install.
 
 This must be a fully working install. WSMS is never a runtime requirement of the
 capture path.
+
+A Standalone install has no double opt-in — not as a gap, but because nothing in
+it ever sends marketing to a [[Lead]]. The log is a log. The one thing that does
+send, the lead-magnet delivery email, fulfils a request the visitor made seconds
+earlier.
 
 ### Pro
 
