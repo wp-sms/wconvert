@@ -29,6 +29,12 @@ When a decision amends, corrects or completes an existing ADR, **edit that ADR
 in the same commit** — inline, where the superseded claim sits, linking the
 amending ADR. Recording it only on the map is what let twelve ADRs drift.
 
+Reading them has the mirror rule: **an ADR's headline is not its current
+state.** Read the inline "Amended by" / "Corrected by" notes before relying on
+anything an ADR says. 0014 proposes a loader mode flag that 0028 killed, and
+0015's absence table still reads "tree-shakes out" beside the note correcting
+it. Skimming headlines builds the thing the ADR stopped saying.
+
 ### Slash commands
 
 Always fully qualify: `/mattpocock-skills:implement`, never `/implement` — the
@@ -65,6 +71,21 @@ It is the **convention source** (PHP 8.1+, DI container, service providers,
 Vite + React admin, PHPStan, PHPUnit, Playwright, premium build split) and the
 **integration target** — but no code is shared and neither release cycle
 constrains the other. Read it; never modify it.
+
+## Shipping changes
+
+**Work on a branch and open a PR. Never push to `main`.** `.github/workflows/ci.yml`
+triggers on `pull_request` only — deliberately, since a PR is tested against the
+result of merging it. So a direct push to `main` means no suite ever runs on the
+change. There is no branch protection enforcing this; the discipline is the
+enforcement. Merge once `CI / Required checks` is green, and require only that
+check — never an individual row, which may legitimately be skipped.
+
+**Verify on a real WordPress before claiming a thing works.** Tests passing is
+not the same as the plugin booting: a fatal on activation, an asset that 404s,
+or output sent during `plugins_loaded` all pass a green suite. Local's MySQL is
+often down, so use the Playground one-liner in [`README.md`](README.md) — it
+needs no database and mounts both plugins.
 
 ## Development phase
 

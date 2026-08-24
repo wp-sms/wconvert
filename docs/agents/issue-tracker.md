@@ -31,7 +31,13 @@ Create a GitHub issue.
 
 ## When a skill says "fetch the relevant ticket"
 
-Run `gh issue view <number> --comments`.
+Run `gh issue view <number> --comments`. Always `--comments`: sign-offs,
+clarifications and added acceptance criteria are posted as comments, so the
+bare `gh issue view` shows a ticket that has since moved on.
+
+**A bare number is a ticket reference.** An argument of `21`, `#21` or
+`ticket 21` all mean issue 21 in this repo — resolve it and read it before
+asking the user what they meant.
 
 ## Wayfinding operations
 
