@@ -17,6 +17,16 @@ The substitution itself is asymmetric by rule kind:
 - **A premium trigger is substituted.** `exit_intent` → `time_on_page`,
   `scroll_up` → `scroll_depth`.
 - **A premium condition is dropped.** No substitute, ever.
+  *Narrowed by [ADR 0027](0027-a-load-bearing-condition-suspends-rather-than-drops.md):
+  except where the Optin's copy asserts the fact the condition guarantees, which
+  makes dropping it say something false rather than widen an audience. Such a
+  condition carries `on_absence: suspend` on the rule manifest, and an Optin
+  holding one is **suspended** rather than shown without it. `drop` stays the
+  default, so this ADR is the rule and 0027 the marked exception. The
+  free-install half of the same boundary is closed by
+  [ADR 0026](0026-a-goal-the-site-cannot-serve-is-hidden.md), which makes the
+  cart Goal `tier: pro` so an Optin needing a cart condition cannot be built
+  without one.*
 - **Display type does not degrade at all** — a Playbook whose type is premium is
   shown as an upsell card and is not selectable.
 

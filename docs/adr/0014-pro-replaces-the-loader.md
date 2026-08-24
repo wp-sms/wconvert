@@ -45,6 +45,10 @@ inverse of the intuition that fewer bytes and fewer copies is the safer shape.
   surface.
 - **A shared-engine bugfix needs two releases**, and the free one carries wp.org
   review latency while Pro's ships immediately. Booked, not solved.
+  *Completed by [ADR 0030](0030-free-and-pro-release-on-independent-tags.md):
+  `free-v*` and `pro-v*` are independent tags, which is the mechanism that keeps
+  this a booked cost rather than a compounding one — a single tag would put every
+  Pro hotfix behind the wp.org review its free counterpart is waiting on.*
 - **Pro activation or deactivation changes the enqueued asset URL, so it must purge
   the page cache.** This replaces the loader prototype's vaguer "an entitlement
   change must purge the page cache" with a concrete, synchronous, plugin-lifecycle

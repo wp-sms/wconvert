@@ -65,6 +65,13 @@ requires none of this.
   constraint**: "Recover abandoned carts" now has a WSMS *premium* implementation
   sitting beside it — consent gates, signed recovery tokens, a sequence compiler —
   and must be decided against that rather than in a vacuum.
+  *Answered by [ADR 0025](0025-cart-recovery-captures-nothing.md): the overlap is
+  **zero, and structurally so**. `AbandonedCartCapture` hooks only the two
+  checkout identity paths plus a refresh, so WSMS cannot see a shopper who never
+  reached checkout — which is exactly WConvert's visitor. The split is before
+  checkout versus after identity, documented and never runtime-detected. The Goal
+  is also renamed to **"Bring shoppers back to their cart"** and captures
+  nothing: no form, no [[Lead]], no [[Destination]], one step.*
 - A future WConvert feature that genuinely needs per-person pending state is a
   signal to re-read `CONTEXT.md`'s Lead entry, not a signal to register an
   `EngagementType`.

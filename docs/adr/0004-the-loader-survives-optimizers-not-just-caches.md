@@ -53,5 +53,11 @@ rule fires at 5.1 s. One line; not a crash, a wrong number nobody notices.
 - **An entitlement change must purge the page cache.** Filtering at enqueue time
   keeps entitlement out of the published set (ADR 0003) but bakes it into the
   cached HTML, where it stays until the cache turns over.
+  *Amended by [ADR 0014](0014-pro-replaces-the-loader.md): "an entitlement
+  change" is now a concrete, synchronous plugin-lifecycle trigger — **Pro
+  activation or deactivation** changes the enqueued asset URL and must purge the
+  cache. There is no licence webhook in this design to miss, and under
+  [ADR 0015](0015-enforcement-is-by-non-registration.md) no licence event that
+  could stand in for one.*
 - The budget is **two numbers, not one**: the loader asset and the inlined
   payload are paid on completely different schedules.

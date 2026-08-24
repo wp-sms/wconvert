@@ -44,6 +44,14 @@ the exact path by which the expression language arrives.
   runtime; the JS build imports it; the evaluator switch is the only hand-written
   duplicate, and a test asserts parity. This makes the vocabulary's closedness
   mechanical rather than a convention.
+  *The field list has grown twice since. `CONTEXT.md`'s Storage Consent entry
+  adds **`consent_category`** beside `tier` — every Trigger and Condition
+  declares the WP Consent API category its storage falls under — and
+  [ADR 0027](0027-a-load-bearing-condition-suspends-rather-than-drops.md) adds
+  **`on_absence: drop | suspend`**.
+  [ADR 0029](0029-the-free-contract-is-proven-at-the-source.md) asserts that
+  every entry carries all four — `tier`, `consent_category`, `on_absence`, kind —
+  and resolves to an implementation on the side its `tier` names.*
 - **One engine type, many UI presets.** The engine gets the general form
   (`total_pageviews {min, max}`, `query_param {key, value}`); the builder ships
   the legible shortcuts ("returning visitor", the UTM fields). A rich admin over
@@ -55,3 +63,13 @@ the exact path by which the expression language arrives.
   carry the whole evaluator harmlessly — an unentitled site never receives a rule
   of that type. Hand-injecting one would work; that is the accepted
   low-severity loss the build-split research already booked.
+  *Amended by [ADR 0028](0028-the-free-loader-source-carries-no-premium-code.md):
+  the free loader does **not** carry the whole evaluator. Premium rule modules
+  live under Pro's own module tree and free's source never imports them, so the
+  premium branches are absent from free's build rather than dead inside it, and
+  [ADR 0029](0029-the-free-contract-is-proven-at-the-source.md) scans free's
+  built loader for premium rule identifiers on every pull request. The
+  enqueue-time strip is unchanged; the accepted loss is now copying Pro's loader
+  onto a free install
+  ([ADR 0015](0015-enforcement-is-by-non-registration.md)), not hand-injecting a
+  rule into free's.*

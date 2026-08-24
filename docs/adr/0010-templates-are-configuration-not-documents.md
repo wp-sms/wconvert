@@ -72,6 +72,22 @@ third-party ones. Under configuration they are properties of the one renderer.
 - **Authoring is the settings panel plus a dev-only export**, not hand-written JSON.
   That makes the vocabulary self-testing: every shipped template is provably
   expressible in the panel, so we never ship a design the user cannot adjust.
+- **The tree is `steps[]`, and how many steps a template has follows from its
+  metric.** A submit-metered template has **two** — the post-submit success state
+  is a terminal step, so a Yes/No two-step needs no new structure, just a second
+  non-terminal step. *Corrected by
+  [ADR 0025](0025-cart-recovery-captures-nothing.md): a **click-metered**
+  template has **one**. The click navigates the visitor away, so there is no
+  success state left to render, and an interstitial is worse than the navigation
+  it delays. This applies to both click Goals — "Promote a sale or offer" and
+  "Bring shoppers back to their cart" — so it is a property of the metric, not of
+  WooCommerce.*
+- **The vocabulary gained a `consent` leaf node** after this ADR, from
+  [#11](https://github.com/navidkashani/wconvert/issues/11), paired with a
+  `consent_text` Slot Role. Consent capture is first-class in the template rather
+  than a required field the merchant hand-adds: off by default, required once
+  present, and enforced server-side, because an *optional* consent checkbox
+  captures Leads whose consent was explicitly refused.
 - **Unverified:** that ten snapshotted trees on one page still gzip inside the 2KB
   payload budget. #9 measured ten rule-set projections at 5.7KB raw compressing to
   621 bytes because they are near-identical text; template trees drawn from one

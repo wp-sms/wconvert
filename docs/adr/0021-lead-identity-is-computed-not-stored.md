@@ -84,6 +84,14 @@ having failed. The capture *looks* successful to everyone involved.
 Refusing it in the form is the only place the visitor can fix it. That makes E.164
 a front-end contract rather than a storage concern.
 
+*Completed by [ADR 0031](0031-a-lead-has-exactly-one-origin.md): this rule is
+**total**, not merely the visitor-present case. It rests on every identifier
+arriving from a visitor who is still on the page, which holds because a [[Lead]]
+has exactly one origin — no admin entry screen, no CSV import, no competitor
+import, no ingestion API. The import case
+[#18](https://github.com/navidkashani/wconvert/issues/18) opened does not exist,
+so the rule needs no second branch.*
+
 ## Consequences
 
 - The lead log gains a grouping view; nothing else in the product gains a person.

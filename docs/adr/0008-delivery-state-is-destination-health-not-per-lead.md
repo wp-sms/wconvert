@@ -48,6 +48,14 @@ narrower than it first looks — but it closes entirely at retention.
   limit; only bulk re-push can. A Destination type declares a sustained
   jobs-per-minute figure and bulk re-push staggers `QueueInterface::schedule()`
   accordingly. Immediate dispatch stays immediate.
+- **The lead-magnet Goal's metric is not read from delivery state.** #2 worded it
+  as "Leads where the delivery fired", which has nothing per-Lead left to read
+  once health is the whole record. *Resolved by
+  [ADR 0020](0020-conversions-are-interpreted-at-read.md): it becomes its own
+  `kind` — `lead_magnet_delivered` — in `wconvert_stats`, written by the Action
+  Scheduler job once per Lead on first successful delivery.
+  `conversions − lead_magnet_delivered` is then the delivery failure count, and
+  it is the analytical half of the operational/analytical split this ADR draws.*
 - If a per-Lead record is ever genuinely needed, it arrives as a table with its
   own sign-off. It is not a column added to `wconvert_leads` — that would give a
   Lead a lifecycle, which ADR-0002 exists to prevent.

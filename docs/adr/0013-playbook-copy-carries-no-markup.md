@@ -14,6 +14,16 @@ fine print — expresses it as **structure rather than markup**:
 The renderer splits on the placeholder and constructs the `<a>` itself. The href
 is scheme-validated to `http`, `https` or `mailto` in PHP at write.
 
+*Amended by [#11](https://github.com/navidkashani/wconvert/issues/11): a Playbook
+supplies the consent and fine-print **wording**, never the privacy-policy link.
+The renderer resolves that one from `get_privacy_policy_url()` at render time, on
+the same reasoning that keeps Destination ids out of Playbooks — a Playbook can
+express nothing site-local, so the link is right on every site without any entry
+knowing which site it is on. The `link` structure above is unchanged; for this
+case its `href` comes from the site rather than from the entry.
+[ADR 0025](0025-cart-recovery-captures-nothing.md) reuses the shape for the cart
+URL.*
+
 **Consequently `wp_kses` does not apply to Playbooks.** ADR 0010 removed it from
 templates; this removes it from copy, which is the only other thing a Playbook
 carries. #7's requirement for a custom `wp_kses` allowlist is **retired, not
