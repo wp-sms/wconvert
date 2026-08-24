@@ -42,8 +42,19 @@ This project's chain: `/mattpocock-skills:to-tickets` to slice the spec,
 `/mattpocock-skills:implement` per ticket, `/mattpocock-skills:tdd` at agreed
 seams, `/mattpocock-skills:code-review` before merge.
 
-Most of Matt's engineering skills are user-invocable only — an agent cannot call
-them for you, you type them.
+Some of Matt's skills are user-invocable only, and the split does not follow
+the chain. `to-tickets` and `implement` carry `disable-model-invocation`, so you
+type those. **`tdd` and `code-review` do not** — an agent can and should call
+them itself, at the seams and before merge.
+
+The same holds for `research`, `domain-modeling`, `codebase-design`,
+`prototype`, `grilling`, `wizard` and `diagnosing-bugs`. Assuming otherwise
+costs a round trip per seam. Check rather than guess:
+
+```bash
+grep -l "disable-model-invocation: true" \
+  ~/.claude/plugins/cache/claude-plugins-official/mattpocock-skills/*/skills/*/*/SKILL.md
+```
 
 ## Reference codebase
 
