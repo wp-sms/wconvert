@@ -400,23 +400,54 @@ licence stops the updater; it does not change what a running site does.
 ### Availability
 
 Whether a member of a registry — a [[Trigger]] or [[Condition]] type, a
-[[Display Type]], a [[Template]], a [[Destination]] type — can be used on this install
-right now. Three states, and the distinction between the last two is load-bearing:
+[[Display Type]], a [[Template]], a [[Destination]] type, a [[Goal]] — can be used on
+this install right now. Three states, and the distinction between the last two is
+load-bearing:
 
 - **`ready`** — present and usable.
-- **`locked`** — absent because the install does not have [[Pro]]. Buyable from us, so
-  it renders as an upsell.
+- **`locked`** — absent because the install does not have [[Pro]]. Buyable from us.
 - **`unavailable`** — absent because something the *site* would need is missing: no
-  WooCommerce, no WSMS. Not buyable from us, so it renders as an explanation and never
-  as an upsell.
+  WooCommerce, no WSMS. Not buyable from us.
+
+Where both reasons apply at once, **`unavailable` wins** — a merchant with no store is
+never sold Pro for a feature Pro would not give them either.
 
 > **A paying customer is never shown an upsell.** Collapsing `locked` and
 > `unavailable` into a single "not available" is exactly what breaks that — it shows a
 > Pro customer an advertisement for Pro, and it offers to sell a merchant a WooCommerce
 > licence we do not have.
 
+The three states name **why** a member is absent. **How** that absence renders is a
+property of the surface, and **no surface ever renders `unavailable` as an upsell**. A
+list the merchant went hunting through explains the gap, because silence there is
+baffling. An entry point into a creation flow **hides** it, because explaining a
+WooCommerce feature to someone with no store is noise rather than honesty — which is
+why a cart-abandonment [[Playbook]] is hidden on a store-less site, and why the Goal
+above it is too.
+
 Availability is a property of the registry member, declared as data beside it. There is
 no separate list of premium capabilities to keep in step.
+
+### Suspended
+
+An [[Optin]] that exists and is published but is **not shown**, because a rule it
+depends on is no longer available on this install — [[Pro]] was deactivated, or
+WooCommerce was.
+
+Not a state the merchant chose, which is what separates it from a draft or a paused
+Optin, and the reason it is always displayed with its cause.
+
+Suspension exists because dropping an unavailable [[Condition]] is only safe while the
+Optin's *words* do not depend on it. Widening the audience for a `device` rule is a
+softer targeting decision; widening it for a cart rule makes the Optin say *"you left 3
+items in your cart"* to someone who has never added anything. A Condition whose
+guarantee the copy asserts is **load-bearing**, and an Optin holding an unavailable one
+is suspended rather than degraded.
+
+A suspended Optin **emits nothing** — no [[Impression]], no [[Conversion]] — so its
+history stays comparable rather than filling with zeroes against a live denominator.
+It resumes on its own when the dependency returns; nothing about it is destroyed, so
+there is never a repair step.
 
 ## Boundary with WSMS
 
