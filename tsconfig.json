@@ -23,6 +23,7 @@
     "resources",
     "pro/resources",
     "tests/js",
+    "pro/tests/js",
     "vitest.config.ts"
   ]
 }

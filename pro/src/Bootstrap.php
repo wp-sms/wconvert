@@ -2,8 +2,6 @@
 
 namespace WConvert\Pro;
 
-use WConvert\Bootstrap as CoreBootstrap;
-use WConvert\Container\ServiceContainer;
 use WConvert\Pro\Boot\BootGuard;
 
 defined('ABSPATH') || exit;
@@ -55,10 +53,12 @@ final class Bootstrap
         add_action('init', [self::class, 'loadTextdomain']);
 
         /*
-         * Pro registers no features yet, and there is deliberately no empty
-         * provider loop standing ready for them. The premium capabilities land
-         * in their own tickets, and each one brings the wiring it needs —
-         * nothing is written before its subject (ADR 0029).
+         * Pro registers no features yet, and there is deliberately no provider
+         * loop or container accessor standing ready for them. When the premium
+         * capabilities land they bind into the container FREE created —
+         * WConvert\Bootstrap::container() — rather than standing up a second
+         * one (ADR 0015). Each arrives with the wiring it needs; nothing is
+         * written before its subject (ADR 0029).
          */
 
         /**
@@ -67,18 +67,6 @@ final class Bootstrap
          * @since 0.1.0
          */
         do_action('wconvert_pro_loaded');
-    }
-
-    /**
-     * The container Pro binds into — free's, not one of Pro's own.
-     *
-     * Pro SUPPLIES premium capabilities into the shared container rather than
-     * unlocking guarded ones (ADR 0015), so there is one container holding
-     * both halves and no second registry to keep in step.
-     */
-    public static function container(): ServiceContainer
-    {
-        return CoreBootstrap::container();
     }
 
     /**

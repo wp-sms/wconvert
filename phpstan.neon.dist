@@ -13,4 +13,5 @@ parameters:
         - tests/fixtures/*
     bootstrapFiles:
         - phpstan-bootstrap.php
+        - pro/phpstan-bootstrap.php
     treatPhpDocTypesAsCertain: false

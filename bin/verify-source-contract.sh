@@ -124,11 +124,11 @@ shopt -s nullglob
 ROOT_PHP=("$TREE"/*.php)
 shopt -u nullglob
 
-run_scan pro-import-scan.php "free TypeScript imports a pro/ path:" "$TREE/resources"
+run_scan pro-ts-scan.php "free TypeScript imports a pro/ path:" "$TREE/resources"
 # ${ARR[@]+"${ARR[@]}"} rather than "${ARR[@]}": under `set -u`, bash 3.2 —
 # which is what /usr/bin/env bash still resolves to on macOS — treats an empty
 # array expansion as an unbound variable and aborts.
-run_scan pro-ns-scan.php "free PHP references the WConvert\\Pro namespace:" "$TREE/src" ${ROOT_PHP[@]+"${ROOT_PHP[@]}"}
+run_scan pro-php-scan.php "free PHP references Pro (namespace, or a pro/ path):" "$TREE/src" ${ROOT_PHP[@]+"${ROOT_PHP[@]}"}
 
 if [ "$FAILURES" -gt 0 ]; then
     echo "==> verify-source-contract FAILED with $FAILURES problem(s)." >&2

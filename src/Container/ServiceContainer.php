@@ -9,9 +9,16 @@ defined('ABSPATH') || exit;
 /**
  * Lazy singleton service container.
  *
- * Holds factories (called once, on first resolution) and already-built
- * instances. One instance serves both plugins: Pro binds into the container
- * free created rather than standing up a second one (ADR 0015).
+ * Holds factories, each called once on first resolution. One instance serves
+ * both plugins: Pro binds into the container free created rather than standing
+ * up a second one (ADR 0015).
+ *
+ * It is deliberately small — register, get, resolve. WSMS's container also
+ * offers aliases, pre-built singletons and a has() probe, and this will
+ * probably want some of them; it gains each one with the caller that needs it.
+ * Copying the whole surface now would be scaffolding for needs no ticket has
+ * yet, which is the habit ADR 0029's "nothing is written before its subject"
+ * exists to break.
  *
  * @since 0.1.0
  */
@@ -24,9 +31,6 @@ final class ServiceContainer
 
     /** @var array<string, object> Resolved singletons keyed by service id. */
     private array $instances = [];
-
-    /** @var array<string, string> Alias -> canonical id. */
-    private array $aliases = [];
 
     private function __construct()
     {
@@ -54,33 +58,6 @@ final class ServiceContainer
     }
 
     /**
-     * Store an already-built object as a singleton.
-     */
-    public function singleton(string $id, object $instance): self
-    {
-        $this->instances[$id] = $instance;
-
-        return $this;
-    }
-
-    /**
-     * Point one id at another.
-     */
-    public function alias(string $alias, string $target): self
-    {
-        $this->aliases[$alias] = $target;
-
-        return $this;
-    }
-
-    public function has(string $id): bool
-    {
-        $id = $this->aliases[$id] ?? $id;
-
-        return isset($this->instances[$id]) || isset($this->factories[$id]);
-    }
-
-    /**
      * Resolve a service, or throw.
      *
      * There is no null-returning variant on purpose. A container that answers
@@ -91,8 +68,6 @@ final class ServiceContainer
      */
     public function get(string $id): object
     {
-        $id = $this->aliases[$id] ?? $id;
-
         if (isset($this->instances[$id])) {
             return $this->instances[$id];
         }
@@ -123,14 +98,5 @@ final class ServiceContainer
         }
 
         return $service;
-    }
-
-    /**
-     * Drop every binding. Test-only — the container is a singleton, so a test
-     * that registers into it would otherwise leak into the next one.
-     */
-    public static function reset(): void
-    {
-        self::$instance = null;
     }
 }

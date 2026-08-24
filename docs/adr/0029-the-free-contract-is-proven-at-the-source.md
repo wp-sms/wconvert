@@ -23,6 +23,28 @@ singled out.
 | c | The free ZIP contains no path under Pro's plugin directory | full ZIP | release |
 | d | The free ZIP contains its un-minified source tree | full ZIP | release |
 
+**(a) is a cross product, and "free's tree" is a named set of paths.** Both
+halves apply in both languages: a `pro/` path *or* the Pro namespace, in TS
+*and* PHP. Scoping the path half to TypeScript would leave the likelier leak
+unwatched, because PHP reaches into another tree by path far more often than
+TypeScript does — `require_once WCONVERT_DIR . 'pro/…'` is the shape a
+WordPress developer reaches for first.
+
+"Free's tree" is `src/`, `resources/`, and the plugin files at the tree root.
+`bin/` and the Vite configs are outside it: they are build tooling that never
+ships, and Pro's own build config necessarily names Pro's entry, so including
+them would mean an exception list — the one thing this check must never
+acquire. Its own analysis bootstrap is *not* an exception, and proved the point
+by failing on day one: `phpstan-bootstrap.php` named Pro's plugin file, so
+Pro's constants moved to `pro/phpstan-bootstrap.php` rather than the check
+learning to look away.
+
+A Pro *URL* is not a Pro path. Free links to the Pro landing page to render a
+`locked` Availability state ([ADR 0015](0015-enforcement-is-by-non-registration.md)),
+and that string has a `pro/` segment in it, so the PHP check qualifies a path by
+where it is used — inside a require/include, or ending in `.php` — rather than
+by the segment alone.
+
 Check (b) reads its identifier list from the rule manifest of
 [ADR 0005](0005-the-rule-model-is-three-flat-closed-axes.md), so it cannot drift
 from what the manifest calls premium.

@@ -25,10 +25,15 @@ final class BootGuard
      */
     public static function verdict(): MinCoreVerdict
     {
-        return MinCoreCheck::evaluate(
-            defined('WCONVERT_VERSION') ? (string) WCONVERT_VERSION : null,
-            (string) WCONVERT_MIN_CORE
-        );
+        return MinCoreCheck::evaluate(self::installedCore(), (string) WCONVERT_MIN_CORE);
+    }
+
+    /**
+     * The installed free version, or null when free is not there at all.
+     */
+    private static function installedCore(): ?string
+    {
+        return defined('WCONVERT_VERSION') ? (string) WCONVERT_VERSION : null;
     }
 
     /**
@@ -37,6 +42,17 @@ final class BootGuard
      * A Pro that quietly does nothing is indistinguishable from a Pro that is
      * working, so the merchant would read the missing premium features as a
      * bug in the product rather than as something they can fix.
+     *
+     * The message is built INSIDE the callback, not here. This runs on
+     * `plugins_loaded`, and calling __() that early makes WordPress load a
+     * text domain before `init` — which since 6.7 emits a
+     * `_load_textdomain_just_in_time` notice. That notice is not cosmetic: with
+     * WP_DEBUG_DISPLAY on it prints during `plugins_loaded`, so headers go out
+     * before anything that needs to set one, and the request breaks in ways
+     * that have nothing to do with WConvert. `admin_notices` fires long after
+     * `init`, where the same __() calls are simply correct — and where the
+     * refusal actually gets translated, which it never did here, because this
+     * path is the one that returns before the text domain is loaded.
      */
     public static function noticeRefusal(MinCoreVerdict $verdict): void
     {
@@ -44,10 +60,8 @@ final class BootGuard
             return;
         }
 
-        $message = self::refusalMessage($verdict);
-
-        add_action('admin_notices', static function () use ($message): void {
-            printf('<div class="notice notice-error"><p>%s</p></div>', esc_html($message));
+        add_action('admin_notices', static function () use ($verdict): void {
+            printf('<div class="notice notice-error"><p>%s</p></div>', esc_html(self::refusalMessage($verdict)));
         });
     }
 
@@ -73,7 +87,7 @@ final class BootGuard
                     'wconvert-pro'
                 ),
                 (string) WCONVERT_MIN_CORE,
-                defined('WCONVERT_VERSION') ? (string) WCONVERT_VERSION : ''
+                self::installedCore() ?? ''
             ),
             MinCoreVerdict::VersionUnreadable => sprintf(
                 /* translators: 1: installed WConvert version string, 2: version WConvert Pro requires. */
@@ -81,7 +95,7 @@ final class BootGuard
                     'WConvert Pro did not start: it could not read the versions it compares. WConvert reports "%1$s" and WConvert Pro requires "%2$s". Reinstall both plugins.',
                     'wconvert-pro'
                 ),
-                defined('WCONVERT_VERSION') ? (string) WCONVERT_VERSION : '',
+                self::installedCore() ?? '',
                 (string) WCONVERT_MIN_CORE
             ),
             MinCoreVerdict::Satisfied => '',

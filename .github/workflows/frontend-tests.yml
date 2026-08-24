@@ -5,8 +5,10 @@ name: Frontend tests
 #
 #   [test]       Vitest under jsdom. Covers free's tree AND Pro's — Pro's
 #                loader tests live under pro/ so that a test importing a Pro
-#                module cannot itself become the free-tree import the source
-#                contract exists to catch.
+#                module never lands in resources/, which IS a scan root for the
+#                source contract. (tests/ is not a scan root in either language,
+#                which is why the PHP tests for Pro's boot guard can sit in
+#                tests/unit/Pro/ without contradicting this.)
 #
 #   [typecheck]  tsc --noEmit.
 #

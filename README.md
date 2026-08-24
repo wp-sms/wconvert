@@ -44,11 +44,15 @@ namespace, in TypeScript **and** PHP
 check **fails closed**: a tree it cannot inspect *fails*, because "couldn't
 look" reading as "clean" is how a leak ships.
 
-Two scanners do the looking, and neither is a grep —
-[`bin/pro-import-scan.php`](bin/pro-import-scan.php) parses module specifiers so
-`repro/` is not mistaken for `pro/`, and
-[`bin/pro-ns-scan.php`](bin/pro-ns-scan.php) tokenizes PHP so free may
-*document* the boundary without tripping the guard that enforces it.
+One scanner per language does the looking, and neither is a grep.
+[`bin/pro-ts-scan.php`](bin/pro-ts-scan.php) parses module specifiers, so
+`repro/harness` is not mistaken for a `pro/` path.
+[`bin/pro-php-scan.php`](bin/pro-php-scan.php) tokenizes PHP, so free may
+*document* the boundary without tripping the guard that enforces it — while a
+Pro name in a string literal still fails, because a dynamic class name resolves
+it. Both halves apply in both languages: PHP is checked for `pro/` paths too,
+since `require_once WCONVERT_DIR . 'pro/…'` is the shape a WordPress developer
+reaches for first.
 
 The artifact contract, Plugin Check and the release guard are **not** here.
 They land with the release workflow: each half lands with the thing it

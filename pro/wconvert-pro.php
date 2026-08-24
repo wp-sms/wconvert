@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WConvert Pro
  * Plugin URI: https://wconvert.io/pro/
- * Description: Supplies WConvert's premium capabilities — exit-intent and scroll-up triggers, advanced targeting, floating bars and slide-ins, A/B testing, and the ESP destinations.
+ * Description: Supplies WConvert's premium capabilities — the exit-intent and scroll-up Triggers, the advanced Conditions, floating bars and slide-ins, A/B testing, and the ESP Destinations.
  * Version: 0.1.0
  * Author: VeronaLabs
  * Author URI: https://veronalabs.com/
@@ -22,7 +22,7 @@ defined('ABSPATH') || exit;
 |--------------------------------------------------------------------------
 | Pro is installed ALONGSIDE the free plugin rather than instead of it
 | (ADR 0014), and it does not unlock free's premium features — it SUPPLIES
-| them. The code for exit intent, the advanced conditions, floating_bar,
+| them. The code for exit intent, the advanced Conditions, floating_bar,
 | slide_in, A/B testing and the ESP destinations exists only in this tree,
 | and a free install has never contained it.
 |

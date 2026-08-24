@@ -71,6 +71,36 @@ final class SourceContractTest extends TestCase
     }
 
     /**
+     * A `pro/` PATH in free's PHP, with no Pro namespace in sight.
+     *
+     * ADR 0029's check (a) is a cross product: a `pro/` path OR the Pro
+     * namespace, in TS AND PHP. PHP reaches into another tree by path far more
+     * often than TypeScript does — `require_once WCONVERT_DIR . 'pro/...'` is
+     * the shape a WordPress developer reaches for first — so scoping the path
+     * half to TypeScript leaves the likelier leak unwatched.
+     */
+    public function testFailsWhenFreePhpRequiresAProPath(): void
+    {
+        $result = $this->verify(self::FIXTURES . '/php-requires-pro-path');
+
+        $this->assertSame(1, $result['status'], $result['output']);
+        $this->assertStringContainsString('Thing.php', $result['output']);
+    }
+
+    /**
+     * But a Pro URL is not a Pro path. Free links to the Pro landing page to
+     * render a `locked` Availability state (ADR 0015), and that string has a
+     * pro/ segment in it. Flagging it would mean free could not sell Pro
+     * without an exception list.
+     */
+    public function testDoesNotFlagALinkToTheProLandingPage(): void
+    {
+        $result = $this->verify(self::FIXTURES . '/php-pro-url');
+
+        $this->assertSame(0, $result['status'], $result['output']);
+    }
+
+    /**
      * The same leak on the PHP side. ADR 0029 states the invariant for TS AND
      * PHP, and a check that only covered the bundler's half would leave free's
      * PHP free to `use WConvert\Pro\...` — a fatal on a free install, and a
