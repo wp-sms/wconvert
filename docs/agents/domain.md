@@ -49,3 +49,19 @@ If the concept you need isn't in the glossary yet, that's a signal — either yo
 If your output contradicts an existing ADR, surface it explicitly rather than silently overriding:
 
 > _Contradicts ADR-0007 (event-sourced orders) — but worth reopening because…_
+
+A genuine **contradiction** — two sources that cannot both be true — is not yours to resolve. Report it and stop. A **missing marker**, where a later decision already settled the question and only the cross-reference is absent, is the section below.
+
+## Record amendments in the ADR, not only on the map
+
+A decision that amends, corrects, completes or supersedes an existing ADR must edit that ADR file **in the same commit that records the decision**. Writing it only in the ticket resolution or the map's index is how an ADR read in isolation hands a future session a decision that was already overturned.
+
+This is not hypothetical here. Every ticket dutifully amended `CONTEXT.md` inline and the glossary never drifted; no equivalent rule covered `docs/adr/`, and twelve of thirty-two ADRs went stale — one of them still describing a template shape a later ticket had corrected.
+
+**House style is an inline note where the superseded claim sits** — not a status header, not a changelog at the bottom. Put the correction against the wrong sentence, so a reader who only reaches that paragraph still gets it:
+
+> _Amended by [ADR 0028](0028-the-free-loader-source-carries-no-premium-code.md): this originally read "one loader source, tree-shaken on a mode flag". It is **separate module trees** instead — premium rule modules live under Pro's, and Pro's entry imports free's plus its own._
+
+Note what that example does: it says what the ADR **originally** claimed, what replaced it, and why. A bare "see ADR 0028" makes the reader go and diff two documents.
+
+**Both directions, every time.** The amending ADR names what it amends; the amended ADR names what amends it. The standard convention is to update one side and forget the other, so treat the second edit as part of the first.

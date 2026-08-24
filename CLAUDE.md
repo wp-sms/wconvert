@@ -25,6 +25,26 @@ The five canonical roles, label strings unchanged. See
 
 Single-context — root `CONTEXT.md` + `docs/adr/`. See `docs/agents/domain.md`.
 
+When a decision amends, corrects or completes an existing ADR, **edit that ADR
+in the same commit** — inline, where the superseded claim sits, linking the
+amending ADR. Recording it only on the map is what let twelve ADRs drift.
+
+### Slash commands
+
+Always fully qualify: `/mattpocock-skills:implement`, never `/implement` — the
+bare name does not resolve.
+
+**`/code-review` is the trap.** Bare, it resolves to a *built-in* skill, not
+`/mattpocock-skills:code-review`. Both are real, neither errors, and they do
+different jobs. Name the plugin every time.
+
+This project's chain: `/mattpocock-skills:to-tickets` to slice the spec,
+`/mattpocock-skills:implement` per ticket, `/mattpocock-skills:tdd` at agreed
+seams, `/mattpocock-skills:code-review` before merge.
+
+Most of Matt's engineering skills are user-invocable only — an agent cannot call
+them for you, you type them.
+
 ## Reference codebase
 
 WSMS 8 lives at
