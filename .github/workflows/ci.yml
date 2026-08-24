@@ -1,0 +1,177 @@
+name: CI
+
+# =============================================================================
+# The single entry point for every check that runs on a pull request.
+#
+#   source-contract ──── ALWAYS runs, no path filter
+#   changes ── one dorny/paths-filter run, the only place the filters live
+#     ├── PHP tests        php-tests.yml
+#     ├── Frontend tests   frontend-tests.yml
+#     └── Required checks ──── always runs, aggregates needs.*.result
+#
+# This mirrors WSMS's ci.yml, including WHY it has this shape. A workflow
+# skipped by a workflow-LEVEL `paths:` filter reports no status at all — not
+# "skipped", nothing — so the day branch protection requires it, a pull request
+# that misses those paths waits forever on a check that never arrives
+# (https://github.com/orgs/community/discussions/13690). Filters therefore live
+# at JOB level, where a skipped job still reports, and one always-running gate
+# aggregates. Require `CI / Required checks` and nothing else.
+#
+# WHY source-contract CARRIES NO PATH FILTER. It is the check that carries the
+# free contract's guarantee (ADR 0029), and it is fail-closed by design — so
+# letting a paths expression decide whether it runs would hand the opt-out to
+# the diff. A pull request that touches only pro/ still changes what free's
+# tree may import, and the whole point of proving the contract at the source is
+# that it costs seconds and can therefore run unconditionally.
+#
+# NO ZIP IS BUILT HERE, DELIBERATELY (ADR 0029). The artifact-level checks
+# confirm at release what the source already proved, and paying minutes per
+# pull request for that confirmation buys nothing. The artifact contract,
+# Plugin Check and the release guard land with the release workflow.
+#
+# NO `push` TRIGGER, DELIBERATELY. A pull request is tested against the result
+# of merging it, so running the same suites again on `main` a moment later
+# re-proves what the pull request proved.
+# =============================================================================
+
+on:
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  # paths-filter reads the changed-file list from the API on a pull request.
+  pull-requests: read
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # THE FREE CONTRACT, PROVEN AT THE SOURCE (ADR 0029, check a).
+  #
+  # No build, no npm install, no composer install — PHP and a shell, because
+  # the invariant is a property of the source text. That is what makes running
+  # it on every pull request cheap enough to be unconditional, and it is why a
+  # stray premium import is caught by whoever wrote it rather than by whoever
+  # cuts the release. WSMS finds one only at release time, because its guard
+  # lives inside build.sh.
+  # ---------------------------------------------------------------------------
+  source-contract:
+    name: 'Source contract (free carries no Pro)'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          coverage: none
+
+      - name: Verify the source contract
+        run: bash bin/verify-source-contract.sh
+
+  changes:
+    name: 'Changed paths'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      php: ${{ steps.filter.outputs.php }}
+      js: ${{ steps.filter.outputs.js }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Pinned to a commit rather than a tag: `stable` is a tag someone else
+      # can repoint at will.
+      - name: Filter changed paths
+        id: filter
+        uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
+        with:
+          filters: |
+            php:
+              - '**.php'
+              - 'composer.json'
+              - 'composer.lock'
+              - 'phpstan*.neon*'
+              - 'phpstan-bootstrap.php'
+              - 'phpunit.xml*'
+              - 'bin/**'
+              - 'tests/**'
+              - '.github/workflows/php-tests.yml'
+              - '.github/workflows/ci.yml'
+            js:
+              - '**.ts'
+              - '**.tsx'
+              - '**.js'
+              - '**.jsx'
+              - '**.mjs'
+              - '**.css'
+              - 'package.json'
+              - 'package-lock.json'
+              - 'tsconfig*.json'
+              - 'vitest.config.ts'
+              - 'resources/**'
+              - 'pro/resources/**'
+              - 'pro/tests/**'
+              - '.github/workflows/frontend-tests.yml'
+              - '.github/workflows/ci.yml'
+
+  php-tests:
+    name: 'PHP tests'
+    needs: changes
+    if: needs.changes.outputs.php == 'true'
+    uses: ./.github/workflows/php-tests.yml
+
+  frontend-tests:
+    name: 'Frontend tests'
+    needs: changes
+    if: needs.changes.outputs.js == 'true'
+    uses: ./.github/workflows/frontend-tests.yml
+
+  # ---------------------------------------------------------------------------
+  # THE GATE. The one check to require in branch protection.
+  #
+  # `if: always()` is the whole point — it reports whatever happened upstream,
+  # including "everything was skipped", which is the case a workflow-level path
+  # filter cannot report at all. It reads `needs` as a whole rather than naming
+  # each job, so adding a suite above means adding one line to `needs:` and
+  # nothing else. Skipped counts as passing; cancelled does not, because a
+  # cancelled required check is an unfinished one.
+  # ---------------------------------------------------------------------------
+  required-checks:
+    name: 'Required checks'
+    if: always()
+    needs: [source-contract, changes, php-tests, frontend-tests]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Aggregate the suite results
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: |
+          set -euo pipefail
+
+          printf '%s' "$RESULTS" | jq -r 'to_entries[] | "\(.key): \(.value.result)"'
+
+          {
+            echo "| Job | Result |"
+            echo "|---|---|"
+            printf '%s' "$RESULTS" | jq -r 'to_entries[] | "| \(.key) | \(.value.result) |"'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          FAILED=$(printf '%s' "$RESULTS" \
+            | jq -r '[to_entries[]
+                      | select(.value.result != "success" and .value.result != "skipped")
+                      | "\(.key) (\(.value.result))"]
+                     | join(", ")')
+
+          if [ -n "$FAILED" ]; then
+            echo "::error::Not every check passed: $FAILED"
+            exit 1
+          fi
+
+          echo "✓ every check either passed or was not needed for this change"
