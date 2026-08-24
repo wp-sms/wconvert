@@ -1,0 +1,77 @@
+name: Frontend tests
+
+# =============================================================================
+# Vitest, tsc and ESLint over the admin app and both loader module trees.
+#
+#   [test]       Vitest under jsdom. Covers free's tree AND Pro's — Pro's
+#                loader tests live under pro/ so that a test importing a Pro
+#                module never lands in resources/, which IS a scan root for the
+#                source contract. (tests/ is not a scan root in either language,
+#                which is why the PHP tests for Pro's boot guard can sit in
+#                tests/unit/Pro/ without contradicting this.)
+#
+#   [typecheck]  tsc --noEmit.
+#
+#   [lint]       ESLint at --max-warnings=0, from the first commit. There is no
+#                backlog to grandfather, and holding it at zero is the whole
+#                point: a lint backlog is what makes the signal worthless.
+#
+# NOTHING HERE BUILDS A BUNDLE. Vitest runs against source through the
+# `@loader` alias, so `npm run build` is not a prerequisite. `npm run
+# check:loader` — the one build ADR 0029 lets onto a pull request, for the byte
+# budget and the premium-identifier scan — lands with the rule manifest whose
+# identifiers it reads. Nothing is written before its subject.
+#
+# NO TRIGGERS OF ITS OWN beyond a manual dispatch. See ci.yml.
+# =============================================================================
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+concurrency:
+  group: frontend-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: 'Vitest'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm test
+
+  typecheck:
+    name: 'TypeScript'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+
+  lint:
+    name: 'ESLint'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run lint

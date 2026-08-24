@@ -1,0 +1,17 @@
+parameters:
+    level: 7
+    phpVersion: 80100
+    paths:
+        - src
+        - pro/src
+        - bin
+        - tests
+    excludePaths:
+        # Deliberately broken trees. Their whole job is to contain the leaks
+        # bin/verify-source-contract.sh must catch, so analysing them would
+        # report the fixtures' faults as the project's.
+        - tests/fixtures/*
+    bootstrapFiles:
+        - phpstan-bootstrap.php
+        - pro/phpstan-bootstrap.php
+    treatPhpDocTypesAsCertain: false

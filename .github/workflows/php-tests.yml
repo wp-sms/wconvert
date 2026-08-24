@@ -1,0 +1,104 @@
+name: PHP tests
+
+# =============================================================================
+# PHPUnit across the supported PHP range, plus PHPStan.
+#
+#   [test]      The floor and the ceiling on a pull request, every supported
+#               version on a manual dispatch or a release. The floor is where a
+#               construct needing a newer PHP fatals at parse time; the ceiling
+#               is where a deprecation shows up first. The matrix below is the
+#               ONLY place the supported versions are listed, and each job
+#               reports its own name, so a range in the workflow title would be
+#               duplicated information that goes stale.
+#
+#   [analysis]  PHPStan, pinned to the floor by `phpVersion` in
+#               phpstan.neon.dist — that file is the source of truth, not this
+#               one.
+#
+# NO TRIGGERS OF ITS OWN beyond a manual dispatch. ci.yml calls this on every
+# pull request behind the changed-path filter; see the note in ci.yml for why
+# the filter cannot live here.
+# =============================================================================
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+concurrency:
+  group: php-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: 'Tests · PHP ${{ matrix.php }}'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ${{ github.event_name == 'pull_request' && fromJSON('["8.1","8.4"]') || fromJSON('["8.1","8.2","8.3","8.4"]') }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP ${{ matrix.php }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, dom, xml
+          coverage: none
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Composer downloads
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-php${{ matrix.php }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-php${{ matrix.php }}-composer-
+
+      # composer.lock is resolved at the floor declared in composer.json, so it
+      # installs cleanly on every matrix row with no platform overrides.
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress
+
+      # composer, not vendor/bin/phpunit: the script carries --testdox, so the
+      # log names each test.
+      - name: PHPUnit
+        run: composer test
+
+  analysis:
+    name: 'Static analysis (PHPStan)'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, dom, xml
+          coverage: none
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Composer downloads
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-php8.2-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-php8.2-composer-
+
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress
+
+      # phpstan.neon.dist pins phpVersion: 80100 — analysis runs on the floor.
+      - name: PHPStan
+        run: composer phpstan
