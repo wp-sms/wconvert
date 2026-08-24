@@ -23,6 +23,23 @@ owns the Contact — WSMS's own subscription form, or the ESP's audience setting
 Not every [[Conversion]] is a Lead. An Optin whose success is a click-through
 captures no form, so it produces a Conversion and no Lead.
 
+**Leads are never deduplicated.** One person submitting two forms produces two
+Leads, because they did two things. That two Leads are one person is a question
+answered when the lead log is *read* — a grouping over the identifier the Leads
+carry — and never a stored fact. Storing it would give a Lead a person to belong
+to, and a person is the one thing that can then acquire a status: it is the same
+drift as the line below, arriving by a side door that satisfies its letter.
+
+So a Lead's headline count is submissions, and grouping is a view offered on top
+of it. It is not a second number the product reports, and there is no honest
+count of *people* anywhere in WConvert.
+
+Because identity is decided by comparing identifiers, a Lead holds its email and
+phone in **canonical form** — one spelling per person, fixed at capture. An
+identifier that cannot be put in canonical form is refused while the visitor is
+still on the page, since the alternative is a capture that appears to succeed and
+fails later where nobody is watching.
+
 WConvert owns Leads.
 
 ### Conversion
@@ -77,6 +94,38 @@ via a [[Destination]].
 > **The line to hold:** a Lead is an event, a Contact is an entity. Any feature
 > that wants to give a Lead a lifecycle is a signal that WConvert is drifting
 > into being a second contact database.
+
+Pushing a [[Lead]] may **create** a Contact, and may **fill in fields the Contact
+left empty** — a name it never had. It never overwrites a stored value, because the
+submission is anonymous and matched on one identifier, so honouring it would let
+whoever knows an email rewrite the phone beside it. And it never touches lifecycle
+state at all: not the subscription status, not an opt-out, not on a re-subscribe.
+
+That asymmetry is deliberate. Creating a Contact is a claim about someone the owning
+system has never heard of, where the form the visitor filled in is the only evidence
+that exists. Matching one is meeting a system that already holds an opinion about that
+person, and **the owner's opinion wins** — including the opinion that they left.
+
+The counterpart is that the owning system decides at *send* time whether a Contact may
+be contacted. WConvert declining to correct that state costs nothing, and asserting it
+would silently revive someone who unsubscribed.
+
+### Engagement
+
+WSMS's term, and named here so WConvert does not reinvent it: one row per *pending
+thing* about one [[Contact]] — an abandoned cart, a back-in-stock wait, a booking
+reminder — carrying a status, a step counter, a next-action time and a conversion
+timestamp, swept on a schedule.
+
+An Engagement is a lifecycle per person, which is exactly what a [[Lead]] is defined
+not to be. **WConvert never writes one**, and the fact that the store is polymorphic
+and open to new producers does not change that: a lifecycle WConvert owns is a
+lifecycle WConvert owns, wherever the row lives — and housing it in another plugin's
+table only hides it from review.
+
+Nor does WConvert read one. A [[Condition]] is evaluated in the browser, which knows
+of no visitor identity, so "has an open cart" cannot be asked of a person; where
+WConvert needs cart state it observes the cart itself.
 
 ### Consent Record
 
@@ -294,7 +343,10 @@ Destinations are the only way a Lead is pushed out of WConvert **automatically**
 CSV export is a manual admin action, not a Destination.
 
 A Destination is configured once, site-wide, and *includes whatever selects the
-target inside the remote system* — the Mailchimp audience, the WSMS list. An
+target inside the remote system* — the Mailchimp audience, the WSMS tag. Whatever
+that selector is, it is only ever **added**: a Lead arriving cannot remove the
+audience or tag membership a [[Contact]] already has, because that membership is a
+decision the owning system made and WConvert has no standing to revise. An
 [[Optin]] holds Destination ids and nothing more, so two Optins feeding one
 audience reference one Destination. Where several Destinations share credentials,
 those live on a [[Connection]] underneath them.

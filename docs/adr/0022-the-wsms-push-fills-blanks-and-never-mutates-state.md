@@ -1,0 +1,103 @@
+# The WSMS push fills blanks and never mutates Contact state
+
+When a pushed [[Lead]] matches an existing WSMS [[Contact]], the adapter:
+
+- fills only fields the Contact left **empty**, never overwriting a stored value;
+- **never** writes `status`, never clears a channel opt-out, never branches on
+  `complained`;
+- reads `id` off the matched row and ignores every other column.
+
+A Contact it *creates* is `subscribed`, per
+[#5 as amended](https://github.com/navidkashani/wconvert/issues/5). A Contact it
+*matches* keeps whatever state it had.
+
+## WSMS has two duplicate policies, and only one is a precedent
+
+[#4](https://github.com/navidkashani/wconvert/issues/4) recorded WSMS as
+fill-empty-only. That is half the picture:
+
+- `SubscriptionHandler` **is** fill-empty-only, and says why in a comment: the
+  submission is unauthenticated and matched by email *or* phone, so honouring it
+  would let whoever knows one identifier clobber the other
+  (`src/SubscriptionForm/SubscriptionHandler.php:157-164`).
+- `CreateContactAction::handleDuplicate()` with `on_duplicate=update` is
+  **incoming-wins** — `array_filter` over the caller's own config (`:171-197`).
+
+WConvert's push shares the *first* threat model exactly: an anonymous public form
+matched on one identifier. A Flow action is admin-authored with a trusted payload,
+which is why incoming-wins is safe there and not here. Same codebase, different
+callers, different correct answers.
+
+## Why this is not a merchant setting
+
+WSMS exposes `on_duplicate` as an enum, so mirroring it on the [[Destination]] was
+available. It is the worst of the three: it turns *PII clobbering by an anonymous
+attacker* into a checkbox, offered to someone who cannot be expected to model the
+attack from the label. This map has refused merchant knobs on smaller stakes.
+
+## The cost, taken deliberately
+
+**A genuine correction never lands.** Someone fixing their own typo'd first name is
+ignored, silently. That is correct at the boundary: amending a Contact's PII is a
+Contact-lifecycle act, and `CONTEXT.md` already denies WConvert any opinion on
+those. Where it matters, it belongs to whoever owns the Contact.
+
+`custom_fields` is untouched for a separate reason — a canonical-key-to-custom-field
+mapping is a second field map, and #4 removed the first one on purpose.
+
+## Never writing state is free, which is why it is absolute
+
+The expected cost of refusing to write `status` was a confused merchant: a Lead in
+WConvert, a Contact in WSMS who never receives anything. **The cost does not
+exist**, because WSMS gates at *send* time rather than at capture:
+
+- `AbandonedCartService::phoneAllowed()` / `emailAllowed()` re-check
+  `channel_opt_outs` on every send (`:318`, `:341`);
+- `ConsentGuard` does the same (`:137`);
+- campaign audiences filter `status = 'subscribed'`
+  (`ContactRepository::eachKeyset()`, `:445`).
+
+So an unsubscriber who converts on a popup is protected by whoever sends. WConvert
+asserting `subscribed` would instead perform a **silent cross-plugin
+resurrection** — invisible in both admin screens until a complaint arrives, and
+the worst failure available in this area.
+
+It also keeps [ADR 0007](0007-destinations-are-outbound-and-fallible.md)'s "never
+reads Contact state on the capture path" *literally* true. Branching on `status` to
+decide anything **is** reading it.
+
+## The asymmetry is the model, not an inconsistency
+
+Creating `subscribed` is a claim about someone the owning system has never heard
+of, where the form the visitor filled in is the only evidence in existence.
+Matching is meeting a system that already holds an opinion about that person, and
+the owner's opinion wins — including the opinion that they left.
+
+## The both-identifiers case
+
+One submission carrying email and phone, where the **email matches Contact A and
+the phone matches Contact B**. Match order is email-then-phone, so A wins. Filling
+A's empty phone then collides with `idx_phone` and throws `ConflictException`
+(`ContactRepository::duplicateContact()`, `:703-715`).
+
+**The adapter catches a conflict on `update()` and treats it as
+success-with-existing** — exactly as #4 already has it doing on `create()`. First
+match wins, the second identifier is dropped, and **nothing is merged.** Merging
+two Contacts is a lifecycle operation and out of bounds by the same rule as the
+rest of this ADR.
+
+Match order is email-first after `SubscriptionHandler` (`:68-73`) and
+`CreateContactAction` (`:118-131`). Noted honestly: `AbandonedCartService` goes
+**phone-first** (`:442-447`). Two-to-one, and both *capture* paths are in the
+majority.
+
+## Consequences
+
+- An email-only [[Optin]] and a phone-only Optin capturing one human produce two
+  Leads and two Contacts, permanently. Neither system reconciles them, and
+  [ADR 0021](0021-lead-identity-is-computed-not-stored.md) means WConvert cannot
+  even see that they might be one.
+- The visitor's response never varies on any of this — the push is queued, so at
+  response time WConvert does not know what happened. See
+  [ADR 0016](0016-wconvert-never-confirms-an-optin.md) for the neighbouring
+  refusal.
