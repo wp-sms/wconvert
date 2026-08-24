@@ -82,12 +82,13 @@ third-party ones. Under configuration they are properties of the one renderer.
   it delays. This applies to both click Goals — "Promote a sale or offer" and
   "Bring shoppers back to their cart" — so it is a property of the metric, not of
   WooCommerce.*
-- **The vocabulary gained a `consent` leaf node** after this ADR, from
-  [#11](https://github.com/navidkashani/wconvert/issues/11), paired with a
-  `consent_text` Slot Role. Consent capture is first-class in the template rather
-  than a required field the merchant hand-adds: off by default, required once
-  present, and enforced server-side, because an *optional* consent checkbox
-  captures Leads whose consent was explicitly refused.
+- **The vocabulary gained a `consent` leaf node** after this ADR, paired with a
+  `consent_text` Slot Role — see
+  [ADR 0032](0032-consent-capture-is-first-class-in-the-template.md). Consent
+  capture is first-class in the template rather than a required field the
+  merchant hand-adds: off by default, required once present, and enforced
+  server-side, because an *optional* consent checkbox captures Leads whose
+  consent was explicitly refused.
 - **Unverified:** that ten snapshotted trees on one page still gzip inside the 2KB
   payload budget. #9 measured ten rule-set projections at 5.7KB raw compressing to
   621 bytes because they are near-identical text; template trees drawn from one

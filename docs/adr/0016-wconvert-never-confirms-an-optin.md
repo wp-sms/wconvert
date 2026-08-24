@@ -71,5 +71,7 @@ own single-opt-in forms act on.
   wearing a hat.
 - The consent evidence WConvert *does* keep is the [[Consent Record]] snapshotted
   onto the Lead at capture — see
+  [ADR 0032](0032-consent-capture-is-first-class-in-the-template.md) for how it is
+  captured and
   [ADR 0018](0018-erasure-deletes-rather-than-anonymises.md) for what happens to
   it under an erasure request.

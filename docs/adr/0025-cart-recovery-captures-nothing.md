@@ -86,7 +86,7 @@ different table.
 - **No new [[Slot Role]].** The discount code is body copy the merchant edits.
 - **The CTA's target is renderer-resolved**, from `wc_get_cart_url()`, with a
   settings-panel override — the same shape as the privacy-policy link in
-  [ADR 0016](0016-wconvert-never-confirms-an-optin.md)'s consent design, and for the
+  [ADR 0032](0032-consent-capture-is-first-class-in-the-template.md), and for the
   same reason: a [[Playbook]] can express nothing site-local.
 - **No WooCommerce-specific templates.** What the Goal needs is *one step,
   click-metered, CTA-bearing* — a shape shared with the other click Goal, not a

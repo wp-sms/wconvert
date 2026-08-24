@@ -21,5 +21,16 @@ and no table at continent granularity — alongside the existing
 - Country-level granularity needs a zone-to-country table of roughly 2KB gzipped
   inside an 8KB loader budget. That is a later decision to be made against a
   measurement, not a v1 commitment.
-- The Playbook degradation mechanism is what a geo-wanting Playbook substitutes
-  through, which is the same seam the free/premium line already uses.
+- **Nothing degrades into `timezone_region`.** This bullet originally read that
+  the Playbook degradation mechanism is what a geo-wanting Playbook substitutes
+  through. That seam turned out to have no branch for it:
+  [ADR 0012](0012-degradation-substitutes-triggers-and-drops-conditions.md)
+  substitutes a premium **trigger**, drops a premium **condition** and upsells a
+  premium **display type** — and geo is none of the three, because it is *cut*
+  rather than premium. A rule absent from the manifest cannot be named by a
+  Playbook at all, since entries are validated against it at registration
+  ([ADR 0005](0005-the-rule-model-is-three-flat-closed-axes.md)). So a Playbook
+  wanting this behaviour writes `timezone_region` directly, and there is no
+  substitution entry to build. Corrected here rather than on the map, which never
+  carried the original claim: it was written forward-looking in this ADR and the
+  mechanism it predicted was later specified differently.

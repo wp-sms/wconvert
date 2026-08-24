@@ -14,7 +14,8 @@ fine print — expresses it as **structure rather than markup**:
 The renderer splits on the placeholder and constructs the `<a>` itself. The href
 is scheme-validated to `http`, `https` or `mailto` in PHP at write.
 
-*Amended by [#11](https://github.com/navidkashani/wconvert/issues/11): a Playbook
+*Amended by
+[ADR 0032](0032-consent-capture-is-first-class-in-the-template.md): a Playbook
 supplies the consent and fine-print **wording**, never the privacy-policy link.
 The renderer resolves that one from `get_privacy_policy_url()` at render time, on
 the same reasoning that keeps Destination ids out of Playbooks — a Playbook can
