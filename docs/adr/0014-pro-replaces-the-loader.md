@@ -29,10 +29,15 @@ inverse of the intuition that fewer bytes and fewer copies is the safer shape.
 
 ## Consequences
 
-- **One loader source, two Vite builds**, tree-shaken on a mode flag, writing to
-  **separate output directories**. WSMS's `main.js` trap — two configs sharing one
-  output path with `emptyOutDir: true`, last build silently wins — is avoided by
-  construction rather than by discipline, because the two artifacts are two plugins.
+- **Two Vite builds writing to separate output directories.** WSMS's `main.js` trap
+  — two configs sharing one output path with `emptyOutDir: true`, last build silently
+  wins — is avoided by construction rather than by discipline, because the two
+  artifacts are two plugins.
+  *Amended by [ADR 0028](0028-the-free-loader-source-carries-no-premium-code.md): this
+  originally read "one loader source, tree-shaken on a mode flag". It is **separate
+  module trees** instead — premium rule modules live under Pro's, and Pro's entry
+  imports free's plus its own. The flag would have put premium code in free's
+  un-minified source, which wp.org Guideline 4 requires be published.*
 - **The ≤8KB gzipped loader budget applies per build.** Pro's is the larger and
   still lands near 4.2KB.
 - **No public `registerRule` seam**, therefore no partial-registration failure mode

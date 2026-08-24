@@ -12,7 +12,7 @@ an `if`.
 
 | Premium capability | How it is absent on free |
 |---|---|
-| `exit_intent`, `scroll_up` | manifest entries the free manifest lacks; code the free build tree-shakes out ([ADR 0014](0014-pro-replaces-the-loader.md)) |
+| `exit_intent`, `scroll_up` | manifest entries the free manifest lacks; code that lives only in Pro's module tree and free's source never imports ([ADR 0028](0028-the-free-loader-source-carries-no-premium-code.md), amending [ADR 0014](0014-pro-replaces-the-loader.md)) |
 | Premium conditions (the advanced-targeting set) | same |
 | `floating_bar`, `slide_in` | templates free does not ship, and the `[popover=manual]` renderer path ([ADR 0011](0011-non-modal-overlays-use-the-popover-top-layer.md)) |
 | A/B testing | REST routes free never registers — so there is no permission callback to write |
