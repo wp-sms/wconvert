@@ -40,6 +40,13 @@ identifier that cannot be put in canonical form is refused while the visitor is
 still on the page, since the alternative is a capture that appears to succeed and
 fails later where nobody is watching.
 
+That rule is total because a Lead has **exactly one origin**: a visitor
+submitting a form, in one request, on a page WConvert served. Nothing else writes
+one — no admin entry screen, no CSV import, no import from another plugin. A row
+arriving any other way would be asserting a capture event that never happened
+here, and would carry no [[Consent Record]], which is the half that cannot be
+invented.
+
 WConvert owns Leads.
 
 ### Conversion
@@ -140,6 +147,12 @@ is the consent timestamp; there is no second one.
 A Consent Record is not a consent *lifecycle*. It records one act at one instant
 and is never revisited — the opposite of the [[Contact]] state above, and the
 reason the two must not share a word.
+
+It also cannot be supplied by anything other than the submission that produced
+it. There is no wording to snapshot for a person this system never showed
+anything to, so a Consent Record is the reason a [[Lead]] cannot arrive from
+outside — synthesising one is manufacturing the evidence rather than recording
+it.
 
 ### Storage Consent
 
