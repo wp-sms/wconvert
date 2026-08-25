@@ -34,6 +34,9 @@ final class OptinRepository
     /** What the published set is built from. */
     private const PROJECTION_COLUMNS = 'id, published_config, published_at, deleted_at';
 
+    /** Enough to label a [[Lead]] with the Optin that captured it, and nothing more. */
+    private const NAME_COLUMNS = 'id, name';
+
     public function __construct(
         private readonly Connection $db,
         private readonly PublishedSet $publishedSet,
@@ -117,6 +120,33 @@ final class OptinRepository
             Connection::TABLE_OPTINS,
             'SELECT ' . self::SUMMARY_COLUMNS . ' FROM %i WHERE ' . $where . ' ORDER BY id DESC LIMIT 500'
         );
+    }
+
+    /**
+     * Every Optin's name, by id — **soft-deleted ones included**.
+     *
+     * This is what the [[Lead]] log, the CSV export and the personal-data
+     * export all label a Lead with, and it is the reason deleting an Optin is
+     * a `deleted_at` stamp rather than a row removal: the name has to survive
+     * for exactly this, without being denormalised onto every Lead row
+     * (ADR 0002, ADR 0020). Excluding deleted Optins here would blank the
+     * label precisely for the Leads whose provenance is hardest to recover.
+     *
+     * Two short columns and no `LIMIT`. A cap would silently blank names past
+     * it, which is worse than the read it would save on an install that has
+     * more Optins than any install has.
+     *
+     * @return array<string, string>
+     */
+    public function names(): array
+    {
+        $names = [];
+
+        foreach ($this->db->results(Connection::TABLE_OPTINS, 'SELECT ' . self::NAME_COLUMNS . ' FROM %i') as $row) {
+            $names[(string) $row['id']] = (string) ($row['name'] ?? '');
+        }
+
+        return $names;
     }
 
     /**

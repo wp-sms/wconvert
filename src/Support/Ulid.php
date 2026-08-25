@@ -34,6 +34,56 @@ final class Ulid
     }
 
     /**
+     * The smallest ULID that could have been minted in a given millisecond —
+     * that millisecond's timestamp with the randomness at zero.
+     *
+     * It is a BOUNDARY rather than an id, and nothing is ever stored under it.
+     * Retention pruning deletes everything captured before a cutoff, and
+     * because the leading 48 bits are the minting time, `id < floorAt(cutoff)`
+     * is that range expressed on the primary key — the same rows
+     * `created_at < cutoff` names, reached without a second index
+     * (ADR 0002, ADR 0018).
+     */
+    public static function floorAt(int $milliseconds): string
+    {
+        return self::encodeTime($milliseconds) . str_repeat(self::ALPHABET[0], self::LENGTH - 10);
+    }
+
+    /**
+     * The millisecond a ULID was minted in, read back out of it.
+     *
+     * The lead log's grouping view is what needs this. `idx_email` covers
+     * `(email, id)` — InnoDB appends the primary key to every secondary index
+     * — so `MAX(id)` per group is answered from the index alone, while a
+     * `MAX(created_at)` would force a row lookup and lose the covering read
+     * ADR 0021 promised when it made the identity keys indexed. The time is
+     * already in the id; reading it here is cheaper than fetching it again.
+     *
+     * Returns null for anything that is not a ULID, because the value it would
+     * otherwise decode is a date, and a wrong date is worse than none.
+     */
+    public static function timeOf(string $ulid): ?int
+    {
+        if (strlen($ulid) !== self::LENGTH) {
+            return null;
+        }
+
+        $milliseconds = 0;
+
+        for ($i = 0; $i < 10; $i++) {
+            $digit = strpos(self::ALPHABET, $ulid[$i]);
+
+            if ($digit === false) {
+                return null;
+            }
+
+            $milliseconds = ($milliseconds << 5) | $digit;
+        }
+
+        return $milliseconds;
+    }
+
+    /**
      * 48 bits of millisecond timestamp as the leading 10 characters — the half
      * that makes ids sort chronologically, so `ORDER BY id` is `ORDER BY
      * created_at` without the column.

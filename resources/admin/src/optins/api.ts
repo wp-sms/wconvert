@@ -21,7 +21,11 @@ export function statusOf(optin: OptinSummary): OptinStatus {
 
 const path = (suffix = '') => `/wconvert/v1/optins${suffix}`;
 
-export const listOptins = () => apiFetch<OptinSummary[]>({ path: path() });
+// `includeDeleted` because a Lead outlives the Optin that captured it: the
+// lead log labels rows with the Optin's name, and a soft-deleted Optin still
+// has one — which is what the soft delete is for.
+export const listOptins = (includeDeleted = false) =>
+  apiFetch<OptinSummary[]>({ path: path(includeDeleted ? '?include_deleted=1' : '') });
 
 export const createOptin = (name: string, goal: string, config: Record<string, unknown>) =>
   apiFetch<unknown>({ path: path(), method: 'POST', data: { name, goal, config } });

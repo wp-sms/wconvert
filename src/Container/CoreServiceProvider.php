@@ -7,12 +7,16 @@ use WConvert\Database\Installer;
 use WConvert\Database\WpdbConnection;
 use WConvert\Frontend\LoaderEnqueue;
 use WConvert\Lead\LeadCapture;
+use WConvert\Lead\LeadCsv;
+use WConvert\Lead\LeadLog;
 use WConvert\Lead\LeadRepository;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
 use WConvert\Rest\CaptureController;
+use WConvert\Rest\LeadController;
 use WConvert\Rest\OptinController;
 use WConvert\Rest\TemplateController;
+use WConvert\Retention\RetentionPeriod;
 use WConvert\Rules\RuleVocabulary;
 use WConvert\Storage\OptionStore;
 use WConvert\Storage\WpOptionStore;
@@ -100,6 +104,35 @@ final class CoreServiceProvider implements ServiceProvider
         );
 
         $container->register(
+            LeadLog::class,
+            static fn (ServiceContainer $c): LeadLog => new LeadLog($c->resolve(LeadRepository::class))
+        );
+
+        // The CSV's columns come from the template vocabulary rather than from
+        // the rows, so the header can be written before the first Lead is
+        // fetched — which is what makes a streamed export possible at all.
+        $container->register(
+            LeadCsv::class,
+            static fn (ServiceContainer $c): LeadCsv => new LeadCsv($c->resolve(TemplateVocabulary::class))
+        );
+
+        // Retention lives in one non-autoloaded option, not a column
+        // (ADR 0018). Registered here rather than beside the pruner because
+        // the REST settings route reads it too.
+        $container->register(
+            RetentionPeriod::class,
+            static fn (ServiceContainer $c): RetentionPeriod => new RetentionPeriod($c->resolve(OptionStore::class))
+        );
+
+        $container->register(
+            LeadController::class,
+            static fn (ServiceContainer $c): LeadController => new LeadController(
+                $c->resolve(LeadLog::class),
+                $c->resolve(RetentionPeriod::class)
+            )
+        );
+
+        $container->register(
             CaptureController::class,
             static fn (ServiceContainer $c): CaptureController => new CaptureController(
                 $c->resolve(PublishedSet::class),
@@ -142,6 +175,7 @@ final class CoreServiceProvider implements ServiceProvider
         // visitor posting a capture is on a page WordPress may serve through
         // any entry point.
         $container->resolve(CaptureController::class)->hooks();
+        $container->resolve(LeadController::class)->hooks();
 
         if (!is_admin()) {
             $container->resolve(LoaderEnqueue::class)->hooks();

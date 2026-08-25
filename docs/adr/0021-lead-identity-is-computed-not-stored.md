@@ -41,6 +41,15 @@ next to it. It is the more dangerous option precisely because it looks compliant
 So the grouping is an indexed aggregate over a table that already exists: no new
 storage, no sign-off under the database rule, and no new concept in the model.
 
+*Completed by [ADR 0033](0033-the-lead-log-reads-without-a-new-index.md): "an
+indexed aggregate" is true only of the right spelling. `GROUP BY COALESCE(email,
+phone)` is a function over two columns and uses neither index, so the query is
+**two aggregates unioned** — one over the rows with an email, one over the rows
+without — and each half is answered from its own index, `MAX(id)` included,
+because InnoDB appends the primary key to every secondary index. The cost is
+recorded there too: a Lead with only an email and a Lead with only a phone are
+two groups, which is safe precisely because of the boundary below.*
+
 And it is **structurally incapable** of becoming the stored version. A result set
 has nothing to attach a status to.
 
@@ -49,6 +58,15 @@ has nothing to attach a status to.
 **Grouping is presentation, never the count.** The headline number stays
 submissions. A toggle collapses Sarah's two rows into one reading "2 submissions";
 it never changes what the dashboard reports.
+
+*Completed by [#25](https://github.com/navidkashani/wconvert/issues/25), which
+built it: the boundary is now structural rather than observed. `WConvert\Lead\LeadLog`
+reads the total before it looks at the toggle and returns one payload shape with
+one total in it, so there is no wiring in which a group count could reach the
+headline and no second number for a screen to mistake for one. The lead log is
+one REST route with a `grouped` parameter for the same reason — a second route
+is a second resource, and the resource a `/leads/people` would name is the one
+this ADR says cannot honestly exist.*
 
 **It never reaches analytics.**
 [ADR 0019](0019-analytics-stores-daily-counters-not-events.md) leaves

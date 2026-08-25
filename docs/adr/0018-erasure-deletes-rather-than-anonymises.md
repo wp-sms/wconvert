@@ -31,12 +31,36 @@ number through the contact row first, and WordPress runs each eraser to
 completion before starting the next. WConvert has one eraser over one table and
 no such dependency. Copy the caveat only if a second eraser ever appears.
 
+*Completed by [#25](https://github.com/navidkashani/wconvert/issues/25), which
+built it: the eraser is keyed on the **email address and nothing else**, which
+is what WordPress's privacy tools address it with. Following the identifier link
+— erasing every Lead sharing a phone number with one of these — was considered
+and left out. That link is one WConvert COMPUTES at read
+([ADR 0021](0021-lead-identity-is-computed-not-stored.md)), never one the
+merchant asserted, so acting on it would delete rows the requested address never
+appears on. The grouping view may under-group with no consequence because
+nothing counts people; an eraser has no such latitude in the other direction.
+The cost is stated rather than hidden: a Lead carrying only a phone number is
+out of the reach of an email-addressed request.*
+
 ## Consequences
 
 - **The export includes the [[Consent Record]]** — the consent text exactly as it
   was shown when the visitor submitted. A consent record that does not travel
   with the data it justifies is useless to the merchant at the moment they need
   it most.
+  *Completed by [#25](https://github.com/navidkashani/wconvert/issues/25): an
+  **absent** Consent Record is exported as nothing at all, and never as a
+  refusal. `consent_text` is missing where there was no wording to snapshot —
+  an Optin that declared no consent node, or one whose `consent_text` Slot Role
+  nobody had filled in, since `CaptureForm` declines to store an empty sentence
+  ([ADR 0031](0031-a-lead-has-exactly-one-origin.md)). It is never missing
+  because consent was withheld: a submission whose Optin declares a consent node
+  and whose payload lacks one is rejected at the endpoint
+  ([ADR 0032](0032-consent-capture-is-first-class-in-the-template.md)), so an
+  un-consented Lead does not exist to export. The CSV's column is named
+  `consent_text` for the same reason — a column named `consent` makes an empty
+  cell read as a refusal.*
 - **CSV export is out of reach and stays that way.** A file the merchant already
   downloaded cannot be recalled, and tracking exports to try would mean logging
   who exported what — more personal data to solve a personal-data problem. The
@@ -48,5 +72,28 @@ no such dependency. Copy the caveat only if a second eraser ever appears.
   they are required to keep for unrelated reasons. The Action Scheduler job
   bundled by [ADR 0007](0007-destinations-are-outbound-and-fallible.md) exists
   from day one and simply has nothing to do until a period is set.
+  *Corrected by [#25](https://github.com/navidkashani/wconvert/issues/25), which
+  built it: **[ADR 0007](0007-destinations-are-outbound-and-fallible.md) bundles
+  no Action Scheduler**, and nothing else does either — WConvert has no runtime
+  Composer dependency at all, and the [[Destination]] pushes that will need
+  per-item durability arrive with
+  [#30](https://github.com/navidkashani/wconvert/issues/30). The pruner is a
+  **WP-Cron daily event**, and the correction is not a downgrade: this is one
+  site-wide job running one statement, with no per-item grain to retry and no
+  outcome to recover. A missed run is made up by the next one, because the
+  boundary is computed from the moment the job runs rather than from the moment
+  it was scheduled. The "exists from day one and has nothing to do" half is
+  unchanged and is the part that mattered.*
+- **The retention period is one non-autoloaded WordPress option, not a column.**
+  It is a single integer for the whole site, read once a day by the pruner and
+  once per render by the settings panel — the table-free alternative the
+  database rule asks to have considered, and the right one. Zero, negative and
+  absent all read as *keep forever*, deliberately: a merchant clearing the field
+  is turning retention off, and the reading that empties their log on the next
+  cron run is the one this must never take.
 - Client-side visitor state is untouched by erasure, and correctly so — after
   [ADR 0017](0017-no-visitor-identifier.md) it contains no personal data.
+- **The prune is a range over the primary key, not over `created_at`.** See
+  [ADR 0033](0033-the-lead-log-reads-without-a-new-index.md): a ULID's leading
+  48 bits are the minting time, so the two name the same rows and only one of
+  them is an index `wconvert_leads` already has.

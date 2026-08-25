@@ -68,5 +68,12 @@ final class AdminMenu
         }
 
         ViteHelper::enqueueAdmin(self::SCRIPT_HANDLE);
+
+        // The CSV download is a navigation to `admin-post.php`, so the screen
+        // needs the nonced URL rather than a REST path — `apiFetch` would read
+        // the file into memory and then have to turn it back into a download.
+        // One value, so `wp_localize_script` rather than a settings object
+        // nothing else fills.
+        wp_localize_script(self::SCRIPT_HANDLE, 'wconvertAdmin', ['exportUrl' => LeadExport::url()]);
     }
 }

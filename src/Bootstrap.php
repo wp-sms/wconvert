@@ -4,6 +4,7 @@ namespace WConvert;
 
 use WConvert\Container\AdminServiceProvider;
 use WConvert\Container\CoreServiceProvider;
+use WConvert\Container\PrivacyServiceProvider;
 use WConvert\Container\ServiceContainer;
 use WConvert\Database\Installer;
 use WConvert\Storage\WpOptionStore;
@@ -34,6 +35,7 @@ final class Bootstrap
     /** @var list<class-string<\WConvert\Container\ServiceProvider>> Service providers, in registration order. */
     private const PROVIDERS = [
         CoreServiceProvider::class,
+        PrivacyServiceProvider::class,
         AdminServiceProvider::class,
     ];
 

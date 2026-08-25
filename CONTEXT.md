@@ -34,6 +34,13 @@ So a Lead's headline count is submissions, and grouping is a view offered on top
 of it. It is not a second number the product reports, and there is no honest
 count of *people* anywhere in WConvert.
 
+That the grouping is a *view* is also what makes it affordable to be imprecise:
+it groups on the email where a Lead has one and on the phone otherwise, so a
+Lead carrying only an email and a Lead carrying only a phone stay apart even
+where a human knows they are one person. Under-grouping cannot produce a wrong
+number when no number of people is produced at all — which is another reason
+the group count must never become one.
+
 Because identity is decided by comparing identifiers, a Lead holds its email and
 phone in **canonical form** — one spelling per person, fixed at capture. An
 identifier that cannot be put in canonical form is refused while the visitor is
@@ -172,6 +179,31 @@ beside the tier flag on the same registry entry. Storage that records a choice
 the visitor themselves made — that they dismissed this [[Optin]] — is
 `functional` and never withheld, because withholding it means the popup reappears
 after they closed it.
+
+### Retention Period
+
+How long the merchant keeps their [[Lead]]s before WConvert deletes them
+automatically. **The default is forever, and pruning ships off.**
+
+That default is not timidity. Deleting a merchant's Leads because the plugin
+shipped an opinion is a support catastrophe, and may destroy records they are
+required to keep for reasons that have nothing to do with marketing. The
+pruning job exists from day one regardless and simply has nothing to do until a
+period is set — so a merchant who sets one gets a job that has been running all
+along, rather than a feature that arrives in a release and changes what a live
+site does to their data.
+
+It is **one setting for the whole site**, not a property of an [[Optin]]. A
+Lead's retention is a data-protection decision about a person's information;
+attaching it to the form that captured them would let two forms disagree about
+how long the same human is kept.
+
+Clearing it is *keep forever*, never *keep zero days*. The two readings differ
+by the whole log.
+
+A Retention Period is disclosed: the privacy-policy text WConvert registers
+states the configured period, so setting one writes the merchant's disclosure
+for them.
 
 ### Optin
 

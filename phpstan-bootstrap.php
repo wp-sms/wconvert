@@ -21,3 +21,8 @@ defined('WCONVERT_VERSION') || define('WCONVERT_VERSION', '0.1.0');
 defined('WCONVERT_DIR') || define('WCONVERT_DIR', __DIR__ . '/');
 defined('WCONVERT_URL') || define('WCONVERT_URL', 'https://example.test/wp-content/plugins/wconvert/');
 defined('WCONVERT_MAIN_FILE') || define('WCONVERT_MAIN_FILE', __DIR__ . '/wconvert.php');
+
+// WordPress's own time constants. wp-config.php has them defined by the time
+// any plugin file runs, so analysis has to see them as defined too.
+defined('HOUR_IN_SECONDS') || define('HOUR_IN_SECONDS', 3600);
+defined('DAY_IN_SECONDS') || define('DAY_IN_SECONDS', 86400);
