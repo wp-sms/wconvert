@@ -88,16 +88,24 @@ KEY idx_goal (goal)
      *
      * `created_at` is a real column even though a ULID's leading 48 bits
      * already carry the minting time, which is why `wconvert_optins` has none.
-     * It earns its place twice: retention pruning is a range delete over it
-     * (ADR 0002), and it IS the Consent Record's timestamp, to the same second
-     * — there is no second one (ADR 0032).
+     * It earns its place as the [[Consent Record]]'s timestamp, to the same
+     * second — there is no second one (ADR 0032), and evidence of consent with
+     * no time on it is evidence of very little.
      *
-     * **Two indexes and no more.** The lead log lists newest-first off the
-     * ULID primary key, so it needs none of its own; the covering indexes a
-     * per-Optin listing, a retention prune and a bulk re-push would want
-     * belong to the tickets that write those queries (#25, #30) and to the
-     * sign-off those tickets get. Guessing at them here is unsanctioned
-     * schema on a table that takes a write per capture.
+     * It does NOT earn it as the retention prune's range. That range is over
+     * the primary key: the ULID's leading bits are stamped in the same
+     * statement as this column, so `id < :boundary` names the same rows and
+     * costs no index of its own (ADR 0033).
+     *
+     * **Two indexes and no more**, and #25 kept it that way. It wrote the
+     * per-Optin listing and the retention prune this comment was holding a
+     * sign-off open for, and needed neither `idx_optin_created` nor
+     * `idx_created`: the prune is a range over the primary key, the listing
+     * walks that key backwards under a LIMIT, and the grouping view is two
+     * aggregates that each use an index already here (ADR 0033). An index is
+     * paid on every capture and read by one admin on demand, which is the
+     * asymmetry that decided it. The bulk re-push #30 will want is still an
+     * open question for #30.
      */
     private static function leads(string $prefix, string $charsetCollate): string
     {

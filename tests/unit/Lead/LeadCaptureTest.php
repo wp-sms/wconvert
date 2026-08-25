@@ -9,7 +9,7 @@ use WConvert\Lead\Submission;
 use WConvert\Lead\Lead;
 use WConvert\Lead\LeadCapture;
 use WConvert\Lead\LeadRepository;
-use WConvert\Tests\Unit\Optin\FakeConnection;
+use WConvert\Tests\Unit\Support\FakeConnection;
 
 /**
  * Write ordering: the local row is the capture itself.

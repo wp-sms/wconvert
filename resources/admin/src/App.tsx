@@ -1,4 +1,5 @@
 import { __ } from '@wordpress/i18n';
+import { LeadLog } from './leads/LeadLog';
 import { OptinList } from './optins/OptinList';
 import { TemplatePreview } from './templates/TemplatePreview';
 
@@ -14,6 +15,7 @@ export function App() {
     <div className="wconvert-admin">
       <h1>{__('WConvert', 'wconvert')}</h1>
       <OptinList />
+      <LeadLog />
       <TemplatePreview />
     </div>
   );

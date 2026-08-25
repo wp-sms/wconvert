@@ -34,6 +34,16 @@ nothing to read.
   with nothing else installed.
 - **The local Lead row is never queued, never retried, and never has delivery
   state.** It is the precondition for dispatch, not a participant in it.
+- **This ADR bundles no Action Scheduler, and nothing yet does.**
+  [ADR 0018](0018-erasure-deletes-rather-than-anonymises.md) and
+  [ADR 0019](0019-analytics-stores-daily-counters-not-events.md) both refer to
+  "the Action Scheduler dependency ADR 0007 makes available"; that reading was
+  never true of this document, and WConvert has no runtime Composer dependency
+  at all. The queue arrives with the Destination dispatch in
+  [#30](https://github.com/navidkashani/wconvert/issues/30), which is the first
+  thing that needs per-(Lead × Destination) durability. Retention pruning, which
+  0018 attributed here, is a WP-Cron daily event instead — one site-wide job
+  running one statement has no per-item grain to retry.
 - "Destinations are the only way a Lead leaves WConvert" is now scoped to
   *automatic* pushes. CSV export is a manual admin action and always was a
   counter-example to the unscoped claim.

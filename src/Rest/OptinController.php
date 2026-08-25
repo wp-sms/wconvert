@@ -5,6 +5,7 @@ namespace WConvert\Rest;
 use WConvert\Optin\Optin;
 use WConvert\Optin\OptinRepository;
 use WConvert\Rules\RuleVocabulary;
+use WConvert\Support\Ulid;
 use WConvert\Targeting\Targeting;
 use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
@@ -27,7 +28,7 @@ defined('ABSPATH') || exit;
 final class OptinController
 {
     /** A ULID, spelled as a route constraint so a malformed id 404s at the router. */
-    private const ID_PATTERN = '(?P<id>[0-9A-HJKMNP-TV-Z]{26})';
+    private const ID_PATTERN = '(?P<id>' . Ulid::PATTERN . ')';
 
     public function __construct(
         private readonly OptinRepository $optins,

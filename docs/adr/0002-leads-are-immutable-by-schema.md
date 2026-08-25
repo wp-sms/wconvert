@@ -7,6 +7,16 @@ no `updated_at` column**. A row with no mutable state cannot acquire a lifecycle
 without a migration a reviewer will see. `created_at` alone also makes retention
 pruning a range delete.
 
+*Amended by [ADR 0033](0033-the-lead-log-reads-without-a-new-index.md): the
+range delete is real but it is **not over `created_at`**. A [[Lead]]'s id is a
+ULID whose leading 48 bits are the millisecond it was minted in, stamped in the
+same statement, so `id < :boundary` names exactly the rows `created_at <
+:cutoff` does — over the primary key, which the table already has, rather than
+over an `idx_created` that would have cost a third write per capture for a job
+that runs once a day. `created_at` keeps its place regardless: it is the
+[[Consent Record]]'s timestamp, to the same second, and there is no second
+one (ADR 0032).*
+
 *Completed by [ADR 0031](0031-a-lead-has-exactly-one-origin.md): the guard also
 assumes every row arrives one submission at a time. A bulk-write path — a CSV
 import, an admin "add lead" screen, a competitor import — is the other way in,
@@ -34,6 +44,16 @@ for Action Scheduler jobs.
   identifier that cannot be canonicalised is rejected at submit. Grouping the log
   by identifier is a lie otherwise, and WSMS's `create()` normalises on the way
   in, so an un-canonicalised row cannot find the Contact it created itself.*
+- **Removing a [[Lead]] is a `DELETE`, and that is not an exception to this
+  ADR.** `WConvert\Database\Connection` gained a `delete()` for the personal-data
+  eraser and the retention prune, and it refuses any SQL that does not begin
+  `DELETE FROM %i` — so the operation this ADR forbids, an `UPDATE` against a
+  table with no update path, still cannot be expressed through it.
+  `tests/unit/Lead/NoLeadIsEverUpdatedTest.php` reads both plugin trees and
+  fails on an `update()` that names `wconvert_leads`, because `update()` cannot
+  simply be removed: an Optin's soft delete IS an update. See
+  [ADR 0018](0018-erasure-deletes-rather-than-anonymises.md) for why erasure
+  deletes rather than anonymises.
 - Deleting an Optin **soft-deletes** it (`deleted_at`) rather than cascading.
   Leads are never destroyed by an Optin delete, and the Optin's name survives
   for CSV export without denormalising it onto every Lead row.

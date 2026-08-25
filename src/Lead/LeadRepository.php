@@ -13,16 +13,66 @@ defined('ABSPATH') || exit;
  * **There is one write, and it is an insert.** Not because nothing else has
  * been needed yet, but because nothing else may ever be: a Lead has no
  * lifecycle, so an update path here is the drift `wconvert_leads`' missing
- * `status` column exists to prevent (ADR 0002). {@see Connection} has no
- * `delete()` and no raw `query()` either, so the erasure #25 registers has to
- * widen that interface in a diff a reviewer sees.
+ * `status` column exists to prevent (ADR 0002).
  *
- * Reading is #25's, along with the grouping view identity is computed by.
+ * **There are now two removals, and neither is an update.** Erasure and
+ * retention pruning both `DELETE`, which is what let ADR 0018 keep ADR 0002
+ * whole rather than carve an exception into it: an eraser that blanked the
+ * identifying columns would be writing to a Lead row, and the one caller
+ * nobody would think to check is exactly where that door reopens. Widening
+ * {@see Connection} with a `delete()` is the diff a reviewer sees;
+ * `tests/unit/Lead/NoLeadIsEverUpdatedTest.php` is what keeps `update()` from
+ * quietly acquiring a call site against this table.
+ *
+ * **Every read here is a PROJECTION, and none of them is `SELECT *`.** Two of
+ * the six columns are LONGTEXT-shaped and the log lists fifty rows at a time.
  *
  * @since 0.1.0
  */
 final class LeadRepository
 {
+    /** Everything a Lead is. The log renders captured values, so `fields` comes too. */
+    private const FULL_COLUMNS = 'id, optin_id, email, phone, fields, created_at';
+
+    /**
+     * The grouping view, as **two indexed aggregates** rather than one over
+     * `COALESCE(email, phone)`.
+     *
+     * That is the shape ADR 0021 promised when it justified making `email` and
+     * `phone` real indexed columns: InnoDB appends the primary key to every
+     * secondary index, so `idx_email` covers `(email, id)` and this half is
+     * answered from the index without touching a row. `COALESCE` is a function
+     * over two columns and can use neither index, which would have made the
+     * ADR's "nearly free" a claim the code did not honour.
+     *
+     * **Email wins where a Lead carries both**, and the second half takes only
+     * the rows with no email — so the two halves partition the table and
+     * `UNION ALL` needs no de-duplication pass.
+     *
+     * The consequence, stated rather than hidden: a Lead with email only and a
+     * Lead with phone only are two groups even where a human knows they are
+     * one person. Under-grouping cannot produce a wrong NUMBER, because the
+     * headline is submissions and no screen reports a count of people — which
+     * is the boundary that makes this trade safe to make at all (ADR 0021).
+     *
+     * No parentheses around the halves: MySQL accepts them, SQLite does not,
+     * and a bare compound select means one query text runs on both — which is
+     * what lets `bin/verify-lead-log.php` prove this on Playground.
+     */
+    private const GROUPED = 'SELECT email AS identifier, COUNT(*) AS submissions, MAX(id) AS latest_id'
+        . ' FROM %i WHERE email IS NOT NULL GROUP BY email'
+        . ' UNION ALL '
+        . 'SELECT phone AS identifier, COUNT(*) AS submissions, MAX(id) AS latest_id'
+        . ' FROM %i WHERE email IS NULL AND phone IS NOT NULL GROUP BY phone'
+        . ' ORDER BY latest_id DESC LIMIT %d';
+
+    private const GROUPED_FOR_OPTIN = 'SELECT email AS identifier, COUNT(*) AS submissions, MAX(id) AS latest_id'
+        . ' FROM %i WHERE optin_id = %s AND email IS NOT NULL GROUP BY email'
+        . ' UNION ALL '
+        . 'SELECT phone AS identifier, COUNT(*) AS submissions, MAX(id) AS latest_id'
+        . ' FROM %i WHERE optin_id = %s AND email IS NULL AND phone IS NOT NULL GROUP BY phone'
+        . ' ORDER BY latest_id DESC LIMIT %d';
+
     public function __construct(
         private readonly Connection $db,
     ) {
@@ -64,5 +114,169 @@ final class LeadRepository
         ]);
 
         return $lead;
+    }
+
+    /**
+     * **The headline number: submissions.** Its own `COUNT(*)`, with no
+     * `GROUP BY` anywhere in it.
+     *
+     * Deriving it by summing the grouping view would give the same answer
+     * today and a different one the moment that view grows a `LIMIT` — which
+     * it has — and a headline that drifts with a presentation toggle is the
+     * second metric ADR 0021 exists to prevent.
+     */
+    public function submissions(?string $optinId): int
+    {
+        $row = $optinId === null
+            ? $this->db->row(Connection::TABLE_LEADS, 'SELECT COUNT(*) AS total FROM %i')
+            : $this->db->row(
+                Connection::TABLE_LEADS,
+                'SELECT COUNT(*) AS total FROM %i WHERE optin_id = %s',
+                $optinId
+            );
+
+        return (int) ($row['total'] ?? 0);
+    }
+
+    /**
+     * The log itself, newest first.
+     *
+     * `ORDER BY id DESC` and not `ORDER BY created_at DESC`: the id is a ULID,
+     * so it already sorts chronologically, and ordering on the primary key
+     * needs no index of its own. Filtering by `optin_id` walks that same key
+     * backwards under the `LIMIT` — an admin screen's read, deliberately not
+     * paid for with a third index on a table that takes a write per capture.
+     *
+     * @return list<Lead>
+     */
+    public function page(?string $optinId, int $limit): array
+    {
+        $rows = $optinId === null
+            ? $this->db->results(
+                Connection::TABLE_LEADS,
+                'SELECT ' . self::FULL_COLUMNS . ' FROM %i ORDER BY id DESC LIMIT %d',
+                $limit
+            )
+            : $this->db->results(
+                Connection::TABLE_LEADS,
+                'SELECT ' . self::FULL_COLUMNS . ' FROM %i WHERE optin_id = %s ORDER BY id DESC LIMIT %d',
+                $optinId,
+                $limit
+            );
+
+        return array_map(static fn (array $row): Lead => Lead::fromRow($row), $rows);
+    }
+
+    /**
+     * The grouping view — {@see self::GROUPED} for why it is two aggregates.
+     *
+     * @return list<LeadGroup>
+     */
+    public function groups(?string $optinId, int $limit): array
+    {
+        $rows = $optinId === null
+            ? $this->db->results(Connection::TABLE_LEADS, self::GROUPED, $limit)
+            : $this->db->results(Connection::TABLE_LEADS, self::GROUPED_FOR_OPTIN, $optinId, $optinId, $limit);
+
+        return array_map(static fn (array $row): LeadGroup => LeadGroup::fromRow($row), $rows);
+    }
+
+    /**
+     * Every Lead carrying one email address, oldest first — what the personal
+     * data exporter hands back, and what the eraser is about to remove.
+     *
+     * Oldest first because it is a person's own history being read to them,
+     * and a history reads forwards. The log reads backwards for the opposite
+     * reason: a merchant wants what just came in.
+     *
+     * @return list<Lead>
+     */
+    public function forEmail(string $email, int $limit, int $offset): array
+    {
+        return array_map(
+            static fn (array $row): Lead => Lead::fromRow($row),
+            $this->db->results(
+                Connection::TABLE_LEADS,
+                'SELECT ' . self::FULL_COLUMNS . ' FROM %i WHERE email = %s ORDER BY id ASC LIMIT %d OFFSET %d',
+                $email,
+                $limit,
+                $offset
+            )
+        );
+    }
+
+    /**
+     * The next batch of Leads after an id, oldest first — how the CSV export
+     * walks the whole log.
+     *
+     * **Keyset, not `OFFSET`.** An offset walk re-reads and discards every row
+     * before it, so exporting the last page of a large log costs a scan of the
+     * whole log; and a Lead inserted mid-export shifts every later page by one,
+     * which duplicates a row in the file. Both go away when the cursor is the
+     * primary key the rows are already ordered by.
+     *
+     * @return list<Lead>
+     */
+    public function since(?string $optinId, string $afterId, int $limit): array
+    {
+        $rows = $optinId === null
+            ? $this->db->results(
+                Connection::TABLE_LEADS,
+                'SELECT ' . self::FULL_COLUMNS . ' FROM %i WHERE id > %s ORDER BY id ASC LIMIT %d',
+                $afterId,
+                $limit
+            )
+            : $this->db->results(
+                Connection::TABLE_LEADS,
+                'SELECT ' . self::FULL_COLUMNS
+                    . ' FROM %i WHERE optin_id = %s AND id > %s ORDER BY id ASC LIMIT %d',
+                $optinId,
+                $afterId,
+                $limit
+            );
+
+        return array_map(static fn (array $row): Lead => Lead::fromRow($row), $rows);
+    }
+
+    /**
+     * Erase every Lead carrying one email address.
+     *
+     * **A `DELETE`, never an anonymising update** (ADR 0018). Anonymising is
+     * an update and ADR 0002 has no update path, so a delete lets that ADR
+     * survive with no carve-out — and it buys almost nothing anyway: what
+     * would remain is a conversion count, which the stats table already owns.
+     *
+     * **Keyed on the email and on nothing else.** WordPress's privacy tools
+     * are email-addressed, and a Lead carrying only a phone number is
+     * therefore out of their reach. Following the identifier link — erasing
+     * every Lead sharing a phone with one of these — was considered and left
+     * out: that link is one WConvert COMPUTES at read (ADR 0021), never one
+     * the merchant asserted, so acting on it would delete rows the requested
+     * address never appears on. The grouping view may under-group with no
+     * consequence because nothing counts people; an eraser has no such
+     * latitude in the other direction.
+     */
+    public function eraseByEmail(string $email): int
+    {
+        return $this->db->delete(Connection::TABLE_LEADS, 'DELETE FROM %i WHERE email = %s', $email);
+    }
+
+    /**
+     * Retention pruning: remove every Lead captured before a boundary.
+     *
+     * **A range on the PRIMARY KEY, not on `created_at`.** They name the same
+     * rows — a ULID's leading 48 bits are the minting time, stamped in the
+     * same statement as `created_at`, which is why the whole codebase already
+     * treats `ORDER BY id` as `ORDER BY created_at` — and only one of them is
+     * an index this table already has. `idx_created` would have been a third
+     * write per capture bought for a job that runs once a day
+     * (ADR 0002, ADR 0018).
+     *
+     * `$boundary` is {@see \WConvert\Support\Ulid::floorAt()}, so the comparison is strict: a
+     * Lead minted in the boundary millisecond itself is kept.
+     */
+    public function pruneBefore(string $boundary): int
+    {
+        return $this->db->delete(Connection::TABLE_LEADS, 'DELETE FROM %i WHERE id < %s', $boundary);
     }
 }

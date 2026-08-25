@@ -122,3 +122,146 @@ if (!function_exists('__')) {
         return $text;
     }
 }
+
+// WordPress's own time constants, which any plugin may assume are defined.
+defined('HOUR_IN_SECONDS') || define('HOUR_IN_SECONDS', 3600);
+defined('DAY_IN_SECONDS') || define('DAY_IN_SECONDS', 86400);
+
+/*
+ * A UTC MySQL datetime in the site's own timezone.
+ *
+ * The identity is not a shortcut: `current_time()` above answers as though the
+ * site were on UTC, so a `get_date_from_gmt()` that shifted would make the two
+ * stubs disagree about what time it is — and the lead log renders a group's
+ * `latest_at` beside a Lead's `created_at`, which is exactly where a
+ * disagreement would show.
+ */
+if (!function_exists('get_date_from_gmt')) {
+    function get_date_from_gmt(string $datetime, string $format = 'Y-m-d H:i:s'): string
+    {
+        return gmdate($format, (int) strtotime($datetime . ' UTC'));
+    }
+}
+
+/*
+ * The filter hook, alongside the action hook above.
+ *
+ * WordPress's personal-data exporter and eraser are REGISTRATIONS on
+ * `wp_privacy_personal_data_exporters` / `_erasers` — a filter each — so the
+ * only way to assert WConvert registers one, and exactly one, is to be able to
+ * run the filter (ADR 0018).
+ *
+ * @var array<string, list<callable>> $wconvertTestFilters
+ */
+$GLOBALS['wconvertTestFilters'] = [];
+
+if (!function_exists('add_filter')) {
+    function add_filter(string $hook, callable $callback, int $priority = 10, int $args = 1): bool
+    {
+        $GLOBALS['wconvertTestFilters'][$hook][] = $callback;
+
+        return true;
+    }
+}
+
+if (!function_exists('apply_filters')) {
+    /**
+     * @param mixed $value
+     * @param mixed ...$args
+     * @return mixed
+     */
+    function apply_filters(string $hook, $value, ...$args)
+    {
+        foreach ($GLOBALS['wconvertTestFilters'][$hook] ?? [] as $callback) {
+            $value = $callback($value, ...$args);
+        }
+
+        return $value;
+    }
+}
+
+/*
+ * The privacy-policy suggestion, recorded rather than performed.
+ *
+ * @var list<array{plugin: string, content: string}> $wconvertTestPolicyContent
+ */
+$GLOBALS['wconvertTestPolicyContent'] = [];
+
+if (!function_exists('wp_add_privacy_policy_content')) {
+    function wp_add_privacy_policy_content(string $pluginName, string $policyText): void
+    {
+        $GLOBALS['wconvertTestPolicyContent'][] = ['plugin' => $pluginName, 'content' => $policyText];
+    }
+}
+
+if (!function_exists('esc_html')) {
+    function esc_html(string $text): string
+    {
+        return htmlspecialchars($text, ENT_QUOTES);
+    }
+}
+
+if (!function_exists('esc_html__')) {
+    function esc_html__(string $text, string $domain = 'default'): string
+    {
+        return htmlspecialchars($text, ENT_QUOTES);
+    }
+}
+
+if (!function_exists('_n')) {
+    function _n(string $single, string $plural, int $number, string $domain = 'default'): string
+    {
+        return $number === 1 ? $single : $plural;
+    }
+}
+
+if (!function_exists('number_format_i18n')) {
+    function number_format_i18n(float $number, int $decimals = 0): string
+    {
+        return number_format($number, $decimals);
+    }
+}
+
+if (!function_exists('sanitize_text_field')) {
+    function sanitize_text_field(string $value): string
+    {
+        return trim((string) preg_replace('/[\r\n\t]+|<[^>]*>/', '', $value));
+    }
+}
+
+if (!function_exists('sanitize_email')) {
+    function sanitize_email(string $email): string
+    {
+        return (string) filter_var(trim($email), FILTER_SANITIZE_EMAIL);
+    }
+}
+
+/*
+ * WP-Cron, recorded rather than performed.
+ *
+ * The retention pruner runs on a WordPress schedule, and "the job is
+ * registered from day one and is a no-op with no period configured" is an
+ * acceptance criterion about the REGISTRATION — which is invisible to any test
+ * that calls the job directly.
+ *
+ * @var array<string, int> $wconvertTestSchedule
+ */
+$GLOBALS['wconvertTestSchedule'] = [];
+
+if (!function_exists('wp_next_scheduled')) {
+    /** @param array<mixed> $args */
+    function wp_next_scheduled(string $hook, array $args = []): int|false
+    {
+        return $GLOBALS['wconvertTestSchedule'][$hook] ?? false;
+    }
+}
+
+if (!function_exists('wp_schedule_event')) {
+    /** @param array<mixed> $args */
+    function wp_schedule_event(int $timestamp, string $recurrence, string $hook, array $args = []): bool
+    {
+        $GLOBALS['wconvertTestSchedule'][$hook] = $timestamp;
+
+        return true;
+    }
+}

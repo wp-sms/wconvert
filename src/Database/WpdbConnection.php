@@ -71,11 +71,75 @@ final class WpdbConnection implements Connection
     }
 
     /**
+     * @param literal-string $sql SQL beginning `DELETE FROM %i`.
+     * @param mixed ...$params
+     */
+    public function delete(string $table, string $sql, ...$params): int
+    {
+        // The guard that keeps {@see Connection::delete()} from being a raw
+        // `query()` with a narrower name. It is a programmer error rather than
+        // a runtime condition — PHPStan's `literal-string` means nothing a
+        // variable helped build reaches here — so it throws rather than
+        // returning a count nobody would read.
+        if (!str_starts_with($sql, 'DELETE FROM %i')) {
+            throw new \LogicException('WConvert\\Database\\Connection::delete() runs DELETE statements and nothing else.');
+        }
+
+        return (int) $this->wpdb->query($this->prepare($table, $sql, $params));
+    }
+
+    /**
      * @param literal-string $sql
      * @param array<array-key, mixed> $params
      */
     private function prepare(string $table, string $sql, array $params): string
     {
-        return $this->wpdb->prepare($sql, $this->wpdb->prefix . $table, ...array_values($params));
+        return $this->wpdb->prepare($sql, ...self::bindings($sql, $this->wpdb->prefix . $table, $params));
+    }
+
+    /**
+     * What `$wpdb->prepare()` wants, in the order it wants it.
+     *
+     * **`prepare()` binds by APPEARANCE, not by kind.** It walks the query and
+     * consumes one argument per placeholder in the order they occur, so a
+     * query naming its table more than once cannot be served by passing the
+     * table first and the values after: the second `%i` takes whatever value
+     * happened to be next.
+     *
+     * The grouping view names the table twice — it is two aggregates over one
+     * table, unioned, so that each half can use its own index (ADR 0033) — and
+     * its per-Optin form interleaves them as `%i, %s, %i, %s, %d`. Front-loaded,
+     * that query filtered on the table name and then selected `FROM` an Optin
+     * id. It failed loudly against a real database and silently against a fake
+     * that ignores SQL text, which is why the check that caught it lives in
+     * `bin/verify-lead-log.php` as well as here.
+     *
+     * Public because it is the one thing in this class that is not delegation,
+     * and it is a fact about `$wpdb` rather than about WConvert — so it is
+     * worth being able to assert without a database.
+     *
+     * `$sql` is a plain `string` here and a `literal-string` everywhere it can
+     * reach a database. Nothing is executed in this method — it counts
+     * placeholders and returns an array — so the constraint would buy no
+     * safety, and it would stop a test reading a statement back off
+     * {@see \WConvert\Tests\Unit\Support\FakeConnection} to check it.
+     *
+     * @param array<array-key, mixed> $params
+     * @return list<mixed>
+     */
+    public static function bindings(string $sql, string $prefixedTable, array $params): array
+    {
+        $values = array_values($params);
+        $bound = [];
+
+        // `%%` is an escaped literal percent and no placeholder at all, so it
+        // is removed before the count rather than matched around.
+        preg_match_all('/%[sdfi]/', str_replace('%%', '', $sql), $placeholders);
+
+        foreach ($placeholders[0] as $placeholder) {
+            $bound[] = $placeholder === '%i' ? $prefixedTable : array_shift($values);
+        }
+
+        return $bound;
     }
 }

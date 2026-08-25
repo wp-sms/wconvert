@@ -122,6 +122,54 @@ the import would put the whole vocabulary in the byte budget. The parity test
 asserts the renderer implements exactly what the manifest declares, in both
 directions.
 
+## The lead log
+
+Reading `wconvert_leads` is the one part of WConvert whose correctness is a
+property of **SQL** rather than of PHP, and the unit suite deliberately cannot
+prove it: `tests/unit/Support/FakeConnection.php` models the table and ignores
+the query text, because a fake that re-implemented `GROUP BY` would make itself
+the authority on what a database does.
+
+So the queries are proven where queries can be proven:
+
+```bash
+wp eval-file bin/verify-lead-log.php   # against a real WordPress and a real database
+```
+
+It writes a small fixture, checks that two rows sharing an identifier really do
+collapse into one group of two, that the grouping toggle does not move the
+headline, that erasure deletes rather than blanks, and that the retention prune
+removes what has outlived the period and nothing else — then deletes what it
+wrote. **It refuses to run on a log that already has Leads in it**, because two
+of those checks delete over the whole table; point it at the throwaway
+WordPress above.
+
+The log adds **no index** to a table that takes a write per capture, and
+[ADR 0033](docs/adr/0033-the-lead-log-reads-without-a-new-index.md) records
+why: the prune is a range over the ULID primary key, the per-Optin listing
+walks that key backwards under a `LIMIT`, and grouping is two aggregates that
+each use an index already there.
+
+## The personal-data surface
+
+WConvert registers a WordPress exporter, an eraser and suggested
+privacy-policy text
+([ADR 0018](docs/adr/0018-erasure-deletes-rather-than-anonymises.md)).
+
+**The eraser issues a `DELETE`, never an anonymising update.** Anonymising is
+an update, and [ADR 0002](docs/adr/0002-leads-are-immutable-by-schema.md) has
+no update path — `wconvert_leads` has no `status` and no `updated_at` precisely
+so a row cannot acquire mutable state without a migration a reviewer will see.
+
+```bash
+tests/unit/Lead/NoLeadIsEverUpdatedTest.php   # no update() in either tree names the lead log
+tests/unit/Privacy/LeadEraserTest.php         # it deletes, retains nothing, and writes nothing
+tests/unit/Privacy/LeadExporterTest.php       # the Consent Record travels; an absent one is not a refusal
+```
+
+Retention ships as **keep forever with pruning off**, and the WP-Cron job
+exists from day one with nothing to do.
+
 ## Development
 
 ```bash
