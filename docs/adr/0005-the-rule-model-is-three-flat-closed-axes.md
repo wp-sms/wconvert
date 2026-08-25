@@ -56,6 +56,21 @@ the exact path by which the expression language arrives.
   runtime; the JS build imports it; the evaluator switch is the only hand-written
   duplicate, and a test asserts parity. This makes the vocabulary's closedness
   mechanical rather than a convention.
+  *Corrected by [#22](https://github.com/navidkashani/wconvert/issues/22) on two
+  words. **"The JS build imports it" cannot stand beside
+  [ADR 0028](0028-the-free-loader-source-carries-no-premium-code.md).** A
+  whole-manifest import inlines every entry into the bundle that imports it,
+  premium ones included — the lookup is dynamic, so nothing tree-shakes — which
+  makes free's loader fail the very scan
+  [ADR 0029](0029-the-free-contract-is-proven-at-the-source.md) runs over it.
+  Free's loader therefore does **not** import the manifest: each loader module
+  declares its own `kind` and `consent_category`, and `tests/js/manifest-parity.test.ts`
+  plus `pro/tests/js/manifest-parity.test.ts` assert the declaration matches the
+  manifest. The manifest's runtime readers are PHP and the tests. And **"the
+  evaluator switch" is a module set**, for the same reason 0028 gives: one switch
+  would have to name `exit_intent`, and premium code is absent from free's source
+  rather than dead inside it. The duplicate is still one duplicate, and a test
+  still asserts parity — which is all this consequence was ever asking for.*
   *The field list has grown twice since. `CONTEXT.md`'s Storage Consent entry
   adds **`consent_category`** beside `tier` — every Trigger and Condition
   declares the WP Consent API category its storage falls under — and

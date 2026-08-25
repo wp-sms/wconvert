@@ -1,5 +1,7 @@
 import { createLoader } from '@loader/engine';
+import { boot } from '@loader/boot';
 import { FREE_MODULES } from '@loader/modules';
+import { noRenderer } from '@loader/present';
 import { PRO_MODULES } from './modules';
 
 /**
@@ -10,6 +12,13 @@ import { PRO_MODULES } from './modules';
  * already describes at the plugin level, applied one layer down.
  *
  * The import direction is the whole design: Pro reaches into free, free never
- * reaches into Pro.
+ * reaches into Pro — including `boot` and the presenter, which are shared
+ * engine and not Pro's to fork. Composition is pure and touches no DOM, so it
+ * happens at module scope; `boot` is the part that must survive being run at
+ * the wrong moment, and it is written to (ADR 0004).
  */
-export default createLoader([...FREE_MODULES, ...PRO_MODULES]);
+const loader = createLoader([...FREE_MODULES, ...PRO_MODULES]);
+
+boot(loader, noRenderer);
+
+export default loader;

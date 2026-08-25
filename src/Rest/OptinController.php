@@ -4,6 +4,7 @@ namespace WConvert\Rest;
 
 use WConvert\Optin\Optin;
 use WConvert\Optin\OptinRepository;
+use WConvert\Rules\RuleVocabulary;
 use WConvert\Targeting\Targeting;
 use WP_Error;
 use WP_REST_Request;
@@ -30,6 +31,7 @@ final class OptinController
 
     public function __construct(
         private readonly OptinRepository $optins,
+        private readonly RuleVocabulary $vocabulary,
     ) {
     }
 
@@ -130,7 +132,7 @@ final class OptinController
         $optin = $this->optins->create(
             (string) $request->get_param('name'),
             (string) $request->get_param('goal'),
-            self::normalizeConfig((array) $request->get_param('config'))
+            $this->normalizeConfig((array) $request->get_param('config'))
         );
 
         return new WP_REST_Response($optin->toArray(), 201);
@@ -147,7 +149,7 @@ final class OptinController
             (string) $request->get_param('id'),
             self::optionalString($request->get_param('name')),
             self::optionalString($request->get_param('goal')),
-            is_array($config) ? self::normalizeConfig($config) : null
+            is_array($config) ? $this->normalizeConfig($config) : null
         );
 
         return $optin === null ? self::notFound() : new WP_REST_Response($optin->toArray());
@@ -185,20 +187,26 @@ final class OptinController
     }
 
     /**
-     * Drop every targeting rule this install's vocabulary does not know, on
-     * the way in.
+     * Drop every rule this install's vocabulary does not know, on the way in —
+     * on all three axes.
      *
      * ADR 0005's vocabulary is closed, so an unrecognised rule is a mistake
      * rather than an extension — and one caught at write is one that cannot be
-     * published later into a payload nothing can evaluate.
+     * published later into a payload nothing can evaluate. The flat client
+     * list stays flat here: it is split into `triggers` and `conditions` at
+     * PUBLISH time, which is a different moment and a different file.
      *
      * @param array<string, mixed> $config
      * @return array<string, mixed>
      */
-    private static function normalizeConfig(array $config): array
+    private function normalizeConfig(array $config): array
     {
         if (isset($config['targeting'])) {
             $config['targeting'] = Targeting::fromArray((array) $config['targeting'])->toArray();
+        }
+
+        if (isset($config['rules'])) {
+            $config['rules'] = $this->vocabulary->normalize($config['rules']);
         }
 
         return $config;

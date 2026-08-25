@@ -66,6 +66,32 @@ The artifact contract, Plugin Check and the release guard are **not** here.
 They land with the release workflow: each half lands with the thing it
 inspects.
 
+## The rule manifest
+
+[`resources/rules/manifest.json`](resources/rules/manifest.json) is the single
+source of truth for every rule type, on all three axes, in **both** tiers. Free
+ships the premium entries too, because free's PHP is what will strip an
+unentitled rule at enqueue, and it can only strip what its own manifest calls
+premium ([ADR 0005](docs/adr/0005-the-rule-model-is-three-flat-closed-axes.md)).
+That strip lands with degradation and suspension; today PHP reads the manifest
+for one thing, the publish-time partition into `triggers` and `conditions`.
+
+**Free's loader must never `import` it.** The lookup would be dynamic, so
+nothing tree-shakes, and every `tier: pro` identifier would land in free's
+bundle — failing the scan above on a build that leaked nothing. Each loader
+module declares its own `kind` and `consent_category` instead, and the
+parity tests assert the declaration matches the manifest:
+
+```bash
+tests/js/manifest-parity.test.ts        # free's modules against the manifest
+pro/tests/js/manifest-parity.test.ts    # Pro's own, from Pro's side
+tests/unit/Rules/RuleManifestParityTest.php   # the four-field invariant, every axis
+```
+
+They are also what decides **where a new rule may land**: a `tier: pro` entry
+with no Pro module fails on the pull request that adds it, so a premium entry
+and its implementation arrive in the same commit.
+
 ## Development
 
 ```bash

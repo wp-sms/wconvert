@@ -67,3 +67,18 @@ value that identifies a browser rather than a person.
 - Free's per-visitor storage is therefore entirely `functional`: it records a
   choice the visitor made by clicking the close button, and withholding it means
   the popup reappears — worse for the visitor on every axis.
+  *Completed by [#22](https://github.com/navidkashani/wconvert/issues/22), which
+  built it: the record is `{impressions, last-seen, dismissed, converted}` per
+  Optin, and **last-seen is a whole day number rather than a timestamp**. A
+  cooldown is expressed in days, so millisecond precision is a resolution nothing
+  ever asks about — and a per-device value at millisecond precision is most of the
+  way back to the artefact this ADR removed. The prototype's `firstSeenAt` is gone
+  with it, having had no reader.*
+  *And the sentence above is what settled a default #3 left open:
+  **`stopAfterDismiss` is ON unless a merchant turns it off**, where the prototype
+  had it off. Off by default, the record is written, read, and ignored — the popup
+  reappears anyway, and the justification for writing anything to a visitor's
+  device collapses. It is now symmetric with `stopAfterConversion`, which was
+  always on: both record something the visitor DID, and both mean stop. The two
+  numbers, `maxImpressions` and `cooldownDays`, stay off — those are a merchant's
+  pacing decision rather than a visitor's answer.*

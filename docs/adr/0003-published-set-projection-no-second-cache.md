@@ -47,3 +47,12 @@ developer's instinct is to add one; don't.
   done once at publish time rather than per request: the enqueue path then does
   no array surgery on an uncached page load, and "separably addressable" is
   literal rather than a convention someone has to keep.*
+  *Extended by [#22](https://github.com/navidkashani/wconvert/issues/22): the
+  same publish-time pass now also consumes the config's flat `rules` list and
+  replaces it with `triggers` and `conditions`, per
+  [ADR 0005](0005-the-rule-model-is-three-flat-closed-axes.md)'s "partitioned at
+  publish time, not at evaluation time". So `payload` is the published config
+  minus `targeting` **and** minus `rules`, plus those two keys — always both,
+  including empty, because the loader reads "no triggers" as "never fires". It
+  is the same argument this bullet already makes, applied to the second axis
+  split: the work happens once, where the manifest is already being read.*

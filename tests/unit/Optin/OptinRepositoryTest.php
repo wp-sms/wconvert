@@ -7,6 +7,7 @@ use PHPUnit\Framework\TestCase;
 use WConvert\Optin\Optin;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
+use WConvert\Rules\RuleVocabulary;
 
 /**
  * The three writes that move an Optin between states, and the one derived
@@ -29,7 +30,11 @@ final class OptinRepositoryTest extends TestCase
         $this->db = new FakeConnection();
         $this->options = new FakeOptionStore();
         $this->publishedSet = new PublishedSet($this->options);
-        $this->repository = new OptinRepository($this->db, $this->publishedSet);
+        $this->repository = new OptinRepository(
+            $this->db,
+            $this->publishedSet,
+            RuleVocabulary::fromManifest(__DIR__ . '/../../..')
+        );
     }
 
     /**

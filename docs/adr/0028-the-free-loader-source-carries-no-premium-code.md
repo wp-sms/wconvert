@@ -43,3 +43,12 @@ is "the bundler probably eliminated it" is not absence; it is a bet.
   [ADR 0029](0029-the-free-contract-is-proven-at-the-source.md) runs on every pull
   request. Under the mode flag that check was impossible — the import was legitimate
   and the guarantee lived in the bundler.
+- **The rule manifest is DATA, and it falls under the same rule.**
+  *Added by [#22](https://github.com/navidkashani/wconvert/issues/22).* Free's
+  manifest names both tiers, because free's PHP is what strips an unentitled rule
+  at enqueue. So free's LOADER must not import it: the lookup is dynamic, nothing
+  tree-shakes, and every premium identifier lands in free's bundle — the same
+  outcome the mode flag was rejected for, reached through a JSON file instead of a
+  branch. Each loader module declares its own manifest fields instead, and parity
+  tests assert they agree; recorded against the sentence it corrects in
+  [ADR 0005](0005-the-rule-model-is-three-flat-closed-axes.md).

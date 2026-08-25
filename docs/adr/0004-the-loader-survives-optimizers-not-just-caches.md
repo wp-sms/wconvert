@@ -9,6 +9,17 @@ frequency capping across days.
 **What actually threatens the model is the optimizer plugins sitting next to the
 page cache.** Three rules come out of that, and none of them is optional.
 
+*Built by [#22](https://github.com/navidkashani/wconvert/issues/22), unchanged:
+`resources/loader/src/boot.ts` is the retry, `payload.ts` reads the JSON tag
+without assuming document position, and `modules/time-on-page.ts` clocks from
+`performance.now()`. #22 added a FOURTH rule of the same family, found by running
+the shipped bundle against a real rendered page rather than by reasoning: **a rule
+evaluator that throws must not take the page down with it.** `decide` runs inside
+scroll handlers and timers, where a throw is uncatchable from anywhere useful, so
+one rule reaching for something a browser lacks would kill every popup on the site
+silently — this ADR's own failure mode, arrived at from a direction it did not
+look. A rule that cannot answer does not hold.*
+
 ## The loader does no work at module scope
 
 Autoptimize's *Aggregate JS-files* + *Force JavaScript in `<head>`* moves the
