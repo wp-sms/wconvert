@@ -32,6 +32,13 @@
             "required": true
           },
           { "type": "button", "role": "cta_label", "label": "Sign me up", "action": "submit" },
+          {
+            "type": "consent",
+            "role": "consent_text",
+            "hidden": true,
+            "text": "Email me offers and news. See our %s.",
+            "link": { "label": "Privacy Policy" }
+          },
           { "type": "text", "role": "fine_print", "text": "Message rates may apply. Stop at any time." }
         ]
       },

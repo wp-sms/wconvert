@@ -193,4 +193,48 @@ final class TemplateVocabularyTest extends TestCase
         // own asset or stays empty" and Playbooks never supply one (ADR 0013).
         $this->assertSame(['type' => 'image', 'src' => '/tote.png', 'alt' => 'A tote bag'], $image);
     }
+
+    /**
+     * **Slot visibility is a param, and which leaves may carry it is a
+     * decision, not an oversight.**
+     *
+     * The settings panel edits slot content and slot visibility and never
+     * arrangement (ADR 0010), so hiding a slot is how a merchant drops one —
+     * and a `consent` node ships hidden, which is what makes ADR 0032's "off
+     * by default" reachable from a panel that cannot add a node.
+     *
+     * `button` and `field` are excluded on purpose. Hiding the button that
+     * converts leaves an Optin with no countable act, which is the state
+     * `TemplateLibrary` refuses at registration; hiding a required field
+     * leaves a form the capture endpoint refuses every submission of. Neither
+     * declares `hidden`, so the key is DROPPED here rather than merely
+     * disallowed further on — the renderer honours `hidden` on anything it is
+     * handed, and this is the boundary that decides what it is ever handed.
+     */
+    public function testOnlyTheLeavesTheManifestNamesMayBeHidden(): void
+    {
+        $normalized = self::normalize([
+            'tree' => ['steps' => [[
+                'type' => 'stack',
+                'children' => [
+                    ['type' => 'heading', 'text' => 'Join', 'hidden' => true],
+                    ['type' => 'text', 'text' => 'Fine print', 'hidden' => true],
+                    ['type' => 'image', 'src' => '/x.png', 'hidden' => true],
+                    ['type' => 'consent', 'text' => 'Email me', 'hidden' => true],
+                    ['type' => 'field', 'name' => 'email', 'hidden' => true],
+                    ['type' => 'button', 'label' => 'Join', 'action' => 'submit', 'hidden' => true],
+                ],
+            ]]],
+        ]);
+
+        $children = $normalized['tree']['steps'][0]['children'];
+
+        foreach (array_slice($children, 0, 4) as $node) {
+            $this->assertTrue($node['hidden'], sprintf('%s may be hidden', $node['type']));
+        }
+
+        foreach (array_slice($children, 4) as $node) {
+            $this->assertArrayNotHasKey('hidden', $node, sprintf('%s may not be hidden', $node['type']));
+        }
+    }
 }

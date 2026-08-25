@@ -1,3 +1,149 @@
 .wconvert-admin {
   max-width: 60rem;
 }
+
+/*
+ * The builder is the one screen that is a place rather than a list, so it gets
+ * the width the gallery and the live preview need.
+ */
+.wconvert-builder {
+  max-width: 72rem;
+}
+
+/*
+ * The gallery: real designs, drawn by the renderer the loader imports. There
+ * are no thumbnails to size, so the cards are sized by the design inside them
+ * and the preview is scaled down to fit one (ADR 0010).
+ */
+.wconvert-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.wconvert-gallery__card {
+  padding: 1rem;
+  background: #fff;
+  border: 1px solid #dcdcde;
+  border-radius: 4px;
+}
+
+.wconvert-gallery__card.is-chosen {
+  border-color: #2271b1;
+  box-shadow: 0 0 0 1px #2271b1;
+}
+
+.wconvert-gallery__chosen {
+  font-weight: 600;
+}
+
+/*
+ * A card is a real render at real width, so it is scaled rather than reflowed:
+ * reflowing would show the merchant a layout no visitor gets, which is the one
+ * thing a live-rendered gallery exists to avoid.
+ */
+.wconvert-gallery .wconvert-preview {
+  transform: scale(0.55);
+  transform-origin: top left;
+  block-size: 12rem;
+  inline-size: 182%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.wconvert-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  align-items: start;
+}
+
+/* The preview follows the controls down a long panel. */
+.wconvert-panel__preview {
+  position: sticky;
+  inset-block-start: 4rem;
+  flex: 1 1 22rem;
+  min-inline-size: 0;
+}
+
+.wconvert-panel__controls {
+  flex: 1 1 22rem;
+  min-inline-size: 0;
+}
+
+.wconvert-slot,
+.wconvert-slot__link {
+  margin-block-end: 1rem;
+  padding: 0.75rem;
+  border: 1px solid #dcdcde;
+  border-radius: 4px;
+}
+
+.wconvert-slot legend,
+.wconvert-slot__link legend {
+  font-weight: 600;
+}
+
+.wconvert-slot__key,
+.wconvert-token {
+  display: block;
+  margin-block-start: 0.5rem;
+}
+
+.wconvert-slot__shown {
+  display: block;
+  margin-block-end: 0.5rem;
+}
+
+.wconvert-rules {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.wconvert-rule {
+  margin-block-end: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: #fff;
+  border: 1px solid #dcdcde;
+  border-radius: 4px;
+}
+
+.wconvert-rule__param {
+  margin-inline-start: 0.75rem;
+}
+
+/*
+ * The degradation note, and the upsell beside it. Persistent by construction —
+ * there is no dismiss control anywhere in this file, because a banner that is
+ * dismissed once leaves the Optin carrying an invisible substitution forever
+ * (ADR 0012).
+ */
+.wconvert-rule__note {
+  margin: 0.5rem 0 0;
+  color: #646970;
+  font-style: italic;
+}
+
+.wconvert-rules__empty,
+.wconvert-templates__empty {
+  color: #646970;
+}
+
+.wconvert-option-set {
+  display: inline-flex;
+  gap: 0.75rem;
+}
+
+.wconvert-value-list {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.wconvert-export {
+  margin-block-start: 1.5rem;
+}

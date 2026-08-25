@@ -75,7 +75,19 @@ the exact path by which the expression language arrives.
   adds **`consent_category`** beside `tier` — every Trigger and Condition
   declares the WP Consent API category its storage falls under — and
   [ADR 0027](0027-a-load-bearing-condition-suspends-rather-than-drops.md) adds
-  **`on_absence: drop | suspend`**.
+  **`on_absence: drop | suspend`**.*
+  *Completed by [#29](https://github.com/navidkashani/wconvert/issues/29), which
+  replaced the single `value` word with **`params`** — the KEYS a rule's scalar
+  arrives under, the control each takes, and an `authored` flag for the ones a
+  [[Playbook]] may not supply — and added **`presets`** under each entry. Until
+  then the param key was implicit and known only to the loader module that read
+  it, which is how three of the four bundled Playbooks shipped
+  `['type' => 'time_on_page', 'value' => 8]` against a module reading
+  `rule.seconds`: a Trigger that could never fire, prefilled onto every Optin
+  they started, with nothing in any log. `authored` also replaces the `_id`
+  suffix heuristic the Playbook registry used, so a post id and
+  `click_element`'s CSS selector are refused by one rule rather than by a rule
+  and a special case.
   [ADR 0029](0029-the-free-contract-is-proven-at-the-source.md) asserts that
   every entry carries all four — `tier`, `consent_category`, `on_absence`, kind —
   and resolves to an implementation on the side its `tier` names.*
@@ -83,6 +95,16 @@ the exact path by which the expression language arrives.
   (`total_pageviews {min, max}`, `query_param {key, value}`); the builder ships
   the legible shortcuts ("returning visitor", the UTM fields). A rich admin over
   a small closed vocabulary depends on this being the standing rule.
+  *Built in [#29](https://github.com/navidkashani/wconvert/issues/29), and the
+  standing rule is now structural rather than remembered: **a preset is declared
+  INSIDE the entry for the type it fixes params on**, so it has no field to name
+  a second type with. `query_param {key, value}` shipped with it, carrying the
+  three UTM presets; `total_pageviews` did not, because counting page views
+  needs storage on the visitor's device and therefore a consent category and a
+  call site that increments on every page view — a design that belongs with the
+  Pro rule set rather than with the builder. The translation is asserted in both
+  directions over the manifest that ships
+  (`tests/js/builder-presets.test.ts`).*
 - **Rules are partitioned into `triggers` and `conditions` at publish time**, not
   at evaluation time. Kind is a fixed property of the type, so the manifest
   already knows the answer and the client should not re-derive it per page view.

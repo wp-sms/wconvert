@@ -143,4 +143,48 @@ final class RuleVocabularyTest extends TestCase
     {
         $this->assertSame([], self::vocabulary()->normalize($rules));
     }
+
+    /**
+     * **Every Optin has at least one [[Trigger]], and "shows immediately" is
+     * the explicit `page_load` one rather than an empty list** (CONTEXT.md,
+     * Trigger).
+     *
+     * Asked of the vocabulary rather than counted at each call site, because
+     * there are two and they must agree: the [[Playbook]] registry refuses an
+     * entry that would prefill an Optin with none, and the save route refuses
+     * the same state arriving from the builder. An Optin with no Trigger can
+     * never fire — a silent, total loss of function with nothing in any log,
+     * which ADR 0012 names as this category's defining support ticket.
+     */
+    public function testARuleListNamesATriggerOnlyWhenOneOfItsTypesIsOne(): void
+    {
+        $vocabulary = self::vocabulary();
+
+        $this->assertTrue($vocabulary->hasTrigger([['type' => 'page_load']]));
+        $this->assertTrue($vocabulary->hasTrigger([['type' => 'device', 'in' => ['mobile']], ['type' => 'page_load']]));
+
+        $this->assertFalse($vocabulary->hasTrigger([]));
+        $this->assertFalse($vocabulary->hasTrigger([['type' => 'device', 'in' => ['mobile']]]));
+
+        // A Targeting rule is not a Trigger however it is spelled, and neither
+        // is a type the vocabulary does not have: both would leave an Optin
+        // that can never fire while looking like one that can.
+        $this->assertFalse($vocabulary->hasTrigger([['type' => 'url', 'value' => '/shop/*']]));
+        $this->assertFalse($vocabulary->hasTrigger([['type' => 'moon_phase']]));
+    }
+
+    /**
+     * A param the type does not declare is dropped on the way in, for the same
+     * reason the type itself is: the vocabulary is closed, and a key no loader
+     * module reads is a rule that silently never holds. Three of the four
+     * bundled Playbooks shipped exactly that — `value` where the module reads
+     * `seconds` — which is what put the declaration in the manifest.
+     */
+    public function testAParamTheTypeDoesNotDeclareIsDropped(): void
+    {
+        $this->assertSame(
+            [['type' => 'time_on_page', 'seconds' => 8]],
+            self::vocabulary()->normalize([['type' => 'time_on_page', 'seconds' => 8, 'value' => 8, 'nonsense' => 1]])
+        );
+    }
 }

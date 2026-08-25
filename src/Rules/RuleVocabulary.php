@@ -2,6 +2,8 @@
 
 namespace WConvert\Rules;
 
+use WConvert\Support\Tier;
+
 defined('ABSPATH') || exit;
 
 /**
@@ -18,17 +20,43 @@ defined('ABSPATH') || exit;
  * gives: letting the raw manifest array travel means every reader downstream
  * spells a rule type as a string literal the parity test cannot see.
  *
+ * ============================================================================
+ * PARAMS ARE DECLARED, NOT IMPLIED.
+ * ============================================================================
+ * Each entry declares the KEYS its scalar arrives under and the control each
+ * one takes — `time_on_page` is `{seconds}`, `device` is `{in}`, `query_param`
+ * is `{key, value}`. That used to be implicit and known only to the loader
+ * module that read it, which is how three of the four bundled [[Playbook]]s
+ * shipped `['type' => 'time_on_page', 'value' => 8]` against a module reading
+ * `rule.seconds`: a Trigger that could never fire, on a prefilled Optin, with
+ * nothing in any log. The builder needs the keys anyway — it is the screen
+ * that fills them in — so writing them where both runtimes already read is the
+ * fix and the feature at once.
+ *
+ * **`authored` is the half a [[Playbook]] may not supply.** A param marked so
+ * names something only one site has: a post id, a term id, a CSS selector.
+ * That single declaration is what refuses a Playbook naming a post id and what
+ * keeps `click_element`'s selector blank in any Playbook-prefilled Optin
+ * (ADR 0012) — one rule rather than an id heuristic beside a selector special
+ * case.
+ *
  * @since 0.1.0
  */
 final class RuleVocabulary
 {
     /**
      * @param array<string, RuleKind> $kinds Rule type => its declared kind.
-     * @param array<string, string> $values Rule type => what its value IS, where it takes one.
+     * @param array<string, Tier> $tiers Rule type => which install supplies it.
+     * @param array<string, array<string, array<string, mixed>>> $params Rule type => param name => its declaration.
+     * @param array<string, array<string, array<string, mixed>>> $presets Rule type => preset id => the values it fixes.
+     * @param array<string, list<string>> $axes Axis name => its types, in manifest order.
      */
     private function __construct(
         private readonly array $kinds,
-        private readonly array $values = [],
+        private readonly array $tiers = [],
+        private readonly array $params = [],
+        private readonly array $presets = [],
+        private readonly array $axes = [],
     ) {
     }
 
@@ -43,14 +71,19 @@ final class RuleVocabulary
     public static function fromArray(array $manifest): self
     {
         $kinds = [];
-        $values = [];
+        $tiers = [];
+        $params = [];
+        $presets = [];
+        $axes = [];
 
-        foreach ($manifest as $axis) {
-            if (!is_array($axis)) {
+        foreach ($manifest as $axis => $entries) {
+            if (!is_array($entries)) {
                 continue;
             }
 
-            foreach ($axis as $type => $entry) {
+            $axes[(string) $axis] = [];
+
+            foreach ($entries as $type => $entry) {
                 $kind = is_array($entry) && is_string($entry['kind'] ?? null)
                     ? RuleKind::tryFrom($entry['kind'])
                     : null;
@@ -59,15 +92,16 @@ final class RuleVocabulary
                     continue;
                 }
 
-                $kinds[(string) $type] = $kind;
-
-                if (is_array($entry) && is_string($entry['value'] ?? null)) {
-                    $values[(string) $type] = $entry['value'];
-                }
+                $type = (string) $type;
+                $axes[(string) $axis][] = $type;
+                $kinds[$type] = $kind;
+                $tiers[$type] = Tier::tryFrom(is_string($entry['tier'] ?? null) ? $entry['tier'] : '') ?? Tier::Free;
+                $params[$type] = self::declarations($entry['params'] ?? []);
+                $presets[$type] = self::declarations($entry['presets'] ?? []);
             }
         }
 
-        return new self($kinds, $values);
+        return new self($kinds, $tiers, $params, $presets, $axes);
     }
 
     public function kindOf(string $type): ?RuleKind
@@ -76,20 +110,69 @@ final class RuleVocabulary
     }
 
     /**
-     * What a rule type's value IS — `post_id`, `post_type`, `path_glob`,
-     * `seconds` — or null where the type takes none.
-     *
-     * Read by [[Playbook]] registration, which refuses an entry naming
-     * anything only one site has. Which types those are follows from this
-     * field: `post_id` and `term_id` are ids, `post_type` and `path_glob`
-     * mean the same thing on every install. Listing them again beside the
-     * validator would be the fifth hand-maintained cross-cutting list this
-     * project has refused (ADR 0019), and the one most likely to be forgotten
-     * the day a sixth targeting type lands.
+     * Which install supplies this rule type. Free for anything the manifest
+     * does not say otherwise about, and null for a type it does not declare.
      */
-    public function valueOf(string $type): ?string
+    public function tierOf(string $type): ?Tier
     {
-        return $this->values[$type] ?? null;
+        return $this->tiers[$type] ?? null;
+    }
+
+    /**
+     * Every axis the manifest declares, and the types under each, in the order
+     * they were written.
+     *
+     * Order is the merchant's: the builder lists Triggers and Conditions in
+     * it, so a type moved in the manifest moves on screen and nothing else has
+     * to be edited to agree.
+     *
+     * @return array<string, list<string>>
+     */
+    public function axes(): array
+    {
+        return $this->axes;
+    }
+
+    /**
+     * What a rule type's params ARE — the keys its scalar arrives under, and
+     * the control each takes.
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    public function paramsOf(string $type): array
+    {
+        return $this->params[$type] ?? [];
+    }
+
+    /**
+     * The legible shortcuts the builder ships over this type's general form —
+     * preset id => the params it fixes.
+     *
+     * **A preset cannot introduce a type of its own**, and that is structural
+     * rather than checked: a preset is declared INSIDE the entry for the type
+     * it fixes params on, so there is no field for it to name a second one
+     * with. "One engine type, many UI presets" (ADR 0005) is therefore a shape
+     * here, not a rule someone has to keep.
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    public function presetsOf(string $type): array
+    {
+        return $this->presets[$type] ?? [];
+    }
+
+    /**
+     * Params of this type a [[Playbook]] may not supply, because they name
+     * something only one site has.
+     *
+     * @return list<string>
+     */
+    public function authoredParamsOf(string $type): array
+    {
+        return array_keys(array_filter(
+            $this->paramsOf($type),
+            static fn (array $param): bool => ($param['authored'] ?? false) === true
+        ));
     }
 
     /**
@@ -105,6 +188,10 @@ final class RuleVocabulary
      * would silently reorder a merchant's rules into triggers-then-conditions
      * on every save, and the rule list is a screen they look at.
      *
+     * **Params outside the type's declaration are dropped too**, for the
+     * reason the type itself is: the vocabulary is closed, and a key no module
+     * reads is a rule that silently never holds rather than an extension.
+     *
      * @param mixed $rules
      * @return list<array<string, mixed>>
      */
@@ -117,13 +204,38 @@ final class RuleVocabulary
         $kept = [];
 
         foreach ($rules as $rule) {
-            if (is_array($rule) && is_string($rule['type'] ?? null) && $this->isClientRule($rule['type'])) {
-                /** @var array<string, mixed> $rule */
-                $kept[] = $rule;
+            if (!is_array($rule) || !is_string($rule['type'] ?? null) || !$this->isClientRule($rule['type'])) {
+                continue;
             }
+
+            $narrowed = ['type' => $rule['type']];
+
+            foreach (array_keys($this->paramsOf($rule['type'])) as $param) {
+                if (array_key_exists($param, $rule)) {
+                    $narrowed[$param] = $rule[$param];
+                }
+            }
+
+            $kept[] = $narrowed;
         }
 
         return $kept;
+    }
+
+    /**
+     * Does this rule list name at least one Trigger?
+     *
+     * **Every Optin has at least one, and "shows immediately" is the explicit
+     * `page_load` Trigger rather than an empty list** (CONTEXT.md, Trigger).
+     * Asked here rather than counted at each call site, so the [[Playbook]]
+     * registry and the save route are asking the vocabulary the same question
+     * rather than two spellings of it.
+     *
+     * @param mixed $rules
+     */
+    public function hasTrigger($rules): bool
+    {
+        return $this->partition($rules)['triggers'] !== [];
     }
 
     private function isClientRule(string $type): bool
@@ -177,5 +289,22 @@ final class RuleVocabulary
         }
 
         return $partitioned;
+    }
+
+    /**
+     * @param mixed $section
+     * @return array<string, array<string, mixed>>
+     */
+    private static function declarations($section): array
+    {
+        $kept = [];
+
+        foreach (is_array($section) ? $section : [] as $name => $declaration) {
+            if (is_array($declaration)) {
+                $kept[(string) $name] = $declaration;
+            }
+        }
+
+        return $kept;
     }
 }

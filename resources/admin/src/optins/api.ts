@@ -27,8 +27,10 @@ const path = (suffix = '') => `/wconvert/v1/optins${suffix}`;
 export const listOptins = (includeDeleted = false) =>
   apiFetch<OptinSummary[]>({ path: path(includeDeleted ? '?include_deleted=1' : '') });
 
+// The created Optin comes back rather than being discarded: creation lands
+// the merchant in the builder, and the builder is addressed by id.
 export const createOptin = (name: string, goal: string, config: Record<string, unknown>) =>
-  apiFetch<unknown>({ path: path(), method: 'POST', data: { name, goal, config } });
+  apiFetch<{ id: string }>({ path: path(), method: 'POST', data: { name, goal, config } });
 
 // Publishing is its own route rather than a field on a PATCH: it promotes one
 // column onto another and rebuilds the published set, which a `status` field

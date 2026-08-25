@@ -30,7 +30,8 @@
         "text"
       ],
       "params": [
-        "level"
+        "level",
+        "hidden"
       ],
       "roles": [
         "role"
@@ -45,7 +46,9 @@
         "text",
         "link"
       ],
-      "params": [],
+      "params": [
+        "hidden"
+      ],
       "roles": [
         "role"
       ]
@@ -57,7 +60,8 @@
       ],
       "copy": [],
       "params": [
-        "fit"
+        "fit",
+        "hidden"
       ],
       "roles": []
     },
@@ -78,14 +82,14 @@
     },
     "button": {
       "content": [
-        "label"
+        "label",
+        "href"
       ],
       "copy": [
         "label"
       ],
       "params": [
-        "action",
-        "href"
+        "action"
       ],
       "roles": [
         "role"
@@ -100,7 +104,9 @@
         "text",
         "link"
       ],
-      "params": [],
+      "params": [
+        "hidden"
+      ],
       "roles": [
         "role"
       ]

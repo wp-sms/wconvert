@@ -77,6 +77,14 @@ function submits(node: TemplateNode): boolean {
  * (ADR 0010).
  */
 function appendNode(parent: HTMLElement, node: TemplateNode): void {
+  // A slot the merchant switched off in the settings panel. Skipped rather
+  // than removed from the tree, because the panel edits content and visibility
+  // and never arrangement — so switching it back on is one click and not a
+  // Template the merchant has to pick again (ADR 0010).
+  if ((node as { hidden?: unknown }).hidden === true) {
+    return;
+  }
+
   const element = elementFor(node);
 
   if (element === null) {

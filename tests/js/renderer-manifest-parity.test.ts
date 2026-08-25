@@ -55,6 +55,31 @@ describe('every member the manifest declares', () => {
     expect(renderStep({ type: 'stack', children: [{ type: 'field', name }] })?.querySelector('input')).not.toBeNull();
   });
 
+  /**
+   * **Every leaf the manifest lets hide, the renderer hides.**
+   *
+   * The settings panel edits slot content and slot visibility and never
+   * arrangement (ADR 0010), so a merchant switches the fine print off rather
+   * than deleting it — and a `consent` node ships hidden, which is how
+   * ADR 0032's "off by default" and "the panel never changes arrangement" are
+   * both true at once.
+   *
+   * The renderer honours `hidden` on ANY node it is handed, and that is the
+   * layering rather than a gap: which leaves may carry the key is the
+   * manifest's answer, enforced where the tree is validated on the way in
+   * (`tests/unit/Template/TemplateVocabularyTest.php`). A renderer that
+   * re-asked would be a second spelling of the vocabulary, which is the thing
+   * this file exists to prevent.
+   */
+  it.each(Object.entries(manifest.nodes).filter(([, node]) => node.params.includes('hidden')))(
+    'hides a leaf the manifest lets hide: %s',
+    (type) => {
+      expect(
+        renderStep({ type: 'stack', children: [{ type, ...MINIMAL[type], hidden: true }] })?.children,
+      ).toHaveLength(0);
+    },
+  );
+
   it('draws nothing for a type it declares nowhere', () => {
     expect(renderStep({ type: 'stack', children: [{ type: 'marquee' }] })?.children).toHaveLength(0);
   });

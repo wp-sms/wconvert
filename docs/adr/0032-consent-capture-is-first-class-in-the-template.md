@@ -96,7 +96,25 @@ second.
   [ADR 0025](0025-cart-recovery-captures-nothing.md) reuses for the cart URL, and
   for the same reason.
 - **`consent_text` is a Slot Role like any other**, so switching Template does
-  not destroy the merchant's wording.
+  not destroy the merchant's wording. *Made true rather than merely intended by
+  [#29](https://github.com/navidkashani/wconvert/issues/29): repicking a Template
+  now carries the words across by Slot Role instead of taking a fresh copy of
+  the design and dropping them ([ADR 0010](0010-templates-are-configuration-not-documents.md)).*
+
+- **"Off by default" now means PRESENT AND HIDDEN, not absent.** *Corrected by
+  [#29](https://github.com/navidkashani/wconvert/issues/29). Until slot
+  visibility existed the two halves of this decision were in tension: a node
+  first-class in the vocabulary "rather than a required field the merchant
+  hand-adds", against a default that costs conversions on the roughly 90% of
+  installs that do not want one. Shipping no node at all was the only reading of
+  the second half available, and it quietly gave up the first — a merchant with
+  no way to add a node had no way to reach consent capture either. Every
+  submit-metered shipped Template now carries a `consent` node with
+  `hidden: true`, so the settings panel — which edits content and visibility and
+  never arrangement — switches it on in one click. The renderer skips a hidden
+  node and `CaptureForm` treats one as absent, so nothing is enforced that no
+  visitor was shown. A click-metered design ships none, because it captures
+  nothing and there is nothing to consent to.*
 - **This is the only consent WConvert captures from a visitor.**
   [[Storage Consent]] is a different thing entirely — ePrivacy permission to
   write to the device, asked of every visitor, read through the WP Consent API —

@@ -69,11 +69,33 @@ final class AdminMenu
 
         ViteHelper::enqueueAdmin(self::SCRIPT_HANDLE);
 
-        // The CSV download is a navigation to `admin-post.php`, so the screen
-        // needs the nonced URL rather than a REST path — `apiFetch` would read
-        // the file into memory and then have to turn it back into a download.
-        // One value, so `wp_localize_script` rather than a settings object
-        // nothing else fills.
-        wp_localize_script(self::SCRIPT_HANDLE, 'wconvertAdmin', ['exportUrl' => LeadExport::url()]);
+        $settings = [
+            // The CSV download is a navigation to `admin-post.php`, so the
+            // screen needs the nonced URL rather than a REST path —
+            // `apiFetch` would read the file into memory and then have to turn
+            // it back into a download.
+            'exportUrl' => LeadExport::url(),
+            // **Authoring is the settings panel plus a DEV-ONLY export**
+            // (ADR 0010). Gated on `WP_DEBUG` rather than on a capability:
+            // everyone who reached this screen already has `manage_options`,
+            // so it is not a permission question — it is that a merchant has
+            // no use for the library entry behind their popup, and a control
+            // they cannot act on is one they learn to ignore.
+            'dev' => defined('WP_DEBUG') && WP_DEBUG,
+        ];
+
+        // `wp_add_inline_script()` rather than `wp_localize_script()`, and the
+        // difference is not stylistic: `localize` casts every value to a
+        // STRING, so `true` arrives in the browser as `"1"` and `false` as
+        // `""`. A boolean that reads as `"1"` is worse than one that reads as
+        // `true` and worse than one that is absent — the screen tests it and
+        // is quietly wrong, which is how the dev export shipped invisible on
+        // an install that had `WP_DEBUG` on. `wp_json_encode()` keeps the type
+        // the setting actually has.
+        wp_add_inline_script(
+            self::SCRIPT_HANDLE,
+            'window.wconvertAdmin = ' . wp_json_encode($settings) . ';',
+            'before'
+        );
     }
 }

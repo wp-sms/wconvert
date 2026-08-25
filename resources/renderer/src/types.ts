@@ -57,20 +57,47 @@ interface BaseNode {
   readonly role?: SlotRole;
 }
 
-export interface HeadingNode extends BaseNode {
+/**
+ * A slot the settings panel may switch off.
+ *
+ * ============================================================================
+ * VISIBILITY IS WHY THE PANEL NEEDS NO WAY TO ADD OR REMOVE A NODE.
+ * ============================================================================
+ * The panel edits tokens, slot content and slot visibility, and never
+ * arrangement — that boundary is what keeps the vocabulary the ceiling on
+ * design variety and keeps a canvas landing later as an editor over a tree
+ * that already exists (ADR 0010). A merchant who does not want the fine print
+ * therefore hides it rather than deleting it, and a `consent` node ships
+ * hidden so ADR 0032's "off by default" and "the panel never changes
+ * arrangement" can both be true at once.
+ *
+ * **`button` and `field` do NOT extend this, deliberately.** Hiding the button
+ * that converts leaves an Optin with no countable act, which is exactly what
+ * `TemplateLibrary` refuses at registration; hiding a required field leaves a
+ * form the capture endpoint refuses every submission of. Neither declares
+ * `hidden` in `resources/templates/manifest.json` either, so PHP drops the key
+ * on the way in and the state is not merely disallowed but inexpressible —
+ * enforcement by non-registration, one layer down from where ADR 0015 puts it.
+ */
+interface HideableNode extends BaseNode {
+  /** Absent and `false` are the same thing: shown. */
+  readonly hidden?: boolean;
+}
+
+export interface HeadingNode extends HideableNode {
   readonly type: 'heading';
   readonly text?: string;
   /** Heading rank inside the Optin, 1 or 2. Not a size — size is a token. */
   readonly level?: 1 | 2;
 }
 
-export interface TextNode extends BaseNode {
+export interface TextNode extends HideableNode {
   readonly type: 'text';
   readonly text?: string;
   readonly link?: SlotLink;
 }
 
-export interface ImageNode extends BaseNode {
+export interface ImageNode extends HideableNode {
   readonly type: 'image';
   readonly src?: string;
   readonly alt?: string;
@@ -103,7 +130,7 @@ export interface ButtonNode extends BaseNode {
  * one the merchant forgets (ADR 0032). Off by default, required once present,
  * and enforced server-side, which lands with capture.
  */
-export interface ConsentNode extends BaseNode {
+export interface ConsentNode extends HideableNode {
   readonly type: 'consent';
   readonly text?: string;
   readonly link?: SlotLink;

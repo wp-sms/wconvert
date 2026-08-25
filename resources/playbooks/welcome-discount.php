@@ -45,7 +45,7 @@ return [
     // adding `page_load` would show the popup immediately and delete the
     // timer rather than backing it up.
     'rules' => [
-        ['type' => 'time_on_page', 'value' => 8],
+        ['type' => 'time_on_page', 'seconds' => 8],
     ],
     'destination_hint' => [
         'types' => ['wsms', 'email_service_provider'],

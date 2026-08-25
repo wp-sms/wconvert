@@ -45,7 +45,7 @@ beforeEach(() => {
 
 describe('a row', () => {
   it('names its Goal the way the merchant does', async () => {
-    render(<OptinList />);
+    render(<OptinList onEdit={() => undefined} />);
 
     expect(await screen.findByText('Grow my email list')).toBeInTheDocument();
     expect(screen.queryByText('grow_email_list')).toBeNull();
@@ -59,7 +59,7 @@ describe('a row', () => {
   it('falls back to the stored value for a Goal this build does not have', async () => {
     optins.listOptins.mockResolvedValue([{ ...OPTIN, goal: 'from_a_plugin_we_lack' }]);
 
-    render(<OptinList />);
+    render(<OptinList onEdit={() => undefined} />);
 
     expect(await screen.findByText('from_a_plugin_we_lack')).toBeInTheDocument();
   });
@@ -71,7 +71,7 @@ describe('a row', () => {
   it('still lists and still acts when the registry cannot be read', async () => {
     goals.listGoals.mockRejectedValue(new Error('nope'));
 
-    render(<OptinList />);
+    render(<OptinList onEdit={() => undefined} />);
 
     expect(await screen.findByText('Welcome discount')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Delete' })).toBeInTheDocument();

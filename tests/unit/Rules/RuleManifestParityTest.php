@@ -100,7 +100,7 @@ final class RuleManifestParityTest extends TestCase
         foreach ($entries as $type => $entry) {
             $where = sprintf('%s.%s', $axis, $type);
 
-            foreach (['kind', 'tier', 'consent_category', 'on_absence'] as $field) {
+            foreach (['kind', 'tier', 'params', 'presets', 'consent_category', 'on_absence'] as $field) {
                 $this->assertArrayHasKey($field, $entry, sprintf('%s is missing %s', $where, $field));
             }
 
@@ -117,6 +117,89 @@ final class RuleManifestParityTest extends TestCase
                 [null, ...self::CONSENT_CATEGORIES],
                 sprintf('%s declares a consent category the WP Consent API does not have', $where)
             );
+        }
+    }
+
+    /**
+     * Every param declares the control it takes, and nothing declares a param
+     * twice.
+     *
+     * The keys a rule's scalar arrives under are the manifest's answer now
+     * rather than the loader module's private knowledge, because the builder
+     * is the screen that fills them in. When they were implicit, three of the
+     * four bundled [[Playbook]]s wrote `value` where the module read `seconds`
+     * — a Trigger that could never fire, prefilled onto every Optin they
+     * started, with nothing in any log.
+     */
+    /** @param list<RuleKind> $_kinds */
+    #[\PHPUnit\Framework\Attributes\DataProvider('axes')]
+    public function testEveryParamDeclaresItsControl(string $axis, array $_kinds): void
+    {
+        foreach ($this->axis($axis) as $type => $entry) {
+            $this->assertIsArray($entry['params'], sprintf('%s.%s declares no params object', $axis, $type));
+
+            foreach ($entry['params'] as $name => $param) {
+                $where = sprintf('%s.%s.%s', $axis, $type, $name);
+
+                $this->assertIsArray($param, sprintf('%s is not a declaration', $where));
+                $this->assertArrayHasKey('control', $param, sprintf('%s declares no control', $where));
+                $this->assertIsString($param['control'], sprintf('%s declares no control', $where));
+
+                if (array_key_exists('authored', $param)) {
+                    $this->assertIsBool($param['authored'], sprintf('%s declares a non-boolean authored', $where));
+                }
+            }
+        }
+    }
+
+    /**
+     * **A Targeting rule is `{type, value}` and nothing else.**
+     *
+     * {@see \WConvert\Targeting\TargetingRule} reads exactly those two keys,
+     * so a targeting entry declaring a second param — or naming its one param
+     * anything but `value` — declares a rule the evaluator would silently drop
+     * for want of a scalar. The client axes have a free-form param bag and
+     * this is what says the server axis does not.
+     */
+    public function testEveryTargetingRuleTakesOneParamCalledValue(): void
+    {
+        foreach ($this->axis('targeting') as $type => $entry) {
+            $this->assertSame(
+                ['value'],
+                array_keys($entry['params']),
+                sprintf('targeting.%s does not take exactly one param called value', $type)
+            );
+        }
+    }
+
+    /**
+     * **A preset fixes params of the type it is declared under, and cannot
+     * name a second one.**
+     *
+     * "One engine type, many UI presets" (ADR 0005) is structural here rather
+     * than checked: a preset is declared INSIDE an entry, so it has no field
+     * to name a type with. What is left to check is that the params it fixes
+     * exist — a preset fixing a key nothing reads is a shortcut to a rule that
+     * never holds, which is the same failure the param declaration above
+     * exists to end.
+     */
+    /** @param list<RuleKind> $_kinds */
+    #[\PHPUnit\Framework\Attributes\DataProvider('axes')]
+    public function testEveryPresetFixesParamsItsTypeDeclares(string $axis, array $_kinds): void
+    {
+        foreach ($this->axis($axis) as $type => $entry) {
+            $this->assertIsArray($entry['presets'], sprintf('%s.%s declares no presets object', $axis, $type));
+
+            foreach ($entry['presets'] as $id => $fixed) {
+                $where = sprintf('%s.%s preset %s', $axis, $type, $id);
+
+                $this->assertIsArray($fixed, sprintf('%s fixes nothing', $where));
+                $this->assertSame(
+                    [],
+                    array_diff(array_keys($fixed), array_keys($entry['params'])),
+                    sprintf('%s fixes a param its type does not declare', $where)
+                );
+            }
         }
     }
 

@@ -329,6 +329,16 @@ already running on it.
 A Template declares its slots as [[Slot Role]]s, which is what lets a [[Playbook]]
 carry copy without being bound to one design.
 
+A slot may be **hidden** rather than removed. The settings panel edits tokens,
+slot content and slot visibility and never *arrangement*, so hiding is how a
+merchant drops a slot they do not want — which keeps the vocabulary the ceiling
+on design variety, and keeps a canvas landing later as an editor over a tree
+that already exists. Hiding is offered only where the design survives it: not
+the button that converts, and not a field, because an Optin with no countable
+act and a form that captures nothing are both refused elsewhere. It is also how
+consent capture is off by default and one click from on — every capture design
+ships the `consent` node hidden.
+
 ### Playbook
 
 A ready-to-run bundle serving one [[Goal]] — a [[Template]], copy, a

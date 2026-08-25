@@ -141,10 +141,11 @@ final class PlaybookRegistrationTest extends TestCase
     /**
      * **Rejection two, in its first shape: a post id in the targeting.**
      *
-     * Which rule types name something site-local is read off the rule
-     * manifest's `value` rather than listed here — `post_id` and `term_id` are
-     * ids, `post_type` and `path_glob` are not. A list would be the fifth
-     * hand-maintained cross-cutting list this project has refused (ADR 0019).
+     * Which params name something site-local is read off the rule manifest's
+     * `authored` flag rather than listed here — a post id and a term id name a
+     * row only one site has, and `post_type` and `path_glob` mean the same
+     * thing everywhere. A list would be the fifth hand-maintained
+     * cross-cutting list this project has refused (ADR 0019).
      */
     public function testAPlaybookNamingAPostIdInItsTargetingIsRejected(): void
     {
@@ -159,6 +160,56 @@ final class PlaybookRegistrationTest extends TestCase
         $this->assertRejected(
             self::entry(['targeting' => ['include' => [['type' => 'term', 'value' => 7]]]]),
             RejectionReason::SiteLocalReference
+        );
+    }
+
+    /**
+     * **`click_element`'s selector is author-only, so a Playbook cannot carry
+     * one** (ADR 0012).
+     *
+     * The same rule as the post id above, and deliberately not a special case:
+     * a CSS selector names markup only one site has, exactly as a post id
+     * names a row only one site has, so both are `authored` in the manifest
+     * and one check refuses both. That is also the whole of "blank in any
+     * Playbook-prefilled Optin" — an entry supplying a selector never
+     * registers, so there is nothing downstream to blank.
+     */
+    public function testAPlaybookSupplyingAnAuthorOnlySelectorIsRejected(): void
+    {
+        $this->assertRejected(
+            self::entry(['rules' => [['type' => 'click_element', 'selector' => '.theme-buy-button']]]),
+            RejectionReason::SiteLocalReference
+        );
+    }
+
+    /**
+     * And the other half: a Playbook may name the Trigger and leave the
+     * selector to the merchant, which is what an author-only param IS. The
+     * prefilled Optin then carries the rule with nothing in it — the state the
+     * builder exists to let the merchant complete.
+     */
+    public function testAPlaybookMayNameTheTriggerAndLeaveTheSelectorBlank(): void
+    {
+        $entry = self::entry(['rules' => [['type' => 'click_element']]]);
+
+        $this->assertSame([], $this->library($entry)->rejections());
+        $this->assertSame([['type' => 'click_element']], $this->library($entry)->find('welcome-discount')?->rules);
+    }
+
+    /**
+     * **A param the manifest does not declare is a rule that can never hold.**
+     *
+     * Three of the four bundled entries shipped `['type' => 'time_on_page',
+     * 'value' => 8]` against a loader module reading `rule.seconds`: a Trigger
+     * that never fires, on every Optin those Playbooks prefilled, with nothing
+     * in any log. Registration is the only moment an author is present, and
+     * the manifest declaring the keys is what makes the check possible at all.
+     */
+    public function testAPlaybookNamingAParamTheManifestDoesNotDeclareIsRejected(): void
+    {
+        $this->assertRejected(
+            self::entry(['rules' => [['type' => 'time_on_page', 'value' => 8]]]),
+            RejectionReason::UnknownRuleParam
         );
     }
 

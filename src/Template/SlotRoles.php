@@ -62,6 +62,53 @@ final class SlotRoles
     }
 
     /**
+     * The words a tree is carrying, keyed by [[Slot Role]].
+     *
+     * The inverse of {@see self::bind()}, and the reason the pair exists:
+     * "because copy is snapshotted separately from design, a [[Playbook]] keys
+     * its words to Slot Roles rather than to one Template's structure — **so
+     * the words survive switching Template**" (CONTEXT.md, Playbook). A
+     * merchant who has written their headline and then finds a design they
+     * like better keeps the headline; without this they would retype every
+     * slot, which is the cost that makes the gallery a thing you use once.
+     *
+     * A Role filling several keys comes back as the map of those keys, which
+     * is the shape `bind()` writes back — a sentence's link is part of the
+     * sentence it sits in, so the two travel together (ADR 0013).
+     *
+     * @param mixed $tree
+     * @return array<string, mixed>
+     */
+    public static function copyFrom($tree, TemplateVocabulary $vocabulary): array
+    {
+        $copy = [];
+
+        self::walk($tree, $vocabulary, static function (array $node, array $bindings) use (&$copy): array {
+            foreach ($bindings as $role => $keys) {
+                $words = [];
+
+                foreach ($keys as $key) {
+                    if (array_key_exists($key, $node)) {
+                        $words[$key] = $node[$key];
+                    }
+                }
+
+                if ($words !== []) {
+                    // One key comes back as the bare value, which is what a
+                    // Playbook writes for every slot but the one that needs a
+                    // link inside a sentence. Two spellings of the same words
+                    // would make a round trip through this pair change shape.
+                    $copy[$role] = count($keys) === 1 ? reset($words) : $words;
+                }
+            }
+
+            return $node;
+        });
+
+        return $copy;
+    }
+
+    /**
      * The same tree with a Playbook's words written into it.
      *
      * A Role the tree does not offer writes nothing rather than inventing a

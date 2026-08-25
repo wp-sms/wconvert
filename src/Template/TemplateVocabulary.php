@@ -292,9 +292,32 @@ final class TemplateVocabulary
             : array_merge($leaf['content'], $leaf['params']);
 
         foreach ($allowed as $key) {
-            if (array_key_exists($key, $node)) {
-                $kept[$key] = $key === 'link' ? $this->link($node[$key]) : $node[$key];
+            if (!array_key_exists($key, $node)) {
+                continue;
             }
+
+            if ($key === 'link') {
+                $kept[$key] = $this->link($node[$key]);
+
+                continue;
+            }
+
+            // A CTA's own destination, scheme-validated exactly as a link
+            // inside a sentence is. It is the merchant's to type — the
+            // settings panel offers it, because a click-metered Optin with no
+            // href is a button that goes nowhere — so it is the merchant's to
+            // get wrong, and `javascript:` is the way it gets wrong.
+            if ($key === 'href') {
+                $href = $this->href($node[$key]);
+
+                if ($href !== null) {
+                    $kept[$key] = $href;
+                }
+
+                continue;
+            }
+
+            $kept[$key] = $node[$key];
         }
 
         $role = $node['role'] ?? null;
@@ -362,13 +385,42 @@ final class TemplateVocabulary
             $kept['label'] = $link['label'];
         }
 
-        $href = $link['href'] ?? null;
+        $href = $this->href($link['href'] ?? null);
 
-        if (is_string($href) && in_array(strtolower((string) parse_url($href, PHP_URL_SCHEME)), $this->schemes, true)) {
+        if ($href !== null) {
             $kept['href'] = $href;
         }
 
         return $kept;
+    }
+
+    /**
+     * One href, or null where its scheme is not one the vocabulary allows.
+     *
+     * The one thing ADR 0013 asks PHP to do about a link: it closes
+     * `javascript:`, and it is honest that it does not stop a link to a bad
+     * destination. Dropped rather than emptied, so the renderer draws no
+     * anchor at all rather than a dead `#`.
+     *
+     * A scheme-less href — `/offers`, `#terms` — is kept. A relative URL names
+     * a page on this site, which is the ordinary case for a CTA, and it can
+     * express nothing a scheme can.
+     *
+     * @param mixed $href
+     */
+    private function href($href): ?string
+    {
+        if (!is_string($href) || $href === '') {
+            return null;
+        }
+
+        $scheme = parse_url($href, PHP_URL_SCHEME);
+
+        if ($scheme === null || $scheme === false) {
+            return $href;
+        }
+
+        return in_array(strtolower((string) $scheme), $this->schemes, true) ? $href : null;
     }
 
     /**

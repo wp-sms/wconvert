@@ -38,7 +38,7 @@ return [
     // Half way down is where someone has decided the page is worth reading,
     // which is the moment a guide about it is worth offering.
     'rules' => [
-        ['type' => 'scroll_depth', 'value' => 50],
+        ['type' => 'scroll_depth', 'percent' => 50],
     ],
     'destination_hint' => [
         'types' => ['lead_magnet_email'],

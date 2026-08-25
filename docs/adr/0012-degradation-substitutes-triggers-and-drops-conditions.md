@@ -101,9 +101,23 @@ working.
 - **The marker is the on-screen surface of the degradation**, rendered as a
   persistent inline note on the rule row — never a dismissible banner, which is
   dismissed once and leaves the Optin carrying an invisible substitution forever.
+  *The row exists as of [#29](https://github.com/navidkashani/wconvert/issues/29)
+  (`resources/admin/src/builder/RulesEditor.tsx`), with the note rendered for the
+  case that needs no marker — a rule authored with Pro and running without it —
+  and nothing anywhere in that file or its stylesheet that dismisses one. The
+  `degraded_from` marker renders in the same place and arrives with
+  [#33](https://github.com/navidkashani/wconvert/issues/33).*
 - **#14 inherits the mechanism and owns only the entitlement primitive it calls
   and the upsell destination.** Its "do optins stop, degrade, or keep running?"
   question is answered here: they degrade. #14 resolved that primitive to
   "is Pro loaded" and nothing else — see [ADR 0015](0015-enforcement-is-by-non-registration.md).
 - **`click_element` never appears to degrade**, because #3 already made its
   selector author-only and blank in any Playbook-prefilled Optin.
+  *Mechanised in [#29](https://github.com/navidkashani/wconvert/issues/29), and
+  deliberately not as a special case: the selector is a param the rule manifest
+  marks `authored`, which is the same declaration a post id and a term id carry,
+  and `PlaybookLibrary` refuses any entry supplying one. So a registered
+  Playbook cannot carry a selector at all, and "blank in any Playbook-prefilled
+  Optin" holds because there is nothing downstream left to blank. A Playbook may
+  still name the Trigger and leave the selector to the merchant, which is what
+  an author-only param IS.*
