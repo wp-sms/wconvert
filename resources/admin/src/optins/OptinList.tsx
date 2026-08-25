@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { __ } from '@wordpress/i18n';
+import { listGoals } from '../goals/api';
 import { deleteOptin, listOptins, publishOptin, statusOf, unpublishOptin, type OptinSummary } from './api';
 
 /**
@@ -17,6 +18,7 @@ import { deleteOptin, listOptins, publishOptin, statusOf, unpublishOptin, type O
  */
 export function OptinList() {
   const [optins, setOptins] = useState<OptinSummary[]>([]);
+  const [labels, setLabels] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -32,6 +34,22 @@ export function OptinList() {
   useEffect(() => {
     void refresh();
   }, [refresh]);
+
+  // The row stores a [[Goal]]'s id and the merchant reads its label, so the
+  // registry is fetched once and the rows are labelled from it. Fetched rather
+  // than spelled here: the five live in one PHP enum, their labels are
+  // translatable strings `wp i18n make-pot` can only see there, and naming one
+  // in this bundle is what `tests/unit/Goal/GoalParityTest.php` fails on.
+  //
+  // Its own error is swallowed on purpose. A registry that did not load costs
+  // this screen a nicer word for a Goal; it must not cost the merchant the
+  // publish and delete buttons beside it, and `refresh()` reports the failure
+  // that would.
+  useEffect(() => {
+    listGoals()
+      .then((goals) => setLabels(Object.fromEntries(goals.map((goal) => [goal.id, goal.label]))))
+      .catch(() => undefined);
+  }, []);
 
   const run = async (action: () => Promise<unknown>) => {
     setBusy(true);
@@ -78,9 +96,13 @@ export function OptinList() {
             return (
               <tr key={optin.id}>
                 <td>{optin.name}</td>
-                <td>
-                  <code>{optin.goal}</code>
-                </td>
+                {/*
+                  An id with no label is an Optin holding a Goal this build
+                  does not have — a `<code>` rather than a blank, because the
+                  raw value is the only honest thing left to show and blanking
+                  it would read as an Optin with no Goal at all.
+                */}
+                <td>{labels[optin.goal] ?? <code>{optin.goal}</code>}</td>
                 <td>{status}</td>
                 <td>
                   {status === 'published' ? (
