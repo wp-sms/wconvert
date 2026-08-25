@@ -146,11 +146,13 @@ final class OptinController
         // back — the Template's design with a [[Playbook]]'s words written
         // into it — and re-snapshotting would take the words straight back
         // out, which is a blank popup and a merchant who watched it happen.
-        $optin = $this->optins->create(
-            (string) $request->get_param('name'),
-            $goal->value,
-            $this->normalizeConfig($config, self::optionalString($config['template_id'] ?? null))
-        );
+        $normalized = $this->normalizeConfig($config, self::optionalString($config['template_id'] ?? null));
+
+        if (!$this->vocabulary->hasTrigger($normalized['rules'] ?? [])) {
+            return self::needsATrigger();
+        }
+
+        $optin = $this->optins->create((string) $request->get_param('name'), $goal->value, $normalized);
 
         return new WP_REST_Response($optin->toArray(), 201);
     }
@@ -184,11 +186,22 @@ final class OptinController
         // there is no stored row yet ({@see self::store()}).
         $pickedBefore = self::optionalString($this->optins->find($id)?->config['template_id'] ?? null);
 
+        $normalized = is_array($config) ? $this->normalizeConfig($config, $pickedBefore) : null;
+
+        // Checked against the config that ARRIVED, because `saveDraft()`
+        // replaces the blob whole — a PATCH carrying `config` is the new
+        // config, so a trigger the stored one had is not one this Optin will
+        // have. A PATCH that carries none is not editing the rules at all and
+        // is not asked the question.
+        if ($normalized !== null && !$this->vocabulary->hasTrigger($normalized['rules'] ?? [])) {
+            return self::needsATrigger();
+        }
+
         $optin = $this->optins->saveDraft(
             $id,
             self::optionalString($request->get_param('name')),
             $checked?->value,
-            is_array($config) ? $this->normalizeConfig($config, $pickedBefore) : null
+            $normalized
         );
 
         return $optin === null ? self::notFound() : new WP_REST_Response($optin->toArray());
@@ -284,6 +297,38 @@ final class OptinController
     private static function respond(?Optin $optin)
     {
         return $optin === null ? self::notFound() : new WP_REST_Response($optin->toArray());
+    }
+
+    /**
+     * **An Optin cannot be saved with no [[Trigger]] it can act on.**
+     *
+     * Every Optin has at least one, and "shows immediately" is the explicit
+     * `page_load` Trigger rather than an empty list (CONTEXT.md, Trigger). An
+     * Optin with none can never fire — a silent, total loss of function with
+     * nothing in any log, which ADR 0012 names as this category's defining
+     * support ticket.
+     *
+     * Refused rather than repaired. Supplying `page_load` for the merchant
+     * would put a popup on the page the moment it loads, which is display
+     * behaviour nobody asked for — the same reason ADR 0012 refuses to invent
+     * a substitute for a dropped [[Condition]], and the reason the [[Playbook]]
+     * registry refuses the same shape at the other end (
+     * {@see \WConvert\Support\RejectionReason::NoTrigger}).
+     *
+     * Refused at SAVE rather than at publish, because the draft is what the
+     * merchant is looking at: told at publish, they would have to find their
+     * way back to a rules panel they had already left.
+     */
+    private static function needsATrigger(): WP_Error
+    {
+        return new WP_Error(
+            'wconvert_optin_needs_a_trigger',
+            __(
+                'An Optin needs at least one Trigger it can act on. Fill in the one you have, or add “Shows immediately” if it should show straight away.',
+                'wconvert'
+            ),
+            ['status' => 400]
+        );
     }
 
     private static function notFound(): WP_Error

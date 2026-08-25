@@ -211,12 +211,30 @@ final class PlaybookLibrary
             return RejectionReason::DisplayTypeMismatch;
         }
 
+        // Every key every rule supplies, against the params its type
+        // declares. A key no loader module reads is not an extension — it is
+        // a rule that can never hold, on every Optin this entry prefills.
+        //
+        // Asked BEFORE the Trigger check below, because a misspelled param and
+        // a missing Trigger are the same symptom with different causes:
+        // `['type' => 'time_on_page', 'value' => 8]` has no `seconds` and so
+        // has no Trigger that could fire, but "no Trigger" is not what its
+        // author got wrong and not what they need to read.
+        foreach (self::rulesNamedBy($entry) as [$type, $supplied]) {
+            if (array_diff($supplied, array_keys($rules->paramsOf($type))) !== []) {
+                return RejectionReason::UnknownRuleParam;
+            }
+        }
+
         // Every Optin has at least one [[Trigger]] and "shows immediately" is
         // the explicit `page_load` one rather than an empty list (CONTEXT.md,
         // Trigger). A Playbook naming none prefills an Optin that can never
         // fire — a silent, total loss of function with nothing in any log
-        // (ADR 0012) — and this is the last moment an author is present.
-        if ($rules->partition($entry['rules'] ?? [])['triggers'] === []) {
+        // (ADR 0012) — and this is the last moment an author is present. One
+        // naming a Trigger with no value for a param the merchant was never
+        // going to supply is the same Optin wearing a rule, which is why this
+        // asks whether one could FIRE rather than counting them.
+        if (!$rules->hasTrigger($entry['rules'] ?? [])) {
             return RejectionReason::NoTrigger;
         }
 
@@ -236,15 +254,59 @@ final class PlaybookLibrary
     }
 
     /**
+     * Every rule this entry names, on all three axes, as `[type, keys it
+     * supplies]`.
+     *
+     * One walk for both checks above, because both ask a question about the
+     * SAME set — "does any rule name a param it may not" and "does any rule
+     * name a param that does not exist" differ only in which list they compare
+     * against. Two walks would be two chances for a `split`-shaped omission:
+     * the exclude list is exactly where a second reader forgets to look.
+     *
+     * Targeting rules are `{type, value}` and client rules are `{type,
+     * ...params}` ({@see \WConvert\Targeting\TargetingRule}), so the keys
+     * are simply everything that is not `type` in either case.
+     *
+     * @param array<string, mixed> $entry
+     * @return list<array{string, list<string>}>
+     */
+    private static function rulesNamedBy(array $entry): array
+    {
+        $targeting = is_array($entry['targeting'] ?? null) ? $entry['targeting'] : [];
+        $lists = [is_array($entry['rules'] ?? null) ? $entry['rules'] : []];
+
+        foreach (['include', 'exclude'] as $list) {
+            $lists[] = is_array($targeting[$list] ?? null) ? $targeting[$list] : [];
+        }
+
+        $named = [];
+
+        foreach ($lists as $rules) {
+            foreach ($rules as $rule) {
+                if (is_array($rule) && is_string($rule['type'] ?? null)) {
+                    $named[] = [$rule['type'], array_values(array_diff(array_map('strval', array_keys($rule)), ['type']))];
+                }
+            }
+        }
+
+        return $named;
+    }
+
+    /**
      * **A Playbook can express nothing site-local.**
      *
      * Three shapes, and the reasoning is one: an entry is written once and
      * runs on every install, so anything naming a row on one of them is wrong
      * everywhere else.
      *
-     * - **A post or term id in the targeting.** Which types those are is read
-     *   off the rule manifest's `value` rather than listed here — an id is an
-     *   id, and `post_type` and `path_glob` mean the same thing everywhere.
+     * - **A param the manifest marks `authored`.** Which those are is read off
+     *   the manifest rather than listed here: a post id and a term id name a
+     *   row only one site has, and `click_element`'s CSS selector names markup
+     *   only one site has — the same fact, so the same declaration. That is
+     *   also the whole of "`click_element`'s selector is author-only and blank
+     *   in any Playbook-prefilled Optin" (ADR 0012): a registered entry cannot
+     *   carry one, so prefill has nothing to blank. `post_type` and
+     *   `path_glob` mean the same thing everywhere and are not marked.
      * - **A [[Destination]] id.** A hint names Destination *types* and the
      *   [[Lead]] fields the Playbook needs; prefill never binds a Destination
      *   invisibly. Anything beyond those two keys is refused rather than
@@ -265,15 +327,9 @@ final class PlaybookLibrary
      */
     private static function namesSomethingSiteLocal(array $entry, array $copy, RuleVocabulary $rules): bool
     {
-        $targeting = is_array($entry['targeting'] ?? null) ? $entry['targeting'] : [];
-
-        foreach (['include', 'exclude'] as $list) {
-            foreach (is_array($targeting[$list] ?? null) ? $targeting[$list] : [] as $rule) {
-                $type = is_array($rule) && is_string($rule['type'] ?? null) ? $rule['type'] : '';
-
-                if (str_ends_with((string) $rules->valueOf($type), '_id')) {
-                    return true;
-                }
+        foreach (self::rulesNamedBy($entry) as [$type, $supplied]) {
+            if (array_intersect($supplied, $rules->authoredParamsOf($type)) !== []) {
+                return true;
             }
         }
 

@@ -51,7 +51,14 @@ third-party ones. Under configuration they are properties of the one renderer.
 ## Consequences
 
 - **The vocabulary is the ceiling on design variety**, and the product bet is that
-  the gallery *is* the design surface.
+  the gallery *is* the design surface. *Built in
+  [#29](https://github.com/navidkashani/wconvert/issues/29): the gallery is a set
+  of designs per [[Display Type]] with no [[Goal]] filter, because Templates are
+  goal-agnostic and the copy is held elsewhere. Picking one SAVES at once, since
+  it takes a fresh snapshot and carries the merchant's words across by
+  [[Slot Role]] — `TemplateLibrary::snapshotInto()` now rebinds rather than
+  stripping, which is what finally makes CONTEXT.md's "the words survive
+  switching Template" true of the one screen where a merchant switches one.*
   *Fixed in [#23](https://github.com/navidkashani/wconvert/issues/23) as six leaf
   nodes — `heading`, `text`, `image`, `field`, `button`, `consent` — and four
   layouts: `stack` (a column), `row` (a wrapping line), `split` (two independent
@@ -99,6 +106,29 @@ third-party ones. Under configuration they are properties of the one renderer.
 - **Authoring is the settings panel plus a dev-only export**, not hand-written JSON.
   That makes the vocabulary self-testing: every shipped template is provably
   expressible in the panel, so we never ship a design the user cannot adjust.
+  *Built in [#29](https://github.com/navidkashani/wconvert/issues/29). The export
+  is gated on `WP_DEBUG` rather than on a capability — everyone on that screen
+  already has `manage_options`, so it is not a permission question — and the
+  round trip is asserted by RENDERING rather than by comparing trees, because
+  the claim is about what a visitor sees (`tests/js/builder-export.test.ts`).
+  The panel half is asserted from both ends: every shipped entry re-normalises
+  to itself in PHP, and every value in it is reachable through a slot in the
+  panel's own model (`tests/js/builder-panel.test.ts`).*
+
+- **The panel edits tokens, slot content and slot VISIBILITY — never
+  arrangement.** *Added by
+  [#29](https://github.com/navidkashani/wconvert/issues/29): a merchant who does
+  not want the fine print hides it rather than deleting it, which is what lets
+  the panel be complete without a control that reshapes the tree — and it is why
+  a canvas can still land later as an editor over a tree that already exists.
+  `hidden` is a param on `heading`, `text`, `image` and `consent` and on nothing
+  else: hiding the button that converts leaves an Optin with no countable act,
+  and hiding a required field leaves a form the capture endpoint refuses every
+  submission of, so neither declares the key and PHP drops it on the way in.
+  `button` also gained `href` as CONTENT rather than a param, because a
+  click-metered CTA's destination is the merchant's to type — and it is
+  scheme-validated at write for the same reason a link inside a sentence is
+  ([ADR 0013](0013-playbook-copy-carries-no-markup.md)).*
 - **The tree is `steps[]`, and how many steps a template has follows from its
   metric.** A submit-metered template has **two** — the post-submit success state
   is a terminal step, so a Yes/No two-step needs no new structure, just a second

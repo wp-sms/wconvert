@@ -16,9 +16,10 @@ import { listGoals, listPlaybooks, prefill, type Draft, type GoalEntry, type Pla
  * builder rather than the first question (CONTEXT.md, Display Type).
  *
  * **Nothing is created until the last step.** Prefill is a read; a merchant
- * who walks the whole flow and closes the tab has written nothing.
+ * who walks the whole flow and closes the tab has written nothing. The step
+ * that does create one hands the merchant straight to the builder.
  */
-export function GoalScreen() {
+export function GoalScreen({ onCreated }: { onCreated: (id: string) => void }) {
   const [goals, setGoals] = useState<GoalEntry[]>([]);
   const [goal, setGoal] = useState<GoalEntry | null>(null);
   const [playbooks, setPlaybooks] = useState<PlaybookEntry[]>([]);
@@ -57,9 +58,13 @@ export function GoalScreen() {
     setBusy(true);
 
     createOptin(draft.name, draft.goal, draft.config)
-      .then(() => {
+      .then((optin) => {
         setDraft(null);
         setGoal(null);
+        // Into the builder, which is where this flow has always said it ends:
+        // "pick a Goal, pick a Playbook under it, land in an editor holding a
+        // prefilled Optin".
+        onCreated(optin.id);
       })
       .catch(report)
       .finally(() => setBusy(false));

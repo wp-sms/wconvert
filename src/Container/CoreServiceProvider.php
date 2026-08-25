@@ -23,8 +23,11 @@ use WConvert\Rest\LeadController;
 use WConvert\Rest\OptinController;
 use WConvert\Rest\PlaybookController;
 use WConvert\Rest\RateLimit;
+use WConvert\Rest\RuleController;
 use WConvert\Rest\TemplateController;
+use WConvert\Rest\ThemeController;
 use WConvert\Retention\RetentionPeriod;
+use WConvert\Rules\RuleCatalogue;
 use WConvert\Rules\RuleVocabulary;
 use WConvert\Stats\Dashboard;
 use WConvert\Stats\StatsRepository;
@@ -259,6 +262,26 @@ final class CoreServiceProvider implements ServiceProvider
                 $c->resolve(TemplateLibrary::class)
             )
         );
+
+        // The rule vocabulary as the builder needs it: the manifest, plus the
+        // words PHP holds so `make-pot` can see them and the [[Availability]]
+        // only this install can resolve (ADR 0026).
+        $container->register(
+            RuleCatalogue::class,
+            static fn (ServiceContainer $c): RuleCatalogue => new RuleCatalogue(
+                $c->resolve(RuleVocabulary::class),
+                $c->resolve(ProPresence::class)
+            )
+        );
+
+        $container->register(
+            RuleController::class,
+            static fn (ServiceContainer $c): RuleController => new RuleController($c->resolve(RuleCatalogue::class))
+        );
+
+        // Theme inheritance is an opt-in VALUE COPY, so this reads the site's
+        // palette and nothing stores where a token came from.
+        $container->register(ThemeController::class, static fn (): ThemeController => new ThemeController());
     }
 
     public function boot(ServiceContainer $container): void
@@ -281,6 +304,8 @@ final class CoreServiceProvider implements ServiceProvider
 
         $container->resolve(OptinController::class)->hooks();
         $container->resolve(TemplateController::class)->hooks();
+        $container->resolve(RuleController::class)->hooks();
+        $container->resolve(ThemeController::class)->hooks();
         $container->resolve(GoalController::class)->hooks();
         $container->resolve(PlaybookController::class)->hooks();
         // Registered on every request, admin included, and NOT behind the

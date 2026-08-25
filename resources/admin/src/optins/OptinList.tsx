@@ -14,9 +14,13 @@ import { deleteOptin, listOptins, publishOptin, statusOf, unpublishOptin, type O
  * registry is precisely the drift the registry exists to stop.
  *
  * Targeting and the rest of an Optin's configuration belong to the builder,
- * which arrives in its own ticket.
+ * which each row opens. Publishing stays HERE rather than moving in there
+ * with them: `config` is the working draft and `published_config` is what the
+ * site is serving, and the two are separate columns so that editing an Optin
+ * is not publishing as you type. A publish button inside the editor would be
+ * the same conflation wearing a different hat.
  */
-export function OptinList() {
+export function OptinList({ onEdit }: { onEdit: (id: string) => void }) {
   const [optins, setOptins] = useState<OptinSummary[]>([]);
   const [labels, setLabels] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
@@ -105,6 +109,9 @@ export function OptinList() {
                 <td>{labels[optin.goal] ?? <code>{optin.goal}</code>}</td>
                 <td>{status}</td>
                 <td>
+                  <button type="button" className="button" onClick={() => onEdit(optin.id)}>
+                    {__('Edit', 'wconvert')}
+                  </button>{' '}
                   {status === 'published' ? (
                     <button
                       type="button"

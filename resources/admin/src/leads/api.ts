@@ -1,4 +1,5 @@
 import apiFetch from '@wordpress/api-fetch';
+import { adminSettings } from '../settings';
 
 /** One [[Lead]] — one capture event, as `GET /wconvert/v1/leads` returns it. */
 export interface Lead {
@@ -45,13 +46,6 @@ export interface Retention {
   max_days: number;
 }
 
-/** What `AdminMenu` localises: the nonced `admin-post.php` URL for the CSV. */
-declare global {
-  interface Window {
-    wconvertAdmin?: { exportUrl: string };
-  }
-}
-
 const query = (params: Record<string, string>) => new URLSearchParams(params).toString();
 
 export const readLog = (optinId: string, grouped: boolean) =>
@@ -76,7 +70,7 @@ export const saveRetention = (days: number | null) =>
  * filter here does not invalidate it.
  */
 export const exportUrl = (optinId: string): string | null => {
-  const base = window.wconvertAdmin?.exportUrl;
+  const base = adminSettings()?.exportUrl;
 
   if (base === undefined) {
     return null;

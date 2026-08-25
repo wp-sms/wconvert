@@ -230,6 +230,16 @@ final class CaptureForm
      */
     private static function read(array $node, array &$fields, ?array &$consent, array $known): void
     {
+        // A slot the merchant switched off. The renderer skips it, so the
+        // browser never drew it — and a server enforcing a consent checkbox no
+        // visitor was shown refuses every submission of a form that could not
+        // contain one. The vocabulary is what keeps this from reaching a
+        // `field` or a `button`: neither declares `hidden`, so neither can
+        // carry it (ADR 0010).
+        if (($node['hidden'] ?? null) === true) {
+            return;
+        }
+
         $type = $node['type'] ?? null;
         $name = $node['name'] ?? null;
 

@@ -115,6 +115,20 @@ enum RejectionReason: string
      */
     case DuplicateId = 'duplicate_id';
 
+    /**
+     * A [[Playbook]] naming a rule param the manifest does not declare.
+     *
+     * The keys a rule's scalar arrives under are declared per type
+     * ({@see \WConvert\Rules\RuleVocabulary}), and a key no loader module
+     * reads is not an extension — it is a rule that can never hold. Three of
+     * the four bundled entries shipped `['type' => 'time_on_page', 'value' =>
+     * 8]` against a module reading `rule.seconds`, which is a Trigger that
+     * never fires on every Optin those Playbooks prefilled, with nothing in
+     * any log. Registration is the only moment an author is present to be
+     * told.
+     */
+    case UnknownRuleParam = 'unknown_rule_param';
+
     /** An entry with no id, or one that is not an array at all. */
     case Malformed = 'malformed';
 }

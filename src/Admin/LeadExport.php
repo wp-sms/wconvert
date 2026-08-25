@@ -57,7 +57,12 @@ final class LeadExport
      */
     public static function url(): string
     {
-        return wp_nonce_url(admin_url('admin-post.php?action=' . self::ACTION), self::ACTION);
+        // Composed rather than `wp_nonce_url()`, which is the same URL run
+        // through `esc_html()`. This one is handed to JavaScript as DATA — the
+        // screen appends `optin_id` to it — so an HTML-encoded `&amp;` between
+        // the parameters is not an escape but a corruption: the browser would
+        // send `amp;optin_id` and the export would ignore the filter.
+        return add_query_arg('_wpnonce', wp_create_nonce(self::ACTION), admin_url('admin-post.php?action=' . self::ACTION));
     }
 
     public function handle(): void

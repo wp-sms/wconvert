@@ -35,7 +35,7 @@ return [
         'success_body' => __('Watch out for a message when the next drop lands.', 'wconvert'),
     ],
     'rules' => [
-        ['type' => 'time_on_page', 'value' => 12],
+        ['type' => 'time_on_page', 'seconds' => 12],
     ],
     'destination_hint' => [
         'types' => ['wsms'],

@@ -1,18 +1,121 @@
 {
   "targeting": {
-    "post": { "kind": "page", "tier": "free", "value": "post_id", "consent_category": null, "on_absence": null },
-    "singular": { "kind": "page", "tier": "free", "value": "post_type", "consent_category": null, "on_absence": null },
-    "archive": { "kind": "page", "tier": "free", "value": "post_type", "consent_category": null, "on_absence": null },
-    "term": { "kind": "page", "tier": "free", "value": "term_id", "consent_category": null, "on_absence": null },
-    "url": { "kind": "page", "tier": "free", "value": "path_glob", "consent_category": null, "on_absence": null },
-    "logged_in": { "kind": "visitor", "tier": "free", "value": "boolean", "consent_category": null, "on_absence": null }
+    "post": {
+      "kind": "page",
+      "tier": "free",
+      "params": { "value": { "control": "post_id", "authored": true } },
+      "presets": {},
+      "consent_category": null,
+      "on_absence": null
+    },
+    "singular": {
+      "kind": "page",
+      "tier": "free",
+      "params": { "value": { "control": "post_type" } },
+      "presets": {},
+      "consent_category": null,
+      "on_absence": null
+    },
+    "archive": {
+      "kind": "page",
+      "tier": "free",
+      "params": { "value": { "control": "post_type" } },
+      "presets": {},
+      "consent_category": null,
+      "on_absence": null
+    },
+    "term": {
+      "kind": "page",
+      "tier": "free",
+      "params": { "value": { "control": "term_id", "authored": true } },
+      "presets": {},
+      "consent_category": null,
+      "on_absence": null
+    },
+    "url": {
+      "kind": "page",
+      "tier": "free",
+      "params": { "value": { "control": "path_glob" } },
+      "presets": {},
+      "consent_category": null,
+      "on_absence": null
+    },
+    "logged_in": {
+      "kind": "visitor",
+      "tier": "free",
+      "params": { "value": { "control": "boolean" } },
+      "presets": {},
+      "consent_category": null,
+      "on_absence": null
+    }
   },
   "triggers": {
-    "page_load": { "kind": "trigger", "tier": "free", "value": null, "consent_category": null, "on_absence": "drop" },
-    "time_on_page": { "kind": "trigger", "tier": "free", "value": "seconds", "consent_category": null, "on_absence": "drop" },
-    "scroll_depth": { "kind": "trigger", "tier": "free", "value": "percent", "consent_category": null, "on_absence": "drop" }
+    "page_load": {
+      "kind": "trigger",
+      "tier": "free",
+      "params": {},
+      "presets": {},
+      "consent_category": null,
+      "on_absence": "drop"
+    },
+    "time_on_page": {
+      "kind": "trigger",
+      "tier": "free",
+      "params": { "seconds": { "control": "seconds" } },
+      "presets": {
+        "after_a_moment": { "seconds": 5 },
+        "after_a_read": { "seconds": 15 }
+      },
+      "consent_category": null,
+      "on_absence": "drop"
+    },
+    "scroll_depth": {
+      "kind": "trigger",
+      "tier": "free",
+      "params": { "percent": { "control": "percent" } },
+      "presets": {
+        "halfway_down": { "percent": 50 },
+        "near_the_end": { "percent": 80 }
+      },
+      "consent_category": null,
+      "on_absence": "drop"
+    },
+    "click_element": {
+      "kind": "trigger",
+      "tier": "pro",
+      "params": { "selector": { "control": "selector", "authored": true } },
+      "presets": {},
+      "consent_category": null,
+      "on_absence": "drop"
+    }
   },
   "conditions": {
-    "device": { "kind": "condition", "tier": "free", "value": "device_set", "consent_category": null, "on_absence": "drop" }
+    "device": {
+      "kind": "condition",
+      "tier": "free",
+      "params": { "in": { "control": "device_set", "options": ["mobile", "tablet", "desktop"] } },
+      "presets": {
+        "mobile_only": { "in": ["mobile"] },
+        "not_on_mobile": { "in": ["tablet", "desktop"] },
+        "desktop_only": { "in": ["desktop"] }
+      },
+      "consent_category": null,
+      "on_absence": "drop"
+    },
+    "query_param": {
+      "kind": "condition",
+      "tier": "pro",
+      "params": {
+        "key": { "control": "text" },
+        "value": { "control": "text_set" }
+      },
+      "presets": {
+        "utm_source": { "key": "utm_source" },
+        "utm_medium": { "key": "utm_medium" },
+        "utm_campaign": { "key": "utm_campaign" }
+      },
+      "consent_category": null,
+      "on_absence": "drop"
+    }
   }
 }

@@ -96,7 +96,7 @@ beforeEach(() => {
   goals.listGoals.mockResolvedValue(GOALS);
   goals.listPlaybooks.mockResolvedValue([PLAYBOOK]);
   goals.prefill.mockResolvedValue(DRAFT);
-  optins.createOptin.mockResolvedValue({});
+  optins.createOptin.mockResolvedValue({ id: '01JQZK8N3M4P5Q6R7S8T9V0W1X' });
 });
 
 describe('the goal screen', () => {
@@ -105,7 +105,7 @@ describe('the goal screen', () => {
    * reading "requires WooCommerce" learns nothing they can act on (ADR 0026).
    */
   it('hides a Goal this site cannot serve', async () => {
-    render(<GoalScreen />);
+    render(<GoalScreen onCreated={() => undefined} />);
 
     await screen.findByText('Grow my email list');
 
@@ -119,7 +119,7 @@ describe('the goal screen', () => {
    * whose only missing piece is buyable from us.
    */
   it('offers a locked Goal as an upsell and offers no upsell for an unavailable one', async () => {
-    render(<GoalScreen />);
+    render(<GoalScreen onCreated={() => undefined} />);
 
     await screen.findByText('Promote a sale or offer');
 
@@ -128,7 +128,7 @@ describe('the goal screen', () => {
   });
 
   it('cannot be chosen while it is an upsell', async () => {
-    render(<GoalScreen />);
+    render(<GoalScreen onCreated={() => undefined} />);
 
     await screen.findByText('Promote a sale or offer');
 
@@ -142,7 +142,7 @@ describe('the goal screen', () => {
    * from.
    */
   it('asks the gallery for the chosen Goal and nothing else', async () => {
-    render(<GoalScreen />);
+    render(<GoalScreen onCreated={() => undefined} />);
 
     await userEvent.click(await screen.findByRole('button', { name: 'Choose' }));
 
@@ -151,7 +151,7 @@ describe('the goal screen', () => {
   });
 
   it('shows the Playbooks under it, with the notes that say why they work', async () => {
-    render(<GoalScreen />);
+    render(<GoalScreen onCreated={() => undefined} />);
 
     await userEvent.click(await screen.findByRole('button', { name: 'Choose' }));
 
@@ -168,7 +168,7 @@ describe('the goal screen', () => {
   it('says so when a Goal has nothing to start from yet', async () => {
     goals.listPlaybooks.mockResolvedValue([]);
 
-    render(<GoalScreen />);
+    render(<GoalScreen onCreated={() => undefined} />);
 
     await userEvent.click(await screen.findByRole('button', { name: 'Choose' }));
 
@@ -183,7 +183,7 @@ describe('the goal screen', () => {
   it('starts from scratch under the Goal already chosen', async () => {
     goals.prefill.mockResolvedValue({ name: 'Grow my email list', goal: 'grow_email_list', config: { rules: [] } });
 
-    render(<GoalScreen />);
+    render(<GoalScreen onCreated={() => undefined} />);
 
     await userEvent.click(await screen.findByRole('button', { name: 'Choose' }));
     await userEvent.click(await screen.findByRole('button', { name: 'Start from scratch' }));
@@ -196,7 +196,7 @@ describe('the goal screen', () => {
    * flow and stopping at the preview writes nothing.
    */
   it('creates nothing until the merchant says so', async () => {
-    render(<GoalScreen />);
+    render(<GoalScreen onCreated={() => undefined} />);
 
     await userEvent.click(await screen.findByRole('button', { name: 'Choose' }));
     await userEvent.click(await screen.findByRole('button', { name: 'Use this Playbook' }));
@@ -220,7 +220,7 @@ describe('the goal screen', () => {
    * the copy renders AS is proven where it can be — `tests/js/playbook-copy.test.ts`.
    */
   it('previews the prefilled Optin through the renderer the loader uses', async () => {
-    render(<GoalScreen />);
+    render(<GoalScreen onCreated={() => undefined} />);
 
     await userEvent.click(await screen.findByRole('button', { name: 'Choose' }));
     await userEvent.click(await screen.findByRole('button', { name: 'Use this Playbook' }));
@@ -238,7 +238,7 @@ describe('the goal screen', () => {
   it('says so when there is no design to preview yet', async () => {
     goals.prefill.mockResolvedValue({ name: 'Grow my email list', goal: 'grow_email_list', config: { rules: [] } });
 
-    render(<GoalScreen />);
+    render(<GoalScreen onCreated={() => undefined} />);
 
     await userEvent.click(await screen.findByRole('button', { name: 'Choose' }));
     await userEvent.click(await screen.findByRole('button', { name: 'Start from scratch' }));
@@ -247,7 +247,7 @@ describe('the goal screen', () => {
   });
 
   it('saves the draft exactly as prefill handed it over', async () => {
-    render(<GoalScreen />);
+    render(<GoalScreen onCreated={() => undefined} />);
 
     await userEvent.click(await screen.findByRole('button', { name: 'Choose' }));
     await userEvent.click(await screen.findByRole('button', { name: 'Use this Playbook' }));
@@ -256,5 +256,23 @@ describe('the goal screen', () => {
     await waitFor(() =>
       expect(optins.createOptin).toHaveBeenCalledWith(DRAFT.name, DRAFT.goal, DRAFT.config),
     );
+  });
+
+  /**
+   * **And it lands in the builder**, which is where this flow has always said
+   * it ends: pick a [[Goal]], pick a [[Playbook]] under it, land in an editor
+   * holding a prefilled Optin. The created Optin is addressed by id, so the
+   * create has to hand one back rather than discard the response.
+   */
+  it('hands the created Optin to the builder', async () => {
+    const created = vi.fn();
+
+    render(<GoalScreen onCreated={created} />);
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Choose' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Use this Playbook' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Create this Optin' }));
+
+    await waitFor(() => expect(created).toHaveBeenCalledWith('01JQZK8N3M4P5Q6R7S8T9V0W1X'));
   });
 });

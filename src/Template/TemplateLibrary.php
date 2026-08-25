@@ -162,7 +162,8 @@ final class TemplateLibrary
      * calls it: provenance. Repicking is the other case and is not the same
      * one — a merchant who chooses a different Template gets a fresh copy,
      * because otherwise the id would say one design and the payload would
-     * render another (ADR 0010).
+     * render another (ADR 0010) — and the WORDS they had written are carried
+     * across by [[Slot Role]], which is what those Roles are for.
      *
      * The renderer and the vocabulary are the other side of the arrangement.
      * They stay a LIVE reference, so a release that fixes accessibility or RTL
@@ -202,8 +203,21 @@ final class TemplateLibrary
             return $config;
         }
 
+        // **The words survive switching Template** (CONTEXT.md, Playbook).
+        // Copy is keyed to [[Slot Role]]s rather than to one Template's
+        // structure precisely so it can be carried across, and a merchant who
+        // has written their headline and then finds a design they prefer must
+        // not have to retype every slot — that cost is what makes a gallery
+        // something you use once.
+        //
+        // The TOKENS are not carried, and that is the same boundary read the
+        // other way: a Role names what a slot SAYS, and tokens are what the
+        // design LOOKS like. Picking a new design and keeping the old one's
+        // colours is picking neither.
+        $carried = SlotRoles::copyFrom($config['template']['tree'] ?? [], $this->vocabulary);
+
         $config['template'] = [
-            'tree' => $this->vocabulary->withoutCopy($entry['tree']),
+            'tree' => SlotRoles::bind($this->vocabulary->withoutCopy($entry['tree']), $carried, $this->vocabulary),
             'tokens' => $entry['tokens'],
         ];
 

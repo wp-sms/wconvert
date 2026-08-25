@@ -219,12 +219,25 @@ final class PrefillSnapshotTest extends TestCase
         );
 
         // And the other half of the same rule still holds: naming a DIFFERENT
-        // Template takes a fresh copy, words and all, because otherwise the id
-        // would say one design and the payload would render another.
+        // Template takes a fresh copy of the DESIGN, because otherwise the id
+        // would say one design and the payload would render another — while
+        // the WORDS come across, since copy is keyed to [[Slot Role]]s rather
+        // than to one Template's structure precisely "so the words survive
+        // switching Template" (CONTEXT.md, Playbook).
         $config['template_id'] = 'stacked-signup';
         $repicked = $templates->snapshotInto($config, 'centred-card');
+        $children = $repicked['template']['tree']['steps'][0]['children'];
 
-        $this->assertArrayNotHasKey('text', $repicked['template']['tree']['steps'][0]['children'][0]);
+        $this->assertSame('Ten percent off your first order', $children[0]['text'], 'the headline came across');
+        $this->assertSame($templates->find('stacked-signup')['tokens'], $repicked['template']['tokens']);
+
+        // A Role the new design does not declare is dropped rather than
+        // carried into a node that cannot hold it: `centred-card` captures an
+        // email and `stacked-signup` a phone, so the email's label has nowhere
+        // to go. A field's Roles are named for what it captures, which is what
+        // makes the field kind part of the DESIGN (CONTEXT.md, Slot Role).
+        $this->assertSame('phone', $children[2]['name']);
+        $this->assertArrayNotHasKey('label', $children[2]);
     }
 
     /**

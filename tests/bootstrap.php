@@ -415,3 +415,31 @@ if (!class_exists('wpdb')) {
         }
     }
 }
+
+/*
+ * The public post types, as objects with labels.
+ *
+ * `RuleCatalogue` resolves the options for a `post_type`-valued Targeting
+ * rule from WordPress rather than from a list of ours, because a custom post
+ * type's label is whatever its author registered. The two WordPress always has
+ * are enough to prove the shape.
+ */
+if (!function_exists('get_post_types')) {
+    /**
+     * @param array<string, mixed> $args
+     * @return array<string, object|string>
+     */
+    function get_post_types(array $args = [], string $output = 'names'): array
+    {
+        unset($args);
+
+        if ($output !== 'objects') {
+            return ['post' => 'post', 'page' => 'page'];
+        }
+
+        return [
+            'post' => (object) ['labels' => (object) ['singular_name' => 'Post']],
+            'page' => (object) ['labels' => (object) ['singular_name' => 'Page']],
+        ];
+    }
+}

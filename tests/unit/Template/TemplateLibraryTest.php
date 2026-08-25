@@ -4,7 +4,9 @@ namespace WConvert\Tests\Unit\Template;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use WConvert\Template\ConvertingAct;
 use WConvert\Template\TemplateLibrary;
+use WConvert\Template\TemplateTree;
 use WConvert\Template\TemplateVocabulary;
 
 /**
@@ -71,14 +73,67 @@ final class TemplateLibraryTest extends TestCase
     }
 
     /**
-     * The consent node is **off by default**: defaulting it on would put a
-     * checkbox on the roughly 90% of installs that do not want one and cost
-     * conversions for no gain (ADR 0032).
+     * **Consent capture is off by default, and reachable in one click.**
+     *
+     * Those used to be in tension. ADR 0032 makes the `consent` node
+     * first-class "rather than a required field the merchant hand-adds",
+     * because one the merchant remembers to add is one the merchant forgets —
+     * while defaulting it ON would put a checkbox on the roughly 90% of
+     * installs that do not want one and cost conversions for no gain. With no
+     * way to express "present but off", shipping no node at all was the only
+     * reading of the second half available, and it quietly gave up the first.
+     *
+     * Slot visibility is what settles it (ADR 0010): every capture design
+     * ships the node HIDDEN, so the panel — which edits content and visibility
+     * and never arrangement — can switch it on without the merchant knowing
+     * the vocabulary has such a thing.
+     *
+     * A click-metered design ships none, and that is not an omission: it
+     * captures nothing, so there is nothing to consent to.
      */
-    public function testNoShippedTemplateTurnsConsentOnForTheMerchant(): void
+    public function testEveryCaptureDesignShipsConsentHiddenRatherThanNotAtAll(): void
     {
         foreach (self::library()->all() as $id => $template) {
-            $this->assertStringNotContainsString('"consent"', (string) json_encode($template['tree']), "{$id}: ships a consent node");
+            $captures = ConvertingAct::offeredIn($template['tree']) === [ConvertingAct::Submit];
+            $nodes = self::consentNodesIn($template['tree']);
+
+            $this->assertCount(
+                $captures ? 1 : 0,
+                $nodes,
+                "{$id}: a capture design offers consent capture, and nothing else offers it"
+            );
+
+            foreach ($nodes as $node) {
+                $this->assertTrue($node['hidden'] ?? false, "{$id}: ships consent turned on for the merchant");
+            }
         }
+    }
+
+    /**
+     * @param array<string, mixed> $tree
+     * @return list<array<string, mixed>>
+     */
+    private static function consentNodesIn(array $tree): array
+    {
+        $found = [];
+        $stack = is_array($tree['steps'] ?? null) ? $tree['steps'] : [];
+
+        while ($stack !== []) {
+            $node = array_pop($stack);
+
+            if (!is_array($node)) {
+                continue;
+            }
+
+            if (($node['type'] ?? null) === 'consent') {
+                $found[] = $node;
+            }
+
+            foreach (TemplateTree::childrenOf($node) as $child) {
+                $stack[] = $child;
+            }
+        }
+
+        return $found;
     }
 }
