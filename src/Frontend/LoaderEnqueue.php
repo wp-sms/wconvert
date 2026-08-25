@@ -5,6 +5,8 @@ namespace WConvert\Frontend;
 use WConvert\Assets\BuiltAsset;
 use WConvert\Optin\PublishedOptin;
 use WConvert\Optin\PublishedSet;
+use WConvert\Rest\Routes;
+use WConvert\Template\PolicyLink;
 
 defined('ABSPATH') || exit;
 
@@ -63,6 +65,15 @@ final class LoaderEnqueue
             return;
         }
 
+        // **The renderer owns the privacy-policy link, and this is render
+        // time** (ADR 0032). It is resolved here rather than baked into the
+        // published set so that moving the policy page corrects every running
+        // Optin without republishing one, and it is safe under the full-page
+        // cache because `get_privacy_policy_url()` is a site-wide setting
+        // identical for every visitor.
+        $policy = get_privacy_policy_url();
+        $entries = array_map(static fn (array $entry): array => PolicyLink::into($entry, $policy), $entries);
+
         $dist = WCONVERT_DIR . self::DIST;
 
         if (!is_file($dist)) {
@@ -85,12 +96,15 @@ final class LoaderEnqueue
         // The loader still must not ASSUME that — Autoptimize's force-in-head
         // moves it above the payload and strips its `defer`, which is why the
         // loader retries after DOMContentLoaded (ADR 0004).
-        add_action('wp_head', static function () use ($entries): void {
+        $captureUrl = rest_url(Routes::NAMESPACE . '/capture');
+
+        add_action('wp_head', static function () use ($entries, $captureUrl): void {
             // Not escaped, and correctly so: PayloadTag renders JSON with
             // JSON_HEX_TAG, which is the escaping this context needs. Running
             // esc_html() over it would escape the quotes and produce invalid
-            // JSON.
-            echo PayloadTag::render($entries);
+            // JSON. It escapes the capture URL itself, where the context is
+            // an attribute and esc_url is what that needs.
+            echo PayloadTag::render($entries, $captureUrl);
         }, 5);
     }
 

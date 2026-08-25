@@ -40,6 +40,7 @@ final class TemplateVocabulary
      * @param list<string> $tokens
      * @param list<string> $roles
      * @param list<string> $schemes
+     * @param list<string> $fields
      */
     private function __construct(
         private readonly array $layouts,
@@ -47,7 +48,41 @@ final class TemplateVocabulary
         private readonly array $tokens,
         private readonly array $roles,
         private readonly array $schemes,
+        private readonly array $fields,
     ) {
+    }
+
+    /**
+     * What a `field` node may capture.
+     *
+     * Read by the capture path, which has to require exactly the fields the
+     * renderer DREW — `resources/renderer/src/render.ts` skips a field whose
+     * name it has no kind for, and a server requiring an input the browser
+     * never rendered refuses every submission of a form that could not contain
+     * it. `tests/js/renderer-manifest-parity.test.ts` holds the renderer to
+     * this same list, so reading it here is what puts both sides on one
+     * source rather than on two that agree today.
+     *
+     * @return list<string>
+     */
+    public function fields(): array
+    {
+        return $this->fields;
+    }
+
+    /**
+     * The schemes an `<a>` may carry.
+     *
+     * Exposed for the same reason as {@see self::fields()}: the [[Consent
+     * Record]] is the wording exactly as SHOWN, and the renderer drops an
+     * href outside this list and renders no anchor at all. A record composed
+     * against a different list would assert wording nobody read.
+     *
+     * @return list<string>
+     */
+    public function schemes(): array
+    {
+        return $this->schemes;
     }
 
     public static function fromManifest(string $pluginDir = WCONVERT_DIR): self
@@ -85,6 +120,7 @@ final class TemplateVocabulary
             array_map('strval', array_keys(self::section($manifest, 'tokens'))),
             self::strings($manifest['roles'] ?? []),
             self::strings($manifest['schemes'] ?? []),
+            self::strings($manifest['fields'] ?? []),
         );
     }
 

@@ -6,8 +6,11 @@ use WConvert\Database\Connection;
 use WConvert\Database\Installer;
 use WConvert\Database\WpdbConnection;
 use WConvert\Frontend\LoaderEnqueue;
+use WConvert\Lead\LeadCapture;
+use WConvert\Lead\LeadRepository;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
+use WConvert\Rest\CaptureController;
 use WConvert\Rest\OptinController;
 use WConvert\Rest\TemplateController;
 use WConvert\Rules\RuleVocabulary;
@@ -87,6 +90,25 @@ final class CoreServiceProvider implements ServiceProvider
         );
 
         $container->register(
+            LeadRepository::class,
+            static fn (ServiceContainer $c): LeadRepository => new LeadRepository($c->resolve(Connection::class))
+        );
+
+        $container->register(
+            LeadCapture::class,
+            static fn (ServiceContainer $c): LeadCapture => new LeadCapture($c->resolve(LeadRepository::class))
+        );
+
+        $container->register(
+            CaptureController::class,
+            static fn (ServiceContainer $c): CaptureController => new CaptureController(
+                $c->resolve(PublishedSet::class),
+                $c->resolve(LeadCapture::class),
+                $c->resolve(TemplateVocabulary::class)
+            )
+        );
+
+        $container->register(
             TemplateController::class,
             static fn (ServiceContainer $c): TemplateController => new TemplateController(
                 $c->resolve(TemplateLibrary::class)
@@ -114,6 +136,12 @@ final class CoreServiceProvider implements ServiceProvider
 
         $container->resolve(OptinController::class)->hooks();
         $container->resolve(TemplateController::class)->hooks();
+        // Registered on every request, admin included, and NOT behind the
+        // `is_admin()` guard the loader sits behind. A REST route has to exist
+        // wherever `rest_api_init` fires or it does not exist at all — and the
+        // visitor posting a capture is on a page WordPress may serve through
+        // any entry point.
+        $container->resolve(CaptureController::class)->hooks();
 
         if (!is_admin()) {
             $container->resolve(LoaderEnqueue::class)->hooks();

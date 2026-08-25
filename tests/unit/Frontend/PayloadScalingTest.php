@@ -60,9 +60,12 @@ final class PayloadScalingTest extends TestCase
         return new RequestContext(path: '/pricing/');
     }
 
+    /** Where the capture endpoint is on this site, the same on every one of these pages. */
+    private const CAPTURE = 'https://example.test/wp-json/wconvert/v1/capture';
+
     private static function bytes(int $totalPublished): int
     {
-        return strlen(PayloadTag::render(Payload::forRequest(self::publishedSet($totalPublished), self::pricingPage())));
+        return strlen(PayloadTag::render(Payload::forRequest(self::publishedSet($totalPublished), self::pricingPage()), self::CAPTURE));
     }
 
     public function testOnlyTheMatchingOptinsReachThePage(): void
@@ -93,7 +96,7 @@ final class PayloadScalingTest extends TestCase
     public function testPayloadSizeGrowsWithTheOptinsThatDoMatch(): void
     {
         $set = self::publishedSet(100);
-        $one = strlen(PayloadTag::render(Payload::forRequest([$set[0]], self::pricingPage())));
+        $one = strlen(PayloadTag::render(Payload::forRequest([$set[0]], self::pricingPage()), self::CAPTURE));
 
         $this->assertGreaterThan($one, self::bytes(100));
     }

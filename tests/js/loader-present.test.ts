@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { INLINE_ANCHOR_ATTRIBUTE, templatePresenter } from '@loader/present';
-import { DOCUMENT_STYLE_ID } from '@renderer/mount';
+import { INLINE_ANCHOR_ATTRIBUTE, captureInto, templatePresenter } from '@loader/present';
+import { CAPTURE_ATTRIBUTE, PAYLOAD_ELEMENT_ID } from '@loader/payload';
+import { DOCUMENT_STYLE_ID, mount } from '@renderer/mount';
 import type { OptinControls, PayloadEntry } from '@loader/types';
 
 /**
@@ -45,6 +46,7 @@ const controls = (): OptinControls & { impressions: number; dismissals: number; 
 afterEach(() => {
   document.body.innerHTML = '';
   document.getElementById(DOCUMENT_STYLE_ID)?.remove();
+  vi.unstubAllGlobals();
 });
 
 describe('showing a popup', () => {
@@ -149,5 +151,123 @@ describe('an inline Optin', () => {
 
     expect(seen.impressions).toBe(0);
     expect(document.body.children).toHaveLength(0);
+  });
+});
+
+/**
+ * The join capture makes: a visitor submits, the [[Lead]] lands, and the Optin
+ * shows them the post-submit success step.
+ *
+ * Reached through `captureInto` and a real `mount()`, because a CLOSED shadow
+ * root is exactly as closed to a test as it is to a theme script — the handle
+ * the container hands back is the only way in, and it is the handle capture
+ * binds to.
+ */
+describe('a visitor submitting the form', () => {
+  const ENDPOINT = 'https://example.test/wp-json/wconvert/v1/capture';
+
+  const payloadElement = (endpoint: string | null) => {
+    const element = document.createElement('script');
+
+    element.id = PAYLOAD_ELEMENT_ID;
+    element.type = 'application/json';
+    element.textContent = '[]';
+
+    if (endpoint !== null) {
+      element.setAttribute(CAPTURE_ATTRIBUTE, endpoint);
+    }
+
+    document.body.appendChild(element);
+  };
+
+  const responding = (response: Partial<Response> & { json: () => Promise<unknown> }) => {
+    const fetchMock = vi.fn(
+      (url: string, init?: RequestInit) => Promise.resolve({ url, init, ...response } as unknown as Response),
+    );
+
+    vi.stubGlobal('fetch', fetchMock);
+
+    return fetchMock;
+  };
+
+  const submitted = async (mounted: { root: HTMLElement | null }) => {
+    mounted.root?.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  };
+
+  const wired = (seen: OptinControls) => {
+    const mounted = mount({ displayType: 'popup', template: TEMPLATE });
+
+    mounted.show();
+    captureInto(mounted, '01JQ0000000000000000000001', seen);
+
+    return mounted;
+  };
+
+  it('reports the Conversion and renders the terminal step once the Lead lands', async () => {
+    const seen = controls();
+
+    payloadElement(ENDPOINT);
+    responding({ ok: true, status: 201, json: () => Promise.resolve({ id: '01JQ' }) });
+
+    const mounted = wired(seen);
+
+    await submitted(mounted);
+
+    expect(seen.conversions).toBe(1);
+    // Terminal is structural — it is the last step (ADR 0025).
+    expect(mounted.root?.textContent).toContain('Check your inbox');
+    expect(mounted.root?.textContent).not.toContain('Join the list');
+    // Converting closes nothing and dismisses nothing. The four ways a visitor
+    // dismisses are one thing, and a Conversion is emphatically not one of
+    // them (CONTEXT.md, Dismissal).
+    expect(seen.dismissals).toBe(0);
+  });
+
+  it('posts to the endpoint the page carries, for the Optin that was shown', async () => {
+    payloadElement(ENDPOINT);
+
+    const fetchMock = responding({ ok: true, status: 201, json: () => Promise.resolve({}) });
+
+    await submitted(wired(controls()));
+
+    expect(fetchMock.mock.calls[0][0]).toBe(ENDPOINT);
+
+    expect(JSON.parse(String(fetchMock.mock.calls[0][1]?.body))).toMatchObject({
+      optin_id: '01JQ0000000000000000000001',
+    });
+  });
+
+  it('reports no Conversion and keeps the form on screen when the capture is refused', async () => {
+    const seen = controls();
+
+    payloadElement(ENDPOINT);
+    responding({
+      ok: false,
+      status: 422,
+      json: () => Promise.resolve({ code: 'x', message: 'Please tick the box.', data: { field: null } }),
+    });
+
+    const mounted = wired(seen);
+
+    await submitted(mounted);
+
+    expect(seen.conversions).toBe(0);
+    expect(mounted.root?.textContent).toContain('Join the list');
+    expect(mounted.root?.textContent).toContain('Please tick the box.');
+  });
+
+  it('posts nowhere when the page carries no endpoint, and reports nothing', async () => {
+    const seen = controls();
+
+    payloadElement(null);
+
+    const fetchMock = responding({ ok: true, status: 201, json: () => Promise.resolve({}) });
+
+    await submitted(wired(seen));
+
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(seen.conversions).toBe(0);
   });
 });

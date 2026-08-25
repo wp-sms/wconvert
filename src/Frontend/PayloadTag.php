@@ -22,9 +22,25 @@ final class PayloadTag
     public const ELEMENT_ID = 'wconvert-payload';
 
     /**
-     * @param list<array<string, mixed>> $entries
+     * Where the capture endpoint is on this site.
+     *
+     * It rides on the payload element as an attribute rather than inside the
+     * JSON, because it is one fact about the SITE and the JSON is a list of
+     * facts about Optins — repeating it per entry would pay for it as many
+     * times as the page has Optins, against a 2KB budget.
+     *
+     * The loader cannot compute it: it is a raw IIFE with no `wp-api-fetch`
+     * and no `wpApiSettings`, deliberately, because either would put a second
+     * script on the page (ADR 0004). And the full ROUTE is passed rather than
+     * a namespace root, so a route name is spelled in PHP and nowhere else.
      */
-    public static function render(array $entries): string
+    public const CAPTURE_ATTRIBUTE = 'data-capture';
+
+    /**
+     * @param list<array<string, mixed>> $entries
+     * @param string $captureUrl `rest_url()` for the capture route.
+     */
+    public static function render(array $entries, string $captureUrl): string
     {
         if ($entries === []) {
             return '';
@@ -42,8 +58,10 @@ final class PayloadTag
         }
 
         return sprintf(
-            '<script type="application/json" id="%s">%s</script>',
+            '<script type="application/json" id="%s" %s="%s">%s</script>',
             self::ELEMENT_ID,
+            self::CAPTURE_ATTRIBUTE,
+            esc_url($captureUrl),
             $json
         );
     }

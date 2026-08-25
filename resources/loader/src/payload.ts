@@ -17,6 +17,31 @@ import type { PayloadEntry } from './types';
 
 export const PAYLOAD_ELEMENT_ID = 'wconvert-payload';
 
+/**
+ * Where the capture endpoint is on this site.
+ *
+ * The reasoning for it being an attribute rather than a JSON field is written
+ * once, on `PayloadTag::CAPTURE_ATTRIBUTE`, which is the side that prints it.
+ * What matters here: the loader cannot compute this. It is a raw IIFE with no
+ * `wp-api-fetch` and no `wpApiSettings`, deliberately (ADR 0004), so the full
+ * route arrives from PHP and a route name is never spelled in TypeScript.
+ */
+export const CAPTURE_ATTRIBUTE = 'data-capture';
+
+/**
+ * Where to post a capture, or null where this page carries nowhere.
+ *
+ * Read on demand rather than threaded through `boot`, because it is needed at
+ * the moment an Optin is SHOWN and the element it lives on is the one the
+ * payload was already read from. Null is a real answer: an optimizer that
+ * rewrote the tag, or a page that has no payload at all.
+ */
+export function captureEndpoint(): string | null {
+  const endpoint = document.getElementById(PAYLOAD_ELEMENT_ID)?.getAttribute(CAPTURE_ATTRIBUTE) ?? '';
+
+  return endpoint === '' ? null : endpoint;
+}
+
 export function readPayload(): readonly PayloadEntry[] | null {
   const element = document.getElementById(PAYLOAD_ELEMENT_ID);
 

@@ -14,6 +14,16 @@ fine print — expresses it as **structure rather than markup**:
 The renderer splits on the placeholder and constructs the `<a>` itself. The href
 is scheme-validated to `http`, `https` or `mailto` in PHP at write.
 
+*Completed by [#24](https://github.com/navidkashani/wconvert/issues/24): the
+placeholder is not decoration, it is **the link's only place**. A sentence
+carrying no `%s` renders no anchor at all, exactly as a link with no resolved
+href renders none — the renderer originally appended the label to the end of the
+sentence instead, which produced a word glued to the last one. That mattered
+enough to correct because the [[Consent Record]] stores the sentence exactly as
+shown, so an evidence string is what a rendering glitch would have become. And
+only the **first** `%s` is the link: a sentence carries one link, so a second
+placeholder stays literal text.*
+
 *Amended by
 [ADR 0032](0032-consent-capture-is-first-class-in-the-template.md): a Playbook
 supplies the consent and fine-print **wording**, never the privacy-policy link.

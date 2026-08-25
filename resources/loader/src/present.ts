@@ -1,5 +1,8 @@
 import type { OptinControls, PayloadEntry, Presenter } from './types';
+import type { Mounted } from '@renderer/mount';
 import { mount } from '@renderer/mount';
+import { bindCapture } from './capture';
+import { captureEndpoint } from './payload';
 import { isOverlay } from './decide';
 
 /**
@@ -57,6 +60,8 @@ export const templatePresenter: Presenter = {
 
     mounted.show();
 
+    captureInto(mounted, entry.id, controls);
+
     // **An Impression has two moments and only a renderer can tell them
     // apart.** For the three overlays it is the moment it is shown, because
     // they render in the top layer and being rendered IS being on screen. For
@@ -72,6 +77,40 @@ export const templatePresenter: Presenter = {
     whenInViewport(anchor, () => controls.impression());
   },
 };
+
+/**
+ * Wire a mounted Optin's form to the capture endpoint.
+ *
+ * **Capture binds to the handle the container hands back**, not to a form it
+ * goes looking for. A closed shadow root is exactly as closed to this module
+ * as it is to a theme script, and the rendered root is the only way in — which
+ * is also why this is exported: it is the seam a test reaches, and the seam
+ * Pro's own presenter reaches when it composes its two containers (ADR 0028).
+ *
+ * **The Conversion is the capture succeeding**, which is why it is reported
+ * from here and not from the container: a submit-metered Optin converts when
+ * the [[Lead]] lands, and the container cannot know whether it did
+ * (ADR 0025). A click-metered Optin reports its own through `onConvert` and
+ * never reaches this at all — its single step holds no form, so nothing it
+ * renders can submit.
+ */
+export function captureInto(mounted: Mounted, optinId: string, controls: OptinControls): void {
+  if (mounted.root === null) {
+    return;
+  }
+
+  bindCapture(mounted.root, {
+    optinId,
+    endpoint: captureEndpoint(),
+    onCaptured: () => {
+      controls.convert();
+      // **Terminal is structural — it is the LAST step** — rather than a flag,
+      // so there is no second spelling of the same fact to keep in step. A
+      // step index past the end renders an empty root, so the floor matters.
+      mounted.showStep(Math.max(mounted.steps - 1, 0));
+    },
+  });
+}
 
 function anchorFor(id: string): Element | null {
   try {

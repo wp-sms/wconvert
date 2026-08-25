@@ -38,6 +38,24 @@ The capture endpoint is public, so client-side validation is decoration: the
 REST handler rejects a submission whose Optin declares a `consent` node and whose
 payload lacks it.
 
+*Completed by [#24](https://github.com/navidkashani/wconvert/issues/24) on the
+two questions building it raised.*
+
+*First: **the check keys off the node's PRESENCE, never its wording.** A snapshot
+carries [[Slot Role]]s and no words, so an Optin can hold a `consent` node whose
+`consent_text` nobody has filled in yet — and keying enforcement off the text
+would make exactly that Optin render a required checkbox the browser enforces and
+the server does not, which is worse than either alone. Declaring the node is the
+declaration; the wording is the evidence, and missing evidence is a copy gap for
+the merchant to close rather than a licence to stop asking.*
+
+*Second: **consent must be the JSON boolean `true` and nothing else.** Not a
+truthy string, and not a schema-coerced one — WordPress's own
+`rest_sanitize_value_from_schema` turns `"true"`, `"on"` and `"1"` into `true`,
+which is why the route declares no type for the parameter and reads the posted
+body raw. A lenient read is an optional consent checkbox by another name, and the
+moment a string is read for truth, `"false"` asserts consent.*
+
 ## A Playbook supplies the wording, never the link
 
 Generic consent copy is copy like any other and a Playbook carries it. The
@@ -48,6 +66,18 @@ Same reasoning that keeps [[Destination]] ids out of Playbooks — a Playbook ca
 express nothing site-local — and it makes the link correct on every site without
 any entry knowing which site it is on. **No policy set means the link node
 renders nothing**, never a dead `#`.
+
+*Completed by [#24](https://github.com/navidkashani/wconvert/issues/24) on how
+the renderer knows WHICH link to resolve: **a link that declares a label and
+names no destination is the site-resolved one.** One rule, and no table of node
+types or [[Slot Role]]s to keep in step — a link the merchant gave an href is a
+link they chose, scheme-validated at write under
+[ADR 0013](0013-playbook-copy-carries-no-markup.md); a link with a label and
+nowhere to go is asking for the one destination only the site can name. It is
+resolved **per request** rather than baked into the published set, so moving the
+policy page corrects every running Optin without republishing one, and that is
+safe under the full-page cache because `get_privacy_policy_url()` is site-wide
+and identical for every visitor.*
 
 ## The proof is a snapshot, and it needs no storage
 
