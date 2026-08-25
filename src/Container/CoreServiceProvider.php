@@ -6,16 +6,21 @@ use WConvert\Database\Connection;
 use WConvert\Database\Installer;
 use WConvert\Database\WpdbConnection;
 use WConvert\Frontend\LoaderEnqueue;
+use WConvert\Goal\GoalRegistry;
 use WConvert\Lead\LeadCapture;
 use WConvert\Lead\LeadCsv;
 use WConvert\Lead\LeadLog;
 use WConvert\Lead\LeadRepository;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
+use WConvert\Playbook\PlaybookLibrary;
+use WConvert\Playbook\Prefill;
 use WConvert\Rest\BeaconController;
 use WConvert\Rest\CaptureController;
+use WConvert\Rest\GoalController;
 use WConvert\Rest\LeadController;
 use WConvert\Rest\OptinController;
+use WConvert\Rest\PlaybookController;
 use WConvert\Rest\RateLimit;
 use WConvert\Rest\TemplateController;
 use WConvert\Retention\RetentionPeriod;
@@ -26,6 +31,9 @@ use WConvert\Storage\TransientStore;
 use WConvert\Storage\WpOptionStore;
 use WConvert\Storage\WpTransientStore;
 use WConvert\Support\ProPresence;
+use WConvert\Support\SitePresence;
+use WConvert\Support\WpProPresence;
+use WConvert\Support\WpSitePresence;
 use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
 
@@ -40,7 +48,11 @@ final class CoreServiceProvider implements ServiceProvider
 {
     public function register(ServiceContainer $container): void
     {
-        $container->register(ProPresence::class, static fn (): ProPresence => new ProPresence());
+        $container->register(ProPresence::class, static fn (): ProPresence => new WpProPresence());
+        // Beside it rather than folded into it: a missing tier is buyable
+        // from us and a missing plugin is not, and collapsing the two shows a
+        // Pro customer an advertisement for Pro (ADR 0026).
+        $container->register(SitePresence::class, static fn (): SitePresence => new WpSitePresence());
 
         $container->register(Connection::class, static fn (): Connection => new WpdbConnection());
 
@@ -93,13 +105,63 @@ final class CoreServiceProvider implements ServiceProvider
             static fn (ServiceContainer $c): LoaderEnqueue => new LoaderEnqueue($c->resolve(PublishedSet::class))
         );
 
+        // The Goal registry is an enum plus the two facts that resolve its
+        // Availability, so there is nothing to read off disk and nothing to
+        // cache (ADR 0019's fifth refusal).
+        $container->register(
+            GoalRegistry::class,
+            static fn (ServiceContainer $c): GoalRegistry => new GoalRegistry(
+                $c->resolve(ProPresence::class),
+                $c->resolve(SitePresence::class)
+            )
+        );
+
+        // Bundled Playbooks are PHP files returning arrays, read once here for
+        // the same reason the two manifests are — the alternative is every
+        // request that touches the gallery paying for the directory
+        // (ADR 0013). Validation happens on the way in, and only here.
+        $container->register(
+            PlaybookLibrary::class,
+            static fn (ServiceContainer $c): PlaybookLibrary => PlaybookLibrary::fromDirectory(
+                $c->resolve(TemplateLibrary::class),
+                $c->resolve(TemplateVocabulary::class),
+                $c->resolve(RuleVocabulary::class)
+            )
+        );
+
+        $container->register(
+            Prefill::class,
+            static fn (ServiceContainer $c): Prefill => new Prefill(
+                $c->resolve(PlaybookLibrary::class),
+                $c->resolve(TemplateLibrary::class),
+                $c->resolve(TemplateVocabulary::class)
+            )
+        );
+
         $container->register(
             OptinController::class,
             static fn (ServiceContainer $c): OptinController => new OptinController(
                 $c->resolve(OptinRepository::class),
                 $c->resolve(RuleVocabulary::class),
                 $c->resolve(TemplateVocabulary::class),
-                $c->resolve(TemplateLibrary::class)
+                $c->resolve(TemplateLibrary::class),
+                $c->resolve(GoalRegistry::class)
+            )
+        );
+
+        $container->register(
+            GoalController::class,
+            static fn (ServiceContainer $c): GoalController => new GoalController(
+                $c->resolve(GoalRegistry::class)
+            )
+        );
+
+        $container->register(
+            PlaybookController::class,
+            static fn (ServiceContainer $c): PlaybookController => new PlaybookController(
+                $c->resolve(PlaybookLibrary::class),
+                $c->resolve(GoalRegistry::class),
+                $c->resolve(Prefill::class)
             )
         );
 
@@ -198,6 +260,8 @@ final class CoreServiceProvider implements ServiceProvider
 
         $container->resolve(OptinController::class)->hooks();
         $container->resolve(TemplateController::class)->hooks();
+        $container->resolve(GoalController::class)->hooks();
+        $container->resolve(PlaybookController::class)->hooks();
         // Registered on every request, admin included, and NOT behind the
         // `is_admin()` guard the loader sits behind. A REST route has to exist
         // wherever `rest_api_init` fires or it does not exist at all — and the

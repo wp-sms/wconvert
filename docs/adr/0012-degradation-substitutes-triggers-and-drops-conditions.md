@@ -85,6 +85,15 @@ working.
 - **Prefill bakes the substitution into `config` and records a `degraded_from`
   marker beside the substituted rule.** No new storage — it rides an
   already-approved blob.
+  *Half-built by [#27](https://github.com/navidkashani/wconvert/issues/27): the
+  call site now exists ([`Prefill`](../../src/Playbook/Prefill.php)) and does no
+  substituting. What a Playbook's rules get is copied, which is correct while
+  free's bundled library names only free's own rules —
+  `tests/unit/Playbook/BundledPlaybooksTest.php` holds that line. The resolver
+  and the `degraded_from` marker are still
+  [#33](https://github.com/navidkashani/wconvert/issues/33)'s, together with the
+  manifest's substitution property, because a field nothing reads is a fourth
+  hand-maintained list with extra steps.*
 - **An upgrade never silently re-upgrades a running Optin.** The marker anchors a
   one-click offer in the editor instead. Changing a live popup's behaviour on a
   licence event with no human in the loop is the same class of surprise #3 made

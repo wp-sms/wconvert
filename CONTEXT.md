@@ -358,7 +358,11 @@ A Playbook cannot name anything that only exists on a particular site: no post o
 term ids in its targeting, no [[Destination]] ids, and no privacy-policy link —
 the consent *wording* is generic copy a Playbook supplies like any other, but the
 link is resolved by the renderer from the site's own configured policy, so it is
-correct everywhere without any Playbook knowing where it is. A destination hint names
+correct everywhere without any Playbook knowing where it is. Which is total for
+links rather than a rule about one of them: **a Playbook's copy carries a link
+label and never an `href` at all**, because a destination is a page on one
+particular site and a link with a label and no destination is precisely how a
+generic entry asks the site for the one it cannot know. A destination hint names
 Destination *types* and the [[Lead]] fields the Playbook needs, and prefill never
 binds a Destination invisibly.
 
@@ -386,6 +390,13 @@ declares which Roles it offers, a [[Playbook]] supplies copy against them, and
 neither needs to know the other's internals. A Role a Template does not declare is
 dropped when a Playbook prefills it — a case prevented at authoring time, since a
 Playbook's default Template is validated to declare every Role it fills.
+
+A field's Roles are **derived rather than declared**: they are named for what it
+captures, so a `field` capturing an email offers `email_label` and
+`email_placeholder` and cannot offer the phone's. That is why a field node carries
+no Role of its own while six of the vocabulary's Roles are named for fields, and
+it is what makes the field kind part of the *design* — a Template capturing an
+email cannot serve the SMS [[Goal]] however its words read.
 
 ### Destination
 

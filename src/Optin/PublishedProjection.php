@@ -24,6 +24,18 @@ defined('ABSPATH') || exit;
 final class PublishedProjection
 {
     /**
+     * Keys that say where an Optin came from, and are read by nothing that
+     * renders it.
+     *
+     * Both are ids into a registry the front end never consults: an Optin
+     * takes a COPY of its [[Template]] and a COPY of its [[Playbook]]'s words,
+     * so improving either entry restyles nothing and deleting either leaves
+     * the Optin working. What is left for an id to do on the page is nothing
+     * at all, and it is bytes on every page view.
+     */
+    private const PROVENANCE = ['template_id', 'playbook_id'];
+
+    /**
      * @param iterable<array<string, mixed>> $rows
      * @return list<array<string, mixed>>
      */
@@ -86,6 +98,17 @@ final class PublishedProjection
 
         $targeting = $published['targeting'] ?? [];
         unset($published['targeting']);
+
+        // PROVENANCE IS STRIPPED. `template_id` and `playbook_id` record where
+        // an Optin CAME FROM; neither is consulted at render time and neither
+        // ever will be, because the Optin holds its own copy of both the
+        // design and the words (ADR 0010, CONTEXT.md Playbook). ADR 0010 says
+        // `template_id` "never appears in the payload" — until #27 that was a
+        // claim rather than a fact, and it is paid for on every page view of
+        // every matching page, against a 2KB budget.
+        foreach (self::PROVENANCE as $key) {
+            unset($published[$key]);
+        }
 
         // The flat list is CONSUMED, not shipped beside its own partition:
         // two spellings of one rule set in one payload is a second source of

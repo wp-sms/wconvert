@@ -37,10 +37,18 @@ final class TemplateSnapshotTest extends TestCase
             'name' => 'Starter',
             'display_type' => 'popup',
             'tokens' => ['bg' => '#ffffff'],
-            'tree' => ['steps' => [['type' => 'stack', 'children' => [
-                ['type' => 'heading', 'role' => 'headline', 'text' => $headline],
-                ['type' => 'field', 'name' => 'email', 'required' => true],
-            ]]]],
+            // Submit-metered, so two steps and exactly one converting act —
+            // the shape TemplateLibrary registers (ADR 0020, ADR 0025).
+            'tree' => ['steps' => [
+                ['type' => 'stack', 'children' => [
+                    ['type' => 'heading', 'role' => 'headline', 'text' => $headline],
+                    ['type' => 'field', 'name' => 'email', 'required' => true],
+                    ['type' => 'button', 'role' => 'cta_label', 'label' => 'Join', 'action' => 'submit'],
+                ]],
+                ['type' => 'stack', 'children' => [
+                    ['type' => 'heading', 'role' => 'success_headline', 'text' => 'You are on the list'],
+                ]],
+            ]],
         ]));
     }
 
@@ -143,7 +151,12 @@ final class TemplateSnapshotTest extends TestCase
             'id' => 'second',
             'display_type' => 'popup',
             'tokens' => ['bg' => '#000000'],
-            'tree' => ['steps' => [['type' => 'stack', 'children' => [['type' => 'image', 'src' => '/x.png', 'alt' => '']]]]],
+            // Click-metered, so ONE step: the click navigates the visitor
+            // away and there is no success state left to render (ADR 0025).
+            'tree' => ['steps' => [['type' => 'stack', 'children' => [
+                ['type' => 'image', 'src' => '/x.png', 'alt' => ''],
+                ['type' => 'button', 'role' => 'cta_label', 'label' => 'Shop', 'action' => 'link', 'href' => 'https://x.test'],
+            ]]]],
         ]));
 
         $config = $this->library()->snapshotInto(['template_id' => 'starter']);

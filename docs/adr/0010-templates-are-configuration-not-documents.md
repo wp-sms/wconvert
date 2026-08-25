@@ -74,8 +74,26 @@ third-party ones. Under configuration they are properties of the one renderer.
   a template does not silently restyle a live popup. This is what makes #2's word
   exact — `template_id` is provenance, and an Optin renders identically if the entry
   is deleted.
+  *Enforced by [#27](https://github.com/navidkashani/wconvert/issues/27), which is
+  also where the header's "never appears in the payload" stopped being a claim.
+  `template_id` was riding to the browser on every matching page view against a
+  2KB budget, because the projection shipped `published_config` whole.
+  [`PublishedProjection`](../../src/Optin/PublishedProjection.php) now strips it
+  and `playbook_id` beside it — [[Playbook]] provenance works the same way and
+  arrived the same way, and neither is read by anything that renders.*
 - **The renderer skips unknown nodes rather than throwing**, so a snapshot outlives a
   vocabulary change. Same failure posture #4 set for an unavailable Destination.
+- **Registration is where a Template is refused**, on the two questions a renderer
+  cannot answer without showing a blank popup. *Added by
+  [#27](https://github.com/navidkashani/wconvert/issues/27):
+  [`TemplateLibrary`](../../src/Template/TemplateLibrary.php) rejects an entry
+  offering two converting acts or none
+  ([ADR 0020](0020-conversions-are-interpreted-at-read.md)), and one whose step
+  count disagrees with its act — two for a submit, one for a click
+  ([ADR 0025](0025-cart-recovery-captures-nothing.md)). Recorded rather than
+  thrown, because one bad entry must not take the gallery down; and rather than
+  dropped in silence, because an entry that simply vanished looks exactly like a
+  gallery that failed to load.*
 - **Authoring is the settings panel plus a dev-only export**, not hand-written JSON.
   That makes the vocabulary self-testing: every shipped template is provably
   expressible in the panel, so we never ship a design the user cannot adjust.

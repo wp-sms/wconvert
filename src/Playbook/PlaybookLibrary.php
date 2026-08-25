@@ -1,0 +1,291 @@
+<?php
+
+namespace WConvert\Playbook;
+
+use WConvert\Goal\Goal;
+use WConvert\Rules\RuleVocabulary;
+use WConvert\Support\Rejection;
+use WConvert\Support\RejectionReason;
+use WConvert\Template\ConvertingAct;
+use WConvert\Template\SlotRoles;
+use WConvert\Template\TemplateLibrary;
+use WConvert\Template\TemplateVocabulary;
+
+defined('ABSPATH') || exit;
+
+/**
+ * The [[Playbook]] registry — and **the whole of Playbook validation**.
+ *
+ * ============================================================================
+ * VALIDATION HAPPENS AT REGISTRATION, NEVER AT RUNTIME.
+ * ============================================================================
+ * These checks replace runtime warnings by design, so this is the only place
+ * the guarantee lives. Registration is the last moment an author is present: a
+ * Playbook is data and third parties add them, so a rule enforced at prefill
+ * reaches its author as a merchant's bug report about a popup with no
+ * headline.
+ *
+ * That is the same pattern ADR 0010 set for Templates and ADR 0020 restated
+ * for the two-converting-acts case, and it is why nothing downstream —
+ * {@see Prefill}, the gallery, the renderer — re-asks any of these questions.
+ *
+ * **Bundled entries are PHP files returning arrays; remote ones are JSON**
+ * (ADR 0013). A Playbook is nothing but words and `wp i18n make-pot` cannot
+ * see a JSON string, so a JSON bundled registry ships an English-only library;
+ * remote entries stay JSON because remote PHP is Guideline 8 remote code
+ * execution with no argument available. **The remote fetch is designed and not
+ * built in v1** — a decoded remote entry is an array, so it enters through
+ * {@see self::fromEntries()} exactly as a bundled one does, and what is
+ * missing is the transport rather than a second normaliser.
+ *
+ * **The library carries no Availability of its own.** A Playbook serves one
+ * Goal and the gallery is only ever reached *through* a Goal the merchant was
+ * able to choose, so the question was already answered one level up
+ * ({@see \WConvert\Goal\GoalRegistry}). A premium [[Display Type]] shown as an
+ * upsell (ADR 0012) needs a Playbook naming a Template free does not ship,
+ * which arrives with those Templates.
+ *
+ * @since 0.1.0
+ */
+final class PlaybookLibrary
+{
+    public const PATH = 'resources/playbooks';
+
+    /** What a destination hint may say. Types and fields — never an id. */
+    private const HINT_KEYS = ['types', 'fields'];
+
+    /**
+     * @param array<string, Playbook> $playbooks
+     * @param list<Rejection> $rejections
+     */
+    private function __construct(
+        private readonly array $playbooks,
+        private readonly array $rejections,
+    ) {
+    }
+
+    /**
+     * The bundled library, off disk.
+     *
+     * Each file `return`s an array and the words inside it are wrapped in
+     * `__()`, so `wp i18n make-pot` can see them — which is the whole reason
+     * bundled entries are PHP rather than the JSON a Template ships as
+     * (ADR 0013).
+     */
+    public static function fromDirectory(
+        TemplateLibrary $templates,
+        TemplateVocabulary $vocabulary,
+        RuleVocabulary $rules,
+        string $pluginDir = WCONVERT_DIR
+    ): self {
+        $files = glob(rtrim($pluginDir, '/') . '/' . self::PATH . '/*.php');
+        $entries = [];
+
+        foreach ($files === false ? [] : $files as $file) {
+            $entry = is_readable($file) ? require $file : null;
+
+            if (is_array($entry)) {
+                /** @var array<string, mixed> $entry */
+                $entries[] = $entry;
+            }
+        }
+
+        return self::fromEntries($entries, $templates, $vocabulary, $rules);
+    }
+
+    /**
+     * Normalise and validate a set of entries — the one door in.
+     *
+     * @param iterable<array<string, mixed>> $entries
+     */
+    public static function fromEntries(
+        iterable $entries,
+        TemplateLibrary $templates,
+        TemplateVocabulary $vocabulary,
+        RuleVocabulary $rules
+    ): self {
+        $playbooks = [];
+        $rejections = [];
+
+        foreach ($entries as $entry) {
+            $id = is_string($entry['id'] ?? null) ? $entry['id'] : '';
+            $reason = self::refuse($entry, $templates, $vocabulary, $rules);
+
+            if ($reason !== null) {
+                $rejections[] = new Rejection($id, $reason);
+                continue;
+            }
+
+            $playbooks[$id] = self::normalize($entry, $templates);
+        }
+
+        ksort($playbooks);
+
+        return new self($playbooks, $rejections);
+    }
+
+    /**
+     * @return array<string, Playbook>
+     */
+    public function all(): array
+    {
+        return $this->playbooks;
+    }
+
+    /**
+     * The gallery, **filtered on Goal only**.
+     *
+     * Display Type is not the primary axis of the product: users arrive via a
+     * Goal, and the type is prefilled by the chosen Playbook — selectable as
+     * an override and a filter afterwards, never the first question asked
+     * (CONTEXT.md, Display Type).
+     *
+     * @return list<Playbook>
+     */
+    public function servicing(Goal $goal): array
+    {
+        return array_values(array_filter(
+            $this->playbooks,
+            static fn (Playbook $playbook): bool => $playbook->goal === $goal
+        ));
+    }
+
+    public function find(string $id): ?Playbook
+    {
+        return $this->playbooks[$id] ?? null;
+    }
+
+    /**
+     * @return list<Rejection>
+     */
+    public function rejections(): array
+    {
+        return $this->rejections;
+    }
+
+    /**
+     * Why this entry may not be registered, or null.
+     *
+     * @param array<string, mixed> $entry
+     */
+    private static function refuse(
+        array $entry,
+        TemplateLibrary $templates,
+        TemplateVocabulary $vocabulary,
+        RuleVocabulary $rules
+    ): ?RejectionReason {
+        if (!is_string($entry['id'] ?? null) || $entry['id'] === '') {
+            return RejectionReason::Malformed;
+        }
+
+        $goal = is_string($entry['goal'] ?? null) ? Goal::tryFrom($entry['goal']) : null;
+        $template = is_string($entry['template_id'] ?? null) ? $templates->find($entry['template_id']) : null;
+
+        if ($goal === null || $template === null) {
+            return RejectionReason::UnknownReference;
+        }
+
+        // The Goal declares the metric that counts it, and a registered
+        // Template offers exactly one converting act. Paired the wrong way
+        // round the Optin reports nothing at all: the Goal counts a submission
+        // and the design offers a click. Same reasoning as the two-act
+        // rejection (ADR 0020), one layer up where the pairing is made.
+        if (ConvertingAct::offeredIn($template['tree']) !== [$goal->convertingAct()]) {
+            return RejectionReason::MetricMismatch;
+        }
+
+        $copy = is_array($entry['copy'] ?? null) ? $entry['copy'] : [];
+
+        if (self::namesSomethingSiteLocal($entry, $copy, $rules)) {
+            return RejectionReason::SiteLocalReference;
+        }
+
+        // Every Role it fills, against every Role its default Template
+        // declares. A Role the Template does not declare is dropped on prefill
+        // and nobody is told (CONTEXT.md, Slot Role) — so it is caught here,
+        // where there is still an author to tell.
+        $declared = SlotRoles::declaredIn($template['tree'], $vocabulary);
+
+        return array_diff(array_keys($copy), $declared) === [] ? null : RejectionReason::UnfilledSlotRole;
+    }
+
+    /**
+     * **A Playbook can express nothing site-local.**
+     *
+     * Three shapes, and the reasoning is one: an entry is written once and
+     * runs on every install, so anything naming a row on one of them is wrong
+     * everywhere else.
+     *
+     * - **A post or term id in the targeting.** Which types those are is read
+     *   off the rule manifest's `value` rather than listed here — an id is an
+     *   id, and `post_type` and `path_glob` mean the same thing everywhere.
+     * - **A [[Destination]] id.** A hint names Destination *types* and the
+     *   [[Lead]] fields the Playbook needs; prefill never binds a Destination
+     *   invisibly, so anything beyond those two keys is refused rather than
+     *   ignored.
+     * - **A privacy-policy link.** A link that declares a label and names no
+     *   destination is asking for the one destination only the site can name,
+     *   and the renderer resolves it from `get_privacy_policy_url()`
+     *   (ADR 0032). A Playbook supplying the href instead is naming a page on
+     *   one particular site — so a Playbook's copy carries labels and never
+     *   hrefs.
+     *
+     * @param array<string, mixed> $entry
+     * @param array<string, mixed> $copy
+     */
+    private static function namesSomethingSiteLocal(array $entry, array $copy, RuleVocabulary $rules): bool
+    {
+        $targeting = is_array($entry['targeting'] ?? null) ? $entry['targeting'] : [];
+
+        foreach (['include', 'exclude'] as $list) {
+            foreach (is_array($targeting[$list] ?? null) ? $targeting[$list] : [] as $rule) {
+                $type = is_array($rule) && is_string($rule['type'] ?? null) ? $rule['type'] : '';
+
+                if (str_ends_with((string) $rules->valueOf($type), '_id')) {
+                    return true;
+                }
+            }
+        }
+
+        $hint = is_array($entry['destination_hint'] ?? null) ? $entry['destination_hint'] : [];
+
+        if (array_diff(array_keys($hint), self::HINT_KEYS) !== []) {
+            return true;
+        }
+
+        foreach ($copy as $words) {
+            if (is_array($words) && is_array($words['link'] ?? null) && array_key_exists('href', $words['link'])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * One validated entry, in the one in-memory shape.
+     *
+     * @param array<string, mixed> $entry
+     */
+    private static function normalize(array $entry, TemplateLibrary $templates): Playbook
+    {
+        $templateId = (string) $entry['template_id'];
+        $template = (array) $templates->find($templateId);
+
+        return new Playbook(
+            (string) $entry['id'],
+            is_string($entry['name'] ?? null) ? $entry['name'] : (string) $entry['id'],
+            (Goal::from((string) $entry['goal'])),
+            $templateId,
+            (string) ($template['display_type'] ?? 'popup'),
+            is_array($entry['copy'] ?? null) ? $entry['copy'] : [],
+            array_values(array_filter(
+                is_array($entry['rules'] ?? null) ? $entry['rules'] : [],
+                'is_array'
+            )),
+            is_array($entry['targeting'] ?? null) ? $entry['targeting'] : [],
+            is_array($entry['destination_hint'] ?? null) ? $entry['destination_hint'] : [],
+            is_string($entry['notes'] ?? null) ? $entry['notes'] : '',
+        );
+    }
+}

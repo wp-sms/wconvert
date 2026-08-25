@@ -24,9 +24,11 @@ final class RuleVocabulary
 {
     /**
      * @param array<string, RuleKind> $kinds Rule type => its declared kind.
+     * @param array<string, string> $values Rule type => what its value IS, where it takes one.
      */
     private function __construct(
         private readonly array $kinds,
+        private readonly array $values = [],
     ) {
     }
 
@@ -41,6 +43,7 @@ final class RuleVocabulary
     public static function fromArray(array $manifest): self
     {
         $kinds = [];
+        $values = [];
 
         foreach ($manifest as $axis) {
             if (!is_array($axis)) {
@@ -52,18 +55,41 @@ final class RuleVocabulary
                     ? RuleKind::tryFrom($entry['kind'])
                     : null;
 
-                if ($kind !== null) {
-                    $kinds[(string) $type] = $kind;
+                if ($kind === null) {
+                    continue;
+                }
+
+                $kinds[(string) $type] = $kind;
+
+                if (is_array($entry) && is_string($entry['value'] ?? null)) {
+                    $values[(string) $type] = $entry['value'];
                 }
             }
         }
 
-        return new self($kinds);
+        return new self($kinds, $values);
     }
 
     public function kindOf(string $type): ?RuleKind
     {
         return $this->kinds[$type] ?? null;
+    }
+
+    /**
+     * What a rule type's value IS — `post_id`, `post_type`, `path_glob`,
+     * `seconds` — or null where the type takes none.
+     *
+     * Read by [[Playbook]] registration, which refuses an entry naming
+     * anything only one site has. Which types those are follows from this
+     * field: `post_id` and `term_id` are ids, `post_type` and `path_glob`
+     * mean the same thing on every install. Listing them again beside the
+     * validator would be the fifth hand-maintained cross-cutting list this
+     * project has refused (ADR 0019), and the one most likely to be forgotten
+     * the day a sixth targeting type lands.
+     */
+    public function valueOf(string $type): ?string
+    {
+        return $this->values[$type] ?? null;
     }
 
     /**

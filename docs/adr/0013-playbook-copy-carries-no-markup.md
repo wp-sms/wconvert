@@ -78,13 +78,34 @@ the same move ADR 0010 made on templates, applied one layer up.
   missed in practice; not worth an `innerHTML` sink up front.
 - **Playbooks never supply images**, for the adjacent reason plus bytes and
   licensing. A template's image slot keeps the template's own asset or stays empty.
-- **The residual `href` exposure is bounded and stated**: a remote Playbook can
+- **~~The residual `href` exposure is bounded and stated~~**: a remote Playbook can
   render a link to an arbitrary URL on the merchant's site. Scheme validation
   closes `javascript:`; it does not stop a link to a bad destination. Accepted
   rather than solved with a two-tier sanitiser for bundled versus remote entries,
   which is more code and a second path to get wrong.
+  *Closed by [#27](https://github.com/navidkashani/wconvert/issues/27), and by
+  the rule directly above rather than by a sanitiser. **A Playbook's copy carries
+  a link LABEL and never an `href`**, refused at registration
+  ([`PlaybookLibrary`](../../src/Playbook/PlaybookLibrary.php)). This ADR's own
+  amendment already made the destination the site's to supply for the case that
+  needs one, and [ADR 0025](0025-cart-recovery-captures-nothing.md) reused the
+  shape for the cart URL — so an entry carrying an href is naming a page on one
+  particular site, which is the thing a Playbook may not do at all. The
+  arbitrary-URL exposure therefore has no shape left to arrive in, and the
+  two-tier sanitiser stays refused because there is now nothing for it to
+  sanitise. The scheme validation is unchanged and still applies at write, to
+  the href a MERCHANT types.*
 - **Bundled Playbooks ship as PHP files returning arrays; remote ones as JSON.**
   A Playbook is nothing but words and `wp i18n make-pot` cannot see a JSON string,
   so a JSON bundled registry ships an English-only library. Remote entries stay
   JSON and untranslated because remote PHP is Guideline 8 remote code execution
   with no argument available. Both normalise to one in-memory shape.
+  *Built by [#27](https://github.com/navidkashani/wconvert/issues/27):
+  [`resources/playbooks/*.php`](../../resources/playbooks/), normalised by
+  [`PlaybookLibrary::fromEntries()`](../../src/Playbook/PlaybookLibrary.php) —
+  which is the one door in, so **the remote fetch is designed and not built**
+  rather than designed and duplicated. A decoded remote entry is an array and
+  goes through the same call; what is missing is the transport.
+  `tests/unit/Playbook/BundledPlaybooksTest.php` asserts every shipped word is
+  reachable by `make-pot`, which is the claim this bullet rests on and had
+  nothing holding it.*

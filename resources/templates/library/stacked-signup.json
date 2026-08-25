@@ -1,0 +1,47 @@
+{
+  "id": "stacked-signup",
+  "name": "Stacked signup",
+  "display_type": "popup",
+  "tokens": {
+    "bg": "#ffffff",
+    "fg": "#0f172a",
+    "muted": "#64748b",
+    "accent": "#0ea5e9",
+    "accent-fg": "#ffffff",
+    "border": "#e2e8f0",
+    "heading-size": "1.5rem",
+    "radius": "0.5rem",
+    "pad": "1.75rem",
+    "gap": "0.875rem",
+    "width": "24rem",
+    "align": "start",
+    "backdrop": "rgba(15, 23, 42, 0.45)"
+  },
+  "tree": {
+    "steps": [
+      {
+        "type": "stack",
+        "children": [
+          { "type": "heading", "role": "headline", "text": "Text me the drops" },
+          { "type": "text", "role": "body", "text": "One message when something new lands. Nothing else." },
+          {
+            "type": "field",
+            "name": "phone",
+            "label": "Mobile number",
+            "placeholder": "+44 7700 900000",
+            "required": true
+          },
+          { "type": "button", "role": "cta_label", "label": "Sign me up", "action": "submit" },
+          { "type": "text", "role": "fine_print", "text": "Message rates may apply. Stop at any time." }
+        ]
+      },
+      {
+        "type": "stack",
+        "children": [
+          { "type": "heading", "role": "success_headline", "text": "You are signed up" },
+          { "type": "text", "role": "success_body", "text": "Watch out for a message when the next drop lands." }
+        ]
+      }
+    ]
+  }
+}

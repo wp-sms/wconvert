@@ -95,6 +95,12 @@ surrogate `id`.
   ([0005](0005-the-rule-model-is-three-flat-closed-axes.md),
   [0012](0012-degradation-substitutes-triggers-and-drops-conditions.md),
   [0015](0015-enforcement-is-by-non-registration.md)).
+  *Extended by [#27](https://github.com/navidkashani/wconvert/issues/27), which
+  makes a [[Goal]] the **fifth** — [`Goal`](../../src/Goal/Goal.php) is an enum
+  plus data, with `tier` and the site dependency declared on each member, and no
+  filter. The argument is this one plus a sharper edge: a Goal decides what the
+  analytics screen REPORTS, so an open set means a screen that cannot say what
+  its headline number means.*
   *Completed by [#26](https://github.com/navidkashani/wconvert/issues/26) as a
   PHP `enum` ([`StatKind`](../../src/Stats/StatKind.php)) over a `VARCHAR(32)`
   column rather than a database `ENUM`: adding a case should be a code change a
