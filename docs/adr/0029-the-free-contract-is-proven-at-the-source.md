@@ -49,6 +49,19 @@ Check (b) reads its identifier list from the rule manifest of
 [ADR 0005](0005-the-rule-model-is-three-flat-closed-axes.md), so it cannot drift
 from what the manifest calls premium.
 
+*Amended by [#21](https://github.com/navidkashani/wconvert/issues/21): the
+manifest lands in halves, so for a while that identifier list is **empty**.
+#21 writes the `targeting` section, which is the axis it implements and is
+entirely free; the `triggers` and `conditions` sections — and with them
+`exit_intent`, `scroll_up` and the advanced Conditions — arrive with the loader
+that evaluates them, in
+[#22](https://github.com/navidkashani/wconvert/issues/22). Until then
+`bin/check-loader.mjs` says so out loud rather than printing a tick: an empty
+list scans for nothing, and a check that reports "clean" while asserting nothing
+is the failure this ADR is about. It is **not** a fail-closed case — the
+manifest is readable and truthfully declares nothing premium — and the scan goes
+live with #22's entries and no change to the script.*
+
 **(b) is scoped to the loader, and that scoping is load-bearing.** Free's *admin*
 bundle contains premium identifiers on purpose — 0015's data-only catalogue of
 premium Destination types, and every `locked` Availability card. Free's loader never
@@ -115,3 +128,7 @@ check has an opt-out, the opt-out is what runs on the day it matters.
   one; the loader checks when there is a loader; the artifact contract, Plugin Check
   and the release guard when there is a release workflow. Nothing is written before
   its subject.
+  *This cuts finer than "per program". The manifest's own four-field invariant is
+  asserted where its subject is — a `tier: pro` entry cannot be checked for "resolves
+  to an implementation" before either side has one — so #21 asserts only the parity
+  its Targeting entries can carry, and #22 brings the rest.*

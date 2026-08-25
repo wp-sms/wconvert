@@ -33,7 +33,7 @@ final class ViteHelper
                 $handle,
                 $distUrl . 'main.css',
                 [],
-                self::assetVersion($distDir . 'main.css')
+                BuiltAsset::version($distDir . 'main.css')
             );
         }
 
@@ -41,7 +41,7 @@ final class ViteHelper
             $handle,
             $distUrl . 'main.js',
             ['wp-i18n', 'wp-api-fetch'],
-            self::assetVersion($distDir . 'main.js'),
+            BuiltAsset::version($distDir . 'main.js'),
             true
         );
 
@@ -60,14 +60,4 @@ final class ViteHelper
         });
     }
 
-    /**
-     * Cache-bust on the file's own mtime, so a rebuilt bundle gets a new URL
-     * without anyone remembering to bump a version.
-     */
-    private static function assetVersion(string $path): string
-    {
-        $mtime = is_file($path) ? filemtime($path) : false;
-
-        return $mtime !== false ? (string) $mtime : WCONVERT_VERSION;
-    }
 }

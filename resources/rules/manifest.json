@@ -1,0 +1,10 @@
+{
+  "targeting": {
+    "post": { "kind": "page", "tier": "free", "value": "post_id", "consent_category": null, "on_absence": null },
+    "singular": { "kind": "page", "tier": "free", "value": "post_type", "consent_category": null, "on_absence": null },
+    "archive": { "kind": "page", "tier": "free", "value": "post_type", "consent_category": null, "on_absence": null },
+    "term": { "kind": "page", "tier": "free", "value": "term_id", "consent_category": null, "on_absence": null },
+    "url": { "kind": "page", "tier": "free", "value": "path_glob", "consent_category": null, "on_absence": null },
+    "logged_in": { "kind": "visitor", "tier": "free", "value": "boolean", "consent_category": null, "on_absence": null }
+  }
+}

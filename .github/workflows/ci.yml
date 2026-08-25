@@ -4,6 +4,7 @@ name: CI
 # The single entry point for every check that runs on a pull request.
 #
 #   source-contract ──── ALWAYS runs, no path filter
+#   loader-contract ──── ALWAYS runs, no path filter
 #   changes ── one dorny/paths-filter run, the only place the filters live
 #     ├── PHP tests        php-tests.yml
 #     ├── Frontend tests   frontend-tests.yml
@@ -72,6 +73,37 @@ jobs:
 
       - name: Verify the source contract
         run: bash bin/verify-source-contract.sh
+
+  # ---------------------------------------------------------------------------
+  # THE FREE CONTRACT, PROVEN AT THE LOADER BUILD (ADR 0029, check b, plus the
+  # byte budget).
+  #
+  # THE ONE BUILD ON A PULL REQUEST, and it earns it: both of its assertions
+  # are about build OUTPUT, which is the premise "no ZIP on a PR" lacks. Two
+  # small Vite configs, seconds.
+  #
+  # NO PATH FILTER, for the same reason source-contract carries none. Letting a
+  # paths expression decide whether a fail-closed compliance check runs hands
+  # the opt-out to the diff — and the byte budget is a property of the shipped
+  # artifact, which a pull request touching only PHP can still change through a
+  # dependency or a config.
+  # ---------------------------------------------------------------------------
+  loader-contract:
+    name: 'Loader contract (budget + no premium in free)'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+
+      - name: Verify the loader contract
+        run: npm run check:loader
 
   changes:
     name: 'Changed paths'
@@ -145,7 +177,7 @@ jobs:
   required-checks:
     name: 'Required checks'
     if: always()
-    needs: [source-contract, changes, php-tests, frontend-tests]
+    needs: [source-contract, loader-contract, changes, php-tests, frontend-tests]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:

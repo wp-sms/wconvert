@@ -5,6 +5,8 @@ namespace WConvert;
 use WConvert\Container\AdminServiceProvider;
 use WConvert\Container\CoreServiceProvider;
 use WConvert\Container\ServiceContainer;
+use WConvert\Database\Installer;
+use WConvert\Storage\WpOptionStore;
 
 defined('ABSPATH') || exit;
 
@@ -46,6 +48,11 @@ final class Bootstrap
 
         self::$initialized = true;
 
+        // Activation creates the tables. It is not the only path that can —
+        // an automatic update overwrites the directory without ever
+        // deactivating — so CoreServiceProvider carries a version check too.
+        register_activation_hook(WCONVERT_MAIN_FILE, [self::class, 'activate']);
+
         add_action('plugins_loaded', [self::class, 'setup'], 10);
     }
 
@@ -67,6 +74,17 @@ final class Bootstrap
          * @since 0.1.0
          */
         do_action('wconvert_loaded');
+    }
+
+    /**
+     * Create WConvert's tables.
+     *
+     * Runs before `plugins_loaded`, so it builds what it needs by hand rather
+     * than reaching for a container that does not exist yet.
+     */
+    public static function activate(): void
+    {
+        (new Installer(new WpOptionStore()))->install();
     }
 
     /**
