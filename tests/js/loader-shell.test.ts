@@ -3,7 +3,7 @@ import { createLoader } from '@loader/engine';
 import { FREE_MODULES } from '@loader/modules';
 import { start } from '@loader/shell';
 import type { Store } from '@loader/storage';
-import type { LoaderModule, PayloadEntry, Presenter } from '@loader/types';
+import type { LoaderModule, OptinControls, PayloadEntry, Presenter } from '@loader/types';
 
 /**
  * The shell, driven the way a cached page drives it.
@@ -30,20 +30,33 @@ function fakeStore(): Store {
   };
 }
 
+/**
+ * A stand-in renderer. It reports the Impression the moment it is shown, which
+ * is what a real one does for an overlay — an `inline` renderer reports it on
+ * entering the viewport instead (CONTEXT.md, Impression).
+ */
 function recordingPresenter(): Presenter & { shown: string[]; dismiss(id: string): void } {
   const shown: string[] = [];
-  const controls = new Map<string, { dismiss(): void; convert(): void }>();
+  const controls = new Map<string, OptinControls>();
 
   return {
     shown,
     show(entry, entryControls) {
       shown.push(entry.id);
       controls.set(entry.id, entryControls);
+      entryControls.impression();
     },
     dismiss(id) {
       controls.get(id)?.dismiss();
     },
   };
+}
+
+/** A renderer that decided the Optin never actually reached the visitor. */
+function silentPresenter(): Presenter & { shown: string[] } {
+  const shown: string[] = [];
+
+  return { shown, show: (entry) => void shown.push(entry.id) };
 }
 
 const optin = (overrides: Partial<PayloadEntry> = {}): PayloadEntry => ({
@@ -286,5 +299,24 @@ describe('storage consent', () => {
     first.presenter.dismiss('a');
 
     expect(pageView(entries, store, march1 + DAY).presenter.shown).toEqual([]);
+  });
+});
+
+/**
+ * The Impression is the presenter's to report, and the frequency cap is spent
+ * against it rather than against the decision to show.
+ */
+describe('who spends the allowance', () => {
+  it('spends nothing when the renderer never reported the Optin as seen', () => {
+    const store = fakeStore();
+    const entries = [optin({ frequency: { maxImpressions: 1 } })];
+
+    // An `inline` Optin rendered far below the fold that the visitor never
+    // scrolled to. It has not been seen, so it has not been spent.
+    const unseen = silentPresenter();
+    start({ loader, entries, presenter: unseen, store, now: () => march1 });
+    expect(unseen.shown).toEqual(['a']);
+
+    expect(pageView(entries, store, march1).presenter.shown).toEqual(['a']);
   });
 });

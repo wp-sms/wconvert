@@ -125,8 +125,24 @@ export interface OptinRecord {
 /** Every record this device holds, keyed by Optin id. */
 export type VisitorState = Record<string, OptinRecord>;
 
-/** What a shown Optin can report back. Rendering is the next ticket's; this is its seam. */
+/**
+ * What a shown Optin reports back. Rendering is the next ticket's; this is its
+ * seam.
+ *
+ * All THREE events are the presenter's to report, including the Impression,
+ * because an Impression has two moments and only a renderer can tell them
+ * apart: for the three overlays it is the moment it is shown, because they
+ * render in the top layer and being rendered IS being on screen; for `inline`
+ * it is the moment it ENTERS THE VIEWPORT, since an inline Optin renders where
+ * it was embedded and may sit far below the fold (CONTEXT.md, Impression).
+ *
+ * A presenter that never calls `impression()` never spends the Optin's
+ * allowance, so it shows again on the next page view. That is the safe
+ * direction — an Optin nobody saw has not been seen — but it is a real
+ * obligation on whatever replaces the stub.
+ */
 export interface OptinControls {
+  impression(): void;
   dismiss(): void;
   convert(): void;
 }

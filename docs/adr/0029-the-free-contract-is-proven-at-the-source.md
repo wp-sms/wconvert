@@ -74,10 +74,13 @@ sentence above named #22, and **#22 cannot write them**: this ADR's own invarian
 is that every entry resolves to an implementation on the side its `tier` names,
 and a `tier: pro` entry whose Pro module does not exist yet fails that invariant
 on the pull request that adds it. So #22 writes the FREE half of the two client
-axes — `page_load`, `time_on_page`, `scroll_depth` and `device` — and each
-premium entry lands in the same commit as the Pro module implementing it,
-starting with `exit_intent` and `scroll_up` in
-[#32](https://github.com/navidkashani/wconvert/issues/32). The identifier list
+axes — `page_load`, `time_on_page`, `scroll_depth` and `device`, which is the
+whole of what issue #3's free/premium line gives free — and each premium entry
+lands in the same commit as the Pro module implementing it. That is
+`exit_intent` and `scroll_up` in
+[#32](https://github.com/navidkashani/wconvert/issues/32), and `click_element`
+plus the remaining twelve Conditions with the Pro tickets that implement them;
+**no premium entry is orphaned, because none may exist without its module.** The identifier list
 therefore stays empty through #22 and the scan goes live in #32, with no change
 to the script. Note that #32's acceptance criteria say free's manifest **lacks**
 those entries; that is the one reading this ADR rules out, because free's PHP is

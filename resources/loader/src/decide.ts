@@ -69,7 +69,7 @@ export interface Decision {
  * the worst it does is show one fewer thing, where reading it as inline could
  * put two overlays on one screen.
  */
-const isOverlay = (entry: PayloadEntry): boolean => entry.display_type !== 'inline';
+export const isOverlay = (entry: PayloadEntry): boolean => entry.display_type !== 'inline';
 
 /** Nothing is live except what could still change, so `capped` and `shown` are not. */
 const STILL_LIVE: ReadonlySet<Standing> = new Set<Standing>(['ready', 'waiting', 'ineligible', 'blocked']);

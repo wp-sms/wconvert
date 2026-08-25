@@ -1,6 +1,6 @@
 import type { Loader, PayloadEntry, Presenter, RuleEvaluator, VisitorState } from './types';
 import type { Store } from './storage';
-import { decide } from './decide';
+import { decide, isOverlay } from './decide';
 import { onConsentChange, withheldTypes } from './consent';
 import { persistentStore } from './storage';
 import { STATE_KEY, dayOf, loadState, saveState, withConversion, withDismissal, withImpression } from './state';
@@ -108,20 +108,19 @@ export function start(options: ShellOptions): () => void {
       });
 
       for (const entry of verdict.show) {
+        // Both of these are settled by the DECISION, not by what the presenter
+        // does with it. `overlayDone` in particular is set on show and never on
+        // dismissal, which is what makes "no runner-up after a dismissal"
+        // structurally impossible rather than a setting someone can
+        // misconfigure (issue #3).
         shown.add(entry.id);
-
-        // Set on SHOW, not on dismissal — which is what makes "no runner-up
-        // after a dismissal" structurally impossible rather than a setting
-        // someone can misconfigure (issue #3).
-        overlayDone = overlayDone || entry.display_type !== 'inline';
-
-        // CONTEXT.md counts an Impression at the moment an overlay is shown
-        // and at the moment an `inline` enters the viewport. Only a renderer
-        // can observe the second, so the refinement lands with the renderer;
-        // here, deciding to show is the moment.
-        record((current) => withImpression(current, entry.id, dayOf(now())));
+        overlayDone = overlayDone || isOverlay(entry);
 
         presenter.show(entry, {
+          // The Impression is the presenter's to report, because it has two
+          // moments and only a renderer can tell them apart — shown, for an
+          // overlay; entered the viewport, for `inline` (CONTEXT.md).
+          impression: () => record((current) => withImpression(current, entry.id, dayOf(now()))),
           dismiss: () => {
             record((current) => withDismissal(current, entry.id));
             run();
