@@ -92,6 +92,36 @@ They are also what decides **where a new rule may land**: a `tier: pro` entry
 with no Pro module fails on the pull request that adds it, so a premium entry
 and its implementation arrive in the same commit.
 
+## The template vocabulary
+
+[`resources/templates/manifest.json`](resources/templates/manifest.json) is the
+closed list of everything a Template may name: six leaf nodes, four layouts,
+the token set, the Slot Roles and the field kinds. A Template is a JSON node
+tree plus tokens with **no HTML and no CSS in it**
+([ADR 0010](docs/adr/0010-templates-are-configuration-not-documents.md)), so
+validating against this manifest is the whole of the sanitisation story —
+`wp_kses` does not apply to templates at all.
+
+One **dependency-free renderer** in
+[`resources/renderer/src/`](resources/renderer/src/) owns the entire vocabulary
+and every line of the stylesheet, and **both** bundles import it: the loader
+draws the live Optin, the admin draws gallery cards and previews. There are no
+static thumbnails to produce or to let go stale, and nothing React-shaped may
+enter that tree — two consumers, two bundles, one byte budget.
+
+```bash
+tests/js/renderer-manifest-parity.test.ts     # the renderer against the manifest
+tests/unit/Template/TemplateVocabularyTest.php # what validation drops on the way in
+tests/unit/Template/TemplateSnapshotTest.php   # an Optin's copy outlives its entry
+tests/unit/Frontend/PayloadBudgetTest.php      # ten snapshotted trees, ≤2KB gzipped
+```
+
+Like the rule manifest, **the loader must never `import` it**: an unrecognised
+node is skipped by the renderer's own switch, so the lookup buys nothing and
+the import would put the whole vocabulary in the byte budget. The parity test
+asserts the renderer implements exactly what the manifest declares, in both
+directions.
+
 ## Development
 
 ```bash

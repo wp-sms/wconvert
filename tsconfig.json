@@ -17,7 +17,8 @@
     "verbatimModuleSyntax": true,
     "types": ["node"],
     "paths": {
-      "@loader/*": ["./resources/loader/src/*"]
+      "@loader/*": ["./resources/loader/src/*"],
+      "@renderer/*": ["./resources/renderer/src/*"]
     }
   },
   "include": [

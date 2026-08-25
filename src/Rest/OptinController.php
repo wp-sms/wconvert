@@ -6,6 +6,8 @@ use WConvert\Optin\Optin;
 use WConvert\Optin\OptinRepository;
 use WConvert\Rules\RuleVocabulary;
 use WConvert\Targeting\Targeting;
+use WConvert\Template\TemplateLibrary;
+use WConvert\Template\TemplateVocabulary;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -32,6 +34,8 @@ final class OptinController
     public function __construct(
         private readonly OptinRepository $optins,
         private readonly RuleVocabulary $vocabulary,
+        private readonly TemplateVocabulary $templates,
+        private readonly TemplateLibrary $library,
     ) {
     }
 
@@ -207,6 +211,20 @@ final class OptinController
 
         if (isset($config['rules'])) {
             $config['rules'] = $this->vocabulary->normalize($config['rules']);
+        }
+
+        // Picking a Template TAKES A COPY of it, once, here. An Optin already
+        // holding a `template` keeps it; `template_id` is provenance from that
+        // moment on, so improving the entry never restyles a running Optin and
+        // deleting it leaves the Optin working (ADR 0010).
+        $config = $this->library->snapshotInto($config);
+
+        if (isset($config['template'])) {
+            // Validated on the way IN, which is what replaces `wp_kses` for a
+            // template: there is no HTML and no CSS to sanitise, so what is
+            // left to enforce is that every node, token, param and Slot Role
+            // is one the vocabulary declares.
+            $config['template'] = $this->templates->normalize($config['template']);
         }
 
         return $config;

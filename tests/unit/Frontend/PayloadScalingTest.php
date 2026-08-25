@@ -17,9 +17,11 @@ use WConvert\Targeting\RequestContext;
  * refactor that drops the URL filter and turns 100 published Optins into 100
  * payload entries on every page.
  *
- * The 2KB bound itself is deliberately NOT asserted here. It is unreachable
- * against the placeholder payloads this ticket can build and would therefore
- * be inert; it lands with real template trees, in the template ticket.
+ * The 2KB bound itself is asserted elsewhere, against real snapshotted
+ * template trees, in {@see PayloadBudgetTest}. It would have been inert here:
+ * these payloads are placeholders chosen to make the SCALING property visible,
+ * and a byte budget measured against them proves nothing about the bytes a
+ * published Optin actually carries.
  */
 #[CoversClass(Payload::class)]
 #[CoversClass(PayloadTag::class)]

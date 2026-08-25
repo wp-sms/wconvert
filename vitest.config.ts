@@ -5,6 +5,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@loader': resolve(import.meta.dirname, 'resources/loader/src'),
+      '@renderer': resolve(import.meta.dirname, 'resources/renderer/src'),
     },
   },
   test: {

@@ -26,6 +26,8 @@
  *   A shared `Signals` interface in free's tree would have to (ADR 0028).
  */
 
+import type { Template } from '@renderer/types';
+
 /** WHEN it fires, or WHETHER the visitor is eligible. Fixed per type (ADR 0005). */
 export type RuleKind = 'trigger' | 'condition';
 
@@ -95,6 +97,13 @@ export interface Frequency {
 export interface PayloadEntry {
   readonly id: string;
   readonly display_type?: string;
+  /**
+   * The Optin's COPY of its Template — tree and tokens, snapshotted when the
+   * Template was picked. The renderer and the vocabulary stay a live
+   * reference, so an accessibility or RTL fix reaches every existing Optin and
+   * a restyle reaches none (ADR 0010).
+   */
+  readonly template?: Template | null;
   readonly priority?: number;
   readonly triggers?: readonly Rule[];
   readonly conditions?: readonly Rule[];

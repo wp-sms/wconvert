@@ -1,5 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { OptinList } from './optins/OptinList';
+import { TemplatePreview } from './templates/TemplatePreview';
 
 /**
  * The WConvert admin screen.
@@ -13,6 +14,7 @@ export function App() {
     <div className="wconvert-admin">
       <h1>{__('WConvert', 'wconvert')}</h1>
       <OptinList />
+      <TemplatePreview />
     </div>
   );
 }

@@ -1,0 +1,49 @@
+{
+  "layouts": {
+    "stack": { "children": "list", "params": [] },
+    "row": { "children": "list", "params": [] },
+    "split": { "children": "panes", "params": ["ratio"] },
+    "grid": { "children": "list", "params": ["columns"] }
+  },
+  "nodes": {
+    "heading": { "content": ["text"], "params": ["level"], "roles": ["role"] },
+    "text": { "content": ["text", "link"], "params": [], "roles": ["role"] },
+    "image": { "content": ["src", "alt"], "params": ["fit"], "roles": [] },
+    "field": { "content": ["label", "placeholder"], "params": ["name", "required"], "roles": [] },
+    "button": { "content": ["label"], "params": ["action", "href"], "roles": ["role"] },
+    "consent": { "content": ["text", "link"], "params": [], "roles": [] }
+  },
+  "tokens": {
+    "bg": "#ffffff",
+    "fg": "#111827",
+    "muted": "#6b7280",
+    "accent": "#2563eb",
+    "accent-fg": "#ffffff",
+    "border": "#e5e7eb",
+    "font": "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
+    "heading-size": "1.5rem",
+    "text-size": "1rem",
+    "radius": "0.5rem",
+    "pad": "1.5rem",
+    "gap": "0.75rem",
+    "width": "28rem",
+    "align": "start",
+    "backdrop": "rgba(15, 23, 42, 0.55)"
+  },
+  "roles": [
+    "headline",
+    "body",
+    "fine_print",
+    "cta_label",
+    "consent_text",
+    "success_headline",
+    "success_body",
+    "email_label",
+    "email_placeholder",
+    "name_label",
+    "name_placeholder",
+    "phone_label",
+    "phone_placeholder"
+  ],
+  "fields": ["email", "name", "phone"]
+}
