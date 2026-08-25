@@ -116,11 +116,27 @@ final class BeaconController
         // it, so a limit keyed on it is keyed on a value the rate-limited party
         // chooses. Behind a reverse proxy this buckets a whole site's visitors
         // together, which is why {@see RateLimit}'s ceiling is generous.
-        if (!$this->rateLimit->allows((string) ($_SERVER['REMOTE_ADDR'] ?? ''))) {
+        //
+        // `wp_unslash()` because WordPress adds slashes to every superglobal on
+        // load. Unescaped, an address carrying one would hash to a different
+        // bucket than the same address without — which is a rate limit with a
+        // hole in it rather than a display bug.
+        $address = (string) wp_unslash($_SERVER['REMOTE_ADDR'] ?? '');
+
+        // The clock is READ HERE and passed down, the same way the day is —
+        // neither {@see RateLimit} nor {@see StatsRepository} owns one, so
+        // neither has anything to stub.
+        if (!$this->rateLimit->allows($address, time())) {
             return new WP_REST_Response(null, 429);
         }
 
-        $published = $this->publishedSet->all();
+        // The set is parsed ONCE, into ids. Asking `PublishedOptin::findInSet()`
+        // per event would parse the whole set — building a `Targeting` and a
+        // payload for every entry — once for each of up to twenty events, and
+        // throw all of it away for an id comparison. That is the right shape for
+        // the capture route, which asks about exactly one id; it is the wrong
+        // one here.
+        $published = PublishedOptin::idsIn($this->publishedSet->all());
 
         // Asked once for the whole batch. The events were coalesced over one
         // page view, so they belong to one moment — and a flush that straddles
@@ -129,7 +145,11 @@ final class BeaconController
         $today = StatDay::today();
 
         foreach (Beacon::eventsIn($request->get_json_params()) as $event) {
-            if (PublishedOptin::findInSet($published, $event->optinId) === null) {
+            // The same membership check the capture endpoint makes. An Optin
+            // that is not in the published set has no rendered form and no
+            // Impression this server ever served, and a count against it names
+            // an Optin the report-time join cannot interpret (ADR 0020).
+            if (!isset($published[$event->optinId])) {
                 continue;
             }
 

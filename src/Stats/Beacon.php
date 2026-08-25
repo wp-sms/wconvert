@@ -34,6 +34,11 @@ final class Beacon
      * below anything worth doing on an unauthenticated request, and the excess
      * is DROPPED rather than the request refused: a batch that lost its tail
      * has still told the truth about its head.
+     *
+     * It bounds the entries LOOKED AT rather than the events accepted. Counting
+     * only what survives means a body of ten thousand malformed entries is
+     * walked in full for a result of nothing, which is the wrong end of the
+     * trade on a public endpoint.
      */
     public const MAX_EVENTS = 20;
 
@@ -59,8 +64,10 @@ final class Beacon
         $raw = is_array($body) && is_array($body[self::EVENTS] ?? null) ? $body[self::EVENTS] : [];
         $events = [];
 
+        $examined = 0;
+
         foreach ($raw as $candidate) {
-            if (count($events) >= self::MAX_EVENTS) {
+            if (++$examined > self::MAX_EVENTS) {
                 break;
             }
 

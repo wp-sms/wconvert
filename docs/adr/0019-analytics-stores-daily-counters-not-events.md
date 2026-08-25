@@ -30,10 +30,12 @@ reason about, and there is no rollup job — the Action Scheduler dependency
 [ADR 0007](0007-destinations-are-outbound-and-fallible.md) makes available is
 simply not needed here.
 
-*Corrected by [ADR 0007](0007-destinations-are-outbound-and-fallible.md): that
-sentence read as though 0007 had already bundled Action Scheduler. It has not,
-and nothing yet has — WConvert has no runtime Composer dependency at all, and
-the queue arrives with the Destination dispatch in
+*Corrected by [ADR 0007](0007-destinations-are-outbound-and-fallible.md), whose
+own inline note names this document; the back-reference was missing until
+[#26](https://github.com/navidkashani/wconvert/issues/26) added it. The sentence
+above reads as though 0007 had already bundled Action Scheduler. It has not, and
+nothing yet has — WConvert has no runtime Composer dependency at all, and the
+queue arrives with the Destination dispatch in
 [#30](https://github.com/navidkashani/wconvert/issues/30). The conclusion here
 is unaffected, because what this ADR needs from that dependency is nothing:
 there is no rollup job.*

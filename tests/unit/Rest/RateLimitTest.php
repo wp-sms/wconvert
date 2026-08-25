@@ -35,6 +35,9 @@ final class RateLimitTest extends TestCase
 
     private const WINDOW = 60;
 
+    /** A fixed instant. The clock is an argument, so a test can simply name one. */
+    private const NOW = 1_700_000_000;
+
     private FakeTransientStore $transients;
 
     private RateLimit $limit;
@@ -45,9 +48,17 @@ final class RateLimitTest extends TestCase
         $this->limit = new RateLimit($this->transients);
     }
 
+    /** Spend `$times` of one address's allowance at one moment. */
+    private function knock(string $ip, int $times, int $now = self::NOW): void
+    {
+        for ($i = 0; $i < $times; $i++) {
+            $this->limit->allows($ip, $now);
+        }
+    }
+
     public function testTheFirstRequestIsAllowed(): void
     {
-        $this->assertTrue($this->limit->allows(self::IP));
+        $this->assertTrue($this->limit->allows(self::IP, self::NOW));
     }
 
     public function testAVisitorsWholePageViewFitsInsideTheWindow(): void
@@ -56,17 +67,15 @@ final class RateLimitTest extends TestCase
         // so a page view is two requests. Thirty page views in a minute from
         // one address is already a whole office behind one NAT.
         for ($i = 0; $i < self::ALLOWED; $i++) {
-            $this->assertTrue($this->limit->allows(self::IP), "request {$i} is within the allowance");
+            $this->assertTrue($this->limit->allows(self::IP, self::NOW), "request {$i} is within the allowance");
         }
     }
 
     public function testTheRequestPastTheAllowanceIsRefused(): void
     {
-        for ($i = 0; $i < self::ALLOWED; $i++) {
-            $this->limit->allows(self::IP);
-        }
+        $this->knock(self::IP, self::ALLOWED);
 
-        $this->assertFalse($this->limit->allows(self::IP));
+        $this->assertFalse($this->limit->allows(self::IP, self::NOW));
     }
 
     /**
@@ -76,24 +85,43 @@ final class RateLimitTest extends TestCase
      */
     public function testKnockingDuringARefusalDoesNotReopenTheWindow(): void
     {
-        for ($i = 0; $i < self::ALLOWED + 10; $i++) {
-            $this->limit->allows(self::IP);
-        }
+        $this->knock(self::IP, self::ALLOWED + 10);
 
-        $this->transients->now += self::WINDOW - 1;
-
-        $this->assertFalse($this->limit->allows(self::IP), 'still inside the window it opened');
+        $this->assertFalse(
+            $this->limit->allows(self::IP, self::NOW + self::WINDOW - 1),
+            'still inside the window it opened'
+        );
     }
 
     public function testTheAllowanceComesBackWhenTheWindowLapses(): void
     {
-        for ($i = 0; $i < self::ALLOWED + 1; $i++) {
-            $this->limit->allows(self::IP);
-        }
-
+        $this->knock(self::IP, self::ALLOWED + 1);
         $this->transients->now += self::WINDOW;
 
-        $this->assertTrue($this->limit->allows(self::IP));
+        $this->assertTrue($this->limit->allows(self::IP, self::NOW + self::WINDOW));
+    }
+
+    /**
+     * **And it comes back on an install where nothing swept the transient.**
+     *
+     * An object-cache-backed transient can hand a value back past its expiry —
+     * an expiry is a hint to the cache, not a promise to the caller. So the
+     * window is decided by the stamp INSIDE the bucket rather than by the
+     * bucket still being there, and this is the test that says the difference
+     * matters: with sweeping off, the value is still returned and the caller
+     * must still be let through.
+     */
+    public function testALapsedWindowReopensEvenWhereNothingSweptTheTransient(): void
+    {
+        $this->transients->sweeps = false;
+
+        $this->knock(self::IP, self::ALLOWED + 1);
+
+        $this->assertFalse($this->limit->allows(self::IP, self::NOW), 'spent, at the moment it was spent');
+        $this->assertTrue(
+            $this->limit->allows(self::IP, self::NOW + self::WINDOW),
+            'and open again a window later, with the stale bucket still in the store'
+        );
     }
 
     /**
@@ -103,12 +131,10 @@ final class RateLimitTest extends TestCase
      */
     public function testOneCallerCannotSpendAnothersAllowance(): void
     {
-        for ($i = 0; $i < self::ALLOWED + 1; $i++) {
-            $this->limit->allows(self::IP);
-        }
+        $this->knock(self::IP, self::ALLOWED + 1);
 
-        $this->assertFalse($this->limit->allows(self::IP));
-        $this->assertTrue($this->limit->allows(self::OTHER_IP));
+        $this->assertFalse($this->limit->allows(self::IP, self::NOW));
+        $this->assertTrue($this->limit->allows(self::OTHER_IP, self::NOW));
     }
 
     /**
@@ -120,7 +146,7 @@ final class RateLimitTest extends TestCase
      */
     public function testTheAddressAppearsNowhereInWhatWasStored(): void
     {
-        $this->limit->allows(self::IP);
+        $this->limit->allows(self::IP, self::NOW);
 
         $stored = json_encode($this->transients->stored) . implode('', array_keys($this->transients->stored));
 
@@ -136,13 +162,13 @@ final class RateLimitTest extends TestCase
      */
     public function testTheKeyIsDerivedFromTheAddressAndIsStableForIt(): void
     {
-        $this->limit->allows(self::IP);
+        $this->limit->allows(self::IP, self::NOW);
         $first = array_keys($this->transients->stored);
 
-        $this->limit->allows(self::IP);
+        $this->limit->allows(self::IP, self::NOW);
         $this->assertSame($first, array_keys($this->transients->stored), 'the same address reaches the same bucket');
 
-        $this->limit->allows(self::OTHER_IP);
+        $this->limit->allows(self::OTHER_IP, self::NOW);
         $this->assertCount(2, $this->transients->stored, 'a different address reaches a different one');
     }
 
@@ -153,7 +179,7 @@ final class RateLimitTest extends TestCase
      */
     public function testARequestWithNoAddressIsRefusedAndStoresNothing(): void
     {
-        $this->assertFalse($this->limit->allows(''));
+        $this->assertFalse($this->limit->allows('', self::NOW));
         $this->assertSame([], $this->transients->stored);
     }
 
@@ -165,7 +191,7 @@ final class RateLimitTest extends TestCase
      */
     public function testTheBucketIsWrittenWithAnExpiry(): void
     {
-        $this->limit->allows(self::IP);
+        $this->limit->allows(self::IP, self::NOW);
 
         $held = array_values($this->transients->stored)[0];
 

@@ -62,7 +62,14 @@ final class RateLimit
     }
 
     /**
-     * May this caller be counted right now?
+     * May this caller be counted at this moment?
+     *
+     * **The clock is passed in.** This class owns none, for the same reason
+     * {@see \WConvert\Stats\StatsRepository} owns no clock and no timezone: a
+     * seam that reads `time()` internally cannot be moved, so the one branch
+     * below that matters — a bucket whose window has lapsed but whose transient
+     * an object cache has not swept — would be a paragraph of reasoning with
+     * nothing exercising it.
      *
      * The window is FIXED rather than sliding: the first request in a window
      * stamps its start, and every request until it lapses is measured against
@@ -74,14 +81,13 @@ final class RateLimit
      * misconfigured proxy or a CLI caller produces — is refused rather than
      * bucketed with every other empty one. There is nobody to inconvenience.
      */
-    public function allows(string $ip): bool
+    public function allows(string $ip, int $now): bool
     {
         if ($ip === '') {
             return false;
         }
 
         $key = self::PREFIX . substr(wp_hash($ip), 0, 32);
-        $now = time();
 
         /** @var mixed $bucket */
         $bucket = $this->transients->get($key);
