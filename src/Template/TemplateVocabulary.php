@@ -85,6 +85,37 @@ final class TemplateVocabulary
         return $this->schemes;
     }
 
+    /**
+     * Every Slot Role the vocabulary declares.
+     *
+     * Exposed for {@see SlotRoles}, which derives a `field` node's Roles from
+     * what it captures and checks the result against this list rather than
+     * asserting a naming convention holds. A field kind whose Roles nobody
+     * declared then offers none, instead of a name only one file knows.
+     *
+     * @return list<string>
+     */
+    public function roles(): array
+    {
+        return $this->roles;
+    }
+
+    /**
+     * Which of a node type's keys are WORDS.
+     *
+     * The same source {@see self::withoutCopy()} strips against, read from the
+     * other side: what a snapshot takes out is exactly what a [[Playbook]]
+     * puts back. Two lists would be one place for a Role to bind to a key a
+     * snapshot had already removed, which renders as an empty slot and says
+     * nothing.
+     *
+     * @return list<string>
+     */
+    public function copyKeysOf(string $type): array
+    {
+        return $this->nodes[$type]['copy'] ?? [];
+    }
+
     public static function fromManifest(string $pluginDir = WCONVERT_DIR): self
     {
         return self::fromArray(TemplateManifest::load($pluginDir));

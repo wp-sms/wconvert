@@ -77,7 +77,15 @@ different table.
 
 ## Consequences
 
-- **Cart-recovery templates have one step, not two.** The [[Template]] ticket's
+- **Cart-recovery templates have one step, not two.** *Enforced by
+  [#27](https://github.com/navidkashani/wconvert/issues/27) at registration
+  rather than left to the author:
+  [`TemplateLibrary`](../../src/Template/TemplateLibrary.php) rejects an entry
+  whose step count disagrees with the converting act its tree offers, so a
+  click-metered design carrying a success state is refused where it is written.
+  The click Goal's Playbook rides the same one-step Template as the other click
+  Goal's, which is this bullet's "property of the metric, not of WooCommerce"
+  made concrete.* The [[Template]] ticket's
   *"every v1 template already has two — the success state is a terminal step"* is true
   only of **submit-metered** templates. A click navigates the visitor away, so there is
   no success state left to render, and an interstitial is worse than the navigation it

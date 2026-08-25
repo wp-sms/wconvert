@@ -1,40 +1,26 @@
 import { useCallback, useEffect, useState } from 'react';
 import { __ } from '@wordpress/i18n';
-import {
-  createOptin,
-  deleteOptin,
-  listOptins,
-  publishOptin,
-  statusOf,
-  unpublishOptin,
-  type OptinSummary,
-} from './api';
+import { listGoals } from '../goals/api';
+import { deleteOptin, listOptins, publishOptin, statusOf, unpublishOptin, type OptinSummary } from './api';
 
 /**
- * The Optin list.
+ * The Optin list: what exists, and what is on the site.
  *
- * Deliberately the thinnest surface that makes an Optin creatable, targetable
- * and publishable. The builder — templates, playbooks, the goal-first creation
- * flow — arrives in its own ticket, and guessing at it here would be writing
- * the shape before its subject.
+ * **It does not create one.** Creation is the goal-first flow beside it: a
+ * [[Goal]] is chosen before anything else is configured, and it is a registry
+ * member subject to [[Availability]] rather than a string somebody types
+ * (ADR 0026). The free-text field this list used to carry was a placeholder
+ * for exactly that flow, and a second door into creation that skipped the
+ * registry is precisely the drift the registry exists to stop.
  *
- * Targeting is edited as raw JSON for exactly that reason: a page picker is a
- * builder component, and a textarea is honest about being a placeholder in a
- * way a half-built picker would not be.
+ * Targeting and the rest of an Optin's configuration belong to the builder,
+ * which arrives in its own ticket.
  */
-const STARTING_CONFIG = JSON.stringify(
-  { targeting: { include: [{ type: 'url', value: '/*' }] } },
-  null,
-  2,
-);
-
 export function OptinList() {
   const [optins, setOptins] = useState<OptinSummary[]>([]);
+  const [labels, setLabels] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [name, setName] = useState('');
-  const [goal, setGoal] = useState('grow_email_list');
-  const [config, setConfig] = useState(STARTING_CONFIG);
 
   const refresh = useCallback(async () => {
     try {
@@ -49,6 +35,22 @@ export function OptinList() {
     void refresh();
   }, [refresh]);
 
+  // The row stores a [[Goal]]'s id and the merchant reads its label, so the
+  // registry is fetched once and the rows are labelled from it. Fetched rather
+  // than spelled here: the five live in one PHP enum, their labels are
+  // translatable strings `wp i18n make-pot` can only see there, and naming one
+  // in this bundle is what `tests/unit/Goal/GoalParityTest.php` fails on.
+  //
+  // Its own error is swallowed on purpose. A registry that did not load costs
+  // this screen a nicer word for a Goal; it must not cost the merchant the
+  // publish and delete buttons beside it, and `refresh()` reports the failure
+  // that would.
+  useEffect(() => {
+    listGoals()
+      .then((goals) => setLabels(Object.fromEntries(goals.map((goal) => [goal.id, goal.label]))))
+      .catch(() => undefined);
+  }, []);
+
   const run = async (action: () => Promise<unknown>) => {
     setBusy(true);
 
@@ -61,24 +63,6 @@ export function OptinList() {
     } finally {
       setBusy(false);
     }
-  };
-
-  const submit = (event: React.FormEvent) => {
-    event.preventDefault();
-
-    let parsed: Record<string, unknown>;
-
-    try {
-      parsed = JSON.parse(config) as Record<string, unknown>;
-    } catch {
-      setError(__('The configuration is not valid JSON.', 'wconvert'));
-      return;
-    }
-
-    void run(async () => {
-      await createOptin(name, goal, parsed);
-      setName('');
-    });
   };
 
   return (
@@ -112,9 +96,13 @@ export function OptinList() {
             return (
               <tr key={optin.id}>
                 <td>{optin.name}</td>
-                <td>
-                  <code>{optin.goal}</code>
-                </td>
+                {/*
+                  An id with no label is an Optin holding a Goal this build
+                  does not have — a `<code>` rather than a blank, because the
+                  raw value is the only honest thing left to show and blanking
+                  it would read as an Optin with no Goal at all.
+                */}
+                <td>{labels[optin.goal] ?? <code>{optin.goal}</code>}</td>
                 <td>{status}</td>
                 <td>
                   {status === 'published' ? (
@@ -150,35 +138,6 @@ export function OptinList() {
           })}
         </tbody>
       </table>
-
-      <h2>{__('New Optin', 'wconvert')}</h2>
-
-      <form onSubmit={submit}>
-        <p>
-          <label>
-            {__('Name', 'wconvert')}{' '}
-            <input type="text" value={name} required onChange={(e) => setName(e.target.value)} />
-          </label>
-        </p>
-        <p>
-          <label>
-            {__('Goal', 'wconvert')}{' '}
-            <input type="text" value={goal} required onChange={(e) => setGoal(e.target.value)} />
-          </label>
-        </p>
-        <p>
-          <label>
-            {__('Configuration (JSON)', 'wconvert')}
-            <br />
-            <textarea rows={8} cols={60} value={config} onChange={(e) => setConfig(e.target.value)} />
-          </label>
-        </p>
-        <p>
-          <button type="submit" className="button button-primary" disabled={busy}>
-            {__('Create', 'wconvert')}
-          </button>
-        </p>
-      </form>
     </>
   );
 }

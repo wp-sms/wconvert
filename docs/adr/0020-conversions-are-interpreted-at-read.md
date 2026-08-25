@@ -69,6 +69,15 @@ see its own inline correction.*
   the same; where it comes from is not.
 - **Changing an Optin's Goal restates its entire history.** This will look like a
   bug to someone. It is the decision.
+  *Built by [#27](https://github.com/navidkashani/wconvert/issues/27), where the
+  sentence stopped being a paragraph.
+  [`Goal::headlineKind()`](../../src/Goal/Goal.php) is the declaration and
+  [`GoalReport`](../../src/Goal/GoalReport.php) is the read that applies it — so
+  correcting a Goal moves **every day**, including the ones counted long before
+  anybody corrected anything, rather than changing the shape of the series
+  halfway along. `tests/unit/Goal/GoalReportTest.php` asserts exactly that. The
+  arithmetic takes rows rather than a repository; the join that produces them
+  belongs to the screen that draws it.*
 - **One Optin has exactly one converting act, fixed by its Goal**, and the
   renderer wires the beacon to that node alone. A [[Template]] offering both a
   form and a click-through CTA is caught as a **registration-time validation
@@ -78,6 +87,16 @@ see its own inline correction.*
   not a runtime ambiguity, and not a per-Optin "what counts as a conversion"
   setting, which is the configuration that making a Goal declare its own metric
   exists to delete.
+  *Built by [#27](https://github.com/navidkashani/wconvert/issues/27) as
+  [`ConvertingAct::offeredIn()`](../../src/Template/ConvertingAct.php), applied by
+  [`TemplateLibrary`](../../src/Template/TemplateLibrary.php) at registration. The
+  walk covers every step and every pane, because a `split`'s far pane is exactly
+  where a second converting act hides from a reader. A Template offering
+  **neither** is refused by the same check — the same rule read the other way,
+  since an Optin that cannot be converted reports zero forever. The pairing is
+  checked one layer up too: a [[Playbook]] whose default Template is metered by
+  the other act from the [[Goal]] it serves is refused, because that Optin
+  reports nothing at all.*
 - **An Optin must never be hard-deleted.** #2's soft delete was argued on
   preserving the Optin's name for CSV export; it is now load-bearing for
   analytics as well, because a removed row makes every count referencing it

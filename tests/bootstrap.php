@@ -123,6 +123,11 @@ if (!function_exists('__')) {
     }
 }
 
+// The free plugin's own version, which `src/constants.php` defines at load time
+// and which nothing in the unit suite loads that file to get. It reaches
+// `_doing_it_wrong()` as the "since" argument.
+defined('WCONVERT_VERSION') || define('WCONVERT_VERSION', '0.1.0');
+
 // WordPress's own time constants, which any plugin may assume are defined.
 defined('HOUR_IN_SECONDS') || define('HOUR_IN_SECONDS', 3600);
 defined('DAY_IN_SECONDS') || define('DAY_IN_SECONDS', 86400);
@@ -263,6 +268,28 @@ if (!function_exists('wp_schedule_event')) {
         $GLOBALS['wconvertTestSchedule'][$hook] = $timestamp;
 
         return true;
+    }
+}
+
+/*
+ * `_doing_it_wrong()`, recorded rather than performed.
+ *
+ * It is WordPress's own channel for "a plugin called this wrong", and it is
+ * where a registry says out loud that it refused an entry — a rejection is an
+ * AUTHORING error, so it goes where an author is working rather than into an
+ * admin notice a merchant cannot act on. The real function triggers a PHP
+ * notice under `WP_DEBUG`, which PHPUnit would report as a failure on the
+ * tests that deliberately register a bad entry; recording it instead is what
+ * lets "not silent" be asserted rather than asserted-about.
+ *
+ * @var list<array{where: string, message: string}> $wconvertTestDoingItWrong
+ */
+$GLOBALS['wconvertTestDoingItWrong'] = [];
+
+if (!function_exists('_doing_it_wrong')) {
+    function _doing_it_wrong(string $function, string $message, string|false|null $version = null): void
+    {
+        $GLOBALS['wconvertTestDoingItWrong'][] = ['where' => $function, 'message' => $message];
     }
 }
 

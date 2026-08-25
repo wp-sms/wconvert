@@ -118,6 +118,45 @@ final class PublishedProjectionTest extends TestCase
      * type, so the manifest already knows the answer and the client should not
      * re-derive it per page view.
      */
+    /**
+     * **The keys a payload may carry, pinned.**
+     *
+     * The projection ships `published_config` WHOLE, minus a denylist — which
+     * fails open: a key added to `config` for the builder's benefit reaches
+     * every visitor of every matching page unless somebody remembers to add it
+     * to `PublishedProjection::NOT_SHIPPED`. `template_id` rode the payload
+     * that way from the day it was written, and `destination_hint` did the
+     * same the day it was.
+     *
+     * So the direction is reversed here: adding a key to the payload fails
+     * this test until somebody writes it down, the same way
+     * `SchemaTest::INDEX_BUDGET` makes a new index a decision in a diff. The
+     * budget it protects is real — ≤2KB gzipped per page, measured
+     * (ADR 0010).
+     */
+    public function testThePayloadCarriesOnlyTheKeysSomebodyWroteDown(): void
+    {
+        $config = [
+            'targeting' => ['include' => [['type' => 'url', 'value' => '/*']]],
+            'rules' => [['type' => 'page_load']],
+            'template' => ['tree' => ['steps' => []], 'tokens' => []],
+            'display_type' => 'popup',
+            'frequency' => ['once_per' => 'session'],
+            // Everything below is authoring state. None of it renders.
+            'template_id' => 'centred-card',
+            'playbook_id' => 'welcome-discount',
+            'destination_hint' => ['types' => ['wsms'], 'fields' => ['email']],
+        ];
+
+        $payload = self::build([self::row(['published_config' => (string) json_encode($config)])])[0]['payload'];
+
+        $this->assertSame(
+            ['template', 'display_type', 'frequency', 'triggers', 'conditions'],
+            array_keys($payload),
+            'a key reaching the browser is a decision; add it here and say why it renders'
+        );
+    }
+
     public function testTheFlatRuleListIsPartitionedIntoTheTwoClientAxes(): void
     {
         $set = self::build([self::row(['published_config' => (string) json_encode([

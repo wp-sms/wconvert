@@ -24,6 +24,27 @@ defined('ABSPATH') || exit;
 final class PublishedProjection
 {
     /**
+     * Keys the browser is never sent, because nothing that renders an Optin
+     * reads them — and the payload is inlined into every matching page against
+     * a 2KB budget.
+     *
+     * **`template_id` and `playbook_id` are provenance.** Both are ids into a
+     * registry the front end never consults: an Optin takes a COPY of its
+     * [[Template]] and a COPY of its [[Playbook]]'s words, so improving either
+     * entry restyles nothing and deleting either leaves the Optin working.
+     * There is nothing left for an id to do on the page.
+     *
+     * **`destination_hint` is an authoring note.** It names [[Destination]]
+     * *types* and the [[Lead]] fields a Playbook wanted, for the builder to
+     * act on — and prefill never binds a Destination invisibly, so it is not
+     * even a decision yet. The capture path re-reads everything about the form
+     * from the server's own published copy and trusts the client for nothing
+     * but the values a person typed (ADR 0004), so a hint on the page is bytes
+     * with no reader.
+     */
+    private const NOT_SHIPPED = ['template_id', 'playbook_id', 'destination_hint'];
+
+    /**
      * @param iterable<array<string, mixed>> $rows
      * @return list<array<string, mixed>>
      */
@@ -86,6 +107,23 @@ final class PublishedProjection
 
         $targeting = $published['targeting'] ?? [];
         unset($published['targeting']);
+
+        // ADMIN-ONLY KEYS ARE STRIPPED. Provenance records where an Optin CAME
+        // FROM and the destination hint records what its [[Playbook]] wanted;
+        // neither is consulted at render time and neither ever will be, because
+        // the Optin holds its own copy of the design and the words (ADR 0010,
+        // CONTEXT.md Playbook). ADR 0010 says `template_id` "never appears in
+        // the payload" — until #27 that was a claim rather than a fact, and it
+        // is paid for on every page view of every matching page against a 2KB
+        // budget.
+        //
+        // This is a DENYLIST over a config blob, which fails open: a key added
+        // to `config` ships unless somebody remembers this line.
+        // `tests/unit/Frontend/PayloadTest.php` pins the keys a payload may
+        // carry so that forgetting fails a build instead of a byte budget.
+        foreach (self::NOT_SHIPPED as $key) {
+            unset($published[$key]);
+        }
 
         // The flat list is CONSUMED, not shipped beside its own partition:
         // two spellings of one rule set in one payload is a second source of

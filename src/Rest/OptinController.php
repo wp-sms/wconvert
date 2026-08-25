@@ -2,6 +2,7 @@
 
 namespace WConvert\Rest;
 
+use WConvert\Goal\GoalRegistry;
 use WConvert\Optin\Optin;
 use WConvert\Optin\OptinRepository;
 use WConvert\Rules\RuleVocabulary;
@@ -35,6 +36,7 @@ final class OptinController
         private readonly RuleVocabulary $vocabulary,
         private readonly TemplateVocabulary $templates,
         private readonly TemplateLibrary $library,
+        private readonly GoalRegistry $goals,
     ) {
     }
 
@@ -125,12 +127,29 @@ final class OptinController
         return $optin === null ? self::notFound() : new WP_REST_Response($optin->toArray());
     }
 
-    public function store(WP_REST_Request $request): WP_REST_Response
+    /**
+     * @return WP_REST_Response|WP_Error
+     */
+    public function store(WP_REST_Request $request)
     {
+        $goal = RequestedGoal::settable($this->goals, (string) $request->get_param('goal'));
+
+        if ($goal instanceof WP_Error) {
+            return $goal;
+        }
+
+        $config = (array) $request->get_param('config');
+
+        // A create has no stored row to compare against, so the config that
+        // arrived IS the prior state: one carrying a design beside the id it
+        // names already holds its copy. That is exactly what prefill hands
+        // back — the Template's design with a [[Playbook]]'s words written
+        // into it — and re-snapshotting would take the words straight back
+        // out, which is a blank popup and a merchant who watched it happen.
         $optin = $this->optins->create(
             (string) $request->get_param('name'),
-            (string) $request->get_param('goal'),
-            $this->normalizeConfig((array) $request->get_param('config'))
+            $goal->value,
+            $this->normalizeConfig($config, self::optionalString($config['template_id'] ?? null))
         );
 
         return new WP_REST_Response($optin->toArray(), 201);
@@ -143,16 +162,32 @@ final class OptinController
     {
         $config = $request->get_param('config');
         $id = (string) $request->get_param('id');
+        $goal = self::optionalString($request->get_param('goal'));
 
-        // Which Template this Optin was LAST saved with, so that repicking one
-        // takes a fresh copy while editing anything else leaves the copy the
-        // merchant has been editing alone.
+        // **A Goal is persistent, not frozen** (CONTEXT.md, Goal). Correcting
+        // one is allowed and is the case ADR 0020 exists for — the counters
+        // carry no `goal`, so the correction restates the Optin's whole
+        // history rather than splitting it at the moment of the edit. What is
+        // checked is the Goal being SET, never the one already held: an Optin
+        // whose Goal became unavailable when WooCommerce was deactivated keeps
+        // it, and keeps every number it already counted (ADR 0026).
+        $checked = $goal === null ? null : RequestedGoal::settable($this->goals, $goal);
+
+        if ($checked instanceof WP_Error) {
+            return $checked;
+        }
+
+        // Which Template the copy in `config` was TAKEN FOR, so that repicking
+        // one takes a fresh copy while editing anything else leaves the copy
+        // the merchant has been editing alone. On an update that is the stored
+        // row; on a create it is whatever the incoming config asserts, because
+        // there is no stored row yet ({@see self::store()}).
         $pickedBefore = self::optionalString($this->optins->find($id)?->config['template_id'] ?? null);
 
         $optin = $this->optins->saveDraft(
             $id,
             self::optionalString($request->get_param('name')),
-            self::optionalString($request->get_param('goal')),
+            $checked?->value,
             is_array($config) ? $this->normalizeConfig($config, $pickedBefore) : null
         );
 
@@ -201,7 +236,7 @@ final class OptinController
      * PUBLISH time, which is a different moment and a different file.
      *
      * @param array<string, mixed> $config
-     * @param string|null $pickedBefore The Template this Optin was last saved with.
+     * @param string|null $pickedBefore The Template the copy in `$config` was taken for.
      * @return array<string, mixed>
      */
     private function normalizeConfig(array $config, ?string $pickedBefore = null): array

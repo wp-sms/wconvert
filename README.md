@@ -122,6 +122,59 @@ the import would put the whole vocabulary in the byte budget. The parity test
 asserts the renderer implements exactly what the manifest declares, in both
 directions.
 
+## Goals and Playbooks
+
+A [[Goal]] is an **enum plus data** — `src/Goal/Goal.php` — and the fifth closed
+set this project has refused to make a registry
+([ADR 0019](docs/adr/0019-analytics-stores-daily-counters-not-events.md)). Each
+of the five declares the metric that counts it, its `tier`, and what the *site*
+must have; `GoalRegistry` resolves those two facts into one
+[[Availability]] state, and the precedence — **`unavailable` beats `locked`** —
+lives in one function so no surface recombines it in an order of its own
+([ADR 0026](docs/adr/0026-a-goal-the-site-cannot-serve-is-hidden.md)).
+
+The registry filters nothing. The three states name **why** a member is absent;
+**how** it renders is the surface's, and the two surfaces disagree on purpose —
+the goal screen hides what a settings list explains, and neither ever renders
+`unavailable` as an upsell.
+
+A [[Playbook]] is **data, not code**: `resources/playbooks/*.php`, each
+returning an array. PHP rather than JSON because a Playbook is nothing but words
+and `wp i18n make-pot` cannot see a JSON string
+([ADR 0013](docs/adr/0013-playbook-copy-carries-no-markup.md)); remote entries
+are JSON and enter through the same `PlaybookLibrary::fromEntries()`, so the
+fetch is **designed and not built**.
+
+**Validation happens at registration, never at runtime**, and that is the only
+place the guarantee lives — there is no runtime check behind it. An entry is
+refused for filling a [[Slot Role]] its Template does not declare, for naming
+anything site-local (a post or term id, a Destination id — including one
+sitting inside `destination_hint.types` — or its own link `href`), for pairing a
+Goal with a Template metered by the other converting act, for declaring a
+[[Display Type]] its Template does not serve, for naming no [[Trigger]], and for
+claiming an id another entry already has. A Template offering two converting
+acts, or none, is refused the same way.
+
+Refusals are **recorded rather than thrown** — one bad entry must not take the
+gallery down — and **not silent**: each one goes to `_doing_it_wrong()`, which
+is WordPress's own channel for "a plugin called this wrong". A rejection is an
+authoring error, so it surfaces where an author is working rather than as an
+admin notice the merchant cannot act on.
+
+```bash
+tests/unit/Playbook/PlaybookRegistrationTest.php  # one test per rejection
+tests/unit/Playbook/PrefillSnapshotTest.php       # the snapshot boundary, both halves
+tests/unit/Playbook/BundledPlaybooksTest.php      # a shipped entry gets no exemption
+tests/unit/Goal/GoalParityTest.php                # Availability is spelled twice; a Goal is not
+tests/js/availability.test.ts                     # one rule, two surfaces, opposite renderings
+tests/js/playbook-copy.test.ts                    # plain text, and no innerHTML in any tree
+```
+
+Prefill is **the snapshot boundary that already exists**, not a second one: the
+Optin takes a copy of the Template's design and the Playbook's words are written
+into it, and the two never speak again. `playbook_id` is provenance exactly as
+`template_id` is — neither reaches the browser, and nothing joins on either.
+
 ## The lead log
 
 Reading `wconvert_leads` is the one part of WConvert whose correctness is a

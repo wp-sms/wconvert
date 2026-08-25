@@ -11,23 +11,23 @@ defined('ABSPATH') || exit;
  * Nothing in WConvert asks it in order to REFUSE a premium capability: a
  * premium capability is absent from a free install rather than present and
  * guarded, so there is nothing to guard. What this answers is the question a
- * surface asks — whether to render an Availability member as `locked`.
+ * surface asks — whether to render an Availability member as `locked`
+ * ({@see Availability}).
  *
- * The answer is possession, never a licence. WCONVERT_PRO_LOADED is defined by
- * Pro's bootstrap and only after Pro's min-core guard passed, so a Pro that
- * refused to boot reads here exactly as a Pro that is not installed — which is
- * what the merchant is in fact getting.
+ * **An interface with one production implementation**, on the same pattern as
+ * {@see \WConvert\Storage\OptionStore} and {@see \WConvert\Database\Connection}
+ * and for the same reason: the fact it reports is a `define()`, and a constant
+ * cannot be undefined again — so a suite that defined `WCONVERT_PRO_LOADED`
+ * would decide the answer for every test that ran after it. The `locked` state
+ * is the one thing a free install renders that a free install cannot reach, so
+ * it has to be reachable from a test.
  *
- * WSMS's cautionary case: its shipped elite ZIP is missing the tiers.json its
- * own TierGate reads, benign only because every lookup fails open. There is no
- * file to be missing here.
+ * It is still ONE accessor. The interface is where the question is asked;
+ * {@see WpProPresence} is the only place the answer is looked up.
  *
  * @since 0.1.0
  */
-final class ProPresence
+interface ProPresence
 {
-    public function isLoaded(): bool
-    {
-        return defined('WCONVERT_PRO_LOADED');
-    }
+    public function isLoaded(): bool;
 }

@@ -2,6 +2,9 @@
 
 namespace WConvert\Template;
 
+use WConvert\Support\Rejection;
+use WConvert\Support\RejectionReason;
+
 defined('ABSPATH') || exit;
 
 /**
@@ -33,10 +36,12 @@ final class TemplateLibrary
 
     /**
      * @param array<string, array<string, mixed>> $templates
+     * @param list<Rejection> $rejections
      */
     private function __construct(
         private readonly TemplateVocabulary $vocabulary,
         private readonly array $templates,
+        private readonly array $rejections = [],
     ) {
     }
 
@@ -44,18 +49,33 @@ final class TemplateLibrary
     {
         $files = glob(rtrim($pluginDir, '/') . '/' . self::PATH . '/*.json');
         $templates = [];
+        $rejections = [];
 
         foreach ($files === false ? [] : $files as $file) {
             $entry = self::read($file, $vocabulary);
 
-            if ($entry !== null) {
-                $templates[(string) $entry['id']] = $entry;
+            if ($entry === null) {
+                continue;
             }
+
+            $reason = self::refuse($entry['tree']);
+
+            if ($reason !== null) {
+                $rejections[] = new Rejection((string) $entry['id'], $reason);
+                continue;
+            }
+
+            $templates[(string) $entry['id']] = $entry;
         }
 
         ksort($templates);
+        usort($rejections, static fn (Rejection $a, Rejection $b): int => strcmp($a->id, $b->id));
 
-        return new self($vocabulary, $templates);
+        foreach ($rejections as $rejection) {
+            $rejection->warn(__METHOD__);
+        }
+
+        return new self($vocabulary, $templates, $rejections);
     }
 
     /**
@@ -69,11 +89,59 @@ final class TemplateLibrary
     }
 
     /**
+     * Every entry this install refused, and why.
+     *
+     * Recorded rather than thrown, and rather than dropped in silence. One
+     * malformed entry must not take the gallery down; an entry that simply
+     * vanished from it looks exactly like a gallery that failed to load
+     * ({@see Rejection}).
+     *
+     * @return list<Rejection>
+     */
+    public function rejections(): array
+    {
+        return $this->rejections;
+    }
+
+    /**
      * @return array<string, mixed>|null
      */
     public function find(string $id): ?array
     {
         return $this->templates[$id] ?? null;
+    }
+
+    /**
+     * Why this tree may not be registered, or null.
+     *
+     * **One converting act, exactly**, and a step count that follows from it.
+     * A Template offering both a form and a click-through CTA is rejected here
+     * rather than disambiguated at runtime, because an Optin with two
+     * candidate Conversions has no honest number to report; one offering
+     * neither reports zero forever, which is the same rule read the other way
+     * (ADR 0020, CONTEXT.md Conversion).
+     *
+     * The step count is the act's, not the entry's: a submit-metered design
+     * has two steps because the post-submit success state is a terminal step,
+     * and a click-metered one has one because the click navigates the visitor
+     * away and an interstitial is worse than the navigation it delays
+     * (ADR 0010, corrected by ADR 0025).
+     *
+     * @param array{steps: list<array<string, mixed>>} $tree
+     */
+    private static function refuse(array $tree): ?RejectionReason
+    {
+        $acts = ConvertingAct::offeredIn($tree);
+
+        if (count($acts) > 1) {
+            return RejectionReason::TwoConvertingActs;
+        }
+
+        if ($acts === []) {
+            return RejectionReason::NoConvertingAct;
+        }
+
+        return count($tree['steps']) === $acts[0]->steps() ? null : RejectionReason::WrongStepCount;
     }
 
     /**
@@ -101,8 +169,16 @@ final class TemplateLibrary
      * reaches every existing Optin, while a release that restyles a Template
      * reaches none.
      *
+     * **`$pickedBefore` is the id the copy in `$config` was TAKEN FOR**, which
+     * on an update is the stored row's and on a create is whatever the
+     * incoming config asserts — a create has no stored row, so the config that
+     * arrived is the prior state. That is what lets a prefilled Optin keep the
+     * [[Playbook]] words already written into its copy: re-snapshotting on the
+     * way in would strip them, because a snapshot is of the design and a
+     * Template carries no copy.
+     *
      * @param array<string, mixed> $config
-     * @param string|null $pickedBefore The `template_id` this Optin was saved with, if any.
+     * @param string|null $pickedBefore The `template_id` the copy in `$config` was taken for.
      * @return array<string, mixed>
      */
     public function snapshotInto(array $config, ?string $pickedBefore = null): array

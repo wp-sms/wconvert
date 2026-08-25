@@ -63,6 +63,25 @@ widened audience trades a missing feature for a factually false one.
   per-surface rule, and the `unavailable`-beats-`locked` precedence is added.
 - **A Goal is a registry member subject to Availability**, like a Trigger type or a
   Destination type. There is still no separate list of premium capabilities.
+  *Built by [#27](https://github.com/navidkashani/wconvert/issues/27) as an **enum
+  plus data**: [`Goal`](../../src/Goal/Goal.php) declares its metric, its `tier`
+  and what the site must have, and
+  [`GoalRegistry`](../../src/Goal/GoalRegistry.php) resolves those against the
+  install. The precedence is one function,
+  [`Availability::of()`](../../src/Support/Availability.php), so no surface
+  recombines two booleans in an order of its own. The registry **filters
+  nothing** — the three states name why a member is absent and how it renders is
+  the surface's, which is what lets the goal screen hide where a settings list
+  explains: one rule, two renderings, in
+  [`resources/admin/src/goals/availability.ts`](../../resources/admin/src/goals/availability.ts).*
+- **The rule is enforced at the write, not only on the screen.** *Added by
+  [#27](https://github.com/navidkashani/wconvert/issues/27): a screen is not an
+  enforcement mechanism, and `POST /wconvert/v1/optins` is scriptable by anyone
+  holding `manage_options` — so the question the goal screen asks is asked again
+  in [`OptinController`](../../src/Rest/OptinController.php), where it can refuse.
+  What is checked is the Goal being SET and never the one already held: an Optin
+  whose Goal became `unavailable` keeps it, and keeps every number it already
+  counted.*
 - Merchants who deactivate WooCommerce temporarily see their goal screen change shape
   with no explanation on that screen. Accepted: it is rare, and ADR 0027 tells them
   what happened on the screen where they would actually notice — the Optin list.
