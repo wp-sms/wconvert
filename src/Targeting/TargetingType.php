@@ -10,7 +10,7 @@ defined('ABSPATH') || exit;
  * This enum is the hand-written duplicate of the rule manifest's `targeting`
  * section that ADR 0005 allows itself — "the evaluator switch is the only
  * hand-written duplicate, and a test asserts parity". That test is
- * {@see \WConvert\Tests\Unit\Targeting\RuleManifestParityTest}.
+ * {@see \WConvert\Tests\Unit\Rules\RuleManifestParityTest}.
  *
  * @since 0.1.0
  */

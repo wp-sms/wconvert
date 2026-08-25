@@ -37,8 +37,9 @@
 // existing one for the same reason: the moment a compliance check has an
 // opt-out, the opt-out is what runs on the day it matters. The optional
 // positional tree is not a flag and cannot turn anything off — it is the same
-// affordance bin/verify-source-contract.sh has, and it exists so the fixture
-// trees in tests/fixtures/check-loader can prove this script fails closed.
+// affordance bin/verify-source-contract.sh has, and it exists so
+// tests/unit/Contract/LoaderContractTest.php can point this script at trees it
+// builds and prove that it fails closed on each of them.
 
 import { gzipSync } from 'node:zlib';
 import { readFileSync } from 'node:fs';
@@ -114,10 +115,14 @@ function premiumIdentifiers() {
   );
 }
 
+// Each bundle is read ONCE. Reading again for the premium scan would report a
+// missing bundle twice and read as two problems where there is one.
+const sources = new Map(BUNDLES.map((bundle) => [bundle.path, readBundle(bundle)]));
+
 // --- 1. The byte budget ------------------------------------------------------
 
 for (const bundle of BUNDLES) {
-  const source = readBundle(bundle);
+  const source = sources.get(bundle.path);
 
   if (source === null) {
     continue;
@@ -155,7 +160,7 @@ if (premium !== null) {
     console.log('  ! premium scan: the manifest declares no premium rule types yet, so this scan asserted nothing');
   } else {
     for (const bundle of BUNDLES.filter((b) => b.scanForPremium)) {
-      const source = readBundle(bundle);
+      const source = sources.get(bundle.path);
 
       if (source === null) {
         continue;

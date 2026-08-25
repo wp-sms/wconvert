@@ -6,6 +6,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use WConvert\Frontend\Payload;
 use WConvert\Frontend\PayloadTag;
+use WConvert\Optin\PublishedOptin;
 use WConvert\Targeting\RequestContext;
 
 /**
@@ -28,7 +29,7 @@ final class PayloadScalingTest extends TestCase
      * A published set of $total Optins, of which exactly two are targeted at
      * `/pricing/` and the rest at pages that are not this one.
      *
-     * @return list<array<string, mixed>>
+     * @return list<PublishedOptin>
      */
     private static function publishedSet(int $total): array
     {
@@ -49,7 +50,7 @@ final class PayloadScalingTest extends TestCase
             ];
         }
 
-        return $set;
+        return PublishedOptin::fromSet($set);
     }
 
     private static function pricingPage(): RequestContext

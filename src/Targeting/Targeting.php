@@ -46,6 +46,26 @@ final class Targeting
     }
 
     /**
+     * Does either list hold a rule of this type?
+     *
+     * Asked by the request-context factory, because resolving a post's terms
+     * is a query and nobody should pay for it on a page where no published
+     * Optin targets a term. It lives HERE rather than there so the question is
+     * asked of the enum rather than of a string literal the manifest parity
+     * test cannot see (ADR 0005).
+     */
+    public function usesType(TargetingType $type): bool
+    {
+        foreach ([...$this->include, ...$this->exclude] as $rule) {
+            if ($rule->type === $type) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Back to storage, with every rule the vocabulary does not know already
      * dropped by {@see self::fromArray()}.
      *

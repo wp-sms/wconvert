@@ -33,7 +33,7 @@ final class ViteHelper
                 $handle,
                 $distUrl . 'main.css',
                 [],
-                self::assetVersion($distDir . 'main.css')
+                BuiltAsset::version($distDir . 'main.css')
             );
         }
 
@@ -41,7 +41,7 @@ final class ViteHelper
             $handle,
             $distUrl . 'main.js',
             ['wp-i18n', 'wp-api-fetch'],
-            self::assetVersion($distDir . 'main.js'),
+            BuiltAsset::version($distDir . 'main.js'),
             true
         );
 
@@ -60,8 +60,4 @@ final class ViteHelper
         });
     }
 
-    private static function assetVersion(string $path): string
-    {
-        return BuiltAsset::version($path);
-    }
 }

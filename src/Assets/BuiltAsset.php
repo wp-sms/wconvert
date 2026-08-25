@@ -14,11 +14,6 @@ defined('ABSPATH') || exit;
  */
 final class BuiltAsset
 {
-    public static function exists(string $absolutePath): bool
-    {
-        return is_file($absolutePath);
-    }
-
     public static function version(string $absolutePath): string
     {
         $mtime = is_file($absolutePath) ? filemtime($absolutePath) : false;

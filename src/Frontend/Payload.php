@@ -2,8 +2,8 @@
 
 namespace WConvert\Frontend;
 
+use WConvert\Optin\PublishedOptin;
 use WConvert\Targeting\RequestContext;
-use WConvert\Targeting\Targeting;
 use WConvert\Targeting\TargetingEvaluator;
 
 defined('ABSPATH') || exit;
@@ -25,27 +25,17 @@ defined('ABSPATH') || exit;
 final class Payload
 {
     /**
-     * @param iterable<array<string, mixed>> $publishedSet
+     * @param iterable<PublishedOptin> $publishedSet
      * @return list<array<string, mixed>>
      */
     public static function forRequest(iterable $publishedSet, RequestContext $context): array
     {
         $entries = [];
 
-        foreach ($publishedSet as $projection) {
-            $targeting = $projection['targeting'] ?? [];
-
-            if (!TargetingEvaluator::matches(Targeting::fromArray(is_array($targeting) ? $targeting : []), $context)) {
-                continue;
+        foreach ($publishedSet as $optin) {
+            if (TargetingEvaluator::matches($optin->targeting, $context)) {
+                $entries[] = $optin->toPayloadEntry();
             }
-
-            $payload = $projection['payload'] ?? [];
-
-            // The Targeting axis is STRIPPED, not shipped. It was answered on
-            // the server; sending it would pay for it twice and hand the
-            // browser a rule it has no reason to be able to re-evaluate
-            // (ADR 0005).
-            $entries[] = ['id' => (string) ($projection['id'] ?? '')] + (is_array($payload) ? $payload : []);
         }
 
         return $entries;

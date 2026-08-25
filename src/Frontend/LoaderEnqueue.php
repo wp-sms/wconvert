@@ -3,6 +3,7 @@
 namespace WConvert\Frontend;
 
 use WConvert\Assets\BuiltAsset;
+use WConvert\Optin\PublishedOptin;
 use WConvert\Optin\PublishedSet;
 
 defined('ABSPATH') || exit;
@@ -44,7 +45,11 @@ final class LoaderEnqueue
             return;
         }
 
-        $set = $this->publishedSet->all();
+        // Parsed once, here, and passed as objects from this point on. The set
+        // is stored as plain arrays because that is what an option is; letting
+        // those arrays travel further means every reader downstream spells a
+        // rule type as a string literal (ADR 0005).
+        $set = PublishedOptin::fromSet($this->publishedSet->all());
 
         if ($set === []) {
             return;
@@ -60,7 +65,7 @@ final class LoaderEnqueue
 
         $dist = WCONVERT_DIR . self::DIST;
 
-        if (!BuiltAsset::exists($dist)) {
+        if (!is_file($dist)) {
             self::noticeMissingLoaderBundle();
 
             return;
@@ -85,7 +90,7 @@ final class LoaderEnqueue
             // JSON_HEX_TAG, which is the escaping this context needs. Running
             // esc_html() over it would escape the quotes and produce invalid
             // JSON.
-            echo PayloadTag::render($entries); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+            echo PayloadTag::render($entries);
         }, 5);
     }
 

@@ -61,9 +61,20 @@ final class CoreServiceProvider implements ServiceProvider
     public function boot(ServiceContainer $container): void
     {
         // A plugin updated by overwriting its directory never fires an
-        // activation hook, so the schema has to be able to catch up here. One
-        // autoloaded option read on a request that changes nothing.
-        $container->resolve(Installer::class)->upgradeIfNeeded();
+        // activation hook, so the schema has to be able to catch up somewhere
+        // other than activation.
+        //
+        // That somewhere is `admin_init`, and NOT this boot. The version
+        // option is written with autoload=false like everything else WConvert
+        // stores, so reading it here would put a real database query on every
+        // uncached front-end page load — which is the exact harm ADR 0003
+        // names when it rejects a transient under the payload. WordPress's own
+        // upgrade routines run on `admin_init` for the same reason, and any
+        // admin page load repairs the schema before a merchant can reach a
+        // screen that needs it.
+        add_action('admin_init', static function () use ($container): void {
+            $container->resolve(Installer::class)->upgradeIfNeeded();
+        });
 
         $container->resolve(OptinController::class)->hooks();
 

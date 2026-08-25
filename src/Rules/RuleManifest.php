@@ -22,6 +22,13 @@ defined('ABSPATH') || exit;
  * `bin/check-loader.mjs` reads this file for the identifiers it calls premium,
  * so that scan cannot drift from what the manifest says (ADR 0029, check b).
  *
+ * **Nothing in PHP reads this at runtime yet**, and that is the staging rather
+ * than an oversight: ADR 0005's "PHP reads it at runtime" is about the
+ * trigger/condition evaluator, which arrives with the loader in #22. Today the
+ * readers are the manifest parity test and the loader check. The fail-closed
+ * throw below is therefore reached only by those two — which is exactly where
+ * an unreadable manifest most needs to stop the build.
+ *
  * @since 0.1.0
  */
 final class RuleManifest

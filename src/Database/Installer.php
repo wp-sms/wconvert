@@ -12,8 +12,10 @@ defined('ABSPATH') || exit;
  * Activation is not enough on its own: a plugin updated by overwriting its
  * directory — which is what every automatic update does — never fires an
  * activation hook, so a schema change would reach a site that never ran the
- * DDL for it. The version check on `plugins_loaded` is the half that covers
- * that, and it is one autoloaded option read on a request that changes nothing.
+ * DDL for it. {@see \WConvert\Container\CoreServiceProvider} covers that by
+ * calling {@see self::upgradeIfNeeded()} on `admin_init`, deliberately NOT on
+ * the front end: the version option is not autoloaded, so reading it there
+ * would be a database query on every uncached page load.
  *
  * @since 0.1.0
  */

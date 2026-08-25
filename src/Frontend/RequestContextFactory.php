@@ -2,7 +2,9 @@
 
 namespace WConvert\Frontend;
 
+use WConvert\Optin\PublishedOptin;
 use WConvert\Targeting\RequestContext;
+use WConvert\Targeting\TargetingType;
 
 defined('ABSPATH') || exit;
 
@@ -27,7 +29,7 @@ final class RequestContextFactory
      * that is conditional, and it is conditional on the rule vocabulary rather
      * than on the URL — a per-URL cache is exactly what ADR 0003 forbids.
      *
-     * @param iterable<array<string, mixed>> $publishedSet
+     * @param iterable<PublishedOptin> $publishedSet
      */
     public static function forPublishedSet(iterable $publishedSet): RequestContext
     {
@@ -137,23 +139,13 @@ final class RequestContextFactory
     }
 
     /**
-     * @param iterable<array<string, mixed>> $publishedSet
+     * @param iterable<PublishedOptin> $publishedSet
      */
     private static function targetsAnyTerm(iterable $publishedSet): bool
     {
-        foreach ($publishedSet as $projection) {
-            $targeting = $projection['targeting'] ?? [];
-
-            if (!is_array($targeting)) {
-                continue;
-            }
-
-            foreach (['include', 'exclude'] as $list) {
-                foreach ((array) ($targeting[$list] ?? []) as $rule) {
-                    if (is_array($rule) && ($rule['type'] ?? null) === 'term') {
-                        return true;
-                    }
-                }
+        foreach ($publishedSet as $optin) {
+            if ($optin->targeting->usesType(TargetingType::Term)) {
+                return true;
             }
         }
 
