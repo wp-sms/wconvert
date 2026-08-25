@@ -144,7 +144,7 @@ final class StatsRepositoryTest extends TestCase
      */
     public function testTheDashboardsReadIsOneStatementAgainstOneTable(): void
     {
-        $this->stats->inRange(StatRange::between('2026-07-27', '2026-08-25'));
+        $this->stats->inRange(StatRange::lastDays(30, '2026-08-25'));
 
         $this->assertCount(1, $this->db->reads);
         $this->assertSame(Connection::TABLE_STATS, $this->db->reads[0]['table']);
@@ -158,7 +158,7 @@ final class StatsRepositoryTest extends TestCase
      */
     public function testItProjectsTheFourColumnsAndBackticksTheOneThatIsAlsoAFunction(): void
     {
-        $this->stats->inRange(StatRange::between('2026-07-27', '2026-08-25'));
+        $this->stats->inRange(StatRange::lastDays(30, '2026-08-25'));
 
         $sql = $this->db->reads[0]['sql'];
 
@@ -173,7 +173,7 @@ final class StatsRepositoryTest extends TestCase
      */
     public function testTheWindowIsBoundRatherThanInterpolated(): void
     {
-        $this->stats->inRange(StatRange::between('2026-07-27', '2026-08-25'));
+        $this->stats->inRange(StatRange::lastDays(30, '2026-08-25'));
 
         $this->assertStringContainsString('WHERE stat_date BETWEEN %s AND %s', $this->db->reads[0]['sql']);
         $this->assertSame(['2026-07-27', '2026-08-25'], $this->db->reads[0]['params']);
@@ -186,7 +186,7 @@ final class StatsRepositoryTest extends TestCase
      */
     public function testTheReadIsAReadAndNothingElse(): void
     {
-        $this->stats->inRange(StatRange::between('2026-07-27', '2026-08-25'));
+        $this->stats->inRange(StatRange::lastDays(30, '2026-08-25'));
 
         $this->assertSame([], $this->db->writes);
         $this->assertSame([], $this->db->upserts);

@@ -95,7 +95,19 @@ rather than by how long the install has been counting.
 - **The window is asked for in DAYS and never in dates.** A date parameter is
   how "the merchant's today" quietly becomes the browser's today, which belongs
   to whoever is at the keyboard. The far end is `StatDay::today()`, read on the
-  server, so the window can only ever end on the site's own day.
+  server, so the window can only ever end on the site's own day — and
+  [`StatRange`](../../src/Stats/StatRange.php) has **one constructor**,
+  `lastDays()`, so a window ending anywhere else is unexpressible rather than
+  merely unused. Its length travels back on the payload, so the admin bundle
+  never spells the default a second time.
+- **Nothing that cannot be reached is shipped.** `conversions − deliveries` is
+  the delivery failure count
+  [ADR 0020](0020-conversions-are-interpreted-at-read.md) names, and it is
+  deliberately absent: nothing writes the delivery kind, so every branch that
+  could produce it is dead in this build, and it is the same
+  arithmetic-over-two-numbers-already-shown shape the "left without converting"
+  figure is refused for. The card carries the sentence explaining the zero and
+  no number behind it.
 - **If an install ever does outgrow the scan, the escalation is cheap and the
   query is already the one that would use it** — add `idx_stat_date`, change
   one number in `SchemaTest::INDEX_BUDGET`, and change no code. It should be

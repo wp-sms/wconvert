@@ -98,40 +98,41 @@ final class GoalReport
     }
 
     /**
-     * How many of one kind the rows carry, over whatever range they cover.
+     * Every kind's total, keyed by kind, in **one pass**.
      *
-     * The one read here with no [[Goal]] in it, and that is the point: a
-     * [[Dismissal]] is a Dismissal whatever the Optin was hoping for, and the
-     * card reports it beside a headline the Goal chose. {@see self::headline()}
-     * is this same sum taken over the kind the Goal declares.
+     * The reads here with no [[Goal]] in them, and that is the point: an
+     * [[Impression]] is one Optin appearing to one visitor and a [[Dismissal]]
+     * is a deliberate close, and neither depends on what the merchant was
+     * hoping for. They are the numbers a Goal correction leaves alone, sitting
+     * beside a headline the Goal chose.
+     *
+     * One pass and a map rather than a method per kind, because the card wants
+     * three of them at once: a named accessor per kind would walk the same
+     * rows three times and would still not name the fourth.
+     *
+     * A kind with no rows is **absent rather than zero** — the caller says
+     * what a missing kind means, and for the headline it means 0
+     * ({@see self::byDay()}).
      *
      * @param iterable<array<string, mixed>> $rows
+     * @return array<string, int>
      */
-    public static function total(StatKind $kind, iterable $rows): int
+    public static function totals(iterable $rows): array
     {
-        $total = 0;
+        $totals = [];
 
         foreach ($rows as $row) {
-            if (StatKind::tryFrom((string) ($row['kind'] ?? '')) === $kind) {
-                $total += (int) ($row['count'] ?? 0);
+            $kind = StatKind::tryFrom((string) ($row['kind'] ?? ''));
+
+            // An unknown kind is a row no version of this code wrote
+            // (ADR 0019), the same reading {@see self::byDay()} takes.
+            if ($kind === null) {
+                continue;
             }
+
+            $totals[$kind->value] = ($totals[$kind->value] ?? 0) + (int) ($row['count'] ?? 0);
         }
 
-        return $total;
-    }
-
-    /**
-     * The denominator of conversion rate, which does not move when the Goal
-     * does.
-     *
-     * An [[Impression]] is one Optin appearing to one visitor, once — it does
-     * not depend on what the merchant was hoping they would do next, so it is
-     * the one number a Goal correction leaves alone (CONTEXT.md, Impression).
-     *
-     * @param iterable<array<string, mixed>> $rows
-     */
-    public static function impressions(iterable $rows): int
-    {
-        return self::total(StatKind::Impression, $rows);
+        return $totals;
     }
 }

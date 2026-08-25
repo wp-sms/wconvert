@@ -21,12 +21,18 @@ defined('ABSPATH') || exit;
  * payload**, and there is no flat list of Optins to sort: an Optin's row lives
  * INSIDE its Goal's card, which is what makes a cross-Goal ranking
  * unexpressible rather than merely discouraged. Comparison is offered within a
- * Goal and within an Optin over time.
+ * Goal and within an Optin over time — both carry their own daily series.
  *
  * **There is no "left without converting" figure either.** It is already
  * `impressions − conversions − dismissals`, and naming it invites a screen
  * reporting two numbers where one is the arithmetic of the other
  * (CONTEXT.md, Dismissal).
+ *
+ * That rule is why `conversions − lead_magnet_delivered`, the delivery failure
+ * count ADR 0020 names, is **not on this payload**. Nothing writes the
+ * delivery kind yet, so the subtraction would report every Conversion as a
+ * failed delivery — and it is the same arithmetic-of-two-numbers-already-shown
+ * shape besides. It belongs to the ticket that ships the job that writes it.
  *
  * ============================================================================
  * TWO READS, AND THE JOIN IS HERE RATHER THAN IN SQL.
@@ -86,7 +92,7 @@ final class Dashboard
         $cards = [];
 
         foreach (Goal::cases() as $goal) {
-            $held = array_filter($optins, static fn (array $o): bool => $o['goal'] === $goal);
+            $held = array_filter($optins, static fn (InterpretedOptin $o): bool => $o->goal === $goal);
 
             // A Goal no Optin holds has nothing to report. This is also what
             // makes a corrected Goal MOVE a history rather than split it: the
@@ -98,77 +104,68 @@ final class Dashboard
             $cards[] = self::card($goal, $range, $byGoal[$goal->value] ?? [], $held, $byOptin);
         }
 
-        return ['from' => $range->from, 'to' => $range->to, 'goals' => $cards];
+        // `days` travels so the screen can say which window is selected
+        // without spelling {@see StatRange::DEFAULT_DAYS} a second time in a
+        // bundle with nothing asserting the two agree.
+        return ['from' => $range->from, 'to' => $range->to, 'days' => $range->days(), 'goals' => $cards];
     }
 
     /**
      * One Goal's card, with its own Optins inside it.
      *
      * @param list<array<string, mixed>> $rows
-     * @param array<string, array{name: string, goal: Goal, deleted: bool}> $held
+     * @param array<string, InterpretedOptin> $held
      * @param array<string, list<array<string, mixed>>> $byOptin
      * @return array<string, mixed>
      */
     private static function card(Goal $goal, StatRange $range, array $rows, array $held, array $byOptin): array
     {
         $kind = $goal->headlineKind();
-        $headline = GoalReport::headline($goal, $rows);
-        $conversions = GoalReport::total(StatKind::Conversion, $rows);
 
         return [
             'goal' => $goal->value,
             'label' => $goal->label(),
             'headline_label' => $goal->headlineLabel(),
-            'headline' => $headline,
-            // `conversions − lead_magnet_delivered` is the delivery failure
-            // count, and it has no second metric behind it (ADR 0020). Null
-            // where the headline IS conversions — the arithmetic would be zero
-            // by construction — and null while nothing writes the headline
-            // kind, because every Conversion would otherwise read as a failed
-            // delivery.
-            'delivery_failures' => $kind !== StatKind::Conversion && $kind->hasWriter()
-                ? max(0, $conversions - $headline)
-                : null,
-            // Why the number above is zero, where it is zero for a reason the
+            // Why the headline is zero, where it is zero for a reason the
             // merchant cannot act on. It disappears when the job that writes
-            // the kind ships.
+            // the kind ships ({@see StatKind::hasWriter()}).
             'note' => $kind->hasWriter() ? null : __(
                 'Nothing records this yet, so it reads zero against real conversions. The job that counts it has not shipped.',
                 'wconvert'
             ),
-            ...self::counts($rows),
-            'by_day' => self::series($goal, $range, $rows),
-            'optins' => self::optinRows($goal, $held, $byOptin),
+            ...self::numbers($goal, $range, $rows),
+            'optins' => self::optinRows($goal, $range, $held, $byOptin),
         ];
     }
 
     /**
-     * The three numbers that do not move when the Goal does, and the rate over
-     * two of them.
+     * The numbers a card and an Optin row both carry, over one set of rows.
      *
-     * An [[Impression]] is one Optin appearing to one visitor and a
-     * [[Dismissal]] is a deliberate close; neither depends on what the
-     * merchant was hoping for. **Conversion rate is conversions ÷
-     * impressions** — the Conversion kind and not the headline kind, so a
-     * lead-magnet Optin's rate measures what visitors did rather than what the
-     * delivery job managed afterwards.
+     * **Conversion rate is conversions ÷ impressions** — the Conversion kind
+     * and not the headline kind, so a lead-magnet Optin's rate measures what
+     * visitors did rather than what the delivery job managed afterwards. An
+     * [[Impression]] is one Optin appearing to one visitor and a [[Dismissal]]
+     * is a deliberate close; neither moves when the Goal does.
      *
      * `null` rather than zero where nothing was shown: a rate over no
-     * denominator is undefined, and 0% is a claim that visitors saw it and
-     * did not act.
+     * denominator is undefined, and 0% is a claim that visitors saw it and did
+     * not act.
      *
      * @param list<array<string, mixed>> $rows
-     * @return array{impressions: int, dismissals: int, conversion_rate: float|null}
+     * @return array{headline: int, impressions: int, dismissals: int, conversion_rate: float|null, by_day: array<string, int>}
      */
-    private static function counts(array $rows): array
+    private static function numbers(Goal $goal, StatRange $range, array $rows): array
     {
-        $impressions = GoalReport::impressions($rows);
-        $conversions = GoalReport::total(StatKind::Conversion, $rows);
+        $totals = GoalReport::totals($rows);
+        $impressions = $totals[StatKind::Impression->value] ?? 0;
+        $conversions = $totals[StatKind::Conversion->value] ?? 0;
 
         return [
+            'headline' => $totals[$goal->headlineKind()->value] ?? 0,
             'impressions' => $impressions,
-            'dismissals' => GoalReport::total(StatKind::Dismiss, $rows),
+            'dismissals' => $totals[StatKind::Dismiss->value] ?? 0,
             'conversion_rate' => $impressions === 0 ? null : round($conversions / $impressions, 4),
+            'by_day' => self::series($goal, $range, $rows),
         ];
     }
 
@@ -201,30 +198,34 @@ final class Dashboard
      * February's goal total fall (ADR 0020). What they lose is the row, which
      * is a list of things the merchant is still running.
      *
+     * Each row carries its own daily series, which is what "comparison is
+     * offered within an Optin over time" means — otherwise the only way to
+     * compare an Optin with itself would be to move the whole screen's window
+     * and remember the last number.
+     *
      * Newest first, off the ULID — the id already sorts chronologically, so
      * this is the Optin list's own order and not a ranking by any number on
      * the row.
      *
-     * @param array<string, array{name: string, goal: Goal, deleted: bool}> $held
+     * @param array<string, InterpretedOptin> $held
      * @param array<string, list<array<string, mixed>>> $byOptin
      * @return list<array<string, mixed>>
      */
-    private static function optinRows(Goal $goal, array $held, array $byOptin): array
+    private static function optinRows(Goal $goal, StatRange $range, array $held, array $byOptin): array
     {
-        $live = array_filter($held, static fn (array $optin): bool => !$optin['deleted']);
+        $live = array_filter($held, static fn (InterpretedOptin $optin): bool => !$optin->deleted);
 
-        krsort($live);
+        // SORT_STRING, because a ULID is base32 text: under SORT_REGULAR an
+        // all-digit one would be compared as a number against its neighbours.
+        krsort($live, SORT_STRING);
 
         $rows = [];
 
         foreach ($live as $id => $optin) {
-            $counters = $byOptin[$id] ?? [];
-
             $rows[] = [
-                'id' => $id,
-                'name' => $optin['name'],
-                'headline' => GoalReport::headline($goal, $counters),
-                ...self::counts($counters),
+                'id' => $optin->id,
+                'name' => $optin->name,
+                ...self::numbers($goal, $range, $byOptin[$id] ?? []),
             ];
         }
 
@@ -234,32 +235,19 @@ final class Dashboard
     /**
      * Every Optin whose counts this build can interpret, by id.
      *
-     * An Optin holding a `goal` outside {@see Goal} is dropped **with its
-     * counts**, rather than being filed under a card that would have to
-     * invent a headline for it. That is the same posture
-     * {@see GoalReport::byDay()} takes towards an unknown `kind`: what is
-     * outside a closed set is a row no version of this code wrote, and
-     * guessing at it is how a wrong number gets reported confidently.
-     *
      * @param iterable<array<string, mixed>> $rows
-     * @return array<string, array{name: string, goal: Goal, deleted: bool}>
+     * @return array<string, InterpretedOptin>
      */
     private static function interpretable(iterable $rows): array
     {
         $optins = [];
 
         foreach ($rows as $row) {
-            $goal = Goal::tryFrom((string) ($row['goal'] ?? ''));
+            $optin = InterpretedOptin::fromRow($row);
 
-            if ($goal === null) {
-                continue;
+            if ($optin !== null) {
+                $optins[$optin->id] = $optin;
             }
-
-            $optins[(string) ($row['id'] ?? '')] = [
-                'name' => (string) ($row['name'] ?? ''),
-                'goal' => $goal,
-                'deleted' => ($row['deleted_at'] ?? null) !== null,
-            ];
         }
 
         return $optins;
@@ -280,7 +268,7 @@ final class Dashboard
      * rows it was given.
      *
      * @param iterable<array<string, mixed>> $rows
-     * @param array<string, array{name: string, goal: Goal, deleted: bool}> $optins
+     * @param array<string, InterpretedOptin> $optins
      * @return array{0: array<string, list<array<string, mixed>>>, 1: array<string, list<array<string, mixed>>>}
      */
     private static function bucket(StatRange $range, iterable $rows, array $optins): array
@@ -295,7 +283,7 @@ final class Dashboard
                 continue;
             }
 
-            $byGoal[$optins[$optinId]['goal']->value][] = $row;
+            $byGoal[$optins[$optinId]->goal->value][] = $row;
             $byOptin[$optinId][] = $row;
         }
 

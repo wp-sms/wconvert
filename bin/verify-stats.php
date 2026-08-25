@@ -409,7 +409,7 @@ $verify->check('the denominator came back too', 8, $card['impressions'] ?? null)
 $verify->check(
     'a day outside the window is excluded, and a wider window picks it up',
     6,
-    $cardFor($dashboard->read(StatRange::between($outside, $today)), 'grow_email_list')['headline'] ?? null
+    $cardFor($dashboard->read(StatRange::lastDays($window->days() + 1, $today)), 'grow_email_list')['headline'] ?? null
 );
 $verify->check('and the rate is conversions over impressions', 0.5, $card['conversion_rate'] ?? null);
 

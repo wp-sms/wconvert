@@ -49,6 +49,16 @@ right rather than splitting it permanently in two — and since #2 made Goal fre
 editable on purpose, the frozen alternative means a permanent split every time
 someone fixes a typo.
 
+*Open, and noted by [#28](https://github.com/navidkashani/wconvert/issues/28)
+rather than settled by it: `wconvert_optins.goal` is **one column with no
+draft/published split**, so `saveDraft()` writes it live and re-attribution
+fires on a draft edit that is never published. That follows from a Goal being
+"kept on the Optin for its whole life" rather than being part of `config`
+(CONTEXT.md, Goal) — but it means a merchant can change a live Optin's reported
+metric while the site still serves the old converting act. Closing the gap needs
+a `published_goal`, which is a schema change and therefore its own sign-off; it
+belongs to the builder ticket that lets a merchant edit a Goal at all.*
+
 ## The one exception
 
 `lead_magnet_delivered` is its own `kind` rather than something derived. It
@@ -142,10 +152,17 @@ see its own inline correction.*
   [`StatKind::hasWriter()`](../../src/Stats/StatKind.php) is the one flag behind
   both, and it is one line to delete when
   [#31](https://github.com/navidkashani/wconvert/issues/31) lands.*
+  *So the failure count itself is **not on the dashboard payload at all**, and
+  that is the second half of the same decision. A field that is `null` in every
+  branch this build can reach is a render path nothing can exercise and a
+  translatable string nobody can read — and `conversions − deliveries` is the
+  same arithmetic-over-two-numbers-already-shown shape the "left without
+  converting" figure is refused for. It belongs to the ticket that ships the
+  job, which is where the number first becomes true.*
 - **Never join `wconvert_leads` to produce a count.** That is the derivation
   #11 asked not to be built, and ADR 0018 depends on it not existing.
-  *Enforced by [#28](https://github.com/navidkashani/wconvert/issues/28) from
-  both ends, because a sentence in an ADR is not a thing that fails.
+  *Enforced by [ADR 0034](0034-the-dashboard-joins-in-php.md) from both ends,
+  because a sentence in an ADR is not a thing that fails.
   `tests/unit/Stats/NoCountComesFromTheLeadLogTest.php` walks the reporting
   classes' **dependency closure** — computed from the route and the screen
   rather than listed, so a `LeadRepository` injected into a report is caught on

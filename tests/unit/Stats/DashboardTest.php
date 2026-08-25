@@ -35,7 +35,7 @@ final class DashboardTest extends TestCase
 
     private static function range(): StatRange
     {
-        return StatRange::between('2026-08-23', '2026-08-25');
+        return StatRange::lastDays(3, '2026-08-25');
     }
 
     /**
@@ -224,7 +224,7 @@ final class DashboardTest extends TestCase
     {
         $payload = Dashboard::of(self::range(), self::counters(), self::optin('grow_email_list'));
 
-        $this->assertSame(['from', 'to', 'goals'], array_keys($payload));
+        $this->assertSame(['from', 'to', 'days', 'goals'], array_keys($payload));
     }
 
     /**
@@ -284,21 +284,36 @@ final class DashboardTest extends TestCase
 
         $this->assertSame(0, $card['headline']);
         $this->assertNotNull($card['note']);
-        // And it does NOT report ten failed deliveries, which is what the
-        // arithmetic would say against a kind nothing writes.
-        $this->assertNull($card['delivery_failures']);
     }
 
     /**
-     * Every other card has neither, because `conversions − conversions` is
-     * zero by construction and there is nothing to explain.
+     * Every other card has no note, because there is nothing to explain.
      */
-    public function testACardWhoseHeadlineIsConversionsHasNoFailureCountAndNoNote(): void
+    public function testACardWhoseHeadlineIsConversionsHasNoNote(): void
     {
         $card = self::cardFor(Dashboard::of(self::range(), self::counters(), self::optin('grow_email_list')), 'grow_email_list');
 
-        $this->assertNull($card['delivery_failures']);
         $this->assertNull($card['note']);
+    }
+
+    /**
+     * **And it does not report ten failed deliveries**, which is what
+     * `conversions − lead_magnet_delivered` would say against a kind nothing
+     * writes. ADR 0020 names that subtraction as the delivery failure count;
+     * it belongs to the ticket that ships the job, because reporting it now
+     * calls every real Conversion a failure — a worse lie than the 0 it would
+     * have explained. It is also the same shape as the "left without
+     * converting" figure this screen refuses: arithmetic over two numbers
+     * already on the card.
+     */
+    public function testNoCardReportsADeliveryFailureCountWhileNothingWritesDeliveries(): void
+    {
+        $rows = [['optin_id' => self::OPTIN, 'stat_date' => '2026-08-24', 'kind' => 'conversion', 'count' => '10']];
+        $payload = Dashboard::of(self::range(), $rows, self::optin('deliver_lead_magnet'));
+
+        foreach ($payload['goals'] as $card) {
+            $this->assertArrayNotHasKey('delivery_failures', $card);
+        }
     }
 
     /**
@@ -308,7 +323,7 @@ final class DashboardTest extends TestCase
      */
     public function testEveryDayInTheWindowIsInTheSeries(): void
     {
-        $range = StatRange::between('2026-08-22', '2026-08-25');
+        $range = StatRange::lastDays(4, '2026-08-25');
         $card = self::cardFor(Dashboard::of($range, self::counters(), self::optin('grow_email_list')), 'grow_email_list');
 
         $this->assertSame(
@@ -359,5 +374,58 @@ final class DashboardTest extends TestCase
 
         $this->assertSame('2026-08-23', $payload['from']);
         $this->assertSame('2026-08-25', $payload['to']);
+    }
+
+    /**
+     * **The window's length travels with it**, so the screen can say which one
+     * is selected without spelling {@see StatRange::DEFAULT_DAYS} a second
+     * time in a bundle with nothing asserting the two agree — the rule
+     * `DashboardController` states about the same number.
+     */
+    public function testThePayloadNamesHowManyDaysItCovers(): void
+    {
+        $this->assertSame(3, Dashboard::of(self::range(), [], self::optin('grow_email_list'))['days']);
+    }
+
+    /**
+     * **Every Optin row carries its own daily series**, which is what
+     * "comparison is offered within an Optin over time" means. Without it the
+     * only way to compare an Optin with itself is to move the whole screen's
+     * window and remember the last number.
+     */
+    public function testAnOptinRowCarriesItsOwnSeriesOverTime(): void
+    {
+        $row = self::cardFor(
+            Dashboard::of(self::range(), self::counters(), self::optin('grow_email_list')),
+            'grow_email_list'
+        )['optins'][0];
+
+        $this->assertSame(['2026-08-23' => 40, '2026-08-24' => 50, '2026-08-25' => 10], $row['by_day']);
+    }
+
+    /**
+     * And it is the row's OWN numbers rather than its Goal's, which is the
+     * whole point of offering the comparison inside the card.
+     */
+    public function testAnOptinRowReportsItselfRatherThanItsGoal(): void
+    {
+        $rows = [
+            ['optin_id' => 'B', 'stat_date' => '2026-08-24', 'kind' => 'impression', 'count' => '100'],
+            ['optin_id' => 'B', 'stat_date' => '2026-08-24', 'kind' => 'conversion', 'count' => '10'],
+            ['optin_id' => 'A', 'stat_date' => '2026-08-24', 'kind' => 'impression', 'count' => '900'],
+            ['optin_id' => 'A', 'stat_date' => '2026-08-24', 'kind' => 'conversion', 'count' => '90'],
+        ];
+        $optins = [
+            ['id' => 'A', 'name' => 'Older', 'goal' => 'grow_email_list', 'deleted_at' => null],
+            ['id' => 'B', 'name' => 'Newer', 'goal' => 'grow_email_list', 'deleted_at' => null],
+        ];
+
+        $card = self::cardFor(Dashboard::of(self::range(), $rows, $optins), 'grow_email_list');
+
+        $this->assertSame(100, $card['headline'], "the card is both Optins' work");
+        // Newest first, off the ULID's own order — not a ranking by any number
+        // on the row, which would be a leaderboard inside the card.
+        $this->assertSame(['Newer', 'Older'], array_column($card['optins'], 'name'));
+        $this->assertSame([10, 90], array_column($card['optins'], 'headline'));
     }
 }

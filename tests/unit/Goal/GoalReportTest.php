@@ -6,6 +6,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use WConvert\Goal\Goal;
 use WConvert\Goal\GoalReport;
+use WConvert\Stats\StatKind;
 
 /**
  * **A [[Conversion]] is interpreted at read, never frozen at write**
@@ -91,7 +92,46 @@ final class GoalReportTest extends TestCase
      */
     public function testTheDenominatorDoesNotMoveWhenTheGoalDoes(): void
     {
-        $this->assertSame(1000, GoalReport::impressions(self::history()));
+        $this->assertSame(1000, GoalReport::totals(self::history())[StatKind::Impression->value]);
+    }
+
+    /**
+     * One pass, and every kind the rows carry. The card wants three of these
+     * at once, so a named accessor per kind would walk the same rows three
+     * times and still not name the fourth.
+     */
+    public function testEveryKindIsTotalledInOnePass(): void
+    {
+        $this->assertSame(
+            ['impression' => 1000, 'conversion' => 100, 'lead_magnet_delivered' => 90],
+            GoalReport::totals(self::history())
+        );
+    }
+
+    /**
+     * **A kind with no rows is absent rather than zero**, so the caller says
+     * what missing means. For the headline it means 0; for a [[Dismissal]]
+     * nobody performed it means the same, and both readings are the caller's
+     * to make rather than this method's to guess.
+     */
+    public function testAKindWithNoRowsIsAbsentRatherThanZero(): void
+    {
+        $totals = GoalReport::totals([['stat_date' => '2026-08-25', 'kind' => 'conversion', 'count' => '10']]);
+
+        $this->assertSame(['conversion' => 10], $totals);
+        $this->assertArrayNotHasKey(StatKind::Dismiss->value, $totals);
+    }
+
+    /** And an unknown kind is not totalled either, for the reason byDay() gives. */
+    public function testAnUnknownKindIsNotTotalled(): void
+    {
+        $this->assertSame(
+            ['conversion' => 10],
+            GoalReport::totals([
+                ['stat_date' => '2026-08-25', 'kind' => 'conversion', 'count' => '10'],
+                ['stat_date' => '2026-08-25', 'kind' => 'telepathy', 'count' => '999'],
+            ])
+        );
     }
 
     /**

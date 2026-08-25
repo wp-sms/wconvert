@@ -82,32 +82,42 @@ final class StatRangeTest extends TestCase
     }
 
     /**
-     * A range is a set of days and a set has no direction, so the only reading
-     * of a backwards one is the days between its ends.
-     */
-    public function testABackwardsWindowIsPutBackRatherThanRefused(): void
-    {
-        $range = StatRange::between('2026-08-25', '2026-08-23');
-
-        $this->assertSame('2026-08-23', $range->from);
-        $this->assertSame('2026-08-25', $range->to);
-    }
-
-    /**
-     * **The cap bites on the FROM end.** A merchant who asks for too much
-     * wants what just happened, not what happened first.
+     * **A window always ends on the day it was given.** The cap bites on the
+     * FROM end, because a merchant who asks for too much wants what just
+     * happened rather than what happened first — and because a window whose
+     * far end moved would be a window ending on a day nobody chose.
      */
     public function testTooLongAWindowKeepsItsMostRecentDays(): void
     {
-        $range = StatRange::between('2020-01-01', '2026-08-25');
+        $range = StatRange::lastDays(10_000, '2026-08-25');
 
         $this->assertSame('2026-08-25', $range->to);
         $this->assertSame(StatRange::MAX_DAYS, $range->days());
     }
 
+    /**
+     * **There is one constructor, and it ends today.** A second one taking two
+     * explicit dates is the shape the REST route must not offer: a window that
+     * ends anywhere but the site's own today is a window whose far end
+     * somebody chose (ADR 0034).
+     */
+    public function testAWindowCanOnlyBeBuiltFromADayAndACount(): void
+    {
+        $constructors = array_values(array_filter(
+            (new \ReflectionClass(StatRange::class))->getMethods(\ReflectionMethod::IS_PUBLIC),
+            static fn (\ReflectionMethod $method): bool => $method->isStatic()
+        ));
+
+        $this->assertSame(['lastDays'], array_map(
+            static fn (\ReflectionMethod $method): string => $method->getName(),
+            $constructors
+        ));
+        $this->assertFalse((new \ReflectionClass(StatRange::class))->getConstructor()?->isPublic());
+    }
+
     public function testItKnowsWhichDaysItCovers(): void
     {
-        $range = StatRange::between('2026-08-23', '2026-08-25');
+        $range = StatRange::lastDays(3, '2026-08-25');
 
         $this->assertTrue($range->covers('2026-08-23'));
         $this->assertTrue($range->covers('2026-08-25'));
@@ -123,7 +133,7 @@ final class StatRangeTest extends TestCase
     {
         $this->assertSame(
             ['2026-08-23', '2026-08-24', '2026-08-25'],
-            StatRange::between('2026-08-23', '2026-08-25')->eachDay()
+            StatRange::lastDays(3, '2026-08-25')->eachDay()
         );
     }
 
@@ -143,7 +153,7 @@ final class StatRangeTest extends TestCase
      */
     public function testADstBoundaryIsStillOneDayPerDay(): void
     {
-        $range = StatRange::between('2026-03-28', '2026-03-30');
+        $range = StatRange::lastDays(3, '2026-03-30');
 
         $this->assertSame(['2026-03-28', '2026-03-29', '2026-03-30'], $range->eachDay());
     }

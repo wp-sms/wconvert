@@ -25,16 +25,28 @@ import apiFetch from '@wordpress/api-fetch';
  * `tests/unit/Goal/GoalParityTest.php` fails the day one appears here.
  */
 
-/** One [[Optin]]'s numbers, inside the card for the Goal it serves. */
-export interface OptinReport {
-  id: string;
-  name: string;
-  /** The Goal's headline metric for this Optin — named by `headline_label` on the card. */
+/** The numbers a card and an Optin row both carry. */
+interface Numbers {
+  /** The Goal's headline metric — named by `headline_label` on the card. */
   headline: number;
   impressions: number;
   dismissals: number;
   /** Conversions ÷ impressions, or null where nothing was shown. */
   conversion_rate: number | null;
+  /** The headline number per day, with every day in the window present. */
+  by_day: Record<string, number>;
+}
+
+/**
+ * One [[Optin]]'s numbers, inside the card for the Goal it serves.
+ *
+ * It carries its own `by_day`, which is what "comparison is offered within an
+ * Optin over time" means — without it the only way to compare an Optin with
+ * itself is to move the whole screen's window and remember the last number.
+ */
+export interface OptinReport extends Numbers {
+  id: string;
+  name: string;
 }
 
 /**
@@ -49,27 +61,19 @@ export interface OptinReport {
  *
  * There is also no "left without converting": it is already
  * `impressions − conversions − dismissals`, and naming it would put two
- * numbers on screen where one is the arithmetic of the other.
+ * numbers on screen where one is the arithmetic of the other. The delivery
+ * failure count — `conversions − deliveries` — is absent for both of those
+ * reasons at once: it is the same arithmetic, and nothing writes deliveries
+ * yet, so it would call every real Conversion a failure.
  */
-export interface GoalReport {
+export interface GoalReport extends Numbers {
   goal: string;
   /** The merchant's own words for the Goal, translated in PHP. */
   label: string;
   /** What the headline number is CALLED — two of the five convert on a click. */
   headline_label: string;
-  headline: number;
-  impressions: number;
-  dismissals: number;
-  conversion_rate: number | null;
-  /**
-   * `conversions − deliveries`, or null where the headline already IS
-   * conversions and where nothing writes the headline kind yet.
-   */
-  delivery_failures: number | null;
   /** Why the headline reads zero, where it reads zero for a reason nobody can act on. */
   note: string | null;
-  /** The headline number per day, with every day in the window present. */
-  by_day: Record<string, number>;
   optins: OptinReport[];
 }
 
@@ -77,8 +81,23 @@ export interface DashboardPayload {
   /** The window the server read, resolved against the SITE's timezone. */
   from: string;
   to: string;
+  /**
+   * How many days that window covers.
+   *
+   * It comes BACK rather than being assumed, so the selector can show which
+   * window is current without this bundle spelling the server's default a
+   * second time — `StatRange::DEFAULT_DAYS` is the only place that number
+   * lives, and there is no parity test across this boundary to catch a copy.
+   */
+  days: number;
   goals: GoalReport[];
 }
 
-export const readDashboard = (days: number) =>
-  apiFetch<DashboardPayload>({ path: `/wconvert/v1/dashboard?days=${encodeURIComponent(String(days))}` });
+/**
+ * `days` omitted asks for the server's own default window, which is the only
+ * way this bundle can avoid naming it.
+ */
+export const readDashboard = (days: number | null) =>
+  apiFetch<DashboardPayload>({
+    path: `/wconvert/v1/dashboard${days === null ? '' : `?days=${encodeURIComponent(String(days))}`}`,
+  });

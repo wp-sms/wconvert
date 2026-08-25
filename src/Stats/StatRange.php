@@ -66,28 +66,15 @@ final class StatRange
      */
     public static function lastDays(int $days, string $today): self
     {
+        // The ONLY way to build a window, deliberately. A second constructor
+        // taking two explicit dates is the shape the REST route must not
+        // offer — a window that ends anywhere but today is a window whose far
+        // end somebody chose, and the whole reason `days` is the query is that
+        // nobody but the site's own clock gets to choose it (ADR 0034).
+
         $days = max(1, min($days, self::MAX_DAYS));
 
         return new self(self::daysBefore($today, $days - 1), $today);
-    }
-
-    /**
-     * An explicit window, ordered and capped.
-     *
-     * Swapped ends are put back rather than refused: a range is a set of days
-     * and a set has no direction, so the only reading of a backwards one is
-     * the days between them.
-     */
-    public static function between(string $from, string $to): self
-    {
-        if ($from > $to) {
-            [$from, $to] = [$to, $from];
-        }
-
-        // The cap bites on the FROM end, so the window keeps the most recent
-        // days rather than the oldest — a merchant who asks for too much wants
-        // what just happened, not what happened first.
-        return new self(max($from, self::daysBefore($to, self::MAX_DAYS - 1)), $to);
     }
 
     /** How many days the window covers, both ends counted. */

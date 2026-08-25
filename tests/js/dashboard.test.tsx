@@ -36,6 +36,7 @@ const { Dashboard } = await import('../../resources/admin/src/stats/Dashboard');
 const TWO_GOALS = {
   from: '2026-07-27',
   to: '2026-08-25',
+  days: 30,
   goals: [
     {
       goal: 'grow_email_list',
@@ -56,6 +57,7 @@ const TWO_GOALS = {
           impressions: 1000,
           dismissals: 40,
           conversion_rate: 0.1,
+          by_day: { '2026-08-24': 90, '2026-08-25': 10 },
         },
       ],
     },
@@ -150,15 +152,34 @@ describe('the analytics screen', () => {
 
     await screen.findByText('Grow my email list');
 
-    expect(api.readDashboard).toHaveBeenCalledWith(30);
+    // The FIRST read names no window at all, so `StatRange::DEFAULT_DAYS` is
+    // spelled once, on the server. The selector then follows the payload.
+    expect(api.readDashboard).toHaveBeenCalledWith(null);
+    expect(screen.getByRole('combobox')).toHaveValue('30');
 
     await userEvent.selectOptions(screen.getByRole('combobox'), '1');
 
     await waitFor(() => expect(api.readDashboard).toHaveBeenLastCalledWith(1));
 
+    // Never anything a calendar produced.
     for (const call of api.readDashboard.mock.calls) {
-      expect(typeof call[0]).toBe('number');
+      expect(call[0] === null || typeof call[0] === 'number').toBe(true);
     }
+  });
+
+  /**
+   * The default window is the SERVER's. This bundle spells no number for it,
+   * so there is nothing here to drift from `StatRange::DEFAULT_DAYS` — the
+   * rule `DashboardController` states about the same constant.
+   */
+  it('never spells the default window itself', async () => {
+    api.readDashboard.mockResolvedValue({ ...TWO_GOALS, days: 7, from: '2026-08-19' });
+
+    render(<Dashboard />);
+
+    await screen.findByText('Grow my email list');
+
+    expect(screen.getByRole('combobox')).toHaveValue('7');
   });
 
   /** The window it actually read comes back, and it says whose calendar it is. */
@@ -235,6 +256,7 @@ describe('the analytics screen', () => {
               impressions: 0,
               dismissals: 0,
               conversion_rate: null,
+              by_day: { '2026-08-25': 0 },
             },
           ],
         },
@@ -272,5 +294,53 @@ describe('the analytics screen', () => {
     render(<Dashboard />);
 
     expect(await screen.findByText('Sorry, you are not allowed to do that.')).toBeInTheDocument();
+  });
+
+  /**
+   * **Comparison within an Optin over time**, which the merchant would
+   * otherwise only get by moving the whole screen's window and remembering the
+   * last number.
+   */
+  it('gives each Optin row its own series over time', async () => {
+    render(<Dashboard />);
+
+    await screen.findByText('Grow my email list');
+
+    const row = screen.getByRole('row', { name: /Newsletter footer/ });
+
+    // The card's own series, and the row's — two sparklines, each describing
+    // itself to a screen reader rather than being a picture with no text.
+    expect(within(row).getByText(/Submissions per day/)).toBeInTheDocument();
+  });
+
+  /**
+   * **No delivery failure count.** `conversions − deliveries` is what ADR 0020
+   * names, and nothing writes deliveries yet — so reporting it would call
+   * every real Conversion a failure. It is also arithmetic over two numbers
+   * already on the card, which is the shape "left without converting" is
+   * refused for.
+   */
+  it('reports no delivery failure count while nothing writes deliveries', async () => {
+    api.readDashboard.mockResolvedValue({
+      ...TWO_GOALS,
+      goals: [
+        {
+          ...TWO_GOALS.goals[0],
+          goal: 'deliver_lead_magnet',
+          label: 'Deliver a lead magnet',
+          headline_label: 'Deliveries',
+          headline: 0,
+          note: 'Nothing records this yet.',
+          optins: [],
+        },
+      ],
+    });
+
+    render(<Dashboard />);
+
+    await screen.findByText('Deliver a lead magnet');
+
+    expect(screen.queryByText(/did not go out/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/failed deliver/i)).not.toBeInTheDocument();
   });
 });

@@ -144,8 +144,8 @@ be paid on every beacon for a read one admin takes on demand.*
   asks WordPress which zone the site is on is proven where a real
   `timezone_string` can be set, in
   [`bin/verify-stats.php`](../../bin/verify-stats.php).*
-  *Extended by [#28](https://github.com/navidkashani/wconvert/issues/28), where
-  "the dashboard says Today" stopped being hypothetical. The screen asks for a
+  *Extended by [ADR 0034](0034-the-dashboard-joins-in-php.md), where "the
+  dashboard says Today" stopped being hypothetical. The screen asks for a
   **number of days and never a date**: a date built in the browser is the day of
   whoever is at the keyboard, so a merchant in Tokyo checking their numbers from
   a hotel in Los Angeles would be handed yesterday's window and told it was

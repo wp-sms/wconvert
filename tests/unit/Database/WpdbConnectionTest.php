@@ -103,7 +103,7 @@ final class WpdbConnectionTest extends TestCase
         );
 
         $stats->increment('01JQ0000000000000000000001', StatKind::Impression, '2026-03-04');
-        $stats->inRange(StatRange::between('2026-07-27', '2026-08-25'));
+        $stats->inRange(StatRange::lastDays(30, '2026-08-25'));
         $leads->submissions(null);
         $leads->submissions('OPTIN1');
         $leads->page(null, 50);

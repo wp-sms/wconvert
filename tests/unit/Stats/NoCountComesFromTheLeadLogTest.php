@@ -43,16 +43,36 @@ use PHPUnit\Framework\TestCase;
  * the reporting classes DISCUSS this rule in prose — the paragraph above is in
  * two of their docblocks — and a check that flags the explanation for a rule
  * earns an exception list, which is the one thing it must never acquire.
+ *
+ * ============================================================================
+ * THE LEAD LOG'S OWN HEADLINE IS NOT IN SCOPE, AND THAT IS NOT A LOOPHOLE.
+ * ============================================================================
+ * {@see \WConvert\Lead\LeadRepository::submissions()} is
+ * `SELECT COUNT(*) FROM wconvert_leads`, and the lead log screen renders it.
+ * That is deliberate and it is ADR 0021's: the log has exactly one total, it
+ * is submissions, and it is a count OF THE LOG shown ON THE LOG.
+ *
+ * The rule is *"never **join** `wconvert_leads` to produce a count"* — a
+ * CONVERSION metric derived from Lead rows, which is what ADR 0018 depends on
+ * not existing, because erasure deletes those rows. A log reporting how many
+ * rows it holds is not that derivation, and it joins nothing: the number moves
+ * when a Lead is erased **because it is a count of Leads**, which is the only
+ * honest thing it could do.
+ *
+ * So {@see self::ROOTS} does not include `LeadController`, and adding it would
+ * fail the build on a number ADR 0021 deliberately built. What the roots name
+ * is every path a **reported analytics number** can come from.
  */
 #[CoversNothing]
 final class NoCountComesFromTheLeadLogTest extends TestCase
 {
     /**
-     * Where a reported number comes from: the route that serves the screen,
-     * and the two classes that produce its arithmetic.
+     * Where a reported ANALYTICS number comes from: the route that serves the
+     * screen, and the two classes that produce its arithmetic.
      *
      * Roots rather than the whole list — everything else in the scan is
-     * reached from these.
+     * reached from these. `LeadController` is deliberately not one; the class
+     * docblock says why.
      */
     private const ROOTS = [
         'WConvert\\Rest\\DashboardController',

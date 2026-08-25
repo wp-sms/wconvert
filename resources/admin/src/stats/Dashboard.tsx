@@ -10,11 +10,16 @@ import { readDashboard, type DashboardPayload, type GoalReport, type OptinReport
  * resolved on the SERVER against the site's timezone. A date picker here would
  * be a picker over the browser's calendar, which belongs to whoever is sitting
  * at the keyboard rather than to the site.
+ *
+ * Which of them is selected on arrival is **not decided here**: the first read
+ * sends no `days` at all and the server's own default answers, so
+ * `StatRange::DEFAULT_DAYS` is spelled once and this bundle never has to keep
+ * a copy of it in step.
  */
 const WINDOWS = [1, 7, 30, 90] as const;
 
 /** Before the first read lands. Not an error state — an install with no Optins looks the same. */
-const EMPTY: DashboardPayload = { from: '', to: '', goals: [] };
+const EMPTY: DashboardPayload = { from: '', to: '', days: 0, goals: [] };
 
 /**
  * The analytics screen.
@@ -39,7 +44,9 @@ const EMPTY: DashboardPayload = { from: '', to: '', goals: [] };
  */
 export function Dashboard() {
   const [payload, setPayload] = useState<DashboardPayload>(EMPTY);
-  const [days, setDays] = useState<number>(30);
+  // `null` is "whatever the server opens on", and only the first read is ever
+  // in that state.
+  const [days, setDays] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
@@ -68,7 +75,7 @@ export function Dashboard() {
       <p>
         <label>
           {__('Showing', 'wconvert')}{' '}
-          <select value={days} onChange={(e) => setDays(Number(e.target.value))}>
+          <select value={payload.days === 0 ? '' : payload.days} onChange={(e) => setDays(Number(e.target.value))}>
             {WINDOWS.map((window) => (
               <option key={window} value={window}>
                 {window === 1
@@ -146,17 +153,6 @@ function GoalCard({ card }: { card: GoalReport }) {
         <li>
           {__('Dismissals', 'wconvert')} <strong>{formatCount(card.dismissals)}</strong>
         </li>
-        {/*
-          `conversions − deliveries`, and there is no second metric behind it.
-          Absent where the headline already IS conversions, and absent while
-          nothing writes the headline kind — otherwise every conversion would
-          read as a failed delivery.
-        */}
-        {card.delivery_failures !== null && (
-          <li>
-            {__('Deliveries that did not go out', 'wconvert')} <strong>{formatCount(card.delivery_failures)}</strong>
-          </li>
-        )}
       </ul>
 
       <Sparkline label={card.headline_label} byDay={card.by_day} />
@@ -192,6 +188,7 @@ function OptinTable({ card }: { card: GoalReport }) {
           <th>{__('Impressions', 'wconvert')}</th>
           <th>{__('Conversion rate', 'wconvert')}</th>
           <th>{__('Dismissals', 'wconvert')}</th>
+          <th>{__('Over time', 'wconvert')}</th>
         </tr>
       </thead>
       <tbody>
@@ -202,6 +199,14 @@ function OptinTable({ card }: { card: GoalReport }) {
             <td>{formatCount(optin.impressions)}</td>
             <td>{formatRate(optin.conversion_rate)}</td>
             <td>{formatCount(optin.dismissals)}</td>
+            {/*
+              Comparison within an Optin over time, which the merchant would
+              otherwise only get by moving the whole screen's window and
+              remembering the last number.
+            */}
+            <td>
+              <Sparkline label={card.headline_label} byDay={optin.by_day} />
+            </td>
           </tr>
         ))}
       </tbody>
