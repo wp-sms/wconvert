@@ -148,9 +148,18 @@ fetch is **designed and not built**.
 **Validation happens at registration, never at runtime**, and that is the only
 place the guarantee lives — there is no runtime check behind it. An entry is
 refused for filling a [[Slot Role]] its Template does not declare, for naming
-anything site-local (a post or term id, a Destination id, its own link `href`),
-and for pairing a Goal with a Template metered by the other converting act. A
-Template offering two converting acts, or none, is refused the same way.
+anything site-local (a post or term id, a Destination id — including one
+sitting inside `destination_hint.types` — or its own link `href`), for pairing a
+Goal with a Template metered by the other converting act, for declaring a
+[[Display Type]] its Template does not serve, for naming no [[Trigger]], and for
+claiming an id another entry already has. A Template offering two converting
+acts, or none, is refused the same way.
+
+Refusals are **recorded rather than thrown** — one bad entry must not take the
+gallery down — and **not silent**: each one goes to `_doing_it_wrong()`, which
+is WordPress's own channel for "a plugin called this wrong". A rejection is an
+authoring error, so it surfaces where an author is working rather than as an
+admin notice the merchant cannot act on.
 
 ```bash
 tests/unit/Playbook/PlaybookRegistrationTest.php  # one test per rejection

@@ -364,7 +364,10 @@ label and never an `href` at all**, because a destination is a page on one
 particular site and a link with a label and no destination is precisely how a
 generic entry asks the site for the one it cannot know. A destination hint names
 Destination *types* and the [[Lead]] fields the Playbook needs, and prefill never
-binds a Destination invisibly.
+binds a Destination invisibly — which is a rule about the *values* as much as the
+shape, since a Destination id is most likely to arrive dressed as a type. The
+hint is also authoring state and never reaches the browser: nothing that renders
+an Optin reads it, and the payload is inlined into every matching page.
 
 **Degradation is visible, and it applies to rules — not to shape.** A Playbook
 wanting a feature the install lacks substitutes the best available rule and says

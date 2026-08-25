@@ -151,6 +151,11 @@ function PlaybookGallery({
         {/* translators: %s: the chosen Goal, e.g. "Grow my email list". */}
         {sprintf(__('Ready-to-run starts for “%s”.', 'wconvert'), goal.label)}
       </p>
+      {playbooks.length === 0 && (
+        <p className="wconvert-playbooks__empty">
+          {__('No ready-to-run starts for this Goal yet — start from scratch below.', 'wconvert')}
+        </p>
+      )}
       <ul className="wconvert-playbooks">
         {playbooks.map((playbook) => (
           <li key={playbook.id} className="wconvert-playbook">

@@ -2,6 +2,7 @@
 
 namespace WConvert\Goal;
 
+use WConvert\Support\Availability;
 use WConvert\Support\ProPresence;
 use WConvert\Support\SitePresence;
 

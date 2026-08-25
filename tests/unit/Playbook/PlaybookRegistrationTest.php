@@ -80,6 +80,40 @@ final class PlaybookRegistrationTest extends TestCase
         ));
     }
 
+    protected function setUp(): void
+    {
+        $GLOBALS['wconvertTestDoingItWrong'] = [];
+    }
+
+    /**
+     * **A refusal is not silent.**
+     *
+     * An entry that simply vanished looks exactly like a registry that failed
+     * to load, which is the hardest failure to notice. It goes to
+     * `_doing_it_wrong()` rather than to an admin notice because a rejection
+     * is an AUTHORING error: the merchant cannot act on "this entry fills a
+     * Slot Role its Template does not declare", and a notice they cannot act
+     * on is one they learn to dismiss.
+     */
+    public function testARefusedEntrySaysSoWhereItsAuthorIsWorking(): void
+    {
+        $this->library(self::entry(['copy' => ['phone_label' => 'Mobile']]));
+
+        /** @var list<array{where: string, message: string}> $warnings */
+        $warnings = $GLOBALS['wconvertTestDoingItWrong'];
+
+        $this->assertCount(1, $warnings);
+        $this->assertStringContainsString('welcome-discount', $warnings[0]['message']);
+        $this->assertStringContainsString(RejectionReason::UnfilledSlotRole->value, $warnings[0]['message']);
+    }
+
+    public function testAWellFormedEntryRegistersAndSaysNothing(): void
+    {
+        $this->library(self::entry());
+
+        $this->assertSame([], $GLOBALS['wconvertTestDoingItWrong']);
+    }
+
     public function testAWellFormedEntryRegisters(): void
     {
         $library = $this->library(self::entry());
@@ -177,6 +211,37 @@ final class PlaybookRegistrationTest extends TestCase
         );
     }
 
+    /**
+     * **Rejection two, in the shape a Destination id actually arrives in.**
+     *
+     * Checking the hint's KEYS catches `['id' => '01JQ…']` and misses
+     * `['types' => ['01JQ…']]`, which is the same id wearing a type's clothes
+     * — and the one an author would plausibly write, because they were looking
+     * at a list of their own Destinations when they wrote it.
+     */
+    public function testAPlaybookNamingADestinationIdInsideItsHintIsRejected(): void
+    {
+        $this->assertRejected(
+            self::entry(['destination_hint' => ['types' => ['01JQ00000000000000000000AA']]]),
+            RejectionReason::SiteLocalReference
+        );
+    }
+
+    /**
+     * One [[Template]] serves exactly one [[Display Type]], so an entry
+     * declaring a different one describes something that cannot exist —
+     * and deriving it silently files a popup under "floating bar".
+     */
+    public function testAPlaybookDeclaringADisplayTypeItsTemplateDoesNotServeIsRejected(): void
+    {
+        $this->assertRejected(self::entry(['display_type' => 'floating_bar']), RejectionReason::DisplayTypeMismatch);
+    }
+
+    public function testAPlaybookMayAgreeWithItsTemplateAboutTheDisplayType(): void
+    {
+        $this->assertSame([], $this->library(self::entry(['display_type' => 'popup']))->rejections());
+    }
+
     public function testAPlaybookMaySupplyTheWordingOfALinkTheSiteResolves(): void
     {
         $entry = self::entry(['copy' => [
@@ -213,6 +278,54 @@ final class PlaybookRegistrationTest extends TestCase
     public function testAPlaybookNamingATemplateThisInstallDoesNotShipIsRejected(): void
     {
         $this->assertRejected(self::entry(['template_id' => 'from-a-plugin-we-lack']), RejectionReason::UnknownReference);
+    }
+
+    /**
+     * **Rejection four: a Playbook that prefills an Optin which can never
+     * fire.**
+     *
+     * Every Optin has at least one [[Trigger]], and "shows immediately" is the
+     * explicit `page_load` Trigger rather than an empty list (CONTEXT.md,
+     * Trigger). Prefilling without one is a silent, total loss of function
+     * with nothing in any log — ADR 0012's defining support ticket — and
+     * supplying `page_load` on the author's behalf would invent display
+     * behaviour nobody asked for.
+     */
+    public function testAPlaybookNamingNoTriggerIsRejected(): void
+    {
+        $this->assertRejected(self::entry(['rules' => []]), RejectionReason::NoTrigger);
+    }
+
+    /**
+     * A [[Condition]] is not a Trigger, and an Optin holding only Conditions
+     * is eligible to be shown at a moment that never arrives.
+     */
+    public function testAPlaybookNamingOnlyConditionsIsRejectedToo(): void
+    {
+        $this->assertRejected(
+            self::entry(['rules' => [['type' => 'device', 'value' => ['mobile']]]]),
+            RejectionReason::NoTrigger
+        );
+    }
+
+    /**
+     * **Rejection five: two entries claiming one id.**
+     *
+     * The second would silently replace the first, and a merchant looking at a
+     * gallery that lost a card has nothing to read. Third parties add
+     * Playbooks, so a collision is a matter of time rather than a typo.
+     */
+    public function testASecondEntryClaimingAnIdIsRejectedRatherThanReplacingTheFirst(): void
+    {
+        $library = PlaybookLibrary::fromEntries(
+            [self::entry(['name' => 'The first one']), self::entry(['name' => 'The impostor'])],
+            TemplateLibrary::fromDirectory(TemplateVocabulary::fromManifest(self::PLUGIN_DIR), self::PLUGIN_DIR),
+            TemplateVocabulary::fromManifest(self::PLUGIN_DIR),
+            RuleVocabulary::fromManifest(self::PLUGIN_DIR)
+        );
+
+        $this->assertSame('The first one', $library->all()['welcome-discount']->name);
+        $this->assertSame(RejectionReason::DuplicateId, $library->rejections()[0]->reason);
     }
 
     public function testAnEntryWithNoIdIsRejected(): void

@@ -4,8 +4,8 @@ namespace WConvert\Tests\Unit\Goal;
 
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
-use WConvert\Goal\Availability;
 use WConvert\Goal\Goal;
+use WConvert\Support\Availability;
 
 /**
  * The [[Goal]] layer across the two languages — **what is spelled twice, and

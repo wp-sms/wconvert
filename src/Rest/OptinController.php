@@ -2,7 +2,6 @@
 
 namespace WConvert\Rest;
 
-use WConvert\Goal\Goal;
 use WConvert\Goal\GoalRegistry;
 use WConvert\Optin\Optin;
 use WConvert\Optin\OptinRepository;
@@ -133,7 +132,7 @@ final class OptinController
      */
     public function store(WP_REST_Request $request)
     {
-        $goal = $this->settableGoal((string) $request->get_param('goal'));
+        $goal = RequestedGoal::settable($this->goals, (string) $request->get_param('goal'));
 
         if ($goal instanceof WP_Error) {
             return $goal;
@@ -172,7 +171,7 @@ final class OptinController
         // checked is the Goal being SET, never the one already held: an Optin
         // whose Goal became unavailable when WooCommerce was deactivated keeps
         // it, and keeps every number it already counted (ADR 0026).
-        $checked = $goal === null ? null : $this->settableGoal($goal);
+        $checked = $goal === null ? null : RequestedGoal::settable($this->goals, $goal);
 
         if ($checked instanceof WP_Error) {
             return $checked;
@@ -269,42 +268,6 @@ final class OptinController
         }
 
         return $config;
-    }
-
-    /**
-     * The Goal a merchant may put an Optin under, or the error that says why
-     * they may not.
-     *
-     * A Goal is a registry member subject to [[Availability]], like a
-     * [[Trigger]] type or a [[Destination]] type (ADR 0026) — so this is the
-     * same question the goal screen asked, asked again where it is enforceable.
-     * The screen hides what this refuses, and a screen is not an enforcement
-     * mechanism: the route is public to anyone with `manage_options` and the
-     * REST API is scriptable.
-     *
-     * @return Goal|WP_Error
-     */
-    private function settableGoal(string $value)
-    {
-        $goal = Goal::tryFrom($value);
-
-        if ($goal === null) {
-            return new WP_Error(
-                'wconvert_goal_not_found',
-                __('No such Goal.', 'wconvert'),
-                ['status' => 400]
-            );
-        }
-
-        if (!$this->goals->isSettable($goal)) {
-            return new WP_Error(
-                'wconvert_goal_unavailable',
-                __('This install cannot serve that Goal.', 'wconvert'),
-                ['status' => 400]
-            );
-        }
-
-        return $goal;
     }
 
     /**

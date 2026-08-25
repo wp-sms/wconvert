@@ -4,10 +4,10 @@ namespace WConvert\Tests\Unit\Goal;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use WConvert\Goal\Availability;
 use WConvert\Goal\Goal;
 use WConvert\Goal\GoalRegistry;
 use WConvert\Stats\StatKind;
+use WConvert\Support\Availability;
 use WConvert\Support\SiteDependency;
 use WConvert\Template\ConvertingAct;
 use WConvert\Tests\Unit\Support\FakeProPresence;

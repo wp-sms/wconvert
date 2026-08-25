@@ -12,7 +12,7 @@
 defined('ABSPATH') || exit;
 
 return [
-    'id' => 'exit-lead-magnet',
+    'id' => 'guide-download',
     'name' => __('Guide download', 'wconvert'),
     'goal' => 'deliver_lead_magnet',
     'template_id' => 'centred-card',

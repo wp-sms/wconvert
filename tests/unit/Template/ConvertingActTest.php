@@ -98,14 +98,4 @@ final class ConvertingActTest extends TestCase
         $this->assertSame(2, ConvertingAct::Submit->steps());
         $this->assertSame(1, ConvertingAct::Click->steps());
     }
-
-    /**
-     * **Every [[Lead]] is a Conversion; the reverse does not hold**
-     * (CONTEXT.md, Lead).
-     */
-    public function testOnlyASubmissionProducesALead(): void
-    {
-        $this->assertTrue(ConvertingAct::Submit->producesALead());
-        $this->assertFalse(ConvertingAct::Click->producesALead());
-    }
 }

@@ -12,7 +12,7 @@ defined('ABSPATH') || exit;
  * premium capability is absent from a free install rather than present and
  * guarded, so there is nothing to guard. What this answers is the question a
  * surface asks — whether to render an Availability member as `locked`
- * ({@see \WConvert\Goal\Availability}).
+ * ({@see Availability}).
  *
  * **An interface with one production implementation**, on the same pattern as
  * {@see \WConvert\Storage\OptionStore} and {@see \WConvert\Database\Connection}

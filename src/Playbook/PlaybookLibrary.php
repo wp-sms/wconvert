@@ -6,6 +6,7 @@ use WConvert\Goal\Goal;
 use WConvert\Rules\RuleVocabulary;
 use WConvert\Support\Rejection;
 use WConvert\Support\RejectionReason;
+use WConvert\Support\Ulid;
 use WConvert\Template\ConvertingAct;
 use WConvert\Template\SlotRoles;
 use WConvert\Template\TemplateLibrary;
@@ -109,7 +110,9 @@ final class PlaybookLibrary
 
         foreach ($entries as $entry) {
             $id = is_string($entry['id'] ?? null) ? $entry['id'] : '';
-            $reason = self::refuse($entry, $templates, $vocabulary, $rules);
+            $reason = isset($playbooks[$id])
+                ? RejectionReason::DuplicateId
+                : self::refuse($entry, $templates, $vocabulary, $rules);
 
             if ($reason !== null) {
                 $rejections[] = new Rejection($id, $reason);
@@ -120,6 +123,10 @@ final class PlaybookLibrary
         }
 
         ksort($playbooks);
+
+        foreach ($rejections as $rejection) {
+            $rejection->warn(__METHOD__);
+        }
 
         return new self($playbooks, $rejections);
     }
@@ -194,6 +201,25 @@ final class PlaybookLibrary
             return RejectionReason::MetricMismatch;
         }
 
+        // One Template serves exactly one Display Type (CONTEXT.md, Template),
+        // so an entry need not declare one — and one that does must agree with
+        // the design it names, or the gallery files a popup under "floating
+        // bar" with nobody told.
+        $declared = $entry['display_type'] ?? null;
+
+        if (is_string($declared) && $declared !== ($template['display_type'] ?? null)) {
+            return RejectionReason::DisplayTypeMismatch;
+        }
+
+        // Every Optin has at least one [[Trigger]] and "shows immediately" is
+        // the explicit `page_load` one rather than an empty list (CONTEXT.md,
+        // Trigger). A Playbook naming none prefills an Optin that can never
+        // fire — a silent, total loss of function with nothing in any log
+        // (ADR 0012) — and this is the last moment an author is present.
+        if ($rules->partition($entry['rules'] ?? [])['triggers'] === []) {
+            return RejectionReason::NoTrigger;
+        }
+
         $copy = is_array($entry['copy'] ?? null) ? $entry['copy'] : [];
 
         if (self::namesSomethingSiteLocal($entry, $copy, $rules)) {
@@ -221,8 +247,12 @@ final class PlaybookLibrary
      *   id, and `post_type` and `path_glob` mean the same thing everywhere.
      * - **A [[Destination]] id.** A hint names Destination *types* and the
      *   [[Lead]] fields the Playbook needs; prefill never binds a Destination
-     *   invisibly, so anything beyond those two keys is refused rather than
-     *   ignored.
+     *   invisibly. Anything beyond those two keys is refused rather than
+     *   ignored — and so is a ULID sitting *inside* them, which is the shape
+     *   an id actually arrives in: `types: ['01JQ…']` is a Destination id
+     *   wearing a type's clothes. The test is {@see Ulid::isOne()}, which is
+     *   the one spelling of "this is a ULID" and does not gain a second copy
+     *   here.
      * - **A privacy-policy link.** A link that declares a label and names no
      *   destination is asking for the one destination only the site can name,
      *   and the renderer resolves it from `get_privacy_policy_url()`
@@ -251,6 +281,14 @@ final class PlaybookLibrary
 
         if (array_diff(array_keys($hint), self::HINT_KEYS) !== []) {
             return true;
+        }
+
+        foreach ($hint as $values) {
+            foreach (is_array($values) ? $values : [$values] as $value) {
+                if (is_string($value) && Ulid::isOne($value)) {
+                    return true;
+                }
+            }
         }
 
         foreach ($copy as $words) {

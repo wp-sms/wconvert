@@ -71,6 +71,10 @@ final class TemplateLibrary
         ksort($templates);
         usort($rejections, static fn (Rejection $a, Rejection $b): int => strcmp($a->id, $b->id));
 
+        foreach ($rejections as $rejection) {
+            $rejection->warn(__METHOD__);
+        }
+
         return new self($vocabulary, $templates, $rejections);
     }
 

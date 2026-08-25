@@ -1,6 +1,6 @@
 <?php
 
-namespace WConvert\Goal;
+namespace WConvert\Support;
 
 defined('ABSPATH') || exit;
 
@@ -9,13 +9,14 @@ defined('ABSPATH') || exit;
  * states, and the distinction between the last two is load-bearing
  * (CONTEXT.md, Availability).
  *
- * It lives beside the [[Goal]] because a Goal is the first registry member to
- * need it, and it is not spelled per registry: a [[Trigger]] type, a
- * [[Display Type]], a [[Template]] and a [[Destination]] type all answer the
- * same question, and three states asked four times is the cross-cutting list
- * ADR 0015 refuses ("each registry declares `tier` locally on members it
- * already enumerates, so the premium split adds zero new lists"). What is
- * shared here is the ARITHMETIC, not a list of members.
+ * It lives here rather than beside the [[Goal]] that is the first registry
+ * member to need it, and beside {@see Tier} and {@see SiteDependency}, which
+ * are the two facts it reads. A [[Trigger]] type, a [[Display Type]], a
+ * [[Template]] and a [[Destination]] type all answer the same question, and
+ * three states asked four times is the cross-cutting list ADR 0015 refuses
+ * ("each registry declares `tier` locally on members it already enumerates,
+ * so the premium split adds zero new lists"). What is shared here is the
+ * ARITHMETIC, not a list of members.
  *
  * **The three states name why a member is absent. How that absence renders is
  * a property of the surface**, and no surface ever renders `unavailable` as an

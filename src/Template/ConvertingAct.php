@@ -31,19 +31,6 @@ enum ConvertingAct: string
     case Click = 'click';
 
     /**
-     * Whether this act produces a [[Lead]].
-     *
-     * **Every Lead is a Conversion; the reverse does not hold**, and assuming
-     * it does makes any Goal measured by clicks report zero forever
-     * (CONTEXT.md, Lead). A click-metered Optin captures no form, so it holds
-     * no [[Consent Record]] and pushes to no [[Destination]] (ADR 0025).
-     */
-    public function producesALead(): bool
-    {
-        return $this === self::Submit;
-    }
-
-    /**
      * How many steps a Template metered by this act has.
      *
      * A submit-metered template has **two** — the post-submit success state is

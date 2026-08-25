@@ -135,29 +135,16 @@ final class PlaybookController
     /**
      * The requested Goal, or the error that says why it is not one.
      *
-     * A Goal this install cannot serve is refused rather than served empty:
-     * the goal screen never offers it, so a request naming it did not come
-     * from the flow, and prefilling under it would produce a draft that
-     * `POST /optins` then refuses.
+     * Shared with {@see OptinController} through {@see RequestedGoal}, so the
+     * two cannot answer the same question with two different statuses —
+     * which they did, and a client could not tell from the code what had
+     * happened. Prefilling under a Goal this install cannot serve would in any
+     * case produce a draft that `POST /optins` then refuses.
      *
      * @return Goal|WP_Error
      */
     private function goal(WP_REST_Request $request)
     {
-        $goal = Goal::tryFrom((string) $request->get_param('goal'));
-
-        if ($goal === null) {
-            return new WP_Error('wconvert_goal_not_found', __('No such Goal.', 'wconvert'), ['status' => 404]);
-        }
-
-        if (!$this->goals->isSettable($goal)) {
-            return new WP_Error(
-                'wconvert_goal_unavailable',
-                __('This install cannot serve that Goal.', 'wconvert'),
-                ['status' => 400]
-            );
-        }
-
-        return $goal;
+        return RequestedGoal::settable($this->goals, (string) $request->get_param('goal'));
     }
 }

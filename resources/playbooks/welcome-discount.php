@@ -40,8 +40,10 @@ return [
         'success_body' => __('Your code is on its way to your inbox.', 'wconvert'),
     ],
     // Eight seconds is long enough to have read something and short enough to
-    // still be on the page. `page_load` beside it so the Optin fires for a
-    // visitor who bounces off the fold before the timer.
+    // still be on the page. One Trigger and not `page_load` beside it: an
+    // Optin fires when ANY of its Triggers fires (CONTEXT.md, Trigger), so
+    // adding `page_load` would show the popup immediately and delete the
+    // timer rather than backing it up.
     'rules' => [
         ['type' => 'time_on_page', 'value' => 8],
     ],

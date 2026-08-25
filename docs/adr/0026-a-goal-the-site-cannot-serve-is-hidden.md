@@ -68,7 +68,7 @@ widened audience trades a missing feature for a factually false one.
   and what the site must have, and
   [`GoalRegistry`](../../src/Goal/GoalRegistry.php) resolves those against the
   install. The precedence is one function,
-  [`Availability::of()`](../../src/Goal/Availability.php), so no surface
+  [`Availability::of()`](../../src/Support/Availability.php), so no surface
   recombines two booleans in an order of its own. The registry **filters
   nothing** — the three states name why a member is absent and how it renders is
   the surface's, which is what lets the goal screen hide where a settings list

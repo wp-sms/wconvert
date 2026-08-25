@@ -74,8 +74,46 @@ enum RejectionReason: string
      */
     case MetricMismatch = 'metric_mismatch';
 
+    /**
+     * A [[Playbook]] whose rules name no [[Trigger]], so the Optin it
+     * prefills could never fire.
+     *
+     * **Every Optin has at least one, and "shows immediately" is the explicit
+     * `page_load` Trigger rather than an empty list** (CONTEXT.md, Trigger).
+     * A dropped or absent Trigger is a silent, total loss of function with
+     * nothing in any log, which is the failure ADR 0012 names as the
+     * category's defining support ticket — and refusing here is the only
+     * moment an author is present to be told. Supplying `page_load` for them
+     * was the alternative and is worse: it invents display behaviour nobody
+     * asked for, which is the same reason ADR 0012 refuses to invent a
+     * substitute for a [[Condition]].
+     */
+    case NoTrigger = 'no_trigger';
+
+    /**
+     * A [[Playbook]] declaring a [[Display Type]] its default [[Template]]
+     * does not serve.
+     *
+     * One Template serves exactly one Display Type (CONTEXT.md, Template), so
+     * the design already decides it and an entry that disagrees is describing
+     * something that cannot exist. Deriving it and moving on would leave the
+     * gallery filing a popup under "floating bar" with nobody told.
+     */
+    case DisplayTypeMismatch = 'display_type_mismatch';
+
     /** A Playbook naming a Goal or a Template this install does not have. */
     case UnknownReference = 'unknown_reference';
+
+    /**
+     * Two entries claiming one id.
+     *
+     * The second would silently replace the first, and a merchant looking at
+     * a gallery that lost a card has nothing to read. Third parties add
+     * Playbooks, so a collision is a matter of time rather than a typo — the
+     * same case `tests/js/support/manifest-parity.ts` catches for loader
+     * modules.
+     */
+    case DuplicateId = 'duplicate_id';
 
     /** An entry with no id, or one that is not an array at all. */
     case Malformed = 'malformed';

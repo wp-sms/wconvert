@@ -160,6 +160,23 @@ describe('the goal screen', () => {
   });
 
   /**
+   * A Goal with no Playbook under it is a real state rather than a broken one:
+   * the cart Goal is reachable on a Pro install with a store and ships none,
+   * because its Playbooks need the [[Condition]]s that define it. An empty
+   * list with nothing said reads as a load that failed.
+   */
+  it('says so when a Goal has nothing to start from yet', async () => {
+    goals.listPlaybooks.mockResolvedValue([]);
+
+    render(<GoalScreen />);
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Choose' }));
+
+    expect(await screen.findByText(/No ready-to-run starts for this Goal yet/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Start from scratch' })).toBeInTheDocument();
+  });
+
+  /**
    * **"Start from scratch" skips the Playbook, never the Goal.** The Goal
    * still travels; only the Playbook is absent.
    */

@@ -1,10 +1,10 @@
 <?php
 
-namespace WConvert\Tests\Unit\Goal;
+namespace WConvert\Tests\Unit\Support;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use WConvert\Goal\Availability;
+use WConvert\Support\Availability;
 
 /**
  * The three states, and the one rule that orders them.

@@ -91,9 +91,11 @@ third-party ones. Under configuration they are properties of the one renderer.
   ([ADR 0020](0020-conversions-are-interpreted-at-read.md)), and one whose step
   count disagrees with its act — two for a submit, one for a click
   ([ADR 0025](0025-cart-recovery-captures-nothing.md)). Recorded rather than
-  thrown, because one bad entry must not take the gallery down; and rather than
-  dropped in silence, because an entry that simply vanished looks exactly like a
-  gallery that failed to load.*
+  thrown, because one bad entry must not take the gallery down; and **not
+  dropped in silence**, because an entry that simply vanished looks exactly like
+  a gallery that failed to load. The channel is `_doing_it_wrong()` rather than
+  an admin notice: a rejection is an AUTHORING error, and a notice the merchant
+  cannot act on is one they learn to dismiss.*
 - **Authoring is the settings panel plus a dev-only export**, not hand-written JSON.
   That makes the vocabulary self-testing: every shipped template is provably
   expressible in the panel, so we never ship a design the user cannot adjust.
