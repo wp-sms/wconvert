@@ -62,6 +62,30 @@ every rule identifier the manifest calls premium — free's *admin* bundle is
 deliberately never scanned, because it carries premium identifiers on purpose
 for its `locked` cards.
 
+## The rule manifest
+
+[`resources/rules/manifest.json`](resources/rules/manifest.json) is the single
+source of truth for every rule type, on all three axes, in **both** tiers. Free
+ships the premium entries too, because free's PHP is what strips an unentitled
+rule at enqueue and it can only strip what its own manifest calls premium
+([ADR 0005](docs/adr/0005-the-rule-model-is-three-flat-closed-axes.md)).
+
+**Free's loader must never `import` it.** The lookup would be dynamic, so
+nothing tree-shakes, and every `tier: pro` identifier would land in free's
+bundle — failing the scan above on a build that leaked nothing. Each loader
+module declares its own `kind` and `consent_category` instead, and the two
+parity tests assert the declaration matches the manifest:
+
+```bash
+tests/js/manifest-parity.test.ts        # free's modules against the manifest
+pro/tests/js/manifest-parity.test.ts    # Pro's own, from Pro's side
+tests/unit/Rules/RuleManifestParityTest.php   # the four-field invariant, every axis
+```
+
+They are also what decides **where a new rule may land**: a `tier: pro` entry
+with no Pro module fails on the pull request that adds it, so a premium entry
+and its implementation arrive in the same commit.
+
 The artifact contract, Plugin Check and the release guard are **not** here.
 They land with the release workflow: each half lands with the thing it
 inspects.

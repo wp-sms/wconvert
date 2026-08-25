@@ -1,5 +1,7 @@
 import { createLoader } from '@loader/engine';
+import { boot } from '@loader/boot';
 import { FREE_MODULES } from '@loader/modules';
+import { noRenderer } from '@loader/present';
 import { PRO_MODULES } from './modules';
 
 /**
@@ -12,4 +14,8 @@ import { PRO_MODULES } from './modules';
  * The import direction is the whole design: Pro reaches into free, free never
  * reaches into Pro.
  */
-export default createLoader([...FREE_MODULES, ...PRO_MODULES]);
+const loader = createLoader([...FREE_MODULES, ...PRO_MODULES]);
+
+boot(loader, noRenderer);
+
+export default loader;

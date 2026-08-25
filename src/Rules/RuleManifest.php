@@ -7,27 +7,28 @@ defined('ABSPATH') || exit;
 /**
  * The rule manifest — one JSON file, read by both runtimes (ADR 0005).
  *
- * It holds one section per axis. **Only `targeting` is here yet**, because
- * only the Targeting axis has an implementation to be the source of truth
- * for; the `triggers` and `conditions` sections arrive with the loader that
- * evaluates them, since nothing is written before its subject (ADR 0029).
+ * One section per axis: `targeting`, `triggers`, `conditions`. Every entry
+ * carries `kind`, `tier`, `consent_category` and `on_absence`.
  *
- * Every entry carries `kind`, `tier`, `consent_category` and `on_absence`.
- * The last two are `null` for every targeting entry, and that is a statement
- * rather than a gap: Targeting is evaluated on the server, writes nothing to
- * the visitor's device, and is never degraded away — so it has no WP Consent
- * API category to declare and no absence behaviour to choose. A Trigger or a
- * Condition arriving in this file must name both.
+ * Targeting's last two are `null`, and that is a statement rather than a gap:
+ * it is evaluated on the server, writes nothing to the visitor's device, and
+ * is never degraded away — so it has no WP Consent API category to declare and
+ * no absence behaviour to choose. A Trigger or a Condition must name both.
  *
- * `bin/check-loader.mjs` reads this file for the identifiers it calls premium,
- * so that scan cannot drift from what the manifest says (ADR 0029, check b).
+ * **PHP reads this at runtime**, through {@see RuleVocabulary}, to partition
+ * an Optin's flat rule list into `triggers` and `conditions` at publish time.
+ * That is the whole of PHP's business with the client axes — it never
+ * evaluates one. `bin/check-loader.mjs` reads the same file for the
+ * identifiers it calls premium, so that scan cannot drift from what the
+ * manifest says (ADR 0029, check b).
  *
- * **Nothing in PHP reads this at runtime yet**, and that is the staging rather
- * than an oversight: ADR 0005's "PHP reads it at runtime" is about the
- * trigger/condition evaluator, which arrives with the loader in #22. Today the
- * readers are the manifest parity test and the loader check. The fail-closed
- * throw below is therefore reached only by those two — which is exactly where
- * an unreadable manifest most needs to stop the build.
+ * **The loader does NOT import this file**, and that is a correction to
+ * ADR 0005's "the JS build imports it" recorded inline in the ADR itself: a
+ * whole-manifest import inlines every entry into free's bundle, premium ones
+ * included, which is precisely the leak ADR 0029's check (b) scans for. Free's
+ * loader modules declare their own kind and consent category; the manifest
+ * stays the source of truth, and the TypeScript parity tests assert the two
+ * agree.
  *
  * @since 0.1.0
  */

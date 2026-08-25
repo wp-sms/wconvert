@@ -9,6 +9,7 @@ use WConvert\Frontend\LoaderEnqueue;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
 use WConvert\Rest\OptinController;
+use WConvert\Rules\RuleVocabulary;
 use WConvert\Storage\OptionStore;
 use WConvert\Storage\WpOptionStore;
 use WConvert\Support\ProPresence;
@@ -27,6 +28,11 @@ final class CoreServiceProvider implements ServiceProvider
         $container->register(ProPresence::class, static fn (): ProPresence => new ProPresence());
 
         $container->register(Connection::class, static fn (): Connection => new WpdbConnection());
+
+        // PHP reads the rule manifest at runtime (ADR 0005). Once, here — the
+        // file is small but it is still a file, and the alternative is every
+        // publish paying a decode.
+        $container->register(RuleVocabulary::class, static fn (): RuleVocabulary => RuleVocabulary::fromManifest());
         $container->register(OptionStore::class, static fn (): OptionStore => new WpOptionStore());
 
         $container->register(
@@ -43,7 +49,8 @@ final class CoreServiceProvider implements ServiceProvider
             OptinRepository::class,
             static fn (ServiceContainer $c): OptinRepository => new OptinRepository(
                 $c->resolve(Connection::class),
-                $c->resolve(PublishedSet::class)
+                $c->resolve(PublishedSet::class),
+                $c->resolve(RuleVocabulary::class)
             )
         );
 
@@ -54,7 +61,10 @@ final class CoreServiceProvider implements ServiceProvider
 
         $container->register(
             OptinController::class,
-            static fn (ServiceContainer $c): OptinController => new OptinController($c->resolve(OptinRepository::class))
+            static fn (ServiceContainer $c): OptinController => new OptinController(
+                $c->resolve(OptinRepository::class),
+                $c->resolve(RuleVocabulary::class)
+            )
         );
     }
 

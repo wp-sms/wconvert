@@ -2,7 +2,12 @@ import { describe, expect, it } from 'vitest';
 import { createLoader } from '@loader/engine';
 import type { LoaderModule } from '@loader/types';
 
-const moduleWithId = (id: string): LoaderModule => ({ id });
+const moduleWithId = (id: string): LoaderModule => ({
+  id,
+  kind: 'trigger',
+  consentCategory: null,
+  create: () => ({ holds: () => true }),
+});
 
 describe('createLoader', () => {
   it('composes the module set it is given', () => {

@@ -33,6 +33,18 @@ on the rule manifest** that both runtimes already read
 so ADR 0012 remains the rule and this is the marked exception. Both cart Conditions set
 `suspend`.
 
+*Completed by [#22](https://github.com/navidkashani/wconvert/issues/22), which gives
+every client entry a concrete value for the first time. **`drop` on a Trigger does not
+mean a Trigger is dropped.** [ADR 0012](0012-degradation-substitutes-triggers-and-drops-conditions.md)
+substitutes premium Triggers, and this field is not where that lives — the substitution
+is a separate manifest property, applied by the thin resolver 0012 describes at two call
+sites. `on_absence` answers only what happens where no substitute is declared, which for
+a Trigger is the zero-trigger loss 0012 names and for a Condition is the whole question.
+Free's Triggers therefore read `drop` vacuously: free is always installed, so their
+absence never arises. The substitution property lands with the resolver in
+[#33](https://github.com/navidkashani/wconvert/issues/33), because a field nothing reads
+is a fourth hand-maintained list with extra steps.*
+
 The alternatives each put the fact in the wrong place:
 
 - **A Playbook-level flag** — a [[Playbook]] is snapshotted at prefill and then never

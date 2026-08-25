@@ -49,18 +49,40 @@ Check (b) reads its identifier list from the rule manifest of
 [ADR 0005](0005-the-rule-model-is-three-flat-closed-axes.md), so it cannot drift
 from what the manifest calls premium.
 
+*Completed by [#22](https://github.com/navidkashani/wconvert/issues/22): the check
+is only meaningful because **free's loader does not import the manifest**. If it
+did, every `tier: pro` identifier would be inlined into free's bundle by the
+import itself, and (b) would fail on a build that leaked nothing — or, worse, be
+"fixed" by narrowing what it scans for. Free's modules declare their own manifest
+fields and the parity tests assert the two agree; this is recorded against the
+sentence it corrects in ADR 0005.*
+
 *Amended by [#21](https://github.com/navidkashani/wconvert/issues/21): the
 manifest lands in halves, so for a while that identifier list is **empty**.
 #21 writes the `targeting` section, which is the axis it implements and is
-entirely free; the `triggers` and `conditions` sections — and with them
-`exit_intent`, `scroll_up` and the advanced Conditions — arrive with the loader
+entirely free; the `triggers` and `conditions` sections arrive with the loader
 that evaluates them, in
 [#22](https://github.com/navidkashani/wconvert/issues/22). Until then
 `bin/check-loader.mjs` says so out loud rather than printing a tick: an empty
 list scans for nothing, and a check that reports "clean" while asserting nothing
 is the failure this ADR is about. It is **not** a fail-closed case — the
-manifest is readable and truthfully declares nothing premium — and the scan goes
-live with #22's entries and no change to the script.*
+manifest is readable and truthfully declares nothing premium.*
+
+*Corrected by [#22](https://github.com/navidkashani/wconvert/issues/22) on which
+ticket brings `exit_intent`, `scroll_up` and the advanced Conditions. The
+sentence above named #22, and **#22 cannot write them**: this ADR's own invariant
+is that every entry resolves to an implementation on the side its `tier` names,
+and a `tier: pro` entry whose Pro module does not exist yet fails that invariant
+on the pull request that adds it. So #22 writes the FREE half of the two client
+axes — `page_load`, `time_on_page`, `scroll_depth` and `device` — and each
+premium entry lands in the same commit as the Pro module implementing it,
+starting with `exit_intent` and `scroll_up` in
+[#32](https://github.com/navidkashani/wconvert/issues/32). The identifier list
+therefore stays empty through #22 and the scan goes live in #32, with no change
+to the script. Note that #32's acceptance criteria say free's manifest **lacks**
+those entries; that is the one reading this ADR rules out, because free's PHP is
+what strips an unentitled rule at enqueue and it can only strip what its own
+manifest calls premium. There is one manifest, in free, and it names both tiers.*
 
 **(b) is scoped to the loader, and that scoping is load-bearing.** Free's *admin*
 bundle contains premium identifiers on purpose — 0015's data-only catalogue of
@@ -131,4 +153,6 @@ check has an opt-out, the opt-out is what runs on the day it matters.
   *This cuts finer than "per program". The manifest's own four-field invariant is
   asserted where its subject is — a `tier: pro` entry cannot be checked for "resolves
   to an implementation" before either side has one — so #21 asserts only the parity
-  its Targeting entries can carry, and #22 brings the rest.*
+  its Targeting entries can carry, and #22 brings the free half of the two client
+  axes. Read one step further than it was written, that same sentence is why a
+  premium entry may not precede its Pro module: see the correction above.*

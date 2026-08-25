@@ -3,6 +3,7 @@
 namespace WConvert\Optin;
 
 use WConvert\Database\Connection;
+use WConvert\Rules\RuleVocabulary;
 use WConvert\Support\Ulid;
 
 defined('ABSPATH') || exit;
@@ -36,6 +37,7 @@ final class OptinRepository
     public function __construct(
         private readonly Connection $db,
         private readonly PublishedSet $publishedSet,
+        private readonly RuleVocabulary $vocabulary,
     ) {
     }
 
@@ -200,6 +202,6 @@ final class OptinRepository
         // dragging every soft-deleted row through PHP, and the projection is
         // where the rule is stated and tested. A row that slips past the query
         // is still excluded.
-        $this->publishedSet->replaceWith(PublishedProjection::build($rows));
+        $this->publishedSet->replaceWith(PublishedProjection::build($rows, $this->vocabulary));
     }
 }
