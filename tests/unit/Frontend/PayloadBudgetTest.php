@@ -139,7 +139,11 @@ final class PayloadBudgetTest extends TestCase
 
         $this->assertCount(self::ON_THE_PAGE, $entries, 'every one of them has to actually be on the page');
 
-        $gzipped = strlen((string) gzencode(PayloadTag::render($entries, 'https://example.test/wp-json/wconvert/v1/capture'), 9));
+        $gzipped = strlen((string) gzencode(PayloadTag::render(
+            $entries,
+            'https://example.test/wp-json/wconvert/v1/capture',
+            'https://example.test/wp-json/wconvert/v1/beacon'
+        ), 9));
 
         $this->assertLessThanOrEqual(
             self::BUDGET,
@@ -155,7 +159,11 @@ final class PayloadBudgetTest extends TestCase
     public function testTheMeasuredPayloadActuallyCarriesTheTrees(): void
     {
         $entries = Payload::forRequest(self::worstCase(), new RequestContext(path: '/pricing/'));
-        $rendered = PayloadTag::render($entries, 'https://example.test/wp-json/wconvert/v1/capture');
+        $rendered = PayloadTag::render(
+            $entries,
+            'https://example.test/wp-json/wconvert/v1/capture',
+            'https://example.test/wp-json/wconvert/v1/beacon'
+        );
 
         $this->assertStringContainsString('"steps"', $rendered);
         $this->assertGreaterThan(self::BUDGET, strlen($rendered), 'uncompressed, ten trees are well over the budget');

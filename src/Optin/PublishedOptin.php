@@ -78,6 +78,35 @@ final class PublishedOptin
     }
 
     /**
+     * Every id in the set, as a lookup.
+     *
+     * Beside {@see self::findInSet()} because it answers the same question for
+     * a DIFFERENT number of ids, and the difference matters: `findInSet` parses
+     * the whole set to answer about one, which is right for the capture route —
+     * one submission, one id, and the parse is the request's only one. The
+     * beacon asks about a batch, so asking that way would parse the set once
+     * per event, on the route that fires on every page view.
+     *
+     * Keyed rather than a list so the caller tests membership with `isset`
+     * rather than `in_array`. This is NOT the "second shape of the published
+     * set" ADR 0003 refuses: it is derived per request from the option that was
+     * just read, and nothing stores it.
+     *
+     * @param iterable<array<string, mixed>> $set
+     * @return array<string, true>
+     */
+    public static function idsIn(iterable $set): array
+    {
+        $ids = [];
+
+        foreach (self::fromSet($set) as $optin) {
+            $ids[$optin->id] = true;
+        }
+
+        return $ids;
+    }
+
+    /**
      * @param array<string, mixed> $projection
      */
     public static function fromProjection(array $projection): ?self

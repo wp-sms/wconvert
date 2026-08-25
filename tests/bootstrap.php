@@ -265,3 +265,126 @@ if (!function_exists('wp_schedule_event')) {
         return true;
     }
 }
+
+/*
+ * The keyed hash core uses for its own flood control, and WConvert uses for
+ * the beacon's rate limit.
+ *
+ * A fixed salt rather than a random one: the assertion that matters is that
+ * the transient key is DERIVED from the address and does not CONTAIN it, and a
+ * key that changed between two calls in one test would make that unassertable.
+ * The real function is an HMAC on the site's own salts, which is what makes a
+ * production key unreversible and uncorrelatable across sites.
+ */
+if (!function_exists('wp_hash')) {
+    function wp_hash(string $data, string $scheme = 'auth'): string
+    {
+        return hash_hmac('md5', $data, 'wconvert-test-salt-' . $scheme);
+    }
+}
+
+/*
+ * The site's timezone — UTC here, like every other clock in this file.
+ *
+ * That is deliberate and it is also why NO test in this suite proves anything
+ * about timezones through it. `stat_date` is the site's day rather than UTC's,
+ * and a stub that answers UTC cannot tell the two apart — so the arithmetic
+ * lives in `WConvert\Stats\StatDay::of()`, which takes the zone as an argument
+ * and is proven against real non-UTC zones with no WordPress in sight, and the
+ * one line that ASKS WordPress for the zone is proven against a real site's
+ * `timezone_string` in `bin/verify-stats.php`.
+ *
+ * What this stub is for is the tests that must call through a code path
+ * containing that line while asserting something else entirely — the beacon's
+ * filtering, its rate limit, its published-set check.
+ */
+if (!function_exists('wp_timezone')) {
+    function wp_timezone(): DateTimeZone
+    {
+        return new DateTimeZone('UTC');
+    }
+}
+
+/*
+ * `$wpdb`, as much of it as `WConvert\Database\WpdbConnection` touches.
+ *
+ * A class rather than a function stub because that class is PASSED IN — which
+ * is the bootstrap's own rule about what may be stubbed, satisfied rather than
+ * bent. It records what it was handed and performs nothing, so a test can
+ * assert the thing no other test in this suite can see: what actually reached
+ * `prepare()`, in the order it reached it.
+ *
+ * That is the shape of the bug #25 shipped. `prepare()` binds by APPEARANCE,
+ * so a query naming its table twice and passing both tables in front of the
+ * values filters on a table name and selects `FROM` an Optin id. It failed
+ * loudly against a real database and silently against a fake that ignores SQL
+ * text.
+ */
+if (!class_exists('wpdb')) {
+    class wpdb
+    {
+        public string $prefix = 'wp_';
+
+        public string $last_error = '';
+
+        /** @var list<array{sql: string, args: list<mixed>}> */
+        public array $prepared = [];
+
+        /** @var list<string> */
+        public array $queries = [];
+
+        /**
+         * @param mixed ...$args
+         */
+        public function prepare(string $query, ...$args): string
+        {
+            $this->prepared[] = ['sql' => $query, 'args' => array_values($args)];
+
+            return $query;
+        }
+
+        public function query(string $sql): int
+        {
+            $this->queries[] = $sql;
+
+            return 1;
+        }
+
+        /**
+         * @return list<array<string, string|null>>
+         */
+        public function get_results(string $sql, string $output = 'OBJECT'): array
+        {
+            $this->queries[] = $sql;
+
+            return [];
+        }
+
+        /**
+         * @return array<string, string|null>|null
+         */
+        public function get_row(string $sql, string $output = 'OBJECT'): ?array
+        {
+            $this->queries[] = $sql;
+
+            return null;
+        }
+
+        /**
+         * @param array<string, mixed> $data
+         */
+        public function insert(string $table, array $data): int
+        {
+            return 1;
+        }
+
+        /**
+         * @param array<string, mixed> $data
+         * @param array<string, mixed> $where
+         */
+        public function update(string $table, array $data, array $where): int
+        {
+            return 1;
+        }
+    }
+}

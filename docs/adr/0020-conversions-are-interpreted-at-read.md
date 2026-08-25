@@ -51,6 +51,17 @@ delivery state is per-Destination health and has nothing per-Lead to read. It is
 written by PHP from the Action Scheduler job, once per [[Lead]] on first
 successful delivery, and only on Optins whose Goal is the lead-magnet one.
 
+*Enforced by [#26](https://github.com/navidkashani/wconvert/issues/26): the
+beacon accepts three of the four kinds and refuses this one
+([`StatKind::fromBeacon()`](../../src/Stats/StatKind.php)). "Written by PHP" is
+only true if a browser cannot assert it, and the endpoint that would take its
+word for it is public and unauthenticated by necessity — so
+`conversions − lead_magnet_delivered` would otherwise be a delivery failure
+count anybody could set. The job that writes it arrives with
+[#30](https://github.com/navidkashani/wconvert/issues/30); the kind and the
+refusal exist now. Note also that ADR 0007 bundles no Action Scheduler yet —
+see its own inline correction.*
+
 ## Consequences
 
 - **The metric wording from #2 changes.** "Leads with an email" becomes

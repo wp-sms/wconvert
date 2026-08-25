@@ -150,6 +150,46 @@ why: the prune is a range over the ULID primary key, the per-Optin listing
 walks that key backwards under a `LIMIT`, and grouping is two aggregates that
 each use an index already there.
 
+## Analytics
+
+`wconvert_stats` holds **one row per `(optin_id, stat_date, kind)` with a
+`count`, and there is no event table**
+([ADR 0019](docs/adr/0019-analytics-stores-daily-counters-not-events.md)). A
+modest site writes ~3.65M raw rows a year against ~29k as daily counters. The
+price is written down rather than hidden: **you can never recompute**, and
+there is no hour-of-day breakdown, ever.
+
+The write is `INSERT … ON DUPLICATE KEY UPDATE count = count + 1`, **atomic at
+the database**. That is a claim about MySQL rather than about PHP, so it is
+proven against MySQL:
+
+```bash
+wp eval-file bin/verify-stats.php   # against a real WordPress and a real MySQL
+```
+
+It fires two increments concurrently on two connections — the second blocking
+on the row lock the first holds — and asserts the count is two; then does the
+same two increments as a **read-modify-write, which loses one**, so the check
+is known to be able to fail. It also sets the site to a non-UTC timezone and
+asserts the row is stamped with the merchant's day, and dispatches real beacon
+requests through `rest_do_request()` to check the published-set validation, the
+bot and prefetch filters and the rate limit. **It refuses to run on a site that
+already has counts**, because counters that cannot be recomputed are not
+something to be careful around.
+
+This one needs MySQL rather than the Playground SQLite above: `ON DUPLICATE KEY
+UPDATE` is MySQL's spelling, and the concurrency check needs two connections
+holding real row locks.
+
+**The beacon is stateless** — no visitor id, no device id, no hashed
+fingerprint ([ADR 0017](docs/adr/0017-no-visitor-identifier.md)) — so there is
+no consent gate on it at all and no identifier to reintroduce. The endpoint is
+public by necessity and hardened lightly and deliberately: the `optin_id` is
+validated against the published set, the IP is hashed into a short-lived
+transient as a rate limit and stored nowhere, and prefetch, prerender and bot
+requests are dropped. What abuse costs is a wrong number on one merchant's
+dashboard, not data loss and not a breach.
+
 ## The personal-data surface
 
 WConvert registers a WordPress exporter, an eraser and suggested

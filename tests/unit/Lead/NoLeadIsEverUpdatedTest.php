@@ -25,6 +25,15 @@ use PHPUnit\Framework\TestCase;
  * anonymising blanks the identifying columns — and ADR 0018 chose a `DELETE`
  * so that ADR 0002 needed no carve-out. A carve-out is exactly what a future
  * reader would add back, absent something that fails.
+ *
+ * **#26 is the ticket that made it widen.** It added `upsert()` to
+ * {@see \WConvert\Database\Connection} for the analytics counter, and the
+ * `ON DUPLICATE KEY UPDATE` half of that is an update by another name: against
+ * `wconvert_leads` it would be a write to a row that already existed, which is
+ * the exact thing this file exists to make unspellable. So the scan is over
+ * WRITE METHODS rather than over one method name — {@see self::WRITE_METHODS}
+ * — and the day the interface widens a third time, this list is where that
+ * widening has to be admitted.
  */
 #[CoversNothing]
 final class NoLeadIsEverUpdatedTest extends TestCase
@@ -41,7 +50,25 @@ final class NoLeadIsEverUpdatedTest extends TestCase
     private const LEAD_TABLE = ['TABLE_LEADS', 'wconvert_leads'];
 
     /**
-     * Every line on which `update()` is called with the lead log as its table.
+     * Every method on {@see \WConvert\Database\Connection} that can write to
+     * a row which already exists.
+     *
+     * `insert()` is deliberately absent: an insert is the ONE write a Lead ever
+     * takes, and `bin/verify-lead-log.php` relies on it — its retention fixture
+     * inserts a Lead with an aged ULID rather than rewriting one, because
+     * rewriting is the thing no file in this repository may do.
+     *
+     * `delete()` is absent for a different reason: removing a Lead is what ADR
+     * 0018 chose ON PURPOSE, so that anonymising — which is an update — never
+     * had to become one.
+     *
+     * `results()` and `row()` read. That leaves these two.
+     */
+    private const WRITE_METHODS = ['update', 'upsert'];
+
+    /**
+     * Every line on which a write method is called with the lead log as its
+     * table.
      *
      * Tokenised rather than grepped, for the reason `bin/pro-php-scan.php`
      * gives at length: the question is whether this is CODE, and free's source
@@ -51,7 +78,7 @@ final class NoLeadIsEverUpdatedTest extends TestCase
      *
      * @return list<int>
      */
-    private static function leadUpdatesIn(string $php): array
+    private static function leadWritesIn(string $php): array
     {
         $tokens = array_values(array_filter(
             token_get_all($php),
@@ -62,12 +89,12 @@ final class NoLeadIsEverUpdatedTest extends TestCase
         $found = [];
 
         foreach ($tokens as $index => $token) {
-            if (!is_array($token) || $token[0] !== T_STRING || $token[1] !== 'update') {
+            if (!is_array($token) || $token[0] !== T_STRING || !in_array($token[1], self::WRITE_METHODS, true)) {
                 continue;
             }
 
-            // A method call, not a function named `update` and not a
-            // declaration of one: `->update(` or `::update(`.
+            // A method call, not a function of the same name and not a
+            // declaration of one: `->update(` or `::upsert(`.
             $arrow = $tokens[$index - 1] ?? null;
             $isCall = is_array($arrow)
                 && in_array($arrow[0], [T_OBJECT_OPERATOR, T_NULLSAFE_OBJECT_OPERATOR, T_DOUBLE_COLON], true)
@@ -174,7 +201,7 @@ final class NoLeadIsEverUpdatedTest extends TestCase
         $offenders = [];
 
         foreach (self::everyPhpFile() as $file) {
-            foreach (self::leadUpdatesIn((string) file_get_contents($file)) as $line) {
+            foreach (self::leadWritesIn((string) file_get_contents($file)) as $line) {
                 $offenders[] = basename($file) . ':' . $line;
             }
         }
@@ -182,7 +209,7 @@ final class NoLeadIsEverUpdatedTest extends TestCase
         $this->assertSame(
             [],
             $offenders,
-            'ADR 0002: a Lead has no lifecycle, so no update() may name wconvert_leads. '
+            'ADR 0002: a Lead has no lifecycle, so no update() and no upsert() may name wconvert_leads. '
                 . 'ADR 0018 chose a DELETE for erasure precisely so this stayed true.'
         );
 
@@ -200,7 +227,7 @@ final class NoLeadIsEverUpdatedTest extends TestCase
         $this->db->update(Connection::TABLE_LEADS, ['email' => null], ['id' => $id]);
         PHP;
 
-        $this->assertSame([2], self::leadUpdatesIn($offending));
+        $this->assertSame([2], self::leadWritesIn($offending));
     }
 
     /**
@@ -218,7 +245,54 @@ final class NoLeadIsEverUpdatedTest extends TestCase
         $wpdb->update($wpdb->prefix . 'wconvert_leads', ['email' => null], ['id' => $id]);
         PHP;
 
-        $this->assertSame([2], self::leadUpdatesIn($offending));
+        $this->assertSame([2], self::leadWritesIn($offending));
+    }
+
+    /**
+     * **The upsert, which is the write #26 added.**
+     *
+     * `INSERT ... ON DUPLICATE KEY UPDATE` against the lead log would be a
+     * write to a row that already existed — an update in every sense except
+     * the method name, which is precisely the shape a scan for one name would
+     * have missed.
+     */
+    public function testTheScannerCatchesAnUpsertAgainstTheLeadLog(): void
+    {
+        $offending = <<<'PHP'
+        <?php
+        $this->db->upsert(Connection::TABLE_LEADS, 'INSERT INTO %i (id) VALUES (%s) ON DUPLICATE KEY UPDATE id = id', $id);
+        PHP;
+
+        $this->assertSame([2], self::leadWritesIn($offending));
+    }
+
+    /**
+     * And the upsert that is legitimate. `wconvert_stats` is the one table it
+     * exists for, and counting an act there is the whole of its call sites.
+     */
+    public function testTheScannerIgnoresTheUpsertAgainstTheCounters(): void
+    {
+        $legitimate = <<<'PHP'
+        <?php
+        $this->db->upsert(Connection::TABLE_STATS, self::INCREMENT, $optinId, $statDate, $kind->value);
+        PHP;
+
+        $this->assertSame([], self::leadWritesIn($legitimate));
+    }
+
+    /**
+     * **The insert stays legal**, and this is the assertion that says so out
+     * loud. An insert is the one write a Lead takes, so a scanner that grew to
+     * flag it would fail the capture path itself.
+     */
+    public function testTheScannerIgnoresTheOneWriteALeadDoesTake(): void
+    {
+        $legitimate = <<<'PHP'
+        <?php
+        $this->db->insert(Connection::TABLE_LEADS, $row);
+        PHP;
+
+        $this->assertSame([], self::leadWritesIn($legitimate));
     }
 
     /**
@@ -233,7 +307,7 @@ final class NoLeadIsEverUpdatedTest extends TestCase
         $this->db->update(Connection::TABLE_OPTINS, ['deleted_at' => $now], ['id' => $id]);
         PHP;
 
-        $this->assertSame([], self::leadUpdatesIn($legitimate));
+        $this->assertSame([], self::leadWritesIn($legitimate));
     }
 
     /**
@@ -249,6 +323,6 @@ final class NoLeadIsEverUpdatedTest extends TestCase
         $this->db->insert(Connection::TABLE_LEADS, $row);
         PHP;
 
-        $this->assertSame([], self::leadUpdatesIn($documented));
+        $this->assertSame([], self::leadWritesIn($documented));
     }
 }

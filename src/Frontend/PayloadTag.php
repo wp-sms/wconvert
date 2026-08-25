@@ -37,10 +37,24 @@ final class PayloadTag
     public const CAPTURE_ATTRIBUTE = 'data-capture';
 
     /**
+     * Where the analytics beacon is on this site.
+     *
+     * A second attribute rather than a namespace root the loader appends a
+     * route name to: the reasoning on {@see self::CAPTURE_ATTRIBUTE} is that a
+     * route name is spelled in PHP and nowhere else, and half a URL in an
+     * attribute plus half in TypeScript is that rule broken while looking like
+     * it is kept. Two full routes cost about sixty bytes against a 2KB
+     * gzipped budget, and they compress against each other — they differ in
+     * one word.
+     */
+    public const BEACON_ATTRIBUTE = 'data-beacon';
+
+    /**
      * @param list<array<string, mixed>> $entries
      * @param string $captureUrl `rest_url()` for the capture route.
+     * @param string $beaconUrl `rest_url()` for the beacon route.
      */
-    public static function render(array $entries, string $captureUrl): string
+    public static function render(array $entries, string $captureUrl, string $beaconUrl): string
     {
         if ($entries === []) {
             return '';
@@ -58,10 +72,12 @@ final class PayloadTag
         }
 
         return sprintf(
-            '<script type="application/json" id="%s" %s="%s">%s</script>',
+            '<script type="application/json" id="%s" %s="%s" %s="%s">%s</script>',
             self::ELEMENT_ID,
             self::CAPTURE_ATTRIBUTE,
             esc_url($captureUrl),
+            self::BEACON_ATTRIBUTE,
+            esc_url($beaconUrl),
             $json
         );
     }

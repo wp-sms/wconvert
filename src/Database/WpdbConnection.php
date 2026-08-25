@@ -89,6 +89,26 @@ final class WpdbConnection implements Connection
     }
 
     /**
+     * @param literal-string $sql SQL beginning `INSERT INTO %i`.
+     * @param mixed ...$params
+     */
+    public function upsert(string $table, string $sql, ...$params): void
+    {
+        // The same guard {@see self::delete()} carries, for the same reason:
+        // this is one named operation, not a raw `query()`. A statement that
+        // does not begin `INSERT INTO %i` is a statement this method has no
+        // business running, and `ON DUPLICATE KEY UPDATE` can only touch the
+        // row the insert itself collided with.
+        if (!str_starts_with($sql, 'INSERT INTO %i')) {
+            throw new \LogicException(
+                'WConvert\\Database\\Connection::upsert() runs INSERT ... ON DUPLICATE KEY UPDATE and nothing else.'
+            );
+        }
+
+        $this->wpdb->query($this->prepare($table, $sql, $params));
+    }
+
+    /**
      * @param literal-string $sql
      * @param array<array-key, mixed> $params
      */

@@ -36,6 +36,9 @@ final class FakeConnection implements Connection
     /** @var list<array{table: string, sql: string, params: list<mixed>}> Every DELETE it was asked to run. */
     public array $deletes = [];
 
+    /** @var list<array{table: string, sql: string, params: list<mixed>}> Every upsert it was asked to run. */
+    public array $upserts = [];
+
     /** @var list<array{table: string, sql: string, params: list<mixed>}> Every read, with what was bound to it. */
     public array $reads = [];
 
@@ -125,5 +128,23 @@ final class FakeConnection implements Connection
         $this->deletes[] = ['table' => $table, 'sql' => $sql, 'params' => array_values($params)];
 
         return $this->removes;
+    }
+
+    /**
+     * Recorded, and NOT applied to {@see self::$rows}.
+     *
+     * The upsert's whole claim is that the DATABASE resolves the collision
+     * atomically. A fake that added up the increments itself would answer
+     * every question about counting correctly while proving nothing about the
+     * statement — and the tests would then agree with this file rather than
+     * with MySQL, which is the one thing this fake must never be the authority
+     * on. `bin/verify-stats.php` is where the counting is proven.
+     *
+     * @param mixed ...$params
+     */
+    public function upsert(string $table, string $sql, ...$params): void
+    {
+        $this->statements[] = $sql;
+        $this->upserts[] = ['table' => $table, 'sql' => $sql, 'params' => array_values($params)];
     }
 }

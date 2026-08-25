@@ -1,5 +1,8 @@
 import type { Loader, PayloadEntry, Presenter, RuleEvaluator, VisitorState } from './types';
 import type { Store } from './storage';
+import type { Beacon } from './beacon';
+import { createBeacon, reporting } from './beacon';
+import { beaconEndpoint } from './payload';
 import { decide, isOverlay, rulesOf } from './decide';
 import { onConsentChange, withheldTypes } from './consent';
 import { persistentStore } from './storage';
@@ -28,6 +31,14 @@ export interface ShellOptions {
   /** Wall-clock, used only to derive the day a record is stamped with. */
   readonly now?: () => number;
   readonly store?: Store;
+  /**
+   * Where the three acts are reported to the site.
+   *
+   * Defaulted rather than required, because `boot` starts the shell with what
+   * it read off the page and nothing else — and a page carrying no beacon
+   * endpoint gets one that reports nothing, not a shell that will not start.
+   */
+  readonly beacon?: Beacon;
 }
 
 /** Every rule type this page's payload actually names, across both axes. */
@@ -47,6 +58,7 @@ export function start(options: ShellOptions): () => void {
   const { loader, entries, presenter } = options;
   const now = options.now ?? Date.now;
   const store = options.store ?? persistentStore(STATE_KEY);
+  const beacon = options.beacon ?? createBeacon(beaconEndpoint());
 
   const evaluators = new Map<string, RuleEvaluator>();
   const shown = new Set<string>();
@@ -116,7 +128,13 @@ export function start(options: ShellOptions): () => void {
         shown.add(entry.id);
         overlayDone = overlayDone || isOverlay(entry);
 
-        presenter.show(entry, {
+        // **Two records, one act.** The device's own record answers "should
+        // this Optin show again here", and the site's counters answer "how is
+        // this Optin doing" — neither is derivable from the other, and the
+        // first is `functional` storage while the second is no storage on the
+        // device at all (ADR 0017). Wrapping rather than calling the beacon
+        // inline keeps the shell's three callbacks about the state they own.
+        presenter.show(entry, reporting(beacon, entry.id, {
           // The Impression is the presenter's to report, because it has two
           // moments and only a renderer can tell them apart — shown, for an
           // overlay; entered the viewport, for `inline` (CONTEXT.md).
@@ -129,7 +147,7 @@ export function start(options: ShellOptions): () => void {
             record((current) => withConversion(current, entry.id));
             run();
           },
-        });
+        }));
       }
 
       if (!verdict.live) {
@@ -143,6 +161,13 @@ export function start(options: ShellOptions): () => void {
   function stop(): void {
     stopped = true;
     releaseConsent();
+
+    // The beacon OUTLIVES this. Teardown happens the moment every candidate is
+    // settled — on a page with one `page_load` Optin that is immediately — and
+    // the Conversion and the Dismissal have not happened yet at that point.
+    // What comes off here is the rule listeners; the beacon keeps its
+    // `pagehide` listener until the page goes away, which is the whole of its
+    // job.
 
     for (const evaluator of evaluators.values()) {
       evaluator.stop?.();
