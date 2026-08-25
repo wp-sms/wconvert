@@ -36,6 +36,7 @@ flag. It is the cost of the decision, and it is the whole cost.
 
 ```bash
 bin/verify-source-contract.sh          # no build, runs on every pull request
+npm run check:loader                   # two loader builds, runs on every pull request
 ```
 
 No file in free's tree may import a `pro/` path or the `WConvert\Pro`
@@ -54,6 +55,13 @@ it. Both halves apply in both languages: PHP is checked for `pro/` paths too,
 since `require_once WCONVERT_DIR . 'pro/…'` is the shape a WordPress developer
 reaches for first.
 
+`npm run check:loader` is the **one build a pull request pays for**, and it
+earns it: both of its assertions are about build output. Free's and Pro's
+loader, gzip -9, hard-fail at 8192 bytes; and free's loader is scanned for
+every rule identifier the manifest calls premium — free's *admin* bundle is
+deliberately never scanned, because it carries premium identifiers on purpose
+for its `locked` cards.
+
 The artifact contract, Plugin Check and the release guard are **not** here.
 They land with the release workflow: each half lands with the thing it
 inspects.
@@ -64,12 +72,22 @@ inspects.
 composer install && npm install
 
 npm run build          # admin bundle + both loader bundles
+npm run check:loader   # the loader byte budget + the premium-identifier scan
 composer test          # PHPUnit
 composer phpstan       # PHPStan, level 7
+composer verify:source # the source contract
 npm test               # Vitest — free's tree and Pro's
 npm run typecheck      # tsc --noEmit
 npm run lint           # ESLint, --max-warnings=0
 ```
+
+### Why WordPress 6.2
+
+`WConvert\Database\Connection` takes its SQL as a `literal-string` and its
+table as a separate argument, passed to `$wpdb->prepare()` through the `%i`
+identifier placeholder that WordPress 6.2 added. That is what makes an injected
+table or column name **unexpressible** rather than merely discouraged: PHPStan
+rejects any query a variable helped build, at the call site.
 
 ### Running both plugins locally
 

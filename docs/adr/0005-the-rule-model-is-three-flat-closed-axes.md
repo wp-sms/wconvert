@@ -6,6 +6,18 @@ any one), and **Conditions** (*whether* the visitor is eligible — all must hol
 at the instant a Trigger fires). Within each axis the rules are a **flat list of
 `{type, scalar}` entries with implicit AND** — no groups, no nesting, ever.
 
+*Completed by [#21](https://github.com/navidkashani/wconvert/issues/21) for the
+Targeting axis: "implicit AND" is the rule for the two CLIENT axes, and this
+originally read as though it were the rule for all three. Targeting is a **page
+set**, so its include list ORs — `post:12 AND post:15` is a set that can never
+contain a page, which is not what a merchant choosing two pages means. The axis
+is therefore an include list unioned, an exclude list unioned, **exclude
+winning**, and one visitor predicate `logged_in` held as a FIELD beside them
+rather than as a member of either list — dropped into an include list a visitor
+rule would WIDEN the Optin to the whole site for anyone matching it, since the
+list is a union. Read whole, the axis is `page-set AND logged_in`, which is the
+implicit AND this ADR asks for.*
+
 Three axes rather than one array because the storage model requires page
 targeting to be separately addressable — PHP evaluates it alone and inlines only
 the survivors — and structural separation means PHP never reasons about client

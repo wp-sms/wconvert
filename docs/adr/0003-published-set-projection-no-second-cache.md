@@ -41,3 +41,9 @@ developer's instinct is to add one; don't.
 - Page-targeting rules must stay **separably addressable** within the
   projection, because the server evaluates them alone. This is a structural
   requirement on the rule engine, not a claim on its vocabulary.
+  *Implemented by [#21](https://github.com/navidkashani/wconvert/issues/21) as a
+  three-key projection entry — `{id, targeting, payload}` — where `payload` is
+  the published config with its `targeting` key already removed. The split is
+  done once at publish time rather than per request: the enqueue path then does
+  no array surgery on an uncached page load, and "separably addressable" is
+  literal rather than a convention someone has to keep.*

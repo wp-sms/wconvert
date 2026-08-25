@@ -9,6 +9,7 @@
     "build:admin": "vite build -c vite.config.admin.mjs",
     "build:loader": "vite build -c vite.config.loader.mjs",
     "build:loader:pro": "vite build -c vite.config.loader-pro.mjs",
+    "check:loader": "npm run build:loader && npm run build:loader:pro && node bin/check-loader.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint . --max-warnings=0",

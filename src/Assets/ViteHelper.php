@@ -60,14 +60,8 @@ final class ViteHelper
         });
     }
 
-    /**
-     * Cache-bust on the file's own mtime, so a rebuilt bundle gets a new URL
-     * without anyone remembering to bump a version.
-     */
     private static function assetVersion(string $path): string
     {
-        $mtime = is_file($path) ? filemtime($path) : false;
-
-        return $mtime !== false ? (string) $mtime : WCONVERT_VERSION;
+        return BuiltAsset::version($path);
     }
 }

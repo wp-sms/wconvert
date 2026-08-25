@@ -207,6 +207,21 @@ asset-enqueue time — so it never reaches the browser, and an Optin that does n
 match the current page costs the page nothing. Every other rule is a
 [[Trigger]] or a [[Condition]] and is evaluated client-side.
 
+Five page rules — `post`, `singular`, `archive`, `term`, `url` — plus one
+visitor predicate, `logged_in`, which lives on this axis **only** because the
+client cannot read WordPress's HttpOnly auth cookie. The two are held apart in
+storage: the lists are a union of page sets, so a visitor rule dropped into an
+include list would widen the Optin to the whole site rather than narrow it.
+
+`term` is one rule covering both places a term puts itself on a page — the
+term's own archive, and a singular post carrying it. A merchant choosing "News"
+means both, and splitting that into two rule types makes the obvious choice the
+wrong one half the time.
+
+An **empty include list is "everywhere"**, not "nowhere". It is the only
+reading under which an exclude-only Optin — everywhere except the checkout —
+means anything.
+
 > **Why not "Placement":** in adtech that means position on the page, which is
 > what [[Display Type]] already covers. **Why not "Audience":** WSMS's
 > `Campaign` has an audience resolver, and both plugins share one wp-admin.
