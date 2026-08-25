@@ -6,7 +6,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use WConvert\Retention\RetentionPeriod;
 use WConvert\Support\Ulid;
-use WConvert\Tests\Unit\Optin\FakeOptionStore;
+use WConvert\Tests\Unit\Support\FakeOptionStore;
 
 /**
  * How long a merchant keeps their [[Lead]]s — and the default, which is

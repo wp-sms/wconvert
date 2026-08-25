@@ -8,6 +8,8 @@ use WConvert\Optin\Optin;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
 use WConvert\Rules\RuleVocabulary;
+use WConvert\Tests\Unit\Support\FakeConnection;
+use WConvert\Tests\Unit\Support\FakeOptionStore;
 
 /**
  * The three writes that move an Optin between states, and the one derived

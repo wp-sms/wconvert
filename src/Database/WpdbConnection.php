@@ -89,22 +89,57 @@ final class WpdbConnection implements Connection
     }
 
     /**
-     * The table, once per `%i` it is named by.
-     *
-     * The grouping view names it twice — it is two aggregates over one table,
-     * unioned — and passing it once would leave the second `%i` to eat the
-     * first value parameter. Repeating it here rather than at the call site
-     * keeps the invariant this class exists for: the table is passed
-     * separately and escaped by `prepare()`, never concatenated into the query
-     * text.
-     *
      * @param literal-string $sql
      * @param array<array-key, mixed> $params
      */
     private function prepare(string $table, string $sql, array $params): string
     {
-        $tables = array_fill(0, substr_count($sql, '%i'), $this->wpdb->prefix . $table);
+        return $this->wpdb->prepare($sql, ...self::bindings($sql, $this->wpdb->prefix . $table, $params));
+    }
 
-        return $this->wpdb->prepare($sql, ...$tables, ...array_values($params));
+    /**
+     * What `$wpdb->prepare()` wants, in the order it wants it.
+     *
+     * **`prepare()` binds by APPEARANCE, not by kind.** It walks the query and
+     * consumes one argument per placeholder in the order they occur, so a
+     * query naming its table more than once cannot be served by passing the
+     * table first and the values after: the second `%i` takes whatever value
+     * happened to be next.
+     *
+     * The grouping view names the table twice — it is two aggregates over one
+     * table, unioned, so that each half can use its own index (ADR 0033) — and
+     * its per-Optin form interleaves them as `%i, %s, %i, %s, %d`. Front-loaded,
+     * that query filtered on the table name and then selected `FROM` an Optin
+     * id. It failed loudly against a real database and silently against a fake
+     * that ignores SQL text, which is why the check that caught it lives in
+     * `bin/verify-lead-log.php` as well as here.
+     *
+     * Public because it is the one thing in this class that is not delegation,
+     * and it is a fact about `$wpdb` rather than about WConvert — so it is
+     * worth being able to assert without a database.
+     *
+     * `$sql` is a plain `string` here and a `literal-string` everywhere it can
+     * reach a database. Nothing is executed in this method — it counts
+     * placeholders and returns an array — so the constraint would buy no
+     * safety, and it would stop a test reading a statement back off
+     * {@see \WConvert\Tests\Unit\Support\FakeConnection} to check it.
+     *
+     * @param array<array-key, mixed> $params
+     * @return list<mixed>
+     */
+    public static function bindings(string $sql, string $prefixedTable, array $params): array
+    {
+        $values = array_values($params);
+        $bound = [];
+
+        // `%%` is an escaped literal percent and no placeholder at all, so it
+        // is removed before the count rather than matched around.
+        preg_match_all('/%[sdfi]/', str_replace('%%', '', $sql), $placeholders);
+
+        foreach ($placeholders[0] as $placeholder) {
+            $bound[] = $placeholder === '%i' ? $prefixedTable : array_shift($values);
+        }
+
+        return $bound;
     }
 }

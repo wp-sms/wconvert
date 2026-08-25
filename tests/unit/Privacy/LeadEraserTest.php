@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 use WConvert\Database\Connection;
 use WConvert\Lead\LeadRepository;
 use WConvert\Privacy\LeadEraser;
-use WConvert\Tests\Unit\Optin\FakeConnection;
+use WConvert\Tests\Unit\Support\FakeConnection;
 
 /**
  * The personal-data eraser, and the decision it exists to carry:
@@ -93,6 +93,41 @@ final class LeadEraserTest extends TestCase
 
         $this->assertFalse($result['items_removed']);
         $this->assertFalse($result['items_retained']);
+        $this->assertTrue($result['done']);
+    }
+
+    /**
+     * **The requested address is canonicalised before it is matched.**
+     *
+     * Stored addresses are lowercased at capture, because that is what makes
+     * grouping over them honest (ADR 0021). `sanitize_email()` does not
+     * lowercase, so matching a raw request address against a canonical column
+     * works only for as long as the collation is case-insensitive — and under
+     * a `_bin` collation this eraser would delete nothing and report `done`,
+     * which is the worst way for an erasure to fail.
+     */
+    public function testTheAddressIsCanonicalisedBeforeItIsMatched(): void
+    {
+        $this->db->removes = 1;
+
+        $this->eraser->erase('  Sarah@Example.COM ');
+
+        $this->assertSame(['sarah@example.com'], $this->db->deletes[0]['params']);
+    }
+
+    /**
+     * An address that cannot be put in canonical form matches no stored Lead,
+     * because no stored Lead was written from one — the capture path refuses
+     * it while the visitor is still on the page (ADR 0021). Nothing to erase
+     * is a finished erasure, not an error, and certainly not a `DELETE` with
+     * a value nothing can match.
+     */
+    public function testAnAddressThatIsNotOneErasesNothingAndStillFinishes(): void
+    {
+        $result = $this->eraser->erase('not-an-address');
+
+        $this->assertSame([], $this->db->deletes);
+        $this->assertFalse($result['items_removed']);
         $this->assertTrue($result['done']);
     }
 

@@ -11,8 +11,8 @@ use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
 use WConvert\Rules\RuleVocabulary;
 use WConvert\Template\TemplateVocabulary;
-use WConvert\Tests\Unit\Optin\FakeConnection;
-use WConvert\Tests\Unit\Optin\FakeOptionStore;
+use WConvert\Tests\Unit\Support\FakeConnection;
+use WConvert\Tests\Unit\Support\FakeOptionStore;
 
 /**
  * The CSV download's walk over the log.

@@ -130,6 +130,68 @@ describe('the lead log', () => {
     expect(await screen.findByLabelText(/Keep them until I delete them/)).toBeChecked();
   });
 
+  /**
+   * **Typing a period must not save what it passes through.** Typing `90`
+   * goes through `9`, and a saved 9 is a period the next cron run enforces —
+   * deleting Leads because a merchant was mid-keystroke is the support
+   * catastrophe ADR 0018 exists to avoid, arriving through the settings panel
+   * instead of through a default.
+   */
+  it('does not save a retention period on every keystroke', async () => {
+    log.readRetention.mockResolvedValue({ days: 30, max_days: 3650 });
+    log.saveRetention.mockResolvedValue({ days: 90, max_days: 3650 });
+
+    render(<LeadLog />);
+
+    const field = await screen.findByRole('spinbutton');
+
+    await userEvent.clear(field);
+    await userEvent.type(field, '90');
+
+    expect(log.saveRetention).not.toHaveBeenCalled();
+
+    await userEvent.tab();
+
+    await waitFor(() => expect(log.saveRetention).toHaveBeenCalledTimes(1));
+    expect(log.saveRetention).toHaveBeenCalledWith(90);
+  });
+
+  it('saves the period once, on Enter', async () => {
+    log.readRetention.mockResolvedValue({ days: 30, max_days: 3650 });
+    log.saveRetention.mockResolvedValue({ days: 7, max_days: 3650 });
+
+    render(<LeadLog />);
+
+    const field = await screen.findByRole('spinbutton');
+
+    await userEvent.clear(field);
+    await userEvent.type(field, '7{Enter}');
+
+    await waitFor(() => expect(log.saveRetention).toHaveBeenCalledTimes(1));
+    expect(log.saveRetention).toHaveBeenCalledWith(7);
+  });
+
+  /**
+   * Turning retention off is a discrete choice, so it commits at once — and it
+   * commits null, never a zero that would read as "keep nothing".
+   */
+  it('commits keep-forever the moment it is chosen', async () => {
+    log.readRetention.mockResolvedValue({ days: 30, max_days: 3650 });
+    log.saveRetention.mockResolvedValue({ days: null, max_days: 3650 });
+
+    render(<LeadLog />);
+
+    await userEvent.click(await screen.findByLabelText(/Keep them until I delete them/));
+
+    await waitFor(() => expect(log.saveRetention).toHaveBeenCalledWith(null));
+  });
+
+  it('says so when it is showing fewer rows than there are submissions', async () => {
+    render(<LeadLog />);
+
+    expect(await screen.findByText('Showing the newest 1 of 7 submissions.')).toBeInTheDocument();
+  });
+
   it('offers the export as a link the browser navigates to, not a fetch', async () => {
     render(<LeadLog />);
 

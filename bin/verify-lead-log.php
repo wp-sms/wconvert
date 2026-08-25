@@ -132,6 +132,18 @@ $forOptin = $log->read($optinId, false, 50);
 
 $verify->check('filtering to one optin counts only its leads', 3, $forOptin['submissions']);
 
+// **The per-Optin GROUPED read**, which is the query the `%i` binding bug hid
+// in: it names the table twice, and only this combination interleaves the
+// table with a value. A fake that ignores SQL text cannot see it, and reading
+// the log unfiltered does not reach it.
+$groupedForOptin = $log->read($optinId, true, 50);
+$forOptinIdentifiers = array_column($groupedForOptin['groups'], 'submissions', 'identifier');
+
+$verify->check('grouping one optin still collapses its shared identifier', 2, $forOptinIdentifiers['sarah@example.com'] ?? null);
+$verify->check("and does not reach the other optin's leads", null, $forOptinIdentifiers['bob@example.com'] ?? null);
+$verify->check('and its headline is that optin\'s submissions', 3, $groupedForOptin['submissions']);
+$verify->check('the grouped query ran at all', '', (string) $wpdb->last_error);
+
 $group = null;
 
 foreach ($grouped['groups'] as $candidate) {
@@ -191,16 +203,31 @@ $pruner = new LeadPruner($leads, $retention);
 $verify->check('with no period configured it removes nothing', 0, $pruner->run());
 $verify->check('and the log is untouched', 2, (int) $wpdb->get_var("SELECT COUNT(*) FROM `{$leadTable}`"));
 
-// Age one row past the boundary by rewriting its id — the only way to make a
-// row old without waiting, and honest here because the id IS the timestamp.
+// A capture that happened sixty days ago, INSERTED rather than aged by an
+// UPDATE. Rewriting a row's id would have been the quick way, and it is the
+// one thing no file in this repository may do — a Lead has no update path, and
+// `tests/unit/Lead/NoLeadIsEverUpdatedTest.php` reads `bin/` for exactly that.
+// An insert is the only write a Lead ever takes, which is what makes this an
+// honest fixture rather than a workaround.
 $aged = Ulid::floorAt((int) floor(microtime(true) * 1000) - (60 * 86400000));
-$wpdb->query($wpdb->prepare("UPDATE `{$leadTable}` SET id = %s WHERE id = %s", $aged, $bob->id));
+
+$db->insert(Connection::TABLE_LEADS, [
+    'id' => $aged,
+    'optin_id' => $otherOptinId,
+    'email' => 'long.ago@example.com',
+    'phone' => null,
+    'fields' => '{}',
+    'created_at' => gmdate('Y-m-d H:i:s', time() - (60 * 86400)),
+]);
 
 $retention->set(30);
 
+$verify->check('the aged capture is in the log before the prune', 3, (int) $wpdb->get_var("SELECT COUNT(*) FROM `{$leadTable}`"));
 $verify->check('a configured period removes what has outlived it', 1, $pruner->run());
-$verify->check('and leaves what has not', 1, (int) $wpdb->get_var("SELECT COUNT(*) FROM `{$leadTable}`"));
-$verify->check('the survivor is the recent one', $phoneOnly->id, (string) $wpdb->get_var("SELECT id FROM `{$leadTable}`"));
+$verify->check('and leaves what has not', 2, (int) $wpdb->get_var("SELECT COUNT(*) FROM `{$leadTable}`"));
+$verify->check('nothing recent was taken with it', 0, (int) $wpdb->get_var(
+    $wpdb->prepare("SELECT COUNT(*) FROM `{$leadTable}` WHERE id = %s", $aged)
+));
 
 echo "Cleaning up\n";
 

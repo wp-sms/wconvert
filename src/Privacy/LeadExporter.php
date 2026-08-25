@@ -2,6 +2,7 @@
 
 namespace WConvert\Privacy;
 
+use WConvert\Lead\Identifier;
 use WConvert\Lead\Lead;
 use WConvert\Lead\LeadRepository;
 use WConvert\Optin\OptinRepository;
@@ -74,7 +75,14 @@ final class LeadExporter
     public function export(string $email, int $page = 1): array
     {
         $page = max(1, $page);
-        $leads = $this->leads->forEmail(sanitize_email($email), self::PER_PAGE, ($page - 1) * self::PER_PAGE);
+
+        // Canonicalised for the reason {@see LeadEraser::erase()} gives at
+        // length: stored addresses are lowercased at capture, and matching a
+        // raw one against them rides on a collation rather than on a rule.
+        $canonical = Identifier::email($email);
+        $leads = $canonical === null
+            ? []
+            : $this->leads->forEmail($canonical, self::PER_PAGE, ($page - 1) * self::PER_PAGE);
 
         // Read once per page rather than once per Lead: an install has tens of
         // Optins and a person may have submitted to several of them.

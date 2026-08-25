@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 use WConvert\Lead\LeadGroup;
 use WConvert\Lead\LeadLog;
 use WConvert\Lead\LeadRepository;
-use WConvert\Tests\Unit\Optin\FakeConnection;
+use WConvert\Tests\Unit\Support\FakeConnection;
 
 /**
  * The lead log, read — and the two boundaries ADR 0021 calls load-bearing.

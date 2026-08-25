@@ -9,8 +9,8 @@ use WConvert\Lead\LeadRepository;
 use WConvert\Retention\LeadPruner;
 use WConvert\Retention\RetentionPeriod;
 use WConvert\Support\Ulid;
-use WConvert\Tests\Unit\Optin\FakeConnection;
-use WConvert\Tests\Unit\Optin\FakeOptionStore;
+use WConvert\Tests\Unit\Support\FakeConnection;
+use WConvert\Tests\Unit\Support\FakeOptionStore;
 
 /**
  * The retention pruning job.

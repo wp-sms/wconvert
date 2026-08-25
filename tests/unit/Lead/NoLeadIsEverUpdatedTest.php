@@ -29,8 +29,16 @@ use PHPUnit\Framework\TestCase;
 #[CoversNothing]
 final class NoLeadIsEverUpdatedTest extends TestCase
 {
-    /** The constant that names the lead log, however it is qualified. */
-    private const LEAD_TABLE = 'TABLE_LEADS';
+    /**
+     * The two ways the lead log gets named.
+     *
+     * The constant is how `src/` spells it. The bare table name is how a
+     * script reaches for it — `$wpdb->update($wpdb->prefix . 'wconvert_leads',
+     * …)` is the shape a WordPress developer writes first, and it is exactly
+     * what `bin/` would contain. Matching only the constant would have watched
+     * the tree least likely to break the rule.
+     */
+    private const LEAD_TABLE = ['TABLE_LEADS', 'wconvert_leads'];
 
     /**
      * Every line on which `update()` is called with the lead log as its table.
@@ -78,15 +86,18 @@ final class NoLeadIsEverUpdatedTest extends TestCase
     }
 
     /**
-     * Does the argument list opening at `$open` name `$needle` in its first
-     * argument?
+     * Does the argument list opening at `$open` name any of `$needles` in its
+     * first argument?
      *
      * Depth-aware, so a nested call in a later argument cannot be mistaken for
-     * the first one.
+     * the first one. A STRING LITERAL counts as naming it, for the same reason
+     * `bin/pro-php-scan.php` flags a namespace in one: the table a query runs
+     * against is decided by the value, not by how it was spelled.
      *
      * @param list<array{0: int, 1: string, 2: int}|string> $tokens
+     * @param list<string> $needles
      */
-    private static function firstArgumentNames(array $tokens, int $open, string $needle): bool
+    private static function firstArgumentNames(array $tokens, int $open, array $needles): bool
     {
         $depth = 0;
 
@@ -111,7 +122,15 @@ final class NoLeadIsEverUpdatedTest extends TestCase
                 return false;
             }
 
-            if (is_array($token) && $token[0] === T_STRING && $token[1] === $needle) {
+            if (!is_array($token)) {
+                continue;
+            }
+
+            if ($token[0] === T_STRING && in_array($token[1], $needles, true)) {
+                return true;
+            }
+
+            if ($token[0] === T_CONSTANT_ENCAPSED_STRING && in_array(trim($token[1], '"\''), $needles, true)) {
                 return true;
             }
         }
@@ -127,7 +146,11 @@ final class NoLeadIsEverUpdatedTest extends TestCase
         $root = dirname(__DIR__, 3);
         $files = [];
 
-        foreach (['/src', '/pro/src'] as $tree) {
+        // `bin/` too. It holds scripts that run inside WordPress with a live
+        // `$wpdb` — `bin/verify-lead-log.php` writes to the lead log by
+        // design — so leaving it out would exempt the tree most likely to
+        // reach for a quick `UPDATE`.
+        foreach (['/src', '/pro/src', '/bin'] as $tree) {
             /** @var \RecursiveIteratorIterator<\RecursiveDirectoryIterator> $iterator */
             $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($root . $tree));
 
@@ -175,6 +198,24 @@ final class NoLeadIsEverUpdatedTest extends TestCase
         $offending = <<<'PHP'
         <?php
         $this->db->update(Connection::TABLE_LEADS, ['email' => null], ['id' => $id]);
+        PHP;
+
+        $this->assertSame([2], self::leadUpdatesIn($offending));
+    }
+
+    /**
+     * **The table named as a string, which is how a script reaches for it.**
+     *
+     * `src/` goes through `Connection::TABLE_LEADS`, so matching only the
+     * constant would have watched the tree least likely to break the rule and
+     * ignored `bin/`, where a live `$wpdb` is in scope and the quick spelling
+     * is the obvious one.
+     */
+    public function testTheScannerCatchesTheTableNamedAsAString(): void
+    {
+        $offending = <<<'PHP'
+        <?php
+        $wpdb->update($wpdb->prefix . 'wconvert_leads', ['email' => null], ['id' => $id]);
         PHP;
 
         $this->assertSame([2], self::leadUpdatesIn($offending));

@@ -7,6 +7,7 @@ use WConvert\Container\CoreServiceProvider;
 use WConvert\Container\PrivacyServiceProvider;
 use WConvert\Container\ServiceContainer;
 use WConvert\Database\Installer;
+use WConvert\Retention\LeadPruner;
 use WConvert\Storage\WpOptionStore;
 
 defined('ABSPATH') || exit;
@@ -55,6 +56,13 @@ final class Bootstrap
         // deactivating — so CoreServiceProvider carries a version check too.
         register_activation_hook(WCONVERT_MAIN_FILE, [self::class, 'activate']);
 
+        // Deactivation does NOT drop the tables — a merchant turning the
+        // plugin off has not asked for their [[Lead]]s to be destroyed, and
+        // that is the whole posture of ADR 0018. It does clear the schedule,
+        // because a cron event whose callback no longer exists is a WP-Cron
+        // entry WordPress retries forever against nothing.
+        register_deactivation_hook(WCONVERT_MAIN_FILE, [self::class, 'deactivate']);
+
         add_action('plugins_loaded', [self::class, 'setup'], 10);
     }
 
@@ -87,6 +95,17 @@ final class Bootstrap
     public static function activate(): void
     {
         (new Installer(new WpOptionStore()))->install();
+    }
+
+    /**
+     * Turn the plugin off without touching a merchant's data.
+     *
+     * The retention period stays in its option, so re-activating restores the
+     * setting rather than silently reverting to keep-forever.
+     */
+    public static function deactivate(): void
+    {
+        wp_clear_scheduled_hook(LeadPruner::HOOK);
     }
 
     /**

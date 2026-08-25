@@ -6,7 +6,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use WConvert\Privacy\PolicyText;
 use WConvert\Retention\RetentionPeriod;
-use WConvert\Tests\Unit\Optin\FakeOptionStore;
+use WConvert\Tests\Unit\Support\FakeOptionStore;
 
 /**
  * The privacy-policy text WConvert suggests, and the two things it has to say.

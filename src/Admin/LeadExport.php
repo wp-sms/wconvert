@@ -5,6 +5,7 @@ namespace WConvert\Admin;
 use WConvert\Lead\LeadCsv;
 use WConvert\Lead\LeadRepository;
 use WConvert\Optin\OptinRepository;
+use WConvert\Support\Ulid;
 
 defined('ABSPATH') || exit;
 
@@ -66,6 +67,16 @@ final class LeadExport
         }
 
         $optinId = isset($_GET['optin_id']) ? sanitize_text_field(wp_unslash((string) $_GET['optin_id'])) : '';
+
+        // Checked against the shape rather than merely sanitised. The value
+        // goes into a prepared statement either way, so this is not about
+        // injection — it is that a filter which is not an id matches no rows,
+        // and a merchant would download an empty file believing they had
+        // exported an Optin. The REST log route holds the same line at its
+        // `optin_id` argument.
+        if ($optinId !== '' && !Ulid::isOne($optinId)) {
+            wp_die(esc_html__('That is not an Optin.', 'wconvert'), '', ['response' => 400]);
+        }
 
         nocache_headers();
         header('Content-Type: text/csv; charset=utf-8');

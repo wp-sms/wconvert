@@ -10,8 +10,8 @@ use WConvert\Optin\PublishedSet;
 use WConvert\Rest\CaptureController;
 use WConvert\Rest\Routes;
 use WConvert\Template\TemplateVocabulary;
-use WConvert\Tests\Unit\Optin\FakeConnection;
-use WConvert\Tests\Unit\Optin\FakeOptionStore;
+use WConvert\Tests\Unit\Support\FakeConnection;
+use WConvert\Tests\Unit\Support\FakeOptionStore;
 
 /**
  * The capture route's REGISTRATION, which is where two of this endpoint's

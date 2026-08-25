@@ -28,6 +28,25 @@ final class Ulid
 
     public const LENGTH = 26;
 
+    /**
+     * A ULID, as a regular expression — **the one spelling of it.**
+     *
+     * Three callers need it and had three copies: two REST route constraints
+     * and the export's query-string filter. A route constraint that drifts
+     * from the alphabet above is a 404 on a legitimate id or a query on a
+     * value that is not one, and neither shows up until it does.
+     *
+     * Unanchored, because a route constraint is spliced into a larger pattern
+     * and an anchor there would end the route rather than the id. Callers that
+     * match it alone anchor it themselves.
+     */
+    public const PATTERN = '[0-9A-HJKMNP-TV-Z]{' . self::LENGTH . '}';
+
+    public static function isOne(string $value): bool
+    {
+        return preg_match('/^' . self::PATTERN . '$/', $value) === 1;
+    }
+
     public static function generate(): string
     {
         return self::encodeTime((int) floor(microtime(true) * 1000)) . self::encodeRandomness();

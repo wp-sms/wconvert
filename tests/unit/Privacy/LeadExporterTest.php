@@ -9,8 +9,8 @@ use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
 use WConvert\Privacy\LeadExporter;
 use WConvert\Rules\RuleVocabulary;
-use WConvert\Tests\Unit\Optin\FakeConnection;
-use WConvert\Tests\Unit\Optin\FakeOptionStore;
+use WConvert\Tests\Unit\Support\FakeConnection;
+use WConvert\Tests\Unit\Support\FakeOptionStore;
 
 /**
  * The personal-data exporter.
@@ -164,6 +164,31 @@ final class LeadExporterTest extends TestCase
 
         $export = $this->exporter->export('nobody@example.com');
 
+        $this->assertSame([], $export['data']);
+        $this->assertTrue($export['done']);
+    }
+
+    /**
+     * Canonicalised before it is matched, for the reason
+     * `LeadEraserTest` gives at length: stored addresses are lowercased at
+     * capture, and matching a raw one against them rides on a collation rather
+     * than on a rule.
+     */
+    public function testTheAddressIsCanonicalisedBeforeItIsMatched(): void
+    {
+        $this->db->answers = [[], []];
+
+        $this->exporter->export('  Sarah@Example.COM ');
+
+        $this->assertStringContainsString('WHERE email = %s', $this->db->reads[0]['sql']);
+        $this->assertSame('sarah@example.com', $this->db->reads[0]['params'][0]);
+    }
+
+    public function testAnAddressThatIsNotOneReadsNothingAndIsDone(): void
+    {
+        $export = $this->exporter->export('not-an-address');
+
+        $this->assertSame([], $this->db->statements);
         $this->assertSame([], $export['data']);
         $this->assertTrue($export['done']);
     }

@@ -46,6 +46,9 @@ final class LeadCsv
     /** What a spreadsheet reads as the start of a formula rather than of a value. */
     private const FORMULA_PREFIXES = ['=', '+', '-', '@', "\t", "\r"];
 
+    /** @var list<string>|null The columns, worked out once — the export writes one per Lead. */
+    private ?array $columns = null;
+
     public function __construct(
         private readonly TemplateVocabulary $vocabulary,
     ) {
@@ -70,7 +73,7 @@ final class LeadCsv
         // real columns on the table rather than entries in `fields`.
         $captured = array_values(array_diff($this->vocabulary->fields(), ['email', 'phone']));
 
-        return array_merge(self::LEADING_COLUMNS, $captured, [self::CONSENT_COLUMN]);
+        return $this->columns ??= array_merge(self::LEADING_COLUMNS, $captured, [self::CONSENT_COLUMN]);
     }
 
     /**
@@ -99,7 +102,7 @@ final class LeadCsv
      */
     private function rowFor(Lead $lead, array $optinNames): array
     {
-        $values = [
+        $leading = [
             'lead_id' => $lead->id,
             'submitted_at' => $lead->createdAt,
             // The NAME, which survives the Optin being soft-deleted — that is
@@ -112,14 +115,15 @@ final class LeadCsv
             'phone' => $lead->phone ?? '',
         ];
 
+        $row = [];
+
+        // In column order, so the row lines up with the header by construction
+        // rather than by two lists agreeing.
         foreach ($this->columns() as $column) {
-            $values[$column] ??= $lead->fields[$column] ?? '';
+            $row[] = self::neutralise($leading[$column] ?? $lead->fields[$column] ?? '');
         }
 
-        return array_map(
-            static fn (string $value): string => self::neutralise($value),
-            array_values(array_map(static fn (string $c): string => $values[$c], $this->columns()))
-        );
+        return $row;
     }
 
     /**

@@ -9,6 +9,15 @@ ticket gets. This is that sign-off, and the answer is **neither index**.
 Two were on the table. `idx_optin_created (optin_id, created_at)` for the log
 filtered to one Optin, and `idx_created (created_at)` for the retention prune.
 
+It **amends [ADR 0002](0002-leads-are-immutable-by-schema.md)**, whose closing
+line reads "`created_at` alone also makes retention pruning a range delete" —
+true of the range, wrong about the column it runs over. It **completes
+[ADR 0018](0018-erasure-deletes-rather-than-anonymises.md)**, which specified
+the prune without saying what it would cost, and **completes
+[ADR 0021](0021-lead-identity-is-computed-not-stored.md)**, whose "indexed
+aggregate over a table that already exists" is true only of the query below and
+not of the obvious one. Both are noted inline in those files.
+
 ## Why the prune needs none
 
 The prune is a range delete: *remove everything captured before a cutoff*. On

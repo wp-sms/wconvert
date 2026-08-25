@@ -9,8 +9,8 @@ use WConvert\Lead\LeadRepository;
 use WConvert\Rest\LeadController;
 use WConvert\Rest\Routes;
 use WConvert\Retention\RetentionPeriod;
-use WConvert\Tests\Unit\Optin\FakeConnection;
-use WConvert\Tests\Unit\Optin\FakeOptionStore;
+use WConvert\Tests\Unit\Support\FakeConnection;
+use WConvert\Tests\Unit\Support\FakeOptionStore;
 
 /**
  * The lead log's route REGISTRATION, which is where two of its guarantees live

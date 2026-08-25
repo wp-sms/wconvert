@@ -116,11 +116,17 @@ tests/unit/Template/TemplateSnapshotTest.php   # an Optin's copy outlives its en
 tests/unit/Frontend/PayloadBudgetTest.php      # ten snapshotted trees, ≤2KB gzipped
 ```
 
+Like the rule manifest, **the loader must never `import` it**: an unrecognised
+node is skipped by the renderer's own switch, so the lookup buys nothing and
+the import would put the whole vocabulary in the byte budget. The parity test
+asserts the renderer implements exactly what the manifest declares, in both
+directions.
+
 ## The lead log
 
 Reading `wconvert_leads` is the one part of WConvert whose correctness is a
 property of **SQL** rather than of PHP, and the unit suite deliberately cannot
-prove it: `tests/unit/Optin/FakeConnection.php` models the table and ignores
+prove it: `tests/unit/Support/FakeConnection.php` models the table and ignores
 the query text, because a fake that re-implemented `GROUP BY` would make itself
 the authority on what a database does.
 
@@ -163,12 +169,6 @@ tests/unit/Privacy/LeadExporterTest.php       # the Consent Record travels; an a
 
 Retention ships as **keep forever with pruning off**, and the WP-Cron job
 exists from day one with nothing to do.
-
-Like the rule manifest, **the loader must never `import` it**: an unrecognised
-node is skipped by the renderer's own switch, so the lookup buys nothing and
-the import would put the whole vocabulary in the byte budget. The parity test
-asserts the renderer implements exactly what the manifest declares, in both
-directions.
 
 ## Development
 

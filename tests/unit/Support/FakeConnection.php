@@ -1,6 +1,6 @@
 <?php
 
-namespace WConvert\Tests\Unit\Optin;
+namespace WConvert\Tests\Unit\Support;
 
 use WConvert\Database\Connection;
 
@@ -36,6 +36,9 @@ final class FakeConnection implements Connection
     /** @var list<array{table: string, sql: string, params: list<mixed>}> Every DELETE it was asked to run. */
     public array $deletes = [];
 
+    /** @var list<array{table: string, sql: string, params: list<mixed>}> Every read, with what was bound to it. */
+    public array $reads = [];
+
     /** @var list<list<array<string, string|null>>> Canned result sets, taken in order by {@see self::results()}. */
     public array $answers = [];
 
@@ -49,6 +52,7 @@ final class FakeConnection implements Connection
     public function results(string $table, string $sql, ...$params): array
     {
         $this->statements[] = $sql;
+        $this->reads[] = ['table' => $table, 'sql' => $sql, 'params' => array_values($params)];
 
         if ($this->answers !== []) {
             return array_shift($this->answers);
@@ -67,6 +71,7 @@ final class FakeConnection implements Connection
     public function row(string $table, string $sql, ...$params): ?array
     {
         $this->statements[] = $sql;
+        $this->reads[] = ['table' => $table, 'sql' => $sql, 'params' => array_values($params)];
 
         if ($this->answers !== []) {
             $answer = array_shift($this->answers);

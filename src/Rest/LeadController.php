@@ -4,6 +4,7 @@ namespace WConvert\Rest;
 
 use WConvert\Lead\LeadLog;
 use WConvert\Retention\RetentionPeriod;
+use WConvert\Support\Ulid;
 use WP_REST_Request;
 use WP_REST_Response;
 
@@ -29,9 +30,6 @@ defined('ABSPATH') || exit;
  */
 final class LeadController
 {
-    /** A ULID, spelled as a route constraint so a malformed id never reaches a query. */
-    private const ULID_PATTERN = '[0-9A-HJKMNP-TV-Z]{26}';
-
     private const DEFAULT_PER_PAGE = 50;
 
     public function __construct(
@@ -53,9 +51,12 @@ final class LeadController
                 'callback' => [$this, 'index'],
                 'permission_callback' => [Routes::class, 'canManage'],
                 'args' => [
+                    // A ULID or nothing. An `optin_id` that is not one is a
+                    // filter that would silently match no rows, which reads on
+                    // screen as an empty log rather than as a bad request.
                     'optin_id' => [
                         'type' => 'string',
-                        'pattern' => '^' . self::ULID_PATTERN . '$',
+                        'pattern' => '^' . Ulid::PATTERN . '$',
                     ],
                     // The grouping toggle. It changes what a ROW is and
                     // nothing else — the response's `submissions` is the same

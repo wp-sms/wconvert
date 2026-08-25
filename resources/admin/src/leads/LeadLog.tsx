@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import {
   exportUrl,
@@ -10,6 +10,12 @@ import {
 } from './api';
 import { listOptins, type OptinSummary } from '../optins/api';
 
+/** Before the first read lands. Not an error state — an empty log looks the same. */
+const EMPTY: LeadLogPayload = { submissions: 0, grouped: false, leads: [], groups: [] };
+
+/** What a merchant gets when they turn retention on without typing a number. */
+const SUGGESTED_DAYS = 90;
+
 /**
  * The [[Lead]] log.
  *
@@ -20,17 +26,24 @@ import { listOptins, type OptinSummary } from '../optins/api';
  * identifiers are optional, so the number of groups counts identifiers seen,
  * which is a different quantity (ADR 0021).
  *
- * The Optin column shows the Optin's NAME, resolved from the list rather than
- * joined in SQL: an install has tens of Optins and thousands of Leads, so the
- * map is cheap and the join would be per-row. A soft-deleted Optin still has a
- * name, which is what the soft delete is for (ADR 0002, ADR 0020).
+ * The Optin column shows the Optin's NAME, resolved from a map built off the
+ * Optin list rather than joined in SQL: an install has tens of Optins and
+ * thousands of Leads, so the map is built once and the join would be per-row.
+ * A soft-deleted Optin still has a name, which is what the soft delete is for
+ * (ADR 0002, ADR 0020).
+ *
+ * **The retention period is committed, never typed through.** Every keystroke
+ * in a number field is a value — typing `90` passes through `9` — and each one
+ * saved is a period the next cron run would enforce. Deleting a merchant's
+ * Leads because they were half way through typing is the support catastrophe
+ * ADR 0018 exists to avoid, arriving through the settings panel instead of
+ * through a default.
  */
-const EMPTY: LeadLogPayload = { submissions: 0, grouped: false, leads: [], groups: [] };
-
 export function LeadLog() {
   const [log, setLog] = useState<LeadLogPayload>(EMPTY);
   const [optins, setOptins] = useState<OptinSummary[]>([]);
   const [retention, setRetention] = useState<Retention | null>(null);
+  const [draftDays, setDraftDays] = useState('');
   const [optinId, setOptinId] = useState('');
   const [grouped, setGrouped] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -57,21 +70,29 @@ export function LeadLog() {
         // Deleted Optins included: a Lead outlives the Optin that captured it,
         // and a blank name on those rows is exactly where provenance matters.
         setOptins(await listOptins(true));
-        setRetention(await readRetention());
+
+        const current = await readRetention();
+
+        setRetention(current);
+        setDraftDays(current.days === null ? '' : String(current.days));
       } catch (cause) {
         say(cause);
       }
     })();
   }, []);
 
-  const nameOf = (id: string) => optins.find((optin) => optin.id === id)?.name ?? id;
+  const names = useMemo(() => new Map(optins.map((optin) => [optin.id, optin.name])), [optins]);
+  const nameOf = (id: string) => names.get(id) ?? id;
 
-  const changeRetention = (days: number | null) => {
+  const commitRetention = (days: number | null) => {
     setBusy(true);
 
     void (async () => {
       try {
-        setRetention(await saveRetention(days));
+        const saved = await saveRetention(days);
+
+        setRetention(saved);
+        setDraftDays(saved.days === null ? '' : String(saved.days));
         setError(null);
       } catch (cause) {
         say(cause);
@@ -79,6 +100,23 @@ export function LeadLog() {
         setBusy(false);
       }
     })();
+  };
+
+  /**
+   * The typed period, committed on blur or Enter.
+   *
+   * A draft that is not a usable number is not saved and not silently
+   * corrected either — the field keeps what they typed, and the stored period
+   * keeps what it had.
+   */
+  const commitDraft = () => {
+    const days = Number(draftDays);
+
+    if (!Number.isInteger(days) || days < 1 || days === retention?.days) {
+      return;
+    }
+
+    commitRetention(Math.min(days, retention?.max_days ?? SUGGESTED_DAYS));
   };
 
   const csv = exportUrl(optinId);
@@ -129,6 +167,24 @@ export function LeadLog() {
           </a>
         )}
       </p>
+
+      {/*
+        **A truncated log says so.** One read is capped, and a screen showing
+        the newest fifty of nine hundred submissions while the headline reads
+        nine hundred is a screen that looks broken. Saying which rows these
+        are costs a sentence; a merchant discovering the cap by counting does
+        not.
+      */}
+      {!grouped && log.leads.length > 0 && log.leads.length < log.submissions && (
+        <p className="description">
+          {sprintf(
+            /* translators: 1: how many rows are shown. 2: how many submissions there are in total. */
+            __('Showing the newest %1$s of %2$s submissions.', 'wconvert'),
+            String(log.leads.length),
+            String(log.submissions),
+          )}
+        </p>
+      )}
 
       {grouped ? (
         <table className="wp-list-table widefat fixed striped">
@@ -210,28 +266,45 @@ export function LeadLog() {
             name="wconvert-retention"
             checked={retention?.days === null}
             disabled={busy || retention === null}
-            onChange={() => changeRetention(null)}
+            onChange={() => commitRetention(null)}
           />{' '}
           {__('Keep them until I delete them', 'wconvert')}
         </label>
       </p>
       <p>
         <label>
+          {/*
+            Turning retention ON commits a suggested period rather than
+            whatever the field happens to hold, and the field is where the
+            merchant then changes it. Committing the draft here would save a
+            number nobody typed.
+          */}
           <input
             type="radio"
             name="wconvert-retention"
             checked={typeof retention?.days === 'number'}
             disabled={busy || retention === null}
-            onChange={() => changeRetention(90)}
+            onChange={() => commitRetention(SUGGESTED_DAYS)}
           />{' '}
           {__('Delete them automatically after', 'wconvert')}{' '}
+          {/*
+            `onBlur` and Enter, never `onChange`. Typing 90 passes through 9,
+            and a saved 9 is a period the next cron run enforces (ADR 0018).
+          */}
           <input
             type="number"
             min={1}
-            max={retention?.max_days ?? 3650}
-            value={retention?.days ?? ''}
+            max={retention?.max_days ?? SUGGESTED_DAYS}
+            value={draftDays}
             disabled={busy || retention === null || retention.days === null}
-            onChange={(e) => changeRetention(Number(e.target.value))}
+            onChange={(e) => setDraftDays(e.target.value)}
+            onBlur={commitDraft}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                commitDraft();
+              }
+            }}
           />{' '}
           {__('days', 'wconvert')}
         </label>

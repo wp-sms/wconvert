@@ -2,6 +2,7 @@
 
 namespace WConvert\Privacy;
 
+use WConvert\Lead\Identifier;
 use WConvert\Lead\LeadRepository;
 
 defined('ABSPATH') || exit;
@@ -82,7 +83,19 @@ final class LeadEraser
      */
     public function erase(string $email, int $page = 1): array
     {
-        $removed = $this->leads->eraseByEmail(sanitize_email($email));
+        // **Canonicalised, not merely sanitised.** Stored addresses are
+        // lowercased at capture because that is what makes grouping honest
+        // (ADR 0021), and `sanitize_email()` does not lowercase — so matching
+        // a raw request address against a canonical column works only for as
+        // long as the column's collation is case-insensitive. Under a `_bin`
+        // collation this eraser would delete nothing and report `done`, which
+        // is the worst possible way for an erasure to fail.
+        $canonical = Identifier::email($email);
+
+        // An address that cannot be put in canonical form matches no stored
+        // Lead, because no stored Lead was written from one. Nothing to erase
+        // is a finished erasure, not an error.
+        $removed = $canonical === null ? 0 : $this->leads->eraseByEmail($canonical);
 
         return [
             'items_removed' => $removed > 0,
