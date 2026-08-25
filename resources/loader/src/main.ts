@@ -1,7 +1,7 @@
 import { createLoader } from './engine';
 import { boot } from './boot';
 import { FREE_MODULES } from './modules';
-import { noRenderer } from './present';
+import { templatePresenter } from './present';
 
 /**
  * Free's loader entry.
@@ -16,6 +16,6 @@ import { noRenderer } from './present';
  */
 const loader = createLoader(FREE_MODULES);
 
-boot(loader, noRenderer);
+boot(loader, templatePresenter);
 
 export default loader;

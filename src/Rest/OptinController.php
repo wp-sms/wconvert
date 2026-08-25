@@ -6,6 +6,8 @@ use WConvert\Optin\Optin;
 use WConvert\Optin\OptinRepository;
 use WConvert\Rules\RuleVocabulary;
 use WConvert\Targeting\Targeting;
+use WConvert\Template\TemplateLibrary;
+use WConvert\Template\TemplateVocabulary;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -24,14 +26,14 @@ defined('ABSPATH') || exit;
  */
 final class OptinController
 {
-    public const NAMESPACE = 'wconvert/v1';
-
     /** A ULID, spelled as a route constraint so a malformed id 404s at the router. */
     private const ID_PATTERN = '(?P<id>[0-9A-HJKMNP-TV-Z]{26})';
 
     public function __construct(
         private readonly OptinRepository $optins,
         private readonly RuleVocabulary $vocabulary,
+        private readonly TemplateVocabulary $templates,
+        private readonly TemplateLibrary $library,
     ) {
     }
 
@@ -42,11 +44,11 @@ final class OptinController
 
     public function registerRoutes(): void
     {
-        register_rest_route(self::NAMESPACE, '/optins', [
+        register_rest_route(Routes::NAMESPACE, '/optins', [
             [
                 'methods' => 'GET',
                 'callback' => [$this, 'index'],
-                'permission_callback' => [$this, 'canManage'],
+                'permission_callback' => [Routes::class, 'canManage'],
                 'args' => [
                     'include_deleted' => ['type' => 'boolean', 'default' => false],
                 ],
@@ -54,7 +56,7 @@ final class OptinController
             [
                 'methods' => 'POST',
                 'callback' => [$this, 'store'],
-                'permission_callback' => [$this, 'canManage'],
+                'permission_callback' => [Routes::class, 'canManage'],
                 'args' => [
                     'name' => ['required' => true, 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field'],
                     'goal' => ['required' => true, 'type' => 'string', 'sanitize_callback' => 'sanitize_key'],
@@ -63,16 +65,16 @@ final class OptinController
             ],
         ]);
 
-        register_rest_route(self::NAMESPACE, '/optins/' . self::ID_PATTERN, [
+        register_rest_route(Routes::NAMESPACE, '/optins/' . self::ID_PATTERN, [
             [
                 'methods' => 'GET',
                 'callback' => [$this, 'show'],
-                'permission_callback' => [$this, 'canManage'],
+                'permission_callback' => [Routes::class, 'canManage'],
             ],
             [
                 'methods' => 'PUT, PATCH',
                 'callback' => [$this, 'update'],
-                'permission_callback' => [$this, 'canManage'],
+                'permission_callback' => [Routes::class, 'canManage'],
                 'args' => [
                     'name' => ['type' => 'string', 'sanitize_callback' => 'sanitize_text_field'],
                     'goal' => ['type' => 'string', 'sanitize_callback' => 'sanitize_key'],
@@ -82,7 +84,7 @@ final class OptinController
             [
                 'methods' => 'DELETE',
                 'callback' => [$this, 'destroy'],
-                'permission_callback' => [$this, 'canManage'],
+                'permission_callback' => [Routes::class, 'canManage'],
             ],
         ]);
 
@@ -90,26 +92,21 @@ final class OptinController
         // update above. It is not an attribute of the Optin being edited — it
         // promotes one column onto another and rebuilds the published set, and
         // a PATCH that happens to carry `status: published` hides that.
-        register_rest_route(self::NAMESPACE, '/optins/' . self::ID_PATTERN . '/publish', [
+        register_rest_route(Routes::NAMESPACE, '/optins/' . self::ID_PATTERN . '/publish', [
             [
                 'methods' => 'POST',
                 'callback' => [$this, 'publish'],
-                'permission_callback' => [$this, 'canManage'],
+                'permission_callback' => [Routes::class, 'canManage'],
             ],
         ]);
 
-        register_rest_route(self::NAMESPACE, '/optins/' . self::ID_PATTERN . '/unpublish', [
+        register_rest_route(Routes::NAMESPACE, '/optins/' . self::ID_PATTERN . '/unpublish', [
             [
                 'methods' => 'POST',
                 'callback' => [$this, 'unpublish'],
-                'permission_callback' => [$this, 'canManage'],
+                'permission_callback' => [Routes::class, 'canManage'],
             ],
         ]);
-    }
-
-    public function canManage(): bool
-    {
-        return current_user_can('manage_options');
     }
 
     public function index(WP_REST_Request $request): WP_REST_Response
@@ -144,12 +141,18 @@ final class OptinController
     public function update(WP_REST_Request $request)
     {
         $config = $request->get_param('config');
+        $id = (string) $request->get_param('id');
+
+        // Which Template this Optin was LAST saved with, so that repicking one
+        // takes a fresh copy while editing anything else leaves the copy the
+        // merchant has been editing alone.
+        $pickedBefore = self::optionalString($this->optins->find($id)?->config['template_id'] ?? null);
 
         $optin = $this->optins->saveDraft(
-            (string) $request->get_param('id'),
+            $id,
             self::optionalString($request->get_param('name')),
             self::optionalString($request->get_param('goal')),
-            is_array($config) ? $this->normalizeConfig($config) : null
+            is_array($config) ? $this->normalizeConfig($config, $pickedBefore) : null
         );
 
         return $optin === null ? self::notFound() : new WP_REST_Response($optin->toArray());
@@ -197,9 +200,10 @@ final class OptinController
      * PUBLISH time, which is a different moment and a different file.
      *
      * @param array<string, mixed> $config
+     * @param string|null $pickedBefore The Template this Optin was last saved with.
      * @return array<string, mixed>
      */
-    private function normalizeConfig(array $config): array
+    private function normalizeConfig(array $config, ?string $pickedBefore = null): array
     {
         if (isset($config['targeting'])) {
             $config['targeting'] = Targeting::fromArray((array) $config['targeting'])->toArray();
@@ -207,6 +211,24 @@ final class OptinController
 
         if (isset($config['rules'])) {
             $config['rules'] = $this->vocabulary->normalize($config['rules']);
+        }
+
+        // Picking a Template TAKES A COPY of its design here — the tree with
+        // every word taken out of it, since a Template carries no copy
+        // (CONTEXT.md, Template). An Optin already holding a copy of the
+        // Template it names keeps it, so improving the entry never restyles a
+        // running Optin and deleting it leaves the Optin working; picking a
+        // DIFFERENT one takes a fresh copy, because otherwise `template_id`
+        // would say one design and the payload would render another
+        // (ADR 0010).
+        $config = $this->library->snapshotInto($config, $pickedBefore);
+
+        if (isset($config['template'])) {
+            // Validated on the way IN, which is what replaces `wp_kses` for a
+            // template: there is no HTML and no CSS to sanitise, so what is
+            // left to enforce is that every node, token, param and Slot Role
+            // is one the vocabulary declares.
+            $config['template'] = $this->templates->normalize($config['template']);
         }
 
         return $config;

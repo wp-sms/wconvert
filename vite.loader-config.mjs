@@ -31,6 +31,10 @@ export function loaderConfig({ entry, outDir, name }) {
         // to reach that way, and an alias would be a second spelling of a path
         // the source contract scans for.
         '@loader': resolve(root, 'resources/loader/src'),
+        // The template renderer, which BOTH the loader and the admin import.
+        // It is dependency-free precisely so that two bundles can share it
+        // without React reaching the loader's byte budget (ADR 0010).
+        '@renderer': resolve(root, 'resources/renderer/src'),
       },
     },
     build: {

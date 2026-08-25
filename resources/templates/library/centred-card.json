@@ -1,0 +1,52 @@
+{
+  "id": "centred-card",
+  "name": "Centred card",
+  "display_type": "popup",
+  "tokens": {
+    "bg": "#ffffff",
+    "fg": "#111827",
+    "muted": "#6b7280",
+    "accent": "#111827",
+    "accent-fg": "#ffffff",
+    "border": "#e5e7eb",
+    "heading-size": "1.625rem",
+    "radius": "0.75rem",
+    "pad": "2rem",
+    "gap": "1rem",
+    "width": "26rem",
+    "align": "center",
+    "backdrop": "rgba(15, 23, 42, 0.55)"
+  },
+  "tree": {
+    "steps": [
+      {
+        "type": "stack",
+        "children": [
+          { "type": "heading", "role": "headline", "text": "Get 10% off your first order" },
+          { "type": "text", "role": "body", "text": "Join the list and we will send the code straight over." },
+          {
+            "type": "row",
+            "children": [
+              {
+                "type": "field",
+                "name": "email",
+                "label": "Email address",
+                "placeholder": "you@example.com",
+                "required": true
+              },
+              { "type": "button", "role": "cta_label", "label": "Send my code", "action": "submit" }
+            ]
+          },
+          { "type": "text", "role": "fine_print", "text": "No spam, and you can unsubscribe at any time." }
+        ]
+      },
+      {
+        "type": "stack",
+        "children": [
+          { "type": "heading", "role": "success_headline", "text": "You are on the list" },
+          { "type": "text", "role": "success_body", "text": "Your code is on its way to your inbox." }
+        ]
+      }
+    ]
+  }
+}

@@ -9,10 +9,13 @@ use WConvert\Frontend\LoaderEnqueue;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
 use WConvert\Rest\OptinController;
+use WConvert\Rest\TemplateController;
 use WConvert\Rules\RuleVocabulary;
 use WConvert\Storage\OptionStore;
 use WConvert\Storage\WpOptionStore;
 use WConvert\Support\ProPresence;
+use WConvert\Template\TemplateLibrary;
+use WConvert\Template\TemplateVocabulary;
 
 defined('ABSPATH') || exit;
 
@@ -33,6 +36,20 @@ final class CoreServiceProvider implements ServiceProvider
         // file is small but it is still a file, and the alternative is every
         // publish paying a decode.
         $container->register(RuleVocabulary::class, static fn (): RuleVocabulary => RuleVocabulary::fromManifest());
+        // The template vocabulary, read the same way and for the same reason:
+        // once per request, so a save does not pay a decode (ADR 0010).
+        $container->register(
+            TemplateVocabulary::class,
+            static fn (): TemplateVocabulary => TemplateVocabulary::fromManifest()
+        );
+
+        $container->register(
+            TemplateLibrary::class,
+            static fn (ServiceContainer $c): TemplateLibrary => TemplateLibrary::fromDirectory(
+                $c->resolve(TemplateVocabulary::class)
+            )
+        );
+
         $container->register(OptionStore::class, static fn (): OptionStore => new WpOptionStore());
 
         $container->register(
@@ -63,7 +80,16 @@ final class CoreServiceProvider implements ServiceProvider
             OptinController::class,
             static fn (ServiceContainer $c): OptinController => new OptinController(
                 $c->resolve(OptinRepository::class),
-                $c->resolve(RuleVocabulary::class)
+                $c->resolve(RuleVocabulary::class),
+                $c->resolve(TemplateVocabulary::class),
+                $c->resolve(TemplateLibrary::class)
+            )
+        );
+
+        $container->register(
+            TemplateController::class,
+            static fn (ServiceContainer $c): TemplateController => new TemplateController(
+                $c->resolve(TemplateLibrary::class)
             )
         );
     }
@@ -87,6 +113,7 @@ final class CoreServiceProvider implements ServiceProvider
         });
 
         $container->resolve(OptinController::class)->hooks();
+        $container->resolve(TemplateController::class)->hooks();
 
         if (!is_admin()) {
             $container->resolve(LoaderEnqueue::class)->hooks();

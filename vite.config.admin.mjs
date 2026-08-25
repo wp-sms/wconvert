@@ -10,6 +10,14 @@ import { resolve } from 'node:path';
  */
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: {
+      // The same renderer the loader imports. Gallery cards and previews
+      // render the real template, so there are no static thumbnails to go
+      // stale (ADR 0010).
+      '@renderer': resolve(import.meta.dirname, 'resources/renderer/src'),
+    },
+  },
   define: {
     'process.env.NODE_ENV': JSON.stringify('production'),
   },

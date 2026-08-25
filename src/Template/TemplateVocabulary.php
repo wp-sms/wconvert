@@ -1,0 +1,360 @@
+<?php
+
+namespace WConvert\Template;
+
+defined('ABSPATH') || exit;
+
+/**
+ * The template manifest, read as a vocabulary — and the validation that reads
+ * it.
+ *
+ * **This is what replaces `wp_kses`.** A template is configuration, not a
+ * document: a JSON node tree plus a token set, with no HTML and no CSS
+ * anywhere in it. There is nothing to sanitise, so the only thing left to
+ * enforce is closure — an unknown node type, an unknown token, an unknown
+ * param and an unknown Slot Role are all DROPPED here, on the way in
+ * (ADR 0010).
+ *
+ * Dropping rather than rejecting, and on the way IN rather than at publish, is
+ * the same posture {@see \WConvert\Rules\RuleVocabulary} takes: the vocabulary
+ * is closed, so what arrives outside it is a mistake rather than an extension,
+ * and one caught at write cannot sit in `config` until the day someone
+ * publishes it.
+ *
+ * Note what this is NOT. It is not the renderer's unknown-node rule. The
+ * renderer skips an unrecognised node because a SNAPSHOT outlives the
+ * vocabulary it was drawn from; this drops one because it was never in the
+ * vocabulary to begin with. Both are needed and they answer different
+ * questions.
+ *
+ * @since 0.1.0
+ */
+final class TemplateVocabulary
+{
+    /** Where a layout keeps its children. `split` is the one with two. */
+    private const PANES = ['start', 'end'];
+
+    /**
+     * @param array<string, array{children: string, params: list<string>}> $layouts
+     * @param array<string, array{content: list<string>, copy: list<string>, params: list<string>, roles: list<string>}> $nodes
+     * @param list<string> $tokens
+     * @param list<string> $roles
+     * @param list<string> $schemes
+     */
+    private function __construct(
+        private readonly array $layouts,
+        private readonly array $nodes,
+        private readonly array $tokens,
+        private readonly array $roles,
+        private readonly array $schemes,
+    ) {
+    }
+
+    public static function fromManifest(string $pluginDir = WCONVERT_DIR): self
+    {
+        return self::fromArray(TemplateManifest::load($pluginDir));
+    }
+
+    /**
+     * @param array<string, mixed> $manifest The decoded manifest, whole.
+     */
+    public static function fromArray(array $manifest): self
+    {
+        $layouts = [];
+        $nodes = [];
+
+        foreach (self::section($manifest, 'layouts') as $type => $entry) {
+            $layouts[(string) $type] = [
+                'children' => is_array($entry) && is_string($entry['children'] ?? null) ? $entry['children'] : 'list',
+                'params' => self::strings(is_array($entry) ? ($entry['params'] ?? []) : []),
+            ];
+        }
+
+        foreach (self::section($manifest, 'nodes') as $type => $entry) {
+            $nodes[(string) $type] = [
+                'content' => self::strings(is_array($entry) ? ($entry['content'] ?? []) : []),
+                'copy' => self::strings(is_array($entry) ? ($entry['copy'] ?? []) : []),
+                'params' => self::strings(is_array($entry) ? ($entry['params'] ?? []) : []),
+                'roles' => self::strings(is_array($entry) ? ($entry['roles'] ?? []) : []),
+            ];
+        }
+
+        return new self(
+            $layouts,
+            $nodes,
+            array_map('strval', array_keys(self::section($manifest, 'tokens'))),
+            self::strings($manifest['roles'] ?? []),
+            self::strings($manifest['schemes'] ?? []),
+        );
+    }
+
+    /**
+     * A whole template — tree and tokens — with everything outside the
+     * vocabulary already gone.
+     *
+     * Both keys are always present, including empty. A template that
+     * normalises to nothing is a template that renders nothing, which is a
+     * visible failure; one missing its `steps` key would be an undefined index
+     * somewhere downstream instead.
+     *
+     * @param mixed $template
+     * @return array{tree: array{steps: list<array<string, mixed>>}, tokens: array<string, string>}
+     */
+    public function normalize($template): array
+    {
+        $template = is_array($template) ? $template : [];
+        $tree = $template['tree'] ?? [];
+        $steps = is_array($tree) ? ($tree['steps'] ?? []) : [];
+
+        // Roles are unique across the whole tree, not per step: a Playbook
+        // binds one word to one Role, and the terminal step's success headline
+        // is a different Role from the first step's headline for exactly that
+        // reason.
+        $seenRoles = [];
+        $normalized = [];
+
+        foreach (is_array($steps) ? $steps : [] as $step) {
+            $node = $this->node($step, $seenRoles);
+
+            if ($node !== null) {
+                $normalized[] = $node;
+            }
+        }
+
+        return [
+            'tree' => ['steps' => $normalized],
+            'tokens' => $this->tokens($template['tokens'] ?? []),
+        ];
+    }
+
+    /**
+     * The same tree with every WORD taken out of it.
+     *
+     * **A Template does not carry copy.** The words come from the Playbook
+     * that prefilled the Optin, or from the user, and whatever placeholder
+     * text a Template carries exists so the gallery has something to show —
+     * it "is never copied into an Optin" (CONTEXT.md, Template). That
+     * boundary is what keeps the library small: copy is what makes an Optin
+     * serve a particular Goal, so with the copy held elsewhere a Template is
+     * goal-agnostic, and the gallery is a set of designs per Display Type
+     * rather than a design for every pairing of Display Type and Goal.
+     *
+     * What survives is everything that is NOT words: the arrangement, the
+     * params, the Slot Roles that say which words go where — and the image,
+     * because "a template's image slot keeps the template's own asset or stays
+     * empty" and Playbooks never supply one (ADR 0013). Which keys are words
+     * is declared per node in the manifest rather than guessed at here.
+     *
+     * @param mixed $tree
+     * @return array{steps: list<array<string, mixed>>}
+     */
+    public function withoutCopy($tree): array
+    {
+        $tree = is_array($tree) ? $tree : [];
+        $steps = is_array($tree['steps'] ?? null) ? $tree['steps'] : [];
+        $stripped = [];
+
+        foreach ($steps as $step) {
+            $node = $this->stripNode($step);
+
+            if ($node !== null) {
+                $stripped[] = $node;
+            }
+        }
+
+        return ['steps' => $stripped];
+    }
+
+    /**
+     * @param mixed $node
+     * @return array<string, mixed>|null
+     */
+    private function stripNode($node): ?array
+    {
+        if (!is_array($node) || !is_string($node['type'] ?? null)) {
+            return null;
+        }
+
+        $leaf = $this->nodes[$node['type']] ?? null;
+
+        foreach ($leaf === null ? [] : $leaf['copy'] as $key) {
+            unset($node[$key]);
+        }
+
+        foreach ($this->childKeysOf($this->layouts[$node['type']]['children'] ?? '') as $key) {
+            if (array_key_exists($key, $node)) {
+                $node[$key] = array_values(array_filter(array_map(
+                    fn ($child): ?array => $this->stripNode($child),
+                    is_array($node[$key]) ? $node[$key] : []
+                )));
+            }
+        }
+
+        return $node;
+    }
+
+    /**
+     * One node, validated — or null, where it names nothing the vocabulary
+     * declares.
+     *
+     * @param mixed $node
+     * @param list<string> $seenRoles
+     * @return array<string, mixed>|null
+     */
+    private function node($node, array &$seenRoles): ?array
+    {
+        if (!is_array($node) || !is_string($node['type'] ?? null)) {
+            return null;
+        }
+
+        $type = $node['type'];
+        $layout = $this->layouts[$type] ?? null;
+        $leaf = $this->nodes[$type] ?? null;
+
+        if ($layout === null && $leaf === null) {
+            return null;
+        }
+
+        $kept = ['type' => $type];
+
+        // Only the keys this member declares survive. Everything else is a
+        // param the vocabulary does not have, which under a configuration
+        // model is the only shape an injection could take.
+        $allowed = $layout !== null
+            ? $layout['params']
+            : array_merge($leaf['content'], $leaf['params']);
+
+        foreach ($allowed as $key) {
+            if (array_key_exists($key, $node)) {
+                $kept[$key] = $key === 'link' ? $this->link($node[$key]) : $node[$key];
+            }
+        }
+
+        $role = $node['role'] ?? null;
+
+        if (
+            $leaf !== null
+            && $leaf['roles'] !== []
+            && is_string($role)
+            && in_array($role, $this->roles, true)
+            && !in_array($role, $seenRoles, true)
+        ) {
+            $seenRoles[] = $role;
+            $kept['role'] = $role;
+        }
+
+        if ($layout !== null) {
+            foreach ($this->childKeysOf($layout['children']) as $key) {
+                $kept[$key] = $this->children($node[$key] ?? [], $seenRoles);
+            }
+        }
+
+        return $kept;
+    }
+
+    /**
+     * @param mixed $children
+     * @param list<string> $seenRoles
+     * @return list<array<string, mixed>>
+     */
+    private function children($children, array &$seenRoles): array
+    {
+        $kept = [];
+
+        foreach (is_array($children) ? $children : [] as $child) {
+            $node = $this->node($child, $seenRoles);
+
+            if ($node !== null) {
+                $kept[] = $node;
+            }
+        }
+
+        return $kept;
+    }
+
+    /**
+     * A link inside a sentence, expressed as structure rather than markup.
+     *
+     * The scheme is validated HERE, at write, which is the one thing ADR 0013
+     * asks PHP to do about a link: it closes `javascript:`, and it is honest
+     * that it does not stop a link to a bad destination. An href that fails is
+     * dropped and the link renders nothing, never a dead `#`.
+     *
+     * @param mixed $link
+     * @return array<string, string>
+     */
+    private function link($link): array
+    {
+        if (!is_array($link)) {
+            return [];
+        }
+
+        $kept = [];
+
+        if (is_string($link['label'] ?? null)) {
+            $kept['label'] = $link['label'];
+        }
+
+        $href = $link['href'] ?? null;
+
+        if (is_string($href) && in_array(strtolower((string) parse_url($href, PHP_URL_SCHEME)), $this->schemes, true)) {
+            $kept['href'] = $href;
+        }
+
+        return $kept;
+    }
+
+    /**
+     * @param mixed $tokens
+     * @return array<string, string>
+     */
+    private function tokens($tokens): array
+    {
+        $kept = [];
+
+        foreach (is_array($tokens) ? $tokens : [] as $name => $value) {
+            // Values are strings and nothing else. A token lands as a CSS
+            // custom property, so anything that is not a scalar has no
+            // spelling there at all.
+            if (in_array((string) $name, $this->tokens, true) && (is_string($value) || is_numeric($value))) {
+                $kept[(string) $name] = (string) $value;
+            }
+        }
+
+        return $kept;
+    }
+
+    /**
+     * Where a member keeps its children, or nothing where it keeps none.
+     *
+     * @return list<string>
+     */
+    private function childKeysOf(string $shape): array
+    {
+        return match ($shape) {
+            'panes' => self::PANES,
+            'list' => ['children'],
+            default => [],
+        };
+    }
+
+    /**
+     * @param array<string, mixed> $manifest
+     * @return array<string, mixed>
+     */
+    private static function section(array $manifest, string $name): array
+    {
+        $section = $manifest[$name] ?? [];
+
+        return is_array($section) ? $section : [];
+    }
+
+    /**
+     * @param mixed $values
+     * @return list<string>
+     */
+    private static function strings($values): array
+    {
+        return array_values(array_filter(is_array($values) ? $values : [], 'is_string'));
+    }
+}
