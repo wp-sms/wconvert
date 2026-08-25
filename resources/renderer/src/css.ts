@@ -81,6 +81,13 @@ export const SHADOW_CSS = [
   `.wc-consent-text{font-size:.8125em;color:var(--wc-muted,#6b7280)}`,
   `.wc-checkbox{margin-block-start:.25em;accent-color:var(--wc-accent,#2563eb)}`,
 
+  // A refused capture, drawn by the loader rather than by the vocabulary — for
+  // the same reason the close button is: a template must not be able to omit
+  // the way out, and it must not be able to make the reason its form was
+  // refused invisible. So the colour is a literal and not a token.
+  `.wc-error{margin:0;color:#b91c1c;font-size:.875em;font-weight:600}`,
+  `.wc-input[aria-invalid]{border-color:#b91c1c}`,
+
   // Container chrome, not vocabulary: a template cannot omit the way out.
   `.wc-close{position:absolute;inset-block-start:.5rem;inset-inline-end:.5rem;inline-size:2rem;block-size:2rem;font:inherit;font-size:1.25rem;line-height:1;cursor:pointer;color:var(--wc-muted,#6b7280);background:transparent;border:0;border-radius:var(--wc-radius,.5rem)}`,
 

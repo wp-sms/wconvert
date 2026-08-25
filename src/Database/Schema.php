@@ -26,6 +26,18 @@ defined('ABSPATH') || exit;
 final class Schema
 {
     /**
+     * Every table, in one string.
+     *
+     * dbDelta takes them together, so {@see Installer} runs one call however
+     * many tables there are — and a table added without being appended here is
+     * a table no install ever creates.
+     */
+    public static function sql(string $prefix, string $charsetCollate): string
+    {
+        return self::optins($prefix, $charsetCollate) . self::leads($prefix, $charsetCollate);
+    }
+
+    /**
      * `wconvert_optins` — an Optin is user-authored content that outlives the
      * request, queryable by `goal`, and joined at report time by analytics.
      *
@@ -36,7 +48,7 @@ final class Schema
      * `deleted_at` is how an Optin is deleted, and the only way. A hard delete
      * orphans every conversion count that references it (ADR 0020).
      */
-    public static function sql(string $prefix, string $charsetCollate): string
+    private static function optins(string $prefix, string $charsetCollate): string
     {
         return "CREATE TABLE {$prefix}wconvert_optins (
 id CHAR(26) NOT NULL,
@@ -48,6 +60,52 @@ published_at DATETIME NULL,
 deleted_at DATETIME NULL,
 PRIMARY KEY  (id),
 KEY idx_goal (goal)
+) {$charsetCollate};\n";
+    }
+
+    /**
+     * `wconvert_leads` — the [[Lead]] log, and **the capture itself**.
+     *
+     * Not a [[Destination]] (ADR 0007): written first and always, not
+     * configurable, not optional, and if it fails the capture failed.
+     *
+     * ========================================================================
+     * THERE IS NO `status` COLUMN AND NO `updated_at` COLUMN.
+     * ========================================================================
+     * Their absence is the enforcement mechanism, not an oversight (ADR 0002).
+     * A Lead is an EVENT — one person submitted one form, at one time — and it
+     * is never confirmed, unsubscribed, bounced or re-engaged. A row with no
+     * mutable state cannot acquire a lifecycle without a migration a reviewer
+     * will see. **Do not "fix" this.** `tests/unit/Database/SchemaTest.php`
+     * fails the day either appears.
+     *
+     * `email` and `phone` are real indexed columns because they are the
+     * identity keys: identity is computed at read by grouping over them, never
+     * stored, so there is no person key and no person table (ADR 0021). They
+     * are indexed and **not unique** — Leads are never deduplicated, and one
+     * person submitting two forms did two things. Everything else the Optin
+     * captured, the [[Consent Record]] included, goes in one `fields` JSON.
+     *
+     * `created_at` is a real column even though a ULID's leading 48 bits
+     * already carry the minting time, which is why `wconvert_optins` has none.
+     * It earns its place twice: retention pruning is a range delete over it
+     * (ADR 0002), and it IS the Consent Record's timestamp, to the same second
+     * — there is no second one (ADR 0032).
+     */
+    private static function leads(string $prefix, string $charsetCollate): string
+    {
+        return "CREATE TABLE {$prefix}wconvert_leads (
+id CHAR(26) NOT NULL,
+optin_id CHAR(26) NOT NULL,
+email VARCHAR(255) NULL,
+phone VARCHAR(20) NULL,
+fields LONGTEXT,
+created_at DATETIME NOT NULL,
+PRIMARY KEY  (id),
+KEY idx_optin_created (optin_id, created_at),
+KEY idx_email (email),
+KEY idx_phone (phone),
+KEY idx_created (created_at)
 ) {$charsetCollate};\n";
     }
 }

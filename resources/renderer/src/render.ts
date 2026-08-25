@@ -226,7 +226,12 @@ function sentence(tag: string, className: string, node: Sentence): HTMLElement {
 
   element.className = className;
 
-  if (node.link === undefined || href === null) {
+  // No link, no destination for one, or NOWHERE TO PUT ONE: all three render
+  // the sentence and no anchor. The placeholder goes with it, and the space in
+  // front of it goes too. A sentence carrying no `%s` has no place for a link,
+  // and appending the label to the end of it produces a word glued to the last
+  // one — evidence of a sentence nobody wrote.
+  if (node.link === undefined || href === null || !text.includes(PLACEHOLDER)) {
     element.textContent = text.replace(/ ?%s/g, '');
 
     return element;

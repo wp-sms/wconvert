@@ -19,6 +19,9 @@ use WConvert\Targeting\RequestContext;
 #[CoversClass(PublishedOptin::class)]
 final class PayloadTest extends TestCase
 {
+    /** Where the capture endpoint is on this site, as `LoaderEnqueue` resolves it. */
+    private const CAPTURE = 'https://example.test/wp-json/wconvert/v1/capture';
+
     /**
      * Built from the STORED shape rather than by hand, so these tests keep
      * exercising the parse the front end actually does.
@@ -52,7 +55,7 @@ final class PayloadTest extends TestCase
         $entries = Payload::forRequest($set, $context);
 
         $this->assertSame([['id' => '01A', 'display_type' => 'popup']], $entries);
-        $this->assertStringNotContainsString('secret-staging-path', PayloadTag::render($entries));
+        $this->assertStringNotContainsString('secret-staging-path', PayloadTag::render($entries, self::CAPTURE));
     }
 
     /**
@@ -63,11 +66,25 @@ final class PayloadTest extends TestCase
      */
     public function testThePayloadTravelsAsAJsonScriptTag(): void
     {
-        $tag = PayloadTag::render([['id' => '01A', 'display_type' => 'popup']]);
+        $tag = PayloadTag::render([['id' => '01A', 'display_type' => 'popup']], self::CAPTURE);
 
-        $this->assertStringStartsWith('<script type="application/json" id="wconvert-payload">', $tag);
+        $this->assertStringStartsWith('<script type="application/json" id="wconvert-payload" ', $tag);
         $this->assertStringEndsWith('</script>', $tag);
         $this->assertStringContainsString('"01A"', $tag);
+    }
+
+    /**
+     * The capture endpoint rides on the element rather than in the JSON: it is
+     * one fact about the SITE, and repeating it per entry would pay for it as
+     * many times as the page has Optins. The loader has no `wp-api-fetch` and
+     * cannot compute it (ADR 0004).
+     */
+    public function testThePayloadCarriesWhereToPostACapture(): void
+    {
+        $tag = PayloadTag::render([['id' => '01A', 'display_type' => 'popup']], self::CAPTURE);
+
+        $this->assertStringContainsString(sprintf('data-capture="%s"', self::CAPTURE), $tag);
+        $this->assertSame(1, substr_count($tag, 'data-capture'));
     }
 
     /**
@@ -77,7 +94,7 @@ final class PayloadTest extends TestCase
      */
     public function testCopyContainingAClosingScriptTagCannotBreakOut(): void
     {
-        $tag = PayloadTag::render([['id' => '01A', 'headline' => '</script><script>alert(1)</script>']]);
+        $tag = PayloadTag::render([['id' => '01A', 'headline' => '</script><script>alert(1)</script>']], self::CAPTURE);
 
         $this->assertSame(1, substr_count($tag, '</script>'));
         $this->assertStringNotContainsString('<script>alert', $tag);
@@ -89,7 +106,7 @@ final class PayloadTest extends TestCase
      */
     public function testNoMatchingOptinPrintsNothingAtAll(): void
     {
-        $this->assertSame('', PayloadTag::render([]));
+        $this->assertSame('', PayloadTag::render([], self::CAPTURE));
     }
 
     /**

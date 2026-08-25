@@ -31,6 +31,13 @@ interface Connection
     public const TABLE_OPTINS = 'wconvert_optins';
 
     /**
+     * The [[Lead]] log. It takes inserts and nothing else — a Lead has no
+     * lifecycle, so `update()` has no honest call site against this table
+     * (ADR 0002).
+     */
+    public const TABLE_LEADS = 'wconvert_leads';
+
+    /**
      * @param literal-string $sql SQL whose table is the `%i` placeholder.
      * @param mixed ...$params
      * @return list<array<string, string|null>>

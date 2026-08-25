@@ -89,6 +89,15 @@ export interface Mounted {
    * means what it says to everything that did not mount this.
    */
   readonly root: HTMLElement | null;
+  /**
+   * How many steps this Optin has.
+   *
+   * `showStep` takes an index and a caller cannot know its range otherwise —
+   * and the range is the whole question, because terminal is STRUCTURAL: the
+   * success state is the last step rather than a flagged one, so
+   * `steps - 1` is how anything reaches it (ADR 0025).
+   */
+  readonly steps: number;
   show(): void;
   /** Swap to another step — the post-submit success state is the terminal one. */
   showStep(step: number): void;
@@ -99,6 +108,7 @@ export interface Mounted {
 const NOTHING: Mounted = {
   mounted: false,
   root: null,
+  steps: 0,
   show: () => undefined,
   showStep: () => undefined,
   close: () => undefined,
@@ -247,6 +257,7 @@ function popup(options: MountOptions): Mounted {
     get root() {
       return parts.root;
     },
+    steps: options.template.tree.steps.length,
     show() {
       documentStyle();
       document.body.appendChild(dialog);
@@ -280,6 +291,7 @@ function inline(options: MountOptions, anchor: Element): Mounted {
     get root() {
       return parts.root;
     },
+    steps: options.template.tree.steps.length,
     show() {
       documentStyle();
       anchor.appendChild(parts.host);

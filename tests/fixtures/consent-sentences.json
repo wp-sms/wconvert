@@ -1,0 +1,63 @@
+{
+  "why": [
+    "The Consent Record is the consent wording EXACTLY AS IT WAS SHOWN, and two",
+    "different programs decide what that is: resources/renderer/src/render.ts draws",
+    "the sentence in the browser, and src/Lead/ConsentRecord.php composes the",
+    "evidence on the server. Neither can defer to the other — the renderer is a",
+    "pure function with no server, and the server cannot trust a wording a public",
+    "endpoint's client supplied.",
+    "So they are two spellings of one rule, and this file is what stops them",
+    "drifting: tests/js/renderer-consent-parity.test.ts renders each node and reads",
+    "its text; tests/unit/Lead/ConsentSentenceParityTest.php composes each node and",
+    "compares the string. Both assert against `shown`.",
+    "The same arrangement the rule and template manifests have (ADR 0005, ADR 0010)."
+  ],
+  "cases": [
+    {
+      "why": "the ordinary case: one placeholder, one resolved link",
+      "node": {
+        "type": "consent",
+        "text": "I agree to receive emails and accept the %s.",
+        "link": { "label": "privacy policy", "href": "https://example.test/privacy/" }
+      },
+      "shown": "I agree to receive emails and accept the privacy policy."
+    },
+    {
+      "why": "no policy configured: the link renders nothing, and the placeholder goes with it along with the space in front of it (ADR 0032)",
+      "node": {
+        "type": "consent",
+        "text": "I agree to receive emails and accept the %s.",
+        "link": { "label": "privacy policy" }
+      },
+      "shown": "I agree to receive emails and accept the."
+    },
+    {
+      "why": "no link at all: the placeholder is still not text the visitor read",
+      "node": { "type": "consent", "text": "I agree to receive emails and accept the %s." },
+      "shown": "I agree to receive emails and accept the."
+    },
+    {
+      "why": "a link with nowhere to go: no placeholder means no place, so nothing renders",
+      "node": {
+        "type": "consent",
+        "text": "I agree to receive emails.",
+        "link": { "label": "privacy policy", "href": "https://example.test/privacy/" }
+      },
+      "shown": "I agree to receive emails."
+    },
+    {
+      "why": "only the FIRST placeholder is a link; a second is literal text, because a sentence carries one link",
+      "node": {
+        "type": "consent",
+        "text": "See the %s, and the %s again.",
+        "link": { "label": "privacy policy", "href": "https://example.test/privacy/" }
+      },
+      "shown": "See the privacy policy, and the %s again."
+    },
+    {
+      "why": "a consent node whose wording nobody has filled in yet — it still enforces, and the evidence says what it says",
+      "node": { "type": "consent", "role": "consent_text" },
+      "shown": ""
+    }
+  ]
+}

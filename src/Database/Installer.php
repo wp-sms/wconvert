@@ -24,7 +24,7 @@ final class Installer
     public const VERSION_OPTION = 'wconvert_db_version';
 
     /** Bump when {@see Schema} changes. */
-    public const VERSION = '1';
+    public const VERSION = '2';
 
     public function __construct(
         private readonly OptionStore $options,

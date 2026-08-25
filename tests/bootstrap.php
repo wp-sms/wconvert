@@ -43,3 +43,51 @@ if (!function_exists('wp_json_encode')) {
         return json_encode($data, $options);
     }
 }
+
+/*
+ * The action hook, and only the action hook.
+ *
+ * `wconvert_lead_captured` is the seam a [[Destination]] dispatch attaches to
+ * (#30), and the ordering guarantee around it — the local row written FIRST and
+ * ALWAYS, before anything else runs (ADR 0007) — is a property of WConvert's own
+ * code that a test has to be able to observe. So the two functions that make a
+ * hook a hook are here, and nothing else of WordPress's plugin API is.
+ *
+ * @var array<string, list<callable>> $wconvertTestActions
+ */
+$GLOBALS['wconvertTestActions'] = [];
+
+if (!function_exists('add_action')) {
+    function add_action(string $hook, callable $callback, int $priority = 10, int $args = 1): bool
+    {
+        $GLOBALS['wconvertTestActions'][$hook][] = $callback;
+
+        return true;
+    }
+}
+
+if (!function_exists('do_action')) {
+    /** @param mixed ...$args */
+    function do_action(string $hook, ...$args): void
+    {
+        foreach ($GLOBALS['wconvertTestActions'][$hook] ?? [] as $callback) {
+            $callback(...$args);
+        }
+    }
+}
+
+if (!function_exists('remove_all_actions')) {
+    function remove_all_actions(string $hook, ?int $priority = null): bool
+    {
+        unset($GLOBALS['wconvertTestActions'][$hook]);
+
+        return true;
+    }
+}
+
+if (!function_exists('esc_url')) {
+    function esc_url(string $url): string
+    {
+        return htmlspecialchars($url, ENT_QUOTES);
+    }
+}
