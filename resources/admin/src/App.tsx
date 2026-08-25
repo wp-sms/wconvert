@@ -2,14 +2,14 @@ import { __ } from '@wordpress/i18n';
 import { GoalScreen } from './goals/GoalScreen';
 import { LeadLog } from './leads/LeadLog';
 import { OptinList } from './optins/OptinList';
+import { Dashboard } from './stats/Dashboard';
 import { TemplatePreview } from './templates/TemplatePreview';
 
 /**
  * The WConvert admin screen.
  *
- * The goal-first creation flow, the Optin list, the lead log and the Template
- * gallery. The builder and the analytics screen each arrive in their own
- * ticket.
+ * The goal-first creation flow, the Optin list, the analytics screen, the lead
+ * log and the Template gallery. The builder arrives in its own ticket.
  */
 export function App() {
   return (
@@ -17,6 +17,7 @@ export function App() {
       <h1>{__('WConvert', 'wconvert')}</h1>
       <GoalScreen />
       <OptinList />
+      <Dashboard />
       <LeadLog />
       <TemplatePreview />
     </div>

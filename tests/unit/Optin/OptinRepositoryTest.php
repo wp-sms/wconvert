@@ -164,4 +164,76 @@ final class OptinRepositoryTest extends TestCase
         $this->assertNull($optin->publishedConfig);
         $this->assertSame([], $this->publishedSet->all());
     }
+
+    /**
+     * ========================================================================
+     * THE OTHER HALF OF THE ANALYTICS JOIN.
+     * ========================================================================
+     * A row in `wconvert_stats` carries no `goal` at all, so what a count
+     * MEANS is read from this table at report time (ADR 0020) — which is what
+     * makes correcting a mis-set Goal restate an Optin's whole history.
+     *
+     * **Soft-deleted Optins are in it**, and that is the point rather than an
+     * oversight: their counts stay in their Goal's totals, so a merchant
+     * tidying up in March does not watch February's goal total fall. It is
+     * {@see \WConvert\Stats\Dashboard} that drops their ROW from the
+     * per-Optin list — one read, two opposite consequences.
+     */
+    public function testTheAnalyticsProjectionIncludesSoftDeletedOptins(): void
+    {
+        $kept = $this->anOptin();
+        $tidied = $this->anOptin();
+
+        $this->repository->delete($tidied->id);
+
+        $interpretable = array_column($this->repository->interpretations(), 'id');
+
+        // Membership, not order. The read carries no `ORDER BY` — the caller
+        // buckets by Goal and by Optin anyway, so asking the database to sort
+        // a result it hands over whole is work nobody reads.
+        sort($interpretable);
+        $expected = [$kept->id, $tidied->id];
+        sort($expected);
+
+        $this->assertSame(
+            $expected,
+            $interpretable,
+            'a deleted Optin whose counts are still in a total must still be interpretable'
+        );
+    }
+
+    /**
+     * **No `LIMIT`, and no `WHERE`.**
+     *
+     * {@see OptinRepository::summaries()} caps at 500 because a list view past
+     * that is a scrolling problem. A cap HERE would silently drop the 501st
+     * Optin's counts out of its Goal's total — a wrong number rather than a
+     * short page, and one nobody can see is wrong. The same argument
+     * {@see OptinRepository::names()} makes, worth more on this read.
+     */
+    public function testTheAnalyticsProjectionIsNeverCappedOrFiltered(): void
+    {
+        $this->repository->interpretations();
+
+        $sql = end($this->db->statements) ?: '';
+
+        $this->assertStringNotContainsString('LIMIT', $sql);
+        $this->assertStringNotContainsString('WHERE', $sql);
+        $this->assertStringNotContainsString('deleted_at IS NULL', $sql);
+    }
+
+    /**
+     * Everything needed to interpret a count, and nothing else. The two
+     * LONGTEXT columns would be dragged per row for a read that spans every
+     * Optin on the install (ADR 0001).
+     */
+    public function testTheAnalyticsProjectionCarriesFourShortColumns(): void
+    {
+        $this->repository->interpretations();
+
+        $sql = end($this->db->statements) ?: '';
+
+        $this->assertStringContainsString('SELECT id, name, goal, deleted_at FROM %i', $sql);
+        $this->assertStringNotContainsString('config', $sql);
+    }
 }

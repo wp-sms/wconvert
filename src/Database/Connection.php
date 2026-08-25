@@ -28,6 +28,15 @@ defined('ABSPATH') || exit;
  * delete (ADR 0019). Two widenings on the same pattern is a pattern; the third
  * one should be read as pressure to stop rather than as precedent.
  *
+ * **It was read that way, and the third widening did not happen.** The
+ * analytics screen needs `wconvert_stats` interpreted through
+ * `wconvert_optins`, which is two tables and therefore two `%i` — so it reads
+ * them with two statements and joins them in PHP instead. A `JOIN` would have
+ * denormalised a fact about tens of Optins onto thousands of counters to save
+ * an array lookup, and it would have put half of one interpretation in SQL
+ * while `Goal::headlineKind()` kept the other half (ADR 0034). The count of
+ * widenings is still two.
+ *
  * **An Optin is still never hard-deleted**, and no widening changes that:
  * analytics interprets its conversion counts by joining `wconvert_optins` at
  * report time, so a removed row makes every count referencing it

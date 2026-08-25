@@ -37,6 +37,9 @@ final class OptinRepository
     /** Enough to label a [[Lead]] with the Optin that captured it, and nothing more. */
     private const NAME_COLUMNS = 'id, name';
 
+    /** Everything needed to interpret a count, and nothing else (ADR 0020). */
+    private const INTERPRETATION_COLUMNS = 'id, name, goal, deleted_at';
+
     public function __construct(
         private readonly Connection $db,
         private readonly PublishedSet $publishedSet,
@@ -147,6 +150,45 @@ final class OptinRepository
         }
 
         return $names;
+    }
+
+    /**
+     * **Everything needed to interpret a count** — and every Optin, including
+     * the soft-deleted ones.
+     *
+     * ========================================================================
+     * THIS IS THE HALF OF THE ANALYTICS JOIN THAT IS NOT THE COUNTERS.
+     * ========================================================================
+     * A row in `wconvert_stats` carries no `goal`, no `had_email` and no
+     * display type; everything that says what a count MEANS is read from this
+     * table at report time (ADR 0020). So the Goal here is the Optin's
+     * CURRENT one, which is exactly what makes correcting a mis-set Goal
+     * restate its whole history rather than split it at the moment of the
+     * edit.
+     *
+     * **Soft-deleted Optins are included, and that is the point.** Their
+     * counts stay in their Goal's totals — a merchant tidying up in March must
+     * not watch February's goal total fall — and it is {@see \WConvert\Stats\Dashboard} that
+     * drops their ROW from the per-Optin list. Excluding them here would take
+     * the counts away with the row, which is the one direction that cannot be
+     * undone. It is the same reason {@see self::names()} includes them, one
+     * table over.
+     *
+     * **Four short columns and no `LIMIT`.** {@see self::summaries()} caps at
+     * 500 because a list view past that is a scrolling problem; a cap HERE
+     * would silently drop the 501st Optin's counts out of its Goal's total,
+     * which is a wrong number rather than a short page. The same argument
+     * `names()` makes, and it is worth more here: nobody can see that a total
+     * is missing something.
+     *
+     * @return list<array<string, string|null>>
+     */
+    public function interpretations(): array
+    {
+        return $this->db->results(
+            Connection::TABLE_OPTINS,
+            'SELECT ' . self::INTERPRETATION_COLUMNS . ' FROM %i'
+        );
     }
 
     /**

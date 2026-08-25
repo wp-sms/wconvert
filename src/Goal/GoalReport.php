@@ -25,12 +25,19 @@ defined('ABSPATH') || exit;
  * permanent split every time somebody fixes a typo. It will look like a bug to
  * someone; it is the decision.
  *
- * **Pure, and it takes rows rather than a repository.** The join that produces
- * them is SQL and belongs to the screen that draws it; what is here is the
+ * **Pure, and it takes rows rather than a repository.** What is here is the
  * arithmetic, which is the half that can be proven without a database — the
  * same arrangement {@see \WConvert\Stats\StatDay} has with the site's
  * timezone and {@see \WConvert\Optin\PublishedProjection} has with the rule
  * vocabulary.
+ *
+ * This originally read "the join that produces them is SQL and belongs to the
+ * screen that draws it". **It is not SQL.** #28 wrote that screen and read the
+ * two tables with two statements, joining them in PHP: a Goal is tens of rows
+ * of fact, and a `JOIN` would denormalise it onto thousands of counters while
+ * costing {@see \WConvert\Database\Connection} a third widening (ADR 0034).
+ * The half that belongs to the screen is {@see \WConvert\Stats\Dashboard},
+ * which is where the two meet.
  *
  * @since 0.1.0
  */
@@ -91,6 +98,29 @@ final class GoalReport
     }
 
     /**
+     * How many of one kind the rows carry, over whatever range they cover.
+     *
+     * The one read here with no [[Goal]] in it, and that is the point: a
+     * [[Dismissal]] is a Dismissal whatever the Optin was hoping for, and the
+     * card reports it beside a headline the Goal chose. {@see self::headline()}
+     * is this same sum taken over the kind the Goal declares.
+     *
+     * @param iterable<array<string, mixed>> $rows
+     */
+    public static function total(StatKind $kind, iterable $rows): int
+    {
+        $total = 0;
+
+        foreach ($rows as $row) {
+            if (StatKind::tryFrom((string) ($row['kind'] ?? '')) === $kind) {
+                $total += (int) ($row['count'] ?? 0);
+            }
+        }
+
+        return $total;
+    }
+
+    /**
      * The denominator of conversion rate, which does not move when the Goal
      * does.
      *
@@ -102,14 +132,6 @@ final class GoalReport
      */
     public static function impressions(iterable $rows): int
     {
-        $total = 0;
-
-        foreach ($rows as $row) {
-            if (StatKind::tryFrom((string) ($row['kind'] ?? '')) === StatKind::Impression) {
-                $total += (int) ($row['count'] ?? 0);
-            }
-        }
-
-        return $total;
+        return self::total(StatKind::Impression, $rows);
     }
 }

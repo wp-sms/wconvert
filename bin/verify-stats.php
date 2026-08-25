@@ -26,7 +26,19 @@
  *
  * IT REFUSES TO RUN ON A SITE THAT ALREADY HAS COUNTS. The counters can never
  * be recomputed — there is no raw data behind them — so a merchant's numbers
- * are not something to be careful around. They are something to refuse.
+ * are not something to be careful around. They are something to refuse. It
+ * refuses on a non-empty LEAD LOG for the same reason: one of the dashboard
+ * checks below writes a [[Lead]] and erases it again, to prove that neither
+ * act moves a reported number.
+ *
+ * IT ALSO VERIFIES THE DASHBOARD, and for the same class of reason. #28 reads
+ * `wconvert_stats` and interprets it through `wconvert_optins` in PHP rather
+ * than in a `JOIN` (ADR 0034), so the claims that need a database are: that
+ * `BETWEEN` over a `DATE` column really includes both ends, that correcting an
+ * Optin's `goal` really restates its whole history, that a `deleted_at` stamp
+ * really keeps the counts and loses the row — and that **no query the screen
+ * issues names `wconvert_leads`**, which is checked against the real query log
+ * rather than against the source (ADR 0018, ADR 0020).
  */
 
 declare(strict_types=1);
@@ -34,12 +46,16 @@ declare(strict_types=1);
 use WConvert\Database\Connection;
 use WConvert\Database\Installer;
 use WConvert\Database\WpdbConnection;
+use WConvert\Lead\LeadRepository;
+use WConvert\Lead\Submission;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
 use WConvert\Rest\RateLimit;
 use WConvert\Rest\Routes;
 use WConvert\Rules\RuleVocabulary;
+use WConvert\Stats\Dashboard;
 use WConvert\Stats\StatDay;
+use WConvert\Stats\StatRange;
 use WConvert\Stats\StatKind;
 use WConvert\Stats\StatsRepository;
 use WConvert\Storage\WpOptionStore;
@@ -149,6 +165,15 @@ $statsTable = $wpdb->prefix . Connection::TABLE_STATS;
 if ((int) $wpdb->get_var("SELECT COUNT(*) FROM `{$statsTable}`") !== 0) {
     fwrite(STDERR, "{$statsTable} is not empty. The counters cannot be recomputed, so this refuses to touch "
         . "a site that already has some — boot a throwaway WordPress instead (see README.md).\n");
+
+    exit(2);
+}
+
+$leadTable = $wpdb->prefix . Connection::TABLE_LEADS;
+
+if ((int) $wpdb->get_var("SELECT COUNT(*) FROM `{$leadTable}`") !== 0) {
+    fwrite(STDERR, "{$leadTable} is not empty. One dashboard check writes a Lead and erases it again to prove "
+        . "that neither act moves a reported number — boot a throwaway WordPress instead (see README.md).\n");
 
     exit(2);
 }
@@ -324,6 +349,231 @@ $verify->check("and not with UTC's", true, $stamped !== $utcToday);
 update_option('timezone_string', $originalZone);
 update_option('gmt_offset', $originalOffset);
 
+echo "The dashboard\n";
+
+// ==========================================================================
+// THE READ, AGAINST REAL SQL.
+// ==========================================================================
+// Everything above proved the WRITE. These prove the read: that a `BETWEEN`
+// over a DATE column includes both of its ends, that an `UPDATE` to an Optin's
+// `goal` really does restate every day of its history, and that a `deleted_at`
+// stamp keeps the counts while taking the row (ADR 0020).
+//
+// The unit suite proves the same arithmetic against rows it handed itself.
+// What it cannot prove is that the rows arriving from MySQL are those rows.
+$optins = new OptinRepository($db, new PublishedSet($options), RuleVocabulary::fromManifest());
+$dashboard = new Dashboard($stats, $optins);
+
+$reported = $optins->create('Reported', 'grow_email_list', []);
+$tidied = $optins->create('Tidied away', 'grow_email_list', []);
+
+$today = StatDay::today();
+$window = StatRange::lastDays(30, $today);
+$edge = $window->from;
+$outside = (new DateTimeImmutable($edge, new DateTimeZone('UTC')))->modify('-1 day')->format(StatDay::FORMAT);
+
+foreach ([$reported->id, $tidied->id] as $id) {
+    foreach ([$edge, $today] as $day) {
+        $stats->increment($id, StatKind::Impression, $day);
+        $stats->increment($id, StatKind::Impression, $day);
+        $stats->increment($id, StatKind::Conversion, $day);
+    }
+
+    // A day before the window opens, which must never be counted.
+    $stats->increment($id, StatKind::Conversion, $outside);
+}
+
+/** One Goal's card, or null where the screen produced none. @param array<string, mixed> $payload */
+$cardFor = static function (array $payload, string $goal): ?array {
+    /** @var list<array<string, mixed>> $cards */
+    $cards = $payload['goals'];
+
+    foreach ($cards as $card) {
+        if ($card['goal'] === $goal) {
+            return $card;
+        }
+    }
+
+    return null;
+};
+
+$card = $cardFor($dashboard->read($window), 'grow_email_list');
+
+$verify->check('the screen produces a card for the Goal its Optins hold', true, $card !== null);
+$verify->check('both ends of the window are inside it', 4, $card['headline'] ?? null);
+$verify->check('the denominator came back too', 8, $card['impressions'] ?? null);
+
+// The same counters read over a window one day wider. BETWEEN is inclusive at
+// both ends, so the two conversions stamped the day before the first window
+// opened appear here and nowhere above.
+$verify->check(
+    'a day outside the window is excluded, and a wider window picks it up',
+    6,
+    $cardFor($dashboard->read(StatRange::between($outside, $today)), 'grow_email_list')['headline'] ?? null
+);
+$verify->check('and the rate is conversions over impressions', 0.5, $card['conversion_rate'] ?? null);
+
+// The one-day window, which is what the merchant means by "Today".
+$todayCard = $cardFor($dashboard->read(StatRange::lastDays(1, $today)), 'grow_email_list');
+
+$verify->check("a one-day window is today alone", 2, $todayCard['headline'] ?? null);
+
+echo "Interpreting at read\n";
+
+// ==========================================================================
+// THE DECISION THIS TICKET EXISTS FOR.
+// ==========================================================================
+// One `UPDATE` to one column in `wconvert_optins`, no counter touched, and
+// EVERY day of the history reads differently. Correcting a mis-set Goal makes
+// an Optin's whole history right rather than splitting it permanently in two
+// at the moment of the edit (ADR 0020). It will look like a bug to someone.
+$beforeCorrection = $cardFor($dashboard->read($window), 'grow_email_list');
+
+$optins->saveDraft($reported->id, null, 'promote_offer', null);
+$optins->saveDraft($tidied->id, null, 'promote_offer', null);
+
+$afterCorrection = $dashboard->read($window);
+
+$verify->check(
+    'the Goal they were corrected away from keeps no card at all',
+    null,
+    $cardFor($afterCorrection, 'grow_email_list')
+);
+$verify->check(
+    'and the whole history arrived under the corrected one',
+    $beforeCorrection['headline'] ?? null,
+    $cardFor($afterCorrection, 'promote_offer')['headline'] ?? null
+);
+$verify->check(
+    'every day of it, not a series that changes shape half way along',
+    $beforeCorrection['by_day'] ?? null,
+    $cardFor($afterCorrection, 'promote_offer')['by_day'] ?? null
+);
+
+// Put them back, so the checks below read the Goal they were filed under.
+$optins->saveDraft($reported->id, null, 'grow_email_list', null);
+$optins->saveDraft($tidied->id, null, 'grow_email_list', null);
+
+echo "Tidying up an Optin\n";
+
+$optins->delete($tidied->id);
+
+$afterDelete = $cardFor($dashboard->read($window), 'grow_email_list');
+
+$verify->check(
+    "February's goal total did not fall when March tidied up",
+    $card['headline'] ?? null,
+    $afterDelete['headline'] ?? null
+);
+$verify->check(
+    'and the deleted Optin is gone from the list of what is running',
+    [$reported->id],
+    array_column($afterDelete['optins'] ?? [], 'id')
+);
+$verify->check(
+    'and the one that is still reports its own numbers',
+    [2],
+    array_column($afterDelete['optins'] ?? [], 'headline')
+);
+
+echo "The lead log, which no reported number comes from\n";
+
+// ==========================================================================
+// ADR 0018 DEPENDS ON THIS DERIVATION NOT EXISTING.
+// ==========================================================================
+// Erasure DELETEs Lead rows, chosen so that anonymising — which is an update —
+// never had to become one against a table with no update path. That is safe
+// only while no metric reads those rows: a "Leads with an email" taken from
+// `wconvert_leads` would let one erasure request silently rewrite a merchant's
+// conversion history, with nothing to repair it from.
+//
+// `tests/unit/Stats/NoCountComesFromTheLeadLogTest.php` reads the SOURCE for
+// that. This reads the QUERY LOG, and then the numbers themselves.
+$leads = new LeadRepository($db);
+
+$leads->record($reported->id, new Submission('erased@example.com', null, ['name' => 'Sarah']));
+
+$verify->check('a Lead really landed in the log', 1, (int) $wpdb->get_var("SELECT COUNT(*) FROM `{$leadTable}`"));
+$verify->check(
+    'and capturing it moved no reported number',
+    $afterDelete,
+    $cardFor($dashboard->read($window), 'grow_email_list')
+);
+
+$leads->eraseByEmail('erased@example.com');
+
+$verify->check('the Lead was erased', 0, (int) $wpdb->get_var("SELECT COUNT(*) FROM `{$leadTable}`"));
+$verify->check(
+    'and erasing it rewrote no history either',
+    $afterDelete,
+    $cardFor($dashboard->read($window), 'grow_email_list')
+);
+
+// And the same claim read off the query log rather than off the numbers: a
+// count that MOVED would be caught above, but a screen that merely READS the
+// table is one edit away from reporting it.
+// Read BEFORE defining it, so a site that has deliberately switched the query
+// log off is skipped rather than overridden.
+$queryLog = !defined('SAVEQUERIES') || (bool) constant('SAVEQUERIES');
+
+if (!defined('SAVEQUERIES')) {
+    define('SAVEQUERIES', true);
+}
+
+if ($queryLog) {
+    $wpdb->queries = [];
+
+    $dashboard->read($window);
+
+    /** @var list<array<int, mixed>> $logged */
+    $logged = is_array($wpdb->queries) ? $wpdb->queries : [];
+    $texts = array_map(static fn (array $entry): string => (string) ($entry[0] ?? ''), $logged);
+
+    $verify->check('the screen issued some queries to look at', true, $texts !== []);
+    $verify->check('and not one of them names the lead log', [], array_values(array_filter(
+        $texts,
+        static fn (string $sql): bool => str_contains($sql, Connection::TABLE_LEADS)
+    )));
+    $verify->check('it is two statements, one per table', 2, count($texts));
+    $verify->check('and neither is a JOIN', [], array_values(array_filter(
+        $texts,
+        static fn (string $sql): bool => stripos($sql, ' join ') !== false
+    )));
+} else {
+    echo "  skip SAVEQUERIES is defined false, so the query log cannot be read\n";
+}
+
+echo "The dashboard's today\n";
+
+// ==========================================================================
+// "TODAY MEANS THE MERCHANT'S TODAY", THROUGH THE WHOLE SCREEN.
+// ==========================================================================
+// The unit suite cannot reach this: `tests/bootstrap.php` answers every clock
+// as though the site were on UTC, deliberately and consistently, so a test
+// built on those stubs would agree with the bootstrap rather than with
+// WordPress. `StatRange` takes the day as an argument for exactly that reason,
+// and this is where the one line that ASKS WordPress is proven.
+$zoned = $optins->create('Timezoned', 'promote_offer', []);
+
+update_option('timezone_string', $elsewhere);
+
+$siteToday = StatDay::today();
+
+$verify->check("the site's day is still not UTC's", true, $siteToday !== gmdate('Y-m-d'));
+
+// One act on the site's today, one on UTC's. A one-day window must hold the
+// first and not the second.
+$stats->increment($zoned->id, StatKind::Conversion, $siteToday);
+$stats->increment($zoned->id, StatKind::Conversion, gmdate('Y-m-d'));
+
+$zonedCard = $cardFor($dashboard->read(StatRange::lastDays(1, StatDay::today())), 'promote_offer');
+
+$verify->check("today's window is the merchant's day", 1, $zonedCard['headline'] ?? null);
+$verify->check('and it says which day that was', $siteToday, $zonedCard === null ? null : array_key_first($zonedCard['by_day']));
+
+update_option('timezone_string', $originalZone);
+update_option('gmt_offset', $originalOffset);
+
 echo "The beacon endpoint\n";
 
 // `rest_do_request()` builds a real request, runs the permission callback and
@@ -331,7 +581,6 @@ echo "The beacon endpoint\n";
 // socket. Nothing else can prove the controller wires its three collaborators
 // together, because a `WP_REST_Request` faithful enough to prove it is a
 // WordPress install with extra steps.
-$optins = new OptinRepository($db, new PublishedSet($options), RuleVocabulary::fromManifest());
 $published = $optins->create('Beacon check', 'grow_email_list', []);
 $optins->publish($published->id);
 $unpublished = $optins->create('Never published', 'grow_email_list', []);
@@ -491,7 +740,7 @@ echo "Cleaning up\n";
 
 $wpdb->query("DELETE FROM `{$statsTable}`");
 
-foreach ([$published->id, $unpublished->id, $limited->id] as $id) {
+foreach ([$published->id, $unpublished->id, $limited->id, $reported->id, $tidied->id, $zoned->id] as $id) {
     $wpdb->query($wpdb->prepare("DELETE FROM `{$wpdb->prefix}wconvert_optins` WHERE id = %s", $id));
 }
 

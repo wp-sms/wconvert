@@ -6,6 +6,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use WConvert\Database\Connection;
 use WConvert\Stats\StatKind;
+use WConvert\Stats\StatRange;
 use WConvert\Stats\StatsRepository;
 use WConvert\Tests\Unit\Support\FakeConnection;
 
@@ -129,5 +130,66 @@ final class StatsRepositoryTest extends TestCase
         $this->assertSame([], $this->db->writes);
         $this->assertSame([], $this->db->deletes);
         $this->assertSame([], $this->db->reads);
+    }
+
+    /**
+     * ========================================================================
+     * THE FIRST READ THIS TABLE HAS EVER TAKEN.
+     * ========================================================================
+     * One table and one statement. The [[Goal]] that gives these rows meaning
+     * lives in `wconvert_optins` and is read separately, then applied in PHP
+     * by {@see \WConvert\Stats\Dashboard} — so there is no `JOIN` here, and
+     * {@see \WConvert\Database\Connection} was not widened a third time to
+     * express one (ADR 0034).
+     */
+    public function testTheDashboardsReadIsOneStatementAgainstOneTable(): void
+    {
+        $this->stats->inRange(StatRange::between('2026-07-27', '2026-08-25'));
+
+        $this->assertCount(1, $this->db->reads);
+        $this->assertSame(Connection::TABLE_STATS, $this->db->reads[0]['table']);
+        $this->assertStringNotContainsString('JOIN', $this->db->reads[0]['sql']);
+        $this->assertSame(1, substr_count($this->db->reads[0]['sql'], '%i'), 'one table, named once');
+    }
+
+    /**
+     * It selects the four columns the counters have and nothing wider. There
+     * is nothing else on the row, but `SELECT *` would stop saying so.
+     */
+    public function testItProjectsTheFourColumnsAndBackticksTheOneThatIsAlsoAFunction(): void
+    {
+        $this->stats->inRange(StatRange::between('2026-07-27', '2026-08-25'));
+
+        $sql = $this->db->reads[0]['sql'];
+
+        $this->assertStringContainsString('SELECT optin_id, stat_date, kind, `count` FROM %i', $sql);
+        $this->assertStringNotContainsString('*', $sql);
+    }
+
+    /**
+     * The window's ends are BOUND, in the order they appear —
+     * {@see \WConvert\Database\WpdbConnection::bindings()} binds by
+     * appearance, and this statement names its table once and then two values.
+     */
+    public function testTheWindowIsBoundRatherThanInterpolated(): void
+    {
+        $this->stats->inRange(StatRange::between('2026-07-27', '2026-08-25'));
+
+        $this->assertStringContainsString('WHERE stat_date BETWEEN %s AND %s', $this->db->reads[0]['sql']);
+        $this->assertSame(['2026-07-27', '2026-08-25'], $this->db->reads[0]['params']);
+    }
+
+    /**
+     * **The read writes nothing.** Obvious, and asserted because the only
+     * other method on this class is the one that writes — and the counters
+     * cannot be recomputed if a read ever stopped being one (ADR 0019).
+     */
+    public function testTheReadIsAReadAndNothingElse(): void
+    {
+        $this->stats->inRange(StatRange::between('2026-07-27', '2026-08-25'));
+
+        $this->assertSame([], $this->db->writes);
+        $this->assertSame([], $this->db->upserts);
+        $this->assertSame([], $this->db->deletes);
     }
 }

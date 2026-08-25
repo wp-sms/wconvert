@@ -118,6 +118,36 @@ enum Goal: string
     }
 
     /**
+     * What the headline number is CALLED, on the card that reports it.
+     *
+     * This is the metric wording ADR 0020 changed, spelled out: "Leads with an
+     * email" became *conversions on Optins that capture an email*, and the
+     * label the merchant reads follows the [[Conversion]] rather than the
+     * [[Lead]]. The number is the same; where it comes from is not, and a card
+     * headed "Leads" over a number read from `wconvert_stats` would be saying
+     * the thing ADR 0018 depends on nobody saying.
+     *
+     * **Two of the five convert on a CLICK**, so the word cannot be one word
+     * for all of them: a Goal measured by click-throughs headed "Submissions"
+     * reports zero forever and looks broken while being right
+     * (CONTEXT.md, Conversion).
+     *
+     * In PHP with the rest of the labels, and for the same reason:
+     * `wp i18n make-pot` cannot see a JavaScript string, and a second spelling
+     * in the admin bundle is what `tests/unit/Goal/GoalParityTest.php` fails
+     * on.
+     */
+    public function headlineLabel(): string
+    {
+        return match ($this) {
+            self::GrowEmailList, self::GrowSmsList => __('Submissions', 'wconvert'),
+            self::RecoverCart => __('Click-throughs back to the cart', 'wconvert'),
+            self::PromoteOffer => __('Click-throughs to the offer', 'wconvert'),
+            self::DeliverLeadMagnet => __('Deliveries', 'wconvert'),
+        };
+    }
+
+    /**
      * Which install supplies this Goal. Only the cart Goal is Pro (ADR 0026).
      */
     public function tier(): Tier
