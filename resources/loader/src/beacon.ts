@@ -32,7 +32,21 @@ export interface Beacon {
   report(optinId: string, kind: BeaconKind): void;
   /** Send whatever is waiting. Called on `pagehide`; safe to call with nothing queued. */
   flush(): void;
-  /** Detach the listeners. */
+  /**
+   * Detach the listeners and drop anything queued.
+   *
+   * **Nothing in the loader calls this, deliberately.** The shell tears its own
+   * rule listeners down the moment every candidate is settled — on a page with
+   * one `page_load` Optin that is immediately — and the Conversion and the
+   * Dismissal have not happened yet at that point, so a beacon that came down
+   * with them would report neither. A beacon lives as long as the page, which
+   * is what its `pagehide` listener is for.
+   *
+   * It exists for the callers that are NOT a page: a test, which would
+   * otherwise leave a live beacon whose events the next test's `pagehide`
+   * flushes, and Pro's own presenter, which composes this engine rather than
+   * inheriting free's entry point (ADR 0028).
+   */
   stop(): void;
 }
 

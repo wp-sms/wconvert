@@ -140,11 +140,24 @@ surrogate `id`.
   capture is one act a person performs rarely and cares about a great deal, and
   one shared window would let ordinary beacon volume refuse the submission a
   visitor was still on the page to fix.*
+  *And the ceiling is sized against LEGITIMATE traffic rather than against
+  abuse, because the two failures are not symmetric. A refused abusive beacon
+  costs what this ADR already books — a wrong number. A refused legitimate one
+  costs an act that really happened and, if it is an Impression, removes a
+  denominator: conversion rate then reads too HIGH, permanently. A page view is
+  not one request — every Impression flushes immediately and an `inline` Optin
+  reports its own on entering the viewport — so the ceiling is set where a
+  building behind one NAT cannot reach it.*
   *Extended by the same ticket with the filtering this ADR did not name:
   `Sec-Purpose`, bot user agent and `document.prerendering`, with **no
   heuristics** — there is no identifier left on a stateless beacon to score a
   suspicious request against, so a scoring pass would be a guess wearing a
-  number. The prerender half is a HOLD rather than a drop: nothing leaves while
+  number — which is also why a request with NO user agent is COUNTED. "Every
+  browser sends one, so a request without one is a script" is exactly such a
+  guess, and it fails in the expensive direction: a visitor behind a
+  UA-stripping extension is a real person, and their missing Impression flatters
+  the numbers forever. The prerender half is a HOLD rather than a drop: nothing
+  leaves while
   `document.prerendering` is true, and the held events flush on
   `prerenderingchange`, because a prerender the visitor goes on to open is a
   page they looked at and an Impression by every definition the glossary offers.

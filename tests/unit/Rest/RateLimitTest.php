@@ -30,8 +30,15 @@ final class RateLimitTest extends TestCase
 
     private const OTHER_IP = '198.51.100.7';
 
-    /** {@see RateLimit}'s own ceiling, restated so a change to it fails here. */
-    private const ALLOWED = 60;
+    /**
+     * {@see RateLimit}'s own numbers, restated rather than imported.
+     *
+     * A test that read the constants would assert the code agrees with itself.
+     * These are the values the reasoning in that file argues FOR — three hundred
+     * a minute, sized so legitimate traffic cannot reach it — so changing either
+     * should fail here and make somebody re-read the argument.
+     */
+    private const ALLOWED = 300;
 
     private const WINDOW = 60;
 

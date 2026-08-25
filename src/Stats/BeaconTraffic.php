@@ -19,12 +19,14 @@ defined('ABSPATH') || exit;
  * request object to build. {@see \WConvert\Rest\BeaconController} reads the
  * three headers; this decides.
  *
- * The direction of error matters and is chosen. An Impression that should not
- * have been counted inflates the denominator of conversion rate, which makes
- * the plugin look WORSE than it is; a Conversion that should not have been
- * counted flatters it. Everything here filters the first kind, and a crawler
- * that renders JavaScript and hides its identity gets counted — a known and
- * accepted inaccuracy, not a gap somebody forgot.
+ * **The direction of error decides every judgement call in this file.** An
+ * Impression counted that should not have been inflates the denominator of
+ * conversion rate, which makes the plugin look WORSE than it is; an Impression
+ * MISSED does the opposite, and flattering the numbers is the error worth
+ * engineering against — especially here, where nothing can ever be recomputed
+ * (ADR 0019). So every doubt resolves towards counting: a crawler that renders
+ * JavaScript and hides its identity gets counted, and so does a request with no
+ * user agent at all.
  *
  * @since 0.1.0
  */
@@ -91,17 +93,22 @@ final class BeaconTraffic
     }
 
     /**
-     * An ABSENT user agent counts as a bot. Every browser sends one; a request
-     * without it is a script that did not bother, and what it would add is the
-     * denominator of somebody's conversion rate.
+     * Something that named itself.
+     *
+     * **An ABSENT user agent is COUNTED**, and an earlier draft of this file had
+     * it the other way round. "Every browser sends one, so a request without one
+     * is a script" is a HEURISTIC — the spec for this endpoint asks for none —
+     * and it is a heuristic that fails in the expensive direction. A visitor
+     * behind a UA-stripping extension or a privacy browser is a real person
+     * looking at a real Optin, and dropping their Impression removes a
+     * DENOMINATOR: it makes conversion rate too high, which is the one error
+     * that flatters us, and it can never be recomputed (ADR 0019).
+     *
+     * What is left over-counts instead, which is the side to be wrong on.
      */
     private static function bot(string $userAgent): bool
     {
         $userAgent = strtolower($userAgent);
-
-        if (trim($userAgent) === '') {
-            return true;
-        }
 
         foreach (self::BOTS as $bot) {
             if (str_contains($userAgent, $bot)) {

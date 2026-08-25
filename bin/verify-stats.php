@@ -36,6 +36,7 @@ use WConvert\Database\Installer;
 use WConvert\Database\WpdbConnection;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
+use WConvert\Rest\RateLimit;
 use WConvert\Rest\Routes;
 use WConvert\Rules\RuleVocabulary;
 use WConvert\Stats\StatDay;
@@ -415,7 +416,19 @@ $beacon(
     ['user-agent' => 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)']
 );
 
-$verify->check('a bot counts nothing either', $before, $countOf($published->id, 'impression', $beaconDay));
+$verify->check('a bot that names itself counts nothing either', $before, $countOf($published->id, 'impression', $beaconDay));
+
+// **And a request with NO user agent is counted.** Dropping it would be a
+// heuristic, and one that fails in the expensive direction: a visitor behind a
+// UA-stripping extension is a real person, and a missing Impression removes a
+// denominator and flatters conversion rate permanently.
+$beacon([['optin_id' => $published->id, 'kind' => 'impression']], ['user-agent' => '']);
+
+$verify->check(
+    'a request with no user agent is counted rather than guessed at',
+    ($before ?? 0) + 1,
+    $countOf($published->id, 'impression', $beaconDay)
+);
 
 echo "The rate limit\n";
 
@@ -430,20 +443,23 @@ $_SERVER['REMOTE_ADDR'] = '198.51.100.7';
 
 $statuses = [];
 
-// The ceiling is 60 a minute per address. The 61st is the one being asserted;
-// everything before it is an allowance a real visitor never comes near — a page
-// view is one Impression plus one flush.
-for ($i = 0; $i < 61; $i++) {
+// Read off the class rather than restated. The ceiling is sized against
+// LEGITIMATE traffic — a page carrying an overlay and a few inline Optins costs
+// three to five requests plus a flush — so it is a number that will move, and a
+// copy of it here would be a second spelling to keep in step.
+$allowed = RateLimit::ALLOWED;
+
+for ($i = 0; $i <= $allowed; $i++) {
     $statuses[] = $beacon([['optin_id' => $limited->id, 'kind' => 'impression']]);
 }
 
 $verify->check(
     'every request inside the allowance is accepted',
     [204],
-    array_values(array_unique(array_slice($statuses, 0, 60)))
+    array_values(array_unique(array_slice($statuses, 0, $allowed)))
 );
-$verify->check('the one past it is refused', 429, $statuses[60]);
-$verify->check('and the refused one counted nothing', 60, $countOf($limited->id, 'impression', $beaconDay));
+$verify->check('the one past it is refused', 429, $statuses[$allowed]);
+$verify->check('and the refused one counted nothing', $allowed, $countOf($limited->id, 'impression', $beaconDay));
 
 // One noisy caller must not silence anybody else, or a single address would
 // take a merchant's whole day of numbers with it.

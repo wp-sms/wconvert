@@ -46,15 +46,36 @@ final class RateLimit
     /**
      * The window, and the requests allowed in it.
      *
-     * A real visitor sends one request per Optin impression plus one flush per
-     * page view, so sixty a minute is many page views a minute from one
-     * address — and one address is a whole office behind one NAT, which is why
-     * the ceiling is generous rather than tight. Tightening it would refuse
-     * real people before it inconvenienced anybody sending traffic on purpose.
+     * ========================================================================
+     * THIS IS SIZED AGAINST LEGITIMATE TRAFFIC, NOT AGAINST ABUSE.
+     * ========================================================================
+     * The two failures are not symmetric. A refused ABUSIVE beacon costs
+     * nothing — ADR 0019 books the loss from abuse as a wrong number on one
+     * merchant's dashboard. A refused LEGITIMATE beacon costs an act that
+     * really happened and can never be recomputed, and if it is an Impression
+     * it removes a denominator, which makes conversion rate too high. So the
+     * ceiling is set where legitimate traffic cannot reach it, and the abuse it
+     * lets through is the cost of that.
+     *
+     * The arithmetic an earlier draft got wrong: a page view is NOT one
+     * request. Every Impression flushes immediately, and an `inline` Optin
+     * reports its own on entering the viewport, so a page carrying an overlay
+     * and a few inline Optins costs three to five requests plus one `pagehide`
+     * flush. At sixty a minute that throttled an office behind one NAT at
+     * roughly a dozen page views a minute — well inside what a real building
+     * does.
+     *
+     * Three hundred is fifty to a hundred page views a minute from one address,
+     * which is a large office rather than a browser, and it still bounds what a
+     * script can do to one merchant's numbers.
+     *
+     * Public because `bin/verify-stats.php` drives the real endpoint up to this
+     * ceiling and past it; a copy of the number in that file would be a second
+     * spelling to keep in step.
      */
-    private const WINDOW = 60;
+    public const WINDOW = 60;
 
-    private const ALLOWED = 60;
+    public const ALLOWED = 300;
 
     public function __construct(
         private readonly TransientStore $transients,

@@ -11,11 +11,13 @@ use WConvert\Stats\BeaconTraffic;
  * Who gets counted: `Sec-Purpose`, bot user agent, and **no heuristics**.
  *
  * There is no identifier left on a stateless beacon to score a suspicious
- * request against (ADR 0017), so this believes requests that say what they are
- * and counts everything else. The direction of error is chosen rather than
- * accepted: an Impression counted that should not have been inflates the
- * denominator of conversion rate and makes the plugin look worse than it is,
- * which is the safe side to be wrong on.
+ * request against (ADR 0017), so this believes requests that SAY what they are
+ * and counts everything else — including a request with no user agent at all.
+ *
+ * The direction of error is chosen rather than accepted: an Impression counted
+ * that should not have been inflates the denominator of conversion rate and
+ * makes the plugin look worse than it is, while one MISSED flatters it. Nothing
+ * here can ever be recomputed, so every doubt resolves towards counting.
  */
 #[CoversClass(BeaconTraffic::class)]
 final class BeaconTrafficTest extends TestCase
@@ -77,8 +79,34 @@ final class BeaconTrafficTest extends TestCase
             'lighthouse' => ['Mozilla/5.0 Chrome-Lighthouse'],
             'curl' => ['curl/8.7.1'],
             'wget' => ['Wget/1.21.4'],
-            'a script that did not bother' => [''],
-            'a script that sent whitespace' => ['   '],
+        ];
+    }
+
+    /**
+     * **A request with NO user agent is counted.**
+     *
+     * An earlier draft dropped it — "every browser sends one, so a request
+     * without one is a script" — and that is a heuristic, which this endpoint
+     * asks for none of. It also fails in the expensive direction: a visitor
+     * behind a UA-stripping extension or a privacy browser is a real person
+     * looking at a real Optin, and a missing Impression removes a DENOMINATOR.
+     * Conversion rate then reads too high, permanently, because nothing here
+     * can ever be recomputed (ADR 0019).
+     */
+    #[DataProvider('agentlessRequests')]
+    public function testARequestWithNoUserAgentIsCountedRatherThanGuessedAt(string $userAgent): void
+    {
+        $this->assertTrue(BeaconTraffic::countable('', '', $userAgent));
+    }
+
+    /**
+     * @return array<string, array{0: string}>
+     */
+    public static function agentlessRequests(): array
+    {
+        return [
+            'absent' => [''],
+            'whitespace' => ['   '],
         ];
     }
 
