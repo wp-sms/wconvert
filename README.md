@@ -227,8 +227,49 @@ is known to be able to fail. It also sets the site to a non-UTC timezone and
 asserts the row is stamped with the merchant's day, and dispatches real beacon
 requests through `rest_do_request()` to check the published-set validation, the
 bot and prefetch filters and the rate limit. **It refuses to run on a site that
-already has counts**, because counters that cannot be recomputed are not
-something to be careful around.
+already has counts, or on a log that already has Leads**, because counters that
+cannot be recomputed are not something to be careful around.
+
+### The dashboard
+
+**A Conversion is interpreted at read, never frozen at write**
+([ADR 0020](docs/adr/0020-conversions-are-interpreted-at-read.md)). A counter
+row carries no `goal` at all, so **changing an Optin's Goal restates its entire
+history** rather than splitting it at the moment of the edit. That will look
+like a bug to someone; it is the decision, and it is the price of making a Goal
+freely correctable.
+
+The screen is **per-goal cards and no leaderboard**. There is no site-wide
+conversion rate, because "click-throughs to the offer" and "conversions on
+Optins that capture an email" are different acts and ranking them means
+nothing. An Optin's numbers arrive *inside* its Goal's card, which is what
+makes a cross-Goal ranking unexpressible rather than merely absent. Conversion
+rate is conversions ÷ impressions, and there is no "left without converting" —
+it is already `impressions − conversions − dismissals`.
+
+**Soft-deleted Optins keep their counts and lose their row.** A merchant
+tidying up in March must not watch February's goal total fall, which is also
+why an Optin is never hard-deleted.
+
+The two tables meet **in PHP rather than in a `JOIN`**
+([ADR 0034](docs/adr/0034-the-dashboard-joins-in-php.md)): a Goal is tens of
+rows of fact, and joining it would denormalise it onto thousands of counters
+while costing `Connection` a third widening. `wconvert_stats` still ships no
+secondary index — the read is a scan, bounded to one year by
+`StatRange::MAX_DAYS`, against an index that would be paid on every beacon.
+
+**No reported number comes from `wconvert_leads`**, which is what
+[ADR 0018](docs/adr/0018-erasure-deletes-rather-than-anonymises.md) depends on:
+erasure deletes those rows, so a metric read from them would let one erasure
+request rewrite a merchant's history. It is checked from both ends —
+`tests/unit/Stats/NoCountComesFromTheLeadLogTest.php` walks the reporting
+classes' computed dependency closure, and `bin/verify-stats.php` reads the real
+query log, then writes a Lead and erases it and asserts no number moved.
+
+**"Today" means the merchant's today.** The screen asks for a *number of days*
+and never a date — a date built in the browser is the day of whoever is at the
+keyboard — and the far end is `StatDay::today()`, read on the server against
+the site's own timezone.
 
 This one needs MySQL rather than the Playground SQLite above: `ON DUPLICATE KEY
 UPDATE` is MySQL's spelling, and the concurrency check needs two connections

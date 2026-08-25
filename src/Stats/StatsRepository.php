@@ -20,10 +20,11 @@ defined('ABSPATH') || exit;
  * nothing in `tests/unit/` can see a lost update; what the unit suite proves is
  * the statement issued, which is the half that can drift silently.
  *
- * **There is no read here yet, and no delete ever.** The dashboard's query
- * arrives with the ticket that draws it; retention is keep-forever with no
- * pruning, because at ~29k rows a year there is nothing to prune and analytics
- * needs no retention setting of its own (ADR 0019).
+ * **There is now one read, and no delete ever.** {@see self::inRange()} is the
+ * first this table has ever taken and the only one the dashboard issues —
+ * retention is keep-forever with no pruning, because at ~29k rows a year there
+ * is nothing to prune and analytics needs no retention setting of its own
+ * (ADR 0019).
  *
  * @since 0.1.0
  */
@@ -47,6 +48,47 @@ final class StatsRepository
     public function __construct(
         private readonly Connection $db,
     ) {
+    }
+
+    /**
+     * Every counter in a window, across every [[Optin]].
+     *
+     * ========================================================================
+     * ONE TABLE, ONE STATEMENT, AND NO `JOIN`.
+     * ========================================================================
+     * The [[Goal]] that gives these rows meaning lives in `wconvert_optins`
+     * and is read separately, then applied in PHP by {@see Dashboard}. That is
+     * a decision rather than an omission (ADR 0034): a Goal is tens of rows of
+     * fact, and joining it here would denormalise it onto thousands of
+     * counters to save an array lookup — while costing
+     * {@see \WConvert\Database\Connection} a third widening, on an interface
+     * whose own docblock says the third should be read as pressure to stop.
+     *
+     * **It is a scan of the primary key, and that is affordable rather than
+     * overlooked.** `(optin_id, stat_date, kind)` puts the id leftmost, so a
+     * date range across every Optin cannot use it as a range — but the table
+     * is booked at ~29k rows a year (ADR 0019) and {@see StatRange::MAX_DAYS}
+     * keeps the window to one of them. A secondary index would be paid on
+     * every beacon to save one admin screen a read it takes on demand, which
+     * is the same asymmetry ADR 0033 decided the other way round for the lead
+     * log. `tests/unit/Database/SchemaTest.php` still budgets this table zero.
+     *
+     * `count` is backticked because it is also a function name.
+     *
+     * `ORDER BY` is deliberately absent: the caller buckets by Optin and by
+     * day anyway, and asking the database to sort a scan it is going to hand
+     * over whole is work nobody reads.
+     *
+     * @return list<array<string, string|null>>
+     */
+    public function inRange(StatRange $range): array
+    {
+        return $this->db->results(
+            Connection::TABLE_STATS,
+            'SELECT optin_id, stat_date, kind, `count` FROM %i WHERE stat_date BETWEEN %s AND %s',
+            $range->from,
+            $range->to
+        );
     }
 
     /**

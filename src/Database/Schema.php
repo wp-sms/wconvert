@@ -141,10 +141,18 @@ KEY idx_phone (phone)
      * `(optin_id, stat_date, kind)` is what makes
      * `INSERT ... ON DUPLICATE KEY UPDATE count = count + 1` atomic at the
      * database: no increment is ever lost, and there is no read-modify-write
-     * race to reason about. It also serves the dashboard's only query shape —
-     * an id set, a date range, grouped by kind — which is why this table has
-     * **no secondary index and no surrogate `id`**. A surrogate would make the
-     * upsert express nothing at all.
+     * race to reason about. A surrogate `id` would make the upsert collide
+     * with nothing and express nothing at all, so there is none.
+     *
+     * **And still no secondary index**, though #28 wrote the dashboard's read
+     * and it is not the shape ADR 0019 predicted. It is a date range across
+     * EVERY Optin — the screen reports on all of them — and with `optin_id`
+     * leftmost that cannot use this key and is a scan. It stays unindexed
+     * anyway: the table is booked at ~29k rows a year,
+     * {@see \WConvert\Stats\StatRange::MAX_DAYS} caps the window to one of
+     * them, and an index here would be paid on every beacon to save one admin
+     * screen a read it takes on demand (ADR 0034). That is the same asymmetry
+     * ADR 0033 decided the same way for the lead log.
      *
      * A row carries **no `goal`, no `had_email`, no `had_phone` and no display
      * type** (ADR 0020). Whether a Conversion carried an email is a property of

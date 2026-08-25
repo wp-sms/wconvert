@@ -6,9 +6,14 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use WConvert\Database\WpdbConnection;
 use WConvert\Lead\LeadRepository;
+use WConvert\Optin\OptinRepository;
+use WConvert\Optin\PublishedSet;
+use WConvert\Rules\RuleVocabulary;
 use WConvert\Stats\StatKind;
+use WConvert\Stats\StatRange;
 use WConvert\Stats\StatsRepository;
 use WConvert\Tests\Unit\Support\FakeConnection;
+use WConvert\Tests\Unit\Support\FakeOptionStore;
 
 /**
  * How WConvert's SQL is bound to `$wpdb->prepare()`.
@@ -91,8 +96,14 @@ final class WpdbConnectionTest extends TestCase
         $db = new FakeConnection();
         $leads = new LeadRepository($db);
         $stats = new StatsRepository($db);
+        $optins = new OptinRepository(
+            $db,
+            new PublishedSet(new FakeOptionStore()),
+            RuleVocabulary::fromManifest(__DIR__ . '/../../..')
+        );
 
         $stats->increment('01JQ0000000000000000000001', StatKind::Impression, '2026-03-04');
+        $stats->inRange(StatRange::lastDays(30, '2026-08-25'));
         $leads->submissions(null);
         $leads->submissions('OPTIN1');
         $leads->page(null, 50);
@@ -104,6 +115,11 @@ final class WpdbConnectionTest extends TestCase
         $leads->forEmail('sarah@example.com', 50, 0);
         $leads->eraseByEmail('sarah@example.com');
         $leads->pruneBefore('01J0000000ZZZZZZZZZZZZZZZZ');
+        $optins->find('OPTIN1');
+        $optins->summaries();
+        $optins->summaries(true);
+        $optins->names();
+        $optins->interpretations();
 
         $this->assertNotSame([], $db->statements);
 

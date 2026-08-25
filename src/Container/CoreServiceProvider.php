@@ -17,6 +17,7 @@ use WConvert\Playbook\PlaybookLibrary;
 use WConvert\Playbook\Prefill;
 use WConvert\Rest\BeaconController;
 use WConvert\Rest\CaptureController;
+use WConvert\Rest\DashboardController;
 use WConvert\Rest\GoalController;
 use WConvert\Rest\LeadController;
 use WConvert\Rest\OptinController;
@@ -25,6 +26,7 @@ use WConvert\Rest\RateLimit;
 use WConvert\Rest\TemplateController;
 use WConvert\Retention\RetentionPeriod;
 use WConvert\Rules\RuleVocabulary;
+use WConvert\Stats\Dashboard;
 use WConvert\Stats\StatsRepository;
 use WConvert\Storage\OptionStore;
 use WConvert\Storage\TransientStore;
@@ -218,6 +220,25 @@ final class CoreServiceProvider implements ServiceProvider
             static fn (ServiceContainer $c): StatsRepository => new StatsRepository($c->resolve(Connection::class))
         );
 
+        // The analytics screen. It reads `wconvert_stats` and interprets it
+        // through `wconvert_optins`, and the two tables meet in PHP rather
+        // than in a JOIN — which is why it takes two repositories and not a
+        // widened Connection (ADR 0034).
+        $container->register(
+            Dashboard::class,
+            static fn (ServiceContainer $c): Dashboard => new Dashboard(
+                $c->resolve(StatsRepository::class),
+                $c->resolve(OptinRepository::class)
+            )
+        );
+
+        $container->register(
+            DashboardController::class,
+            static fn (ServiceContainer $c): DashboardController => new DashboardController(
+                $c->resolve(Dashboard::class)
+            )
+        );
+
         $container->register(
             RateLimit::class,
             static fn (ServiceContainer $c): RateLimit => new RateLimit($c->resolve(TransientStore::class))
@@ -272,6 +293,7 @@ final class CoreServiceProvider implements ServiceProvider
         // wherever `rest_api_init` fires or it does not exist at all.
         $container->resolve(BeaconController::class)->hooks();
         $container->resolve(LeadController::class)->hooks();
+        $container->resolve(DashboardController::class)->hooks();
 
         if (!is_admin()) {
             $container->resolve(LoaderEnqueue::class)->hooks();

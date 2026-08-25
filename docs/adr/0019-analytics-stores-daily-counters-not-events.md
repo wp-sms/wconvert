@@ -58,6 +58,17 @@ is what makes the upsert atomic, and it serves the dashboard's only query shape 
 an id set, a date range, grouped by kind — with no secondary index and no
 surrogate `id`.
 
+*Corrected by [ADR 0034](0034-the-dashboard-joins-in-php.md), which wrote that
+query. It is **a date range across every Optin**, not an id set — the dashboard
+reports on all of them, so an `optin_id IN (…)` filter would exclude nothing,
+and a variable-length `IN` list is not a `literal-string` and cannot be
+expressed through [`Connection`](../../src/Database/Connection.php) anyway. With
+`optin_id` leftmost that range **cannot use the key** and is a scan. The
+conclusion is unchanged and the reasoning is now the honest one: the scan is
+affordable at the ~29k rows a year this document books, capped to one year by
+[`StatRange::MAX_DAYS`](../../src/Stats/StatRange.php), and an index here would
+be paid on every beacon for a read one admin takes on demand.*
+
 ## Table-free alternatives, rejected
 
 - **A WP option.** `update_option` is a read-modify-write with no row lock.
@@ -80,6 +91,12 @@ surrogate `id`.
 - **You can never recompute.** If a counting bug ships, there is no raw data to
   repair the numbers from — they are wrong for that period, permanently. This is
   the price of the shape and it was taken knowingly.
+  *Extended by [#28](https://github.com/navidkashani/wconvert/issues/28) into a
+  rule about the ROUTES as well as the writes:
+  [`DashboardController`](../../src/Rest/DashboardController.php) is read-only
+  with no exception, because a write route against a table nothing can repair is
+  a route that can destroy a merchant's history permanently. The only writer of
+  a counter remains the beacon, counting one act.*
 - **There is no hour-of-day breakdown, ever.** "Today so far" works, because the
   day's row updates live; an intra-day curve does not and cannot be added
   retroactively.
@@ -127,6 +144,14 @@ surrogate `id`.
   asks WordPress which zone the site is on is proven where a real
   `timezone_string` can be set, in
   [`bin/verify-stats.php`](../../bin/verify-stats.php).*
+  *Extended by [ADR 0034](0034-the-dashboard-joins-in-php.md), where "the
+  dashboard says Today" stopped being hypothetical. The screen asks for a
+  **number of days and never a date**: a date built in the browser is the day of
+  whoever is at the keyboard, so a merchant in Tokyo checking their numbers from
+  a hotel in Los Angeles would be handed yesterday's window and told it was
+  today's. [`StatRange`](../../src/Stats/StatRange.php) takes the day as an
+  argument like `StatDay::of()` does, and the one end that is a date is
+  `StatDay::today()`, read on the server.*
 - **`count` is `INT UNSIGNED`.** 4.29 billion of one kind on one Optin in one day
   is not a number to plan for.
 - **The beacon endpoint is hardened lightly and deliberately.** It validates

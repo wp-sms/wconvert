@@ -25,12 +25,19 @@ defined('ABSPATH') || exit;
  * permanent split every time somebody fixes a typo. It will look like a bug to
  * someone; it is the decision.
  *
- * **Pure, and it takes rows rather than a repository.** The join that produces
- * them is SQL and belongs to the screen that draws it; what is here is the
+ * **Pure, and it takes rows rather than a repository.** What is here is the
  * arithmetic, which is the half that can be proven without a database — the
  * same arrangement {@see \WConvert\Stats\StatDay} has with the site's
  * timezone and {@see \WConvert\Optin\PublishedProjection} has with the rule
  * vocabulary.
+ *
+ * This originally read "the join that produces them is SQL and belongs to the
+ * screen that draws it". **It is not SQL.** #28 wrote that screen and read the
+ * two tables with two statements, joining them in PHP: a Goal is tens of rows
+ * of fact, and a `JOIN` would denormalise it onto thousands of counters while
+ * costing {@see \WConvert\Database\Connection} a third widening (ADR 0034).
+ * The half that belongs to the screen is {@see \WConvert\Stats\Dashboard},
+ * which is where the two meet.
  *
  * @since 0.1.0
  */
@@ -91,25 +98,41 @@ final class GoalReport
     }
 
     /**
-     * The denominator of conversion rate, which does not move when the Goal
-     * does.
+     * Every kind's total, keyed by kind, in **one pass**.
      *
-     * An [[Impression]] is one Optin appearing to one visitor, once — it does
-     * not depend on what the merchant was hoping they would do next, so it is
-     * the one number a Goal correction leaves alone (CONTEXT.md, Impression).
+     * The reads here with no [[Goal]] in them, and that is the point: an
+     * [[Impression]] is one Optin appearing to one visitor and a [[Dismissal]]
+     * is a deliberate close, and neither depends on what the merchant was
+     * hoping for. They are the numbers a Goal correction leaves alone, sitting
+     * beside a headline the Goal chose.
+     *
+     * One pass and a map rather than a method per kind, because the card wants
+     * three of them at once: a named accessor per kind would walk the same
+     * rows three times and would still not name the fourth.
+     *
+     * A kind with no rows is **absent rather than zero** — the caller says
+     * what a missing kind means, and for the headline it means 0
+     * ({@see self::byDay()}).
      *
      * @param iterable<array<string, mixed>> $rows
+     * @return array<string, int>
      */
-    public static function impressions(iterable $rows): int
+    public static function totals(iterable $rows): array
     {
-        $total = 0;
+        $totals = [];
 
         foreach ($rows as $row) {
-            if (StatKind::tryFrom((string) ($row['kind'] ?? '')) === StatKind::Impression) {
-                $total += (int) ($row['count'] ?? 0);
+            $kind = StatKind::tryFrom((string) ($row['kind'] ?? ''));
+
+            // An unknown kind is a row no version of this code wrote
+            // (ADR 0019), the same reading {@see self::byDay()} takes.
+            if ($kind === null) {
+                continue;
             }
+
+            $totals[$kind->value] = ($totals[$kind->value] ?? 0) + (int) ($row['count'] ?? 0);
         }
 
-        return $total;
+        return $totals;
     }
 }

@@ -51,11 +51,16 @@ final class SchemaTest extends TestCase
      *   listing walks that key backwards under a LIMIT, and the grouping view
      *   is two aggregates that each use an index already here (ADR 0033). An
      *   index is paid on every capture and read by one admin on demand.
-     * - **`wconvert_stats`, none.** The composite primary key IS the mechanism
-     *   — it makes the upsert atomic — and it already serves the dashboard's
-     *   only query shape: an id set, a date range, grouped by kind. A secondary
-     *   index here would be paid on every beacon for a query nobody issues
-     *   (ADR 0019).
+     * - **`wconvert_stats`, none.** The composite primary key IS the mechanism —
+     *   it makes the upsert atomic. This used to add that the key "already
+     *   serves the dashboard's only query shape: an id set, a date range,
+     *   grouped by kind. A secondary index here would be paid on every beacon
+     *   for a query nobody issues." #28 issued it, and it is neither: it is a
+     *   date range across every Optin, which cannot use a key with `optin_id`
+     *   leftmost and is a scan. The number stays zero on the ASYMMETRY rather
+     *   than on the access path — ~29k rows a year, capped to one year by
+     *   `StatRange::MAX_DAYS`, against an index paid on every beacon for a read
+     *   one admin takes on demand (ADR 0019, ADR 0034).
      */
     private const INDEX_BUDGET = [
         'wconvert_optins' => 1,
