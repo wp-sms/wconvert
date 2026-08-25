@@ -35,8 +35,6 @@ defined('ABSPATH') || exit;
  */
 final class PolicyLink
 {
-    /** Where a layout keeps its children. `split` is the one with two. */
-    private const CHILD_KEYS = ['children', 'start', 'end'];
 
     /**
      * One payload entry with every site-resolved link filled in.
@@ -86,7 +84,7 @@ final class PolicyLink
             $node['link'] = $link;
         }
 
-        foreach (self::CHILD_KEYS as $key) {
+        foreach (TemplateTree::CHILD_KEYS as $key) {
             if (is_array($node[$key] ?? null)) {
                 $node[$key] = array_map(
                     static fn ($child): mixed => is_array($child) ? self::resolve($child, $url) : $child,

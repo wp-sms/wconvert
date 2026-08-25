@@ -108,6 +108,20 @@ final class SchemaTest extends TestCase
     }
 
     /**
+     * **Those two, and no more.** The lead log lists newest-first off the ULID
+     * primary key; the covering indexes a per-Optin listing, a retention prune
+     * or a bulk re-push would want belong to the tickets that write those
+     * queries (#25, #30) and to the sign-off those tickets get. An index is
+     * schema, and schema needs a yes (CLAUDE.md, Database changes).
+     */
+    public function testTheLeadLogShipsNoIndexNoTicketAskedFor(): void
+    {
+        $leads = substr(self::ddl(), (int) strpos(self::ddl(), self::PREFIX . 'wconvert_leads'));
+
+        $this->assertSame(2, substr_count(substr($leads, 0, (int) strpos($leads, "\n)")), "\nKEY "));
+    }
+
+    /**
      * **Never unique.** Leads are never deduplicated — one person submitting
      * two forms did two things and produces two rows (ADR 0021) — so a UNIQUE
      * index on either identity key would make the second submission fail at

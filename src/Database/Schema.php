@@ -91,6 +91,13 @@ KEY idx_goal (goal)
      * It earns its place twice: retention pruning is a range delete over it
      * (ADR 0002), and it IS the Consent Record's timestamp, to the same second
      * — there is no second one (ADR 0032).
+     *
+     * **Two indexes and no more.** The lead log lists newest-first off the
+     * ULID primary key, so it needs none of its own; the covering indexes a
+     * per-Optin listing, a retention prune and a bulk re-push would want
+     * belong to the tickets that write those queries (#25, #30) and to the
+     * sign-off those tickets get. Guessing at them here is unsanctioned
+     * schema on a table that takes a write per capture.
      */
     private static function leads(string $prefix, string $charsetCollate): string
     {
@@ -102,10 +109,8 @@ phone VARCHAR(20) NULL,
 fields LONGTEXT,
 created_at DATETIME NOT NULL,
 PRIMARY KEY  (id),
-KEY idx_optin_created (optin_id, created_at),
 KEY idx_email (email),
-KEY idx_phone (phone),
-KEY idx_created (created_at)
+KEY idx_phone (phone)
 ) {$charsetCollate};\n";
     }
 }

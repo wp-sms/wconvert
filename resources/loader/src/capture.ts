@@ -42,7 +42,12 @@ export interface CaptureOptions {
   readonly onCaptured: () => void;
 }
 
-interface Refusal {
+/**
+ * A `WP_Error` as REST serialises it. Named for the wire shape rather than for
+ * the domain: the server's `Refusal` is a code and a field, and this is the
+ * JSON it arrives in.
+ */
+interface RefusalBody {
   readonly message?: unknown;
   readonly data?: { readonly field?: unknown };
 }
@@ -103,7 +108,7 @@ export function bindCapture(root: HTMLElement, options: CaptureOptions): void {
  * its own rather than as a success: a capture is only captured when the server
  * says so.
  */
-async function send(endpoint: string, payload: string): Promise<Refusal | null> {
+async function send(endpoint: string, payload: string): Promise<RefusalBody | null> {
   const response = await fetch(endpoint, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -114,7 +119,7 @@ async function send(endpoint: string, payload: string): Promise<Refusal | null> 
     return null;
   }
 
-  return await response.json().catch((): Refusal => ({}));
+  return await response.json().catch((): RefusalBody => ({}));
 }
 
 /**

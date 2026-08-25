@@ -10,7 +10,8 @@
     "drifting: tests/js/renderer-consent-parity.test.ts renders each node and reads",
     "its text; tests/unit/Lead/ConsentSentenceParityTest.php composes each node and",
     "compares the string. Both assert against `shown`.",
-    "The same arrangement the rule and template manifests have (ADR 0005, ADR 0010)."
+    "The same arrangement the rule and template manifests have (ADR 0005, ADR 0010).",
+    "Each case also declares `anchor`: the href the rendered <a> must carry, or null where no anchor renders at all. That is the renderer's half of the same rule — no dead `#`, ever (ADR 0032)."
   ],
   "cases": [
     {
@@ -18,46 +19,95 @@
       "node": {
         "type": "consent",
         "text": "I agree to receive emails and accept the %s.",
-        "link": { "label": "privacy policy", "href": "https://example.test/privacy/" }
+        "link": {
+          "label": "privacy policy",
+          "href": "https://example.test/privacy/"
+        }
       },
-      "shown": "I agree to receive emails and accept the privacy policy."
+      "shown": "I agree to receive emails and accept the privacy policy.",
+      "anchor": "https://example.test/privacy/"
     },
     {
       "why": "no policy configured: the link renders nothing, and the placeholder goes with it along with the space in front of it (ADR 0032)",
       "node": {
         "type": "consent",
         "text": "I agree to receive emails and accept the %s.",
-        "link": { "label": "privacy policy" }
+        "link": {
+          "label": "privacy policy"
+        }
       },
-      "shown": "I agree to receive emails and accept the."
+      "shown": "I agree to receive emails and accept the.",
+      "anchor": null
     },
     {
       "why": "no link at all: the placeholder is still not text the visitor read",
-      "node": { "type": "consent", "text": "I agree to receive emails and accept the %s." },
-      "shown": "I agree to receive emails and accept the."
+      "node": {
+        "type": "consent",
+        "text": "I agree to receive emails and accept the %s."
+      },
+      "shown": "I agree to receive emails and accept the.",
+      "anchor": null
     },
     {
       "why": "a link with nowhere to go: no placeholder means no place, so nothing renders",
       "node": {
         "type": "consent",
         "text": "I agree to receive emails.",
-        "link": { "label": "privacy policy", "href": "https://example.test/privacy/" }
+        "link": {
+          "label": "privacy policy",
+          "href": "https://example.test/privacy/"
+        }
       },
-      "shown": "I agree to receive emails."
+      "shown": "I agree to receive emails.",
+      "anchor": null
     },
     {
       "why": "only the FIRST placeholder is a link; a second is literal text, because a sentence carries one link",
       "node": {
         "type": "consent",
         "text": "See the %s, and the %s again.",
-        "link": { "label": "privacy policy", "href": "https://example.test/privacy/" }
+        "link": {
+          "label": "privacy policy",
+          "href": "https://example.test/privacy/"
+        }
       },
-      "shown": "See the privacy policy, and the %s again."
+      "shown": "See the privacy policy, and the %s again.",
+      "anchor": "https://example.test/privacy/"
     },
     {
       "why": "a consent node whose wording nobody has filled in yet — it still enforces, and the evidence says what it says",
-      "node": { "type": "consent", "role": "consent_text" },
-      "shown": ""
+      "node": {
+        "type": "consent",
+        "role": "consent_text"
+      },
+      "shown": "",
+      "anchor": null
+    },
+    {
+      "why": "an href outside the safe schemes: the renderer drops it and renders no anchor, so the evidence must not claim one was there",
+      "node": {
+        "type": "consent",
+        "text": "I agree and accept the %s.",
+        "link": {
+          "label": "privacy policy",
+          "href": "javascript:alert(1)"
+        }
+      },
+      "shown": "I agree and accept the.",
+      "anchor": null
+    },
+    {
+      "why": "a link with a resolved href and no label: the anchor renders, empty, so the placeholder is replaced by nothing and the space in front of it stays",
+      "node": {
+        "type": "consent",
+        "text": "I agree and accept the %s.",
+        "link": {
+          "label": "",
+          "href": "https://example.test/privacy/"
+        }
+      },
+      "shown": "I agree and accept the .",
+      "anchor": "https://example.test/privacy/"
     }
   ]
 }

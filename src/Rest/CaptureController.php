@@ -5,9 +5,11 @@ namespace WConvert\Rest;
 use WConvert\Lead\CaptureForm;
 use WConvert\Lead\LeadCapture;
 use WConvert\Lead\Refusal;
+use WConvert\Lead\RefusalCode;
 use WConvert\Optin\PublishedOptin;
 use WConvert\Optin\PublishedSet;
 use WConvert\Template\PolicyLink;
+use WConvert\Template\TemplateVocabulary;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -43,6 +45,7 @@ final class CaptureController
     public function __construct(
         private readonly PublishedSet $publishedSet,
         private readonly LeadCapture $capture,
+        private readonly TemplateVocabulary $vocabulary,
     ) {
     }
 
@@ -80,7 +83,10 @@ final class CaptureController
      */
     public function capture(WP_REST_Request $request)
     {
-        $optin = $this->publishedOptin((string) $request->get_param('optin_id'));
+        $optin = PublishedOptin::findInSet(
+            $this->publishedSet->all(),
+            (string) $request->get_param('optin_id')
+        );
 
         // An Optin that is not in the published set has no form this server
         // ever showed anyone, so there is nothing to validate a submission
@@ -99,7 +105,8 @@ final class CaptureController
         // was shown depends on whether this site has a privacy policy
         // (ADR 0032).
         $payload = PolicyLink::into($optin->payload, get_privacy_policy_url());
-        $result = CaptureForm::fromTemplate($payload['template'] ?? null)->validate(self::submitted($request));
+        $form = CaptureForm::fromTemplate($payload['template'] ?? null, $this->vocabulary);
+        $result = $form->validate(self::submitted($request));
 
         if ($result instanceof Refusal) {
             return self::refuse($result);
@@ -145,21 +152,6 @@ final class CaptureController
         return $body;
     }
 
-    private function publishedOptin(string $id): ?PublishedOptin
-    {
-        if ($id === '') {
-            return null;
-        }
-
-        foreach (PublishedOptin::fromSet($this->publishedSet->all()) as $optin) {
-            if ($optin->id === $id) {
-                return $optin;
-            }
-        }
-
-        return null;
-    }
-
     /**
      * A refusal, as something the form can render beside the input that caused
      * it.
@@ -171,7 +163,7 @@ final class CaptureController
     private static function refuse(Refusal $refusal): WP_Error
     {
         return new WP_Error(
-            $refusal->code,
+            $refusal->code->value,
             self::message($refusal),
             ['status' => 422, 'field' => $refusal->field]
         );
@@ -194,17 +186,18 @@ final class CaptureController
      */
     private static function message(Refusal $refusal): string
     {
-        if ($refusal->code === Refusal::NOT_CANONICAL) {
-            return $refusal->field === 'phone'
-                ? __('Please include your country code, like +12025551234.', 'wconvert')
-                : __('Please enter a valid email address.', 'wconvert');
-        }
-
+        // Exhaustive, with no `default` arm: a case added to {@see RefusalCode}
+        // and forgotten here throws rather than silently reading as "this form
+        // is not accepting submissions", which is the one wording that would
+        // send a visitor away for a fixable typo.
         return match ($refusal->code) {
-            Refusal::CONSENT_REQUIRED => __('Please tick the box to continue.', 'wconvert'),
-            Refusal::FIELD_REQUIRED => __('Please fill this in.', 'wconvert'),
-            Refusal::NO_IDENTIFIER => __('Please enter an email address or a phone number.', 'wconvert'),
-            default => __('This form is not accepting submissions.', 'wconvert'),
+            RefusalCode::NotCanonical => $refusal->field === 'phone'
+                ? __('Please include your country code, like +12025551234.', 'wconvert')
+                : __('Please enter a valid email address.', 'wconvert'),
+            RefusalCode::ConsentRequired => __('Please tick the box to continue.', 'wconvert'),
+            RefusalCode::FieldRequired => __('Please fill this in.', 'wconvert'),
+            RefusalCode::NoIdentifier => __('Please enter an email address or a phone number.', 'wconvert'),
+            RefusalCode::NothingToCapture => __('This form is not accepting submissions.', 'wconvert'),
         };
     }
 }

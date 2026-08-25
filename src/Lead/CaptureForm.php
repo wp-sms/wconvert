@@ -2,6 +2,9 @@
 
 namespace WConvert\Lead;
 
+use WConvert\Template\TemplateTree;
+use WConvert\Template\TemplateVocabulary;
+
 defined('ABSPATH') || exit;
 
 /**
@@ -29,10 +32,12 @@ final class CaptureForm
     /**
      * @param array<string, bool> $fields Field name => whether it is required.
      * @param array<string, mixed>|null $consent The `consent` node, or null where the Optin declares none.
+     * @param list<string> $schemes The schemes an `<a>` may carry, for composing the Consent Record.
      */
     private function __construct(
         private readonly array $fields,
         private readonly ?array $consent,
+        private readonly array $schemes,
     ) {
     }
 
@@ -50,9 +55,14 @@ final class CaptureForm
      * but the shape of a click-metered Optin, whose whole product is a message
      * and a link (ADR 0025).
      *
+     * The vocabulary is passed in rather than read here, the same arrangement
+     * {@see \WConvert\Optin\PublishedProjection} has: it is the manifest, and
+     * a class that reads a file off disk is no longer a pure function of its
+     * arguments.
+     *
      * @param mixed $template
      */
-    public static function fromTemplate($template): self
+    public static function fromTemplate($template, TemplateVocabulary $vocabulary): self
     {
         $template = is_array($template) ? $template : [];
         $tree = is_array($template['tree'] ?? null) ? $template['tree'] : [];
@@ -63,29 +73,29 @@ final class CaptureForm
                 $fields = [];
                 $consent = null;
 
-                self::read($step, $fields, $consent);
+                self::read($step, $fields, $consent, $vocabulary->fields());
 
-                return new self($fields, $consent);
+                return new self($fields, $consent, $vocabulary->schemes());
             }
         }
 
-        return new self([], null);
+        return new self([], null, $vocabulary->schemes());
     }
 
     /**
      * One submission, checked against what this form declares.
      *
-     * Returns a {@see Capture} or a {@see Refusal} rather than throwing,
+     * Returns a {@see Submission} or a {@see Refusal} rather than throwing,
      * because a refusal is an ordinary outcome the caller must render on
      * screen — the visitor is still on the page, and the form is the only
      * place they can fix it (ADR 0021).
      *
      * @param array<string, mixed> $submitted The posted body, whole.
      */
-    public function validate(array $submitted): Capture|Refusal
+    public function validate(array $submitted): Submission|Refusal
     {
         if ($this->fields === []) {
-            return new Refusal(Refusal::NOTHING_TO_CAPTURE);
+            return new Refusal(RefusalCode::NothingToCapture);
         }
 
         $consent = $this->consented($submitted);
@@ -107,7 +117,7 @@ final class CaptureForm
 
             if ($raw === '') {
                 if ($required) {
-                    return new Refusal(Refusal::FIELD_REQUIRED, $name);
+                    return new Refusal(RefusalCode::FieldRequired, $name);
                 }
 
                 continue;
@@ -126,7 +136,7 @@ final class CaptureForm
             // queued job minutes later, with nothing on screen having failed
             // (ADR 0021).
             if ($canonical === null) {
-                return new Refusal(Refusal::NOT_CANONICAL, $name);
+                return new Refusal(RefusalCode::NotCanonical, $name);
             }
 
             $identifiers[$name] = $canonical;
@@ -136,10 +146,10 @@ final class CaptureForm
         // and a Lead carrying neither can never be grouped by identifier,
         // which is the only identity this system has (ADR 0002, ADR 0021).
         if ($identifiers['email'] === null && $identifiers['phone'] === null) {
-            return new Refusal(Refusal::NO_IDENTIFIER);
+            return new Refusal(RefusalCode::NoIdentifier);
         }
 
-        return new Capture($identifiers['email'], $identifiers['phone'], $rest);
+        return new Submission($identifiers['email'], $identifiers['phone'], $rest);
     }
 
     /**
@@ -171,10 +181,18 @@ final class CaptureForm
         }
 
         if (($submitted['consent'] ?? null) !== true) {
-            return new Refusal(Refusal::CONSENT_REQUIRED, 'consent');
+            return new Refusal(RefusalCode::ConsentRequired, 'consent');
         }
 
-        return ['consent_text' => ConsentRecord::asShown($this->consent)];
+        $shown = ConsentRecord::asShown($this->consent, $this->schemes);
+
+        // **An empty sentence is not evidence, so it is not written.** ADR 0031
+        // names the failure exactly: "a Lead the schema says was consented,
+        // with nothing behind it". The consent still held — the node was
+        // declared and the box was ticked — but a `consent_text` of `''` in
+        // the export the merchant hands a regulator asserts an artefact that
+        // does not exist. Absent says the same thing honestly.
+        return $shown === '' ? [] : ['consent_text' => $shown];
     }
 
     /**
@@ -193,7 +211,7 @@ final class CaptureForm
             return ($node['action'] ?? null) !== 'link';
         }
 
-        foreach (self::childrenOf($node) as $child) {
+        foreach (TemplateTree::childrenOf($node) as $child) {
             if (is_array($child) && self::submits($child)) {
                 return true;
             }
@@ -208,16 +226,20 @@ final class CaptureForm
      * @param array<string, mixed> $node
      * @param array<string, bool> $fields
      * @param array<string, mixed>|null $consent
+     * @param list<string> $known What a `field` may capture, from the manifest.
      */
-    private static function read(array $node, array &$fields, ?array &$consent): void
+    private static function read(array $node, array &$fields, ?array &$consent, array $known): void
     {
         $type = $node['type'] ?? null;
         $name = $node['name'] ?? null;
 
-        // A field capturing nothing this build knows how to canonicalise is
-        // skipped, exactly as the renderer skips it — so the server never
-        // requires an input the browser never drew.
-        if ($type === 'field' && is_string($name) && in_array($name, ['email', 'name', 'phone'], true)) {
+        // A field naming something the manifest does not declare is skipped,
+        // exactly as the renderer skips it — so the server never requires an
+        // input the browser never drew. The list comes FROM the manifest
+        // rather than from a copy here, which is what stops the two answering
+        // differently; `tests/js/renderer-manifest-parity.test.ts` holds the
+        // renderer to the same file from its side (ADR 0010).
+        if ($type === 'field' && is_string($name) && in_array($name, $known, true)) {
             $fields[$name] = ($node['required'] ?? null) === true;
         }
 
@@ -229,30 +251,10 @@ final class CaptureForm
             $consent = $node;
         }
 
-        foreach (self::childrenOf($node) as $child) {
+        foreach (TemplateTree::childrenOf($node) as $child) {
             if (is_array($child)) {
-                self::read($child, $fields, $consent);
+                self::read($child, $fields, $consent, $known);
             }
         }
-    }
-
-    /**
-     * Every child of a layout node, whichever key it keeps them under.
-     * `split` is the one with two.
-     *
-     * @param array<string, mixed> $node
-     * @return list<mixed>
-     */
-    private static function childrenOf(array $node): array
-    {
-        $children = [];
-
-        foreach (['children', 'start', 'end'] as $key) {
-            if (is_array($node[$key] ?? null)) {
-                $children = array_merge($children, array_values($node[$key]));
-            }
-        }
-
-        return $children;
     }
 }

@@ -91,3 +91,34 @@ if (!function_exists('esc_url')) {
         return htmlspecialchars($url, ENT_QUOTES);
     }
 }
+
+/*
+ * REST route registration, recorded rather than performed.
+ *
+ * The capture route's `args` is deliberately almost empty: declaring
+ * `'type' => 'boolean'` for `consent` would run
+ * `rest_sanitize_value_from_schema`, which coerces `"true"`, `"on"` and `"1"`
+ * into `true` — and a lenient read is an optional consent checkbox by another
+ * name (ADR 0032). That is a property of the REGISTRATION, invisible to every
+ * test that goes through the form, so it needs a way to be asserted.
+ *
+ * @var list<array{namespace: string, route: string, args: array<mixed>}> $wconvertTestRoutes
+ */
+$GLOBALS['wconvertTestRoutes'] = [];
+
+if (!function_exists('register_rest_route')) {
+    /** @param array<mixed> $args */
+    function register_rest_route(string $namespace, string $route, array $args = []): bool
+    {
+        $GLOBALS['wconvertTestRoutes'][] = ['namespace' => $namespace, 'route' => $route, 'args' => $args];
+
+        return true;
+    }
+}
+
+if (!function_exists('__')) {
+    function __(string $text, string $domain = 'default'): string
+    {
+        return $text;
+    }
+}

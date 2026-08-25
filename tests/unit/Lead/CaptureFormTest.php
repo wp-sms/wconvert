@@ -5,10 +5,12 @@ namespace WConvert\Tests\Unit\Lead;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use WConvert\Lead\Capture;
+use WConvert\Lead\RefusalCode;
+use WConvert\Lead\Submission;
 use WConvert\Lead\CaptureForm;
 use WConvert\Lead\ConsentRecord;
 use WConvert\Lead\Refusal;
+use WConvert\Template\TemplateVocabulary;
 
 /**
  * What an Optin's published template DECLARES, and whether a submission
@@ -19,12 +21,15 @@ use WConvert\Lead\Refusal;
  * only place the guarantee lives.
  */
 #[CoversClass(CaptureForm::class)]
-#[CoversClass(Capture::class)]
+#[CoversClass(Submission::class)]
+#[CoversClass(RefusalCode::class)]
 #[CoversClass(ConsentRecord::class)]
 #[CoversClass(Refusal::class)]
 final class CaptureFormTest extends TestCase
 {
     private const CONSENT_TEXT = 'I agree to receive emails and accept the %s.';
+
+    private const PLUGIN_DIR = __DIR__ . '/../../..';
 
     /**
      * A submit-metered template: a form step and a terminal success step,
@@ -75,9 +80,13 @@ final class CaptureFormTest extends TestCase
      * @param array<string, mixed> $template
      * @param array<string, mixed> $submitted
      */
-    private static function validate(array $template, array $submitted): Capture|Refusal
+    private static function validate(array $template, array $submitted): Submission|Refusal
     {
-        return CaptureForm::fromTemplate($template)->validate($submitted);
+        // The REAL manifest, not a stub of one: what a `field` may capture and
+        // what schemes an `<a>` may carry are the manifest's answers, and a
+        // test that invented its own would stop noticing the day it changed.
+        return CaptureForm::fromTemplate($template, TemplateVocabulary::fromManifest(self::PLUGIN_DIR))
+            ->validate($submitted);
     }
 
     /**
@@ -121,6 +130,7 @@ final class CaptureFormTest extends TestCase
 
         $this->assertInstanceOf(Refusal::class, $refusal);
         $this->assertSame('consent', $refusal->field);
+        $this->assertSame(RefusalCode::ConsentRequired, $refusal->code);
     }
 
     public function testAConsentedSubmissionIsAccepted(): void
@@ -130,7 +140,7 @@ final class CaptureFormTest extends TestCase
             ['fields' => ['email' => 'sarah@example.com'], 'consent' => true]
         );
 
-        $this->assertInstanceOf(Capture::class, $capture);
+        $this->assertInstanceOf(Submission::class, $capture);
         $this->assertSame('sarah@example.com', $capture->email);
     }
 
@@ -154,6 +164,7 @@ final class CaptureFormTest extends TestCase
 
         $this->assertInstanceOf(Refusal::class, $refusal);
         $this->assertSame('consent', $refusal->field);
+        $this->assertSame(RefusalCode::ConsentRequired, $refusal->code);
     }
 
     /**
@@ -164,7 +175,7 @@ final class CaptureFormTest extends TestCase
     {
         $capture = self::validate(self::template(), ['fields' => ['email' => 'sarah@example.com']]);
 
-        $this->assertInstanceOf(Capture::class, $capture);
+        $this->assertInstanceOf(Submission::class, $capture);
         $this->assertArrayNotHasKey('consent_text', $capture->fields);
     }
 
@@ -182,7 +193,7 @@ final class CaptureFormTest extends TestCase
             'consent_text' => 'I agreed to absolutely nothing',
         ]);
 
-        $this->assertInstanceOf(Capture::class, $capture);
+        $this->assertInstanceOf(Submission::class, $capture);
         $this->assertSame(
             'I agree to receive emails and accept the privacy policy.',
             $capture->fields['consent_text']
@@ -201,7 +212,7 @@ final class CaptureFormTest extends TestCase
             'consent' => true,
         ]);
 
-        $this->assertInstanceOf(Capture::class, $capture);
+        $this->assertInstanceOf(Submission::class, $capture);
         $this->assertSame('I agree to receive emails and accept the.', $capture->fields['consent_text']);
     }
 
@@ -219,7 +230,7 @@ final class CaptureFormTest extends TestCase
 
         $capture = self::validate($template, ['fields' => ['email' => 'sarah@example.com']]);
 
-        $this->assertInstanceOf(Capture::class, $capture);
+        $this->assertInstanceOf(Submission::class, $capture);
         $this->assertNull($capture->phone);
     }
 
@@ -251,7 +262,7 @@ final class CaptureFormTest extends TestCase
             'fields' => ['email' => ' Sarah@Example.COM ', 'phone' => '+1 (202) 555-1234'],
         ]);
 
-        $this->assertInstanceOf(Capture::class, $capture);
+        $this->assertInstanceOf(Submission::class, $capture);
         $this->assertSame('sarah@example.com', $capture->email);
         $this->assertSame('+12025551234', $capture->phone);
     }
@@ -269,7 +280,7 @@ final class CaptureFormTest extends TestCase
             'fields' => ['email' => 'sarah@example.com', 'name' => 'Sarah'],
         ]);
 
-        $this->assertInstanceOf(Capture::class, $capture);
+        $this->assertInstanceOf(Submission::class, $capture);
         $this->assertSame(['name' => 'Sarah'], $capture->fields);
     }
 
@@ -284,7 +295,7 @@ final class CaptureFormTest extends TestCase
             'fields' => ['email' => 'sarah@example.com', 'phone' => '+12025551234', 'nickname' => 'Sar'],
         ]);
 
-        $this->assertInstanceOf(Capture::class, $capture);
+        $this->assertInstanceOf(Submission::class, $capture);
         $this->assertNull($capture->phone);
         $this->assertSame([], $capture->fields);
     }

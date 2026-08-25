@@ -6,6 +6,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use WConvert\Lead\ConsentRecord;
+use WConvert\Template\TemplateVocabulary;
 
 /**
  * The server's half of the consent-sentence parity.
@@ -57,6 +58,11 @@ final class ConsentSentenceParityTest extends TestCase
     #[DataProvider('sentences')]
     public function testTheRecordIsTheSentenceTheVisitorRead(array $node, string $shown): void
     {
-        $this->assertSame($shown, ConsentRecord::asShown($node));
+        // The schemes come from the same manifest the renderer's own parity
+        // test reads, so "which hrefs render an anchor" has one answer on both
+        // sides rather than two that agree today.
+        $schemes = TemplateVocabulary::fromManifest(__DIR__ . '/../../..')->schemes();
+
+        $this->assertSame($shown, ConsentRecord::asShown($node, $schemes));
     }
 }

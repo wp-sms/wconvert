@@ -103,7 +103,8 @@ final class CoreServiceProvider implements ServiceProvider
             CaptureController::class,
             static fn (ServiceContainer $c): CaptureController => new CaptureController(
                 $c->resolve(PublishedSet::class),
-                $c->resolve(LeadCapture::class)
+                $c->resolve(LeadCapture::class),
+                $c->resolve(TemplateVocabulary::class)
             )
         );
 
@@ -135,9 +136,11 @@ final class CoreServiceProvider implements ServiceProvider
 
         $container->resolve(OptinController::class)->hooks();
         $container->resolve(TemplateController::class)->hooks();
-        // Registered on every request, admin included. `rest_api_init` fires
-        // for admin-ajax-adjacent contexts too, and a route that exists only
-        // on the front end is a route that 404s exactly where a test tries it.
+        // Registered on every request, admin included, and NOT behind the
+        // `is_admin()` guard the loader sits behind. A REST route has to exist
+        // wherever `rest_api_init` fires or it does not exist at all — and the
+        // visitor posting a capture is on a page WordPress may serve through
+        // any entry point.
         $container->resolve(CaptureController::class)->hooks();
 
         if (!is_admin()) {

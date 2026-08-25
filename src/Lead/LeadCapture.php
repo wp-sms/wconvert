@@ -38,9 +38,9 @@ final class LeadCapture
     ) {
     }
 
-    public function record(string $optinId, Capture $capture): Lead
+    public function record(string $optinId, Submission $submission): Lead
     {
-        $lead = $this->leads->record($optinId, $capture);
+        $lead = $this->leads->record($optinId, $submission);
 
         // **A Destination can fail without the capture failing** (ADR 0007),
         // and the capture is already complete — so a handler that throws must

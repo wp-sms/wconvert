@@ -49,6 +49,35 @@ final class PublishedOptin
     }
 
     /**
+     * One entry of the set, by id — or null where it is not in it.
+     *
+     * Beside {@see self::fromSet()} because it is the same act narrowed: the
+     * set is stored as plain arrays, so finding one means parsing, and the
+     * parse belongs here rather than at a caller that would then be reaching
+     * into `$projection['id']` itself (ADR 0005).
+     *
+     * The scan is linear over an option the front end already reads whole on
+     * every uncached page view; a keyed lookup would be a second shape of the
+     * published set to keep in step, which is exactly what ADR 0003 refuses.
+     *
+     * @param iterable<array<string, mixed>> $set
+     */
+    public static function findInSet(iterable $set, string $id): ?self
+    {
+        if ($id === '') {
+            return null;
+        }
+
+        foreach (self::fromSet($set) as $optin) {
+            if ($optin->id === $id) {
+                return $optin;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * @param array<string, mixed> $projection
      */
     public static function fromProjection(array $projection): ?self

@@ -5,7 +5,7 @@ namespace WConvert\Tests\Unit\Lead;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use WConvert\Database\Connection;
-use WConvert\Lead\Capture;
+use WConvert\Lead\Submission;
 use WConvert\Lead\Lead;
 use WConvert\Lead\LeadCapture;
 use WConvert\Lead\LeadRepository;
@@ -28,6 +28,7 @@ use WConvert\Tests\Unit\Optin\FakeConnection;
 #[CoversClass(LeadCapture::class)]
 #[CoversClass(LeadRepository::class)]
 #[CoversClass(Lead::class)]
+#[CoversClass(Submission::class)]
 final class LeadCaptureTest extends TestCase
 {
     private const OPTIN = '01JQ0000000000000000000001';
@@ -37,9 +38,9 @@ final class LeadCaptureTest extends TestCase
         remove_all_actions(LeadCapture::CAPTURED);
     }
 
-    private static function capture(): Capture
+    private static function submission(): Submission
     {
-        return new Capture('sarah@example.com', null, ['name' => 'Sarah']);
+        return new Submission('sarah@example.com', null, ['name' => 'Sarah']);
     }
 
     /**
@@ -65,7 +66,7 @@ final class LeadCaptureTest extends TestCase
             $seen = self::leadRows($db);
         });
 
-        $lead = (new LeadCapture(new LeadRepository($db)))->record(self::OPTIN, self::capture());
+        $lead = (new LeadCapture(new LeadRepository($db)))->record(self::OPTIN, self::submission());
 
         $this->assertCount(1, $seen);
         $this->assertSame($lead->id, $seen[0]['id']);
@@ -89,7 +90,7 @@ final class LeadCaptureTest extends TestCase
         $previous = (string) ini_set('error_log', $log);
 
         try {
-            $lead = (new LeadCapture(new LeadRepository($db)))->record(self::OPTIN, self::capture());
+            $lead = (new LeadCapture(new LeadRepository($db)))->record(self::OPTIN, self::submission());
         } finally {
             ini_set('error_log', $previous);
         }
@@ -120,8 +121,8 @@ final class LeadCaptureTest extends TestCase
         $db = new FakeConnection();
         $capture = new LeadCapture(new LeadRepository($db));
 
-        $first = $capture->record(self::OPTIN, self::capture());
-        $second = $capture->record(self::OPTIN, self::capture());
+        $first = $capture->record(self::OPTIN, self::submission());
+        $second = $capture->record(self::OPTIN, self::submission());
 
         $rows = self::leadRows($db);
 
@@ -141,7 +142,7 @@ final class LeadCaptureTest extends TestCase
     {
         $db = new FakeConnection();
 
-        (new LeadCapture(new LeadRepository($db)))->record(self::OPTIN, self::capture());
+        (new LeadCapture(new LeadRepository($db)))->record(self::OPTIN, self::submission());
 
         $written = self::leadRows($db)[0];
 
@@ -154,6 +155,24 @@ final class LeadCaptureTest extends TestCase
     }
 
     /**
+     * A Lead that captured nothing but its identifier still writes a JSON
+     * OBJECT. PHP decodes `[]` and `{}` to the same empty array and would
+     * never notice, but the column is an object of captured values and #25's
+     * export reads it as one.
+     */
+    public function testAnEmptyFieldsColumnIsAnObjectAndNotAnArray(): void
+    {
+        $db = new FakeConnection();
+
+        (new LeadCapture(new LeadRepository($db)))->record(
+            self::OPTIN,
+            new Submission('sarah@example.com', null, [])
+        );
+
+        $this->assertSame('{}', self::leadRows($db)[0]['fields']);
+    }
+
+    /**
      * The [[Consent Record]] rides in the existing `fields` JSON — no new
      * column, and no second timestamp, because `created_at` already is one to
      * the same second (ADR 0032).
@@ -161,12 +180,12 @@ final class LeadCaptureTest extends TestCase
     public function testEverythingThatIsNotAnIdentityKeyTravelsInTheFieldsJson(): void
     {
         $db = new FakeConnection();
-        $capture = new Capture('sarah@example.com', '+12025551234', [
+        $submission = new Submission('sarah@example.com', '+12025551234', [
             'name' => 'Sarah',
             'consent_text' => 'I agree to receive emails.',
         ]);
 
-        (new LeadCapture(new LeadRepository($db)))->record(self::OPTIN, $capture);
+        (new LeadCapture(new LeadRepository($db)))->record(self::OPTIN, $submission);
 
         $written = self::leadRows($db)[0];
 

@@ -24,6 +24,8 @@ interface Case {
   readonly why: string;
   readonly node: TemplateNode;
   readonly shown: string;
+  /** The href the rendered anchor must carry, or null where no anchor renders. */
+  readonly anchor: string | null;
 }
 
 const FIXTURE = resolve(import.meta.dirname, '../fixtures/consent-sentences.json');
@@ -37,15 +39,16 @@ describe('the consent sentence, as the renderer draws it', () => {
   });
 
   /**
-   * The other half of "no dead `#`": with no href resolved there is no anchor
-   * at all, not an anchor pointing nowhere (ADR 0032).
+   * The other half of "no dead `#`": where the link has no resolved
+   * destination there is no anchor AT ALL, rather than an anchor pointing
+   * nowhere (ADR 0032). Declared per case rather than inferred from the
+   * sentence, because an anchor with an empty label renders and contributes
+   * no words to it.
    */
-  it('renders no anchor where the sentence carries no resolved link', () => {
-    for (const { node, shown } of cases) {
-      const root = render({ steps: [{ type: 'stack', children: [node] }] }, {});
-      const anchor = root.querySelector('.wc-consent-text a');
+  it.each(cases)('anchor — $why', ({ node, anchor }) => {
+    const root = render({ steps: [{ type: 'stack', children: [node] }] }, {});
+    const rendered = root.querySelector<HTMLAnchorElement>('.wc-consent-text a');
 
-      expect(anchor === null).toBe(!shown.includes('privacy policy'));
-    }
+    expect(rendered?.getAttribute('href') ?? null).toBe(anchor);
   });
 });

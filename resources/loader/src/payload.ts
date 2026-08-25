@@ -20,15 +20,11 @@ export const PAYLOAD_ELEMENT_ID = 'wconvert-payload';
 /**
  * Where the capture endpoint is on this site.
  *
- * It rides on the payload element as an attribute rather than inside the JSON,
- * because it is one fact about the SITE and the JSON is a list of facts about
- * Optins — repeating it per entry would pay for it as many times as the page
- * has Optins, against a 2KB budget.
- *
- * The loader cannot compute it. It is a raw IIFE with no `wp-api-fetch` and no
- * `wpApiSettings`, deliberately, because either would put a second script on
- * the page (ADR 0004) — so the full route arrives from PHP, spelled there and
- * nowhere else.
+ * The reasoning for it being an attribute rather than a JSON field is written
+ * once, on `PayloadTag::CAPTURE_ATTRIBUTE`, which is the side that prints it.
+ * What matters here: the loader cannot compute this. It is a raw IIFE with no
+ * `wp-api-fetch` and no `wpApiSettings`, deliberately (ADR 0004), so the full
+ * route arrives from PHP and a route name is never spelled in TypeScript.
  */
 export const CAPTURE_ATTRIBUTE = 'data-capture';
 

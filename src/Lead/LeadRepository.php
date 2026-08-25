@@ -38,14 +38,14 @@ final class LeadRepository
      * because it is the [[Consent Record]]'s timestamp — there is no second
      * one (ADR 0002, ADR 0032).
      */
-    public function record(string $optinId, Capture $capture): Lead
+    public function record(string $optinId, Submission $submission): Lead
     {
         $lead = new Lead(
             Ulid::generate(),
             $optinId,
-            $capture->email,
-            $capture->phone,
-            $capture->fields,
+            $submission->email,
+            $submission->phone,
+            $submission->fields,
             current_time('mysql')
         );
 
@@ -54,7 +54,12 @@ final class LeadRepository
             'optin_id' => $lead->optinId,
             'email' => $lead->email,
             'phone' => $lead->phone,
-            'fields' => (string) wp_json_encode($lead->fields),
+            // Cast, so an empty `fields` is `{}` and not `[]`. PHP decodes
+            // both to the same empty array and would never notice, but the
+            // column is a JSON OBJECT of captured values and #25's export
+            // reads it as one — a row that is silently a different JSON type
+            // from its neighbours is the kind of thing found much later.
+            'fields' => (string) wp_json_encode((object) $lead->fields),
             'created_at' => $lead->createdAt,
         ]);
 
