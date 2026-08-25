@@ -34,7 +34,9 @@ final class Schema
      */
     public static function sql(string $prefix, string $charsetCollate): string
     {
-        return self::optins($prefix, $charsetCollate) . self::leads($prefix, $charsetCollate);
+        return self::optins($prefix, $charsetCollate)
+            . self::leads($prefix, $charsetCollate)
+            . self::stats($prefix, $charsetCollate);
     }
 
     /**
@@ -119,6 +121,58 @@ created_at DATETIME NOT NULL,
 PRIMARY KEY  (id),
 KEY idx_email (email),
 KEY idx_phone (phone)
+) {$charsetCollate};\n";
+    }
+
+    /**
+     * `wconvert_stats` — the whole of analytics, as daily counters.
+     *
+     * **There is no event table** (ADR 0019). A modest site — 10k pageviews a
+     * day, one popup sitewide — writes ~3.65M raw rows a year; the same site as
+     * daily counters, at 20 active Optins across four kinds, writes ~29k, and
+     * the index stays in the buffer pool permanently. That gap is not close at
+     * any site size a wp.org plugin will meet, and the price of it is written
+     * down rather than hidden: **you can never recompute**, and there is no
+     * hour-of-day breakdown, ever.
+     *
+     * ========================================================================
+     * THE PRIMARY KEY IS THE MECHANISM, NOT DECORATION.
+     * ========================================================================
+     * `(optin_id, stat_date, kind)` is what makes
+     * `INSERT ... ON DUPLICATE KEY UPDATE count = count + 1` atomic at the
+     * database: no increment is ever lost, and there is no read-modify-write
+     * race to reason about. It also serves the dashboard's only query shape —
+     * an id set, a date range, grouped by kind — which is why this table has
+     * **no secondary index and no surrogate `id`**. A surrogate would make the
+     * upsert express nothing at all.
+     *
+     * A row carries **no `goal`, no `had_email`, no `had_phone` and no display
+     * type** (ADR 0020). Whether a Conversion carried an email is a property of
+     * the Optin's form rather than of the moment, so it is constant across
+     * every row that Optin will ever produce — and the join interpretation
+     * needs is to `wconvert_optins`, which is soft-deleted and never erased.
+     * That is also why an Optin must never be hard-deleted: a removed row makes
+     * every count referencing it uninterpretable.
+     *
+     * `kind` is `VARCHAR(32)` and not an `ENUM`, though it is a closed set of
+     * four. The set is closed in PHP by {@see \WConvert\Stats\StatKind}, where
+     * adding a case is a code change a reviewer reads; as an `ENUM` it would be
+     * a schema change, which is the more expensive half of the same edit and
+     * buys nothing the enum does not already enforce.
+     *
+     * `stat_date` is a `DATE` in the **site's** timezone, not UTC, because the
+     * dashboard says "Today" and that has to mean the merchant's today
+     * ({@see \WConvert\Stats\StatDay}). `count` is `INT UNSIGNED`: 4.29 billion
+     * of one kind on one Optin in one day is not a number to plan for.
+     */
+    private static function stats(string $prefix, string $charsetCollate): string
+    {
+        return "CREATE TABLE {$prefix}wconvert_stats (
+optin_id CHAR(26) NOT NULL,
+stat_date DATE NOT NULL,
+kind VARCHAR(32) NOT NULL,
+count INT UNSIGNED NOT NULL DEFAULT 0,
+PRIMARY KEY  (optin_id,stat_date,kind)
 ) {$charsetCollate};\n";
     }
 }

@@ -26,3 +26,15 @@ defined('WCONVERT_MAIN_FILE') || define('WCONVERT_MAIN_FILE', __DIR__ . '/wconve
 // any plugin file runs, so analysis has to see them as defined too.
 defined('HOUR_IN_SECONDS') || define('HOUR_IN_SECONDS', 3600);
 defined('DAY_IN_SECONDS') || define('DAY_IN_SECONDS', 86400);
+
+/*
+ * The database credentials wp-config.php defines.
+ *
+ * `bin/verify-stats.php` opens a SECOND connection with them — the concurrency
+ * check needs two, and `wpdb` keeps its own handle protected — so analysis has
+ * to see them as defined for the same reason it has to see ABSPATH.
+ */
+defined('DB_NAME') || define('DB_NAME', 'wordpress');
+defined('DB_USER') || define('DB_USER', 'root');
+defined('DB_PASSWORD') || define('DB_PASSWORD', '');
+defined('DB_HOST') || define('DB_HOST', 'localhost');

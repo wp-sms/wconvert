@@ -1,0 +1,133 @@
+<?php
+
+namespace WConvert\Tests\Unit\Stats;
+
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\TestCase;
+use WConvert\Database\Connection;
+use WConvert\Stats\StatKind;
+use WConvert\Stats\StatsRepository;
+use WConvert\Tests\Unit\Support\FakeConnection;
+
+/**
+ * The one write, and the statement it issues.
+ *
+ * ============================================================================
+ * THIS FILE CANNOT PROVE THE COUNTING, AND DOES NOT TRY.
+ * ============================================================================
+ * {@see FakeConnection} records the upsert and does not apply it, deliberately:
+ * a fake that added up the increments itself would be the authority on what
+ * `ON DUPLICATE KEY UPDATE` does, and the tests would then agree with that file
+ * rather than with MySQL. The atomicity is the whole justification for the
+ * table's shape, so it is proven where it can be — `bin/verify-stats.php`
+ * fires two increments concurrently on two connections against a real MySQL,
+ * and includes a deliberate read-modify-write control that loses one, so the
+ * check is known to be able to fail.
+ *
+ * What is provable here is the statement: that it is ONE, that it is an upsert
+ * rather than an insert-then-update, that the count is a literal `1` rather
+ * than anything a caller passed, and that nothing else in this repository can
+ * write to the table.
+ */
+#[CoversClass(StatsRepository::class)]
+final class StatsRepositoryTest extends TestCase
+{
+    private const OPTIN = '01JQ0000000000000000000001';
+
+    private FakeConnection $db;
+
+    private StatsRepository $stats;
+
+    protected function setUp(): void
+    {
+        $this->db = new FakeConnection();
+        $this->stats = new StatsRepository($this->db);
+    }
+
+    public function testCountingAnActIsOneStatementAgainstTheCounters(): void
+    {
+        $this->stats->increment(self::OPTIN, StatKind::Impression, '2026-03-04');
+
+        $this->assertCount(1, $this->db->upserts);
+        $this->assertCount(1, $this->db->statements);
+        $this->assertSame(Connection::TABLE_STATS, $this->db->upserts[0]['table']);
+    }
+
+    /**
+     * **An upsert, not an insert and then an update.**
+     *
+     * Two statements would be a read-modify-write with a race between them,
+     * which is exactly what the composite primary key exists to make
+     * unnecessary (ADR 0019). The `%i` is the table, bound by
+     * {@see \WConvert\Database\WpdbConnection}, so the name is escaped by the
+     * same machinery that escapes values and never concatenated in.
+     */
+    public function testTheStatementIsASingleAtomicUpsert(): void
+    {
+        $this->stats->increment(self::OPTIN, StatKind::Conversion, '2026-03-04');
+
+        $sql = $this->db->upserts[0]['sql'];
+
+        $this->assertStringStartsWith('INSERT INTO %i', $sql);
+        $this->assertStringContainsString('ON DUPLICATE KEY UPDATE', $sql);
+        $this->assertStringContainsString('`count` = `count` + 1', $sql);
+    }
+
+    /**
+     * **The increment is a literal one, and nothing reaches it from outside.**
+     *
+     * The endpoint is public, so a count a caller could influence is a count a
+     * caller could set — and the counters can never be recomputed, so a wrong
+     * number is wrong permanently (ADR 0019).
+     */
+    public function testTheIncrementIsAlwaysOne(): void
+    {
+        $this->stats->increment(self::OPTIN, StatKind::Dismiss, '2026-03-04');
+
+        $this->assertStringContainsString('VALUES (%s, %s, %s, 1)', $this->db->upserts[0]['sql']);
+        $this->assertSame([self::OPTIN, '2026-03-04', 'dismiss'], $this->db->upserts[0]['params']);
+    }
+
+    /**
+     * The date is HANDED IN. This class has no clock and no timezone, which is
+     * what makes "the site's day" one question answered once at the request
+     * boundary rather than a stub every test has to agree with
+     * ({@see \WConvert\Stats\StatDay}).
+     */
+    public function testTheDayIsWhateverItWasGiven(): void
+    {
+        $this->stats->increment(self::OPTIN, StatKind::Impression, '2026-12-31');
+
+        $this->assertSame('2026-12-31', $this->db->upserts[0]['params'][1]);
+    }
+
+    /**
+     * The kind travels as its own string, so what lands in the column is the
+     * enum's value and never a case name.
+     */
+    public function testEveryKindWritesItsOwnValue(): void
+    {
+        foreach (StatKind::cases() as $kind) {
+            $this->stats->increment(self::OPTIN, $kind, '2026-03-04');
+        }
+
+        $this->assertSame(
+            ['impression', 'conversion', 'dismiss', 'lead_magnet_delivered'],
+            array_map(static fn (array $upsert): string => (string) $upsert['params'][2], $this->db->upserts)
+        );
+    }
+
+    /**
+     * **No insert, no update, no delete.** The upsert is the only write this
+     * table takes, and a second write path would be a second place for the
+     * count to be wrong (ADR 0019).
+     */
+    public function testNothingElseWritesToTheCounters(): void
+    {
+        $this->stats->increment(self::OPTIN, StatKind::Impression, '2026-03-04');
+
+        $this->assertSame([], $this->db->writes);
+        $this->assertSame([], $this->db->deletes);
+        $this->assertSame([], $this->db->reads);
+    }
+}

@@ -30,6 +30,27 @@ reason about, and there is no rollup job — the Action Scheduler dependency
 [ADR 0007](0007-destinations-are-outbound-and-fallible.md) makes available is
 simply not needed here.
 
+*Corrected by [ADR 0007](0007-destinations-are-outbound-and-fallible.md): that
+sentence read as though 0007 had already bundled Action Scheduler. It has not,
+and nothing yet has — WConvert has no runtime Composer dependency at all, and
+the queue arrives with the Destination dispatch in
+[#30](https://github.com/navidkashani/wconvert/issues/30). The conclusion here
+is unaffected, because what this ADR needs from that dependency is nothing:
+there is no rollup job.*
+
+*Built by [#26](https://github.com/navidkashani/wconvert/issues/26), which is
+also where the atomicity stopped being a claim.
+[`Connection::upsert()`](../../src/Database/Connection.php) is the one method
+that can express this statement, guarded so it refuses SQL that does not begin
+`INSERT INTO %i` — the second widening of an interface that deliberately offers
+no raw `query()`, on the same pattern as `delete()`. And because "the database
+does it" is a claim about MySQL rather than about PHP,
+[`bin/verify-stats.php`](../../bin/verify-stats.php) fires two increments
+concurrently on two connections, with the second blocking on the row lock the
+first holds, and asserts the count is two — then runs the same two increments as
+a read-modify-write, **which loses one**, so the check is known to be able to
+fail.*
+
 The primary key is the mechanism, not decoration: `(optin_id, stat_date, kind)`
 is what makes the upsert atomic, and it serves the dashboard's only query shape —
 an id set, a date range, grouped by kind — with no secondary index and no
@@ -72,11 +93,32 @@ surrogate `id`.
   ([0005](0005-the-rule-model-is-three-flat-closed-axes.md),
   [0012](0012-degradation-substitutes-triggers-and-drops-conditions.md),
   [0015](0015-enforcement-is-by-non-registration.md)).
+  *Completed by [#26](https://github.com/navidkashani/wconvert/issues/26) as a
+  PHP `enum` ([`StatKind`](../../src/Stats/StatKind.php)) over a `VARCHAR(32)`
+  column rather than a database `ENUM`: adding a case should be a code change a
+  reviewer reads, not a migration. And the beacon accepts **three of the four**.
+  `lead_magnet_delivered` records an act a browser cannot have watched, so an
+  endpoint that is public by necessity must not take its word for it — otherwise
+  `conversions − lead_magnet_delivered`, the delivery failure count
+  [ADR 0020](0020-conversions-are-interpreted-at-read.md) names, is a number
+  anybody can set.*
 - **`stat_date` is a `DATE` in the site's timezone**, not UTC. The dashboard is
   the only consumer and it says "Today", which has to mean the merchant's today.
   A merchant who later changes their site timezone does not retro-fix old rows;
   that seam is preferable to every merchant east of London reading their day
   split across two rows forever.
+  *Completed by [#26](https://github.com/navidkashani/wconvert/issues/26) as a
+  **boundary rather than a stub**. The arithmetic is
+  [`StatDay::of()`](../../src/Stats/StatDay.php) — pure, taking the zone as an
+  argument — and the day is computed once per request and passed down, so the
+  repository has no clock and no timezone. That shape was forced by the test
+  suite: `tests/bootstrap.php` answers `current_time()` and `get_date_from_gmt()`
+  as though the site were on UTC, deliberately and consistently with each other,
+  so a seam built on those stubs could not tell the site's day from UTC's and
+  would pass just as happily against code that got this wrong. The one line that
+  asks WordPress which zone the site is on is proven where a real
+  `timezone_string` can be set, in
+  [`bin/verify-stats.php`](../../bin/verify-stats.php).*
 - **`count` is `INT UNSIGNED`.** 4.29 billion of one kind on one Optin in one day
   is not a number to plan for.
 - **The beacon endpoint is hardened lightly and deliberately.** It validates
@@ -85,3 +127,24 @@ surrogate `id`.
   baked into a cached page is the same nonce for every visitor for the cache's
   lifetime, so it authenticates nothing. The loss from abuse is a wrong number on
   one merchant's dashboard, not data loss and not a breach.
+  *Corrected by [#26](https://github.com/navidkashani/wconvert/issues/26): there
+  was nothing to reuse. #11 described the shape — hash the IP into a short-lived
+  transient, never persist it, the way core does comment flood control — and #24
+  shipped the capture endpoint without one, so #26 BUILT it
+  ([`RateLimit`](../../src/Rest/RateLimit.php), over a new
+  [`TransientStore`](../../src/Storage/TransientStore.php) seam beside
+  `OptionStore`). It limits the beacon and **not** the capture endpoint, on
+  purpose: a beacon fires on every page view a published Optin matches while a
+  capture is one act a person performs rarely and cares about a great deal, and
+  one shared window would let ordinary beacon volume refuse the submission a
+  visitor was still on the page to fix.*
+  *Extended by the same ticket with the filtering this ADR did not name:
+  `Sec-Purpose`, bot user agent and `document.prerendering`, with **no
+  heuristics** — there is no identifier left on a stateless beacon to score a
+  suspicious request against, so a scoring pass would be a guess wearing a
+  number. The prerender half is a HOLD rather than a drop: nothing leaves while
+  `document.prerendering` is true, and the held events flush on
+  `prerenderingchange`, because a prerender the visitor goes on to open is a
+  page they looked at and an Impression by every definition the glossary offers.
+  Dropping it would undercount the denominator of conversion rate on every site
+  running speculation rules — which is the direction of error that flatters us.*

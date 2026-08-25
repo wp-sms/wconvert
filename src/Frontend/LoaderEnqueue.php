@@ -97,14 +97,15 @@ final class LoaderEnqueue
         // moves it above the payload and strips its `defer`, which is why the
         // loader retries after DOMContentLoaded (ADR 0004).
         $captureUrl = rest_url(Routes::NAMESPACE . '/capture');
+        $beaconUrl = rest_url(Routes::NAMESPACE . '/beacon');
 
-        add_action('wp_head', static function () use ($entries, $captureUrl): void {
+        add_action('wp_head', static function () use ($entries, $captureUrl, $beaconUrl): void {
             // Not escaped, and correctly so: PayloadTag renders JSON with
             // JSON_HEX_TAG, which is the escaping this context needs. Running
             // esc_html() over it would escape the quotes and produce invalid
-            // JSON. It escapes the capture URL itself, where the context is
-            // an attribute and esc_url is what that needs.
-            echo PayloadTag::render($entries, $captureUrl);
+            // JSON. It escapes the two route URLs itself, where the context
+            // is an attribute and esc_url is what that needs.
+            echo PayloadTag::render($entries, $captureUrl, $beaconUrl);
         }, 5);
     }
 

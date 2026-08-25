@@ -29,6 +29,16 @@ export const PAYLOAD_ELEMENT_ID = 'wconvert-payload';
 export const CAPTURE_ATTRIBUTE = 'data-capture';
 
 /**
+ * Where the analytics beacon is on this site.
+ *
+ * A second attribute for the same reasons as the first, and passed as a FULL
+ * route rather than as a namespace root: half a URL in an attribute plus half
+ * in TypeScript is "a route name is spelled in PHP and nowhere else" broken
+ * while looking like it is kept.
+ */
+export const BEACON_ATTRIBUTE = 'data-beacon';
+
+/**
  * Where to post a capture, or null where this page carries nowhere.
  *
  * Read on demand rather than threaded through `boot`, because it is needed at
@@ -37,7 +47,23 @@ export const CAPTURE_ATTRIBUTE = 'data-capture';
  * rewrote the tag, or a page that has no payload at all.
  */
 export function captureEndpoint(): string | null {
-  const endpoint = document.getElementById(PAYLOAD_ELEMENT_ID)?.getAttribute(CAPTURE_ATTRIBUTE) ?? '';
+  return endpointAt(CAPTURE_ATTRIBUTE);
+}
+
+/**
+ * Where to post a beacon, or null where this page carries nowhere.
+ *
+ * Null is a real answer and the beacon treats it as one: it becomes a beacon
+ * that reports nothing rather than a throw or a queue that grows forever. An
+ * optimizer that rewrote the tag must not take the page down with it
+ * (ADR 0004).
+ */
+export function beaconEndpoint(): string | null {
+  return endpointAt(BEACON_ATTRIBUTE);
+}
+
+function endpointAt(attribute: string): string | null {
+  const endpoint = document.getElementById(PAYLOAD_ELEMENT_ID)?.getAttribute(attribute) ?? '';
 
   return endpoint === '' ? null : endpoint;
 }

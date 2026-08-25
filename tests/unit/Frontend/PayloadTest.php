@@ -22,6 +22,8 @@ final class PayloadTest extends TestCase
     /** Where the capture endpoint is on this site, as `LoaderEnqueue` resolves it. */
     private const CAPTURE = 'https://example.test/wp-json/wconvert/v1/capture';
 
+    private const BEACON = 'https://example.test/wp-json/wconvert/v1/beacon';
+
     /**
      * Built from the STORED shape rather than by hand, so these tests keep
      * exercising the parse the front end actually does.
@@ -55,7 +57,7 @@ final class PayloadTest extends TestCase
         $entries = Payload::forRequest($set, $context);
 
         $this->assertSame([['id' => '01A', 'display_type' => 'popup']], $entries);
-        $this->assertStringNotContainsString('secret-staging-path', PayloadTag::render($entries, self::CAPTURE));
+        $this->assertStringNotContainsString('secret-staging-path', PayloadTag::render($entries, self::CAPTURE, self::BEACON));
     }
 
     /**
@@ -66,7 +68,7 @@ final class PayloadTest extends TestCase
      */
     public function testThePayloadTravelsAsAJsonScriptTag(): void
     {
-        $tag = PayloadTag::render([['id' => '01A', 'display_type' => 'popup']], self::CAPTURE);
+        $tag = PayloadTag::render([['id' => '01A', 'display_type' => 'popup']], self::CAPTURE, self::BEACON);
 
         $this->assertStringStartsWith('<script type="application/json" id="wconvert-payload" ', $tag);
         $this->assertStringEndsWith('</script>', $tag);
@@ -81,10 +83,24 @@ final class PayloadTest extends TestCase
      */
     public function testThePayloadCarriesWhereToPostACapture(): void
     {
-        $tag = PayloadTag::render([['id' => '01A', 'display_type' => 'popup']], self::CAPTURE);
+        $tag = PayloadTag::render([['id' => '01A', 'display_type' => 'popup']], self::CAPTURE, self::BEACON);
 
         $this->assertStringContainsString(sprintf('data-capture="%s"', self::CAPTURE), $tag);
         $this->assertSame(1, substr_count($tag, 'data-capture'));
+    }
+
+    /**
+     * And the beacon rides beside it, for the same reason and at the same
+     * cost: one fact about the site, once per page rather than once per
+     * Optin. The loader cannot compute this one either, and a namespace root
+     * it appended `/beacon` to would be a route name spelled in TypeScript.
+     */
+    public function testThePayloadCarriesWhereToPostABeacon(): void
+    {
+        $tag = PayloadTag::render([['id' => '01A', 'display_type' => 'popup']], self::CAPTURE, self::BEACON);
+
+        $this->assertStringContainsString(sprintf('data-beacon="%s"', self::BEACON), $tag);
+        $this->assertSame(1, substr_count($tag, 'data-beacon'));
     }
 
     /**
@@ -94,7 +110,7 @@ final class PayloadTest extends TestCase
      */
     public function testCopyContainingAClosingScriptTagCannotBreakOut(): void
     {
-        $tag = PayloadTag::render([['id' => '01A', 'headline' => '</script><script>alert(1)</script>']], self::CAPTURE);
+        $tag = PayloadTag::render([['id' => '01A', 'headline' => '</script><script>alert(1)</script>']], self::CAPTURE, self::BEACON);
 
         $this->assertSame(1, substr_count($tag, '</script>'));
         $this->assertStringNotContainsString('<script>alert', $tag);
@@ -106,7 +122,7 @@ final class PayloadTest extends TestCase
      */
     public function testNoMatchingOptinPrintsNothingAtAll(): void
     {
-        $this->assertSame('', PayloadTag::render([], self::CAPTURE));
+        $this->assertSame('', PayloadTag::render([], self::CAPTURE, self::BEACON));
     }
 
     /**

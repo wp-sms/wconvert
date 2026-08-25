@@ -58,6 +58,17 @@ value that identifies a browser rather than a person.
 - **[#12](https://github.com/navidkashani/wconvert/issues/12) may not reintroduce
   one.** If unique-visitor metrics are wanted later, they arrive as a Pro feature
   gated on `statistics` consent — never as a core default.
+  *Held by [#26](https://github.com/navidkashani/wconvert/issues/26), which built
+  the beacon and reintroduced nothing. What travels is
+  `{optin_id, kind}` — an id that is already public in the page's payload, and
+  one of three words — with no timestamp either, because the day is stamped from
+  the SERVER's clock and a client-supplied date on a public endpoint is a date
+  anyone can choose. The consequence is followed through: there is **no consent
+  gate on the beacon at all**, because there is nothing there a gate would be
+  protecting. The rate limit is the one place an address is touched, and it is
+  hashed with `wp_hash()` into a transient key and stored nowhere — asserted by
+  reading back the whole options table in
+  [`bin/verify-stats.php`](../../bin/verify-stats.php).*
 - **`Math.random()` would have been the wrong generator anyway.** Noting it so
   nobody "fixes" this ADR by reaching for `crypto.getRandomValues()`; the
   objection is to the identifier, not to its entropy.

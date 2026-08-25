@@ -12,14 +12,19 @@ use WConvert\Lead\LeadLog;
 use WConvert\Lead\LeadRepository;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
+use WConvert\Rest\BeaconController;
 use WConvert\Rest\CaptureController;
 use WConvert\Rest\LeadController;
 use WConvert\Rest\OptinController;
+use WConvert\Rest\RateLimit;
 use WConvert\Rest\TemplateController;
 use WConvert\Retention\RetentionPeriod;
 use WConvert\Rules\RuleVocabulary;
+use WConvert\Stats\StatsRepository;
 use WConvert\Storage\OptionStore;
+use WConvert\Storage\TransientStore;
 use WConvert\Storage\WpOptionStore;
+use WConvert\Storage\WpTransientStore;
 use WConvert\Support\ProPresence;
 use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
@@ -58,6 +63,11 @@ final class CoreServiceProvider implements ServiceProvider
         );
 
         $container->register(OptionStore::class, static fn (): OptionStore => new WpOptionStore());
+        // Beside the option store rather than folded into it: what goes
+        // here is a value whose whole meaning is that it expires, which is
+        // the opposite of the derived state ADR 0003 refuses to put in a
+        // transient.
+        $container->register(TransientStore::class, static fn (): TransientStore => new WpTransientStore());
 
         $container->register(
             Installer::class,
@@ -142,6 +152,25 @@ final class CoreServiceProvider implements ServiceProvider
         );
 
         $container->register(
+            StatsRepository::class,
+            static fn (ServiceContainer $c): StatsRepository => new StatsRepository($c->resolve(Connection::class))
+        );
+
+        $container->register(
+            RateLimit::class,
+            static fn (ServiceContainer $c): RateLimit => new RateLimit($c->resolve(TransientStore::class))
+        );
+
+        $container->register(
+            BeaconController::class,
+            static fn (ServiceContainer $c): BeaconController => new BeaconController(
+                $c->resolve(PublishedSet::class),
+                $c->resolve(StatsRepository::class),
+                $c->resolve(RateLimit::class)
+            )
+        );
+
+        $container->register(
             TemplateController::class,
             static fn (ServiceContainer $c): TemplateController => new TemplateController(
                 $c->resolve(TemplateLibrary::class)
@@ -175,6 +204,9 @@ final class CoreServiceProvider implements ServiceProvider
         // visitor posting a capture is on a page WordPress may serve through
         // any entry point.
         $container->resolve(CaptureController::class)->hooks();
+        // And the beacon, for the same reason: a route has to exist
+        // wherever `rest_api_init` fires or it does not exist at all.
+        $container->resolve(BeaconController::class)->hooks();
         $container->resolve(LeadController::class)->hooks();
 
         if (!is_admin()) {

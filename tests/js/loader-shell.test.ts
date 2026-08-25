@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { Beacon } from '@loader/beacon';
 import { createLoader } from '@loader/engine';
 import { FREE_MODULES } from '@loader/modules';
 import { start } from '@loader/shell';
@@ -317,5 +318,71 @@ describe('who spends the allowance', () => {
     expect(unseen.shown).toEqual(['a']);
 
     expect(pageView(entries, store, march1).presenter.shown).toEqual(['a']);
+  });
+});
+
+/**
+ * **Two records, one act.**
+ *
+ * The device's record answers "should this Optin show again here" and the
+ * site's counters answer "how is it doing" — neither is derivable from the
+ * other. The first is `functional` storage the visitor's consent never gates,
+ * because it exists to honour a choice they made by clicking close; the second
+ * is no storage on the device at all, because the beacon is stateless
+ * (ADR 0017).
+ */
+describe('what the site is told', () => {
+  /** A beacon that records rather than posts. */
+  function recordingBeacon(): Beacon & { reported: string[] } {
+    const reported: string[] = [];
+
+    return {
+      reported,
+      report: (id, kind) => void reported.push(`${id}:${kind}`),
+      flush: () => undefined,
+      stop: () => undefined,
+    };
+  }
+
+  it('reports every act the presenter reports, against the Optin it happened to', () => {
+    const beacon = recordingBeacon();
+    const presenter = recordingPresenter();
+
+    start({ loader, entries: [optin()], presenter, store: fakeStore(), now: () => march1, beacon });
+    presenter.convert('a');
+    presenter.dismiss('a');
+
+    expect(beacon.reported).toEqual(['a:impression', 'a:conversion', 'a:dismiss']);
+  });
+
+  /**
+   * A presenter that never reported the Impression — an `inline` Optin far
+   * below the fold that the visitor never scrolled to — tells the site nothing
+   * either. An Optin nobody saw has not been seen, and counting it would put a
+   * denominator under a conversion rate that never had a chance.
+   */
+  it('says nothing about an Optin that was never actually seen', () => {
+    const beacon = recordingBeacon();
+
+    start({ loader, entries: [optin()], presenter: silentPresenter(), store: fakeStore(), now: () => march1, beacon });
+
+    expect(beacon.reported).toEqual([]);
+  });
+
+  /**
+   * The listeners come off the moment every candidate is settled — on a page
+   * with one `page_load` Optin that is immediately — and the Conversion has not
+   * happened yet at that point. So teardown must not take the beacon with it.
+   */
+  it('still reports a Conversion after the rule listeners have been torn down', () => {
+    const beacon = recordingBeacon();
+    const presenter = recordingPresenter();
+
+    const stop = start({ loader, entries: [optin()], presenter, store: fakeStore(), now: () => march1, beacon });
+
+    stop();
+    presenter.convert('a');
+
+    expect(beacon.reported).toContain('a:conversion');
   });
 });
