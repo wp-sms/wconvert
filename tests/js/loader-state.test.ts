@@ -132,12 +132,20 @@ describe('frequency capping across days', () => {
   });
 
   /**
-   * Converting is the strongest "stop showing me this" a visitor can give, so
-   * it is the one cap that is on unless a merchant turns it off.
+   * Dismissing and converting are the two things a visitor DOES that mean
+   * "stop showing me this", so both caps are on unless a merchant turns them
+   * off. The two numbers are pacing decisions and default off.
    */
-  it('stops after a conversion unless the merchant said otherwise', () => {
+  it('stops after a dismissal or a conversion unless the merchant said otherwise', () => {
+    expect(isAllowed(undefined, { d: 1 }, 0)).toBe(false);
+    expect(isAllowed({ stopAfterDismiss: false }, { d: 1 }, 0)).toBe(true);
+
     expect(isAllowed(undefined, { c: 1 }, 0)).toBe(false);
     expect(isAllowed({ stopAfterConversion: false }, { c: 1 }, 0)).toBe(true);
+  });
+
+  it('caps nothing by number until a merchant asks for one', () => {
+    expect(isAllowed(undefined, { i: 99, l: 0 }, 20_000)).toBe(true);
   });
 
   it('allows an Optin this device has never seen', () => {

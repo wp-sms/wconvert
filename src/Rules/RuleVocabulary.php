@@ -68,21 +68,41 @@ final class RuleVocabulary
 
     /**
      * The same rule list, with everything {@see self::partition()} would drop
-     * already gone — and still flat.
+     * already gone — still flat, and still in the merchant's order.
      *
      * Called on the way IN, so an unrecognised rule cannot sit in `config`
      * until the day someone publishes it. The vocabulary names BOTH tiers, so
      * nothing dropped here is a premium rule an install merely lacks the code
      * for; what is dropped is a typo.
      *
+     * It filters rather than partitioning and re-flattening. Re-flattening
+     * would silently reorder a merchant's rules into triggers-then-conditions
+     * on every save, and the rule list is a screen they look at.
+     *
      * @param mixed $rules
      * @return list<array<string, mixed>>
      */
     public function normalize($rules): array
     {
-        $partitioned = $this->partition($rules);
+        if (!is_array($rules)) {
+            return [];
+        }
 
-        return [...$partitioned['triggers'], ...$partitioned['conditions']];
+        $kept = [];
+
+        foreach ($rules as $rule) {
+            if (is_array($rule) && is_string($rule['type'] ?? null) && $this->isClientRule($rule['type'])) {
+                /** @var array<string, mixed> $rule */
+                $kept[] = $rule;
+            }
+        }
+
+        return $kept;
+    }
+
+    private function isClientRule(string $type): bool
+    {
+        return in_array($this->kindOf($type), [RuleKind::Trigger, RuleKind::Condition], true);
     }
 
     /**
@@ -92,9 +112,10 @@ final class RuleVocabulary
      *
      * - **A type the manifest does not declare.** The vocabulary is closed, so
      *   an unknown type is a mistake, not an extension — and a stray CONDITION
-     *   reaching the payload would fail shut in the evaluator and suspend the
-     *   Optin for a reason that is a bug rather than a missing dependency
-     *   (ADR 0029).
+     *   reaching the payload would fail shut in the evaluator, so the Optin
+     *   would never show and nothing would say why. Not a [[Suspended]] Optin,
+     *   which is a state with a cause the merchant can read; this one is a bug
+     *   wearing its clothes (ADR 0029).
      * - **A Targeting type.** It is answered on the server and stripped from
      *   the payload (ADR 0005); one sitting in the client list would be
      *   evaluated twice or, since the loader has no implementation for it,
@@ -121,6 +142,7 @@ final class RuleVocabulary
                 RuleKind::Condition => 'conditions',
                 default => null,
             };
+
 
             if ($axis !== null) {
                 /** @var array<string, mixed> $rule */

@@ -94,6 +94,12 @@ final class PublishedProjection
         $rules = $published['rules'] ?? [];
         unset($published['rules']);
 
+        // And the partition OVERWRITES rather than merges. `$published` is a
+        // config blob, so it can carry a `triggers` key of its own — hand-
+        // written, or left by an older shape — and PHP's `+` lets the LEFT
+        // operand win, which would ship that instead and discard the real
+        // answer. The manifest decides what the two axes hold; nothing in the
+        // blob gets a vote.
         return [
             'id' => (string) ($row['id'] ?? ''),
             'targeting' => is_array($targeting) ? $targeting : [],
@@ -101,7 +107,7 @@ final class PublishedProjection
             // triggers" as "never fires", which is ADR 0012's zero-trigger
             // loss stated rather than guessed at, and it can only read that
             // from a key that is present.
-            'payload' => $published + $vocabulary->partition($rules),
+            'payload' => array_merge($published, $vocabulary->partition($rules)),
         ];
     }
 }

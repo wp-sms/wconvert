@@ -163,4 +163,24 @@ final class PublishedProjectionTest extends TestCase
             ['triggers' => null, 'conditions' => null]
         ));
     }
+
+    /**
+     * The partition OVERWRITES. `published_config` is a config blob, so it can
+     * carry a `triggers` key of its own — hand-written, or left by an older
+     * shape — and PHP's `+` would let that win and discard the real answer
+     * silently. The manifest decides what the two axes hold.
+     */
+    public function testAConfigCarryingItsOwnAxisKeysDoesNotBeatThePartition(): void
+    {
+        $set = self::build([self::row(['published_config' => (string) json_encode([
+            'triggers' => [['type' => 'page_load']],
+            'conditions' => 'whatever this is',
+            'rules' => [['type' => 'time_on_page', 'seconds' => 10]],
+        ])])]);
+
+        $this->assertSame([
+            'triggers' => [['type' => 'time_on_page', 'seconds' => 10]],
+            'conditions' => [],
+        ], $set[0]['payload']);
+    }
 }

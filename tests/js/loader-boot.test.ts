@@ -3,7 +3,8 @@ import { boot } from '@loader/boot';
 import { createLoader } from '@loader/engine';
 import { FREE_MODULES } from '@loader/modules';
 import { PAYLOAD_ELEMENT_ID } from '@loader/payload';
-import type { PayloadEntry, Presenter } from '@loader/types';
+import type { PayloadEntry } from '@loader/types';
+import { recordingPresenter } from './support/presenter';
 
 /**
  * The late-start path — the most important ten lines in the loader, and the
@@ -16,12 +17,6 @@ import type { PayloadEntry, Presenter } from '@loader/types';
  */
 
 const loader = createLoader(FREE_MODULES);
-
-function recordingPresenter(): Presenter & { shown: string[] } {
-  const shown: string[] = [];
-
-  return { shown, show: (entry) => void shown.push(entry.id) };
-}
 
 function inlinePayload(entries: readonly PayloadEntry[], text?: string): void {
   const element = document.createElement('script');

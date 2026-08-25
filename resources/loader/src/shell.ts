@@ -1,6 +1,6 @@
 import type { Loader, PayloadEntry, Presenter, RuleEvaluator, VisitorState } from './types';
 import type { Store } from './storage';
-import { decide, isOverlay } from './decide';
+import { decide, isOverlay, rulesOf } from './decide';
 import { onConsentChange, withheldTypes } from './consent';
 import { persistentStore } from './storage';
 import { STATE_KEY, dayOf, loadState, saveState, withConversion, withDismissal, withImpression } from './state';
@@ -35,7 +35,7 @@ function typesInPlay(entries: readonly PayloadEntry[]): ReadonlySet<string> {
   const types = new Set<string>();
 
   for (const entry of entries) {
-    for (const rule of [...(entry.triggers ?? []), ...(entry.conditions ?? [])]) {
+    for (const rule of rulesOf(entry)) {
       types.add(rule.type);
     }
   }

@@ -23,6 +23,8 @@ export type Standing =
   | 'ready'
   /** Eligible, but no Trigger has fired yet. */
   | 'waiting'
+  /** No Trigger this build can ever fire — an empty list, or every one unknown here. */
+  | 'inert'
   /** A Condition does not hold. It may come to. */
   | 'ineligible'
   /** A rule needs Storage Consent this visitor has not given. Not evaluated, not failed. */
@@ -71,7 +73,19 @@ export interface Decision {
  */
 export const isOverlay = (entry: PayloadEntry): boolean => entry.display_type !== 'inline';
 
-/** Nothing is live except what could still change, so `capped` and `shown` are not. */
+/**
+ * Every rule an entry carries, both axes, in one list.
+ *
+ * The axes are separate because kind decides how a rule is READ — any one
+ * Trigger, all Conditions. Questions about the rules themselves, like which
+ * modules this page needs or which need consent, are asked of all of them.
+ */
+export const rulesOf = (entry: PayloadEntry): readonly Rule[] => [
+  ...(entry.triggers ?? []),
+  ...(entry.conditions ?? []),
+];
+
+/** Nothing is live except what could still change, so `capped`, `inert` and `shown` are not. */
 const STILL_LIVE: ReadonlySet<Standing> = new Set<Standing>(['ready', 'waiting', 'ineligible', 'blocked']);
 
 export function decide(decision: Decision): Verdict {
@@ -124,8 +138,18 @@ function standingOf(entry: PayloadEntry, decision: Decision): Standing {
   // rules need a category the visitor has withheld is NOT EVALUATED rather
   // than evaluated-as-false, so it can still fire later in the same page view
   // when consent arrives (issue #11).
-  if ([...triggers, ...conditions].some((rule) => decision.withheld.has(rule.type))) {
+  if (rulesOf(entry).some((rule) => decision.withheld.has(rule.type))) {
     return 'blocked';
+  }
+
+  // ADR 0012's zero-trigger loss, named rather than hidden inside "waiting".
+  // An Optin with an empty trigger list, or whose every trigger names a type
+  // this build has no module for, can NEVER fire — so calling it "waiting"
+  // holds a timer open for the rest of the visit waiting for a moment that
+  // cannot arrive. Checked before the conditions, because a failing condition
+  // is temporary and this is not.
+  if (!triggers.some((rule) => decision.evaluators.has(rule.type))) {
+    return 'inert';
   }
 
   const holds = (rule: Rule): boolean => {
@@ -147,11 +171,6 @@ function standingOf(entry: PayloadEntry, decision: Decision): Standing {
     return 'ineligible';
   }
 
-  // `some` on an empty list is false, and that is the answer this wants. Every
-  // Optin has at least one Trigger — "shows immediately" is the explicit
-  // `page_load` Trigger, never an empty list (CONTEXT.md) — so an Optin that
-  // reaches here with none can never fire. That is ADR 0012's zero-trigger
-  // loss, and reading it as "fires" would hide the bug substitution exists for.
   return triggers.some(holds) ? 'ready' : 'waiting';
 }
 

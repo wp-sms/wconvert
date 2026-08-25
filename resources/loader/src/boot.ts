@@ -23,19 +23,27 @@ import { start } from './shell';
  * alone.
  */
 export function boot(loader: Loader, presenter: Presenter): void {
-  if (attempt(loader, presenter)) {
+  if (payloadWasInTheDom(loader, presenter)) {
     return;
   }
 
   // Only worth waiting if the document is still being parsed. Past that, an
   // absent element is absent, not late.
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => void attempt(loader, presenter), { once: true });
+    document.addEventListener('DOMContentLoaded', () => void payloadWasInTheDom(loader, presenter), {
+      once: true,
+    });
   }
 }
 
-/** @returns whether the payload element was found — not whether anything was shown. */
-function attempt(loader: Loader, presenter: Presenter): boolean {
+/**
+ * Read the payload and, if there is one, start.
+ *
+ * Named for what it ANSWERS rather than for what it does, because the answer is
+ * the only thing the caller acts on — and "did it work" would be the wrong
+ * question: a payload with nothing in it is found, handled and shows nothing.
+ */
+function payloadWasInTheDom(loader: Loader, presenter: Presenter): boolean {
   const entries = readPayload();
 
   if (entries === null) {

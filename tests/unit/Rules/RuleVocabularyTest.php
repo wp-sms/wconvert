@@ -108,8 +108,12 @@ final class RuleVocabularyTest extends TestCase
      * The write path's view of the same question: still flat, but with the
      * typos gone before they can be published into a payload nothing can
      * evaluate.
+     *
+     * And still in the merchant's order — partitioning and re-flattening would
+     * shuffle their rules into triggers-then-conditions on every save, on a
+     * screen they look at.
      */
-    public function testNormalizeKeepsTheListFlatAndDropsWhatPartitionWouldDrop(): void
+    public function testNormalizeDropsWhatPartitionWouldDropAndKeepsTheOrder(): void
     {
         $normalized = self::vocabulary()->normalize([
             ['type' => 'device', 'in' => ['desktop']],
@@ -118,8 +122,25 @@ final class RuleVocabularyTest extends TestCase
         ]);
 
         $this->assertSame(
-            [['type' => 'page_load'], ['type' => 'device', 'in' => ['desktop']]],
+            [['type' => 'device', 'in' => ['desktop']], ['type' => 'page_load']],
             $normalized
         );
+    }
+
+    /**
+     * @return iterable<string, array{mixed}>
+     */
+    public static function unusableRuleListsForNormalize(): iterable
+    {
+        return self::unusableRuleLists();
+    }
+
+    /**
+     * @param mixed $rules
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('unusableRuleListsForNormalize')]
+    public function testAnUnusableRuleListNormalizesToNothing($rules): void
+    {
+        $this->assertSame([], self::vocabulary()->normalize($rules));
     }
 }

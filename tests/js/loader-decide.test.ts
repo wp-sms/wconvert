@@ -134,22 +134,25 @@ describe('decide', () => {
    * `page_load` Trigger, never an empty list (CONTEXT.md). So an empty list is
    * an Optin that can never fire — the silent, total loss of function ADR 0012
    * substitutes premium triggers to prevent. Reading it as "fires" would hide
-   * exactly the bug that substitution exists for.
+   * exactly the bug that substitution exists for, and reading it as "waiting"
+   * would hold a timer open for a moment that cannot arrive.
    */
-  it('never fires an Optin with no triggers at all', () => {
+  it('reports an Optin with no triggers at all as inert, not waiting', () => {
     const verdict = decide(input({ entries: [entry({ triggers: [] })] }));
 
     expect(verdict.show).toEqual([]);
-    expect(standings(verdict)).toEqual({ '01JQ0000000000000000000001': 'waiting' });
+    expect(standings(verdict)).toEqual({ '01JQ0000000000000000000001': 'inert' });
+    expect(verdict.live).toBe(false);
   });
 
   /**
    * A rule type this build has no module for fails shut. On a correctly
    * degraded install it cannot arrive — PHP strips what the install is not
    * entitled to — so one that does is a bug, and firing on it would be worse
-   * than not.
+   * than not. An Optin left with only such triggers is inert for the same
+   * reason an empty list is: nothing here can ever fire it.
    */
-  it('never holds a rule it has no module for', () => {
+  it('never holds a rule it has no module for, and calls such an Optin inert', () => {
     const verdict = decide(
       input({
         entries: [entry({ triggers: [rule('exit_intent')], conditions: [] })],
@@ -158,6 +161,25 @@ describe('decide', () => {
     );
 
     expect(verdict.show).toEqual([]);
+    expect(standings(verdict)).toEqual({ '01JQ0000000000000000000001': 'inert' });
+    expect(verdict.live).toBe(false);
+  });
+
+  /**
+   * But an Optin with ONE firable trigger beside an unknown one is not inert —
+   * the known one can still fire, and a degraded install is meant to keep
+   * working (ADR 0012).
+   */
+  it('is not inert while one trigger is still firable', () => {
+    const verdict = decide(
+      input({
+        entries: [entry({ triggers: [rule('exit_intent'), rule('time_on_page')], conditions: [] })],
+        evaluators: evaluators({ time_on_page: () => false }),
+      }),
+    );
+
+    expect(standings(verdict)).toEqual({ '01JQ0000000000000000000001': 'waiting' });
+    expect(verdict.live).toBe(true);
   });
 
   describe('the contest between overlays', () => {

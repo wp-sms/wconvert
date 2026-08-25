@@ -22,7 +22,6 @@ import type { ConsentCategory, LoaderModule } from './types';
 declare global {
   interface Window {
     wp_has_consent?: (category: string) => boolean;
-    wp_listen_for_consent_change?: unknown;
   }
 }
 

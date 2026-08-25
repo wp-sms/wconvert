@@ -3,7 +3,8 @@ import { createLoader } from '@loader/engine';
 import { FREE_MODULES } from '@loader/modules';
 import { start } from '@loader/shell';
 import type { Store } from '@loader/storage';
-import type { LoaderModule, OptinControls, PayloadEntry, Presenter } from '@loader/types';
+import type { LoaderModule, PayloadEntry } from '@loader/types';
+import { recordingPresenter, silentPresenter } from './support/presenter';
 
 /**
  * The shell, driven the way a cached page drives it.
@@ -30,34 +31,6 @@ function fakeStore(): Store {
   };
 }
 
-/**
- * A stand-in renderer. It reports the Impression the moment it is shown, which
- * is what a real one does for an overlay — an `inline` renderer reports it on
- * entering the viewport instead (CONTEXT.md, Impression).
- */
-function recordingPresenter(): Presenter & { shown: string[]; dismiss(id: string): void } {
-  const shown: string[] = [];
-  const controls = new Map<string, OptinControls>();
-
-  return {
-    shown,
-    show(entry, entryControls) {
-      shown.push(entry.id);
-      controls.set(entry.id, entryControls);
-      entryControls.impression();
-    },
-    dismiss(id) {
-      controls.get(id)?.dismiss();
-    },
-  };
-}
-
-/** A renderer that decided the Optin never actually reached the visitor. */
-function silentPresenter(): Presenter & { shown: string[] } {
-  const shown: string[] = [];
-
-  return { shown, show: (entry) => void shown.push(entry.id) };
-}
 
 const optin = (overrides: Partial<PayloadEntry> = {}): PayloadEntry => ({
   id: 'a',
@@ -84,6 +57,32 @@ afterEach(() => {
 });
 
 describe('one payload, many page views', () => {
+  /**
+   * With NO frequency block at all — the shape a merchant gets by not thinking
+   * about it. A dismissal that only sticks when configured makes the record
+   * something written, read and ignored, and ADR 0017's justification for
+   * writing anything to the device at all is that it stops the popup coming
+   * back.
+   */
+  it('keeps a dismissed Optin dismissed by default', () => {
+    const store = fakeStore();
+    const entries = [optin()];
+
+    pageView(entries, store, march1).presenter.dismiss('a');
+
+    expect(pageView(entries, store, march1).presenter.shown).toEqual([]);
+    expect(pageView(entries, store, march1 + 30 * DAY).presenter.shown).toEqual([]);
+  });
+
+  it('lets a merchant turn that off deliberately', () => {
+    const store = fakeStore();
+    const entries = [optin({ frequency: { stopAfterDismiss: false } })];
+
+    pageView(entries, store, march1).presenter.dismiss('a');
+
+    expect(pageView(entries, store, march1).presenter.shown).toEqual(['a']);
+  });
+
   it('keeps a dismissed Optin dismissed on the next page view and a month later', () => {
     const store = fakeStore();
     const entries = [optin({ frequency: { stopAfterDismiss: true } })];
