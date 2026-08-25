@@ -4,20 +4,23 @@ import { mount } from '@renderer/mount';
 import { listTemplates, type TemplateEntry } from './api';
 
 /**
- * The shipped gallery, rendered through the renderer the loader imports.
+ * The shipped Templates, drawn by the renderer the loader imports.
  *
- * **This is the whole point of the renderer being dependency-free.** Two
- * consumers, two bundles: React inside it would drag the admin's dependencies
- * into the loader's byte budget, and a static thumbnail would be a second
- * artefact to produce and to let go stale. What the merchant sees here is the
- * template, drawn by the code that will draw it on the site (ADR 0010).
+ * **This exists to make one property real rather than aspirational**: the
+ * renderer is dependency-free precisely so two bundles can share it, and the
+ * admin is the second one. React inside that module would drag the admin's
+ * dependencies into the loader's byte budget, and a static thumbnail would be
+ * a second artefact to produce and to let go stale (ADR 0010).
  *
- * It mounts `inline` rather than as a `popup`, because a gallery card is a
- * card: it wants the closed shadow root that wins the CSS fight against
- * wp-admin's own stylesheet, and none of the top layer.
+ * **It is not the gallery.** Filtering by Goal, selection, the settings panel
+ * beside it and the step-by-step preview are the builder's, and building them
+ * here would be writing that ticket's shape before its subject. What is here
+ * is one card per shipped entry, showing the design as it will actually
+ * render.
  *
- * The gallery proper — filtering, selection, the settings panel beside it —
- * arrives in its own ticket. This is the seam it will build on.
+ * It mounts `inline`, because a card is a card: it wants the closed shadow
+ * root that wins the CSS fight against wp-admin's own stylesheet, and none of
+ * the top layer.
  */
 export function TemplatePreview() {
   const [templates, setTemplates] = useState<TemplateEntry[]>([]);
@@ -34,10 +37,13 @@ export function TemplatePreview() {
   }
 
   return (
-    <section className="wconvert-gallery">
+    <section className="wconvert-templates">
       <h2>{__('Templates', 'wconvert')}</h2>
       {templates.map((template) => (
-        <TemplateCard key={template.id} template={template} />
+        <figure key={template.id} className="wconvert-template">
+          <figcaption>{template.name}</figcaption>
+          <TemplateCard template={template} />
+        </figure>
       ))}
     </section>
   );
@@ -45,27 +51,14 @@ export function TemplatePreview() {
 
 function TemplateCard({ template }: { template: TemplateEntry }) {
   const anchor = useRef<HTMLDivElement>(null);
-  const [step, setStep] = useState(0);
 
   useEffect(() => {
     const mounted = mount({ displayType: 'inline', template, anchor: anchor.current });
 
     mounted.show();
-    mounted.showStep(step);
 
     return () => mounted.close();
-  }, [template, step]);
+  }, [template]);
 
-  return (
-    <figure className="wconvert-card">
-      <figcaption>{template.name}</figcaption>
-      <div ref={anchor} />
-      {template.tree.steps.map((_, index) => (
-        <button key={index} type="button" onClick={() => setStep(index)} aria-pressed={index === step}>
-          {/* A submit-metered template has two steps, the success state being the terminal one. */}
-          {index === 0 ? __('Form', 'wconvert') : __('Success', 'wconvert')}
-        </button>
-      ))}
-    </figure>
-  );
+  return <div ref={anchor} />;
 }

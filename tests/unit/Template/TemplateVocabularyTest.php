@@ -142,21 +142,55 @@ final class TemplateVocabularyTest extends TestCase
     }
 
     /**
-     * Every Slot Role a tree declares, which is what the Playbook registry
-     * validates a Playbook's copy against at registration.
+     * The consent checkbox's wording is a Slot Role like any other, so
+     * switching Template does not destroy the merchant's version of it
+     * (ADR 0032). A node that cannot carry the Role leaves it declared and
+     * unreachable.
      */
-    public function testTheRolesATreeDeclaresIncludeTheOnesAFieldImplies(): void
+    public function testAConsentNodeCanCarryItsSlotRole(): void
     {
-        $roles = self::vocabulary()->rolesIn([
-            'steps' => [[
-                'type' => 'stack',
-                'children' => [
-                    ['type' => 'heading', 'role' => 'headline', 'text' => 'Join'],
-                    ['type' => 'field', 'name' => 'email'],
-                ],
-            ]],
+        $normalized = self::normalize([
+            'tree' => ['steps' => [['type' => 'consent', 'role' => 'consent_text', 'text' => 'I agree to the %s.']]],
         ]);
 
-        $this->assertSame(['headline', 'email_label', 'email_placeholder'], $roles);
+        $this->assertSame('consent_text', $normalized['tree']['steps'][0]['role'] ?? null);
+    }
+
+    /**
+     * **A Template does not carry copy.** Whatever placeholder text it has is
+     * for the gallery and "is never copied into an Optin" (CONTEXT.md,
+     * Template) — that boundary is what keeps the library goal-agnostic and
+     * therefore small.
+     */
+    public function testTakingACopyLeavesEveryWordBehindAndKeepsEverythingElse(): void
+    {
+        $stripped = self::vocabulary()->withoutCopy(['steps' => [[
+            'type' => 'stack',
+            'children' => [
+                ['type' => 'heading', 'role' => 'headline', 'text' => 'Get 10% off'],
+                ['type' => 'field', 'name' => 'email', 'label' => 'Email', 'placeholder' => 'you@x.test', 'required' => true],
+                ['type' => 'image', 'src' => '/tote.png', 'alt' => 'A tote bag'],
+                ['type' => 'text', 'role' => 'fine_print', 'text' => 'Our %s', 'link' => ['label' => 'policy']],
+            ],
+        ]]]);
+
+        [$heading, $field, $image, $fine] = $stripped['steps'][0]['children'];
+
+        // The words go.
+        $this->assertSame(['type' => 'heading', 'role' => 'headline'], $heading);
+        $this->assertArrayNotHasKey('label', $field);
+        $this->assertArrayNotHasKey('placeholder', $field);
+        $this->assertArrayNotHasKey('text', $fine);
+        $this->assertArrayNotHasKey('link', $fine);
+
+        // The design stays — including the Slot Roles, which are the seam a
+        // Playbook binds the words back onto.
+        $this->assertSame('email', $field['name']);
+        $this->assertTrue($field['required']);
+        $this->assertSame('fine_print', $fine['role']);
+
+        // And the image, because "a template's image slot keeps the template's
+        // own asset or stays empty" and Playbooks never supply one (ADR 0013).
+        $this->assertSame(['type' => 'image', 'src' => '/tote.png', 'alt' => 'A tote bag'], $image);
     }
 }

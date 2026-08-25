@@ -55,10 +55,17 @@ final class PayloadBudgetTest extends TestCase
     private static function worstCase(): array
     {
         $vocabulary = TemplateVocabulary::fromManifest(self::PLUGIN_DIR);
-        $template = TemplateLibrary::fromDirectory($vocabulary, self::PLUGIN_DIR)->find('centred-card');
+        $library = TemplateLibrary::fromDirectory($vocabulary, self::PLUGIN_DIR);
 
-        self::assertIsArray($template, 'the shipped template is what this measures');
+        // What an Optin actually carries: the SNAPSHOT — the shipped design
+        // with the gallery's placeholder words taken out of it — and then the
+        // merchant's own words written back onto its Slot Roles. Measuring the
+        // gallery entry instead would measure copy no visitor ever sees.
+        $snapshot = $library->snapshotInto(['template_id' => 'centred-card']);
 
+        self::assertArrayHasKey('template', $snapshot, 'the shipped template is what this measures');
+
+        $template = $snapshot['template'];
         $set = [];
 
         for ($i = 0; $i < self::ON_THE_PAGE; $i++) {
@@ -70,7 +77,7 @@ final class PayloadBudgetTest extends TestCase
                     'template_id' => 'centred-card',
                     'priority' => $i,
                     'template' => [
-                        'tree' => self::diverged($template['tree'], $i),
+                        'tree' => self::withCopy($template['tree'], $i),
                         'tokens' => ['accent' => sprintf('#%06x', 0x2563EB + $i * 4919)] + $template['tokens'],
                     ],
                     'triggers' => [['type' => 'time_on_page', 'seconds' => 5 + $i]],
@@ -84,12 +91,19 @@ final class PayloadBudgetTest extends TestCase
     }
 
     /**
-     * One snapshot, edited the way a merchant edits one: every word replaced.
+     * One snapshot with words written onto its slots, the way a Playbook or a
+     * merchant fills one — and every Optin's words different from every
+     * other's.
+     *
+     * That divergence is the point. Ten copies of one tree would compress to
+     * almost nothing and the assertion would prove only that gzip works; these
+     * ten share structure and share almost no text, which is exactly the case
+     * ADR 0010 was unsure about.
      *
      * @param array<string, mixed> $tree
      * @return array<string, mixed>
      */
-    private static function diverged(array $tree, int $i): array
+    private static function withCopy(array $tree, int $i): array
     {
         $copy = [
             'Get %d%% off your very first order today',
@@ -99,20 +113,24 @@ final class PayloadBudgetTest extends TestCase
             'Members get %d%% off every single order',
         ];
 
-        $encoded = (string) json_encode($tree);
+        $slot = 0;
+        $fill = static function (array $node) use (&$fill, $copy, $i, &$slot): array {
+            if (in_array($node['type'], ['heading', 'text', 'button', 'field'], true)) {
+                $words = sprintf($copy[$slot++ % count($copy)], 5 + $i);
 
-        // Replaced rather than appended, so the ten trees share structure and
-        // share almost no text — which is exactly the case the ADR was unsure
-        // about.
-        return (array) json_decode(preg_replace_callback(
-            '/"text":"[^"]*"/',
-            static function (array $match) use ($copy, $i): string {
-                static $slot = 0;
+                $node[$node['type'] === 'button' ? 'label' : 'text'] = $words;
+            }
 
-                return sprintf('"text":%s', (string) json_encode(sprintf($copy[$slot++ % count($copy)], 5 + $i)));
-            },
-            $encoded
-        ) ?? $encoded, true);
+            foreach (['children', 'start', 'end'] as $key) {
+                if (isset($node[$key]) && is_array($node[$key])) {
+                    $node[$key] = array_map($fill, $node[$key]);
+                }
+            }
+
+            return $node;
+        };
+
+        return ['steps' => array_map($fill, $tree['steps'])];
     }
 
     public function testTenSnapshottedTreesOnOnePageFitTheGzippedPayloadBudget(): void

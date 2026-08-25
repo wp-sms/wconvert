@@ -2,6 +2,8 @@
 
 namespace WConvert\Rules;
 
+use WConvert\Support\JsonManifest;
+
 defined('ABSPATH') || exit;
 
 /**
@@ -37,31 +39,16 @@ final class RuleManifest
     public const PATH = 'resources/rules/manifest.json';
 
     /**
-     * The manifest, decoded.
-     *
-     * Reading it is fail-closed in the same sense the source contract is: an
-     * unreadable or unparseable manifest throws rather than degrading to an
-     * empty vocabulary, because an empty vocabulary silently accepts nothing
-     * and shows nothing.
+     * The manifest, decoded — fail-closed, which is
+     * {@see \WConvert\Support\JsonManifest}'s whole reason for existing.
      *
      * @return array<string, array<string, array<string, mixed>>>
      */
     public static function load(string $pluginDir = WCONVERT_DIR): array
     {
-        $path = rtrim($pluginDir, '/') . '/' . self::PATH;
-        $raw = is_readable($path) ? file_get_contents($path) : false;
-
-        if ($raw === false) {
-            throw new \RuntimeException(sprintf('WConvert rule manifest is unreadable at %s.', $path));
-        }
-
-        $decoded = json_decode($raw, true);
-
-        if (!is_array($decoded)) {
-            throw new \RuntimeException(sprintf('WConvert rule manifest at %s is not valid JSON.', $path));
-        }
-
         /** @var array<string, array<string, array<string, mixed>>> $decoded */
+        $decoded = JsonManifest::load(rtrim($pluginDir, '/') . '/' . self::PATH, 'rule manifest');
+
         return $decoded;
     }
 

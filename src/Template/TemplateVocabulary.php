@@ -35,31 +35,18 @@ final class TemplateVocabulary
     private const PANES = ['start', 'end'];
 
     /**
-     * The Slot Roles a `field` declares, named for what it captures.
-     *
-     * A Role is unique across a Template's whole tree (CONTEXT.md, Slot Role),
-     * so a field cannot carry a `field_label` Role — two fields would collide
-     * on it. Naming them for the kind makes uniqueness a property of the
-     * vocabulary rather than a rule to check.
-     */
-    private const FIELD_ROLE_SUFFIXES = ['_label', '_placeholder'];
-
-    /** The only schemes a link may carry (ADR 0013). */
-    private const SAFE_SCHEMES = ['http', 'https', 'mailto'];
-
-    /**
      * @param array<string, array{children: string, params: list<string>}> $layouts
-     * @param array<string, array{content: list<string>, params: list<string>, roles: list<string>}> $nodes
+     * @param array<string, array{content: list<string>, copy: list<string>, params: list<string>, roles: list<string>}> $nodes
      * @param list<string> $tokens
      * @param list<string> $roles
-     * @param list<string> $fields
+     * @param list<string> $schemes
      */
     private function __construct(
         private readonly array $layouts,
         private readonly array $nodes,
         private readonly array $tokens,
         private readonly array $roles,
-        private readonly array $fields,
+        private readonly array $schemes,
     ) {
     }
 
@@ -86,6 +73,7 @@ final class TemplateVocabulary
         foreach (self::section($manifest, 'nodes') as $type => $entry) {
             $nodes[(string) $type] = [
                 'content' => self::strings(is_array($entry) ? ($entry['content'] ?? []) : []),
+                'copy' => self::strings(is_array($entry) ? ($entry['copy'] ?? []) : []),
                 'params' => self::strings(is_array($entry) ? ($entry['params'] ?? []) : []),
                 'roles' => self::strings(is_array($entry) ? ($entry['roles'] ?? []) : []),
             ];
@@ -96,7 +84,7 @@ final class TemplateVocabulary
             $nodes,
             array_map('strval', array_keys(self::section($manifest, 'tokens'))),
             self::strings($manifest['roles'] ?? []),
-            self::strings($manifest['fields'] ?? []),
+            self::strings($manifest['schemes'] ?? []),
         );
     }
 
@@ -140,58 +128,69 @@ final class TemplateVocabulary
     }
 
     /**
-     * Every Slot Role a tree declares, in tree order.
+     * The same tree with every WORD taken out of it.
      *
-     * The Playbook registry validates a Playbook's copy against this at
-     * registration: a Playbook's default Template must declare every Role it
-     * fills, which is what makes a dropped word a build-time failure rather
-     * than a blank slot on a live popup (CONTEXT.md, Slot Role).
+     * **A Template does not carry copy.** The words come from the Playbook
+     * that prefilled the Optin, or from the user, and whatever placeholder
+     * text a Template carries exists so the gallery has something to show —
+     * it "is never copied into an Optin" (CONTEXT.md, Template). That
+     * boundary is what keeps the library small: copy is what makes an Optin
+     * serve a particular Goal, so with the copy held elsewhere a Template is
+     * goal-agnostic, and the gallery is a set of designs per Display Type
+     * rather than a design for every pairing of Display Type and Goal.
+     *
+     * What survives is everything that is NOT words: the arrangement, the
+     * params, the Slot Roles that say which words go where — and the image,
+     * because "a template's image slot keeps the template's own asset or stays
+     * empty" and Playbooks never supply one (ADR 0013). Which keys are words
+     * is declared per node in the manifest rather than guessed at here.
      *
      * @param mixed $tree
-     * @return list<string>
+     * @return array{steps: list<array<string, mixed>>}
      */
-    public function rolesIn($tree): array
+    public function withoutCopy($tree): array
     {
         $tree = is_array($tree) ? $tree : [];
         $steps = is_array($tree['steps'] ?? null) ? $tree['steps'] : [];
-        $roles = [];
+        $stripped = [];
 
         foreach ($steps as $step) {
-            $this->collectRoles($step, $roles);
+            $node = $this->stripNode($step);
+
+            if ($node !== null) {
+                $stripped[] = $node;
+            }
         }
 
-        return $roles;
+        return ['steps' => $stripped];
     }
 
     /**
      * @param mixed $node
-     * @param list<string> $roles
+     * @return array<string, mixed>|null
      */
-    private function collectRoles($node, array &$roles): void
+    private function stripNode($node): ?array
     {
         if (!is_array($node) || !is_string($node['type'] ?? null)) {
-            return;
+            return null;
         }
 
-        $role = $node['role'] ?? null;
+        $leaf = $this->nodes[$node['type']] ?? null;
 
-        if (is_string($role) && in_array($role, $this->roles, true)) {
-            $roles[] = $role;
+        foreach ($leaf === null ? [] : $leaf['copy'] as $key) {
+            unset($node[$key]);
         }
 
-        // A field's Roles are IMPLIED by what it captures rather than written
-        // on it, so `email_label` exists the moment an email field does.
-        if ($node['type'] === 'field' && is_string($node['name'] ?? null) && in_array($node['name'], $this->fields, true)) {
-            foreach (self::FIELD_ROLE_SUFFIXES as $suffix) {
-                $roles[] = $node['name'] . $suffix;
+        foreach ($this->childKeysOf($this->layouts[$node['type']]['children'] ?? '') as $key) {
+            if (array_key_exists($key, $node)) {
+                $node[$key] = array_values(array_filter(array_map(
+                    fn ($child): ?array => $this->stripNode($child),
+                    is_array($node[$key]) ? $node[$key] : []
+                )));
             }
         }
 
-        foreach ($this->childListsOf($node) as $children) {
-            foreach ($children as $child) {
-                $this->collectRoles($child, $roles);
-            }
-        }
+        return $node;
     }
 
     /**
@@ -298,7 +297,7 @@ final class TemplateVocabulary
 
         $href = $link['href'] ?? null;
 
-        if (is_string($href) && in_array(strtolower((string) parse_url($href, PHP_URL_SCHEME)), self::SAFE_SCHEMES, true)) {
+        if (is_string($href) && in_array(strtolower((string) parse_url($href, PHP_URL_SCHEME)), $this->schemes, true)) {
             $kept['href'] = $href;
         }
 
@@ -326,32 +325,17 @@ final class TemplateVocabulary
     }
 
     /**
-     * @param array<string, mixed> $node
-     * @return list<list<mixed>>
-     */
-    private function childListsOf(array $node): array
-    {
-        $layout = $this->layouts[(string) ($node['type'] ?? '')] ?? null;
-
-        if ($layout === null) {
-            return [];
-        }
-
-        $lists = [];
-
-        foreach ($this->childKeysOf($layout['children']) as $key) {
-            $lists[] = is_array($node[$key] ?? null) ? array_values($node[$key]) : [];
-        }
-
-        return $lists;
-    }
-
-    /**
+     * Where a member keeps its children, or nothing where it keeps none.
+     *
      * @return list<string>
      */
     private function childKeysOf(string $shape): array
     {
-        return $shape === 'panes' ? self::PANES : ['children'];
+        return match ($shape) {
+            'panes' => self::PANES,
+            'list' => ['children'],
+            default => [],
+        };
     }
 
     /**

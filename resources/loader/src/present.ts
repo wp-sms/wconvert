@@ -1,5 +1,6 @@
 import type { OptinControls, PayloadEntry, Presenter } from './types';
 import { mount } from '@renderer/mount';
+import { isOverlay } from './decide';
 
 /**
  * The presenter: the join between deciding WHETHER to show an Optin and
@@ -34,8 +35,11 @@ export const templatePresenter: Presenter = {
       return;
     }
 
-    const isInline = entry.display_type === 'inline';
-    const anchor = isInline ? anchorFor(entry.id) : null;
+    // `inline` is the one Display Type that needs somewhere on the page to go.
+    // Asked through `isOverlay` rather than by comparing the string again:
+    // the arbitration in `decide` already answers this question, and two
+    // spellings of it would eventually disagree about an unknown type.
+    const anchor = isOverlay(entry) ? null : anchorFor(entry.id);
 
     const mounted = mount({
       displayType: entry.display_type,

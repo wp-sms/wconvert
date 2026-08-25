@@ -15,12 +15,6 @@
  * arrangement the rule manifest has.
  */
 
-/** The four closed layouts. Anything else in a tree is skipped, not thrown on. */
-export type LayoutType = 'stack' | 'row' | 'split' | 'grid';
-
-/** The six leaf nodes. */
-export type LeafType = 'heading' | 'text' | 'image' | 'field' | 'button' | 'consent';
-
 /**
  * The semantic name of a slot, unique across a Template's whole tree
  * (CONTEXT.md, Slot Role). It is the seam a Playbook binds copy to, so the

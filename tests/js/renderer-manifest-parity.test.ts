@@ -1,7 +1,9 @@
+import { readFileSync, readdirSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import manifest from '../../resources/templates/manifest.json';
 import { DOCUMENT_CSS, SHADOW_CSS } from '@renderer/css';
-import { render } from '@renderer/render';
+import { SAFE_SCHEMES, render } from '@renderer/render';
 import type { TemplateTree } from '@renderer/types';
 
 /**
@@ -74,5 +76,49 @@ describe('every token the manifest declares', () => {
     const read = [...CSS.matchAll(/var\(--wc-([a-z-]+)/g)].map((match) => match[1]);
 
     expect([...new Set(read)].filter((name) => !declared.has(name))).toEqual([]);
+  });
+});
+
+/**
+ * The scheme allowlist is ONE rule that has to hold in two languages: PHP
+ * validates an href at write (ADR 0013), and the renderer validates again
+ * because the admin renders a tree through this module before any write has
+ * happened. Two hand-maintained lists is the drift the manifest arrangement
+ * exists to prevent, so the list lives in the manifest and both sides are
+ * asserted against it.
+ */
+describe('the link scheme allowlist', () => {
+  it('is the manifest is, on both sides of the boundary', () => {
+    expect([...SAFE_SCHEMES].sort()).toEqual([...manifest.schemes].map((scheme) => `${scheme}:`).sort());
+  });
+});
+
+/**
+ * **The loader must never import the manifest.** An unrecognised node is
+ * skipped by the renderer's own switch, so the lookup buys nothing — and the
+ * import would inline the whole vocabulary into a bundle held to 8KB gzipped.
+ * The same rule the rule manifest has (README, *The rule manifest*), and until
+ * now the same rule with nothing asserting it.
+ */
+describe('the shipped trees', () => {
+  const SHIPPED = ['resources/renderer/src', 'resources/loader/src'];
+
+  /**
+   * Matches a module SPECIFIER, not a mention. The same distinction
+   * `bin/pro-php-scan.php` draws by tokenising rather than grepping: free may
+   * document the boundary without tripping the guard that enforces it, and
+   * these files document it at length.
+   */
+  const IMPORTS_THE_MANIFEST = /(?:from|import|require)\s*\(?\s*['"][^'"]*templates\/manifest\.json['"]/;
+
+  it.each(SHIPPED)('does not import the template manifest: %s', (dir) => {
+    const root = resolve(import.meta.dirname, '../..', dir);
+    const files = readdirSync(root, { recursive: true, encoding: 'utf8' }).filter((file) => file.endsWith('.ts'));
+
+    // An empty scan root is a tree this check cannot speak for, not a tree
+    // with nothing wrong in it — the same fail-closed posture the source
+    // contract takes (ADR 0029).
+    expect(files.length).toBeGreaterThan(0);
+    expect(files.filter((file) => IMPORTS_THE_MANIFEST.test(readFileSync(resolve(root, file), 'utf8')))).toEqual([]);
   });
 });

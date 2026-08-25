@@ -45,7 +45,11 @@ final class TemplateLibraryTest extends TestCase
         $template = self::library()->find('centred-card');
 
         $this->assertCount(2, $template['tree']['steps']);
-        $this->assertContains('success_headline', TemplateVocabulary::fromManifest(self::PLUGIN_DIR)->rolesIn($template['tree']));
+        $this->assertStringContainsString(
+            '"success_headline"',
+            (string) json_encode($template['tree']['steps'][1]),
+            'the terminal step has to offer the Slot Role its words bind to'
+        );
     }
 
     /**

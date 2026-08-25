@@ -51,13 +51,14 @@ third-party ones. Under configuration they are properties of the one renderer.
 ## Consequences
 
 - **The vocabulary is the ceiling on design variety**, and the product bet is that
-  the gallery *is* the design surface. *Fixed in
-  [#23](https://github.com/navidkashani/wconvert/issues/23) as six leaf nodes —
-  `heading`, `text`, `image`, `field`, `button`, `consent` — and four layouts:
-  `stack` (a column), `row` (a wrapping line), `split` (two independent panes, which
-  is what makes an image-led design possible) and `grid` (equal collapsing tracks).
-  `resources/templates/manifest.json` is the file; the renderer is asserted against
-  it by `tests/js/renderer-manifest-parity.test.ts`.* A thin vocabulary yields one popup in twelve
+  the gallery *is* the design surface.
+  *Fixed in [#23](https://github.com/navidkashani/wconvert/issues/23) as six leaf
+  nodes — `heading`, `text`, `image`, `field`, `button`, `consent` — and four
+  layouts: `stack` (a column), `row` (a wrapping line), `split` (two independent
+  panes, which is what makes an image-led design possible) and `grid` (equal
+  collapsing tracks). `resources/templates/manifest.json` is the file, and
+  `tests/js/renderer-manifest-parity.test.ts` asserts the renderer implements
+  exactly it.* A thin vocabulary yields one popup in twelve
   colours — the "thin or ugly" failure the ticket names. This is why `image` and the
   `split` layout are in v1 rather than deferred: the differentiator that is not
   colour has to exist in the vocabulary, or the gallery is thin no matter how many
@@ -100,11 +101,11 @@ third-party ones. Under configuration they are properties of the one renderer.
   compressing to 621 bytes because they are near-identical text; template trees drawn
   from one closed vocabulary should be more self-similar, not less, but this was a
   prediction. *Confirmed in [#23](https://github.com/navidkashani/wconvert/issues/23):
-  ten copies of the shipped `centred-card`, each diverged so that the ten share
-  structure and almost no text, and each carrying its own tokens, rules and frequency,
-  measure **12,824 bytes raw compressing to 1,074 bytes** — 52% of the budget, gzipped
-  in isolation rather than against the surrounding HTML, so the real figure is lower
-  still. `tests/unit/Frontend/PayloadBudgetTest.php` is what holds it.* The recorded
-  fix if it ever fails is unchanged: delta-encoding each Optin against its
+  ten snapshots of the shipped `centred-card`, each filled with different copy so the
+  ten share structure and almost no text, each carrying its own tokens, rules and
+  frequency, measure **13,044 bytes raw compressing to 1,072 bytes** — 52% of the
+  budget, gzipped in isolation rather than against the surrounding HTML, so the real
+  figure is lower still. `tests/unit/Frontend/PayloadBudgetTest.php` holds it.*
+  The recorded fix if it ever fails is unchanged: delta-encoding each Optin against its
   `template_id`, rejected now because snapshots diverge from their source by design and
   the delta would need the source *version* too.

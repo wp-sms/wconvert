@@ -2,6 +2,8 @@
 
 namespace WConvert\Template;
 
+use WConvert\Support\JsonManifest;
+
 defined('ABSPATH') || exit;
 
 /**
@@ -29,31 +31,13 @@ final class TemplateManifest
     public const PATH = 'resources/templates/manifest.json';
 
     /**
-     * The manifest, decoded.
-     *
-     * Fail-closed in the same sense the rule manifest is: an unreadable or
-     * unparseable manifest throws rather than degrading to an empty
-     * vocabulary, because an empty vocabulary validates every template down to
-     * nothing and shows a blank popup.
+     * The manifest, decoded — fail-closed, which is
+     * {@see \WConvert\Support\JsonManifest}'s whole reason for existing.
      *
      * @return array<string, mixed>
      */
     public static function load(string $pluginDir = WCONVERT_DIR): array
     {
-        $path = rtrim($pluginDir, '/') . '/' . self::PATH;
-        $raw = is_readable($path) ? file_get_contents($path) : false;
-
-        if ($raw === false) {
-            throw new \RuntimeException(sprintf('WConvert template manifest is unreadable at %s.', $path));
-        }
-
-        $decoded = json_decode($raw, true);
-
-        if (!is_array($decoded)) {
-            throw new \RuntimeException(sprintf('WConvert template manifest at %s is not valid JSON.', $path));
-        }
-
-        /** @var array<string, mixed> $decoded */
-        return $decoded;
+        return JsonManifest::load(rtrim($pluginDir, '/') . '/' . self::PATH, 'template manifest');
     }
 }

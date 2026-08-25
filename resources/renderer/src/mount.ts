@@ -2,6 +2,8 @@ import type { Template } from './types';
 import { DOCUMENT_CSS, SHADOW_CSS } from './css';
 import { render } from './render';
 
+export { render, SHADOW_CSS };
+
 /**
  * The containers — two of them, because they solve two different problems and
  * neither solves the other's (ADR 0009).
@@ -26,6 +28,13 @@ import { render } from './render';
  * and modality natively. **None of that is hand-written here, deliberately.**
  * `floating_bar` and `slide_in` cannot use it — they must not be modal — and
  * they pay for that with hand-written code in Pro (ADR 0011).
+ *
+ * **Where Pro's two containers go.** Not here, and not behind a flag on this
+ * function: the free tree carries no premium code, ever (ADR 0028). Pro
+ * composes its own presenter and hands it to the same `boot(loader,
+ * presenter)` free's entry uses, building a `[popover=manual]` container from
+ * the pieces this module already exports — {@link render}, {@link SHADOW_CSS}
+ * and {@link documentStyle}. Nothing in free's tree changes to let it.
  */
 
 export const DOCUMENT_STYLE_ID = 'wconvert-style';

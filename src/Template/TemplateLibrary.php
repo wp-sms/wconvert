@@ -35,6 +35,7 @@ final class TemplateLibrary
      * @param array<string, array<string, mixed>> $templates
      */
     private function __construct(
+        private readonly TemplateVocabulary $vocabulary,
         private readonly array $templates,
     ) {
     }
@@ -54,7 +55,7 @@ final class TemplateLibrary
 
         ksort($templates);
 
-        return new self($templates);
+        return new self($vocabulary, $templates);
     }
 
     /**
@@ -78,25 +79,41 @@ final class TemplateLibrary
     /**
      * Take the copy.
      *
-     * **This is the snapshot boundary, and it happens exactly once.** An Optin
-     * that already holds a `template` keeps it untouched, however many times
-     * this runs and whatever the entry says now — so improving a Template
-     * never restyles an Optin already running on it, and `template_id` stays
-     * what CONTEXT.md calls it: provenance (ADR 0010).
+     * **The snapshot is of the DESIGN, never of the words.** A Template
+     * declares which slots exist, how they are arranged and how they are
+     * styled; the copy comes from the Playbook that prefilled the Optin, or
+     * from the user. Whatever placeholder text an entry carries is for the
+     * gallery and "is never copied into an Optin" (CONTEXT.md, Template) — so
+     * what lands here is the tree with every word taken out of it and the
+     * Slot Roles left in, which is the seam a Playbook binds to.
      *
-     * The renderer and the vocabulary are the other side of the same
-     * arrangement. They stay a LIVE reference, so a release that fixes
-     * accessibility or RTL reaches every existing Optin, while a release that
-     * restyles a Template reaches none.
+     * **It happens when, and only when, the design changes.** An Optin that
+     * already holds a copy of the Template it names keeps it untouched
+     * whatever the entry says now, so improving a Template never restyles an
+     * Optin already running on it and `template_id` stays what CONTEXT.md
+     * calls it: provenance. Repicking is the other case and is not the same
+     * one — a merchant who chooses a different Template gets a fresh copy,
+     * because otherwise the id would say one design and the payload would
+     * render another (ADR 0010).
+     *
+     * The renderer and the vocabulary are the other side of the arrangement.
+     * They stay a LIVE reference, so a release that fixes accessibility or RTL
+     * reaches every existing Optin, while a release that restyles a Template
+     * reaches none.
      *
      * @param array<string, mixed> $config
+     * @param string|null $pickedBefore The `template_id` this Optin was saved with, if any.
      * @return array<string, mixed>
      */
-    public function snapshotInto(array $config): array
+    public function snapshotInto(array $config, ?string $pickedBefore = null): array
     {
         $id = $config['template_id'] ?? null;
 
-        if (!is_string($id) || isset($config['template'])) {
+        if (!is_string($id)) {
+            return $config;
+        }
+
+        if (isset($config['template']) && $id === $pickedBefore) {
             return $config;
         }
 
@@ -109,7 +126,10 @@ final class TemplateLibrary
             return $config;
         }
 
-        $config['template'] = ['tree' => $entry['tree'], 'tokens' => $entry['tokens']];
+        $config['template'] = [
+            'tree' => $this->vocabulary->withoutCopy($entry['tree']),
+            'tokens' => $entry['tokens'],
+        ];
 
         return $config;
     }

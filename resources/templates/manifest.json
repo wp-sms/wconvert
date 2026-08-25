@@ -1,17 +1,110 @@
 {
   "layouts": {
-    "stack": { "children": "list", "params": [] },
-    "row": { "children": "list", "params": [] },
-    "split": { "children": "panes", "params": ["ratio"] },
-    "grid": { "children": "list", "params": ["columns"] }
+    "stack": {
+      "children": "list",
+      "params": []
+    },
+    "row": {
+      "children": "list",
+      "params": []
+    },
+    "split": {
+      "children": "panes",
+      "params": [
+        "ratio"
+      ]
+    },
+    "grid": {
+      "children": "list",
+      "params": [
+        "columns"
+      ]
+    }
   },
   "nodes": {
-    "heading": { "content": ["text"], "params": ["level"], "roles": ["role"] },
-    "text": { "content": ["text", "link"], "params": [], "roles": ["role"] },
-    "image": { "content": ["src", "alt"], "params": ["fit"], "roles": [] },
-    "field": { "content": ["label", "placeholder"], "params": ["name", "required"], "roles": [] },
-    "button": { "content": ["label"], "params": ["action", "href"], "roles": ["role"] },
-    "consent": { "content": ["text", "link"], "params": [], "roles": [] }
+    "heading": {
+      "content": [
+        "text"
+      ],
+      "copy": [
+        "text"
+      ],
+      "params": [
+        "level"
+      ],
+      "roles": [
+        "role"
+      ]
+    },
+    "text": {
+      "content": [
+        "text",
+        "link"
+      ],
+      "copy": [
+        "text",
+        "link"
+      ],
+      "params": [],
+      "roles": [
+        "role"
+      ]
+    },
+    "image": {
+      "content": [
+        "src",
+        "alt"
+      ],
+      "copy": [],
+      "params": [
+        "fit"
+      ],
+      "roles": []
+    },
+    "field": {
+      "content": [
+        "label",
+        "placeholder"
+      ],
+      "copy": [
+        "label",
+        "placeholder"
+      ],
+      "params": [
+        "name",
+        "required"
+      ],
+      "roles": []
+    },
+    "button": {
+      "content": [
+        "label"
+      ],
+      "copy": [
+        "label"
+      ],
+      "params": [
+        "action",
+        "href"
+      ],
+      "roles": [
+        "role"
+      ]
+    },
+    "consent": {
+      "content": [
+        "text",
+        "link"
+      ],
+      "copy": [
+        "text",
+        "link"
+      ],
+      "params": [],
+      "roles": [
+        "role"
+      ]
+    }
   },
   "tokens": {
     "bg": "#ffffff",
@@ -45,5 +138,14 @@
     "phone_label",
     "phone_placeholder"
   ],
-  "fields": ["email", "name", "phone"]
+  "fields": [
+    "email",
+    "name",
+    "phone"
+  ],
+  "schemes": [
+    "http",
+    "https",
+    "mailto"
+  ]
 }

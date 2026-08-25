@@ -33,18 +33,13 @@ final class TemplateController
 
     public function registerRoutes(): void
     {
-        register_rest_route(OptinController::NAMESPACE, '/templates', [
+        register_rest_route(Routes::NAMESPACE, '/templates', [
             [
                 'methods' => 'GET',
                 'callback' => [$this, 'index'],
-                'permission_callback' => [$this, 'canManage'],
+                'permission_callback' => [Routes::class, 'canManage'],
             ],
         ]);
-    }
-
-    public function canManage(): bool
-    {
-        return current_user_can('manage_options');
     }
 
     public function index(): WP_REST_Response

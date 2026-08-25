@@ -1,4 +1,16 @@
-import type { TemplateNode, TemplateTree, Tokens } from './types';
+import type {
+  ButtonNode,
+  ConsentNode,
+  FieldNode,
+  HeadingNode,
+  ImageNode,
+  SlotLink,
+  SplitNode,
+  TemplateNode,
+  TemplateTree,
+  TextNode,
+  Tokens,
+} from './types';
 
 /**
  * The renderer: (tree, tokens) in, DOM out.
@@ -90,19 +102,19 @@ function elementFor(node: TemplateNode): HTMLElement | null {
     case 'grid':
       return layout(node);
     case 'split':
-      return split(node as SplitLike);
+      return split(node as SplitNode);
     case 'heading':
-      return heading(node as { text?: string; level?: number });
+      return heading(node as HeadingNode);
     case 'text':
-      return sentence('p', 'wc-text', node as SentenceNode);
+      return sentence('p', 'wc-text', node as TextNode);
     case 'image':
-      return image(node as ImageLike);
+      return image(node as ImageNode);
     case 'field':
-      return field(node as FieldLike);
+      return field(node as FieldNode);
     case 'button':
-      return button(node as ButtonLike);
+      return button(node as ButtonNode);
     case 'consent':
-      return consent(node as SentenceNode);
+      return consent(node as ConsentNode);
     default:
       return null;
   }
@@ -127,12 +139,6 @@ function layout(node: TemplateNode & { children?: readonly TemplateNode[]; colum
   return element;
 }
 
-interface SplitLike {
-  readonly start?: readonly TemplateNode[];
-  readonly end?: readonly TemplateNode[];
-  readonly ratio?: number;
-}
-
 /**
  * Two panes, each holding its own children.
  *
@@ -141,7 +147,7 @@ interface SplitLike {
  * direction crosses every boundary, so RTL correctness is a matter of the
  * vocabulary never naming a physical side (ADR 0009).
  */
-function split(node: SplitLike): HTMLElement {
+function split(node: SplitNode): HTMLElement {
   const element = document.createElement('div');
 
   element.className = 'wc-split';
@@ -165,7 +171,7 @@ function split(node: SplitLike): HTMLElement {
   return element;
 }
 
-function heading(node: { text?: string; level?: number }): HTMLElement {
+function heading(node: HeadingNode): HTMLElement {
   const element = document.createElement(node.level === 2 ? 'h3' : 'h2');
 
   element.className = 'wc-heading';
@@ -174,10 +180,11 @@ function heading(node: { text?: string; level?: number }): HTMLElement {
   return element;
 }
 
-interface SentenceNode {
-  readonly text?: string;
-  readonly link?: { readonly label: string; readonly href?: string | null };
-}
+/**
+ * The two leaves that are a sentence which may hold one link. Named for the
+ * shape rather than for either node, because the rule is the same for both.
+ */
+type Sentence = Pick<TextNode | ConsentNode, 'text' | 'link'>;
 
 /**
  * The one placeholder a sentence may carry, and the only reason a leaf holds
@@ -192,8 +199,13 @@ const PLACEHOLDER = '%s';
  * spelling of that rule so much as the same rule where the first one cannot
  * reach: the admin renders a tree through this module BEFORE it has been
  * written, so a preview is a live render of unvalidated input.
+ *
+ * Exported so it can be ASSERTED against the manifest PHP reads, rather than
+ * being a second hand-maintained list. The renderer still does not import the
+ * manifest — the test does, from both sides, exactly as the rule vocabulary's
+ * parity tests do.
  */
-const SAFE_SCHEMES = ['http:', 'https:', 'mailto:'];
+export const SAFE_SCHEMES = ['http:', 'https:', 'mailto:'];
 
 /**
  * A sentence that may hold one link, built as STRUCTURE and never as markup.
@@ -207,7 +219,7 @@ const SAFE_SCHEMES = ['http:', 'https:', 'mailto:'];
  * privacy policy configured has no link to offer, and offering a broken one is
  * worse than offering none (ADR 0032).
  */
-function sentence(tag: string, className: string, node: SentenceNode): HTMLElement {
+function sentence(tag: string, className: string, node: Sentence): HTMLElement {
   const element = document.createElement(tag);
   const text = node.text ?? '';
   const href = safeHref(node.link?.href);
@@ -233,7 +245,7 @@ function sentence(tag: string, className: string, node: SentenceNode): HTMLEleme
   return element;
 }
 
-function safeHref(href: string | null | undefined): string | null {
+function safeHref(href: SlotLink['href']): string | null {
   if (typeof href !== 'string' || href === '') {
     return null;
   }
@@ -247,13 +259,7 @@ function safeHref(href: string | null | undefined): string | null {
   }
 }
 
-interface ImageLike {
-  readonly src?: string;
-  readonly alt?: string;
-  readonly fit?: string;
-}
-
-function image(node: ImageLike): HTMLElement | null {
+function image(node: ImageNode): HTMLElement | null {
   if (typeof node.src !== 'string' || node.src === '') {
     return null;
   }
@@ -275,13 +281,6 @@ function image(node: ImageLike): HTMLElement | null {
   return element;
 }
 
-interface FieldLike {
-  readonly name?: string;
-  readonly label?: string;
-  readonly placeholder?: string;
-  readonly required?: boolean;
-}
-
 /**
  * What each field kind captures: the input type that gets the right keyboard,
  * and the autofill token that lets a browser fill it.
@@ -301,7 +300,7 @@ const FIELD_KINDS: Readonly<Record<string, { type: string; autocomplete: AutoFil
  * collide, because a Slot Role is unique across a Template's whole tree
  * (CONTEXT.md, Slot Role) and a field's Roles are named for what it captures.
  */
-function field(node: FieldLike): HTMLElement | null {
+function field(node: FieldNode): HTMLElement | null {
   const name = node.name ?? '';
   const kind = FIELD_KINDS[name];
 
@@ -333,12 +332,6 @@ function field(node: FieldLike): HTMLElement | null {
   return wrapper;
 }
 
-interface ButtonLike {
-  readonly label?: string;
-  readonly action?: string;
-  readonly href?: string | null;
-}
-
 /**
  * The converting act, in one of its two spellings.
  *
@@ -346,7 +339,7 @@ interface ButtonLike {
  * exactly one converting act — a Template offering both is rejected when it is
  * registered rather than disambiguated here (CONTEXT.md, Conversion).
  */
-function button(node: ButtonLike): HTMLElement {
+function button(node: ButtonNode): HTMLElement {
   const label = node.label ?? '';
 
   if (node.action === 'link') {
@@ -382,7 +375,7 @@ function button(node: ButtonLike): HTMLElement {
  * link the fine print does; enforcement is server-side and lands with capture,
  * since the capture endpoint is public and a client-side check is decoration.
  */
-function consent(node: SentenceNode): HTMLElement {
+function consent(node: ConsentNode): HTMLElement {
   const wrapper = document.createElement('div');
   const label = sentence('label', 'wc-consent-text', node);
   const box = document.createElement('input');
