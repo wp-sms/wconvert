@@ -5,7 +5,7 @@ import { TOKENS, slotsOf, withHidden, withToken, withValue } from './panel';
 import { exportEntry, importEntry } from './entry';
 import { getThemeTokens } from './api';
 import type { Path, Slot } from './panel';
-import type { TemplateEntry, TemplateLabels } from '../templates/api';
+import { nameOf, type TemplateEntry, type TemplateLabels } from '../templates/api';
 import type { Template } from '@renderer/types';
 
 /**
@@ -127,13 +127,13 @@ function Slots({
             key === 'link' ? (
               <LinkControl
                 key={key}
-                label={labels.keys[key] ?? key}
+                label={nameOf(labels.keys, key)}
                 value={slot.values[key]}
                 onChange={(value) => edit(slot.path, key, value)}
               />
             ) : (
               <label key={key} className="wconvert-slot__key">
-                {labels.keys[key] ?? key}
+                {nameOf(labels.keys, key)}
                 <input
                   type="text"
                   className="widefat"
@@ -151,14 +151,14 @@ function Slots({
 
 function headingFor(slot: Slot, labels: TemplateLabels): string {
   if (slot.role !== null) {
-    return labels.roles[slot.role] ?? slot.role;
+    return nameOf(labels.roles, slot.role);
   }
 
   if (slot.captures !== null) {
-    return labels.fields[slot.captures] ?? slot.captures;
+    return nameOf(labels.fields, slot.captures);
   }
 
-  return labels.nodes[slot.type] ?? slot.type;
+  return nameOf(labels.nodes, slot.type);
 }
 
 /**
@@ -270,7 +270,7 @@ function Tokens({
       </p>
       {TOKENS.map((token) => (
         <label key={token.name} className="wconvert-token">
-          {labels.tokens[token.name] ?? token.name}
+          {nameOf(labels.tokens, token.name)}
           <input
             type="text"
             className="regular-text"

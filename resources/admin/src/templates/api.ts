@@ -32,3 +32,14 @@ export interface Gallery {
 }
 
 export const listTemplates = () => apiFetch<Gallery>({ path: '/wconvert/v1/templates' });
+
+/**
+ * One label, or the key itself where nothing names it.
+ *
+ * The same fallback `WConvert\Rules\RuleLabels` takes on the other side of
+ * the boundary, and for the same reason: a build whose vocabulary is ahead of
+ * its translations shows a merchant `success_headline` rather than an empty
+ * control. `tests/unit/Template/TemplateLabelParityTest.php` is what keeps
+ * that from becoming the normal case.
+ */
+export const nameOf = (labels: Record<string, string>, key: string): string => labels[key] ?? key;

@@ -39,7 +39,12 @@ describe('a stored rule, read back', () => {
   it('is the preset it is wearing, and what the merchant filled in beside it', () => {
     const read = fromRule({ type: 'query_param', key: 'utm_source', value: ['google'] }, [queryParam]);
 
-    expect(read).toEqual({ type: queryParam, preset: queryParam.presets[0], filled: { value: ['google'] } });
+    expect(read).toEqual({
+      type: queryParam,
+      preset: queryParam.presets[0],
+      values: { key: 'utm_source', value: ['google'] },
+      filled: { value: ['google'] },
+    });
   });
 
   /**
@@ -51,7 +56,12 @@ describe('a stored rule, read back', () => {
   it('is the general form where no preset fits, with every param the merchant filled in', () => {
     const read = fromRule({ type: 'query_param', key: 'utm_term', value: ['sale'] }, [queryParam]);
 
-    expect(read).toEqual({ type: queryParam, preset: null, filled: { key: 'utm_term', value: ['sale'] } });
+    expect(read).toEqual({
+      type: queryParam,
+      preset: null,
+      values: { key: 'utm_term', value: ['sale'] },
+      filled: { key: 'utm_term', value: ['sale'] },
+    });
   });
 
   /**
@@ -116,7 +126,29 @@ describe('every preset the manifest ships', () => {
     const rule = toRule(type, preset, filled);
 
     expect(rule.type).toBe(type.type);
-    expect(fromRule(rule, TYPES)).toEqual({ type, preset, filled });
+    expect(fromRule(rule, TYPES)).toEqual({ type, preset, values: { ...preset.fixed, ...filled }, filled });
     expect(toRule(type, preset, filled)).toEqual(rule);
+  });
+});
+
+/**
+ * **A preset is a shortcut over the engine type, never a replacement for it**
+ * (ADR 0005) — so leaving one has to leave the merchant somewhere they can
+ * work, not back at an empty rule.
+ *
+ * `values` is what makes that possible: it carries every declared param the
+ * rule holds, preset-fixed ones included, which is exactly what the panel
+ * hands back when the merchant drops to the general form.
+ */
+describe('leaving a preset for the general form', () => {
+  it('keeps what the preset had decided, as something the merchant can now edit', () => {
+    const wearing = fromRule({ type: 'query_param', key: 'utm_source', value: ['google'] }, [queryParam]);
+
+    // What the panel does when the preset select moves to "Set it myself".
+    expect(toRule(queryParam, null, wearing?.values ?? {})).toEqual({
+      type: 'query_param',
+      key: 'utm_source',
+      value: ['google'],
+    });
   });
 });

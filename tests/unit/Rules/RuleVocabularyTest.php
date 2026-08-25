@@ -166,6 +166,27 @@ final class RuleVocabularyTest extends TestCase
         $this->assertFalse($vocabulary->hasTrigger([]));
         $this->assertFalse($vocabulary->hasTrigger([['type' => 'device', 'in' => ['mobile']]]));
 
+        // **Counting Triggers is not the same as having one.** The loader
+        // module reads `rule.seconds`, and `Number(undefined)` is NaN, so a
+        // `time_on_page` with no value never fires however long the visitor
+        // stays — the same silent loss of function as an empty list, wearing a
+        // rule. Empty is judged the way a form field is: absent, `''` and `[]`
+        // all mean nothing was chosen.
+        $this->assertFalse($vocabulary->hasTrigger([['type' => 'time_on_page']]));
+        $this->assertFalse($vocabulary->hasTrigger([['type' => 'time_on_page', 'seconds' => '']]));
+        $this->assertFalse($vocabulary->hasTrigger([['type' => 'scroll_depth']]));
+
+        // But a zero IS a value: "as soon as they arrive" is a rule somebody
+        // meant, and refusing it would make the vocabulary narrower than the
+        // engine.
+        $this->assertTrue($vocabulary->hasTrigger([['type' => 'scroll_depth', 'percent' => 0]]));
+
+        // And an `authored` param is the merchant's to fill in on their own
+        // site — a [[Playbook]] may not supply one at all (ADR 0012) — so
+        // requiring it here would refuse the very state prefill hands them to
+        // complete.
+        $this->assertTrue($vocabulary->hasTrigger([['type' => 'click_element']]));
+
         // A Targeting rule is not a Trigger however it is spelled, and neither
         // is a type the vocabulary does not have: both would leave an Optin
         // that can never fire while looking like one that can.

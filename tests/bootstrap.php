@@ -325,34 +325,6 @@ if (!function_exists('wp_hash')) {
  * containing that line while asserting something else entirely — the beacon's
  * filtering, its rate limit, its published-set check.
  */
-/*
- * The public post types, as objects with labels.
- *
- * `RuleController` resolves the options for a `post_type`-valued Targeting
- * rule from WordPress rather than from a list of ours, because a custom post
- * type's label is whatever its author registered. The two WordPress always has
- * are enough to prove the shape.
- */
-if (!function_exists('get_post_types')) {
-    /**
-     * @param array<string, mixed> $args
-     * @return array<string, object|string>
-     */
-    function get_post_types(array $args = [], string $output = 'names'): array
-    {
-        unset($args);
-
-        if ($output !== 'objects') {
-            return ['post' => 'post', 'page' => 'page'];
-        }
-
-        return [
-            'post' => (object) ['labels' => (object) ['singular_name' => 'Post']],
-            'page' => (object) ['labels' => (object) ['singular_name' => 'Page']],
-        ];
-    }
-}
-
 if (!function_exists('wp_timezone')) {
     function wp_timezone(): DateTimeZone
     {
@@ -441,5 +413,33 @@ if (!class_exists('wpdb')) {
         {
             return 1;
         }
+    }
+}
+
+/*
+ * The public post types, as objects with labels.
+ *
+ * `RuleCatalogue` resolves the options for a `post_type`-valued Targeting
+ * rule from WordPress rather than from a list of ours, because a custom post
+ * type's label is whatever its author registered. The two WordPress always has
+ * are enough to prove the shape.
+ */
+if (!function_exists('get_post_types')) {
+    /**
+     * @param array<string, mixed> $args
+     * @return array<string, object|string>
+     */
+    function get_post_types(array $args = [], string $output = 'names'): array
+    {
+        unset($args);
+
+        if ($output !== 'objects') {
+            return ['post' => 'post', 'page' => 'page'];
+        }
+
+        return [
+            'post' => (object) ['labels' => (object) ['singular_name' => 'Post']],
+            'page' => (object) ['labels' => (object) ['singular_name' => 'Page']],
+        ];
     }
 }

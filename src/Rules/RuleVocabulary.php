@@ -223,19 +223,69 @@ final class RuleVocabulary
     }
 
     /**
-     * Does this rule list name at least one Trigger?
+     * Does this rule list name at least one Trigger **that could fire**?
      *
+     * ========================================================================
+     * COUNTING TRIGGERS IS NOT THE SAME AS HAVING ONE.
+     * ========================================================================
      * **Every Optin has at least one, and "shows immediately" is the explicit
      * `page_load` Trigger rather than an empty list** (CONTEXT.md, Trigger).
-     * Asked here rather than counted at each call site, so the [[Playbook]]
-     * registry and the save route are asking the vocabulary the same question
-     * rather than two spellings of it.
+     * A list holding `{"type": "time_on_page"}` and nothing else satisfies the
+     * count and fails the rule: the loader module reads `rule.seconds`, and
+     * `Number(undefined)` is NaN, so the comparison is false forever. That is
+     * the same silent, total loss of function ADR 0012 names as this
+     * category's defining support ticket, arriving through the builder instead
+     * of through a [[Playbook]].
+     *
+     * So a Trigger counts when every param it declares has a value — **except
+     * the `authored` ones**, which are the merchant's to fill in on their own
+     * site and which a Playbook may not supply at all (ADR 0012). Requiring
+     * one of those would refuse exactly the state prefill hands the merchant
+     * to complete: a `click_element` naming the Trigger with the selector left
+     * blank.
+     *
+     * Asked here rather than counted at each call site, so the Playbook
+     * registry and the save route ask the vocabulary the same question rather
+     * than two spellings of it.
      *
      * @param mixed $rules
      */
     public function hasTrigger($rules): bool
     {
-        return $this->partition($rules)['triggers'] !== [];
+        foreach ($this->partition($rules)['triggers'] as $rule) {
+            if ($this->couldFire($rule)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Is every param this rule needs actually supplied?
+     *
+     * Emptiness is judged the way a form field is: an absent key, an empty
+     * string and an empty set all mean "nothing was chosen". `false` and `0`
+     * are values — a `scroll_depth` of 0 is "as soon as they arrive", which is
+     * a rule somebody meant.
+     *
+     * @param array<string, mixed> $rule
+     */
+    private function couldFire(array $rule): bool
+    {
+        foreach ($this->paramsOf((string) $rule['type']) as $name => $param) {
+            if (($param['authored'] ?? false) === true) {
+                continue;
+            }
+
+            $value = $rule[$name] ?? null;
+
+            if ($value === null || $value === '' || $value === []) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private function isClientRule(string $type): bool

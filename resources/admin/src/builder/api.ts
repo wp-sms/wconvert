@@ -26,7 +26,7 @@ export interface Rule {
  * Spelled here as well as in the manifest, which is the same duplicate
  * {@link Availability} is: there is nothing else about a control to declare,
  * so a manifest between the two would be a file with one column.
- * `tests/js/builder-controls.test.ts` is what stops them drifting.
+ * `tests/js/builder-controls.test.tsx` is what stops them drifting.
  */
 export type Control =
   | 'text'

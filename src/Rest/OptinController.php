@@ -300,7 +300,7 @@ final class OptinController
     }
 
     /**
-     * **An Optin cannot be saved with zero [[Trigger]]s.**
+     * **An Optin cannot be saved with no [[Trigger]] it can act on.**
      *
      * Every Optin has at least one, and "shows immediately" is the explicit
      * `page_load` Trigger rather than an empty list (CONTEXT.md, Trigger). An
@@ -323,7 +323,10 @@ final class OptinController
     {
         return new WP_Error(
             'wconvert_optin_needs_a_trigger',
-            __('An Optin needs at least one Trigger. Add “Shows immediately” if it should show straight away.', 'wconvert'),
+            __(
+                'An Optin needs at least one Trigger it can act on. Fill in the one you have, or add “Shows immediately” if it should show straight away.',
+                'wconvert'
+            ),
             ['status' => 400]
         );
     }

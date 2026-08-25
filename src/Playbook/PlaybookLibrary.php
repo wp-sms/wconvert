@@ -211,22 +211,31 @@ final class PlaybookLibrary
             return RejectionReason::DisplayTypeMismatch;
         }
 
-        // Every Optin has at least one [[Trigger]] and "shows immediately" is
-        // the explicit `page_load` one rather than an empty list (CONTEXT.md,
-        // Trigger). A Playbook naming none prefills an Optin that can never
-        // fire — a silent, total loss of function with nothing in any log
-        // (ADR 0012) — and this is the last moment an author is present.
-        if ($rules->partition($entry['rules'] ?? [])['triggers'] === []) {
-            return RejectionReason::NoTrigger;
-        }
-
         // Every key every rule supplies, against the params its type
         // declares. A key no loader module reads is not an extension — it is
         // a rule that can never hold, on every Optin this entry prefills.
+        //
+        // Asked BEFORE the Trigger check below, because a misspelled param and
+        // a missing Trigger are the same symptom with different causes:
+        // `['type' => 'time_on_page', 'value' => 8]` has no `seconds` and so
+        // has no Trigger that could fire, but "no Trigger" is not what its
+        // author got wrong and not what they need to read.
         foreach (self::rulesNamedBy($entry) as [$type, $supplied]) {
             if (array_diff($supplied, array_keys($rules->paramsOf($type))) !== []) {
                 return RejectionReason::UnknownRuleParam;
             }
+        }
+
+        // Every Optin has at least one [[Trigger]] and "shows immediately" is
+        // the explicit `page_load` one rather than an empty list (CONTEXT.md,
+        // Trigger). A Playbook naming none prefills an Optin that can never
+        // fire — a silent, total loss of function with nothing in any log
+        // (ADR 0012) — and this is the last moment an author is present. One
+        // naming a Trigger with no value for a param the merchant was never
+        // going to supply is the same Optin wearing a rule, which is why this
+        // asks whether one could FIRE rather than counting them.
+        if (!$rules->hasTrigger($entry['rules'] ?? [])) {
+            return RejectionReason::NoTrigger;
         }
 
         $copy = is_array($entry['copy'] ?? null) ? $entry['copy'] : [];

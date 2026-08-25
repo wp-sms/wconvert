@@ -354,7 +354,7 @@ final class PlaybookRegistrationTest extends TestCase
     public function testAPlaybookNamingOnlyConditionsIsRejectedToo(): void
     {
         $this->assertRejected(
-            self::entry(['rules' => [['type' => 'device', 'value' => ['mobile']]]]),
+            self::entry(['rules' => [['type' => 'device', 'in' => ['mobile']]]]),
             RejectionReason::NoTrigger
         );
     }

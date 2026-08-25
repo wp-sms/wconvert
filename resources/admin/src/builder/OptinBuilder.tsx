@@ -6,6 +6,7 @@ import { SettingsPanel } from './SettingsPanel';
 import { TargetingEditor, type Targeting } from './TargetingEditor';
 import { getOptin, getRules, saveOptin, type Rule, type RuleVocabulary } from './api';
 import { listTemplates, type Gallery as TemplateGallery, type TemplateEntry } from '../templates/api';
+import { adminSettings } from '../settings';
 import type { Template } from '@renderer/types';
 
 /**
@@ -141,7 +142,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
         <SettingsPanel
           entry={entryFor(template, templateId, gallery.templates)}
           labels={gallery.labels}
-          dev={window.wconvertAdmin?.dev === true}
+          dev={adminSettings()?.dev === true}
           onChange={(next) => edit({ template: next })}
           onError={report}
         />

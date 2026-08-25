@@ -1,4 +1,5 @@
 import apiFetch from '@wordpress/api-fetch';
+import { adminSettings } from '../settings';
 
 /** One [[Lead]] — one capture event, as `GET /wconvert/v1/leads` returns it. */
 export interface Lead {
@@ -45,24 +46,6 @@ export interface Retention {
   max_days: number;
 }
 
-/**
- * What `AdminMenu` localises.
- *
- * `exportUrl` is the nonced `admin-post.php` URL for the CSV. `dev` is
- * `WP_DEBUG`, and the builder's library-entry export is the only thing that
- * reads it — authoring is the settings panel plus a **dev-only** export
- * (ADR 0010).
- *
- * Declared here rather than beside each reader, because a `declare global`
- * per consumer is one interface merged from several files and the shape stops
- * being readable in any of them.
- */
-declare global {
-  interface Window {
-    wconvertAdmin?: { exportUrl: string; dev?: boolean };
-  }
-}
-
 const query = (params: Record<string, string>) => new URLSearchParams(params).toString();
 
 export const readLog = (optinId: string, grouped: boolean) =>
@@ -87,7 +70,7 @@ export const saveRetention = (days: number | null) =>
  * filter here does not invalidate it.
  */
 export const exportUrl = (optinId: string): string | null => {
-  const base = window.wconvertAdmin?.exportUrl;
+  const base = adminSettings()?.exportUrl;
 
   if (base === undefined) {
     return null;

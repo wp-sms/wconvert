@@ -89,7 +89,7 @@ export function ParamControl({ id, param, value, onChange }: ParamControlProps) 
       return <OptionSet id={id} param={param} value={value} onChange={onChange} />;
 
     case 'text_set':
-      return <ValueList id={id} value={value} onChange={onChange} />;
+      return <ValueList value={value} onChange={onChange} />;
 
     default:
       return (
@@ -108,8 +108,10 @@ export function ParamControl({ id, param, value, onChange }: ParamControlProps) 
 function OptionSet({ id, param, value, onChange }: ParamControlProps) {
   const chosen = Array.isArray(value) ? (value as unknown[]) : [];
 
+  // A group of checkboxes rather than one control, so it carries `role` and a
+  // pointer at its own name instead of an `id` no `<label>` can point at.
   return (
-    <fieldset id={id} className="wconvert-option-set">
+    <span className="wconvert-option-set" role="group" aria-labelledby={id}>
       {param.options.map((option) => (
         <label key={option.value}>
           <input
@@ -130,12 +132,12 @@ function OptionSet({ id, param, value, onChange }: ParamControlProps) {
           {option.label}
         </label>
       ))}
-    </fieldset>
+    </span>
   );
 }
 
 /** A set the merchant types — one value per row, and no way to nest one. */
-function ValueList({ id, value, onChange }: Omit<ParamControlProps, 'param'>) {
+function ValueList({ value, onChange }: Omit<ParamControlProps, 'param' | 'id'>) {
   const values = (Array.isArray(value) ? (value as unknown[]) : []).map((each) => String(each));
   // Always one empty row at the end, so adding a value is typing rather than
   // finding a button first.
@@ -145,7 +147,7 @@ function ValueList({ id, value, onChange }: Omit<ParamControlProps, 'param'>) {
     onChange(rows.map((row, index) => (index === at ? next : row)).filter((row) => row !== ''));
 
   return (
-    <span className="wconvert-value-list" id={id}>
+    <span className="wconvert-value-list">
       {rows.map((row, index) => (
         <span key={index}>
           <input
@@ -161,6 +163,44 @@ function ValueList({ id, value, onChange }: Omit<ParamControlProps, 'param'>) {
           )}
         </span>
       ))}
+    </span>
+  );
+}
+
+/**
+ * One param, with its name attached to its control the way an assistive
+ * technology reads it.
+ *
+ * ============================================================================
+ * A SET IS SEVERAL CONTROLS, SO IT IS A GROUP AND NOT A LABEL.
+ * ============================================================================
+ * `<label>` points at exactly one form control. A device set is three
+ * checkboxes and a value list is a column of inputs, so wrapping either in a
+ * label leaves the name attached to whichever one the browser picks — which
+ * reads as a checkbox called "Shows on" and two with no name at all. Those get
+ * a named group instead.
+ *
+ * This file already cites wp.org Guideline 9 about not drawing controls a user
+ * cannot use; a control they cannot hear the name of is the same failure one
+ * layer down.
+ */
+export function ParamField({ id, param, value, onChange }: ParamControlProps) {
+  const control = <ParamControl id={id} param={param} value={value} onChange={onChange} />;
+
+  if (param.control === 'device_set' || param.control === 'text_set') {
+    return (
+      <span className="wconvert-param">
+        <span id={id} className="wconvert-param__name">
+          {param.label}
+        </span>{' '}
+        {control}
+      </span>
+    );
+  }
+
+  return (
+    <span className="wconvert-param">
+      <label htmlFor={id}>{param.label}</label> {control}
     </span>
   );
 }

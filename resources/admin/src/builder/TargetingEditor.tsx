@@ -1,5 +1,6 @@
 import { __ } from '@wordpress/i18n';
-import { ParamControl } from './controls';
+import { ParamField } from './controls';
+import { RuleRows, type Row } from './RuleRows';
 import type { RuleType } from './api';
 
 /**
@@ -63,10 +64,14 @@ export function TargetingEditor({ types, targeting, onChange }: TargetingEditorP
     <>
       <h3>{__('Where it shows', 'wconvert')}</h3>
       <p className="description">
-        {__('Leave the first list empty to show it everywhere. Where the two lists disagree, the second one wins.', 'wconvert')}
+        {__(
+          'Leave “Show it on” empty to show it everywhere. Anything in “But never on” wins, even where the same page is in “Show it on” too.',
+          'wconvert',
+        )}
       </p>
 
       <RuleList
+        list="include"
         heading={__('Show it on', 'wconvert')}
         empty={__('Everywhere on the site.', 'wconvert')}
         types={pages}
@@ -75,6 +80,7 @@ export function TargetingEditor({ types, targeting, onChange }: TargetingEditorP
       />
 
       <RuleList
+        list="exclude"
         heading={__('But never on', 'wconvert')}
         empty={__('Nowhere is excluded.', 'wconvert')}
         types={pages}
@@ -114,6 +120,8 @@ export function TargetingEditor({ types, targeting, onChange }: TargetingEditorP
 }
 
 interface RuleListProps {
+  /** `include` or `exclude` — a stable key, so a control id is not a translated string. */
+  readonly list: string;
   readonly heading: string;
   readonly empty: string;
   readonly types: readonly RuleType[];
@@ -129,41 +137,34 @@ interface RuleListProps {
  * a select of what this site registers, a path is a glob. Which is what makes
  * this a picker rather than a pair of free-text boxes.
  */
-function RuleList({ heading, empty, types, rules, onChange }: RuleListProps) {
+function RuleList({ list, heading, empty, types, rules, onChange }: RuleListProps) {
+  const rows: Row[] = rules.map((rule, at) => {
+    const type = types.find((each) => each.type === rule.type);
+
+    return {
+      key: String(at),
+      content:
+        type === undefined ? (
+          <code>{rule.type}</code>
+        ) : (
+          <>
+            <strong>{type.label}</strong>{' '}
+            <ParamField
+              id={`wconvert-target-${list}-${at}`}
+              param={type.params.value}
+              value={rule.value}
+              onChange={(value) => onChange(rules.map((each, index) => (index === at ? { ...each, value } : each)))}
+            />
+          </>
+        ),
+      onRemove: () => onChange(rules.filter((_each, index) => index !== at)),
+    };
+  });
+
   return (
     <>
       <h4>{heading}</h4>
-      {rules.length === 0 && <p className="wconvert-rules__empty">{empty}</p>}
-      <ul className="wconvert-rules">
-        {rules.map((rule, at) => {
-          const type = types.find((each) => each.type === rule.type);
-
-          return (
-            <li key={at} className="wconvert-rule">
-              {type === undefined ? (
-                <code>{rule.type}</code>
-              ) : (
-                <label>
-                  <strong>{type.label}</strong> {type.params.value.label}{' '}
-                  <ParamControl
-                    id={`wconvert-target-${heading}-${at}`}
-                    param={type.params.value}
-                    value={rule.value}
-                    onChange={(value) => onChange(rules.map((each, index) => (index === at ? { ...each, value } : each)))}
-                  />
-                </label>
-              )}{' '}
-              <button
-                type="button"
-                className="button-link button-link-delete"
-                onClick={() => onChange(rules.filter((_each, index) => index !== at))}
-              >
-                {__('Remove', 'wconvert')}
-              </button>
-            </li>
-          );
-        })}
-      </ul>
+      <RuleRows rows={rows} empty={empty} />
       <p>
         <label>
           {__('Add', 'wconvert')}{' '}

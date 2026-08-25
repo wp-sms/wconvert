@@ -1,5 +1,6 @@
 import { __ } from '@wordpress/i18n';
-import { ParamControl } from './controls';
+import { ParamField } from './controls';
+import { RuleRows, type Row } from './RuleRows';
 import { fromRule, toRule } from './presets';
 import type { Rule, RuleType } from './api';
 
@@ -17,9 +18,14 @@ import type { Rule, RuleType } from './api';
  *
  * **One list underneath.** The rules are stored flat and in the merchant's
  * order, and every edit here lands at the rule's own index rather than
- * rebuilding the list from the two views. Rebuilding would silently reorder
- * the list into triggers-then-conditions on every save, and the rule list is
- * a screen they look at.
+ * rebuilding the list from the views. Rebuilding would silently reorder the
+ * list into triggers-then-conditions on every save, and the rule list is a
+ * screen they look at.
+ *
+ * **Every rule reaches a row**, including one whose type this build has never
+ * heard of. Filtering the flat list down to the two known axes would leave
+ * such a rule invisible AND unremovable — still in `config`, still saved back,
+ * with nothing on screen to act on. It gets a third list and a way out.
  *
  * **A premium type is named, never drawn disabled.** wp.org Guideline 9 fires
  * on showing a real control the user cannot use, and ADR 0012 answers it the
@@ -49,75 +55,61 @@ export function RulesEditor({ triggers, conditions, rules, onChange }: RulesEdit
       .map((rule, index) => [rule, index] as const)
       .filter(([rule]) => axis.some((type) => type.type === rule.type));
 
-  const kept = on(triggers).length;
+  const unknown = rules
+    .map((rule, index) => [rule, index] as const)
+    .filter(([rule]) => !types.some((type) => type.type === rule.type));
+
+  const row = ([rule, at]: readonly [Rule, number], removable: boolean): Row => ({
+    key: String(at),
+    content: <RuleRow rule={rule} at={at} types={types} onChange={(next) => replace(at, next)} />,
+    onRemove: removable ? () => remove(at) : null,
+  });
+
+  const kept = on(triggers);
 
   return (
     <>
       <h3>{__('When it shows', 'wconvert')}</h3>
-      <p className="description">
-        {__('It fires as soon as any one of these happens.', 'wconvert')}
-      </p>
-      <RuleList
-        rows={on(triggers)}
-        types={types}
-        // **Every Optin has at least one Trigger** and "shows immediately" is
-        // the explicit `page_load` one, never an empty list (CONTEXT.md,
-        // Trigger). The last one keeps no remove control, and the save route
-        // refuses the same state — one of those is a screen and the other is
-        // the guarantee.
-        removable={kept > 1}
-        onReplace={replace}
-        onRemove={remove}
-      />
+      <p className="description">{__('It fires as soon as any one of these happens.', 'wconvert')}</p>
+      {/*
+        **Every Optin has at least one Trigger** and "shows immediately" is the
+        explicit `page_load` one, never an empty list (CONTEXT.md, Trigger). The
+        last one keeps no remove control, and the save route refuses the same
+        state — one of those is a screen and the other is the guarantee.
+      */}
+      <RuleRows rows={kept.map((entry) => row(entry, kept.length > 1))} empty={__('Nothing yet.', 'wconvert')} />
       <AddRule axis={triggers} label={__('Add a trigger', 'wconvert')} onAdd={add} />
 
       <h3>{__('Who sees it', 'wconvert')}</h3>
-      <p className="description">
-        {__('Every one of these must hold at the moment it fires.', 'wconvert')}
-      </p>
-      <RuleList rows={on(conditions)} types={types} removable onReplace={replace} onRemove={remove} />
+      <p className="description">{__('Every one of these must hold at the moment it fires.', 'wconvert')}</p>
+      <RuleRows
+        rows={on(conditions).map((entry) => row(entry, true))}
+        empty={__('Nothing yet.', 'wconvert')}
+      />
       <AddRule axis={conditions} label={__('Add a condition', 'wconvert')} onAdd={add} />
+
+      {unknown.length > 0 && (
+        <>
+          <h3>{__('Not available on this site', 'wconvert')}</h3>
+          <p className="description">
+            {__('These rules are still saved with the Optin. Remove one if you no longer want it.', 'wconvert')}
+          </p>
+          <RuleRows rows={unknown.map((entry) => row(entry, true))} empty="" />
+        </>
+      )}
     </>
-  );
-}
-
-interface RuleListProps {
-  readonly rows: readonly (readonly [Rule, number])[];
-  readonly types: readonly RuleType[];
-  readonly removable: boolean;
-  readonly onReplace: (at: number, rule: Rule) => void;
-  readonly onRemove: (at: number) => void;
-}
-
-function RuleList({ rows, types, removable, onReplace, onRemove }: RuleListProps) {
-  if (rows.length === 0) {
-    return <p className="wconvert-rules__empty">{__('Nothing yet.', 'wconvert')}</p>;
-  }
-
-  return (
-    <ul className="wconvert-rules">
-      {rows.map(([rule, at]) => (
-        <li key={at} className="wconvert-rule">
-          <RuleRow
-            rule={rule}
-            types={types}
-            onChange={(next) => onReplace(at, next)}
-            onRemove={removable ? () => onRemove(at) : null}
-          />
-        </li>
-      ))}
-    </ul>
   );
 }
 
 interface RuleRowProps {
   readonly rule: Rule;
+  /** Its index in the flat list, which is what makes each control's id unique. */
+  readonly at: number;
   readonly types: readonly RuleType[];
   readonly onChange: (rule: Rule) => void;
-  readonly onRemove: (() => void) | null;
 }
 
-function RuleRow({ rule, types, onChange, onRemove }: RuleRowProps) {
+function RuleRow({ rule, at, types, onChange }: RuleRowProps) {
   const read = fromRule(rule, types);
 
   if (read === null) {
@@ -129,12 +121,11 @@ function RuleRow({ rule, types, onChange, onRemove }: RuleRowProps) {
       <>
         <code>{rule.type}</code>{' '}
         <span className="wconvert-rule__note">{__('This rule is not available on this site.', 'wconvert')}</span>{' '}
-        {onRemove !== null && <RemoveButton onClick={onRemove} />}
       </>
     );
   }
 
-  const { type, preset, filled } = read;
+  const { type, preset, values, filled } = read;
   const editable = Object.entries(type.params).filter(([param]) => !(preset !== null && param in preset.fixed));
 
   return (
@@ -145,7 +136,12 @@ function RuleRow({ rule, types, onChange, onRemove }: RuleRowProps) {
           aria-label={type.label}
           value={preset?.id ?? ''}
           onChange={(event) =>
-            onChange(toRule(type, type.presets.find((each) => each.id === event.target.value) ?? null, filled))
+            // The rule's OWN values, not just the ones outside the old preset:
+            // dropping from "came from a particular source" to the general form
+            // must hand the merchant `utm_source` to edit rather than an empty
+            // key and a rule that matches every visitor. A preset's fixed
+            // params still win, so this changes nothing when one is chosen.
+            onChange(toRule(type, type.presets.find((each) => each.id === event.target.value) ?? null, values))
           }
         >
           {type.presets.map((each) => (
@@ -160,38 +156,29 @@ function RuleRow({ rule, types, onChange, onRemove }: RuleRowProps) {
         </select>
       )}
       {editable.map(([param, declaration]) => (
-        <label key={param} className="wconvert-rule__param">
-          {declaration.label}{' '}
-          <ParamControl
-            id={`wconvert-rule-${type.type}-${param}`}
-            param={declaration}
-            value={filled[param]}
-            onChange={(value) => onChange(toRule(type, preset, { ...filled, [param]: value }))}
-          />
-        </label>
+        <ParamField
+          key={param}
+          id={`wconvert-rule-${at}-${param}`}
+          param={declaration}
+          value={filled[param]}
+          onChange={(value) => onChange(toRule(type, preset, { ...filled, [param]: value }))}
+        />
       ))}
-      {onRemove !== null && <RemoveButton onClick={onRemove} />}
       {/*
         Where a rule was substituted by degradation, its row carries a
         PERSISTENT inline note here — never a dismissible banner, which is
         dismissed once and leaves the Optin carrying an invisible substitution
         forever (ADR 0012). The marker that anchors it is `degraded_from`, and
-        it arrives with the degradation ticket; this is the surface it renders
-        on. The `locked` note below is the same shape, for the case that needs
-        no marker: a rule authored with Pro and running without it.
+        it arrives with the degradation ticket; note that
+        `RuleVocabulary::normalize()` keeps only params the manifest declares,
+        so the marker has to be declared there or it will not survive a save.
+        The `locked` note below is the same surface, for the case that needs no
+        marker: a rule authored with Pro and running without it.
       */}
       {type.availability === 'locked' && (
         <p className="wconvert-rule__note">{__('Needs WConvert Pro to run.', 'wconvert')}</p>
       )}
     </>
-  );
-}
-
-function RemoveButton({ onClick }: { onClick: () => void }) {
-  return (
-    <button type="button" className="button-link button-link-delete" onClick={onClick}>
-      {__('Remove', 'wconvert')}
-    </button>
   );
 }
 

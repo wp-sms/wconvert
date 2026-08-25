@@ -112,8 +112,18 @@
   border-radius: 4px;
 }
 
-.wconvert-rule__param {
+.wconvert-param {
+  display: inline-block;
   margin-inline-start: 0.75rem;
+}
+
+/*
+ * A set is several controls, so its name is a `<span>` an `aria-labelledby`
+ * points at rather than a `<label>` pointing at one of them. It still has to
+ * read as a label.
+ */
+.wconvert-param__name {
+  color: #1d2327;
 }
 
 /*

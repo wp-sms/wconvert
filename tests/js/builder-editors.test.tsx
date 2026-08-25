@@ -108,6 +108,25 @@ describe('the rules editor', () => {
   });
 
   /**
+   * **A rule of a type this build has never heard of still reaches a row.**
+   *
+   * Filtering the flat list down to the two known axes would leave such a rule
+   * invisible AND unremovable — still in `config`, still saved back, with
+   * nothing on screen to act on. The vocabulary is closed, so this is rare;
+   * "rare and silent" is the combination that makes it worth a list of its own.
+   */
+  it('shows a rule it cannot draw controls for, and offers a way out of it', async () => {
+    const changed = rulesEditor([{ type: 'page_load' }, { type: 'moon_phase', in: ['waxing'] }]);
+
+    expect(screen.getByText('moon_phase')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Not available on this site' })).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Remove' }));
+
+    expect(changed).toHaveBeenCalledWith([{ type: 'page_load' }]);
+  });
+
+  /**
    * **A premium type is named, never drawn disabled.** wp.org Guideline 9
    * fires on showing a real control the user cannot use, and ADR 0012 answers
    * it the same way at prefill. Naming it is also what a settings list owes a
@@ -188,9 +207,10 @@ describe('the targeting picker', () => {
   it('states how the two lists combine, and what an empty one means', () => {
     targeting();
 
-    expect(
-      screen.getByText(/Leave the first list empty to show it everywhere\. Where the two lists disagree, the second one wins\./),
-    ).toBeInTheDocument();
+    // Both halves are named, rather than left to reading order: "the second
+    // one wins" is only true of a screen the merchant has already understood.
+    expect(screen.getByText(/Leave “Show it on” empty to show it everywhere/)).toBeInTheDocument();
+    expect(screen.getByText(/Anything in “But never on” wins/)).toBeInTheDocument();
   });
 
   /**

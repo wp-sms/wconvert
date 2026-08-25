@@ -60,10 +60,7 @@ export function toRule(type: RuleType, preset: RulePreset | null, filled: Record
  * the panel draws the params rather than pretending the rule is something
  * else.
  */
-export function fromRule(
-  rule: Rule,
-  types: readonly RuleType[],
-): { type: RuleType; preset: RulePreset | null; filled: Record<string, unknown> } | null {
+export function fromRule(rule: Rule, types: readonly RuleType[]): ReadRule | null {
   const type = types.find((candidate) => candidate.type === rule.type);
 
   if (type === undefined) {
@@ -71,15 +68,39 @@ export function fromRule(
   }
 
   const preset = type.presets.find((candidate) => fixes(candidate, rule)) ?? null;
+  const values: Record<string, unknown> = {};
   const filled: Record<string, unknown> = {};
 
   for (const param of Object.keys(type.params)) {
-    if (param in rule && !(preset !== null && param in preset.fixed)) {
+    if (!(param in rule)) {
+      continue;
+    }
+
+    values[param] = rule[param];
+
+    if (!(preset !== null && param in preset.fixed)) {
       filled[param] = rule[param];
     }
   }
 
-  return { type, preset, filled };
+  return { type, preset, values, filled };
+}
+
+export interface ReadRule {
+  readonly type: RuleType;
+  readonly preset: RulePreset | null;
+  /**
+   * Every declared param the rule carries, preset-fixed ones included.
+   *
+   * This is what a merchant leaving a preset for the general form keeps:
+   * dropping to "set it myself" from "came from a particular source" should
+   * hand them `utm_source` to edit, not an empty `key` and a rule that matches
+   * every visitor. {@link filled} is the other reading of the same rule and
+   * both are wanted — one is what to KEEP, the other is what to DRAW.
+   */
+  readonly values: Record<string, unknown>;
+  /** What the merchant supplied beyond the preset — the controls to draw. */
+  readonly filled: Record<string, unknown>;
 }
 
 /** Does this rule carry everything the preset decides? */

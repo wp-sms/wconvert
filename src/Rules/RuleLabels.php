@@ -129,10 +129,36 @@ final class RuleLabels
     /**
      * One label, or the key itself where nothing names it.
      *
-     * @param array<string, string> $labels
+     * ============================================================================
+     * A MISSING LABEL FALLS BACK TO THE KEY, DELIBERATELY.
+     * ============================================================================
+     * A build whose manifest is ahead of its translations shows a merchant
+     * `utm_medium` rather than an empty control. The parity test is what keeps
+     * that fallback from becoming the normal case; without it, the fallback
+     * would be the mechanism by which a missing label goes unnoticed forever.
+     *
+     * Params, presets and options are keyed by two parts because the same
+     * short name means different things under different types —
+     * `query_param`'s `value` is what the parameter must equal, and a
+     * Targeting rule's `value` is the page it names.
      */
-    public static function lookUp(array $labels, string $key): string
+    public static function type(string $type): string
     {
-        return $labels[$key] ?? $key;
+        return self::types()[$type] ?? $type;
+    }
+
+    public static function param(string $type, string $param): string
+    {
+        return self::params()[$type . '.' . $param] ?? $param;
+    }
+
+    public static function preset(string $type, string $preset): string
+    {
+        return self::presets()[$type . '.' . $preset] ?? $preset;
+    }
+
+    public static function option(string $control, string $value): string
+    {
+        return self::options()[$control . '.' . $value] ?? $value;
     }
 }

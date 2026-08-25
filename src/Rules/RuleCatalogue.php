@@ -69,7 +69,7 @@ final class RuleCatalogue
         return [
             'type' => $type,
             'kind' => $this->vocabulary->kindOf($type)?->value,
-            'label' => RuleLabels::lookUp(RuleLabels::types(), $type),
+            'label' => RuleLabels::type($type),
             'tier' => $tier?->value,
             // No rule type declares a [[SiteDependency]] in v1 — the cart
             // Conditions that would are not in the vocabulary yet — so the
@@ -89,14 +89,13 @@ final class RuleCatalogue
     private function params(string $type): array
     {
         $described = [];
-        $labels = RuleLabels::params();
 
         foreach ($this->vocabulary->paramsOf($type) as $name => $param) {
             $control = is_string($param['control'] ?? null) ? $param['control'] : 'text';
 
             $described[$name] = [
                 'control' => $control,
-                'label' => RuleLabels::lookUp($labels, $type . '.' . $name),
+                'label' => RuleLabels::param($type, (string) $name),
                 'authored' => ($param['authored'] ?? false) === true,
                 'options' => self::options($control, is_array($param['options'] ?? null) ? $param['options'] : []),
             ];
@@ -111,12 +110,11 @@ final class RuleCatalogue
     private function presets(string $type): array
     {
         $described = [];
-        $labels = RuleLabels::presets();
 
         foreach ($this->vocabulary->presetsOf($type) as $id => $fixed) {
             $described[] = [
                 'id' => $id,
-                'label' => RuleLabels::lookUp($labels, $type . '.' . $id),
+                'label' => RuleLabels::preset($type, (string) $id),
                 'fixed' => $fixed,
             ];
         }
@@ -143,12 +141,10 @@ final class RuleCatalogue
             return self::postTypes();
         }
 
-        $labels = RuleLabels::options();
-
         return array_values(array_map(
             static fn ($value): array => [
                 'value' => (string) $value,
-                'label' => RuleLabels::lookUp($labels, $control . '.' . (string) $value),
+                'label' => RuleLabels::option($control, (string) $value),
             ],
             array_filter($declared, 'is_scalar')
         ));
