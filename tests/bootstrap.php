@@ -149,6 +149,20 @@ if (!function_exists('get_date_from_gmt')) {
 }
 
 /*
+ * The inverse of the stub above, and identical for the same reason: this
+ * suite's clock is UTC throughout, so the two must agree about what time it
+ * is. Bulk re-push turns a Destination's `last_success_at` — written by
+ * `current_time('mysql')`, in the SITE's zone — into the real epoch a ULID
+ * boundary is built from, and only WordPress knows the offset (ADR 0008).
+ */
+if (!function_exists('get_gmt_from_date')) {
+    function get_gmt_from_date(string $datetime, string $format = 'Y-m-d H:i:s'): string
+    {
+        return gmdate($format, (int) strtotime($datetime . ' UTC'));
+    }
+}
+
+/*
  * The filter hook, alongside the action hook above.
  *
  * WordPress's personal-data exporter and eraser are REGISTRATIONS on
@@ -412,6 +426,72 @@ if (!class_exists('wpdb')) {
         public function update(string $table, array $data, array $where): int
         {
             return 1;
+        }
+    }
+}
+
+/*
+ * `WP_REST_Response` and `WP_Error`, as much of each as a controller's return
+ * value needs.
+ *
+ * Classes rather than function stubs, on the same footing as `wpdb` above and
+ * for the same reason: they are what the code under test CONSTRUCTS, and there
+ * is no way to pass a return type in. Every other Rest test in this suite
+ * asserts on the REGISTRATION and never calls a callback, which is why nothing
+ * needed these until a route had a payload worth asserting on — the
+ * [[Destination]] read, whose guarantee is that a credential never appears in
+ * it (#4).
+ *
+ * Deliberately minimal. A controller that needed more of WordPress's REST
+ * layer than a status and a body is a controller with logic that should have
+ * been somewhere testable.
+ */
+if (!class_exists('WP_REST_Response')) {
+    class WP_REST_Response
+    {
+        /** @param mixed $data */
+        public function __construct(private $data = null, private int $status = 200)
+        {
+        }
+
+        /** @return mixed */
+        public function get_data()
+        {
+            return $this->data;
+        }
+
+        public function get_status(): int
+        {
+            return $this->status;
+        }
+    }
+}
+
+if (!class_exists('WP_Error')) {
+    class WP_Error
+    {
+        /** @param array<string, mixed> $data */
+        public function __construct(
+            private string $code = '',
+            private string $message = '',
+            private array $data = []
+        ) {
+        }
+
+        public function get_error_code(): string
+        {
+            return $this->code;
+        }
+
+        public function get_error_message(): string
+        {
+            return $this->message;
+        }
+
+        /** @return array<string, mixed> */
+        public function get_error_data(): array
+        {
+            return $this->data;
         }
     }
 }

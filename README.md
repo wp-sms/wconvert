@@ -203,6 +203,72 @@ why: the prune is a range over the ULID primary key, the per-Optin listing
 walks that key backwards under a `LIMIT`, and grouping is two aggregates that
 each use an index already there.
 
+## Destinations, the queue and health
+
+A [[Destination]] is **outbound and fallible** — configured, optional, one of
+several, and able to fail without the capture failing
+([ADR 0007](docs/adr/0007-destinations-are-outbound-and-fallible.md)). **The
+Lead log is not one**: it is the Lead store, written first and always. Free
+ships one Destination type, the in-process WSMS push; every type that makes an
+outbound HTTP call is Pro's.
+
+**Everything is queued, including the WSMS push.** Action Scheduler is a core
+dependency bundled in the free plugin — three free features want a scheduler
+with no ESP in sight — and it is loaded from `wconvert.php` rather than through
+Composer's autoloader, because it version-negotiates at load and the newest
+copy on the site must win.
+
+**A job carries a Lead id and a Destination id, and nothing else.** Job
+arguments live in `actionscheduler_actions` for that plugin's whole retention
+period, which outlives any retention policy WConvert sets for itself — so
+personal data in one would survive both the prune and an honoured erasure
+request, in a table nothing here would ever look in again.
+
+**Delivery state is per-Destination health, not a per-Lead record**
+([ADR 0008](docs/adr/0008-delivery-state-is-destination-health-not-per-lead.md)).
+There is no `wconvert_lead_deliveries` table, because `push()` is idempotent:
+once re-pushing a Lead that already landed is harmless, per-Lead precision buys
+efficiency rather than correctness. What is stored is `last_success_at`,
+`last_error`, `last_error_at` and `consecutive_failures`, in their own
+non-autoloaded option — deliberately separate from Destination configuration,
+so the lost-increment race `update_option` allows can only ever eat advisory
+health and never an admin's edit.
+
+The failure split is the whole design, and it inverts under a naive
+implementation:
+
+| Outcome | Health | The ring |
+|---|---|---|
+| success | `last_success_at`, count cleared | — |
+| skipped — nothing to send | — | — |
+| **retryable** — the vendor is down | `consecutive_failures++`, retried with backoff | on the last attempt |
+| **terminal** — this Lead, specifically | **untouched** | recorded |
+
+A hundred malformed addresses are a hundred Lead-specific rejections, not a
+hundred consecutive outages. They are covered instead by a bounded ring of the
+last ~200 terminal failures, holding a Lead id and an error string.
+
+Recovery is **bulk re-push**: replay every Lead for Optins bound to this
+Destination since `last_success_at`, staggered against the type's declared
+jobs-per-minute — which is what replaces a rate limiter in v1, since only a
+replay can approach a vendor's limit. The window is a range over the ULID
+primary key, so it costs **no new index**.
+
+```bash
+wp eval-file bin/verify-destinations.php   # the plugin boots, AS loads, a capture queues two ids
+```
+
+A green suite is not the same as a plugin that runs: that script asserts
+`as_enqueue_async_action()` is genuinely defined by the time a capture fires,
+and reads the arguments back out of Action Scheduler's own table to check that
+no captured value is in them. **It refuses to run on an install that has
+Leads.**
+
+With WSMS deactivated the install is [[Standalone]] and fully working: capture,
+the lead log and CSV export all run, and the WSMS Destination reads as
+`unavailable` rather than `locked` — a missing plugin is not something we can
+sell.
+
 ## Analytics
 
 `wconvert_stats` holds **one row per `(optin_id, stat_date, kind)` with a

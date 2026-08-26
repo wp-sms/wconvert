@@ -50,4 +50,28 @@ if (!is_file($wconvertAutoloader)) {
 
 require_once $wconvertAutoloader;
 
+/*
+|--------------------------------------------------------------------------
+| Action Scheduler, bundled — a CORE dependency, not a premium one
+|--------------------------------------------------------------------------
+| Every [[Destination]] push is queued, including the in-process WSMS one, so
+| the free plugin needs a scheduler with no ESP in sight (#4, ADR 0008). WSMS's
+| own build stages Action Scheduler into its FREE tier for the same reason, and
+| WooCommerce has shipped it that way for years.
+|
+| Loaded HERE rather than on `plugins_loaded`, because Action Scheduler
+| version-negotiates at load time so the newest copy on the site wins — and a
+| copy that registers late has already lost that negotiation. It must never be
+| php-scoped for the same reason: `wp-sms.php:127` says it outright, "shared
+| library — must NOT be prefixed".
+|
+| Composer's autoloader does not pull it in: it is a WordPress plugin rather
+| than a PSR-4 library, and its entry file is what defines `as_*()`.
+*/
+$wconvertActionScheduler = __DIR__ . '/vendor/woocommerce/action-scheduler/action-scheduler.php';
+
+if (is_file($wconvertActionScheduler)) {
+    require_once $wconvertActionScheduler;
+}
+
 WConvert\Bootstrap::init();

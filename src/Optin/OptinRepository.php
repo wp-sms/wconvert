@@ -40,6 +40,9 @@ final class OptinRepository
     /** Everything needed to interpret a count, and nothing else (ADR 0020). */
     private const INTERPRETATION_COLUMNS = 'id, name, goal, deleted_at';
 
+    /** Which [[Destination]]s an Optin binds — the published config, and the id to key it by. */
+    private const BINDING_COLUMNS = 'id, published_config';
+
     public function __construct(
         private readonly Connection $db,
         private readonly PublishedSet $publishedSet,
@@ -189,6 +192,36 @@ final class OptinRepository
             Connection::TABLE_OPTINS,
             'SELECT ' . self::INTERPRETATION_COLUMNS . ' FROM %i'
         );
+    }
+
+    /**
+     * Every Optin's published config, by id — **soft-deleted and unpublished
+     * ones included.**
+     *
+     * The one caller is bulk re-push, which asks which Optins are bound to a
+     * [[Destination]] ({@see \WConvert\Destination\OptinBinding}). A [[Lead]]
+     * captured last week by an Optin since unpublished still needs re-pushing,
+     * and unpublishing keeps the last live config precisely so republishing is
+     * not a retype — so filtering here would silently drop exactly the Leads
+     * an operator is trying to recover.
+     *
+     * It is the one read outside the published-set rebuild that pulls a
+     * LONGTEXT column for every row, and it is affordable because it happens
+     * when a human presses a button rather than on any request path.
+     *
+     * @return array<string, array<string, mixed>|null>
+     */
+    public function publishedConfigs(): array
+    {
+        $configs = [];
+
+        foreach ($this->db->results(Connection::TABLE_OPTINS, 'SELECT ' . self::BINDING_COLUMNS . ' FROM %i') as $row) {
+            $decoded = json_decode((string) ($row['published_config'] ?? ''), true);
+
+            $configs[(string) $row['id']] = is_array($decoded) ? $decoded : null;
+        }
+
+        return $configs;
     }
 
     /**

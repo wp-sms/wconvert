@@ -2,6 +2,7 @@
 
 namespace WConvert\Rest;
 
+use WConvert\Destination\OptinBinding;
 use WConvert\Goal\GoalRegistry;
 use WConvert\Optin\Optin;
 use WConvert\Optin\OptinRepository;
@@ -260,6 +261,15 @@ final class OptinController
 
         if (isset($config['rules'])) {
             $config['rules'] = $this->vocabulary->normalize($config['rules']);
+        }
+
+        // **[[Destination]] ids and nothing more** (CONTEXT.md, Destination).
+        // Normalised on the way in like everything else here: a Destination's
+        // audience, tags and field map live on the Destination, so anything
+        // that is not an id in this list is a second configuration surface
+        // arriving by the back door.
+        if (isset($config[OptinBinding::KEY])) {
+            $config[OptinBinding::KEY] = OptinBinding::ids($config);
         }
 
         // Picking a Template TAKES A COPY of its design here — the tree with

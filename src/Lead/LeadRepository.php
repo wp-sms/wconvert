@@ -117,6 +117,27 @@ final class LeadRepository
     }
 
     /**
+     * One Lead by id — what a queued push re-reads.
+     *
+     * The job carries a Lead id and a [[Destination]] id and no Lead data at
+     * all (ADR 0008), so this is the read that turns one back into the other.
+     * A `null` here is not an error: a Lead erased or pruned between capture
+     * and job is a Lead that must not be pushed, and its absence says so.
+     *
+     * A primary-key lookup, so it costs no index this table does not have.
+     */
+    public function find(string $id): ?Lead
+    {
+        $row = $this->db->row(
+            Connection::TABLE_LEADS,
+            'SELECT ' . self::FULL_COLUMNS . ' FROM %i WHERE id = %s',
+            $id
+        );
+
+        return $row === null ? null : Lead::fromRow($row);
+    }
+
+    /**
      * **The headline number: submissions.** Its own `COUNT(*)`, with no
      * `GROUP BY` anywhere in it.
      *

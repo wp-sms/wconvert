@@ -44,6 +44,25 @@ nothing to read.
   thing that needs per-(Lead × Destination) durability. Retention pruning, which
   0018 attributed here, is a WP-Cron daily event instead — one site-wide job
   running one statement has no per-item grain to retry.
+
+  > **Completed by #30, and the sentence above is now out of date in one
+  > respect: WConvert has exactly one runtime Composer dependency.**
+  > `woocommerce/action-scheduler` is required by `composer.json` and loaded
+  > from `wconvert.php` itself rather than through the PSR-4 autoloader — it is
+  > a WordPress plugin, and its entry file is what defines the `as_*()`
+  > functions. It is loaded at plugin-file time rather than on `plugins_loaded`
+  > because Action Scheduler version-negotiates at load and the newest copy on
+  > the site wins; a copy registering late has already lost that negotiation.
+  > It must never be php-scoped, for the same reason.
+  >
+  > The seam is `WConvert\Queue\Queue`, with **no `cancel()`** — Action
+  > Scheduler cannot be queried by argument content, so a cancel here would be
+  > a method that lies. Retries are WConvert's own (`PushJob::MAX_ATTEMPTS`,
+  > exponential backoff): AS marks a failed action failed and does not retry
+  > it, which is the same thing WSMS's `JobProcessor` works around.
+  >
+  > Retention pruning stays on WP-Cron exactly as this bullet says. Having a
+  > scheduler did not change the argument that put it there.
 - "Destinations are the only way a Lead leaves WConvert" is now scoped to
   *automatic* pushes. CSV export is a manual admin action and always was a
   counter-example to the unscoped claim.
