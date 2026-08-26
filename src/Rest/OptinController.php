@@ -6,6 +6,11 @@ use WConvert\Destination\OptinBinding;
 use WConvert\Goal\GoalRegistry;
 use WConvert\Optin\Optin;
 use WConvert\Optin\OptinRepository;
+use WConvert\Optin\PublishedOptin;
+use WConvert\Optin\PublishedSet;
+use WConvert\Optin\Suspension;
+use WConvert\Rules\Degradation;
+use WConvert\Rules\RuleCatalogue;
 use WConvert\Rules\RuleVocabulary;
 use WConvert\Support\Ulid;
 use WConvert\Targeting\Targeting;
@@ -38,6 +43,9 @@ final class OptinController
         private readonly TemplateVocabulary $templates,
         private readonly TemplateLibrary $library,
         private readonly GoalRegistry $goals,
+        private readonly PublishedSet $publishedSet,
+        private readonly Degradation $degradation,
+        private readonly RuleCatalogue $rules,
     ) {
     }
 
@@ -113,9 +121,46 @@ final class OptinController
         ]);
     }
 
+    /**
+     * The list, with [[Suspended]] resolved for every published row.
+     *
+     * ========================================================================
+     * SUSPENSION IS COMPUTED HERE, AND STORED NOWHERE (ADR 0027).
+     * ========================================================================
+     * It is a pure function of what the site is SERVING against the live
+     * registry, so it is read off the published set — one non-autoloaded
+     * option the front end already reads whole — rather than off the two
+     * LONGTEXT columns the summary projection exists to avoid dragging
+     * (ADR 0001). That also makes it the same input the enqueue path resolves,
+     * so the list cannot say "running" about an Optin the payload is leaving
+     * out.
+     *
+     * A column would drift the moment [[Pro]] was deactivated without anything
+     * republishing, which is precisely the event it would be recording.
+     */
     public function index(WP_REST_Request $request): WP_REST_Response
     {
-        return new WP_REST_Response($this->optins->summaries((bool) $request->get_param('include_deleted')));
+        $summaries = $this->optins->summaries((bool) $request->get_param('include_deleted'));
+        $published = PublishedOptin::fromSet($this->publishedSet->all());
+
+        $suspended = [];
+
+        foreach ($published as $optin) {
+            $suspension = Suspension::of($optin, $this->degradation, $this->rules);
+
+            if ($suspension !== null) {
+                $suspended[$optin->id] = $suspension->reason();
+            }
+        }
+
+        return new WP_REST_Response(array_map(
+            // Present on every row, including as null. A key that appears only
+            // on the bad rows is a key the client tests for existence, and
+            // "absent" and "not suspended" would then be one thing that the
+            // day a request half-fails become two.
+            static fn (array $row): array => $row + ['suspended' => $suspended[$row['id'] ?? ''] ?? null],
+            $summaries
+        ));
     }
 
     /**

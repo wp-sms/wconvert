@@ -21,6 +21,24 @@ export interface Rule {
 }
 
 /**
+ * The one key a stored rule carries that is not a param of its type.
+ *
+ * It records which rule this one was SUBSTITUTED FOR when the Optin was
+ * prefilled on an install without [[Pro]] — `time_on_page` standing in for
+ * `exit_intent` — and the rule row renders it as a persistent inline note
+ * (ADR 0012). Provenance rather than configuration: it is deliberately not a
+ * manifest param, because a param would draw a control and invite the merchant
+ * to edit the record of a substitution.
+ *
+ * Spelled here and in `WConvert\Rules\RuleVocabulary::DEGRADED_FROM`, which is
+ * the side that decides what survives a save.
+ * `tests/unit/Rules/DegradedMarkerParityTest.php` is what stops the two
+ * drifting — a marker the builder wrote under another name would be dropped on
+ * the way in, silently, and the note would simply never appear.
+ */
+export const DEGRADED_FROM = 'degraded_from';
+
+/**
  * What a param takes on screen.
  *
  * Spelled here as well as in the manifest, which is the same duplicate

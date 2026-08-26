@@ -132,6 +132,57 @@ describe('the rules editor', () => {
    * it the same way at prefill. Naming it is also what a settings list owes a
    * merchant who went hunting for it (ADR 0026).
    */
+  /**
+   * ========================================================================
+   * A SUBSTITUTION IS A PERSISTENT NOTE ON ITS OWN ROW.
+   * ========================================================================
+   * Never a dismissible banner: dismissed once, it leaves the Optin carrying
+   * an invisible substitution forever (ADR 0012). So the note is on the row
+   * the substituted rule occupies, and nothing on screen retires it.
+   */
+  it('says on the row which premium rule this one is standing in for', () => {
+    const locked = ruleTypes({ free: 'ready', pro: 'locked' });
+
+    render(
+      <RulesEditor
+        triggers={locked.triggers}
+        conditions={locked.conditions}
+        rules={[{ type: 'time_on_page', seconds: 15, degraded_from: 'exit_intent' }]}
+        onChange={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText(/Standing in for/)).toHaveTextContent('exit_intent');
+    // Persistent: there is no control anywhere on this screen that takes it
+    // away. `Remove` belongs to a row, and this Optin's only Trigger keeps
+    // none — so the note has no dismissal to be confused with.
+    expect(screen.queryByRole('button', { name: /Dismiss|Got it|Hide/ })).toBeNull();
+  });
+
+  /** A rule the merchant asked for carries no such note. */
+  it('says nothing of the sort about an ordinary rule', () => {
+    rulesEditor([{ type: 'time_on_page', seconds: 15 }]);
+
+    expect(screen.queryByText(/Standing in for/)).toBeNull();
+  });
+
+  /**
+   * **Editing a substituted rule does not un-substitute it.** A `time_on_page`
+   * retimed to 30 seconds is still what the Optin got instead of exit intent,
+   * and losing the marker on the first edit would retire the note and the
+   * upgrade offer it anchors — the invisible substitution again, arriving
+   * through the one screen that was supposed to show it.
+   */
+  it('carries the marker through an edit of the substituted rule', async () => {
+    const changed = rulesEditor([{ type: 'time_on_page', seconds: 15, degraded_from: 'exit_intent' }]);
+
+    await userEvent.selectOptions(screen.getByLabelText('time_on_page'), 'after_a_moment');
+
+    expect(changed).toHaveBeenCalledWith([
+      { type: 'time_on_page', seconds: 5, degraded_from: 'exit_intent' },
+    ]);
+  });
+
   it('names a locked type as an upsell rather than offering it', () => {
     const locked = ruleTypes({ free: 'ready', pro: 'locked' });
 

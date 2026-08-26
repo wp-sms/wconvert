@@ -4,6 +4,7 @@ namespace WConvert\Rest;
 
 use WConvert\Optin\PublishedOptin;
 use WConvert\Optin\PublishedSet;
+use WConvert\Rules\Degradation;
 use WConvert\Stats\Beacon;
 use WConvert\Stats\BeaconTraffic;
 use WConvert\Stats\StatDay;
@@ -59,6 +60,7 @@ final class BeaconController
         private readonly PublishedSet $publishedSet,
         private readonly StatsRepository $stats,
         private readonly RateLimit $rateLimit,
+        private readonly Degradation $degradation,
     ) {
     }
 
@@ -136,7 +138,17 @@ final class BeaconController
         // throw all of it away for an id comparison. That is the right shape for
         // the capture route, which asks about exactly one id; it is the wrong
         // one here.
-        $published = PublishedOptin::idsIn($this->publishedSet->all());
+        //
+        // **And a [[Suspended]] Optin is not in it**, which is why this asks
+        // for the SERVED ids rather than the published ones: ADR 0027 wants
+        // no rows rather than zero-valued ones, and a page cached before the
+        // dependency went away still carries the entry and still beacons.
+        //
+        // The capture route deliberately does NOT ask the same question. A
+        // [[Lead]] somebody actually typed is the one genuinely unrecoverable
+        // loss available here, and the [[Lead]] log is not where a
+        // [[Conversion]] is counted (ADR 0019).
+        $published = PublishedOptin::servableIdsIn($this->publishedSet->all(), $this->degradation);
 
         // Asked once for the whole batch. The events were coalesced over one
         // page view, so they belong to one moment — and a flush that straddles

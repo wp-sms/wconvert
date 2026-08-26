@@ -13,6 +13,7 @@ use WConvert\Playbook\Prefill;
 use WConvert\Rules\RuleVocabulary;
 use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
+use WConvert\Tests\Unit\Support\InstalledRules;
 
 /**
  * **Prefill is a snapshot** — and it is the snapshot boundary that already
@@ -70,7 +71,8 @@ final class PrefillSnapshotTest extends TestCase
         return new Prefill(
             PlaybookLibrary::fromEntries([$entry], $templates, $vocabulary, RuleVocabulary::fromManifest(self::PLUGIN_DIR)),
             $templates,
-            $vocabulary
+            $vocabulary,
+            InstalledRules::free()
         );
     }
 

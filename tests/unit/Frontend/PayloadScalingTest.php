@@ -8,6 +8,7 @@ use WConvert\Frontend\Payload;
 use WConvert\Frontend\PayloadTag;
 use WConvert\Optin\PublishedOptin;
 use WConvert\Targeting\RequestContext;
+use WConvert\Tests\Unit\Support\InstalledRules;
 
 /**
  * ADR 0029's payload assertion, as PHPUnit.
@@ -67,12 +68,12 @@ final class PayloadScalingTest extends TestCase
 
     private static function bytes(int $totalPublished): int
     {
-        return strlen(PayloadTag::render(Payload::forRequest(self::publishedSet($totalPublished), self::pricingPage()), self::CAPTURE, self::BEACON));
+        return strlen(PayloadTag::render(Payload::forRequest(self::publishedSet($totalPublished), self::pricingPage(), InstalledRules::free()), self::CAPTURE, self::BEACON));
     }
 
     public function testOnlyTheMatchingOptinsReachThePage(): void
     {
-        $entries = Payload::forRequest(self::publishedSet(100), self::pricingPage());
+        $entries = Payload::forRequest(self::publishedSet(100), self::pricingPage(), InstalledRules::free());
 
         $this->assertCount(2, $entries);
     }
@@ -98,7 +99,7 @@ final class PayloadScalingTest extends TestCase
     public function testPayloadSizeGrowsWithTheOptinsThatDoMatch(): void
     {
         $set = self::publishedSet(100);
-        $one = strlen(PayloadTag::render(Payload::forRequest([$set[0]], self::pricingPage()), self::CAPTURE, self::BEACON));
+        $one = strlen(PayloadTag::render(Payload::forRequest([$set[0]], self::pricingPage(), InstalledRules::free()), self::CAPTURE, self::BEACON));
 
         $this->assertGreaterThan($one, self::bytes(100));
     }

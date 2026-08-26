@@ -16,19 +16,36 @@ The substitution itself is asymmetric by rule kind:
 
 - **A premium trigger is substituted.** `exit_intent` → `time_on_page`,
   `scroll_up` → `scroll_depth`.
-  *Both halves of that pair exist as of
-  [#32](https://github.com/navidkashani/wconvert/issues/32), and both landed
-  carrying `on_absence: drop` — deliberately, and worth saying out loud since
-  this ADR calls a dropped premium trigger "a silent, total loss of function".
-  The substitution property is not in the manifest yet because
-  [#33](https://github.com/navidkashani/wconvert/issues/33) owns it, and a
-  field nothing reads is a fourth hand-maintained list with extra steps (see
-  the first consequence below). `drop` is what every trigger entry carries
-  today, premium or not, so the pair is parked on the existing default rather
-  than on a value chosen for them. Until #33, an Optin whose only Trigger is
-  premium and whose Pro is gone cannot fire — which is exactly the failure #33
-  exists to close, and is why it is #32's immediate successor.*
+  *Built in [#33](https://github.com/navidkashani/wconvert/issues/33). The
+  substitution property is **`substitute` on the rule manifest entry**, beside
+  `tier`, `consent_category` and `on_absence` — and it is a COMPLETE rule
+  rather than a type name, because `time_on_page` reads `rule.seconds` and
+  `Number(undefined)` is NaN: a substitution naming only the type swaps one
+  silent, total loss of function for another.
+  `tests/unit/Rules/RuleManifestParityTest.php` asserts that every declared
+  substitute names a free type of the same kind and fills every param that
+  type declares, and that **only a Trigger may declare one** — which is where
+  "a condition is dropped, no substitute, ever" stops being a sentence and
+  starts being a build failure.*
+
+  ***And the table is no longer the whole guarantee.** #33 found the gap
+  between this bullet and the manifest: `click_element` is a premium Trigger
+  with **no honest substitute**, since its selector names something only one
+  site has. Dropping it is right; dropping the LAST Trigger is the silent,
+  total loss this ADR names two paragraphs down. So
+  [`Degradation`](../../src/Rules/Degradation.php) checks the post-condition
+  rather than trusting the table: an Optin whose rules named a Trigger going in
+  and name none that could fire coming out is **[[Suspended]]** — the same
+  outcome as the silent loss, with a cause on the list screen and no repair
+  step when Pro returns. That is this ADR narrowed in exactly the shape
+  [ADR 0027](0027-a-load-bearing-condition-suspends-rather-than-drops.md)
+  already narrowed it, and it means "an Optin never ends up with zero Triggers"
+  holds structurally rather than because somebody remembered to write a
+  substitute.*
 - **A premium condition is dropped.** No substitute, ever.
+  *Enforced as of [#33](https://github.com/navidkashani/wconvert/issues/33)
+  rather than remembered: a Condition declaring a `substitute` fails the
+  manifest parity test.*
   *Narrowed by [ADR 0027](0027-a-load-bearing-condition-suspends-rather-than-drops.md):
   except where the Optin's copy asserts the fact the condition guarantees, which
   makes dropping it say something false rather than widen an audience. Such a
@@ -57,6 +74,17 @@ hand-maintained lists drift, and the drift is silent").
 #3 also anticipated this: it recorded that device applicability is "a declared
 property of the rule type in the manifest" and that "that declaration is also what
 #13's substitution table keys off."
+
+*Built that way in [#33](https://github.com/navidkashani/wconvert/issues/33),
+and the count held: the resolver added **no list at all**. What decides whether
+a rule can run is
+[`SuppliedRules`](../../src/Rules/SuppliedRules.php) — a registry free fills
+from the manifest's `tier: free` entries and [[Pro]] fills from its own, each
+side asking the one manifest for its own tier and neither naming a rule type.
+That is [ADR 0015](0015-enforcement-is-by-non-registration.md)'s "each registry
+declares `tier` locally on members it already enumerates" applied to the rule
+vocabulary, and it is what lets the enqueue call site below ask its question
+without asking a tier question.*
 
 ## Why triggers must be substituted and conditions must not
 
@@ -87,6 +115,17 @@ stored projection and apply it at enqueue, so the premium rule is still sitting 
 `config` when Pro stops being loaded. Stripping it there without substituting
 reintroduces the zero-trigger bug above, on a live Optin, with no human present.
 
+*Built in [#33](https://github.com/navidkashani/wconvert/issues/33) at
+[`Payload::forRequest()`](../../src/Frontend/Payload.php), inside the loop that
+narrows the published set to this request — because suspension decides
+MEMBERSHIP, and a second pass over the result would build an entry only to
+throw it away. **It asks no tier question**, which matters because
+`tests/unit/Contract/NoLicenceOnTheFrontEndTest.php` reads that file's source
+to make sure it never starts to: the question is "does this install supply this
+rule type", answered by which code registered
+([`SuppliedRules`](../../src/Rules/SuppliedRules.php)), not by a licence, a
+tier, or "is Pro loaded".*
+
 The two never touch the same Optin: prefill covers those authored on an install
 without Pro, enqueue covers those authored with it and now running without it.
 Together they mean **losing Pro degrades rather than stops**, and capture keeps
@@ -97,15 +136,34 @@ working.
 - **Prefill bakes the substitution into `config` and records a `degraded_from`
   marker beside the substituted rule.** No new storage — it rides an
   already-approved blob.
-  *Half-built by [#27](https://github.com/navidkashani/wconvert/issues/27): the
-  call site now exists ([`Prefill`](../../src/Playbook/Prefill.php)) and does no
-  substituting. What a Playbook's rules get is copied, which is correct while
-  free's bundled library names only free's own rules —
-  `tests/unit/Playbook/BundledPlaybooksTest.php` holds that line. The resolver
-  and the `degraded_from` marker are still
-  [#33](https://github.com/navidkashani/wconvert/issues/33)'s, together with the
-  manifest's substitution property, because a field nothing reads is a fourth
-  hand-maintained list with extra steps.*
+  *Half-built by [#27](https://github.com/navidkashani/wconvert/issues/27) and
+  finished in [#33](https://github.com/navidkashani/wconvert/issues/33):
+  [`Prefill`](../../src/Playbook/Prefill.php) now resolves a Playbook's rules
+  through the shared resolver, and the marker rides `config` beside the
+  substituted rule as `degraded_from`.*
+
+  ***It is provenance, not a param**, and the distinction had to be built as
+  well as stated.
+  [`RuleVocabulary::normalize()`](../../src/Rules/RuleVocabulary.php) keeps only
+  the params a type declares, so the marker had to be exempted explicitly to
+  survive a save — and declaring it as a param instead would have drawn a
+  control in the builder, inviting the merchant to edit the record of a
+  substitution. It is also stripped at `partition()`, so it never reaches the
+  browser: nothing that renders an Optin reads it, and the payload is inlined
+  into every matching page against a 2KB budget.*
+
+  ***Enqueue writes no marker, and needs none.** It persists nothing — the
+  published set outlives the code that reads it — so there is nowhere to put
+  one; and the case it covers is a rule still sitting in `config` at its own
+  tier, which the builder's `locked` note already explains. That is what makes
+  the two call sites disjoint in the CODE rather than only in the prose: prefill
+  bakes the substitution in, so enqueue is a no-op on anything prefill touched.*
+
+  *Free's bundled library still names only free's own rules
+  (`tests/unit/Playbook/BundledPlaybooksTest.php` holds that line), so prefill's
+  substitution is unreached by any entry that ships today. It is reached by a
+  remote or third-party Playbook, which is the case ADR 0013 exists for, and it
+  is asserted in `tests/unit/Rules/DegradationTest.php`.*
 - **An upgrade never silently re-upgrades a running Optin.** The marker anchors a
   one-click offer in the editor instead. Changing a live popup's behaviour on a
   licence event with no human in the loop is the same class of surprise #3 made
@@ -117,14 +175,26 @@ working.
   (`resources/admin/src/builder/RulesEditor.tsx`), with the note rendered for the
   case that needs no marker — a rule authored with Pro and running without it —
   and nothing anywhere in that file or its stylesheet that dismisses one. The
-  `degraded_from` marker renders in the same place and arrives with
+  `degraded_from` note renders in the same place as of
   [#33](https://github.com/navidkashani/wconvert/issues/33).*
+  ***And it survives an edit**, which is the half a marker can lose quietly:
+  retiming a substituted `time_on_page` from 15 seconds to 30 must not
+  un-substitute it, or the first edit retires the note and the upgrade offer it
+  anchors — the invisible substitution again, arriving through the one screen
+  that was supposed to show it. Removing the ROW is how a merchant is done with
+  it, and that takes the marker with it.*
 - **#14 inherits the mechanism and owns only the entitlement primitive it calls
   and the upsell destination.** Its "do optins stop, degrade, or keep running?"
   question is answered here: they degrade. #14 resolved that primitive to
   "is Pro loaded" and nothing else — see [ADR 0015](0015-enforcement-is-by-non-registration.md).
 - **`click_element` never appears to degrade**, because #3 already made its
   selector author-only and blank in any Playbook-prefilled Optin.
+  *True at PREFILL, and [#33](https://github.com/navidkashani/wconvert/issues/33)
+  found the other end of it: an Optin AUTHORED with Pro can carry a
+  `click_element` with a real selector, and on an install that lost Pro there is
+  nothing honest to put in its place. It is dropped like any Trigger with no
+  substitute, and where it was the last one the Optin is suspended — see the
+  post-condition recorded on the first bullet above.*
   *Mechanised in [#29](https://github.com/navidkashani/wconvert/issues/29), and
   deliberately not as a special case: the selector is a param the rule manifest
   marks `authored`, which is the same declaration a post id and a term id carry,

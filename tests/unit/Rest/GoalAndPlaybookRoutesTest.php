@@ -15,6 +15,7 @@ use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
 use WConvert\Tests\Unit\Support\FakeProPresence;
 use WConvert\Tests\Unit\Support\FakeSitePresence;
+use WConvert\Tests\Unit\Support\InstalledRules;
 
 /**
  * The creation flow's route REGISTRATION, which is where two of its
@@ -55,7 +56,7 @@ final class GoalAndPlaybookRoutesTest extends TestCase
         $goals = new GoalRegistry(new FakeProPresence(), new FakeSitePresence());
 
         (new GoalController($goals))->registerRoutes();
-        (new PlaybookController($playbooks, $goals, new Prefill($playbooks, $templates, $vocabulary)))
+        (new PlaybookController($playbooks, $goals, new Prefill($playbooks, $templates, $vocabulary, InstalledRules::free())))
             ->registerRoutes();
     }
 

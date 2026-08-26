@@ -71,11 +71,21 @@ the exact path by which the expression language arrives.
   would have to name `exit_intent`, and premium code is absent from free's source
   rather than dead inside it. The duplicate is still one duplicate, and a test
   still asserts parity — which is all this consequence was ever asking for.*
-  *The field list has grown twice since. `CONTEXT.md`'s Storage Consent entry
-  adds **`consent_category`** beside `tier` — every Trigger and Condition
-  declares the WP Consent API category its storage falls under — and
+  *The field list has grown three times since. `CONTEXT.md`'s Storage Consent
+  entry adds **`consent_category`** beside `tier` — every Trigger and Condition
+  declares the WP Consent API category its storage falls under —
   [ADR 0027](0027-a-load-bearing-condition-suspends-rather-than-drops.md) adds
-  **`on_absence: drop | suspend`**.*
+  **`on_absence: drop | suspend`**, and
+  [#33](https://github.com/navidkashani/wconvert/issues/33) adds
+  **`substitute`**: the complete rule that runs in place of a premium one,
+  which is [ADR 0012](0012-degradation-substitutes-triggers-and-drops-conditions.md)'s
+  table living in the only place that ADR permits a substitution to be
+  declared. A COMPLETE rule rather than a type name, because a Trigger with no
+  params can never fire; only a Trigger may carry one; and it must name a free
+  type of the same kind with every non-`authored` param filled — all asserted
+  in `tests/unit/Rules/RuleManifestParityTest.php`, because a substitute that
+  could not fire is the silent loss it exists to prevent, one indirection
+  further along.*
   *Completed by [#29](https://github.com/navidkashani/wconvert/issues/29), which
   replaced the single `value` word with **`params`** — the KEYS a rule's scalar
   arrives under, the control each takes, and an `authored` flag for the ones a
@@ -91,6 +101,15 @@ the exact path by which the expression language arrives.
   [ADR 0029](0029-the-free-contract-is-proven-at-the-source.md) asserts that
   every entry carries all four — `tier`, `consent_category`, `on_absence`, kind —
   and resolves to an implementation on the side its `tier` names.*
+  *Five as of [#33](https://github.com/navidkashani/wconvert/issues/33), which
+  added `substitute` (above). It also carved out the ONE key beyond a type's
+  declared params that survives a save: **`degraded_from`**, the marker
+  recording which rule this one was substituted for. It is PROVENANCE rather
+  than configuration and is deliberately NOT a param — declared as one it would
+  draw a control and invite the merchant to edit the record of a substitution —
+  so `normalize()` exempts it by name and `partition()` strips it again, since
+  nothing that renders an Optin reads it and the payload is inlined into every
+  matching page.*
 - **One engine type, many UI presets.** The engine gets the general form
   (`total_pageviews {min, max}`, `query_param {key, value}`); the builder ships
   the legible shortcuts ("returning visitor", the UTM fields). A rich admin over

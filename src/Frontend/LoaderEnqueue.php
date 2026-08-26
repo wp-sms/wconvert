@@ -6,6 +6,7 @@ use WConvert\Assets\BuiltAsset;
 use WConvert\Optin\PublishedOptin;
 use WConvert\Optin\PublishedSet;
 use WConvert\Rest\Routes;
+use WConvert\Rules\Degradation;
 use WConvert\Template\PolicyLink;
 
 defined('ABSPATH') || exit;
@@ -43,6 +44,7 @@ final class LoaderEnqueue
 
     public function __construct(
         private readonly PublishedSet $publishedSet,
+        private readonly Degradation $degradation,
     ) {
     }
 
@@ -69,7 +71,14 @@ final class LoaderEnqueue
             return;
         }
 
-        $entries = Payload::forRequest($set, RequestContextFactory::forPublishedSet($set));
+        // Degradation is applied HERE, on the way to the page, and not at
+        // publish time — a premium rule is still in `published_config` when
+        // [[Pro]] stops being loaded, and config outlives the code that reads
+        // it (ADR 0012). What this passes down is not an entitlement: it is a
+        // registry of the rule types that actually registered on this request
+        // ({@see \WConvert\Rules\SuppliedRules}), which is why the front-end
+        // path still asks no tier question of any kind (ADR 0015).
+        $entries = Payload::forRequest($set, RequestContextFactory::forPublishedSet($set), $this->degradation);
 
         // An Optin that does not match this page costs this page nothing —
         // not a script, not a byte of payload.

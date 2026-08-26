@@ -10,6 +10,7 @@ use WConvert\Optin\PublishedOptin;
 use WConvert\Targeting\RequestContext;
 use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
+use WConvert\Tests\Unit\Support\InstalledRules;
 
 /**
  * The 2KB gzipped per-page payload bound, against real snapshotted trees.
@@ -135,7 +136,7 @@ final class PayloadBudgetTest extends TestCase
 
     public function testTenSnapshottedTreesOnOnePageFitTheGzippedPayloadBudget(): void
     {
-        $entries = Payload::forRequest(self::worstCase(), new RequestContext(path: '/pricing/'));
+        $entries = Payload::forRequest(self::worstCase(), new RequestContext(path: '/pricing/'), InstalledRules::free());
 
         $this->assertCount(self::ON_THE_PAGE, $entries, 'every one of them has to actually be on the page');
 
@@ -158,7 +159,7 @@ final class PayloadBudgetTest extends TestCase
      */
     public function testTheMeasuredPayloadActuallyCarriesTheTrees(): void
     {
-        $entries = Payload::forRequest(self::worstCase(), new RequestContext(path: '/pricing/'));
+        $entries = Payload::forRequest(self::worstCase(), new RequestContext(path: '/pricing/'), InstalledRules::free());
         $rendered = PayloadTag::render(
             $entries,
             'https://example.test/wp-json/wconvert/v1/capture',
