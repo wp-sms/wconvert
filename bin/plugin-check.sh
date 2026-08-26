@@ -65,17 +65,26 @@ RESULTS="${PLUGIN_CHECK_RESULTS:-$TREE/../plugin-check-${SLUG}.json}"
 
 echo "==> plugin-check: $SLUG (Plugin Check $PC_VERSION)"
 
-WP_ENV_DIR="$(mktemp -d)"
-trap 'rm -rf "$WP_ENV_DIR"' EXIT
-
 # wp-env reads its config from the working directory. Kept OUT of the staged
 # tree on purpose: a .wp-env.json written inside it would become part of the
 # artifact being checked, and Plugin Check would then report on a file the
 # checker put there.
+#
+# A STABLE directory rather than a mktemp one, because wp-env derives its
+# Docker project name from this path: a fresh temp directory every run means a
+# fresh ~1.2GB WordPress image built every run, and — when a run is
+# interrupted before its trap fires — a container set left behind that the next
+# run cannot find to clean up. One path, one environment, reused.
+WP_ENV_DIR="$(dirname "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)")/dist/plugin-check"
+mkdir -p "$WP_ENV_DIR"
+
+# `testsEnvironment: false` because wp-env otherwise starts a second WordPress
+# and a second database that nothing here uses.
 cat > "$WP_ENV_DIR/.wp-env.json" <<JSON
 {
   "core": null,
   "plugins": [],
+  "testsEnvironment": false,
   "mappings": {
     "wp-content/plugins/${SLUG}": "${TREE}"
   }
@@ -85,14 +94,16 @@ JSON
 cd "$WP_ENV_DIR"
 
 npm -g --no-fund --silent install @wordpress/env >/dev/null
-wp-env start --update >/dev/null
 
-stop_wp_env() {
-    wp-env stop >/dev/null 2>&1 || true
-    wp-env destroy --debug >/dev/null 2>&1 || true
-    rm -rf "$WP_ENV_DIR"
-}
-trap stop_wp_env EXIT
+# NOT silenced. `wp-env start` builds a WordPress image on a cold cache and can
+# take minutes; a silent minutes-long step is indistinguishable from a hung one,
+# and the first thing anybody debugging this needs is to see it moving.
+wp-env start --update
+
+# `stop`, not `destroy`. The environment is what the next run reuses, and CI
+# runners are thrown away anyway — destroying it buys nothing there and costs an
+# image rebuild here.
+trap 'wp-env stop >/dev/null 2>&1 || true' EXIT
 
 # THE PIN. `--version=` is the whole reason this script exists rather than the
 # action; `--force` so a warm environment cannot leave a different build
