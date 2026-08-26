@@ -19,16 +19,11 @@ defined('ABSPATH') || exit;
  *
  * @since 0.1.0
  */
-final class TemplateController
+final class TemplateController implements RestController
 {
     public function __construct(
         private readonly TemplateLibrary $templates,
     ) {
-    }
-
-    public function hooks(): void
-    {
-        add_action('rest_api_init', [$this, 'registerRoutes']);
     }
 
     public function registerRoutes(): void

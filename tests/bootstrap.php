@@ -95,6 +95,24 @@ if (!function_exists('do_action')) {
     }
 }
 
+/*
+ * Which side of wp-admin the request is on, decided by the test.
+ *
+ * Three of the four service providers branch on it — the loader is enqueued
+ * only outside wp-admin, the admin menu only inside it — so a test that boots
+ * one has to be able to say which request it is booting for. Nothing else in
+ * this suite reaches it: a class that asks WordPress where it is, rather than
+ * being told, is a class whose touchpoint should have been passed in.
+ */
+$GLOBALS['wconvertTestIsAdmin'] = false;
+
+if (!function_exists('is_admin')) {
+    function is_admin(): bool
+    {
+        return (bool) ($GLOBALS['wconvertTestIsAdmin'] ?? false);
+    }
+}
+
 if (!function_exists('remove_all_actions')) {
     function remove_all_actions(string $hook, ?int $priority = null): bool
     {
@@ -230,10 +248,55 @@ if (!function_exists('register_rest_route')) {
     }
 }
 
+/*
+ * TRANSLATION — AND WHETHER IT IS ALLOWED TO HAPPEN YET.
+ *
+ * WordPress refuses to translate before `init`. A `__()` on `plugins_loaded`
+ * makes it load a text domain early, and since 6.7 that prints
+ * `_load_textdomain_just_in_time was called incorrectly` — DURING
+ * `plugins_loaded`, so output starts before `<!DOCTYPE html>` and nothing
+ * after it can set a header. The string does not come back translated either,
+ * because it was asked for before there was a domain to translate it against.
+ *
+ * This suite has no `init` and no text domain, so a passthrough `__()` cannot
+ * fail on that and did not: fifty-seven [[Playbook]] strings were translated
+ * on every request, on every install, with the whole suite green (#52).
+ *
+ * So the suite carries the one fact WordPress would have carried — whether
+ * `init` has fired — and the stubs below refuse while it has not. It is TRUE
+ * by default, because everything else here is testing code that legitimately
+ * runs after `init`; the test that boots a service provider turns it off for
+ * the duration and any translation on that path throws with the string that
+ * asked for it.
+ */
+$GLOBALS['wconvertTestInitHasFired'] = true;
+
+if (!function_exists('wconvert_test_translate')) {
+    /**
+     * The one gate every translating stub below goes through.
+     *
+     * It throws rather than recording, because the stack trace is the whole
+     * answer: what is wanted is the file and line that asked, and a counter
+     * read after the fact has lost it.
+     */
+    function wconvert_test_translate(string $text): string
+    {
+        if (($GLOBALS['wconvertTestInitHasFired'] ?? true) === false) {
+            throw new RuntimeException(sprintf(
+                'WConvert asked to translate "%s" before `init`. WordPress answers that with '
+                . '"_load_textdomain_just_in_time was called incorrectly", printed mid-request (#52).',
+                $text
+            ));
+        }
+
+        return $text;
+    }
+}
+
 if (!function_exists('__')) {
     function __(string $text, string $domain = 'default'): string
     {
-        return $text;
+        return wconvert_test_translate($text);
     }
 }
 
@@ -274,6 +337,13 @@ defined('WCONVERT_PRO_MAIN_FILE') || define('WCONVERT_PRO_MAIN_FILE', dirname(__
 // and which nothing in the unit suite loads that file to get. It reaches
 // `_doing_it_wrong()` as the "since" argument.
 defined('WCONVERT_VERSION') || define('WCONVERT_VERSION', '0.1.0');
+
+// The plugin directory, which `src/constants.php` defines at load time and
+// which is the default argument of every `fromManifest()` and
+// `fromDirectory()` in the tree. Most tests pass their own directory and never
+// reach it; the one that boots the service providers takes the registrations
+// as they ship, which means the real manifests and the real Playbook files.
+defined('WCONVERT_DIR') || define('WCONVERT_DIR', dirname(__DIR__) . '/');
 
 // WordPress's own time constants, which any plugin may assume are defined.
 defined('HOUR_IN_SECONDS') || define('HOUR_IN_SECONDS', 3600);
@@ -370,14 +440,14 @@ if (!function_exists('esc_html')) {
 if (!function_exists('esc_html__')) {
     function esc_html__(string $text, string $domain = 'default'): string
     {
-        return htmlspecialchars($text, ENT_QUOTES);
+        return htmlspecialchars(wconvert_test_translate($text), ENT_QUOTES);
     }
 }
 
 if (!function_exists('_n')) {
     function _n(string $single, string $plural, int $number, string $domain = 'default'): string
     {
-        return $number === 1 ? $single : $plural;
+        return wconvert_test_translate($number === 1 ? $single : $plural);
     }
 }
 

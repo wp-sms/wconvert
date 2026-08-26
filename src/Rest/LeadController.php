@@ -28,7 +28,7 @@ defined('ABSPATH') || exit;
  *
  * @since 0.1.0
  */
-final class LeadController
+final class LeadController implements RestController
 {
     private const DEFAULT_PER_PAGE = 50;
 
@@ -36,11 +36,6 @@ final class LeadController
         private readonly LeadLog $log,
         private readonly RetentionPeriod $retention,
     ) {
-    }
-
-    public function hooks(): void
-    {
-        add_action('rest_api_init', [$this, 'registerRoutes']);
     }
 
     public function registerRoutes(): void

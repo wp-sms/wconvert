@@ -30,18 +30,13 @@ defined('ABSPATH') || exit;
  *
  * @since 0.1.0
  */
-final class PlaybookController
+final class PlaybookController implements RestController
 {
     public function __construct(
         private readonly PlaybookLibrary $playbooks,
         private readonly GoalRegistry $goals,
         private readonly Prefill $prefill,
     ) {
-    }
-
-    public function hooks(): void
-    {
-        add_action('rest_api_init', [$this, 'registerRoutes']);
     }
 
     public function registerRoutes(): void

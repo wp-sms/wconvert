@@ -54,7 +54,7 @@ defined('ABSPATH') || exit;
  *
  * @since 0.1.0
  */
-final class BeaconController
+final class BeaconController implements RestController
 {
     public function __construct(
         private readonly PublishedSet $publishedSet,
@@ -62,11 +62,6 @@ final class BeaconController
         private readonly RateLimit $rateLimit,
         private readonly Degradation $degradation,
     ) {
-    }
-
-    public function hooks(): void
-    {
-        add_action('rest_api_init', [$this, 'registerRoutes']);
     }
 
     public function registerRoutes(): void

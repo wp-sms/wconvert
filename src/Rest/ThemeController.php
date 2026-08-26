@@ -21,13 +21,8 @@ defined('ABSPATH') || exit;
  *
  * @since 0.1.0
  */
-final class ThemeController
+final class ThemeController implements RestController
 {
-    public function hooks(): void
-    {
-        add_action('rest_api_init', [$this, 'registerRoutes']);
-    }
-
     public function registerRoutes(): void
     {
         register_rest_route(Routes::NAMESPACE, '/theme', [

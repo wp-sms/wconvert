@@ -34,16 +34,11 @@ defined('ABSPATH') || exit;
  *
  * @since 0.1.0
  */
-final class DashboardController
+final class DashboardController implements RestController
 {
     public function __construct(
         private readonly Dashboard $dashboard,
     ) {
-    }
-
-    public function hooks(): void
-    {
-        add_action('rest_api_init', [$this, 'registerRoutes']);
     }
 
     public function registerRoutes(): void

@@ -33,7 +33,7 @@ defined('ABSPATH') || exit;
  *
  * @since 0.1.0
  */
-final class DestinationController
+final class DestinationController implements RestController
 {
     private const ID_PATTERN = '(?P<id>' . Ulid::PATTERN . ')';
 
@@ -45,11 +45,6 @@ final class DestinationController
         private readonly DeliveryFailures $failures,
         private readonly BulkRePush $rePush,
     ) {
-    }
-
-    public function hooks(): void
-    {
-        add_action('rest_api_init', [$this, 'registerRoutes']);
     }
 
     public function registerRoutes(): void

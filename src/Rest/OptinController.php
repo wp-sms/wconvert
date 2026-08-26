@@ -33,7 +33,7 @@ defined('ABSPATH') || exit;
  *
  * @since 0.1.0
  */
-final class OptinController
+final class OptinController implements RestController
 {
     /** A ULID, spelled as a route constraint so a malformed id 404s at the router. */
     private const ID_PATTERN = '(?P<id>' . Ulid::PATTERN . ')';
@@ -48,11 +48,6 @@ final class OptinController
         private readonly Degradation $degradation,
         private readonly RuleCatalogue $rules,
     ) {
-    }
-
-    public function hooks(): void
-    {
-        add_action('rest_api_init', [$this, 'registerRoutes']);
     }
 
     public function registerRoutes(): void

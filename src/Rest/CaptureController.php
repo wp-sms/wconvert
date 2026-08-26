@@ -40,18 +40,13 @@ defined('ABSPATH') || exit;
  *
  * @since 0.1.0
  */
-final class CaptureController
+final class CaptureController implements RestController
 {
     public function __construct(
         private readonly PublishedSet $publishedSet,
         private readonly LeadCapture $capture,
         private readonly TemplateVocabulary $vocabulary,
     ) {
-    }
-
-    public function hooks(): void
-    {
-        add_action('rest_api_init', [$this, 'registerRoutes']);
     }
 
     public function registerRoutes(): void
