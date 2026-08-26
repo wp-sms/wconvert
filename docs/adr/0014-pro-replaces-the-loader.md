@@ -27,6 +27,32 @@ Under replacement the `wp_dequeue_script` happens in PHP before any HTML exists,
 strictly safer than augmentation under the exact hazard 0004 documents — the
 inverse of the intuition that fewer bytes and fewer copies is the safer shape.
 
+*Built in [#32](https://github.com/navidkashani/wconvert/issues/32):
+[`ProLoaderEnqueue`](../../pro/src/Frontend/ProLoaderEnqueue.php), on
+`wp_enqueue_scripts` at `LoaderEnqueue::PRIORITY + 10`. Three things this ADR
+did not say, each of which is what the dequeue actually has to survive:*
+
+- ***"Later" is DERIVED from free's own constant, not written as a number.***
+  *WordPress loads active plugins in the order its own option lists them, so a
+  swap that worked because `wconvert-pro` happened to be read after `wconvert`
+  would work by accident.*
+- ***The handle is DEREGISTERED as well as dequeued.*** *A dequeued script is
+  out of the queue but still registered, and WordPress prints the registered
+  dependencies of anything queued — so one third-party script declaring
+  `wconvert-loader` as a dependency would put free's loader back on a page that
+  already has Pro's, which is the state this ADR says can never occur.*
+- ***A broken Pro degrades to free, never to nothing.*** *The dequeue is
+  conditional on Pro's own bundle existing. Dequeuing free's while pointing at
+  a bundle a bad unpack left out would 404 on every page and leave every Optin
+  dead — the same silent, total loss of function 0004 exists to prevent,
+  arriving through a missing file instead of through an optimizer.*
+
+*Free decides WHETHER a page carries a loader — it reads the published set and
+enqueues nothing on a page no Optin matched — and Pro decides WHICH. Asserted
+in [`tests/unit/Pro/Frontend/LoaderReplacementTest.php`](../../tests/unit/Pro/Frontend/LoaderReplacementTest.php)
+at the script queue, which is the seam the immunity lives at: an optimizer only
+ever sees that queue's output.*
+
 ## Consequences
 
 - **Two Vite builds writing to separate output directories.** WSMS's `main.js` trap
@@ -40,6 +66,13 @@ inverse of the intuition that fewer bytes and fewer copies is the safer shape.
   un-minified source, which wp.org Guideline 4 requires be published.*
 - **The ≤8KB gzipped loader budget applies per build.** Pro's is the larger and
   still lands near 4.2KB.
+  *Measured in [#32](https://github.com/navidkashani/wconvert/issues/32) with
+  the whole client vocabulary shipped bar the premium Conditions still to come:
+  free 5,968 B, Pro 6,318 B, gzip -9, both under the 8,192 B gate. The
+  prototype's 4.2KB predates the renderer and the beacon riding in the same
+  bundle, so the gap is work rather than drift — but the headroom is smaller
+  than this line implies, and the next premium rule should be weighed against
+  1,874 B rather than against 4KB.*
 - **No public `registerRule` seam**, therefore no partial-registration failure mode
   and no documented extension point that immediately becomes a compatibility
   surface.
@@ -53,3 +86,16 @@ inverse of the intuition that fewer bytes and fewer copies is the safer shape.
   the page cache.** This replaces the loader prototype's vaguer "an entitlement
   change must purge the page cache" with a concrete, synchronous, plugin-lifecycle
   trigger — there is no licence webhook in this design to miss.
+  *Built in [#32](https://github.com/navidkashani/wconvert/issues/32):
+  [`PageCache`](../../pro/src/Boot/PageCache.php), on both lifecycle hooks, and
+  registered OUTSIDE the min-core guard — a Pro that refused to boot changes
+  nothing about what the already-cached pages should say, and a merchant
+  deactivating one is exactly the person whose cache should not be left holding
+  a decision nobody made. It calls the purges it knows about and fires
+  `wconvert_purge_page_cache` for everything it does not. **The design does not
+  rest on the purge landing**, which is what makes an incomplete list
+  affordable: deactivating a plugin does not delete its files, so free's loader
+  is still on disk after Pro activates and Pro's is still there after it
+  deactivates. A stale page therefore serves the previous tier's behaviour for
+  a few minutes rather than a 404 and a dead popup. The purge makes the change
+  take effect promptly; it is not what keeps the site working.*

@@ -32,6 +32,44 @@ absent from the free build because it was never in free's source
 That boundary is drawn on day one, deliberately, rather than deferred behind a
 flag. It is the cost of the decision, and it is the whole cost.
 
+### Pro replaces the loader; it never adds a second one
+
+With both plugins active a page carries **exactly one** loader, and it is
+Pro's. Pro dequeues free's on `wp_enqueue_scripts`, in PHP, before one byte of
+HTML exists — so an aggregating optimizer never sees two scripts to reorder
+([ADR 0014](docs/adr/0014-pro-replaces-the-loader.md)). That is the whole
+argument against the add-on shape the premium-SDK research recommended: a
+second script that must register before the first evaluates is precisely the
+failure Autoptimize's force-in-head produces, silently, with nothing in any
+log.
+
+Three details are load-bearing rather than incidental:
+
+- **Pro's priority is derived from free's constant**, not written as a number.
+  WordPress loads plugins in the order its own option lists them, so a swap
+  that worked because `wconvert-pro` was read second would work by accident.
+- **Free's handle is deregistered, not just dequeued.** WordPress prints the
+  registered dependencies of anything queued, so one third-party script
+  depending on `wconvert-loader` would otherwise put free's loader back on a
+  page that already has Pro's.
+- **A broken Pro degrades to free, never to nothing.** The dequeue is
+  conditional on Pro's own bundle existing; an incomplete upload costs the
+  merchant `exit_intent`, not every popup on the site.
+
+Turning Pro on or off changes that asset URL on every already-cached page, so
+both lifecycle hooks purge the page cache
+([`PageCache`](pro/src/Boot/PageCache.php)). Nothing rests on the purge
+landing: deactivating a plugin does not delete its files, so a stale page
+serves the previous tier's behaviour for a few minutes rather than a 404.
+
+**There is no licence check anywhere on this path, and nothing is missing.**
+Being in Pro's ZIP *is* the entitlement
+([ADR 0015](docs/adr/0015-enforcement-is-by-non-registration.md)), so not one
+premium feature needs an `if` —
+[`tests/unit/Contract/NoLicenceOnTheFrontEndTest.php`](tests/unit/Contract/NoLicenceOnTheFrontEndTest.php)
+fails if a second file answers "is Pro loaded", if anything that ships reads a
+licence value, or if the front-end path grows a tier branch at all.
+
 ### It is checked, not trusted
 
 ```bash

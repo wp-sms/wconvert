@@ -4,6 +4,7 @@ namespace WConvert\Tests\Unit\Frontend;
 
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
+use WConvert\Tests\Unit\Support\PhpSource;
 
 /**
  * There is deliberately no per-URL cache under the front-end read path.
@@ -70,12 +71,10 @@ final class NoSecondCacheTest extends TestCase
         ];
 
         foreach ($this->readPathSources() as $file) {
-            $source = (string) file_get_contents($file);
-
-            // Strip comments first: these files explain at length why they do
-            // not call any of this, and the explanation must not read as the
-            // violation.
-            $code = self::stripComments($source);
+            // Comments stripped first: these files explain at length why they
+            // do not call any of this, and the explanation must not read as
+            // the violation.
+            $code = PhpSource::code($file);
 
             foreach ($forbidden as $call) {
                 $this->assertStringNotContainsString(
@@ -87,18 +86,4 @@ final class NoSecondCacheTest extends TestCase
         }
     }
 
-    private static function stripComments(string $source): string
-    {
-        $code = '';
-
-        foreach (token_get_all($source) as $token) {
-            if (is_array($token) && in_array($token[0], [T_COMMENT, T_DOC_COMMENT], true)) {
-                continue;
-            }
-
-            $code .= is_array($token) ? $token[1] : $token;
-        }
-
-        return $code;
-    }
 }

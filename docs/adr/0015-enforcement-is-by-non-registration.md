@@ -12,12 +12,37 @@ an `if`.
 
 | Premium capability | How it is absent on free |
 |---|---|
-| `exit_intent`, `scroll_up` | manifest entries the free manifest lacks; code that lives only in Pro's module tree and free's source never imports ([ADR 0028](0028-the-free-loader-source-carries-no-premium-code.md), amending [ADR 0014](0014-pro-replaces-the-loader.md)) |
+| `exit_intent`, `scroll_up` | `tier: pro` entries in the one manifest, implemented only in Pro's module tree, which free's source never imports ([ADR 0028](0028-the-free-loader-source-carries-no-premium-code.md), amending [ADR 0014](0014-pro-replaces-the-loader.md)) — *corrected, see below* |
 | Premium conditions (the advanced-targeting set) | same |
 | `floating_bar`, `slide_in` | templates free does not ship, and the `[popover=manual]` renderer path ([ADR 0011](0011-non-modal-overlays-use-the-popover-top-layer.md)) |
 | A/B testing | REST routes free never registers — so there is no permission callback to write |
 | The four ESPs and the generic Webhook | Destination types Pro binds into the shared container ([ADR 0007](0007-destinations-are-outbound-and-fallible.md)) |
 | The *Bring shoppers back to their cart* Goal | a Goal registry entry marked `tier: pro`, and absent outright on a site with no WooCommerce, where `unavailable` beats `locked` ([ADR 0026](0026-a-goal-the-site-cannot-serve-is-hidden.md)) — *built in [#27](https://github.com/navidkashani/wconvert/issues/27): the tier flag is [`Goal::tier()`](../../src/Goal/Goal.php) and the site half is [`SiteDependency`](../../src/Support/SiteDependency.php), asked through a [`SitePresence`](../../src/Support/SitePresence.php) seam beside `ProPresence`* |
+
+*Corrected by [#32](https://github.com/navidkashani/wconvert/issues/32) on the
+first row. It read "manifest entries the free manifest LACKS", and **free's
+manifest names both tiers**: free's own PHP is what strips an unentitled rule
+at enqueue ([ADR 0012](0012-degradation-substitutes-triggers-and-drops-conditions.md)),
+and it can only strip what its own manifest calls premium — a premium
+Condition left in the payload fails shut in free's evaluator, so the Optin
+never shows and nothing says why. The same manifest is what free's admin
+renders the `locked` card from, and what `bin/check-loader.mjs` reads its
+identifier list from. The absence that matters is the CODE's, and it is real:
+free's built loader contains neither identifier, scanned on every pull request
+([ADR 0029](0029-the-free-contract-is-proven-at-the-source.md), check b, live
+since #32). Recorded here rather than only on the ticket, because the row is
+what a reader reaches for.*
+
+*Built in [#32](https://github.com/navidkashani/wconvert/issues/32), first row
+only: `exit_intent` and `scroll_up` are two modules under
+[`pro/resources/loader/src/modules/`](../../pro/resources/loader/src/modules/),
+and they are **two types rather than one with two meanings** — a single type
+meaning `mouseout` on a desktop and an upward scroll on a phone is
+unreportable, because "why didn't my popup show" has no per-rule answer when
+one row means two things, and unpairable, because a merchant could never ask
+for one gesture without the other. Neither is device-guarded; a merchant
+confines either with the `device` Condition, which is what the second client
+axis is for.*
 
 ## Why no hard enforcement
 
@@ -54,8 +79,21 @@ and would put a branch on the request path 0004 exists to protect.
   that defined `WCONVERT_PRO_LOADED` would decide the answer for every test that
   ran after it, and `locked` is the one state a free install renders that a free
   install cannot itself reach. It is still ONE accessor: the interface is where
-  the question is asked, and one file is where the answer is looked up.* WSMS's cautionary case: its shipped elite ZIP is
+  the question is asked, and one file is where the answer is looked up.*
+  *Asserted from [#32](https://github.com/navidkashani/wconvert/issues/32):
+  [`tests/unit/Contract/NoLicenceOnTheFrontEndTest.php`](../../tests/unit/Contract/NoLicenceOnTheFrontEndTest.php)
+  fails if a second file in either tree looks the constant up, if anything that
+  ships reads a licence value, or if the front-end request path asks a tier
+  question at all. It reads SOURCE rather than behaviour, because what it
+  guards against is a line someone adds and no assertion about output can see a
+  rule that is currently being kept.* WSMS's cautionary case: its shipped elite ZIP is
   missing the `tiers.json` its own `TierGate` reads, benign only because every lookup
   fails open — and a ladder that fails open is not a ladder.
 - **The licence option is read by Pro's updater and admin screens only**, and never on
   a front-end request.
+  *As of [#32](https://github.com/navidkashani/wconvert/issues/32) neither
+  exists, so the assertion available is the total one — nothing that ships
+  reads a licence value anywhere. The updater will be the first hit, and
+  whoever adds it has to come to that test and narrow it to the two paths named
+  here. That is the point: a licence read becomes a decision somebody takes on
+  purpose rather than one that arrives inside a feature branch.*

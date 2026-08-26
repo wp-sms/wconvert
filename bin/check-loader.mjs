@@ -152,12 +152,13 @@ try {
 if (premium !== null) {
   if (premium.length === 0) {
     // Not a failure: the manifest is readable and says, truthfully, that
-    // nothing in the vocabulary is premium yet. It carries only the Targeting
-    // axis, which is server-evaluated and entirely free. The trigger and
-    // condition entries — `exit_intent`, `scroll_up` and the advanced
-    // Conditions — arrive with the loader that evaluates them, and this scan
-    // goes live with them and no change here.
-    console.log('  ! premium scan: the manifest declares no premium rule types yet, so this scan asserted nothing');
+    // nothing in the vocabulary is premium. That was the state through #21 and
+    // #22, when the manifest carried only server-evaluated Targeting entries,
+    // and it says so out loud rather than printing a tick — an empty list
+    // scans for nothing, and a check reporting "clean" while asserting nothing
+    // is the failure ADR 0029 is about. The scan went live in #32 with
+    // `exit_intent` and `scroll_up`, and no change was needed here.
+    console.log('  ! premium scan: the manifest declares no premium rule types, so this scan asserted nothing');
   } else {
     for (const bundle of BUNDLES.filter((b) => b.scanForPremium)) {
       const source = sources.get(bundle.path);

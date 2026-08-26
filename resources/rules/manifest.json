@@ -87,6 +87,22 @@
       "presets": {},
       "consent_category": null,
       "on_absence": "drop"
+    },
+    "exit_intent": {
+      "kind": "trigger",
+      "tier": "pro",
+      "params": {},
+      "presets": {},
+      "consent_category": null,
+      "on_absence": "drop"
+    },
+    "scroll_up": {
+      "kind": "trigger",
+      "tier": "pro",
+      "params": {},
+      "presets": {},
+      "consent_category": null,
+      "on_absence": "drop"
     }
   },
   "conditions": {

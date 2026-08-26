@@ -118,9 +118,17 @@ final class CoreServiceProvider implements ServiceProvider
             )
         );
 
+        // Where free is on disk and on the web, passed rather than read off
+        // the constants inside: the enqueue is the front end's one asset
+        // decision, and Pro's replacement of it is asserted against this one
+        // (`tests/unit/Pro/Frontend/LoaderReplacementTest.php`).
         $container->register(
             LoaderEnqueue::class,
-            static fn (ServiceContainer $c): LoaderEnqueue => new LoaderEnqueue($c->resolve(PublishedSet::class))
+            static fn (ServiceContainer $c): LoaderEnqueue => new LoaderEnqueue(
+                $c->resolve(PublishedSet::class),
+                WCONVERT_DIR,
+                WCONVERT_URL
+            )
         );
 
         // The Goal registry is an enum plus the two facts that resolve its
