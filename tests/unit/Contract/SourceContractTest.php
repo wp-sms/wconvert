@@ -71,6 +71,30 @@ final class SourceContractTest extends TestCase
     }
 
     /**
+     * ========================================================================
+     * A PLAYBOOK REACHING INTO PRO — the half of free's tree this check did
+     * not look at until #37.
+     * ========================================================================
+     * ADR 0029 defines free's tree as "src/, resources/, and the plugin files
+     * at the tree root", and its check (a) as a CROSS PRODUCT: a `pro/` path
+     * or the Pro namespace, in TS *and* PHP. `resources/` was scanned for
+     * TypeScript only, so the PHP half of that cross product simply skipped
+     * it.
+     *
+     * That is not a theoretical corner. `resources/playbooks/*.php` SHIPS —
+     * `PlaybookLibrary::PATH` reads it at runtime — so a Playbook is free's
+     * code, inside the free ZIP, in the language ADR 0029 says reaches into
+     * another tree by path "far more often than TypeScript does".
+     */
+    public function testFailsWhenAPlaybookRequiresAProPath(): void
+    {
+        $result = $this->verify(self::FIXTURES . '/playbook-requires-pro-path');
+
+        $this->assertSame(1, $result['status'], $result['output']);
+        $this->assertStringContainsString('welcome-discount.php', $result['output']);
+    }
+
+    /**
      * A `pro/` PATH in free's PHP, with no Pro namespace in sight.
      *
      * ADR 0029's check (a) is a cross product: a `pro/` path OR the Pro

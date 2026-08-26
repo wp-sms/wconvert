@@ -1,0 +1,316 @@
+#!/usr/bin/env bash
+#
+# verify-artifact-contract.sh — the free contract, proven at the artifact.
+#
+# The THIRD of ADR 0029's three programs, and the last to land, because "each
+# half lands with the thing it inspects; nothing is written before its
+# subject" — there was no release build to call it from until now.
+#
+#   ./bin/verify-artifact-contract.sh <staged-tree>
+#
+# Called from the release build, once per artifact, on the staged tree that is
+# about to become a ZIP. It asserts what a build can get wrong and the source
+# cannot (ADR 0029, checks c and d):
+#
+#   (c) The free artifact contains NO PATH UNDER PRO'S PLUGIN DIRECTORY.
+#   (d) The free artifact CONTAINS ITS UN-MINIFIED SOURCE TREE — which is what
+#       makes the readme's source claim true by construction, and what makes
+#       wp.org Guideline 4 compatible with Guideline 9. WSMS's .distignore
+#       strips its /resources while its readme still says sources ship there;
+#       that is the trap this deletes rather than inherits (ADR 0028).
+#
+# Exit 0 = clean. Exit 1 = a violation, OR the check could not look.
+#
+# IT FAILS CLOSED, and that is not a detail. A check that cannot inspect what
+# it was asked to inspect FAILS, because "couldn't look" reading as "clean" is
+# how a leak ships the one time a BUILD is incomplete — and an incomplete build
+# is precisely the state this program exists to be pointed at. A staged tree
+# with no PHP in it, no bundle in it, or no sources in it is not a clean tree;
+# it is a tree nothing was proven about.
+#
+# NO FLAGS, EVER (ADR 0029). It is a third program rather than a --artifact
+# flag on verify-source-contract.sh for the reason that ADR gives: "the moment
+# a check has an opt-out, the opt-out is what runs on the day it matters."
+#
+# AND IT IS NOT TOLD WHICH PLUGIN IT IS LOOKING AT. Both release runs invoke
+# this same script (ADR 0030), and a --free/--pro switch would be the same
+# opt-out one level down: point it at a Pro tree with --free and the leak scan
+# runs against the wrong tier and passes. The tree answers instead — see
+# bin/plugin-identity.php.
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# fail(), pass(), find_matches(), require_populated_dir(), run_scan(),
+# collect_root_php(), shared with bin/verify-source-contract.sh.
+#
+# A SHARED LIBRARY IS NOT A SHARED ENTRY POINT, and ADR 0029's "three programs,
+# no flags" is about the second. bin/pro-scan-support.php says so for the two
+# PHP scanners; the same holds here, and `run_scan` had already been copied
+# between the two shell programs verbatim — comment and all — which is exactly
+# the drift that file warns about.
+# shellcheck source=bin/contract-support.sh
+. "$SCRIPT_DIR/contract-support.sh"
+
+# The failure count when the current section started, so a section can report
+# its own verdict rather than the running total's — otherwise one failure in
+# [2] silently suppresses the tick every later section earns.
+SECTION_START=0
+
+section() {
+    SECTION_START="$FAILURES"
+}
+
+section_clean() {
+    [ "$FAILURES" -eq "$SECTION_START" ]
+}
+
+verdict() {
+    if [ "$FAILURES" -gt 0 ]; then
+        echo "==> verify-artifact-contract FAILED with $FAILURES problem(s)." >&2
+        exit 1
+    fi
+}
+
+# --- Is there anything to inspect? -------------------------------------------
+#
+# Every branch here is a fail-closed one. None of them means "clean".
+
+TREE="${1:-}"
+
+if [ -z "$TREE" ]; then
+    echo "usage: $0 <staged-tree>" >&2
+    echo "==> verify-artifact-contract FAILED: no staged tree given — nothing was inspected." >&2
+    exit 1
+fi
+
+TREE="${TREE%/}"
+
+echo "==> verify-artifact-contract: $TREE"
+
+if [ ! -d "$TREE" ] || [ ! -r "$TREE" ] || [ ! -x "$TREE" ]; then
+    fail "staged tree is not a readable directory: $TREE — cannot verify"
+    verdict
+fi
+
+# --- [0] WHICH PLUGIN IS THIS? -----------------------------------------------
+#
+# The tree says, by which plugin main file sits at its root. Zero is not a
+# plugin; BOTH is one artifact carrying the other plugin inside it, which is
+# the leak itself. Either way the answer is a failure, never a default.
+IDENTITY=""
+
+if ! IDENTITY="$(php "$SCRIPT_DIR/plugin-identity.php" "$TREE" 2>&1)"; then
+    fail "cannot identify the staged tree — cannot verify"
+    printf '%s\n' "$IDENTITY" | sed 's/^/        /' >&2
+    verdict
+fi
+
+# Every value was escapeshellarg()'d by the emitter.
+eval "$IDENTITY"
+
+pass "identified as $slug ($tier)"
+
+# --- [1] IS IT A PLUGIN AT ALL? ----------------------------------------------
+#
+# The floor beneath both contracts below. A scan of an empty tree finds no Pro
+# path and no missing source, and reports both as clean.
+
+require_file() {
+    # $1 = path relative to the tree, $2 = why it must be there
+    local rel="$1" why="$2"
+    local path="$TREE/$rel"
+
+    if [ ! -f "$path" ] || [ ! -r "$path" ]; then
+        fail "$rel is missing or unreadable — $why"
+        return 1
+    fi
+
+    if [ ! -s "$path" ]; then
+        fail "$rel is empty — $why"
+        return 1
+    fi
+
+    return 0
+}
+
+require_file() {
+    # $1 = path relative to the tree, $2 = why it must be there
+    local rel="$1" why="$2"
+    local path="$TREE/$rel"
+
+    if [ ! -f "$path" ] || [ ! -r "$path" ]; then
+        fail "$rel is missing or unreadable — $why"
+        return 1
+    fi
+
+    if [ ! -s "$path" ]; then
+        fail "$rel is empty — $why"
+        return 1
+    fi
+
+    return 0
+}
+
+require_file "$main_file" "a plugin directory without its main file is not a plugin" || true
+require_populated_dir "$TREE" src '*.php' "this artifact ships no PHP" || true
+
+# THE LOADER, BOTH TIERS. Pro's is not optional and not cosmetic: Pro dequeues
+# free's loader and enqueues its own (ADR 0014), so a Pro ZIP missing this file
+# leaves every page with no loader at all — "the same silent, total loss of
+# function 0004 exists to prevent, arriving through a missing file".
+require_file public/loader/loader.js "the shipped loader is built, never committed — run the build" || true
+
+if [ "$tier" = "free" ]; then
+    # Free's wconvert.php requires vendor/autoload.php and renders an admin
+    # notice instead of booting when it is absent. It is also what check (c)
+    # inspects below, so a tree without it is a tree that check cannot speak
+    # for.
+    require_file vendor/autoload.php "free's plugin file cannot boot without Composer's autoloader" || true
+    require_file public/admin/main.js "the admin bundle is built, never committed — run the build" || true
+    require_file "$readme" "the wp.org listing, and the source claim (d) makes true, live in it" || true
+fi
+
+verdict
+
+# --- [2] NOTHING THAT MUST NEVER SHIP ----------------------------------------
+#
+# Two names, and deliberately only two. This is not a denylist of untidy
+# things — `tests/` and `bin/` shipping is untidy and harmless, and wp.org
+# Guideline compliance is Plugin Check's job, not this program's. These two are
+# here because neither can ever legitimately appear inside a WordPress plugin
+# and each makes the artifact catastrophically wrong rather than merely
+# scruffy: `.git` publishes the whole private history of a private repo, and
+# `node_modules` is hundreds of megabytes of build-time dependencies. Their
+# presence also means the stage did not run, which invalidates everything
+# below it.
+section
+
+for never in .git node_modules; do
+    if find_matches "$TREE" -name "$never"; then
+        fail "the staged tree contains $never — the stage did not strip it"
+    elif [ "$?" -eq 2 ]; then
+        fail "could not search the staged tree for $never — cannot verify"
+    fi
+done
+
+if section_clean; then
+    pass "no .git and no node_modules"
+fi
+
+# --- [3] (c) NO PATH UNDER PRO'S PLUGIN DIRECTORY ----------------------------
+#
+# THE LEAK HAS ONE DIRECTION, and this program says so rather than pretending
+# to a symmetry it does not have. Pro IS the premium code (ADR 0015 —
+# enforcement is by non-registration, and possession is the gate), so there is
+# nothing for a Pro artifact to leak. What protects the Pro artifact from
+# carrying free is [0]: a tree holding both main files fails identification.
+#
+# For free, the check is real and has three halves, because a Pro path can
+# reach the free ZIP three ways:
+#
+#   1. Pro's TREE, un-stripped by the stage — `pro/` as this repo lays it out,
+#      or `wconvert-pro/` as an installed WordPress does.
+#   2. Pro's MAIN FILE, at any depth, which is the same tree arriving under a
+#      name nobody chose.
+#   3. A Pro REFERENCE in free's shipped PHP. This is the half the source
+#      contract cannot cover on its own, because `vendor/` is GENERATED: the
+#      Composer autoload map is written at build time, and an autoload entry
+#      pointing at `pro/src` is a premium path inside the free artifact that
+#      no source file ever contained. pro/src/autoload.php names this exact
+#      risk as its first reason for existing.
+section
+
+if [ "$tier" = "free" ]; then
+    for dir_name in $pro_dir_names; do
+        if find_matches "$TREE" -type d -name "$dir_name"; then
+            fail "the free artifact contains a $dir_name/ directory — that is Pro's tree"
+        elif [ "$?" -eq 2 ]; then
+            fail "could not search the free artifact for a $dir_name/ directory — cannot verify"
+        fi
+    done
+
+    if find_matches "$TREE" -type f -name "$other_main_file"; then
+        fail "the free artifact contains $other_main_file — that is Pro's plugin"
+    elif [ "$?" -eq 2 ]; then
+        fail "could not search the free artifact for $other_main_file — cannot verify"
+    fi
+
+    collect_root_php "$TREE"
+
+    # vendor/composer/ ONLY, never vendor/ whole. The generated autoload maps
+    # are the artifact-level risk and they all live there; the rest of vendor/
+    # is third-party code whose own use of a `pro/` path would be a false
+    # positive, and the fix for a false positive is always an exception —
+    # the one thing this gate must not acquire (ADR 0029).
+    # src/ AND resources/. `resources/playbooks/*.php` SHIPS IN THE FREE ZIP —
+    # PlaybookLibrary reads it by path constant — so it is free's tree by ADR
+    # 0029's own definition ("free's tree is src/, resources/, and the plugin
+    # files at the tree root"), and a `require WCONVERT_DIR . 'pro/…'` in a
+    # Playbook is a Pro path in the free artifact. Scanning only src/ left that
+    # unwatched. bin/pro-php-scan.php skips anything that is not PHP, so
+    # pointing it at resources/ costs the walk and nothing else.
+    SCAN_PATHS=("$TREE/src" "$TREE/resources")
+
+    if [ -d "$TREE/vendor/composer" ]; then
+        SCAN_PATHS+=("$TREE/vendor/composer")
+    else
+        fail "vendor/composer/ is missing — the autoload map was not inspected"
+    fi
+
+    run_scan "$SCRIPT_DIR" pro-php-scan.php \
+        "the free artifact's PHP references Pro (namespace, or a pro/ path):" \
+        "${SCAN_PATHS[@]}" ${ROOT_PHP[@]+"${ROOT_PHP[@]}"}
+
+    if section_clean; then
+        pass "no path under Pro's plugin directory"
+    fi
+else
+    echo "  ! (c) asserted nothing: Pro IS the premium code, so a Pro artifact has no Pro to leak."
+    echo "    What keeps free out of it is identification above — a tree holding both main files fails."
+fi
+
+verdict
+
+# --- [4] (d) THE UN-MINIFIED SOURCE TREE -------------------------------------
+#
+# FREE ONLY, and the asymmetry is the point rather than an omission. Guideline
+# 4 is a wp.org obligation and Pro is not distributed there — but more than
+# that, "its un-minified source tree" is not a property Pro's DIRECTORY has:
+# Pro's loader entry imports free's modules through `@loader/*` (ADR 0028), so
+# Pro's sources are free's plus its own, and free's half lives in the other
+# plugin. Asserting (d) against pro/resources/ would assert something that is
+# not true of it.
+#
+# `resources/` is checked here for BOTH of its jobs at once, which is what
+# keeps this list from being arbitrary. It is the un-minified source Guideline
+# 4 requires published, AND it is runtime data `src/` reads by a path constant.
+# Each entry below names the constant it answers to.
+section
+
+if [ "$tier" = "free" ]; then
+    # The sources behind the two shipped bundles, plus the renderer both of
+    # them import (vite.config.admin.mjs aliases @renderer at it).
+    require_populated_dir "$TREE" resources/loader/src '*.ts' "public/loader/loader.js is built from it" || true
+    require_populated_dir "$TREE" resources/admin/src '*.tsx' "public/admin/main.js is built from it" || true
+    require_populated_dir "$TREE" resources/renderer/src '*.ts' "both bundles import it" || true
+
+    # Runtime data. Free reads each of these by a path constant, and a ZIP
+    # missing one is a plugin that cannot draw a template or evaluate a rule.
+    require_file resources/rules/manifest.json "WConvert\\Rules\\RuleManifest::PATH reads it" || true
+    require_file resources/templates/manifest.json "WConvert\\Template\\TemplateManifest::PATH reads it" || true
+    require_populated_dir "$TREE" resources/templates/library '*.json' "WConvert\\Template\\TemplateLibrary::PATH reads it" || true
+    require_populated_dir "$TREE" resources/playbooks '*.php' "WConvert\\Playbook\\PlaybookLibrary::PATH reads it" || true
+
+    if section_clean; then
+        pass "the un-minified source tree ships, and so does the data src/ reads"
+    fi
+else
+    echo "  ! (d) asserted nothing: Pro's loader source is free's plus its own (ADR 0028),"
+    echo "    so 'its un-minified source tree' is not a property of Pro's directory."
+fi
+
+verdict
+
+echo "  ✓ artifact contract clean"

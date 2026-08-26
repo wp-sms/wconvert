@@ -1,0 +1,27 @@
+# What the PRO artifact does not carry.
+#
+# Pro's own, beside Pro's tree, because Pro is a separate plugin rather than a
+# build of the same one (ADR 0014) and the two artifacts are staged from two
+# different roots. One shared file would have to name paths that exist in only
+# one of them, which is how a rule meant for free ends up silently doing
+# nothing to Pro.
+#
+# Short, because pro/ is already almost all shippable code: it has no Composer
+# manifest, no node_modules and no build config of its own — Pro's Vite config
+# lives at the repo root and is stripped by never being copied.
+#
+# `resources/` STAYS, as it does for free. Pro is not distributed on wp.org so
+# Guideline 4 does not reach it, but Pro's loader source is the honest record
+# of what its bundle is, and there is no reason to ship less of it than free
+# ships of its own. bin/verify-artifact-contract.sh does not assert it here —
+# see the note in that script on why (d) has one direction.
+
+# Tests and analysis
+/tests
+/phpstan-bootstrap.php
+
+# This file
+/.distignore
+
+# Editor and OS litter, at any depth
+.DS_Store

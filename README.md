@@ -113,9 +113,9 @@ every rule identifier the manifest calls premium — free's *admin* bundle is
 deliberately never scanned, because it carries premium identifiers on purpose
 for its `locked` cards.
 
-The artifact contract, Plugin Check and the release guard are **not** here.
-They land with the release workflow: each half lands with the thing it
-inspects.
+The artifact contract, Plugin Check and the release guard run at **release**,
+not here — each half lands with the thing it inspects, and their subject is a
+build rather than a source tree. See [Releasing](#releasing).
 
 ## The rule manifest
 
@@ -484,6 +484,7 @@ composer install && npm install
 
 npm run build          # admin bundle + both loader bundles
 npm run check:loader   # the loader byte budget + the premium-identifier scan
+composer verify:artifact dist/stage/wconvert   # the artifact contract, on a staged tree
 composer test          # PHPUnit
 composer phpstan       # PHPStan, level 7
 composer verify:source # the source contract
@@ -491,6 +492,108 @@ npm test               # Vitest — free's tree and Pro's
 npm run typecheck      # tsc --noEmit
 npm run lint           # ESLint, --max-warnings=0
 ```
+
+## Releasing
+
+**Free and Pro release on independent tags** —
+[ADR 0030](docs/adr/0030-free-and-pro-release-on-independent-tags.md). Publish a
+GitHub Release whose tag is `free-vX.Y.Z` or `pro-vX.Y.Z`; the prefix decides
+which of the two workflows runs, and the other reports as skipped. A tag push
+on its own does nothing.
+
+```bash
+npm run build          # public/ and pro/public/ are gitignored — nothing is stale
+bin/build.sh free      # → dist/wconvert-v0.1.0.zip
+bin/build.sh pro       # → dist/wconvert-pro-v0.1.0.zip
+bin/build.sh all
+```
+
+`bin/build.sh` stages a copy, runs `composer install --no-dev` inside it,
+applies the tree's own `.distignore`, and then runs
+[`bin/verify-artifact-contract.sh`](bin/verify-artifact-contract.sh) **before**
+writing the ZIP — a ZIP that exists is a ZIP somebody can upload, so the
+contract has to be what decides whether one is written.
+
+### The artifact contract
+
+The third of ADR 0029's three programs, and the one whose subject is a build:
+
+* the free artifact contains **no path under Pro's plugin directory** — including
+  in `vendor/composer/`'s generated autoload map, which is a leak the source
+  contract structurally cannot see because `vendor/` does not exist until build
+  time;
+* the free artifact contains **its un-minified source tree**, which is what makes
+  `readme.txt`'s source claim true by construction.
+
+It takes a staged tree and **no flags**, and it is not told which plugin it is
+looking at: the tree holds exactly one plugin main file and that is the answer
+([`bin/plugin-identity.php`](bin/plugin-identity.php)). Zero is not a plugin;
+both is one artifact carrying the other inside it, which is the leak.
+
+### The release guard, five conditions
+
+Each is a program under `bin/`, called from both workflows, so the list of who
+may publish exists once rather than once per workflow — and so every condition
+can be tested. `tests/unit/Contract/ReleaseGuardTest.php` runs all five against
+fixture trees, fixture tags and a fixture git repository.
+
+| # | Condition | Program |
+|---|---|---|
+| 1 | The publisher is on the allowlist | `bin/check-publisher.sh` |
+| 2 | The tag names *this* plugin and is shaped like a version | `bin/check-release-tag.php` |
+| 3 | The tag is on the default branch | `bin/check-tag-on-branch.sh` |
+| 4 | Every statement of the version agrees | `bin/check-release-tag.php` |
+| 5 | Pro's `WCONVERT_MIN_CORE` ≤ the highest **published** free version | `bin/check-min-core.php` |
+
+**Condition 4 is three statements for free**, not one: the `Version:` header,
+`WCONVERT_VERSION`, and `readme.txt`'s `Stable tag:`. The constant is what
+runs; the stable tag is what wp.org serves. Checking one of the three is
+checking the one nobody installs.
+
+**Condition 5 is the one worth reading twice.** The anchor is the version
+wp.org is *serving*, read from its plugin information API by
+[`bin/published-free-version.sh`](bin/published-free-version.sh) — not the
+version in the working tree. Anchored to the repo it would pass the exact
+release it exists to catch: Pro 1.3 requiring core 1.3 while free 1.3 is still
+in the wp.org queue. The comparison itself is
+`WConvert\Pro\Boot\MinCoreCheck`, borrowed whole, so the release guard ranks
+versions exactly the way every install will.
+
+Two consequences follow, and neither is a bug: **free ships first, always** —
+until free is live on wp.org there is no version any install can be running, so
+no Pro release can pass — and a wp.org outage blocks a Pro release. That is the
+trade a fail-closed check makes.
+
+### Plugin Check
+
+Pinned to the exact version in `.github/plugin-check-version`, blocking on
+`error` and reporting `warning`.
+
+`WordPress/plugin-check-action` is deliberately **not** used: it has no input
+for the checker's version and always installs the latest from wp.org, so
+pinning its SHA pins the wrapper rather than the gate.
+[`bin/plugin-check.sh`](bin/plugin-check.sh) does the same sequence with
+`--version=` and asserts afterwards that the version it asked for is the one it
+got.
+
+```bash
+bin/plugin-check.sh dist/stage/wconvert "$(cat .github/plugin-check-version)"
+```
+
+It needs Docker — `@wordpress/env` starts a real WordPress and runs wp.org's own
+checker inside it. `.github/workflows/plugin-check-drift.yml` runs the **latest**
+against `main` weekly, compares it to the pin by finding code, and opens an
+issue on anything new.
+
+**The free plugin does not pass this gate yet.** The first run against a real
+staged tree reported 53 errors and 17 warnings — escaping, i18n and
+`WordPress.DB.PreparedSQL` findings in `src/` and `resources/playbooks/`, none
+of them introduced by the release workflow. They are tracked in
+[#60](https://github.com/navidkashani/wconvert/issues/60) and the first wp.org
+release is blocked on them. Nothing is suppressed to make the gate green: an
+`--ignore-codes` list is the exception list
+[ADR 0029](docs/adr/0029-the-free-contract-is-proven-at-the-source.md) spends
+its length refusing.
 
 ### Why WordPress 6.2
 

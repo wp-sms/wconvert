@@ -32,15 +32,14 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PLUGIN_ROOT="$(dirname "$SCRIPT_DIR")"
 
+# fail(), find_matches(), require_populated_dir(), run_scan(), collect_root_php().
+# Shared with bin/verify-artifact-contract.sh — see that file's header for why a
+# shared library does not contradict "three programs, no flags".
+# shellcheck source=bin/contract-support.sh
+. "$SCRIPT_DIR/contract-support.sh"
+
 TREE="${1:-$PLUGIN_ROOT}"
 TREE="${TREE%/}"
-
-FAILURES=0
-
-fail() {
-    echo "  ✗ $1" >&2
-    FAILURES=$((FAILURES + 1))
-}
 
 echo "==> verify-source-contract: $TREE"
 
@@ -85,50 +84,26 @@ fi
 
 # --- The scans ---------------------------------------------------------------
 #
-# Each delegate answers with an exit code, and the THIRD code is the important
-# one: 0 clean, 1 offenders (with a non-empty list), anything else means it
-# could not look, which is a failure and not a pass. Requiring a non-empty list
-# alongside exit 1 also stops the PHP interpreter's own "could not open the
-# script" exit 1 from being reported as a leak with a blank offender list —
-# WSMS names that exact misdiagnosis in its own guard.
-run_scan() {
-    # $1 = scanner script, $2 = what a hit means, $3.. = paths to scan
-    local scanner="$1" label="$2"
-    shift 2
-    local out="" rc=0
-
-    out="$(php "$SCRIPT_DIR/$scanner" "$@")" || rc=$?
-
-    if [ "$rc" -eq 0 ]; then
-        return 0
-    fi
-
-    if [ "$rc" -eq 1 ] && [ -n "$out" ]; then
-        fail "$label"
-        printf '%s\n' "$out" | sed 's/^/        /' >&2
-        return 0
-    fi
-
-    fail "$scanner could not run (exit $rc) — cannot verify"
-}
-
-# The PHP scan covers src/ AND the plugin bootstrap files at the tree root.
-# Those root files ship and are the first thing every install executes, so a
-# scan scoped to subdirectories would leave them entirely unread. Globbed
-# rather than named, so adding a root-level PHP file cannot quietly opt out.
+# The PHP scan covers src/, resources/ AND the plugin bootstrap files at the
+# tree root — the whole of what ADR 0029 calls free's tree. The root files ship
+# and are the first thing every install executes, so a scan scoped to
+# subdirectories would leave them entirely unread.
 #
-# Unlike src/ and resources/, this one is opportunistic: it scans what is
-# there and does not insist something is. The fail-closed line is drawn at the
-# two roots above, which is where free's code actually lives.
-shopt -s nullglob
-ROOT_PHP=("$TREE"/*.php)
-shopt -u nullglob
+# resources/ IS SCANNED FOR PHP, not only for TypeScript, and it was not
+# always: `resources/playbooks/*.php` ships in the free ZIP and is read by
+# PlaybookLibrary at runtime, so `require WCONVERT_DIR . 'pro/…'` in a Playbook
+# is a Pro path in free's tree that a src/-only scan never looked at.
+# bin/pro-php-scan.php skips anything that is not PHP, so pointing it at
+# resources/ costs the walk and nothing else.
+#
+# The root glob is opportunistic — it scans what is there and does not insist
+# something is. The fail-closed line is drawn at the two roots above, which is
+# where free's code actually lives.
+collect_root_php "$TREE"
 
-run_scan pro-ts-scan.php "free TypeScript imports a pro/ path:" "$TREE/resources"
-# ${ARR[@]+"${ARR[@]}"} rather than "${ARR[@]}": under `set -u`, bash 3.2 —
-# which is what /usr/bin/env bash still resolves to on macOS — treats an empty
-# array expansion as an unbound variable and aborts.
-run_scan pro-php-scan.php "free PHP references Pro (namespace, or a pro/ path):" "$TREE/src" ${ROOT_PHP[@]+"${ROOT_PHP[@]}"}
+run_scan "$SCRIPT_DIR" pro-ts-scan.php "free TypeScript imports a pro/ path:" "$TREE/resources"
+run_scan "$SCRIPT_DIR" pro-php-scan.php "free PHP references Pro (namespace, or a pro/ path):" \
+    "$TREE/src" "$TREE/resources" ${ROOT_PHP[@]+"${ROOT_PHP[@]}"}
 
 if [ "$FAILURES" -gt 0 ]; then
     echo "==> verify-source-contract FAILED with $FAILURES problem(s)." >&2

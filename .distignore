@@ -1,0 +1,72 @@
+# What the FREE artifact does not carry.
+#
+# Applied by bin/build.sh to a staged copy of this tree, never to the tree
+# itself. Two forms, the same two WSMS's build understands:
+#
+#   /anchored/path   removed from the root of the stage, and only from there
+#   bare-name        removed wherever it appears, at any depth
+#
+# ============================================================================
+# WHAT IS *NOT* HERE IS THE POINT: /resources.
+# ============================================================================
+# WSMS strips its /resources and its readme still says sources ship there.
+# That is the trap ADR 0028 deletes rather than inherits: free's un-minified
+# sources ship INSIDE the free ZIP, which is what makes the readme's source
+# claim true by construction and what makes wp.org Guideline 4 compatible with
+# Guideline 9. `resources/` is also runtime data — the rule manifest, the
+# template library, the Playbooks — read by path constants in src/. Stripping
+# it would break the plugin and break the claim in the same move.
+#
+# bin/verify-artifact-contract.sh asserts it is still there, so this file
+# cannot quietly acquire the line later.
+
+# Version control & CI
+/.git
+/.github
+/.gitignore
+/.distignore
+
+# The other plugin. Free contains no path under Pro's plugin directory
+# (ADR 0029, check c); this is the line that makes that true, and
+# verify-artifact-contract.sh is what proves it did.
+/pro
+
+# Build tooling and its output
+/bin
+/dist
+/node_modules
+/vite.config.admin.mjs
+/vite.config.loader.mjs
+/vite.config.loader-pro.mjs
+/vite.loader-config.mjs
+/package.json
+/package-lock.json
+/tsconfig.json
+/eslint.config.js
+
+# Composer's manifests. The staged vendor/ is installed from them with
+# --no-dev before this file is applied, so the artifact carries the
+# autoloader and Action Scheduler, and neither manifest.
+/composer.json
+/composer.lock
+
+# Tests and analysis
+/tests
+/phpunit.xml.dist
+/.phpunit.cache
+/.phpunit.result.cache
+/phpstan.neon.dist
+/phpstan-bootstrap.php
+/phpstan-stubs
+/vitest.config.ts
+
+# Documentation and agent instructions. readme.txt is the plugin's
+# documentation and stays.
+/README.md
+/CLAUDE.md
+/CONTEXT.md
+/docs
+/.claude
+
+# Editor and OS litter, at any depth
+.DS_Store

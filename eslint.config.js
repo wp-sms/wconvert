@@ -5,7 +5,19 @@ import globals from 'globals';
 
 export default [
   {
-    ignores: ['node_modules/', 'vendor/', 'public/', 'pro/public/', '*.config.*', 'vite.loader-config.mjs'],
+    // `dist/` is build OUTPUT — a staged copy of the same TypeScript that is
+    // already linted where it lives, plus the vendored JavaScript of whatever
+    // Composer installed. Linting it reports every file twice and every
+    // third-party file once.
+    ignores: [
+      'node_modules/',
+      'vendor/',
+      'public/',
+      'pro/public/',
+      'dist/',
+      '*.config.*',
+      'vite.loader-config.mjs',
+    ],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
