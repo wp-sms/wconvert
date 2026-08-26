@@ -140,6 +140,14 @@ final class PublishedProjection
         // blob gets a vote.
         return [
             'id' => (string) ($row['id'] ?? ''),
+            // **Beside the payload, never inside it.** The [[Goal]] is what
+            // says an Optin's CTA goes back to the cart, and the cart URL is
+            // resolved at enqueue from `wc_get_cart_url()` rather than frozen
+            // here — so PHP needs it and the browser does not (ADR 0025). A
+            // sibling key rather than a payload one is how it reaches the
+            // first without costing the second a byte on every matching page
+            // view, which is the same split `targeting` already has.
+            'goal' => (string) ($row['goal'] ?? ''),
             'targeting' => is_array($targeting) ? $targeting : [],
             // Both keys, always — including empty. The loader reads "no
             // triggers" as "never fires", which is ADR 0012's zero-trigger

@@ -4,6 +4,8 @@ namespace WConvert\Rules;
 
 use WConvert\Support\Availability;
 use WConvert\Support\ProPresence;
+use WConvert\Support\SiteDependency;
+use WConvert\Support\SitePresence;
 
 defined('ABSPATH') || exit;
 
@@ -38,6 +40,10 @@ final class RuleCatalogue
     public function __construct(
         private readonly RuleVocabulary $vocabulary,
         private readonly ProPresence $pro,
+        // Beside Pro's presence rather than folded into it: a missing tier is
+        // buyable from us and a missing plugin is not, and collapsing the two
+        // shows a Pro customer an advertisement for Pro (ADR 0026).
+        private readonly SitePresence $site,
     ) {
     }
 
@@ -73,12 +79,54 @@ final class RuleCatalogue
      */
     public function availabilityOf(string $type): Availability
     {
-        // No rule type declares a [[SiteDependency]] in v1 — the cart
-        // Conditions that would are #36's — so the site can serve every one of
-        // them and the only question left is the tier. Passed rather than
-        // assumed, so the day a cart Condition lands the arithmetic is already
-        // the shared one and `unavailable` still beats `locked` (ADR 0026).
-        return Availability::of(true, $this->vocabulary->tierOf($type)?->isSuppliedBy($this->pro) ?? true);
+        $requires = $this->vocabulary->requiresOf($type);
+
+        // **Both halves, and `unavailable` beats `locked`.** The precedence is
+        // {@see Availability::of()}'s rather than an order written out here,
+        // so a merchant with no store is never sold Pro for a feature Pro
+        // would not give them either (ADR 0026). Until #36's cart Conditions
+        // no rule type named a dependency and the first argument was the
+        // literal `true`; what changed is the manifest gaining `requires`, not
+        // the arithmetic.
+        return Availability::of(
+            $requires === null || $this->site->has($requires),
+            $this->vocabulary->tierOf($type)?->isSuppliedBy($this->pro) ?? true
+        );
+    }
+
+    /**
+     * The [[SiteDependency]] this rule type is missing **where that is why it
+     * is absent here** — and null where the cause is the tier, or where it is
+     * not absent at all.
+     *
+     * ========================================================================
+     * ONE FACT RATHER THAN TWO COORDINATES, BECAUSE ONLY ONE COMBINATION IS
+     * REAL.
+     * ========================================================================
+     * The surface that needs this is {@see \WConvert\Optin\Suspension},
+     * which turns it into the sentence on the Optin list: `unavailable` says a
+     * dependency is missing and nothing more, and a row reading *"Suspended —
+     * not available on this site"* leaves a merchant who deactivated
+     * WooCommerce to guess which of their plugins did it.
+     *
+     * Handing that surface an {@see Availability} AND a dependency would let
+     * it hold a pair that cannot occur — `unavailable` with nothing to name —
+     * and a branch for that pair is dead code arguing it is defensive. So the
+     * two are resolved together, here, and what comes back is the cause or
+     * nothing.
+     *
+     * **The precedence is still {@see Availability::of()}'s and is not
+     * re-derived.** This asks the shared arithmetic which half won and answers
+     * with the dependency only where the SITE's did — so a rule declaring a
+     * dependency the site HAS is `locked` and reads as null here, which is
+     * what stops a free install with a store being told it needs WooCommerce
+     * (ADR 0026).
+     */
+    public function missingDependencyOf(string $type): ?SiteDependency
+    {
+        return $this->availabilityOf($type) === Availability::Unavailable
+            ? $this->vocabulary->requiresOf($type)
+            : null;
     }
 
     /**

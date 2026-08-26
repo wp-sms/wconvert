@@ -781,3 +781,90 @@ if (!class_exists('WP_REST_Request')) {
         }
     }
 }
+
+/*
+|--------------------------------------------------------------------------
+| WooCommerce, as thinly as WConvert touches it
+|--------------------------------------------------------------------------
+| Two functions and one class, which is the entire surface
+| `WConvert\Pro\WooCommerce\CartCookie` reaches for. It is stubbed HERE rather
+| than required from the test that needs it, so the suite keeps one mechanism
+| for "a function the units under test call" — the same place `wpdb` and
+| `WP_REST_Request` live.
+|
+| **`WooCommerce` itself is deliberately NOT declared.** That class is what
+| `WConvert\Support\WpSitePresence` asks `class_exists()` about, and declaring
+| it here would make every test run report a site with a store — turning the
+| one question ADR 0026's whole distinction rests on into a constant. The cart
+| is reached through `WC()`, which is what the writer actually calls.
+*/
+$GLOBALS['wconvertTestCookies'] = [];
+
+/**
+ * The cart, holding only the two numbers WConvert ever reads of it.
+ *
+ * The numbers come from globals rather than from a constructor, because
+ * WooCommerce's own `WC_Cart` takes no constructor arguments — and a stub that
+ * invented some would be describing an API the product does not have, which is
+ * the one thing a stub must never do.
+ */
+if (!class_exists('WC_Cart')) {
+    class WC_Cart
+    {
+        public function get_cart_contents_count(): int
+        {
+            return (int) ($GLOBALS['wconvertTestCartCount'] ?? 0);
+        }
+
+        /** @return float */
+        public function get_total(string $context = 'view')
+        {
+            return (float) ($GLOBALS['wconvertTestCartTotal'] ?? 0.0);
+        }
+    }
+}
+
+/**
+ * WooCommerce's own container accessor, holding whichever cart a test set.
+ *
+ * `null` is a real answer and the default one: a request that never loaded a
+ * cart — an admin screen, a cron run — is the case the writer must survive
+ * without clearing a live shopper's cookie.
+ */
+if (!function_exists('WC')) {
+    function WC(): object
+    {
+        return new class ($GLOBALS['wconvertTestCart'] ?? null) {
+            public function __construct(public readonly ?WC_Cart $cart)
+            {
+            }
+        };
+    }
+}
+
+/**
+ * Recorded rather than performed, on the same footing as the script queue: a
+ * `Set-Cookie` header is the one thing this writer produces, and PHPUnit has
+ * already sent output by the time a test runs.
+ */
+if (!function_exists('wc_setcookie')) {
+    function wc_setcookie(string $name, string $value, int $expire = 0, bool $secure = false, bool $httponly = false): void
+    {
+        $GLOBALS['wconvertTestCookies'][] = [
+            'name' => $name,
+            'value' => $value,
+            'expire' => $expire,
+            'secure' => $secure,
+            'httponly' => $httponly,
+        ];
+    }
+}
+
+if (!function_exists('is_ssl')) {
+    function is_ssl(): bool
+    {
+        return false;
+    }
+}
+
+defined('YEAR_IN_SECONDS') || define('YEAR_IN_SECONDS', 31536000);

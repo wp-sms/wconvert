@@ -55,6 +55,8 @@ final class RuleLabels
             'scroll_up' => __('Scrolls back up', 'wconvert'),
             'device' => __('Device', 'wconvert'),
             'query_param' => __('A URL parameter', 'wconvert'),
+            'cart_has_items' => __('Has something in their cart', 'wconvert'),
+            'cart_value_min' => __('Cart is worth at least', 'wconvert'),
         ];
     }
 
@@ -82,6 +84,10 @@ final class RuleLabels
             'device.in' => __('Shows on', 'wconvert'),
             'query_param.key' => __('Parameter name', 'wconvert'),
             'query_param.value' => __('Any of these values', 'wconvert'),
+            // No currency symbol and no formatting: the threshold is in the
+            // store's own currency, which is exactly why a [[Playbook]] may
+            // not supply one and the param is marked `authored` (ADR 0013).
+            'cart_value_min.amount' => __('Cart total, in your store currency', 'wconvert'),
         ];
     }
 

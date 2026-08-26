@@ -110,6 +110,23 @@ the exact path by which the expression language arrives.
   so `normalize()` exempts it by name and `partition()` strips it again, since
   nothing that renders an Optin reads it and the payload is inlined into every
   matching page.*
+  ***Six as of [#36](https://github.com/navidkashani/wconvert/issues/36), which
+  added `requires`*** *— the [[SiteDependency]] a rule type needs, which is the
+  half of [[Availability]] that is not about [[Pro]] and the one thing we cannot
+  sell. It is filed the same way `tier` is, beside the member on a registry that
+  already enumerates it, so the count of separate lists is still zero
+  ([ADR 0015](0015-enforcement-is-by-non-registration.md)).*
+
+  ***This list has grown once per reader and never once ahead of one***, *which
+  is what keeps [ADR 0029](0029-the-free-contract-is-proven-at-the-source.md)'s
+  "nothing is written before its subject" true of a manifest that is now six
+  fields wide rather than a slogan it has outgrown.* `substitute` *waited for
+  #33's resolver;* `requires` *arrived with three readers on one pull request —
+  the registration gate that stops a rule nothing can answer being registered as
+  though it could, the [[Availability]] arithmetic where `unavailable` starts
+  beating `locked` for a rule type, and the sentence a merchant reads on the
+  Optin list. The pressure is always to add the field first and the reader
+  later; the answer each time has been to ship them together.*
 - **One engine type, many UI presets.** The engine gets the general form
   (`total_pageviews {min, max}`, `query_param {key, value}`); the builder ships
   the legible shortcuts ("returning visitor", the UTM fields). A rich admin over

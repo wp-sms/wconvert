@@ -5,8 +5,11 @@ namespace WConvert\Pro\Container;
 use WConvert\Container\ServiceContainer;
 use WConvert\Container\ServiceProvider;
 use WConvert\Pro\Frontend\ProLoaderEnqueue;
+use WConvert\Pro\WooCommerce\CartCookie;
 use WConvert\Rules\RuleVocabulary;
 use WConvert\Rules\SuppliedRules;
+use WConvert\Support\SiteDependency;
+use WConvert\Support\SitePresence;
 use WConvert\Support\Tier;
 
 defined('ABSPATH') || exit;
@@ -39,6 +42,11 @@ final class ProServiceProvider implements ServiceProvider
             ProLoaderEnqueue::class,
             static fn (): ProLoaderEnqueue => new ProLoaderEnqueue(WCONVERT_PRO_DIR, WCONVERT_PRO_URL)
         );
+
+        // The whole of WConvert's coupling to WooCommerce: one cookie, so the
+        // two cart [[Condition]]s can be answered synchronously in the browser
+        // (ADR 0025).
+        $container->register(CartCookie::class, static fn (): CartCookie => new CartCookie());
     }
 
     public function boot(ServiceContainer $container): void
@@ -66,8 +74,49 @@ final class ProServiceProvider implements ServiceProvider
          * are suspended while the site shows them perfectly.
          */
         $container->resolve(SuppliedRules::class)->add(
-            ...$container->resolve(RuleVocabulary::class)->typesAt(Tier::Pro)
+            ...$container->resolve(RuleVocabulary::class)->typesAt(
+                Tier::Pro,
+                /*
+                 * AND THE SITE HALF, WHICH IS WHAT #36 CLOSED.
+                 *
+                 * Registering every `tier: pro` type unconditionally was a
+                 * live hole: on a Pro install with WooCommerce deactivated,
+                 * `cart_has_items` was SUPPLIED, therefore not suspended,
+                 * therefore shown — and the Optin said "You left 3 items in
+                 * your cart" to somebody who has never added anything. That
+                 * is the failure ADR 0027 exists for, arriving from the
+                 * WooCommerce side instead of the Pro side, and
+                 * `on_absence: suspend` alone does not close it because the
+                 * field only fires when the type is UNSUPPLIED.
+                 *
+                 * Being loaded is still the whole of the ENTITLEMENT
+                 * (ADR 0015). This is not a second entitlement question: it
+                 * is whether Pro's module could answer at all, and with no
+                 * store nothing writes the cart cookie it reads.
+                 */
+                $container->resolve(SitePresence::class)
+            )
         );
+
+        /*
+         * THE CART COOKIE, HOOKED ABOVE THE `is_admin()` GUARD AND ONLY WHERE
+         * THERE IS A STORE.
+         *
+         * Above the guard because adding to a cart is a VISITOR's act, and
+         * one route for it — `admin-ajax.php` — reads as wp-admin however
+         * little it resembles one. A writer that skipped it would leave the
+         * shopper who added from a shop archive with no cookie, which is most
+         * of them.
+         *
+         * And only with WooCommerce, because `woocommerce_cart_updated` is
+         * WooCommerce's action: on a site without it the hook is a listener
+         * for an event that cannot fire. Asked rather than left to WordPress
+         * so the ABSENCE is stated once, beside the registration it belongs
+         * to, rather than being a fact about a hook name nobody reads.
+         */
+        if ($container->resolve(SitePresence::class)->has(SiteDependency::WooCommerce)) {
+            $container->resolve(CartCookie::class)->hooks();
+        }
 
         // The same guard free's loader sits behind, and for the same reason:
         // wp-admin is not a page a visitor is looking at. There is deliberately

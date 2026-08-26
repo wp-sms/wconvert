@@ -2,6 +2,8 @@
 
 namespace WConvert\Rules;
 
+use WConvert\Support\SiteDependency;
+use WConvert\Support\SitePresence;
 use WConvert\Support\Tier;
 
 defined('ABSPATH') || exit;
@@ -52,6 +54,33 @@ defined('ABSPATH') || exit;
  * content, and a standalone table is the fourth hand-maintained list this
  * design has now refused four times (ADR 0012).
  *
+ * ============================================================================
+ * AND THE SITE HALF OF [[Availability]], WHICH IS NOT A TIER QUESTION.
+ * ============================================================================
+ * `requires` names a {@see \WConvert\Support\SiteDependency} — something the
+ * SITE would need that we cannot sell. It is the rule vocabulary's copy of the
+ * declaration {@see \WConvert\Goal\Goal::requires()} already carries, filed the
+ * same way `tier` is: **beside the member, on a registry that already
+ * enumerates it**, so the split still adds zero new lists (ADR 0015).
+ *
+ * It arrives with the two cart [[Condition]]s and not before, which is
+ * ADR 0029's "nothing is written before its subject" — the rule that kept
+ * `substitute` out of the manifest until #33 had a reader for it. This field
+ * lands with THREE readers on the same pull request: {@see self::typesAt()},
+ * which is what stops a type nothing can evaluate being registered as though
+ * it could; {@see RuleCatalogue::availabilityOf()}, which is where
+ * `unavailable` starts beating `locked` for a rule type; and
+ * {@see \WConvert\Optin\Suspension}, which is the sentence a merchant reads.
+ *
+ * **Why it cannot be inferred from the tier.** [[Pro]] registers every
+ * `tier: pro` type unconditionally at boot, so on a Pro install with
+ * WooCommerce deactivated `cart_has_items` would be *supplied*, therefore not
+ * suspended, therefore shown — and the Optin would say *"You left 3 items in
+ * your cart"* to somebody who has never added anything. That is exactly the
+ * failure ADR 0027 exists for, arriving from the WooCommerce side rather than
+ * the Pro side, and `on_absence: suspend` alone does not close it: the field
+ * only fires when the type is UNSUPPLIED.
+ *
  * @since 0.1.0
  */
 final class RuleVocabulary
@@ -75,6 +104,7 @@ final class RuleVocabulary
      * @param array<string, list<string>> $axes Axis name => its types, in manifest order.
      * @param array<string, OnAbsence> $onAbsence Rule type => what happens where this install cannot evaluate it.
      * @param array<string, array<string, mixed>> $substitutes Rule type => the rule that runs in its place.
+     * @param array<string, SiteDependency> $requires Rule type => what the SITE must have for it to mean anything.
      */
     private function __construct(
         private readonly array $kinds,
@@ -84,6 +114,7 @@ final class RuleVocabulary
         private readonly array $axes = [],
         private readonly array $onAbsence = [],
         private readonly array $substitutes = [],
+        private readonly array $requires = [],
     ) {
     }
 
@@ -104,6 +135,7 @@ final class RuleVocabulary
         $axes = [];
         $onAbsence = [];
         $substitutes = [];
+        $requires = [];
 
         foreach ($manifest as $axis => $entries) {
             if (!is_array($entries)) {
@@ -141,10 +173,24 @@ final class RuleVocabulary
                     $substitute = $entry['substitute'];
                     $substitutes[$type] = $substitute;
                 }
+
+                // **Absent means "needs nothing but WordPress"**, and an
+                // unrecognised name means the same. A dependency this build
+                // cannot name is one {@see \WConvert\Support\SitePresence}
+                // has no question to ask about, so treating it as a
+                // requirement would suspend every Optin holding the rule with
+                // a cause nobody can act on.
+                $dependency = SiteDependency::tryFrom(
+                    is_string($entry['requires'] ?? null) ? $entry['requires'] : ''
+                );
+
+                if ($dependency !== null) {
+                    $requires[$type] = $dependency;
+                }
             }
         }
 
-        return new self($kinds, $tiers, $params, $presets, $axes, $onAbsence, $substitutes);
+        return new self($kinds, $tiers, $params, $presets, $axes, $onAbsence, $substitutes, $requires);
     }
 
     public function kindOf(string $type): ?RuleKind
@@ -162,31 +208,79 @@ final class RuleVocabulary
     }
 
     /**
-     * Every CLIENT rule type declared at one tier, in manifest order.
+     * Every CLIENT rule type declared at one tier **that this site can
+     * serve**, in manifest order.
      *
      * This is what free and [[Pro]] each register into {@see SuppliedRules},
      * and it is why the premium split still adds **zero new lists** (ADR 0015):
      * neither side names a rule type, each asks the one manifest for the types
      * filed under its own tier.
      *
+     * ========================================================================
+     * THE SITE HALF IS ASKED HERE, AT REGISTRATION, RATHER THAN AT THE
+     * RESOLVER.
+     * ========================================================================
+     * `SuppliedRules` answers exactly one question — *"can this install
+     * evaluate this rule type"* — and registration is the answer (ADR 0015).
+     * A rule that needs a store on a site with no store **cannot be
+     * evaluated**: nothing writes the cart cookie, so its module would answer
+     * `false` on every page view forever. Registering it anyway would make
+     * that a silent, total loss of function with nothing in any log, which is
+     * the exact shape ADR 0012 names as this category's defining support
+     * ticket.
+     *
+     * Asked here, it is instead the [[Suspended]] state ADR 0027 designed:
+     * the type is unsupplied, `on_absence: suspend` fires, the Optin leaves
+     * the payload, and the Optin list carries a cause the merchant can read.
+     * {@see Degradation} needs no site branch at all, and the front-end path
+     * still asks no tier question of any kind.
+     *
+     * **Both sides ask it, not just [[Pro]]'s.** Nothing free ships declares a
+     * dependency today, so free's call is vacuous — but a gate only one caller
+     * applies is a gate the second caller re-opens, and Pro's provider
+     * registering every `tier: pro` type unconditionally is precisely how this
+     * hole was open before.
+     *
      * Client types only. Targeting is answered on the server by code both
      * installs carry, so it is never absent and has nothing to register.
      *
      * @return list<string>
      */
-    public function typesAt(Tier $tier): array
+    public function typesAt(Tier $tier, SitePresence $site): array
     {
         $types = [];
 
         foreach (array_keys($this->kinds) as $type) {
             $type = (string) $type;
+            $requires = $this->requiresOf($type);
 
-            if ($this->tierOf($type) === $tier && $this->isClientRule($type)) {
+            if (
+                $this->tierOf($type) === $tier
+                && $this->isClientRule($type)
+                && ($requires === null || $site->has($requires))
+            ) {
                 $types[] = $type;
             }
         }
 
         return $types;
+    }
+
+    /**
+     * What the SITE must have for this rule type to mean anything, or null
+     * where it needs nothing but WordPress.
+     *
+     * The half of [[Availability]] that is not about [[Pro]], and the reason
+     * it is a separate question: `locked` is buyable from us and
+     * `unavailable` is not, so a surface that collapsed the two would offer a
+     * merchant a WooCommerce licence we do not have (ADR 0026). The
+     * arithmetic that combines this with {@see self::tierOf()} is
+     * {@see \WConvert\Support\Availability::of()}'s, done once in
+     * {@see RuleCatalogue::availabilityOf()}.
+     */
+    public function requiresOf(string $type): ?SiteDependency
+    {
+        return $this->requires[$type] ?? null;
     }
 
     /**

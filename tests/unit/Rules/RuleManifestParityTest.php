@@ -6,6 +6,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use WConvert\Rules\RuleKind;
 use WConvert\Rules\RuleManifest;
+use WConvert\Support\SiteDependency;
 use WConvert\Targeting\TargetingType;
 
 /**
@@ -16,10 +17,10 @@ use WConvert\Targeting\TargetingType;
  * one of the three axes, so this file asserts:
  *
  * - **parity for Targeting**, against the enum that is its switch, and
- * - **the five-field invariant across every axis**, because PHP is what reads
- *   `tier`, `consent_category`, `on_absence` and `substitute` — the loader
- *   never sees a rule its install is not entitled to, and never sees a rule
- *   that stood in for one.
+ * - **the six-field invariant across every axis**, because PHP is what reads
+ *   `tier`, `requires`, `consent_category`, `on_absence` and `substitute` —
+ *   the loader never sees a rule its install is not entitled to, never sees
+ *   one the SITE cannot serve, and never sees a rule that stood in for one.
  *
  * The trigger/condition half of parity — every entry resolving to a module on
  * the side its `tier` names — is asserted in TypeScript, where the modules
@@ -84,16 +85,24 @@ final class RuleManifestParityTest extends TestCase
     }
 
     /**
-     * Five fields on every entry (ADR 0029) — `tier`, `consent_category`,
-     * `on_absence`, `substitute` and kind. The key must be PRESENT even where
-     * the value is null, because null is a claim: Targeting is
-     * server-evaluated, writes nothing to the visitor's device, and is never
-     * degraded away, so it declares nothing to stand in for it either.
+     * Six fields on every entry (ADR 0029) — `tier`, `requires`,
+     * `consent_category`, `on_absence`, `substitute` and kind. The key must be
+     * PRESENT even where the value is null, because null is a claim: Targeting
+     * is server-evaluated, writes nothing to the visitor's device, and is
+     * never degraded away, so it declares nothing to stand in for it either;
+     * and a `requires` of null says a rule needs nothing but WordPress, which
+     * is a statement rather than an omission.
+     *
+     * **`requires` is the sixth**, added by #36 with three readers on the same
+     * pull request — the registration gate, the [[Availability]] arithmetic
+     * and the sentence on the Optin list. That is what keeps ADR 0029's
+     * "nothing is written before its subject" true of a growing manifest: this
+     * list has grown once per reader and never once ahead of one.
      *
      * @param list<RuleKind> $kinds
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('axes')]
-    public function testEveryEntryCarriesAllFiveFields(string $axis, array $kinds): void
+    public function testEveryEntryCarriesAllSixFields(string $axis, array $kinds): void
     {
         $entries = $this->axis($axis);
 
@@ -102,9 +111,17 @@ final class RuleManifestParityTest extends TestCase
         foreach ($entries as $type => $entry) {
             $where = sprintf('%s.%s', $axis, $type);
 
-            foreach (['kind', 'tier', 'params', 'presets', 'consent_category', 'on_absence', 'substitute'] as $field) {
+            $fields = ['kind', 'tier', 'requires', 'params', 'presets', 'consent_category', 'on_absence', 'substitute'];
+
+            foreach ($fields as $field) {
                 $this->assertArrayHasKey($field, $entry, sprintf('%s is missing %s', $where, $field));
             }
+
+            $this->assertContains(
+                $entry['requires'],
+                [null, ...array_map(static fn (SiteDependency $d): string => $d->value, SiteDependency::cases())],
+                sprintf('%s needs something SitePresence has no question to ask about', $where)
+            );
 
             $this->assertContains($entry['tier'], ['free', 'pro'], sprintf('%s has no valid tier', $where));
 
@@ -317,6 +334,57 @@ final class RuleManifestParityTest extends TestCase
                 }
             }
         }
+    }
+
+    /**
+     * ========================================================================
+     * A RULE THE COPY LEANS ON SUSPENDS, AND BOTH CART CONDITIONS DO.
+     * ========================================================================
+     * *"You left 3 items in your cart"* is guaranteed by `cart_has_items`.
+     * Dropped, the sentence shows to visitors who have never added anything —
+     * which does not widen an audience, it makes the Optin say something false
+     * (ADR 0027). Pinned by type rather than derived, because the whole point
+     * of `suspend` is that somebody CHOSE it: a rule that quietly reverted to
+     * the `drop` default would ship exactly the lying popup, and the default
+     * is what an entry saying nothing gets.
+     */
+    public function testBothCartConditionsSuspendRatherThanDrop(): void
+    {
+        $conditions = $this->axis('conditions');
+
+        foreach (['cart_has_items', 'cart_value_min'] as $type) {
+            $this->assertArrayHasKey($type, $conditions, sprintf('the manifest declares no %s', $type));
+            $this->assertSame('suspend', $conditions[$type]['on_absence'], sprintf('%s drops rather than suspends', $type));
+            $this->assertSame('woocommerce', $conditions[$type]['requires'], sprintf('%s needs no store', $type));
+            $this->assertSame('pro', $conditions[$type]['tier'], sprintf('%s is not premium', $type));
+        }
+    }
+
+    /**
+     * **`functional`, and it is a judgement call rather than an obvious
+     * reading.** The cart cookie records something the visitor did on this
+     * site to operate a feature of it; the purist reading files anything
+     * serving a marketing outcome under `marketing`, which is withheld by
+     * default and would silently kill the [[Goal]] across the EU. Pinned so
+     * the decision is a decision rather than whatever the last edit left, and
+     * argued where the cookie is written.
+     */
+    public function testBothCartConditionsDeclareFunctionalStorageConsent(): void
+    {
+        foreach (['cart_has_items', 'cart_value_min'] as $type) {
+            $this->assertSame('functional', $this->axis('conditions')[$type]['consent_category']);
+        }
+    }
+
+    /**
+     * **A currency threshold is site-local**, so a [[Playbook]] may not supply
+     * one and `cart_value_min` is reachable only by hand. That is the same
+     * `authored` declaration a post id and a CSS selector carry, rather than
+     * a special case named after this rule (ADR 0012).
+     */
+    public function testTheCurrencyThresholdIsAuthorOnly(): void
+    {
+        $this->assertTrue($this->axis('conditions')['cart_value_min']['params']['amount']['authored']);
     }
 
     /**

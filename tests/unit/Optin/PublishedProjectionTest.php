@@ -40,6 +40,7 @@ final class PublishedProjectionTest extends TestCase
     {
         return array_merge([
             'id' => '01JQ0000000000000000000001',
+            'goal' => 'grow_email_list',
             'config' => '{"targeting":{"include":[{"type":"url","value":"/draft"}]},"note":"working draft"}',
             'published_config' => '{"targeting":{"include":[{"type":"post","value":12}]},"display_type":"popup"}',
             'published_at' => '2026-08-24 10:00:00',
@@ -53,6 +54,9 @@ final class PublishedProjectionTest extends TestCase
 
         $this->assertSame([[
             'id' => '01JQ0000000000000000000001',
+            // Beside the payload, never inside it: PHP resolves the cart URL
+            // from it at enqueue and the browser never sees it (ADR 0025).
+            'goal' => 'grow_email_list',
             'targeting' => ['include' => [['type' => 'post', 'value' => 12]]],
             'payload' => ['display_type' => 'popup', 'triggers' => [], 'conditions' => []],
         ]], $set);
