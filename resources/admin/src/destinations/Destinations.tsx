@@ -442,6 +442,21 @@ function SettingsControl({
 }
 
 /**
+ * The field kinds whose stored value is a **list** rather than a string.
+ *
+ * One place rather than two `=== 'ids'` checks that have to stay in step:
+ * {@see toDraft} and {@see fromDraft} are the two halves of one round trip, and
+ * a kind added to one but not the other would read back as a different shape
+ * than it was saved as. WSMS's `tags` is the only member today.
+ *
+ * The control switch in {@see SettingsControl} is deliberately NOT driven off
+ * this: which control to draw and which shape to store are different questions,
+ * and `ids` happens to answer both the same way only because a comma-separated
+ * text input is what a list has always been edited with here.
+ */
+const LIST_KINDS = new Set(['ids']);
+
+/**
  * What is stored, as text a control can edit.
  *
  * Keyed off the SCHEMA rather than off the stored settings, so a field the
@@ -457,12 +472,11 @@ function toDraft(
   for (const [key, field] of Object.entries(schema)) {
     const stored = settings[key];
 
-    draft[key] =
-      field.type === 'ids'
-        ? (Array.isArray(stored) ? (stored as unknown[]) : []).filter((id) => typeof id === 'string').join(', ')
-        : typeof stored === 'string'
-          ? stored
-          : '';
+    draft[key] = LIST_KINDS.has(field.type)
+      ? (Array.isArray(stored) ? (stored as unknown[]) : []).filter((id) => typeof id === 'string').join(', ')
+      : typeof stored === 'string'
+        ? stored
+        : '';
   }
 
   return draft;
@@ -487,13 +501,12 @@ function fromDraft(
   for (const [key, field] of Object.entries(schema)) {
     const value = draft[key] ?? '';
 
-    settings[key] =
-      field.type === 'ids'
-        ? value
-            .split(',')
-            .map((id) => id.trim())
-            .filter((id) => id !== '')
-        : value;
+    settings[key] = LIST_KINDS.has(field.type)
+      ? value
+          .split(',')
+          .map((id) => id.trim())
+          .filter((id) => id !== '')
+      : value;
   }
 
   return settings;

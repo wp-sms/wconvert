@@ -122,18 +122,12 @@ final class Dashboard
      */
     private static function card(Goal $goal, StatRange $range, array $rows, array $held, array $byOptin): array
     {
-        // Hoisted, so one Goal's slice is walked once rather than twice: the
-        // failure count and the numbers below both want the same map, and
-        // {@see GoalReport::totals()} produces every kind in one pass on
-        // purpose.
-        $totals = GoalReport::totals($rows);
-
         return [
             'goal' => $goal->value,
             'label' => $goal->label(),
             'headline_label' => $goal->headlineLabel(),
-            'delivery_failures' => self::deliveryFailures($goal, $totals),
-            ...self::numbers($goal, $range, $rows, $totals),
+            'delivery_failures' => self::deliveryFailures($goal, $rows),
+            ...self::numbers($goal, $range, $rows),
             'optins' => self::optinRows($goal, $range, $held, $byOptin),
         ];
     }
@@ -184,13 +178,22 @@ final class Dashboard
      * whose push is still queued or backing off is in it. That is the honest
      * reading of the subtraction and the copy on the card says so.
      *
-     * @param array<string, int> $totals Every kind's total for this Goal's slice.
+     * It walks the Goal's slice a second time rather than being handed
+     * {@see self::numbers()}'s totals. Two parameters that must agree — `$rows`
+     * and `totals($rows)` — would be an invariant held by a docblock and by
+     * nothing else, and the caller that got it wrong would report a wrong
+     * number rather than fail. One extra pass over one Goal's rows, on an admin
+     * read taken on demand, is the cheaper of the two.
+     *
+     * @param list<array<string, mixed>> $rows
      */
-    private static function deliveryFailures(Goal $goal, array $totals): ?int
+    private static function deliveryFailures(Goal $goal, array $rows): ?int
     {
         if ($goal->headlineKind() !== StatKind::LeadMagnetDelivered) {
             return null;
         }
+
+        $totals = GoalReport::totals($rows);
 
         return max(
             0,
@@ -212,11 +215,11 @@ final class Dashboard
      * not act.
      *
      * @param list<array<string, mixed>> $rows
-     * @param array<string, int> $totals `GoalReport::totals($rows)`, hoisted by the caller so one slice is walked once.
      * @return array{headline: int, impressions: int, dismissals: int, conversion_rate: float|null, by_day: array<string, int>}
      */
-    private static function numbers(Goal $goal, StatRange $range, array $rows, array $totals): array
+    private static function numbers(Goal $goal, StatRange $range, array $rows): array
     {
+        $totals = GoalReport::totals($rows);
         $impressions = $totals[StatKind::Impression->value] ?? 0;
         $conversions = $totals[StatKind::Conversion->value] ?? 0;
 
@@ -282,12 +285,10 @@ final class Dashboard
         $rows = [];
 
         foreach ($live as $id => $optin) {
-            $own = $byOptin[$id] ?? [];
-
             $rows[] = [
                 'id' => $optin->id,
                 'name' => $optin->name,
-                ...self::numbers($goal, $range, $own, GoalReport::totals($own)),
+                ...self::numbers($goal, $range, $byOptin[$id] ?? []),
             ];
         }
 

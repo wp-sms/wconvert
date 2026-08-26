@@ -439,9 +439,14 @@ and never a date — a date built in the browser is the day of whoever is at the
 keyboard — and the far end is `StatDay::today()`, read on the server against
 the site's own timezone.
 
-This one needs MySQL rather than the Playground SQLite above: `ON DUPLICATE KEY
-UPDATE` is MySQL's spelling, and the concurrency check needs two connections
-holding real row locks.
+This one needs MySQL rather than the Playground SQLite above, **on the
+concurrency half**: the check needs two connections holding real row locks, and
+Playground gives one. The other reason this used to give — that `ON DUPLICATE
+KEY UPDATE` is MySQL's spelling — has expired. The SQLite integration now
+translates it, and three increments on one key really do land as one row with
+`count = 3`. So the counters can be exercised under Playground; what cannot be
+is the claim the statement exists to make, which is that two writers in the
+same instant produce two.
 
 **The beacon is stateless** — no visitor id, no device id, no hashed
 fingerprint ([ADR 0017](docs/adr/0017-no-visitor-identifier.md)) — so there is

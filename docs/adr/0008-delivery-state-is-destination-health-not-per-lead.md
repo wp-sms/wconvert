@@ -70,6 +70,33 @@ narrower than it first looks — but it closes entirely at retention.
 > [`Queue`](../../src/Queue/Queue.php)'s docblock — because a stale reason
 > beside a sound one is how the sound one gets discarded with it. Retention was
 > always the load-bearing half and it still is.
+>
+> **The obvious objection, answered where it is formed: this correction
+> establishes a dedupe primitive and then declines to use it.** If
+> `as_has_scheduled_action()` can ask "has this Lead been pushed to this
+> Destination before", why is that not the exactly-once marker #31 wanted?
+>
+> Because it answers a narrower question than it appears to. AS can tell you
+> an action with these arguments **exists or ran within the retention window**;
+> it cannot tell you one **succeeded**, and after 31 days it cannot tell you
+> anything at all. A marker that silently starts saying "no" on day 32 is worse
+> than no marker: the re-count it was meant to prevent comes back, and comes
+> back only for the old Leads nobody is watching. Retention is not a smaller
+> objection than queryability was — it is the objection.
+>
+> A marker in one of WConvert's own stores was considered and is not free
+> either. An option keyed per Lead grows without bound — the reason
+> {@link ../../src/Destination/DeliveryFailures.php `DeliveryFailures`} is a
+> ring capped at 200 — and it would hold Lead ids with no expiry, which is the
+> personal-data-with-no-expiry problem
+> [ADR 0018](0018-erasure-deletes-rather-than-anonymises.md) exists to keep out
+> of options. That leaves a table, which is the thing declined above.
+>
+> **So the honest position is the one recorded in the last bullet: the chain
+> reaches Success at most once, the two replay seams are real, and neither the
+> queue nor an option can close them without a store that outlives the
+> attempt.** The dashboard's clamp keeps the *displayed* number sane; it is not
+> a substitute for the marker, and it is not claimed as one.
 
 ## Consequences
 

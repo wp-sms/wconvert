@@ -161,9 +161,19 @@ final class LeadMagnetDestinationType implements DestinationType
             self::BODY => [
                 'type' => 'multiline',
                 'label' => __('Message', 'wconvert'),
-                'description' => __(
-                    'Write {link} where the download should go. Leave it out and the link is added at the end.',
-                    'wconvert'
+                // The token is interpolated rather than written into the
+                // string. A translator who localises `{link}` breaks
+                // substitution silently — the body would simply arrive with
+                // the URL appended and the merchant's placement ignored — and
+                // {@see self::LINK} would stop being the one place it is
+                // spelled.
+                'description' => sprintf(
+                    /* translators: %s: the literal token {link}, which must not be translated. */
+                    __(
+                        'Write %s where the download should go. Leave it out and the link is added at the end.',
+                        'wconvert'
+                    ),
+                    self::LINK
                 ),
             ],
         ];

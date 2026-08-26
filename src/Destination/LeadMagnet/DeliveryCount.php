@@ -31,8 +31,11 @@ defined('ABSPATH') || exit;
  * **Neither can become a method on `DestinationType`.** Its docblock refuses
  * the `Supports*` capability split outright, and a `countsDeliveries()` there
  * would be that split reopened for one type. So both rules live here, in the
- * delivery type's OWN namespace — which is what makes the id comparison below
- * a local reference rather than the generic worker naming a concrete type.
+ * delivery type's OWN namespace: what that keeps local is the comparison
+ * against {@see LeadMagnetDestinationType::ID} below — a generic worker
+ * spelling a concrete type's id would be the thing worth avoiding.
+ * {@see \WConvert\Destination\PushWorker} names this collaborator openly and
+ * has to; that is an injected dependency, not a special case.
  *
  * ============================================================================
  * IT TAKES AN OPTIN ID AND NEVER A LEAD.

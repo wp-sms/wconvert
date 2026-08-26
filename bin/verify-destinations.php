@@ -265,9 +265,9 @@ $deliveries = static function (string $optinId) use ($wpdb, $statsTable): int {
 };
 
 $delivery = $destinations->save(null, LeadMagnetDestinationType::ID, 'Lead magnet email', null, [
-    'file_url' => 'https://example.com/guide.pdf',
-    'subject' => 'Your guide',
-    'body' => 'Thanks! Grab it here: {link}',
+    LeadMagnetDestinationType::FILE_URL => 'https://example.com/guide.pdf',
+    LeadMagnetDestinationType::SUBJECT => 'Your guide',
+    LeadMagnetDestinationType::BODY => 'Thanks! Grab it here: ' . LeadMagnetDestinationType::LINK,
 ]);
 
 $verify->check(
