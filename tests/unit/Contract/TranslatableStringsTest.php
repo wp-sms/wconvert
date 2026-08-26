@@ -42,8 +42,18 @@ final class TranslatableStringsTest extends TestCase
      * Both, because the rule is a property of translation tooling rather than
      * of either artifact: a concatenated `__()` in `pro/src/` is exactly as
      * untranslatable, and Pro's release runs the same checker.
+     *
+     * The same scope `bin/verify-source-contract.sh` walks — `src/`,
+     * `resources/` and **the plugin files at the tree root**, which is the
+     * whole of what ADR 0029 calls free's tree. The root files ship and are
+     * the first thing every install executes: `wconvert.php` alone holds an
+     * `esc_html__()` in the notice that fires when the autoloader is missing,
+     * so a scan scoped to subdirectories would leave the earliest translatable
+     * string in the plugin entirely unread.
      */
-    private const ROOTS = ['src', 'resources', 'pro/src', 'pro/resources'];
+    private const DIRECTORIES = ['src', 'resources', 'pro/src', 'pro/resources'];
+
+    private const ROOTS = ['', 'pro'];
 
     /**
      * The gettext calls WConvert uses, with how many leading arguments of each
@@ -52,6 +62,11 @@ final class TranslatableStringsTest extends TestCase
      * `_n()` takes TWO — a plural form spelled as a concatenation is as
      * invisible to `make-pot` as a singular one, and it is the easier of the
      * two to write by accident because it is the second argument along.
+     *
+     * WConvert calls four of these twelve today. The rest are listed anyway
+     * because the cost is a line each and the alternative is a check that
+     * silently stops covering a call the day somebody reaches for `_x()` —
+     * which is precisely how the ten findings this file exists for survived.
      */
     private const TEXT_ARGUMENTS = [
         '__' => 1,
@@ -73,23 +88,41 @@ final class TranslatableStringsTest extends TestCase
      */
     public static function shippedPhpFiles(): array
     {
-        $files = [];
+        $paths = [];
 
-        foreach (self::ROOTS as $root) {
-            $directory = self::PLUGIN_DIR . '/' . $root;
+        foreach (self::DIRECTORIES as $directory) {
+            $root = self::PLUGIN_DIR . '/' . $directory;
 
-            if (!is_dir($directory)) {
+            if (!is_dir($root)) {
                 continue;
             }
 
             /** @var iterable<\SplFileInfo> $found */
-            $found = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($directory));
+            $found = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($root));
 
             foreach ($found as $file) {
                 if ($file->isFile() && $file->getExtension() === 'php') {
-                    $files[$root . '/' . $file->getBasename()] = [$file->getPathname()];
+                    $paths[] = $file->getPathname();
                 }
             }
+        }
+
+        // Opportunistic, exactly as collect_root_php() is: it scans the plugin
+        // files that are there and does not insist any of them exists. The
+        // fail-closed line is the one below, drawn across the whole scan.
+        foreach (self::ROOTS as $root) {
+            $paths = array_merge($paths, glob(rtrim(self::PLUGIN_DIR . '/' . $root, '/') . '/*.php') ?: []);
+        }
+
+        $files = [];
+
+        foreach ($paths as $path) {
+            // Keyed on the path RELATIVE TO THE PLUGIN, never the basename.
+            // Three basenames repeat across these roots — Bootstrap.php,
+            // Connection.php and constants.php — so a basename key silently
+            // dropped three files from the scan and the fail-closed guard
+            // below could not see it, because the provider was not empty.
+            $files[str_replace(self::PLUGIN_DIR . '/', '', $path)] = [$path];
         }
 
         // Fail closed, on the posture bin/verify-source-contract.sh takes: a
@@ -141,20 +174,29 @@ final class TranslatableStringsTest extends TestCase
         $found = [];
 
         foreach ($tokens as $index => $token) {
-            if (!is_array($token) || $token[0] !== T_STRING) {
+            if (!is_array($token)) {
                 continue;
             }
 
-            $arguments = self::TEXT_ARGUMENTS[$token[1]] ?? null;
+            // `\__('a' . 'b')` is the same call one backslash away, and PHP 8
+            // tokenises it as T_NAME_FULLY_QUALIFIED rather than T_STRING — so
+            // matching only T_STRING is a one-character hole in the check.
+            if ($token[0] !== T_STRING && $token[0] !== T_NAME_FULLY_QUALIFIED) {
+                continue;
+            }
+
+            $arguments = self::TEXT_ARGUMENTS[ltrim($token[1], '\\')] ?? null;
 
             if ($arguments === null || ($tokens[$index + 1] ?? null) !== '(') {
                 continue;
             }
 
-            // `$this->__(...)` and `Foo::__(...)` are somebody else's method.
+            // `$this->__(...)`, `$maybe?->__(...)` and `Foo::__(...)` are
+            // somebody else's method and not a gettext call at all.
             $before = $tokens[$index - 1] ?? null;
+            $notACall = [T_OBJECT_OPERATOR, T_NULLSAFE_OBJECT_OPERATOR, T_DOUBLE_COLON, T_FUNCTION];
 
-            if (is_array($before) && in_array($before[0], [T_OBJECT_OPERATOR, T_DOUBLE_COLON, T_FUNCTION], true)) {
+            if (is_array($before) && in_array($before[0], $notACall, true)) {
                 continue;
             }
 
@@ -164,10 +206,20 @@ final class TranslatableStringsTest extends TestCase
                 $text = $tokens[$at] ?? null;
                 $next = $tokens[$at + 1] ?? null;
 
-                // One literal, and the argument ends right after it. Anything
-                // else — a concatenation, a variable, an interpolated
-                // double-quoted string — is an expression make-pot cannot read.
-                if (!is_array($text) || $text[0] !== T_CONSTANT_ENCAPSED_STRING || $next !== ',') {
+                // One literal, and the argument ends right after it —  at a
+                // comma, or at the closing paren when it is the call's last.
+                // `__('x')` with no domain is a different bug and not this
+                // file's, and a check that cries wolf is a check that gets
+                // deleted.
+                //
+                // Anything else — a concatenation, a variable, an interpolated
+                // double-quoted string — is an expression make-pot cannot
+                // read. **A named argument is flagged deliberately**, not
+                // missed: WP-CLI's extractor reads gettext arguments
+                // POSITIONALLY, so `__(text: 'x', domain: 'wconvert')` is as
+                // absent from the catalogue as a concatenation is.
+                if (!is_array($text) || $text[0] !== T_CONSTANT_ENCAPSED_STRING
+                    || ($next !== ',' && $next !== ')')) {
                     $found[] = ['function' => $token[1], 'line' => is_array($text) ? $text[2] : $token[2]];
                     break;
                 }

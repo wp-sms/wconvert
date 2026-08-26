@@ -41,6 +41,12 @@ final class Rejection
      */
     public function warn(string $registry): void
     {
+        // Every argument escaped, including the version this plugin defines
+        // itself. `_doing_it_wrong()` prints all three, and "escape what an
+        // output function prints" is a rule that reads at a glance, where
+        // "escape the two of these three that could carry HTML" is a claim
+        // the next reader has to re-derive. The constant costs nothing to put
+        // through esc_html() and cannot change under it.
         _doing_it_wrong(
             esc_html($registry),
             sprintf(

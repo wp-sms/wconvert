@@ -214,7 +214,11 @@ final class WsmsDestinationType implements DestinationType
                 // the Contact holding it. Nothing here can resolve that, and a
                 // retry is free — `push()` is idempotent — so this is the one
                 // shape of conflict that goes back on the queue.
-                throw new UnresolvableConflict(esc_html($taken->getMessage()));
+                // Unescaped, for the reason {@see WpWsmsContacts::call()}
+                // spells out where WSMS's text enters: this message ends up in
+                // `PushResult::reason` and is stored, not printed.
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- caught by push() below and stored as operator text; see WpWsmsContacts::call().
+                throw new UnresolvableConflict($taken->getMessage());
             }
 
             return (string) ($existing['id'] ?? '');

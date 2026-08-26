@@ -113,14 +113,22 @@ final class WpWsmsContacts implements WsmsContacts
             // (ADR 0022). Matched by NAME, because WConvert runs Standalone
             // and cannot `catch` a class that is usually absent.
             if ($failure instanceof \RuntimeException && is_a($failure, self::CONFLICT)) {
-                // The MESSAGE is escaped because it is WSMS's and an uncaught
-                // exception reaches a page. `$previous` is not: it is the
-                // chained exception object, which nothing prints and which
-                // esc_html() could not take anyway. PHPCS reads every argument
-                // of a `throw new` as output and cannot tell the third one is
-                // a constructor slot rather than a string.
-                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- $previous is an exception object, never output.
-                throw new ContactConflict(esc_html($failure->getMessage()), 0, $failure);
+                // NOT escaped, and that is the whole argument for this pair.
+                // Every path through this class runs inside
+                // {@see WsmsDestinationType::push()}'s `catch (\Throwable)`, so
+                // neither this nor {@see UnresolvableConflict} can reach a
+                // page — what the message becomes is
+                // `PushResult::retryable($failure->getMessage())`, which
+                // {@see \WConvert\Destination\PushWorker} hands to the failure
+                // ring and to health as OPERATOR-FACING TEXT.
+                //
+                // esc_html() there is corruption rather than safety three ways
+                // over: an apostrophe in WSMS's message is stored as `&#039;`,
+                // `DeliveryFailures::record()` truncates with mb_substr() and
+                // can cut an entity in half, and the admin renders the string
+                // through React, which escapes it again on the way to the DOM.
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- never reaches a page: push() catches every path, and the message is stored operator text (see above).
+                throw new ContactConflict($failure->getMessage(), 0, $failure);
             }
 
             throw $failure;
