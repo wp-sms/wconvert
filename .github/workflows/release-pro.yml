@@ -1,0 +1,224 @@
+name: Release Pro
+
+# =============================================================================
+# The PRO plugin. Driven by a `pro-v*` tag and nothing else.
+#
+#   guard ─────────── five conditions, and Pro is the only run with a fifth
+#     ├── php-tests ── the same file the PR gate uses
+#     ├── frontend-tests ─ likewise
+#     │     └── build ─── the Pro ZIP, gated by the SAME artifact contract
+#     └── summary ───── always runs, says what shipped and what did not
+#
+# TWO RELEASE WORKFLOWS, ONE GATE (ADR 0030). Read release-free.yml's header for
+# why there are two; what matters here is the two ways this file differs from
+# it, and both are load-bearing:
+#
+#   - ONLY THE FREE RUN STAGES FOR WP.ORG. Pro is not distributed there, has no
+#     readme.txt and no Stable tag, and is not subject to Plugin Check. There
+#     is no publish job below because there is no wp.org to publish to — Pro's
+#     distribution is a separate matter that this ticket does not settle.
+#
+#   - ONLY THE PRO RUN EVALUATES CONDITION 5. WCONVERT_MIN_CORE is the one
+#     statement Pro makes about free, and it is checked against the highest
+#     free version ACTUALLY PUBLISHED rather than the one in this tree.
+#
+# The artifact contract is the same script, invoked the same way, with no flag
+# telling it which plugin it is looking at — the staged tree says (see
+# bin/plugin-identity.php).
+#
+# ONE TRIGGER, as for free: a published GitHub Release. Both workflows listen to
+# the same event because GitHub cannot filter a `release` trigger by tag
+# pattern; the prefix in `guard.if` decides which one runs.
+# =============================================================================
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.event.release.tag_name }}
+  cancel-in-progress: false
+
+jobs:
+
+  # ---------------------------------------------------------------------------
+  # [0] GUARD — all five conditions.
+  # ---------------------------------------------------------------------------
+  guard:
+    name: '[0] Guard'
+    if: startsWith(github.event.release.tag_name, 'pro-v')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      published_core: ${{ steps.published.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          coverage: none
+
+      - name: 'Condition 1/5 — publisher is allowed to release'
+        env:
+          ACTOR: ${{ github.actor }}
+        run: bash bin/check-publisher.sh "$ACTOR"
+
+      - name: 'Condition 3/5 — tag is on the default branch'
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          TAG_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          git fetch --quiet origin "$DEFAULT_BRANCH"
+          bash bin/check-tag-on-branch.sh . "$TAG_SHA" "origin/$DEFAULT_BRANCH"
+
+      # Two statements for Pro rather than free's three: the header and
+      # WCONVERT_PRO_VERSION. There is no readme.txt because there is no wp.org
+      # listing, and the check knows that from the tree rather than from a flag.
+      - name: 'Conditions 2 & 4/5 — the tag names Pro, and every version agrees'
+        id: version
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+          VERSION="$(php bin/check-release-tag.php "$TAG" pro)"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      # ---------------------------------------------------------------------
+      # CONDITION 5, IN TWO STEPS, AND THE SPLIT IS THE CHECK.
+      #
+      # The anchor is the version wp.org is SERVING, not the one in this
+      # checkout. A check anchored to the repository passes the exact release
+      # it exists to catch: Pro 1.3 requiring core 1.3 while free 1.3 sits in
+      # the wp.org review queue — a Pro that refuses to boot on every install
+      # that can exist, presenting to the merchant as premium features
+      # silently missing with no error they can act on.
+      #
+      # So one step ASKS wp.org and the next COMPARES. Both fail closed: an
+      # unreachable wp.org blocks a Pro hotfix, which is a cost, while a Pro
+      # hotfix that shipped because nobody could reach wp.org to say no is the
+      # failure the whole gate is about.
+      # ---------------------------------------------------------------------
+      - name: 'Condition 5/5 (a) — ask wp.org what free version is published'
+        id: published
+        run: |
+          set -euo pipefail
+          VERSION="$(bash bin/published-free-version.sh wconvert)"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "wp.org is serving free $VERSION"
+
+      - name: 'Condition 5/5 (b) — WCONVERT_MIN_CORE ≤ that version'
+        env:
+          PUBLISHED: ${{ steps.published.outputs.version }}
+        run: php bin/check-min-core.php pro "$PUBLISHED"
+
+      - name: Record the verdict
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+          ACTOR: ${{ github.actor }}
+          VERSION: ${{ steps.version.outputs.version }}
+          PUBLISHED: ${{ steps.published.outputs.version }}
+        run: |
+          {
+            echo "### Release guard passed"
+            echo ""
+            echo "- Tag: \`$TAG\`"
+            echo "- Version: \`$VERSION\`"
+            echo "- Highest free version published: \`$PUBLISHED\`"
+            echo "- Published by: @$ACTOR"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ---------------------------------------------------------------------------
+  # [1] TESTS — the same files the PR gate runs. Called, not copied. Both run,
+  # not just the JS ones: Pro's PHP is what free's loader enqueue defers to, so
+  # a Pro release that broke free's side would break both plugins at once.
+  # ---------------------------------------------------------------------------
+  php-tests:
+    name: '[1] PHP tests'
+    needs: guard
+    uses: ./.github/workflows/php-tests.yml
+
+  frontend-tests:
+    name: '[1] Frontend tests'
+    needs: guard
+    uses: ./.github/workflows/frontend-tests.yml
+
+  # ---------------------------------------------------------------------------
+  # [2] BUILD — the Pro ZIP, through the same script and the same contract.
+  # ---------------------------------------------------------------------------
+  build:
+    name: '[2] Build the Pro ZIP'
+    needs: [guard, php-tests, frontend-tests]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          coverage: none
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+
+      # Both loader bundles, because `npm run build:loader:pro` builds Pro's
+      # entry from free's modules plus Pro's (ADR 0028) — one command, and no
+      # arrangement where Pro's is built from a stale copy of free's.
+      - run: npm run build
+
+      - name: Build, gated by the artifact contract
+        run: bash bin/build.sh pro
+
+      - name: Upload the Pro ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: pro-zip
+          path: dist/*.zip
+          retention-days: 14
+          if-no-files-found: error
+
+  # ---------------------------------------------------------------------------
+  # [3] SUMMARY — always runs.
+  # ---------------------------------------------------------------------------
+  summary:
+    name: '[3] What shipped'
+    needs: [guard, build]
+    if: always() && needs.guard.result != 'skipped'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Write the summary
+        env:
+          VERSION: ${{ needs.guard.outputs.version }}
+          PUBLISHED: ${{ needs.guard.outputs.published_core }}
+          BUILD: ${{ needs.build.result }}
+        run: |
+          set -euo pipefail
+          {
+            echo "## WConvert Pro ${VERSION}"
+            echo ""
+            if [ "$BUILD" = "success" ]; then
+              echo "Built and contract-checked. The ZIP is attached to this run for 14 days."
+            else
+              echo "Build or checks did not pass — no artifact was produced."
+            fi
+            echo ""
+            echo "- Highest free version published: \`${PUBLISHED}\`"
+            echo ""
+            echo "Pro is not distributed through WordPress.org, so there is no publish step here."
+            echo "Where Pro ZIPs go is a separate decision that has not been made yet."
+          } >> "$GITHUB_STEP_SUMMARY"

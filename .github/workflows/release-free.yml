@@ -1,0 +1,337 @@
+name: Release free
+
+# =============================================================================
+# The FREE plugin, to WordPress.org. Driven by a `free-v*` tag and nothing else.
+#
+#   guard ─────────── five conditions; the fifth is Pro's, so four run here
+#     ├── php-tests ── the same file the PR gate uses
+#     ├── frontend-tests ─ likewise
+#     │     └── build ─── the free ZIP, gated by the artifact contract
+#     │           └── plugin-check ── wp.org's own checker, PINNED
+#     │                 └── publish_wporg ── OFF
+#     └── summary ───── always runs, says what shipped and what did not
+#
+# TWO RELEASE WORKFLOWS, ONE GATE (ADR 0030). This file and release-pro.yml are
+# separate because free and Pro release on INDEPENDENT TAGS with independent
+# version numbers — a single tag would put every Pro hotfix in a queue behind a
+# wp.org review the hotfix has no reason to wait for, which is the coupling the
+# add-on shape was chosen to avoid. What the two share is not YAML: it is
+# bin/verify-artifact-contract.sh, bin/build.sh and the guard programs under
+# bin/, each of which exists once and is called from both.
+#
+# ONE TRIGGER: a published GitHub Release, WSMS's rule and its reasoning. Not a
+# tag push, not a workflow_dispatch, not a schedule. `git push --tags` by itself
+# does nothing. Publishing a Release is a deliberate act with its own
+# confirmation step, and it is the single door.
+#
+# Both release workflows listen to the same event, because GitHub cannot filter
+# a `release` trigger by tag pattern. Which one RUNS is decided by the tag's
+# prefix in `guard.if` — so a `free-v*` release shows release-pro.yml as
+# skipped, and that is the honest picture rather than a hidden one.
+#
+# BUILDS RUN ONLY FROM A CLEAN CI CHECKOUT, which deletes staleness rather than
+# detecting it. `public/` is gitignored, so a fresh checkout has no bundles at
+# all and `npm run build` is the only thing that can produce them.
+#
+# WHERE IT STOPS TODAY: after `plugin-check`. The wp.org publish is behind two
+# independent switches AND its secrets do not exist, so a release run today is
+# GREEN with a downloadable ZIP and nothing published anywhere.
+#
+# TO PUBLISH TO WORDPRESS.ORG:
+#   1. Set repository variable RELEASE_PUBLISH_ENABLED = true   (master switch)
+#   2. Set PUBLISH_WPORG = true
+#   3. Add secrets WP_ORG_USERNAME and WP_ORG_PASSWORD
+# Unset means off. Both switches are required, so flipping one by mistake
+# publishes nothing.
+# =============================================================================
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+# Never cancel a release that is already running.
+concurrency:
+  group: release-${{ github.event.release.tag_name }}
+  cancel-in-progress: false
+
+jobs:
+
+  # ---------------------------------------------------------------------------
+  # [0] GUARD — four of the five conditions. Everything else needs this job.
+  #
+  # Each condition is a PROGRAM under bin/, not a shell snippet in this file,
+  # for two reasons. There are two release workflows now, so a snippet is a
+  # snippet written twice — and the copy that is not being read is the one that
+  # drifts. And a condition in YAML is a condition no test can point at:
+  # tests/unit/Contract/ReleaseGuardTest.php runs every one of these against
+  # fixture trees, fixture tags and a fixture repository, which is only possible
+  # because they are programs.
+  #
+  # Every untrusted value goes through env, never interpolated into a script
+  # body — a tag name is attacker-supplied text.
+  # ---------------------------------------------------------------------------
+  guard:
+    name: '[0] Guard'
+    if: startsWith(github.event.release.tag_name, 'free-v')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      # Full history: condition 3 needs real commits, not a shallow clone that
+      # cannot see whether the tag is on the default branch.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          coverage: none
+
+      - name: 'Condition 1/5 — publisher is allowed to release'
+        env:
+          ACTOR: ${{ github.actor }}
+        run: bash bin/check-publisher.sh "$ACTOR"
+
+      - name: 'Condition 3/5 — tag is on the default branch'
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          TAG_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          git fetch --quiet origin "$DEFAULT_BRANCH"
+          bash bin/check-tag-on-branch.sh . "$TAG_SHA" "origin/$DEFAULT_BRANCH"
+
+      # Conditions 2 and 4 are one program because they are one question asked
+      # twice: does this tag name this plugin, and does everything that states
+      # this plugin's version agree with it. For free that is three statements —
+      # the header, WCONVERT_VERSION, and readme.txt's `Stable tag:`, which is
+      # the one wp.org actually serves.
+      - name: 'Conditions 2 & 4/5 — the tag names free, and every version agrees'
+        id: version
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+          VERSION="$(php bin/check-release-tag.php "$TAG" .)"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      # Condition 5 is Pro's. It is not "skipped" here in the sense of a check
+      # that could have run — WCONVERT_MIN_CORE is the one statement Pro makes
+      # about free (ADR 0030), and free makes no statement about Pro at all.
+      - name: 'Condition 5/5 — not applicable to a free release'
+        run: |
+          echo "WCONVERT_MIN_CORE is Pro's statement about free. A free release makes no claim about Pro."
+
+      - name: Record the verdict
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+          ACTOR: ${{ github.actor }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          {
+            echo "### Release guard passed"
+            echo ""
+            echo "- Tag: \`$TAG\`"
+            echo "- Version: \`$VERSION\`"
+            echo "- Published by: @$ACTOR"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ---------------------------------------------------------------------------
+  # [1] TESTS — the very same files the PR gate runs. Called, not copied.
+  # ---------------------------------------------------------------------------
+  php-tests:
+    name: '[1] PHP tests'
+    needs: guard
+    uses: ./.github/workflows/php-tests.yml
+
+  frontend-tests:
+    name: '[1] Frontend tests'
+    needs: guard
+    uses: ./.github/workflows/frontend-tests.yml
+
+  # ---------------------------------------------------------------------------
+  # [2] BUILD — the free ZIP.
+  #
+  # bin/build.sh runs bin/verify-artifact-contract.sh on the staged tree BEFORE
+  # it writes the ZIP, which is WSMS's exact slot for the same call. A ZIP that
+  # exists is a ZIP somebody can upload, so the contract has to be what decides
+  # whether one is written rather than what comments on one afterwards.
+  # ---------------------------------------------------------------------------
+  build:
+    name: '[2] Build the free ZIP'
+    needs: [guard, php-tests, frontend-tests]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          coverage: none
+          tools: composer
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+
+      # The bundles. Gitignored, so this checkout has none and there is nothing
+      # stale for the build to pick up by accident.
+      - run: npm run build
+
+      - name: Build, gated by the artifact contract
+        run: bash bin/build.sh free
+
+      - name: Upload the free ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: free-zip
+          path: dist/*.zip
+          retention-days: 14
+          if-no-files-found: error
+
+      # The staged tree, so plugin-check runs against exactly what was zipped
+      # rather than against a second stage built from the same inputs.
+      - name: Upload the staged tree
+        uses: actions/upload-artifact@v4
+        with:
+          name: free-stage
+          path: dist/stage/wconvert
+          retention-days: 14
+          if-no-files-found: error
+          include-hidden-files: true
+
+  # ---------------------------------------------------------------------------
+  # [3] PLUGIN CHECK — wp.org's own checker, PINNED TO AN EXACT VERSION.
+  #
+  # Blocking on `error`, reporting `warning`. Since 2025-10-27 it runs on every
+  # wp.org release, so an error is a release blocker whatever we decide — this
+  # only moves the discovery from the review queue to here.
+  #
+  # The pin is the point (ADR 0029): "a blocking gate whose owner controls when
+  # `main` breaks is not a gate we own." The version lives in
+  # .github/plugin-check-version and nowhere else, and the drift it creates is
+  # closed by plugin-check-drift.yml, which runs the LATEST against `main`
+  # weekly and opens an issue.
+  # ---------------------------------------------------------------------------
+  plugin-check:
+    name: '[3] Plugin Check (pinned)'
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Download the staged tree
+        uses: actions/download-artifact@v4
+        with:
+          name: free-stage
+          path: stage/wconvert
+
+      - name: Run Plugin Check at the pinned version
+        run: bash bin/plugin-check.sh stage/wconvert "$(cat .github/plugin-check-version)"
+
+  # ===========================================================================
+  # PUBLISH — OFF. Needs the master switch AND its own, and neither variable
+  # exists on this repository today.
+  # ===========================================================================
+
+  # ---------------------------------------------------------------------------
+  # [4] WORDPRESS.ORG — the free build to SVN.
+  # Secrets: WP_ORG_USERNAME, WP_ORG_PASSWORD.
+  #
+  # Skipped for pre-releases: WordPress.org has no concept of one, so publishing
+  # a beta there would hand it to every free user as the current version.
+  #
+  # The staged tree is downloaded to a directory of its own and the action is
+  # pointed at it via BUILD_DIR. WSMS's #105 is the reason that sentence is
+  # here: its earlier version rsync'd the built tree over the checkout with
+  # --delete, which removed .git and the workflow files themselves, and it had
+  # never run so it had never been caught.
+  # ---------------------------------------------------------------------------
+  publish_wporg:
+    name: '[4] Publish → WordPress.org'
+    needs: [guard, build, plugin-check]
+    if: |
+      always() &&
+      needs.build.result == 'success' &&
+      needs.plugin-check.result == 'success' &&
+      github.event.release.prerelease == false &&
+      vars.RELEASE_PUBLISH_ENABLED == 'true' &&
+      vars.PUBLISH_WPORG == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download the staged tree
+        uses: actions/download-artifact@v4
+        with:
+          name: free-stage
+          path: ${{ runner.temp }}/wconvert
+          # The artifact IS the plugin directory's contents, so the tree the
+          # action deploys is this path itself.
+
+      # Pinned to a commit, not a moving tag: this step holds the WordPress.org
+      # credentials, and `stable` is a tag someone else can repoint at will.
+      # 54bd289 == 10up/action-wordpress-plugin-deploy 2.3.0
+      - name: WordPress.org SVN deploy
+        uses: 10up/action-wordpress-plugin-deploy@54bd289b8525fd23a5c365ec369185f2966529c2
+        env:
+          SLUG: wconvert
+          VERSION: ${{ needs.guard.outputs.version }}
+          BUILD_DIR: ${{ runner.temp }}/wconvert
+          SVN_USERNAME: ${{ secrets.WP_ORG_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.WP_ORG_PASSWORD }}
+
+  # ---------------------------------------------------------------------------
+  # [5] SUMMARY — always runs. A release run is GREEN when nothing published,
+  # so this is what says which targets were held back and why.
+  # ---------------------------------------------------------------------------
+  summary:
+    name: '[5] What shipped'
+    needs: [guard, build, plugin-check, publish_wporg]
+    if: always() && needs.guard.result != 'skipped'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Write the summary
+        env:
+          VERSION: ${{ needs.guard.outputs.version }}
+          BUILD: ${{ needs.build.result }}
+          CHECK: ${{ needs.plugin-check.result }}
+          WPORG: ${{ needs.publish_wporg.result }}
+        run: |
+          set -euo pipefail
+          {
+            echo "## WConvert free ${VERSION}"
+            echo ""
+            if [ "$BUILD" = "success" ] && [ "$CHECK" = "success" ]; then
+              echo "Built, contract-checked and Plugin-Checked. The ZIP is attached to this run for 14 days."
+            else
+              echo "Build or checks did not pass — nothing was published."
+            fi
+            echo ""
+            case "$WPORG" in
+              success) echo "- ✅ WordPress.org — published" ;;
+              skipped) echo "- ⏸️ WordPress.org — held back (switch is off, or this is a pre-release)" ;;
+              failure) echo "- ❌ WordPress.org — FAILED" ;;
+              *)       echo "- ⚪ WordPress.org — $WPORG" ;;
+            esac
+            echo ""
+            echo "Publishing needs RELEASE_PUBLISH_ENABLED **and** PUBLISH_WPORG, plus the SVN secrets."
+          } >> "$GITHUB_STEP_SUMMARY"

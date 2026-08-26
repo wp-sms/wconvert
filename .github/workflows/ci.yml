@@ -28,7 +28,11 @@ name: CI
 # NO ZIP IS BUILT HERE, DELIBERATELY (ADR 0029). The artifact-level checks
 # confirm at release what the source already proved, and paying minutes per
 # pull request for that confirmation buys nothing. The artifact contract,
-# Plugin Check and the release guard land with the release workflow.
+# Plugin Check and the release guard live in release-free.yml and
+# release-pro.yml, and are exercised on a pull request only as PHPUnit —
+# tests/unit/Contract/{ArtifactContract,ReleaseGuard}Test.php build their
+# fixture trees file by file rather than calling bin/build.sh, so the suite a
+# pull request runs still stages nothing.
 #
 # NO `push` TRIGGER, DELIBERATELY. A pull request is tested against the result
 # of merging it, so running the same suites again on `main` a moment later

@@ -110,6 +110,38 @@ the release build, WSMS's exact slot). Each is **fail-closed**: a check that can
 inspect what it was asked to inspect *fails*, because "couldn't look" reading as
 "clean" is how a leak ships the one time a build is incomplete.
 
+*Completed by [#37](https://github.com/navidkashani/wconvert/issues/37): the third
+program exists, and writing it surfaced a case this section did not anticipate.
+**Both release runs invoke it** ([ADR 0030](0030-free-and-pro-release-on-independent-tags.md)),
+so it has to apply free's contract to free's tree and Pro's to Pro's — and a
+`--free` flag would be the same opt-out one layer down, since pointing it at a Pro
+tree with `--free` runs the leak scan against the wrong tier and passes. **The tree
+answers instead**: a plugin directory holds exactly one plugin main file, and which
+one it is says which plugin this is. Zero is not a plugin, and BOTH is one artifact
+carrying the other inside it — which is the leak, so it is a failure rather than an
+ambiguity to resolve.*
+
+*The same ticket found a leak this ADR's table does not describe, and it is the one
+the source contract **structurally cannot see**. `vendor/` is generated: Composer
+writes the autoload map at build time, so an entry pointing at `pro/src` is a Pro
+path inside the free artifact that no source file ever contained.
+`pro/src/autoload.php` already names that risk as its first reason for existing; (c)
+is what makes the sentence enforceable, by scanning the staged tree's own PHP **and
+`vendor/composer/`** with the same `bin/pro-php-scan.php` the source contract uses.
+Scoped to `vendor/composer/` rather than to `vendor/` whole, because the generated
+maps all live there and the rest is third-party code whose own use of a `pro/` path
+would be a false positive — and the fix for a false positive is always an exception.*
+
+*And **(d) has one direction**, which is worth saying because the table above does
+not. Guideline 4 is a wp.org obligation and Pro is not distributed there, but the
+stronger reason is that "its un-minified source tree" is not a property Pro's
+DIRECTORY has: Pro's loader entry imports free's modules through `@loader/*`
+([ADR 0028](0028-the-free-loader-source-carries-no-premium-code.md)), so Pro's
+sources are free's plus its own and free's half lives in the other plugin.
+Asserting (d) against `pro/resources/` would assert something untrue of it. The
+script says so out loud on every Pro run rather than printing a tick — the same
+rule `check-loader.mjs` follows when the manifest declares nothing premium.*
+
 A single script with a `--source-only` flag would be the same mistake
 [ADR 0028](0028-the-free-loader-source-carries-no-premium-code.md) refused one layer
 down — letting a flag decide how much of a compliance contract runs. The moment a
@@ -159,6 +191,19 @@ check has an opt-out, the opt-out is what runs on the day it matters.
   `dorny/paths-filter` to a commit and the wp.org deploy action to a SHA because
   *"`stable` is a tag someone else can repoint at will."* The drift the pin creates is
   closed separately: a weekly job runs the latest against `main` and opens an issue.
+  *Built in [#37](https://github.com/navidkashani/wconvert/issues/37), and the pin
+  could not be had the obvious way. **`WordPress/plugin-check-action` has no input
+  for the Plugin Check version** — it runs `wp plugin install plugin-check
+  --activate`, which is always the latest release on wp.org. Pinning the action's own
+  SHA pins the wrapper and not the checker, so that gate would still change under us
+  on somebody else's schedule: the action IS the repointable tag, one layer down. So
+  `bin/plugin-check.sh` does the action's sequence itself with `--version=` and
+  `--force`, takes the version as a required argument, and asserts afterwards that
+  the version it asked for is the version it got. The number lives in
+  `.github/plugin-check-version`, once, and `latest` is a legitimate value that the
+  weekly drift job passes on purpose. That job compares the two runs **by finding
+  CODE**, not by file and line — everything but the code moves when the source moves,
+  and a weekly job that cries drift every week is a weekly job nobody opens.*
 
 ## Consequences
 
@@ -168,6 +213,13 @@ check has an opt-out, the opt-out is what runs on the day it matters.
 - **No ZIP is built on a pull request.** WSMS's frontend job runs `npm ci`, vitest and
   eslint with no build, deliberately; inverting that for an artifact contract the
   source already proves would be paying minutes per PR for a confirmation.
+  *Still true after [#37](https://github.com/navidkashani/wconvert/issues/37), with
+  one deliberate exception that is not a pull request: the weekly Plugin Check drift
+  job stages a tree, because its subject IS the artifact and there is no cheaper way
+  to ask wp.org's checker what it thinks of a plugin than to give it one. It runs on
+  a schedule, blocks nothing, and `tests/unit/Contract/ArtifactContractTest.php`
+  builds its trees file by file rather than calling `bin/build.sh`, so the suite the
+  pull request runs still stages nothing.*
 - **`npm run check:loader` is the one exception, and it earns it.** Both of its
   assertions — the byte budget and the premium-identifier scan — are about build
   output, which is the premise WSMS's "no build on a PR" lacks. Seconds, one small
@@ -176,6 +228,8 @@ check has an opt-out, the opt-out is what runs on the day it matters.
   one; the loader checks when there is a loader; the artifact contract, Plugin Check
   and the release guard when there is a release workflow. Nothing is written before
   its subject.
+  ***All three now exist**, as of [#37](https://github.com/navidkashani/wconvert/issues/37),
+  which brought the release workflows that are the artifact contract's subject.*
   *This cuts finer than "per program". The manifest's own four-field invariant is
   asserted where its subject is — a `tier: pro` entry cannot be checked for "resolves
   to an implementation" before either side has one — so #21 asserts only the parity

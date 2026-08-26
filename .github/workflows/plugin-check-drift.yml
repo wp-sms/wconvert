@@ -1,0 +1,155 @@
+name: Plugin Check drift
+
+# =============================================================================
+# What the PIN is holding back.
+#
+# .github/workflows/release-free.yml runs Plugin Check at an EXACT version, so
+# that a blocking gate cannot break `main` on somebody else's release schedule
+# (ADR 0029: "a blocking gate whose owner controls when `main` breaks is not a
+# gate we own"). That is the right trade and it has one cost, which this job is
+# the payment for: the pin ages, and an unread pin is a gate that has quietly
+# stopped checking what wp.org checks.
+#
+# So: run the LATEST Plugin Check against `main` weekly, run the PINNED one
+# beside it, and open an issue naming what the latest finds that the pinned one
+# does not. The two runs are the whole design — reporting the latest's findings
+# on their own would file an issue every week for everything the pin already
+# knows about and already passes.
+#
+# IT NEVER BLOCKS ANYTHING. Nothing depends on it, it runs on a schedule rather
+# than on a change, and a new finding is an issue to read rather than a `main`
+# that has gone red without anybody touching it. That is the point of pinning.
+#
+# It builds a ZIP, which every other non-release workflow here refuses to do
+# (ADR 0029: no ZIP on a pull request). This is not a pull request: it is a
+# weekly job whose subject IS the artifact, and there is no cheaper way to ask
+# wp.org's checker what it thinks of a plugin than to give it one.
+# =============================================================================
+
+on:
+  schedule:
+    # Mondays, 06:17 UTC. Off the hour deliberately — GitHub drops scheduled
+    # runs at peak times, and :00 is the peak.
+    - cron: '17 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  # The one thing this workflow writes.
+  issues: write
+
+concurrency:
+  group: plugin-check-drift
+  cancel-in-progress: false
+
+jobs:
+  drift:
+    name: 'Latest Plugin Check vs the pin'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          coverage: none
+          tools: composer
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build
+
+      - name: Stage the free tree
+        run: bash bin/build.sh free
+
+      - name: Read the pinned version
+        id: pin
+        run: echo "version=$(cat .github/plugin-check-version)" >> "$GITHUB_OUTPUT"
+
+      # Both runs are allowed to fail. A finding is the subject of this job, not
+      # its failure — including a finding the PINNED checker makes, which would
+      # mean `main` is currently un-releasable and is worth an issue rather than
+      # a red schedule nobody reads.
+      - name: Plugin Check, pinned
+        continue-on-error: true
+        env:
+          PLUGIN_CHECK_RESULTS: ${{ runner.temp }}/pinned.json
+        run: bash bin/plugin-check.sh dist/stage/wconvert "${{ steps.pin.outputs.version }}"
+
+      - name: Plugin Check, latest
+        continue-on-error: true
+        env:
+          PLUGIN_CHECK_RESULTS: ${{ runner.temp }}/latest.json
+        run: bash bin/plugin-check.sh dist/stage/wconvert latest
+
+      # The diff is by CODE, not by file and line. A checker upgrade that
+      # re-anchors an existing finding two lines down is not news; a check the
+      # pinned version does not implement at all is. Comparing whole findings
+      # would report the first as drift every time the source moves.
+      - name: What the latest finds that the pin does not
+        id: diff
+        env:
+          PINNED: ${{ runner.temp }}/pinned.json
+          LATEST: ${{ runner.temp }}/latest.json
+          PIN_VERSION: ${{ steps.pin.outputs.version }}
+        run: |
+          set -euo pipefail
+          REPORT="$RUNNER_TEMP/drift.md"
+
+          php bin/plugin-check-drift.php "$PINNED" "$LATEST" "$PIN_VERSION" \
+            > "$REPORT" || DRIFT_FOUND=1
+
+          cat "$REPORT" >> "$GITHUB_STEP_SUMMARY"
+          echo "found=${DRIFT_FOUND:-0}" | sed 's/found=0/found=false/;s/found=1/found=true/' >> "$GITHUB_OUTPUT"
+
+          # A random delimiter, because the report is Markdown this job did not
+          # write and a fixed one could appear inside it.
+          DELIMITER="drift-$(head -c 16 /dev/urandom | od -An -tx1 | tr -d ' \n')"
+          {
+            echo "body<<${DELIMITER}"
+            cat "$REPORT"
+            echo "${DELIMITER}"
+          } >> "$GITHUB_OUTPUT"
+
+      # ONE OPEN ISSUE AT A TIME, found by label rather than by title. A weekly
+      # job that opened a fresh issue every Monday would be a weekly job nobody
+      # reads by March; this one adds a comment to the issue already open, and
+      # the label is what makes "already open" answerable without matching on
+      # text somebody may have edited.
+      - name: Open or update the drift issue
+        if: steps.diff.outputs.found == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BODY: ${{ steps.diff.outputs.body }}
+          PIN_VERSION: ${{ steps.pin.outputs.version }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+
+          gh label create plugin-check-drift \
+            --color 'fbca04' \
+            --description 'The latest Plugin Check finds something the pinned version does not' \
+            2>/dev/null || true
+
+          EXISTING="$(gh issue list --label plugin-check-drift --state open --limit 1 --json number --jq '.[0].number // empty')"
+
+          FULL="$(printf '%s\n\n---\n\nPinned version: `%s` (.github/plugin-check-version)\nRun: %s\n' \
+            "$BODY" "$PIN_VERSION" "$RUN_URL")"
+
+          if [ -n "$EXISTING" ]; then
+            echo "Commenting on #$EXISTING"
+            printf '%s' "$FULL" | gh issue comment "$EXISTING" --body-file -
+          else
+            printf '%s' "$FULL" | gh issue create \
+              --title 'Plugin Check has moved past the pinned version' \
+              --label plugin-check-drift \
+              --label needs-triage \
+              --body-file -
+          fi

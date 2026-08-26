@@ -81,6 +81,15 @@ change. There is no branch protection enforcing this; the discipline is the
 enforcement. Merge once `CI / Required checks` is green, and require only that
 check — never an individual row, which may legitimately be skipped.
 
+**Releases are two tags, not one.** `free-vX.Y.Z` and `pro-vX.Y.Z` carry
+independent version numbers and drive `release-free.yml` and `release-pro.yml`
+out of the one monorepo (ADR 0030). Publishing a GitHub Release is the only
+trigger — a tag push alone does nothing. The five guard conditions and the
+artifact contract are programs under `bin/`, one per condition, called from
+both workflows; see README's *Releasing* section before changing any of them.
+**Free must be live on wp.org before any Pro release can pass its own guard** —
+condition 5 anchors `WCONVERT_MIN_CORE` to the *published* free version.
+
 **Verify on a real WordPress before claiming a thing works.** Tests passing is
 not the same as the plugin booting: a fatal on activation, an asset that 404s,
 or output sent during `plugins_loaded` all pass a green suite. Local's MySQL is
