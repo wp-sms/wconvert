@@ -46,7 +46,7 @@ const TWO_GOALS = {
       impressions: 1000,
       dismissals: 40,
       conversion_rate: 0.1,
-      delivery_failures: null,
+      undelivered_conversions: null,
       by_day: { '2026-08-24': 50, '2026-08-25': 10 },
       optins: [
         {
@@ -68,7 +68,7 @@ const TWO_GOALS = {
       impressions: 20000,
       dismissals: 100,
       conversion_rate: 0.45,
-      delivery_failures: null,
+      undelivered_conversions: null,
       by_day: { '2026-08-24': 4000, '2026-08-25': 5000 },
       optins: [],
     },
@@ -205,7 +205,7 @@ describe('the analytics screen', () => {
           label: 'Deliver a lead magnet',
           headline_label: 'Deliveries',
           headline: 90,
-          delivery_failures: 10,
+          undelivered_conversions: 10,
           optins: [],
         },
       ],

@@ -30,11 +30,11 @@ defined('ABSPATH') || exit;
  *
  * **`conversions − lead_magnet_delivered` is not an instance of that rule**,
  * and this paragraph used to say it was. It is on the payload as of #31, as
- * `delivery_failures` on the lead-magnet card and `null` everywhere else —
- * because `conversions` is not a field here at all, so the subtraction is new
- * information rather than a restatement of two numbers already on screen. The
- * check is written out at {@see self::deliveryFailures()}, which is also where
- * the clamp and the null are argued.
+ * `undelivered_conversions` on the lead-magnet card and `null` everywhere
+ * else — because `conversions` is not a field here at all, so the subtraction
+ * is new information rather than a restatement of two numbers already on
+ * screen. The check is written out at {@see self::undeliveredConversions()},
+ * which is also where the clamp and the null are argued.
  *
  * ============================================================================
  * TWO READS, AND THE JOIN IS HERE RATHER THAN IN SQL.
@@ -126,7 +126,7 @@ final class Dashboard
             'goal' => $goal->value,
             'label' => $goal->label(),
             'headline_label' => $goal->headlineLabel(),
-            'delivery_failures' => self::deliveryFailures($goal, $rows),
+            'undelivered_conversions' => self::undeliveredConversions($goal, $rows),
             ...self::numbers($goal, $range, $rows),
             'optins' => self::optinRows($goal, $range, $held, $byOptin),
         ];
@@ -178,6 +178,15 @@ final class Dashboard
      * whose push is still queued or backing off is in it. That is the honest
      * reading of the subtraction and the copy on the card says so.
      *
+     * **And the field is named for that reading.** It shipped as
+     * `delivery_failures`, which was wrong twice over: it contradicted its own
+     * copy, and it collided with
+     * {@see \WConvert\Destination\DeliveryFailures} — a bounded ring of
+     * ~200 *terminal* failures, which is the opposite population. One name for
+     * two opposite things is the collision CONTEXT.md's glossary exists to
+     * stop, so the payload field is `undelivered_conversions` and the class
+     * keeps the name that describes what it holds.
+     *
      * It walks the Goal's slice a second time rather than being handed
      * {@see self::numbers()}'s totals. Two parameters that must agree — `$rows`
      * and `totals($rows)` — would be an invariant held by a docblock and by
@@ -187,7 +196,7 @@ final class Dashboard
      *
      * @param list<array<string, mixed>> $rows
      */
-    private static function deliveryFailures(Goal $goal, array $rows): ?int
+    private static function undeliveredConversions(Goal $goal, array $rows): ?int
     {
         if ($goal->headlineKind() !== StatKind::LeadMagnetDelivered) {
             return null;

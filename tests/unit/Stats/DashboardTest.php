@@ -287,7 +287,7 @@ final class DashboardTest extends TestCase
         );
 
         $this->assertSame(90, $card['headline'], 'the headline is deliveries on this Goal');
-        $this->assertSame(10, $card['delivery_failures']);
+        $this->assertSame(10, $card['undelivered_conversions']);
     }
 
     /**
@@ -306,8 +306,8 @@ final class DashboardTest extends TestCase
             'grow_email_list'
         );
 
-        $this->assertArrayHasKey('delivery_failures', $card);
-        $this->assertNull($card['delivery_failures']);
+        $this->assertArrayHasKey('undelivered_conversions', $card);
+        $this->assertNull($card['undelivered_conversions']);
     }
 
     /**
@@ -332,7 +332,7 @@ final class DashboardTest extends TestCase
             'deliver_lead_magnet'
         );
 
-        $this->assertSame(0, $card['delivery_failures']);
+        $this->assertSame(0, $card['undelivered_conversions']);
     }
 
     /**
@@ -341,13 +341,13 @@ final class DashboardTest extends TestCase
      * the Optin table has no column for it and could not head one without
      * spelling the Goal.
      */
-    public function testNoOptinRowCarriesADeliveryFailureCount(): void
+    public function testNoOptinRowCarriesAnUndeliveredConversionCount(): void
     {
         $payload = Dashboard::of(self::range(), self::counters(), self::optin('deliver_lead_magnet'));
 
         foreach ($payload['goals'] as $card) {
             foreach ($card['optins'] as $row) {
-                $this->assertArrayNotHasKey('delivery_failures', $row);
+                $this->assertArrayNotHasKey('undelivered_conversions', $row);
             }
         }
     }
