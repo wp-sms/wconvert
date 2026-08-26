@@ -62,6 +62,19 @@ both lifecycle hooks purge the page cache
 landing: deactivating a plugin does not delete its files, so a stale page
 serves the previous tier's behaviour for a few minutes rather than a 404.
 
+```bash
+wp eval-file bin/verify-loader-replacement.php   # needs both plugins active
+```
+
+The unit test proves the swap against a script queue that *records* what it was
+handed. But WordPress's queue is a **dependency graph**, not a list, and the
+hazard lives in the graph: a dequeued handle stays registered, and WordPress
+prints the registered dependencies of anything queued. That script enqueues a
+third-party script declaring `wconvert-loader` as a dependency, prints the
+scripts for real, and asserts free's loader is nowhere in the markup. It also
+asserts the cost — that the dependent is dropped along with it — so the
+trade-off is on record rather than met in a support ticket.
+
 **There is no licence check anywhere on this path, and nothing is missing.**
 Being in Pro's ZIP *is* the entitlement
 ([ADR 0015](docs/adr/0015-enforcement-is-by-non-registration.md)), so not one

@@ -1,7 +1,11 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { FREE_MODULES } from '@loader/modules';
+import { start } from '@loader/shell';
+import type { Store } from '@loader/storage';
+import type { PayloadEntry } from '@loader/types';
 import { PRO_MODULES } from '../../resources/loader/src/modules';
 import proLoader from '../../resources/loader/src/main';
+import { recordingPresenter } from '../../../tests/js/support/presenter';
 
 /**
  * The free/Pro loader module boundary, asserted from Pro's side.
@@ -44,5 +48,108 @@ describe("Pro's loader entry", () => {
     for (const free of FREE_MODULES) {
       expect(composed).toContain(free.id);
     }
+  });
+});
+
+/**
+ * =============================================================================
+ * ONE OPTIN CARRYING BOTH GESTURES, ON PRO'S REAL LOADER.
+ * =============================================================================
+ * `pro/tests/js/pro-modules.test.ts` proves the two modules answer
+ * independently. This proves the thing a merchant actually builds: **one Optin
+ * naming `exit_intent` AND `scroll_up`**, run through the composed Pro loader
+ * and the real shell, firing on whichever gesture the visitor's device can
+ * make.
+ *
+ * That pairing is the whole reason they are two types rather than one with two
+ * meanings (#32). A single type would make this Optin unexpressible: the
+ * merchant could not ask for the desktop gesture without the phone one, and
+ * the rules panel would have one row that means two things — so "why didn't my
+ * popup show" would have no per-rule answer.
+ *
+ * Neither module is device-guarded, deliberately. A desktop visitor never
+ * produces the scroll gesture and a phone never produces the pointer one, so
+ * the wrong Trigger simply never fires — no branch that has to be right about
+ * what a device is.
+ */
+describe('one Optin carrying both premium Triggers', () => {
+  const bothGestures = (): PayloadEntry => ({
+    id: 'a',
+    display_type: 'popup',
+    triggers: [{ type: 'exit_intent' }, { type: 'scroll_up' }],
+    conditions: [],
+  });
+
+  /** A store that starts empty and stays on this test, never localStorage. */
+  const fakeStore = (): Store => {
+    let held: string | null = null;
+
+    return { read: () => held, write: (value) => void (held = value) };
+  };
+
+  const pageView = () => {
+    const presenter = recordingPresenter();
+    const stop = start({
+      loader: proLoader,
+      entries: [bothGestures()],
+      presenter,
+      store: fakeStore(),
+      now: () => Date.UTC(2026, 2, 1),
+    });
+
+    return { presenter, stop };
+  };
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('does not fire before either gesture is made', () => {
+    const { presenter, stop } = pageView();
+
+    expect(presenter.shown).toEqual([]);
+    stop();
+  });
+
+  /** The desktop half: a pointer leaving through the top, and no scrolling. */
+  it('fires on the pointer leaving, with no scrolling at all', () => {
+    const { presenter, stop } = pageView();
+
+    document.dispatchEvent(new MouseEvent('mouseout', { clientY: 0, relatedTarget: null }));
+
+    expect(presenter.shown).toEqual(['a']);
+    stop();
+  });
+
+  /** The phone half: a turn back up the page, and no pointer at all. */
+  it('fires on the turn back up the page, with no pointer at all', () => {
+    vi.spyOn(window, 'scrollY', 'get').mockReturnValue(0);
+    const { presenter, stop } = pageView();
+
+    vi.spyOn(window, 'scrollY', 'get').mockReturnValue(1_200);
+    window.dispatchEvent(new Event('scroll'));
+    vi.spyOn(window, 'scrollY', 'get').mockReturnValue(900);
+    window.dispatchEvent(new Event('scroll'));
+
+    expect(presenter.shown).toEqual(['a']);
+    stop();
+  });
+
+  /**
+   * And ONCE. Two Triggers on one Optin is "any one of these", not two
+   * chances to show the same popup at the same visitor.
+   */
+  it('shows once when the visitor makes both gestures', () => {
+    vi.spyOn(window, 'scrollY', 'get').mockReturnValue(0);
+    const { presenter, stop } = pageView();
+
+    document.dispatchEvent(new MouseEvent('mouseout', { clientY: 0, relatedTarget: null }));
+    vi.spyOn(window, 'scrollY', 'get').mockReturnValue(1_200);
+    window.dispatchEvent(new Event('scroll'));
+    vi.spyOn(window, 'scrollY', 'get').mockReturnValue(900);
+    window.dispatchEvent(new Event('scroll'));
+
+    expect(presenter.shown).toEqual(['a']);
+    stop();
   });
 });

@@ -19,10 +19,8 @@ import type { LoaderModule } from '@loader/types';
  * **It is not device-guarded, deliberately.** A touch device does not produce
  * this gesture, so it never fires there without a branch that has to be right
  * about what a device is — and a hybrid laptop with a touchscreen is a desktop
- * that would fail such a branch. Its distinct mobile sibling is `scroll_up`,
- * which is a SEPARATE type rather than a second meaning for this one (#32); a
- * merchant who wants either confined to a form factor pairs it with the
- * `device` Condition, which is what the second client axis is for (ADR 0005).
+ * that would fail such a branch. Its distinct mobile sibling is `scroll_up`;
+ * see that module's header for why the pair is two types rather than one.
  *
  * One document-level listener rather than one per rule, and no params: the
  * module is instantiated once for however many Optins name this type, and the

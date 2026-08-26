@@ -4,6 +4,7 @@ namespace WConvert\Tests\Unit\Frontend;
 
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
+use WConvert\Tests\Unit\Support\FrontEndReadPath;
 use WConvert\Tests\Unit\Support\PhpSource;
 
 /**
@@ -23,41 +24,6 @@ use WConvert\Tests\Unit\Support\PhpSource;
 #[CoversNothing]
 final class NoSecondCacheTest extends TestCase
 {
-    private const SRC = __DIR__ . '/../../../src';
-
-    /**
-     * Every file an uncached front-end page load actually runs.
-     *
-     * Named rather than globbed over one directory: the read path is not one
-     * directory. It reads the option through `Storage`, parses the set in
-     * `Optin`, and evaluates the axis in `Targeting`, and a transient added in
-     * any of those three is the same mistake as one added in `Frontend`.
-     *
-     * @return list<string>
-     */
-    private function readPathSources(): array
-    {
-        $files = array_merge(
-            glob(self::SRC . '/Frontend/*.php') ?: [],
-            glob(self::SRC . '/Targeting/*.php') ?: [],
-            [
-                self::SRC . '/Storage/OptionStore.php',
-                self::SRC . '/Storage/WpOptionStore.php',
-                self::SRC . '/Optin/PublishedSet.php',
-                self::SRC . '/Optin/PublishedOptin.php',
-                self::SRC . '/Assets/BuiltAsset.php',
-            ],
-        );
-
-        $this->assertNotEmpty($files, 'nothing was inspected, so nothing is proven');
-
-        foreach ($files as $file) {
-            $this->assertFileExists($file, 'a named read-path file has moved — this check is now looking at nothing');
-        }
-
-        return $files;
-    }
-
     public function testTheFrontEndReadPathCreatesNoCacheEntry(): void
     {
         $forbidden = [
@@ -70,7 +36,7 @@ final class NoSecondCacheTest extends TestCase
             'wp_cache_get',
         ];
 
-        foreach ($this->readPathSources() as $file) {
+        foreach (FrontEndReadPath::files() as $file) {
             // Comments stripped first: these files explain at length why they
             // do not call any of this, and the explanation must not read as
             // the violation.

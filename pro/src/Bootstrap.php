@@ -92,7 +92,6 @@ final class Bootstrap
         $provider->register($container);
         $provider->boot($container);
 
-
         /**
          * Fires once WConvert Pro is fully loaded.
          *

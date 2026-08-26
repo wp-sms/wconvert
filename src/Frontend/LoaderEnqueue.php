@@ -41,14 +41,8 @@ final class LoaderEnqueue
 
     private const DIST = 'public/loader/loader.js';
 
-    /**
-     * @param string $pluginDir Where free is on disk, trailing slash — `WCONVERT_DIR`.
-     * @param string $pluginUrl Where free is on the web, trailing slash — `WCONVERT_URL`.
-     */
     public function __construct(
         private readonly PublishedSet $publishedSet,
-        private readonly string $pluginDir,
-        private readonly string $pluginUrl,
     ) {
     }
 
@@ -92,7 +86,7 @@ final class LoaderEnqueue
         $policy = get_privacy_policy_url();
         $entries = array_map(static fn (array $entry): array => PolicyLink::into($entry, $policy), $entries);
 
-        $dist = $this->pluginDir . self::DIST;
+        $dist = WCONVERT_DIR . self::DIST;
 
         if (!is_file($dist)) {
             self::noticeMissingLoaderBundle();
@@ -102,7 +96,7 @@ final class LoaderEnqueue
 
         wp_enqueue_script(
             self::HANDLE,
-            $this->pluginUrl . self::DIST,
+            WCONVERT_URL . self::DIST,
             [],
             BuiltAsset::version($dist),
             true

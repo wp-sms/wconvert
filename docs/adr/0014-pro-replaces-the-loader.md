@@ -40,7 +40,15 @@ did not say, each of which is what the dequeue actually has to survive:*
   out of the queue but still registered, and WordPress prints the registered
   dependencies of anything queued — so one third-party script declaring
   `wconvert-loader` as a dependency would put free's loader back on a page that
-  already has Pro's, which is the state this ADR says can never occur.*
+  already has Pro's, which is the state this ADR says can never occur. **The
+  cost is real and is now measured rather than assumed:** a dependent whose
+  dependency is deregistered is not printed either, because
+  `WP_Dependencies::all_deps()` returns false for it. Accepted — free's loader
+  handle is not a documented extension point, this ADR having refused to create
+  one, and the alternative is two loaders. `bin/verify-loader-replacement.php`
+  asserts both halves against real `WP_Dependencies`, which is the one thing a
+  recording stub cannot do: a stub that re-implemented `all_deps()` would make
+  itself the authority on what WordPress does.*
 - ***A broken Pro degrades to free, never to nothing.*** *The dequeue is
   conditional on Pro's own bundle existing. Dequeuing free's while pointing at
   a bundle a bad unpack left out would 404 on every page and leave every Optin

@@ -108,23 +108,53 @@ if (!function_exists('remove_all_actions')) {
  * The script queue, recorded rather than performed.
  *
  * WordPress has no other seam for "what will this page load". [[Pro]] ships a
- * COMPLETE replacement loader and dequeues free's in PHP, and the property that
- * matters — **exactly one loader on the page, whatever an aggregating optimizer
- * then does to it** (ADR 0004, ADR 0014) — is a property of this queue at the
- * moment `wp_enqueue_scripts` finishes. An optimizer only ever sees the queue's
- * output, so a queue holding one loader cannot become a page holding two.
+ * COMPLETE replacement loader and dequeues free's, and the property that
+ * matters — **exactly one loader on the page, whatever an aggregating
+ * optimizer then does to it** (ADR 0004, ADR 0014) — is a property of this
+ * queue at the moment `wp_enqueue_scripts` finishes. An optimizer only ever
+ * sees the queue's output, so a queue holding one loader cannot become a page
+ * holding two.
  *
- * Deliberately simpler than the real thing in one way: it does not separate
- * "registered" from "enqueued". Nothing in WConvert registers a script without
- * enqueuing it, so a stub that told the two apart would be modelling a state
- * this codebase cannot reach.
+ * **REGISTERED AND ENQUEUED ARE TWO SETS, and that is the whole reason this is
+ * not one array.** WordPress prints the registered DEPENDENCIES of anything
+ * queued, so a handle that is dequeued but still registered comes back the
+ * moment one other script declares it — which is why Pro deregisters as well
+ * as dequeues, and why a stub that conflated the two would let that line be
+ * deleted with every test still green. It was, and they did.
  *
- * @var array<string, array{src: string, ver: string|false, in_footer: bool}> $wconvertTestScripts
+ * What is still simpler than the real thing: dependencies are recorded and
+ * never resolved, so nothing here can prove the resurrection itself. That
+ * needs real `WP_Dependencies`, and `bin/verify-loader-replacement.php` is
+ * where it is proven.
+ *
+ * @var array{registered: array<string, array{src: string, deps: list<string>, ver: mixed}>, enqueued: array<string, true>} $wconvertTestScripts
  */
-$GLOBALS['wconvertTestScripts'] = [];
+$GLOBALS['wconvertTestScripts'] = ['registered' => [], 'enqueued' => []];
+
+if (!function_exists('wp_register_script')) {
+    /**
+     * @param list<string> $deps
+     * @param string|false|null $ver
+     * @param array<string, mixed>|bool $args
+     */
+    function wp_register_script(
+        string $handle,
+        string $src = '',
+        array $deps = [],
+        $ver = false,
+        $args = false
+    ): bool {
+        $GLOBALS['wconvertTestScripts']['registered'][$handle] = ['src' => $src, 'deps' => $deps, 'ver' => $ver];
+
+        return true;
+    }
+}
 
 if (!function_exists('wp_enqueue_script')) {
     /**
+     * A `$src` registers as well as enqueues, exactly as WordPress's does —
+     * which is why nothing in WConvert calls `wp_register_script()` directly.
+     *
      * @param list<string> $deps
      * @param string|false|null $ver
      * @param array<string, mixed>|bool $args
@@ -136,32 +166,36 @@ if (!function_exists('wp_enqueue_script')) {
         $ver = false,
         $args = false
     ): void {
-        $GLOBALS['wconvertTestScripts'][$handle] = [
-            'src' => $src,
-            'ver' => $ver,
-            'in_footer' => $args === true || (is_array($args) && ($args['in_footer'] ?? false) === true),
-        ];
+        if ($src !== '') {
+            wp_register_script($handle, $src, $deps, $ver, $args);
+        }
+
+        $GLOBALS['wconvertTestScripts']['enqueued'][$handle] = true;
     }
 }
 
 if (!function_exists('wp_dequeue_script')) {
+    /** Out of the queue. STILL REGISTERED — that is the point of the pair. */
     function wp_dequeue_script(string $handle): void
     {
-        unset($GLOBALS['wconvertTestScripts'][$handle]);
+        unset($GLOBALS['wconvertTestScripts']['enqueued'][$handle]);
     }
 }
 
 if (!function_exists('wp_deregister_script')) {
+    /** Registration gone. WordPress does not dequeue it here either. */
     function wp_deregister_script(string $handle): void
     {
-        unset($GLOBALS['wconvertTestScripts'][$handle]);
+        unset($GLOBALS['wconvertTestScripts']['registered'][$handle]);
     }
 }
 
 if (!function_exists('wp_script_is')) {
     function wp_script_is(string $handle, string $list = 'enqueued'): bool
     {
-        return isset($GLOBALS['wconvertTestScripts'][$handle]);
+        $set = $list === 'registered' ? 'registered' : 'enqueued';
+
+        return isset($GLOBALS['wconvertTestScripts'][$set][$handle]);
     }
 }
 

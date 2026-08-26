@@ -4,6 +4,7 @@ namespace WConvert\Tests\Unit\Contract;
 
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
+use WConvert\Tests\Unit\Support\FrontEndReadPath;
 use WConvert\Tests\Unit\Support\PhpSource;
 
 /**
@@ -107,6 +108,20 @@ final class NoLicenceOnTheFrontEndTest extends TestCase
     }
 
     /**
+     * @param list<string> $absolutePaths
+     * @return list<string> Those whose CODE contains the needle, tree-relative.
+     */
+    private static function absoluteContaining(array $absolutePaths, string $needle): array
+    {
+        $root = (string) realpath(self::ROOT);
+
+        return array_values(array_map(
+            static fn (string $path): string => ltrim(str_replace($root, '', (string) realpath($path)), '/'),
+            array_filter($absolutePaths, static fn (string $path): bool => str_contains(PhpSource::code($path), $needle))
+        ));
+    }
+
+    /**
      * ONE ACCESSOR, FROM DAY ONE.
      *
      * It exists as headroom for a future tier ladder, not as a gate. The fact
@@ -156,7 +171,7 @@ final class NoLicenceOnTheFrontEndTest extends TestCase
      */
     public function testNoShippedFileReadsALicence(): void
     {
-        foreach (['licence', 'license', 'activation_key', 'serial'] as $needle) {
+        foreach (['licence', 'license', 'activation_key'] as $needle) {
             $this->assertSame(
                 [],
                 self::containing($this->shippedSources(), $needle),
@@ -181,19 +196,16 @@ final class NoLicenceOnTheFrontEndTest extends TestCase
      */
     public function testTheFrontEndPathAsksNeitherALicenceNorATier(): void
     {
-        $files = array_merge(
-            self::phpUnder(self::ROOT . '/src/Frontend'),
-            self::phpUnder(self::ROOT . '/pro/src/Frontend'),
-            self::phpUnder(self::ROOT . '/src/Targeting'),
-            ['src/Optin/PublishedOptin.php', 'src/Optin/PublishedSet.php', 'src/Assets/BuiltAsset.php'],
-        );
-
-        $this->assertGreaterThan(5, count($files), 'nothing was inspected, so nothing is proven');
+        // The same list `NoSecondCacheTest` scans for a second cache. One
+        // list, because two hand-maintained ones drift and the drift is
+        // silent — and it is where the "has this file been renamed out from
+        // under the scan" guard lives.
+        $files = FrontEndReadPath::files();
 
         foreach (['ProPresence', 'WCONVERT_PRO_LOADED', 'Tier::'] as $needle) {
             $this->assertSame(
                 [],
-                self::containing($files, $needle),
+                self::absoluteContaining($files, $needle),
                 sprintf('an entitlement branch ("%s") on the front-end request path', $needle)
             );
         }

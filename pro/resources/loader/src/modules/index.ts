@@ -17,8 +17,7 @@ import { scrollUp } from './scroll-up';
  * campaign presets are shortcuts over (ADR 0005).
  *
  * `exit_intent` and `scroll_up` are the first two premium rules that are
- * premium for their own sake (#32), and they are **two types rather than one
- * with two meanings** — see the header of `scroll-up.ts` for why that is the
- * mistake worth naming.
+ * premium for their own sake (#32). They are two entries here rather than one,
+ * and `scroll-up.ts` is where that is argued.
  */
 export const PRO_MODULES: readonly LoaderModule[] = [clickElement, exitIntent, scrollUp, queryParam];

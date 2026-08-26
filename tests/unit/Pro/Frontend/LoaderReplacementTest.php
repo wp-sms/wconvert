@@ -36,8 +36,9 @@ use WConvert\Pro\Frontend\ProLoaderEnqueue;
  * simulate a page rather than test one. So free's half is stood in for by the
  * one call it makes, spelled with free's OWN handle and priority constants so
  * neither can drift. The end-to-end half — both plugins active on a real
- * WordPress, one `<script>` in the source — is checked on a Playground boot,
- * which is the only place it can honestly be checked at all.
+ * WordPress, one `<script>` in the printed source, and a third-party script
+ * depending on free's handle unable to bring it back — needs real
+ * `WP_Dependencies` and is proven in `bin/verify-loader-replacement.php`.
  */
 #[CoversClass(ProLoaderEnqueue::class)]
 final class LoaderReplacementTest extends TestCase
@@ -60,7 +61,7 @@ final class LoaderReplacementTest extends TestCase
 
     protected function setUp(): void
     {
-        $GLOBALS['wconvertTestScripts'] = [];
+        $GLOBALS['wconvertTestScripts'] = ['registered' => [], 'enqueued' => []];
         $GLOBALS['wconvertTestActions'] = [];
     }
 
@@ -95,7 +96,7 @@ final class LoaderReplacementTest extends TestCase
     /** @return list<array-key> Every script handle the page would load. */
     private static function enqueued(): array
     {
-        return array_keys($GLOBALS['wconvertTestScripts']);
+        return array_keys($GLOBALS['wconvertTestScripts']['enqueued']);
     }
 
     public function testAPageWithBothPluginsActiveCarriesExactlyOneLoaderAndItIsPros(): void
@@ -138,7 +139,7 @@ final class LoaderReplacementTest extends TestCase
 
         $this->assertSame(
             self::PRO_URL . 'public/loader/loader.js',
-            $GLOBALS['wconvertTestScripts'][ProLoaderEnqueue::HANDLE]['src']
+            $GLOBALS['wconvertTestScripts']['registered'][ProLoaderEnqueue::HANDLE]['src']
         );
     }
 
@@ -198,15 +199,23 @@ final class LoaderReplacementTest extends TestCase
     }
 
     /**
-     * The handle is deregistered as well as dequeued, and that is the
-     * difference between one loader and two.
-     *
-     * `wp_dequeue_script()` alone takes it out of the queue but leaves the
+     * ========================================================================
+     * THE HANDLE IS DEREGISTERED AS WELL AS DEQUEUED.
+     * ========================================================================
+     * `wp_dequeue_script()` alone takes it out of the queue and leaves the
      * handle REGISTERED — and WordPress prints the registered dependencies of
      * anything that is queued. So one third-party script declaring
      * `wconvert-loader` as a dependency would put free's loader back on a page
      * that already has Pro's, which is the exact state ADR 0014 says can never
      * occur.
+     *
+     * This assertion was inert on the first pass, and it is worth saying why:
+     * the script-queue stub held ONE array, so dequeuing and deregistering
+     * were the same `unset()` and deleting the `wp_deregister_script()` line
+     * left every test green. The stub models the two sets now. What it still
+     * cannot prove is the resurrection itself — that needs real
+     * `WP_Dependencies`, and `bin/verify-loader-replacement.php` enqueues a
+     * dependent script against a real WordPress to prove it.
      */
     public function testTheFreeHandleIsGoneRatherThanMerelyUnqueued(): void
     {
@@ -215,6 +224,23 @@ final class LoaderReplacementTest extends TestCase
 
         do_action('wp_enqueue_scripts');
 
-        $this->assertFalse(wp_script_is(LoaderEnqueue::HANDLE, 'registered'));
+        $this->assertFalse(wp_script_is(LoaderEnqueue::HANDLE, 'registered'), 'still registered, so a dependent could bring it back');
+        $this->assertFalse(wp_script_is(LoaderEnqueue::HANDLE, 'enqueued'));
+    }
+
+    /**
+     * And the guard that decides whether to swap at all reads the QUEUE, not
+     * the registry. A handle that free registered and did not enqueue is a
+     * page free chose to leave alone, and Pro must leave it alone too.
+     */
+    public function testARegisteredButUnqueuedLoaderIsNotAPageToReplace(): void
+    {
+        wp_register_script(LoaderEnqueue::HANDLE, self::FREE_URL . 'public/loader/loader.js', [], '1');
+        self::pro()->hooks();
+
+        do_action('wp_enqueue_scripts');
+
+        $this->assertSame([], self::enqueued());
+        $this->assertTrue(wp_script_is(LoaderEnqueue::HANDLE, 'registered'), 'free\'s registration was taken away from it');
     }
 }

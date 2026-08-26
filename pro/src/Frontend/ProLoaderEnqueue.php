@@ -56,6 +56,15 @@ final class ProLoaderEnqueue
      */
     public const PRIORITY = LoaderEnqueue::PRIORITY + 10;
 
+    /**
+     * Pro's own bundle path, spelled again rather than borrowed from free.
+     *
+     * That the two read identically is a coincidence of two Vite configs, not
+     * a shared fact: each plugin's build decides where its own artifact lands,
+     * and they release on independent tags (ADR 0030). Reaching for free's
+     * constant would make Pro's asset path change when free moved its build
+     * output — a plugin breaking because a *different* plugin was refactored.
+     */
     private const DIST = 'public/loader/loader.js';
 
     /**
