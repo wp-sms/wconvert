@@ -2,6 +2,7 @@
 
 namespace WConvert\Destination;
 
+use WConvert\Destination\LeadMagnet\DeliveryCount;
 use WConvert\Lead\LeadRepository;
 use WConvert\Optin\OptinRepository;
 use WConvert\Queue\Queue;
@@ -49,6 +50,7 @@ final class PushWorker
         private readonly HealthStore $health,
         private readonly DeliveryFailures $failures,
         private readonly Queue $queue,
+        private readonly DeliveryCount $deliveries,
     ) {
     }
 
@@ -98,7 +100,7 @@ final class PushWorker
             return;
         }
 
-        $this->record($job, $type->push($lead, new PushContext(
+        $this->record($job, $lead->optinId, $destination->type, $type->push($lead, new PushContext(
             // One name, by primary key. An Optin is never hard-deleted, so
             // this is null only where something removed a row nothing should
             // remove — and an empty `source_ref` would then assert provenance
@@ -110,12 +112,26 @@ final class PushWorker
         )));
     }
 
-    private function record(PushJob $job, PushResult $result): void
+    /**
+     * `$optinId` and `$destinationType` travel here rather than being looked
+     * up again, because the only thing that reads them is
+     * {@see DeliveryCount::landed()} — and it needs BOTH: a lead-magnet Optin
+     * may be bound to the WSMS push as well, and counting that success as a
+     * delivery would report two deliveries per Conversion (#31).
+     */
+    private function record(PushJob $job, string $optinId, string $destinationType, PushResult $result): void
     {
         $now = current_time('mysql');
 
         if ($result->outcome === PushOutcome::Success) {
             $this->health->landed($job->destinationId, $now);
+
+            // **This is the whole of exactly-once**, and it is the shape
+            // rather than a flag: the chain below re-queues only on a
+            // retryable failure and stops here, so it reaches Success at most
+            // once. The two seams that can replay it anyway are named in
+            // {@see DeliveryCount} and clamped by the dashboard.
+            $this->deliveries->landed($optinId, $destinationType);
 
             return;
         }

@@ -149,9 +149,8 @@ see its own inline correction.*
   Conversion as a failed delivery — which is a worse lie than the 0 it was meant
   to explain. So the lead-magnet card shows 0 deliveries, no failure count, and
   a sentence saying the job that records them has not shipped.
-  [`StatKind::hasWriter()`](../../src/Stats/StatKind.php) is the one flag behind
-  both, and it is one line to delete when
-  [#31](https://github.com/navidkashani/wconvert/issues/31) lands.*
+  `StatKind::hasWriter()` is the one flag behind both, and it is one line to
+  delete when [#31](https://github.com/navidkashani/wconvert/issues/31) lands.*
   *So the failure count itself is **not on the dashboard payload at all**, and
   that is the second half of the same decision. A field that is `null` in every
   branch this build can reach is a render path nothing can exercise and a
@@ -159,6 +158,43 @@ see its own inline correction.*
   same arithmetic-over-two-numbers-already-shown shape the "left without
   converting" figure is refused for. It belongs to the ticket that ships the
   job, which is where the number first becomes true.*
+
+  > **Completed by [#31](https://github.com/navidkashani/wconvert/issues/31),
+  > and the two paragraphs above are now history rather than state.**
+  >
+  > The kind has a writer:
+  > [`DeliveryCount`](../../src/Destination/LeadMagnet/DeliveryCount.php) writes
+  > it when a queued push to the lead-magnet email Destination succeeds.
+  > `StatKind::hasWriter()` **is gone**, along with the card's `note` and the
+  > sentence it carried — a screen that apologises for a feature that exists is
+  > worse than one that says nothing.
+  >
+  > `delivery_failures` **is on the payload**, as
+  > `max(0, conversions − lead_magnet_delivered)` on the lead-magnet card and
+  > `null` on every other Goal. Null rather than absent, because
+  > `GoalParityTest::testNoGoalIsSpelledInTheAdminBundle` fails on any Goal id
+  > appearing under `resources/admin/src` — so the admin can never branch on
+  > which Goal a card is, and a server-nulled field is the only shape
+  > available. It is on the card and never on an Optin row: one figure for the
+  > Goal, not a second metric per row.
+  >
+  > **The second argument above does not survive, and it was checked rather
+  > than assumed.** `conversions` is not a field on the payload at all —
+  > `Dashboard::numbers()` emits `headline`, `impressions`, `dismissals`,
+  > `conversion_rate` and `by_day`, and on a lead-magnet card `headline` is
+  > *deliveries*. So one operand is the headline and the other is nowhere on
+  > screen. That is not the "left without converting" shape, whose three
+  > operands — `impressions`, `conversions`, `dismissals` — are all on the
+  > card. (`conversions` is loosely recoverable from
+  > `conversion_rate × impressions`, rounded to 4dp and never displayed, which
+  > is not a number on screen either.) The first argument was sound and is what
+  > actually held the field back.
+  >
+  > The clamp is not defensive padding. A Conversion at 23:58 and its delivery
+  > at 00:01 land on different `stat_date`s, so a one-day window would print a
+  > negative number most mornings without it. It also absorbs the two replay
+  > seams [ADR 0008](0008-delivery-state-is-destination-health-not-per-lead.md)
+  > accepts.
 - **Never join `wconvert_leads` to produce a count.** That is the derivation
   #11 asked not to be built, and ADR 0018 depends on it not existing.
   *Enforced by [ADR 0034](0034-the-dashboard-joins-in-php.md) from both ends,

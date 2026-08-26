@@ -134,15 +134,6 @@ function GoalCard({ card }: { card: GoalReport }) {
         <strong>{formatCount(card.headline)}</strong> <span>{card.headline_label}</span>
       </p>
 
-      {/*
-        **Why the number above is zero, where it is zero for a reason the
-        merchant cannot act on.** Nothing writes the delivery count yet, so a
-        lead-magnet card reads 0 against real conversions — which is the honest
-        number for a feature that has not shipped, and reads as a broken screen
-        without this sentence. The server decides whether there is one.
-      */}
-      {card.note !== null && <p className="description wconvert-goal-card__note">{card.note}</p>}
-
       <ul className="wconvert-goal-card__stats">
         <li>
           {__('Impressions', 'wconvert')} <strong>{formatCount(card.impressions)}</strong>
@@ -153,6 +144,29 @@ function GoalCard({ card }: { card: GoalReport }) {
         <li>
           {__('Dismissals', 'wconvert')} <strong>{formatCount(card.dismissals)}</strong>
         </li>
+        {/*
+          **`conversions − deliveries`, and only the server knows whether there
+          is one.** This bundle spells no Goal id — `GoalParityTest` fails on
+          any of the five appearing here — so a card cannot ask which Goal it
+          is drawing. `null` is the server saying there is nothing to report,
+          and the row is absent rather than zero.
+
+          The copy is "did not go out" rather than "failed" on purpose: a
+          Conversion whose push is still queued or backing off is counted here
+          too, and calling that a failure would be a stronger claim than the
+          subtraction supports.
+        */}
+        {card.delivery_failures !== null && (
+          <li>
+            {_n(
+              'Conversion with no delivery yet',
+              'Conversions with no delivery yet',
+              card.delivery_failures,
+              'wconvert'
+            )}{' '}
+            <strong>{formatCount(card.delivery_failures)}</strong>
+          </li>
+        )}
       </ul>
 
       <Sparkline label={card.headline_label} byDay={card.by_day} />

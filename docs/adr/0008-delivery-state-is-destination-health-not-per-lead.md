@@ -12,6 +12,21 @@ requirement the contract now states outright, because retries re-run a sequence
 that may be two or three HTTP calls. Once re-pushing a Lead that already landed
 is *harmless*, exact per-Lead delivery state buys efficiency, not correctness.
 
+> **Amended by [#31](https://github.com/navidkashani/wconvert/issues/31): the
+> premise holds for every type but one.** `wp_mail()` has no upsert. The
+> lead-magnet delivery
+> ([`LeadMagnetDestinationType`](../../src/Destination/LeadMagnet/LeadMagnetDestinationType.php))
+> is idempotent in the sense this ADR needs — there is no remote object to
+> double up, so running it twice leaves the world as it was — but the *send* is
+> not undoable. Re-pushing a Lead that already landed re-sends the file and
+> re-counts the delivery.
+>
+> That does not reopen the table decision (see the last bullet below); it
+> changes what "harmless" is a claim about. It is a claim about remote STATE,
+> not about the recipient's inbox. The consequence is stated where a merchant
+> can meet it: bulk re-push on this one Destination genuinely re-sends, and
+> `README.md` says so.
+
 So we store what is actually needed to recover, at the coarsest grain that
 supports it: **per-Destination health** — `last_success_at`, `last_error`,
 `last_error_at`, `consecutive_failures`. Bulk recovery is "re-push every Lead
@@ -38,11 +53,23 @@ with no new table.
 > behind it are recovered by a bulk re-push rather than by the number — the
 > number is only ever the prompt to run one.
 
-Action Scheduler was reconsidered as the store and rejected again, for the reason
-already recorded: it prunes completed actions on a retention period and cannot be
-queried by argument content. It gives durable *attempts*, never durable
+Action Scheduler was reconsidered as the store and rejected again — **on
+retention, which is the reason that actually holds.**
+`ActionScheduler_QueueCleaner::$month_in_seconds = 2678400` deletes completed
+actions after 31 days, so it gives durable *attempts* and never durable
 *outcomes*. Its admin UI does cover the recent window, which is why the gap is
 narrower than it first looks — but it closes entirely at retention.
+
+> **Corrected by [#31](https://github.com/navidkashani/wconvert/issues/31).**
+> This paragraph used to give a second reason — *"cannot be queried by argument
+> content"* — and that stopped being true. AS 4.1 hashes arguments into a
+> queryable column: `ActionScheduler_DBStore::hash_args()`, the
+> `partial_args_matching` option, and `as_has_scheduled_action()` are all built
+> on it. The claim is repeated in two other places and corrected in both —
+> [ADR 0007](0007-destinations-are-outbound-and-fallible.md) and
+> [`Queue`](../../src/Queue/Queue.php)'s docblock — because a stale reason
+> beside a sound one is how the sound one gets discarded with it. Retention was
+> always the load-bearing half and it still is.
 
 ## Consequences
 
@@ -78,3 +105,28 @@ narrower than it first looks — but it closes entirely at retention.
 - If a per-Lead record is ever genuinely needed, it arrives as a table with its
   own sign-off. It is not a column added to `wconvert_leads` — that would give a
   Lead a lifecycle, which ADR-0002 exists to prevent.
+  *Asked and answered **no** by
+  [#31](https://github.com/navidkashani/wconvert/issues/31), which is the first
+  ticket to want one. "Exactly one `lead_magnet_delivered` per Lead on first
+  success" reads like it needs a per-Lead marker. It does not:
+  `PushDispatcher` fires once per capture,
+  [`PushWorker::record()`](../../src/Destination/PushWorker.php) re-queues
+  **only** on a retryable failure, and the chain stops at
+  `PushOutcome::Success` — so a chain reaches Success at most once.
+  **Exactly-once is a property of the shape, not of a stored flag**, and a
+  `wconvert_deliveries` table was declined on those grounds rather than
+  deferred.*
+  *Two replay seams are **accepted rather than hidden**. `BulkRePush` — a
+  button a merchant presses — replays Leads that already landed, and on the
+  lead-magnet type that re-sends the file and re-counts (see the amendment at
+  the top of this ADR). Action Scheduler resetting a stuck action replays
+  identical arguments. Because an over-count is therefore possible,
+  [`Dashboard`](../../src/Stats/Dashboard.php) clamps:
+  `delivery_failures = max(0, conversions − lead_magnet_delivered)`. The clamp
+  is load-bearing for a second reason with nothing to do with replay — a
+  Conversion at 23:58 and its delivery at 00:01 land on different `stat_date`s,
+  so a one-day window would go negative most mornings without it.*
+  *No warning is shown on the re-push button for this type. It would need
+  either a Goal or type id spelled in TypeScript — `GoalParityTest` forbids the
+  first — or a capability method on `DestinationType`, whose docblock refuses
+  the `Supports*` split outright. The seam is recorded here instead.*

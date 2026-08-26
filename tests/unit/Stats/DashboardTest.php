@@ -271,48 +271,99 @@ final class DashboardTest extends TestCase
     }
 
     /**
-     * **The lead-magnet card says why it reads zero.** Nothing writes
-     * `lead_magnet_delivered` yet — the delivery job arrives with its own
-     * ticket, and the beacon refuses the kind because a browser cannot have
-     * watched an email send (ADR 0020). This is the first screen a merchant
-     * meets that on, and a bare 0 beside real conversions reads as a bug.
+     * **`conversions − lead_magnet_delivered`, on the card that means it.**
+     *
+     * The counters hold 100 Conversions and 90 deliveries across the window,
+     * so ten people converted and have no download. That is the number ADR 0020
+     * names, and it is new information rather than a restatement: `conversions`
+     * is not a field on this payload at all, and on this card `headline` is
+     * *deliveries*.
      */
-    public function testTheCardForAKindNothingWritesYetSaysWhyItIsZero(): void
+    public function testTheLeadMagnetCardReportsConversionsWithNoDelivery(): void
     {
-        $rows = [['optin_id' => self::OPTIN, 'stat_date' => '2026-08-24', 'kind' => 'conversion', 'count' => '10']];
-        $card = self::cardFor(Dashboard::of(self::range(), $rows, self::optin('deliver_lead_magnet')), 'deliver_lead_magnet');
+        $card = self::cardFor(
+            Dashboard::of(self::range(), self::counters(), self::optin('deliver_lead_magnet')),
+            'deliver_lead_magnet'
+        );
 
-        $this->assertSame(0, $card['headline']);
-        $this->assertNotNull($card['note']);
+        $this->assertSame(90, $card['headline'], 'the headline is deliveries on this Goal');
+        $this->assertSame(10, $card['delivery_failures']);
     }
 
     /**
-     * Every other card has no note, because there is nothing to explain.
+     * **Null on every other Goal, and present rather than absent.**
+     *
+     * `GoalParityTest::testNoGoalIsSpelledInTheAdminBundle` fails on any Goal
+     * id appearing under `resources/admin/src`, so a card cannot know which
+     * Goal it is drawing. A server-nulled field is therefore the only shape
+     * available — the bundle renders the row where there is a number and omits
+     * it where there is not, and never asks why.
      */
-    public function testACardWhoseHeadlineIsConversionsHasNoNote(): void
+    public function testEveryOtherGoalReportsNullRatherThanOmittingTheField(): void
     {
-        $card = self::cardFor(Dashboard::of(self::range(), self::counters(), self::optin('grow_email_list')), 'grow_email_list');
+        $card = self::cardFor(
+            Dashboard::of(self::range(), self::counters(), self::optin('grow_email_list')),
+            'grow_email_list'
+        );
 
-        $this->assertNull($card['note']);
+        $this->assertArrayHasKey('delivery_failures', $card);
+        $this->assertNull($card['delivery_failures']);
     }
 
     /**
-     * **And it does not report ten failed deliveries**, which is what
-     * `conversions − lead_magnet_delivered` would say against a kind nothing
-     * writes. ADR 0020 names that subtraction as the delivery failure count;
-     * it belongs to the ticket that ships the job, because reporting it now
-     * calls every real Conversion a failure — a worse lie than the 0 it would
-     * have explained. It is also the same shape as the "left without
-     * converting" figure this screen refuses: arithmetic over two numbers
-     * already on the card.
+     * **Clamped at zero, and the clamp is not defensive padding.**
+     *
+     * A Conversion at 23:58 and its delivery at 00:01 land on different
+     * `stat_date`s, so on a short window deliveries genuinely can exceed
+     * Conversions — every morning, for the merchants whose evening traffic
+     * converts. It also absorbs the two replay seams ADR 0008 accepts. A
+     * negative "conversions with no delivery yet" is not a number anybody can
+     * read.
      */
-    public function testNoCardReportsADeliveryFailureCountWhileNothingWritesDeliveries(): void
+    public function testMoreDeliveriesThanConversionsClampsToZeroRatherThanGoingNegative(): void
     {
-        $rows = [['optin_id' => self::OPTIN, 'stat_date' => '2026-08-24', 'kind' => 'conversion', 'count' => '10']];
-        $payload = Dashboard::of(self::range(), $rows, self::optin('deliver_lead_magnet'));
+        $rows = [
+            ['optin_id' => self::OPTIN, 'stat_date' => '2026-08-24', 'kind' => 'conversion', 'count' => '3'],
+            ['optin_id' => self::OPTIN, 'stat_date' => '2026-08-24', 'kind' => 'lead_magnet_delivered', 'count' => '5'],
+        ];
+
+        $card = self::cardFor(
+            Dashboard::of(self::range(), $rows, self::optin('deliver_lead_magnet')),
+            'deliver_lead_magnet'
+        );
+
+        $this->assertSame(0, $card['delivery_failures']);
+    }
+
+    /**
+     * **The card only, never an Optin row.** `numbers()` is spread into both,
+     * and this is one figure for the Goal rather than a second metric per row —
+     * the Optin table has no column for it and could not head one without
+     * spelling the Goal.
+     */
+    public function testNoOptinRowCarriesADeliveryFailureCount(): void
+    {
+        $payload = Dashboard::of(self::range(), self::counters(), self::optin('deliver_lead_magnet'));
 
         foreach ($payload['goals'] as $card) {
-            $this->assertArrayNotHasKey('delivery_failures', $card);
+            foreach ($card['optins'] as $row) {
+                $this->assertArrayNotHasKey('delivery_failures', $row);
+            }
+        }
+    }
+
+    /**
+     * **And no card carries a `note` any more.** It existed to explain a
+     * headline that read zero because nothing wrote the kind; #31 shipped the
+     * writer, so the sentence would now be false. A screen that apologises for
+     * a feature that exists is worse than one that says nothing.
+     */
+    public function testNoCardCarriesTheApologyThatOutlivedItsReason(): void
+    {
+        $payload = Dashboard::of(self::range(), self::counters(), self::optin('deliver_lead_magnet'));
+
+        foreach ($payload['goals'] as $card) {
+            $this->assertArrayNotHasKey('note', $card);
         }
     }
 

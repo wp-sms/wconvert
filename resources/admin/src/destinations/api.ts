@@ -9,7 +9,22 @@ import type { Availability } from '../goals/availability';
  */
 export type { Availability } from '../goals/availability';
 
-/** One field a Destination type offers, from its `settingsSchema()`. */
+/**
+ * One field a Destination type offers, from its `settingsSchema()`.
+ *
+ * **`type` picks the control**, as of #31. It was documentation until then —
+ * declared here and read nowhere, while the screen hard-coded WSMS's one field
+ * — which meant the second type to declare a field would have rendered none of
+ * them. `Destinations.tsx` switches on it and falls back to a text input, so
+ * a kind this bundle does not know is a degraded control rather than an
+ * invisible one.
+ *
+ * The kinds in use: `ids` (a comma-separated list, held as `string[]`), `url`,
+ * `text` and `multiline`. It is a `string` rather than a union because the
+ * server is the authority — a Pro type shipping a kind free has never heard of
+ * must render as something, and a union here would make it a type error
+ * instead.
+ */
 export interface SettingsField {
   type: string;
   label: string;

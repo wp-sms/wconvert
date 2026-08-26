@@ -11,6 +11,9 @@ use WConvert\Destination\DeliveryFailures;
 use WConvert\Destination\DestinationRegistry;
 use WConvert\Destination\DestinationStore;
 use WConvert\Destination\HealthStore;
+use WConvert\Destination\LeadMagnet\DeliveryCount;
+use WConvert\Destination\LeadMagnet\LeadMagnetDestinationType;
+use WConvert\Destination\LeadMagnet\WpMailer;
 use WConvert\Destination\PushDispatcher;
 use WConvert\Destination\PushWorker;
 use WConvert\Destination\Wsms\WpWsmsContacts;
@@ -340,7 +343,20 @@ final class CoreServiceProvider implements ServiceProvider
             static fn (ServiceContainer $c): DestinationRegistry => (new DestinationRegistry(
                 $c->resolve(ProPresence::class),
                 $c->resolve(SitePresence::class)
-            ))->register(new WsmsDestinationType(new WpWsmsContacts()))
+            ))
+                ->register(new WsmsDestinationType(new WpWsmsContacts()))
+                // The one type that works on a Standalone install: `wp_mail()`
+                // is WordPress's, so it needs nothing and is never
+                // `unavailable` (ADR 0007, ADR 0026).
+                ->register(new LeadMagnetDestinationType(new WpMailer()))
+        );
+
+        $container->register(
+            DeliveryCount::class,
+            static fn (ServiceContainer $c): DeliveryCount => new DeliveryCount(
+                $c->resolve(OptinRepository::class),
+                $c->resolve(StatsRepository::class)
+            )
         );
 
         $container->register(
@@ -364,7 +380,8 @@ final class CoreServiceProvider implements ServiceProvider
                 $c->resolve(OptinRepository::class),
                 $c->resolve(HealthStore::class),
                 $c->resolve(DeliveryFailures::class),
-                $c->resolve(Queue::class)
+                $c->resolve(Queue::class),
+                $c->resolve(DeliveryCount::class)
             )
         );
 

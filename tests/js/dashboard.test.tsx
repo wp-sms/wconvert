@@ -47,7 +47,6 @@ const TWO_GOALS = {
       dismissals: 40,
       conversion_rate: 0.1,
       delivery_failures: null,
-      note: null,
       by_day: { '2026-08-24': 50, '2026-08-25': 10 },
       optins: [
         {
@@ -70,7 +69,6 @@ const TWO_GOALS = {
       dismissals: 100,
       conversion_rate: 0.45,
       delivery_failures: null,
-      note: null,
       by_day: { '2026-08-24': 4000, '2026-08-25': 5000 },
       optins: [],
     },
@@ -190,11 +188,14 @@ describe('the analytics screen', () => {
   });
 
   /**
-   * **A metric nothing writes yet says why it reads zero.** The delivery job
-   * has not shipped, so a lead-magnet card is 0 deliveries against real
-   * conversions — honest, and indistinguishable from a bug without the note.
+   * **The delivery gap, on the card the server put it on.**
+   *
+   * This bundle spells no Goal id — `GoalParityTest` fails on any of the five
+   * appearing under `resources/admin/src` — so the card cannot ask which Goal
+   * it is drawing. A number here means the server decided there was one to
+   * report.
    */
-  it('explains a headline that reads zero for a reason the merchant cannot act on', async () => {
+  it('reports conversions with no delivery where the server sends a number', async () => {
     api.readDashboard.mockResolvedValue({
       ...TWO_GOALS,
       goals: [
@@ -203,8 +204,8 @@ describe('the analytics screen', () => {
           goal: 'deliver_lead_magnet',
           label: 'Deliver a lead magnet',
           headline_label: 'Deliveries',
-          headline: 0,
-          note: 'Nothing records this yet, so it reads zero against real conversions.',
+          headline: 90,
+          delivery_failures: 10,
           optins: [],
         },
       ],
@@ -212,7 +213,8 @@ describe('the analytics screen', () => {
 
     render(<Dashboard />);
 
-    expect(await screen.findByText(/Nothing records this yet/)).toBeInTheDocument();
+    expect(await screen.findByText(/Conversions with no delivery yet/)).toBeInTheDocument();
+    expect(screen.getByText('10')).toBeInTheDocument();
   });
 
   /**
@@ -314,33 +316,18 @@ describe('the analytics screen', () => {
   });
 
   /**
-   * **No delivery failure count.** `conversions − deliveries` is what ADR 0020
-   * names, and nothing writes deliveries yet — so reporting it would call
-   * every real Conversion a failure. It is also arithmetic over two numbers
-   * already on the card, which is the shape "left without converting" is
-   * refused for.
+   * **And null means the row is absent, not zero.**
+   *
+   * Which is the whole reason the server nulls it rather than omitting it: the
+   * field is always on the payload, so this bundle branches on a value rather
+   * than on a Goal it is forbidden to name. A `0` here would be a claim that
+   * every conversion was delivered on a Goal that delivers nothing.
    */
-  it('reports no delivery failure count while nothing writes deliveries', async () => {
-    api.readDashboard.mockResolvedValue({
-      ...TWO_GOALS,
-      goals: [
-        {
-          ...TWO_GOALS.goals[0],
-          goal: 'deliver_lead_magnet',
-          label: 'Deliver a lead magnet',
-          headline_label: 'Deliveries',
-          headline: 0,
-          note: 'Nothing records this yet.',
-          optins: [],
-        },
-      ],
-    });
-
+  it('says nothing about deliveries on a Goal the server sent null for', async () => {
     render(<Dashboard />);
 
-    await screen.findByText('Deliver a lead magnet');
+    await screen.findByText('Grow my email list');
 
-    expect(screen.queryByText(/did not go out/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/failed deliver/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/no delivery yet/i)).not.toBeInTheDocument();
   });
 });
