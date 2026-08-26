@@ -3,6 +3,7 @@
 namespace WConvert\Optin;
 
 use WConvert\Database\Connection;
+use WConvert\Goal\Goal;
 use WConvert\Rules\RuleVocabulary;
 use WConvert\Support\Ulid;
 
@@ -222,6 +223,32 @@ final class OptinRepository
         $row = $this->db->row(Connection::TABLE_OPTINS, 'SELECT name FROM %i WHERE id = %s', $id);
 
         return $row === null ? null : (string) ($row['name'] ?? '');
+    }
+
+    /**
+     * One Optin's [[Goal]].
+     *
+     * Beside {@see self::nameOf()} and for the same stated reason: a queued
+     * job wants ONE Optin's fact and would otherwise pull every Optin's row
+     * off disk per job to read a single key. The one caller is
+     * {@see \WConvert\Destination\LeadMagnet\DeliveryCount}, which asks
+     * whether the delivery it just made is one the analytics screen counts.
+     *
+     * **Soft-deleted Optins included**, again for `nameOf()`'s reason and one
+     * of its own: a [[Lead]] outlives the Optin that captured it, and
+     * {@see \WConvert\Stats\Dashboard} interprets counts against
+     * soft-deleted Optins on purpose (ADR 0020). An Optin unpublished or
+     * tidied away between capture and delivery still owns the delivery.
+     *
+     * Null where the row is gone or the column holds a Goal this build cannot
+     * interpret — {@see Goal::tryFrom()} is the one place the closed set is
+     * enforced over a `VARCHAR` column (ADR 0019).
+     */
+    public function goalOf(string $id): ?Goal
+    {
+        $row = $this->db->row(Connection::TABLE_OPTINS, 'SELECT goal FROM %i WHERE id = %s', $id);
+
+        return $row === null ? null : Goal::tryFrom((string) ($row['goal'] ?? ''));
     }
 
     /**

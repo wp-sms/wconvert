@@ -260,8 +260,9 @@ A [[Destination]] is **outbound and fallible** — configured, optional, one of
 several, and able to fail without the capture failing
 ([ADR 0007](docs/adr/0007-destinations-are-outbound-and-fallible.md)). **The
 Lead log is not one**: it is the Lead store, written first and always. Free
-ships one Destination type, the in-process WSMS push; every type that makes an
-outbound HTTP call is Pro's.
+ships two Destination types — the in-process WSMS push, and the lead-magnet
+delivery email over `wp_mail()`. Every type that makes an outbound HTTP call is
+Pro's.
 
 **Everything is queued, including the WSMS push.** Action Scheduler is a core
 dependency bundled in the free plugin — three free features want a scheduler
@@ -279,7 +280,11 @@ request, in a table nothing here would ever look in again.
 ([ADR 0008](docs/adr/0008-delivery-state-is-destination-health-not-per-lead.md)).
 There is no `wconvert_lead_deliveries` table, because `push()` is idempotent:
 once re-pushing a Lead that already landed is harmless, per-Lead precision buys
-efficiency rather than correctness. What is stored is `last_success_at`,
+efficiency rather than correctness. **"Harmless" is a claim about remote state,
+and the delivery email is the one type where it does not extend to the
+recipient** — `wp_mail()` has no upsert, so a bulk re-push there re-sends the
+file and re-counts the delivery. That seam is accepted and recorded rather than
+guarded against. What is stored is `last_success_at`,
 `last_error`, `last_error_at` and `consecutive_failures`, in their own
 non-autoloaded option — deliberately separate from Destination configuration,
 so the lost-increment race `update_option` allows can only ever eat advisory
@@ -308,6 +313,42 @@ attempted, so it is not an outage; and one ring entry per capture would fill
 200 slots in an afternoon. So it is a counter, and it is what turns a silent
 fortnight of dropped pushes into a number beside a re-push button.
 
+### The lead-magnet delivery email
+
+The one Destination type that works on a [[Standalone]] install. Everything
+else reaches something that may not be there; this reaches `wp_mail()`, which
+every WordPress has — so the **Deliver a lead magnet** [[Goal]] is one a
+merchant can complete out of the box rather than one that captures Leads and
+sends nothing.
+
+It carries **a link, never an attachment**. `wp_mail()`'s `$attachments` takes
+absolute server paths and WConvert has no media-library integration at all, so
+there is nothing here that turns a merchant's choice into a path on disk — and
+pushing a large PDF through `wp_mail()` on shared hosting is a deliverability
+and a memory hazard besides. Three settings: the file URL, the subject and the
+message. One `{link}` token, substituted where the message names it and
+**appended where it does not**, so a body that never mentions it still arrives
+with the download in it.
+
+Its failure split is the table above, argued case by case rather than guessed.
+A Lead with no email is *skipped*. **A Destination with no file configured is
+`retryable`, not terminal** — it is about the Destination rather than about
+this Lead, so health says "N failures in a row: no lead magnet file is
+configured" on the screen built to say exactly that, and someone who published
+before finishing configuration gets a window to finish in. A transport that
+refuses the message is an outage. Only an address WordPress will not send to is
+terminal, and that is near-vacuous — capture already refuses anything
+`filter_var` rejects.
+
+A successful delivery writes one `lead_magnet_delivered` counter, scoped **both
+by Goal and by Destination type**: a merchant can bind the WSMS push *and* the
+delivery email to one lead-magnet Optin, and counting the WSMS success as a
+delivery would report two deliveries per conversion. `conversions −
+lead_magnet_delivered`, clamped at zero, is then the *conversions with no
+delivery yet* figure on the Goal's card. Exactly-once is a property of the job
+chain — it re-queues only on a retryable failure and stops at success — rather
+than of any stored per-Lead flag.
+
 Recovery is **bulk re-push**: replay every Lead for Optins bound to this
 Destination since `last_success_at`, staggered against the type's declared
 jobs-per-minute — which is what replaces a rate limiter in v1, since only a
@@ -325,9 +366,10 @@ no captured value is in them. **It refuses to run on an install that has
 Leads.**
 
 With WSMS deactivated the install is [[Standalone]] and fully working: capture,
-the lead log and CSV export all run, and the WSMS Destination reads as
-`unavailable` rather than `locked` — a missing plugin is not something we can
-sell.
+the lead log, CSV export and the lead-magnet delivery email all run, and the
+WSMS Destination reads as `unavailable` rather than `locked` — a missing plugin
+is not something we can sell. The delivery email never reads `unavailable`,
+because `wp_mail()` is WordPress's and there is nothing for it to be missing.
 
 ## Analytics
 
@@ -397,9 +439,14 @@ and never a date — a date built in the browser is the day of whoever is at the
 keyboard — and the far end is `StatDay::today()`, read on the server against
 the site's own timezone.
 
-This one needs MySQL rather than the Playground SQLite above: `ON DUPLICATE KEY
-UPDATE` is MySQL's spelling, and the concurrency check needs two connections
-holding real row locks.
+This one needs MySQL rather than the Playground SQLite above, **on the
+concurrency half**: the check needs two connections holding real row locks, and
+Playground gives one. The other reason this used to give — that `ON DUPLICATE
+KEY UPDATE` is MySQL's spelling — has expired. The SQLite integration now
+translates it, and three increments on one key really do land as one row with
+`count = 3`. So the counters can be exercised under Playground; what cannot be
+is the claim the statement exists to make, which is that two writers in the
+same instant produce two.
 
 **The beacon is stateless** — no visitor id, no device id, no hashed
 fingerprint ([ADR 0017](docs/adr/0017-no-visitor-identifier.md)) — so there is
@@ -473,6 +520,41 @@ npx @wp-playground/cli server --workers=1 \
 `--workers=1` is not optional: Playground's default six worker threads all
 write one SQLite file and corrupt it, which surfaces as intermittent 500s that
 read like flaky tests rather than a broken database.
+
+### Running a `bin/verify-*.php` script under Playground
+
+Playground has no WP-CLI, so `wp eval-file` is not available and the scripts are
+run through `@wp-playground/cli php` instead. Two things bite, both of them
+once:
+
+**The plugin has to be loaded, and activating it mid-request does not do that.**
+`activate_plugin()` takes effect on the *next* request, so a script that
+activates and then carries on runs against a WordPress that never loaded
+WConvert. Mount an mu-plugin that `require`s `wconvert.php` instead — mu-plugins
+load before regular plugins and before `plugins_loaded`, so WConvert's own hook
+ordering is untouched.
+
+**Loading is not activating, so the tables are not there.** `Installer::install()`
+runs on `register_activation_hook`, and `upgradeIfNeeded()` runs on `admin_init`
+— neither of which a CLI script reaches. Call the installer explicitly before
+requiring the script, or every check downstream fails against a missing schema
+rather than against the thing under test.
+
+```bash
+# runner.php, mounted at /scratch:
+#   require_once '/wordpress/wp-load.php';
+#   WConvert\Bootstrap::container()->get(WConvert\Database\Installer::class)->install();
+#   require '/wordpress/wp-content/plugins/wconvert/bin/verify-destinations.php';
+
+npx @wp-playground/cli php --php=8.1 \
+  --mount "$PWD:/wordpress/wp-content/plugins/wconvert" \
+  --mount "$PWD/../mu:/wordpress/wp-content/mu-plugins" \
+  --mount "$PWD/../scratch:/scratch" \
+  -- /scratch/runner.php
+```
+
+`--php=8.1` rather than the default, because 8.1 is this plugin's floor and the
+point of the exercise is to run on it.
 
 ## Conventions
 

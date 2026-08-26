@@ -25,9 +25,11 @@ declare(strict_types=1);
 use WConvert\Bootstrap;
 use WConvert\Destination\DestinationStore;
 use WConvert\Destination\HealthStore;
+use WConvert\Destination\LeadMagnet\LeadMagnetDestinationType;
 use WConvert\Destination\OptinBinding;
 use WConvert\Destination\PushJob;
 use WConvert\Destination\Wsms\WsmsDestinationType;
+use WConvert\Goal\Goal;
 use WConvert\Lead\LeadCapture;
 use WConvert\Lead\Submission;
 use WConvert\Optin\OptinRepository;
@@ -236,15 +238,122 @@ $verify->check(
 );
 $verify->check('and leaves no failures behind it', 0, $health->of($destination->id)->consecutiveFailures);
 
+echo "\nThe lead-magnet delivery\n";
+
+// Playground has no mail transport, and neither does most of CI. `pre_wp_mail`
+// short-circuits `wp_mail()` before it reaches PHPMailer and is the documented
+// way to do it — so this proves the type really calls `wp_mail()` with the
+// right arguments, without asking the host to deliver anything.
+$mail = [];
+
+add_filter('pre_wp_mail', static function ($short, array $atts) use (&$mail) {
+    unset($short);
+
+    $mail[] = $atts;
+
+    return true;
+}, 10, 2);
+
+$statsTable = $wpdb->prefix . 'wconvert_stats';
+
+$deliveries = static function (string $optinId) use ($wpdb, $statsTable): int {
+    return (int) $wpdb->get_var($wpdb->prepare(
+        "SELECT COALESCE(SUM(`count`), 0) FROM `{$statsTable}` WHERE optin_id = %s AND kind = %s",
+        $optinId,
+        \WConvert\Stats\StatKind::LeadMagnetDelivered->value
+    ));
+};
+
+$delivery = $destinations->save(null, LeadMagnetDestinationType::ID, 'Lead magnet email', null, [
+    LeadMagnetDestinationType::FILE_URL => 'https://example.com/guide.pdf',
+    LeadMagnetDestinationType::SUBJECT => 'Your guide',
+    LeadMagnetDestinationType::BODY => 'Thanks! Grab it here: ' . LeadMagnetDestinationType::LINK,
+]);
+
+$verify->check(
+    'the delivery type is registered by free',
+    true,
+    $registry->find(LeadMagnetDestinationType::ID) !== null
+);
+
+// It needs nothing of the site, so it is `ready` on every install — including
+// this one, which has no WP SMS.
+$verify->check(
+    'and is ready on a Standalone install',
+    'ready',
+    $registry->availabilityOf(LeadMagnetDestinationType::ID)->value
+);
+
+$magnetOptin = $optins->create('Guide download', Goal::DeliverLeadMagnet->value, [
+    'template' => ['tree' => ['steps' => []]],
+    OptinBinding::KEY => [$delivery->id],
+]);
+$optins->publish($magnetOptin->id);
+
+$magnetLead = $capture->record(
+    $magnetOptin->id,
+    new Submission('magnet@example.com', null, ['name' => 'Magnet Person'])
+);
+
+$worker->run((new PushJob($magnetLead->id, $delivery->id, 1))->toArgs());
+
+$verify->check('the delivery sent exactly one email', 1, count($mail));
+$verify->check('to the Lead', 'magnet@example.com', $mail[0]['to'] ?? null);
+$verify->check('with the configured subject', 'Your guide', $mail[0]['subject'] ?? null);
+$verify->check(
+    'and the {link} token substituted for the file',
+    'Thanks! Grab it here: https://example.com/guide.pdf',
+    $mail[0]['message'] ?? null
+);
+
+// The claim the dashboard's failure count rests on, against a real table with a
+// real unique key rather than against a fake that records statements.
+$verify->check('it counted exactly one delivery', 1, $deliveries($magnetOptin->id));
+
+echo "\n  scoping\n";
+
+// **Type scoping.** The same lead-magnet Optin, pushed to a Destination that is
+// not the delivery email. A merchant binding both to one Optin is ordinary, and
+// counting this would report two deliveries per Conversion and drive the
+// failure count negative.
+//
+// The worker takes the two ids directly, so this needs no rebinding: the
+// Optin's Destination list decides what gets DISPATCHED, and what is under test
+// here is what the worker counts once a job exists.
+$worker->run((new PushJob($magnetLead->id, $destination->id, 1))->toArgs());
+
+$verify->check(
+    'a non-delivery type succeeding on a lead-magnet Optin counts nothing',
+    1,
+    $deliveries($magnetOptin->id)
+);
+
+// **Goal scoping.** The delivery Destination, on an Optin whose Goal is not
+// measured in deliveries. The email goes out — the merchant asked for it — and
+// no counter moves, because no card would read the row.
+$otherLead = $capture->record($optin->id, new Submission('other@example.com', null, []));
+
+$worker->run((new PushJob($otherLead->id, $delivery->id, 1))->toArgs());
+
+$verify->check('a delivery on another Goal still sends', 2, count($mail));
+$verify->check('and counts nothing', 0, $deliveries($optin->id));
+
 echo "\nCleaning up\n";
 
 as_unschedule_all_actions(PushJob::HOOK, [], ActionSchedulerQueue::GROUP);
 
 $destinations->delete($destination->id);
+$destinations->delete($delivery->id);
 $health->forget($destination->id);
+$health->forget($delivery->id);
 delete_option(\WConvert\Destination\DeliveryFailures::OPTION);
 $wpdb->query("DELETE FROM `{$leadTable}`");
-$wpdb->query($wpdb->prepare("DELETE FROM `{$wpdb->prefix}wconvert_optins` WHERE id = %s", $optin->id));
+$wpdb->query($wpdb->prepare("DELETE FROM `{$statsTable}` WHERE optin_id IN (%s, %s)", $optin->id, $magnetOptin->id));
+$wpdb->query($wpdb->prepare(
+    "DELETE FROM `{$wpdb->prefix}wconvert_optins` WHERE id IN (%s, %s)",
+    $optin->id,
+    $magnetOptin->id
+));
 
 echo "\n";
 

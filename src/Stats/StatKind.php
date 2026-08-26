@@ -52,36 +52,14 @@ enum StatKind: string
      * `conversions − lead_magnet_delivered` is the delivery failure count with
      * no second metric behind it (ADR 0008, ADR 0020).
      *
-     * **PHP writes this one, and only PHP.** It comes from the delivery job
-     * once per [[Lead]] on first success; a browser has no way to know a
-     * delivery succeeded, so {@see self::fromBeacon()} refuses it.
+     * **PHP writes this one, and only PHP.** It is written by
+     * {@see \WConvert\Destination\LeadMagnet\DeliveryCount} when a queued
+     * push to the lead-magnet email Destination succeeds — once per [[Lead]],
+     * because the job chain reaches `PushOutcome::Success` at most once (#31).
+     * A browser has no way to know a delivery succeeded, so
+     * {@see self::fromBeacon()} refuses the kind outright.
      */
     case LeadMagnetDelivered = 'lead_magnet_delivered';
-
-    /**
-     * Whether anything in this build actually writes this kind.
-     *
-     * ========================================================================
-     * THIS IS A FACT ABOUT THE BUILD, NOT ABOUT THE KIND.
-     * ========================================================================
-     * `lead_magnet_delivered` has no writer yet: the delivery job that records
-     * it arrives with #30 and #31, and the beacon refuses the kind because a
-     * browser cannot have watched an email send (ADR 0020). So a lead-magnet
-     * [[Goal]]'s card reports **0 deliveries against real Conversions** — the
-     * honest number for a feature that has not shipped, and one that reads as
-     * a broken screen unless it says why.
-     *
-     * The dashboard turns this into that sentence, and into the one other
-     * thing it decides: `conversions − lead_magnet_delivered` is the delivery
-     * failure count ADR 0020 names, and reporting it against a kind nothing
-     * writes would report every Conversion as a failed delivery. Both go away
-     * together when the job lands, and this method goes with them — it is one
-     * line to delete, on purpose.
-     */
-    public function hasWriter(): bool
-    {
-        return $this !== self::LeadMagnetDelivered;
-    }
 
     /**
      * The kind a *browser* may assert, or null.

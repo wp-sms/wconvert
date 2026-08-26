@@ -28,11 +28,13 @@ defined('ABSPATH') || exit;
  * reporting two numbers where one is the arithmetic of the other
  * (CONTEXT.md, Dismissal).
  *
- * That rule is why `conversions − lead_magnet_delivered`, the delivery failure
- * count ADR 0020 names, is **not on this payload**. Nothing writes the
- * delivery kind yet, so the subtraction would report every Conversion as a
- * failed delivery — and it is the same arithmetic-of-two-numbers-already-shown
- * shape besides. It belongs to the ticket that ships the job that writes it.
+ * **`conversions − lead_magnet_delivered` is not an instance of that rule**,
+ * and this paragraph used to say it was. It is on the payload as of #31, as
+ * `delivery_failures` on the lead-magnet card and `null` everywhere else —
+ * because `conversions` is not a field here at all, so the subtraction is new
+ * information rather than a restatement of two numbers already on screen. The
+ * check is written out at {@see self::deliveryFailures()}, which is also where
+ * the clamp and the null are argued.
  *
  * ============================================================================
  * TWO READS, AND THE JOIN IS HERE RATHER THAN IN SQL.
@@ -120,22 +122,83 @@ final class Dashboard
      */
     private static function card(Goal $goal, StatRange $range, array $rows, array $held, array $byOptin): array
     {
-        $kind = $goal->headlineKind();
-
         return [
             'goal' => $goal->value,
             'label' => $goal->label(),
             'headline_label' => $goal->headlineLabel(),
-            // Why the headline is zero, where it is zero for a reason the
-            // merchant cannot act on. It disappears when the job that writes
-            // the kind ships ({@see StatKind::hasWriter()}).
-            'note' => $kind->hasWriter() ? null : __(
-                'Nothing records this yet, so it reads zero against real conversions. The job that counts it has not shipped.',
-                'wconvert'
-            ),
+            'delivery_failures' => self::deliveryFailures($goal, $rows),
             ...self::numbers($goal, $range, $rows),
             'optins' => self::optinRows($goal, $range, $held, $byOptin),
         ];
+    }
+
+    /**
+     * `conversions − lead_magnet_delivered`, clamped at zero — **or null on
+     * every other Goal.**
+     *
+     * ========================================================================
+     * NULL RATHER THAN ABSENT, BECAUSE THE ADMIN CANNOT BRANCH ON A GOAL.
+     * ========================================================================
+     * `GoalParityTest::testNoGoalIsSpelledInTheAdminBundle` scans every
+     * `.ts`/`.tsx` under `resources/admin/src` and fails on any Goal enum
+     * value, so a card cannot know which Goal it is drawing. A server-nulled
+     * field is therefore the only shape available: the bundle renders the row
+     * where there is a number and omits it where there is not, and never asks
+     * why. It is the same constraint the `note` this replaces was built
+     * around.
+     *
+     * **On the card only, never on an Optin row.** {@see self::numbers()} is
+     * spread into both, and this is one figure for the Goal rather than a
+     * second metric per row — the Optin table has no column for it and could
+     * not head one without spelling the Goal.
+     *
+     * ========================================================================
+     * IT IS NEW INFORMATION, WHICH IS WHY THE OLD OBJECTION DOES NOT HOLD.
+     * ========================================================================
+     * This class used to refuse the figure as *"the same
+     * arithmetic-of-two-numbers-already-shown shape"* as the "left without
+     * converting" count. **That was wrong, and worth checking rather than
+     * repeating.** `conversions` is not a field on this payload at all —
+     * {@see self::numbers()} emits `headline`, `impressions`, `dismissals`,
+     * `conversion_rate` and `by_day`, and on a lead-magnet card `headline` is
+     * *deliveries*. So one operand is the headline and the other is nowhere on
+     * screen. "Left without converting" is `impressions − conversions −
+     * dismissals`, whose three operands are all on the card; this is not that
+     * shape. (`conversions` is loosely recoverable from
+     * `conversion_rate × impressions`, rounded to 4dp and never displayed,
+     * which is not a number on screen either.)
+     *
+     * **The clamp is not defensive padding.** A Conversion at 23:58 and its
+     * delivery at 00:01 land on different `stat_date`s, so on the one-day
+     * window this would print a negative number most mornings without it. It
+     * also absorbs the two replay seams
+     * {@see \WConvert\Destination\LeadMagnet\DeliveryCount} names.
+     *
+     * A count here is *not yet delivered* rather than *failed*: a Conversion
+     * whose push is still queued or backing off is in it. That is the honest
+     * reading of the subtraction and the copy on the card says so.
+     *
+     * It walks the Goal's slice a second time rather than being handed
+     * {@see self::numbers()}'s totals. Two parameters that must agree — `$rows`
+     * and `totals($rows)` — would be an invariant held by a docblock and by
+     * nothing else, and the caller that got it wrong would report a wrong
+     * number rather than fail. One extra pass over one Goal's rows, on an admin
+     * read taken on demand, is the cheaper of the two.
+     *
+     * @param list<array<string, mixed>> $rows
+     */
+    private static function deliveryFailures(Goal $goal, array $rows): ?int
+    {
+        if ($goal->headlineKind() !== StatKind::LeadMagnetDelivered) {
+            return null;
+        }
+
+        $totals = GoalReport::totals($rows);
+
+        return max(
+            0,
+            ($totals[StatKind::Conversion->value] ?? 0) - ($totals[StatKind::LeadMagnetDelivered->value] ?? 0)
+        );
     }
 
     /**

@@ -65,9 +65,11 @@ final class GoalReport
      * along.
      *
      * A day the rows mention with no count of the headline kind reports **0
-     * rather than being absent**: `lead_magnet_delivered` has no writer yet,
-     * so a lead-magnet Optin honestly reports no deliveries against real
-     * Conversions, and a gap in the series would read as missing data instead.
+     * rather than being absent**, and the lead-magnet Goal is where that
+     * matters: a delivery happens after the Conversion and from a different
+     * process, so a day can carry Conversions and no deliveries at all — a
+     * mail transport that was down, or pushes still backing off. Zero is the
+     * true number there; a gap in the series would read as missing data.
      *
      * @param iterable<array<string, mixed>> $rows
      * @return array<string, int>

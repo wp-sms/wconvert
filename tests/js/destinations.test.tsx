@@ -52,6 +52,22 @@ const MAILCHIMP_LOCKED = {
   availability: 'locked' as const,
 };
 
+const LEAD_MAGNET = {
+  id: 'lead_magnet_email',
+  label: 'Lead magnet email',
+  icon: 'dashicons-email-alt',
+  tier: 'free' as const,
+  requires: null,
+  requires_label: null,
+  availability: 'ready' as const,
+  needs_connection: false,
+  settings_schema: {
+    file_url: { type: 'url', label: 'Link to the file', description: 'A link, never an attachment.' },
+    subject: { type: 'text', label: 'Subject line' },
+    body: { type: 'multiline', label: 'Message', description: 'Write {link} where the download should go.' },
+  },
+};
+
 const HEALTHY = {
   id: '01J0000000AAAAAAAAAAAAAAAA',
   type: 'wsms',
@@ -66,6 +82,18 @@ const HEALTHY = {
     consecutive_failures: 0,
     skipped_captures: 0,
     last_skipped_at: null,
+  },
+};
+
+const LEAD_MAGNET_BOUND = {
+  ...HEALTHY,
+  id: '01J0000000CCCCCCCCCCCCCCCC',
+  type: 'lead_magnet_email',
+  label: 'Lead magnet email',
+  settings: {
+    file_url: 'https://example.com/guide.pdf',
+    subject: 'Your download',
+    body: 'Here you go: {link}',
   },
 };
 
@@ -202,6 +230,149 @@ describe('the destinations screen', () => {
 
     expect(await screen.findByText(/Which tags/)).toBeInTheDocument();
     expect(screen.getByText(/Added, never removed\./)).toBeInTheDocument();
+  });
+
+  /**
+   * **The screen draws the schema, not one hard-coded field.**
+   *
+   * Until #31 it looked up `settings_schema.tags`, rendered one text input and
+   * read `SettingsField.type` nowhere — so the second type to declare a field
+   * would have rendered none of them. The lead magnet email declares three.
+   */
+  it('draws every field its type declares, with the control the kind asks for', async () => {
+    api.readDestinations.mockResolvedValue({
+      types: [LEAD_MAGNET],
+      destinations: [LEAD_MAGNET_BOUND],
+      connections: [],
+      failures: [],
+    });
+
+    render(<Destinations />);
+
+    // A URL input, a text input and a textarea — one per declared field.
+    expect(await screen.findByLabelText(/Link to the file/)).toHaveAttribute('type', 'url');
+    expect(screen.getByLabelText(/Subject line/)).toHaveAttribute('type', 'text');
+    expect(screen.getByLabelText(/Message/).tagName).toBe('TEXTAREA');
+  });
+
+  /** What is stored comes back into the controls, so a save is an edit rather than a retype. */
+  it('seeds each control from what is stored', async () => {
+    api.readDestinations.mockResolvedValue({
+      types: [LEAD_MAGNET],
+      destinations: [LEAD_MAGNET_BOUND],
+      connections: [],
+      failures: [],
+    });
+
+    render(<Destinations />);
+
+    expect(await screen.findByLabelText(/Link to the file/)).toHaveValue('https://example.com/guide.pdf');
+    expect(screen.getByLabelText(/Message/)).toHaveValue('Here you go: {link}');
+  });
+
+  /**
+   * **A string field round-trips as a string**, where `ids` round-trips as a
+   * list. That split is the only thing the value shapes differ on, and getting
+   * it backwards would store the lead magnet's URL as a one-element array.
+   */
+  it('saves a string field as a string', async () => {
+    api.readDestinations.mockResolvedValue({
+      types: [LEAD_MAGNET],
+      destinations: [LEAD_MAGNET_BOUND],
+      connections: [],
+      failures: [],
+    });
+
+    render(<Destinations />);
+
+    await userEvent.clear(await screen.findByLabelText(/Subject line/));
+    await userEvent.type(screen.getByLabelText(/Subject line/), 'Your guide');
+    await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+    await waitFor(() => {
+      expect(api.saveDestination).toHaveBeenCalledWith(
+        expect.objectContaining({
+          settings: {
+            file_url: 'https://example.com/guide.pdf',
+            subject: 'Your guide',
+            body: 'Here you go: {link}',
+          },
+        })
+      );
+    });
+  });
+
+  /**
+   * **WSMS's round-trip survives byte for byte**, which is the one thing the
+   * generalisation could break: `tags` is a LIST, and the comma-separated text
+   * input that has always edited it must still split back into one.
+   */
+  it('still round-trips the WSMS tag list as a list of ids', async () => {
+    render(<Destinations />);
+
+    const input = await screen.findByLabelText(/Tags to add/);
+
+    expect(input).toHaveValue('tag-7');
+
+    await userEvent.clear(input);
+    await userEvent.type(input, 'tag-7, tag-9 ,');
+    await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+    await waitFor(() => {
+      expect(api.saveDestination).toHaveBeenCalledWith(
+        expect.objectContaining({ settings: { tags: ['tag-7', 'tag-9'] } })
+      );
+    });
+  });
+
+  /**
+   * A kind this bundle has never heard of — a Pro type's, or a later
+   * version's — gets a text input rather than nothing. The same `default` case
+   * `builder/controls.tsx` has, for the same reason: a degraded control is
+   * editable, an absent one is a setting nobody can reach.
+   */
+  it('falls back to a text input for a field kind it does not know', async () => {
+    api.readDestinations.mockResolvedValue({
+      types: [
+        {
+          ...WSMS_READY,
+          settings_schema: { whatever: { type: 'a_kind_from_pro', label: 'Something new' } },
+        },
+      ],
+      destinations: [{ ...HEALTHY, settings: { whatever: 'a value' } }],
+      connections: [],
+      failures: [],
+    });
+
+    render(<Destinations />);
+
+    expect(await screen.findByLabelText(/Something new/)).toHaveAttribute('type', 'text');
+  });
+
+  /**
+   * A settings key the type no longer declares is left alone rather than
+   * dropped. The bag is opaque to the REST layer, so a screen that silently
+   * discarded what it could not draw would be the one place that opacity bites.
+   */
+  it('leaves a stored setting it cannot draw untouched on save', async () => {
+    api.readDestinations.mockResolvedValue({
+      types: [WSMS_READY],
+      destinations: [{ ...HEALTHY, settings: { tags: ['tag-7'], from_an_older_version: 'keep me' } }],
+      connections: [],
+      failures: [],
+    });
+
+    render(<Destinations />);
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Save' }));
+
+    await waitFor(() => {
+      expect(api.saveDestination).toHaveBeenCalledWith(
+        expect.objectContaining({
+          settings: { tags: ['tag-7'], from_an_older_version: 'keep me' },
+        })
+      );
+    });
   });
 
   /**

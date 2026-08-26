@@ -61,6 +61,19 @@ nothing to read.
   > exponential backoff): AS marks a failed action failed and does not retry
   > it, which is the same thing WSMS's `JobProcessor` works around.
   >
+  > > **Corrected by [#31](https://github.com/navidkashani/wconvert/issues/31):
+  > > AS *can* be queried by argument content**, and has been able to since
+  > > 4.1 — `ActionScheduler_DBStore::hash_args()` writes a queryable hash, and
+  > > `partial_args_matching` and `as_has_scheduled_action()` are built on it.
+  > > **`cancel()` still does not exist**, for the reason the sentence after it
+  > > gives on its own: nothing in WConvert is designed to depend on cancelling
+  > > or looking up a queued push. What changes is the justification, not the
+  > > interface. The same stale claim appeared in
+  > > [ADR 0008](0008-delivery-state-is-destination-health-not-per-lead.md) and
+  > > in [`Queue`](../../src/Queue/Queue.php)'s docblock and is corrected in
+  > > both; in 0008 it sat beside the reason that *does* hold — 31-day
+  > > retention, so AS stores durable attempts and never durable outcomes.
+  >
   > Retention pruning stays on WP-Cron exactly as this bullet says. Having a
   > scheduler did not change the argument that put it there.
 - "Destinations are the only way a Lead leaves WConvert" is now scoped to

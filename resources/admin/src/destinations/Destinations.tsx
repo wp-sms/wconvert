@@ -9,6 +9,7 @@ import {
   type DestinationType,
   type DestinationsPayload,
   type RePushReport,
+  type SettingsField,
 } from './api';
 import { renderingFor } from '../goals/availability';
 
@@ -142,7 +143,7 @@ export function Destinations() {
         <Configured
           key={destination.id}
           destination={destination}
-          field={payload.types.find((type) => type.id === destination.type)?.settings_schema?.tags}
+          schema={payload.types.find((type) => type.id === destination.type)?.settings_schema ?? {}}
           busy={busy}
           onSave={save}
           onRemove={remove}
@@ -227,23 +228,26 @@ function Types({
 /** One configured Destination, its health, and the one recovery action. */
 function Configured({
   destination,
-  field,
+  schema,
   busy,
   onSave,
   onRemove,
   onRePush,
 }: {
   destination: Destination;
-  /** The `tags` field as its TYPE declares it — copy included. */
-  field: DestinationType['settings_schema'][string] | undefined;
+  /** Every field its TYPE declares, in the order PHP returned them — copy included. */
+  schema: DestinationType['settings_schema'];
   busy: boolean;
   onSave: (destination: Destination, settings: Record<string, unknown>) => void;
   onRemove: (destination: Destination) => void;
   onRePush: (destination: Destination) => void;
 }) {
-  const tags = Array.isArray(destination.settings.tags) ? (destination.settings.tags as string[]) : [];
-  const [draft, setDraft] = useState(tags.join(', '));
+  // Seeded once from what is stored. Keyed by field rather than held as one
+  // string, because a type declares as many fields as it likes — the WSMS push
+  // has one and the lead magnet email has three.
+  const [draft, setDraft] = useState<Record<string, string>>(() => toDraft(schema, destination.settings));
   const failing = destination.health.consecutive_failures > 0;
+  const fields = Object.entries(schema);
 
   return (
     <div className="wconvert-destinations__row">
@@ -299,40 +303,47 @@ function Configured({
         </p>
       )}
 
-      <p>
-        <label>
-          {/*
-            The label comes from the TYPE's `settingsSchema()`, which is what
-            replaces WSMS's five `Supports*` capability interfaces: a
-            Destination's fields are a schema rather than a capability, so
-            there is one method and no matrix (#4).
-          */}
-          {field?.label ?? __('Tags to add', 'wconvert')}{' '}
-          <input
-            type="text"
-            className="regular-text"
-            value={draft}
-            onChange={(event) => setDraft(event.target.value)}
-          />
-        </label>{' '}
-        <button
-          type="button"
-          className="button"
-          disabled={busy}
-          onClick={() =>
-            onSave(destination, {
-              ...destination.settings,
-              tags: draft
-                .split(',')
-                .map((tag) => tag.trim())
-                .filter((tag) => tag !== ''),
-            })
-          }
-        >
-          {__('Save', 'wconvert')}
-        </button>
-        {field?.description !== undefined && <span className="description"> {field.description}</span>}
-      </p>
+      {/*
+        **The fields are the schema, drawn in the order PHP returned them.**
+        Both the copy and the CONTROL come from the type's `settingsSchema()`,
+        which is what replaces WSMS's five `Supports*` capability interfaces: a
+        Destination's fields are a schema rather than a capability, so there is
+        one method and no matrix (#4). Before #31 this screen hard-coded the
+        one field WSMS declares and read `type` nowhere, which meant the second
+        type to declare a field would have rendered none of them.
+
+        A type whose schema is empty — or one this install cannot see, so there
+        is no schema to read — gets no form and no Save button, because there
+        is nothing to save.
+      */}
+      {fields.length > 0 && (
+        <>
+          {fields.map(([key, field]) => (
+            <p key={key}>
+              <label>
+                {field.label}{' '}
+                <SettingsControl
+                  field={field}
+                  value={draft[key] ?? ''}
+                  onChange={(value) => setDraft({ ...draft, [key]: value })}
+                />
+              </label>
+              {field.description !== undefined && <span className="description"> {field.description}</span>}
+            </p>
+          ))}
+
+          <p>
+            <button
+              type="button"
+              className="button"
+              disabled={busy}
+              onClick={() => onSave(destination, { ...destination.settings, ...fromDraft(schema, draft) })}
+            >
+              {__('Save', 'wconvert')}
+            </button>
+          </p>
+        </>
+      )}
 
       <p>
         <button type="button" className="button" disabled={busy} onClick={() => onRePush(destination)}>
@@ -344,6 +355,161 @@ function Configured({
       </p>
     </div>
   );
+}
+
+/**
+ * One control per field kind — **the whole of what a Destination's settings UI
+ * can draw.**
+ *
+ * The precedent is `../builder/controls.tsx`, which does the same job for the
+ * rules manifest: a schema kind picks a control, and the `default` case is a
+ * text input rather than nothing. That default is what makes a new field kind
+ * a DEGRADED control instead of an invisible one — a merchant can still type
+ * into it, and the value round-trips as a string.
+ *
+ * **Every value here is a string except `ids`.** The whole draft is held as
+ * text while it is being edited, and {@see fromDraft} is the one place that
+ * turns it back into what the server stores. `ids` is the exception because
+ * WSMS's `tags` is a list — the shape that shipped, and it round-trips
+ * unchanged.
+ *
+ * There is no `select`: nothing in the Destination schemas offers a closed set
+ * of options yet, and inventing the control before a field needs it would be
+ * guessing at whether the options travel in the schema or come off the wire.
+ */
+function SettingsControl({
+  field,
+  value,
+  onChange,
+}: {
+  field: SettingsField;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  switch (field.type) {
+    /**
+     * A comma-separated list, which is what `tags` has always been. The
+     * splitting is in {@see fromDraft} rather than here, so a merchant can
+     * type a comma without the field reformatting itself under them.
+     */
+    case 'ids':
+      return (
+        <input
+          type="text"
+          className="regular-text"
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+        />
+      );
+
+    /**
+     * `type="url"` for the keyboard and the browser's own hint, and nothing
+     * more: the value is not validated here or on the way in. The push checks
+     * what it needs at the moment it needs it, which is the same posture the
+     * rest of the settings bag takes.
+     */
+    case 'url':
+      return (
+        <input
+          type="url"
+          className="regular-text"
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+        />
+      );
+
+    case 'multiline':
+      return (
+        <textarea
+          className="large-text"
+          rows={5}
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+        />
+      );
+
+    case 'text':
+    default:
+      return (
+        <input
+          type="text"
+          className="regular-text"
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+        />
+      );
+  }
+}
+
+/**
+ * The field kinds whose stored value is a **list** rather than a string.
+ *
+ * One place rather than two `=== 'ids'` checks that have to stay in step:
+ * {@see toDraft} and {@see fromDraft} are the two halves of one round trip, and
+ * a kind added to one but not the other would read back as a different shape
+ * than it was saved as. WSMS's `tags` is the only member today.
+ *
+ * The control switch in {@see SettingsControl} is deliberately NOT driven off
+ * this: which control to draw and which shape to store are different questions,
+ * and `ids` happens to answer both the same way only because a comma-separated
+ * text input is what a list has always been edited with here.
+ */
+const LIST_KINDS = new Set(['ids']);
+
+/**
+ * What is stored, as text a control can edit.
+ *
+ * Keyed off the SCHEMA rather than off the stored settings, so a field the
+ * type declares but nothing has ever saved still gets an empty control — and a
+ * stored key the type no longer declares is left alone rather than drawn.
+ */
+function toDraft(
+  schema: DestinationType['settings_schema'],
+  settings: Destination['settings']
+): Record<string, string> {
+  const draft: Record<string, string> = {};
+
+  for (const [key, field] of Object.entries(schema)) {
+    const stored = settings[key];
+
+    draft[key] = LIST_KINDS.has(field.type)
+      ? (Array.isArray(stored) ? (stored as unknown[]) : []).filter((id) => typeof id === 'string').join(', ')
+      : typeof stored === 'string'
+        ? stored
+        : '';
+  }
+
+  return draft;
+}
+
+/**
+ * The text, back in the shape the server stores.
+ *
+ * **The caller spreads this over the existing settings rather than replacing
+ * them**, so a key this type no longer declares — or one a future version
+ * wrote — survives a save from this screen. A settings bag is opaque to the
+ * REST layer (`DestinationController::store()` validates nothing in it), and a
+ * screen that silently dropped what it could not draw would be the one place
+ * that opacity bites.
+ */
+function fromDraft(
+  schema: DestinationType['settings_schema'],
+  draft: Record<string, string>
+): Record<string, unknown> {
+  const settings: Record<string, unknown> = {};
+
+  for (const [key, field] of Object.entries(schema)) {
+    const value = draft[key] ?? '';
+
+    settings[key] = LIST_KINDS.has(field.type)
+      ? value
+          .split(',')
+          .map((id) => id.trim())
+          .filter((id) => id !== '')
+      : value;
+  }
+
+  return settings;
 }
 
 /** What the replay queued — including, out loud, whether it was truncated. */

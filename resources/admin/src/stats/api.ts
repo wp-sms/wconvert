@@ -61,10 +61,14 @@ export interface OptinReport extends Numbers {
  *
  * There is also no "left without converting": it is already
  * `impressions − conversions − dismissals`, and naming it would put two
- * numbers on screen where one is the arithmetic of the other. The delivery
- * failure count — `conversions − deliveries` — is absent for both of those
- * reasons at once: it is the same arithmetic, and nothing writes deliveries
- * yet, so it would call every real Conversion a failure.
+ * numbers on screen where one is the arithmetic of the other.
+ *
+ * `delivery_failures` is **not** an instance of that rule, which is worth
+ * saying because this comment used to claim it was. `conversions` is not a
+ * field on this payload at all — the numbers below are `headline`,
+ * `impressions`, `dismissals`, `conversion_rate` and `by_day`, and on a
+ * lead-magnet card `headline` is *deliveries*. So the subtraction is new
+ * information rather than a restatement.
  */
 export interface GoalReport extends Numbers {
   goal: string;
@@ -72,8 +76,19 @@ export interface GoalReport extends Numbers {
   label: string;
   /** What the headline number is CALLED — two of the five convert on a click. */
   headline_label: string;
-  /** Why the headline reads zero, where it reads zero for a reason nobody can act on. */
-  note: string | null;
+  /**
+   * Conversions that have no delivery yet, clamped at zero — or **null on
+   * every Goal but the lead-magnet one.**
+   *
+   * The server decides which, because this bundle cannot: no Goal id is
+   * spelled anywhere in it, so a card has no way to know which Goal it is
+   * drawing. Null means "there is nothing to say here", and the row is not
+   * rendered.
+   *
+   * It reads *not yet delivered* rather than *failed*: a Conversion whose push
+   * is still queued or backing off is in it.
+   */
+  delivery_failures: number | null;
   optins: OptinReport[];
 }
 

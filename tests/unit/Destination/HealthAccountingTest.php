@@ -8,6 +8,7 @@ use WConvert\Destination\DeliveryFailures;
 use WConvert\Destination\DestinationRegistry;
 use WConvert\Destination\DestinationStore;
 use WConvert\Destination\HealthStore;
+use WConvert\Destination\LeadMagnet\DeliveryCount;
 use WConvert\Destination\PushJob;
 use WConvert\Destination\PushResult;
 use WConvert\Destination\PushWorker;
@@ -15,6 +16,7 @@ use WConvert\Lead\LeadRepository;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
 use WConvert\Rules\RuleVocabulary;
+use WConvert\Stats\StatsRepository;
 use WConvert\Support\Ulid;
 use WConvert\Tests\Unit\Support\FakeConnection;
 use WConvert\Tests\Unit\Support\FakeDestinationType;
@@ -83,15 +85,25 @@ final class HealthAccountingTest extends TestCase
         $registry = (new DestinationRegistry(new FakeProPresence(false), new FakeSitePresence()))
             ->register($this->type);
 
+        $optins = new OptinRepository(
+            $this->db,
+            new PublishedSet($this->options),
+            RuleVocabulary::fromManifest(dirname(__DIR__, 3))
+        );
+
         return new PushWorker(
             $registry,
             $this->destinations,
             new ConnectionStore($this->options),
             new LeadRepository($this->db),
-            new OptinRepository($this->db, new PublishedSet($this->options), RuleVocabulary::fromManifest(dirname(__DIR__, 3))),
+            $optins,
             $this->health,
             $this->failures,
-            $this->queue
+            $this->queue,
+            // Real, over the same fakes. The counting rules are proven in
+            // {@see DeliveryCountingTest}; what this file needs is a collaborator
+            // that behaves rather than one that records.
+            new DeliveryCount($optins, new StatsRepository($this->db))
         );
     }
 
