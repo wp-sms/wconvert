@@ -11,11 +11,8 @@ defined('ABSPATH') || exit;
  * `hooks()` beside it.** Every controller's `hooks()` was the same single line
  * — `add_action('rest_api_init', [$this, 'registerRoutes'])` — so WHEN a
  * controller is wired was written eleven times and WHERE it is built was
- * written nowhere. That cost #52: {@see \WConvert\Container\CoreServiceProvider}
- * had to resolve all eleven on `plugins_loaded` just to reach the line, and
- * building `PlaybookController` reads seven Playbook files whose every string
- * is wrapped in `__()` — a translation asked for before `init`, which WordPress
- * answers by printing a notice mid-`plugins_loaded`.
+ * written nowhere. That cost #52, argued in full in
+ * {@see \WConvert\Container\CoreServiceProvider::boot()}.
  *
  * So the hook moved to the provider, which is where the container is, and this
  * is what is left: the controller says what its routes are and says nothing

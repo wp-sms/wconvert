@@ -109,7 +109,7 @@ $GLOBALS['wconvertTestIsAdmin'] = false;
 if (!function_exists('is_admin')) {
     function is_admin(): bool
     {
-        return (bool) ($GLOBALS['wconvertTestIsAdmin'] ?? false);
+        return (bool) $GLOBALS['wconvertTestIsAdmin'];
     }
 }
 
@@ -264,33 +264,44 @@ if (!function_exists('register_rest_route')) {
  *
  * So the suite carries the one fact WordPress would have carried — whether
  * `init` has fired — and the stubs below refuse while it has not. It is TRUE
- * by default, because everything else here is testing code that legitimately
+ * here, because everything else in this suite is testing code that legitimately
  * runs after `init`; the test that boots a service provider turns it off for
  * the duration and any translation on that path throws with the string that
  * asked for it.
+ *
+ * **Every translating stub in this file must go through the gate**, and which
+ * ones those are is not a list anyone keeps by hand: `NothingTranslatesAtBootTest`
+ * reads the shipped source for the i18n functions WConvert actually calls and
+ * fails on one this file stubs without gating. An ungated `_x()` added for a
+ * caller nobody thought about is how #52 comes back with the suite green.
  */
 $GLOBALS['wconvertTestInitHasFired'] = true;
 
-if (!function_exists('wconvert_test_translate')) {
-    /**
-     * The one gate every translating stub below goes through.
-     *
-     * It throws rather than recording, because the stack trace is the whole
-     * answer: what is wanted is the file and line that asked, and a counter
-     * read after the fact has lost it.
-     */
-    function wconvert_test_translate(string $text): string
-    {
-        if (($GLOBALS['wconvertTestInitHasFired'] ?? true) === false) {
-            throw new RuntimeException(sprintf(
-                'WConvert asked to translate "%s" before `init`. WordPress answers that with '
-                . '"_load_textdomain_just_in_time was called incorrectly", printed mid-request (#52).',
-                $text
-            ));
-        }
-
-        return $text;
+/**
+ * The one gate every translating stub below goes through.
+ *
+ * Not wrapped in `function_exists()` like the WordPress stubs around it: those
+ * guard against a name WordPress may already own, and this name is the suite's
+ * own.
+ *
+ * It throws rather than recording, because the stack trace is the whole answer:
+ * what is wanted is the file and line that asked, and a counter read after the
+ * fact has lost it. **It also fails closed** — an unset flag refuses rather than
+ * translating, on the same posture `bin/verify-source-contract.sh` takes when it
+ * cannot inspect a tree. A gate whose default is "allowed" is the gate that was
+ * missing.
+ */
+function wconvert_test_translate(string $text): string
+{
+    if (($GLOBALS['wconvertTestInitHasFired'] ?? false) !== true) {
+        throw new RuntimeException(sprintf(
+            'WConvert asked to translate "%s" before `init`. WordPress answers that with '
+            . '"_load_textdomain_just_in_time was called incorrectly", printed mid-request (#52).',
+            $text
+        ));
     }
+
+    return $text;
 }
 
 if (!function_exists('__')) {
@@ -333,16 +344,33 @@ if (!function_exists('register_deactivation_hook')) {
 // It is the file Pro hangs its two lifecycle hooks on.
 defined('WCONVERT_PRO_MAIN_FILE') || define('WCONVERT_PRO_MAIN_FILE', dirname(__DIR__) . '/pro/wconvert-pro.php');
 
+// Pro's tree, and where it is served from. `ProServiceProvider` passes both to
+// the loader replacement rather than letting it read the constants itself, so
+// only a test that takes Pro's registrations AS THEY SHIP reaches these — which
+// is the boot test, and it is why they are here rather than in that file.
+// The URL is a plausible string and not a real one: nothing that boots asks
+// what it resolves to, and `plugin_dir_url()` is more of WordPress than this
+// bootstrap carries.
+defined('WCONVERT_PRO_DIR') || define('WCONVERT_PRO_DIR', dirname(__DIR__) . '/pro/');
+defined('WCONVERT_PRO_URL') || define('WCONVERT_PRO_URL', 'https://example.test/wp-content/plugins/wconvert-pro/');
+
 // The free plugin's own version, which `src/constants.php` defines at load time
 // and which nothing in the unit suite loads that file to get. It reaches
 // `_doing_it_wrong()` as the "since" argument.
 defined('WCONVERT_VERSION') || define('WCONVERT_VERSION', '0.1.0');
 
 // The plugin directory, which `src/constants.php` defines at load time and
-// which is the default argument of every `fromManifest()` and
-// `fromDirectory()` in the tree. Most tests pass their own directory and never
-// reach it; the one that boots the service providers takes the registrations
-// as they ship, which means the real manifests and the real Playbook files.
+// which is the default argument of every `fromManifest()` and `fromDirectory()`
+// in the tree. Most tests pass their own directory and never reach it; the one
+// that boots the service providers takes the registrations AS THEY SHIP, which
+// means the real manifests and the real Playbook files — a boot that built
+// fixtures would prove nothing about what the shipped one builds.
+//
+// The cost, stated: an undefined constant used to be a fatal, so a test that
+// forgot to pass its own directory failed loudly. It now falls through to this
+// one. Nothing relied on that fatal, and the alternative — overriding four
+// services with the same directory this constant holds — buys the signal back
+// by weakening the one claim the boot test exists to make.
 defined('WCONVERT_DIR') || define('WCONVERT_DIR', dirname(__DIR__) . '/');
 
 // WordPress's own time constants, which any plugin may assume are defined.
