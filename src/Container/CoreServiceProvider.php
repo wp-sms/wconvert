@@ -36,6 +36,7 @@ use WConvert\Rest\LeadController;
 use WConvert\Rest\OptinController;
 use WConvert\Rest\PlaybookController;
 use WConvert\Rest\RateLimit;
+use WConvert\Rest\RestController;
 use WConvert\Rest\RuleController;
 use WConvert\Rest\TemplateController;
 use WConvert\Rest\ThemeController;
@@ -67,6 +68,32 @@ defined('ABSPATH') || exit;
  */
 final class CoreServiceProvider implements ServiceProvider
 {
+    /**
+     * Every controller that owns REST routes.
+     *
+     * A list rather than eleven lines in {@see self::boot()} because it is a
+     * list that has to be COMPLETE: a controller left off it registers no
+     * route at all, and a route that does not exist fails as a 404 from the
+     * admin screen that calls it rather than as anything naming the omission.
+     * `tests/unit/Container/NothingTranslatesAtBootTest.php` walks `src/Rest`
+     * and fails on a {@see RestController} that is not named here.
+     *
+     * @var list<class-string<RestController>>
+     */
+    public const REST_CONTROLLERS = [
+        OptinController::class,
+        TemplateController::class,
+        RuleController::class,
+        ThemeController::class,
+        GoalController::class,
+        PlaybookController::class,
+        CaptureController::class,
+        BeaconController::class,
+        LeadController::class,
+        DashboardController::class,
+        DestinationController::class,
+    ];
+
     public function register(ServiceContainer $container): void
     {
         $container->register(ProPresence::class, static fn (): ProPresence => new WpProPresence());
@@ -451,24 +478,43 @@ final class CoreServiceProvider implements ServiceProvider
             $container->resolve(Installer::class)->upgradeIfNeeded();
         });
 
-        $container->resolve(OptinController::class)->hooks();
-        $container->resolve(TemplateController::class)->hooks();
-        $container->resolve(RuleController::class)->hooks();
-        $container->resolve(ThemeController::class)->hooks();
-        $container->resolve(GoalController::class)->hooks();
-        $container->resolve(PlaybookController::class)->hooks();
-        // Registered on every request, admin included, and NOT behind the
-        // `is_admin()` guard the loader sits behind. A REST route has to exist
-        // wherever `rest_api_init` fires or it does not exist at all — and the
-        // visitor posting a capture is on a page WordPress may serve through
-        // any entry point.
-        $container->resolve(CaptureController::class)->hooks();
-        // And the beacon, for the same reason: a route has to exist
-        // wherever `rest_api_init` fires or it does not exist at all.
-        $container->resolve(BeaconController::class)->hooks();
-        $container->resolve(LeadController::class)->hooks();
-        $container->resolve(DashboardController::class)->hooks();
-        $container->resolve(DestinationController::class)->hooks();
+        /*
+         * ====================================================================
+         * A REST CONTROLLER IS BUILT WHEN A ROUTE IS SERVED, NEVER HERE.
+         * ====================================================================
+         * This runs on `plugins_loaded`, which is before `init` — and a
+         * controller is not one object but the graph behind it.
+         * `PlaybookController` pulls the [[Playbook]] library, which `require`s
+         * seven PHP files whose every string is wrapped in `__()` (ADR 0013).
+         * Fifty-seven translations asked for before the text domain is loaded,
+         * on EVERY request, which is #52: WordPress answers with
+         * `_load_textdomain_just_in_time was called incorrectly` and prints it
+         * mid-`plugins_loaded`, so output begins before `<!DOCTYPE html>` and
+         * nothing after it can set a header. The quieter half is that the
+         * strings do not come back translated, because they were asked for
+         * before there was a domain to translate them against.
+         *
+         * **Nothing is lost by waiting**, and that is what makes this the fix
+         * rather than a deferral bought with something. A controller's entire
+         * `hooks()` was one `add_action('rest_api_init', …)`, so it already
+         * did nothing until a route was served; what boot paid for was
+         * building the graph behind routes most requests never reach.
+         *
+         * One deferral covers all eleven, and covers whatever a controller's
+         * dependencies come to do at construction next — which is the half
+         * that a fix aimed at the Playbook library alone would leave open for
+         * the next constructor that reaches for a word.
+         *
+         * NOT behind `is_admin()`, for the reason the two public routes always
+         * needed: a route has to exist wherever `rest_api_init` fires or it
+         * does not exist at all, and the visitor posting a capture or a beacon
+         * is on a page WordPress may serve through any entry point.
+         */
+        add_action('rest_api_init', static function () use ($container): void {
+            foreach (self::REST_CONTROLLERS as $controller) {
+                $container->resolve($controller)->registerRoutes();
+            }
+        });
 
         // On EVERY request, admin included, and not behind `is_admin()`. The
         // dispatch attaches to a capture, which arrives through REST from a

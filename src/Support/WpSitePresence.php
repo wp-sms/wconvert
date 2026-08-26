@@ -22,19 +22,37 @@ defined('ABSPATH') || exit;
  */
 final class WpSitePresence implements SitePresence
 {
-    /** What each dependency is present as, once WordPress has loaded it. */
-    private const CLASSES = [
-        SiteDependency::WooCommerce->value => 'WooCommerce',
-        // WSMS's own bootstrap, which is what "WP SMS is loaded" means. Its
-        // container is what the push reaches through, so the class that OWNS
-        // the container is the honest thing to ask about — a plugin whose
-        // files are present but which fataled before booting has no container
-        // to hand out.
-        SiteDependency::Wsms->value => 'WSms\\Bootstrap',
-    ];
-
+    /**
+     * What each dependency is present as, once WordPress has loaded it.
+     *
+     * A `match` rather than the `const` array this was, and the reason is that
+     * the array could not be COMPILED on the oldest PHP the plugin supports:
+     * `SiteDependency::WooCommerce->value` is a property fetch, and a property
+     * fetch in a constant expression needs PHP 8.3. On 8.1 and 8.2 — and the
+     * plugin file says `Requires PHP: 8.1` — merely autoloading this class was
+     * `Constant expression contains invalid operations`, a fatal on every
+     * front-end request, because the loader's degradation resolver asks what
+     * the site has. Found by the class sweep in
+     * `tests/unit/Container/NothingTranslatesAtBootTest.php`, which is the
+     * first thing in the suite to load every class in `src/`; PHPStan cannot
+     * see it because it is a limit of the compiler rather than of the types.
+     *
+     * The `match` is the better shape anyway. A new case added to the enum is
+     * an `UnhandledMatchError` naming it, where the array was an undefined key
+     * and a `class_exists(null)` two lines later.
+     */
     public function has(SiteDependency $dependency): bool
     {
-        return class_exists(self::CLASSES[$dependency->value], false);
+        $class = match ($dependency) {
+            SiteDependency::WooCommerce => 'WooCommerce',
+            // WSMS's own bootstrap, which is what "WP SMS is loaded" means. Its
+            // container is what the push reaches through, so the class that OWNS
+            // the container is the honest thing to ask about — a plugin whose
+            // files are present but which fataled before booting has no container
+            // to hand out.
+            SiteDependency::Wsms => 'WSms\\Bootstrap',
+        };
+
+        return class_exists($class, false);
     }
 }

@@ -53,6 +53,12 @@ final class BootGuard
      * `init`, where the same __() calls are simply correct — and where the
      * refusal actually gets translated, which it never did here, because this
      * path is the one that returns before the text domain is loaded.
+     *
+     * Free had the same fault and did not know it (#52): its service provider
+     * resolved every REST controller on `plugins_loaded`, and building one read
+     * the [[Playbook]] directory, whose every string is `__()` at file scope.
+     * The rule this docblock states is therefore the plugin's, not Pro's — no
+     * `plugins_loaded` callback in either tree may ask for a word.
      */
     public static function noticeRefusal(MinCoreVerdict $verdict): void
     {

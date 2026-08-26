@@ -18,16 +18,11 @@ defined('ABSPATH') || exit;
  *
  * @since 0.1.0
  */
-final class RuleController
+final class RuleController implements RestController
 {
     public function __construct(
         private readonly RuleCatalogue $catalogue,
     ) {
-    }
-
-    public function hooks(): void
-    {
-        add_action('rest_api_init', [$this, 'registerRoutes']);
     }
 
     public function registerRoutes(): void

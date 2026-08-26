@@ -109,3 +109,17 @@ the same move ADR 0010 made on templates, applied one layer up.
   `tests/unit/Playbook/BundledPlaybooksTest.php` asserts every shipped word is
   reachable by `make-pot`, which is the claim this bullet rests on and had
   nothing holding it.*
+
+  *Completed by [#52](https://github.com/navidkashani/wconvert/issues/52), with
+  the cost this shape carries and where it is paid. **A PHP entry translates
+  when the file is READ**, not when a word is displayed: `require`ing the seven
+  bundled files fires 57 `__()` calls, so WHERE the library is built decides
+  whether they are legal. It was built in `CoreServiceProvider::register()` and
+  resolved from `boot()`, which runs on `plugins_loaded` — before `init`, where
+  WordPress refuses to translate and says so by printing
+  `_load_textdomain_just_in_time was called incorrectly` mid-request, on every
+  request of every install. The decision is unchanged and the strings stay in
+  PHP; what moved is the moment the directory is read. Every REST controller is
+  now resolved on `rest_api_init`
+  ([`CoreServiceProvider::REST_CONTROLLERS`](../../src/Container/CoreServiceProvider.php)),
+  which is both after `init` and the only moment a Playbook is asked for.*
