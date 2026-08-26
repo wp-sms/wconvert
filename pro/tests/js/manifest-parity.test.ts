@@ -11,13 +11,13 @@ import { PRO_MODULES } from '../../resources/loader/src/modules';
  * the point: it imports Pro's tree, so putting it in free's tree would make the
  * test itself the leak `bin/verify-source-contract.sh` exists to catch.
  *
- * WHAT IT PROVES TODAY, HONESTLY: the manifest declares no premium rule yet and
- * Pro implements none, so this compares two empty sets. It is written now
- * rather than then because it is the assertion that decides WHERE the premium
- * entries may land — a `tier: pro` entry added to the manifest without a Pro
- * module fails here on the same pull request, which is what keeps ADR 0029's
- * "every entry resolves to an implementation on the side its tier names" from
- * being a sentence nobody runs.
+ * It is the assertion that decides WHERE a premium entry may land: a
+ * `tier: pro` entry added to the manifest without a Pro module fails here on
+ * the same pull request, which is what keeps ADR 0029's "every entry resolves
+ * to an implementation on the side its tier names" from being a sentence
+ * nobody runs. That is why `exit_intent` and `scroll_up` could not arrive with
+ * the manifest half of #22 and arrive here instead, with the modules that
+ * implement them.
  */
 describe("Pro's modules against the manifest", () => {
   it('implements every premium trigger and condition, and nothing else', () => {

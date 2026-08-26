@@ -3,15 +3,17 @@ import { PRO_MODULES } from '../../resources/loader/src/modules';
 import type { LoaderModule } from '@loader/types';
 
 /**
- * What Pro's two modules actually answer.
+ * What Pro's modules actually answer.
  *
  * The manifest-parity file next door proves each one is declared where its
  * `tier` says; this proves each one DOES what its declaration promises — the
  * same division `tests/js/loader-modules.test.ts` draws for free's four.
  *
- * Both decisions worth asserting here are ones prose alone would leave
- * unchecked: a blank `click_element` selector never fires, and a
- * `query_param` with no wanted value means "present with any value".
+ * The decisions worth asserting here are ones prose alone would leave
+ * unchecked: a blank `click_element` selector never fires, a `query_param`
+ * with no wanted value means "present with any value", and **`exit_intent`
+ * and `scroll_up` are two types rather than one with two meanings** — the
+ * specific mistake this pair exists not to make.
  */
 
 const moduleFor = (id: string): LoaderModule => {
@@ -27,7 +29,21 @@ const moduleFor = (id: string): LoaderModule => {
 afterEach(() => {
   window.history.replaceState({}, '', '/');
   document.body.innerHTML = '';
+  vi.restoreAllMocks();
 });
+
+/** The pointer leaving through the top of the viewport, to nothing. */
+const leaveThroughTheTop = (): void =>
+  void document.dispatchEvent(new MouseEvent('mouseout', { clientY: 0, relatedTarget: null }));
+
+/** Where the visitor is on the page, before any listener is attached. */
+const scrolledTo = (y: number): void => void vi.spyOn(window, 'scrollY', 'get').mockReturnValue(y);
+
+/** A scroll to `y`, as the browser reports one. */
+const scrollTo = (y: number): void => {
+  scrolledTo(y);
+  window.dispatchEvent(new Event('scroll'));
+};
 
 describe('click_element', () => {
   const clickOn = (html: string, selector: string): { fired: boolean; stop: () => void } => {
@@ -170,5 +186,229 @@ describe('query_param', () => {
 
     window.history.replaceState({}, '', '/');
     expect(evaluator.holds({ type: 'query_param', key: 'utm_source' })).toBe(false);
+  });
+});
+
+describe('exit_intent', () => {
+  /**
+   * The gesture is the pointer leaving through the TOP of the viewport — the
+   * direction the tab strip, the address bar and the close button are in.
+   * Leaving through a side or the bottom is reaching for a scrollbar or the
+   * dock.
+   */
+  it('fires once the pointer leaves through the top of the viewport', () => {
+    const evaluator = moduleFor('exit_intent').create(vi.fn());
+
+    expect(evaluator.holds({ type: 'exit_intent' })).toBe(false);
+
+    leaveThroughTheTop();
+
+    expect(evaluator.holds({ type: 'exit_intent' })).toBe(true);
+    evaluator.stop?.();
+  });
+
+  /**
+   * `mouseout` fires on every move between two elements on the page, which is
+   * most of what a mouse does. A move that has somewhere to go is not a
+   * departure, and reading it as one would fire on the first hover.
+   */
+  it('does not fire on a move from one element to another', () => {
+    const evaluator = moduleFor('exit_intent').create(vi.fn());
+
+    document.body.innerHTML = '<a id="link" href="#x">Elsewhere</a>';
+    document.dispatchEvent(
+      new MouseEvent('mouseout', { clientY: 0, relatedTarget: document.querySelector('#link') }),
+    );
+
+    expect(evaluator.holds({ type: 'exit_intent' })).toBe(false);
+    evaluator.stop?.();
+  });
+
+  it('does not fire on the pointer leaving through a side or the bottom', () => {
+    const evaluator = moduleFor('exit_intent').create(vi.fn());
+
+    document.dispatchEvent(new MouseEvent('mouseout', { clientY: 400, relatedTarget: null }));
+
+    expect(evaluator.holds({ type: 'exit_intent' })).toBe(false);
+    evaluator.stop?.();
+  });
+
+  /**
+   * The same high-water posture `scroll_depth` takes, for the same reason:
+   * coming back does not un-intend leaving, and a Trigger that un-fired would
+   * be answerable differently depending on where the mouse happened to be at
+   * the instant a Condition became true.
+   */
+  it('stays fired once it has fired', () => {
+    const evaluator = moduleFor('exit_intent').create(vi.fn());
+
+    leaveThroughTheTop();
+    document.dispatchEvent(new MouseEvent('mouseover', {}));
+
+    expect(evaluator.holds({ type: 'exit_intent' })).toBe(true);
+    evaluator.stop?.();
+  });
+
+  /**
+   * Once, on the transition. `scroll_depth` asks on every scroll because each
+   * rule carries its own threshold; this one is a boolean with no params, so
+   * a second ask has nothing new to answer.
+   */
+  it('asks the shell to decide again on the gesture, and detaches when told to', () => {
+    const changed = vi.fn();
+    const evaluator = moduleFor('exit_intent').create(changed);
+
+    leaveThroughTheTop();
+    leaveThroughTheTop();
+    expect(changed).toHaveBeenCalledTimes(1);
+
+    evaluator.stop?.();
+    leaveThroughTheTop();
+    expect(changed).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('scroll_up', () => {
+  it('does not fire while the visitor is still going down', () => {
+    scrolledTo(0);
+    const evaluator = moduleFor('scroll_up').create(vi.fn());
+
+    scrollTo(600);
+    scrollTo(1_200);
+
+    expect(evaluator.holds({ type: 'scroll_up' })).toBe(false);
+    evaluator.stop?.();
+  });
+
+  it('fires once they turn back and rise far enough from the deepest point', () => {
+    scrolledTo(0);
+    const evaluator = moduleFor('scroll_up').create(vi.fn());
+
+    scrollTo(1_200);
+    scrollTo(900);
+
+    expect(evaluator.holds({ type: 'scroll_up' })).toBe(true);
+    evaluator.stop?.();
+  });
+
+  /**
+   * A few pixels back up is reading, not leaving. Without a rise threshold
+   * this fires on the first overshoot of a tap-scroll, which on a phone is
+   * every scroll.
+   */
+  it('does not fire on a small correction', () => {
+    scrolledTo(0);
+    const evaluator = moduleFor('scroll_up').create(vi.fn());
+
+    scrollTo(1_200);
+    scrollTo(1_150);
+
+    expect(evaluator.holds({ type: 'scroll_up' })).toBe(false);
+    evaluator.stop?.();
+  });
+
+  /**
+   * Near the top there is nothing to come back FROM. A visitor who has barely
+   * entered the page and nudges up is arriving, and firing there makes this a
+   * page-load Trigger wearing a gesture's name.
+   */
+  it('does not fire for a visitor who never went deep', () => {
+    scrolledTo(0);
+    const evaluator = moduleFor('scroll_up').create(vi.fn());
+
+    scrollTo(250);
+    scrollTo(0);
+
+    expect(evaluator.holds({ type: 'scroll_up' })).toBe(false);
+    evaluator.stop?.();
+  });
+
+  /**
+   * Read at instantiation, before any listener is attached — the same finding
+   * `scroll_depth` is built on. Under delayed JS the visitor is already deep
+   * when the loader runs, and the scrolls we missed are never replayed, so a
+   * module starting from 0 would read their first rise as a descent.
+   */
+  it('starts from where the visitor already is, not from the top', () => {
+    scrolledTo(1_500);
+    const evaluator = moduleFor('scroll_up').create(vi.fn());
+
+    scrollTo(1_200);
+
+    expect(evaluator.holds({ type: 'scroll_up' })).toBe(true);
+    evaluator.stop?.();
+  });
+
+  it('stays fired once it has fired', () => {
+    scrolledTo(0);
+    const evaluator = moduleFor('scroll_up').create(vi.fn());
+
+    scrollTo(1_200);
+    scrollTo(900);
+    scrollTo(1_600);
+
+    expect(evaluator.holds({ type: 'scroll_up' })).toBe(true);
+    evaluator.stop?.();
+  });
+
+  it('asks the shell to decide again on the gesture, and detaches when told to', () => {
+    scrolledTo(0);
+    const changed = vi.fn();
+    const evaluator = moduleFor('scroll_up').create(changed);
+
+    scrollTo(1_200);
+    scrollTo(900);
+    scrollTo(600);
+    expect(changed).toHaveBeenCalledTimes(1);
+
+    evaluator.stop?.();
+    scrollTo(1_600);
+    scrollTo(1_000);
+    expect(changed).toHaveBeenCalledTimes(1);
+  });
+});
+
+/**
+ * ============================================================================
+ * TWO TYPES, NOT ONE TYPE WITH TWO MEANINGS.
+ * ============================================================================
+ * `scroll_up` is `exit_intent`'s **distinct mobile sibling** (#32), and the
+ * specific mistake this pair exists not to make is a single `exit_intent`
+ * type that quietly means `mouseout` on a desktop and an upward scroll on a
+ * phone. That type would be unreportable — "why didn't my popup show" has no
+ * per-rule answer when one row means two things — and unpairable, because a
+ * merchant could never ask for one without the other.
+ *
+ * So they evaluate independently, and both may sit on one Optin: the gesture
+ * a visitor's device can actually make is the one that fires, and the other
+ * simply never does. Neither is device-guarded, deliberately — a merchant who
+ * wants one confined to a phone pairs it with the `device` Condition, which is
+ * what the second client axis is for (ADR 0005).
+ */
+describe('exit_intent and scroll_up on one Optin', () => {
+  it('evaluate independently, and each answers only for its own gesture', () => {
+    scrolledTo(0);
+    const exit = moduleFor('exit_intent').create(vi.fn());
+    const up = moduleFor('scroll_up').create(vi.fn());
+
+    leaveThroughTheTop();
+
+    expect(exit.holds({ type: 'exit_intent' })).toBe(true);
+    expect(up.holds({ type: 'scroll_up' })).toBe(false);
+
+    scrollTo(1_200);
+    scrollTo(900);
+
+    expect(up.holds({ type: 'scroll_up' })).toBe(true);
+
+    exit.stop?.();
+    up.stop?.();
+  });
+
+  it('are two entries in the module set, with two ids', () => {
+    const ids = PRO_MODULES.map((module) => module.id);
+
+    expect(ids).toContain('exit_intent');
+    expect(ids).toContain('scroll_up');
   });
 });

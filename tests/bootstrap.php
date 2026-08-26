@@ -53,14 +53,26 @@ if (!function_exists('wp_json_encode')) {
  * code that a test has to be able to observe. So the two functions that make a
  * hook a hook are here, and nothing else of WordPress's plugin API is.
  *
- * @var array<string, list<callable>> $wconvertTestActions
+ * **PRIORITY IS HONOURED**, and that is not decoration either. [[Pro]] replaces
+ * free's loader by dequeuing it on the SAME hook at a LATER priority (ADR 0014),
+ * so a stub that fired callbacks in registration order would let a swap that
+ * only works because Pro's plugin file happens to load second pass as one that
+ * works because it asked to run later.
+ *
+ * @var array<string, list<array{callback: callable, priority: int, order: int}>> $wconvertTestActions
  */
 $GLOBALS['wconvertTestActions'] = [];
 
 if (!function_exists('add_action')) {
     function add_action(string $hook, callable $callback, int $priority = 10, int $args = 1): bool
     {
-        $GLOBALS['wconvertTestActions'][$hook][] = $callback;
+        $GLOBALS['wconvertTestActions'][$hook][] = [
+            'callback' => $callback,
+            'priority' => $priority,
+            // Registration order, so equal priorities keep it — which is what
+            // WordPress does and is the half a plain sort would lose.
+            'order' => count($GLOBALS['wconvertTestActions'][$hook] ?? []),
+        ];
 
         return true;
     }
@@ -70,8 +82,15 @@ if (!function_exists('do_action')) {
     /** @param mixed ...$args */
     function do_action(string $hook, ...$args): void
     {
-        foreach ($GLOBALS['wconvertTestActions'][$hook] ?? [] as $callback) {
-            $callback(...$args);
+        $callbacks = $GLOBALS['wconvertTestActions'][$hook] ?? [];
+
+        usort(
+            $callbacks,
+            static fn (array $a, array $b): int => [$a['priority'], $a['order']] <=> [$b['priority'], $b['order']]
+        );
+
+        foreach ($callbacks as $registered) {
+            $registered['callback'](...$args);
         }
     }
 }
@@ -82,6 +101,101 @@ if (!function_exists('remove_all_actions')) {
         unset($GLOBALS['wconvertTestActions'][$hook]);
 
         return true;
+    }
+}
+
+/*
+ * The script queue, recorded rather than performed.
+ *
+ * WordPress has no other seam for "what will this page load". [[Pro]] ships a
+ * COMPLETE replacement loader and dequeues free's, and the property that
+ * matters — **exactly one loader on the page, whatever an aggregating
+ * optimizer then does to it** (ADR 0004, ADR 0014) — is a property of this
+ * queue at the moment `wp_enqueue_scripts` finishes. An optimizer only ever
+ * sees the queue's output, so a queue holding one loader cannot become a page
+ * holding two.
+ *
+ * **REGISTERED AND ENQUEUED ARE TWO SETS, and that is the whole reason this is
+ * not one array.** WordPress prints the registered DEPENDENCIES of anything
+ * queued, so a handle that is dequeued but still registered comes back the
+ * moment one other script declares it — which is why Pro deregisters as well
+ * as dequeues, and why a stub that conflated the two would let that line be
+ * deleted with every test still green. It was, and they did.
+ *
+ * What is still simpler than the real thing: dependencies are recorded and
+ * never resolved, so nothing here can prove the resurrection itself. That
+ * needs real `WP_Dependencies`, and `bin/verify-loader-replacement.php` is
+ * where it is proven.
+ *
+ * @var array{registered: array<string, array{src: string, deps: list<string>, ver: mixed}>, enqueued: array<string, true>} $wconvertTestScripts
+ */
+$GLOBALS['wconvertTestScripts'] = ['registered' => [], 'enqueued' => []];
+
+if (!function_exists('wp_register_script')) {
+    /**
+     * @param list<string> $deps
+     * @param string|false|null $ver
+     * @param array<string, mixed>|bool $args
+     */
+    function wp_register_script(
+        string $handle,
+        string $src = '',
+        array $deps = [],
+        $ver = false,
+        $args = false
+    ): bool {
+        $GLOBALS['wconvertTestScripts']['registered'][$handle] = ['src' => $src, 'deps' => $deps, 'ver' => $ver];
+
+        return true;
+    }
+}
+
+if (!function_exists('wp_enqueue_script')) {
+    /**
+     * A `$src` registers as well as enqueues, exactly as WordPress's does —
+     * which is why nothing in WConvert calls `wp_register_script()` directly.
+     *
+     * @param list<string> $deps
+     * @param string|false|null $ver
+     * @param array<string, mixed>|bool $args
+     */
+    function wp_enqueue_script(
+        string $handle,
+        string $src = '',
+        array $deps = [],
+        $ver = false,
+        $args = false
+    ): void {
+        if ($src !== '') {
+            wp_register_script($handle, $src, $deps, $ver, $args);
+        }
+
+        $GLOBALS['wconvertTestScripts']['enqueued'][$handle] = true;
+    }
+}
+
+if (!function_exists('wp_dequeue_script')) {
+    /** Out of the queue. STILL REGISTERED — that is the point of the pair. */
+    function wp_dequeue_script(string $handle): void
+    {
+        unset($GLOBALS['wconvertTestScripts']['enqueued'][$handle]);
+    }
+}
+
+if (!function_exists('wp_deregister_script')) {
+    /** Registration gone. WordPress does not dequeue it here either. */
+    function wp_deregister_script(string $handle): void
+    {
+        unset($GLOBALS['wconvertTestScripts']['registered'][$handle]);
+    }
+}
+
+if (!function_exists('wp_script_is')) {
+    function wp_script_is(string $handle, string $list = 'enqueued'): bool
+    {
+        $set = $list === 'registered' ? 'registered' : 'enqueued';
+
+        return isset($GLOBALS['wconvertTestScripts'][$set][$handle]);
     }
 }
 
@@ -122,6 +236,39 @@ if (!function_exists('__')) {
         return $text;
     }
 }
+
+/*
+ * Plugin activation and deactivation, recorded rather than performed.
+ *
+ * [[Pro]] going on or off is what changes which loader a page enqueues
+ * (ADR 0014), so "activating or deactivating Pro purges the page cache" is a
+ * claim about a REGISTRATION — invisible to any test that calls the purge
+ * itself. Recording the callback is the only way to assert it is hung on both
+ * moments rather than on one.
+ *
+ * @var array<string, list<callable>> $wconvertTestLifecycle
+ */
+$GLOBALS['wconvertTestLifecycle'] = ['activate' => [], 'deactivate' => []];
+
+if (!function_exists('register_activation_hook')) {
+    function register_activation_hook(string $file, callable $callback): void
+    {
+        $GLOBALS['wconvertTestLifecycle']['activate'][] = $callback;
+    }
+}
+
+if (!function_exists('register_deactivation_hook')) {
+    function register_deactivation_hook(string $file, callable $callback): void
+    {
+        $GLOBALS['wconvertTestLifecycle']['deactivate'][] = $callback;
+    }
+}
+
+// Where Pro's plugin file is, which `pro/src/constants.php` defines at load
+// time and which nothing in the unit suite loads that file to get — it calls
+// `plugin_dir_url()`, which is more of WordPress than this bootstrap carries.
+// It is the file Pro hangs its two lifecycle hooks on.
+defined('WCONVERT_PRO_MAIN_FILE') || define('WCONVERT_PRO_MAIN_FILE', dirname(__DIR__) . '/pro/wconvert-pro.php');
 
 // The free plugin's own version, which `src/constants.php` defines at load time
 // and which nothing in the unit suite loads that file to get. It reaches

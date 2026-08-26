@@ -82,7 +82,10 @@ lands in the same commit as the Pro module implementing it. That is
 plus the remaining twelve Conditions with the Pro tickets that implement them;
 **no premium entry is orphaned, because none may exist without its module.** The identifier list
 therefore stays empty through #22 and the scan goes live in #32, with no change
-to the script. Note that #32's acceptance criteria say free's manifest **lacks**
+to the script. **It did.** #32 added `exit_intent` and `scroll_up` beside the
+`click_element` and `query_param` entries #29 brought, each in the same commit
+as its Pro module, and the scan now reads four premium identifiers out of the
+manifest and finds none of them in free's built loader. Note that #32's acceptance criteria say free's manifest **lacks**
 those entries; that is the one reading this ADR rules out, because free's PHP is
 what strips an unentitled rule at enqueue and it can only strip what its own
 manifest calls premium. There is one manifest, in free, and it names both tiers.*

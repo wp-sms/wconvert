@@ -27,6 +27,18 @@ final class LoaderEnqueue
 {
     public const HANDLE = 'wconvert-loader';
 
+    /**
+     * When this runs on `wp_enqueue_scripts`.
+     *
+     * A named constant because **[[Pro]] replaces this loader by dequeuing it
+     * on the same hook, later** (ADR 0014), and "later" has to be a fact the
+     * two plugins share rather than two numbers that agree by habit. Pro reads
+     * it — `WConvert\Pro\Frontend\ProLoaderEnqueue::PRIORITY` is this plus
+     * ten — so the ordering cannot drift, and it does not depend on which
+     * plugin file WordPress loaded first.
+     */
+    public const PRIORITY = 10;
+
     private const DIST = 'public/loader/loader.js';
 
     public function __construct(
@@ -36,7 +48,7 @@ final class LoaderEnqueue
 
     public function hooks(): void
     {
-        add_action('wp_enqueue_scripts', [$this, 'enqueue']);
+        add_action('wp_enqueue_scripts', [$this, 'enqueue'], self::PRIORITY);
     }
 
     public function enqueue(): void

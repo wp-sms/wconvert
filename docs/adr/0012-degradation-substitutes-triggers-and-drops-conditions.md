@@ -16,6 +16,18 @@ The substitution itself is asymmetric by rule kind:
 
 - **A premium trigger is substituted.** `exit_intent` → `time_on_page`,
   `scroll_up` → `scroll_depth`.
+  *Both halves of that pair exist as of
+  [#32](https://github.com/navidkashani/wconvert/issues/32), and both landed
+  carrying `on_absence: drop` — deliberately, and worth saying out loud since
+  this ADR calls a dropped premium trigger "a silent, total loss of function".
+  The substitution property is not in the manifest yet because
+  [#33](https://github.com/navidkashani/wconvert/issues/33) owns it, and a
+  field nothing reads is a fourth hand-maintained list with extra steps (see
+  the first consequence below). `drop` is what every trigger entry carries
+  today, premium or not, so the pair is parked on the existing default rather
+  than on a value chosen for them. Until #33, an Optin whose only Trigger is
+  premium and whose Pro is gone cannot fire — which is exactly the failure #33
+  exists to close, and is why it is #32's immediate successor.*
 - **A premium condition is dropped.** No substitute, ever.
   *Narrowed by [ADR 0027](0027-a-load-bearing-condition-suspends-rather-than-drops.md):
   except where the Optin's copy asserts the fact the condition guarantees, which

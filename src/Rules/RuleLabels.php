@@ -51,6 +51,8 @@ final class RuleLabels
             'time_on_page' => __('Time on the page', 'wconvert'),
             'scroll_depth' => __('Scroll depth', 'wconvert'),
             'click_element' => __('Clicks an element', 'wconvert'),
+            'exit_intent' => __('About to leave', 'wconvert'),
+            'scroll_up' => __('Scrolls back up', 'wconvert'),
             'device' => __('Device', 'wconvert'),
             'query_param' => __('A URL parameter', 'wconvert'),
         ];

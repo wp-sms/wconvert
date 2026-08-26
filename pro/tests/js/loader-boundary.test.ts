@@ -1,7 +1,11 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { FREE_MODULES } from '@loader/modules';
+import { start } from '@loader/shell';
+import type { Store } from '@loader/storage';
+import type { PayloadEntry } from '@loader/types';
 import { PRO_MODULES } from '../../resources/loader/src/modules';
 import proLoader from '../../resources/loader/src/main';
+import { recordingPresenter } from '../../../tests/js/support/presenter';
 
 /**
  * The free/Pro loader module boundary, asserted from Pro's side.
@@ -10,14 +14,15 @@ import proLoader from '../../resources/loader/src/main';
  * the point: it imports Pro's tree, so putting it in free's tree would make the
  * test itself the leak bin/verify-source-contract.sh exists to catch.
  *
- * HONESTY ABOUT WHAT IS PROVEN TODAY. Both module lists are empty, so the
- * composition assertions below compare empty arrays and would pass against a
- * Pro entry that ignored free entirely. What they DO prove today is the import
- * direction: this file resolves free's tree from inside Pro's, and Pro's entry
- * evaluates, so the cross-tree wiring ADR 0028 requires exists rather than
- * merely being described. The composition claims become load-bearing the moment
- * the first module lands, which is why they are written now rather than then.
- * The composition LOGIC is asserted non-vacuously in tests/js/loader-engine.test.ts.
+ * Two things are proven here, and the second only became load-bearing once
+ * both sides shipped modules. The IMPORT DIRECTION: this file resolves free's
+ * tree from inside Pro's, and Pro's entry evaluates, so the cross-tree wiring
+ * ADR 0028 requires exists rather than merely being described. And the
+ * COMPOSITION: Pro's loader is free's modules plus Pro's, in that order, and
+ * carries every module free's carries — which is what makes the PHP dequeue
+ * safe (`tests/unit/Pro/Frontend/LoaderReplacementTest.php`). Pro REPLACES
+ * free's loader, so a free module missing from Pro's build is a capability a
+ * merchant loses by paying for Pro.
  */
 describe("Pro's loader entry", () => {
   it("resolves free's loader tree from inside Pro's", () => {
@@ -43,5 +48,108 @@ describe("Pro's loader entry", () => {
     for (const free of FREE_MODULES) {
       expect(composed).toContain(free.id);
     }
+  });
+});
+
+/**
+ * =============================================================================
+ * ONE OPTIN CARRYING BOTH GESTURES, ON PRO'S REAL LOADER.
+ * =============================================================================
+ * `pro/tests/js/pro-modules.test.ts` proves the two modules answer
+ * independently. This proves the thing a merchant actually builds: **one Optin
+ * naming `exit_intent` AND `scroll_up`**, run through the composed Pro loader
+ * and the real shell, firing on whichever gesture the visitor's device can
+ * make.
+ *
+ * That pairing is the whole reason they are two types rather than one with two
+ * meanings (#32). A single type would make this Optin unexpressible: the
+ * merchant could not ask for the desktop gesture without the phone one, and
+ * the rules panel would have one row that means two things — so "why didn't my
+ * popup show" would have no per-rule answer.
+ *
+ * Neither module is device-guarded, deliberately. A desktop visitor never
+ * produces the scroll gesture and a phone never produces the pointer one, so
+ * the wrong Trigger simply never fires — no branch that has to be right about
+ * what a device is.
+ */
+describe('one Optin carrying both premium Triggers', () => {
+  const bothGestures = (): PayloadEntry => ({
+    id: 'a',
+    display_type: 'popup',
+    triggers: [{ type: 'exit_intent' }, { type: 'scroll_up' }],
+    conditions: [],
+  });
+
+  /** A store that starts empty and stays on this test, never localStorage. */
+  const fakeStore = (): Store => {
+    let held: string | null = null;
+
+    return { read: () => held, write: (value) => void (held = value) };
+  };
+
+  const pageView = () => {
+    const presenter = recordingPresenter();
+    const stop = start({
+      loader: proLoader,
+      entries: [bothGestures()],
+      presenter,
+      store: fakeStore(),
+      now: () => Date.UTC(2026, 2, 1),
+    });
+
+    return { presenter, stop };
+  };
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('does not fire before either gesture is made', () => {
+    const { presenter, stop } = pageView();
+
+    expect(presenter.shown).toEqual([]);
+    stop();
+  });
+
+  /** The desktop half: a pointer leaving through the top, and no scrolling. */
+  it('fires on the pointer leaving, with no scrolling at all', () => {
+    const { presenter, stop } = pageView();
+
+    document.dispatchEvent(new MouseEvent('mouseout', { clientY: 0, relatedTarget: null }));
+
+    expect(presenter.shown).toEqual(['a']);
+    stop();
+  });
+
+  /** The phone half: a turn back up the page, and no pointer at all. */
+  it('fires on the turn back up the page, with no pointer at all', () => {
+    vi.spyOn(window, 'scrollY', 'get').mockReturnValue(0);
+    const { presenter, stop } = pageView();
+
+    vi.spyOn(window, 'scrollY', 'get').mockReturnValue(1_200);
+    window.dispatchEvent(new Event('scroll'));
+    vi.spyOn(window, 'scrollY', 'get').mockReturnValue(900);
+    window.dispatchEvent(new Event('scroll'));
+
+    expect(presenter.shown).toEqual(['a']);
+    stop();
+  });
+
+  /**
+   * And ONCE. Two Triggers on one Optin is "any one of these", not two
+   * chances to show the same popup at the same visitor.
+   */
+  it('shows once when the visitor makes both gestures', () => {
+    vi.spyOn(window, 'scrollY', 'get').mockReturnValue(0);
+    const { presenter, stop } = pageView();
+
+    document.dispatchEvent(new MouseEvent('mouseout', { clientY: 0, relatedTarget: null }));
+    vi.spyOn(window, 'scrollY', 'get').mockReturnValue(1_200);
+    window.dispatchEvent(new Event('scroll'));
+    vi.spyOn(window, 'scrollY', 'get').mockReturnValue(900);
+    window.dispatchEvent(new Event('scroll'));
+
+    expect(presenter.shown).toEqual(['a']);
+    stop();
   });
 });
