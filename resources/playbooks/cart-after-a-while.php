@@ -21,13 +21,7 @@ return [
     'name' => __('After a while on the page', 'wconvert'),
     'goal' => 'recover_cart',
     'template_id' => 'offer-panel',
-    'notes' => __(
-        'The one to reach for on a mobile-heavy store: there is no mouse to leave the viewport on a '
-        . 'phone, so an exit-intent reminder has much less to read there. Fifteen seconds is long '
-        . 'enough that the visitor has settled in and short enough that they are still shopping. '
-        . 'Measured by clicks back to the cart — nothing is submitted and nobody joins a list.',
-        'wconvert'
-    ),
+    'notes' => __('The one to reach for on a mobile-heavy store: there is no mouse to leave the viewport on a phone, so an exit-intent reminder has much less to read there. Fifteen seconds is long enough that the visitor has settled in and short enough that they are still shopping. Measured by clicks back to the cart — nothing is submitted and nobody joins a list.', 'wconvert'),
     'copy' => [
         'headline' => __('Still thinking it over?', 'wconvert'),
         'body' => __('Everything you picked is waiting in your cart.', 'wconvert'),

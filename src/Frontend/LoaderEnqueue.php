@@ -156,8 +156,15 @@ final class LoaderEnqueue
             // Not escaped, and correctly so: PayloadTag renders JSON with
             // JSON_HEX_TAG, which is the escaping this context needs. Running
             // esc_html() over it would escape the quotes and produce invalid
-            // JSON. It escapes the two route URLs itself, where the context
-            // is an attribute and esc_url is what that needs.
+            // JSON — a silent break, because the tag still renders and only
+            // the loader's JSON.parse fails, in the browser, at runtime. It
+            // escapes the two route URLs itself with esc_url(), where the
+            // context is an attribute and esc_url is what that needs.
+            //
+            // PHPCS sees `echo <a function call>` and can see neither of those
+            // facts. {@see PayloadTag::render()} is where they are enforced,
+            // and tests/unit/Frontend/PayloadTest.php is what holds them.
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- PayloadTag::render() escapes for this context: JSON_HEX_TAG on the body, esc_url() on the attributes.
             echo PayloadTag::render($entries, $captureUrl, $beaconUrl);
         }, 5);
     }

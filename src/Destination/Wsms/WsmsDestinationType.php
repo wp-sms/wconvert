@@ -214,7 +214,7 @@ final class WsmsDestinationType implements DestinationType
                 // the Contact holding it. Nothing here can resolve that, and a
                 // retry is free — `push()` is idempotent — so this is the one
                 // shape of conflict that goes back on the queue.
-                throw new UnresolvableConflict($taken->getMessage());
+                throw new UnresolvableConflict(esc_html($taken->getMessage()));
             }
 
             return (string) ($existing['id'] ?? '');

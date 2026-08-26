@@ -20,12 +20,7 @@ return [
     'name' => __('Sale announcement', 'wconvert'),
     'goal' => 'promote_offer',
     'template_id' => 'offer-panel',
-    'notes' => __(
-        'Put the deadline in the body copy — an offer with no end date reads as a permanent price. '
-        . 'This Optin is measured by clicks through to the offer, so there is nothing to submit and '
-        . 'nobody is added to a list.',
-        'wconvert'
-    ),
+    'notes' => __('Put the deadline in the body copy — an offer with no end date reads as a permanent price. This Optin is measured by clicks through to the offer, so there is nothing to submit and nobody is added to a list.', 'wconvert'),
     'copy' => [
         'headline' => __('Midseason sale', 'wconvert'),
         'body' => __('Everything reduced for the next three days.', 'wconvert'),

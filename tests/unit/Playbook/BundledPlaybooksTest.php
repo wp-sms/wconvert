@@ -292,26 +292,41 @@ final class BundledPlaybooksTest extends TestCase
      * or an array key, so it would either miss words or flag `'wconvert'` —
      * and a check that cries wolf is a check that gets deleted. Every string a
      * merchant or a visitor actually reads is reached from here.
+     *
+     * **The WHOLE sentence, spelled as one literal.** This asserted the first
+     * forty characters and normalised the whitespace after `__(` away, which
+     * made it pass on exactly the shape it exists to forbid: a long note
+     * written as `__('first part ' . 'second part', 'wconvert')` starts at a
+     * `__(` call and is still invisible to `make-pot`, which extracts a string
+     * LITERAL and not an expression. Plugin Check found seven of them
+     * ([#60](https://github.com/navidkashani/wconvert/issues/60)) in entries
+     * this test had been passing since #27. Matching the closing `, 'wconvert')`
+     * is what closes the gap — a concatenation cannot produce it.
      */
     public function testEveryShippedWordIsTranslatable(): void
     {
         foreach (self::library()->all() as $id => $playbook) {
             $source = (string) file_get_contents(self::PLUGIN_DIR . '/' . PlaybookLibrary::PATH . '/' . $id . '.php');
 
-            // A long note is written as concatenated literals across several
-            // lines, so the opening quote is not always adjacent to the call.
-            // Closing that gap here keeps the assertion one string comparison
-            // rather than a regex nobody can read.
-            $source = (string) preg_replace('/__\(\s+/', '__(', $source);
-
             foreach ([$playbook->name, $playbook->notes, ...self::wordsIn($playbook->copy)] as $words) {
                 $this->assertStringContainsString(
-                    "__('" . substr($words, 0, 40),
+                    self::asOneLiteral($words),
                     $source,
                     "{$id}: \"{$words}\" is a shipped string make-pot cannot see"
                 );
             }
         }
+    }
+
+    /**
+     * The call `make-pot` can read, spelled the way the file spells it.
+     *
+     * Single-quoted, because that is what every bundled entry uses and a
+     * double-quoted string would interpolate a `$` a note may one day carry.
+     */
+    private static function asOneLiteral(string $words): string
+    {
+        return "__('" . str_replace(['\\', "'"], ['\\\\', "\\'"], $words) . "', 'wconvert')";
     }
 
     /**

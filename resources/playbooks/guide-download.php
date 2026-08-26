@@ -16,12 +16,7 @@ return [
     'name' => __('Guide download', 'wconvert'),
     'goal' => 'deliver_lead_magnet',
     'template_id' => 'centred-card',
-    'notes' => __(
-        'Name the thing being sent, not the act of sending it — "the 12-page guide" converts better than '
-        . '"our newsletter". The headline number for this Goal is deliveries rather than submissions, so '
-        . 'a bad address shows up as the gap between the two.',
-        'wconvert'
-    ),
+    'notes' => __('Name the thing being sent, not the act of sending it — "the 12-page guide" converts better than "our newsletter". The headline number for this Goal is deliveries rather than submissions, so a bad address shows up as the gap between the two.', 'wconvert'),
     'copy' => [
         'headline' => __('Get the free guide', 'wconvert'),
         'body' => __('Twelve pages, no fluff. We will email it over right away.', 'wconvert'),
@@ -29,6 +24,7 @@ return [
         'email_placeholder' => __('you@example.com', 'wconvert'),
         'cta_label' => __('Email me the guide', 'wconvert'),
         'fine_print' => [
+            /* translators: %s: the label of a link to the site's privacy policy. */
             'text' => __('One email with your download. See our %s.', 'wconvert'),
             'link' => ['label' => __('Privacy Policy', 'wconvert')],
         ],

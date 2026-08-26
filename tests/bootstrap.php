@@ -225,6 +225,65 @@ if (!function_exists('esc_url')) {
 }
 
 /*
+ * WordPress's `parse_url()`, which is what the two scheme guards call.
+ *
+ * The plugin uses `wp_parse_url()` rather than `parse_url()` because wp.org's
+ * Plugin Check requires it (#60) — WordPress wraps the PHP function to make
+ * protocol-relative and root-relative URLs parse consistently across PHP
+ * versions, by prefixing a placeholder scheme and host and then unsetting
+ * them again. This is that behaviour for the one component WConvert asks for.
+ *
+ * The prefixing is not decoration here: `//evil.example/x` has no scheme to
+ * PHP either, and both callers treat "no scheme" as "relative, therefore
+ * safe". A stub that skipped the wrapper would agree with the plugin by
+ * accident on exactly the inputs where the wrapper is doing the work.
+ */
+if (!function_exists('wp_parse_url')) {
+    /** @return array<string, int|string>|string|int|false|null */
+    function wp_parse_url(string $url, int $component = -1)
+    {
+        $unset = [];
+
+        if (str_starts_with($url, '//')) {
+            $unset = ['scheme'];
+            $url = 'placeholder:' . $url;
+        } elseif (str_starts_with($url, '/')) {
+            $unset = ['scheme', 'host'];
+            $url = 'placeholder://placeholder' . $url;
+        }
+
+        $parts = parse_url($url);
+
+        // `false` whatever was asked for, exactly as WordPress returns it: it
+        // bails on a parsing failure before it looks at $component at all.
+        if (!is_array($parts)) {
+            return false;
+        }
+
+        foreach ($unset as $key) {
+            unset($parts[$key]);
+        }
+
+        if ($component === -1) {
+            return $parts;
+        }
+
+        $keys = [
+            PHP_URL_SCHEME => 'scheme',
+            PHP_URL_HOST => 'host',
+            PHP_URL_PORT => 'port',
+            PHP_URL_USER => 'user',
+            PHP_URL_PASS => 'pass',
+            PHP_URL_PATH => 'path',
+            PHP_URL_QUERY => 'query',
+            PHP_URL_FRAGMENT => 'fragment',
+        ];
+
+        return $parts[$keys[$component] ?? ''] ?? null;
+    }
+}
+
+/*
  * REST route registration, recorded rather than performed.
  *
  * The capture route's `args` is deliberately almost empty: declaring

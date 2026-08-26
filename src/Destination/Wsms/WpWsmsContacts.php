@@ -113,7 +113,14 @@ final class WpWsmsContacts implements WsmsContacts
             // (ADR 0022). Matched by NAME, because WConvert runs Standalone
             // and cannot `catch` a class that is usually absent.
             if ($failure instanceof \RuntimeException && is_a($failure, self::CONFLICT)) {
-                throw new ContactConflict($failure->getMessage(), 0, $failure);
+                // The MESSAGE is escaped because it is WSMS's and an uncaught
+                // exception reaches a page. `$previous` is not: it is the
+                // chained exception object, which nothing prints and which
+                // esc_html() could not take anyway. PHPCS reads every argument
+                // of a `throw new` as output and cannot tell the third one is
+                // a constructor slot rather than a string.
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- $previous is an exception object, never output.
+                throw new ContactConflict(esc_html($failure->getMessage()), 0, $failure);
             }
 
             throw $failure;

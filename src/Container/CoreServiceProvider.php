@@ -2,6 +2,24 @@
 
 namespace WConvert\Container;
 
+/*
+ * ABOVE the imports, and in this one file only.
+ *
+ * Every other file in src/ carries this line directly below its `use` block,
+ * which is the house order and stays that way. This provider imports fifty-nine
+ * classes, so the guard landed on line 65 — and wp.org's Plugin Check reads the
+ * FIRST FIFTY LINES for it (`Direct_File_Access_Check::has_direct_access_protection_regex()`).
+ * Its AST pass would find the guard anywhere in the file but never runs on a
+ * namespaced one: it walks only top-level nodes, and under `namespace Foo;`
+ * every statement is nested one level down. So the regex is the only pass that
+ * sees this file, the fifty-line window is real, and the guard was reported
+ * missing on a file that has always had one (#60).
+ *
+ * Nothing between the namespace and here can execute, so this is the earliest
+ * the line can sit and the ONE position no import list can push out of view.
+ */
+defined('ABSPATH') || exit;
+
 use WConvert\Database\Connection;
 use WConvert\Database\Installer;
 use WConvert\Database\WpdbConnection;
@@ -61,8 +79,6 @@ use WConvert\Support\WpProPresence;
 use WConvert\Support\WpSitePresence;
 use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
-
-defined('ABSPATH') || exit;
 
 /**
  * Core services — the ones every request may need, admin or front end.

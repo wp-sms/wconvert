@@ -31,13 +31,17 @@ final class JsonManifest
         $raw = is_readable($path) ? file_get_contents($path) : false;
 
         if ($raw === false) {
-            throw new \RuntimeException(sprintf('WConvert %s is unreadable at %s.', $subject, $path));
+            throw new \RuntimeException(
+                sprintf('WConvert %s is unreadable at %s.', esc_html($subject), esc_html($path))
+            );
         }
 
         $decoded = json_decode($raw, true);
 
         if (!is_array($decoded)) {
-            throw new \RuntimeException(sprintf('WConvert %s at %s is not valid JSON.', $subject, $path));
+            throw new \RuntimeException(
+                sprintf('WConvert %s at %s is not valid JSON.', esc_html($subject), esc_html($path))
+            );
         }
 
         /** @var array<string, mixed> $decoded */

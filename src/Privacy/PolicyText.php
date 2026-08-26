@@ -46,22 +46,10 @@ final class PolicyText
     public function content(): string
     {
         $paragraphs = [
-            __(
-                'When you submit a form displayed by WConvert, we store what you entered — which may include your'
-                . ' email address and phone number — along with the page and the form it came from, and the date.',
-                'wconvert'
-            ),
-            __(
-                'Where a form asked you to agree to something, we also store the wording of that agreement exactly'
-                . ' as it was shown to you at the time, so that what you consented to can be established later.',
-                'wconvert'
-            ),
+            __('When you submit a form displayed by WConvert, we store what you entered — which may include your email address and phone number — along with the page and the form it came from, and the date.', 'wconvert'),
+            __('Where a form asked you to agree to something, we also store the wording of that agreement exactly as it was shown to you at the time, so that what you consented to can be established later.', 'wconvert'),
             $this->retentionSentence(),
-            __(
-                'Site administrators can export these submissions to a spreadsheet file. Once a file has been'
-                . ' exported it is held by the site owner, and this plugin can no longer reach it.',
-                'wconvert'
-            ),
+            __('Site administrators can export these submissions to a spreadsheet file. Once a file has been exported it is held by the site owner, and this plugin can no longer reach it.', 'wconvert'),
         ];
 
         return '<p>' . implode('</p>' . "\n" . '<p>', $paragraphs) . '</p>';
