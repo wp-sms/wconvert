@@ -1,10 +1,20 @@
 import apiFetch from '@wordpress/api-fetch';
+import type { Availability } from '../goals/availability';
 
 /**
- * Three states, and the distinction between the last two is load-bearing: a
- * missing tier is buyable from us and a missing plugin is not (ADR 0026).
+ * The three states, and how a surface renders them, come from
+ * `../goals/availability` — **one spelling and one cascade**, because a
+ * condition written out per screen is how `unavailable` eventually renders as
+ * an upsell on the screen nobody re-read (ADR 0026).
  */
-export type Availability = 'ready' | 'locked' | 'unavailable';
+export type { Availability } from '../goals/availability';
+
+/** One field a Destination type offers, from its `settingsSchema()`. */
+export interface SettingsField {
+  type: string;
+  label: string;
+  description?: string;
+}
 
 /** A kind of [[Destination]] this install can reach — WSMS, and Pro's ESPs. */
 export interface DestinationType {
@@ -12,9 +22,13 @@ export interface DestinationType {
   label: string;
   icon: string;
   tier: 'free' | 'pro';
+  /** The slug — never copy. Use `requires_label`. */
   requires: string | null;
+  /** What the site is missing, in words the merchant can act on. */
+  requires_label: string | null;
   availability: Availability;
   needs_connection: boolean;
+  settings_schema: Record<string, SettingsField>;
 }
 
 /**
@@ -30,6 +44,17 @@ export interface DestinationHealth {
   last_error_at: string | null;
   /** **Outages only.** A terminal per-Lead failure leaves this at zero. */
   consecutive_failures: number;
+  /**
+   * Captures that were never enqueued, because this Destination's type is not
+   * `ready` here — a deactivated plugin, a lapsed licence.
+   *
+   * **Neither a failure nor a success**, which is why it is its own number:
+   * nothing was attempted, so counting it as an outage would be a lie, and
+   * saying nothing at all is how a merchant loses a fortnight of pushes with
+   * an Optin that looks like it is working (#4).
+   */
+  skipped_captures: number;
+  last_skipped_at: string | null;
 }
 
 export interface Destination {

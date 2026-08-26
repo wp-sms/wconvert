@@ -239,14 +239,23 @@ implementation:
 
 | Outcome | Health | The ring |
 |---|---|---|
-| success | `last_success_at`, count cleared | — |
+| success | `last_success_at`, counts cleared | — |
 | skipped — nothing to send | — | — |
 | **retryable** — the vendor is down | `consecutive_failures++`, retried with backoff | on the last attempt |
 | **terminal** — this Lead, specifically | **untouched** | recorded |
+| **never enqueued** — the type is not `ready` | `skipped_captures++` | — |
 
 A hundred malformed addresses are a hundred Lead-specific rejections, not a
 hundred consecutive outages. They are covered instead by a bounded ring of the
 last ~200 terminal failures, holding a Lead id and an error string.
+
+The last row is the third thing that goes wrong and is neither of the other
+two. A Destination whose type is not `ready` — a deactivated WP SMS, a lapsed
+licence — is **skipped and recorded, never enqueued**: an Action Scheduler job
+whose handler is unregistered retries against nothing forever. Nothing was
+attempted, so it is not an outage; and one ring entry per capture would fill
+200 slots in an afternoon. So it is a counter, and it is what turns a silent
+fortnight of dropped pushes into a number beside a re-push button.
 
 Recovery is **bulk re-push**: replay every Lead for Optins bound to this
 Destination since `last_success_at`, staggered against the type's declared

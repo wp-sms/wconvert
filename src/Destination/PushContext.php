@@ -20,6 +20,11 @@ defined('ABSPATH') || exit;
  * permanently unreadable text (ADR 0023). It is a snapshot in the same sense
  * `playbook_id` and the consent sentence are.
  *
+ * It is **nullable**, and null is not the same as empty. An Optin is never
+ * hard-deleted, so a missing name means a row was removed that nothing should
+ * remove — and writing `source_ref = ''` there would assert provenance that
+ * does not exist, where leaving the column unset says so honestly.
+ *
  * `credentials` is empty for a Destination whose type has no Connection. The
  * WSMS push authenticates against nothing: it is an in-process PHP call.
  *
@@ -32,7 +37,7 @@ final class PushContext
      * @param array<string, mixed> $credentials The Connection underneath it, or `[]` where the type has none.
      */
     public function __construct(
-        public readonly string $optinName,
+        public readonly ?string $optinName,
         public readonly array $settings = [],
         public readonly array $credentials = [],
     ) {

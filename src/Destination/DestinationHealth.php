@@ -26,6 +26,16 @@ defined('ABSPATH') || exit;
  * That distinction is the whole design, and it inverts under a naive
  * implementation that counts every failure the same.
  *
+ * **`skippedCaptures` is the third thing that can go wrong, and it is neither
+ * of the other two.** A Destination bound to an Optin whose TYPE is not
+ * `ready` — a deactivated WSMS, a lapsed licence — is never enqueued at all,
+ * because an Action Scheduler job whose handler cannot succeed retries against
+ * nothing forever. That is the right behaviour and it is also completely
+ * silent, so #4's "skipped and recorded" needs somewhere to record it. A
+ * counter is what makes it affordable: the alternative is an entry in
+ * {@see DeliveryFailures} per capture, which fills a 200-entry ring in an
+ * afternoon and buries every genuine terminal failure under it.
+ *
  * @since 0.1.0
  */
 final class DestinationHealth
@@ -35,6 +45,8 @@ final class DestinationHealth
         public readonly ?string $lastError = null,
         public readonly ?string $lastErrorAt = null,
         public readonly int $consecutiveFailures = 0,
+        public readonly int $skippedCaptures = 0,
+        public readonly ?string $lastSkippedAt = null,
     ) {
     }
 
@@ -48,6 +60,8 @@ final class DestinationHealth
             self::nullableString($stored['last_error'] ?? null),
             self::nullableString($stored['last_error_at'] ?? null),
             (int) ($stored['consecutive_failures'] ?? 0),
+            (int) ($stored['skipped_captures'] ?? 0),
+            self::nullableString($stored['last_skipped_at'] ?? null),
         );
     }
 
@@ -58,6 +72,12 @@ final class DestinationHealth
      * what a merchant reads to answer "is this working right now", and an
      * error string left standing beside a fresh success answers a different
      * question badly.
+     *
+     * The skip count clears for the same reason. A Destination that has just
+     * landed something is running, so a standing "12 captures were not sent"
+     * beside it describes an outage that is over — and the Leads behind those
+     * twelve are recovered by a bulk re-push rather than by this number, which
+     * is only ever the prompt to run one.
      */
     public function landed(string $at): self
     {
@@ -70,11 +90,39 @@ final class DestinationHealth
      */
     public function failed(string $error, string $at): self
     {
-        return new self($this->lastSuccessAt, $error, $at, $this->consecutiveFailures + 1);
+        return new self(
+            $this->lastSuccessAt,
+            $error,
+            $at,
+            $this->consecutiveFailures + 1,
+            $this->skippedCaptures,
+            $this->lastSkippedAt
+        );
     }
 
     /**
-     * @return array{last_success_at: string|null, last_error: string|null, last_error_at: string|null, consecutive_failures: int}
+     * A capture that was never enqueued, because this Destination's type is
+     * not `ready` on this install.
+     *
+     * **Not a failure**, so `consecutiveFailures` does not move: nothing was
+     * attempted and nothing is down. It is the third state, and it is the one
+     * the merchant can actually act on — reactivate the plugin, renew the
+     * licence, then re-push.
+     */
+    public function skipped(string $at): self
+    {
+        return new self(
+            $this->lastSuccessAt,
+            $this->lastError,
+            $this->lastErrorAt,
+            $this->consecutiveFailures,
+            $this->skippedCaptures + 1,
+            $at
+        );
+    }
+
+    /**
+     * @return array{last_success_at: string|null, last_error: string|null, last_error_at: string|null, consecutive_failures: int, skipped_captures: int, last_skipped_at: string|null}
      */
     public function toArray(): array
     {
@@ -83,6 +131,8 @@ final class DestinationHealth
             'last_error' => $this->lastError,
             'last_error_at' => $this->lastErrorAt,
             'consecutive_failures' => $this->consecutiveFailures,
+            'skipped_captures' => $this->skippedCaptures,
+            'last_skipped_at' => $this->lastSkippedAt,
         ];
     }
 

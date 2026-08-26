@@ -195,6 +195,25 @@ final class OptinRepository
     }
 
     /**
+     * One Optin's name.
+     *
+     * Beside {@see self::names()} rather than replacing it: the lead log and
+     * the CSV export label thousands of rows and want the whole map, while a
+     * queued push wants ONE name and would otherwise pull every Optin's name
+     * off disk per job to read a single key.
+     *
+     * **Soft-deleted Optins included**, for the same reason `names()` includes
+     * them: a [[Lead]] outlives the Optin that captured it, and the name is
+     * exactly what the soft delete exists to preserve (ADR 0002, ADR 0020).
+     */
+    public function nameOf(string $id): ?string
+    {
+        $row = $this->db->row(Connection::TABLE_OPTINS, 'SELECT name FROM %i WHERE id = %s', $id);
+
+        return $row === null ? null : (string) ($row['name'] ?? '');
+    }
+
+    /**
      * Every Optin's published config, by id — **soft-deleted and unpublished
      * ones included.**
      *

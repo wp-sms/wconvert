@@ -43,4 +43,20 @@ enum SiteDependency: string
      * like any other capture, and needs no Destination to do it.
      */
     case Wsms = 'wsms';
+
+    /**
+     * What to call it on screen.
+     *
+     * Here rather than in the admin bundle because the slug is not copy: a
+     * surface interpolating `wsms` into "Needs %s on this site" produces a
+     * sentence no merchant can act on, and one built in TypeScript would be a
+     * second spelling of this list that `make-pot` cannot see.
+     */
+    public function label(): string
+    {
+        return match ($this) {
+            self::WooCommerce => __('WooCommerce', 'wconvert'),
+            self::Wsms => __('WP SMS', 'wconvert'),
+        };
+    }
 }

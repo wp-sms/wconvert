@@ -44,7 +44,14 @@ final class WsmsPushTest extends TestCase
     public function testItFillsAnEmptyFieldAndNeverOverwritesAStoredOne(): void
     {
         $contacts = new FakeWsmsContacts();
-        $contacts->seed('c1', ['email' => 'sarah@example.com', 'phone' => null, 'name' => 'Sarah Stored']);
+
+        // Seeded under the column the adapter actually writes. The canonical
+        // key is `name` and WSMS's column is `first_name`, and a fixture
+        // seeded under the canonical spelling would leave the stored value in
+        // a column nothing reads — so the assertion below would hold whatever
+        // the adapter did with a name, which is the one thing this test exists
+        // to pin down.
+        $contacts->seed('c1', ['email' => 'sarah@example.com', 'phone' => null, 'first_name' => 'Sarah Stored']);
 
         $type = new WsmsDestinationType($contacts);
 
@@ -57,11 +64,12 @@ final class WsmsPushTest extends TestCase
         self::assertSame([], $contacts->created, 'A matched Contact is never created again.');
 
         self::assertCount(1, $contacts->updated);
-        $patch = $contacts->updated[0]['data'];
 
-        self::assertSame('+447911123456', $patch['phone'] ?? null, 'The empty phone is filled.');
-        self::assertArrayNotHasKey('name', $patch, 'A stored name is not in the patch at all.');
-        self::assertSame('Sarah Stored', $contacts->contacts['c1']['name']);
+        // The WHOLE patch, not a key probe: incoming-wins would add
+        // `first_name` here, and an assertion that only names the keys it
+        // expects to be absent cannot see a key it forgot to name.
+        self::assertSame(['phone' => '+447911123456'], $contacts->updated[0]['data']);
+        self::assertSame('Sarah Stored', $contacts->contacts['c1']['first_name'], 'The stored name is untouched.');
     }
 
     /**

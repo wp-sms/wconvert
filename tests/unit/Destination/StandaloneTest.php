@@ -5,6 +5,7 @@ namespace WConvert\Tests\Unit\Destination;
 use PHPUnit\Framework\TestCase;
 use WConvert\Destination\DestinationRegistry;
 use WConvert\Destination\DestinationStore;
+use WConvert\Destination\HealthStore;
 use WConvert\Destination\PushDispatcher;
 use WConvert\Destination\Wsms\WsmsDestinationType;
 use WConvert\Lead\LeadCapture;
@@ -46,6 +47,8 @@ final class StandaloneTest extends TestCase
 
     private string $optinId;
 
+    private string $destinationId;
+
     protected function setUp(): void
     {
         $this->db = new FakeConnection();
@@ -54,7 +57,7 @@ final class StandaloneTest extends TestCase
 
         $this->optinId = Ulid::generate();
 
-        $destinationId = (new DestinationStore($this->options))
+        $this->destinationId = (new DestinationStore($this->options))
             ->save(null, WsmsDestinationType::ID, 'WP SMS', null, [])->id;
 
         $this->db->rows[$this->optinId] = [
@@ -62,7 +65,7 @@ final class StandaloneTest extends TestCase
             'name' => 'Guide download',
             'goal' => 'grow_list',
             'config' => '{}',
-            'published_config' => (string) json_encode(['destinations' => [$destinationId]]),
+            'published_config' => (string) json_encode(['destinations' => [$this->destinationId]]),
             'published_at' => '2026-08-25 09:00:00',
             'deleted_at' => null,
         ];
@@ -109,7 +112,15 @@ final class StandaloneTest extends TestCase
             RuleVocabulary::fromManifest(dirname(__DIR__, 3))
         );
 
-        (new PushDispatcher($registry, new DestinationStore($this->options), $optins, $this->queue))->hooks();
+        $health = new HealthStore($this->options);
+
+        (new PushDispatcher(
+            $registry,
+            new DestinationStore($this->options),
+            $optins,
+            $health,
+            $this->queue
+        ))->hooks();
 
         $lead = (new LeadCapture(new LeadRepository($this->db)))->record(
             $this->optinId,
@@ -119,6 +130,21 @@ final class StandaloneTest extends TestCase
         self::assertNotSame('', $lead->id, 'The Lead landed.');
         self::assertSame('sarah@example.com', $lead->email);
         self::assertSame([], $this->queue->jobs, 'Nothing is enqueued for a Destination that cannot run.');
+
+        // **Skipped AND RECORDED.** Without this the drop is completely
+        // silent: the Optin keeps converting, the Leads keep landing, and
+        // nothing anywhere says the pushes stopped — which is the exact
+        // support case Destination health exists for (#4).
+        $skipped = $health->of($this->destinationId);
+
+        self::assertSame(1, $skipped->skippedCaptures);
+        self::assertNotNull($skipped->lastSkippedAt);
+
+        // And it is NOT an outage. Nothing was attempted, so counting it as
+        // one would be a lie — and it is the same inversion ADR 0008 draws
+        // between a terminal per-Lead failure and a vendor being down.
+        self::assertSame(0, $skipped->consecutiveFailures);
+        self::assertNull($skipped->lastError);
 
         remove_all_actions(LeadCapture::CAPTURED);
     }

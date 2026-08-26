@@ -73,6 +73,18 @@ final class WsmsDestinationType implements DestinationType
     }
 
     /**
+     * One field: the tags to add.
+     *
+     * **Tags, not lists** — `wsms_lists` is a segment definition whose
+     * membership is a query, so there is nothing to insert into (ADR 0023).
+     *
+     * The options are NOT read off the wire here, which is the one place this
+     * type differs from every ESP: WSMS is in-process, so the admin can read
+     * its tags itself, and pulling them through this method would put a
+     * database query on a REST read that is otherwise pure configuration. The
+     * method still earns its place — it is what tells the admin the field
+     * exists at all, which is what collapses the `Supports*` split (#4).
+     *
      * @param array<string, mixed> $credentials
      * @return array<string, mixed>
      */
@@ -80,7 +92,16 @@ final class WsmsDestinationType implements DestinationType
     {
         unset($credentials);
 
-        return [];
+        return [
+            'tags' => [
+                'type' => 'ids',
+                'label' => __('Tags to add', 'wconvert'),
+                'description' => __(
+                    'Added to the contact, never removed — a tag WConvert did not set is not WConvert’s to take away.',
+                    'wconvert'
+                ),
+            ],
+        ];
     }
 
     /**
@@ -206,7 +227,14 @@ final class WsmsDestinationType implements DestinationType
      */
     private function newContact(array $values, PushContext $context): array
     {
-        $contact = ['status' => 'subscribed', 'source' => 'wconvert', 'source_ref' => $context->optinName];
+        $contact = ['status' => 'subscribed', 'source' => 'wconvert'];
+
+        // Set only where there is a name to set. WSMS's own default for
+        // `source_ref` is null, and an empty string here would read as
+        // provenance that was recorded and came back blank.
+        if ($context->optinName !== null && $context->optinName !== '') {
+            $contact['source_ref'] = $context->optinName;
+        }
 
         foreach (self::COLUMNS as $canonical => $column) {
             if (isset($values[$canonical])) {

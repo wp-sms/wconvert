@@ -77,6 +77,24 @@ final class HealthStore
     }
 
     /**
+     * Record a capture that was never enqueued, because this Destination's
+     * type is not `ready` here.
+     *
+     * **This is the "recorded" half of "skipped and recorded, never
+     * enqueued"** (#4). Without it a deactivated WSMS or a lapsed licence
+     * drops every push with no trace anywhere — the Optin keeps converting,
+     * the Leads keep landing, and nothing says the pushes stopped, which is
+     * precisely the support case Destination health exists for.
+     *
+     * A write on the capture path, and only in the degraded case: a
+     * Destination whose type IS ready never reaches here.
+     */
+    public function skipped(string $destinationId, string $at): void
+    {
+        $this->write($destinationId, $this->of($destinationId)->skipped($at));
+    }
+
+    /**
      * Forget a Destination's health — what deleting the Destination does.
      *
      * Health keyed by an id nothing references is a row that never goes away

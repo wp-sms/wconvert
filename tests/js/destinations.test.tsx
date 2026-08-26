@@ -34,11 +34,23 @@ const WSMS_READY = {
   icon: 'dashicons-groups',
   tier: 'free' as const,
   requires: 'wsms',
+  requires_label: 'WP SMS',
   availability: 'ready' as const,
   needs_connection: false,
+  settings_schema: {
+    tags: { type: 'ids', label: 'Tags to add', description: 'Added, never removed.' },
+  },
 };
 
-const MAILCHIMP_LOCKED = { ...WSMS_READY, id: 'mailchimp', label: 'Mailchimp', tier: 'pro' as const, requires: null, availability: 'locked' as const };
+const MAILCHIMP_LOCKED = {
+  ...WSMS_READY,
+  id: 'mailchimp',
+  label: 'Mailchimp',
+  tier: 'pro' as const,
+  requires: null,
+  requires_label: null,
+  availability: 'locked' as const,
+};
 
 const HEALTHY = {
   id: '01J0000000AAAAAAAAAAAAAAAA',
@@ -52,6 +64,8 @@ const HEALTHY = {
     last_error: null,
     last_error_at: null,
     consecutive_failures: 0,
+    skipped_captures: 0,
+    last_skipped_at: null,
   },
 };
 
@@ -80,6 +94,7 @@ describe('the destinations screen', () => {
         {
           ...HEALTHY,
           health: {
+            ...HEALTHY.health,
             last_success_at: '2026-08-22 10:00:00',
             last_error: 'Gateway timeout',
             last_error_at: '2026-08-25 10:00:00',
@@ -132,8 +147,61 @@ describe('the destinations screen', () => {
 
     render(<Destinations />);
 
-    expect(await screen.findByText('Needs wsms on this site.')).toBeInTheDocument();
+    // The LABEL, never the slug: "Needs wsms on this site" is copy no
+    // merchant can act on and no translator can repair from their end.
+    expect(await screen.findByText('Needs WP SMS on this site.')).toBeInTheDocument();
+
+    // And the two absent states stay apart. Collapsing them is what shows a
+    // paying customer an advertisement for Pro, and offers a merchant a WP SMS
+    // licence we do not sell (ADR 0026).
     expect(screen.getByText('Included with Pro.')).toBeInTheDocument();
+    expect(screen.queryByText(/Needs null/)).not.toBeInTheDocument();
+  });
+
+  /**
+   * The "recorded" half of "skipped and recorded, never enqueued". Without it
+   * a deactivated WP SMS drops every push with nothing anywhere saying so —
+   * the Optin keeps converting and the Leads keep landing (#4).
+   */
+  it('reports captures that were never sent, separately from outages', async () => {
+    api.readDestinations.mockResolvedValue({
+      types: [{ ...WSMS_READY, availability: 'unavailable' as const }],
+      destinations: [
+        {
+          ...HEALTHY,
+          availability: 'unavailable' as const,
+          health: { ...HEALTHY.health, skipped_captures: 12, last_skipped_at: '2026-08-25 12:00:00' },
+        },
+      ],
+      connections: [],
+      failures: [],
+    });
+
+    render(<Destinations />);
+
+    expect(await screen.findByText(/12 captures were not sent/)).toBeInTheDocument();
+    // Not an outage: nothing was attempted, so the failure count stays out of it.
+    expect(screen.queryByText(/failures in a row/)).not.toBeInTheDocument();
+  });
+
+  /**
+   * A field's copy comes from its TYPE's `settingsSchema()` — the method that
+   * replaces WSMS's five `Supports*` capability interfaces (#4). Hard-coding
+   * it here would leave that method with no caller and the collapse
+   * unjustified.
+   */
+  it('labels a setting from the schema its type declares', async () => {
+    api.readDestinations.mockResolvedValue({
+      types: [{ ...WSMS_READY, settings_schema: { tags: { type: 'ids', label: 'Which tags', description: 'Added, never removed.' } } }],
+      destinations: [HEALTHY],
+      connections: [],
+      failures: [],
+    });
+
+    render(<Destinations />);
+
+    expect(await screen.findByText(/Which tags/)).toBeInTheDocument();
+    expect(screen.getByText(/Added, never removed\./)).toBeInTheDocument();
   });
 
   /**

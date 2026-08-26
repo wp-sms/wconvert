@@ -71,9 +71,20 @@ export function DestinationsEditor({ bound, onChange, onError }: DestinationsEdi
                 />{' '}
                 {destination.label}
               </label>{' '}
+              {/*
+                **Nothing waits.** A Destination whose type is not `ready` is
+                skipped at dispatch and never enqueued — a job whose handler
+                cannot succeed would retry against nothing forever — so the
+                captures are kept and the pushes are LOST until a bulk re-push
+                replays them. Copy that said "pushes wait" would describe a
+                queue that does not exist (#4, ADR 0008).
+              */}
               {destination.availability !== 'ready' && (
                 <span className="description">
-                  {__('Not running right now — captures still work, pushes wait.', 'wconvert')}
+                  {__(
+                    'Not running here, so captures are kept but not sent. Re-push from Destinations once it is working.',
+                    'wconvert'
+                  )}
                 </span>
               )}
             </li>

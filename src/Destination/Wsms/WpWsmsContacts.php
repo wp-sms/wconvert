@@ -27,9 +27,15 @@ defined('ABSPATH') || exit;
  * way out, so the adapter above can catch a conflict without naming a class it
  * cannot rely on.
  *
+ * Named `WpWsmsContacts` rather than `WpSmsContacts` on the repo's own
+ * convention — `WpOptionStore implements OptionStore`,
+ * `WpSitePresence implements SitePresence` — and because the shorter name
+ * differs from the interface it implements by a single letter, which is a
+ * distinction nobody should have to make at a glance.
+ *
  * @since 0.1.0
  */
-final class WpSmsContacts implements WsmsContacts
+final class WpWsmsContacts implements WsmsContacts
 {
     private const BOOTSTRAP = 'WSms\\Bootstrap';
 

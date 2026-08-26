@@ -97,6 +97,9 @@ final class DestinationRegistry
      * retries and fails forever, silently. The Optin keeps showing and keeps
      * capturing, because losing captures when a licence lapses would be the
      * one genuinely unrecoverable failure available here (#4).
+     *
+     * The recording is {@see HealthStore::skipped()}, written by
+     * {@see PushDispatcher}. This method only answers the question.
      */
     public function isDispatchable(string $typeId): bool
     {

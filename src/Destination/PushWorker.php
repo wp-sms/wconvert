@@ -99,7 +99,12 @@ final class PushWorker
         }
 
         $this->record($job, $type->push($lead, new PushContext(
-            $this->optins->names()[$lead->optinId] ?? '',
+            // One name, by primary key. An Optin is never hard-deleted, so
+            // this is null only where something removed a row nothing should
+            // remove — and an empty `source_ref` would then assert provenance
+            // that is not there, which is worse than leaving the column unset
+            // (ADR 0023).
+            $this->optins->nameOf($lead->optinId),
             $destination->settings,
             $this->connections->credentialsFor($destination)
         )));

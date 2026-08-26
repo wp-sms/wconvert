@@ -10,6 +10,7 @@ import {
   type DestinationsPayload,
   type RePushReport,
 } from './api';
+import { renderingFor } from '../goals/availability';
 
 const EMPTY: DestinationsPayload = { types: [], destinations: [], connections: [], failures: [] };
 
@@ -141,6 +142,7 @@ export function Destinations() {
         <Configured
           key={destination.id}
           destination={destination}
+          field={payload.types.find((type) => type.id === destination.type)?.settings_schema?.tags}
           busy={busy}
           onSave={save}
           onRemove={remove}
@@ -179,11 +181,23 @@ function Types({
 
   return (
     <ul className="wconvert-destinations__types">
-      {types.map((type) => (
+      {types.map((type) => {
+        const rendering = renderingFor(type.availability, 'settings_list');
+
+        return (
         <li key={type.id}>
           <span className={`dashicons ${type.icon}`} aria-hidden="true" />{' '}
           <strong>{type.label}</strong>{' '}
-          {type.availability === 'ready' ? (
+          {/*
+            This is a SETTINGS LIST, so it explains an absence rather than
+            hiding it — the merchant opened this page expecting a list, and
+            silence here is baffling. The cascade is `renderingFor`'s and not
+            one written out again: `locked` and `unavailable` must never
+            collapse into one "not available", because that is exactly how a
+            paying customer gets shown an advertisement for Pro and a merchant
+            gets offered a WP SMS licence we do not sell (ADR 0026).
+          */}
+          {rendering === 'offer' ? (
             <button
               type="button"
               className="button"
@@ -192,19 +206,20 @@ function Types({
             >
               {__('Add', 'wconvert')}
             </button>
+          ) : rendering === 'upsell' ? (
+            <span className="description">{__('Included with Pro.', 'wconvert')}</span>
           ) : (
             <span className="description">
-              {type.availability === 'unavailable'
-                ? sprintf(
-                    /* translators: %s: the plugin or platform the Destination needs. */
-                    __('Needs %s on this site.', 'wconvert'),
-                    type.requires ?? __('something this site does not have', 'wconvert')
-                  )
-                : __('Included with Pro.', 'wconvert')}
+              {sprintf(
+                /* translators: %s: the plugin or platform the Destination needs, e.g. "WP SMS". */
+                __('Needs %s on this site.', 'wconvert'),
+                type.requires_label ?? __('something this site does not have', 'wconvert')
+              )}
             </span>
           )}
         </li>
-      ))}
+        );
+      })}
     </ul>
   );
 }
@@ -212,12 +227,15 @@ function Types({
 /** One configured Destination, its health, and the one recovery action. */
 function Configured({
   destination,
+  field,
   busy,
   onSave,
   onRemove,
   onRePush,
 }: {
   destination: Destination;
+  /** The `tags` field as its TYPE declares it — copy included. */
+  field: DestinationType['settings_schema'][string] | undefined;
   busy: boolean;
   onSave: (destination: Destination, settings: Record<string, unknown>) => void;
   onRemove: (destination: Destination) => void;
@@ -231,8 +249,15 @@ function Configured({
     <div className="wconvert-destinations__row">
       <h3>
         {destination.label}{' '}
-        {destination.availability !== 'ready' && (
-          <span className="description">{__('Not running on this site right now.', 'wconvert')}</span>
+        {destination.availability === 'locked' && (
+          <span className="description">
+            {__('Its type is a Pro feature this install does not have, so captures are not being sent.', 'wconvert')}
+          </span>
+        )}
+        {destination.availability === 'unavailable' && (
+          <span className="description">
+            {__('What it needs is not on this site, so captures are not being sent.', 'wconvert')}
+          </span>
         )}
       </h3>
 
@@ -258,15 +283,31 @@ function Configured({
               )}
       </p>
 
+      {destination.health.skipped_captures > 0 && (
+        <p className="notice notice-warning">
+          {sprintf(
+            /* translators: 1: number of captures, 2: a date and time. */
+            _n(
+              '%1$d capture was not sent, most recently at %2$s. Fix what this Destination needs, then re-push.',
+              '%1$d captures were not sent, most recently at %2$s. Fix what this Destination needs, then re-push.',
+              destination.health.skipped_captures,
+              'wconvert'
+            ),
+            destination.health.skipped_captures,
+            destination.health.last_skipped_at ?? ''
+          )}
+        </p>
+      )}
+
       <p>
         <label>
           {/*
-            Tags, not lists. `wsms_lists` is a segment DEFINITION whose
-            membership is a query — there is nothing to insert into — and
-            membership WConvert adds is only ever ADDED, never reconciled
-            (ADR 0023).
+            The label comes from the TYPE's `settingsSchema()`, which is what
+            replaces WSMS's five `Supports*` capability interfaces: a
+            Destination's fields are a schema rather than a capability, so
+            there is one method and no matrix (#4).
           */}
-          {__('Tags to add (comma separated ids)', 'wconvert')}{' '}
+          {field?.label ?? __('Tags to add', 'wconvert')}{' '}
           <input
             type="text"
             className="regular-text"
@@ -290,6 +331,7 @@ function Configured({
         >
           {__('Save', 'wconvert')}
         </button>
+        {field?.description !== undefined && <span className="description"> {field.description}</span>}
       </p>
 
       <p>

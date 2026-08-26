@@ -5,6 +5,7 @@ namespace WConvert\Tests\Unit\Destination;
 use PHPUnit\Framework\TestCase;
 use WConvert\Destination\DestinationRegistry;
 use WConvert\Destination\DestinationStore;
+use WConvert\Destination\HealthStore;
 use WConvert\Destination\PushDispatcher;
 use WConvert\Destination\PushJob;
 use WConvert\Lead\Lead;
@@ -85,6 +86,7 @@ final class JobPayloadTest extends TestCase
             $registry,
             new DestinationStore($this->options),
             new OptinRepository($this->db, new PublishedSet($this->options), RuleVocabulary::fromManifest(dirname(__DIR__, 3))),
+            new HealthStore($this->options),
             $this->queue
         ))->dispatch(new Lead(
             Ulid::generate(),

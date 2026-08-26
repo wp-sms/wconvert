@@ -13,7 +13,7 @@ use WConvert\Destination\DestinationStore;
 use WConvert\Destination\HealthStore;
 use WConvert\Destination\PushDispatcher;
 use WConvert\Destination\PushWorker;
-use WConvert\Destination\Wsms\WpSmsContacts;
+use WConvert\Destination\Wsms\WpWsmsContacts;
 use WConvert\Destination\Wsms\WsmsDestinationType;
 use WConvert\Frontend\LoaderEnqueue;
 use WConvert\Goal\GoalRegistry;
@@ -25,6 +25,8 @@ use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
 use WConvert\Playbook\PlaybookLibrary;
 use WConvert\Playbook\Prefill;
+use WConvert\Queue\ActionSchedulerQueue;
+use WConvert\Queue\Queue;
 use WConvert\Rest\BeaconController;
 use WConvert\Rest\CaptureController;
 use WConvert\Rest\DashboardController;
@@ -37,8 +39,6 @@ use WConvert\Rest\RateLimit;
 use WConvert\Rest\RuleController;
 use WConvert\Rest\TemplateController;
 use WConvert\Rest\ThemeController;
-use WConvert\Queue\ActionSchedulerQueue;
-use WConvert\Queue\Queue;
 use WConvert\Retention\RetentionPeriod;
 use WConvert\Rules\RuleCatalogue;
 use WConvert\Rules\RuleVocabulary;
@@ -268,7 +268,7 @@ final class CoreServiceProvider implements ServiceProvider
             static fn (ServiceContainer $c): DestinationRegistry => (new DestinationRegistry(
                 $c->resolve(ProPresence::class),
                 $c->resolve(SitePresence::class)
-            ))->register(new WsmsDestinationType(new WpSmsContacts()))
+            ))->register(new WsmsDestinationType(new WpWsmsContacts()))
         );
 
         $container->register(
@@ -277,6 +277,7 @@ final class CoreServiceProvider implements ServiceProvider
                 $c->resolve(DestinationRegistry::class),
                 $c->resolve(DestinationStore::class),
                 $c->resolve(OptinRepository::class),
+                $c->resolve(HealthStore::class),
                 $c->resolve(Queue::class)
             )
         );

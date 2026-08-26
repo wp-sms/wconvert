@@ -103,6 +103,18 @@ final class DestinationController
                     'requires' => $type->requires()?->value,
                     'availability' => $this->registry->availabilityOf($type->id())->value,
                     'needs_connection' => $type->connectionSchema() !== null,
+                    // What a merchant is missing, in words. The enum's value
+                    // is a slug — interpolating `wsms` into "Needs %s on this
+                    // site" produces copy no merchant can act on, and a
+                    // translator cannot fix it from their end either.
+                    'requires_label' => $type->requires()?->label(),
+                    // The fields this type offers, which is what removes the
+                    // `Supports*` capability split: list discovery, custom
+                    // fields and the configuration UI all fall out of one
+                    // method (#4).
+                    'settings_schema' => $type->settingsSchema(
+                        $this->credentialsForType($type->id())
+                    ),
                 ],
                 $this->registry->all()
             )),
@@ -178,6 +190,27 @@ final class DestinationController
     public function repush(WP_REST_Request $request): WP_REST_Response
     {
         return new WP_REST_Response($this->rePush->run((string) $request->get_param('id'))->toArray());
+    }
+
+    /**
+     * The credentials a type's settings schema may need to read its options
+     * off the wire.
+     *
+     * The FIRST Connection for the type, because a schema describes the type
+     * rather than one configured Destination — and a type with no Connection
+     * at all gets `[]`, which is every free type.
+     *
+     * @return array<string, mixed>
+     */
+    private function credentialsForType(string $typeId): array
+    {
+        foreach ($this->connections->all() as $connection) {
+            if ($connection->type === $typeId) {
+                return $connection->credentials;
+            }
+        }
+
+        return [];
     }
 
     /**
