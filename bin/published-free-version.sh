@@ -46,6 +46,8 @@
 
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 SLUG="${1:-}"
 
 if [ -z "$SLUG" ]; then
@@ -81,34 +83,15 @@ if [ "$HTTP" != "200" ]; then
     exit 1
 fi
 
-# Piped into PHP rather than jq: PHP is already required by every other
-# program in this gate, and one fewer runner dependency is one fewer way for
-# a release box to differ from a developer's.
+# Piped into a program rather than an inline `php -r`, and that is not tidying:
+# the parse is the half of this that can be WRONG, and a parse inside a shell
+# heredoc is a parse nothing can assert. bin/wporg-version.php is a pure
+# function of these bytes, and ReleaseGuardTest feeds it those bytes directly —
+# including the "Plugin not found" body, which is the branch ADR 0030's "free
+# ships first, always" rests on.
 VERSION=""
 
-if ! VERSION="$(php -r '
-    $raw = stream_get_contents(STDIN);
-    $data = json_decode($raw, true);
-
-    if (!is_array($data)) {
-        fwrite(STDERR, "wp.org returned something that is not JSON\n");
-        exit(1);
-    }
-
-    if (isset($data["error"])) {
-        fwrite(STDERR, "wp.org: " . $data["error"] . "\n");
-        exit(1);
-    }
-
-    $version = $data["version"] ?? null;
-
-    if (!is_string($version) || $version === "") {
-        fwrite(STDERR, "wp.org returned no version for this plugin\n");
-        exit(1);
-    }
-
-    echo $version;
-' < "$BODY_FILE")"; then
+if ! VERSION="$(php "$SCRIPT_DIR/wporg-version.php" < "$BODY_FILE")"; then
     echo "could not read a published version out of ${URL}" >&2
     exit 1
 fi

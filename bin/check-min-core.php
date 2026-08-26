@@ -125,7 +125,15 @@ if ($found > 1) {
 $minCore = $matches[1][0];
 
 /*
- * Pro's own guard, borrowed whole.
+ * Pro's own guard, borrowed whole — from THIS REPOSITORY, not from $tree.
+ *
+ * The asymmetry is deliberate and worth stating, because everything else here
+ * comes from $tree. What is being released is $tree's WCONVERT_MIN_CORE; what
+ * ranks it is the comparison this repository is about to ship. Those are the
+ * same code on a release run, where $tree IS pro/. They differ only for a
+ * fixture tree, and there the split is the point: a fixture supplies numbers,
+ * never the logic under test, or the test would be asserting against its own
+ * copy of the thing it is checking.
  *
  * These two files are ordinary classes behind WordPress's standard
  * direct-access guard, so ABSPATH stands in for the WordPress this program

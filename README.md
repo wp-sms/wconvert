@@ -585,6 +585,16 @@ checker inside it. `.github/workflows/plugin-check-drift.yml` runs the **latest*
 against `main` weekly, compares it to the pin by finding code, and opens an
 issue on anything new.
 
+**The free plugin does not pass this gate yet.** The first run against a real
+staged tree reported 53 errors and 17 warnings — escaping, i18n and
+`WordPress.DB.PreparedSQL` findings in `src/` and `resources/playbooks/`, none
+of them introduced by the release workflow. They are tracked in
+[#60](https://github.com/navidkashani/wconvert/issues/60) and the first wp.org
+release is blocked on them. Nothing is suppressed to make the gate green: an
+`--ignore-codes` list is the exception list
+[ADR 0029](docs/adr/0029-the-free-contract-is-proven-at-the-source.md) spends
+its length refusing.
+
 ### Why WordPress 6.2
 
 `WConvert\Database\Connection` takes its SQL as a `literal-string` and its

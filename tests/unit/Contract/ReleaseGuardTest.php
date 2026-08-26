@@ -456,6 +456,99 @@ final class ReleaseGuardTest extends TestCase
     }
 
     // =========================================================================
+    // CONDITION 5's DATA SOURCE — what wp.org said, read.
+    //
+    // The fetch cannot be asserted cheaply; the PARSE can, and the parse is the
+    // half that can be wrong. bin/wporg-version.php exists as its own program
+    // so that these can feed it wp.org's actual response bodies without a
+    // network call — including the one that matters most, which is wp.org
+    // saying it has never heard of the plugin.
+    // =========================================================================
+
+    /**
+     * @return array{status: int, output: string}
+     */
+    private function wporgVersion(string $body): array
+    {
+        $output = [];
+        $status = 0;
+
+        exec(
+            sprintf(
+                'printf %s | php %s 2>&1',
+                escapeshellarg($body),
+                escapeshellarg(self::BIN . '/wporg-version.php')
+            ),
+            $output,
+            $status
+        );
+
+        return ['status' => $status, 'output' => implode("\n", $output)];
+    }
+
+    public function testTheStableTagIsWhatIsReadOutOfAWpOrgResponse(): void
+    {
+        $result = $this->wporgVersion('{"name":"WConvert","slug":"wconvert","version":"1.4.2"}');
+
+        $this->assertSame(0, $result['status'], $result['output']);
+        $this->assertSame('1.4.2', $result['output']);
+    }
+
+    /**
+     * ========================================================================
+     * "PLUGIN NOT FOUND" IS A REFUSAL, NOT A VERSION OF ZERO.
+     * ========================================================================
+     * This is the branch ADR 0030's "free ships first, always" rests on, and
+     * it is the one a reader is most likely to think is defensive padding. If
+     * free has never been published there is no version any install can be
+     * running, so no WCONVERT_MIN_CORE can be satisfied and no Pro release may
+     * go out. A parse returning "0.0.0" here would turn that into a Pro
+     * release that boots nowhere — the exact failure condition 5 exists for,
+     * reached through the check meant to prevent it.
+     */
+    public function testAPluginWpOrgHasNeverHeardOfIsARefusal(): void
+    {
+        $result = $this->wporgVersion('{"error":"Plugin not found."}');
+
+        $this->assertSame(1, $result['status'], $result['output']);
+        $this->assertStringContainsString('Plugin not found', $result['output']);
+    }
+
+    public function testAResponseWithNoVersionFieldIsARefusal(): void
+    {
+        $result = $this->wporgVersion('{"name":"WConvert","slug":"wconvert"}');
+
+        $this->assertSame(1, $result['status'], $result['output']);
+    }
+
+    public function testAResponseThatIsNotJsonIsARefusal(): void
+    {
+        $result = $this->wporgVersion('<html><body>502 Bad Gateway</body></html>');
+
+        $this->assertSame(1, $result['status'], $result['output']);
+    }
+
+    public function testAnEmptyResponseIsARefusal(): void
+    {
+        $result = $this->wporgVersion('');
+
+        $this->assertSame(1, $result['status'], $result['output']);
+    }
+
+    /**
+     * **Refused before it reaches a comparison, not after.**
+     * `version_compare('trunk', '1.4.0', '>=')` is TRUE in PHP, so a version
+     * that is not shaped like one has to be rejected here — the same rule
+     * MinCoreCheck applies to its own inputs, for the same reason.
+     */
+    public function testAVersionThatIsNotShapedLikeOneIsARefusal(): void
+    {
+        $result = $this->wporgVersion('{"version":"trunk"}');
+
+        $this->assertSame(1, $result['status'], $result['output']);
+    }
+
+    // =========================================================================
     // CONDITION 5 — WCONVERT_MIN_CORE ≤ the highest free version PUBLISHED.
     // =========================================================================
 

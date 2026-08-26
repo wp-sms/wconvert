@@ -81,7 +81,8 @@ jobs:
         continue-on-error: true
         env:
           PLUGIN_CHECK_RESULTS: ${{ runner.temp }}/pinned.json
-        run: bash bin/plugin-check.sh dist/stage/wconvert "${{ steps.pin.outputs.version }}"
+          PIN_VERSION: ${{ steps.pin.outputs.version }}
+        run: bash bin/plugin-check.sh dist/stage/wconvert "$PIN_VERSION"
 
       - name: Plugin Check, latest
         continue-on-error: true
@@ -107,7 +108,12 @@ jobs:
             > "$REPORT" || DRIFT_FOUND=1
 
           cat "$REPORT" >> "$GITHUB_STEP_SUMMARY"
-          echo "found=${DRIFT_FOUND:-0}" | sed 's/found=0/found=false/;s/found=1/found=true/' >> "$GITHUB_OUTPUT"
+
+          if [ "${DRIFT_FOUND:-0}" = "1" ]; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "found=false" >> "$GITHUB_OUTPUT"
+          fi
 
           # A random delimiter, because the report is Markdown this job did not
           # write and a fixed one could appear inside it.

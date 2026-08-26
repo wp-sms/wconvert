@@ -42,16 +42,16 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-FAILURES=0
-
-fail() {
-    echo "  ✗ $1" >&2
-    FAILURES=$((FAILURES + 1))
-}
-
-pass() {
-    echo "  ✓ $1"
-}
+# fail(), pass(), find_matches(), require_populated_dir(), run_scan(),
+# collect_root_php(), shared with bin/verify-source-contract.sh.
+#
+# A SHARED LIBRARY IS NOT A SHARED ENTRY POINT, and ADR 0029's "three programs,
+# no flags" is about the second. bin/pro-scan-support.php says so for the two
+# PHP scanners; the same holds here, and `run_scan` had already been copied
+# between the two shell programs verbatim — comment and all — which is exactly
+# the drift that file warns about.
+# shellcheck source=bin/contract-support.sh
+. "$SCRIPT_DIR/contract-support.sh"
 
 # The failure count when the current section started, so a section can report
 # its own verdict rather than the running total's — otherwise one failure in
@@ -135,18 +135,18 @@ require_file() {
     return 0
 }
 
-require_populated_dir() {
-    # $1 = path relative to the tree, $2 = find(1) name pattern, $3 = why
-    local rel="$1" pattern="$2" why="$3"
-    local dir="$TREE/$rel"
+require_file() {
+    # $1 = path relative to the tree, $2 = why it must be there
+    local rel="$1" why="$2"
+    local path="$TREE/$rel"
 
-    if [ ! -d "$dir" ] || [ ! -r "$dir" ] || [ ! -x "$dir" ]; then
-        fail "$rel/ is missing or unreadable — $why"
+    if [ ! -f "$path" ] || [ ! -r "$path" ]; then
+        fail "$rel is missing or unreadable — $why"
         return 1
     fi
 
-    if [ -z "$(find "$dir" -type f -name "$pattern" -print -quit 2>/dev/null)" ]; then
-        fail "$rel/ holds no $pattern files — nothing was inspected, so nothing is proven"
+    if [ ! -s "$path" ]; then
+        fail "$rel is empty — $why"
         return 1
     fi
 
@@ -154,7 +154,7 @@ require_populated_dir() {
 }
 
 require_file "$main_file" "a plugin directory without its main file is not a plugin" || true
-require_populated_dir src '*.php' "this artifact ships no PHP" || true
+require_populated_dir "$TREE" src '*.php' "this artifact ships no PHP" || true
 
 # THE LOADER, BOTH TIERS. Pro's is not optional and not cosmetic: Pro dequeues
 # free's loader and enqueues its own (ADR 0014), so a Pro ZIP missing this file
@@ -188,8 +188,10 @@ verdict
 section
 
 for never in .git node_modules; do
-    if [ -n "$(find "$TREE" -name "$never" -print -quit 2>/dev/null)" ]; then
+    if find_matches "$TREE" -name "$never"; then
         fail "the staged tree contains $never — the stage did not strip it"
+    elif [ "$?" -eq 2 ]; then
+        fail "could not search the staged tree for $never — cannot verify"
     fi
 done
 
@@ -222,54 +224,34 @@ section
 
 if [ "$tier" = "free" ]; then
     for dir_name in $pro_dir_names; do
-        if [ -n "$(find "$TREE" -type d -name "$dir_name" -print -quit 2>/dev/null)" ]; then
+        if find_matches "$TREE" -type d -name "$dir_name"; then
             fail "the free artifact contains a $dir_name/ directory — that is Pro's tree"
+        elif [ "$?" -eq 2 ]; then
+            fail "could not search the free artifact for a $dir_name/ directory — cannot verify"
         fi
     done
 
-    if [ -n "$(find "$TREE" -type f -name "$other_main_file" -print -quit 2>/dev/null)" ]; then
+    if find_matches "$TREE" -type f -name "$other_main_file"; then
         fail "the free artifact contains $other_main_file — that is Pro's plugin"
+    elif [ "$?" -eq 2 ]; then
+        fail "could not search the free artifact for $other_main_file — cannot verify"
     fi
 
-    # The scanner answers with an exit code, and the THIRD code is the
-    # important one: 0 clean, 1 offenders (with a non-empty list), anything
-    # else means it could not look, which is a failure and not a pass.
-    # Requiring a non-empty list alongside exit 1 also stops the PHP
-    # interpreter's own "could not open the script" exit 1 from being reported
-    # as a leak with a blank offender list.
-    run_scan() {
-        # $1 = what a hit means, $2.. = paths to scan
-        local label="$1"
-        shift
-        local out="" rc=0
-
-        out="$(php "$SCRIPT_DIR/pro-php-scan.php" "$@")" || rc=$?
-
-        if [ "$rc" -eq 0 ]; then
-            return 0
-        fi
-
-        if [ "$rc" -eq 1 ] && [ -n "$out" ]; then
-            fail "$label"
-            printf '%s\n' "$out" | sed 's/^/        /' >&2
-            return 0
-        fi
-
-        fail "pro-php-scan.php could not run (exit $rc) — cannot verify"
-    }
-
-    # Globbed rather than named, so a root-level PHP file added to the artifact
-    # cannot quietly opt out.
-    shopt -s nullglob
-    ROOT_PHP=("$TREE"/*.php)
-    shopt -u nullglob
+    collect_root_php "$TREE"
 
     # vendor/composer/ ONLY, never vendor/ whole. The generated autoload maps
     # are the artifact-level risk and they all live there; the rest of vendor/
     # is third-party code whose own use of a `pro/` path would be a false
     # positive, and the fix for a false positive is always an exception —
     # the one thing this gate must not acquire (ADR 0029).
-    SCAN_PATHS=("$TREE/src")
+    # src/ AND resources/. `resources/playbooks/*.php` SHIPS IN THE FREE ZIP —
+    # PlaybookLibrary reads it by path constant — so it is free's tree by ADR
+    # 0029's own definition ("free's tree is src/, resources/, and the plugin
+    # files at the tree root"), and a `require WCONVERT_DIR . 'pro/…'` in a
+    # Playbook is a Pro path in the free artifact. Scanning only src/ left that
+    # unwatched. bin/pro-php-scan.php skips anything that is not PHP, so
+    # pointing it at resources/ costs the walk and nothing else.
+    SCAN_PATHS=("$TREE/src" "$TREE/resources")
 
     if [ -d "$TREE/vendor/composer" ]; then
         SCAN_PATHS+=("$TREE/vendor/composer")
@@ -277,10 +259,8 @@ if [ "$tier" = "free" ]; then
         fail "vendor/composer/ is missing — the autoload map was not inspected"
     fi
 
-    # ${ARR[@]+"${ARR[@]}"} rather than "${ARR[@]}": under `set -u`, bash 3.2 —
-    # which is what /usr/bin/env bash still resolves to on macOS — treats an
-    # empty array expansion as an unbound variable and aborts.
-    run_scan "the free artifact's PHP references Pro (namespace, or a pro/ path):" \
+    run_scan "$SCRIPT_DIR" pro-php-scan.php \
+        "the free artifact's PHP references Pro (namespace, or a pro/ path):" \
         "${SCAN_PATHS[@]}" ${ROOT_PHP[@]+"${ROOT_PHP[@]}"}
 
     if section_clean; then
@@ -312,16 +292,16 @@ section
 if [ "$tier" = "free" ]; then
     # The sources behind the two shipped bundles, plus the renderer both of
     # them import (vite.config.admin.mjs aliases @renderer at it).
-    require_populated_dir resources/loader/src '*.ts' "public/loader/loader.js is built from it" || true
-    require_populated_dir resources/admin/src '*.tsx' "public/admin/main.js is built from it" || true
-    require_populated_dir resources/renderer/src '*.ts' "both bundles import it" || true
+    require_populated_dir "$TREE" resources/loader/src '*.ts' "public/loader/loader.js is built from it" || true
+    require_populated_dir "$TREE" resources/admin/src '*.tsx' "public/admin/main.js is built from it" || true
+    require_populated_dir "$TREE" resources/renderer/src '*.ts' "both bundles import it" || true
 
     # Runtime data. Free reads each of these by a path constant, and a ZIP
     # missing one is a plugin that cannot draw a template or evaluate a rule.
     require_file resources/rules/manifest.json "WConvert\\Rules\\RuleManifest::PATH reads it" || true
     require_file resources/templates/manifest.json "WConvert\\Template\\TemplateManifest::PATH reads it" || true
-    require_populated_dir resources/templates/library '*.json' "WConvert\\Template\\TemplateLibrary::PATH reads it" || true
-    require_populated_dir resources/playbooks '*.php' "WConvert\\Playbook\\PlaybookLibrary::PATH reads it" || true
+    require_populated_dir "$TREE" resources/templates/library '*.json' "WConvert\\Template\\TemplateLibrary::PATH reads it" || true
+    require_populated_dir "$TREE" resources/playbooks '*.php' "WConvert\\Playbook\\PlaybookLibrary::PATH reads it" || true
 
     if section_clean; then
         pass "the un-minified source tree ships, and so does the data src/ reads"

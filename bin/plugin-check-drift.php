@@ -43,6 +43,11 @@
 
 declare(strict_types=1);
 
+// The reader this shares with bin/plugin-check.sh's verdict step. Two readers
+// hand-copying a parse would drift, and for this parse a drift means one of
+// them silently reading a checker's output wrong.
+require_once __DIR__ . '/plugin-check-results.php';
+
 const DRIFT_NONE = 0;
 const DRIFT_FOUND = 1;
 
@@ -53,38 +58,6 @@ $pinnedVersion = $argv[3] ?? '';
 if ($pinnedPath === '' || $latestPath === '' || $pinnedVersion === '') {
     fwrite(STDERR, "usage: php bin/plugin-check-drift.php <pinned.json> <latest.json> <pinned-version>\n");
     exit(DRIFT_FOUND);
-}
-
-/**
- * Plugin Check's findings, or null when the run produced nothing readable.
- *
- * @return list<array<string, mixed>>|null
- */
-function driftFindings(string $path): ?array
-{
-    if (!is_file($path) || !is_readable($path)) {
-        return null;
-    }
-
-    $raw = (string) file_get_contents($path);
-
-    // wp-cli prefixes its own chatter on some runs; the payload is the JSON.
-    $start = strpos($raw, '[');
-
-    if ($start === false) {
-        return null;
-    }
-
-    $decoded = json_decode(substr($raw, $start), true);
-
-    if (!is_array($decoded)) {
-        return null;
-    }
-
-    /** @var list<array<string, mixed>> $findings */
-    $findings = array_values(array_filter($decoded, 'is_array'));
-
-    return $findings;
 }
 
 /**
@@ -111,7 +84,7 @@ function driftByCode(array $findings): array
         }
 
         $byCode[$code] = [
-            'type' => strtoupper((string) ($finding['type'] ?? 'OTHER')),
+            'type' => pluginCheckIsError($finding) ? 'ERROR' : 'WARNING',
             'message' => (string) ($finding['message'] ?? ''),
             'where' => sprintf('%s:%s', $finding['file'] ?? '?', $finding['line'] ?? '?'),
             'count' => 1,
@@ -121,8 +94,8 @@ function driftByCode(array $findings): array
     return $byCode;
 }
 
-$pinned = driftFindings($pinnedPath);
-$latest = driftFindings($latestPath);
+$pinned = pluginCheckFindings($pinnedPath);
+$latest = pluginCheckFindings($latestPath);
 
 /** @var list<string> $report */
 $report = [];

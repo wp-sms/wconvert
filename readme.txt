@@ -2,7 +2,7 @@
 Contributors: veronalabs, mostafa.s1990, kashani
 Tags: popup, lead capture, optin form, email list, conversion
 Requires at least: 6.2
-Tested up to: 6.9
+Tested up to: 7.1
 Requires PHP: 8.1
 Stable tag: 0.1.0
 License: GPL-2.0+

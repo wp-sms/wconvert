@@ -224,6 +224,52 @@ final class ArtifactContractTest extends TestCase
     }
 
     /**
+     * ========================================================================
+     * THE SAME LEAK, IN THE ARTIFACT.
+     * ========================================================================
+     * `resources/playbooks/*.php` ships in the free ZIP — PlaybookLibrary
+     * reads it by path constant — so a Playbook reaching into Pro puts a Pro
+     * path in the artifact. Scanning only `src/` and the root left it
+     * unwatched at BOTH ends of the gate.
+     */
+    public function testFailsWhenAShippedPlaybookReferencesPro(): void
+    {
+        $result = $this->verify($this->stagedFree([
+            'resources/playbooks/welcome.php' =>
+                "<?php\nrequire_once WCONVERT_DIR . 'pro/src/Playbook/PremiumSteps.php';\nreturn [];\n",
+        ]));
+
+        $this->assertSame(1, $result['status'], $result['output']);
+        $this->assertStringContainsString('welcome.php', $result['output']);
+    }
+
+    /**
+     * **A find(1) that could not look must not vote "clean".**
+     *
+     * The absence checks are spelled `find_matches`, not
+     * `[ -n "$(find … 2>/dev/null)" ]`, and the difference is the whole
+     * fail-closed property: the naive form throws find's exit status away, so
+     * an unreadable subdirectory prints nothing, nothing reads as "no match",
+     * and no match reads as "no Pro path here". An unreadable directory inside
+     * the tree is exactly the case, and it must fail.
+     */
+    public function testFailsWhenPartOfTheTreeCannotBeSearched(): void
+    {
+        $tree = $this->stagedFree();
+        $locked = $tree . '/resources/locked';
+        mkdir($locked, 0777, true);
+        file_put_contents($locked . '/thing.txt', 'x');
+        chmod($locked, 0000);
+
+        $result = $this->verify($tree);
+
+        chmod($locked, 0755);
+
+        $this->assertSame(1, $result['status'], $result['output']);
+        $this->assertStringContainsString('cannot verify', $result['output']);
+    }
+
+    /**
      * No vendor/composer/ is not "the autoload map is clean". It is an
      * artifact whose autoload map was never inspected — and, separately, a
      * free plugin that cannot boot.

@@ -53,8 +53,14 @@ permissions:
   contents: read
 
 # Never cancel a release that is already running.
+#
+# The workflow's own name is in the group, and it has to be: BOTH release
+# workflows fire on every published release — the tag prefix decides which one
+# does any work — so a group keyed only on the tag would put the two runs of
+# the SAME event in one group, and with cancel-in-progress false the second
+# would queue behind the first for no reason at all.
 concurrency:
-  group: release-${{ github.event.release.tag_name }}
+  group: release-free-${{ github.event.release.tag_name }}
   cancel-in-progress: false
 
 jobs:
