@@ -63,8 +63,8 @@ export interface OptinReport extends Numbers {
  * `impressions − conversions − dismissals`, and naming it would put two
  * numbers on screen where one is the arithmetic of the other.
  *
- * `delivery_failures` is **not** an instance of that rule, which is worth
- * saying because this comment used to claim it was. `conversions` is not a
+ * `undelivered_conversions` is **not** an instance of that rule, which is
+ * worth saying because this comment used to claim it was. `conversions` is not a
  * field on this payload at all — the numbers below are `headline`,
  * `impressions`, `dismissals`, `conversion_rate` and `by_day`, and on a
  * lead-magnet card `headline` is *deliveries*. So the subtraction is new
@@ -86,9 +86,12 @@ export interface GoalReport extends Numbers {
    * rendered.
    *
    * It reads *not yet delivered* rather than *failed*: a Conversion whose push
-   * is still queued or backing off is in it.
+   * is still queued or backing off is in it — which is what the name says. It
+   * shipped as `delivery_failures`, contradicting both this sentence and
+   * `WConvert\Destination\DeliveryFailures`, a ring of ~200 *terminal*
+   * failures on the PHP side. Two opposite populations under one name.
    */
-  delivery_failures: number | null;
+  undelivered_conversions: number | null;
   optins: OptinReport[];
 }
 

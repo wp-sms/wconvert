@@ -149,10 +149,17 @@ narrower than it first looks — but it closes entirely at retention.
   the top of this ADR). Action Scheduler resetting a stuck action replays
   identical arguments. Because an over-count is therefore possible,
   [`Dashboard`](../../src/Stats/Dashboard.php) clamps:
-  `delivery_failures = max(0, conversions − lead_magnet_delivered)`. The clamp
-  is load-bearing for a second reason with nothing to do with replay — a
+  `undelivered_conversions = max(0, conversions − lead_magnet_delivered)`. The
+  clamp is load-bearing for a second reason with nothing to do with replay — a
   Conversion at 23:58 and its delivery at 00:01 land on different `stat_date`s,
   so a one-day window would go negative most mornings without it.*
+  *That payload field was called `delivery_failures` when #31 landed it, and
+  was renamed before the first release: it is **not** this ADR's
+  [`DeliveryFailures`](../../src/Destination/DeliveryFailures.php) ring, which
+  holds terminal failures only. A Conversion still queued or backing off is in
+  the dashboard figure and is in none of the ring. One name for two opposite
+  populations, three files apart, is the collision the glossary exists to
+  stop.*
   *No warning is shown on the re-push button for this type. It would need
   either a Goal or type id spelled in TypeScript — `GoalParityTest` forbids the
   first — or a capability method on `DestinationType`, whose docblock refuses

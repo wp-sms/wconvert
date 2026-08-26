@@ -169,7 +169,7 @@ see its own inline correction.*
   > sentence it carried — a screen that apologises for a feature that exists is
   > worse than one that says nothing.
   >
-  > `delivery_failures` **is on the payload**, as
+  > `undelivered_conversions` **is on the payload**, as
   > `max(0, conversions − lead_magnet_delivered)` on the lead-magnet card and
   > `null` on every other Goal. Null rather than absent, because
   > `GoalParityTest::testNoGoalIsSpelledInTheAdminBundle` fails on any Goal id
@@ -177,6 +177,13 @@ see its own inline correction.*
   > which Goal a card is, and a server-nulled field is the only shape
   > available. It is on the card and never on an Optin row: one figure for the
   > Goal, not a second metric per row.
+  >
+  > *It shipped under the name `delivery_failures` and was renamed before the
+  > first release. The old name contradicted the copy directly beneath it —
+  > "Conversions with no delivery yet" — and collided with
+  > [`DeliveryFailures`](../../src/Destination/DeliveryFailures.php), the
+  > bounded ring of ~200 **terminal** failures, which is the opposite
+  > population. Nothing about the figure changed; only what it is called.*
   >
   > **The second argument above does not survive, and it was checked rather
   > than assumed.** `conversions` is not a field on the payload at all —

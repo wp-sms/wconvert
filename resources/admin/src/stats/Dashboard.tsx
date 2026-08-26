@@ -151,20 +151,22 @@ function GoalCard({ card }: { card: GoalReport }) {
           is drawing. `null` is the server saying there is nothing to report,
           and the row is absent rather than zero.
 
-          The copy is "did not go out" rather than "failed" on purpose: a
+          The copy is "no delivery yet" rather than "failed" on purpose: a
           Conversion whose push is still queued or backing off is counted here
           too, and calling that a failure would be a stronger claim than the
-          subtraction supports.
+          subtraction supports. The field is named `undelivered_conversions`
+          for the same reason — it shipped as `delivery_failures`, which said
+          the opposite of the copy directly beneath it.
         */}
-        {card.delivery_failures !== null && (
+        {card.undelivered_conversions !== null && (
           <li>
             {_n(
               'Conversion with no delivery yet',
               'Conversions with no delivery yet',
-              card.delivery_failures,
+              card.undelivered_conversions,
               'wconvert'
             )}{' '}
-            <strong>{formatCount(card.delivery_failures)}</strong>
+            <strong>{formatCount(card.undelivered_conversions)}</strong>
           </li>
         )}
       </ul>
