@@ -45,6 +45,15 @@ those. Where it matters, it belongs to whoever owns the Contact.
 `custom_fields` is untouched for a separate reason — a canonical-key-to-custom-field
 mapping is a second field map, and #4 removed the first one on purpose.
 
+**Completed by #30: the captured name goes into `first_name`, whole and
+unsplit.** WConvert's template vocabulary offers one `name` field, and WSMS
+carries `first_name` and `last_name`. Splitting on a space to fill both is a
+guess with no way back — "van der Berg" and "Maria Elena" file wrong in
+opposite directions — and under fill-empty-only the wrong half becomes a stored
+value that nothing will ever correct. So the whole name lands in `first_name`
+and `last_name` is left empty, which the merchant or the person can fix in the
+system that owns the Contact.
+
 ## Never writing state is free, which is why it is absolute
 
 The expected cost of refusing to write `status` was a confused merchant: a Lead in

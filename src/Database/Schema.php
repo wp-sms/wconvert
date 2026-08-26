@@ -106,8 +106,17 @@ KEY idx_goal (goal)
      * walks that key backwards under a LIMIT, and the grouping view is two
      * aggregates that each use an index already here (ADR 0033). An index is
      * paid on every capture and read by one admin on demand, which is the
-     * asymmetry that decided it. The bulk re-push #30 will want is still an
-     * open question for #30.
+     * asymmetry that decided it.
+     *
+     * **#30 asked for the third index and did not get one either.** Bulk
+     * re-push replays "every Lead for Optins bound to this Destination since
+     * `last_success_at`", and both halves fall out of what is already here: a
+     * ULID's leading 48 bits are the minting time, so the window is
+     * `id > floorAt(lastSuccess)` — a range on the PRIMARY KEY, the same trick
+     * the prune uses — and the per-Optin filter rides on top of that bounded
+     * range under a `LIMIT`. An `idx_optin` would be a write per capture
+     * bought for a job a human triggers by hand (ADR 0008,
+     * {@see \WConvert\Destination\BulkRePush}).
      */
     private static function leads(string $prefix, string $charsetCollate): string
     {

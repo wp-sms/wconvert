@@ -5,6 +5,7 @@ import { GoalScreen } from './goals/GoalScreen';
 import { LeadLog } from './leads/LeadLog';
 import { OptinList } from './optins/OptinList';
 import { Dashboard } from './stats/Dashboard';
+import { Destinations } from './destinations/Destinations';
 
 /**
  * The WConvert admin screen.
@@ -37,6 +38,7 @@ export function App() {
       <OptinList onEdit={setEditing} />
       <Dashboard />
       <LeadLog />
+      <Destinations />
     </div>
   );
 }

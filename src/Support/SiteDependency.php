@@ -29,4 +29,34 @@ enum SiteDependency: string
      * shown it — not greyed out, not explained, absent (ADR 0026).
      */
     case WooCommerce = 'woocommerce';
+
+    /**
+     * WP SMS, which the WSMS [[Destination]] pushes into.
+     *
+     * **`unavailable` and never `locked`.** The WSMS push ships in the free
+     * plugin, so a site without it is not missing a tier we sell — it is
+     * missing a plugin, and the two are the whole of ADR 0026's distinction.
+     *
+     * This case arrived with the push (#30) and not before. The comment that
+     * used to stand here said nothing in v1 needed it, and was right at the
+     * time: a Standalone install captures phone numbers into the [[Lead]] log
+     * like any other capture, and needs no Destination to do it.
+     */
+    case Wsms = 'wsms';
+
+    /**
+     * What to call it on screen.
+     *
+     * Here rather than in the admin bundle because the slug is not copy: a
+     * surface interpolating `wsms` into "Needs %s on this site" produces a
+     * sentence no merchant can act on, and one built in TypeScript would be a
+     * second spelling of this list that `make-pot` cannot see.
+     */
+    public function label(): string
+    {
+        return match ($this) {
+            self::WooCommerce => __('WooCommerce', 'wconvert'),
+            self::Wsms => __('WP SMS', 'wconvert'),
+        };
+    }
 }

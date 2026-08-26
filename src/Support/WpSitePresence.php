@@ -25,6 +25,12 @@ final class WpSitePresence implements SitePresence
     /** What each dependency is present as, once WordPress has loaded it. */
     private const CLASSES = [
         SiteDependency::WooCommerce->value => 'WooCommerce',
+        // WSMS's own bootstrap, which is what "WP SMS is loaded" means. Its
+        // container is what the push reaches through, so the class that OWNS
+        // the container is the honest thing to ask about — a plugin whose
+        // files are present but which fataled before booting has no container
+        // to hand out.
+        SiteDependency::Wsms->value => 'WSms\\Bootstrap',
     ];
 
     public function has(SiteDependency $dependency): bool

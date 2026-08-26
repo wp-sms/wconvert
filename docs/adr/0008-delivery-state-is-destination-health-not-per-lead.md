@@ -19,6 +19,25 @@ for Optins bound to this Destination since `last_success_at`". That answers the
 real support case (an expired API key silently dropping three days of leads)
 with no new table.
 
+> **Amended by [#30](https://github.com/navidkashani/wconvert/issues/30): two
+> more fields, `skipped_captures` and `last_skipped_at`.** The four above cover
+> a Destination that was *tried*. They cannot describe the third thing that
+> goes wrong, which #4 named and this ADR did not carry over: a Destination
+> whose TYPE is not `ready` — a deactivated WSMS, a lapsed licence — is
+> "skipped and recorded, never enqueued", because an Action Scheduler job whose
+> handler is unregistered retries against nothing forever.
+>
+> Nothing was attempted, so it is not an outage and must not touch
+> `consecutive_failures` — that would be the same inversion this ADR exists to
+> prevent, one state over. And it cannot go in the terminal-failure ring
+> either: one entry per capture fills 200 slots in an afternoon and buries
+> every genuine terminal failure under it.
+>
+> So it is a counter, in the same option, with the same advisory semantics and
+> the same tolerable race. It clears on a successful landing, because the Leads
+> behind it are recovered by a bulk re-push rather than by the number — the
+> number is only ever the prompt to run one.
+
 Action Scheduler was reconsidered as the store and rejected again, for the reason
 already recorded: it prunes completed actions on a retention period and cannot be
 queried by argument content. It gives durable *attempts*, never durable

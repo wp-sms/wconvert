@@ -5,6 +5,16 @@ namespace WConvert\Container;
 use WConvert\Database\Connection;
 use WConvert\Database\Installer;
 use WConvert\Database\WpdbConnection;
+use WConvert\Destination\BulkRePush;
+use WConvert\Destination\ConnectionStore;
+use WConvert\Destination\DeliveryFailures;
+use WConvert\Destination\DestinationRegistry;
+use WConvert\Destination\DestinationStore;
+use WConvert\Destination\HealthStore;
+use WConvert\Destination\PushDispatcher;
+use WConvert\Destination\PushWorker;
+use WConvert\Destination\Wsms\WpWsmsContacts;
+use WConvert\Destination\Wsms\WsmsDestinationType;
 use WConvert\Frontend\LoaderEnqueue;
 use WConvert\Goal\GoalRegistry;
 use WConvert\Lead\LeadCapture;
@@ -15,9 +25,12 @@ use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
 use WConvert\Playbook\PlaybookLibrary;
 use WConvert\Playbook\Prefill;
+use WConvert\Queue\ActionSchedulerQueue;
+use WConvert\Queue\Queue;
 use WConvert\Rest\BeaconController;
 use WConvert\Rest\CaptureController;
 use WConvert\Rest\DashboardController;
+use WConvert\Rest\DestinationController;
 use WConvert\Rest\GoalController;
 use WConvert\Rest\LeadController;
 use WConvert\Rest\OptinController;
@@ -218,6 +231,95 @@ final class CoreServiceProvider implements ServiceProvider
             )
         );
 
+        // ------------------------------------------------------------------
+        // Destinations, the queue, and health (#30).
+        // ------------------------------------------------------------------
+
+        $container->register(Queue::class, static fn (): Queue => new ActionSchedulerQueue());
+
+        $container->register(
+            DestinationStore::class,
+            static fn (ServiceContainer $c): DestinationStore => new DestinationStore($c->resolve(OptionStore::class))
+        );
+        $container->register(
+            ConnectionStore::class,
+            static fn (ServiceContainer $c): ConnectionStore => new ConnectionStore($c->resolve(OptionStore::class))
+        );
+
+        // Health in its OWN option, separate from the configuration above.
+        // Two jobs completing at once lose an increment to `update_option`'s
+        // read-modify-write, and that race is tolerable for advisory health —
+        // it would not be tolerable if it ate an admin's edit (ADR 0008).
+        $container->register(
+            HealthStore::class,
+            static fn (ServiceContainer $c): HealthStore => new HealthStore($c->resolve(OptionStore::class))
+        );
+        $container->register(
+            DeliveryFailures::class,
+            static fn (ServiceContainer $c): DeliveryFailures => new DeliveryFailures($c->resolve(OptionStore::class))
+        );
+
+        // **Pro registers its own types into this same registry** from its
+        // service provider's boot(), by pulling it out of the shared container
+        // (ADR 0015). Free registers the WSMS push and nothing else — every
+        // Destination that makes an outbound HTTP call is Pro's (#4).
+        $container->register(
+            DestinationRegistry::class,
+            static fn (ServiceContainer $c): DestinationRegistry => (new DestinationRegistry(
+                $c->resolve(ProPresence::class),
+                $c->resolve(SitePresence::class)
+            ))->register(new WsmsDestinationType(new WpWsmsContacts()))
+        );
+
+        $container->register(
+            PushDispatcher::class,
+            static fn (ServiceContainer $c): PushDispatcher => new PushDispatcher(
+                $c->resolve(DestinationRegistry::class),
+                $c->resolve(DestinationStore::class),
+                $c->resolve(OptinRepository::class),
+                $c->resolve(HealthStore::class),
+                $c->resolve(Queue::class)
+            )
+        );
+
+        $container->register(
+            PushWorker::class,
+            static fn (ServiceContainer $c): PushWorker => new PushWorker(
+                $c->resolve(DestinationRegistry::class),
+                $c->resolve(DestinationStore::class),
+                $c->resolve(ConnectionStore::class),
+                $c->resolve(LeadRepository::class),
+                $c->resolve(OptinRepository::class),
+                $c->resolve(HealthStore::class),
+                $c->resolve(DeliveryFailures::class),
+                $c->resolve(Queue::class)
+            )
+        );
+
+        $container->register(
+            BulkRePush::class,
+            static fn (ServiceContainer $c): BulkRePush => new BulkRePush(
+                $c->resolve(DestinationRegistry::class),
+                $c->resolve(DestinationStore::class),
+                $c->resolve(OptinRepository::class),
+                $c->resolve(LeadRepository::class),
+                $c->resolve(HealthStore::class),
+                $c->resolve(Queue::class)
+            )
+        );
+
+        $container->register(
+            DestinationController::class,
+            static fn (ServiceContainer $c): DestinationController => new DestinationController(
+                $c->resolve(DestinationRegistry::class),
+                $c->resolve(DestinationStore::class),
+                $c->resolve(ConnectionStore::class),
+                $c->resolve(HealthStore::class),
+                $c->resolve(DeliveryFailures::class),
+                $c->resolve(BulkRePush::class)
+            )
+        );
+
         $container->register(
             StatsRepository::class,
             static fn (ServiceContainer $c): StatsRepository => new StatsRepository($c->resolve(Connection::class))
@@ -319,6 +421,14 @@ final class CoreServiceProvider implements ServiceProvider
         $container->resolve(BeaconController::class)->hooks();
         $container->resolve(LeadController::class)->hooks();
         $container->resolve(DashboardController::class)->hooks();
+        $container->resolve(DestinationController::class)->hooks();
+
+        // On EVERY request, admin included, and not behind `is_admin()`. The
+        // dispatch attaches to a capture, which arrives through REST from a
+        // visitor's page; the worker attaches to an Action Scheduler hook,
+        // which fires from a loopback request that is neither (#4).
+        $container->resolve(PushDispatcher::class)->hooks();
+        $container->resolve(PushWorker::class)->hooks();
 
         if (!is_admin()) {
             $container->resolve(LoaderEnqueue::class)->hooks();

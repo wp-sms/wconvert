@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Gallery } from './Gallery';
+import { DestinationsEditor } from './DestinationsEditor';
 import { RulesEditor } from './RulesEditor';
 import { SettingsPanel } from './SettingsPanel';
 import { TargetingEditor, type Targeting } from './TargetingEditor';
@@ -153,6 +154,12 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
         conditions={vocabulary.conditions}
         rules={Array.isArray(config.rules) ? (config.rules as Rule[]) : []}
         onChange={(rules) => edit({ rules })}
+      />
+
+      <DestinationsEditor
+        bound={Array.isArray(config.destinations) ? (config.destinations as string[]) : []}
+        onChange={(destinations) => edit({ destinations })}
+        onError={report}
       />
 
       <TargetingEditor
