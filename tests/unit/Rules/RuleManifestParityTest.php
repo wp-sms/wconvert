@@ -16,9 +16,10 @@ use WConvert\Targeting\TargetingType;
  * one of the three axes, so this file asserts:
  *
  * - **parity for Targeting**, against the enum that is its switch, and
- * - **the four-field invariant across every axis**, because PHP is what reads
- *   `tier`, `consent_category` and `on_absence` — the loader never sees a rule
- *   its install is not entitled to.
+ * - **the five-field invariant across every axis**, because PHP is what reads
+ *   `tier`, `consent_category`, `on_absence` and `substitute` — the loader
+ *   never sees a rule its install is not entitled to, and never sees a rule
+ *   that stood in for one.
  *
  * The trigger/condition half of parity — every entry resolving to a module on
  * the side its `tier` names — is asserted in TypeScript, where the modules
@@ -83,15 +84,16 @@ final class RuleManifestParityTest extends TestCase
     }
 
     /**
-     * Four fields on every entry (ADR 0029) — `tier`, `consent_category`,
-     * `on_absence` and kind. The key must be PRESENT even where the value is
-     * null, because null is a claim: Targeting is server-evaluated, writes
-     * nothing to the visitor's device, and is never degraded away.
+     * Five fields on every entry (ADR 0029) — `tier`, `consent_category`,
+     * `on_absence`, `substitute` and kind. The key must be PRESENT even where
+     * the value is null, because null is a claim: Targeting is
+     * server-evaluated, writes nothing to the visitor's device, and is never
+     * degraded away, so it declares nothing to stand in for it either.
      *
      * @param list<RuleKind> $kinds
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('axes')]
-    public function testEveryEntryCarriesAllFourFields(string $axis, array $kinds): void
+    public function testEveryEntryCarriesAllFiveFields(string $axis, array $kinds): void
     {
         $entries = $this->axis($axis);
 
@@ -100,7 +102,7 @@ final class RuleManifestParityTest extends TestCase
         foreach ($entries as $type => $entry) {
             $where = sprintf('%s.%s', $axis, $type);
 
-            foreach (['kind', 'tier', 'params', 'presets', 'consent_category', 'on_absence'] as $field) {
+            foreach (['kind', 'tier', 'params', 'presets', 'consent_category', 'on_absence', 'substitute'] as $field) {
                 $this->assertArrayHasKey($field, $entry, sprintf('%s is missing %s', $where, $field));
             }
 
@@ -221,6 +223,98 @@ final class RuleManifestParityTest extends TestCase
                     $allowed,
                     sprintf('%s.%s declares an on_absence this axis may not', $axis, $type)
                 );
+            }
+        }
+    }
+
+    /**
+     * ========================================================================
+     * A SUBSTITUTE THAT COULD NOT RUN IS NOT A SUBSTITUTE.
+     * ========================================================================
+     * ADR 0012 substitutes a premium [[Trigger]] because a *dropped* one
+     * leaves an Optin that can never fire. A substitution that names a type
+     * this install also lacks, or that leaves the type's params empty, buys
+     * exactly nothing: `time_on_page` reads `rule.seconds` and
+     * `Number(undefined)` is NaN, so the comparison is false forever — the
+     * same silent, total loss of function, one indirection further along.
+     *
+     * Four claims, and each one is a way the table could be written wrong:
+     *
+     * - it names a type the manifest declares, at tier **free**, so every
+     *   install can run it;
+     * - of the **same kind**, since a Trigger swapped for a Condition leaves
+     *   the Optin trigger-less anyway;
+     * - filling **every param that type declares** except the `authored` ones,
+     *   which name something only one site has and which a manifest can no
+     *   more supply than a [[Playbook]] can;
+     * - and naming **no param the type does not declare**, which
+     *   {@see \WConvert\Rules\RuleVocabulary::normalize()} would drop on the
+     *   way into `config`.
+     */
+    public function testEverySubstituteNamesAFreeRuleOfTheSameKindWithItsParamsFilled(): void
+    {
+        $manifest = RuleManifest::load(self::PLUGIN_DIR);
+        $entries = array_merge(...array_values($manifest));
+        $checked = 0;
+
+        foreach ($entries as $type => $entry) {
+            $substitute = $entry['substitute'] ?? null;
+
+            if ($substitute === null) {
+                continue;
+            }
+
+            $checked++;
+            $where = sprintf('%s\'s substitute', $type);
+
+            $this->assertIsArray($substitute, sprintf('%s is not a rule', $where));
+            $this->assertIsString($substitute['type'] ?? null, sprintf('%s names no type', $where));
+
+            $named = $entries[$substitute['type']] ?? null;
+
+            $this->assertIsArray($named, sprintf('%s names a type the manifest does not declare', $where));
+            $this->assertSame('free', $named['tier'], sprintf('%s names a type this install may also lack', $where));
+            $this->assertSame($entry['kind'], $named['kind'], sprintf('%s is not the same kind of rule', $where));
+
+            $wanted = array_keys(array_filter(
+                $named['params'],
+                static fn (array $param): bool => ($param['authored'] ?? false) !== true
+            ));
+
+            $this->assertSame(
+                $wanted,
+                array_keys(array_diff_key($substitute, ['type' => true])),
+                sprintf('%s does not fill exactly the params its type declares', $where)
+            );
+        }
+
+        // Not a tautology: the table emptying out would make every assertion
+        // above vacuous, and ADR 0012 requires the two premium Triggers that
+        // have an honest stand-in to have one.
+        $this->assertGreaterThan(0, $checked, 'the substitution table is empty');
+    }
+
+    /**
+     * **A [[Condition]] is dropped, never substituted** (ADR 0012). There is
+     * no honest substitute for "the referrer is Google", and inventing one
+     * fabricates targeting the merchant never asked for and silently narrows
+     * or redirects their audience — where dropping only widens it, which is
+     * the safe direction to fail in.
+     *
+     * Targeting declares none either, and for a different reason: it is
+     * evaluated on the server by code both installs carry, so it is never
+     * absent and has nothing to stand in for.
+     */
+    public function testOnlyATriggerMayDeclareASubstitute(): void
+    {
+        foreach (self::AXES as $axis => $_kinds) {
+            foreach ($this->axis($axis) as $type => $entry) {
+                if (RuleKind::tryFrom((string) $entry['kind']) !== RuleKind::Trigger) {
+                    $this->assertNull(
+                        $entry['substitute'],
+                        sprintf('%s.%s declares a substitute, and only a Trigger may', $axis, $type)
+                    );
+                }
             }
         }
     }

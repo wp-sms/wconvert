@@ -16,12 +16,18 @@ const optins = vi.hoisted(() => ({
   publishOptin: vi.fn(),
   unpublishOptin: vi.fn(),
   deleteOptin: vi.fn(),
-  statusOf: vi.fn(() => 'draft'),
 }));
 
 const goals = vi.hoisted(() => ({ listGoals: vi.fn() }));
 
-vi.mock('../../resources/admin/src/optins/api', () => optins);
+// The four network calls are stubbed; `statusOf` and `isPublished` are NOT.
+// They are pure functions over one row, and a row's STATE is one of the things
+// this screen decides — a stubbed `statusOf` would let the list say
+// [[Suspended]] because the test said so rather than because the row does.
+vi.mock('../../resources/admin/src/optins/api', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../../resources/admin/src/optins/api')>()),
+  ...optins,
+}));
 vi.mock('../../resources/admin/src/goals/api', () => goals);
 
 const { OptinList } = await import('../../resources/admin/src/optins/OptinList');
@@ -32,12 +38,12 @@ const OPTIN = {
   goal: 'grow_email_list',
   published_at: null,
   deleted_at: null,
+  suspended: null,
 };
 
 beforeEach(() => {
   vi.clearAllMocks();
   optins.listOptins.mockResolvedValue([OPTIN]);
-  optins.statusOf.mockReturnValue('draft');
   goals.listGoals.mockResolvedValue([
     { id: 'grow_email_list', label: 'Grow my email list', availability: 'ready' },
   ]);
@@ -76,5 +82,53 @@ describe('a row', () => {
     expect(await screen.findByText('Welcome discount')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Delete' })).toBeInTheDocument();
     expect(screen.queryByText('nope')).toBeNull();
+  });
+});
+
+/**
+ * ============================================================================
+ * SUSPENDED IS VISIBLE, AND IT IS SHOWN WITH ITS CAUSE.
+ * ============================================================================
+ * *"This is the screen a merchant actually looks at when something stopped
+ * working"* (ADR 0027). An Optin that quietly does not show is a merchant with
+ * nowhere to ask why, so the state alone would be the answer that produces the
+ * support ticket rather than the one that prevents it.
+ */
+describe('a suspended row', () => {
+  const SUSPENDED = {
+    ...OPTIN,
+    published_at: '2026-08-01 09:00:00',
+    suspended: 'Suspended — the “Clicks an element” rule needs WConvert Pro, which is not active',
+  };
+
+  it('shows the cause rather than a bare state', async () => {
+    optins.listOptins.mockResolvedValue([SUSPENDED]);
+
+    render(<OptinList onEdit={() => undefined} />);
+
+    expect(await screen.findByText(SUSPENDED.suspended)).toBeInTheDocument();
+  });
+
+  /**
+   * It is still PUBLISHED underneath: the site is holding it back, the
+   * merchant did not. Offering Publish would read as "this never went live"
+   * and would ask them to undo something they never did.
+   */
+  it('keeps the unpublish control, because the merchant did not unpublish it', async () => {
+    optins.listOptins.mockResolvedValue([SUSPENDED]);
+
+    render(<OptinList onEdit={() => undefined} />);
+
+    expect(await screen.findByRole('button', { name: 'Unpublish' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Publish' })).toBeNull();
+  });
+
+  /** And a running Optin says nothing of the sort. */
+  it('is not what an ordinary published row says', async () => {
+    optins.listOptins.mockResolvedValue([{ ...SUSPENDED, suspended: null }]);
+
+    render(<OptinList onEdit={() => undefined} />);
+
+    expect(await screen.findByText('published')).toBeInTheDocument();
   });
 });

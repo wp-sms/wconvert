@@ -40,6 +40,7 @@ describe('a stored rule, read back', () => {
     const read = fromRule({ type: 'query_param', key: 'utm_source', value: ['google'] }, [queryParam]);
 
     expect(read).toEqual({
+      degradedFrom: null,
       type: queryParam,
       preset: queryParam.presets[0],
       values: { key: 'utm_source', value: ['google'] },
@@ -57,6 +58,7 @@ describe('a stored rule, read back', () => {
     const read = fromRule({ type: 'query_param', key: 'utm_term', value: ['sale'] }, [queryParam]);
 
     expect(read).toEqual({
+      degradedFrom: null,
       type: queryParam,
       preset: null,
       values: { key: 'utm_term', value: ['sale'] },
@@ -126,7 +128,7 @@ describe('every preset the manifest ships', () => {
     const rule = toRule(type, preset, filled);
 
     expect(rule.type).toBe(type.type);
-    expect(fromRule(rule, TYPES)).toEqual({ type, preset, values: { ...preset.fixed, ...filled }, filled });
+    expect(fromRule(rule, TYPES)).toEqual({ type, preset, values: { ...preset.fixed, ...filled }, filled, degradedFrom: null });
     expect(toRule(type, preset, filled)).toEqual(rule);
   });
 });

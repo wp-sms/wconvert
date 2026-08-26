@@ -1,4 +1,4 @@
-import type { Rule, RulePreset, RuleType } from './api';
+import { DEGRADED_FROM, type Rule, type RulePreset, type RuleType } from './api';
 
 /**
  * The preset ↔ engine-type translation, in both directions.
@@ -27,7 +27,23 @@ import type { Rule, RulePreset, RuleType } from './api';
  * shortcut, and honouring their value would produce a rule the panel would
  * then draw as some other preset.
  */
-export function toRule(type: RuleType, preset: RulePreset | null, filled: Record<string, unknown>): Rule {
+export function toRule(
+  type: RuleType,
+  preset: RulePreset | null,
+  filled: Record<string, unknown>,
+  /**
+   * The rule this one stands in for, carried through the edit.
+   *
+   * Editing a substituted rule does not un-substitute it: a `time_on_page`
+   * retimed from 15 seconds to 30 is still what the Optin got instead of exit
+   * intent, and dropping the marker here would quietly retire the note and the
+   * upgrade offer it anchors — leaving the Optin carrying an invisible
+   * substitution forever, which is the exact failure a dismissible banner
+   * would have caused (ADR 0012). Removing the ROW is how a merchant is done
+   * with it, and that takes the marker with it.
+   */
+  degradedFrom: string | null = null,
+): Rule {
   const rule: Rule = { type: type.type };
 
   for (const param of Object.keys(type.params)) {
@@ -36,6 +52,10 @@ export function toRule(type: RuleType, preset: RulePreset | null, filled: Record
     if (value !== undefined) {
       rule[param] = value;
     }
+  }
+
+  if (degradedFrom !== null) {
+    rule[DEGRADED_FROM] = degradedFrom;
   }
 
   return rule;
@@ -83,7 +103,9 @@ export function fromRule(rule: Rule, types: readonly RuleType[]): ReadRule | nul
     }
   }
 
-  return { type, preset, values, filled };
+  const marker = rule[DEGRADED_FROM];
+
+  return { type, preset, values, filled, degradedFrom: typeof marker === 'string' ? marker : null };
 }
 
 export interface ReadRule {
@@ -101,6 +123,12 @@ export interface ReadRule {
   readonly values: Record<string, unknown>;
   /** What the merchant supplied beyond the preset — the controls to draw. */
   readonly filled: Record<string, unknown>;
+  /**
+   * Which rule this one was substituted for, or null where it is what the
+   * merchant asked for. Read back so the row can say so and so an edit can
+   * carry it (ADR 0012).
+   */
+  readonly degradedFrom: string | null;
 }
 
 /** Does this rule carry everything the preset decides? */

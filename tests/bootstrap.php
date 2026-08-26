@@ -670,3 +670,114 @@ if (!function_exists('get_post_types')) {
         ];
     }
 }
+
+/*
+ * `wp_unslash`, because WordPress adds slashes to every superglobal on load
+ * and {@see \WConvert\Rest\BeaconController} strips them off `REMOTE_ADDR`
+ * before hashing it — an address carrying one would hash into a different
+ * rate-limit bucket than the same address without.
+ */
+if (!function_exists('wp_unslash')) {
+    /**
+     * @param mixed $value
+     * @return mixed
+     */
+    function wp_unslash($value)
+    {
+        return is_string($value) ? stripslashes($value) : $value;
+    }
+}
+
+/*
+ * The beacon's half of the REST request, and only that half.
+ *
+ * The route end to end — the router, the permission callback, dispatch, and a
+ * real row in a real table — stays `bin/verify-stats.php`'s, because a
+ * `WP_REST_Request` faithful enough to prove THAT is a WordPress install with
+ * extra steps. What this exists for is the one claim that cannot be observed
+ * from outside a request at all: **a [[Suspended]] Optin emits NO ROWS**, not
+ * zero-valued ones (ADR 0027). Counting zeroes against a live denominator is
+ * invisible unless something asserts it, and a counter cannot be recomputed
+ * afterwards (ADR 0019).
+ *
+ * The constructor and the four methods take WordPress's own signatures rather
+ * than convenient ones, because `bin/verify-stats.php` builds a REAL request
+ * with the same calls and PHPStan analyses both files: a stub that took a
+ * shape of its own would report the verifier as broken.
+ */
+if (!class_exists('WP_REST_Request')) {
+    class WP_REST_Request
+    {
+        /** @var array<string, string> */
+        private array $headers = [];
+
+        private string $body = '';
+
+        /** @var array<string, mixed> */
+        private array $params = [];
+
+        /** @param array<string, mixed> $attributes */
+        public function __construct(
+            private string $method = '',
+            private string $route = '',
+            private array $attributes = []
+        ) {
+        }
+
+        public function get_method(): string
+        {
+            return $this->method;
+        }
+
+        public function get_route(): string
+        {
+            return $this->route;
+        }
+
+        /** @return array<string, mixed> */
+        public function get_attributes(): array
+        {
+            return $this->attributes;
+        }
+
+        public function set_header(string $name, string $value): void
+        {
+            $this->headers[strtolower($name)] = $value;
+        }
+
+        public function get_header(string $name): ?string
+        {
+            return $this->headers[strtolower($name)] ?? null;
+        }
+
+        public function set_body(string $body): void
+        {
+            $this->body = $body;
+        }
+
+        /**
+         * WordPress decodes the body on demand and returns null where it is
+         * not JSON, which is the case the beacon's own parser has to survive.
+         *
+         * @return array<string, mixed>|null
+         */
+        public function get_json_params(): ?array
+        {
+            $decoded = json_decode($this->body, true);
+
+            return is_array($decoded) ? $decoded : null;
+        }
+
+        /** @param mixed $value */
+        public function set_param(string $name, $value): void
+        {
+            $this->params[$name] = $value;
+        }
+
+        /** @return mixed */
+        public function get_param(string $name)
+        {
+            return $this->params[$name] ?? null;
+        }
+    }
+}

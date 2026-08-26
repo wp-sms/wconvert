@@ -3,6 +3,7 @@
 namespace WConvert\Playbook;
 
 use WConvert\Goal\Goal;
+use WConvert\Rules\Degradation;
 use WConvert\Template\SlotRoles;
 use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
@@ -39,10 +40,25 @@ defined('ABSPATH') || exit;
  * `POST /wconvert/v1/optins` takes. A merchant who browses the gallery and
  * closes the tab has created nothing.
  *
- * Degradation is deliberately NOT here. ADR 0012 names prefill as one of the
- * two call sites for the substitution resolver, and that resolver lands with
- * the ticket that writes it; what this does with a Playbook's rules is copy
- * them.
+ * ============================================================================
+ * AND IT IS THE FIRST OF DEGRADATION'S TWO CALL SITES (ADR 0012).
+ * ============================================================================
+ * **Prefill exists for authoring honesty.** wp.org Guideline 9 fires on
+ * showing a real control `disabled`, so a free user must be handed a working
+ * rule they can configure rather than a locked one they cannot — which is why
+ * a [[Playbook]] asking for `exit_intent` on an install without [[Pro]] gets
+ * `time_on_page`, with a `degraded_from` marker beside it saying so.
+ *
+ * **This is the only call site that WRITES**, so it is the only one that
+ * records a marker. Enqueue, the other, resolves a published Optin on its way
+ * to the page and persists nothing — there is nowhere for it to put one, and
+ * the case it covers needs none: the premium rule is still sitting in
+ * `config`, at its own tier, and the builder's rule row says so already.
+ *
+ * The two therefore never touch the same Optin — prefill covers those authored
+ * on an install without Pro, enqueue those authored with it and now running
+ * without — and prefill baking the substitution in is what makes the second
+ * pass a no-op on anything the first one touched.
  *
  * @since 0.1.0
  */
@@ -52,6 +68,7 @@ final class Prefill
         private readonly PlaybookLibrary $playbooks,
         private readonly TemplateLibrary $templates,
         private readonly TemplateVocabulary $vocabulary,
+        private readonly Degradation $degradation,
     ) {
     }
 
@@ -89,7 +106,12 @@ final class Prefill
 
         $config['playbook_id'] = $playbook->id;
         $config['display_type'] = $playbook->displayType;
-        $config['rules'] = $playbook->rules;
+        // The rules the Playbook asked for, resolved against what this install
+        // can actually run. On a Pro install nothing changes; on a free one a
+        // premium [[Trigger]] is substituted and marked, and a premium
+        // [[Condition]] is dropped — which only widens the audience, the safe
+        // direction to fail in (ADR 0012).
+        $config['rules'] = $this->degradation->intoConfig($playbook->rules);
 
         if ($playbook->targeting !== []) {
             $config['targeting'] = $playbook->targeting;

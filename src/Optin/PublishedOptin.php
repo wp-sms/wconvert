@@ -2,6 +2,7 @@
 
 namespace WConvert\Optin;
 
+use WConvert\Rules\Degradation;
 use WConvert\Targeting\Targeting;
 
 defined('ABSPATH') || exit;
@@ -60,6 +61,13 @@ final class PublishedOptin
      * every uncached page view; a keyed lookup would be a second shape of the
      * published set to keep in step, which is exactly what ADR 0003 refuses.
      *
+     * **One id, one parse.** This is right for the capture route, which asks
+     * about exactly one submission. A caller asking about a BATCH — the beacon
+     * coalesces up to twenty events over one page view — parses the set once
+     * with {@see self::fromSet()} and builds its own lookup from that, rather
+     * than paying for the whole set per event on the route that fires on every
+     * page view.
+     *
      * @param iterable<array<string, mixed>> $set
      */
     public static function findInSet(iterable $set, string $id): ?self
@@ -78,29 +86,45 @@ final class PublishedOptin
     }
 
     /**
-     * Every id in the set, as a lookup.
+     * Every id in the set this install is actually SERVING, as a lookup.
      *
-     * Beside {@see self::findInSet()} because it answers the same question for
-     * a DIFFERENT number of ids, and the difference matters: `findInSet` parses
-     * the whole set to answer about one, which is right for the capture route —
-     * one submission, one id, and the parse is the request's only one. The
-     * beacon asks about a batch, so asking that way would parse the set once
-     * per event, on the route that fires on every page view.
+     * Beside {@see self::findInSet()} because it answers a related question
+     * for a DIFFERENT number of ids, and the difference matters: `findInSet`
+     * parses the whole set to answer about one, which is right for the capture
+     * route. The beacon coalesces up to twenty events over one page view, so
+     * asking that way would parse the set once per event, on the route that
+     * fires on every page view.
      *
-     * Keyed rather than a list so the caller tests membership with `isset`
-     * rather than `in_array`. This is NOT the "second shape of the published
-     * set" ADR 0003 refuses: it is derived per request from the option that was
-     * just read, and nothing stores it.
+     * ========================================================================
+     * "PUBLISHED" IS NOT THE SAME QUESTION AS "SERVED".
+     * ========================================================================
+     * A [[Suspended]] Optin is in the published set and is not on any page
+     * this install serves, so it must not be countable either: ADR 0027 asks
+     * for **no rows** rather than zero-valued ones, because a suspended Optin
+     * contributing zeroes against a live denominator makes two periods
+     * incomparable and a counter cannot be recomputed afterwards.
+     *
+     * Absence from the payload usually delivers that on its own. What it does
+     * not cover is a page cached BEFORE the dependency went away, which still
+     * carries the entry and whose loader will still beacon — so the same
+     * question is asked again here, where the count would land.
+     *
+     * Keyed rather than a list so the caller tests membership with `isset`.
+     * This is NOT the "second shape of the published set" ADR 0003 refuses: it
+     * is derived per request from the option that was just read, and nothing
+     * stores it.
      *
      * @param iterable<array<string, mixed>> $set
      * @return array<string, true>
      */
-    public static function idsIn(iterable $set): array
+    public static function servableIdsIn(iterable $set, Degradation $degradation): array
     {
         $ids = [];
 
         foreach (self::fromSet($set) as $optin) {
-            $ids[$optin->id] = true;
+            if ($degradation->suspendedIn($optin->toPayloadEntry()) === null) {
+                $ids[$optin->id] = true;
+            }
         }
 
         return $ids;

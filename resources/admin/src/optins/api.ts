@@ -7,17 +7,54 @@ export interface OptinSummary {
   goal: string;
   published_at: string | null;
   deleted_at: string | null;
+  /**
+   * Why this Optin is [[Suspended]], already written as a sentence — or null
+   * where it is running.
+   *
+   * The words come from PHP rather than being keyed off a code here, because
+   * `wp i18n make-pot` can only see them there and there is no registry for
+   * this bundle to fetch and map against. Present on every row, including as
+   * null: a key that appeared only on the bad rows is a key this file would
+   * test for existence, and "absent" and "not suspended" would be one thing
+   * until the day a request half-failed.
+   */
+  suspended: string | null;
 }
 
-export type OptinStatus = 'published' | 'draft' | 'deleted';
+/**
+ * The four states a row can be in, in the order they OVERRIDE one another.
+ *
+ * `suspended` sits between deleted and published because it is not a state the
+ * merchant chose — which is exactly what separates it from a draft or a
+ * deleted Optin, and the reason it is always shown with its cause (CONTEXT.md,
+ * Suspended). A suspended Optin is still PUBLISHED underneath, so the row
+ * keeps its Unpublish button: the merchant did not unpublish it and must not
+ * have to publish it again to undo something they never did.
+ */
+export type OptinStatus = 'published' | 'suspended' | 'draft' | 'deleted';
 
 export function statusOf(optin: OptinSummary): OptinStatus {
   if (optin.deleted_at !== null) {
     return 'deleted';
   }
 
-  return optin.published_at !== null ? 'published' : 'draft';
+  if (optin.published_at === null) {
+    return 'draft';
+  }
+
+  return optin.suspended !== null ? 'suspended' : 'published';
 }
+
+/**
+ * May this row be unpublished?
+ *
+ * Named for the question the button asks rather than for "is it live", which a
+ * [[Suspended]] Optin is NOT — it is on no page and emits nothing. What it is
+ * is *published*: the site is holding it back and the merchant did not, so
+ * offering them Publish would read as "this never went live" and ask them to
+ * undo something they never did.
+ */
+export const canUnpublish = (status: OptinStatus): boolean => status === 'published' || status === 'suspended';
 
 const path = (suffix = '') => `/wconvert/v1/optins${suffix}`;
 

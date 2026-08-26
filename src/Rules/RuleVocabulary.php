@@ -40,16 +40,41 @@ defined('ABSPATH') || exit;
  * (ADR 0012) — one rule rather than an id heuristic beside a selector special
  * case.
  *
+ * ============================================================================
+ * AND THE TWO FIELDS DEGRADATION READS.
+ * ============================================================================
+ * `on_absence` says what happens to an Optin holding a rule this install
+ * cannot evaluate ({@see OnAbsence}), and `substitute` names the rule that
+ * runs in its place. Both are declared HERE, on the entry, because the
+ * manifest is the only place a substitution may be declared: a
+ * [[Playbook]]-owned fallback lets a remotely-sourced entry declare what runs
+ * in place of a feature it cannot have, which is capability rather than
+ * content, and a standalone table is the fourth hand-maintained list this
+ * design has now refused four times (ADR 0012).
+ *
  * @since 0.1.0
  */
 final class RuleVocabulary
 {
+    /**
+     * The one key a stored rule may carry that is not a param of its type.
+     *
+     * It is PROVENANCE — which rule this one stands in for — and it is the
+     * on-screen surface of a degradation, so it has to survive
+     * {@see self::normalize()} without being declared as a param. Declared as
+     * a param it would draw a control in the builder and invite the merchant
+     * to edit the record of a substitution.
+     */
+    public const DEGRADED_FROM = 'degraded_from';
+
     /**
      * @param array<string, RuleKind> $kinds Rule type => its declared kind.
      * @param array<string, Tier> $tiers Rule type => which install supplies it.
      * @param array<string, array<string, array<string, mixed>>> $params Rule type => param name => its declaration.
      * @param array<string, array<string, array<string, mixed>>> $presets Rule type => preset id => the values it fixes.
      * @param array<string, list<string>> $axes Axis name => its types, in manifest order.
+     * @param array<string, OnAbsence> $onAbsence Rule type => what happens where this install cannot evaluate it.
+     * @param array<string, array<string, mixed>> $substitutes Rule type => the rule that runs in its place.
      */
     private function __construct(
         private readonly array $kinds,
@@ -57,6 +82,8 @@ final class RuleVocabulary
         private readonly array $params = [],
         private readonly array $presets = [],
         private readonly array $axes = [],
+        private readonly array $onAbsence = [],
+        private readonly array $substitutes = [],
     ) {
     }
 
@@ -75,6 +102,8 @@ final class RuleVocabulary
         $params = [];
         $presets = [];
         $axes = [];
+        $onAbsence = [];
+        $substitutes = [];
 
         foreach ($manifest as $axis => $entries) {
             if (!is_array($entries)) {
@@ -98,10 +127,24 @@ final class RuleVocabulary
                 $tiers[$type] = Tier::tryFrom(is_string($entry['tier'] ?? null) ? $entry['tier'] : '') ?? Tier::Free;
                 $params[$type] = self::declarations($entry['params'] ?? []);
                 $presets[$type] = self::declarations($entry['presets'] ?? []);
+                // **Absent means `drop`.** ADR 0012 is the rule and ADR 0027
+                // is the marked exception, so an entry that says nothing
+                // behaves as the rule — which is what keeps `suspend`
+                // something somebody chose rather than something a schema
+                // handed out.
+                $onAbsence[$type] = OnAbsence::tryFrom(
+                    is_string($entry['on_absence'] ?? null) ? $entry['on_absence'] : ''
+                ) ?? OnAbsence::Drop;
+
+                if (is_array($entry['substitute'] ?? null) && is_string($entry['substitute']['type'] ?? null)) {
+                    /** @var array<string, mixed> $substitute */
+                    $substitute = $entry['substitute'];
+                    $substitutes[$type] = $substitute;
+                }
             }
         }
 
-        return new self($kinds, $tiers, $params, $presets, $axes);
+        return new self($kinds, $tiers, $params, $presets, $axes, $onAbsence, $substitutes);
     }
 
     public function kindOf(string $type): ?RuleKind
@@ -116,6 +159,62 @@ final class RuleVocabulary
     public function tierOf(string $type): ?Tier
     {
         return $this->tiers[$type] ?? null;
+    }
+
+    /**
+     * Every CLIENT rule type declared at one tier, in manifest order.
+     *
+     * This is what free and [[Pro]] each register into {@see SuppliedRules},
+     * and it is why the premium split still adds **zero new lists** (ADR 0015):
+     * neither side names a rule type, each asks the one manifest for the types
+     * filed under its own tier.
+     *
+     * Client types only. Targeting is answered on the server by code both
+     * installs carry, so it is never absent and has nothing to register.
+     *
+     * @return list<string>
+     */
+    public function typesAt(Tier $tier): array
+    {
+        $types = [];
+
+        foreach (array_keys($this->kinds) as $type) {
+            $type = (string) $type;
+
+            if ($this->tierOf($type) === $tier && $this->isClientRule($type)) {
+                $types[] = $type;
+            }
+        }
+
+        return $types;
+    }
+
+    /**
+     * What happens to an Optin holding this rule where the install cannot
+     * evaluate it. `drop` for anything the manifest does not say otherwise
+     * about, which is ADR 0012's rule; ADR 0027 is the marked exception.
+     */
+    public function onAbsenceOf(string $type): OnAbsence
+    {
+        return $this->onAbsence[$type] ?? OnAbsence::Drop;
+    }
+
+    /**
+     * The rule that runs in place of this one, or null where nothing does.
+     *
+     * A COMPLETE rule — `{type, ...params}` — rather than a bare type name,
+     * because a Trigger with no params can never fire: `time_on_page` reads
+     * `rule.seconds` and `Number(undefined)` is NaN, so a substitution naming
+     * only the type would swap one silent, total loss of function for another.
+     * `tests/unit/Rules/RuleManifestParityTest.php` asserts every declared
+     * substitute names a free type of the same kind and fills every param that
+     * type declares.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function substituteFor(string $type): ?array
+    {
+        return $this->substitutes[$type] ?? null;
     }
 
     /**
@@ -192,6 +291,15 @@ final class RuleVocabulary
      * reason the type itself is: the vocabulary is closed, and a key no module
      * reads is a rule that silently never holds rather than an extension.
      *
+     * **`degraded_from` is the one exception, and it is not a param.** It is
+     * the marker {@see Degradation} writes beside a substituted rule, and the
+     * builder renders it as a persistent inline note on the rule row — so it
+     * has to survive a save. Declaring it as a param instead would draw a
+     * control for it, which invites the merchant to edit the record of a
+     * substitution. It is kept only where it names a rule type this
+     * vocabulary declares: a marker pointing at nothing is junk in `config`
+     * and a note nobody can read.
+     *
      * @param mixed $rules
      * @return list<array<string, mixed>>
      */
@@ -214,6 +322,12 @@ final class RuleVocabulary
                 if (array_key_exists($param, $rule)) {
                     $narrowed[$param] = $rule[$param];
                 }
+            }
+
+            $marker = $rule[self::DEGRADED_FROM] ?? null;
+
+            if (is_string($marker) && $this->kindOf($marker) !== null) {
+                $narrowed[self::DEGRADED_FROM] = $marker;
             }
 
             $kept[] = $narrowed;
@@ -294,6 +408,37 @@ final class RuleVocabulary
     }
 
     /**
+     * The inverse of {@see self::partition()}: both client axes of a payload
+     * entry, flat again.
+     *
+     * Beside partition rather than at the caller, because the two axis names
+     * are this class's word. The partition happened at publish time and is
+     * what the browser is sent (ADR 0005); a question asked ABOUT an Optin's
+     * rules rather than about when each one fires is asked of all of them at
+     * once, and {@see Degradation} is what asks — a substitution is a rule
+     * swap, and kind is a fixed property of the type rather than of the axis
+     * a rule happened to arrive on.
+     *
+     * @param array<string, mixed> $entry
+     * @return list<array<string, mixed>>
+     */
+    public function flatten(array $entry): array
+    {
+        $rules = [];
+
+        foreach (['triggers', 'conditions'] as $axis) {
+            foreach (is_array($entry[$axis] ?? null) ? $entry[$axis] : [] as $rule) {
+                if (is_array($rule)) {
+                    /** @var array<string, mixed> $rule */
+                    $rules[] = $rule;
+                }
+            }
+        }
+
+        return $rules;
+    }
+
+    /**
      * Split a flat `{type, scalar}` rule list into the two client axes.
      *
      * Two things are dropped rather than carried, and for the same reason:
@@ -334,6 +479,15 @@ final class RuleVocabulary
 
             if ($axis !== null) {
                 /** @var array<string, mixed> $rule */
+                // **The marker does not travel.** It is provenance for the
+                // builder — which rule this one stands in for — and nothing
+                // that renders an Optin reads it, so on the page it is bytes
+                // with no reader against a 2KB budget. The same rule
+                // {@see \WConvert\Optin\PublishedProjection}'s `NOT_SHIPPED`
+                // states one level up, applied where a rule is turned into
+                // payload shape.
+                unset($rule[self::DEGRADED_FROM]);
+
                 $partitioned[$axis][] = $rule;
             }
         }

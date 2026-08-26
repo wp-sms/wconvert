@@ -12,7 +12,7 @@ an `if`.
 
 | Premium capability | How it is absent on free |
 |---|---|
-| `exit_intent`, `scroll_up` | `tier: pro` entries in the one manifest, implemented only in Pro's module tree, which free's source never imports ([ADR 0028](0028-the-free-loader-source-carries-no-premium-code.md), amending [ADR 0014](0014-pro-replaces-the-loader.md)) — *corrected, see below* |
+| `exit_intent`, `scroll_up` | `tier: pro` entries in the one manifest, implemented only in Pro's module tree, which free's source never imports ([ADR 0028](0028-the-free-loader-source-carries-no-premium-code.md), amending [ADR 0014](0014-pro-replaces-the-loader.md)), and registered into [`SuppliedRules`](../../src/Rules/SuppliedRules.php) by Pro's own provider — *corrected, see below* |
 | Premium conditions (the advanced-targeting set) | same |
 | `floating_bar`, `slide_in` | templates free does not ship, and the `[popover=manual]` renderer path ([ADR 0011](0011-non-modal-overlays-use-the-popover-top-layer.md)) |
 | A/B testing | REST routes free never registers — so there is no permission callback to write |
@@ -69,6 +69,19 @@ and would put a branch on the request path 0004 exists to protect.
   members it already enumerates, so the premium split adds **zero new lists** — the
   same drift argument that rejected a second rule list in 0005 and a standalone
   substitution table in 0012.
+  *Held through [#33](https://github.com/navidkashani/wconvert/issues/33), which is
+  where it was most at risk: the degradation resolver needs to know which rule types
+  this install can EVALUATE, and the obvious spelling of that is a list. It is
+  [`SuppliedRules`](../../src/Rules/SuppliedRules.php) instead — a registry free fills
+  from the manifest's `tier: free` entries and Pro fills from its own `tier: pro` ones,
+  **neither side naming a rule type**. The question it answers is set membership, so
+  the enqueue-time strip
+  ([ADR 0012](0012-degradation-substitutes-triggers-and-drops-conditions.md)) asks no
+  tier question at all and the front-end contract test below still passes for a real
+  reason rather than because the branch moved one file along. This is the same shape
+  the Destination registry already had, and it makes "enforcement is by
+  non-registration" literal for the rule vocabulary: what registered decides, and a Pro
+  that refused its min-core guard never reaches its provider.*
 - **One accessor for "is Pro loaded", from day one.** It exists as headroom for a
   future tier ladder, not as a gate.
   *Amended by [#27](https://github.com/navidkashani/wconvert/issues/27): it is now

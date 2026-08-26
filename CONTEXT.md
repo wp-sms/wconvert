@@ -528,6 +528,14 @@ items in your cart"* to someone who has never added anything. A Condition whose
 guarantee the copy asserts is **load-bearing**, and an Optin holding an unavailable one
 is suspended rather than degraded.
 
+The other way in is a [[Trigger]] with no honest substitute. A premium Trigger is
+normally substituted, because an Optin with none can never fire — but `click_element`
+names a selector only one site has, so there is nothing to put in its place. It is
+dropped like any other, and an Optin that loses its **last** Trigger that way is
+suspended rather than left running and unable to fire. Both roads lead here for the
+same reason: suspension is what a silent failure looks like once it has a cause the
+merchant can read.
+
 A suspended Optin **emits nothing** — no [[Impression]], no [[Conversion]] — so its
 history stays comparable rather than filling with zeroes against a live denominator.
 It resumes on its own when the dependency returns; nothing about it is destroyed, so

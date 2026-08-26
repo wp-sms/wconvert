@@ -1,4 +1,4 @@
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { ParamField } from './controls';
 import { RuleRows, type Row } from './RuleRows';
 import { fromRule, toRule } from './presets';
@@ -33,6 +33,12 @@ import type { Rule, RuleType } from './api';
  * not a locked one they cannot. So `locked` types are a sentence under the
  * list — which is also what a settings list owes a merchant who went hunting
  * for exit intent (ADR 0026).
+ *
+ * **And a degradation is a note on its own row, never a banner.** A banner is
+ * dismissed once and leaves the Optin carrying an invisible substitution
+ * forever, which is why ADR 0012 asks for a persistent inline note instead —
+ * on the row, where the substituted rule is, with nothing anywhere in this
+ * file or its stylesheet that dismisses one.
  */
 
 export interface RulesEditorProps {
@@ -125,8 +131,16 @@ function RuleRow({ rule, at, types, onChange }: RuleRowProps) {
     );
   }
 
-  const { type, preset, values, filled } = read;
+  const { type, preset, values, filled, degradedFrom } = read;
   const editable = Object.entries(type.params).filter(([param]) => !(preset !== null && param in preset.fixed));
+  // The rule this one stands in for, by its own name where this install knows
+  // it. `RuleCatalogue` describes a `locked` type rather than filtering it out
+  // — the rules panel explains a gap rather than hiding one (ADR 0026) — so
+  // the words for "Exit intent" are here even on a free install. The raw type
+  // is the fallback for a marker naming something this build has never heard
+  // of, which is the only honest thing left to show.
+  const substitutedFor =
+    degradedFrom === null ? null : (types.find((each) => each.type === degradedFrom)?.label ?? degradedFrom);
 
   return (
     <>
@@ -141,7 +155,9 @@ function RuleRow({ rule, at, types, onChange }: RuleRowProps) {
             // must hand the merchant `utm_source` to edit rather than an empty
             // key and a rule that matches every visitor. A preset's fixed
             // params still win, so this changes nothing when one is chosen.
-            onChange(toRule(type, type.presets.find((each) => each.id === event.target.value) ?? null, values))
+            onChange(
+              toRule(type, type.presets.find((each) => each.id === event.target.value) ?? null, values, degradedFrom)
+            )
           }
         >
           {type.presets.map((each) => (
@@ -161,20 +177,37 @@ function RuleRow({ rule, at, types, onChange }: RuleRowProps) {
           id={`wconvert-rule-${at}-${param}`}
           param={declaration}
           value={filled[param]}
-          onChange={(value) => onChange(toRule(type, preset, { ...filled, [param]: value }))}
+          onChange={(value) => onChange(toRule(type, preset, { ...filled, [param]: value }, degradedFrom))}
         />
       ))}
       {/*
-        Where a rule was substituted by degradation, its row carries a
-        PERSISTENT inline note here — never a dismissible banner, which is
-        dismissed once and leaves the Optin carrying an invisible substitution
-        forever (ADR 0012). The marker that anchors it is `degraded_from`, and
-        it arrives with the degradation ticket; note that
-        `RuleVocabulary::normalize()` keeps only params the manifest declares,
-        so the marker has to be declared there or it will not survive a save.
-        The `locked` note below is the same surface, for the case that needs no
-        marker: a rule authored with Pro and running without it.
+        THE TWO HALVES OF ADR 0012'S ON-SCREEN SURFACE, ON ONE ROW.
+
+        The MARKER is for an Optin prefilled on an install without Pro: the
+        Playbook asked for exit intent, prefill wrote time-on-page instead, and
+        this is the sentence that says so. It is what an upgrade offer will be
+        anchored to, which is why an upgrade never silently re-upgrades a
+        running Optin — changing a live popup's behaviour with no human in the
+        loop is the surprise ADR 0012 refuses. Prose rather than a link, like
+        every other upsell in this bundle: the upgrade DESTINATION is #14's and
+        does not exist yet, and a sentence that says "upgrade here" beside
+        nothing to click is worse than one that does not.
+
+        The LOCKED note is the case that needs no marker: a rule authored WITH
+        Pro and running without it. The premium rule is still in `config` at
+        its own tier, so the type says everything the marker would.
+
+        Both are persistent `<p>`s and neither has a dismiss control.
       */}
+      {substitutedFor !== null && (
+        <p className="wconvert-rule__note">
+          {sprintf(
+            /* translators: %s: the premium rule this one was substituted for, e.g. “Exit intent”. */
+            __('Standing in for “%s”, which is available with WConvert Pro.', 'wconvert'),
+            substitutedFor
+          )}
+        </p>
+      )}
       {type.availability === 'locked' && (
         <p className="wconvert-rule__note">{__('Needs WConvert Pro to run.', 'wconvert')}</p>
       )}

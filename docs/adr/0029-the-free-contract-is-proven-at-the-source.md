@@ -132,6 +132,13 @@ check has an opt-out, the opt-out is what runs on the day it matters.
   *because both runtimes read it*; that only holds if something asserts it. Otherwise
   an entry with no implementation suspends Optins at runtime for a reason that is a
   bug rather than a missing dependency.
+  *Five fields as of [#33](https://github.com/navidkashani/wconvert/issues/33), which
+  added **`substitute`** — the rule that runs in place of a premium one
+  ([ADR 0012](0012-degradation-substitutes-triggers-and-drops-conditions.md)). The
+  count is what changed and the reasoning is not: the fifth field arrived with its
+  reader, its two call sites and its screen in the same ticket, which is what "nothing
+  is written before its subject" asks for, and it is asserted the same way — present on
+  every entry including as null, because null is a claim.*
 - **Plugin Check, pinned to an exact version**, blocking on `error` and reporting
   `warning`. Since 2025-10-27 it runs on every wp.org release, so an error is a
   release blocker whatever we decide — but a blocking gate whose owner controls when

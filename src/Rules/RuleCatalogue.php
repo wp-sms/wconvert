@@ -58,26 +58,42 @@ final class RuleCatalogue
     }
 
     /**
+     * One rule type's [[Availability]] on this install.
+     *
+     * The one place the arithmetic is done for a rule type, because
+     * `unavailable` beating `locked` must not be re-derived per surface: a
+     * merchant with no store is never sold Pro for a feature Pro would not
+     * give them either (ADR 0026).
+     *
+     * Public because a second screen asks it now. {@see \WConvert\Optin\Suspension}
+     * turns "this Optin cannot run rule X" into the sentence the Optin list
+     * shows — *"Suspended — WConvert Pro is not active"* — and the difference
+     * between a missing tier and a missing plugin is exactly what decides
+     * whether that sentence may carry an upsell.
+     */
+    public function availabilityOf(string $type): Availability
+    {
+        // No rule type declares a [[SiteDependency]] in v1 — the cart
+        // Conditions that would are #36's — so the site can serve every one of
+        // them and the only question left is the tier. Passed rather than
+        // assumed, so the day a cart Condition lands the arithmetic is already
+        // the shared one and `unavailable` still beats `locked` (ADR 0026).
+        return Availability::of(true, $this->vocabulary->tierOf($type)?->isSuppliedBy($this->pro) ?? true);
+    }
+
+    /**
      * One rule type, whole.
      *
      * @return array<string, mixed>
      */
     private function describe(string $type): array
     {
-        $tier = $this->vocabulary->tierOf($type);
-
         return [
             'type' => $type,
             'kind' => $this->vocabulary->kindOf($type)?->value,
             'label' => RuleLabels::type($type),
-            'tier' => $tier?->value,
-            // No rule type declares a [[SiteDependency]] in v1 — the cart
-            // Conditions that would are not in the vocabulary yet — so the
-            // site can serve every one of them and the only question left is
-            // the tier. Passed rather than assumed, so the day a cart
-            // Condition lands the arithmetic is already the shared one and
-            // `unavailable` still beats `locked` (ADR 0026).
-            'availability' => Availability::of(true, $tier?->isSuppliedBy($this->pro) ?? true)->value,
+            'tier' => $this->vocabulary->tierOf($type)?->value,
+            'availability' => $this->availabilityOf($type)->value,
             'params' => $this->params($type),
             'presets' => $this->presets($type),
         ];

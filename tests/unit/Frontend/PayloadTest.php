@@ -8,6 +8,7 @@ use WConvert\Frontend\Payload;
 use WConvert\Frontend\PayloadTag;
 use WConvert\Optin\PublishedOptin;
 use WConvert\Targeting\RequestContext;
+use WConvert\Tests\Unit\Support\InstalledRules;
 
 /**
  * What the page actually receives: the published set, filtered to this
@@ -45,8 +46,8 @@ final class PayloadTest extends TestCase
         $onTarget = new RequestContext(path: '/hello/', isSingular: true, postId: 12, postType: 'post');
         $elsewhere = new RequestContext(path: '/other/', isSingular: true, postId: 13, postType: 'post');
 
-        $this->assertSame(['01A'], array_column(Payload::forRequest($set, $onTarget), 'id'));
-        $this->assertSame([], Payload::forRequest($set, $elsewhere));
+        $this->assertSame(['01A'], array_column(Payload::forRequest($set, $onTarget, InstalledRules::free()), 'id'));
+        $this->assertSame([], Payload::forRequest($set, $elsewhere, InstalledRules::free()));
     }
 
     public function testTargetingIsStrippedFromWhatTheBrowserReceives(): void
@@ -54,7 +55,7 @@ final class PayloadTest extends TestCase
         $set = self::projection('01A', ['include' => [['type' => 'url', 'value' => '/secret-staging-path']]]);
         $context = new RequestContext(path: '/secret-staging-path/');
 
-        $entries = Payload::forRequest($set, $context);
+        $entries = Payload::forRequest($set, $context, InstalledRules::free());
 
         $this->assertSame([['id' => '01A', 'display_type' => 'popup']], $entries);
         $this->assertStringNotContainsString('secret-staging-path', PayloadTag::render($entries, self::CAPTURE, self::BEACON));
@@ -137,7 +138,7 @@ final class PayloadTest extends TestCase
             ['id' => '01A', 'targeting' => [], 'payload' => ['display_type' => 'popup']],
         ]);
 
-        $this->assertSame(['01A'], array_column(Payload::forRequest($set, self::at('/')), 'id'));
+        $this->assertSame(['01A'], array_column(Payload::forRequest($set, self::at('/'), InstalledRules::free()), 'id'));
     }
 
     private static function at(string $path): RequestContext

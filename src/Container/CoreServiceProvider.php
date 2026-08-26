@@ -40,8 +40,10 @@ use WConvert\Rest\RuleController;
 use WConvert\Rest\TemplateController;
 use WConvert\Rest\ThemeController;
 use WConvert\Retention\RetentionPeriod;
+use WConvert\Rules\Degradation;
 use WConvert\Rules\RuleCatalogue;
 use WConvert\Rules\RuleVocabulary;
+use WConvert\Rules\SuppliedRules;
 use WConvert\Stats\Dashboard;
 use WConvert\Stats\StatsRepository;
 use WConvert\Storage\OptionStore;
@@ -50,6 +52,7 @@ use WConvert\Storage\WpOptionStore;
 use WConvert\Storage\WpTransientStore;
 use WConvert\Support\ProPresence;
 use WConvert\Support\SitePresence;
+use WConvert\Support\Tier;
 use WConvert\Support\WpProPresence;
 use WConvert\Support\WpSitePresence;
 use WConvert\Template\TemplateLibrary;
@@ -78,6 +81,31 @@ final class CoreServiceProvider implements ServiceProvider
         // file is small but it is still a file, and the alternative is every
         // publish paying a decode.
         $container->register(RuleVocabulary::class, static fn (): RuleVocabulary => RuleVocabulary::fromManifest());
+
+        // **The live registry: which client rule types this install can
+        // actually evaluate.** Free registers the manifest's own free tier;
+        // [[Pro]] adds the premium ones from its provider, into this same
+        // object, exactly as it does with the Destination registry — so the
+        // question the enqueue path asks is answered by which code ran rather
+        // than by a licence or a tier (ADR 0015). Neither side names a rule
+        // type: each asks the one manifest for its own, so the premium split
+        // still adds zero new lists.
+        $container->register(
+            SuppliedRules::class,
+            static fn (ServiceContainer $c): SuppliedRules => (new SuppliedRules())
+                ->add(...$c->resolve(RuleVocabulary::class)->typesAt(Tier::Free))
+        );
+
+        // The thin resolver of ADR 0012, shared by both of its call sites —
+        // [[Playbook]] prefill and asset enqueue. One object, so the two
+        // cannot read the substitution table differently.
+        $container->register(
+            Degradation::class,
+            static fn (ServiceContainer $c): Degradation => new Degradation(
+                $c->resolve(RuleVocabulary::class),
+                $c->resolve(SuppliedRules::class)
+            )
+        );
         // The template vocabulary, read the same way and for the same reason:
         // once per request, so a save does not pay a decode (ADR 0010).
         $container->register(
@@ -120,7 +148,10 @@ final class CoreServiceProvider implements ServiceProvider
 
         $container->register(
             LoaderEnqueue::class,
-            static fn (ServiceContainer $c): LoaderEnqueue => new LoaderEnqueue($c->resolve(PublishedSet::class))
+            static fn (ServiceContainer $c): LoaderEnqueue => new LoaderEnqueue(
+                $c->resolve(PublishedSet::class),
+                $c->resolve(Degradation::class)
+            )
         );
 
         // The Goal registry is an enum plus the two facts that resolve its
@@ -152,7 +183,8 @@ final class CoreServiceProvider implements ServiceProvider
             static fn (ServiceContainer $c): Prefill => new Prefill(
                 $c->resolve(PlaybookLibrary::class),
                 $c->resolve(TemplateLibrary::class),
-                $c->resolve(TemplateVocabulary::class)
+                $c->resolve(TemplateVocabulary::class),
+                $c->resolve(Degradation::class)
             )
         );
 
@@ -163,7 +195,10 @@ final class CoreServiceProvider implements ServiceProvider
                 $c->resolve(RuleVocabulary::class),
                 $c->resolve(TemplateVocabulary::class),
                 $c->resolve(TemplateLibrary::class),
-                $c->resolve(GoalRegistry::class)
+                $c->resolve(GoalRegistry::class),
+                $c->resolve(PublishedSet::class),
+                $c->resolve(Degradation::class),
+                $c->resolve(RuleCatalogue::class)
             )
         );
 
@@ -354,7 +389,8 @@ final class CoreServiceProvider implements ServiceProvider
             static fn (ServiceContainer $c): BeaconController => new BeaconController(
                 $c->resolve(PublishedSet::class),
                 $c->resolve(StatsRepository::class),
-                $c->resolve(RateLimit::class)
+                $c->resolve(RateLimit::class),
+                $c->resolve(Degradation::class)
             )
         );
 

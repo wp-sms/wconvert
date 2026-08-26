@@ -1,7 +1,15 @@
 import { useCallback, useEffect, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { listGoals } from '../goals/api';
-import { deleteOptin, listOptins, publishOptin, statusOf, unpublishOptin, type OptinSummary } from './api';
+import {
+  deleteOptin,
+  canUnpublish,
+  listOptins,
+  publishOptin,
+  statusOf,
+  unpublishOptin,
+  type OptinSummary,
+} from './api';
 
 /**
  * The Optin list: what exists, and what is on the site.
@@ -107,12 +115,30 @@ export function OptinList({ onEdit }: { onEdit: (id: string) => void }) {
                   it would read as an Optin with no Goal at all.
                 */}
                 <td>{labels[optin.goal] ?? <code>{optin.goal}</code>}</td>
-                <td>{status}</td>
+                {/*
+                  **The state AND its cause, never the state alone.**
+                  [[Suspended]] is not a state the merchant chose, so a bare
+                  word here is a merchant with nowhere to ask why their popup
+                  stopped — and this is the screen they come to when it does
+                  (ADR 0027). The sentence is PHP's, already translated.
+
+                  Branched on the STATE rather than on the sentence's presence,
+                  so `statusOf` stays the one place a row's state is decided.
+                  Reading `optin.suspended` directly here would be a second way
+                  of asking, and the two would eventually answer differently.
+                */}
+                <td>{status === 'suspended' ? optin.suspended : status}</td>
                 <td>
                   <button type="button" className="button" onClick={() => onEdit(optin.id)}>
                     {__('Edit', 'wconvert')}
                   </button>{' '}
-                  {status === 'published' ? (
+                  {/*
+                    A suspended Optin is published — the site is holding it
+                    back, the merchant did not. So it keeps Unpublish rather
+                    than being offered a Publish it never needed, which would
+                    read as "this never went live".
+                  */}
+                  {canUnpublish(status) ? (
                     <button
                       type="button"
                       className="button"

@@ -12,6 +12,7 @@ use WConvert\Stats\StatsRepository;
 use WConvert\Tests\Unit\Support\FakeConnection;
 use WConvert\Tests\Unit\Support\FakeOptionStore;
 use WConvert\Tests\Unit\Support\FakeTransientStore;
+use WConvert\Tests\Unit\Support\InstalledRules;
 
 /**
  * The beacon route's REGISTRATION, which is where this endpoint's shape lives
@@ -39,7 +40,8 @@ final class BeaconControllerTest extends TestCase
         $controller = new BeaconController(
             new PublishedSet(new FakeOptionStore()),
             new StatsRepository(new FakeConnection()),
-            new RateLimit(new FakeTransientStore())
+            new RateLimit(new FakeTransientStore()),
+            InstalledRules::free()
         );
 
         $controller->registerRoutes();
