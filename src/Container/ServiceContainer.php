@@ -76,7 +76,7 @@ final class ServiceContainer
             return $this->instances[$id] = ($this->factories[$id])($this);
         }
 
-        throw new ServiceNotFoundException(sprintf('WConvert service "%s" is not registered.', $id));
+        throw new ServiceNotFoundException(sprintf('WConvert service "%s" is not registered.', esc_html($id)));
     }
 
     /**
@@ -93,7 +93,7 @@ final class ServiceContainer
 
         if (!$service instanceof $className) {
             throw new ServiceNotFoundException(
-                sprintf('WConvert service "%s" resolved to %s.', $className, $service::class)
+                sprintf('WConvert service "%s" resolved to %s.', esc_html($className), esc_html($service::class))
             );
         }
 

@@ -107,6 +107,29 @@ final class PayloadTest extends TestCase
     }
 
     /**
+     * **The two route attributes are escaped for an ATTRIBUTE**, which is the
+     * other half of the claim {@see \WConvert\Frontend\LoaderEnqueue} rests on
+     * when it echoes this tag without escaping it again (#60). The JSON body
+     * is escaped by `JSON_HEX_TAG` below; these are not JSON and `esc_url()`
+     * is what their context needs.
+     *
+     * A quote reaching either one unescaped closes the attribute and every
+     * character after it is markup — the same failure as the one below, in the
+     * one place on this tag the JSON encoder never sees.
+     */
+    public function testTheRouteAttributesCannotBreakOutOfTheirAttribute(): void
+    {
+        $tag = PayloadTag::render(
+            [['id' => '01A', 'display_type' => 'popup']],
+            'https://example.com/wp-json/wconvert/v1/capture?x="><script>alert(1)</script>',
+            self::BEACON
+        );
+
+        $this->assertStringNotContainsString('<script>alert', $tag);
+        $this->assertSame(1, substr_count($tag, '</script>'));
+    }
+
+    /**
      * A closing tag inside the copy must not end the script element early.
      * json_encode's JSON_HEX_TAG is what stops it, and this is the test that
      * notices the day someone drops the flag for smaller output.

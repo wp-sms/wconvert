@@ -278,4 +278,52 @@ final class WsmsPushTest extends TestCase
         self::assertSame(PushOutcome::Failed, $result->outcome);
         self::assertTrue($result->retryable);
     }
+
+    /**
+     * ========================================================================
+     * WSMS'S MESSAGE ARRIVES VERBATIM, ON BOTH ROUTES OUT.
+     * ========================================================================
+     * `reason` is not a page. {@see \WConvert\Destination\PushWorker} hands it
+     * to {@see \WConvert\Destination\HealthStore::failed()} and to
+     * {@see \WConvert\Destination\DeliveryFailures::record()}, which store it
+     * for an operator to read — and the admin renders it through React, which
+     * escapes on the way to the DOM.
+     *
+     * So HTML-escaping it anywhere on the way is corruption and not safety:
+     * `&#039;` is what an operator would read instead of an apostrophe, and
+     * `DeliveryFailures` truncates with `mb_substr()`, which will happily cut
+     * an entity in half. This is the assertion that says so, and it holds the
+     * `phpcs:ignore` in {@see \WConvert\Destination\Wsms\WpWsmsContacts::call()}
+     * up (#60) — an escape added to satisfy the sniff fails here.
+     *
+     * Both routes, because they escape through different exceptions: an
+     * ordinary throw rides `catch (\Throwable)`, and an unresolvable conflict
+     * is re-thrown as {@see \WConvert\Destination\Wsms\UnresolvableConflict}
+     * one frame down.
+     */
+    public function testWsmsFailureTextIsStoredExactlyAsWsmsWroteIt(): void
+    {
+        $message = "Sarah's contact & the <list> it's on couldn't be reached";
+
+        $contacts = new FakeWsmsContacts();
+        $contacts->failures = [$message];
+
+        $ordinary = (new WsmsDestinationType($contacts))
+            ->push($this->lead('sarah@example.com', null), $this->context());
+
+        self::assertSame($message, $ordinary->reason, 'an ordinary WSMS throw was rewritten on the way out');
+
+        // The index says the identifier is taken and no read can find the
+        // Contact holding it — the one conflict that is not success-with-
+        // existing, and the only path through UnresolvableConflict.
+        $raced = new FakeWsmsContacts();
+        $raced->createConflicts = [$message];
+
+        $unresolvable = (new WsmsDestinationType($raced))
+            ->push($this->lead('sarah@example.com', null), $this->context());
+
+        self::assertSame(PushOutcome::Failed, $unresolvable->outcome);
+        self::assertTrue($unresolvable->retryable);
+        self::assertSame($message, $unresolvable->reason, 'an unresolvable conflict was rewritten on the way out');
+    }
 }

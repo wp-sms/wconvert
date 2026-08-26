@@ -414,7 +414,7 @@ final class TemplateVocabulary
             return null;
         }
 
-        $scheme = parse_url($href, PHP_URL_SCHEME);
+        $scheme = wp_parse_url($href, PHP_URL_SCHEME);
 
         if ($scheme === null || $scheme === false) {
             return $href;

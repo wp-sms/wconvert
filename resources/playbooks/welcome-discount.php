@@ -15,11 +15,7 @@ return [
     'name' => __('Welcome discount', 'wconvert'),
     'goal' => 'grow_email_list',
     'template_id' => 'centred-card',
-    'notes' => __(
-        'A first-order discount is the highest-converting trade there is, because the visitor gets '
-        . 'something back in the same session. Keep the discount in the headline where it is read first.',
-        'wconvert'
-    ),
+    'notes' => __('A first-order discount is the highest-converting trade there is, because the visitor gets something back in the same session. Keep the discount in the headline where it is read first.', 'wconvert'),
     'copy' => [
         'headline' => __('Get 10% off your first order', 'wconvert'),
         'body' => __('Join the list and we will send the code straight over.', 'wconvert'),
@@ -33,6 +29,7 @@ return [
          * on every install without knowing which install it is on (ADR 0032).
          */
         'fine_print' => [
+            /* translators: %s: the label of a link to the site's privacy policy. */
             'text' => __('No spam, and you can unsubscribe at any time. See our %s.', 'wconvert'),
             'link' => ['label' => __('Privacy Policy', 'wconvert')],
         ],

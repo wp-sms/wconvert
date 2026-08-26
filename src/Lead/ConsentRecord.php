@@ -92,7 +92,7 @@ final class ConsentRecord
         // has no scheme of its own and is safe for the same reason the
         // renderer's `new URL(href, base)` makes it one: it can only ever
         // resolve against the page it is on.
-        $scheme = parse_url($href, PHP_URL_SCHEME);
+        $scheme = wp_parse_url($href, PHP_URL_SCHEME);
 
         if ($scheme === null || $scheme === false) {
             return $href;

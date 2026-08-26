@@ -87,10 +87,25 @@ final class LeadExport
         header('Content-Type: text/csv; charset=utf-8');
         header('Content-Disposition: attachment; filename="' . self::filename() . '"');
 
+        // `php://output` is the RESPONSE, not a file, which is the whole
+        // point: the log can be large and the export streams it in keyset
+        // batches, so nothing holds the whole CSV in memory. WP_Filesystem is
+        // an abstraction over files on disk and cannot open this stream at
+        // all — the alternative it implies is buffering the export and
+        // writing it somewhere, which is the failure mode this shape exists
+        // to avoid.
+        //
+        // WPCS agrees about the OPEN and only about the open: its
+        // AlternativeFunctions sniff exempts fopen(), file_put_contents() and
+        // readfile() when the filename is a local data stream, and
+        // `php://output` is on that list. fclose() takes a handle rather than
+        // a filename, so the sniff has nothing to inspect and flags every
+        // call — including the one closing a handle it just exempted.
         $handle = fopen('php://output', 'w');
 
         if ($handle !== false) {
             $this->stream($handle, $optinId === '' ? null : $optinId);
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- closes the php://output handle opened above, which the same sniff exempts.
             fclose($handle);
         }
 

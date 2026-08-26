@@ -46,6 +46,15 @@ final class FakeWsmsContacts implements WsmsContacts
      */
     public array $raceOnCreate = [];
 
+    /**
+     * @var list<string> Conflicts to raise, one per create call, in order.
+     *      `''` means "no conflict". Unlike {@see self::$raceOnCreate} this
+     *      seeds NO row, so the read that follows finds nothing and the
+     *      conflict is unresolvable — the one branch that reaches
+     *      {@see \WConvert\Destination\Wsms\UnresolvableConflict}.
+     */
+    public array $createConflicts = [];
+
     /** @var list<string> Failures to raise, one per addTag call, in order. `''` means "no failure". */
     public array $tagFailures = [];
 
@@ -86,6 +95,14 @@ final class FakeWsmsContacts implements WsmsContacts
     public function create(array $contact): string
     {
         $this->raiseNextFailure();
+
+        if ($this->createConflicts !== []) {
+            $conflict = array_shift($this->createConflicts);
+
+            if ($conflict !== '') {
+                throw new ContactConflict($conflict);
+            }
+        }
 
         $this->created[] = $contact;
 

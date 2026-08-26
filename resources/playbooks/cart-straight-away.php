@@ -23,14 +23,7 @@ return [
     'name' => __('Straight away', 'wconvert'),
     'goal' => 'recover_cart',
     'template_id' => 'offer-panel',
-    'notes' => __(
-        'The loudest of the three, and the one to be careful with: it shows the moment the page '
-        . 'loads. That suits a store whose shoppers arrive back from an email or an ad already '
-        . 'meaning to finish, and it suits a browsing audience badly — an immediate overlay on a '
-        . 'phone is what search engines mean by an intrusive interstitial. Pair it with targeting '
-        . 'rather than running it site-wide.',
-        'wconvert'
-    ),
+    'notes' => __('The loudest of the three, and the one to be careful with: it shows the moment the page loads. That suits a store whose shoppers arrive back from an email or an ad already meaning to finish, and it suits a browsing audience badly — an immediate overlay on a phone is what search engines mean by an intrusive interstitial. Pair it with targeting rather than running it site-wide.', 'wconvert'),
     'copy' => [
         'headline' => __('Welcome back', 'wconvert'),
         'body' => __('You still have a cart on the go. Pick up where you left off.', 'wconvert'),

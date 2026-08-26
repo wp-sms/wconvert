@@ -29,13 +29,7 @@ return [
     'name' => __('On the way out', 'wconvert'),
     'goal' => 'recover_cart',
     'template_id' => 'offer-panel',
-    'notes' => __(
-        'The gentlest of the three: it waits until the visitor looks like they are leaving, so it '
-        . 'interrupts nothing. Start here — a shopper who has already put something in the cart '
-        . 'rarely needs reminding twice. This Optin is measured by clicks back to the cart, so '
-        . 'there is nothing to submit and nobody is added to a list.',
-        'wconvert'
-    ),
+    'notes' => __('The gentlest of the three: it waits until the visitor looks like they are leaving, so it interrupts nothing. Start here — a shopper who has already put something in the cart rarely needs reminding twice. This Optin is measured by clicks back to the cart, so there is nothing to submit and nobody is added to a list.', 'wconvert'),
     'copy' => [
         'headline' => __('Leaving something behind?', 'wconvert'),
         'body' => __('Your cart is still here, exactly as you left it.', 'wconvert'),
