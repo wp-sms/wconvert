@@ -108,6 +108,23 @@ final class Degradation
     }
 
     /**
+     * The rule type one published Optin cannot run without, or null — asked of
+     * a payload entry rather than of a flat list.
+     *
+     * Beside {@see suspendedBy()} because the same question arrives in two
+     * shapes: prefill holds the flat list a [[Playbook]] wrote, and everything
+     * downstream of publish holds the entry `partition()` produced. Both go
+     * through the same resolver, so the Optin list and the enqueue path can
+     * never disagree about whether a site is serving an Optin.
+     *
+     * @param array<string, mixed> $entry
+     */
+    public function suspendedIn(array $entry): ?string
+    {
+        return $this->resolve($this->vocabulary->flatten($entry), false)['suspendedBy'];
+    }
+
+    /**
      * ENQUEUE. One payload entry, degraded — or **null where the Optin is
      * Suspended and this page must not carry it at all**.
      *
@@ -121,10 +138,7 @@ final class Degradation
      */
     public function intoPayload(array $entry): ?array
     {
-        $triggers = is_array($entry['triggers'] ?? null) ? $entry['triggers'] : [];
-        $conditions = is_array($entry['conditions'] ?? null) ? $entry['conditions'] : [];
-
-        $resolved = $this->resolve([...array_values($triggers), ...array_values($conditions)], false);
+        $resolved = $this->resolve($this->vocabulary->flatten($entry), false);
 
         if ($resolved['suspendedBy'] !== null) {
             return null;
@@ -170,13 +184,42 @@ final class Degradation
     /**
      * The whole resolver, once.
      *
+     * ========================================================================
+     * TWO LISTS COME OUT OF ONE WALK, AND THE VERDICT IS TAKEN FROM THE
+     * SECOND.
+     * ========================================================================
+     * `$kept` is what the caller wanted — a config to write, or a payload to
+     * ship. `$runnable` is the subset this install can actually EVALUATE, and
+     * suspension is judged against that. Judging against `$kept` instead would
+     * make the answer depend on which caller asked, and the Optin list saying
+     * "running" about an Optin the payload is leaving out is the one
+     * disagreement this class exists to make impossible.
+     *
+     * The two lists differ in exactly one case, and it is the case ADR 0012's
+     * table cannot cover: a premium Trigger with **no honest substitute**.
+     *
+     * - **Authoring keeps it.** A [[Playbook]] may name `click_element` and
+     *   leave the selector to the merchant, so dropping it hands prefill a
+     *   draft with zero Triggers — which the save route then refuses, telling
+     *   a merchant who picked a Playbook from a gallery that their Optin needs
+     *   a Trigger. Kept, the draft saves, the Optin is [[Suspended]] with a
+     *   cause on the list, the row is one click from removable, and it starts
+     *   working by itself the day [[Pro]] arrives.
+     * - **The payload strips it.** Free's loader has no module for it, so
+     *   shipping it spends bytes on every matching page view for a rule
+     *   nothing can evaluate — and the Optin is absent anyway.
+     *
+     * A Condition with no substitute is dropped by both, because dropping one
+     * only WIDENS the audience and there is nothing for the merchant to fix.
+     *
      * @param mixed $rules
-     * @param bool $mark Whether to record `degraded_from` — true only where the result is written.
+     * @param bool $forAuthoring True at prefill — the call site that writes `config` for a person to read.
      * @return array{rules: list<array<string, mixed>>, suspendedBy: string|null}
      */
-    private function resolve($rules, bool $mark): array
+    private function resolve($rules, bool $forAuthoring): array
     {
         $kept = [];
+        $runnable = [];
         $suspendedBy = null;
 
         foreach (is_array($rules) ? $rules : [] as $rule) {
@@ -189,6 +232,7 @@ final class Degradation
 
             if ($this->supplied->supplies($type)) {
                 $kept[] = $rule;
+                $runnable[] = $rule;
 
                 continue;
             }
@@ -210,18 +254,22 @@ final class Degradation
             // asked rather than assumed, because the alternative is a rule
             // nothing can run in place of a rule nothing can run.
             if ($substitute !== null && $this->supplied->supplies((string) $substitute['type'])) {
-                $kept[] = $mark ? $substitute + [RuleVocabulary::DEGRADED_FROM => $type] : $substitute;
+                $kept[] = $forAuthoring ? $substitute + [RuleVocabulary::DEGRADED_FROM => $type] : $substitute;
+                $runnable[] = $substitute;
 
                 continue;
             }
 
-            // Dropped — which for a Condition only widens the audience, and
-            // for a Trigger is caught by the post-condition below.
+            // Nothing to run in its place. It never joins `$runnable`, so the
+            // post-condition below sees it go whichever list it lands in.
+            if ($forAuthoring && $this->vocabulary->kindOf($type) === RuleKind::Trigger) {
+                $kept[] = $rule;
+            }
         }
 
         return [
             'rules' => $kept,
-            'suspendedBy' => $suspendedBy ?? $this->lostItsLastTrigger($rules, $kept),
+            'suspendedBy' => $suspendedBy ?? $this->lostItsLastTrigger($rules, $runnable),
         ];
     }
 
@@ -235,11 +283,11 @@ final class Degradation
      * report a bug as a missing dependency.
      *
      * @param mixed $before
-     * @param list<array<string, mixed>> $after
+     * @param list<array<string, mixed>> $runnable What is left that this install can evaluate.
      */
-    private function lostItsLastTrigger($before, array $after): ?string
+    private function lostItsLastTrigger($before, array $runnable): ?string
     {
-        if (!$this->vocabulary->hasTrigger($before) || $this->vocabulary->hasTrigger($after)) {
+        if (!$this->vocabulary->hasTrigger($before) || $this->vocabulary->hasTrigger($runnable)) {
             return null;
         }
 

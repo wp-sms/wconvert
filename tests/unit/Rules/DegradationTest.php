@@ -128,14 +128,71 @@ final class DegradationTest extends TestCase
         $this->assertNull($free->intoPayload(['id' => '01A', 'triggers' => [['type' => 'click_element', 'selector' => '#buy']]]));
     }
 
-    /** With another Trigger beside it, dropping it only loses that one way in. */
+    /**
+     * ========================================================================
+     * AND PREFILL HANDS BACK A DRAFT THAT CAN STILL BE SAVED.
+     * ========================================================================
+     * A [[Playbook]] may name `click_element` and leave the selector to the
+     * merchant — that is what an `authored` param IS (ADR 0012) — so the
+     * registry accepts one whose only Trigger is premium and unsubstitutable.
+     * Resolve that by DROPPING it and prefill returns a draft with zero
+     * Triggers, which `POST /wconvert/v1/optins` then refuses: the merchant
+     * picks a Playbook from the gallery and is told their Optin needs a
+     * Trigger, about a config they never wrote.
+     *
+     * So the authoring call site KEEPS it. The Optin is saveable, born
+     * [[Suspended]] with a cause on the list, one click from removable, and it
+     * starts working by itself the day Pro arrives — which is the whole of
+     * ADR 0027's bargain, offered at the moment the merchant is actually
+     * looking at the rule.
+     */
+    public function testPrefillKeepsATriggerItCannotRunRatherThanHandingBackADraftThatCannotBeSaved(): void
+    {
+        $vocabulary = self::shipped();
+        $free = InstalledRules::free($vocabulary);
+
+        // Exactly what a Playbook may carry: the type, and no selector.
+        $resolved = $free->intoConfig([['type' => 'click_element']]);
+
+        $this->assertSame([['type' => 'click_element']], $resolved);
+        $this->assertTrue($vocabulary->hasTrigger($resolved), 'prefill handed back a draft the save route refuses');
+        $this->assertSame('click_element', $free->suspendedBy($resolved));
+    }
+
+    /**
+     * The payload half of the same rule is the opposite, and has to be: free's
+     * loader has no module for `click_element`, so shipping it spends bytes on
+     * every matching page view for a rule nothing can evaluate — the strip
+     * ADR 0012 puts at enqueue. The Optin is absent anyway, and this is what
+     * says the two call sites disagree ON PURPOSE.
+     */
+    public function testTheSameRuleIsStrippedOnTheWayToThePage(): void
+    {
+        $free = InstalledRules::free();
+
+        $this->assertNull($free->intoPayload(['id' => '01A', 'triggers' => [['type' => 'click_element']]]));
+    }
+
+    /**
+     * With another Trigger beside it, losing that one way in is not a
+     * suspension — the Optin still fires.
+     *
+     * And the two call sites part company here, which is the whole of the
+     * split: the merchant KEEPS the row, because it is theirs to fill in or
+     * remove and an upgrade makes it work; the PAGE does not, because free's
+     * loader has no module for it and the bytes would buy nothing.
+     */
     public function testDroppingATriggerIsFineWhileAnotherOneSurvives(): void
     {
         $free = InstalledRules::free();
         $rules = [['type' => 'click_element', 'selector' => '#buy'], ['type' => 'page_load']];
 
         $this->assertNull($free->suspendedBy($rules));
-        $this->assertSame([['type' => 'page_load']], $free->intoConfig($rules));
+        $this->assertSame($rules, $free->intoConfig($rules), 'the merchant lost a rule they could act on');
+
+        $entry = $free->intoPayload(['id' => '01A', 'triggers' => $rules]);
+
+        $this->assertSame([['type' => 'page_load']], $entry['triggers'] ?? null);
     }
 
     /**

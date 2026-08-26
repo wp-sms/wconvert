@@ -51,16 +51,39 @@ final class Suspension
     }
 
     /**
-     * Whether this published Optin is suspended on this install, and why.
+     * Why each suspended Optin in the published set is suspended, by id.
      *
-     * Asked of the PUBLISHED entry rather than of the draft, deliberately.
-     * Suspension is a statement about what the site is serving; a draft is not
+     * The batch form is the primary one, because the surface is a LIST: the
+     * Optin list resolves every row in one pass over the option the front end
+     * already reads whole, rather than asking per row.
+     *
+     * Asked of the PUBLISHED set rather than of the drafts, deliberately.
+     * Suspension is a statement about what the site is SERVING; a draft is not
      * being served at all, and calling one suspended would put a scary word on
      * an Optin whose author has simply not finished it.
+     *
+     * @param iterable<array<string, mixed>> $set The published set, as stored.
+     * @return array<string, string> Optin id => the sentence to show, for the suspended ones only.
      */
-    public static function of(PublishedOptin $optin, Degradation $degradation, RuleCatalogue $rules): ?self
+    public static function reasonsIn(iterable $set, Degradation $degradation, RuleCatalogue $rules): array
     {
-        $rule = $degradation->suspendedBy($optin->rules());
+        $reasons = [];
+
+        foreach (PublishedOptin::fromSet($set) as $optin) {
+            $suspension = self::of($optin, $degradation, $rules);
+
+            if ($suspension !== null) {
+                $reasons[$optin->id] = $suspension->reason();
+            }
+        }
+
+        return $reasons;
+    }
+
+    /** Whether one published Optin is suspended on this install, and why. */
+    private static function of(PublishedOptin $optin, Degradation $degradation, RuleCatalogue $rules): ?self
+    {
+        $rule = $degradation->suspendedIn($optin->toPayloadEntry());
 
         return $rule === null ? null : new self($rule, $rules->availabilityOf($rule));
     }

@@ -58,6 +58,21 @@ The substitution itself is asymmetric by rule kind:
   without one.*
 - **Display type does not degrade at all** — a Playbook whose type is premium is
   shown as an upsell card and is not selectable.
+  *Untouched by [#33](https://github.com/navidkashani/wconvert/issues/33), and
+  said out loud rather than left to be inferred from silence. This bullet needs
+  **no resolver**, which is the point of it — but it does need a surface, and
+  there is none yet: no [[Template]] and no [[Display Type]] carries a `tier`
+  anywhere in the tree, so nothing on this install can BE premium and the
+  upsell card has nothing to draw. `floating_bar` and `slide_in` are the two
+  [ADR 0015](0015-enforcement-is-by-non-registration.md) names, and they land
+  with the templates that ship them and the `[popover=manual]` renderer path
+  ([ADR 0011](0011-non-modal-overlays-use-the-popover-top-layer.md)) — the
+  same "nothing is written before its subject" rule
+  ([ADR 0029](0029-the-free-contract-is-proven-at-the-source.md)) that kept
+  `substitute` out of the manifest until #33 had a reader for it. The
+  arithmetic those cards will need already exists and is shared:
+  [`Availability`](../../src/Support/Availability.php), resolved per registry
+  member, with `unavailable` beating `locked`.*
 
 ## Why the manifest owns the table
 
@@ -131,6 +146,27 @@ without Pro, enqueue covers those authored with it and now running without it.
 Together they mean **losing Pro degrades rather than stops**, and capture keeps
 working.
 
+*They also **keep different things**, which
+[#33](https://github.com/navidkashani/wconvert/issues/33) had to discover
+rather than read here. A premium Trigger with no substitute — `click_element`
+— is KEPT by prefill and STRIPPED by enqueue.*
+
+*Dropping it at prefill hands back a draft with **zero Triggers**, which the
+save route then refuses: a merchant picks a Playbook from the gallery and is
+told their Optin needs a Trigger, about a config they never wrote. (A Playbook
+may name the type and leave the selector, because `authored` is precisely
+that — see the last consequence below.) Kept, the draft saves, the Optin is
+**[[Suspended]]** with a cause on the list, the row is one click from
+removable, and it starts working by itself the day Pro arrives. Enqueue strips
+it for the mirror reason: free's loader has no module for it, so the bytes buy
+nothing on every matching page view.*
+
+*What the two must never disagree about is the **verdict**, and that is
+structural rather than remembered: the resolver judges suspension against the
+subset this install can actually EVALUATE, never against what each caller chose
+to keep. Otherwise the Optin list says "running" about an Optin the payload is
+leaving out.*
+
 ## Consequences
 
 - **Prefill bakes the substitution into `config` and records a `degraded_from`
@@ -177,6 +213,11 @@ working.
   and nothing anywhere in that file or its stylesheet that dismisses one. The
   `degraded_from` note renders in the same place as of
   [#33](https://github.com/navidkashani/wconvert/issues/33).*
+  *The note is PROSE rather than a link, like every other upsell in the admin
+  bundle: #14 owns the upgrade destination and it does not exist yet, and a
+  sentence reading "upgrade here" beside nothing to click is worse than one
+  that does not. The marker is what such a control will be anchored TO, which
+  is the claim this bullet actually makes.*
   ***And it survives an edit**, which is the half a marker can lose quietly:
   retiming a substituted `time_on_page` from 15 seconds to 30 must not
   un-substitute it, or the first edit retires the note and the upgrade offer it

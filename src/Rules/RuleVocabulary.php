@@ -408,6 +408,37 @@ final class RuleVocabulary
     }
 
     /**
+     * The inverse of {@see self::partition()}: both client axes of a payload
+     * entry, flat again.
+     *
+     * Beside partition rather than at the caller, because the two axis names
+     * are this class's word. The partition happened at publish time and is
+     * what the browser is sent (ADR 0005); a question asked ABOUT an Optin's
+     * rules rather than about when each one fires is asked of all of them at
+     * once, and {@see Degradation} is what asks — a substitution is a rule
+     * swap, and kind is a fixed property of the type rather than of the axis
+     * a rule happened to arrive on.
+     *
+     * @param array<string, mixed> $entry
+     * @return list<array<string, mixed>>
+     */
+    public function flatten(array $entry): array
+    {
+        $rules = [];
+
+        foreach (['triggers', 'conditions'] as $axis) {
+            foreach (is_array($entry[$axis] ?? null) ? $entry[$axis] : [] as $rule) {
+                if (is_array($rule)) {
+                    /** @var array<string, mixed> $rule */
+                    $rules[] = $rule;
+                }
+            }
+        }
+
+        return $rules;
+    }
+
+    /**
      * Split a flat `{type, scalar}` rule list into the two client axes.
      *
      * Two things are dropped rather than carried, and for the same reason:

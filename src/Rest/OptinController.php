@@ -6,7 +6,6 @@ use WConvert\Destination\OptinBinding;
 use WConvert\Goal\GoalRegistry;
 use WConvert\Optin\Optin;
 use WConvert\Optin\OptinRepository;
-use WConvert\Optin\PublishedOptin;
 use WConvert\Optin\PublishedSet;
 use WConvert\Optin\Suspension;
 use WConvert\Rules\Degradation;
@@ -141,17 +140,7 @@ final class OptinController
     public function index(WP_REST_Request $request): WP_REST_Response
     {
         $summaries = $this->optins->summaries((bool) $request->get_param('include_deleted'));
-        $published = PublishedOptin::fromSet($this->publishedSet->all());
-
-        $suspended = [];
-
-        foreach ($published as $optin) {
-            $suspension = Suspension::of($optin, $this->degradation, $this->rules);
-
-            if ($suspension !== null) {
-                $suspended[$optin->id] = $suspension->reason();
-            }
-        }
+        $suspended = Suspension::reasonsIn($this->publishedSet->all(), $this->degradation, $this->rules);
 
         return new WP_REST_Response(array_map(
             // Present on every row, including as null. A key that appears only

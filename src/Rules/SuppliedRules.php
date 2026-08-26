@@ -61,18 +61,4 @@ final class SuppliedRules
     {
         return isset($this->types[$type]);
     }
-
-    /**
-     * Every type registered, sorted — for the tests and for nothing else.
-     *
-     * @return list<string>
-     */
-    public function all(): array
-    {
-        $types = array_keys($this->types);
-
-        sort($types);
-
-        return $types;
-    }
 }

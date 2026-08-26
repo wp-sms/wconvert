@@ -122,7 +122,7 @@ final class PublishedOptin
         $ids = [];
 
         foreach (self::fromSet($set) as $optin) {
-            if ($degradation->suspendedBy($optin->rules()) === null) {
+            if ($degradation->suspendedIn($optin->toPayloadEntry()) === null) {
                 $ids[$optin->id] = true;
             }
         }
@@ -152,38 +152,6 @@ final class PublishedOptin
             Targeting::fromArray(is_array($targeting) ? $targeting : []),
             is_array($payload) ? $payload : [],
         );
-    }
-
-    /**
-     * Both client axes, flat again — the shape the rule vocabulary reads.
-     *
-     * The partition happened at publish time and is what the browser is sent
-     * (ADR 0005); questions asked ABOUT an Optin's rules rather than about
-     * when each one fires are asked of all of them at once. The one asking is
-     * {@see \WConvert\Rules\Degradation}, which resolves both axes together
-     * because a substitution is a rule swap and kind is a fixed property of
-     * the type.
-     *
-     * Here rather than at the caller, for this class's whole reason: nothing
-     * downstream should be reaching into `$payload['triggers']` and spelling
-     * an axis name for itself.
-     *
-     * @return list<array<string, mixed>>
-     */
-    public function rules(): array
-    {
-        $rules = [];
-
-        foreach (['triggers', 'conditions'] as $axis) {
-            foreach (is_array($this->payload[$axis] ?? null) ? $this->payload[$axis] : [] as $rule) {
-                if (is_array($rule)) {
-                    /** @var array<string, mixed> $rule */
-                    $rules[] = $rule;
-                }
-            }
-        }
-
-        return $rules;
     }
 
     /**

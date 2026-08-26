@@ -45,8 +45,16 @@ export function statusOf(optin: OptinSummary): OptinStatus {
   return optin.suspended !== null ? 'suspended' : 'published';
 }
 
-/** Is this Optin live on the site — including one the site is holding back? */
-export const isPublished = (status: OptinStatus): boolean => status === 'published' || status === 'suspended';
+/**
+ * May this row be unpublished?
+ *
+ * Named for the question the button asks rather than for "is it live", which a
+ * [[Suspended]] Optin is NOT — it is on no page and emits nothing. What it is
+ * is *published*: the site is holding it back and the merchant did not, so
+ * offering them Publish would read as "this never went live" and ask them to
+ * undo something they never did.
+ */
+export const canUnpublish = (status: OptinStatus): boolean => status === 'published' || status === 'suspended';
 
 const path = (suffix = '') => `/wconvert/v1/optins${suffix}`;
 

@@ -185,10 +185,13 @@ function RuleRow({ rule, at, types, onChange }: RuleRowProps) {
 
         The MARKER is for an Optin prefilled on an install without Pro: the
         Playbook asked for exit intent, prefill wrote time-on-page instead, and
-        this is the sentence that says so. It anchors the upgrade offer, which
-        is why an upgrade never silently re-upgrades a running Optin — changing
-        a live popup's behaviour with no human in the loop is the surprise
-        ADR 0012 refuses.
+        this is the sentence that says so. It is what an upgrade offer will be
+        anchored to, which is why an upgrade never silently re-upgrades a
+        running Optin — changing a live popup's behaviour with no human in the
+        loop is the surprise ADR 0012 refuses. Prose rather than a link, like
+        every other upsell in this bundle: the upgrade DESTINATION is #14's and
+        does not exist yet, and a sentence that says "upgrade here" beside
+        nothing to click is worse than one that does not.
 
         The LOCKED note is the case that needs no marker: a rule authored WITH
         Pro and running without it. The premium rule is still in `config` at
@@ -200,7 +203,7 @@ function RuleRow({ rule, at, types, onChange }: RuleRowProps) {
         <p className="wconvert-rule__note">
           {sprintf(
             /* translators: %s: the premium rule this one was substituted for, e.g. “Exit intent”. */
-            __('Standing in for “%s”, which needs WConvert Pro. Upgrade to use it here.', 'wconvert'),
+            __('Standing in for “%s”, which is available with WConvert Pro.', 'wconvert'),
             substitutedFor
           )}
         </p>

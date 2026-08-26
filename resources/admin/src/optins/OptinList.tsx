@@ -3,7 +3,7 @@ import { __ } from '@wordpress/i18n';
 import { listGoals } from '../goals/api';
 import {
   deleteOptin,
-  isPublished,
+  canUnpublish,
   listOptins,
   publishOptin,
   statusOf,
@@ -121,8 +121,13 @@ export function OptinList({ onEdit }: { onEdit: (id: string) => void }) {
                   word here is a merchant with nowhere to ask why their popup
                   stopped — and this is the screen they come to when it does
                   (ADR 0027). The sentence is PHP's, already translated.
+
+                  Branched on the STATE rather than on the sentence's presence,
+                  so `statusOf` stays the one place a row's state is decided.
+                  Reading `optin.suspended` directly here would be a second way
+                  of asking, and the two would eventually answer differently.
                 */}
-                <td>{optin.suspended ?? status}</td>
+                <td>{status === 'suspended' ? optin.suspended : status}</td>
                 <td>
                   <button type="button" className="button" onClick={() => onEdit(optin.id)}>
                     {__('Edit', 'wconvert')}
@@ -133,7 +138,7 @@ export function OptinList({ onEdit }: { onEdit: (id: string) => void }) {
                     than being offered a Publish it never needed, which would
                     read as "this never went live".
                   */}
-                  {isPublished(status) ? (
+                  {canUnpublish(status) ? (
                     <button
                       type="button"
                       className="button"
