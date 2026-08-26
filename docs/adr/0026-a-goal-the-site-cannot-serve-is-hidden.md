@@ -59,10 +59,44 @@ widened audience trades a missing feature for a factually false one.
   Conditions are always available to it. ADR 0012's table has no work to do inside it.
   The only remaining case is a dependency the merchant *removes* later, which
   [ADR 0027](0027-a-load-bearing-condition-suspends-rather-than-drops.md) covers.
+  *Relied on by [#36](https://github.com/navidkashani/wconvert/issues/36): two of
+  the three cart [[Playbook]]s prefill a premium [[Trigger]] alongside a premium
+  Condition, which no other bundled entry may do. The rule that replaced "free's
+  bundled library names only free's own rules" is exactly this bullet made
+  checkable — **a Playbook may name what its Goal already guarantees, on both
+  axes**, so a `tier: pro` rule needs a `tier: pro` Goal over it and a rule
+  declaring a [[SiteDependency]] needs a Goal declaring the same one
+  (`tests/unit/Playbook/BundledPlaybooksTest.php`).*
 - **`CONTEXT.md`'s [[Availability]] entry is amended** — the rendering line becomes a
   per-surface rule, and the `unavailable`-beats-`locked` precedence is added.
 - **A Goal is a registry member subject to Availability**, like a Trigger type or a
   Destination type. There is still no separate list of premium capabilities.
+
+  ***And so is a rule type, on both halves, as of
+  [#36](https://github.com/navidkashani/wconvert/issues/36).*** *Until then
+  [`RuleCatalogue::availabilityOf()`](../../src/Rules/RuleCatalogue.php) passed a
+  literal `true` for "the site can serve it", because no rule type declared a
+  dependency; the two cart Conditions are the first that do, and they declare it as
+  `requires` on the rule manifest — beside `tier`, on a registry that already
+  enumerates them, so the count of lists is still zero. The arithmetic did not
+  change: it was already `Availability::of()`, which is why `unavailable` beating
+  `locked` arrived for rule types with nothing to re-derive.*
+
+  ***There was a live hole underneath this, and closing it is what #36 was for.***
+  *Registration is the entitlement ([ADR 0015](0015-enforcement-is-by-non-registration.md)),
+  and Pro's provider registered every `tier: pro` rule type unconditionally at boot.
+  So on a Pro install with WooCommerce **deactivated**, `cart_has_items` was
+  *supplied* — therefore not suspended, therefore shown, and the Optin said "you
+  left 3 items in your cart" to somebody who had never added anything. That is
+  precisely ADR 0027's failure arriving from the WooCommerce side rather than the
+  Pro side, and `on_absence: suspend` alone does not close it: the field only fires
+  when the type is UNSUPPLIED. The fix keeps the shape rather than adding a branch —
+  [`RuleVocabulary::typesAt()`](../../src/Rules/RuleVocabulary.php) now takes the
+  site as well as the tier, and **both** providers ask it, because a gate only one
+  caller applies is a gate the other re-opens. A rule needing a store on a site with
+  no store genuinely cannot be evaluated: nothing writes the cart cookie, so its
+  module would answer false forever — the silent, total loss ADR 0012 names, where
+  suspension is the same outcome with a cause the merchant can read.*
   *Built by [#27](https://github.com/navidkashani/wconvert/issues/27) as an **enum
   plus data**: [`Goal`](../../src/Goal/Goal.php) declares its metric, its `tier`
   and what the site must have, and
@@ -85,6 +119,16 @@ widened audience trades a missing feature for a factually false one.
 - Merchants who deactivate WooCommerce temporarily see their goal screen change shape
   with no explanation on that screen. Accepted: it is rare, and ADR 0027 tells them
   what happened on the screen where they would actually notice — the Optin list.
+  *Delivered by [#36](https://github.com/navidkashani/wconvert/issues/36), and the
+  sentence NAMES the plugin: [`Suspension`](../../src/Optin/Suspension.php)'s
+  `unavailable` branch was written in #33 and unreachable until a rule type declared
+  a dependency, and it read "not available on this site" — which leaves a merchant
+  who deactivated WooCommerce to guess which of their plugins did it. It now reads
+  "the “Has something in their cart” rule needs WooCommerce, which is not active on
+  this site", resolved from the manifest through
+  [`SiteDependency::label()`](../../src/Support/SiteDependency.php) rather than
+  written out, and it says nothing about Pro — which is this ADR's load-bearing half
+  at the one moment it could have been broken.*
 - Existing Optins are untouched. The [[Goal]] is read at report time and never frozen
   ([ADR 0020](0020-conversions-are-interpreted-at-read.md)), so an install that loses
   WooCommerce keeps every number it already counted and they stay correct.

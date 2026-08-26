@@ -10,6 +10,7 @@ use WConvert\Rest\ThemeController;
 use WConvert\Rules\RuleCatalogue;
 use WConvert\Rules\RuleVocabulary;
 use WConvert\Tests\Unit\Support\FakeProPresence;
+use WConvert\Tests\Unit\Support\FakeSitePresence;
 
 /**
  * The builder's two reads, and the fact that they ARE reads.
@@ -37,7 +38,8 @@ final class BuilderRoutesTest extends TestCase
 
         (new RuleController(new RuleCatalogue(
             RuleVocabulary::fromManifest(self::PLUGIN_DIR),
-            new FakeProPresence()
+            new FakeProPresence(),
+            new FakeSitePresence()
         )))->registerRoutes();
 
         (new ThemeController())->registerRoutes();

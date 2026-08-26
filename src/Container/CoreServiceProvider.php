@@ -93,7 +93,17 @@ final class CoreServiceProvider implements ServiceProvider
         $container->register(
             SuppliedRules::class,
             static fn (ServiceContainer $c): SuppliedRules => (new SuppliedRules())
-                ->add(...$c->resolve(RuleVocabulary::class)->typesAt(Tier::Free))
+                ->add(...$c->resolve(RuleVocabulary::class)->typesAt(
+                    Tier::Free,
+                    // The SITE half, asked at registration rather than at the
+                    // resolver: a rule needing a store on a site with no store
+                    // cannot be evaluated, so registering it would make an
+                    // Optin holding it fail silently instead of being visibly
+                    // [[Suspended]] (ADR 0027). Nothing free ships declares
+                    // one, so this call is vacuous today — but a gate only
+                    // Pro's provider applied is a gate free's would re-open.
+                    $c->resolve(SitePresence::class)
+                ))
         );
 
         // The thin resolver of ADR 0012, shared by both of its call sites —
@@ -408,7 +418,8 @@ final class CoreServiceProvider implements ServiceProvider
             RuleCatalogue::class,
             static fn (ServiceContainer $c): RuleCatalogue => new RuleCatalogue(
                 $c->resolve(RuleVocabulary::class),
-                $c->resolve(ProPresence::class)
+                $c->resolve(ProPresence::class),
+                $c->resolve(SitePresence::class)
             )
         );
 

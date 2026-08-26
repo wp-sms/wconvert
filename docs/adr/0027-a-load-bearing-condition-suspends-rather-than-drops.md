@@ -45,6 +45,20 @@ on the rule manifest** that both runtimes already read
 so ADR 0012 remains the rule and this is the marked exception. Both cart Conditions set
 `suspend`.
 
+***And `suspend` alone does not close the WooCommerce half.*** *Recorded by
+[#36](https://github.com/navidkashani/wconvert/issues/36), which found it live.
+The field only fires where the rule type is UNSUPPLIED, and supply is
+registration ([ADR 0015](0015-enforcement-is-by-non-registration.md)) — so on a
+Pro install with WooCommerce deactivated, a Pro that registered every `tier: pro`
+type at boot made `cart_has_items` supplied, not suspended, and shown. The
+missing half is a **fourth** property on the same entry, `requires`, naming the
+[[SiteDependency]] the rule needs; both service providers ask it at registration,
+so a rule the site cannot serve reads as unsupplied and this ADR's whole
+mechanism applies unchanged. `Degradation` gained no site branch, and the enqueue
+path still asks no tier question of any kind. See
+[ADR 0026](0026-a-goal-the-site-cannot-serve-is-hidden.md) for why the CAUSE has
+to distinguish the two.*
+
 *Read for the first time by [#33](https://github.com/navidkashani/wconvert/issues/33):
 until then `on_absence` was a field nothing consulted. `suspend` is still declared by
 NOTHING that ships — the two cart Conditions that set it are
@@ -54,6 +68,14 @@ manifest the test writes, which is also what proves the DEFAULT: the same entry 
 the field left out is dropped. That the mechanism precedes its first declaring entry is
 deliberate and is the shape #36 is blocked on, not the "field nothing reads" this map
 has refused four times: it has a reader, two call sites and a screen.*
+
+***Declared as of [#36](https://github.com/navidkashani/wconvert/issues/36).***
+*`cart_has_items` and `cart_value_min` ship with `on_absence: suspend`, and they
+are the first entries in the manifest to carry it —
+`tests/unit/Rules/RuleManifestParityTest.php` pins both by type rather than
+deriving them, because the whole point of `suspend` is that somebody CHOSE it: a
+rule that quietly reverted to the `drop` default would ship exactly the lying
+popup, and the default is what an entry saying nothing gets.*
 
 *Completed by [#22](https://github.com/navidkashani/wconvert/issues/22), which gives
 every client entry a concrete value for the first time. **`drop` on a Trigger does not
@@ -96,6 +118,12 @@ The alternatives each put the fact in the wrong place:
   not active"*, *"Suspended — Pro not active"*. This is the screen a merchant actually
   looks at when something stopped working, which is what makes ADR 0026's silent goal
   screen acceptable.
+  *Named in full as of [#36](https://github.com/navidkashani/wconvert/issues/36):
+  this bullet's own example, "Suspended — WooCommerce not active", was unreachable
+  until a rule type declared a dependency, and the branch that would have rendered
+  it said only "not available on this site". Both halves now say which thing is
+  missing, because a merchant reading a row is a merchant deciding what to go and
+  turn back on.*
   *Built as [`Suspension`](../../src/Optin/Suspension.php) in
   [#33](https://github.com/navidkashani/wconvert/issues/33), and the cause is RESOLVED
   rather than asserted: the resolver reports the rule type it could not run — the code

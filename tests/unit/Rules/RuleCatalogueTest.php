@@ -6,7 +6,10 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use WConvert\Rules\RuleCatalogue;
 use WConvert\Rules\RuleVocabulary;
+use WConvert\Support\Availability;
+use WConvert\Support\SiteDependency;
 use WConvert\Tests\Unit\Support\FakeProPresence;
+use WConvert\Tests\Unit\Support\FakeSitePresence;
 
 /**
  * The rule vocabulary as the builder receives it.
@@ -32,12 +35,18 @@ final class RuleCatalogueTest extends TestCase
     /**
      * @return array<string, list<array<string, mixed>>>
      */
-    private static function catalogue(bool $hasPro = false): array
+    private static function catalogue(bool $hasPro = false, bool $hasStore = true): array
     {
-        return (new RuleCatalogue(
+        return self::of($hasPro, $hasStore)->all();
+    }
+
+    private static function of(bool $hasPro, bool $hasStore = true): RuleCatalogue
+    {
+        return new RuleCatalogue(
             RuleVocabulary::fromManifest(self::PLUGIN_DIR),
-            new FakeProPresence($hasPro)
-        ))->all();
+            new FakeProPresence($hasPro),
+            new FakeSitePresence($hasStore ? [SiteDependency::WooCommerce] : [])
+        );
     }
 
     /**
@@ -144,5 +153,95 @@ final class RuleCatalogueTest extends TestCase
     {
         $this->assertTrue(self::type(self::catalogue(true), 'triggers', 'click_element')['params']['selector']['authored']);
         $this->assertFalse(self::type(self::catalogue(), 'triggers', 'time_on_page')['params']['seconds']['authored']);
+    }
+
+    // ========================================================================
+    // AND THE SITE HALF, WHERE `unavailable` BEATS `locked` (ADR 0026).
+    // ========================================================================
+
+    /**
+     * **A paying customer is never shown an upsell**, and the mirror of it:
+     * a merchant with no store is never sold [[Pro]] for a feature Pro would
+     * not give them either. A cart [[Condition]] on a Pro install with no
+     * WooCommerce is `unavailable`, not `ready` — Pro cannot make a cart out
+     * of nothing.
+     */
+    public function testACartConditionIsUnavailableWithoutAStoreEvenOnPro(): void
+    {
+        $this->assertSame(
+            Availability::Unavailable,
+            self::of(true, false)->availabilityOf('cart_has_items')
+        );
+    }
+
+    /**
+     * The precedence, from the side where both reasons apply at once. A free
+     * install with no store could be told either thing, and `locked` is the
+     * one that offers to sell a licence for a feature the buyer still could
+     * not use.
+     */
+    public function testUnavailableBeatsLockedWhenBothReasonsApply(): void
+    {
+        $this->assertSame(
+            Availability::Unavailable,
+            self::of(false, false)->availabilityOf('cart_value_min')
+        );
+    }
+
+    /** With both halves present it is simply usable. */
+    public function testACartConditionIsReadyOnProWithAStore(): void
+    {
+        $this->assertSame(Availability::Ready, self::of(true)->availabilityOf('cart_has_items'));
+    }
+
+    /**
+     * A store and no Pro is the one cart case that IS buyable from us, so it
+     * is the one that may carry an upsell.
+     */
+    public function testACartConditionIsLockedOnFreeWithAStore(): void
+    {
+        $this->assertSame(Availability::Locked, self::of(false)->availabilityOf('cart_has_items'));
+    }
+
+    /**
+     * A rule needing nothing of the site is never `unavailable`, whatever the
+     * install is missing — otherwise every install without WooCommerce would
+     * lose `exit_intent`'s upsell too.
+     */
+    public function testARuleThatNeedsNothingOfTheSiteIsNeverUnavailable(): void
+    {
+        $this->assertSame(Availability::Locked, self::of(false, false)->availabilityOf('exit_intent'));
+        $this->assertSame(Availability::Ready, self::of(false, false)->availabilityOf('device'));
+    }
+
+    /**
+     * **The dependency is NAMED**, because "not available on this site" leaves
+     * a merchant who deactivated WooCommerce to guess which of their plugins
+     * did it ({@see \WConvert\Optin\Suspension} is what turns it into a
+     * sentence).
+     */
+    public function testTheCatalogueSaysWhichPluginTheSiteWouldNeed(): void
+    {
+        $catalogue = self::of(true);
+
+        $this->assertSame(SiteDependency::WooCommerce, $catalogue->requirementOf('cart_has_items'));
+        $this->assertSame(SiteDependency::WooCommerce, $catalogue->requirementOf('cart_value_min'));
+        $this->assertNull($catalogue->requirementOf('exit_intent'));
+        $this->assertNull($catalogue->requirementOf('nonsense'));
+    }
+
+    /**
+     * **A rule the site cannot serve is still DESCRIBED.** The rules panel is
+     * a settings list the merchant went hunting through, and such a list
+     * explains a gap; it is the creation flow's front door that hides one
+     * (ADR 0026). Filtering here would leave a merchant who deactivated
+     * WooCommerce wondering where their cart rules went.
+     */
+    public function testACartConditionIsDescribedEvenWithNoStore(): void
+    {
+        $described = self::type(self::catalogue(true, false), 'conditions', 'cart_has_items');
+
+        $this->assertSame('unavailable', $described['availability']);
+        $this->assertSame('Has something in their cart', $described['label']);
     }
 }

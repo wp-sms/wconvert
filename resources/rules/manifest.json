@@ -3,6 +3,7 @@
     "post": {
       "kind": "page",
       "tier": "free",
+      "requires": null,
       "params": { "value": { "control": "post_id", "authored": true } },
       "presets": {},
       "consent_category": null,
@@ -12,6 +13,7 @@
     "singular": {
       "kind": "page",
       "tier": "free",
+      "requires": null,
       "params": { "value": { "control": "post_type" } },
       "presets": {},
       "consent_category": null,
@@ -21,6 +23,7 @@
     "archive": {
       "kind": "page",
       "tier": "free",
+      "requires": null,
       "params": { "value": { "control": "post_type" } },
       "presets": {},
       "consent_category": null,
@@ -30,6 +33,7 @@
     "term": {
       "kind": "page",
       "tier": "free",
+      "requires": null,
       "params": { "value": { "control": "term_id", "authored": true } },
       "presets": {},
       "consent_category": null,
@@ -39,6 +43,7 @@
     "url": {
       "kind": "page",
       "tier": "free",
+      "requires": null,
       "params": { "value": { "control": "path_glob" } },
       "presets": {},
       "consent_category": null,
@@ -48,6 +53,7 @@
     "logged_in": {
       "kind": "visitor",
       "tier": "free",
+      "requires": null,
       "params": { "value": { "control": "boolean" } },
       "presets": {},
       "consent_category": null,
@@ -59,6 +65,7 @@
     "page_load": {
       "kind": "trigger",
       "tier": "free",
+      "requires": null,
       "params": {},
       "presets": {},
       "consent_category": null,
@@ -68,6 +75,7 @@
     "time_on_page": {
       "kind": "trigger",
       "tier": "free",
+      "requires": null,
       "params": { "seconds": { "control": "seconds" } },
       "presets": {
         "after_a_moment": { "seconds": 5 },
@@ -80,6 +88,7 @@
     "scroll_depth": {
       "kind": "trigger",
       "tier": "free",
+      "requires": null,
       "params": { "percent": { "control": "percent" } },
       "presets": {
         "halfway_down": { "percent": 50 },
@@ -92,6 +101,7 @@
     "click_element": {
       "kind": "trigger",
       "tier": "pro",
+      "requires": null,
       "params": { "selector": { "control": "selector", "authored": true } },
       "presets": {},
       "consent_category": null,
@@ -101,6 +111,7 @@
     "exit_intent": {
       "kind": "trigger",
       "tier": "pro",
+      "requires": null,
       "params": {},
       "presets": {},
       "consent_category": null,
@@ -110,6 +121,7 @@
     "scroll_up": {
       "kind": "trigger",
       "tier": "pro",
+      "requires": null,
       "params": {},
       "presets": {},
       "consent_category": null,
@@ -121,6 +133,7 @@
     "device": {
       "kind": "condition",
       "tier": "free",
+      "requires": null,
       "params": { "in": { "control": "device_set", "options": ["mobile", "tablet", "desktop"] } },
       "presets": {
         "mobile_only": { "in": ["mobile"] },
@@ -134,6 +147,7 @@
     "query_param": {
       "kind": "condition",
       "tier": "pro",
+      "requires": null,
       "params": {
         "key": { "control": "text" },
         "value": { "control": "text_set" }
@@ -145,6 +159,26 @@
       },
       "consent_category": null,
       "on_absence": "drop",
+      "substitute": null
+    },
+    "cart_has_items": {
+      "kind": "condition",
+      "tier": "pro",
+      "requires": "woocommerce",
+      "params": {},
+      "presets": {},
+      "consent_category": "functional",
+      "on_absence": "suspend",
+      "substitute": null
+    },
+    "cart_value_min": {
+      "kind": "condition",
+      "tier": "pro",
+      "requires": "woocommerce",
+      "params": { "amount": { "control": "amount", "authored": true } },
+      "presets": {},
+      "consent_category": "functional",
+      "on_absence": "suspend",
       "substitute": null
     }
   }

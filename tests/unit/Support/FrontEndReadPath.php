@@ -46,6 +46,13 @@ final class FrontEndReadPath
                 'src/Optin/PublishedSet.php',
                 'src/Optin/PublishedOptin.php',
                 'src/Assets/BuiltAsset.php',
+                // The two site-resolved links, filled in at render time
+                // rather than frozen into the published set (ADR 0032,
+                // ADR 0025). They run on every uncached page view that
+                // carries an Optin, so an entitlement branch or a memo added
+                // in either is the same mistake as one added in `Frontend`.
+                'src/Template/PolicyLink.php',
+                'src/Template/CartLink.php',
             ]),
         );
 

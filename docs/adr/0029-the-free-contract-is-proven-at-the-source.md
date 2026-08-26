@@ -85,7 +85,11 @@ therefore stays empty through #22 and the scan goes live in #32, with no change
 to the script. **It did.** #32 added `exit_intent` and `scroll_up` beside the
 `click_element` and `query_param` entries #29 brought, each in the same commit
 as its Pro module, and the scan now reads four premium identifiers out of the
-manifest and finds none of them in free's built loader. Note that #32's acceptance criteria say free's manifest **lacks**
+manifest and finds none of them in free's built loader. *Six as of
+[#36](https://github.com/navidkashani/wconvert/issues/36) — the two cart
+Conditions, again in the same commit as the Pro module that implements them, and
+again with no change to the script, because the list is read from the manifest
+rather than written here.* Note that #32's acceptance criteria say free's manifest **lacks**
 those entries; that is the one reading this ADR rules out, because free's PHP is
 what strips an unentitled rule at enqueue and it can only strip what its own
 manifest calls premium. There is one manifest, in free, and it names both tiers.*
@@ -132,6 +136,15 @@ check has an opt-out, the opt-out is what runs on the day it matters.
   *because both runtimes read it*; that only holds if something asserts it. Otherwise
   an entry with no implementation suspends Optins at runtime for a reason that is a
   bug rather than a missing dependency.
+  ***Six as of [#36](https://github.com/navidkashani/wconvert/issues/36)***, *which
+  added **`requires`** — the [[SiteDependency]] a rule type needs
+  ([ADR 0026](0026-a-goal-the-site-cannot-serve-is-hidden.md)). Same test, same
+  reasoning, and worth saying out loud now the list has grown twice: **the count is
+  not the invariant.** What is asserted is that no field arrives ahead of a reader,
+  and this one landed with three of them in one pull request — the registration gate,
+  the Availability arithmetic, and the sentence on the Optin list. A manifest that
+  gained a field per ticket and a reader per release would satisfy every assertion
+  here and none of its point.*
   *Five fields as of [#33](https://github.com/navidkashani/wconvert/issues/33), which
   added **`substitute`** — the rule that runs in place of a premium one
   ([ADR 0012](0012-degradation-substitutes-triggers-and-drops-conditions.md)). The

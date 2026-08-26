@@ -3,10 +3,12 @@
 namespace WConvert\Frontend;
 
 use WConvert\Assets\BuiltAsset;
+use WConvert\Goal\Goal;
 use WConvert\Optin\PublishedOptin;
 use WConvert\Optin\PublishedSet;
 use WConvert\Rest\Routes;
 use WConvert\Rules\Degradation;
+use WConvert\Template\CartLink;
 use WConvert\Template\PolicyLink;
 
 defined('ABSPATH') || exit;
@@ -95,6 +97,22 @@ final class LoaderEnqueue
         $policy = get_privacy_policy_url();
         $entries = array_map(static fn (array $entry): array => PolicyLink::into($entry, $policy), $entries);
 
+        // **And the way back to the cart, on the same terms** (ADR 0025). The
+        // cart page is site-local, so a [[Playbook]] cannot name it and the
+        // published set must not freeze it — the merchant who moves their cart
+        // page corrects every running Optin without republishing one.
+        //
+        // Keyed on the [[Goal]] rather than on the shape of the button,
+        // because *Promote a sale or offer* ships the same click-metered CTA
+        // with no href and its destination is the merchant's. `CartLink` is
+        // where that argument lives.
+        //
+        // The URL is read HERE and passed down, so the rule itself stays a
+        // pure function of (entries, set, url) — the same arrangement
+        // `PolicyLink` has one line up, and what lets both be tested without
+        // a WordPress install or a WooCommerce one.
+        $entries = self::withCartUrl($entries, $set, self::cartUrl($set));
+
         $dist = WCONVERT_DIR . self::DIST;
 
         if (!is_file($dist)) {
@@ -128,6 +146,77 @@ final class LoaderEnqueue
             // is an attribute and esc_url is what that needs.
             echo PayloadTag::render($entries, $captureUrl, $beaconUrl);
         }, 5);
+    }
+
+    /**
+     * Every cart-recovery entry on this page, pointed back at the cart.
+     *
+     * The Optins were parsed once at the top of {@see self::enqueue()} and the
+     * [[Goal]] rides the projection beside the payload, so this is a lookup
+     * over what has already been read rather than a second pass over the
+     * option (ADR 0003).
+     *
+     * **Keyed on the Goal rather than on the shape of the button.** *Promote
+     * a sale or offer* ships the same click-metered CTA with no href and its
+     * destination is the merchant's, so a purely structural rule — the one
+     * {@see PolicyLink} can afford, because a site has exactly one privacy
+     * policy — would silently point an unconfigured sale Optin at the cart.
+     *
+     * Public and static for the reason {@see Payload::forRequest()} is: it is
+     * a pure function of what the enqueue path has already read, and the whole
+     * of the surrounding method is WordPress calls a unit suite cannot make.
+     *
+     * @param list<array<string, mixed>> $entries
+     * @param list<PublishedOptin> $set
+     * @param string|null $url `wc_get_cart_url()`, or null where there is no store.
+     * @return list<array<string, mixed>>
+     */
+    public static function withCartUrl(array $entries, array $set, ?string $url): array
+    {
+        $cartOptins = [];
+
+        foreach ($set as $optin) {
+            if ($optin->goal === Goal::RecoverCart->value) {
+                $cartOptins[$optin->id] = true;
+            }
+        }
+
+        if ($cartOptins === []) {
+            return $entries;
+        }
+
+        return array_map(
+            static fn (array $entry): array => isset($cartOptins[$entry['id'] ?? ''])
+                ? CartLink::into($entry, $url)
+                : $entry,
+            $entries
+        );
+    }
+
+    /**
+     * Where this site's cart is, or null where there is no store.
+     *
+     * **Asked only where a cart Optin actually matched this page**, which is
+     * almost never: `wc_get_cart_url()` reads a WooCommerce option and runs a
+     * filter, and an Optin that does not match this page costs this page
+     * nothing (ADR 0003).
+     *
+     * With no WooCommerce there is no URL, and none is invented — never a dead
+     * `#`. Such an Optin is [[Suspended]] anyway, because both cart
+     * [[Condition]]s carry `on_absence: suspend` and neither is supplied
+     * without a store (ADR 0027), so this is the belt beside that brace.
+     *
+     * @param list<PublishedOptin> $set
+     */
+    private static function cartUrl(array $set): ?string
+    {
+        foreach ($set as $optin) {
+            if ($optin->goal === Goal::RecoverCart->value) {
+                return function_exists('wc_get_cart_url') ? (string) wc_get_cart_url() : null;
+            }
+        }
+
+        return null;
     }
 
     private static function noticeMissingLoaderBundle(): void

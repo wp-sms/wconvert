@@ -90,6 +90,14 @@ hand-maintained lists drift, and the drift is silent").
 property of the rule type in the manifest" and that "that declaration is also what
 #13's substitution table keys off."
 
+*Widened by [#36](https://github.com/navidkashani/wconvert/issues/36) without
+changing shape: each side now asks the one manifest for the types filed under
+its own tier **that this site can serve**, since a rule needing a store on a
+site with no store cannot be evaluated at all — nothing writes the cart cookie,
+so its module would answer false forever, which is the silent total loss this
+ADR names two sections down. It is still zero new lists, still no entitlement
+branch on the request path, and `Degradation` itself is untouched.*
+
 *Built that way in [#33](https://github.com/navidkashani/wconvert/issues/33),
 and the count held: the resolver added **no list at all**. What decides whether
 a rule can run is
@@ -194,6 +202,16 @@ leaving out.*
   tier, which the builder's `locked` note already explains. That is what makes
   the two call sites disjoint in the CODE rather than only in the prose: prefill
   bakes the substitution in, so enqueue is a no-op on anything prefill touched.*
+
+  ***That line moved in [#36](https://github.com/navidkashani/wconvert/issues/36)***
+  *and the reasoning behind it survived: an entry naming a rule free cannot
+  evaluate prefills a free install with a rule free cannot evaluate — but a
+  gallery is only ever reached THROUGH a [[Goal]] the merchant was able to
+  choose, so an entry under a `tier: pro` Goal cannot be prefilled onto a free
+  install at all. The rule is now "a Playbook may name what its Goal already
+  guarantees", on both halves of [[Availability]], which is what lets the three
+  cart entries name `exit_intent` and `cart_has_items` and still refuses a cart
+  Condition dropped into a Playbook for* Grow my email list.
 
   *Free's bundled library still names only free's own rules
   (`tests/unit/Playbook/BundledPlaybooksTest.php` holds that line), so prefill's

@@ -27,6 +27,20 @@ final class PublishedOptin
         public readonly string $id,
         public readonly Targeting $targeting,
         public readonly array $payload = [],
+        /**
+         * The [[Goal]] this Optin serves, as stored.
+         *
+         * A string rather than the enum, because this is a parse of an option
+         * and a Goal that was valid when the set was built is not this class's
+         * to re-validate — a corrupted one reads as "no Goal" and the Optin
+         * simply gets no site-resolved CTA target, which is the failure that
+         * leaves the page working.
+         *
+         * It is beside {@see self::$payload} rather than in it: the front end
+         * reads it to resolve the cart URL and the browser never sees it
+         * (ADR 0025).
+         */
+        public readonly string $goal = '',
     ) {
     }
 
@@ -151,6 +165,7 @@ final class PublishedOptin
             $id,
             Targeting::fromArray(is_array($targeting) ? $targeting : []),
             is_array($payload) ? $payload : [],
+            (string) ($projection['goal'] ?? ''),
         );
     }
 

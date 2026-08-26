@@ -102,7 +102,9 @@ final class DegradationTest extends TestCase
     {
         $vocabulary = self::shipped();
 
-        foreach ([...$vocabulary->typesAt(Tier::Free), ...$vocabulary->typesAt(Tier::Pro)] as $type) {
+        $store = InstalledRules::store();
+
+        foreach ([...$vocabulary->typesAt(Tier::Free, $store), ...$vocabulary->typesAt(Tier::Pro, $store)] as $type) {
             if ($vocabulary->kindOf($type) === RuleKind::Condition) {
                 $this->assertNull($vocabulary->substituteFor($type), sprintf('%s declares a substitute', $type));
             }
@@ -207,7 +209,7 @@ final class DegradationTest extends TestCase
     {
         $vocabulary = RuleVocabulary::fromManifest(self::PLUGIN_DIR);
 
-        foreach ($vocabulary->typesAt(Tier::Pro) as $type) {
+        foreach ($vocabulary->typesAt(Tier::Pro, InstalledRules::store()) as $type) {
             if ($vocabulary->kindOf($type) === RuleKind::Trigger) {
                 yield $type => [$type];
             }

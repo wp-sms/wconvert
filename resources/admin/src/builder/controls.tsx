@@ -56,6 +56,28 @@ export function ParamControl({ id, param, value, onChange }: ParamControlProps) 
         />
       );
 
+    /**
+     * A money threshold, in the store's own currency.
+     *
+     * No symbol and no locale formatting, deliberately: the store's currency
+     * is a WooCommerce setting this bundle does not read, and a control that
+     * printed the wrong one would be worse than a control that prints none.
+     * The label carries the fact instead. `step` allows minor units, since a
+     * threshold of 49.99 is the one a merchant actually writes.
+     */
+    case 'amount':
+      return (
+        <input
+          id={id}
+          type="number"
+          className="small-text"
+          min={0}
+          step="0.01"
+          value={typeof value === 'number' ? value : ''}
+          onChange={(event) => onChange(event.target.value === '' ? undefined : Number(event.target.value))}
+        />
+      );
+
     case 'post_id':
     case 'term_id':
       return (

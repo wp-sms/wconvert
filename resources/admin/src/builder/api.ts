@@ -57,7 +57,8 @@ export type Control =
   | 'post_id'
   | 'term_id'
   | 'post_type'
-  | 'path_glob';
+  | 'path_glob'
+  | 'amount';
 
 export interface RuleParam {
   control: Control;

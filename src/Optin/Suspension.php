@@ -6,6 +6,7 @@ use WConvert\Rules\Degradation;
 use WConvert\Rules\RuleCatalogue;
 use WConvert\Rules\RuleLabels;
 use WConvert\Support\Availability;
+use WConvert\Support\SiteDependency;
 
 defined('ABSPATH') || exit;
 
@@ -47,6 +48,15 @@ final class Suspension
         /** The rule type this Optin cannot run without. */
         public readonly string $rule,
         public readonly Availability $availability,
+        /**
+         * What the SITE would need for that rule, where that is the cause.
+         *
+         * Carried rather than re-derived, because `unavailable` on its own is
+         * not a sentence a merchant can act on: it says a dependency is
+         * missing and leaves them to guess which plugin. Null wherever the
+         * cause is the tier, which is the case that may name Pro.
+         */
+        public readonly ?SiteDependency $dependency,
     ) {
     }
 
@@ -85,7 +95,9 @@ final class Suspension
     {
         $rule = $degradation->suspendedIn($optin->toPayloadEntry());
 
-        return $rule === null ? null : new self($rule, $rules->availabilityOf($rule));
+        return $rule === null
+            ? null
+            : new self($rule, $rules->availabilityOf($rule), $rules->requirementOf($rule));
     }
 
     /**
@@ -107,11 +119,27 @@ final class Suspension
             );
         }
 
-        // Not an upsell, and never one: a rule the SITE cannot serve is not
-        // something we can sell (ADR 0026). No rule type declares a
-        // [[SiteDependency]] until #36's cart Conditions, so today this is
-        // unreachable — written because the alternative is a screen that
-        // offers to sell a WooCommerce licence the day one does.
+        // **Not an upsell, and never one**: a rule the SITE cannot serve is
+        // not something we can sell (ADR 0026). Reachable as of #36, whose
+        // two cart Conditions are the first rule types to declare a
+        // [[SiteDependency]] — and it NAMES the dependency, because
+        // “not available on this site” leaves a merchant who deactivated
+        // WooCommerce to guess which of their plugins did it.
+        if ($this->dependency !== null) {
+            return sprintf(
+                /* translators: 1: the display name of the rule the Optin cannot run without. 2: the plugin the site needs, e.g. WooCommerce. */
+                __('Suspended — the “%1$s” rule needs %2$s, which is not active on this site', 'wconvert'),
+                RuleLabels::type($this->rule),
+                $this->dependency->label()
+            );
+        }
+
+        // No dependency to name, which {@see Availability::of()} makes
+        // unreachable — `unavailable` is what a MISSING dependency produces.
+        // Kept as the honest thing to say rather than as a `match` arm that
+        // cannot happen: a manifest naming a dependency this build does not
+        // know reads as no dependency at all, and a fatal on the Optin list
+        // would be a worse answer than a vaguer sentence.
         return sprintf(
             /* translators: %s: the display name of the rule the Optin cannot run without. */
             __('Suspended — “%s” is not available on this site', 'wconvert'),

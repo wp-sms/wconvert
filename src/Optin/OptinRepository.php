@@ -31,8 +31,19 @@ final class OptinRepository
     /** The list view's projection — no LONGTEXT. */
     private const SUMMARY_COLUMNS = 'id, name, goal, published_at, deleted_at';
 
-    /** What the published set is built from. */
-    private const PROJECTION_COLUMNS = 'id, published_config, published_at, deleted_at';
+    /**
+     * What the published set is built from.
+     *
+     * **`goal` is here and `name` is not**, which is the line: the set is the
+     * front end's read path, so a column earns its place by being something
+     * the page needs. The Goal is what says an Optin's CTA goes back to the
+     * cart, and the cart URL is resolved per request from `wc_get_cart_url()`
+     * rather than frozen into the set (ADR 0025) — so the Goal has to reach
+     * enqueue. It is an indexed `VARCHAR(64)` beside a `LONGTEXT` this query
+     * already pulls, and it never reaches the browser
+     * ({@see \WConvert\Optin\PublishedProjection}).
+     */
+    private const PROJECTION_COLUMNS = 'id, goal, published_config, published_at, deleted_at';
 
     /** Enough to label a [[Lead]] with the Optin that captured it, and nothing more. */
     private const NAME_COLUMNS = 'id, name';

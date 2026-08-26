@@ -8,6 +8,8 @@ use WConvert\Goal\Goal;
 use WConvert\Playbook\Playbook;
 use WConvert\Playbook\PlaybookLibrary;
 use WConvert\Rules\RuleVocabulary;
+use WConvert\Support\SiteDependency;
+use WConvert\Support\Tier;
 use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
 
@@ -51,21 +53,129 @@ final class BundledPlaybooksTest extends TestCase
     /**
      * The gallery filters on **Goal only** (CONTEXT.md, Display Type), so a
      * Goal reachable on the goal screen with no Playbook under it lands the
-     * merchant on an empty gallery. Four of five are covered here; the cart
-     * Goal is `tier: pro` and its Playbooks arrive with the Conditions that
-     * define it (ADR 0026).
+     * merchant on an empty gallery.
+     *
+     * **All five, as of #36.** Four were covered from the start and the cart
+     * Goal was skipped here, because its Playbooks could not exist before the
+     * [[Condition]]s that define it — nothing is written before its subject
+     * (ADR 0029). They arrived with those Conditions, so the exemption goes
+     * with them.
      */
-    public function testEveryGoalAFreeInstallCanReachHasSomethingToStartFrom(): void
+    public function testEveryGoalHasSomethingToStartFrom(): void
     {
         $library = self::library();
 
         foreach (Goal::cases() as $goal) {
-            if ($goal === Goal::RecoverCart) {
-                continue;
-            }
-
             $this->assertNotSame([], $library->servicing($goal), "{$goal->value} has no Playbook");
         }
+    }
+
+    /**
+     * **Three cart Playbooks, split by INTRUSION and by nothing else.**
+     *
+     * They ride one Template, because what the cart [[Goal]] needs is *one
+     * step, click-metered, CTA-bearing* — a shape it shares with the other
+     * click Goal rather than a WooCommerce design (ADR 0025). So the only
+     * axis worth three cards is how loudly the Optin asks, which is the
+     * [[Trigger]]: on the way out, after a while, straight away.
+     */
+    public function testTheCartGoalShipsThreePlaybooksThatDifferOnlyInHowLoudlyTheyAsk(): void
+    {
+        $cart = self::library()->servicing(Goal::RecoverCart);
+        $vocabulary = RuleVocabulary::fromManifest(self::PLUGIN_DIR);
+
+        $this->assertCount(3, $cart);
+
+        $triggers = [];
+
+        foreach ($cart as $playbook) {
+            $this->assertSame(
+                'offer-panel',
+                $playbook->templateId,
+                'a cart Playbook named a Template of its own, and there are no WooCommerce designs (ADR 0025)'
+            );
+
+            foreach ($vocabulary->partition($playbook->rules)['triggers'] as $trigger) {
+                $triggers[] = $trigger['type'];
+            }
+        }
+
+        $this->assertSame(
+            $triggers,
+            array_unique($triggers),
+            'two cart Playbooks ask at the same moment, so one of them is a duplicate card'
+        );
+    }
+
+    /**
+     * **`cart_value_min` is reachable only by hand**, so it appears in no
+     * bundled entry: a currency threshold is site-local and a [[Playbook]] can
+     * express nothing site-local. The manifest marks its `amount` `authored`,
+     * which is what refuses a Playbook SUPPLYING one; this is the other half —
+     * no bundled entry names the rule at all, since a card whose defining rule
+     * the merchant must fill in by hand prefills an Optin that never holds.
+     */
+    public function testNoBundledPlaybookNamesTheCurrencyThreshold(): void
+    {
+        foreach (self::library()->all() as $id => $playbook) {
+            foreach ($playbook->rules as $rule) {
+                $this->assertNotSame('cart_value_min', $rule['type'] ?? '', "{$id} names a site-local threshold");
+            }
+        }
+    }
+
+    /**
+     * **A cart Playbook captures nothing either**, which is the whole of
+     * ADR 0025 read from the gallery: no form node in the design it names, no
+     * [[Destination]] hint, no `consent_text` to snapshot a [[Consent Record]]
+     * from. The Template half is enforced at registration by the
+     * converting-act check; this is the Playbook half.
+     */
+    public function testEveryCartPlaybookCapturesNothing(): void
+    {
+        foreach (self::library()->servicing(Goal::RecoverCart) as $playbook) {
+            $this->assertSame([], $playbook->destinationHint, "{$playbook->id} pushes to a Destination");
+            $this->assertArrayNotHasKey('consent_text', $playbook->copy, "{$playbook->id} holds a Consent Record");
+        }
+    }
+
+    /**
+     * **The CTA carries a label and no destination**, which is how a generic
+     * entry asks the site for the one thing it cannot know. The way back to
+     * the cart is resolved by the renderer from `wc_get_cart_url()`, with the
+     * settings panel as the override (ADR 0025) — a Playbook naming an href
+     * would be naming a page on one particular site.
+     *
+     * Asserted against the Template each cart entry actually names, because
+     * that is what prefill snapshots.
+     */
+    public function testNoCartPlaybookNamesTheWayBackToTheCart(): void
+    {
+        $templates = TemplateLibrary::fromDirectory(TemplateVocabulary::fromManifest(self::PLUGIN_DIR), self::PLUGIN_DIR);
+
+        foreach (self::library()->servicing(Goal::RecoverCart) as $playbook) {
+            $tree = (array) ($templates->find($playbook->templateId)['tree'] ?? []);
+
+            $this->assertNotSame([], $tree, "{$playbook->id} names no design");
+            $this->assertSame([], self::hrefsIn($tree), "{$playbook->id}'s design names a site-local URL");
+        }
+    }
+
+    /**
+     * @param array<string, mixed> $tree
+     * @return list<string>
+     */
+    private static function hrefsIn(array $tree): array
+    {
+        $found = [];
+
+        array_walk_recursive($tree, static function ($value, $key) use (&$found): void {
+            if ($key === 'href' && is_string($value) && $value !== '') {
+                $found[] = $value;
+            }
+        });
+
+        return $found;
     }
 
     /**
@@ -88,26 +198,86 @@ final class BundledPlaybooksTest extends TestCase
     }
 
     /**
-     * A bundled entry naming a premium rule prefills a free install with a
-     * rule free cannot evaluate, and the substitution resolver that would
-     * repair it lands with its own ticket (ADR 0012). Until then, free's
-     * bundled library stays inside free's own vocabulary.
+     * ========================================================================
+     * A PLAYBOOK MAY NAME A RULE THE INSTALL LACKS ONLY WHERE ITS GOAL
+     * ALREADY DEMANDS THE SAME THING.
+     * ========================================================================
+     * This used to read *"no bundled entry names a premium rule"*, full stop,
+     * and the reasoning it gave was: such an entry prefills a free install
+     * with a rule free cannot evaluate. **That reasoning survives; the rule it
+     * produced was too wide.** A gallery is only ever reached THROUGH a
+     * [[Goal]] the merchant was able to choose ({@see \WConvert\Goal\GoalRegistry}),
+     * so an entry under a `tier: pro` Goal cannot be prefilled onto a free
+     * install at all — the goal screen hides it and the save route refuses it
+     * (ADR 0026).
+     *
+     * So the question is not "is this rule premium" but **"can this Playbook
+     * be reached on an install that cannot run it"**, and the Goal above it is
+     * what answers. Both halves of [[Availability]] are checked, because both
+     * can make a rule unrunnable and only one of them is buyable from us:
+     *
+     * - a `tier: pro` rule needs a `tier: pro` Goal over it;
+     * - a rule declaring a [[SiteDependency]] needs a Goal declaring the SAME
+     *   one, which is what stops a cart Condition being dropped into a
+     *   [[Playbook]] for *Grow my email list* — a real and sensible pairing a
+     *   merchant may build by hand (ADR 0025 routes them there), and one a
+     *   bundled card must not make for them, since it would suspend the Optin
+     *   on every store-less install that started from it.
      */
-    public function testNoBundledPlaybookPrefillsARuleAFreeInstallCannotRun(): void
+    public function testNoBundledPlaybookPrefillsARuleItsGoalCannotGuarantee(): void
     {
-        $premium = array_keys(array_filter(
-            array_merge(
-                \WConvert\Rules\RuleManifest::axis('triggers', self::PLUGIN_DIR),
-                \WConvert\Rules\RuleManifest::axis('conditions', self::PLUGIN_DIR)
-            ),
-            static fn (array $entry): bool => ($entry['tier'] ?? 'free') !== 'free'
-        ));
+        $entries = array_merge(
+            \WConvert\Rules\RuleManifest::axis('triggers', self::PLUGIN_DIR),
+            \WConvert\Rules\RuleManifest::axis('conditions', self::PLUGIN_DIR)
+        );
 
         foreach (self::library()->all() as $id => $playbook) {
             foreach ($playbook->rules as $rule) {
-                $this->assertNotContains($rule['type'] ?? '', $premium, "{$id} prefills a premium rule");
+                $type = (string) ($rule['type'] ?? '');
+                $entry = $entries[$type] ?? [];
+
+                if (($entry['tier'] ?? 'free') !== 'free') {
+                    $this->assertSame(
+                        Tier::Pro,
+                        $playbook->goal->tier(),
+                        "{$id} prefills the premium rule {$type} under a Goal a free install can reach"
+                    );
+                }
+
+                $requires = SiteDependency::tryFrom(is_string($entry['requires'] ?? null) ? $entry['requires'] : '');
+
+                if ($requires !== null) {
+                    $this->assertSame(
+                        $requires,
+                        $playbook->goal->requires(),
+                        "{$id} prefills {$type} under a Goal that does not need {$requires->value}"
+                    );
+                }
             }
         }
+    }
+
+    /**
+     * Not a tautology: the assertion above is vacuous unless something in the
+     * shipped library actually exercises it. The cart entries are what do —
+     * they are the first bundled Playbooks to name a rule free cannot run.
+     */
+    public function testTheLibraryActuallyExercisesThatRule(): void
+    {
+        $entries = \WConvert\Rules\RuleManifest::axis('conditions', self::PLUGIN_DIR);
+        $named = [];
+
+        foreach (self::library()->all() as $playbook) {
+            foreach ($playbook->rules as $rule) {
+                $type = (string) ($rule['type'] ?? '');
+
+                if (($entries[$type]['requires'] ?? null) !== null) {
+                    $named[] = $type;
+                }
+            }
+        }
+
+        $this->assertNotSame([], $named, 'no bundled Playbook names a site-dependent rule');
     }
 
     /**

@@ -11,6 +11,7 @@ use WConvert\Optin\Suspension;
 use WConvert\Rest\OptinController;
 use WConvert\Rules\RuleCatalogue;
 use WConvert\Rules\RuleVocabulary;
+use WConvert\Support\SiteDependency;
 use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
 use WConvert\Tests\Unit\Support\FakeConnection;
@@ -75,23 +76,41 @@ final class SuspendedOnTheListTest extends TestCase
     }
 
     /**
-     * @return list<array<string, mixed>> The list exactly as `GET /wconvert/v1/optins` answers it.
+     * The list exactly as `GET /wconvert/v1/optins` answers it, on an install
+     * described by the two facts that decide [[Availability]].
+     *
+     * Two axes rather than one as of #36, and they are INDEPENDENT: [[Pro]]
+     * can go while the store stays, and the store can go while Pro stays. The
+     * second is the case that was live before — Pro registered every
+     * `tier: pro` rule type unconditionally, so a cart rule read as supplied
+     * on a site with no WooCommerce.
+     *
+     * @return list<array<string, mixed>>
      */
-    private function listedOn(bool $proLoaded): array
+    private function listedOn(bool $proLoaded, bool $hasStore = true): array
     {
         $templates = TemplateVocabulary::fromManifest(self::PLUGIN_DIR);
         $pro = new FakeProPresence($proLoaded);
+        $site = new FakeSitePresence($hasStore ? [SiteDependency::WooCommerce] : []);
         $vocabulary = RuleVocabulary::fromManifest(self::PLUGIN_DIR);
+
+        if (!$proLoaded) {
+            $degradation = InstalledRules::free($vocabulary);
+        } else {
+            $degradation = $hasStore
+                ? InstalledRules::withPro($vocabulary)
+                : InstalledRules::withProButNoStore($vocabulary);
+        }
 
         $controller = new OptinController(
             $this->optins,
             $vocabulary,
             $templates,
             TemplateLibrary::fromDirectory($templates, self::PLUGIN_DIR),
-            new GoalRegistry($pro, new FakeSitePresence()),
+            new GoalRegistry($pro, $site),
             $this->publishedSet,
-            $proLoaded ? InstalledRules::withPro($vocabulary) : InstalledRules::free($vocabulary),
-            new RuleCatalogue($vocabulary, $pro)
+            $degradation,
+            new RuleCatalogue($vocabulary, $pro, $site)
         );
 
         /** @var list<array<string, mixed>> $rows */
@@ -159,6 +178,97 @@ final class SuspendedOnTheListTest extends TestCase
         $id = $this->draft([['type' => 'click_element', 'selector' => '#buy']]);
 
         $this->assertNull(self::suspensionOf($this->listedOn(false), $id));
+    }
+
+    // ========================================================================
+    // AND THE OTHER AXIS: THE DEPENDENCY THE SITE SUPPLIES (#36).
+    // ========================================================================
+
+    /**
+     * **The live hole #36 closed.** [[Pro]] registers every `tier: pro` rule
+     * type at boot, so on a Pro install with WooCommerce deactivated
+     * `cart_has_items` used to read as SUPPLIED — therefore not suspended,
+     * therefore shown, and the Optin said *"you left 3 items in your cart"* to
+     * somebody who has never added anything. `on_absence: suspend` alone does
+     * not close it, because the field only fires when the type is unsupplied.
+     */
+    public function testACartOptinIsSuspendedWhenTheStoreGoesEvenWithProRunning(): void
+    {
+        $id = $this->publish([['type' => 'page_load'], ['type' => 'cart_has_items']]);
+
+        $reason = self::suspensionOf($this->listedOn(true, false), $id);
+
+        $this->assertNotNull($reason, 'a cart Optin ran on a site with no cart');
+        $this->assertStringContainsString('Suspended', $reason);
+    }
+
+    /**
+     * **And it names WooCommerce rather than Pro.** `locked` is buyable from
+     * us and `unavailable` is not, so a row that reached for the upsell here
+     * would offer a paying customer a WConvert licence they already hold, for
+     * a WooCommerce licence we do not sell (ADR 0026).
+     */
+    public function testTheCauseNamesTheMissingPluginAndNeverSellsPro(): void
+    {
+        $id = $this->publish([['type' => 'page_load'], ['type' => 'cart_has_items']]);
+
+        $reason = (string) self::suspensionOf($this->listedOn(true, false), $id);
+
+        $this->assertStringContainsString('WooCommerce', $reason);
+        $this->assertStringNotContainsString('WConvert Pro', $reason);
+    }
+
+    /**
+     * The same Optin on a free install with a store: the cause is the TIER,
+     * which is the one cart case we may sell against.
+     */
+    public function testWithAStoreAndNoProTheCauseIsTheTier(): void
+    {
+        $id = $this->publish([['type' => 'page_load'], ['type' => 'cart_has_items']]);
+
+        $reason = (string) self::suspensionOf($this->listedOn(false), $id);
+
+        $this->assertStringContainsString('WConvert Pro', $reason);
+    }
+
+    /**
+     * Both gone at once, and `unavailable` still beats `locked`. This is the
+     * merchant who has neither, and the one a collapsed state would try to
+     * sell Pro to for a feature Pro alone would not deliver.
+     */
+    public function testWithNeitherProNorAStoreTheCauseIsStillTheStore(): void
+    {
+        $id = $this->publish([['type' => 'page_load'], ['type' => 'cart_has_items']]);
+
+        $reason = (string) self::suspensionOf($this->listedOn(false, false), $id);
+
+        $this->assertStringContainsString('WooCommerce', $reason);
+        $this->assertStringNotContainsString('WConvert Pro', $reason);
+    }
+
+    /**
+     * **Self-healing on this axis too, with no repair step.** Reactivating
+     * WooCommerce is a plugin screen and nothing else: nothing about the Optin
+     * was stored, so the next request simply computes a different answer.
+     */
+    public function testTheSameRowResumesTheMomentTheStoreIsBack(): void
+    {
+        $id = $this->publish([['type' => 'page_load'], ['type' => 'cart_has_items']]);
+
+        $this->assertNotNull(self::suspensionOf($this->listedOn(true, false), $id));
+        $this->assertNull(self::suspensionOf($this->listedOn(true), $id));
+    }
+
+    /**
+     * The two axes do not leak into each other. An Optin holding no cart rule
+     * is untouched by the store going away, or every Optin on a site that
+     * uninstalled WooCommerce would go dark at once.
+     */
+    public function testAnOptinWithNoCartRuleIsUnaffectedByTheStoreGoingAway(): void
+    {
+        $id = $this->publish([['type' => 'page_load'], ['type' => 'device', 'in' => ['mobile']]]);
+
+        $this->assertNull(self::suspensionOf($this->listedOn(true, false), $id));
     }
 
     /** Every row carries the key, so "absent" and "not suspended" stay one thing. */

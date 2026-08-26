@@ -4,6 +4,8 @@ namespace WConvert\Rules;
 
 use WConvert\Support\Availability;
 use WConvert\Support\ProPresence;
+use WConvert\Support\SiteDependency;
+use WConvert\Support\SitePresence;
 
 defined('ABSPATH') || exit;
 
@@ -38,6 +40,10 @@ final class RuleCatalogue
     public function __construct(
         private readonly RuleVocabulary $vocabulary,
         private readonly ProPresence $pro,
+        // Beside Pro's presence rather than folded into it: a missing tier is
+        // buyable from us and a missing plugin is not, and collapsing the two
+        // shows a Pro customer an advertisement for Pro (ADR 0026).
+        private readonly SitePresence $site,
     ) {
     }
 
@@ -73,12 +79,36 @@ final class RuleCatalogue
      */
     public function availabilityOf(string $type): Availability
     {
-        // No rule type declares a [[SiteDependency]] in v1 — the cart
-        // Conditions that would are #36's — so the site can serve every one of
-        // them and the only question left is the tier. Passed rather than
-        // assumed, so the day a cart Condition lands the arithmetic is already
-        // the shared one and `unavailable` still beats `locked` (ADR 0026).
-        return Availability::of(true, $this->vocabulary->tierOf($type)?->isSuppliedBy($this->pro) ?? true);
+        $requires = $this->vocabulary->requiresOf($type);
+
+        // **Both halves, and `unavailable` beats `locked`.** The precedence is
+        // {@see Availability::of()}'s rather than an order written out here,
+        // so a merchant with no store is never sold Pro for a feature Pro
+        // would not give them either (ADR 0026). Until #36's cart Conditions
+        // no rule type named a dependency and the first argument was the
+        // literal `true`; what changed is the manifest gaining `requires`, not
+        // the arithmetic.
+        return Availability::of(
+            $requires === null || $this->site->has($requires),
+            $this->vocabulary->tierOf($type)?->isSuppliedBy($this->pro) ?? true
+        );
+    }
+
+    /**
+     * What the SITE would need for this rule type, or null.
+     *
+     * Public for the one surface that has to NAME it. `unavailable` says a
+     * dependency is missing and nothing more; a list row reading *"Suspended
+     * — not available on this site"* leaves the merchant to guess which
+     * plugin, which is the same silence ADR 0026 refuses on a settings list.
+     * {@see \WConvert\Optin\Suspension} turns the pair into a sentence.
+     *
+     * It delegates rather than re-reading the manifest, so the catalogue and
+     * the vocabulary cannot disagree about what a type needs.
+     */
+    public function requirementOf(string $type): ?SiteDependency
+    {
+        return $this->vocabulary->requiresOf($type);
     }
 
     /**

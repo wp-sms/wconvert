@@ -412,3 +412,148 @@ describe('exit_intent and scroll_up on one Optin', () => {
     expect(ids).toContain('scroll_up');
   });
 });
+
+/**
+ * =============================================================================
+ * THE TWO CART CONDITIONS: ONE COOKIE, TWO READS, NO WRITES.
+ * =============================================================================
+ * `WConvert\Pro\WooCommerce\CartCookie` writes `<count>:<total>` on
+ * `woocommerce_cart_updated`. These two read it, synchronously, at the instant
+ * a Trigger fires — which is what keeps the rule engine pure and what makes
+ * "all Conditions hold at that instant" something the engine can state
+ * (CONTEXT.md, Condition).
+ *
+ * The decisions worth asserting are the ones that decide whether an Optin
+ * LIES: no cookie is false rather than true, a malformed cookie is false, and
+ * `cart_has_items` reads the COUNT so a fully-discounted cart still counts as
+ * a full one.
+ */
+describe('the cart conditions', () => {
+  const withCookie = (value: string | null): void => {
+    // jsdom's `document.cookie` setter appends, so an expiry is how one goes.
+    document.cookie = 'wconvert_cart=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+
+    if (value !== null) {
+      document.cookie = `wconvert_cart=${encodeURIComponent(value)}; path=/`;
+    }
+  };
+
+  const hasItems = (): boolean => moduleFor('cart_has_items').create(vi.fn()).holds({ type: 'cart_has_items' });
+
+  const worthAtLeast = (amount: unknown): boolean =>
+    moduleFor('cart_value_min').create(vi.fn()).holds({ type: 'cart_value_min', amount });
+
+  afterEach(() => withCookie(null));
+
+  it('reads a cart the server put on the device', () => {
+    withCookie('3:45.00');
+
+    expect(hasItems()).toBe(true);
+    expect(worthAtLeast(40)).toBe(true);
+  });
+
+  /**
+   * **No cookie is FALSE, never true.** A visitor with no cart is exactly the
+   * person an Optin saying "you left something in your cart" would be lying
+   * to, so the absent case must fail closed — the opposite of the storage
+   * ladder's fail-open posture, which is about a frequency cap rather than
+   * about a claim.
+   */
+  it('holds for nobody when there is no cart on the device', () => {
+    withCookie(null);
+
+    expect(hasItems()).toBe(false);
+    expect(worthAtLeast(0)).toBe(false);
+  });
+
+  it('holds for nobody when the cart has been emptied', () => {
+    withCookie('0:0.00');
+
+    expect(hasItems()).toBe(false);
+    expect(worthAtLeast(0)).toBe(false);
+  });
+
+  /**
+   * A malformed cookie is not a cart. `Number('')` is 0 and
+   * `Number(undefined)` is NaN, so both halves are checked rather than
+   * trusted.
+   */
+  it('treats a cookie it cannot parse as no cart at all', () => {
+    for (const nonsense of ['', 'three items', '3', ':', 'x:y', '3:']) {
+      withCookie(nonsense);
+
+      expect(hasItems(), nonsense).toBe(false);
+      expect(worthAtLeast(1), nonsense).toBe(false);
+    }
+  });
+
+  /**
+   * **`cart_has_items` reads the COUNT and not the total**, which is what
+   * keeps the rule named for what it measures: a cart holding three fully
+   * discounted items is worth nothing and still has three items in it.
+   */
+  it('counts a fully discounted cart as a full one', () => {
+    withCookie('3:0.00');
+
+    expect(hasItems()).toBe(true);
+    expect(worthAtLeast(1)).toBe(false);
+  });
+
+  it('compares the threshold inclusively, because "at least" includes it', () => {
+    withCookie('1:45.00');
+
+    expect(worthAtLeast(45)).toBe(true);
+    expect(worthAtLeast(45.01)).toBe(false);
+  });
+
+  /**
+   * **A blank threshold holds for nobody**, not for everybody. The opposite
+   * reading turns a rule the merchant left half-configured into one that
+   * holds for every visitor, which is the direction that makes an Optin lie —
+   * and a Condition that never holds is the failure they can see, because
+   * they are looking at the row they left blank.
+   */
+  it('holds for nobody when the merchant has not set a threshold', () => {
+    withCookie('2:99.00');
+
+    for (const blank of [undefined, null, '', '50', NaN]) {
+      expect(worthAtLeast(blank), String(blank)).toBe(false);
+    }
+  });
+
+  /**
+   * **Read live, never at instantiation.** A visitor can add to their cart in
+   * another tab, or through WooCommerce's own AJAX on this page, between a
+   * timer being armed and firing — and the answer that matters is the one at
+   * the moment it fires.
+   */
+  it('answers for right now rather than for when it was created', () => {
+    withCookie(null);
+
+    const evaluator = moduleFor('cart_has_items').create(vi.fn());
+
+    expect(evaluator.holds({ type: 'cart_has_items' })).toBe(false);
+
+    withCookie('1:10.00');
+
+    expect(evaluator.holds({ type: 'cart_has_items' })).toBe(true);
+  });
+
+  /** No listener to attach, so there is nothing to detach. */
+  it('attaches nothing, so neither has anything to stop', () => {
+    expect(moduleFor('cart_has_items').create(vi.fn()).stop).toBeUndefined();
+    expect(moduleFor('cart_value_min').create(vi.fn()).stop).toBeUndefined();
+  });
+
+  /**
+   * Both declare `functional`, which is never withheld — the judgement call
+   * behind that is argued where the cookie is written. A category the manifest
+   * and the module disagreed about would be caught next door; what this pins
+   * is that neither is `null`, since a rule that READS the visitor's device
+   * and declares nothing would be exempt from consent by omission.
+   */
+  it('both declare the storage they read', () => {
+    expect(moduleFor('cart_has_items').consentCategory).toBe('functional');
+    expect(moduleFor('cart_value_min').consentCategory).toBe('functional');
+  });
+});

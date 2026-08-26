@@ -180,6 +180,15 @@ the visitor themselves made — that they dismissed this [[Optin]] — is
 `functional` and never withheld, because withholding it means the popup reappears
 after they closed it.
 
+The cart cookie is the second `functional` case, and it is **booked as a
+judgement call rather than an obvious reading**. It records what the visitor put
+in their own cart on this site, in this session, to operate a feature of it; it
+names nothing about who they are and holds a count and a total, never contents.
+The case against is real — cart recovery is marketing in intent — and it loses on
+consequence: `marketing` is withheld by default wherever a consent plugin is
+installed, so the purist reading silently kills the cart [[Goal]] across the EU,
+with nothing in any log to say why.
+
 ### Retention Period
 
 How long the merchant keeps their [[Lead]]s before WConvert deletes them
