@@ -3,6 +3,7 @@
 namespace WConvert\Rest;
 
 use WConvert\Destination\OptinBinding;
+use WConvert\Goal\Goal;
 use WConvert\Goal\GoalRegistry;
 use WConvert\Optin\Optin;
 use WConvert\Optin\OptinRepository;
@@ -13,6 +14,7 @@ use WConvert\Rules\RuleCatalogue;
 use WConvert\Rules\RuleVocabulary;
 use WConvert\Support\Ulid;
 use WConvert\Targeting\Targeting;
+use WConvert\Template\ConvertingAct;
 use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
 use WP_Error;
@@ -187,6 +189,12 @@ final class OptinController
             return self::needsATrigger();
         }
 
+        $mismatch = self::refuseAMetricItCannotReport($normalized, $goal);
+
+        if ($mismatch !== null) {
+            return $mismatch;
+        }
+
         $optin = $this->optins->create((string) $request->get_param('name'), $goal->value, $normalized);
 
         return new WP_REST_Response($optin->toArray(), 201);
@@ -214,12 +222,18 @@ final class OptinController
             return $checked;
         }
 
+        // The stored row, read ONCE. Two things below are asked of it — which
+        // Template the config was taken for, and which Goal this Optin holds —
+        // and reading it twice would pull a LONGTEXT column twice per edit to
+        // answer two questions about the same row.
+        $stored = $this->optins->find($id);
+
         // Which Template the copy in `config` was TAKEN FOR, so that repicking
         // one takes a fresh copy while editing anything else leaves the copy
         // the merchant has been editing alone. On an update that is the stored
         // row; on a create it is whatever the incoming config asserts, because
         // there is no stored row yet ({@see self::store()}).
-        $pickedBefore = self::optionalString($this->optins->find($id)?->config['template_id'] ?? null);
+        $pickedBefore = self::optionalString($stored?->config['template_id'] ?? null);
 
         $normalized = is_array($config) ? $this->normalizeConfig($config, $pickedBefore) : null;
 
@@ -230,6 +244,19 @@ final class OptinController
         // is not asked the question.
         if ($normalized !== null && !$this->vocabulary->hasTrigger($normalized['rules'] ?? [])) {
             return self::needsATrigger();
+        }
+
+        // Against the Goal this Optin will HAVE — the corrected one where the
+        // PATCH carries one, and the stored one where it does not. Reading the
+        // stored Goal is what makes editing a design on an Optin nobody is
+        // re-goaling still answerable.
+        $held = $checked ?? ($stored === null ? null : Goal::tryFrom($stored->goal));
+        $mismatch = $normalized === null || $held === null
+            ? null
+            : self::refuseAMetricItCannotReport($normalized, $held);
+
+        if ($mismatch !== null) {
+            return $mismatch;
         }
 
         $optin = $this->optins->saveDraft(
@@ -363,6 +390,79 @@ final class OptinController
      * merchant is looking at: told at publish, they would have to find their
      * way back to a rules panel they had already left.
      */
+    /**
+     * ========================================================================
+     * A DESIGN THAT REPORTS NOTHING FOR THE GOAL IT IS FILED UNDER IS REFUSED
+     * AT THE WRITE, NOT ONLY ON THE SCREEN.
+     * ========================================================================
+     * **One Optin has exactly one converting act, and its [[Goal]] decides
+     * which** (CONTEXT.md, Conversion). Paired the wrong way round the Optin
+     * reports nothing at all: the Goal counts a submission and the design
+     * offers a click, so the analytics screen reads zero forever and looks
+     * broken while being right.
+     *
+     * {@see \WConvert\Playbook\PlaybookLibrary} asks this of a [[Playbook]]
+     * at registration and {@see \WConvert\Template\TemplateLibrary} asks it
+     * of a [[Template]], but **neither is an enforcement mechanism for an
+     * Optin**: `POST /wconvert/v1/optins` takes a whole design in `config`
+     * and is scriptable by anyone holding `manage_options`. That is the same
+     * argument ADR 0026 already made about the goal screen — "a screen is not
+     * an enforcement mechanism" — applied to the other half of the pairing.
+     *
+     * Without it, `{goal: 'recover_cart', template_id: 'stacked-signup'}` is
+     * accepted: a cart Optin with a form on it, which ADR 0025 says is not
+     * merely unnecessary but **forbidden**, since a click-metered Optin
+     * carrying a form emits [[Lead]]s that are not [[Conversion]]s.
+     *
+     * **A design offering nothing is not refused.** A draft mid-creation has
+     * no template yet, and refusing one would block the save that is about to
+     * add it. What is refused is a design that offers the WRONG act, or both.
+     *
+     * @param array<string, mixed> $config Already normalised.
+     */
+    private static function refuseAMetricItCannotReport(array $config, Goal $goal): ?WP_Error
+    {
+        $offered = ConvertingAct::offeredIn($config['template']['tree'] ?? null);
+
+        if ($offered !== [] && $offered !== [$goal->convertingAct()]) {
+            return new WP_Error(
+                'wconvert_optin_metric_mismatch',
+                sprintf(
+                    /* translators: %s: the name of the Goal the Optin is filed under. */
+                    __(
+                        'This design does not produce the outcome “%s” counts, so the Optin would report nothing. Pick a design that matches the Goal, or change the Goal.',
+                        'wconvert'
+                    ),
+                    $goal->label()
+                ),
+                ['status' => 400]
+            );
+        }
+
+        // **A click-metered Optin holds no [[Destination]] ids** (ADR 0025).
+        // It captures nothing, so there is no Lead to push and a bound
+        // Destination is configuration that can never fire — refused rather
+        // than stripped, because stripping writes a decision the merchant did
+        // not make and leaves them looking for a binding that is silently
+        // gone.
+        if ($goal->convertingAct() === ConvertingAct::Click && ($config[OptinBinding::KEY] ?? []) !== []) {
+            return new WP_Error(
+                'wconvert_optin_captures_nothing',
+                sprintf(
+                    /* translators: %s: the name of the Goal the Optin is filed under. */
+                    __(
+                        '“%s” is measured by a click and captures nothing, so it has no leads to send anywhere. Remove its destinations first.',
+                        'wconvert'
+                    ),
+                    $goal->label()
+                ),
+                ['status' => 400]
+            );
+        }
+
+        return null;
+    }
+
     private static function needsATrigger(): WP_Error
     {
         return new WP_Error(

@@ -220,14 +220,50 @@ final class RuleCatalogueTest extends TestCase
      * did it ({@see \WConvert\Optin\Suspension} is what turns it into a
      * sentence).
      */
-    public function testTheCatalogueSaysWhichPluginTheSiteWouldNeed(): void
+    public function testTheCatalogueSaysWhichPluginTheSiteIsMissing(): void
     {
-        $catalogue = self::of(true);
+        $noStore = self::of(true, false);
 
-        $this->assertSame(SiteDependency::WooCommerce, $catalogue->requirementOf('cart_has_items'));
-        $this->assertSame(SiteDependency::WooCommerce, $catalogue->requirementOf('cart_value_min'));
-        $this->assertNull($catalogue->requirementOf('exit_intent'));
-        $this->assertNull($catalogue->requirementOf('nonsense'));
+        $this->assertSame(SiteDependency::WooCommerce, $noStore->missingDependencyOf('cart_has_items'));
+        $this->assertSame(SiteDependency::WooCommerce, $noStore->missingDependencyOf('cart_value_min'));
+        $this->assertNull($noStore->missingDependencyOf('exit_intent'));
+        $this->assertNull($noStore->missingDependencyOf('nonsense'));
+    }
+
+    /**
+     * **A rule whose dependency the site HAS names nothing**, even though it
+     * declares one. That rule is `locked` on a free install, and the sentence
+     * for `locked` is the one that may mention Pro — so a catalogue that
+     * answered "WooCommerce" here would tell a merchant with a perfectly good
+     * store to go and install one.
+     */
+    public function testARuleWhoseDependencyIsPresentNamesNothing(): void
+    {
+        $this->assertNull(self::of(false)->missingDependencyOf('cart_has_items'), 'locked, not unavailable');
+        $this->assertNull(self::of(true)->missingDependencyOf('cart_has_items'), 'ready');
+    }
+
+    /**
+     * **The invariant that lets {@see \WConvert\Optin\Suspension} hold one
+     * field instead of two**: `unavailable` is what a MISSING dependency
+     * produces, so there is never an `unavailable` rule with nothing to name.
+     * Asserted over every type the manifest declares rather than the two that
+     * happen to have one, so a future rule that broke it fails here rather
+     * than shipping a row that says "Suspended" and nothing else.
+     */
+    public function testUnavailableAlwaysHasADependencyToName(): void
+    {
+        $vocabulary = RuleVocabulary::fromManifest(self::PLUGIN_DIR);
+
+        foreach ([self::of(true, false), self::of(false, false), self::of(true), self::of(false)] as $catalogue) {
+            foreach (array_keys($vocabulary->axes()) as $axis) {
+                foreach ($vocabulary->axes()[$axis] as $type) {
+                    if ($catalogue->availabilityOf($type) === Availability::Unavailable) {
+                        $this->assertNotNull($catalogue->missingDependencyOf($type), $type);
+                    }
+                }
+            }
+        }
     }
 
     /**

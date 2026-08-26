@@ -72,21 +72,21 @@ final class CartLink
      */
     public static function into(array $payload, ?string $url): array
     {
-        $steps = $payload['template']['tree']['steps'] ?? null;
-
-        if ($url === null || $url === '' || !is_array($steps)) {
+        if ($url === null || $url === '') {
             return $payload;
         }
 
-        $payload['template']['tree']['steps'] = array_map(
-            static fn ($step): mixed => is_array($step) ? self::resolve($step, $url) : $step,
-            array_values($steps)
-        );
-
-        return $payload;
+        return TemplateTree::rewrittenIn($payload, static fn (array $node): array => self::resolve($node, $url));
     }
 
     /**
+     * One node, with the cart's URL filled in where the CTA asked for it.
+     *
+     * The walk is {@see TemplateTree::rewrittenIn()}'s — shared with
+     * {@see PolicyLink}, which is the only other thing that resolves a
+     * site-local destination into a tree at render time. Two resolvers, one
+     * walk, and each holds only the sentence it can argue for.
+     *
      * @param array<string, mixed> $node
      * @return array<string, mixed>
      */
@@ -100,11 +100,12 @@ final class CartLink
         // An href already there is the merchant's, typed into the settings
         // panel, and it wins. **Emptiness is judged the way a form field is**
         // — an absent key and an empty string both mean "nothing was chosen",
-        // which is the reading {@see \WConvert\Rules\RuleVocabulary::couldFire()}
-        // already takes one axis over. The panel deletes the key when a
-        // control is cleared, so the two agree; an entry hand-written or
-        // imported with `href: ""` is the case that would otherwise leave a
-        // merchant who cleared the field with a dead CTA and nothing to read.
+        // which is the reading {@see \WConvert\Rules\RuleVocabulary::hasTrigger()}
+        // already takes one axis over. `panel.ts`'s `withValue()` deletes the
+        // key when a control is cleared, so the two agree; an entry
+        // hand-written or imported with `href: ""` is the case that would
+        // otherwise leave a merchant who cleared the field with a dead CTA and
+        // nothing to read.
         $href = $node['href'] ?? null;
 
         if (($node['type'] ?? null) === 'button'
@@ -112,15 +113,6 @@ final class CartLink
             && (!is_string($href) || $href === '')
         ) {
             $node['href'] = $url;
-        }
-
-        foreach (TemplateTree::CHILD_KEYS as $key) {
-            if (is_array($node[$key] ?? null)) {
-                $node[$key] = array_map(
-                    static fn ($child): mixed => is_array($child) ? self::resolve($child, $url) : $child,
-                    array_values($node[$key])
-                );
-            }
         }
 
         return $node;

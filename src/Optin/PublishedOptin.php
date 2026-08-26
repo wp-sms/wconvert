@@ -2,6 +2,7 @@
 
 namespace WConvert\Optin;
 
+use WConvert\Goal\Goal;
 use WConvert\Rules\Degradation;
 use WConvert\Targeting\Targeting;
 
@@ -28,19 +29,25 @@ final class PublishedOptin
         public readonly Targeting $targeting,
         public readonly array $payload = [],
         /**
-         * The [[Goal]] this Optin serves, as stored.
+         * The [[Goal]] this Optin serves, or **null where the stored value is
+         * not one**.
          *
-         * A string rather than the enum, because this is a parse of an option
-         * and a Goal that was valid when the set was built is not this class's
-         * to re-validate — a corrupted one reads as "no Goal" and the Optin
-         * simply gets no site-resolved CTA target, which is the failure that
-         * leaves the page working.
+         * The enum rather than its backing string, so a reader asks
+         * `$optin->goal === Goal::RecoverCart` instead of reaching through the
+         * enum to `->value` — which is the same reason this class exists at
+         * all: letting the raw option travel means every reader downstream
+         * spells a domain word as a string literal (ADR 0005).
+         *
+         * `tryFrom` rather than `from` because this is a PARSE of an option: a
+         * Goal that was valid when the set was built is not this class's to
+         * re-validate, and a corrupted one reading as null costs the Optin its
+         * site-resolved CTA target rather than the page.
          *
          * It is beside {@see self::$payload} rather than in it: the front end
          * reads it to resolve the cart URL and the browser never sees it
          * (ADR 0025).
          */
-        public readonly string $goal = '',
+        public readonly ?Goal $goal = null,
     ) {
     }
 
@@ -165,7 +172,7 @@ final class PublishedOptin
             $id,
             Targeting::fromArray(is_array($targeting) ? $targeting : []),
             is_array($payload) ? $payload : [],
-            (string) ($projection['goal'] ?? ''),
+            Goal::tryFrom((string) ($projection['goal'] ?? '')),
         );
     }
 

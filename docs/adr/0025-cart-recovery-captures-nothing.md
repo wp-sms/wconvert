@@ -21,6 +21,21 @@ leaves "two of five" naming a Goal that does not exist.
 
 ## The form is not merely unnecessary — it is forbidden
 
+*Enforced at the WRITE as of [#36](https://github.com/navidkashani/wconvert/issues/36),
+and not only in the library. [`PlaybookLibrary`](../../src/Playbook/PlaybookLibrary.php)
+refuses a [[Playbook]] whose Template offers the wrong act and
+[`TemplateLibrary`](../../src/Template/TemplateLibrary.php) refuses the Template
+itself — but neither is an enforcement mechanism for an OPTIN, because
+`POST /wconvert/v1/optins` takes a whole design in `config` and is scriptable by
+anyone holding `manage_options`. Without the check,
+`{goal: 'recover_cart', template_id: 'stacked-signup'}` was accepted: a cart Optin
+with a form on it. [`OptinController`](../../src/Rest/OptinController.php) now asks
+the same question the library asks, on create and on edit, against the Goal the
+Optin will HAVE — and refuses a click-metered Optin holding [[Destination]] ids for
+the same reason, since it captures nothing to send. That is
+[ADR 0026](0026-a-goal-the-site-cannot-serve-is-hidden.md)'s "a screen is not an
+enforcement mechanism" applied to the other half of the pairing.*
+
 `CONTEXT.md` holds that **every [[Lead]] is a [[Conversion]]; the reverse does not
 hold.** A click-metered Optin that also carried a form would emit Leads that are not
 Conversions, which inverts that rule rather than bending it. `CONTEXT.md`'s
@@ -82,7 +97,13 @@ cart itself.*
 
 *So [`CartCookie`](../../pro/src/WooCommerce/CartCookie.php) writes
 `<count>:<total>` on `woocommerce_cart_updated` and Pro's two loader modules read
-it. **The scope is capped at two numbers and never contents** — no product ids, no
+it. **Two hooks rather than the one #36 asked for**, and the second was found on a
+real WordPress rather than by the suite: `WC_Cart::empty_cart()` — what a
+COMPLETED CHECKOUT calls — fires `woocommerce_cart_emptied` and never calls
+`calculate_totals()`, so `cart_updated` never fires. On one hook, a shopper who
+had just paid kept a cookie saying three items were waiting and the Optin told
+them so on the order-received page: this ADR's own lying popup, reached by buying
+something.* **The scope is capped at two numbers and never contents** — no product ids, no
 SKUs, no names — which is what makes cart-*contents* Conditions a later, additive
 decision rather than one the cookie settled by accident. The count is there because
 the count is what the copy asserts: a rule named `cart_has_items` answered from the

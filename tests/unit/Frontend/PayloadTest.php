@@ -159,7 +159,7 @@ final class PayloadTest extends TestCase
             ['id' => '01A', 'goal' => 'recover_cart', 'targeting' => [], 'payload' => ['display_type' => 'popup']],
         ]);
 
-        $this->assertSame('recover_cart', $set[0]->goal);
+        $this->assertSame(\WConvert\Goal\Goal::RecoverCart, $set[0]->goal);
 
         $entries = Payload::forRequest($set, self::at('/'), InstalledRules::withPro());
 
@@ -206,7 +206,7 @@ final class PayloadTest extends TestCase
         $set = self::optin('recover_cart');
         $entries = Payload::forRequest($set, self::at('/'), InstalledRules::withPro());
 
-        $this->assertSame(self::CART, self::href(LoaderEnqueue::withCartUrl($entries, $set, self::CART)));
+        $this->assertSame(self::CART, self::href(LoaderEnqueue::withCartUrl($entries, LoaderEnqueue::cartOptinsIn($set), self::CART)));
     }
 
     /**
@@ -220,7 +220,7 @@ final class PayloadTest extends TestCase
         $set = self::optin('promote_offer');
         $entries = Payload::forRequest($set, self::at('/'), InstalledRules::withPro());
 
-        $this->assertNull(self::href(LoaderEnqueue::withCartUrl($entries, $set, self::CART)));
+        $this->assertNull(self::href(LoaderEnqueue::withCartUrl($entries, LoaderEnqueue::cartOptinsIn($set), self::CART)));
     }
 
     /**
@@ -232,7 +232,7 @@ final class PayloadTest extends TestCase
         $set = self::optin('grow_email_list');
         $entries = Payload::forRequest($set, self::at('/'), InstalledRules::withPro());
 
-        $this->assertSame($entries, LoaderEnqueue::withCartUrl($entries, $set, self::CART));
+        $this->assertSame($entries, LoaderEnqueue::withCartUrl($entries, LoaderEnqueue::cartOptinsIn($set), self::CART));
     }
 
     private static function at(string $path): RequestContext

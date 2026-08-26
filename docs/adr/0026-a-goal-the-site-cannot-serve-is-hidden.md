@@ -116,6 +116,17 @@ widened audience trades a missing feature for a factually false one.
   What is checked is the Goal being SET and never the one already held: an Optin
   whose Goal became `unavailable` keeps it, and keeps every number it already
   counted.*
+
+  ***And the same route now checks the other half of the pairing***, *added by
+  [#36](https://github.com/navidkashani/wconvert/issues/36): whether the DESIGN
+  produces the outcome the Goal counts. The argument is this bullet's, one step
+  further — a Playbook is checked at registration and a Template when it is
+  registered, but `POST /wconvert/v1/optins` takes a whole design in `config`, so
+  `{goal: 'recover_cart', template_id: 'stacked-signup'}` was accepted until then:
+  a cart Optin with a form on it, which
+  [ADR 0025](0025-cart-recovery-captures-nothing.md) says is forbidden rather than
+  merely unnecessary. Asked against the Goal the Optin will HAVE, so correcting a
+  Goal is still allowed and is still checked.*
 - Merchants who deactivate WooCommerce temporarily see their goal screen change shape
   with no explanation on that screen. Accepted: it is rare, and ADR 0027 tells them
   what happened on the screen where they would actually notice — the Optin list.

@@ -49,21 +49,21 @@ final class PolicyLink
      */
     public static function into(array $payload, ?string $url): array
     {
-        $steps = $payload['template']['tree']['steps'] ?? null;
-
-        if ($url === null || $url === '' || !is_array($steps)) {
+        if ($url === null || $url === '') {
             return $payload;
         }
 
-        $payload['template']['tree']['steps'] = array_map(
-            static fn ($step): mixed => is_array($step) ? self::resolve($step, $url) : $step,
-            array_values($steps)
-        );
-
-        return $payload;
+        return TemplateTree::rewrittenIn($payload, static fn (array $node): array => self::resolve($node, $url));
     }
 
     /**
+     * One node, with the site's link filled in where it was asked for.
+     *
+     * The walk is {@see TemplateTree::rewrittenIn()}'s, so what is left here
+     * is the rule and nothing else — which is the point: the rule is the half
+     * worth reading, and it used to sit under fifteen lines of recursion that
+     * {@see CartLink} then copied.
+     *
      * @param array<string, mixed> $node
      * @return array<string, mixed>
      */
@@ -82,15 +82,6 @@ final class PolicyLink
         ) {
             $link['href'] = $url;
             $node['link'] = $link;
-        }
-
-        foreach (TemplateTree::CHILD_KEYS as $key) {
-            if (is_array($node[$key] ?? null)) {
-                $node[$key] = array_map(
-                    static fn ($child): mixed => is_array($child) ? self::resolve($child, $url) : $child,
-                    array_values($node[$key])
-                );
-            }
         }
 
         return $node;

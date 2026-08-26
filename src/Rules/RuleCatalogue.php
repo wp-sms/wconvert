@@ -95,20 +95,38 @@ final class RuleCatalogue
     }
 
     /**
-     * What the SITE would need for this rule type, or null.
+     * The [[SiteDependency]] this rule type is missing **where that is why it
+     * is absent here** — and null where the cause is the tier, or where it is
+     * not absent at all.
      *
-     * Public for the one surface that has to NAME it. `unavailable` says a
-     * dependency is missing and nothing more; a list row reading *"Suspended
-     * — not available on this site"* leaves the merchant to guess which
-     * plugin, which is the same silence ADR 0026 refuses on a settings list.
-     * {@see \WConvert\Optin\Suspension} turns the pair into a sentence.
+     * ========================================================================
+     * ONE FACT RATHER THAN TWO COORDINATES, BECAUSE ONLY ONE COMBINATION IS
+     * REAL.
+     * ========================================================================
+     * The surface that needs this is {@see \WConvert\Optin\Suspension},
+     * which turns it into the sentence on the Optin list: `unavailable` says a
+     * dependency is missing and nothing more, and a row reading *"Suspended —
+     * not available on this site"* leaves a merchant who deactivated
+     * WooCommerce to guess which of their plugins did it.
      *
-     * It delegates rather than re-reading the manifest, so the catalogue and
-     * the vocabulary cannot disagree about what a type needs.
+     * Handing that surface an {@see Availability} AND a dependency would let
+     * it hold a pair that cannot occur — `unavailable` with nothing to name —
+     * and a branch for that pair is dead code arguing it is defensive. So the
+     * two are resolved together, here, and what comes back is the cause or
+     * nothing.
+     *
+     * **The precedence is still {@see Availability::of()}'s and is not
+     * re-derived.** This asks the shared arithmetic which half won and answers
+     * with the dependency only where the SITE's did — so a rule declaring a
+     * dependency the site HAS is `locked` and reads as null here, which is
+     * what stops a free install with a store being told it needs WooCommerce
+     * (ADR 0026).
      */
-    public function requirementOf(string $type): ?SiteDependency
+    public function missingDependencyOf(string $type): ?SiteDependency
     {
-        return $this->vocabulary->requiresOf($type);
+        return $this->availabilityOf($type) === Availability::Unavailable
+            ? $this->vocabulary->requiresOf($type)
+            : null;
     }
 
     /**
