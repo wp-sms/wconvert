@@ -44,14 +44,33 @@ final class AdminMenu
         // false when the current user lacks the capability, in which case there
         // is no screen to match against and nothing to enqueue.
         $this->screenId = is_string($screenId) ? $screenId : '';
+
+        // The one place this suffix is learned, and both things that scope by
+        // screen read it from here: the bundle enqueue below, and the notice
+        // suppression that empties `admin_notices` on WConvert's screens and
+        // nowhere else (ADR 0035).
+        AdminNotices::owns($this->screenId);
     }
 
     /**
-     * The mount node, and nothing else.
+     * The plugin's own notices, then the mount node.
+     *
+     * **No `.wrap`.** That class is what insets a WordPress screen and draws
+     * WordPress's heading rhythm around it, and this page is WConvert's
+     * (ADR 0035) — the frame, the type and the spacing are the admin bundle's,
+     * over tokens the plugin owns.
+     *
+     * The notices come first and come from PHP, because
+     * {@see AdminNotices::renderOwned()} is the only path that can report a
+     * missing admin bundle: that failure leaves no React to render a message
+     * with. It runs after `admin_notices` was emptied on this screen, which is
+     * the whole reason it exists.
      */
     public function renderScreen(): void
     {
-        echo '<div class="wrap"><div id="wconvert-admin"></div></div>';
+        AdminNotices::renderOwned();
+
+        echo '<div id="wconvert-admin"></div>';
     }
 
     /**

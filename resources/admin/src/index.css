@@ -1,5 +1,337 @@
-.wconvert-admin {
-  max-width: 60rem;
+/*
+ * The admin's stylesheet, and the whole of its design contract.
+ *
+ * **Preflight is on and the utilities are `important`** (ADR 0035). Both
+ * halves are deliberate and both are load-bearing:
+ *
+ * - Preflight resets margins, list styles and form appearance across the whole
+ *   document, not only inside our mount node. That is the price of owning the
+ *   page rather than styling a corner of somebody else's, and it is survivable
+ *   because Tailwind emits `@layer base` — a CASCADE LAYER, which every
+ *   unlayered rule in wp-admin's own stylesheet outranks regardless of
+ *   specificity. So WordPress's menu, toolbar and footer keep the styling
+ *   WordPress gave them, and the reset lands on the elements nobody else
+ *   claimed. That is why this ships intact rather than by luck.
+ * - `important` is the mirror of the same fact: OUR utilities are unlayered
+ *   `!important` declarations, so they beat wp-admin's high-specificity
+ *   selectors, which load after ours and would otherwise win on the screens
+ *   nobody checked.
+ *
+ * This stylesheet is enqueued on WConvert's screens only ({@see
+ * \WConvert\Admin\AdminMenu::enqueueAssets()}), so nothing here reaches an
+ * admin page that is not ours.
+ */
+@import 'tailwindcss' important;
+
+/*
+ * The enter/exit animations the vendored dialog, popover and select reference
+ * by class (`animate-in`, `fade-in-0`, `slide-in-from-top-2`). They are
+ * Tailwind 4's replacement for `tailwindcss-animate` and shadcn's components
+ * are written against them, so without this import those classes compile to
+ * nothing and every overlay in the admin snaps rather than opens.
+ */
+@import 'tw-animate-css';
+
+/*
+ * **`dark:` is bound to a class, and no element carries it.**
+ *
+ * Left undefined, Tailwind resolves `dark:` to `prefers-color-scheme: dark` —
+ * so every `dark:bg-input/30` in the vendored components would fire on any
+ * merchant whose machine is set to dark, against light tokens that are not,
+ * and the screen would come apart on a preference nobody in this codebase
+ * answered. ADR 0038 puts dark mode out of scope for 0.1.0; this is what makes
+ * that true rather than assumed. When it does land it is a second set of
+ * values under the same names (ADR 0037) and a `.dark` on the mount node —
+ * no component touched.
+ */
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Tailwind 4 detects sources relative to this file. The admin's TSX lives
+ * beside it, so this is the whole scan root — and it is written out rather
+ * than left implicit because the vendored `components/ui/` under it is where
+ * most utility classes now live.
+ */
+@source "./";
+
+/*
+ * **The token NAMES are WSMS's and the values are WConvert's** (ADR 0037).
+ * That split is what makes a component vendored against the shadcn contract
+ * drop into either tree (ADR 0036) while keeping the two products from
+ * reading as one. Renaming a token here is not a local change — it breaks the
+ * drop-in property with every component either upstream produces. Adding one
+ * is free.
+ */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-surface: var(--surface);
+
+  --shadow-brutalist: 4px 4px 0 var(--border);
+  --radius-sm: max(calc(var(--radius) - 2px), 0px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 4px);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 300ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root {
+  /*
+   * Taken from WSMS deliberately: a tight radius and a hard offset shadow are
+   * the two things about the sibling's surface a person could describe from
+   * memory, and keeping them is what carries the family resemblance once the
+   * colour stops doing it (ADR 0037).
+   */
+  --radius: 0.25rem;
+  --shadow-lg: 3px 3px 0 var(--border);
+
+  /*
+   * Petrol. Cool against the sibling's warm burnt orange, so the two are
+   * obviously related and obviously not the same — and it leaves green, amber
+   * and red entirely free to mean *converted*, *dismissed* and *failed* on the
+   * screen this product is sold on. Green as a primary was refused for exactly
+   * that collision (ADR 0037).
+   *
+   * 5.95:1 against white, measured rather than assumed: petrol text on white
+   * and a white label on a petrol button both clear AA in both directions
+   * without a second shade.
+   */
+  --primary: #0f6e79;
+  --primary-foreground: #ffffff;
+
+  --background: #f6f9f9;
+  --foreground: #12242b;
+  --card: #ffffff;
+  --card-foreground: #12242b;
+  --popover: #ffffff;
+  --popover-foreground: #12242b;
+  --surface: #eef3f4;
+
+  --secondary: #eef3f4;
+  --secondary-foreground: #12242b;
+  --muted: #eef3f4;
+  --muted-foreground: #55666d;
+  --accent: #e3edee;
+  --accent-foreground: #0b545c;
+
+  /*
+   * The semantic trio, and the reason the primary is not green. Each is
+   * measured against white rather than eyeballed: destructive 6.57:1, success
+   * 6.13:1, warning 5.93:1, info 6.46:1 — AA in both directions, so each works
+   * as text on a card and as a solid fill under a white label.
+   */
+  --destructive: #b42318;
+  --destructive-foreground: #ffffff;
+  --success: #17703f;
+  --warning: #8a5a00;
+  --info: #1c5fa8;
+
+  /*
+   * `--border` draws dividers and card edges, which are decoration. `--input`
+   * draws the edge of a control, which is *"visual information required to
+   * identify a user interface component"* and therefore owes 3:1 under WCAG
+   * 1.4.11 (ADR 0038 sets AA as the bar). They are two tokens because they are
+   * two jobs — 3.25:1 on a card and 3.07:1 on the background for the one that
+   * has to clear it.
+   */
+  --border: #d3e0e2;
+  --input: #7e9299;
+  --ring: #0f6e79;
+
+  /*
+   * The chart ramp is the analytics screen's vocabulary, in the order ADR 0019
+   * stores the counters: impressions, conversions, dismissals, then the
+   * delivery failures ADR 0021 counts beside them, then a neutral for anything
+   * with no meaning of its own.
+   */
+  --chart-1: #0f6e79;
+  --chart-2: #17703f;
+  --chart-3: #8a5a00;
+  --chart-4: #b42318;
+  --chart-5: #5b7078;
+
+  /*
+   * Named because the shadcn contract spells them and a component vendored
+   * against it may reference one. WConvert's admin is four tabs and has no
+   * sidebar (ADR 0036) — these exist so a drop-in never resolves to nothing.
+   */
+  --sidebar: #ffffff;
+  --sidebar-foreground: #12242b;
+  --sidebar-primary: #0f6e79;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e3edee;
+  --sidebar-accent-foreground: #0b545c;
+  --sidebar-border: #d3e0e2;
+  --sidebar-ring: #0f6e79;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+}
+
+/*
+ * A merchant who asked their system for less motion asked this screen too.
+ * Scoped to the app so it is a promise about our animations rather than an
+ * opinion imposed on wp-admin's.
+ */
+@media (prefers-reduced-motion: reduce) {
+  #wconvert-admin *,
+  #wconvert-admin *::before,
+  #wconvert-admin *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/*
+ * The mount node takes the full width of the content column: the negative
+ * inline start cancels `#wpcontent`'s 20px gutter, which exists to inset a
+ * WordPress screen from the admin menu and is exactly the frame this screen
+ * stopped drawing.
+ *
+ * **WordPress's footer stays.** WSMS hides `#wpfooter`; this does not. ADR
+ * 0035 owns the PAGE and names the menu, the toolbar and the footer as the
+ * parts WordPress still owns — a footer that vanishes on one plugin's screen
+ * is the plugin reaching past its own boundary, and it is one of the three
+ * things this ticket is checked against on a real install.
+ */
+#wconvert-admin {
+  @apply relative bg-background text-foreground;
+  margin-inline-start: -20px;
+  width: calc(100% + 20px);
+}
+
+/*
+ * **There are no ID-scoped element resets here, and that is a decision.**
+ *
+ * WSMS strips `p`, `a`, `ul` and every form control inside its mount node,
+ * because every control in its app is a component it drew. WConvert's shell is
+ * drawn that way too — and it needs no reset to be, because `important` above
+ * means a utility class on an element WE authored already beats wp-admin's
+ * selectors. A reset earns nothing there.
+ *
+ * What it would reach instead is the four screens #64-#72 have not converted
+ * yet, which still render WordPress's controls. Stripping the border off an
+ * `<input>` whose replacement has not been written yet does not make the page
+ * ours — it makes the intervening tickets ship a form nobody can see. So the
+ * reset lands with the components that replace what it strips, screen by
+ * screen, and not before.
+ */
+
+/*
+ * Anything that echoes a notice straight into `admin_head` or
+ * `in_admin_header` bypasses the `admin_notices` hook and therefore bypasses
+ * {@see \WConvert\Admin\AdminNotices::suppress()}. WConvert's own surviving
+ * notice carries none of these classes, so it is not caught by this.
+ */
+#wpbody-content > .notice,
+#wpbody-content > .updated,
+#wpbody-content > .error,
+#wpbody-content > .update-nag {
+  display: none !important;
+}
+
+/*
+ * Radix portals its overlays to `document.body`, outside the mount node, so
+ * the stacking order has to be stated here rather than inherited. wp-admin's
+ * toolbar sits at z-index 99999, which is the number these have to clear.
+ */
+[data-radix-popper-content-wrapper] :is([role="option"], [role="menuitem"]) {
+  cursor: pointer;
+}
+
+[data-radix-popper-content-wrapper],
+[data-slot="select-content"] {
+  z-index: 100300 !important;
+}
+
+/* ---------------------------------------------------------------------------
+ * SCAFFOLDING — the screens this ticket did not convert.
+ *
+ * Everything below styles content #64-#72 will rewrite, and every rule here is
+ * expected to be deleted by the ticket that converts the screen it serves.
+ * It is kept because ADR 0035's page is the deliverable of THIS ticket and the
+ * screens inside it are the deliverable of the next nine: an Optin list that
+ * loses its layout in between is a regression, not a step.
+ *
+ * The colours are the only thing changed — the raw wp-admin greys and the
+ * `#2271b1` blue are now tokens, so the page reads as one palette while the
+ * shapes stay exactly where a merchant left them.
+ * ------------------------------------------------------------------------- */
+
+/*
+ * Preflight zeroes the margins the browser gave `<p>`, `<h2>` and `<ul>`, and
+ * these screens were written expecting them. Restoring a rhythm here keeps
+ * them legible for the tickets in between without re-introducing preflight's
+ * opposite anywhere the shell can see.
+ */
+.wconvert-legacy :is(p, h2, h3, h4, table, ul, ol) {
+  margin-block: 1em;
+}
+
+.wconvert-legacy :is(h2, h3, h4) {
+  font-weight: 600;
+}
+
+.wconvert-legacy h2 {
+  font-size: 1.3rem;
+}
+
+.wconvert-legacy h3 {
+  font-size: 1.1rem;
+}
+
+.wconvert-legacy :is(ul, ol):not(.wconvert-gallery, .wconvert-rules) {
+  padding-inline-start: 1.5em;
+  list-style: revert;
 }
 
 /*
@@ -26,14 +358,14 @@
 
 .wconvert-gallery__card {
   padding: 1rem;
-  background: #fff;
-  border: 1px solid #dcdcde;
-  border-radius: 4px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
 }
 
 .wconvert-gallery__card.is-chosen {
-  border-color: #2271b1;
-  box-shadow: 0 0 0 1px #2271b1;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary);
 }
 
 .wconvert-gallery__chosen {
@@ -78,8 +410,8 @@
 .wconvert-slot__link {
   margin-block-end: 1rem;
   padding: 0.75rem;
-  border: 1px solid #dcdcde;
-  border-radius: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
 }
 
 .wconvert-slot legend,
@@ -107,9 +439,9 @@
 .wconvert-rule {
   margin-block-end: 0.5rem;
   padding: 0.5rem 0.75rem;
-  background: #fff;
-  border: 1px solid #dcdcde;
-  border-radius: 4px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
 }
 
 .wconvert-param {
@@ -123,7 +455,7 @@
  * read as a label.
  */
 .wconvert-param__name {
-  color: #1d2327;
+  color: var(--foreground);
 }
 
 /*
@@ -134,13 +466,13 @@
  */
 .wconvert-rule__note {
   margin: 0.5rem 0 0;
-  color: #646970;
+  color: var(--muted-foreground);
   font-style: italic;
 }
 
 .wconvert-rules__empty,
 .wconvert-templates__empty {
-  color: #646970;
+  color: var(--muted-foreground);
 }
 
 .wconvert-option-set {

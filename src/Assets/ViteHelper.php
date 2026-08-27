@@ -2,6 +2,8 @@
 
 namespace WConvert\Assets;
 
+use WConvert\Admin\AdminNotices;
+
 defined('ABSPATH') || exit;
 
 /**
@@ -48,16 +50,22 @@ final class ViteHelper
         wp_set_script_translations($handle, 'wconvert');
     }
 
+    /**
+     * **Not `admin_notices`, and that is the point.**
+     *
+     * This fires on exactly the screen whose `admin_notices` hook
+     * {@see AdminNotices::suppress()} empties, so a callback added there would
+     * remove itself a moment later and the plugin would lose its only way of
+     * saying its admin screen cannot load. {@see AdminNotices} prints it from
+     * inside the page instead — the one path that survives the suppression,
+     * and the one that does not need the stylesheet whose absence it is
+     * reporting.
+     */
     private static function noticeMissingAdminBundle(): void
     {
-        add_action('admin_notices', static function (): void {
-            echo '<div class="notice notice-error"><p>';
-            echo esc_html__(
-                'WConvert could not load its admin screen — the built assets are missing. Reinstall the plugin to restore them.',
-                'wconvert'
-            );
-            echo '</p></div>';
-        });
+        AdminNotices::add(__(
+            'WConvert could not load its admin screen — the built assets are missing. Reinstall the plugin to restore them.',
+            'wconvert'
+        ));
     }
-
 }

@@ -18,7 +18,8 @@
     "types": ["node"],
     "paths": {
       "@loader/*": ["./resources/loader/src/*"],
-      "@renderer/*": ["./resources/renderer/src/*"]
+      "@renderer/*": ["./resources/renderer/src/*"],
+      "@/*": ["./resources/admin/src/*"]
     }
   },
   "include": [
