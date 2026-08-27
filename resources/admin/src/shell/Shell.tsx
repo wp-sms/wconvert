@@ -46,7 +46,7 @@ export function Shell({
   children: ReactNode;
 }) {
   return (
-    <div className="font-sans text-[15px] leading-normal text-foreground">
+    <div className="font-sans text-sm leading-normal text-foreground">
       <div className="border-b border-border bg-card">
         <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
           <Masthead nav={section !== undefined && <SectionNav current={section} />} />
@@ -55,14 +55,14 @@ export function Shell({
 
       {section !== undefined && (
         <div className="border-b border-border bg-card">
-          <div className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6">
+          <div className="mx-auto w-full max-w-6xl px-4 py-4 sm:px-6">
             <PageHeader section={section} actions={actions} />
           </div>
         </div>
       )}
 
-      <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6">
-        <div className="rounded-md border border-border bg-card p-4 sm:p-6">{children}</div>
+      <main className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6">
+        <div className="rounded-md border border-border bg-card p-4 sm:p-5">{children}</div>
       </main>
     </div>
   );
@@ -113,10 +113,18 @@ function PageHeader({ section, actions }: { section: SectionId; actions?: ReactN
   return (
     <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-3">
       <div className="min-w-0">
-        <h1 className="text-2xl font-semibold leading-tight tracking-tight text-foreground">
+        {/*
+          * `m-0` and `mb-0` are not tidying. Preflight zeroes these in
+          * `@layer base`, and an unlayered wp-admin heading rule outranks a
+          * layered one however specific it is — so the `<h1>` was carrying the
+          * browser's 16px above AND below it, which is a third of this band's
+          * height. A utility is `!important` and unlayered, so it wins. Any
+          * element this shell draws states its own box for the same reason.
+          */}
+        <h1 className="m-0 text-2xl font-semibold leading-tight tracking-tight text-foreground">
           {entry?.label}
         </h1>
-        <p className="mt-1.5 max-w-2xl text-pretty text-sm text-muted-foreground">
+        <p className="mt-1.5 mb-0 max-w-2xl text-pretty text-muted-foreground">
           {descriptionFor(section)}
         </p>
       </div>

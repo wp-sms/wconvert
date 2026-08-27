@@ -123,6 +123,14 @@
   --shadow-xl: 4px 4px 0 var(--border);
   --shadow-2xl: 4px 4px 0 var(--border);
   --shadow-brutalist: 4px 4px 0 var(--border);
+
+  /*
+   * **One control height for the whole admin.** 2.25rem is what the vendored
+   * `Button` draws at its default size, so a WordPress control that has not
+   * been converted yet stands exactly as tall as the real one beside it and
+   * nothing jumps when #64-#72 swap them.
+   */
+  --control-height: 2.25rem;
   --radius-sm: max(calc(var(--radius) - 2px), 0px);
   --radius-md: var(--radius);
   --radius-lg: calc(var(--radius) + 2px);
@@ -489,6 +497,73 @@
 }
 
 /*
+ * **One height, one alignment, for every control on a row.**
+ *
+ * They were 40px and sitting on three different baselines. wp-admin sizes its
+ * controls with line-height MULTIPLIERS against a 13px base, and preflight's
+ * `font: inherit` hands them the shell's base instead — so every multiplier
+ * resolved against the wrong number and each control arrived at its own
+ * height. Inheriting a font while inheriting somebody else's line-height
+ * arithmetic is the whole bug.
+ *
+ * Stating the height rather than correcting the multipliers, because a row of
+ * controls that share a height and a centre line is the property that actually
+ * matters, and it is one number instead of four.
+ *
+ * `textarea` is deliberately absent — its height is content, not chrome.
+ */
+#wconvert-admin
+  :is(
+    .button,
+    .button-primary,
+    .button-secondary,
+    select,
+    input:is(
+        [type="text"],
+        [type="search"],
+        [type="url"],
+        [type="email"],
+        [type="number"],
+        [type="password"],
+        [type="tel"],
+        [type="date"],
+        [type="datetime-local"]
+      )
+  ) {
+  min-height: var(--control-height);
+  height: var(--control-height);
+  padding-block: 0;
+  line-height: calc(var(--control-height) - 2px);
+  vertical-align: middle;
+  font-size: inherit;
+}
+
+#wconvert-admin :is(input[type="radio"], input[type="checkbox"]) {
+  vertical-align: middle;
+  margin-block: 0;
+  margin-inline-end: 0.375rem;
+}
+
+/*
+ * A row of controls needs a gap between them, and JSX's single space is not
+ * one — "…share an email or phone" ended flush against the Export button, so
+ * a sentence and a control read as one object. Adjacent-sibling rather than a
+ * blanket margin, so nothing gains a trailing indent it did not ask for.
+ */
+#wconvert-admin .wconvert-legacy :is(label, .button, select, a) + :is(label, .button, select) {
+  margin-inline-start: 0.75rem;
+}
+
+/*
+ * A day count is one to four characters. wp-admin gives a number input the
+ * width of a text field, which reads as an empty box somebody forgot to fill
+ * rather than as a small number.
+ */
+#wconvert-admin input[type="number"] {
+  inline-size: 5rem;
+}
+
+/*
  * **wp-admin paints these itself, so `accent-color` never reaches them.**
  * That property redirects a control the BROWSER is still drawing; WordPress
  * replaces both with a background of its own plus a pseudo-element for the dot
@@ -520,8 +595,18 @@
  * them legible for the tickets in between without re-introducing preflight's
  * opposite anywhere the shell can see.
  */
+/*
+ * **One body size across the admin.** wp-admin sets `#wpbody-content p` to
+ * 13px, so the un-converted screens rendered two points smaller than the frame
+ * around them — a difference that reads as a rendering fault rather than as a
+ * hierarchy. The class in the selector is what outranks WordPress's id.
+ */
+#wconvert-admin .wconvert-legacy :is(p, li, td, th, label, legend, select, input, textarea) {
+  font-size: inherit;
+}
+
 .wconvert-legacy :is(p, h2, h3, h4, table, ul, ol) {
-  margin-block: 1em;
+  margin-block: 0.75rem;
 }
 
 .wconvert-legacy > :first-child {
@@ -553,8 +638,8 @@
 }
 
 .wconvert-legacy > h3 {
-  margin-block-start: 2rem;
-  padding-block-start: 1.5rem;
+  margin-block-start: 1.25rem;
+  padding-block-start: 1rem;
   border-block-start: 1px solid var(--border);
 }
 
