@@ -25,9 +25,10 @@ import { PageActionSlotProvider } from './PageActions';
  * objects that one card merges into a single blob — which is why a rule had to
  * be invented to separate them again. ACF and Gravity Forms both put the table
  * itself on the page background and let each region own its own edges, and
- * that is the contract #64-#72 want. Until a screen is converted, the
- * `.wconvert-legacy` wrapper supplies one surface so nothing floats; that rule
- * is scaffolding and leaves with the last conversion.
+ * that is the contract #64-#72 wanted, and every screen holds to it now.
+ * `.wconvert-legacy` — the wrapper that supplied one surface to a screen not
+ * yet converted — was scaffolding, and it left with the last conversion exactly
+ * as planned. It exists nowhere in this tree.
  *
  * **Structure is carried by rules and alignment, never by shadow or motion.**
  * That is not asceticism — it is what the subject is. WConvert counts events:

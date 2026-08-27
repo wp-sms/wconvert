@@ -105,6 +105,18 @@ Any element reference the panel held would be stale one character later. A key
 derived from the tree survives every remount, because it is a fact about the
 design rather than about this render of it.
 
+## What this amends
+
+- [ADR 0035](0035-the-admin-owns-its-page.md) said *"the builder's live preview
+  is unaffected in both directions"*, which was the one collision worth checking
+  before the admin took its own page. One direction is now deliberate traffic.
+  Its CSS claim is untouched, and is the reason this was cheap.
+- [ADR 0009](0009-overlays-render-in-the-top-layer.md) is **scoped, not
+  relaxed** — see above. Its own note now says so.
+- [ADR 0010](0010-templates-are-configuration-not-documents.md) is untouched:
+  selection edits nothing, so the panel is still the only thing that writes and
+  it still writes only content, visibility and tokens.
+
 ## Consequences
 
 - **The preview is pinned beside all four builder tabs**, not inside the settings

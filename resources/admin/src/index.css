@@ -345,12 +345,14 @@
  * means a utility class on an element WE authored already beats wp-admin's
  * selectors. A reset earns nothing there.
  *
- * What it would reach instead is the four screens #64-#72 have not converted
- * yet, which still render WordPress's controls. Stripping the border off an
- * `<input>` whose replacement has not been written yet does not make the page
- * ours — it makes the intervening tickets ship a form nobody can see. So the
- * reset lands with the components that replace what it strips, screen by
- * screen, and not before.
+ * What it would reach instead is the builder's four editors, which still
+ * render WordPress's controls. (This read "the four screens #64-#72 have not
+ * converted yet" until those tickets closed. Every screen is converted; what is
+ * left is one level in — see THE CONTROLS THE BUILDER'S EDITORS STILL RENDER
+ * below.) Stripping the border off an `<input>` whose replacement has not been
+ * written yet does not make the page ours — it makes the intervening tickets
+ * ship a form nobody can see. So the reset lands with the components that
+ * replace what it strips, and not before.
  */
 
 /*
@@ -858,10 +860,14 @@
 /*
  * **WordPress's controls, wearing WConvert's colours.**
  *
- * The screens #64-#72 have not converted yet still render `.button`,
- * `.button-primary` and bare inputs, and wp-admin paints those its own blue.
- * Beside a petrol page header that reads as two products on one screen — the
- * exact seam ADR 0035 refused when it eliminated the hybrid posture.
+ * The builder's four editors still render `.button`, `.button-primary` and
+ * bare inputs, and wp-admin paints those its own blue. Beside a petrol page
+ * header that reads as two products on one screen — the exact seam ADR 0035
+ * refused when it eliminated the hybrid posture.
+ *
+ * This read "the screens #64-#72 have not converted yet" until those tickets
+ * closed. They are converted; the editors inside the builder are the part that
+ * is not, which is the boundary stated above rather than a screen left behind.
  *
  * **This retargets colour and radius, and touches nothing else.** The box
  * model, the sizes and the focus behaviour are left exactly as WordPress drew

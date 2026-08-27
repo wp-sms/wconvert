@@ -113,3 +113,11 @@ it in ways that appear only on the screens nobody checked.
   preflight nor any admin utility can reach a rendered [[Optin]], and the
   popup's own tokens cannot leak out onto the panel editing them. This was the
   one collision worth checking before deciding, and it does not exist.
+
+  *Amended by [ADR 0040](0040-the-builders-preview-is-an-input.md): the preview
+  is no longer unaffected in **both** directions. It is now an INPUT — clicking a
+  slot puts the caret in the block that edits it — so one direction is deliberate
+  traffic. The CSS claim above is untouched and is the reason this was cheap:
+  nothing crosses the boundary but a string naming a slot, and the outline the
+  admin paints is set inline rather than through a stylesheet that could not
+  reach in.*
