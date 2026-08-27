@@ -25,6 +25,8 @@ import { EmptyState } from '../shell/EmptyState';
 import { Region, RegionError, RegionErrorState } from '../shell/Region';
 import { TableSkeleton } from '../shell/TableSkeleton';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
+import { readDashboard } from '../stats/api';
+import { formatCount, formatRate } from '../stats/format';
 import {
   deleteOptin,
   canUnpublish,
@@ -60,6 +62,27 @@ import {
  * one and an install has tens of Optins. The screen's one action, *Create an
  * Optin*, is page-scoped and lives in the page header, which is where
  * {@see App} puts it.
+ *
+ * ============================================================================
+ * IMPRESSIONS AND CONVERSION RATE, BUT DELIBERATELY NOT "CONVERSIONS".
+ * ============================================================================
+ * *Which of these is working?* is asked here — this is the list of what exists
+ * — and it was answerable only two screens away. So the two numbers that mean
+ * the same thing under every [[Goal]] join the row.
+ *
+ * **There is no Conversions column, and that is not an omission.** `headline`
+ * is the Goal's own metric: on a lead-magnet Goal it counts DELIVERIES, and two
+ * of the five convert on a click. One heading over a mixed list would therefore
+ * be a wrong number under most of the rows — which is the same reason the
+ * analytics screen has no leaderboard and names its headline from the server.
+ * `impressions` and `conversion_rate` carry no such ambiguity.
+ *
+ * **The read is the dashboard's**, flattened to a map by Optin id, so there is
+ * no second endpoint computing the same figures a second way (ADR 0034).
+ *
+ * **Its failure is swallowed**, exactly as the Goal registry's below is.
+ * Numbers are a nicety on this screen; they must not cost the merchant the
+ * publish and delete buttons, and `refresh()` reports the failure that would.
  */
 export function OptinList({
   onEdit,
@@ -70,6 +93,7 @@ export function OptinList({
 }) {
   const [list, setList] = useState<Loadable<OptinSummary[]>>(LOADING);
   const [labels, setLabels] = useState<Record<string, string>>({});
+  const [numbers, setNumbers] = useState<Record<string, RowNumbers>>({});
   const [error, setError] = useState<string | null>(null);
   /*
    * **Per row, not per screen.** One screen-wide `busy` meant a slow publish on
@@ -124,6 +148,27 @@ export function OptinList({
       .catch(() => undefined);
   }, []);
 
+  // The dashboard's own read, over the server's default window, flattened out
+  // of its per-Goal cards into one map by Optin id. Swallowed on failure for
+  // the reason stated above the component: a row without its numbers is a row
+  // that still publishes.
+  useEffect(() => {
+    readDashboard(null)
+      .then((payload) =>
+        setNumbers(
+          Object.fromEntries(
+            payload.goals.flatMap((card) =>
+              card.optins.map((optin) => [
+                optin.id,
+                { impressions: optin.impressions, rate: optin.conversion_rate },
+              ]),
+            ),
+          ),
+        ),
+      )
+      .catch(() => undefined);
+  }, []);
+
   const run = async (id: string, action: () => Promise<unknown>) => {
     setBusyId(id);
 
@@ -167,10 +212,7 @@ export function OptinList({
             )
           }
         >
-          {__(
-            'An Optin is the popup, floating bar, slide-in or inline form a visitor sees. Pick a goal and WConvert starts you with a design built for it.',
-            'wconvert',
-          )}
+          {__('Pick a goal and we’ll start you with a design built for it.', 'wconvert')}
         </EmptyState>
       ) : (
         <DataTable>
@@ -178,11 +220,13 @@ export function OptinList({
             <DataTableColumn>{__('Name', 'wconvert')}</DataTableColumn>
             <DataTableColumn>{__('Goal', 'wconvert')}</DataTableColumn>
             <DataTableColumn>{__('Status', 'wconvert')}</DataTableColumn>
+            <DataTableColumn numeric>{__('Impressions', 'wconvert')}</DataTableColumn>
+            <DataTableColumn numeric>{__('Conversion rate', 'wconvert')}</DataTableColumn>
             <DataTableActionsColumn>{__('Actions', 'wconvert')}</DataTableActionsColumn>
           </DataTableHead>
 
           {list.status === 'loading' ? (
-            <TableSkeleton columns={4} />
+            <TableSkeleton columns={6} />
           ) : (
             <DataTableBody>
               {rows.map((optin) => (
@@ -190,6 +234,7 @@ export function OptinList({
                   key={optin.id}
                   optin={optin}
                   goal={labels[optin.goal]}
+                  numbers={numbers[optin.id]}
                   busy={busyId === optin.id}
                   onEdit={() => onEdit(optin.id)}
                   onPublish={() => void run(optin.id, () => publishOptin(optin.id))}
@@ -226,7 +271,7 @@ export function OptinList({
             : sprintf(
                 /* translators: %s: the name of an Optin. */
                 __(
-                  '“%s” stops being served and leaves this list. The leads it captured and the conversions it is credited with are kept — the analytics screen still reads them.',
+                  '“%s” stops being served and leaves this list. Its leads and conversions are kept.',
                   'wconvert',
                 ),
                 confirming.name,
@@ -261,6 +306,7 @@ export function OptinList({
 function Row({
   optin,
   goal,
+  numbers,
   busy,
   onEdit,
   onPublish,
@@ -269,6 +315,7 @@ function Row({
 }: {
   optin: OptinSummary;
   goal: string | undefined;
+  numbers: RowNumbers | undefined;
   busy: boolean;
   onEdit: () => void;
   onPublish: () => void;
@@ -330,6 +377,21 @@ function Row({
         )}
       </DataTableCell>
 
+      {/*
+        **An em dash for an Optin the window has nothing to say about**, which
+        is every draft and every published one nobody has seen yet — and it is
+        also what a swallowed read leaves behind. Zero would be a claim that
+        visitors saw it and did nothing, which is a different and much worse
+        thing to tell a merchant about an Optin that never rendered.
+      */}
+      <DataTableCell label={__('Impressions', 'wconvert')} numeric>
+        {numbers === undefined ? '—' : formatCount(numbers.impressions)}
+      </DataTableCell>
+
+      <DataTableCell label={__('Conversion rate', 'wconvert')} numeric>
+        {numbers === undefined ? '—' : formatRate(numbers.rate)}
+      </DataTableCell>
+
       <DataTableActions>
         <Button variant="ghost" size="sm" onClick={onEdit}>
           {__('Edit', 'wconvert')}
@@ -379,6 +441,19 @@ function Row({
       </DataTableActions>
     </DataTableRow>
   );
+}
+
+/**
+ * The two figures a row carries beside its state.
+ *
+ * Not `OptinReport`: that carries `headline` and `by_day` as well, and a row
+ * has no honest heading for either — `headline` is the Goal's own metric and
+ * this list is mixed. Narrowing here is what makes the wrong column
+ * unexpressible rather than merely absent.
+ */
+interface RowNumbers {
+  readonly impressions: number;
+  readonly rate: number | null;
 }
 
 /**

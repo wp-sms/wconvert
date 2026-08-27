@@ -274,42 +274,43 @@ const ICONS: Record<SectionId, LucideIcon> = {
 /**
  * One line saying what a section holds.
  *
+ * ==========================================================================
+ * THE SUBTITLE LABELS. THE DECISION POINT EXPLAINS.
+ * ==========================================================================
+ * These were four sentences long enough to be read once and skipped forever
+ * after — which is the worst return a permanent line can earn, because it
+ * taxes every visit and informs one. A subtitle's job is to say what the
+ * screen is; a guarantee's job is to be on screen where it is acted on.
+ *
+ * So the promises did not disappear, they MOVED:
+ *
+ * - *"One row is one submission, never one person"* (ADR 0021) is now help
+ *   text on the submission count, which is the exact number a merchant would
+ *   otherwise read as a headcount.
+ * - *"The Lead log is not a Destination — it is written first and always"*
+ *   (ADR 0007) is in the Destinations empty state and in the remove confirm,
+ *   which are the two moments a merchant is deciding something about it.
+ *
+ * Each is now read at the point it changes an answer, rather than three lines
+ * above a table on every visit.
+ *
  * **A function, not a constant**, because `__()` must not run at module scope:
  * the catalogue is not loaded when the bundle is evaluated, so a top-level
  * call would freeze the English string into every locale.
  *
  * It lives beside the section rather than inside the screen because it
  * describes the SECTION — what this part of WConvert is for — which is the
- * same thing `nav.ts` names and the tab labels. Destinations already carried
- * its line inside the component; the other three had none, and the asymmetry
- * showed.
- *
- * The Leads line is doing real work rather than filling a slot. CONTEXT.md's
- * sharpest rule is that a [[Lead]] is an event and never a person, and the
- * count above the table is the exact place a merchant would read it the other
- * way. Saying so under the title is cheaper than a support conversation.
+ * same thing `nav.ts` names and the tab labels.
  */
 function descriptionFor(section: SectionId): string {
   switch (section) {
     case 'optins':
-      return __(
-        'Every popup, floating bar, slide-in and inline form on this site, and whether it is live.',
-        'wconvert'
-      );
+      return __('What you show visitors, and whether it’s live.', 'wconvert');
     case 'analytics':
-      return __(
-        'Impressions, conversions and dismissals, counted per day against the Goal each Optin was built for.',
-        'wconvert'
-      );
+      return __('How each goal is performing.', 'wconvert');
     case 'leads':
-      return __(
-        'Every form submission, as it was captured. One row is one submission, never one person.',
-        'wconvert'
-      );
+      return __('Every form submission, as it was captured.', 'wconvert');
     case 'destinations':
-      return __(
-        'Where a captured Lead is sent on to. The Lead log is not one — it is written first and always, whatever happens here.',
-        'wconvert'
-      );
+      return __('Where captured leads are sent on to.', 'wconvert');
   }
 }

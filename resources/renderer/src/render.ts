@@ -100,6 +100,18 @@ function appendNode(parent: HTMLElement, node: TemplateNode): void {
     element.dataset.role = role;
   }
 
+  // A `field` has no Role of its own — its Roles are DERIVED from what it
+  // captures (CONTEXT.md, Slot Role) — so the key the panel heads it with is
+  // the capture kind, and that is what has to reach the DOM for the builder's
+  // preview to be clickable back to it (ADR 0040). The loader never reads it;
+  // it costs the free bundle a few bytes of the budget `check-loader.mjs`
+  // measures, and it is the only way a field is addressable at all.
+  const captures = (node as { name?: string }).name;
+
+  if (node.type === 'field' && typeof captures === 'string' && captures !== '') {
+    element.dataset.captures = captures;
+  }
+
   parent.appendChild(element);
 }
 

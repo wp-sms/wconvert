@@ -249,6 +249,27 @@ describe('slot roles', () => {
 
     expect(render(tree, TOKENS).querySelector('[data-role=fine_print]')?.textContent).toBe('No spam.');
   });
+
+  /**
+   * **A `field` carries what it CAPTURES instead**, because its Roles are
+   * derived from the capture kind rather than declared, so it has no `role` key
+   * to stamp (CONTEXT.md, Slot Role).
+   *
+   * The loader never reads either. Both are downstream readers of the same
+   * render: the stylesheet, which makes fine print smaller without a class per
+   * slot, and the builder's preview, where a click has to reach the block that
+   * edits the slot and a field would otherwise be the one thing unaddressable
+   * (ADR 0040).
+   */
+  it('stamps a field with what it captures, since it has no Role of its own', () => {
+    const tree = {
+      steps: [{ type: 'stack', children: [{ type: 'field', name: 'email', label: 'Email' }] }],
+    } as TemplateTree;
+    const field = render(tree, TOKENS).querySelector('[data-captures=email]');
+
+    expect(field).not.toBeNull();
+    expect(field?.getAttribute('data-role')).toBeNull();
+  });
 });
 
 /**

@@ -177,7 +177,7 @@ export function Destinations() {
             <Region label={__('Destinations', 'wconvert')}>
               <EmptyState icon={Plug} title={__('Nothing is being pushed on', 'wconvert')}>
                 {__(
-                  'Every capture is written to the Lead log first and always. Add a Destination below to send it somewhere else as well.',
+                  'Every capture is written to the lead log first and always. Add a destination to send it on as well.',
                   'wconvert',
                 )}
               </EmptyState>
@@ -220,20 +220,20 @@ export function Destinations() {
             setConfirming(null);
           }
         }}
-        title={__('Remove this Destination?', 'wconvert')}
+        title={__('Remove this destination?', 'wconvert')}
         description={
           confirming === null
             ? ''
             : sprintf(
                 /* translators: %s: the name of a Destination. */
                 __(
-                  'Captures stop being sent to “%s” from now on. Leads already in the log are untouched — the log is not a Destination and is written first and always.',
+                  'Captures stop being sent to “%s”. Leads already in the log are untouched — the log is not a destination, and is always written first.',
                   'wconvert',
                 ),
                 confirming.label,
               )
         }
-        confirmLabel={__('Remove Destination', 'wconvert')}
+        confirmLabel={__('Remove destination', 'wconvert')}
         returnFocusTo={returnFocus}
         onConfirm={() => {
           const destination = confirming;
@@ -292,11 +292,11 @@ function Configured({
         description={
           destination.availability === 'locked'
             ? __(
-                'Its type is a Pro feature this install does not have, so captures are not being sent.',
+                'A Pro feature this install does not have, so captures are not being sent.',
                 'wconvert',
               )
             : destination.availability === 'unavailable'
-              ? __('What it needs is not on this site, so captures are not being sent.', 'wconvert')
+              ? __('What it needs is missing, so captures are not being sent.', 'wconvert')
               : undefined
         }
         trailing={
@@ -350,7 +350,7 @@ function Configured({
               {sprintf(
                 /* translators: 1: number of captures, 2: a date and time. */
                 _n(
-                  '%1$d capture was not sent, most recently at %2$s. Fix what this Destination needs, then re-push.',
+                  '%1$d capture was not sent, most recently at %2$s. Fix what this destination needs, then re-push.',
                   '%1$d captures were not sent, most recently at %2$s. Fix what this Destination needs, then re-push.',
                   destination.health.skipped_captures,
                   'wconvert',
@@ -379,7 +379,7 @@ function Configured({
             <AlertTitle className="line-clamp-none">
               {sprintf(
                 /* translators: %d: number of pushes queued. */
-                _n('%d Lead queued for re-pushing.', '%d Leads queued for re-pushing.', report.jobs, 'wconvert'),
+                _n('%d lead queued for re-pushing.', '%d Leads queued for re-pushing.', report.jobs, 'wconvert'),
                 report.jobs,
               )}
             </AlertTitle>
@@ -443,7 +443,7 @@ function Configured({
       <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-border px-4 py-3">
         <Button variant="outline" size="sm" disabled={busy} onClick={() => onRePush(destination)}>
           <RotateCcw aria-hidden="true" />
-          {__('Re-push Leads since the last success', 'wconvert')}
+          {__('Re-push leads since the last success', 'wconvert')}
         </Button>
         <Button
           ref={removeTrigger}
@@ -487,13 +487,13 @@ function Types({
   return (
     <Region>
       <RegionHeader
-        title={__('Add a Destination', 'wconvert')}
-        description={__('Where else a captured Lead can be sent on to.', 'wconvert')}
+        title={__('Add a destination', 'wconvert')}
+        description={__('Where else a captured lead can go.', 'wconvert')}
       />
 
       {types.length === 0 ? (
         <RegionBody className="text-muted-foreground">
-          {__('No Destination types are available on this site.', 'wconvert')}
+          {__('No destination types are available on this site.', 'wconvert')}
         </RegionBody>
       ) : (
         <ul className="m-0 list-none p-0">
@@ -704,7 +704,7 @@ function Failures({ failures }: { failures: DestinationsPayload['failures'] }) {
       <RegionHeader
         title={__('Leads that could not be delivered', 'wconvert')}
         description={__(
-          'These failed for their own sake rather than because a Destination was down, so they are not counted as outages. The most recent 200 are kept.',
+          'These failed for their own reasons, not an outage. Last 200 kept.',
           'wconvert',
         )}
       />

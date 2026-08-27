@@ -42,14 +42,14 @@ export function DestinationsEditor({ bound, onChange, onError }: DestinationsEdi
 
   return (
     <section className="wconvert-destinations-editor">
-      <h3>{__('Where these Leads go', 'wconvert')}</h3>
+      <h3>{__('Where these leads go', 'wconvert')}</h3>
 
       {available === null ? (
         <p className="description">{__('Loading…', 'wconvert')}</p>
       ) : available.length === 0 ? (
         <p className="description">
           {__(
-            'No Destinations are set up yet. Leads are still captured and still exported — a Destination only sends them on.',
+            'No destinations yet. Leads are still captured and exported — a destination only sends them on.',
             'wconvert'
           )}
         </p>
@@ -82,7 +82,7 @@ export function DestinationsEditor({ bound, onChange, onError }: DestinationsEdi
               {destination.availability !== 'ready' && (
                 <span className="description">
                   {__(
-                    'Not running here, so captures are kept but not sent. Re-push from Destinations once it is working.',
+                    'Not running here, so captures are kept, not sent. Re-push from Destinations once it works.',
                     'wconvert'
                   )}
                 </span>

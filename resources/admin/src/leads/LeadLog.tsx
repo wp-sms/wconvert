@@ -316,7 +316,7 @@ export function LeadLog() {
         description={sprintf(
           /* translators: %d: a number of days. */
           __(
-            'WConvert will delete every lead older than %d days, and will keep doing it from now on. Deleted leads cannot be recovered — export a CSV first if you need them.',
+            'Every lead older than %d days is deleted, from now on. Deleted leads cannot be recovered — export a CSV first if you need them.',
             'wconvert',
           ),
           SUGGESTED_DAYS,
@@ -386,7 +386,17 @@ function LogRegion({
               split from its noun to style them apart is a number a later
               change can render without it.
             */
-            <ToolbarCount>
+            <ToolbarCount
+              /*
+                **The promise moved here from the page subtitle.** CONTEXT.md's
+                sharpest rule is that a [[Lead]] is an event and never a person
+                (ADR 0021), and THIS number is the exact place a merchant reads
+                it the other way — so the sentence sits on the number rather
+                than three lines above the table, where it was a permanent tax
+                on every visit for one reading.
+              */
+              hint={__('One row is one submission, never one person.', 'wconvert')}
+            >
               {sprintf(
                 /* translators: %s: a number of form submissions. */
                 _n('%s submission', '%s submissions', data.submissions, 'wconvert'),
@@ -452,7 +462,7 @@ function LogRegion({
         >
           {optinId === ''
             ? __(
-                'A row appears here the moment a visitor submits a published Optin. Nothing else writes one.',
+                'A row appears the moment a visitor submits a published Optin.',
                 'wconvert',
               )
             : __('Another Optin may have captured what you are looking for.', 'wconvert')}

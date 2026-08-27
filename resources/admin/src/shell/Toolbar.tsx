@@ -46,6 +46,24 @@ export function Toolbar({ children, trailing }: { children?: ReactNode; trailing
  * **A count is stated only where the set can be large enough to need one.** The
  * Optin list has none and is not missing one.
  */
-export function ToolbarCount({ children }: { children: string }) {
-  return <span className="tabular-nums text-muted-foreground">{children}</span>;
+export function ToolbarCount({ children, hint }: { children: string; hint?: string }) {
+  return (
+    <span className="tabular-nums text-muted-foreground" title={hint}>
+      {/*
+        **The count keeps a text node of its own**, so it is still findable as
+        exactly the words it says. Folding the hint in beside it would make the
+        element's text "7 submissions One row is…", which is not what anything
+        reading this number is looking for.
+      */}
+      <span>{children}</span>
+      {/*
+        **The hint is a `title` AND a sentence in the accessibility tree.** A
+        `title` alone is a pointer-only affordance — no keyboard reaches it and
+        support in screen readers is uneven — and what it says here is a
+        correction to how the number reads, which is exactly the reader who
+        must not miss it.
+      */}
+      {hint !== undefined && <span className="sr-only"> {hint}</span>}
+    </span>
+  );
 }

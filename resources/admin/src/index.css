@@ -1200,24 +1200,267 @@
   background: var(--surface);
 }
 
-.wconvert-panel {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2rem;
+/* ---------------------------------------------------------------------------
+ * THE BUILDER: TABS BESIDE A PINNED PREVIEW.
+ *
+ * **The preview used to live inside the settings panel**, which meant a
+ * merchant editing a Trigger saw no preview at all — they were changing an
+ * Optin with the picture of it on another tab. It is the SCREEN's now, in a
+ * column of its own beside all four tabs.
+ *
+ * One column below 1024px, because the second one has nowhere to go: the
+ * builder's own floor is 782px (ADR 0038), and between the two a 22rem aside
+ * would squeeze the controls narrower than the fields inside them.
+ * ------------------------------------------------------------------------- */
+.wconvert-builder {
+  display: grid;
+  gap: 1.5rem;
   align-items: start;
 }
 
-/* The preview follows the controls down a long panel. */
-.wconvert-panel__preview {
-  position: sticky;
-  inset-block-start: 4rem;
-  flex: 1 1 22rem;
+@media (min-width: 1024px) {
+  .wconvert-builder {
+    grid-template-columns: minmax(0, 1fr) 24rem;
+  }
+}
+
+/*
+ * **Wider once there is room, because the device toggle needs it to mean
+ * anything.** Every shipped design asks for `--wc-width: 28rem` and `.wc-root`
+ * takes `min(that, 100%)` — so in a column narrower than 28rem the desktop
+ * preview is ALREADY narrower than a phone, and switching to Mobile changes
+ * nothing a merchant can see. At 29rem the stage holds the design at its own
+ * measure and 375px is visibly narrower than it.
+ */
+@media (min-width: 1280px) {
+  .wconvert-builder {
+    grid-template-columns: minmax(0, 1fr) 29rem;
+  }
+}
+
+.wconvert-builder__tabs {
   min-inline-size: 0;
 }
 
-.wconvert-panel__controls {
-  flex: 1 1 22rem;
+/*
+ * It follows the tabs down. `4rem` clears wp-admin's own sticky toolbar, which
+ * is the one piece of chrome ADR 0035 deliberately leaves in place.
+ */
+.wconvert-builder__preview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
   min-inline-size: 0;
+}
+
+@media (min-width: 1024px) {
+  .wconvert-builder__preview {
+    position: sticky;
+    inset-block-start: 4rem;
+  }
+}
+
+/*
+ * The stage the design stands on. `--surface` rather than the card colour, so
+ * a design with a white background still reads as a picture of something
+ * rather than as part of the page holding it — the same argument the gallery
+ * card makes.
+ */
+.wconvert-builder__stage {
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: auto;
+}
+
+/*
+ * **The stage is the width the design is being judged at**, handed down as a
+ * custom property rather than spelled here: on Desktop it is the design's OWN
+ * `width` token, and on Mobile it is a phone. `.wc-root` takes
+ * `min(--wc-width, 100%)` of whatever contains it, so this is the `100%` — and
+ * a stage that just filled the column left the popup hard against its leading
+ * edge, reading as a broken float rather than as a popup.
+ */
+.wconvert-builder__stage > .wconvert-preview {
+  inline-size: var(--wconvert-stage, 100%);
+  max-inline-size: 100%;
+}
+
+/*
+ * **Mobile is a WIDTH, not a scale.** The renderer draws at real size, so
+ * constraining the stage is what makes a headline wrap where it would wrap on
+ * a phone. Scaling it down would show the merchant a layout no visitor gets —
+ * which is the one thing a live-rendered preview exists to avoid. Which width
+ * is the component's, above.
+ */
+
+/* ---------------------------------------------------------------------------
+ * THE THEME PANEL: PRESETS FIRST, RAW TOKENS BEHIND A DISCLOSURE (#71).
+ * ------------------------------------------------------------------------- */
+.wconvert-themes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: 0.5rem;
+  margin-block: 0.75rem;
+}
+
+.wconvert-theme {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-weight: 500;
+  text-align: start;
+}
+
+.wconvert-theme:hover {
+  border-color: var(--ring);
+}
+
+/*
+ * The applied one is stated rather than merely darker: `aria-pressed` is what
+ * a screen reader reads, and the ring is the same one every selected thing in
+ * this admin wears.
+ */
+.wconvert-theme[aria-pressed="true"] {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary);
+}
+
+.wconvert-theme__swatches {
+  display: inline-flex;
+}
+
+.wconvert-theme__swatch {
+  inline-size: 0.875rem;
+  block-size: 0.875rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+
+.wconvert-theme__swatch + .wconvert-theme__swatch {
+  margin-inline-start: -0.3125rem;
+}
+
+.wconvert-themes__theme {
+  margin-block: 0.75rem;
+}
+
+/*
+ * **Every raw token lives here, once.** Duplicating the "important" colours
+ * above the disclosure would give one token two controls a merchant can watch
+ * disagree with itself; presets are what carries the median case (#71).
+ */
+.wconvert-advanced {
+  margin-block-start: 1rem;
+  padding-block-start: 0.75rem;
+  border-block-start: 1px solid var(--border);
+}
+
+.wconvert-advanced > summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.wconvert-token--colour {
+  align-items: start;
+}
+
+.wconvert-token__name {
+  color: var(--muted-foreground);
+}
+
+.wconvert-swatch {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  inline-size: 100%;
+  block-size: var(--control-height);
+  padding-inline: 0.5rem;
+  background: var(--card);
+  border: 1px solid var(--input);
+  border-radius: var(--radius);
+  color: var(--foreground);
+  font-variant-numeric: tabular-nums;
+  text-align: start;
+}
+
+.wconvert-swatch:hover {
+  border-color: var(--ring);
+}
+
+/*
+ * A chequerboard behind the chip, so a translucent backdrop reads as
+ * translucent rather than as a lighter flat colour. Two gradients rather than
+ * an image: there is nothing to request.
+ */
+.wconvert-swatch__chip {
+  flex: none;
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 0.25rem;
+  background-color: transparent;
+  background-image: linear-gradient(45deg, var(--border) 25%, transparent 25%, transparent 75%, var(--border) 75%),
+    linear-gradient(45deg, var(--border) 25%, transparent 25%, transparent 75%, var(--border) 75%);
+  background-size: 0.5rem 0.5rem;
+  background-position: 0 0, 0.25rem 0.25rem;
+  box-shadow: inset 0 0 0 999px var(--wconvert-chip, transparent);
+}
+
+.wconvert-swatch__value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wconvert-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.wconvert-picker .react-colorful {
+  inline-size: 100%;
+}
+
+/*
+ * **The hex box has to draw its own border, because it is in a portal.** The
+ * popover renders into `document.body`, outside `#wconvert-admin` — so the
+ * input styling scoped to that id never reaches it, preflight has already
+ * zeroed the browser's own, and what a merchant saw was the hex value sitting
+ * as plain text where a field should be. Found in a browser, which is the only
+ * place this class of fault is visible at all (see THE PORTAL ROOTS above).
+ */
+.wconvert-picker input[type="text"] {
+  inline-size: 100%;
+  block-size: var(--control-height);
+  margin: 0;
+  padding-inline: 0.5rem;
+  background: var(--card);
+  border: 1px solid var(--input);
+  border-radius: var(--radius);
+  color: var(--foreground);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.875rem;
+}
+
+.wconvert-picker input[type="text"]:focus {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 1px var(--ring);
+  outline: none;
+}
+
+.wconvert-picker label {
+  display: grid;
+  gap: 0.25rem;
+  color: var(--muted-foreground);
 }
 
 .wconvert-slot {
@@ -1225,6 +1468,16 @@
   padding: 0.75rem;
   border: 1px solid var(--border);
   border-radius: var(--radius);
+}
+
+/*
+ * The block that edits the slot the preview is outlining. The SAME ring on
+ * both sides of the boundary is the whole affordance: one thing is selected
+ * and it is legible in two places at once (ADR 0040).
+ */
+.wconvert-slot[data-selected="true"] {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 1px var(--ring);
 }
 
 /*
@@ -1316,6 +1569,60 @@
 .wconvert-rules__empty,
 .wconvert-templates__empty {
   color: var(--muted-foreground);
+}
+
+/* ---------------------------------------------------------------------------
+ * LOCKED RULE TYPES, AS CARDS FROM THE MANIFEST (#72, ADR 0015).
+ *
+ * They were a comma list appended to the sentence holding the add control —
+ * three distinct capabilities read as a run-on. A card each is what ADR 0015
+ * specified, and it is metadata rather than a disabled control: the premium
+ * code is genuinely not in this bundle, so there is nothing here to disable.
+ * ------------------------------------------------------------------------- */
+.wconvert-locked {
+  margin-block: 0.75rem;
+}
+
+.wconvert-locked__heading {
+  margin: 0 0 0.5rem;
+  color: var(--muted-foreground);
+  font-weight: 600;
+}
+
+.wconvert-locked__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/*
+ * Quiet on purpose: it names something absent, and a card that competes with
+ * the controls beside it would read as one of them.
+ */
+.wconvert-locked__card {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  color: var(--muted-foreground);
+}
+
+.wconvert-locked__icon {
+  flex: none;
+  inline-size: 0.875rem;
+  block-size: 0.875rem;
+}
+
+.wconvert-locked__label {
+  color: var(--foreground);
+  font-weight: 500;
 }
 
 .wconvert-option-set {

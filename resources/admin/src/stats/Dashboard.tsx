@@ -17,6 +17,9 @@ import { Stat, StatRow } from '../shell/Stat';
 import { TableSkeleton } from '../shell/TableSkeleton';
 import { LOADING, failed, ready, type Loadable } from '../shell/loadable';
 import { readDashboard, type DashboardPayload, type GoalReport, type OptinReport } from './api';
+// Spelled once, because the Optin list and the builder's header read the same
+// two numbers and "—" must not become "0%" on one screen and not another.
+import { formatCount, formatRate } from './format';
 
 /**
  * The windows the merchant can ask for, in days.
@@ -160,10 +163,7 @@ export function Dashboard() {
               </Button>
             }
           >
-            {__(
-              'Create an Optin and publish it. From the moment a visitor sees it, its impressions, conversions and dismissals are counted here.',
-              'wconvert',
-            )}
+            {__('Publish an Optin and its numbers appear here.', 'wconvert')}
           </EmptyState>
         </Region>
       )}
@@ -394,16 +394,3 @@ function Sparkline({ label, byDay }: { label: string; byDay: Record<string, numb
     </div>
   );
 }
-
-const formatCount = (count: number) => new Intl.NumberFormat().format(count);
-
-/**
- * A rate, or an em dash.
- *
- * **Undefined is not zero.** Nothing was shown, so there is no denominator —
- * and "0%" is a claim that visitors saw it and did not act, which is a
- * different and much worse thing to tell a merchant about an Optin that never
- * rendered.
- */
-const formatRate = (rate: number | null) =>
-  rate === null ? '—' : `${new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 }).format(rate * 100)}%`;

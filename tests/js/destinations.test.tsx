@@ -384,7 +384,7 @@ describe('the destinations screen', () => {
 
     render(<Destinations />);
 
-    await userEvent.click(await screen.findByRole('button', { name: /Re-push Leads/ }));
+    await userEvent.click(await screen.findByRole('button', { name: /Re-push leads/ }));
 
     await waitFor(() => {
       expect(screen.getByText(/per-run limit/)).toBeInTheDocument();

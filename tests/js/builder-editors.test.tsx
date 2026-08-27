@@ -254,14 +254,20 @@ describe('the targeting picker', () => {
    * half a merchant cannot guess: an empty include list is "everywhere", not
    * "nowhere". It is the only reading under which an exclude-only Optin means
    * anything.
+   *
+   * **The words got shorter and the claim did not.** It read *"Leave 'Show it
+   * on' empty to show it everywhere. Anything in 'But never on' wins, even
+   * where the same page is in 'Show it on' too."* — 130 characters restating
+   * the two headings a centimetre below it. What is asserted here was never
+   * the wording; it is that BOTH halves are stated rather than left to reading
+   * order, because "the second one wins" is only true of a screen the merchant
+   * has already understood. Two sentences still say both.
    */
   it('states how the two lists combine, and what an empty one means', () => {
     targeting();
 
-    // Both halves are named, rather than left to reading order: "the second
-    // one wins" is only true of a screen the merchant has already understood.
-    expect(screen.getByText(/Leave “Show it on” empty to show it everywhere/)).toBeInTheDocument();
-    expect(screen.getByText(/Anything in “But never on” wins/)).toBeInTheDocument();
+    expect(screen.getByText(/Empty means everywhere/)).toBeInTheDocument();
+    expect(screen.getByText(/Exclusions always win/)).toBeInTheDocument();
   });
 
   /**

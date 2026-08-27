@@ -69,6 +69,18 @@ beside the title. Analytics' range picker changes what one region shows, so it
 is region-scoped and belongs in that region's toolbar. Neither answer required
 looking at the screen.
 
+*Amended by [#65](https://github.com/navidkashani/wconvert/issues/65), on the
+range picker only: **it is in the page header.** The premise above is wrong
+about the screen. Analytics is not one region with a picker over it — it is one
+region PER GOAL, and the window governs every one of them at once. A copy in
+each region's toolbar would be four controls that have to be kept in agreement,
+and a merchant who moved one and not the others would be comparing two windows
+on one screen. It sits at the trailing edge rather than beside the title,
+because the table's other rule still holds: a filter is not an action, and the
+position beside the title is what pairs an action with the thing it acts on.
+Recorded here rather than only in the commit that moved it, because this
+paragraph is what a reader reaches for.*
+
 **Two is the cap on page-header actions, and it is a cap on the header rather
 than on the screen.** A third page-scoped action is the signal that one of them
 is really region-scoped, or that the screen is two screens. ACF and Gravity
@@ -156,12 +168,23 @@ implicit role with it in a real browser, the table's elements carry their roles
 is four tabs"* against WSMS's twenty-five-section rail. That is a statement about
 **top-level sections** and about the scale a rail exists to serve. It is not a
 budget on tabs anywhere in the product, and
-[#69](https://github.com/navidkashani/wconvert/issues/69)'s five builder tabs are
-a level below it.
+[#69](https://github.com/navidkashani/wconvert/issues/69)'s ~~five~~ **four**
+builder tabs are a level below it.
 
 This is written down because the two look like a contradiction and are not, and
 because the cheapest place to lose that distinction is a review comment reading
 *"ADR 0036 says four"*.
+
+*Amended by [#69](https://github.com/navidkashani/wconvert/issues/69): the
+builder ships **four** tabs — Design · Content · Display rules · Destinations.
+Triggers, Conditions and page targeting were three tabs' worth of one question
+(*when and where does this show?*), and merchants arrive expecting them
+together; OptinMonster ships the same merge as one Display Rules screen. The
+count is struck through rather than rewritten because the point of this section
+is that a count at this level is not the thing being budgeted — and a section
+arguing that, which then silently tracks the number, would be arguing against
+itself. `RulesEditor` and `TargetingEditor` are unchanged: the merge is a tab,
+not a model.*
 
 ## Consequences
 
@@ -209,12 +232,16 @@ because the cheapest place to lose that distinction is a review comment reading
   against it in the same branch, because they are the two that exercise every
   part — a table with row actions and a destructive one, a toolbar with filters
   and a count, a region footer, a second region on the same screen, and a
-  page-scoped action that must stay an `<a>`.
+  page-scoped action that must stay an `<a>`. *This is now history rather than a
+  plan: every screen is converted and `.wconvert-legacy` is gone. It is kept
+  because it records WHY those two went first.*
 - **[#65](https://github.com/navidkashani/wconvert/issues/65),
   [#67](https://github.com/navidkashani/wconvert/issues/67) and
   [#68](https://github.com/navidkashani/wconvert/issues/68) become mechanical**,
   which is the point of writing this first. Their share of the audit above is
-  posted on each of them so it is not re-discovered.
+  posted on each of them so it is not re-discovered. *They did, and they have
+  landed — with one exception worth recording: #65's range picker was not
+  mechanical, and the amendment above is what it cost.*
 - **A test breaking mid-conversion is still the signal ADR 0038 says it is.**
   Two assertions in `optin-list.test.tsx` change with this grammar — `published`
   becomes a translated word, and Delete moves behind an overflow menu. Both are

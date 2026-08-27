@@ -51,7 +51,7 @@ export function widerScreenMessage(): string {
   return sprintf(
     /* translators: %d: minimum viewport width in pixels. */
     __(
-      'The Optin builder needs a screen at least %dpx wide. Open this page on a desktop to design an Optin — everything else in WConvert works here.',
+      'The Optin builder needs a screen at least %dpx wide. Everything else in WConvert works here.',
       'wconvert'
     ),
     BUILDER_MIN_WIDTH

@@ -64,10 +64,7 @@ export function TargetingEditor({ types, targeting, onChange }: TargetingEditorP
     <>
       <h3>{__('Where it shows', 'wconvert')}</h3>
       <p className="description">
-        {__(
-          'Leave “Show it on” empty to show it everywhere. Anything in “But never on” wins, even where the same page is in “Show it on” too.',
-          'wconvert',
-        )}
+        {__('Empty means everywhere. Exclusions always win.', 'wconvert')}
       </p>
 
       <RuleList
