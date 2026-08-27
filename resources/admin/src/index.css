@@ -298,12 +298,39 @@
    * supposed to be one surface.
    */
   min-block-size: calc(100vh - var(--wp-admin--admin-bar--height, 32px));
+
+  /*
+   * **The room WordPress's footer needs, given back — inside our surface
+   * rather than under it.**
+   *
+   * `#wpfooter` is `position: absolute; bottom: 0`, so it is out of the flow
+   * and lands on whatever is at the bottom of the document. wp-admin reserves
+   * space for it with 65px of padding on `#wpbody-content`, and the rule below
+   * takes that away so our background can run all the way down — which it does,
+   * and which also dropped the footer straight on top of the last 40px of every
+   * screen. Reported from a real install: "Thank you for creating with
+   * WordPress" printed across a region's own footer row.
+   *
+   * Padding HERE rather than restoring it on `#wpbody-content` is the whole
+   * point: our background is painted on this element, so the reserved strip is
+   * ours and the footer sits on it. Restoring it outside would put wp-admin's
+   * grey back under the page and re-open the seam the rule below closed.
+   *
+   * 65px is WordPress's own number for this, not one invented here — the
+   * footer is 40px on one line and this is what wp-admin budgets for it
+   * wrapping.
+   */
+  padding-block-end: 65px;
 }
 
 /*
  * The 65px this reserves is the gap wp-admin leaves between a screen and the
  * footer. Our surface runs to the footer instead, so the reservation is the
  * seam. The footer itself is untouched and keeps its own backdrop.
+ *
+ * **The reservation is not deleted, it is moved** — see the `padding-block-end`
+ * on `#wconvert-admin` above. Taking it away without giving it back is what put
+ * an absolutely positioned footer on top of the bottom of every screen.
  */
 #wpbody-content {
   padding-bottom: 0;
