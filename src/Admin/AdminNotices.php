@@ -42,14 +42,14 @@ final class AdminNotices
      *
      * @var array<string, true>
      */
-    private static array $screens = [];
+    private array $screens = [];
 
     /**
      * Messages the plugin needs a human to read, in the order they were added.
      *
      * @var list<string>
      */
-    private static array $messages = [];
+    private array $messages = [];
 
     public function __construct(
         private readonly PublishedSet $publishedSet,
@@ -69,31 +69,32 @@ final class AdminNotices
         // has already had a chance to add.
         add_action('in_admin_header', [$this, 'suppress'], PHP_INT_MAX);
 
-        add_action('admin_notices', [self::class, 'renderForWordPress']);
+        // Removed again by suppress() on our own screens, where
+        // {@see AdminMenu::renderScreen()} calls render() from inside the page
+        // instead. Registering both and letting one be removed is what makes
+        // the surviving path a consequence of the suppression rather than a
+        // second thing to keep in step with it.
+        add_action('admin_notices', [$this, 'render']);
     }
 
     /**
      * Record a message for whichever render path this request reaches.
-     *
-     * Static because its callers are: {@see \WConvert\Assets\ViteHelper} is a
-     * static helper and reports a missing bundle from inside an enqueue, where
-     * there is no service to resolve and no container to reach for.
      */
-    public static function add(string $message): void
+    public function add(string $message): void
     {
-        self::$messages[] = $message;
+        $this->messages[] = $message;
     }
 
     /**
      * Declare a hook suffix as one of WConvert's screens.
      */
-    public static function owns(string $hookSuffix): void
+    public function owns(string $hookSuffix): void
     {
         if ($hookSuffix === '') {
             return;
         }
 
-        self::$screens[$hookSuffix] = true;
+        $this->screens[$hookSuffix] = true;
     }
 
     /**
@@ -125,7 +126,7 @@ final class AdminNotices
             return;
         }
 
-        self::add(__(
+        $this->add(__(
             'WConvert has published Optins but its loader script is missing, so none of them can display. Reinstall the plugin to restore it.',
             'wconvert'
         ));
@@ -138,14 +139,14 @@ final class AdminNotices
      * where a plugin puts a banner it wants shown on every screen — which is
      * the category this exists to keep off ours.
      *
-     * This removes {@see renderForWordPress()} along with everything else, and
-     * that is intended: on our screen the surviving path is
-     * {@see renderOwned()}, and leaving both registered would print the same
-     * sentence twice.
+     * This removes our own `admin_notices` callback along with everything
+     * else, and that is intended: on our screen the surviving path is
+     * {@see AdminMenu::renderScreen()}, and leaving both registered would
+     * print the same sentence twice.
      */
     public function suppress(): void
     {
-        if (!self::isOurScreen()) {
+        if (!$this->isOurScreen()) {
             return;
         }
 
@@ -155,38 +156,28 @@ final class AdminNotices
     }
 
     /**
-     * Print the plugin's notices on a screen that is WordPress's.
+     * Print the plugin's notices.
      *
-     * Removed before it runs on a screen that is ours.
-     */
-    public static function renderForWordPress(): void
-    {
-        self::render();
-    }
-
-    /**
-     * Print the plugin's notices inside the page WConvert owns.
-     *
-     * Called by {@see AdminMenu::renderScreen()}, after the suppression above
-     * has run and before React mounts — which is what makes it the path that
-     * survives, and the only path that can report a MISSING ADMIN BUNDLE at
-     * all. That failure leaves no React to render a message and no stylesheet
-     * to style one with.
+     * **Two call sites, one behaviour.** On a screen that is WordPress's this
+     * runs from `admin_notices`. On a screen that is ours that hook has been
+     * emptied, so {@see AdminMenu::renderScreen()} calls it directly from
+     * inside the page — after the suppression and before React mounts, which
+     * is what makes it the path that survives and the only path that can
+     * report a MISSING ADMIN BUNDLE at all. That failure leaves no React to
+     * render a message and no stylesheet to style one with.
      *
      * **So it wears WordPress's notice classes, on purpose.** ADR 0035 says
      * this screen renders no wp-admin chrome, and this is the one moment the
      * screen is not WConvert's: the assets that would have made it ours are
-     * the thing that is missing. A notice that depends on the stylesheet it is
-     * reporting the absence of is a notice nobody reads.
+     * the thing that is missing. A notice that depends on the stylesheet whose
+     * absence it is reporting is a notice nobody reads.
+     *
+     * `wconvert-notice` is what keeps it out of the catch-all in `index.css`
+     * that hides banners echoed past the hook.
      */
-    public static function renderOwned(): void
+    public function render(): void
     {
-        self::render();
-    }
-
-    private static function render(): void
-    {
-        foreach (self::$messages as $message) {
+        foreach ($this->messages as $message) {
             echo '<div class="notice notice-error wconvert-notice"><p>';
             echo esc_html($message);
             echo '</p></div>';
@@ -201,10 +192,10 @@ final class AdminNotices
      * passed, so matching it compares one fact to itself. A screen id is a
      * second derivation of the same thing and drifts on submenu pages.
      */
-    private static function isOurScreen(): bool
+    private function isOurScreen(): bool
     {
         $suffix = $GLOBALS['hook_suffix'] ?? '';
 
-        return is_string($suffix) && isset(self::$screens[$suffix]);
+        return is_string($suffix) && isset($this->screens[$suffix]);
     }
 }

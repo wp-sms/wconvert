@@ -45,7 +45,7 @@ final class WsmsDestinationType implements DestinationType
 
     public function icon(): string
     {
-        return 'dashicons-groups';
+        return 'users';
     }
 
     public function tier(): Tier

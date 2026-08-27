@@ -96,7 +96,7 @@ final class LeadMagnetDestinationType implements DestinationType
 
     public function icon(): string
     {
-        return 'dashicons-email-alt';
+        return 'mail';
     }
 
     public function tier(): Tier

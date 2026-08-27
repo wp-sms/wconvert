@@ -40,7 +40,19 @@ interface DestinationType
 
     public function label(): string;
 
-    /** A dashicon name. The admin renders it; nothing else reads it. */
+    /**
+     * A lucide icon name, kebab-case, as lucide itself spells it.
+     *
+     * **Not a dashicon.** Dashicons is WordPress chrome and ADR 0035 stopped
+     * rendering that, so a registry handing out `dashicons-groups` would be
+     * the one place the chrome got back in — through the domain rather than
+     * through the markup ([ADR 0036](../../docs/adr/0036-admin-components-are-vendored-from-upstream.md)).
+     *
+     * A name the admin resolves rather than a component, because this is PHP
+     * and the admin is where icons live. An unknown name resolves to a
+     * fallback rather than to nothing, so a [[Destination]] registered by
+     * [[Pro]] against a lucide release this admin predates still draws a row.
+     */
     public function icon(): string;
 
     /** Which install supplies this type. Free ships WSMS; the ESPs are Pro's. */

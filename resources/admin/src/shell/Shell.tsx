@@ -7,9 +7,17 @@ import { SECTIONS, hashFor, type SectionId } from '../nav';
 /**
  * The frame every WConvert screen is drawn inside.
  *
+ * **`section` is optional, and omitting it is what the builder does.**
+ * Everything else in the admin is a list or a report a merchant reads in
+ * passing; the builder is somewhere they sit down, and it replaces even the
+ * tabs — leaving them up offers three ways out of an editor holding unsaved
+ * work. That was the shape #62 settled, and one frame with an optional nav is
+ * the whole of the difference between the two cases.
+ *
  * **The page is WConvert's, not WordPress's** (ADR 0035). There is no
  * `nav-tab`, no `.wrap` and no `wp-heading-inline` here; the tokens are
- * WConvert's ([ADR 0037](../index.css)) and the chrome around this frame —
+ * WConvert's ([ADR 0037](../../../../docs/adr/0037-the-admin-inherits-token-structure-and-owns-its-values.md))
+ * and the chrome around this frame —
  * the admin menu, the toolbar and the footer — is the part WordPress still
  * owns and this deliberately leaves alone.
  *
@@ -18,36 +26,17 @@ import { SECTIONS, hashFor, type SectionId } from '../nav';
  * flow is comparing it to OptinMonster and ConvertKit rather than to
  * Settings → Permalinks.
  */
-export function Shell({ section, children }: { section: SectionId; children: ReactNode }) {
+export function Shell({ section, children }: { section?: SectionId; children: ReactNode }) {
   return (
     <div className="font-sans text-[15px] leading-normal text-foreground">
       <header className="border-b border-border bg-card">
-        <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 pt-5 sm:px-6">
+        <div
+          className={`mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 sm:px-6 ${
+            section === undefined ? 'py-5' : 'pt-5'
+          }`}
+        >
           <Wordmark />
-          <SectionNav current={section} />
-        </div>
-      </header>
-
-      <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6">{children}</main>
-    </div>
-  );
-}
-
-/**
- * A frame with no section nav, for the screens that are a place rather than a
- * list.
- *
- * **The builder replaces even the tabs**, which was the shape #62 settled:
- * everything else in the admin is a list or a report a merchant reads in
- * passing, and the builder is somewhere they sit down. Leaving the tabs up
- * offers three ways out of an editor holding unsaved work.
- */
-export function PlainShell({ children }: { children: ReactNode }) {
-  return (
-    <div className="font-sans text-[15px] leading-normal text-foreground">
-      <header className="border-b border-border bg-card">
-        <div className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6">
-          <Wordmark />
+          {section !== undefined && <SectionNav current={section} />}
         </div>
       </header>
 

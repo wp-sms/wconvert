@@ -100,6 +100,28 @@
   --color-sidebar-ring: var(--sidebar-ring);
   --color-surface: var(--surface);
 
+  /*
+   * **The whole scale is a hard offset, not only the named token.**
+   *
+   * ADR 0037 keeps WSMS's `4px 4px 0` deliberately — a tight radius and a hard
+   * shadow are the two things about the sibling's surface a person could
+   * describe from memory, and they are what carries the family resemblance
+   * once the colour stops doing it. Declaring `--shadow-brutalist` alone would
+   * have left that as decoration: every vendored component asks for
+   * `shadow-xs`, `shadow-sm` or `shadow-md`, so the shadow that actually
+   * rendered would have been Tailwind's soft blurred default and the house
+   * style would appear nowhere on the screen.
+   *
+   * Depth is offset distance rather than blur, so the scale reads as one idea
+   * at four sizes and the top of it IS the `4px 4px 0` the ADR names.
+   */
+  --shadow-2xs: 1px 1px 0 var(--border);
+  --shadow-xs: 1px 1px 0 var(--border);
+  --shadow-sm: 2px 2px 0 var(--border);
+  --shadow-md: 2px 2px 0 var(--border);
+  --shadow-lg: 3px 3px 0 var(--border);
+  --shadow-xl: 4px 4px 0 var(--border);
+  --shadow-2xl: 4px 4px 0 var(--border);
   --shadow-brutalist: 4px 4px 0 var(--border);
   --radius-sm: max(calc(var(--radius) - 2px), 0px);
   --radius-md: var(--radius);
@@ -122,7 +144,6 @@
    * colour stops doing it (ADR 0037).
    */
   --radius: 0.25rem;
-  --shadow-lg: 3px 3px 0 var(--border);
 
   /*
    * Petrol. Cool against the sibling's warm burnt orange, so the two are

@@ -241,5 +241,4 @@ final class LoaderEnqueue
             $entries
         );
     }
-
 }

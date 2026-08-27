@@ -8,9 +8,9 @@ import { OptinList } from './optins/OptinList';
 import { Dashboard } from './stats/Dashboard';
 import { Destinations } from './destinations/Destinations';
 import { Button } from './components/ui/button';
-import { PlainShell, Shell } from './shell/Shell';
+import { Shell } from './shell/Shell';
 import { NarrowScreenNotice } from './shell/NarrowScreenNotice';
-import { useBuilderViewport } from './useBuilderViewport';
+import { useBuilderViewport } from './hooks/useBuilderViewport';
 import { sectionFrom, type SectionId } from './nav';
 
 /**
@@ -78,6 +78,13 @@ export function App() {
  * renders a live preview through the renderer the loader imports and sticks it
  * to the scroll, none of which is work worth doing behind a message saying it
  * cannot be shown.
+ *
+ * **That saves the WORK and not the BYTES.** The import above is static, so
+ * the builder and the renderer it pulls are in the bundle whatever this
+ * decides — which is also why the size printed by every build is the unsplit
+ * number. Making it a lazy boundary is
+ * [#73](https://github.com/navidkashani/wconvert/issues/73), and it is not a
+ * one-line change: the admin is built as an IIFE, and IIFE cannot code-split.
  */
 function BuilderScreen({ id, onClose }: { id: string; onClose: () => void }) {
   const fits = useBuilderViewport();
@@ -89,22 +96,22 @@ function BuilderScreen({ id, onClose }: { id: string; onClose: () => void }) {
      * first version of this shipped.
      */
     return (
-      <PlainShell>
+      <Shell>
         <Button variant="ghost" size="sm" className="mb-4 -ms-3" onClick={onClose}>
           <ArrowLeft aria-hidden="true" />
           {__('All Optins', 'wconvert')}
         </Button>
         <NarrowScreenNotice />
-      </PlainShell>
+      </Shell>
     );
   }
 
   return (
-    <PlainShell>
+    <Shell>
       <div className="wconvert-legacy">
         <OptinBuilder id={id} onClose={onClose} />
       </div>
-    </PlainShell>
+    </Shell>
   );
 }
 

@@ -43,7 +43,7 @@ final class FakeDestinationType implements DestinationType
 
     public function icon(): string
     {
-        return 'dashicons-admin-generic';
+        return 'plug';
     }
 
     public function tier(): Tier

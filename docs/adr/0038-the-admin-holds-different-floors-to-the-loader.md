@@ -110,6 +110,14 @@ failure, not a line of new code.
   it is caused.
 - **The builder is a lazy boundary**, which means it is also the natural place for
   anything else heavy to land later without a conversation about the budget.
+  *Not built as of [#63](https://github.com/navidkashani/wconvert/issues/63),
+  which stood the reporting up; the split is
+  [#73](https://github.com/navidkashani/wconvert/issues/73). Until it lands the
+  printed number is the UNSPLIT bundle, so a reader comparing it against the
+  argument above should know it is the pessimistic figure and not the one a
+  merchant checking yesterday's leads actually pays. The split needs the admin
+  build to stop being an IIFE, which cannot code-split — that is the work #73
+  carries and the reason it is a ticket rather than a line.*
 - **A 782px message is a shipped string** and therefore translatable, and it needs
   to say what the merchant should do rather than that something is unsupported.
 - **If someone later shows the admin bundle actually hurting**, the escalation is

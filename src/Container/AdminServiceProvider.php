@@ -21,8 +21,6 @@ final class AdminServiceProvider implements ServiceProvider
 {
     public function register(ServiceContainer $container): void
     {
-        $container->register(AdminMenu::class, static fn (): AdminMenu => new AdminMenu());
-
         // Empties `admin_notices` on WConvert's screens and carries the
         // plugin's own notices across the gap that leaves (ADR 0035). It reads
         // the published set only once the loader bundle is already known to be
@@ -31,6 +29,13 @@ final class AdminServiceProvider implements ServiceProvider
             AdminNotices::class,
             static fn (ServiceContainer $c): AdminNotices => new AdminNotices(
                 $c->resolve(PublishedSet::class)
+            )
+        );
+
+        $container->register(
+            AdminMenu::class,
+            static fn (ServiceContainer $c): AdminMenu => new AdminMenu(
+                $c->resolve(AdminNotices::class)
             )
         );
 

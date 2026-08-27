@@ -23,6 +23,11 @@ final class AdminMenu
 
     private string $screenId = '';
 
+    public function __construct(
+        private readonly AdminNotices $notices,
+    ) {
+    }
+
     public function hooks(): void
     {
         add_action('admin_menu', [$this, 'registerMenu']);
@@ -49,7 +54,7 @@ final class AdminMenu
         // screen read it from here: the bundle enqueue below, and the notice
         // suppression that empties `admin_notices` on WConvert's screens and
         // nowhere else (ADR 0035).
-        AdminNotices::owns($this->screenId);
+        $this->notices->owns($this->screenId);
     }
 
     /**
@@ -68,7 +73,7 @@ final class AdminMenu
      */
     public function renderScreen(): void
     {
-        AdminNotices::renderOwned();
+        $this->notices->render();
 
         echo '<div id="wconvert-admin"></div>';
     }
@@ -86,7 +91,7 @@ final class AdminMenu
             return;
         }
 
-        ViteHelper::enqueueAdmin(self::SCRIPT_HANDLE);
+        ViteHelper::enqueueAdmin(self::SCRIPT_HANDLE, $this->notices);
 
         $settings = [
             // The CSV download is a navigation to `admin-post.php`, so the

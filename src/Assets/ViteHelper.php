@@ -15,7 +15,11 @@ final class ViteHelper
 {
     private const ADMIN_DIST = 'public/admin/';
 
-    public static function enqueueAdmin(string $handle): void
+    /**
+     * @param AdminNotices $notices where a broken build is reported, since
+     *                              `admin_notices` is emptied on this screen.
+     */
+    public static function enqueueAdmin(string $handle, AdminNotices $notices): void
     {
         $distDir = WCONVERT_DIR . self::ADMIN_DIST;
         $distUrl = WCONVERT_URL . self::ADMIN_DIST;
@@ -23,7 +27,7 @@ final class ViteHelper
         // A missing main.js is an incomplete build, and the screen would render
         // as a blank <div> with nothing in any log. Say so instead.
         if (!is_file($distDir . 'main.js')) {
-            self::noticeMissingAdminBundle();
+            self::noticeMissingAdminBundle($notices);
 
             return;
         }
@@ -61,9 +65,9 @@ final class ViteHelper
      * and the one that does not need the stylesheet whose absence it is
      * reporting.
      */
-    private static function noticeMissingAdminBundle(): void
+    private static function noticeMissingAdminBundle(AdminNotices $notices): void
     {
-        AdminNotices::add(__(
+        $notices->add(__(
             'WConvert could not load its admin screen — the built assets are missing. Reinstall the plugin to restore them.',
             'wconvert'
         ));

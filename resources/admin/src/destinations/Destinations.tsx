@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { iconFor } from '../icons';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import {
   deleteDestination,
@@ -184,10 +185,11 @@ function Types({
     <ul className="wconvert-destinations__types">
       {types.map((type) => {
         const rendering = renderingFor(type.availability, 'settings_list');
+        const TypeIcon = iconFor(type.icon);
 
         return (
         <li key={type.id}>
-          <span className={`dashicons ${type.icon}`} aria-hidden="true" />{' '}
+          <TypeIcon aria-hidden="true" className="inline-block size-4 align-text-bottom" />{' '}
           <strong>{type.label}</strong>{' '}
           {/*
             This is a SETTINGS LIST, so it explains an absence rather than
