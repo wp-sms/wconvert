@@ -59,6 +59,26 @@ export default [
        * recommended set arrives at the severity it is written for.
        */
       ...jsxA11y.flatConfigs.recommended.rules,
+
+      /*
+       * **The two exceptions, and they are the same exception twice.**
+       *
+       * ADR 0039 turns a table into a list of row-cards below 640px with CSS
+       * alone — `display: block` on the table, the body, the rows and the
+       * cells. In a real browser that can take an element's IMPLICIT role with
+       * it, so the table quietly leaves the accessibility tree at exactly the
+       * width nobody is testing a screen reader against. Writing the roles out
+       * is what survives the change; the DOM stays a table, and
+       * `lead-log.test.tsx`'s `findByRole('row', …)` stays true at every width.
+       *
+       * Both rules are right in general and are reasoning from the static
+       * markup: `rowgroup` on a `<tbody>` IS redundant until a stylesheet makes
+       * it not, and `<td>` is treated as interactive because it also maps to
+       * `gridcell`. Narrowed to the exact element/role pairs rather than
+       * disabled, so everything else these rules catch still fires.
+       */
+      'jsx-a11y/no-redundant-roles': ['error', { thead: ['rowgroup'], tbody: ['rowgroup'] }],
+      'jsx-a11y/no-interactive-element-to-noninteractive-role': ['error', { td: ['cell'] }],
     },
   },
 ];

@@ -49,6 +49,14 @@ dies on the screen the product is sold on.
 That argument disqualifies green independently of taste, which is why it is here
 rather than in a design file.
 
+_Completed by [ADR 0039](0039-a-screen-is-regions-and-scope-decides-placement.md):
+there is a design document now, and this refusal still does not belong in it. 0039
+holds layout — page parts, where a control goes, what a region owes — and this is
+an argument about what a colour is allowed to mean, which is a property of the
+product rather than of a screen. What 0039 does add is the other half of the same
+rule: green and amber are **spent** on `Badge`'s `success` and `warning` variants,
+where *published* and *suspended* are exactly the meaning they were reserved for._
+
 ## Indigo lost on confidence, not on correctness
 
 `#4f46e5` and its neighbours leave the semantic palette free and would have

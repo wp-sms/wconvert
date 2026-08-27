@@ -14,6 +14,26 @@ const badgeVariants = cva(
           "bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90",
         destructive:
           "bg-destructive text-white focus-visible:ring-destructive/20 dark:bg-destructive/60 dark:focus-visible:ring-destructive/40 [a&]:hover:bg-destructive/90",
+        /*
+         * WCONVERT'S, not upstream's — and the escalation ADR 0036 names
+         * ("if the vendored components turn out to fight the design, the
+         * escalation is to edit them").
+         *
+         * ADR 0037 reserves green and amber for MEANING and forbids spending
+         * them on chrome. A [[Suspended]] Optin and a published one are that
+         * meaning exactly: the site is holding one back and serving the other,
+         * and a merchant scanning the Status column is reading for which. So
+         * this is the reserved palette being spent on what it was reserved for
+         * (ADR 0039).
+         *
+         * Tinted rather than solid: the tokens are measured against WHITE
+         * (`--success` 6.13:1, `--warning` 5.93:1), and a 10% wash under them
+         * keeps the text above 4.5:1 while leaving the solid fills to the
+         * chart ramp, where a run of solid green badges down a table would
+         * shout louder than the numbers.
+         */
+        success: "border-success/25 bg-success/10 text-success",
+        warning: "border-warning/25 bg-warning/10 text-warning",
         outline:
           "border-border text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
         ghost: "[a&]:hover:bg-accent [a&]:hover:text-accent-foreground",

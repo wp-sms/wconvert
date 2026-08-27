@@ -1,8 +1,9 @@
-import type { ReactNode } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { __ } from '@wordpress/i18n';
 import { ChartColumn, Inbox, Megaphone, Send } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { SECTIONS, hashFor, type SectionId } from '../nav';
+import { PageActionSlotProvider } from './PageActions';
 
 /**
  * The frame every WConvert screen is drawn inside.
@@ -42,6 +43,11 @@ import { SECTIONS, hashFor, type SectionId } from '../nav';
  * tabs — leaving them up offers three ways out of an editor holding unsaved
  * work. That was the shape #62 settled, and one frame with an optional nav is
  * the whole of the difference between the two cases.
+ *
+ * **Five parts in one order, on every screen** (ADR 0039): masthead, page
+ * header, page body — and inside the body, regions the SCREEN owns. The first
+ * three are this file's and a screen may not draw them; the regions are the
+ * screen's and this file may not draw those.
  */
 export function Shell({
   section,
@@ -52,25 +58,39 @@ export function Shell({
   actions?: ReactNode;
   children: ReactNode;
 }) {
-  return (
-    <div className="font-sans text-sm leading-normal text-foreground">
-      <div className="bg-primary">
-        <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-2.5 sm:px-6">
-          <Wordmark />
-          {section !== undefined && <SectionNav current={section} />}
-        </div>
-      </div>
+  /*
+   * State rather than a `useRef`, because a ref does not re-render and the
+   * screens portalling into this node need to hear that it exists. The
+   * callback form runs once on mount with the node and once on unmount with
+   * null, which is exactly the two events {@see PageAction} cares about.
+   */
+  const [target, setTarget] = useState<HTMLElement | null>(null);
+  const slot = useMemo(
+    () => ({ present: section !== undefined, target }),
+    [section, target],
+  );
 
-      {section !== undefined && (
-        <div className="border-b border-border bg-card">
-          <div className="mx-auto w-full max-w-6xl px-4 py-4 sm:px-6">
-            <PageHeader section={section} actions={actions} />
+  return (
+    <PageActionSlotProvider value={slot}>
+      <div className="font-sans text-sm leading-normal text-foreground">
+        <div className="bg-primary">
+          <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-2.5 sm:px-6">
+            <Wordmark />
+            {section !== undefined && <SectionNav current={section} />}
           </div>
         </div>
-      )}
 
-      <main className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6">{children}</main>
-    </div>
+        {section !== undefined && (
+          <div className="border-b border-border bg-card">
+            <div className="mx-auto w-full max-w-6xl px-4 py-4 sm:px-6">
+              <PageHeader section={section} actions={actions} actionSlot={setTarget} />
+            </div>
+          </div>
+        )}
+
+        <main className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6">{children}</main>
+      </div>
+    </PageActionSlotProvider>
   );
 }
 
@@ -111,17 +131,39 @@ function Wordmark() {
  * + Add New"*, Gravity Forms' *"Forms  Add New"* — and the reason is that the
  * eye pairs them: a button a thousand pixels away from the words it acts on
  * is a button in the same band rather than a button about that thing.
+ *
+ * **At most TWO actions, and only actions that act on the whole screen**
+ * (ADR 0039). The order is primary solid, then secondary outline, reading
+ * order; a screen with one action has the primary and nothing else. A third is
+ * not a spacing problem — it is the signal that one of them is really scoped to
+ * a region and belongs in that region's toolbar, or that this screen is two
+ * screens. Nothing that acts on a row or on a filtered set may appear here,
+ * however well it would fit.
+ *
+ * The slot after `actions` is for a screen that owns its own page-scoped action
+ * — Leads' CSV export, whose URL carries the screen's filter
+ * ({@see PageAction}). `display: contents` so an empty slot is not a gap in the
+ * band, and after `actions` so the frame's primary keeps first position.
  */
-function PageHeader({ section, actions }: { section: SectionId; actions?: ReactNode }) {
+function PageHeader({
+  section,
+  actions,
+  actionSlot,
+}: {
+  section: SectionId;
+  actions?: ReactNode;
+  actionSlot: (node: HTMLElement | null) => void;
+}) {
   const entry = SECTIONS.find((candidate) => candidate.id === section);
 
   return (
     <>
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-        <h1 className="m-0 text-2xl font-semibold leading-tight tracking-tight text-foreground">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+        <h1 className="m-0 me-1 text-2xl font-semibold leading-tight tracking-tight text-foreground">
           {entry?.label}
         </h1>
         {actions}
+        <div ref={actionSlot} className="contents" />
       </div>
       <p className="mt-1.5 mb-0 max-w-2xl text-pretty text-muted-foreground">
         {descriptionFor(section)}

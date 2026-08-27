@@ -93,6 +93,15 @@ it in ways that appear only on the screens nobody checked.
 - **Every control is ours to get right, including the ones nobody thinks about** —
   disabled states, focus-visible, `prefers-reduced-motion`, and what a 200-row
   lead table does on a narrow viewport.
+
+  _Completed by [ADR 0039](0039-a-screen-is-regions-and-scope-decides-placement.md):
+  this ADR made the page ours without saying how anything is arranged on it, and
+  the five screens then each invented an arrangement — no loading states, four
+  different kinds of empty state, page-level errors far from the control that
+  failed, and no confirmation on anything destructive. 0039 is the layout grammar
+  that was missing: five page parts in one order, placement decided by what a
+  control acts on, three declared states per region, and 640px as the table's own
+  breakpoint — the answer to the 200-row question this bullet left open._
 - **Dark mode becomes possible rather than required.** Ignoring WordPress's
   schemes means the tokens answer to nothing external, so a
   `prefers-color-scheme` implementation is a second set of values against the

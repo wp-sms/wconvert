@@ -125,12 +125,26 @@
   --shadow-brutalist: 4px 4px 0 var(--border);
 
   /*
-   * **One control height for the whole admin.** 2.25rem is what the vendored
-   * `Button` draws at its default size, so a WordPress control that has not
-   * been converted yet stands exactly as tall as the real one beside it and
-   * nothing jumps when #64-#72 swap them.
+   * **Two control heights, and which one applies is a question of scope**
+   * (ADR 0039). 2.25rem is what the vendored `Button` draws at its default
+   * size, so a WordPress control that has not been converted yet stands
+   * exactly as tall as the real one beside it and nothing jumps when #64-#72
+   * swap them. It is the height of a page-header action and of a form field in
+   * a settings region — the controls a merchant came to the screen to use.
+   *
+   * 2rem is everything that qualifies what is already on the screen: a
+   * toolbar's filters, a row's actions, a control inside a table. It is what
+   * the vendored `size="sm"` draws, and it is stated here as a token rather
+   * than repeated as a prop because *"a toolbar control is the small height"*
+   * is a rule about the toolbar and not about each control that lands in one.
+   *
+   * This amends #63's "one control height for the whole admin", which was
+   * right about the un-converted screens it was written for and is what made
+   * the Leads filter row read chunky: one height everywhere means a filter
+   * stands as tall as the action beside it, and they are not the same weight.
    */
   --control-height: 2.25rem;
+  --control-height-sm: 2rem;
   --radius-sm: max(calc(var(--radius) - 2px), 0px);
   --radius-md: var(--radius);
   --radius-lg: calc(var(--radius) + 2px);
@@ -333,18 +347,246 @@
   display: none !important;
 }
 
-/*
- * Radix portals its overlays to `document.body`, outside the mount node, so
- * the stacking order has to be stated here rather than inherited. wp-admin's
- * toolbar sits at z-index 99999, which is the number these have to clear.
- */
+/* ---------------------------------------------------------------------------
+ * THE PORTAL ROOTS.
+ *
+ * **Radix portals to `document.body`, outside `#wconvert-admin`** — so nothing
+ * scoped to that id reaches a dropdown, a select or a dialog. Everything the
+ * app takes for granted has to be restated here: the font, the body size, the
+ * colour, the pointer cursor and the stacking order (ADR 0039). This is the
+ * single most likely thing to look wrong on a first run, because a portaled
+ * menu inherits wp-admin's 13px font and its own foreground and looks like a
+ * WordPress menu that wandered onto our page.
+ *
+ * The popper wrapper covers dropdown, popover and select, which are positioned
+ * by Radix's popper. A dialog is not — it portals straight into the body — so
+ * its overlay and content are named separately rather than assumed.
+ * ------------------------------------------------------------------------- */
+[data-radix-popper-content-wrapper],
+[data-slot="select-content"],
+[data-slot="dialog-overlay"],
+[data-slot="dialog-content"],
+[data-slot="alert-dialog-overlay"],
+[data-slot="alert-dialog-content"] {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--foreground);
+}
+
 [data-radix-popper-content-wrapper] :is([role="option"], [role="menuitem"]) {
   cursor: pointer;
 }
 
+/*
+ * wp-admin's toolbar sits at z-index 99999, which is the number these have to
+ * clear. A confirm dialog that opens behind the toolbar is a confirm dialog a
+ * merchant cannot answer.
+ */
 [data-radix-popper-content-wrapper],
-[data-slot="select-content"] {
+[data-slot="select-content"],
+[data-slot="dialog-overlay"],
+[data-slot="dialog-content"],
+[data-slot="alert-dialog-overlay"],
+[data-slot="alert-dialog-content"] {
   z-index: 100300 !important;
+}
+
+/* ---------------------------------------------------------------------------
+ * THE REGION TABLE, AND WHAT IT BECOMES BELOW 640px.
+ *
+ * **640px is the table's own breakpoint and is neither number ADR 0038 owns**
+ * (ADR 0039). 782px is the *builder's* floor — a sticky preview beside a
+ * settings panel — and 360px is a *floor* rather than a breakpoint, the width
+ * the reading screens must survive rather than the width at which they change
+ * shape. Reusing either would make one number mean two things.
+ *
+ * Below it a table becomes a stacked list of row-cards, one card per row, with
+ * each cell a label-and-value pair. Not horizontal scroll — a lead log you have
+ * to drag sideways is a log you do not read — and not column hiding, which
+ * decides for the merchant which of their own columns matter.
+ *
+ * **The DOM stays a table at every width**, which is a design constraint and a
+ * test constraint at once: `lead-log.test.tsx` asserts `findByRole('row', …)`.
+ * `display: block` on a `<tr>` can take its implicit role with it in a real
+ * browser, so {@see DataTable} writes `role="table"`, `role="row"`,
+ * `role="cell"` and `role="columnheader"` explicitly — this stylesheet changes
+ * how the rows LOOK and the accessibility tree does not hear about it.
+ *
+ * The header row is not `display: none` for the same reason: it is
+ * visually hidden, so a screen reader still announces a column name that a
+ * sighted merchant now reads off the `::before` beside the value.
+ * ------------------------------------------------------------------------- */
+/*
+ * **The whole register is here rather than in utilities on the elements**, and
+ * that is what makes the treatment below possible at all. Tailwind's utilities
+ * are `!important` (ADR 0035); a `py-3` on a `<td>` would beat every padding
+ * this media query wants to change, and the row-card would arrive with the
+ * table's own spacing inside it. Plain CSS on one class is the version that can
+ * be overridden by the query underneath it.
+ *
+ * The `#wconvert-admin` prefix is for specificity against wp-admin's own
+ * id-scoped table rules, which load after ours.
+ */
+#wconvert-admin .wconvert-table {
+  inline-size: 100%;
+  border-collapse: collapse;
+}
+
+#wconvert-admin .wconvert-table > thead > tr > th {
+  padding: 0.5rem 0.75rem;
+  border-block-end: 1px solid var(--border);
+  color: var(--muted-foreground);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+  text-align: start;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+#wconvert-admin .wconvert-table > tbody > tr {
+  border-block-end: 1px solid var(--border);
+}
+
+#wconvert-admin .wconvert-table > tbody > tr:last-child {
+  border-block-end: 0;
+}
+
+/*
+ * 0.6875rem of block padding around one 21px line is a 44px row — the pointer
+ * target the in-row actions need, stated as the row's own height rather than
+ * as a minimum on the buttons inside it.
+ */
+#wconvert-admin .wconvert-table > tbody > tr > td {
+  padding: 0.6875rem 0.75rem;
+  font-size: inherit;
+  text-align: start;
+  vertical-align: middle;
+}
+
+/*
+ * **Numbers are right-aligned and lined up digit for digit.** A column of
+ * counts is read by comparing lengths, and proportional digits make 11 and 44
+ * different widths.
+ */
+#wconvert-admin .wconvert-table :is(th, td).is-numeric {
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+}
+
+/*
+ * The actions row is laid out here rather than by utilities because its
+ * alignment FLIPS below 640px — trailing edge in a table, leading edge in a
+ * card — and a Tailwind `justify-end` is an `!important` declaration no media
+ * query can take back.
+ */
+#wconvert-admin .wconvert-table > tbody > tr > td.wconvert-table__actions {
+  text-align: end;
+}
+
+#wconvert-admin .wconvert-table .wconvert-table__actions-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.25rem;
+}
+
+/*
+ * **A toolbar control and an in-row action stand at the small height**
+ * (ADR 0039). Stated once, here, rather than passed as a class at every call
+ * site — the rule is about the toolbar and the table, not about each control
+ * that lands in one, and a control added later inherits it without anybody
+ * remembering to.
+ *
+ * Inside `@layer utilities` because the vendored sizes are `!important`
+ * utilities: for important declarations the cascade runs layers in reverse, so
+ * an unlayered rule here would lose to `.h-8` however specific it was. In the
+ * same layer the ordinary rules apply again and an id plus a class plus an
+ * attribute beats a single utility class.
+ */
+@layer utilities {
+  #wconvert-admin
+    :is(.wconvert-toolbar, .wconvert-table)
+    :is([data-slot="button"], [data-slot="select-trigger"]) {
+    block-size: var(--control-height-sm);
+  }
+}
+
+@media (max-width: 639px) {
+  #wconvert-admin .wconvert-table,
+  #wconvert-admin .wconvert-table > tbody,
+  #wconvert-admin .wconvert-table > tbody > tr,
+  #wconvert-admin .wconvert-table > tbody > tr > td {
+    display: block;
+  }
+
+  #wconvert-admin .wconvert-table > thead {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  #wconvert-admin .wconvert-table > tbody > tr {
+    margin-block-end: 0.75rem;
+    padding: 0.75rem 0.875rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+
+  #wconvert-admin .wconvert-table > tbody > tr:last-child {
+    margin-block-end: 0;
+  }
+
+  /*
+   * Label and value, not label above value: a lead log is scanned down its
+   * values, and a two-column pair keeps them on one axis. The label column is
+   * capped so a long translated column name cannot push the value off the
+   * card.
+   */
+  #wconvert-admin .wconvert-table > tbody > tr > td {
+    display: grid;
+    grid-template-columns: minmax(0, 8rem) minmax(0, 1fr);
+    gap: 0.25rem 0.75rem;
+    padding: 0.3125rem 0;
+    border: 0;
+    text-align: start;
+  }
+
+  #wconvert-admin .wconvert-table > tbody > tr > td::before {
+    content: attr(data-label);
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  /*
+   * The Actions cell has no label worth repeating — the controls say what they
+   * are — so it takes the whole card width and sits under a rule, which is
+   * where a card's actions read as the card's rather than as one more field.
+   */
+  #wconvert-admin .wconvert-table > tbody > tr > td.wconvert-table__actions {
+    display: block;
+    margin-block-start: 0.5rem;
+    padding-block-start: 0.625rem;
+    border-block-start: 1px solid var(--border);
+    text-align: start;
+  }
+
+  #wconvert-admin .wconvert-table > tbody > tr > td.wconvert-table__actions::before {
+    content: none;
+  }
+
+  #wconvert-admin .wconvert-table .wconvert-table__actions-row {
+    justify-content: flex-start;
+  }
 }
 
 /* ---------------------------------------------------------------------------
