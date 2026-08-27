@@ -1,5 +1,39 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
+import { Download, Inbox } from 'lucide-react';
+import { Button } from '../components/ui/button';
+import { Checkbox } from '../components/ui/checkbox';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../components/ui/select';
+import { ConfirmDialog } from '../shell/ConfirmDialog';
+import {
+  DataTable,
+  DataTableBody,
+  DataTableCell,
+  DataTableColumn,
+  DataTableHead,
+  DataTableRow,
+} from '../shell/DataTable';
+import { EmptyState } from '../shell/EmptyState';
+import { PageAction } from '../shell/PageActions';
+import {
+  Region,
+  RegionBody,
+  RegionError,
+  RegionErrorState,
+  RegionFooter,
+  RegionHeader,
+} from '../shell/Region';
+import { TableSkeleton } from '../shell/TableSkeleton';
+import { Toolbar, ToolbarCount } from '../shell/Toolbar';
+import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
 import {
   exportUrl,
   readLog,
@@ -10,11 +44,18 @@ import {
 } from './api';
 import { listOptins, type OptinSummary } from '../optins/api';
 
-/** Before the first read lands. Not an error state — an empty log looks the same. */
-const EMPTY: LeadLogPayload = { submissions: 0, grouped: false, leads: [], groups: [] };
-
 /** What a merchant gets when they turn retention on without typing a number. */
 const SUGGESTED_DAYS = 90;
+
+/**
+ * The value the filter carries for "every Optin".
+ *
+ * A sentinel rather than the empty string the API takes, because Radix reserves
+ * `""` for a `Select` with nothing chosen — an `<SelectItem value="">` throws.
+ * It is translated back at the boundary, so nothing below this component sees
+ * it.
+ */
+const ALL_OPTINS = 'all';
 
 /**
  * The [[Lead]] log.
@@ -32,6 +73,18 @@ const SUGGESTED_DAYS = 90;
  * A soft-deleted Optin still has a name, which is what the soft delete is for
  * (ADR 0002, ADR 0020).
  *
+ * **Two regions, because this screen holds two objects** (ADR 0039). The log is
+ * one; how long its rows live is another, and they shared a card until now — so
+ * the thing a merchant was looking at was "leads, and also a control that
+ * destroys leads". Retention stays on this screen, which is what #66 requires
+ * and what `nav.ts` says: it is one question about the rows here, and a tab
+ * holding a single radio pair reads as a screen somebody forgot to finish.
+ *
+ * **Export CSV acts on the whole log, so it is page-scoped** and sits in the
+ * page header beside the title. It is rendered from here rather than from
+ * {@see App} because its URL carries this screen's filter; {@see PageAction} is
+ * what gets it up there without the filter having to come down.
+ *
  * **The retention period is committed, never typed through.** Every keystroke
  * in a number field is a value — typing `90` passes through `9` — and each one
  * saved is a period the next cron run would enforce. Deleting a merchant's
@@ -40,23 +93,28 @@ const SUGGESTED_DAYS = 90;
  * through a default.
  */
 export function LeadLog() {
-  const [log, setLog] = useState<LeadLogPayload>(EMPTY);
+  const [log, setLog] = useState<Loadable<LeadLogPayload>>(LOADING);
   const [optins, setOptins] = useState<OptinSummary[]>([]);
-  const [retention, setRetention] = useState<Retention | null>(null);
-  const [draftDays, setDraftDays] = useState('');
+  const [logError, setLogError] = useState<string | null>(null);
   const [optinId, setOptinId] = useState('');
   const [grouped, setGrouped] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
 
-  const say = (cause: unknown) => setError(cause instanceof Error ? cause.message : String(cause));
+  const [retention, setRetention] = useState<Loadable<Retention>>(LOADING);
+  const [retentionError, setRetentionError] = useState<string | null>(null);
+  const [draftDays, setDraftDays] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [confirming, setConfirming] = useState(false);
 
   const refresh = useCallback(async () => {
     try {
-      setLog(await readLog(optinId, grouped));
-      setError(null);
+      setLog(ready(await readLog(optinId, grouped)));
+      setLogError(null);
     } catch (cause) {
-      say(cause);
+      // The rows already on screen stay: a filter change that fails must not
+      // empty a log the merchant is reading. Only a FIRST failure has nothing
+      // to keep, and that arm renders the error as the region's whole content.
+      setLog((current) => (current.status === 'ready' ? current : failed(cause)));
+      setLogError(messageOf(cause));
     }
   }, [optinId, grouped]);
 
@@ -65,24 +123,30 @@ export function LeadLog() {
   }, [refresh]);
 
   useEffect(() => {
-    void (async () => {
-      try {
-        // Deleted Optins included: a Lead outlives the Optin that captured it,
-        // and a blank name on those rows is exactly where provenance matters.
-        setOptins(await listOptins(true));
+    // Deleted Optins included: a Lead outlives the Optin that captured it,
+    // and a blank name on those rows is exactly where provenance matters.
+    //
+    // Its failure belongs to the LOG's region — it costs this screen the
+    // filter's options and the names in the Optin column, and nothing at all
+    // on the retention region below (ADR 0039).
+    listOptins(true)
+      .then(setOptins)
+      .catch((cause: unknown) => setLogError(messageOf(cause)));
+  }, []);
 
-        const current = await readRetention();
-
-        setRetention(current);
+  useEffect(() => {
+    readRetention()
+      .then((current) => {
+        setRetention(ready(current));
         setDraftDays(current.days === null ? '' : String(current.days));
-      } catch (cause) {
-        say(cause);
-      }
-    })();
+      })
+      .catch((cause: unknown) => setRetention(failed(cause)));
   }, []);
 
   const names = useMemo(() => new Map(optins.map((optin) => [optin.id, optin.name])), [optins]);
   const nameOf = (id: string) => names.get(id) ?? id;
+
+  const period = retention.status === 'ready' ? retention.data : null;
 
   const commitRetention = (days: number | null) => {
     setBusy(true);
@@ -91,11 +155,11 @@ export function LeadLog() {
       try {
         const saved = await saveRetention(days);
 
-        setRetention(saved);
+        setRetention(ready(saved));
         setDraftDays(saved.days === null ? '' : String(saved.days));
-        setError(null);
+        setRetentionError(null);
       } catch (cause) {
-        say(cause);
+        setRetentionError(messageOf(cause));
       } finally {
         setBusy(false);
       }
@@ -112,201 +176,377 @@ export function LeadLog() {
   const commitDraft = () => {
     const days = Number(draftDays);
 
-    if (!Number.isInteger(days) || days < 1 || days === retention?.days) {
+    if (!Number.isInteger(days) || days < 1 || days === period?.days) {
       return;
     }
 
-    commitRetention(Math.min(days, retention?.max_days ?? SUGGESTED_DAYS));
+    commitRetention(Math.min(days, period?.max_days ?? SUGGESTED_DAYS));
   };
 
   const csv = exportUrl(optinId);
 
   return (
-    <>
-      {error !== null && (
-        <div className="notice notice-error">
-          <p>{error}</p>
-        </div>
+    <div className="flex flex-col gap-5">
+      {csv !== null && (
+        <PageAction>
+          {/*
+            **It stays an `<a>`.** A download is a navigation: the browser needs
+            the `Content-Disposition` the server sends, and `apiFetch` would read
+            the file into memory and then have to turn it back into one (#66).
+            `asChild` is what lets it wear a button and stay a link.
+          */}
+          <Button asChild variant="outline">
+            <a href={csv}>
+              <Download aria-hidden="true" />
+              {__('Export CSV', 'wconvert')}
+            </a>
+          </Button>
+        </PageAction>
+      )}
+
+      <LogRegion
+        log={log}
+        error={logError}
+        optins={optins}
+        optinId={optinId}
+        onOptinId={setOptinId}
+        grouped={grouped}
+        onGrouped={setGrouped}
+        nameOf={nameOf}
+      />
+
+      <Region>
+        <RegionHeader
+          title={__('How long leads are kept', 'wconvert')}
+          description={__(
+            'This applies to every lead above, whichever Optin captured it.',
+            'wconvert',
+          )}
+        />
+
+        {retention.status === 'failed' ? (
+          <RegionErrorState
+            message={retention.message}
+            hint={__('Reload the page to try again.', 'wconvert')}
+          />
+        ) : (
+          <>
+            {retentionError !== null && <RegionError message={retentionError} />}
+
+            <RegionBody className="flex flex-col gap-3">
+              {/*
+                Keep-forever is the shipped default and the first option,
+                because deleting a merchant's leads on the plugin's own opinion
+                is a support catastrophe and may destroy records they must keep
+                (ADR 0018).
+              */}
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name="wconvert-retention"
+                  checked={period?.days === null}
+                  disabled={busy || period === null}
+                  onChange={() => commitRetention(null)}
+                />
+                {__('Keep them until I delete them', 'wconvert')}
+              </label>
+
+              <label className="flex flex-wrap items-center gap-2">
+                {/*
+                  **Turning it on asks first, and it is the only control in this
+                  admin that destroys data a merchant cannot get back**
+                  (ADR 0039). One click here schedules a cron run that deletes
+                  every Lead older than the period, and keeps doing it.
+
+                  Confirming commits a SUGGESTED period rather than whatever the
+                  field happens to hold; the field is where the merchant then
+                  changes it. Committing the draft here would save a number
+                  nobody typed.
+
+                  Changing an existing period does not ask. It is an adjustment
+                  to a decision already made and already confirmed, and a dialog
+                  on every edit is a dialog nobody reads by the third one.
+                */}
+                <input
+                  type="radio"
+                  name="wconvert-retention"
+                  checked={typeof period?.days === 'number'}
+                  disabled={busy || period === null}
+                  onChange={() => setConfirming(true)}
+                />
+                {__('Delete them automatically after', 'wconvert')}
+                {/*
+                  `onBlur` and Enter, never `onChange`. Typing 90 passes through
+                  9, and a saved 9 is a period the next cron run enforces
+                  (ADR 0018).
+                */}
+                <Input
+                  type="number"
+                  min={1}
+                  max={period?.max_days ?? SUGGESTED_DAYS}
+                  className="w-24"
+                  value={draftDays}
+                  disabled={busy || period === null || period.days === null}
+                  onChange={(event) => setDraftDays(event.target.value)}
+                  onBlur={commitDraft}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter') {
+                      event.preventDefault();
+                      commitDraft();
+                    }
+                  }}
+                />
+                {__('days', 'wconvert')}
+              </label>
+            </RegionBody>
+          </>
+        )}
+      </Region>
+
+      <ConfirmDialog
+        open={confirming}
+        onOpenChange={setConfirming}
+        title={__('Delete old leads automatically?', 'wconvert')}
+        description={sprintf(
+          /* translators: %d: a number of days. */
+          __(
+            'WConvert will delete every lead older than %d days, and will keep doing it from now on. Deleted leads cannot be recovered — export a CSV first if you need them.',
+            'wconvert',
+          ),
+          SUGGESTED_DAYS,
+        )}
+        confirmLabel={__('Turn on automatic deletion', 'wconvert')}
+        onConfirm={() => {
+          setConfirming(false);
+          commitRetention(SUGGESTED_DAYS);
+        }}
+      />
+    </div>
+  );
+}
+
+/**
+ * The log itself: a toolbar that says what is being shown, and the rows.
+ *
+ * A component of its own because the region is the unit ADR 0039 names, and a
+ * screen with two of them reads better as two things than as one function with
+ * a horizontal rule in the middle.
+ */
+function LogRegion({
+  log,
+  error,
+  optins,
+  optinId,
+  onOptinId,
+  grouped,
+  onGrouped,
+  nameOf,
+}: {
+  log: Loadable<LeadLogPayload>;
+  error: string | null;
+  optins: OptinSummary[];
+  optinId: string;
+  onOptinId: (id: string) => void;
+  grouped: boolean;
+  onGrouped: (grouped: boolean) => void;
+  nameOf: (id: string) => string;
+}) {
+  if (log.status === 'failed') {
+    return (
+      <Region label={__('Submissions', 'wconvert')}>
+        <RegionErrorState
+          message={log.message}
+          hint={__('Reload the page to try again.', 'wconvert')}
+        />
+      </Region>
+    );
+  }
+
+  const data = log.status === 'ready' ? log.data : null;
+  const rows = grouped ? (data?.groups.length ?? 0) : (data?.leads.length ?? 0);
+  const truncated =
+    data !== null && !grouped && data.leads.length > 0 && data.leads.length < data.submissions;
+
+  return (
+    <Region label={__('Submissions', 'wconvert')}>
+      <Toolbar
+        trailing={
+          data === null ? undefined : (
+            /*
+              **One number, one text node, and it says what it counts.**
+              "Leads" alone would invite the reading that this is a count of
+              people, which it is not and cannot be (ADR 0021) — and a number
+              split from its noun to style them apart is a number a later
+              change can render without it.
+            */
+            <ToolbarCount>
+              {sprintf(
+                /* translators: %s: a number of form submissions. */
+                _n('%s submission', '%s submissions', data.submissions, 'wconvert'),
+                String(data.submissions),
+              )}
+            </ToolbarCount>
+          )
+        }
+      >
+        <Label htmlFor="wconvert-lead-optin" className="text-muted-foreground">
+          {__('Optin', 'wconvert')}
+        </Label>
+        <Select
+          value={optinId === '' ? ALL_OPTINS : optinId}
+          onValueChange={(value) => onOptinId(value === ALL_OPTINS ? '' : value)}
+        >
+          <SelectTrigger id="wconvert-lead-optin" size="sm" className="max-w-full min-w-44">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={ALL_OPTINS}>{__('All Optins', 'wconvert')}</SelectItem>
+            {optins.map((optin) => (
+              <SelectItem key={optin.id} value={optin.id}>
+                {optin.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <span className="flex items-center gap-2">
+          <Checkbox
+            id="wconvert-lead-grouped"
+            checked={grouped}
+            onCheckedChange={(checked) => onGrouped(checked === true)}
+          />
+          <Label htmlFor="wconvert-lead-grouped">
+            {__('Group submissions that share an email or phone', 'wconvert')}
+          </Label>
+        </span>
+      </Toolbar>
+
+      {error !== null && <RegionError message={error} />}
+
+      {log.status === 'ready' && rows === 0 ? (
+        <EmptyState
+          icon={Inbox}
+          title={
+            optinId === ''
+              ? __('No submissions yet', 'wconvert')
+              : __('No submissions from this Optin', 'wconvert')
+          }
+          action={
+            optinId === '' ? (
+              <Button asChild variant="outline">
+                <a href="#optins">{__('Go to Optins', 'wconvert')}</a>
+              </Button>
+            ) : (
+              <Button variant="outline" onClick={() => onOptinId('')}>
+                {__('Show every Optin', 'wconvert')}
+              </Button>
+            )
+          }
+        >
+          {optinId === ''
+            ? __(
+                'A row appears here the moment a visitor submits a published Optin. Nothing else writes one.',
+                'wconvert',
+              )
+            : __('Another Optin may have captured what you are looking for.', 'wconvert')}
+        </EmptyState>
+      ) : (
+        <DataTable>
+          {grouped ? (
+            <DataTableHead>
+              <DataTableColumn>{__('Identifier', 'wconvert')}</DataTableColumn>
+              <DataTableColumn numeric>{__('Submissions', 'wconvert')}</DataTableColumn>
+              <DataTableColumn>{__('Last submitted', 'wconvert')}</DataTableColumn>
+            </DataTableHead>
+          ) : (
+            <DataTableHead>
+              <DataTableColumn>{__('Submitted', 'wconvert')}</DataTableColumn>
+              <DataTableColumn>{__('Optin', 'wconvert')}</DataTableColumn>
+              <DataTableColumn>{__('Email', 'wconvert')}</DataTableColumn>
+              <DataTableColumn>{__('Phone', 'wconvert')}</DataTableColumn>
+              <DataTableColumn>{__('Captured', 'wconvert')}</DataTableColumn>
+            </DataTableHead>
+          )}
+
+          {data === null ? (
+            <TableSkeleton columns={grouped ? 3 : 5} />
+          ) : (
+            <DataTableBody>
+              {grouped
+                ? data.groups.map((group) => (
+                    <DataTableRow key={group.identifier}>
+                      <DataTableCell label={__('Identifier', 'wconvert')}>
+                        {group.identifier}
+                      </DataTableCell>
+                      <DataTableCell label={__('Submissions', 'wconvert')} numeric>
+                        {sprintf(
+                          /* translators: %s: a number of form submissions. */
+                          _n('%s submission', '%s submissions', group.submissions, 'wconvert'),
+                          String(group.submissions),
+                        )}
+                      </DataTableCell>
+                      <DataTableCell label={__('Last submitted', 'wconvert')}>
+                        {group.latest_at ?? '—'}
+                      </DataTableCell>
+                    </DataTableRow>
+                  ))
+                : data.leads.map((lead) => (
+                    <DataTableRow key={lead.id}>
+                      <DataTableCell label={__('Submitted', 'wconvert')}>
+                        {lead.created_at}
+                      </DataTableCell>
+                      <DataTableCell label={__('Optin', 'wconvert')}>
+                        {nameOf(lead.optin_id)}
+                      </DataTableCell>
+                      {/*
+                        An em dash rather than a blank. A [[Lead]] may carry only
+                        an email, only a phone, or neither — an empty cell reads
+                        as a rendering fault, and a merchant checking whether a
+                        capture kept the phone number needs the answer to be
+                        visible.
+                      */}
+                      <DataTableCell label={__('Email', 'wconvert')}>
+                        {lead.email ?? '—'}
+                      </DataTableCell>
+                      <DataTableCell label={__('Phone', 'wconvert')}>
+                        {lead.phone ?? '—'}
+                      </DataTableCell>
+                      <DataTableCell
+                        label={__('Captured', 'wconvert')}
+                        className="whitespace-normal"
+                      >
+                        {Object.entries(lead.fields).map(([name, value]) => (
+                          <span key={name} className="block">
+                            <code className="font-mono text-xs text-muted-foreground">{name}</code>{' '}
+                            {value}
+                          </span>
+                        ))}
+                      </DataTableCell>
+                    </DataTableRow>
+                  ))}
+            </DataTableBody>
+          )}
+        </DataTable>
       )}
 
       {/*
-        One number, and it says what it counts. "Leads" alone would invite the
-        reading that this is a count of people, which it is not and cannot be.
+        **A truncated log says so, and the sentence has a place to live now.**
+        One read is capped, and a screen showing the newest fifty of nine
+        hundred submissions while the count reads nine hundred is a screen that
+        looks broken. The region footer is where a notice about the SET below
+        the table goes — and where pagination lands when it arrives, so #66 did
+        not have to invent one (ADR 0039).
       */}
-      <p className="wconvert-lead-log__headline">
-        <strong>
-          {sprintf(
-            /* translators: %s: a number of form submissions. */
-            _n('%s submission', '%s submissions', log.submissions, 'wconvert'),
-            String(log.submissions),
-          )}
-        </strong>
-      </p>
-
-      <p>
-        <label>
-          {__('Optin', 'wconvert')}{' '}
-          <select value={optinId} onChange={(e) => setOptinId(e.target.value)}>
-            <option value="">{__('All Optins', 'wconvert')}</option>
-            {optins.map((optin) => (
-              <option key={optin.id} value={optin.id}>
-                {optin.name}
-              </option>
-            ))}
-          </select>
-        </label>{' '}
-        <label>
-          <input type="checkbox" checked={grouped} onChange={(e) => setGrouped(e.target.checked)} />{' '}
-          {__('Group submissions that share an email or phone', 'wconvert')}
-        </label>{' '}
-        {csv !== null && (
-          <a className="button" href={csv}>
-            {__('Export CSV', 'wconvert')}
-          </a>
-        )}
-      </p>
-
-      {/*
-        **A truncated log says so.** One read is capped, and a screen showing
-        the newest fifty of nine hundred submissions while the headline reads
-        nine hundred is a screen that looks broken. Saying which rows these
-        are costs a sentence; a merchant discovering the cap by counting does
-        not.
-      */}
-      {!grouped && log.leads.length > 0 && log.leads.length < log.submissions && (
-        <p className="description">
+      {truncated && data !== null && (
+        <RegionFooter>
           {sprintf(
             /* translators: 1: how many rows are shown. 2: how many submissions there are in total. */
             __('Showing the newest %1$s of %2$s submissions.', 'wconvert'),
-            String(log.leads.length),
-            String(log.submissions),
+            String(data.leads.length),
+            String(data.submissions),
           )}
-        </p>
+        </RegionFooter>
       )}
-
-      {grouped ? (
-        <table className="wp-list-table widefat fixed striped">
-          <thead>
-            <tr>
-              <th>{__('Identifier', 'wconvert')}</th>
-              <th>{__('Submissions', 'wconvert')}</th>
-              <th>{__('Last submitted', 'wconvert')}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {log.groups.length === 0 && (
-              <tr>
-                <td colSpan={3}>{__('No leads yet.', 'wconvert')}</td>
-              </tr>
-            )}
-            {log.groups.map((group) => (
-              <tr key={group.identifier}>
-                <td>{group.identifier}</td>
-                <td>
-                  {sprintf(
-                    /* translators: %s: a number of form submissions. */
-                    _n('%s submission', '%s submissions', group.submissions, 'wconvert'),
-                    String(group.submissions),
-                  )}
-                </td>
-                <td>{group.latest_at ?? '—'}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <table className="wp-list-table widefat fixed striped">
-          <thead>
-            <tr>
-              <th>{__('Submitted', 'wconvert')}</th>
-              <th>{__('Optin', 'wconvert')}</th>
-              <th>{__('Email', 'wconvert')}</th>
-              <th>{__('Phone', 'wconvert')}</th>
-              <th>{__('Captured', 'wconvert')}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {log.leads.length === 0 && (
-              <tr>
-                <td colSpan={5}>{__('No leads yet.', 'wconvert')}</td>
-              </tr>
-            )}
-            {log.leads.map((lead) => (
-              <tr key={lead.id}>
-                <td>{lead.created_at}</td>
-                <td>{nameOf(lead.optin_id)}</td>
-                <td>{lead.email ?? '—'}</td>
-                <td>{lead.phone ?? '—'}</td>
-                <td>
-                  {Object.entries(lead.fields).map(([name, value]) => (
-                    <div key={name}>
-                      <code>{name}</code> {value}
-                    </div>
-                  ))}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-
-      <h3>{__('How long leads are kept', 'wconvert')}</h3>
-
-      {/*
-        Keep-forever is the shipped default and the first option, because
-        deleting a merchant's leads on the plugin's own opinion is a support
-        catastrophe and may destroy records they must keep (ADR 0018).
-      */}
-      <p>
-        <label>
-          <input
-            type="radio"
-            name="wconvert-retention"
-            checked={retention?.days === null}
-            disabled={busy || retention === null}
-            onChange={() => commitRetention(null)}
-          />{' '}
-          {__('Keep them until I delete them', 'wconvert')}
-        </label>
-      </p>
-      <p>
-        <label>
-          {/*
-            Turning retention ON commits a suggested period rather than
-            whatever the field happens to hold, and the field is where the
-            merchant then changes it. Committing the draft here would save a
-            number nobody typed.
-          */}
-          <input
-            type="radio"
-            name="wconvert-retention"
-            checked={typeof retention?.days === 'number'}
-            disabled={busy || retention === null}
-            onChange={() => commitRetention(SUGGESTED_DAYS)}
-          />{' '}
-          {__('Delete them automatically after', 'wconvert')}{' '}
-          {/*
-            `onBlur` and Enter, never `onChange`. Typing 90 passes through 9,
-            and a saved 9 is a period the next cron run enforces (ADR 0018).
-          */}
-          <input
-            type="number"
-            min={1}
-            max={retention?.max_days ?? SUGGESTED_DAYS}
-            value={draftDays}
-            disabled={busy || retention === null || retention.days === null}
-            onChange={(e) => setDraftDays(e.target.value)}
-            onBlur={commitDraft}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                commitDraft();
-              }
-            }}
-          />{' '}
-          {__('days', 'wconvert')}
-        </label>
-      </p>
-    </>
+    </Region>
   );
 }
