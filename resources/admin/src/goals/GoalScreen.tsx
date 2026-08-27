@@ -1,7 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
+import { ArrowLeft, Sparkles } from 'lucide-react';
 import { mount } from '@renderer/mount';
 import type { Template } from '@renderer/types';
+import { Badge } from '../components/ui/badge';
+import { Button } from '../components/ui/button';
+import { Skeleton } from '../components/ui/skeleton';
+import { EmptyState } from '../shell/EmptyState';
+import { Region, RegionBody, RegionError, RegionErrorState, RegionHeader } from '../shell/Region';
+import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
 import { createOptin } from '../optins/api';
 import { renderingFor } from './availability';
 import { listGoals, listPlaybooks, prefill, type Draft, type GoalEntry, type PlaybookEntry } from './api';
@@ -18,28 +25,52 @@ import { listGoals, listPlaybooks, prefill, type Draft, type GoalEntry, type Pla
  * **Nothing is created until the last step.** Prefill is a read; a merchant
  * who walks the whole flow and closes the tab has written nothing. The step
  * that does create one hands the merchant straight to the builder.
+ *
+ * ============================================================================
+ * THREE STEPS, AND THE SCREEN SAYS WHICH ONE (ADR 0039).
+ * ============================================================================
+ * This was a bulleted list of Goals with a button loose under each bullet, and
+ * nothing anywhere saying it was a flow at all — a merchant two clicks in had
+ * no way to tell how far through they were or how to get back one step rather
+ * than all the way out. Each step is a region that names itself and counts
+ * itself, and the way back one step sits with the step it returns to.
+ *
+ * **Loading is a state here, and it was the worst instance of not being one.**
+ * Step 2 initialised from an empty array, so between choosing a Goal and its
+ * Playbooks arriving it said *"No ready-to-run starts for this Goal yet"* —
+ * a false statement about the merchant's Goal, at the exact moment they are
+ * deciding whether this product has anything for them. `Loadable<T>` makes
+ * that unwritable.
+ *
+ * **And the error clears.** There was no `setError(null)` anywhere in this
+ * file: a failure from step 1 stayed on screen through step 2 and into the
+ * builder hand-off.
  */
 export function GoalScreen({ onCreated }: { onCreated: (id: string) => void }) {
-  const [goals, setGoals] = useState<GoalEntry[]>([]);
+  const [goals, setGoals] = useState<Loadable<GoalEntry[]>>(LOADING);
   const [goal, setGoal] = useState<GoalEntry | null>(null);
-  const [playbooks, setPlaybooks] = useState<PlaybookEntry[]>([]);
+  const [playbooks, setPlaybooks] = useState<Loadable<PlaybookEntry[]>>(LOADING);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  const report = useCallback((cause: unknown) => {
-    setError(cause instanceof Error ? cause.message : String(cause));
-  }, []);
+  const report = useCallback((cause: unknown) => setError(messageOf(cause)), []);
 
   useEffect(() => {
-    listGoals().then(setGoals).catch(report);
-  }, [report]);
+    listGoals()
+      .then((entries) => setGoals(ready(entries)))
+      .catch((cause: unknown) => setGoals(failed(cause)));
+  }, []);
 
   const choose = (chosen: GoalEntry) => {
     setGoal(chosen);
     setDraft(null);
-    setPlaybooks([]);
-    listPlaybooks(chosen.id).then(setPlaybooks).catch(report);
+    setPlaybooks(LOADING);
+    setError(null);
+
+    listPlaybooks(chosen.id)
+      .then((entries) => setPlaybooks(ready(entries)))
+      .catch((cause: unknown) => setPlaybooks(failed(cause)));
   };
 
   const start = (playbookId?: string) => {
@@ -47,6 +78,7 @@ export function GoalScreen({ onCreated }: { onCreated: (id: string) => void }) {
       return;
     }
 
+    setError(null);
     prefill(goal.id, playbookId).then(setDraft).catch(report);
   };
 
@@ -56,6 +88,7 @@ export function GoalScreen({ onCreated }: { onCreated: (id: string) => void }) {
     }
 
     setBusy(true);
+    setError(null);
 
     createOptin(draft.name, draft.goal, draft.config)
       .then((optin) => {
@@ -70,30 +103,39 @@ export function GoalScreen({ onCreated }: { onCreated: (id: string) => void }) {
       .finally(() => setBusy(false));
   };
 
-  return (
-    <section className="wconvert-goal-screen">
-      <h2>{__('Create an Optin', 'wconvert')}</h2>
+  if (draft !== null) {
+    return (
+      <DraftPreview
+        draft={draft}
+        busy={busy}
+        error={error}
+        onSave={save}
+        onBack={() => setDraft(null)}
+      />
+    );
+  }
 
-      {error !== null && (
-        <div className="notice notice-error">
-          <p>{error}</p>
-        </div>
-      )}
+  if (goal !== null) {
+    return (
+      <PlaybookGallery
+        goal={goal}
+        playbooks={playbooks}
+        error={error}
+        onStart={start}
+        onBack={() => {
+          setGoal(null);
+          setError(null);
+        }}
+      />
+    );
+  }
 
-      {goal === null && <GoalPicker goals={goals} onChoose={choose} />}
-
-      {goal !== null && draft === null && (
-        <PlaybookGallery goal={goal} playbooks={playbooks} onStart={start} onBack={() => setGoal(null)} />
-      )}
-
-      {draft !== null && <DraftPreview draft={draft} busy={busy} onSave={save} onBack={() => setDraft(null)} />}
-    </section>
-  );
+  return <GoalPicker goals={goals} error={error} onChoose={choose} />;
 }
 
 /**
- * The goal screen — **the front door of the creation flow**, which is what
- * decides how it renders an absence.
+ * Step one — **the front door of the creation flow**, which is what decides how
+ * it renders an absence.
  *
  * An `unavailable` Goal is **absent**: not greyed out, not explained. A
  * `locked` one is an upsell card, because Pro is buyable from us. And where
@@ -101,127 +143,343 @@ export function GoalScreen({ onCreated }: { onCreated: (id: string) => void }) {
  * screen hides it — a merchant with no store is never sold Pro for a feature
  * Pro would not give them either (ADR 0026).
  */
-function GoalPicker({ goals, onChoose }: { goals: GoalEntry[]; onChoose: (goal: GoalEntry) => void }) {
-  const shown = goals.filter((goal) => renderingFor(goal.availability, 'creation_flow') !== 'hide');
+function GoalPicker({
+  goals,
+  error,
+  onChoose,
+}: {
+  goals: Loadable<GoalEntry[]>;
+  error: string | null;
+  onChoose: (goal: GoalEntry) => void;
+}) {
+  if (goals.status === 'failed') {
+    return (
+      <Region>
+        <RegionHeader title={__('Create an Optin', 'wconvert')} trailing={<Step at={1} />} />
+        <RegionErrorState
+          message={goals.message}
+          hint={__('Reload the page to try again.', 'wconvert')}
+        />
+      </Region>
+    );
+  }
+
+  const shown =
+    goals.status === 'ready'
+      ? goals.data.filter((goal) => renderingFor(goal.availability, 'creation_flow') !== 'hide')
+      : [];
 
   return (
-    <>
-      <p>{__('What do you want this Optin to do?', 'wconvert')}</p>
-      <ul className="wconvert-goals">
-        {shown.map((goal) => {
-          const rendering = renderingFor(goal.availability, 'creation_flow');
+    <Region>
+      <RegionHeader
+        title={__('Create an Optin', 'wconvert')}
+        description={__('What do you want this Optin to do?', 'wconvert')}
+        trailing={<Step at={1} />}
+      />
 
-          return (
-            <li key={goal.id} className={`wconvert-goal wconvert-goal--${rendering}`}>
-              <h3>{goal.label}</h3>
-              <p>{goal.description}</p>
-              {rendering === 'upsell' ? (
-                // Bundled copy, never fetched (ADR 0015).
-                <p className="wconvert-upsell">{__('Available with WConvert Pro.', 'wconvert')}</p>
-              ) : (
-                <button type="button" className="button button-primary" onClick={() => onChoose(goal)}>
-                  {__('Choose', 'wconvert')}
-                </button>
-              )}
-            </li>
-          );
-        })}
-      </ul>
-    </>
+      {error !== null && <RegionError message={error} />}
+
+      <RegionBody>
+        {goals.status === 'loading' ? (
+          <ChoiceGrid>
+            {[0, 1, 2, 3].map((row) => (
+              <ChoiceSkeleton key={row} />
+            ))}
+          </ChoiceGrid>
+        ) : (
+          <ChoiceGrid>
+            {shown.map((goal) => {
+              const rendering = renderingFor(goal.availability, 'creation_flow');
+
+              return (
+                <ChoiceCard
+                  key={goal.id}
+                  title={goal.label}
+                  notes={goal.description}
+                  badge={
+                    rendering === 'upsell' ? (
+                      <Badge variant="warning">{__('Pro', 'wconvert')}</Badge>
+                    ) : undefined
+                  }
+                  action={
+                    rendering === 'upsell' ? (
+                      // Bundled copy, never fetched (ADR 0015).
+                      <span className="text-muted-foreground">
+                        {__('Available with WConvert Pro.', 'wconvert')}
+                      </span>
+                    ) : (
+                      <Button onClick={() => onChoose(goal)}>{__('Choose', 'wconvert')}</Button>
+                    )
+                  }
+                />
+              );
+            })}
+          </ChoiceGrid>
+        )}
+      </RegionBody>
+    </Region>
   );
 }
 
 /**
- * The gallery, **filtered on Goal only** — the server did the filtering, and
- * there is no second control here to make Display Type an axis.
+ * Step two — the gallery, **filtered on Goal only**. The server did the
+ * filtering, and there is no second control here to make Display Type an axis.
  *
- * "Start from scratch" sits beside the cards rather than replacing them,
- * because it skips the Playbook and not the Goal: the merchant has already
- * answered the one question that is asked before anything else.
+ * "Start from scratch" sits in the region's footer rather than replacing the
+ * cards, because it skips the Playbook and not the Goal: the merchant has
+ * already answered the one question that is asked before anything else. It is
+ * the secondary way forward, so it is an outline button beside the way back —
+ * never a card competing with the real Playbooks.
  */
 function PlaybookGallery({
   goal,
   playbooks,
+  error,
   onStart,
   onBack,
 }: {
   goal: GoalEntry;
-  playbooks: PlaybookEntry[];
+  playbooks: Loadable<PlaybookEntry[]>;
+  error: string | null;
   onStart: (playbookId?: string) => void;
   onBack: () => void;
 }) {
+  const entries = playbooks.status === 'ready' ? playbooks.data : [];
+
   return (
-    <>
-      <p>
-        {/* translators: %s: the chosen Goal, e.g. "Grow my email list". */}
-        {sprintf(__('Ready-to-run starts for “%s”.', 'wconvert'), goal.label)}
-      </p>
-      {playbooks.length === 0 && (
-        <p className="wconvert-playbooks__empty">
-          {__('No ready-to-run starts for this Goal yet — start from scratch below.', 'wconvert')}
-        </p>
+    <Region>
+      <RegionHeader
+        title={sprintf(
+          /* translators: %s: the chosen Goal, e.g. "Grow my email list". */
+          __('Ready-to-run starts for “%s”.', 'wconvert'),
+          goal.label,
+        )}
+        trailing={<Step at={2} />}
+      />
+
+      {error !== null && <RegionError message={error} />}
+
+      {playbooks.status === 'failed' ? (
+        <RegionErrorState message={playbooks.message} />
+      ) : playbooks.status === 'loading' ? (
+        <RegionBody>
+          <ChoiceGrid>
+            {[0, 1].map((row) => (
+              <ChoiceSkeleton key={row} />
+            ))}
+          </ChoiceGrid>
+        </RegionBody>
+      ) : entries.length === 0 ? (
+        <EmptyState icon={Sparkles} title={__('Nothing ready-made yet', 'wconvert')}>
+          {__(
+            'No ready-to-run starts for this Goal yet — start from scratch below.',
+            'wconvert',
+          )}
+        </EmptyState>
+      ) : (
+        <RegionBody>
+          <ChoiceGrid>
+            {entries.map((playbook) => (
+              <ChoiceCard
+                key={playbook.id}
+                title={playbook.name}
+                notes={playbook.notes}
+                action={
+                  <Button onClick={() => onStart(playbook.id)}>
+                    {__('Use this Playbook', 'wconvert')}
+                  </Button>
+                }
+              />
+            ))}
+          </ChoiceGrid>
+        </RegionBody>
       )}
-      <ul className="wconvert-playbooks">
-        {playbooks.map((playbook) => (
-          <li key={playbook.id} className="wconvert-playbook">
-            <h3>{playbook.name}</h3>
-            <p className="wconvert-playbook__notes">{playbook.notes}</p>
-            <button type="button" className="button button-primary" onClick={() => onStart(playbook.id)}>
-              {__('Use this Playbook', 'wconvert')}
-            </button>
-          </li>
-        ))}
-      </ul>
-      <p>
-        <button type="button" className="button" onClick={() => onStart()}>
-          {__('Start from scratch', 'wconvert')}
-        </button>{' '}
-        <button type="button" className="button button-link" onClick={onBack}>
-          {__('Pick a different Goal', 'wconvert')}
-        </button>
-      </p>
-    </>
+
+      <StepFooter
+        onBack={onBack}
+        backLabel={__('Pick a different Goal', 'wconvert')}
+        forward={
+          <Button variant="outline" onClick={() => onStart()}>
+            {__('Start from scratch', 'wconvert')}
+          </Button>
+        }
+      />
+    </Region>
   );
 }
 
 /**
- * The prefilled Optin, before anybody saves it.
+ * Step three — the prefilled Optin, before anybody saves it.
  *
  * The preview is the REAL design with the REAL words, drawn by the same
  * dependency-free renderer the loader imports (ADR 0010) — so what the
  * merchant approves here is what a visitor sees. A draft from scratch has no
  * Template yet and shows none.
+ *
+ * It sits on `--surface` inside its own inset frame, because a design rendered
+ * flush against a white card reads as part of this screen rather than as a
+ * picture of something a visitor will see somewhere else.
  */
 function DraftPreview({
   draft,
   busy,
+  error,
   onSave,
   onBack,
 }: {
   draft: Draft;
   busy: boolean;
+  error: string | null;
   onSave: () => void;
   onBack: () => void;
 }) {
   const template = draft.config.template as Template | undefined;
 
   return (
-    <>
-      <h3>{draft.name}</h3>
-      {template === undefined ? (
-        <p>{__('An empty Optin, under the Goal you picked. Choose a Template in the builder.', 'wconvert')}</p>
-      ) : (
-        <PrefilledCard template={template} />
+    <Region>
+      <RegionHeader
+        title={draft.name}
+        description={__('Nothing is saved until you create it.', 'wconvert')}
+        trailing={<Step at={3} />}
+      />
+
+      {error !== null && <RegionError message={error} />}
+
+      <RegionBody>
+        {template === undefined ? (
+          <p className="m-0 text-muted-foreground">
+            {__(
+              'An empty Optin, under the Goal you picked. Choose a Template in the builder.',
+              'wconvert',
+            )}
+          </p>
+        ) : (
+          <div className="flex justify-center overflow-hidden rounded-md border border-border bg-surface p-4">
+            {/*
+              Centred, because this is a picture of something a visitor will
+              see somewhere else. Left-aligned in a 1000px frame it read as a
+              panel of this screen with grey space beside it.
+            */}
+            <PrefilledCard template={template} />
+          </div>
+        )}
+      </RegionBody>
+
+      <StepFooter
+        onBack={onBack}
+        backLabel={__('Choose something else', 'wconvert')}
+        disabled={busy}
+        forward={
+          <Button disabled={busy} onClick={onSave}>
+            {__('Create this Optin', 'wconvert')}
+          </Button>
+        }
+      />
+    </Region>
+  );
+}
+
+/**
+ * How far through the flow this is.
+ *
+ * Three steps is few enough that a progress bar would be heavier than the fact
+ * it carries, and a merchant who has just clicked into step 2 mainly wants to
+ * know there is an end. `tabular-nums` so it does not jiggle between steps.
+ */
+function Step({ at }: { at: 1 | 2 | 3 }) {
+  return (
+    <span className="shrink-0 tabular-nums text-muted-foreground">
+      {sprintf(
+        /* translators: 1: the current step. 2: how many steps there are. */
+        __('Step %1$s of %2$s', 'wconvert'),
+        String(at),
+        '3',
       )}
-      <p>
-        <button type="button" className="button button-primary" disabled={busy} onClick={onSave}>
-          {__('Create this Optin', 'wconvert')}
-        </button>{' '}
-        <button type="button" className="button button-link" disabled={busy} onClick={onBack}>
-          {__('Choose something else', 'wconvert')}
-        </button>
-      </p>
-    </>
+    </span>
+  );
+}
+
+/**
+ * The way on and the way back, at the bottom of a step.
+ *
+ * **The way back is a step, not an exit.** "All Optins" above the region leaves
+ * the flow entirely; this returns one question. They were the same weight and
+ * two clicks apart, so a merchant who wanted to change their Goal had to guess
+ * which one did it.
+ */
+function StepFooter({
+  onBack,
+  backLabel,
+  forward,
+  disabled = false,
+}: {
+  onBack: () => void;
+  backLabel: string;
+  forward: React.ReactNode;
+  disabled?: boolean;
+}) {
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-border px-4 py-3">
+      <Button variant="ghost" disabled={disabled} onClick={onBack}>
+        <ArrowLeft aria-hidden="true" />
+        {backLabel}
+      </Button>
+      {forward}
+    </div>
+  );
+}
+
+/**
+ * The cards a step offers.
+ *
+ * `auto-fit` with a 16rem floor: four Goals are two rows of two on a laptop and
+ * one column at 360px, without a breakpoint anywhere. It was a `<ul>` with
+ * bullets and a button loose under each item, and `.wconvert-goal-card` — the
+ * class that was supposed to make them cards — had no CSS anywhere in this
+ * admin.
+ */
+function ChoiceGrid({ children }: { children: React.ReactNode }) {
+  return (
+    <ul className="m-0 grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-[repeat(auto-fit,minmax(16rem,1fr))]">
+      {children}
+    </ul>
+  );
+}
+
+function ChoiceCard({
+  title,
+  notes,
+  badge,
+  action,
+}: {
+  title: string;
+  notes: string;
+  badge?: React.ReactNode;
+  action: React.ReactNode;
+}) {
+  return (
+    <li className="flex flex-col gap-2 rounded-md border border-border bg-card p-4">
+      <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
+        <h3 className="m-0 text-base font-semibold leading-tight tracking-tight text-foreground">
+          {title}
+        </h3>
+        {badge}
+      </div>
+      <p className="m-0 flex-1 text-pretty text-muted-foreground">{notes}</p>
+      <div className="mt-1">{action}</div>
+    </li>
+  );
+}
+
+/** A card in the shape of the cards that are coming, never the empty state. */
+function ChoiceSkeleton() {
+  return (
+    <li className="flex flex-col gap-3 rounded-md border border-border bg-card p-4">
+      <Skeleton className="h-4 w-40 max-w-full" />
+      <Skeleton className="h-3 w-full" />
+      <Skeleton className="h-3 w-2/3" />
+      <Skeleton className="mt-1 h-9 w-24" />
+    </li>
   );
 }
 

@@ -104,10 +104,9 @@ export function App() {
  * the legacy rhythm rules — the `<p>` margins, the `<h3>` divider, the trailing
  * control margins — fight a layout that has already decided all three.
  *
- * **Two callers left: the creation flow and the builder.** Analytics and
- * Destinations were converted alongside Optins and Leads, so what remains is
- * the goal picker and the editor. When those go, so does everything under
- * SCAFFOLDING in `index.css`.
+ * **One caller left: the builder.** Every reading screen and the creation flow
+ * are converted, so this and everything under SCAFFOLDING in `index.css` leave
+ * with #69.
  */
 function Legacy({ children }: { children: ReactNode }) {
   return <div className="wconvert-legacy">{children}</div>;
@@ -194,14 +193,12 @@ function OptinsSection({
           <ArrowLeft aria-hidden="true" />
           {__('All Optins', 'wconvert')}
         </Button>
-        <Legacy>
-          <GoalScreen
-            onCreated={(id) => {
-              onCancelCreate();
-              onEdit(id);
-            }}
-          />
-        </Legacy>
+        <GoalScreen
+          onCreated={(id) => {
+            onCancelCreate();
+            onEdit(id);
+          }}
+        />
       </>
     );
   }
