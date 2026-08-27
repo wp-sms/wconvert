@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { ArrowLeft, Plus } from 'lucide-react';
 import { OptinBuilder } from './builder/OptinBuilder';
@@ -91,28 +91,6 @@ export function App() {
 }
 
 /**
- * The surface an un-converted screen still needs.
- *
- * The shell draws none — every region owns its own edges as of ADR 0039 — so a
- * screen that has not been converted yet would render straight onto the page
- * background with no edge at all. This gives it one card until the ticket that
- * converts it gives it real ones, and it takes the spacing rhythm in
- * `index.css` with it.
- *
- * **It wraps the un-converted screens and nothing else**, which used to be
- * "everything". A converted screen inside it gets a card inside a card, and
- * the legacy rhythm rules — the `<p>` margins, the `<h3>` divider, the trailing
- * control margins — fight a layout that has already decided all three.
- *
- * **One caller left: the builder.** Every reading screen and the creation flow
- * are converted, so this and everything under SCAFFOLDING in `index.css` leave
- * with #69.
- */
-function Legacy({ children }: { children: ReactNode }) {
-  return <div className="wconvert-legacy">{children}</div>;
-}
-
-/**
  * The builder, or the sentence that stands where it would.
  *
  * **The gate is here rather than inside {@see OptinBuilder}**, so a viewport
@@ -150,9 +128,7 @@ function BuilderScreen({ id, onClose }: { id: string; onClose: () => void }) {
 
   return (
     <Shell>
-      <Legacy>
-        <OptinBuilder id={id} onClose={onClose} />
-      </Legacy>
+      <OptinBuilder id={id} onClose={onClose} />
     </Shell>
   );
 }

@@ -703,12 +703,12 @@
  * found by measuring in a browser after it was reported, having been invisible
  * in every screenshot review before that.
  *
- * Scoped to lists WE draw. `.wconvert-legacy` is deliberately excluded: the
- * screens still inside it render prose lists that were written expecting
- * WordPress's rhythm, and taking it away would close their spacing up.
+ * Scoped to lists WE draw. `.wconvert-editor` is deliberately excluded: the
+ * builder's editors render prose lists that were written expecting WordPress's
+ * rhythm, and taking it away would close their spacing up.
  * ------------------------------------------------------------------------- */
-#wconvert-admin :not(.wconvert-legacy) > ul > li,
-#wconvert-admin :not(.wconvert-legacy) > ol > li {
+#wconvert-admin :not(.wconvert-editor) > ul > li,
+#wconvert-admin :not(.wconvert-editor) > ol > li {
   margin-block-end: 0;
 }
 
@@ -798,17 +798,23 @@
 }
 
 /* ---------------------------------------------------------------------------
- * SCAFFOLDING — the screens this ticket did not convert.
+ * THE CONTROLS THE BUILDER'S EDITORS STILL RENDER.
  *
- * Everything below styles content #64-#72 will rewrite, and every rule here is
- * expected to be deleted by the ticket that converts the screen it serves.
- * It is kept because ADR 0035's page is the deliverable of THIS ticket and the
- * screens inside it are the deliverable of the next nine: an Optin list that
- * loses its layout in between is a regression, not a step.
+ * **This was SCAFFOLDING and it is now a boundary.** Everything below styled
+ * screens #64-#72 had not converted; all five are converted, and what is left
+ * renders `.button`, `.regular-text` and bare `<select>`s inside the builder's
+ * four editors — the settings panel, the rules editor, the targeting picker and
+ * the destinations editor.
+ *
+ * They are the deepest part of this admin and the part with the most tests
+ * pinned to their markup, so they keep WordPress's controls wearing WConvert's
+ * colours until each is rewritten against the component vocabulary. That is the
+ * same line #63 drew, held one screen further in: change what a control LOOKS
+ * like now, change what it IS when its replacement lands.
  *
  * The colours are the only thing changed — the raw wp-admin greys and the
- * `#2271b1` blue are now tokens, so the page reads as one palette while the
- * shapes stay exactly where a merchant left them.
+ * `#2271b1` blue are tokens, so the page reads as one palette while the shapes
+ * stay exactly where a merchant left them.
  * ------------------------------------------------------------------------- */
 
 /*
@@ -865,7 +871,7 @@
  * change what a control LOOKS like now, change what it IS when its replacement
  * lands.
  *
- * `#wconvert-admin` rather than `.wconvert-legacy` for the id's specificity —
+ * `#wconvert-admin` rather than `.wconvert-editor` for the id's specificity —
  * wp-admin spells these `.wp-core-ui .button-primary`, and a tie would be
  * settled by stylesheet order, which is not a thing to depend on.
  */
@@ -979,7 +985,7 @@
   font-size: inherit;
 }
 
-#wconvert-admin .wconvert-legacy :is(input[type="radio"], input[type="checkbox"]) {
+#wconvert-admin .wconvert-editor :is(input[type="radio"], input[type="checkbox"]) {
   margin-inline-end: 0.375rem;
 }
 
@@ -1000,7 +1006,7 @@
  * block margin is what stops two lines of buttons touching.
  */
 #wconvert-admin
-  .wconvert-legacy
+  .wconvert-editor
   :is(
     label,
     select,
@@ -1010,7 +1016,7 @@
   margin-inline-end: 0.625rem;
 }
 
-#wconvert-admin .wconvert-legacy .button {
+#wconvert-admin .wconvert-editor .button {
   margin-block: 0.125rem;
 }
 
@@ -1029,93 +1035,100 @@
  * them legible for the tickets in between without re-introducing preflight's
  * opposite anywhere the shell can see.
  */
-/*
- * **The surface the shell stopped drawing.**
+/* ---------------------------------------------------------------------------
+ * THE BUILDER'S EDITORS.
  *
- * An un-converted screen renders straight onto the page background, and text
- * on grey with no edge reads as loose rather than as a region. This gives it
- * one card until the ticket that converts it gives it real ones — a table with
- * its own edges, a settings panel with its own, the way ACF and Gravity Forms
- * both do it. Every rule under here leaves with the last conversion.
- */
-.wconvert-legacy {
-  padding: 1.25rem;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-}
-
+ * **This was `.wconvert-editor`, and what it lost is the surface.** That class
+ * drew a card around a screen the shell no longer draws one for; every reading
+ * screen has real regions now, so the card is gone and what is left is the
+ * typographic rhythm the four editors inside the builder were written
+ * expecting — `<p>` margins, heading weights, a gap between controls on a row.
+ *
+ * It is scoped to a region's body rather than to a screen, so an editor sits
+ * inside a real region and does not draw a second card inside it. It is no
+ * longer scaffolding waiting to be deleted: it is what the settings panel, the
+ * rules editor, the targeting picker and the destinations editor are laid out
+ * by until each is rewritten against the component vocabulary.
+ * ------------------------------------------------------------------------- */
 /*
  * **One body size across the admin.** wp-admin sets `#wpbody-content p` to
  * 13px, so the un-converted screens rendered two points smaller than the frame
  * around them — a difference that reads as a rendering fault rather than as a
  * hierarchy. The class in the selector is what outranks WordPress's id.
  */
-#wconvert-admin .wconvert-legacy :is(p, li, td, th, label, legend, select, input, textarea) {
+#wconvert-admin .wconvert-editor :is(p, li, td, th, label, legend, select, input, textarea) {
   font-size: inherit;
 }
 
-.wconvert-legacy :is(p, h2, h3, h4, table, ul, ol) {
+.wconvert-editor :is(p, h2, h3, h4, table, ul, ol) {
   margin-block: 0.75rem;
 }
 
-.wconvert-legacy > :first-child {
+.wconvert-editor > :first-child {
   margin-block-start: 0;
 }
 
-.wconvert-legacy > :last-child {
+.wconvert-editor > :last-child {
   margin-block-end: 0;
 }
 
-.wconvert-legacy :is(h2, h3, h4) {
+.wconvert-editor :is(h2, h3, h4) {
   font-weight: 600;
 }
 
-.wconvert-legacy h2 {
+.wconvert-editor h2 {
   font-size: 1.3rem;
 }
 
 /*
- * An `<h3>` in these screens is a change of subject — "How long leads are
- * kept" is a settings question sitting under a table of data — and it arrived
- * with no more weight than the paragraph above it. A rule and the space around
- * it is what says *this is a different thing*, which is the job #66 and #67
- * will do properly with real sections.
+ * An `<h3>` inside an editor is a change of subject — "Who sees it" under
+ * "When it shows" — and it arrived with no more weight than the paragraph
+ * above it. A rule and the space around it is what says *this is a different
+ * thing*.
  */
-.wconvert-legacy h3 {
+.wconvert-editor h3 {
   font-size: 1rem;
   letter-spacing: -0.01em;
 }
 
-.wconvert-legacy > h3 {
+.wconvert-editor > h3 {
   margin-block-start: 1.25rem;
   padding-block-start: 1rem;
   border-block-start: 1px solid var(--border);
 }
 
 /*
- * The shell already draws a bounded surface around the screen, so a list table
- * inside it does not need a second box — it needs to read as the grid it is.
- * The outer border goes and the row rules stay, and the header row keeps the
- * one line that separates it from the data.
+ * **The first heading divides nothing.** The rule exists to separate one
+ * subject from the one above it, and the first has none — inside a region it
+ * drew a second line a few pixels under the region header's own, which reads as
+ * a rendering fault rather than as a division.
  */
-.wconvert-legacy table.wp-list-table {
+.wconvert-editor > h3:first-child {
+  margin-block-start: 0;
+  padding-block-start: 0;
+  border-block-start: 0;
+}
+
+/*
+ * A region already draws a bounded surface, so a list table inside one does not
+ * need a second box — it needs to read as the grid it is.
+ */
+.wconvert-editor table.wp-list-table {
   border: 0;
   font-variant-numeric: tabular-nums;
 }
 
-.wconvert-legacy :is(ul, ol):not(.wconvert-gallery, .wconvert-rules) {
+.wconvert-editor :is(ul, ol):not(.wconvert-gallery, .wconvert-rules) {
   padding-inline-start: 1.5em;
   list-style: revert;
 }
 
 /*
  * The builder is the one screen that is a place rather than a list, so it gets
- * the width the gallery and the live preview need.
+ * the width the gallery and the live preview need. The class is no longer
+ * rendered — the frame's own `max-w-6xl` is the same measure — and it is kept
+ * out of the stylesheet rather than kept as a rule nothing matches.
  */
-.wconvert-builder {
-  max-width: 72rem;
-}
 
 /*
  * The gallery: real designs, drawn by the renderer the loader imports. There
@@ -1131,8 +1144,17 @@
   list-style: none;
 }
 
+/*
+ * **The card frames the render rather than padding it.** The preview is a real
+ * design on its own background, so a card that inset it on white produced two
+ * surfaces with a margin between them and no edge saying which was which. The
+ * render runs to the card's edge and the name sits under a rule, which is the
+ * same shape a region has one level up.
+ */
 .wconvert-gallery__card {
-  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -1143,22 +1165,24 @@
   box-shadow: 0 0 0 1px var(--primary);
 }
 
-.wconvert-gallery__chosen {
-  font-weight: 600;
-}
-
 /*
  * A card is a real render at real width, so it is scaled rather than reflowed:
  * reflowing would show the merchant a layout no visitor gets, which is the one
  * thing a live-rendered gallery exists to avoid.
+ *
+ * It sits on `--surface` so a design with a light background still reads as a
+ * picture of something rather than as part of the card holding it.
  */
 .wconvert-gallery .wconvert-preview {
   transform: scale(0.55);
   transform-origin: top left;
   block-size: 12rem;
-  inline-size: 182%;
+  /* Exactly the scale's reciprocal: 182% overshot the card by a tenth of a
+   * percent and left a hairline of card showing down the right edge. */
+  inline-size: calc(100% / 0.55);
   overflow: hidden;
   pointer-events: none;
+  background: var(--surface);
 }
 
 .wconvert-panel {
@@ -1181,12 +1205,23 @@
   min-inline-size: 0;
 }
 
-.wconvert-slot,
-.wconvert-slot__link {
+.wconvert-slot {
   margin-block-end: 1rem;
   padding: 0.75rem;
   border: 1px solid var(--border);
   border-radius: var(--radius);
+}
+
+/*
+ * **The link is a part of the slot above it, not a second slot.** It was the
+ * same bordered box nested inside the slot's own, which drew boxes inside boxes
+ * three deep on a design with a fine-print link. A rule down its leading edge
+ * says "this belongs to that" with one line instead of four.
+ */
+.wconvert-slot__link {
+  margin-block: 0.75rem 0;
+  padding-inline-start: 0.75rem;
+  border-inline-start: 2px solid var(--border);
 }
 
 .wconvert-slot legend,
@@ -1194,10 +1229,28 @@
   font-weight: 600;
 }
 
+/*
+ * **A field is its label above its control, at one width.**
+ *
+ * These were inline labels followed by a control, and wp-admin sizes a control
+ * from its own class — so the token list came out as a staircase: "Background"
+ * then a wide box, "Text" then a narrower one, thirteen rows each starting at a
+ * different x. A column of settings is read down its left edge, and there was
+ * no left edge to read.
+ */
 .wconvert-slot__key,
 .wconvert-token {
-  display: block;
+  display: grid;
+  gap: 0.25rem;
   margin-block-start: 0.5rem;
+  color: var(--muted-foreground);
+}
+
+.wconvert-slot__key > :is(input, select, textarea),
+.wconvert-token > :is(input, select, textarea) {
+  inline-size: 100%;
+  margin-inline-end: 0;
+  color: var(--foreground);
 }
 
 .wconvert-slot__shown {

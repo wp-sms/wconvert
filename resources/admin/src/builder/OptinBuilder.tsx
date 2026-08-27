@@ -1,5 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
 import { __ } from '@wordpress/i18n';
+import { ArrowLeft, Check } from 'lucide-react';
+import { Button } from '../components/ui/button';
+import { Skeleton } from '../components/ui/skeleton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
+import { Region, RegionBody, RegionError, RegionErrorState, RegionHeader } from '../shell/Region';
+import { messageOf } from '../shell/loadable';
 import { Gallery } from './Gallery';
 import { DestinationsEditor } from './DestinationsEditor';
 import { RulesEditor } from './RulesEditor';
@@ -33,6 +39,22 @@ import type { Template } from '@renderer/types';
  * carries the merchant's words across by [[Slot Role]], and the snapshot
  * boundary is the server's. Taking it at the click is what lets the panel
  * underneath show what was actually stored.
+ *
+ * ============================================================================
+ * FIVE TABS, WHICH IS THE SHAPE ADR 0039 ANTICIPATED.
+ * ============================================================================
+ * It was one column: the gallery, then the whole settings panel, then three
+ * editors, stacked. A merchant adjusting the fine print scrolled past every
+ * design in the library to reach it, and the Save button was at the bottom of
+ * all of it. Five surfaces over one `config` is five tabs — and ADR 0039 states
+ * in as many words that these are *"a level below"* ADR 0036's four top-level
+ * sections, so the two numbers are not in competition.
+ *
+ * **The name and Save are the page header's, not a tab's.** They act on the
+ * whole Optin, so they sit above the tabs where they are reachable from every
+ * one of them — which is the same placement rule every other screen follows
+ * (ADR 0039). Save at the bottom of tab five would be a Save a merchant on tab
+ * two cannot see.
  */
 
 export interface OptinBuilderProps {
@@ -42,18 +64,29 @@ export interface OptinBuilderProps {
 
 type Config = Record<string, unknown>;
 
+/** The five surfaces, in the order a merchant meets them. */
+type TabId = 'design' | 'content' | 'rules' | 'pages' | 'destinations';
+
 export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
   const [name, setName] = useState('');
   const [config, setConfig] = useState<Config | null>(null);
   const [vocabulary, setVocabulary] = useState<RuleVocabulary | null>(null);
   const [gallery, setGallery] = useState<TemplateGallery | null>(null);
+  /*
+   * A first read that fails leaves the builder with nothing to draw, so it is
+   * held apart from `error` — which is what a SAVE reports, above a screen the
+   * merchant is still working in. `Loadable` is not used here because there is
+   * no "ready" arm to model: the three reads below gate on their own values
+   * being non-null, and a fourth flag agreeing with them is a fourth thing to
+   * keep in step.
+   */
+  const [fatal, setFatal] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [tab, setTab] = useState<TabId>('design');
 
-  const report = useCallback((cause: unknown) => {
-    setError(cause instanceof Error ? cause.message : String(cause));
-  }, []);
+  const report = useCallback((cause: unknown) => setError(messageOf(cause)), []);
 
   useEffect(() => {
     getOptin(id)
@@ -61,15 +94,19 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
         setName(optin.name);
         setConfig(optin.config);
       })
-      .catch(report);
-  }, [id, report]);
+      .catch((cause: unknown) => setFatal(messageOf(cause)));
+  }, [id]);
 
   // The rule vocabulary and the gallery are the install's, not the Optin's, so
   // they are fetched once and survive every edit below.
   useEffect(() => {
-    getRules().then(setVocabulary).catch(report);
-    listTemplates().then(setGallery).catch(report);
-  }, [report]);
+    getRules()
+      .then(setVocabulary)
+      .catch((cause: unknown) => setFatal(messageOf(cause)));
+    listTemplates()
+      .then(setGallery)
+      .catch((cause: unknown) => setFatal(messageOf(cause)));
+  }, []);
 
   const edit = (changes: Config) => {
     setConfig((current) => (current === null ? current : { ...current, ...changes }));
@@ -92,12 +129,32 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
       .finally(() => setBusy(false));
   };
 
+  if (fatal !== null) {
+    return (
+      <>
+        <BackLink onClose={onClose} />
+        <Region label={__('Optin builder', 'wconvert')}>
+          <RegionErrorState
+            message={fatal}
+            hint={__('Reload the page to try again.', 'wconvert')}
+          />
+        </Region>
+      </>
+    );
+  }
+
   if (config === null || vocabulary === null || gallery === null) {
     return (
-      <section className="wconvert-builder">
-        {error !== null && <Notice message={error} />}
-        {error === null && <p>{__('Loading…', 'wconvert')}</p>}
-      </section>
+      <>
+        <BackLink onClose={onClose} />
+        <Region label={__('Optin builder', 'wconvert')}>
+          <RegionBody className="flex flex-col gap-4">
+            <Skeleton className="h-8 w-72 max-w-full" />
+            <Skeleton className="h-4 w-full max-w-md" />
+            <Skeleton className="h-48 w-full" />
+          </RegionBody>
+        </Region>
+      </>
     );
   }
 
@@ -105,83 +162,185 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
   const templateId = typeof config.template_id === 'string' ? config.template_id : undefined;
 
   return (
-    <section className="wconvert-builder">
-      <p>
-        <button type="button" className="button-link" onClick={onClose}>
-          {__('← All Optins', 'wconvert')}
-        </button>
-      </p>
+    <div className="flex flex-col gap-4">
+      <BackLink onClose={onClose} />
 
-      {error !== null && <Notice message={error} />}
-
-      <h2>
-        <label>
-          {__('Name', 'wconvert')}{' '}
-          <input
-            type="text"
-            className="regular-text"
-            value={name}
-            onChange={(event) => {
-              setName(event.target.value);
-              setSaved(false);
-            }}
-          />
+      {/*
+        The Optin's own header. The builder is the one screen the frame draws no
+        page header for — it replaces even the section nav (#62) — so it draws
+        its own, to the same anatomy: what this is, and what acts on all of it.
+      */}
+      <div className="wconvert-page-actions flex flex-wrap items-center gap-x-3 gap-y-2">
+        <label htmlFor="wconvert-optin-name" className="sr-only">
+          {__('Name', 'wconvert')}
         </label>
-      </h2>
-
-      <Gallery
-        templates={gallery.templates}
-        displayType={displayTypeOf(config, gallery.templates)}
-        chosen={templateId}
-        busy={busy}
-        onChoose={(chosen) => void save({ ...config, template_id: chosen })}
-      />
-
-      {template === undefined ? (
-        <p className="description">{__('Choose a design above to start adjusting it.', 'wconvert')}</p>
-      ) : (
-        <SettingsPanel
-          entry={entryFor(template, templateId, gallery.templates)}
-          labels={gallery.labels}
-          dev={adminSettings()?.dev === true}
-          onChange={(next) => edit({ template: next })}
-          onError={report}
+        {/*
+          The name IS the title, so it is edited where the title stands rather
+          than in a field labelled "Name" above the design. Borderless until it
+          is focused, which is what says "this text is editable" without
+          drawing a form on a screen that is not one.
+        */}
+        <input
+          id="wconvert-optin-name"
+          type="text"
+          value={name}
+          placeholder={__('Untitled Optin', 'wconvert')}
+          onChange={(event) => {
+            setName(event.target.value);
+            setSaved(false);
+          }}
+          className="min-w-0 flex-1 rounded-md border border-transparent bg-transparent px-2 py-1 text-2xl font-semibold leading-tight tracking-tight text-foreground hover:border-border focus:border-ring focus:bg-card focus:outline-none"
         />
-      )}
 
-      <RulesEditor
-        triggers={vocabulary.triggers}
-        conditions={vocabulary.conditions}
-        rules={Array.isArray(config.rules) ? (config.rules as Rule[]) : []}
-        onChange={(rules) => edit({ rules })}
-      />
-
-      <DestinationsEditor
-        bound={Array.isArray(config.destinations) ? (config.destinations as string[]) : []}
-        onChange={(destinations) => edit({ destinations })}
-        onError={report}
-      />
-
-      <TargetingEditor
-        types={vocabulary.targeting}
-        targeting={(config.targeting ?? {}) as Targeting}
-        onChange={(targeting) => edit({ targeting })}
-      />
-
-      <p className="wconvert-builder__save">
-        <button type="button" className="button button-primary" disabled={busy} onClick={() => void save()}>
+        <Button disabled={busy} onClick={() => void save()}>
           {__('Save changes', 'wconvert')}
-        </button>{' '}
-        {saved && <span className="description">{__('Saved. Publish it from the list when it is ready.', 'wconvert')}</span>}
-      </p>
-    </section>
+        </Button>
+
+        {/*
+          **"Saved" says where publishing happens.** Editing is not publishing —
+          `config` is the draft and `published_config` is what the site serves —
+          and a merchant who saved and saw nothing go live needs that sentence
+          here rather than in a support reply.
+        */}
+        {saved && (
+          <span className="flex items-center gap-1.5 text-muted-foreground">
+            <Check aria-hidden="true" className="size-4 text-success" />
+            {__('Saved. Publish it from the list when it is ready.', 'wconvert')}
+          </span>
+        )}
+      </div>
+
+      <Tabs value={tab} onValueChange={(value) => setTab(value as TabId)}>
+        <TabsList className="mb-4">
+          <TabsTrigger value="design">{__('Design', 'wconvert')}</TabsTrigger>
+          <TabsTrigger value="content">{__('Content', 'wconvert')}</TabsTrigger>
+          <TabsTrigger value="rules">{__('Rules', 'wconvert')}</TabsTrigger>
+          <TabsTrigger value="pages">{__('Where it shows', 'wconvert')}</TabsTrigger>
+          <TabsTrigger value="destinations">{__('Destinations', 'wconvert')}</TabsTrigger>
+        </TabsList>
+
+        {error !== null && (
+          <Region className="mb-4">
+            <RegionError message={error} />
+          </Region>
+        )}
+
+        <TabsContent value="design">
+          <Region>
+            <RegionHeader
+              title={__('The design', 'wconvert')}
+              description={__(
+                'Picking one saves straight away, and carries your words across.',
+                'wconvert',
+              )}
+            />
+            <RegionBody>
+              <Gallery
+                templates={gallery.templates}
+                displayType={displayTypeOf(config, gallery.templates)}
+                chosen={templateId}
+                busy={busy}
+                onChoose={(chosen) => void save({ ...config, template_id: chosen })}
+              />
+            </RegionBody>
+          </Region>
+        </TabsContent>
+
+        <TabsContent value="content">
+          <Region>
+            <RegionHeader
+              title={__('What it says', 'wconvert')}
+              description={__('The preview is the real design, drawn the way a visitor gets it.', 'wconvert')}
+            />
+            {template === undefined ? (
+              <RegionBody className="text-muted-foreground">
+                {__('Choose a design first — the Design tab is where the library is.', 'wconvert')}
+              </RegionBody>
+            ) : (
+              <RegionBody className="wconvert-editor">
+                <SettingsPanel
+                  entry={entryFor(template, templateId, gallery.templates)}
+                  labels={gallery.labels}
+                  dev={adminSettings()?.dev === true}
+                  onChange={(next) => edit({ template: next })}
+                  onError={report}
+                />
+              </RegionBody>
+            )}
+          </Region>
+        </TabsContent>
+
+        <TabsContent value="rules">
+          <Region>
+            <RegionHeader
+              title={__('When it shows, and who sees it', 'wconvert')}
+              description={__('Both lists are read in the visitor’s browser.', 'wconvert')}
+            />
+            <RegionBody className="wconvert-editor">
+              <RulesEditor
+                triggers={vocabulary.triggers}
+                conditions={vocabulary.conditions}
+                rules={Array.isArray(config.rules) ? (config.rules as Rule[]) : []}
+                onChange={(rules) => edit({ rules })}
+              />
+            </RegionBody>
+          </Region>
+        </TabsContent>
+
+        <TabsContent value="pages">
+          <Region>
+            <RegionHeader
+              title={__('Where it shows', 'wconvert')}
+              description={__('Which pages of this site carry it. Decided on the server.', 'wconvert')}
+            />
+            <RegionBody className="wconvert-editor">
+              <TargetingEditor
+                types={vocabulary.targeting}
+                targeting={(config.targeting ?? {}) as Targeting}
+                onChange={(targeting) => edit({ targeting })}
+              />
+            </RegionBody>
+          </Region>
+        </TabsContent>
+
+        <TabsContent value="destinations">
+          <Region>
+            <RegionHeader
+              title={__('Destinations', 'wconvert')}
+              description={__(
+                'Where a capture is sent on to. The Lead log is not one — it is written first and always.',
+                'wconvert',
+              )}
+            />
+            <RegionBody className="wconvert-editor">
+              <DestinationsEditor
+                bound={Array.isArray(config.destinations) ? (config.destinations as string[]) : []}
+                onChange={(destinations) => edit({ destinations })}
+                onError={report}
+              />
+            </RegionBody>
+          </Region>
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 }
 
-function Notice({ message }: { message: string }) {
+/**
+ * The way out of the builder.
+ *
+ * A `<button>` rather than an `<a>`: the list is a state this bundle holds and
+ * the builder has no URL of its own, so an `href="#"` a handler cancels would
+ * be a link that lies about being one. {@see App} draws the same control on the
+ * narrow-screen notice, and there is exactly one of them on screen at a time.
+ */
+function BackLink({ onClose }: { onClose: () => void }) {
   return (
-    <div className="notice notice-error">
-      <p>{message}</p>
+    <div>
+      <Button variant="ghost" size="sm" className="-ms-3" onClick={onClose}>
+        <ArrowLeft aria-hidden="true" />
+        {__('All Optins', 'wconvert')}
+      </Button>
     </div>
   );
 }
