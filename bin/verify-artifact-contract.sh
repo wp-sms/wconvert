@@ -168,7 +168,19 @@ if [ "$tier" = "free" ]; then
     # inspects below, so a tree without it is a tree that check cannot speak
     # for.
     require_file vendor/autoload.php "free's plugin file cannot boot without Composer's autoloader" || true
-    require_file public/admin/main.js "the admin bundle is built, never committed — run the build" || true
+    # THE ADMIN, BOTH HALVES. #73 split the bundle: the entry is what the
+    # screen loads, and the builder, the gallery, the settings panel and the
+    # renderer are a chunk it `import()`s the moment a merchant opens the
+    # builder. A ZIP carrying the entry and not the chunk boots, renders four
+    # working screens, and fails only on the fifth — in the browser, with a 404
+    # in a console nobody has open.
+    #
+    # Both names carry a content hash (`vite.config.admin.mjs`), which is why
+    # these are patterns rather than paths; `WConvert\Assets\ViteHelper` globs
+    # for the same two at enqueue time and renders a notice instead of a screen
+    # if either is missing.
+    require_matching_file "$TREE" public/admin 'main-*.js' "the admin bundle is built, never committed — run the build" || true
+    require_matching_file "$TREE" public/admin 'builder-*.js' "the builder chunk is built, never committed — run the build" || true
     require_file "$readme" "the wp.org listing, and the source claim (d) makes true, live in it" || true
 fi
 
@@ -293,7 +305,7 @@ if [ "$tier" = "free" ]; then
     # The sources behind the two shipped bundles, plus the renderer both of
     # them import (vite.config.admin.mjs aliases @renderer at it).
     require_populated_dir "$TREE" resources/loader/src '*.ts' "public/loader/loader.js is built from it" || true
-    require_populated_dir "$TREE" resources/admin/src '*.tsx' "public/admin/main.js is built from it" || true
+    require_populated_dir "$TREE" resources/admin/src '*.tsx' "public/admin/main-*.js is built from it" || true
     require_populated_dir "$TREE" resources/renderer/src '*.ts' "both bundles import it" || true
 
     # Runtime data. Free reads each of these by a path constant, and a ZIP

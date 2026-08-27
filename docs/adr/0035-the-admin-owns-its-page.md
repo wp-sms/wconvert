@@ -5,6 +5,29 @@ WConvert's admin screen renders **none of WordPress's admin chrome**. No
 whole page and admin notices are suppressed on it. Everything a merchant sees on
 `admin.php?page=wconvert` is WConvert's, drawn from WConvert's own tokens.
 
+_Amended by [#69](https://github.com/navidkashani/wconvert/issues/69), recorded
+here by [#74](https://github.com/navidkashani/wconvert/issues/74): **"no
+`.button`" is not true of the builder's four editors**, and has not been since
+the builder converted. `SettingsPanel`, `RuleRows`, `TargetingEditor` and
+`DestinationsEditor` still emit `.button`, `regular-text`, `description`,
+`widefat` and bare `<select>`s, and `index.css` (~line 872) retargets their
+COLOUR and RADIUS to WConvert's tokens while leaving the box model, the sizes
+and the focus behaviour exactly as WordPress drew them. `table.wp-list-table`
+is likewise styled rather than absent._
+
+_That is a staged boundary, not a reversal of this ADR. The reason it is a
+boundary and not a hybrid — the posture eliminated two sections below — is that
+the hybrid put WordPress's chrome and WConvert's side by side on ONE screen,
+with a seam down the middle where they met. Here the un-converted controls are
+all inside the builder's settings column, wearing WConvert's colours, waiting
+for the component that replaces each one. The rule the CSS states is: change
+what a control LOOKS like now, change what it IS when its replacement lands._
+
+_Written into this ADR rather than left in the stylesheet because a CSS comment
+is the map and this is the territory — the failure `docs/agents/domain.md`
+names. #74 walked the builder and found the ADR still saying the thing the code
+stopped doing._
+
 That is a reversal. The screen shipped as WordPress defaults throughout, and
 [#62](https://github.com/navidkashani/wconvert/pull/62) built its section nav out
 of `nav-tab` markup a fortnight before this was decided. **That nav is
@@ -93,6 +116,15 @@ it in ways that appear only on the screens nobody checked.
 - **Every control is ours to get right, including the ones nobody thinks about** —
   disabled states, focus-visible, `prefers-reduced-motion`, and what a 200-row
   lead table does on a narrow viewport.
+
+  _Completed by [ADR 0039](0039-a-screen-is-regions-and-scope-decides-placement.md):
+  this ADR made the page ours without saying how anything is arranged on it, and
+  the five screens then each invented an arrangement — no loading states, four
+  different kinds of empty state, page-level errors far from the control that
+  failed, and no confirmation on anything destructive. 0039 is the layout grammar
+  that was missing: five page parts in one order, placement decided by what a
+  control acts on, three declared states per region, and 640px as the table's own
+  breakpoint — the answer to the 200-row question this bullet left open._
 - **Dark mode becomes possible rather than required.** Ignoring WordPress's
   schemes means the tokens answer to nothing external, so a
   `prefers-color-scheme` implementation is a second set of values against the
@@ -104,3 +136,11 @@ it in ways that appear only on the screens nobody checked.
   preflight nor any admin utility can reach a rendered [[Optin]], and the
   popup's own tokens cannot leak out onto the panel editing them. This was the
   one collision worth checking before deciding, and it does not exist.
+
+  *Amended by [ADR 0040](0040-the-builders-preview-is-an-input.md): the preview
+  is no longer unaffected in **both** directions. It is now an INPUT — clicking a
+  slot puts the caret in the block that edits it — so one direction is deliberate
+  traffic. The CSS claim above is untouched and is the reason this was cheap:
+  nothing crosses the boundary but a string naming a slot, and the outline the
+  admin paints is set inline rather than through a stylesheet that could not
+  reach in.*

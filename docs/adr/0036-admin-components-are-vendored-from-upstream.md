@@ -66,6 +66,14 @@ WConvert's tree, with no upstream to fight.
 
 WSMS's admin is a left rail of sections. WConvert's is four tabs.
 
+*Qualified by [ADR 0039](0039-a-screen-is-regions-and-scope-decides-placement.md)'s
+"Levels are not a cap": this sentence is about **top-level sections** and about
+the scale a rail exists to serve. It is not a budget on tabs anywhere else in the
+product — the builder has its own tab strip a level below, and its count has
+already moved once (five to four) without touching this decision. Recorded here
+because the cheapest place to lose that distinction is a review comment reading
+"ADR 0036 says four".*
+
 That is not disagreement about taste. WSMS has twenty-five sections and WConvert
 has four, and a rail exists to make twenty-five navigable. Copying it here would
 be copying a response to a scale WConvert does not have — which is the failure

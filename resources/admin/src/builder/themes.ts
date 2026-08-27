@@ -1,0 +1,140 @@
+import { __ } from '@wordpress/i18n';
+import type { Tokens } from '@renderer/types';
+
+/**
+ * Ready-made looks, as **token bundles and nothing else**.
+ *
+ * ============================================================================
+ * A PRESET CHANGES NO SHAPE, SO IT NEEDS NO NEW VOCABULARY.
+ * ============================================================================
+ * ADR 0010's bargain is that the gallery is the design surface and the settings
+ * panel edits content, visibility and tokens — never arrangement. A preset is
+ * an entry in the third of those: a map of token names the manifest already
+ * declares to values the renderer already reads. It cannot express a layout,
+ * because there is nowhere in this file to put one.
+ *
+ * That is what makes presets the answer to
+ * [#71](https://github.com/navidkashani/wconvert/issues/71) rather than a
+ * second design system. The panel asked a merchant for
+ * `rgba(15, 23, 42, 0.55)` in a text box and gave them no way to find out what
+ * it did but to type one and watch. Four bundles carry the median case; the raw
+ * tokens stay reachable underneath for the brand-exact tail.
+ *
+ * **Every value here is a colour or a corner.** Type, spacing and width belong
+ * to the DESIGN — a centred card and a wide banner do not want the same measure
+ * — so a preset that set them would quietly restyle the layout the merchant
+ * chose in the gallery, which is the boundary above stated in values.
+ *
+ * **Labels are built at render, never at module scope.** The translation
+ * catalogue is not loaded when the bundle is evaluated, so a top-level `__()`
+ * would freeze the English string into every locale — the same reason
+ * `statusLabel()` in the Optin list is a function.
+ */
+
+export interface ThemePreset {
+  /** Stable across releases and never shown: it is what a control's key is. */
+  readonly id: string;
+  readonly label: string;
+  /** The tokens it sets. Anything absent is left as the design had it. */
+  readonly tokens: Readonly<Record<string, string>>;
+}
+
+export function themePresets(): readonly ThemePreset[] {
+  return [
+    {
+      id: 'classic',
+      label: __('Classic', 'wconvert'),
+      tokens: {
+        bg: '#ffffff',
+        fg: '#111827',
+        muted: '#6b7280',
+        accent: '#2563eb',
+        'accent-fg': '#ffffff',
+        border: '#e5e7eb',
+        radius: '0.5rem',
+        backdrop: 'rgba(15, 23, 42, 0.55)',
+      },
+    },
+    {
+      id: 'midnight',
+      label: __('Midnight', 'wconvert'),
+      tokens: {
+        bg: '#0f172a',
+        fg: '#f8fafc',
+        muted: '#94a3b8',
+        accent: '#38bdf8',
+        'accent-fg': '#0f172a',
+        border: '#1e293b',
+        radius: '0.75rem',
+        backdrop: 'rgba(2, 6, 23, 0.7)',
+      },
+    },
+    {
+      id: 'warm',
+      label: __('Warm', 'wconvert'),
+      tokens: {
+        bg: '#fffaf3',
+        fg: '#3f2d20',
+        muted: '#8a7361',
+        accent: '#c2410c',
+        'accent-fg': '#ffffff',
+        border: '#efe0cf',
+        radius: '0.75rem',
+        backdrop: 'rgba(67, 41, 20, 0.55)',
+      },
+    },
+    {
+      id: 'minimal',
+      label: __('Minimal', 'wconvert'),
+      tokens: {
+        bg: '#ffffff',
+        fg: '#18181b',
+        muted: '#71717a',
+        accent: '#18181b',
+        'accent-fg': '#ffffff',
+        border: '#d4d4d8',
+        radius: '0rem',
+        backdrop: 'rgba(9, 9, 11, 0.45)',
+      },
+    },
+  ];
+}
+
+/**
+ * Is this preset what the Optin is currently wearing?
+ *
+ * Every token the preset names has to match, and tokens it does not name are
+ * ignored — a merchant who widened the panel is still on Midnight. Nothing is
+ * STORED saying which preset was applied, for the same reason nothing records
+ * where a copied theme colour came from: a stored name would be a link, and a
+ * link is what would let a later change to this file restyle an Optin already
+ * running (ADR 0010).
+ */
+export function isApplied(preset: ThemePreset, tokens: Tokens): boolean {
+  return Object.entries(preset.tokens).every(([name, value]) => tokens[name] === value);
+}
+
+/**
+ * Does this token take a colour?
+ *
+ * Read off the value rather than from a list spelled here, so a token added to
+ * `resources/templates/manifest.json` gets the right control without this file
+ * being edited — the same argument `TOKENS` in `panel.ts` makes for the panel
+ * drawing one field per manifest entry.
+ */
+export function isColour(value: string): boolean {
+  // A hex, or the one other notation the vocabulary uses — which is exactly
+  // what {@see isTranslucent} tests for, so it is tested there and not twice.
+  return /^#[0-9a-f]{3,8}$/i.test(value.trim()) || isTranslucent(value);
+}
+
+/**
+ * Does it carry an alpha channel, and therefore need a picker that has one?
+ *
+ * The backdrop is the only one in the shipped vocabulary, and it is exactly the
+ * token a merchant most wants a slider for: "how dark is the page behind the
+ * popup" is unanswerable by typing a fourth number into `rgba()`.
+ */
+export function isTranslucent(value: string): boolean {
+  return /^rgba?\(/i.test(value.trim());
+}

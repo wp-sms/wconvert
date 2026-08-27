@@ -129,9 +129,14 @@ final class LoaderEnqueue
 
         $dist = WCONVERT_DIR . self::DIST;
 
+        // **Reported from wp-admin, not from here.** This method runs on
+        // `wp_enqueue_scripts` and returns above on `is_admin()`, so an
+        // `admin_notices` callback added at this point would be registered on
+        // a front-end request — where `admin_notices` never fires and nobody
+        // would ever have read it. {@see \WConvert\Admin\AdminNotices::checkLoaderBundle()}
+        // asks the same question where the answer can be seen. All this can
+        // honestly do on a visitor's page is print nothing.
         if (!is_file($dist)) {
-            self::noticeMissingLoaderBundle();
-
             return;
         }
 
@@ -235,17 +240,5 @@ final class LoaderEnqueue
                 : $entry,
             $entries
         );
-    }
-
-    private static function noticeMissingLoaderBundle(): void
-    {
-        add_action('admin_notices', static function (): void {
-            echo '<div class="notice notice-error"><p>';
-            echo esc_html__(
-                'WConvert has published Optins but its loader script is missing, so none of them can display. Reinstall the plugin to restore it.',
-                'wconvert'
-            );
-            echo '</p></div>';
-        });
     }
 }

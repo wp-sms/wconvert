@@ -27,6 +27,14 @@ script sweeping `document.querySelectorAll('input')` cannot reach the capture fi
 and rebind it. The cost is that `document.activeElement` reports the host `<div>`
 and nothing outside can learn otherwise.
 
+*Scoped by [ADR 0040](0040-the-builders-preview-is-an-input.md), which did NOT
+relax this. The hazard named above is a hazard on a **visitor's** page, from code
+WConvert does not control; the builder's preview is neither. It needed no change
+here regardless: `mount()` already hands the rendered step to whoever mounted it,
+so the builder reads what it asked for and the boundary stays shut to everything
+else. The cost sentence above is also what makes a keyboard test of that preview
+dispatch at the element rather than at `document.activeElement`.*
+
 ## The top layer wins the positioning and stacking fights
 
 A `transform` on an ancestor makes it the containing block for `position: fixed`

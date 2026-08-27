@@ -31,7 +31,7 @@ const { Destinations } = await import('../../resources/admin/src/destinations/De
 const WSMS_READY = {
   id: 'wsms',
   label: 'WP SMS contacts',
-  icon: 'dashicons-groups',
+  icon: 'users',
   tier: 'free' as const,
   requires: 'wsms',
   requires_label: 'WP SMS',
@@ -55,7 +55,7 @@ const MAILCHIMP_LOCKED = {
 const LEAD_MAGNET = {
   id: 'lead_magnet_email',
   label: 'Lead magnet email',
-  icon: 'dashicons-email-alt',
+  icon: 'mail',
   tier: 'free' as const,
   requires: null,
   requires_label: null,
@@ -384,7 +384,7 @@ describe('the destinations screen', () => {
 
     render(<Destinations />);
 
-    await userEvent.click(await screen.findByRole('button', { name: /Re-push Leads/ }));
+    await userEvent.click(await screen.findByRole('button', { name: /Re-push leads/ }));
 
     await waitFor(() => {
       expect(screen.getByText(/per-run limit/)).toBeInTheDocument();

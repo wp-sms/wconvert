@@ -125,6 +125,87 @@ describe('the settings panel', () => {
     );
   });
 
+  /**
+   * ========================================================================
+   * SELECTION MOVES THE CARET ONE WAY ONLY.
+   * ========================================================================
+   * A click in the PREVIEW has to put the caret in the block that edits that
+   * slot — otherwise the affordance is an outline and nothing else. A focus
+   * that started HERE must not then drag the caret back to the top of the
+   * block, which on every keystroke's re-render would take it out of the field
+   * being typed in. Same key, opposite obligations, which is why the origin
+   * travels with it (ADR 0040).
+   */
+  it('puts the caret in the block a preview click names', () => {
+    panel({ selection: { key: 'role:headline', from: 'preview' } });
+
+    const slot = screen.getByText('Headline').closest('fieldset') as HTMLElement;
+
+    expect(within(slot).getAllByRole('textbox')[0]).toHaveFocus();
+  });
+
+  it('reaches a field by what it captures, which is the only key it has', () => {
+    panel({ selection: { key: 'captures:email', from: 'preview' } });
+
+    const slot = screen.getByText('Email address').closest('fieldset') as HTMLElement;
+
+    expect(within(slot).getAllByRole('textbox')[0]).toHaveFocus();
+  });
+
+  it('does not move the caret for a selection that started in the panel', () => {
+    panel({ selection: { key: 'role:headline', from: 'panel' } });
+
+    expect(document.body).toHaveFocus();
+  });
+
+  /** Focusing a block is what tells the preview which slot to outline. */
+  it('reports the slot a merchant focuses, so the preview can outline it', async () => {
+    const chosen = vi.fn();
+
+    panel({ onSelect: chosen });
+
+    const slot = screen.getByText('Headline').closest('fieldset') as HTMLElement;
+
+    await userEvent.click(within(slot).getAllByRole('textbox')[0]);
+
+    expect(chosen).toHaveBeenCalledWith('role:headline');
+  });
+
+  /**
+   * ========================================================================
+   * PRESETS CARRY THE MEDIAN CASE; THE RAW TOKENS KEEP THE TAIL (#71).
+   * ========================================================================
+   * A preset is a bundle of token VALUES and nothing else, so it changes no
+   * shape and needs no new vocabulary — which is what keeps ADR 0010's
+   * boundary where it is while fixing the panel that asked a merchant for
+   * `rgba(15, 23, 42, 0.55)` in a text box.
+   */
+  it('applies a preset as token values, and touches nothing else', async () => {
+    const changed = panel();
+
+    await userEvent.click(screen.getByRole('button', { name: /Midnight/ }));
+
+    const [next] = changed.mock.calls[0] as [{ tokens: Record<string, string>; tree: unknown }];
+
+    expect(next.tokens.bg).toBe('#0f172a');
+    expect(next.tokens.accent).toBe('#38bdf8');
+    // The tree is the SAME object: a preset cannot express arrangement, because
+    // there is nowhere in a token bundle to put one.
+    expect(next.tree).toBe(ENTRY.tree);
+  });
+
+  /** **Every raw token is still reachable**, behind the disclosure (#71). */
+  it('keeps every token the manifest declares, once', () => {
+    panel();
+
+    // A colour is a picker rather than a text box; the rest keep the box they
+    // had, because there is no visual control for `1.5rem` that is not a guess.
+    expect(screen.getByRole('button', { name: /Choose a colour for Background/ })).toBeInTheDocument();
+    // The stub names only two tokens, so the rest fall back to their raw key —
+    // which is what `nameOf` does on a real install missing a label too.
+    expect(screen.getByLabelText('font')).toBeInTheDocument();
+  });
+
   /** **Authoring is the settings panel plus a DEV-ONLY export** (ADR 0010). */
   it('keeps the library entry behind WP_DEBUG', () => {
     panel();

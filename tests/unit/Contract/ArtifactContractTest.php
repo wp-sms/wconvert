@@ -120,7 +120,8 @@ final class ArtifactContractTest extends TestCase
             'vendor/autoload.php' => "<?php\n// composer\n",
             'vendor/composer/autoload_psr4.php' => "<?php\nreturn array('WConvert\\\\' => array('/src'));\n",
             'public/loader/loader.js' => "console.log('loader');\n",
-            'public/admin/main.js' => "console.log('admin');\n",
+            'public/admin/main-abc12345.js' => "console.log('admin');\n",
+            'public/admin/builder-def67890.js' => "console.log('builder');\n",
             'resources/loader/src/main.ts' => "export const boot = () => {};\n",
             'resources/admin/src/main.tsx' => "export const App = () => null;\n",
             'resources/renderer/src/render.ts' => "export const render = () => {};\n",
@@ -395,6 +396,36 @@ final class ArtifactContractTest extends TestCase
 
         $this->assertSame(1, $result['status'], $result['output']);
         $this->assertStringContainsString('empty', $result['output']);
+    }
+
+    /**
+     * **The builder is a chunk the entry fetches**, so a ZIP carrying the entry
+     * without it boots, renders four working screens, and fails only on the
+     * fifth — in a browser, with a 404 in a console nobody has open (#73).
+     */
+    public function testFailsWhenTheAdminShipsNoBuilderChunk(): void
+    {
+        $result = $this->verify($this->stagedFree([
+            'public/admin/builder-def67890.js' => null,
+        ]));
+
+        $this->assertSame(1, $result['status'], $result['output']);
+        $this->assertStringContainsString('builder-*.js', $result['output']);
+    }
+
+    /**
+     * The hashed names are matched by pattern, which is where a zero-byte file
+     * is easiest to wave through — `find` reports a match and nothing looks at
+     * the size. It is the same halfway-failed build the loader's own case names.
+     */
+    public function testFailsWhenTheAdminBundleIsEmpty(): void
+    {
+        $result = $this->verify($this->stagedFree([
+            'public/admin/main-abc12345.js' => '',
+        ]));
+
+        $this->assertSame(1, $result['status'], $result['output']);
+        $this->assertStringContainsString('main-*.js', $result['output']);
     }
 
     public function testFailsWhenFreeShipsNoComposerAutoloader(): void

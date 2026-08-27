@@ -1,12 +1,16 @@
 import { useEffect, useState } from 'react';
 import { __ } from '@wordpress/i18n';
-import { OptinBuilder } from './builder/OptinBuilder';
-import { GoalScreen } from './goals/GoalScreen';
+import { ArrowLeft, Plus } from 'lucide-react';
+import { GoalScreen, OptinBuilder } from './builder/lazy';
 import { LeadLog } from './leads/LeadLog';
 import { OptinList } from './optins/OptinList';
 import { Dashboard } from './stats/Dashboard';
 import { Destinations } from './destinations/Destinations';
-import { SECTIONS, hashFor, sectionFrom, type SectionId } from './nav';
+import { Button } from './components/ui/button';
+import { Shell } from './shell/Shell';
+import { NarrowScreenNotice } from './shell/NarrowScreenNotice';
+import { useBuilderViewport } from './hooks/useBuilderViewport';
+import { sectionFrom, type SectionId } from './nav';
 
 /**
  * The WConvert admin screen.
@@ -14,7 +18,7 @@ import { SECTIONS, hashFor, sectionFrom, type SectionId } from './nav';
  * **One section at a time, and the builder replaces even the tabs.** The
  * builder is a place a merchant sits down with; everything else is a list or a
  * report they read in passing, and the two do not belong on one page. That
- * distinction was always the design — what was missing until now is the nav
+ * distinction was always the design — what was missing until #62 is the nav
  * the v1 map decided ("conventional nav in v1"), without which the four
  * reading screens were one scroll and the create flow sat permanently on top
  * of them.
@@ -23,11 +27,31 @@ import { SECTIONS, hashFor, sectionFrom, type SectionId } from './nav';
  * flow has always described: pick a [[Goal]], pick a [[Playbook]] under it,
  * land in an editor holding a prefilled Optin. What changed is where that flow
  * starts from — a button on the Optin list rather than the top of every visit.
+ *
+ * **The frame is WConvert's as of ADR 0035** and the hash router underneath it
+ * is #62's, unchanged. `nav.ts` was always the load-bearing half of that
+ * ticket; the `nav-tab` strip it fed was scaffolding, and {@see Shell} is what
+ * replaced it.
  */
 export function App() {
   const [editing, setEditing] = useState<string | null>(null);
+  /*
+   * Held here rather than inside {@see OptinsSection} because the button that
+   * starts creation now sits in the page header, which is the frame's. The
+   * state and the control that sets it belong on the same side of that line —
+   * the alternative is a button in the header reaching into a child's state,
+   * which is the shape that quietly grows a context.
+   */
+  const [creating, setCreating] = useState(false);
   const [section, setSection] = useState<SectionId>(() =>
     sectionFrom(typeof window === 'undefined' ? '' : window.location.hash),
+  );
+
+  const createButton = (
+    <Button onClick={() => setCreating(true)}>
+      <Plus aria-hidden="true" />
+      {__('Create an Optin', 'wconvert')}
+    </Button>
   );
 
   /*
@@ -45,47 +69,69 @@ export function App() {
   }, []);
 
   if (editing !== null) {
+    return <BuilderScreen id={editing} onClose={() => setEditing(null)} />;
+  }
+
+  return (
+    <Shell section={section} actions={section === 'optins' && !creating ? createButton : undefined}>
+      {section === 'optins' && (
+        <OptinsSection
+          creating={creating}
+          onCreate={() => setCreating(true)}
+          onCancelCreate={() => setCreating(false)}
+          onEdit={setEditing}
+        />
+      )}
+      {section === 'analytics' && <Dashboard />}
+      {section === 'leads' && <LeadLog />}
+      {section === 'destinations' && <Destinations />}
+    </Shell>
+  );
+}
+
+/**
+ * The builder, or the sentence that stands where it would.
+ *
+ * **The gate is here rather than inside {@see OptinBuilder}**, so a viewport
+ * too narrow for the builder does not mount it: the panel fetches a template,
+ * renders a live preview through the renderer the loader imports and sticks it
+ * to the scroll, none of which is work worth doing behind a message saying it
+ * cannot be shown.
+ *
+ * **It now saves the BYTES as well, and that is #73.** The import above is
+ * `builder/lazy`, not the builder — so the four reading screens never fetch
+ * it, and neither does this arm: the chunk is requested when the boundary
+ * mounts, and below 782px the boundary is never rendered at all. The saving
+ * and the work now go together, where the gate used to buy only the second.
+ *
+ * The `Shell` is drawn HERE rather than inside the boundary, so the masthead
+ * and the header band are on screen the instant the merchant clicks. Only the
+ * inside of the page waits.
+ */
+function BuilderScreen({ id, onClose }: { id: string; onClose: () => void }) {
+  const fits = useBuilderViewport();
+
+  if (!fits) {
+    /*
+     * The way out is rendered HERE and only here, because {@see OptinBuilder}
+     * draws its own and it is not on screen. Two back buttons is what the
+     * first version of this shipped.
+     */
     return (
-      <div className="wconvert-admin">
-        <OptinBuilder id={editing} onClose={() => setEditing(null)} />
-      </div>
+      <Shell>
+        <Button variant="ghost" size="sm" className="mb-4 -ms-3" onClick={onClose}>
+          <ArrowLeft aria-hidden="true" />
+          {__('All Optins', 'wconvert')}
+        </Button>
+        <NarrowScreenNotice />
+      </Shell>
     );
   }
 
   return (
-    <div className="wconvert-admin">
-      <h1 className="wp-heading-inline">{__('WConvert', 'wconvert')}</h1>
-
-      {/*
-        * WordPress's own `nav-tab` markup rather than a bespoke strip: four
-        * sections is what tabs are for, and the classes carry the focus ring,
-        * the active state and the responsive behaviour that a hand-rolled one
-        * would have to re-earn. WSMS uses a sidebar because it has twenty-five
-        * sections — that is a response to scale WConvert does not have.
-        *
-        * Real `href`s, so a tab is middle-clickable, copyable and reachable by
-        * keyboard with nothing here re-implementing any of it. The click
-        * handler is not what navigates; the hash change is, and the effect
-        * above is what hears it.
-        */}
-      <nav className="nav-tab-wrapper wp-clearfix" aria-label={__('WConvert sections', 'wconvert')}>
-        {SECTIONS.map((entry) => (
-          <a
-            key={entry.id}
-            href={hashFor(entry.id)}
-            className={`nav-tab${entry.id === section ? ' nav-tab-active' : ''}`}
-            aria-current={entry.id === section ? 'page' : undefined}
-          >
-            {entry.label}
-          </a>
-        ))}
-      </nav>
-
-      {section === 'optins' && <OptinsSection onEdit={setEditing} />}
-      {section === 'analytics' && <Dashboard />}
-      {section === 'leads' && <LeadLog />}
-      {section === 'destinations' && <Destinations />}
-    </div>
+    <Shell bareHeader>
+      <OptinBuilder id={id} onClose={onClose} />
+    </Shell>
   );
 }
 
@@ -97,19 +143,43 @@ export function App() {
  * registry is the drift the registry exists to stop (ADR 0026). This keeps
  * that: the button opens the same goal-first flow, and the only thing it
  * changes is that the flow is not already open.
+ *
+ * The button itself now lives in the page header — a screen's primary action
+ * beside the screen's name, rather than floating above the table it does not
+ * act on.
  */
-function OptinsSection({ onEdit }: { onEdit: (id: string) => void }) {
-  const [creating, setCreating] = useState(false);
-
+function OptinsSection({
+  creating,
+  onCreate,
+  onCancelCreate,
+  onEdit,
+}: {
+  creating: boolean;
+  onCreate: () => void;
+  onCancelCreate: () => void;
+  onEdit: (id: string) => void;
+}) {
   if (creating) {
     return (
       <>
-        <button type="button" className="button button-link" onClick={() => setCreating(false)}>
-          {__('← All Optins', 'wconvert')}
-        </button>
+        {/*
+          Above the region rather than inside it, because the way out of the
+          flow is the PAGE's and not the flow's — it leaves the whole flow, so
+          it cannot sit within the card the flow draws.
+
+          This used to read "outside {@see Legacy}", naming the
+          `.wconvert-legacy` wrapper that put it inside that card. The wrapper
+          left with the last un-converted screen (ADR 0039) and the reference
+          went dead with it; the placement it argued for is still the right
+          one, so the reason is restated rather than deleted.
+        */}
+        <Button variant="ghost" size="sm" className="mb-4 -ms-3" onClick={onCancelCreate}>
+          <ArrowLeft aria-hidden="true" />
+          {__('All Optins', 'wconvert')}
+        </Button>
         <GoalScreen
           onCreated={(id) => {
-            setCreating(false);
+            onCancelCreate();
             onEdit(id);
           }}
         />
@@ -117,14 +187,11 @@ function OptinsSection({ onEdit }: { onEdit: (id: string) => void }) {
     );
   }
 
-  return (
-    <>
-      <p>
-        <button type="button" className="button button-primary" onClick={() => setCreating(true)}>
-          {__('Create an Optin', 'wconvert')}
-        </button>
-      </p>
-      <OptinList onEdit={onEdit} />
-    </>
-  );
+  /*
+   * `onCreate` is the SAME door the page header opens, handed down so the
+   * empty state can carry it. An empty screen whose only way forward is a
+   * button in a band the merchant has already read past is an empty screen
+   * with a dead end in it (ADR 0039).
+   */
+  return <OptinList onEdit={onEdit} onCreate={onCreate} />;
 }

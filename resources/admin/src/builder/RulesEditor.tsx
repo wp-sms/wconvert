@@ -1,4 +1,5 @@
 import { __, sprintf } from '@wordpress/i18n';
+import { Lock } from 'lucide-react';
 import { ParamField } from './controls';
 import { RuleRows, type Row } from './RuleRows';
 import { fromRule, toRule } from './presets';
@@ -30,9 +31,11 @@ import type { Rule, RuleType } from './api';
  * **A premium type is named, never drawn disabled.** wp.org Guideline 9 fires
  * on showing a real control the user cannot use, and ADR 0012 answers it the
  * same way at prefill: a free user is given a working rule they can configure,
- * not a locked one they cannot. So `locked` types are a sentence under the
- * list — which is also what a settings list owes a merchant who went hunting
- * for exit intent (ADR 0026).
+ * not a locked one they cannot. So `locked` types are CARDS under the list,
+ * built from the shared manifest exactly as ADR 0015 specifies — which is also
+ * what a settings list owes a merchant who went hunting for exit intent
+ * (ADR 0026). They were a comma list appended to a sentence about the add
+ * control until #72; see {@link LockedTypes}.
  *
  * **And a degradation is a note on its own row, never a banner.** A banner is
  * dismissed once and leaves the Optin carrying an invisible substitution
@@ -76,7 +79,7 @@ export function RulesEditor({ triggers, conditions, rules, onChange }: RulesEdit
   return (
     <>
       <h3>{__('When it shows', 'wconvert')}</h3>
-      <p className="description">{__('It fires as soon as any one of these happens.', 'wconvert')}</p>
+      <p className="description">{__('Fires when any of these happens.', 'wconvert')}</p>
       {/*
         **Every Optin has at least one Trigger** and "shows immediately" is the
         explicit `page_load` one, never an empty list (CONTEXT.md, Trigger). The
@@ -87,7 +90,7 @@ export function RulesEditor({ triggers, conditions, rules, onChange }: RulesEdit
       <AddRule axis={triggers} label={__('Add a trigger', 'wconvert')} onAdd={add} />
 
       <h3>{__('Who sees it', 'wconvert')}</h3>
-      <p className="description">{__('Every one of these must hold at the moment it fires.', 'wconvert')}</p>
+      <p className="description">{__('All of these must be true when it fires.', 'wconvert')}</p>
       <RuleRows
         rows={on(conditions).map((entry) => row(entry, true))}
         empty={__('Nothing yet.', 'wconvert')}
@@ -98,7 +101,7 @@ export function RulesEditor({ triggers, conditions, rules, onChange }: RulesEdit
         <>
           <h3>{__('Not available on this site', 'wconvert')}</h3>
           <p className="description">
-            {__('These rules are still saved with the Optin. Remove one if you no longer want it.', 'wconvert')}
+            {__('Still saved with the Optin. Remove one you no longer want.', 'wconvert')}
           </p>
           <RuleRows rows={unknown.map((entry) => row(entry, true))} empty="" />
         </>
@@ -237,45 +240,89 @@ function AddRule({
   const locked = axis.filter((type) => type.availability === 'locked');
 
   return (
-    <p>
-      <label>
-        {label}{' '}
-        <select
-          value=""
-          onChange={(event) => {
-            const [type, presetId] = event.target.value.split('|');
-            const chosen = ready.find((each) => each.type === type);
+    <>
+      <p>
+        <label>
+          {label}{' '}
+          <select
+            value=""
+            onChange={(event) => {
+              const [type, presetId] = event.target.value.split('|');
+              const chosen = ready.find((each) => each.type === type);
 
-            if (chosen !== undefined) {
-              onAdd(toRule(chosen, chosen.presets.find((each) => each.id === presetId) ?? null, {}));
-            }
-          }}
-        >
-          <option value="">{__('Choose…', 'wconvert')}</option>
-          {ready.map((type) => (
-            <optgroup key={type.type} label={type.label}>
-              {type.presets.map((preset) => (
-                <option key={preset.id} value={`${type.type}|${preset.id}`}>
-                  {preset.label}
+              if (chosen !== undefined) {
+                onAdd(toRule(chosen, chosen.presets.find((each) => each.id === presetId) ?? null, {}));
+              }
+            }}
+          >
+            <option value="">{__('Choose…', 'wconvert')}</option>
+            {ready.map((type) => (
+              <optgroup key={type.type} label={type.label}>
+                {type.presets.map((preset) => (
+                  <option key={preset.id} value={`${type.type}|${preset.id}`}>
+                    {preset.label}
+                  </option>
+                ))}
+                <option value={`${type.type}|`}>
+                  {type.presets.length === 0 ? type.label : __('Set it myself', 'wconvert')}
                 </option>
-              ))}
-              <option value={`${type.type}|`}>
-                {type.presets.length === 0 ? type.label : __('Set it myself', 'wconvert')}
-              </option>
-            </optgroup>
-          ))}
-        </select>
-      </label>
-      {locked.length > 0 && (
-        // Named rather than drawn disabled (Guideline 9), and named rather
-        // than hidden: a settings list the merchant went hunting through
-        // explains the gap, where the creation flow's front door hides one
-        // (ADR 0026).
-        <span className="wconvert-upsell">
-          {' '}
-          {__('With WConvert Pro:', 'wconvert')} {locked.map((type) => type.label).join(', ')}
-        </span>
-      )}
-    </p>
+              </optgroup>
+            ))}
+          </select>
+        </label>
+      </p>
+
+      <LockedTypes types={locked} />
+    </>
+  );
+}
+
+/**
+ * The premium rule types this install cannot run, as **cards from the
+ * manifest**.
+ *
+ * ============================================================================
+ * A RUN-ON SENTENCE IS NOT WHAT ADR 0015 SPECIFIED.
+ * ============================================================================
+ * What shipped was *"With WConvert Pro: Clicks an element, About to leave,
+ * Scrolls back up"* appended to the paragraph holding the add control — three
+ * distinct capabilities as a comma list in a sentence about something else,
+ * which is drift from ADR 0015's *"free's admin renders the `locked` card from
+ * the shared manifest"* ([#72](https://github.com/navidkashani/wconvert/issues/72)).
+ *
+ * **The heading keeps the words.** *With WConvert Pro:* is what named this on
+ * screen before and it is what `builder-editors.test.tsx` reads, so the phrase
+ * survives the change of shape — the test is asserting that a premium type is
+ * NAMED, and it still is.
+ *
+ * **Metadata, never a disabled control.** wp.org Guideline 9 fires on showing a
+ * real control the user cannot use, and the premium code genuinely is not in
+ * this bundle — there is nothing here to disable. A card carries the type's
+ * label from PHP and nothing a click could reach, which is what makes the
+ * upsell honest rather than trialware (ADR 0015).
+ *
+ * **Named rather than hidden**, which is the other half: a settings list the
+ * merchant went hunting through explains the gap, where the creation flow's
+ * front door hides one (ADR 0026). There is no link, because the upgrade
+ * destination does not exist yet and "upgrade here" beside nothing to click is
+ * worse than saying nothing.
+ */
+function LockedTypes({ types }: { types: readonly RuleType[] }) {
+  if (types.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="wconvert-locked">
+      <p className="wconvert-locked__heading">{__('With WConvert Pro:', 'wconvert')}</p>
+      <ul className="wconvert-locked__list">
+        {types.map((type) => (
+          <li key={type.type} className="wconvert-locked__card">
+            <Lock aria-hidden="true" className="wconvert-locked__icon" />
+            <span className="wconvert-locked__label">{type.label}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }

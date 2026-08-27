@@ -1,14 +1,1173 @@
-.wconvert-admin {
-  max-width: 60rem;
+/*
+ * The admin's stylesheet, and the whole of its design contract.
+ *
+ * **Preflight is on and the utilities are `important`** (ADR 0035). Both
+ * halves are deliberate and both are load-bearing:
+ *
+ * - Preflight resets margins, list styles and form appearance across the whole
+ *   document, not only inside our mount node. That is the price of owning the
+ *   page rather than styling a corner of somebody else's, and it is survivable
+ *   because Tailwind emits `@layer base` — a CASCADE LAYER, which every
+ *   unlayered rule in wp-admin's own stylesheet outranks regardless of
+ *   specificity. So WordPress's menu, toolbar and footer keep the styling
+ *   WordPress gave them, and the reset lands on the elements nobody else
+ *   claimed. That is why this ships intact rather than by luck.
+ * - `important` is the mirror of the same fact: OUR utilities are unlayered
+ *   `!important` declarations, so they beat wp-admin's high-specificity
+ *   selectors, which load after ours and would otherwise win on the screens
+ *   nobody checked.
+ *
+ * This stylesheet is enqueued on WConvert's screens only ({@see
+ * \WConvert\Admin\AdminMenu::enqueueAssets()}), so nothing here reaches an
+ * admin page that is not ours.
+ */
+@import 'tailwindcss' important;
+
+/*
+ * The enter/exit animations the vendored dialog, popover and select reference
+ * by class (`animate-in`, `fade-in-0`, `slide-in-from-top-2`). They are
+ * Tailwind 4's replacement for `tailwindcss-animate` and shadcn's components
+ * are written against them, so without this import those classes compile to
+ * nothing and every overlay in the admin snaps rather than opens.
+ */
+@import 'tw-animate-css';
+
+/*
+ * **`dark:` is bound to a class, and no element carries it.**
+ *
+ * Left undefined, Tailwind resolves `dark:` to `prefers-color-scheme: dark` —
+ * so every `dark:bg-input/30` in the vendored components would fire on any
+ * merchant whose machine is set to dark, against light tokens that are not,
+ * and the screen would come apart on a preference nobody in this codebase
+ * answered. ADR 0038 puts dark mode out of scope for 0.1.0; this is what makes
+ * that true rather than assumed. When it does land it is a second set of
+ * values under the same names (ADR 0037) and a `.dark` on the mount node —
+ * no component touched.
+ */
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Tailwind 4 detects sources relative to this file. The admin's TSX lives
+ * beside it, so this is the whole scan root — and it is written out rather
+ * than left implicit because the vendored `components/ui/` under it is where
+ * most utility classes now live.
+ */
+@source "./";
+
+/*
+ * **The token NAMES are WSMS's and the values are WConvert's** (ADR 0037).
+ * That split is what makes a component vendored against the shadcn contract
+ * drop into either tree (ADR 0036) while keeping the two products from
+ * reading as one. Renaming a token here is not a local change — it breaks the
+ * drop-in property with every component either upstream produces. Adding one
+ * is free.
+ */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-surface: var(--surface);
+
+  /*
+   * **The whole scale is a hard offset, not only the named token.**
+   *
+   * ADR 0037 keeps WSMS's `4px 4px 0` deliberately — a tight radius and a hard
+   * shadow are the two things about the sibling's surface a person could
+   * describe from memory, and they are what carries the family resemblance
+   * once the colour stops doing it. Declaring `--shadow-brutalist` alone would
+   * have left that as decoration: every vendored component asks for
+   * `shadow-xs`, `shadow-sm` or `shadow-md`, so the shadow that actually
+   * rendered would have been Tailwind's soft blurred default and the house
+   * style would appear nowhere on the screen.
+   *
+   * Depth is offset distance rather than blur, so the scale reads as one idea
+   * at four sizes and the top of it IS the `4px 4px 0` the ADR names.
+   */
+  --shadow-2xs: 1px 1px 0 var(--border);
+  --shadow-xs: 1px 1px 0 var(--border);
+  --shadow-sm: 2px 2px 0 var(--border);
+  --shadow-md: 2px 2px 0 var(--border);
+  --shadow-lg: 3px 3px 0 var(--border);
+  --shadow-xl: 4px 4px 0 var(--border);
+  --shadow-2xl: 4px 4px 0 var(--border);
+  --shadow-brutalist: 4px 4px 0 var(--border);
+
+  /*
+   * **Two control heights, and which one applies is a question of scope**
+   * (ADR 0039). 2.25rem is what the vendored `Button` draws at its default
+   * size, so a WordPress control that has not been converted yet stands
+   * exactly as tall as the real one beside it and nothing jumps when #64-#72
+   * swap them. It is the height of a page-header action and of a form field in
+   * a settings region — the controls a merchant came to the screen to use.
+   *
+   * 2rem is everything that qualifies what is already on the screen: a
+   * toolbar's filters, a row's actions, a control inside a table. It is what
+   * the vendored `size="sm"` draws, and it is stated here as a token rather
+   * than repeated as a prop because *"a toolbar control is the small height"*
+   * is a rule about the toolbar and not about each control that lands in one.
+   *
+   * This amends #63's "one control height for the whole admin", which was
+   * right about the un-converted screens it was written for and is what made
+   * the Leads filter row read chunky: one height everywhere means a filter
+   * stands as tall as the action beside it, and they are not the same weight.
+   */
+  --control-height: 2.25rem;
+  --control-height-sm: 2rem;
+  --radius-sm: max(calc(var(--radius) - 2px), 0px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 4px);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 300ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root {
+  /*
+   * Taken from WSMS deliberately: a tight radius and a hard offset shadow are
+   * the two things about the sibling's surface a person could describe from
+   * memory, and keeping them is what carries the family resemblance once the
+   * colour stops doing it (ADR 0037).
+   */
+  --radius: 0.25rem;
+
+  /*
+   * Petrol. Cool against the sibling's warm burnt orange, so the two are
+   * obviously related and obviously not the same — and it leaves green, amber
+   * and red entirely free to mean *converted*, *dismissed* and *failed* on the
+   * screen this product is sold on. Green as a primary was refused for exactly
+   * that collision (ADR 0037).
+   *
+   * 5.95:1 against white, measured rather than assumed: petrol text on white
+   * and a white label on a petrol button both clear AA in both directions
+   * without a second shade.
+   */
+  --primary: #0f6e79;
+  --primary-foreground: #ffffff;
+
+  --background: #f6f9f9;
+  --foreground: #12242b;
+  --card: #ffffff;
+  --card-foreground: #12242b;
+  --popover: #ffffff;
+  --popover-foreground: #12242b;
+  --surface: #eef3f4;
+
+  --secondary: #eef3f4;
+  --secondary-foreground: #12242b;
+  --muted: #eef3f4;
+  --muted-foreground: #55666d;
+  --accent: #e3edee;
+  --accent-foreground: #0b545c;
+
+  /*
+   * The semantic trio, and the reason the primary is not green. Each is
+   * measured against white rather than eyeballed: destructive 6.57:1, success
+   * 6.13:1, warning 5.93:1, info 6.46:1 — AA in both directions, so each works
+   * as text on a card and as a solid fill under a white label.
+   */
+  --destructive: #b42318;
+  --destructive-foreground: #ffffff;
+  --success: #17703f;
+  --warning: #8a5a00;
+  --info: #1c5fa8;
+
+  /*
+   * `--border` draws dividers and card edges, which are decoration. `--input`
+   * draws the edge of a control, which is *"visual information required to
+   * identify a user interface component"* and therefore owes 3:1 under WCAG
+   * 1.4.11 (ADR 0038 sets AA as the bar). They are two tokens because they are
+   * two jobs — 3.25:1 on a card and 3.07:1 on the background for the one that
+   * has to clear it.
+   */
+  --border: #d3e0e2;
+  --input: #7e9299;
+  --ring: #0f6e79;
+
+  /*
+   * The chart ramp is the analytics screen's vocabulary, in the order ADR 0019
+   * stores the counters: impressions, conversions, dismissals, then the
+   * delivery failures ADR 0021 counts beside them, then a neutral for anything
+   * with no meaning of its own.
+   */
+  --chart-1: #0f6e79;
+  --chart-2: #17703f;
+  --chart-3: #8a5a00;
+  --chart-4: #b42318;
+  --chart-5: #5b7078;
+
+  /*
+   * Named because the shadcn contract spells them and a component vendored
+   * against it may reference one. WConvert's admin is four tabs and has no
+   * sidebar (ADR 0036) — these exist so a drop-in never resolves to nothing.
+   */
+  --sidebar: #ffffff;
+  --sidebar-foreground: #12242b;
+  --sidebar-primary: #0f6e79;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e3edee;
+  --sidebar-accent-foreground: #0b545c;
+  --sidebar-border: #d3e0e2;
+  --sidebar-ring: #0f6e79;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+}
+
+/*
+ * A merchant who asked their system for less motion asked this screen too.
+ * Scoped to the app so it is a promise about our animations rather than an
+ * opinion imposed on wp-admin's.
+ */
+@media (prefers-reduced-motion: reduce) {
+  #wconvert-admin *,
+  #wconvert-admin *::before,
+  #wconvert-admin *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/*
+ * The mount node takes the full width of the content column: the negative
+ * inline start cancels `#wpcontent`'s 20px gutter, which exists to inset a
+ * WordPress screen from the admin menu and is exactly the frame this screen
+ * stopped drawing.
+ *
+ * **WordPress's footer stays.** WSMS hides `#wpfooter`; this does not. ADR
+ * 0035 owns the PAGE and names the menu, the toolbar and the footer as the
+ * parts WordPress still owns — a footer that vanishes on one plugin's screen
+ * is the plugin reaching past its own boundary, and it is one of the three
+ * things this ticket is checked against on a real install.
+ */
+#wconvert-admin {
+  @apply relative bg-background text-foreground;
+  margin-inline-start: -20px;
+  width: calc(100% + 20px);
+
+  /*
+   * Tall enough that our background reaches the bottom of the window on a
+   * screen with little on it. Without this the app stops at its content and
+   * wp-admin's grey shows through underneath — a seam across a page that is
+   * supposed to be one surface.
+   */
+  min-block-size: calc(100vh - var(--wp-admin--admin-bar--height, 32px));
+
+  /*
+   * **The room WordPress's footer needs, given back — inside our surface
+   * rather than under it.**
+   *
+   * `#wpfooter` is `position: absolute; bottom: 0`, so it is out of the flow
+   * and lands on whatever is at the bottom of the document. wp-admin reserves
+   * space for it with 65px of padding on `#wpbody-content`, and the rule below
+   * takes that away so our background can run all the way down — which it does,
+   * and which also dropped the footer straight on top of the last 40px of every
+   * screen. Reported from a real install: "Thank you for creating with
+   * WordPress" printed across a region's own footer row.
+   *
+   * Padding HERE rather than restoring it on `#wpbody-content` is the whole
+   * point: our background is painted on this element, so the reserved strip is
+   * ours and the footer sits on it. Restoring it outside would put wp-admin's
+   * grey back under the page and re-open the seam the rule below closed.
+   *
+   * 65px is WordPress's own number for this, not one invented here — the
+   * footer is 40px on one line and this is what wp-admin budgets for it
+   * wrapping.
+   */
+  padding-block-end: 65px;
+}
+
+/*
+ * The 65px this reserves is the gap wp-admin leaves between a screen and the
+ * footer. Our surface runs to the footer instead, so the reservation is the
+ * seam. The footer itself is untouched and keeps its own backdrop.
+ *
+ * **The reservation is not deleted, it is moved** — see the `padding-block-end`
+ * on `#wconvert-admin` above. Taking it away without giving it back is what put
+ * an absolutely positioned footer on top of the bottom of every screen.
+ */
+#wpbody-content {
+  padding-bottom: 0;
+}
+
+/*
+ * **There are no ID-scoped element resets here, and that is a decision.**
+ *
+ * WSMS strips `p`, `a`, `ul` and every form control inside its mount node,
+ * because every control in its app is a component it drew. WConvert's shell is
+ * drawn that way too — and it needs no reset to be, because `important` above
+ * means a utility class on an element WE authored already beats wp-admin's
+ * selectors. A reset earns nothing there.
+ *
+ * What it would reach instead is the builder's four editors, which still
+ * render WordPress's controls. (This read "the four screens #64-#72 have not
+ * converted yet" until those tickets closed. Every screen is converted; what is
+ * left is one level in — see THE CONTROLS THE BUILDER'S EDITORS STILL RENDER
+ * below.) Stripping the border off an `<input>` whose replacement has not been
+ * written yet does not make the page ours — it makes the intervening tickets
+ * ship a form nobody can see. So the reset lands with the components that
+ * replace what it strips, and not before.
+ */
+
+/*
+ * Anything that echoes a notice straight into `admin_head` or
+ * `in_admin_header` bypasses the `admin_notices` hook and therefore bypasses
+ * {@see \WConvert\Admin\AdminNotices::suppress()}.
+ *
+ * **`:not(.wconvert-notice)` is what keeps this from silencing us.** The
+ * plugin's own surviving notice wears `.notice notice-error` deliberately —
+ * it has to be legible on the failure where our stylesheet never loaded — and
+ * it is printed by the page callback, which makes it a DIRECT CHILD of
+ * `#wpbody-content` and therefore a match for the selector below. Without the
+ * exclusion this rule hid the very message that exists to survive the
+ * suppression, and hid it only on the failure where the stylesheet WAS
+ * present, which is the half nobody would have tested.
+ */
+#wpbody-content > .notice:not(.wconvert-notice),
+#wpbody-content > .updated,
+#wpbody-content > .error,
+#wpbody-content > .update-nag {
+  display: none !important;
+}
+
+/* ---------------------------------------------------------------------------
+ * THE PORTAL ROOTS.
+ *
+ * **Radix portals to `document.body`, outside `#wconvert-admin`** — so nothing
+ * scoped to that id reaches a dropdown, a select or a dialog. Everything the
+ * app takes for granted has to be restated here: the font, the body size, the
+ * colour, the pointer cursor and the stacking order (ADR 0039). This is the
+ * single most likely thing to look wrong on a first run, because a portaled
+ * menu inherits wp-admin's 13px font and its own foreground and looks like a
+ * WordPress menu that wandered onto our page.
+ *
+ * The popper wrapper covers dropdown, popover and select, which are positioned
+ * by Radix's popper. A dialog is not — it portals straight into the body — so
+ * its overlay and content are named separately rather than assumed.
+ * ------------------------------------------------------------------------- */
+[data-radix-popper-content-wrapper],
+[data-slot="select-content"],
+[data-slot="dialog-overlay"],
+[data-slot="dialog-content"],
+[data-slot="alert-dialog-overlay"],
+[data-slot="alert-dialog-content"] {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--foreground);
+}
+
+[data-radix-popper-content-wrapper] :is([role="option"], [role="menuitem"]) {
+  cursor: pointer;
+}
+
+/*
+ * wp-admin's toolbar sits at z-index 99999, which is the number these have to
+ * clear. A confirm dialog that opens behind the toolbar is a confirm dialog a
+ * merchant cannot answer.
+ *
+ * **Inside `@layer utilities`, and the dialog is why.** The popper wrapper is
+ * Radix's own element and carries no utility, so an unlayered rule reached it
+ * — but a dialog's overlay and content are shadcn's markup and wear `z-50`,
+ * which is a LAYERED `!important` declaration. For important declarations the
+ * cascade runs layers in reverse, so the unlayered version of this rule lost to
+ * a single utility class and the confirm dialog opened at z-index 50, behind
+ * wp-admin's toolbar. Verified in a browser rather than reasoned about: this is
+ * the second time in this stylesheet that reversal has caught a rule out, after
+ * `.fixed` below.
+ */
+@layer utilities {
+  [data-radix-popper-content-wrapper],
+  [data-slot="select-content"],
+  [data-slot="dialog-overlay"],
+  [data-slot="dialog-content"],
+  [data-slot="alert-dialog-overlay"],
+  [data-slot="alert-dialog-content"] {
+    z-index: 100300 !important;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * THE REGION TABLE, AND WHAT IT BECOMES BELOW 640px.
+ *
+ * **640px is the table's own breakpoint and is neither number ADR 0038 owns**
+ * (ADR 0039). 782px is the *builder's* floor — a sticky preview beside a
+ * settings panel — and 360px is a *floor* rather than a breakpoint, the width
+ * the reading screens must survive rather than the width at which they change
+ * shape. Reusing either would make one number mean two things.
+ *
+ * Below it a table becomes a stacked list of row-cards, one card per row, with
+ * each cell a label-and-value pair. Not horizontal scroll — a lead log you have
+ * to drag sideways is a log you do not read — and not column hiding, which
+ * decides for the merchant which of their own columns matter.
+ *
+ * **The DOM stays a table at every width**, which is a design constraint and a
+ * test constraint at once: `lead-log.test.tsx` asserts `findByRole('row', …)`.
+ * `display: block` on a `<tr>` can take its implicit role with it in a real
+ * browser, so {@see DataTable} writes `role="table"`, `role="row"`,
+ * `role="cell"` and `role="columnheader"` explicitly — this stylesheet changes
+ * how the rows LOOK and the accessibility tree does not hear about it.
+ *
+ * The header row is not `display: none` for the same reason: it is
+ * visually hidden, so a screen reader still announces a column name that a
+ * sighted merchant now reads off the `::before` beside the value.
+ * ------------------------------------------------------------------------- */
+/*
+ * **The whole register is here rather than in utilities on the elements**, and
+ * that is what makes the treatment below possible at all. Tailwind's utilities
+ * are `!important` (ADR 0035); a `py-3` on a `<td>` would beat every padding
+ * this media query wants to change, and the row-card would arrive with the
+ * table's own spacing inside it. Plain CSS on one class is the version that can
+ * be overridden by the query underneath it.
+ *
+ * The `#wconvert-admin` prefix is for specificity against wp-admin's own
+ * id-scoped table rules, which load after ours.
+ */
+#wconvert-admin .wconvert-table {
+  inline-size: 100%;
+  border-collapse: collapse;
+}
+
+/*
+ * **A column name wraps, and that is the difference between a table that fits
+ * and one that does not.** These were `white-space: nowrap`, which reads well
+ * until a table has six columns: on the analytics screen "Conversion rate"
+ * claimed 147 unbreakable pixels and pushed the whole page 25px past a 641px
+ * viewport — one pixel above the breakpoint where the row-card treatment would
+ * have rescued it. A header on two lines costs a few pixels of height; a header
+ * that cannot break costs the merchant the whole screen.
+ */
+#wconvert-admin .wconvert-table > thead > tr > th {
+  padding: 0.5rem 0.75rem;
+  border-block-end: 1px solid var(--border);
+  color: var(--muted-foreground);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+  text-align: start;
+  text-transform: uppercase;
+}
+
+#wconvert-admin .wconvert-table > tbody > tr {
+  border-block-end: 1px solid var(--border);
+}
+
+#wconvert-admin .wconvert-table > tbody > tr:last-child {
+  border-block-end: 0;
+}
+
+/*
+ * 0.6875rem of block padding around one 21px line is a 44px row — the pointer
+ * target the in-row actions need, stated as the row's own height rather than
+ * as a minimum on the buttons inside it.
+ */
+#wconvert-admin .wconvert-table > tbody > tr > td {
+  padding: 0.6875rem 0.75rem;
+  font-size: inherit;
+  text-align: start;
+  vertical-align: middle;
+}
+
+/*
+ * **Numbers are right-aligned and lined up digit for digit.** A column of
+ * counts is read by comparing lengths, and proportional digits make 11 and 44
+ * different widths.
+ */
+#wconvert-admin .wconvert-table :is(th, td).is-numeric {
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+}
+
+/*
+ * **`1%` is what makes the Actions column take its content width.** A table
+ * with no stated widths divides the row between its columns, which gave three
+ * controls a cell narrower than they are and wrapped them onto two lines — with
+ * the third arriving under a button it is meant to sit beside. A percentage
+ * this small resolves to "as narrow as the content allows" and hands every
+ * remaining pixel to the columns holding data, which is where the reading
+ * happens.
+ *
+ * The header and the cell carry the same class so the two halves of the column
+ * cannot be sized apart.
+ *
+ * The actions row itself is laid out here rather than by utilities because its
+ * alignment FLIPS below 640px — trailing edge in a table, leading edge in a
+ * card — and a Tailwind `justify-end` is an `!important` declaration no media
+ * query can take back.
+ */
+#wconvert-admin .wconvert-table :is(th, td).wconvert-table__actions {
+  inline-size: 1%;
+  text-align: end;
+  white-space: nowrap;
+}
+
+#wconvert-admin .wconvert-table .wconvert-table__actions-row {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.25rem;
+}
+
+/*
+ * **A toolbar control and an in-row action stand at the small height**
+ * (ADR 0039). Stated once, here, rather than passed as a class at every call
+ * site — the rule is about the toolbar and the table, not about each control
+ * that lands in one, and a control added later inherits it without anybody
+ * remembering to.
+ *
+ * Inside `@layer utilities` because the vendored sizes are `!important`
+ * utilities: for important declarations the cascade runs layers in reverse, so
+ * an unlayered rule here would lose to `.h-8` however specific it was. In the
+ * same layer the ordinary rules apply again and an id plus a class plus an
+ * attribute beats a single utility class.
+ */
+@layer utilities {
+  #wconvert-admin
+    :is(.wconvert-page-actions, .wconvert-toolbar, .wconvert-table)
+    :is([data-slot="button"], [data-slot="select-trigger"]) {
+    /*
+     * **The height is a MINIMUM, and the label may wrap.** "Export CSV" is two
+     * short words in English and *"Erfassungsdatensätze als CSV-Datei
+     * herunterladen"* in German, and the vendored button is `whitespace-nowrap`
+     * and `shrink-0` — so at 360px the page header grew to 394px and the whole
+     * screen scrolled sideways. Measured with artificially long labels rather
+     * than assumed to be saved by `flex-wrap`, which cannot help a box that
+     * refuses to be narrower than its longest line.
+     *
+     * `max-inline-size` is what actually caps it: a `shrink-0` flex item ignores
+     * its container's pressure but not its own maximum. The rest is what makes
+     * the wrapped result look deliberate instead of clipped.
+     */
+    block-size: auto;
+    min-block-size: var(--control-height-sm);
+    max-inline-size: 100%;
+    padding-block: 0.3125rem;
+    white-space: normal;
+  }
+
+  /* A page-header action is the taller of the two heights (ADR 0039). */
+  #wconvert-admin .wconvert-page-actions [data-slot="button"] {
+    min-block-size: var(--control-height);
+  }
+}
+
+@media (max-width: 639px) {
+  #wconvert-admin .wconvert-table,
+  #wconvert-admin .wconvert-table > tbody,
+  #wconvert-admin .wconvert-table > tbody > tr,
+  #wconvert-admin .wconvert-table > tbody > tr > td {
+    display: block;
+  }
+
+  #wconvert-admin .wconvert-table > thead {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  #wconvert-admin .wconvert-table > tbody > tr {
+    margin-block-end: 0.75rem;
+    padding: 0.75rem 0.875rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+
+  #wconvert-admin .wconvert-table > tbody > tr:last-child {
+    margin-block-end: 0;
+  }
+
+  /*
+   * Label and value, not label above value: a lead log is scanned down its
+   * values, and a two-column pair keeps them on one axis. The label column is
+   * capped so a long translated column name cannot push the value off the
+   * card.
+   */
+  #wconvert-admin .wconvert-table > tbody > tr > td {
+    display: grid;
+    grid-template-columns: minmax(0, 8rem) minmax(0, 1fr);
+    gap: 0.25rem 0.75rem;
+    padding: 0.3125rem 0;
+    border: 0;
+    text-align: start;
+  }
+
+  /*
+   * The label always reads from the leading edge, even on a numeric cell whose
+   * VALUE is still right-aligned so a column of figures lines up. Without this
+   * the two moved together and "SUBMISSIONS" sat hard against its own number.
+   */
+  #wconvert-admin .wconvert-table > tbody > tr > td::before {
+    content: attr(data-label);
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-align: start;
+    text-transform: uppercase;
+  }
+
+  /*
+   * **A cell with nothing in it has no label either.** In a table an empty cell
+   * is a blank that keeps the column aligned; in a card it is a heading over
+   * nothing — which is what "OVER TIME" with no series under it was, on every
+   * row of a fresh install.
+   */
+  #wconvert-admin .wconvert-table > tbody > tr > td:empty {
+    display: none;
+  }
+
+  /*
+   * The Actions cell has no label worth repeating — the controls say what they
+   * are — so it takes the whole card width and sits under a rule, which is
+   * where a card's actions read as the card's rather than as one more field.
+   *
+   * **`inline-size` and `white-space` are taken BACK here, and forgetting them
+   * is what shipped a 3px cell.** Both are set above for the table, where they
+   * are one idea: `1%` is not a width there but a hint the table algorithm
+   * reads as "as narrow as the content allows", and `nowrap` is what stops two
+   * buttons that fit becoming two lines. Neither survives the cell becoming a
+   * block. A block resolves `1%` literally — 1% of the card, which measured
+   * 3.02px — and `nowrap` then carried the buttons out through the card's
+   * leading edge rather than wrapping them. Restoring the initial values is
+   * what makes `display: block` above mean the full card width it says.
+   */
+  #wconvert-admin .wconvert-table > tbody > tr > td.wconvert-table__actions {
+    display: block;
+    margin-block-start: 0.5rem;
+    padding-block-start: 0.625rem;
+    border-block-start: 1px solid var(--border);
+    inline-size: auto;
+    text-align: start;
+    white-space: normal;
+  }
+
+  #wconvert-admin .wconvert-table > tbody > tr > td.wconvert-table__actions::before {
+    content: none;
+  }
+
+  #wconvert-admin .wconvert-table .wconvert-table__actions-row {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * THE LISTS THIS ADMIN AUTHORS.
+ *
+ * **wp-admin's `common.css` says `li, dd { margin-bottom: 6px }`, unlayered.**
+ * Tailwind's preflight zeroes it in `@layer base`, and an unlayered rule beats
+ * a cascade layer regardless of specificity — which is the property this
+ * stylesheet's own header depends on for the admin menu and relies on NOT
+ * happening here. It is the same mechanism working against us.
+ *
+ * Six pixels under every `<li>`, which is what put the section nav's white pill
+ * 10px below the top of the petrol bar and 16px above the bottom. The bar was
+ * measurably off-centre and it was WordPress's margin doing it, not ours —
+ * found by measuring in a browser after it was reported, having been invisible
+ * in every screenshot review before that.
+ *
+ * Scoped to lists WE draw. `.wconvert-editor` is deliberately excluded: the
+ * builder's editors render prose lists that were written expecting WordPress's
+ * rhythm, and taking it away would close their spacing up.
+ * ------------------------------------------------------------------------- */
+#wconvert-admin :not(.wconvert-editor) > ul > li,
+#wconvert-admin :not(.wconvert-editor) > ol > li {
+  margin-block-end: 0;
+}
+
+/* ---------------------------------------------------------------------------
+ * THE SPARKLINE.
+ *
+ * **It had no rule anywhere until now**, which is why it rendered as a row of
+ * black dashes across the top of the analytics table: `.wconvert-sparkline` was
+ * one of fourteen class names in this admin with no CSS at all, so its `<svg>`
+ * took the browser's default `fill` — black — and no size of its own.
+ *
+ * The bars are `--chart-1`, which ADR 0037 put first in the ramp for the series
+ * this draws. The height is small on purpose: a sparkline is a shape read at a
+ * glance beside the number it belongs to, and one tall enough to read values
+ * off is a chart pretending to be an annotation.
+ * ------------------------------------------------------------------------- */
+.wconvert-sparkline {
+  display: block;
+  inline-size: 100%;
+  min-inline-size: 4rem;
+}
+
+.wconvert-sparkline > svg {
+  display: block;
+  inline-size: 100%;
+  block-size: 1.5rem;
+  fill: var(--chart-1);
+  opacity: 0.85;
+}
+
+/*
+ * A card's own series is the wider one and gets more room than a row's, which
+ * sits in a table cell beside five numbers.
+ */
+.wconvert-sparkline:not(td .wconvert-sparkline) > svg {
+  block-size: 2.5rem;
+}
+
+/* ---------------------------------------------------------------------------
+ * THE ONE CONTROL THE ADMIN STILL DRAWS NATIVELY.
+ *
+ * **A radio, and only a radio.** There is no vendored radio-group and the
+ * retention pair on the Leads screen does not need one: two mutually exclusive
+ * choices, drawn by the browser, are already keyboard-navigable, already
+ * announced as a group, and already round — which is the whole affordance
+ * telling a merchant that one of these excludes the other.
+ *
+ * These rules were written for the un-converted screens and sat under
+ * SCAFFOLDING with them. A converted screen depends on them now, so they move
+ * up here: deleting the scaffolding with the last conversion must not take the
+ * colour off a control that is still on the page.
+ *
+ * **wp-admin paints these itself, so `accent-color` never reaches them.** That
+ * property redirects a control the BROWSER is still drawing; WordPress replaces
+ * both with a background of its own plus a pseudo-element for the dot and the
+ * tick, and its admin colour scheme sets that background from
+ * `--wp-admin-theme-color`. Recolouring the pseudo-element alone left a petrol
+ * dot centred in a blue disc. `accent-color` still earns its line for the
+ * browsers and controls WordPress does not repaint.
+ * ------------------------------------------------------------------------- */
+#wconvert-admin {
+  accent-color: var(--primary);
+}
+
+#wconvert-admin :is(input[type="radio"], input[type="checkbox"]) {
+  vertical-align: middle;
+  margin-block: 0;
+}
+
+/*
+ * The radio keeps a white field with a petrol ring and a petrol dot, which is
+ * the shape it already had. The checkbox fills petrol, because its tick is
+ * drawn in the field's foreground and a white tick needs something behind it.
+ */
+#wconvert-admin input[type="radio"]:checked {
+  background: var(--card);
+  border-color: var(--primary);
+}
+
+#wconvert-admin input[type="radio"]:checked::before {
+  background-color: var(--primary);
+}
+
+#wconvert-admin input[type="checkbox"]:checked {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+/* ---------------------------------------------------------------------------
+ * THE CONTROLS THE BUILDER'S EDITORS STILL RENDER.
+ *
+ * **This was SCAFFOLDING and it is now a boundary.** Everything below styled
+ * screens #64-#72 had not converted; all five are converted, and what is left
+ * renders `.button`, `.regular-text` and bare `<select>`s inside the builder's
+ * four editors — the settings panel, the rules editor, the targeting picker and
+ * the destinations editor.
+ *
+ * They are the deepest part of this admin and the part with the most tests
+ * pinned to their markup, so they keep WordPress's controls wearing WConvert's
+ * colours until each is rewritten against the component vocabulary. That is the
+ * same line #63 drew, held one screen further in: change what a control LOOKS
+ * like now, change what it IS when its replacement lands.
+ *
+ * The colours are the only thing changed — the raw wp-admin greys and the
+ * `#2271b1` blue are tokens, so the page reads as one palette while the shapes
+ * stay exactly where a merchant left them.
+ * ------------------------------------------------------------------------- */
+
+/*
+ * **`fixed` means two different things and Tailwind's wins.**
+ *
+ * WordPress spells `table-layout: fixed` as a class — `<table class="wp-list-table
+ * widefat fixed striped">` — and Tailwind spells `position: fixed` the same
+ * way. Ours is `!important` and unlayered, so on every list table in the admin
+ * the utility won: the table left the flow, its `width: 100%` resolved against
+ * the VIEWPORT rather than its column, and it ran off the right of the screen
+ * while the page collapsed underneath it. Three screens — the Optin list, the
+ * lead log and the dashboard, whose table renders only once there is data and
+ * which therefore looked fine on an empty install.
+ *
+ * This is exactly the failure ADR 0035 warned `important` could cause, arriving
+ * through a door nobody was watching: not a specificity fight but a NAME
+ * collision, and one a green suite cannot see. **The lesson generalises past
+ * this rule** — any WordPress class name that happens to be a Tailwind utility
+ * (`block`, `hidden`, `inline`, `sticky`, `container`, `visible`, `border`)
+ * will do the same thing, so a screen converted in #64-#72 that keeps a
+ * WordPress class is carrying the same risk until the class goes.
+ *
+ * `position` is all that is corrected: `table-layout: fixed` comes from
+ * WordPress's own rule for the same class and is what the markup actually
+ * wanted.
+ *
+ * **The override lives INSIDE `@layer utilities`, and that is not decoration.**
+ * For `!important` declarations the cascade runs layers in REVERSE — an
+ * important declaration in a layer beats an important declaration that is
+ * unlayered, however specific the unlayered one is. Written outside the layer
+ * this rule loses to `.fixed` at one class against an id and two, which is
+ * what it did on the first attempt. Inside the same layer the ordinary rules
+ * apply again and specificity decides.
+ */
+@layer utilities {
+  #wconvert-admin table.wp-list-table.fixed {
+    position: static !important;
+  }
+}
+
+/*
+ * **WordPress's controls, wearing WConvert's colours.**
+ *
+ * The builder's four editors still render `.button`, `.button-primary` and
+ * bare inputs, and wp-admin paints those its own blue. Beside a petrol page
+ * header that reads as two products on one screen — the exact seam ADR 0035
+ * refused when it eliminated the hybrid posture.
+ *
+ * This read "the screens #64-#72 have not converted yet" until those tickets
+ * closed. They are converted; the editors inside the builder are the part that
+ * is not, which is the boundary stated above rather than a screen left behind.
+ *
+ * **ADR 0035 carries this now, in its opening paragraph.** It said "no
+ * `.button`" flatly and this file was the only place saying otherwise — the
+ * map-not-territory failure `docs/agents/domain.md` names, and the reason that
+ * rule asks for BOTH directions. #74 amended the ADR inline; this is the
+ * pointer back.
+ *
+ * **This retargets colour and radius, and touches nothing else.** The box
+ * model, the sizes and the focus behaviour are left exactly as WordPress drew
+ * them, because the control that replaces each of these has not been written
+ * yet and a half-restyled button is still a button a merchant can use. That is
+ * the same line the missing element reset above draws, from the other side:
+ * change what a control LOOKS like now, change what it IS when its replacement
+ * lands.
+ *
+ * `#wconvert-admin` rather than `.wconvert-editor` for the id's specificity —
+ * wp-admin spells these `.wp-core-ui .button-primary`, and a tie would be
+ * settled by stylesheet order, which is not a thing to depend on.
+ */
+#wconvert-admin :is(.button, .button-secondary) {
+  border-color: var(--input);
+  border-radius: var(--radius);
+  color: var(--foreground);
+  background: var(--card);
+}
+
+#wconvert-admin :is(.button, .button-secondary):hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--accent);
+}
+
+#wconvert-admin .button-primary {
+  border-color: var(--primary);
+  border-radius: var(--radius);
+  color: var(--primary-foreground);
+  background: var(--primary);
+}
+
+#wconvert-admin .button-primary:hover {
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 90%, black);
+  color: var(--primary-foreground);
+}
+
+#wconvert-admin :is(.button-link, a) {
+  color: var(--primary);
+}
+
+#wconvert-admin :is(.button-link-delete, .button-link.button-link-delete) {
+  color: var(--destructive);
+}
+
+/*
+ * **Text-like inputs are named one by one, and a radio is not among them.**
+ * Applying `border-radius` to `input:not([type="hidden"])` squares the radio
+ * buttons — a control whose whole affordance is that it is round, telling a
+ * merchant at a glance that one of these is exclusive and a checkbox is not.
+ * Retargeting colour must not restate shape, and an attribute list is the only
+ * way to say so that cannot quietly widen.
+ */
+#wconvert-admin
+  :is(
+    input:is(
+        [type="text"],
+        [type="search"],
+        [type="url"],
+        [type="email"],
+        [type="number"],
+        [type="password"],
+        [type="tel"],
+        [type="date"],
+        [type="datetime-local"]
+      ),
+    select,
+    textarea
+  ) {
+  border-color: var(--input);
+  border-radius: var(--radius);
+}
+
+#wconvert-admin :is(input, select, textarea):focus {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 1px var(--ring);
+  outline: 2px solid transparent;
+}
+
+/*
+ * **One height, one alignment, for every control on a row.**
+ *
+ * They were 40px and sitting on three different baselines. wp-admin sizes its
+ * controls with line-height MULTIPLIERS against a 13px base, and preflight's
+ * `font: inherit` hands them the shell's base instead — so every multiplier
+ * resolved against the wrong number and each control arrived at its own
+ * height. Inheriting a font while inheriting somebody else's line-height
+ * arithmetic is the whole bug.
+ *
+ * Stating the height rather than correcting the multipliers, because a row of
+ * controls that share a height and a centre line is the property that actually
+ * matters, and it is one number instead of four.
+ *
+ * `textarea` is deliberately absent — its height is content, not chrome.
+ */
+#wconvert-admin
+  :is(
+    .button,
+    .button-primary,
+    .button-secondary,
+    select,
+    input:is(
+        [type="text"],
+        [type="search"],
+        [type="url"],
+        [type="email"],
+        [type="number"],
+        [type="password"],
+        [type="tel"],
+        [type="date"],
+        [type="datetime-local"]
+      )
+  ) {
+  min-height: var(--control-height);
+  height: var(--control-height);
+  padding-block: 0;
+  line-height: calc(var(--control-height) - 2px);
+  vertical-align: middle;
+  font-size: inherit;
+}
+
+#wconvert-admin .wconvert-editor :is(input[type="radio"], input[type="checkbox"]) {
+  margin-inline-end: 0.375rem;
+}
+
+/*
+ * **A row of controls needs a gap, and a wrapped row needs two.**
+ *
+ * JSX's single space is not a gap — "…share an email or phone" ended flush
+ * against the Export button, so a sentence and a control read as one object.
+ * The first attempt used an adjacent-sibling `margin-inline-start`, which is
+ * correct for a row that fits on one line and wrong the moment it does not:
+ * three row actions in a 266px cell wrapped, and the wrapped one arrived
+ * INDENTED by the gap meant to separate it from the button now above it,
+ * with no vertical space at all — 36px tall boxes stacked at exactly 36px
+ * apart, which reads as an overlap.
+ *
+ * A trailing margin has neither problem: the first control in a row is flush,
+ * every gap is equal, and a wrapped control starts where the row starts. The
+ * block margin is what stops two lines of buttons touching.
+ */
+#wconvert-admin
+  .wconvert-editor
+  :is(
+    label,
+    select,
+    .button,
+    input:is([type="text"], [type="search"], [type="number"], [type="email"], [type="url"])
+  ) {
+  margin-inline-end: 0.625rem;
+}
+
+#wconvert-admin .wconvert-editor .button {
+  margin-block: 0.125rem;
+}
+
+/*
+ * A day count is one to four characters. wp-admin gives a number input the
+ * width of a text field, which reads as an empty box somebody forgot to fill
+ * rather than as a small number.
+ */
+#wconvert-admin input[type="number"] {
+  inline-size: 5rem;
+}
+
+/*
+ * Preflight zeroes the margins the browser gave `<p>`, `<h2>` and `<ul>`, and
+ * these screens were written expecting them. Restoring a rhythm here keeps
+ * them legible for the tickets in between without re-introducing preflight's
+ * opposite anywhere the shell can see.
+ */
+/* ---------------------------------------------------------------------------
+ * THE BUILDER'S EDITORS.
+ *
+ * **This was `.wconvert-editor`, and what it lost is the surface.** That class
+ * drew a card around a screen the shell no longer draws one for; every reading
+ * screen has real regions now, so the card is gone and what is left is the
+ * typographic rhythm the four editors inside the builder were written
+ * expecting — `<p>` margins, heading weights, a gap between controls on a row.
+ *
+ * It is scoped to a region's body rather than to a screen, so an editor sits
+ * inside a real region and does not draw a second card inside it. It is no
+ * longer scaffolding waiting to be deleted: it is what the settings panel, the
+ * rules editor, the targeting picker and the destinations editor are laid out
+ * by until each is rewritten against the component vocabulary.
+ * ------------------------------------------------------------------------- */
+/*
+ * **One body size across the admin.** wp-admin sets `#wpbody-content p` to
+ * 13px, so the un-converted screens rendered two points smaller than the frame
+ * around them — a difference that reads as a rendering fault rather than as a
+ * hierarchy. The class in the selector is what outranks WordPress's id.
+ */
+#wconvert-admin .wconvert-editor :is(p, li, td, th, label, legend, select, input, textarea) {
+  font-size: inherit;
+}
+
+.wconvert-editor :is(p, h2, h3, h4, table, ul, ol) {
+  margin-block: 0.75rem;
+}
+
+.wconvert-editor > :first-child {
+  margin-block-start: 0;
+}
+
+.wconvert-editor > :last-child {
+  margin-block-end: 0;
+}
+
+.wconvert-editor :is(h2, h3, h4) {
+  font-weight: 600;
+}
+
+.wconvert-editor h2 {
+  font-size: 1.3rem;
+}
+
+/*
+ * An `<h3>` inside an editor is a change of subject — "Who sees it" under
+ * "When it shows" — and it arrived with no more weight than the paragraph
+ * above it. A rule and the space around it is what says *this is a different
+ * thing*.
+ */
+.wconvert-editor h3 {
+  font-size: 1rem;
+  letter-spacing: -0.01em;
+}
+
+.wconvert-editor > h3 {
+  margin-block-start: 1.25rem;
+  padding-block-start: 1rem;
+  border-block-start: 1px solid var(--border);
+}
+
+/*
+ * **The first heading divides nothing.** The rule exists to separate one
+ * subject from the one above it, and the first has none — inside a region it
+ * drew a second line a few pixels under the region header's own, which reads as
+ * a rendering fault rather than as a division.
+ */
+.wconvert-editor > h3:first-child {
+  margin-block-start: 0;
+  padding-block-start: 0;
+  border-block-start: 0;
+}
+
+/*
+ * A region already draws a bounded surface, so a list table inside one does not
+ * need a second box — it needs to read as the grid it is.
+ */
+.wconvert-editor table.wp-list-table {
+  border: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/*
+ * Prose lists inside an editor keep their markers; lists of CONTROLS do not.
+ * A checkbox already says "pick some of these", so a disc in front of it is one
+ * marker too many — which is what the destinations picker had, a bullet before
+ * every checkbox.
+ */
+.wconvert-editor :is(ul, ol):not(.wconvert-gallery, .wconvert-rules, .wconvert-choices) {
+  padding-inline-start: 1.5em;
+  list-style: revert;
+}
+
+.wconvert-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 /*
  * The builder is the one screen that is a place rather than a list, so it gets
- * the width the gallery and the live preview need.
+ * the width the gallery and the live preview need. The class is no longer
+ * rendered — the frame's own `max-w-6xl` is the same measure — and it is kept
+ * out of the stylesheet rather than kept as a rule nothing matches.
  */
-.wconvert-builder {
-  max-width: 72rem;
-}
 
 /*
  * The gallery: real designs, drawn by the renderer the loader imports. There
@@ -24,62 +1183,337 @@
   list-style: none;
 }
 
+/*
+ * **The card frames the render rather than padding it.** The preview is a real
+ * design on its own background, so a card that inset it on white produced two
+ * surfaces with a margin between them and no edge saying which was which. The
+ * render runs to the card's edge and the name sits under a rule, which is the
+ * same shape a region has one level up.
+ */
 .wconvert-gallery__card {
-  padding: 1rem;
-  background: #fff;
-  border: 1px solid #dcdcde;
-  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
 }
 
 .wconvert-gallery__card.is-chosen {
-  border-color: #2271b1;
-  box-shadow: 0 0 0 1px #2271b1;
-}
-
-.wconvert-gallery__chosen {
-  font-weight: 600;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary);
 }
 
 /*
  * A card is a real render at real width, so it is scaled rather than reflowed:
  * reflowing would show the merchant a layout no visitor gets, which is the one
  * thing a live-rendered gallery exists to avoid.
+ *
+ * It sits on `--surface` so a design with a light background still reads as a
+ * picture of something rather than as part of the card holding it.
  */
 .wconvert-gallery .wconvert-preview {
   transform: scale(0.55);
   transform-origin: top left;
   block-size: 12rem;
-  inline-size: 182%;
+  /* Exactly the scale's reciprocal: 182% overshot the card by a tenth of a
+   * percent and left a hairline of card showing down the right edge. */
+  inline-size: calc(100% / 0.55);
   overflow: hidden;
   pointer-events: none;
+  background: var(--surface);
 }
 
-.wconvert-panel {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2rem;
+/* ---------------------------------------------------------------------------
+ * THE BUILDER: TABS BESIDE A PINNED PREVIEW.
+ *
+ * **The preview used to live inside the settings panel**, which meant a
+ * merchant editing a Trigger saw no preview at all — they were changing an
+ * Optin with the picture of it on another tab. It is the SCREEN's now, in a
+ * column of its own beside all four tabs.
+ *
+ * One column below 1024px, because the second one has nowhere to go: the
+ * builder's own floor is 782px (ADR 0038), and between the two a 22rem aside
+ * would squeeze the controls narrower than the fields inside them.
+ * ------------------------------------------------------------------------- */
+.wconvert-builder {
+  display: grid;
+  gap: 1.5rem;
   align-items: start;
 }
 
-/* The preview follows the controls down a long panel. */
-.wconvert-panel__preview {
-  position: sticky;
-  inset-block-start: 4rem;
-  flex: 1 1 22rem;
+@media (min-width: 1024px) {
+  .wconvert-builder {
+    grid-template-columns: minmax(0, 1fr) 24rem;
+  }
+}
+
+/*
+ * **Wider once there is room, because the device toggle needs it to mean
+ * anything.** Every shipped design asks for `--wc-width: 28rem` and `.wc-root`
+ * takes `min(that, 100%)` — so in a column narrower than 28rem the desktop
+ * preview is ALREADY narrower than a phone, and switching to Mobile changes
+ * nothing a merchant can see. At 29rem the stage holds the design at its own
+ * measure and 375px is visibly narrower than it.
+ */
+@media (min-width: 1280px) {
+  .wconvert-builder {
+    grid-template-columns: minmax(0, 1fr) 29rem;
+  }
+}
+
+.wconvert-builder__tabs {
   min-inline-size: 0;
 }
 
-.wconvert-panel__controls {
-  flex: 1 1 22rem;
+/*
+ * It follows the tabs down. `4rem` clears wp-admin's own sticky toolbar, which
+ * is the one piece of chrome ADR 0035 deliberately leaves in place.
+ */
+.wconvert-builder__preview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
   min-inline-size: 0;
 }
 
-.wconvert-slot,
-.wconvert-slot__link {
+@media (min-width: 1024px) {
+  .wconvert-builder__preview {
+    position: sticky;
+    inset-block-start: 4rem;
+  }
+}
+
+/*
+ * The stage the design stands on. `--surface` rather than the card colour, so
+ * a design with a white background still reads as a picture of something
+ * rather than as part of the page holding it — the same argument the gallery
+ * card makes.
+ */
+.wconvert-builder__stage {
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: auto;
+}
+
+/*
+ * **The stage is the width the design is being judged at**, handed down as a
+ * custom property rather than spelled here: on Desktop it is the design's OWN
+ * `width` token, and on Mobile it is a phone. `.wc-root` takes
+ * `min(--wc-width, 100%)` of whatever contains it, so this is the `100%` — and
+ * a stage that just filled the column left the popup hard against its leading
+ * edge, reading as a broken float rather than as a popup.
+ */
+.wconvert-builder__stage > .wconvert-preview {
+  inline-size: var(--wconvert-stage, 100%);
+  max-inline-size: 100%;
+}
+
+/*
+ * **Mobile is a WIDTH, not a scale.** The renderer draws at real size, so
+ * constraining the stage is what makes a headline wrap where it would wrap on
+ * a phone. Scaling it down would show the merchant a layout no visitor gets —
+ * which is the one thing a live-rendered preview exists to avoid. Which width
+ * is the component's, above.
+ */
+
+/* ---------------------------------------------------------------------------
+ * THE THEME PANEL: PRESETS FIRST, RAW TOKENS BEHIND A DISCLOSURE (#71).
+ * ------------------------------------------------------------------------- */
+.wconvert-themes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: 0.5rem;
+  margin-block: 0.75rem;
+}
+
+.wconvert-theme {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-weight: 500;
+  text-align: start;
+}
+
+.wconvert-theme:hover {
+  border-color: var(--ring);
+}
+
+/*
+ * The applied one is stated rather than merely darker: `aria-pressed` is what
+ * a screen reader reads, and the ring is the same one every selected thing in
+ * this admin wears.
+ */
+.wconvert-theme[aria-pressed="true"] {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary);
+}
+
+.wconvert-theme__swatches {
+  display: inline-flex;
+}
+
+.wconvert-theme__swatch {
+  inline-size: 0.875rem;
+  block-size: 0.875rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+
+.wconvert-theme__swatch + .wconvert-theme__swatch {
+  margin-inline-start: -0.3125rem;
+}
+
+.wconvert-themes__theme {
+  margin-block: 0.75rem;
+}
+
+/*
+ * **Every raw token lives here, once.** Duplicating the "important" colours
+ * above the disclosure would give one token two controls a merchant can watch
+ * disagree with itself; presets are what carries the median case (#71).
+ */
+.wconvert-advanced {
+  margin-block-start: 1rem;
+  padding-block-start: 0.75rem;
+  border-block-start: 1px solid var(--border);
+}
+
+.wconvert-advanced > summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.wconvert-token--colour {
+  align-items: start;
+}
+
+.wconvert-token__name {
+  color: var(--muted-foreground);
+}
+
+.wconvert-swatch {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  inline-size: 100%;
+  block-size: var(--control-height);
+  padding-inline: 0.5rem;
+  background: var(--card);
+  border: 1px solid var(--input);
+  border-radius: var(--radius);
+  color: var(--foreground);
+  font-variant-numeric: tabular-nums;
+  text-align: start;
+}
+
+.wconvert-swatch:hover {
+  border-color: var(--ring);
+}
+
+/*
+ * A chequerboard behind the chip, so a translucent backdrop reads as
+ * translucent rather than as a lighter flat colour. Two gradients rather than
+ * an image: there is nothing to request.
+ */
+.wconvert-swatch__chip {
+  flex: none;
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 0.25rem;
+  background-color: transparent;
+  background-image: linear-gradient(45deg, var(--border) 25%, transparent 25%, transparent 75%, var(--border) 75%),
+    linear-gradient(45deg, var(--border) 25%, transparent 25%, transparent 75%, var(--border) 75%);
+  background-size: 0.5rem 0.5rem;
+  background-position: 0 0, 0.25rem 0.25rem;
+  box-shadow: inset 0 0 0 999px var(--wconvert-chip, transparent);
+}
+
+.wconvert-swatch__value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wconvert-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.wconvert-picker .react-colorful {
+  inline-size: 100%;
+}
+
+/*
+ * **The hex box has to draw its own border, because it is in a portal.** The
+ * popover renders into `document.body`, outside `#wconvert-admin` — so the
+ * input styling scoped to that id never reaches it, preflight has already
+ * zeroed the browser's own, and what a merchant saw was the hex value sitting
+ * as plain text where a field should be. Found in a browser, which is the only
+ * place this class of fault is visible at all (see THE PORTAL ROOTS above).
+ */
+.wconvert-picker input[type="text"] {
+  inline-size: 100%;
+  block-size: var(--control-height);
+  margin: 0;
+  padding-inline: 0.5rem;
+  background: var(--card);
+  border: 1px solid var(--input);
+  border-radius: var(--radius);
+  color: var(--foreground);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.875rem;
+}
+
+.wconvert-picker input[type="text"]:focus {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 1px var(--ring);
+  outline: none;
+}
+
+.wconvert-picker label {
+  display: grid;
+  gap: 0.25rem;
+  color: var(--muted-foreground);
+}
+
+.wconvert-slot {
   margin-block-end: 1rem;
   padding: 0.75rem;
-  border: 1px solid #dcdcde;
-  border-radius: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+/*
+ * The block that edits the slot the preview is outlining. The SAME ring on
+ * both sides of the boundary is the whole affordance: one thing is selected
+ * and it is legible in two places at once (ADR 0040).
+ */
+.wconvert-slot[data-selected="true"] {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 1px var(--ring);
+}
+
+/*
+ * **The link is a part of the slot above it, not a second slot.** It was the
+ * same bordered box nested inside the slot's own, which drew boxes inside boxes
+ * three deep on a design with a fine-print link. A rule down its leading edge
+ * says "this belongs to that" with one line instead of four.
+ */
+.wconvert-slot__link {
+  margin-block: 0.75rem 0;
+  padding-inline-start: 0.75rem;
+  border-inline-start: 2px solid var(--border);
 }
 
 .wconvert-slot legend,
@@ -87,10 +1521,28 @@
   font-weight: 600;
 }
 
+/*
+ * **A field is its label above its control, at one width.**
+ *
+ * These were inline labels followed by a control, and wp-admin sizes a control
+ * from its own class — so the token list came out as a staircase: "Background"
+ * then a wide box, "Text" then a narrower one, thirteen rows each starting at a
+ * different x. A column of settings is read down its left edge, and there was
+ * no left edge to read.
+ */
 .wconvert-slot__key,
 .wconvert-token {
-  display: block;
+  display: grid;
+  gap: 0.25rem;
   margin-block-start: 0.5rem;
+  color: var(--muted-foreground);
+}
+
+.wconvert-slot__key > :is(input, select, textarea),
+.wconvert-token > :is(input, select, textarea) {
+  inline-size: 100%;
+  margin-inline-end: 0;
+  color: var(--foreground);
 }
 
 .wconvert-slot__shown {
@@ -107,9 +1559,9 @@
 .wconvert-rule {
   margin-block-end: 0.5rem;
   padding: 0.5rem 0.75rem;
-  background: #fff;
-  border: 1px solid #dcdcde;
-  border-radius: 4px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
 }
 
 .wconvert-param {
@@ -123,7 +1575,7 @@
  * read as a label.
  */
 .wconvert-param__name {
-  color: #1d2327;
+  color: var(--foreground);
 }
 
 /*
@@ -134,13 +1586,67 @@
  */
 .wconvert-rule__note {
   margin: 0.5rem 0 0;
-  color: #646970;
+  color: var(--muted-foreground);
   font-style: italic;
 }
 
 .wconvert-rules__empty,
 .wconvert-templates__empty {
-  color: #646970;
+  color: var(--muted-foreground);
+}
+
+/* ---------------------------------------------------------------------------
+ * LOCKED RULE TYPES, AS CARDS FROM THE MANIFEST (#72, ADR 0015).
+ *
+ * They were a comma list appended to the sentence holding the add control —
+ * three distinct capabilities read as a run-on. A card each is what ADR 0015
+ * specified, and it is metadata rather than a disabled control: the premium
+ * code is genuinely not in this bundle, so there is nothing here to disable.
+ * ------------------------------------------------------------------------- */
+.wconvert-locked {
+  margin-block: 0.75rem;
+}
+
+.wconvert-locked__heading {
+  margin: 0 0 0.5rem;
+  color: var(--muted-foreground);
+  font-weight: 600;
+}
+
+.wconvert-locked__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/*
+ * Quiet on purpose: it names something absent, and a card that competes with
+ * the controls beside it would read as one of them.
+ */
+.wconvert-locked__card {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  color: var(--muted-foreground);
+}
+
+.wconvert-locked__icon {
+  flex: none;
+  inline-size: 0.875rem;
+  block-size: 0.875rem;
+}
+
+.wconvert-locked__label {
+  color: var(--foreground);
+  font-weight: 500;
 }
 
 .wconvert-option-set {
