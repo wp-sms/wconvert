@@ -194,6 +194,7 @@ function GoalPicker({
               return (
                 <ChoiceCard
                   key={goal.id}
+                  id={goal.id}
                   title={goal.label}
                   notes={goal.description}
                   badge={
@@ -201,14 +202,16 @@ function GoalPicker({
                       <Badge variant="warning">{__('Pro', 'wconvert')}</Badge>
                     ) : undefined
                   }
-                  action={
+                  action={(describedBy) =>
                     rendering === 'upsell' ? (
                       // Bundled copy, never fetched (ADR 0015).
                       <span className="text-muted-foreground">
                         {__('Available with WConvert Pro.', 'wconvert')}
                       </span>
                     ) : (
-                      <Button onClick={() => onChoose(goal)}>{__('Choose', 'wconvert')}</Button>
+                      <Button aria-describedby={describedBy} onClick={() => onChoose(goal)}>
+                        {__('Choose', 'wconvert')}
+                      </Button>
                     )
                   }
                 />
@@ -282,13 +285,14 @@ function PlaybookGallery({
             {entries.map((playbook) => (
               <ChoiceCard
                 key={playbook.id}
+                id={playbook.id}
                 title={playbook.name}
                 notes={playbook.notes}
-                action={
-                  <Button onClick={() => onStart(playbook.id)}>
+                action={(describedBy) => (
+                  <Button aria-describedby={describedBy} onClick={() => onStart(playbook.id)}>
                     {__('Use this Playbook', 'wconvert')}
                   </Button>
-                }
+                )}
               />
             ))}
           </ChoiceGrid>
@@ -440,33 +444,56 @@ function StepFooter({
  */
 function ChoiceGrid({ children }: { children: React.ReactNode }) {
   return (
-    <ul className="m-0 grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-[repeat(auto-fit,minmax(16rem,1fr))]">
+    /*
+      `auto-fill` rather than `auto-fit`, and the difference shows on a Goal
+      with exactly one Playbook: `auto-fit` collapses the empty tracks and
+      stretches the single card to the full region, so its notes ran at a
+      thousand-pixel measure. `auto-fill` keeps the tracks, so one card is the
+      same card as one of four.
+    */
+    <ul className="m-0 grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-[repeat(auto-fill,minmax(16rem,1fr))]">
       {children}
     </ul>
   );
 }
 
 function ChoiceCard({
+  id,
   title,
   notes,
   badge,
   action,
 }: {
+  id: string;
   title: string;
   notes: string;
   badge?: React.ReactNode;
-  action: React.ReactNode;
+  action: (describedBy: string) => React.ReactNode;
 }) {
+  const titleId = `wconvert-choice-${id}`;
+
   return (
     <li className="flex flex-col gap-2 rounded-md border border-border bg-card p-4">
       <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
-        <h3 className="m-0 text-base font-semibold leading-tight tracking-tight text-foreground">
+        <h3
+          id={titleId}
+          className="m-0 text-base font-semibold leading-tight tracking-tight text-foreground"
+        >
           {title}
         </h3>
         {badge}
       </div>
       <p className="m-0 flex-1 text-pretty text-muted-foreground">{notes}</p>
-      <div className="mt-1">{action}</div>
+      {/*
+        **Four buttons all called "Choose" is four buttons a keyboard user
+        cannot tell apart.** The visible label stays short because the card it
+        sits in is what it refers to; `aria-describedby` is what carries that
+        fact into the accessibility tree, so the button announces as "Choose,
+        Grow my email list" without the card growing a longer label. ADR 0038
+        sets AA as the bar, and this is the shape the ARIA practices give for a
+        list of cards with one action each.
+      */}
+      <div className="mt-1">{action(titleId)}</div>
     </li>
   );
 }

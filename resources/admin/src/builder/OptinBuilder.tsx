@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { __ } from '@wordpress/i18n';
 import { ArrowLeft, Check } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Skeleton } from '../components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import { Region, RegionBody, RegionError, RegionErrorState, RegionHeader } from '../shell/Region';
+import { PageAction } from '../shell/PageActions';
+import { Region, RegionBody, RegionError, RegionErrorState } from '../shell/Region';
 import { messageOf } from '../shell/loadable';
 import { Gallery } from './Gallery';
 import { DestinationsEditor } from './DestinationsEditor';
@@ -131,30 +132,34 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
 
   if (fatal !== null) {
     return (
-      <>
-        <BackLink onClose={onClose} />
+      <div className="flex flex-col gap-4">
+        <BuilderBand>
+          <BackLink onClose={onClose} />
+        </BuilderBand>
         <Region label={__('Optin builder', 'wconvert')}>
           <RegionErrorState
             message={fatal}
             hint={__('Reload the page to try again.', 'wconvert')}
           />
         </Region>
-      </>
+      </div>
     );
   }
 
   if (config === null || vocabulary === null || gallery === null) {
     return (
-      <>
-        <BackLink onClose={onClose} />
+      <div className="flex flex-col gap-4">
+        <BuilderBand>
+          <BackLink onClose={onClose} />
+          <Skeleton className="mt-3 h-9 w-72 max-w-full" />
+        </BuilderBand>
         <Region label={__('Optin builder', 'wconvert')}>
           <RegionBody className="flex flex-col gap-4">
-            <Skeleton className="h-8 w-72 max-w-full" />
             <Skeleton className="h-4 w-full max-w-md" />
             <Skeleton className="h-48 w-full" />
           </RegionBody>
         </Region>
-      </>
+      </div>
     );
   }
 
@@ -163,52 +168,66 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
 
   return (
     <div className="flex flex-col gap-4">
-      <BackLink onClose={onClose} />
-
       {/*
-        The Optin's own header. The builder is the one screen the frame draws no
-        page header for — it replaces even the section nav (#62) — so it draws
-        its own, to the same anatomy: what this is, and what acts on all of it.
+        **The same band every other screen has.** The frame draws a page header
+        for a section and the builder has none — it replaces even the section
+        nav (#62) — so it draws its own, in the same place, on the same surface,
+        with the same rule under it. The negative margins take it full-bleed out
+        of `<main>`'s measure, which is what makes it read as the frame's band
+        rather than as the first card on the page.
       */}
-      <div className="wconvert-page-actions flex flex-wrap items-center gap-x-3 gap-y-2">
-        <label htmlFor="wconvert-optin-name" className="sr-only">
-          {__('Name', 'wconvert')}
-        </label>
+      <BuilderBand>
+        <BackLink onClose={onClose} />
+
+        {/*
+          **A page needs a heading, and an `<input>` is not one.** The name is
+          editable in place, which is right for the title of a thing you are
+          building — but it left the document with no `h1` at all, on the one
+          screen a merchant spends real time in. The visible title stays the
+          field; the heading says the same words to anything reading structure.
+        */}
+        <h1 className="sr-only">{name === '' ? __('Untitled Optin', 'wconvert') : name}</h1>
+
+        <div className="wconvert-page-actions mt-2 flex flex-wrap items-center gap-x-3 gap-y-2">
+          <label htmlFor="wconvert-optin-name" className="sr-only">
+            {__('Name', 'wconvert')}
+          </label>
         {/*
           The name IS the title, so it is edited where the title stands rather
           than in a field labelled "Name" above the design. Borderless until it
           is focused, which is what says "this text is editable" without
           drawing a form on a screen that is not one.
         */}
-        <input
-          id="wconvert-optin-name"
-          type="text"
-          value={name}
-          placeholder={__('Untitled Optin', 'wconvert')}
-          onChange={(event) => {
-            setName(event.target.value);
-            setSaved(false);
-          }}
-          className="min-w-0 flex-1 rounded-md border border-transparent bg-transparent px-2 py-1 text-2xl font-semibold leading-tight tracking-tight text-foreground hover:border-border focus:border-ring focus:bg-card focus:outline-none"
-        />
+          <input
+            id="wconvert-optin-name"
+            type="text"
+            value={name}
+            placeholder={__('Untitled Optin', 'wconvert')}
+            onChange={(event) => {
+              setName(event.target.value);
+              setSaved(false);
+            }}
+            className="min-w-0 flex-1 rounded-md border border-transparent bg-transparent px-2 py-1 text-2xl font-semibold leading-tight tracking-tight text-foreground hover:border-border focus:border-ring focus:bg-background focus:outline-none"
+          />
 
-        <Button disabled={busy} onClick={() => void save()}>
-          {__('Save changes', 'wconvert')}
-        </Button>
+          <Button disabled={busy} onClick={() => void save()}>
+            {__('Save changes', 'wconvert')}
+          </Button>
 
-        {/*
-          **"Saved" says where publishing happens.** Editing is not publishing —
-          `config` is the draft and `published_config` is what the site serves —
-          and a merchant who saved and saw nothing go live needs that sentence
-          here rather than in a support reply.
-        */}
-        {saved && (
-          <span className="flex items-center gap-1.5 text-muted-foreground">
-            <Check aria-hidden="true" className="size-4 text-success" />
-            {__('Saved. Publish it from the list when it is ready.', 'wconvert')}
-          </span>
-        )}
-      </div>
+          {/*
+            **"Saved" says where publishing happens.** Editing is not publishing
+            — `config` is the draft and `published_config` is what the site
+            serves — and a merchant who saved and saw nothing go live needs that
+            sentence here rather than in a support reply.
+          */}
+          {saved && (
+            <span className="flex items-center gap-1.5 text-muted-foreground">
+              <Check aria-hidden="true" className="size-4 text-success" />
+              {__('Saved. Publish it from the list when it is ready.', 'wconvert')}
+            </span>
+          )}
+        </div>
+      </BuilderBand>
 
       <Tabs value={tab} onValueChange={(value) => setTab(value as TabId)}>
         <TabsList className="mb-4">
@@ -226,15 +245,11 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
         )}
 
         <TabsContent value="design">
-          <Region>
-            <RegionHeader
-              title={__('The design', 'wconvert')}
-              description={__(
-                'Picking one saves straight away, and carries your words across.',
-                'wconvert',
-              )}
-            />
-            <RegionBody>
+          <Region label={__('The design', 'wconvert')}>
+            <RegionBody className="flex flex-col gap-4">
+              <TabNote>
+                {__('Picking one saves straight away, and carries your words across.', 'wconvert')}
+              </TabNote>
               <Gallery
                 templates={gallery.templates}
                 displayType={displayTypeOf(config, gallery.templates)}
@@ -247,11 +262,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
         </TabsContent>
 
         <TabsContent value="content">
-          <Region>
-            <RegionHeader
-              title={__('What it says', 'wconvert')}
-              description={__('The preview is the real design, drawn the way a visitor gets it.', 'wconvert')}
-            />
+          <Region label={__('What it says', 'wconvert')}>
             {template === undefined ? (
               <RegionBody className="text-muted-foreground">
                 {__('Choose a design first — the Design tab is where the library is.', 'wconvert')}
@@ -271,11 +282,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
         </TabsContent>
 
         <TabsContent value="rules">
-          <Region>
-            <RegionHeader
-              title={__('When it shows, and who sees it', 'wconvert')}
-              description={__('Both lists are read in the visitor’s browser.', 'wconvert')}
-            />
+          <Region label={__('Rules', 'wconvert')}>
             <RegionBody className="wconvert-editor">
               <RulesEditor
                 triggers={vocabulary.triggers}
@@ -288,11 +295,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
         </TabsContent>
 
         <TabsContent value="pages">
-          <Region>
-            <RegionHeader
-              title={__('Where it shows', 'wconvert')}
-              description={__('Which pages of this site carry it. Decided on the server.', 'wconvert')}
-            />
+          <Region label={__('Where it shows', 'wconvert')}>
             <RegionBody className="wconvert-editor">
               <TargetingEditor
                 types={vocabulary.targeting}
@@ -304,14 +307,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
         </TabsContent>
 
         <TabsContent value="destinations">
-          <Region>
-            <RegionHeader
-              title={__('Destinations', 'wconvert')}
-              description={__(
-                'Where a capture is sent on to. The Lead log is not one — it is written first and always.',
-                'wconvert',
-              )}
-            />
+          <Region label={__('Destinations', 'wconvert')}>
             <RegionBody className="wconvert-editor">
               <DestinationsEditor
                 bound={Array.isArray(config.destinations) ? (config.destinations as string[]) : []}
@@ -324,6 +320,38 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
       </Tabs>
     </div>
   );
+}
+
+/**
+ * **The frame's own header band, filled by the builder.**
+ *
+ * The builder has no `section`, so the frame draws it no title — but it does
+ * have a title of its own and an action that acts on the whole Optin, and those
+ * belong in the same band on the same surface as every other screen's. Drawing
+ * a lookalike inside `<main>` got the surface right and the width wrong: `main`
+ * is a centred `max-w-6xl`, so the rule under the band stopped short of the
+ * screen while every other screen's ran edge to edge. `Shell`'s `bareHeader`
+ * renders the real band and {@see PageAction} puts this inside it.
+ *
+ * All three arms of the builder use it, so a slow load does not draw a header
+ * that then moves when the real one replaces it.
+ */
+function BuilderBand({ children }: { children: ReactNode }) {
+  return <PageAction>{children}</PageAction>;
+}
+
+/**
+ * A sentence a tab needs before its editor starts.
+ *
+ * **The tab regions have no `RegionHeader`, and that is the fix for a heading
+ * printed three times.** "Where it shows" was the tab's label, then the
+ * region's title, then the editor's own `<h3>` — three lines of the same words
+ * before a single control. A tab strip already names what is under it, so the
+ * region takes its name as an `aria-label` and the visible naming is left to
+ * the one place that was always going to say it.
+ */
+function TabNote({ children }: { children: ReactNode }) {
+  return <p className="m-0 text-pretty text-muted-foreground">{children}</p>;
 }
 
 /**

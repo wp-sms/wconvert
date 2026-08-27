@@ -54,7 +54,7 @@ export function DestinationsEditor({ bound, onChange, onError }: DestinationsEdi
           )}
         </p>
       ) : (
-        <ul>
+        <ul className="wconvert-choices">
           {available.map((destination) => (
             <li key={destination.id}>
               <label>

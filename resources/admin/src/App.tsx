@@ -127,7 +127,7 @@ function BuilderScreen({ id, onClose }: { id: string; onClose: () => void }) {
   }
 
   return (
-    <Shell>
+    <Shell bareHeader>
       <OptinBuilder id={id} onClose={onClose} />
     </Shell>
   );

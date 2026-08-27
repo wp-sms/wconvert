@@ -52,10 +52,24 @@ import { PageActionSlotProvider } from './PageActions';
 export function Shell({
   section,
   actions,
+  bareHeader = false,
   children,
 }: {
   section?: SectionId;
   actions?: ReactNode;
+  /**
+   * Draw the header band with nothing in it but the slot.
+   *
+   * **This is how the builder gets the same band as every other screen.** It
+   * has no `section` — it replaces even the nav (#62) — so it has no title for
+   * the frame to draw, but it does have a title of its own and an action that
+   * acts on the whole Optin. Reproducing the band inside `<main>` got the
+   * surface right and the WIDTH wrong: `main` is `max-w-6xl` and centred, so a
+   * band drawn inside it stops where the measure does, and the rule under it
+   * stopped a hundred pixels short of the screen. The band belongs to the
+   * frame, so the frame draws it.
+   */
+  bareHeader?: boolean;
   children: ReactNode;
 }) {
   /*
@@ -65,10 +79,8 @@ export function Shell({
    * null, which is exactly the two events {@see PageAction} cares about.
    */
   const [target, setTarget] = useState<HTMLElement | null>(null);
-  const slot = useMemo(
-    () => ({ present: section !== undefined, target }),
-    [section, target],
-  );
+  const banded = section !== undefined || bareHeader;
+  const slot = useMemo(() => ({ present: banded, target }), [banded, target]);
 
   return (
     <PageActionSlotProvider value={slot}>
@@ -80,10 +92,14 @@ export function Shell({
           </div>
         </div>
 
-        {section !== undefined && (
+        {banded && (
           <div className="border-b border-border bg-card">
             <div className="mx-auto w-full max-w-6xl px-4 py-4 sm:px-6">
-              <PageHeader section={section} actions={actions} actionSlot={setTarget} />
+              {section === undefined ? (
+                <div ref={setTarget} />
+              ) : (
+                <PageHeader section={section} actions={actions} actionSlot={setTarget} />
+              )}
             </div>
           </div>
         )}

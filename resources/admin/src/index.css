@@ -1118,9 +1118,24 @@
   font-variant-numeric: tabular-nums;
 }
 
-.wconvert-editor :is(ul, ol):not(.wconvert-gallery, .wconvert-rules) {
+/*
+ * Prose lists inside an editor keep their markers; lists of CONTROLS do not.
+ * A checkbox already says "pick some of these", so a disc in front of it is one
+ * marker too many — which is what the destinations picker had, a bullet before
+ * every checkbox.
+ */
+.wconvert-editor :is(ul, ol):not(.wconvert-gallery, .wconvert-rules, .wconvert-choices) {
   padding-inline-start: 1.5em;
   list-style: revert;
+}
+
+.wconvert-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 /*

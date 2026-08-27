@@ -68,14 +68,20 @@ export function Gallery({ templates, displayType, chosen, busy, onChoose }: Gall
             <Preview template={template} />
 
             {/*
-              `nowrap` and a truncating name: with wrapping, a card whose name
-              happened to be one word longer put its button on a second line and
-              stood taller than the card beside it. A gallery is read by
-              comparing designs, and a row of cards that are not the same shape
-              is a row that compares badly.
+              **The name is on its own line and the action under it**, which is
+              the only arrangement that is the same on every card. Side by side,
+              a name one word longer either wrapped the button onto a second
+              line — leaving that card taller than the one beside it — or, once
+              wrapping was off, truncated a name as short as "Stacked signup".
+              A gallery is read by comparing designs, and cards that are not the
+              same shape compare badly.
+
+              `aria-describedby` is what tells three identically labelled "Use
+              this design" buttons apart in the accessibility tree, without
+              putting the design's name on every button face.
             */}
-            <div className="flex flex-nowrap items-center justify-between gap-x-3 border-t border-border px-3 py-2.5">
-              <span className="min-w-0 truncate font-medium text-foreground" title={template.name}>
+            <div className="flex flex-col items-start gap-2 border-t border-border px-3 py-2.5">
+              <span id={`wconvert-design-${template.id}`} className="font-medium text-foreground">
                 {template.name}
               </span>
               {inUse ? (
@@ -84,6 +90,7 @@ export function Gallery({ templates, displayType, chosen, busy, onChoose }: Gall
                 <Button
                   variant="outline"
                   size="sm"
+                  aria-describedby={`wconvert-design-${template.id}`}
                   disabled={busy}
                   onClick={() => onChoose(template.id)}
                 >
