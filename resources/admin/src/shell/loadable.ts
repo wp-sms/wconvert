@@ -36,7 +36,10 @@ export const ready = <T>(data: T): Loadable<T> => ({ status: 'ready', data });
  * same two lines every time. It lives here because the alternative is a fifth
  * copy that says `String(cause)` for an `Error` and prints `[object Object]`.
  */
+export const messageOf = (cause: unknown): string =>
+  cause instanceof Error ? cause.message : String(cause);
+
 export const failed = (cause: unknown): Loadable<never> => ({
   status: 'failed',
-  message: cause instanceof Error ? cause.message : String(cause),
+  message: messageOf(cause),
 });

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { __ } from '@wordpress/i18n';
 import { ArrowLeft, Plus } from 'lucide-react';
 import { OptinBuilder } from './builder/OptinBuilder';
@@ -75,20 +75,47 @@ export function App() {
 
   return (
     <Shell section={section} actions={section === 'optins' && !creating ? createButton : undefined}>
-      <div className="wconvert-legacy">
-        {section === 'optins' && (
-          <OptinsSection
-            creating={creating}
-            onCancelCreate={() => setCreating(false)}
-            onEdit={setEditing}
-          />
-        )}
-        {section === 'analytics' && <Dashboard />}
-        {section === 'leads' && <LeadLog />}
-        {section === 'destinations' && <Destinations />}
-      </div>
+      {section === 'optins' && (
+        <OptinsSection
+          creating={creating}
+          onCreate={() => setCreating(true)}
+          onCancelCreate={() => setCreating(false)}
+          onEdit={setEditing}
+        />
+      )}
+      {section === 'analytics' && (
+        <Legacy>
+          <Dashboard />
+        </Legacy>
+      )}
+      {section === 'leads' && <LeadLog />}
+      {section === 'destinations' && (
+        <Legacy>
+          <Destinations />
+        </Legacy>
+      )}
     </Shell>
   );
+}
+
+/**
+ * The surface an un-converted screen still needs.
+ *
+ * The shell draws none — every region owns its own edges as of ADR 0039 — so a
+ * screen that has not been converted yet would render straight onto the page
+ * background with no edge at all. This gives it one card until the ticket that
+ * converts it gives it real ones, and it takes the spacing rhythm in
+ * `index.css` with it.
+ *
+ * **It wraps the un-converted screens and nothing else**, which used to be
+ * "everything". A converted screen inside it gets a card inside a card, and
+ * the legacy rhythm rules — the `<p>` margins, the `<h3>` divider, the trailing
+ * control margins — fight a layout that has already decided all three. It
+ * leaves with #65, #67 and #68; when it does, so does everything under
+ * SCAFFOLDING in `index.css`.
+ */
+function Legacy({ children }: { children: ReactNode }) {
+  return <div className="wconvert-legacy">{children}</div>;
 }
 
 /**
@@ -129,9 +156,9 @@ function BuilderScreen({ id, onClose }: { id: string; onClose: () => void }) {
 
   return (
     <Shell>
-      <div className="wconvert-legacy">
+      <Legacy>
         <OptinBuilder id={id} onClose={onClose} />
-      </div>
+      </Legacy>
     </Shell>
   );
 }
@@ -151,29 +178,44 @@ function BuilderScreen({ id, onClose }: { id: string; onClose: () => void }) {
  */
 function OptinsSection({
   creating,
+  onCreate,
   onCancelCreate,
   onEdit,
 }: {
   creating: boolean;
+  onCreate: () => void;
   onCancelCreate: () => void;
   onEdit: (id: string) => void;
 }) {
   if (creating) {
     return (
       <>
+        {/*
+          Outside {@see Legacy}, because the way out of the flow is the page's
+          and not the flow's. Inside the wrapper it sat within the card it is
+          meant to be above.
+        */}
         <Button variant="ghost" size="sm" className="mb-4 -ms-3" onClick={onCancelCreate}>
           <ArrowLeft aria-hidden="true" />
           {__('All Optins', 'wconvert')}
         </Button>
-        <GoalScreen
-          onCreated={(id) => {
-            onCancelCreate();
-            onEdit(id);
-          }}
-        />
+        <Legacy>
+          <GoalScreen
+            onCreated={(id) => {
+              onCancelCreate();
+              onEdit(id);
+            }}
+          />
+        </Legacy>
       </>
     );
   }
 
-  return <OptinList onEdit={onEdit} />;
+  /*
+   * `onCreate` is the SAME door the page header opens, handed down so the
+   * empty state can carry it. An empty screen whose only way forward is a
+   * button in a band the merchant has already read past is an empty screen
+   * with a dead end in it (ADR 0039).
+   */
+  return <OptinList onEdit={onEdit} onCreate={onCreate} />;
 }

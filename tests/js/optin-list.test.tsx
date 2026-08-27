@@ -73,6 +73,12 @@ describe('a row', () => {
   /**
    * The registry is a nicety on this screen. Losing it must not cost the
    * merchant the publish and delete buttons beside it.
+   *
+   * **Delete is behind the row's overflow menu as of ADR 0039** — a destructive
+   * action may not sit adjacent to the safe action it could be mistaken for,
+   * and *Unpublish* and *Delete* were two same-sized buttons side by side. So
+   * this asserts the menu that holds it rather than the button, which is the
+   * same claim about the same row: the actions are still there.
    */
   it('still lists and still acts when the registry cannot be read', async () => {
     goals.listGoals.mockRejectedValue(new Error('nope'));
@@ -80,7 +86,9 @@ describe('a row', () => {
     render(<OptinList onEdit={() => undefined} />);
 
     expect(await screen.findByText('Welcome discount')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Delete' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'More actions for Welcome discount' }),
+    ).toBeInTheDocument();
     expect(screen.queryByText('nope')).toBeNull();
   });
 });
@@ -123,12 +131,20 @@ describe('a suspended row', () => {
     expect(screen.queryByRole('button', { name: 'Publish' })).toBeNull();
   });
 
-  /** And a running Optin says nothing of the sort. */
+  /**
+   * And a running Optin says nothing of the sort.
+   *
+   * **`Published`, not `published`, as of ADR 0039.** The lower-case word was
+   * the machine token `statusOf` returns — a value this bundle computes, never
+   * a string anybody wrote, and therefore untranslated in every locale. The
+   * state is still what is asserted; the screen now says it in the merchant's
+   * language.
+   */
   it('is not what an ordinary published row says', async () => {
     optins.listOptins.mockResolvedValue([{ ...SUSPENDED, suspended: null }]);
 
     render(<OptinList onEdit={() => undefined} />);
 
-    expect(await screen.findByText('published')).toBeInTheDocument();
+    expect(await screen.findByText('Published')).toBeInTheDocument();
   });
 });
