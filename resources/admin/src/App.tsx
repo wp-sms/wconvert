@@ -83,17 +83,9 @@ export function App() {
           onEdit={setEditing}
         />
       )}
-      {section === 'analytics' && (
-        <Legacy>
-          <Dashboard />
-        </Legacy>
-      )}
+      {section === 'analytics' && <Dashboard />}
       {section === 'leads' && <LeadLog />}
-      {section === 'destinations' && (
-        <Legacy>
-          <Destinations />
-        </Legacy>
-      )}
+      {section === 'destinations' && <Destinations />}
     </Shell>
   );
 }
@@ -110,8 +102,11 @@ export function App() {
  * **It wraps the un-converted screens and nothing else**, which used to be
  * "everything". A converted screen inside it gets a card inside a card, and
  * the legacy rhythm rules — the `<p>` margins, the `<h3>` divider, the trailing
- * control margins — fight a layout that has already decided all three. It
- * leaves with #65, #67 and #68; when it does, so does everything under
+ * control margins — fight a layout that has already decided all three.
+ *
+ * **Two callers left: the creation flow and the builder.** Analytics and
+ * Destinations were converted alongside Optins and Leads, so what remains is
+ * the goal picker and the editor. When those go, so does everything under
  * SCAFFOLDING in `index.css`.
  */
 function Legacy({ children }: { children: ReactNode }) {

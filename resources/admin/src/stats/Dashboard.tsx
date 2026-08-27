@@ -1,5 +1,21 @@
 import { useCallback, useEffect, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
+import { ChartColumn } from 'lucide-react';
+import { Button } from '../components/ui/button';
+import {
+  DataTable,
+  DataTableBody,
+  DataTableCell,
+  DataTableColumn,
+  DataTableHead,
+  DataTableRow,
+} from '../shell/DataTable';
+import { EmptyState } from '../shell/EmptyState';
+import { PageAction } from '../shell/PageActions';
+import { Region, RegionBody, RegionErrorState, RegionHeader } from '../shell/Region';
+import { Stat, StatRow } from '../shell/Stat';
+import { TableSkeleton } from '../shell/TableSkeleton';
+import { LOADING, failed, ready, type Loadable } from '../shell/loadable';
 import { readDashboard, type DashboardPayload, type GoalReport, type OptinReport } from './api';
 
 /**
@@ -17,9 +33,6 @@ import { readDashboard, type DashboardPayload, type GoalReport, type OptinReport
  * a copy of it in step.
  */
 const WINDOWS = [1, 7, 30, 90] as const;
-
-/** Before the first read lands. Not an error state — an install with no Optins looks the same. */
-const EMPTY: DashboardPayload = { from: '', to: '', days: 0, goals: [] };
 
 /**
  * The analytics screen.
@@ -41,20 +54,30 @@ const EMPTY: DashboardPayload = { from: '', to: '', days: 0, goals: [] };
  * Goals live in one PHP enum, their labels are translatable strings
  * `wp i18n make-pot` can only see there, and a Goal id spelled in this bundle
  * is what `tests/unit/Goal/GoalParityTest.php` fails on.
+ *
+ * **One region per Goal** (ADR 0039), because a Goal's performance is one
+ * concern and two Goals are two. What each region holds stopped being a
+ * bulleted list of numbers: a merchant scanning a card is comparing
+ * magnitudes, and magnitudes are compared as figures with their names under
+ * them ({@see Stat}), never as *"Impressions 0"* prose.
+ *
+ * **The window is in the page header, and that amends ADR 0039's own
+ * sentence.** It governs every region on the screen at once, so a copy in each
+ * region's toolbar would be four controls that must be kept in agreement — the
+ * ADR's placement table is about ACTIONS, and this is a filter over the whole
+ * screen.
  */
 export function Dashboard() {
-  const [payload, setPayload] = useState<DashboardPayload>(EMPTY);
+  const [report, setReport] = useState<Loadable<DashboardPayload>>(LOADING);
   // `null` is "whatever the server opens on", and only the first read is ever
   // in that state.
   const [days, setDays] = useState<number | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
     try {
-      setPayload(await readDashboard(days));
-      setError(null);
+      setReport(ready(await readDashboard(days)));
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : String(cause));
+      setReport(failed(cause));
     }
   }, [days]);
 
@@ -62,18 +85,38 @@ export function Dashboard() {
     void refresh();
   }, [refresh]);
 
-  return (
-    <section className="wconvert-dashboard">
-      {error !== null && (
-        <div className="notice notice-error">
-          <p>{error}</p>
-        </div>
-      )}
+  const payload = report.status === 'ready' ? report.data : null;
 
-      <p>
-        <label>
-          {__('Showing', 'wconvert')}{' '}
-          <select value={payload.days === 0 ? '' : payload.days} onChange={(e) => setDays(Number(e.target.value))}>
+  return (
+    <div className="flex flex-col gap-5">
+      {/*
+        **A native `<select>`, and it stays one.** The vendored Radix select is
+        the right control for a filter inside a region's toolbar, where it sits
+        beside other controls we drew; here it is one control in the page
+        header, it is read by `dashboard.test.tsx` as a `combobox` with a
+        VALUE, and a four-item window picker gains nothing from a portal.
+      */}
+      <PageAction>
+        {/*
+          **`ms-auto`, because this is a filter and not an action.** ADR 0039
+          pairs an ACTION with the title — the eye reads "Optins + Create an
+          Optin" as one object — and a window picker sitting in that position
+          reads as part of the screen's name. Pushed to the trailing edge it
+          reads as what it is: a control over everything below it. It still
+          wraps under the title on a narrow viewport, where there is no trailing
+          edge to go to.
+
+          `pe-9` clears the arrow the browser draws. Preflight does not strip a
+          select's appearance, so at `px-2` the chevron sat on top of the last
+          letter of "The last 30 days".
+        */}
+        <label className="ms-auto flex items-center gap-2 text-muted-foreground">
+          {__('Showing', 'wconvert')}
+          <select
+            className="h-9 rounded-md border border-input bg-card ps-3 pe-9 text-sm text-foreground"
+            value={payload === null || payload.days === 0 ? '' : payload.days}
+            onChange={(event) => setDays(Number(event.target.value))}
+          >
             {WINDOWS.map((window) => (
               <option key={window} value={window}>
                 {window === 1
@@ -86,93 +129,136 @@ export function Dashboard() {
               </option>
             ))}
           </select>
-        </label>{' '}
-        {payload.from !== '' && (
-          <span className="description">
-            {payload.from === payload.to
-              ? payload.from
-              : sprintf(
-                  /* translators: 1: the first day of the window. 2: the last day. */
-                  __('%1$s to %2$s, in your site’s timezone.', 'wconvert'),
-                  payload.from,
-                  payload.to,
-                )}
-          </span>
-        )}
-      </p>
+        </label>
+      </PageAction>
 
-      {payload.goals.length === 0 && (
-        <p className="wconvert-dashboard__empty">
-          {__('Nothing to report yet. Create an Optin and publish it, and its numbers appear here.', 'wconvert')}
-        </p>
+      {report.status === 'failed' && (
+        <Region label={__('Analytics', 'wconvert')}>
+          <RegionErrorState
+            message={report.message}
+            hint={__('Reload the page to try again.', 'wconvert')}
+          />
+        </Region>
       )}
 
-      <div className="wconvert-goal-cards">
-        {payload.goals.map((card) => (
-          <GoalCard key={card.goal} card={card} />
-        ))}
-      </div>
-    </section>
+      {report.status === 'loading' && (
+        <Region label={__('Analytics', 'wconvert')}>
+          <DataTable>
+            <TableSkeleton columns={4} rows={3} />
+          </DataTable>
+        </Region>
+      )}
+
+      {payload !== null && payload.goals.length === 0 && (
+        <Region label={__('Analytics', 'wconvert')}>
+          <EmptyState
+            icon={ChartColumn}
+            title={__('Nothing to report yet', 'wconvert')}
+            action={
+              <Button asChild variant="outline">
+                <a href="#optins">{__('Go to Optins', 'wconvert')}</a>
+              </Button>
+            }
+          >
+            {__(
+              'Create an Optin and publish it. From the moment a visitor sees it, its impressions, conversions and dismissals are counted here.',
+              'wconvert',
+            )}
+          </EmptyState>
+        </Region>
+      )}
+
+      {/*
+        The window is stated ONCE, on the first card. It is the same window for
+        every region on the screen, so repeating it under each would be one
+        fact printed four times — and `dashboard.test.tsx` reads it with
+        `findByText`, which fails on a second match rather than passing.
+      */}
+      {payload?.goals.map((card, index) => (
+        <GoalRegion key={card.goal} card={card} window={index === 0 ? payload : null} />
+      ))}
+    </div>
   );
 }
 
 /**
- * One Goal's card.
+ * One Goal's region.
  *
  * The headline is named by the server, because two of the five Goals convert
  * on a CLICK — a card headed "Submissions" over a click-metered Goal reports
  * zero forever and looks broken while being right.
+ *
+ * The heading is an `<h3>` rather than a region's usual `<h2>`: these are a
+ * repeating SET under the page's own subject rather than a list of unrelated
+ * concerns, and `dashboard.test.tsx` pins the level from the other side.
+ *
+ * **The window sits on the first region's title line and nowhere else.** It is
+ * the same window for every card, so repeating it under each would be the same
+ * fact stated four times.
  */
-function GoalCard({ card }: { card: GoalReport }) {
+function GoalRegion({ card, window }: { card: GoalReport; window: DashboardPayload | null }) {
   return (
-    <div className="wconvert-goal-card">
-      <h3>{card.label}</h3>
+    <Region>
+      <RegionHeader
+        title={card.label}
+        level={3}
+        trailing={
+          window === null || window.from === '' ? undefined : (
+            <span className="text-muted-foreground tabular-nums">
+              {window.from === window.to
+                ? window.from
+                : sprintf(
+                    /* translators: 1: the first day of the window. 2: the last day. */
+                    __('%1$s to %2$s, in your site’s timezone.', 'wconvert'),
+                    window.from,
+                    window.to,
+                  )}
+            </span>
+          )
+        }
+      />
 
-      <p className="wconvert-goal-card__headline">
-        <strong>{formatCount(card.headline)}</strong> <span>{card.headline_label}</span>
-      </p>
+      <RegionBody className="flex flex-col gap-5">
+        <StatRow>
+          <Stat label={card.headline_label} value={formatCount(card.headline)} emphasis />
+          <Stat label={__('Impressions', 'wconvert')} value={formatCount(card.impressions)} />
+          <Stat
+            label={__('Conversion rate', 'wconvert')}
+            value={formatRate(card.conversion_rate)}
+          />
+          <Stat label={__('Dismissals', 'wconvert')} value={formatCount(card.dismissals)} />
+          {/*
+            **`conversions − deliveries`, and only the server knows whether there
+            is one.** This bundle spells no Goal id — `GoalParityTest` fails on
+            any of the five appearing here — so a card cannot ask which Goal it
+            is drawing. `null` is the server saying there is nothing to report,
+            and the stat is absent rather than zero.
 
-      <ul className="wconvert-goal-card__stats">
-        <li>
-          {__('Impressions', 'wconvert')} <strong>{formatCount(card.impressions)}</strong>
-        </li>
-        <li>
-          {__('Conversion rate', 'wconvert')} <strong>{formatRate(card.conversion_rate)}</strong>
-        </li>
-        <li>
-          {__('Dismissals', 'wconvert')} <strong>{formatCount(card.dismissals)}</strong>
-        </li>
-        {/*
-          **`conversions − deliveries`, and only the server knows whether there
-          is one.** This bundle spells no Goal id — `GoalParityTest` fails on
-          any of the five appearing here — so a card cannot ask which Goal it
-          is drawing. `null` is the server saying there is nothing to report,
-          and the row is absent rather than zero.
+            The copy is "no delivery yet" rather than "failed" on purpose: a
+            Conversion whose push is still queued or backing off is counted here
+            too, and calling that a failure would be a stronger claim than the
+            subtraction supports. The field is named `undelivered_conversions`
+            for the same reason — it shipped as `delivery_failures`, which said
+            the opposite of the copy directly beneath it.
+          */}
+          {card.undelivered_conversions !== null && (
+            <Stat
+              label={_n(
+                'Conversion with no delivery yet',
+                'Conversions with no delivery yet',
+                card.undelivered_conversions,
+                'wconvert',
+              )}
+              value={formatCount(card.undelivered_conversions)}
+            />
+          )}
+        </StatRow>
 
-          The copy is "no delivery yet" rather than "failed" on purpose: a
-          Conversion whose push is still queued or backing off is counted here
-          too, and calling that a failure would be a stronger claim than the
-          subtraction supports. The field is named `undelivered_conversions`
-          for the same reason — it shipped as `delivery_failures`, which said
-          the opposite of the copy directly beneath it.
-        */}
-        {card.undelivered_conversions !== null && (
-          <li>
-            {_n(
-              'Conversion with no delivery yet',
-              'Conversions with no delivery yet',
-              card.undelivered_conversions,
-              'wconvert'
-            )}{' '}
-            <strong>{formatCount(card.undelivered_conversions)}</strong>
-          </li>
-        )}
-      </ul>
-
-      <Sparkline label={card.headline_label} byDay={card.by_day} />
+        <Sparkline label={card.headline_label} byDay={card.by_day} />
+      </RegionBody>
 
       <OptinTable card={card} />
-    </div>
+    </Region>
   );
 }
 
@@ -187,44 +273,55 @@ function GoalCard({ card }: { card: GoalReport }) {
 function OptinTable({ card }: { card: GoalReport }) {
   if (card.optins.length === 0) {
     return (
-      <p className="description">
-        {__('No Optins are running under this Goal. Its numbers are what earlier ones counted.', 'wconvert')}
-      </p>
+      <RegionBody className="border-t border-border text-muted-foreground">
+        {__(
+          'No Optins are running under this Goal. Its numbers are what earlier ones counted.',
+          'wconvert',
+        )}
+      </RegionBody>
     );
   }
 
   return (
-    <table className="wp-list-table widefat fixed striped">
-      <thead>
-        <tr>
-          <th>{__('Optin', 'wconvert')}</th>
-          <th>{card.headline_label}</th>
-          <th>{__('Impressions', 'wconvert')}</th>
-          <th>{__('Conversion rate', 'wconvert')}</th>
-          <th>{__('Dismissals', 'wconvert')}</th>
-          <th>{__('Over time', 'wconvert')}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {card.optins.map((optin: OptinReport) => (
-          <tr key={optin.id}>
-            <td>{optin.name}</td>
-            <td>{formatCount(optin.headline)}</td>
-            <td>{formatCount(optin.impressions)}</td>
-            <td>{formatRate(optin.conversion_rate)}</td>
-            <td>{formatCount(optin.dismissals)}</td>
-            {/*
-              Comparison within an Optin over time, which the merchant would
-              otherwise only get by moving the whole screen's window and
-              remembering the last number.
-            */}
-            <td>
-              <Sparkline label={card.headline_label} byDay={optin.by_day} />
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <div className="border-t border-border">
+      <DataTable>
+        <DataTableHead>
+          <DataTableColumn>{__('Optin', 'wconvert')}</DataTableColumn>
+          <DataTableColumn numeric>{card.headline_label}</DataTableColumn>
+          <DataTableColumn numeric>{__('Impressions', 'wconvert')}</DataTableColumn>
+          <DataTableColumn numeric>{__('Conversion rate', 'wconvert')}</DataTableColumn>
+          <DataTableColumn numeric>{__('Dismissals', 'wconvert')}</DataTableColumn>
+          <DataTableColumn>{__('Over time', 'wconvert')}</DataTableColumn>
+        </DataTableHead>
+        <DataTableBody>
+          {card.optins.map((optin: OptinReport) => (
+            <DataTableRow key={optin.id}>
+              <DataTableCell label={__('Optin', 'wconvert')}>{optin.name}</DataTableCell>
+              <DataTableCell label={card.headline_label} numeric>
+                {formatCount(optin.headline)}
+              </DataTableCell>
+              <DataTableCell label={__('Impressions', 'wconvert')} numeric>
+                {formatCount(optin.impressions)}
+              </DataTableCell>
+              <DataTableCell label={__('Conversion rate', 'wconvert')} numeric>
+                {formatRate(optin.conversion_rate)}
+              </DataTableCell>
+              <DataTableCell label={__('Dismissals', 'wconvert')} numeric>
+                {formatCount(optin.dismissals)}
+              </DataTableCell>
+              {/*
+                Comparison within an Optin over time, which the merchant would
+                otherwise only get by moving the whole screen's window and
+                remembering the last number.
+              */}
+              <DataTableCell label={__('Over time', 'wconvert')}>
+                <Sparkline label={card.headline_label} byDay={optin.by_day} />
+              </DataTableCell>
+            </DataTableRow>
+          ))}
+        </DataTableBody>
+      </DataTable>
+    </div>
   );
 }
 
@@ -238,6 +335,12 @@ function OptinTable({ card }: { card: GoalReport }) {
  *
  * `aria-hidden`, with the same series offered as text beside it. A bar chart
  * is decoration to a screen reader, and the numbers are already on the card.
+ *
+ * **It had no CSS at all until now**, which is why it rendered as a row of
+ * black dashes across the top of the table: `.wconvert-sparkline` was one of
+ * fourteen class names in this admin with no rule anywhere, so the `<svg>` took
+ * the browser's default `fill` and no size. The bars are `--chart-1`, which is
+ * the token ADR 0037 reserved for impressions and the series this draws.
  */
 function Sparkline({ label, byDay }: { label: string; byDay: Record<string, number> }) {
   const days = Object.entries(byDay);
@@ -247,6 +350,17 @@ function Sparkline({ label, byDay }: { label: string; byDay: Record<string, numb
   }
 
   const peak = Math.max(...days.map(([, count]) => count));
+
+  /*
+   * **A series of nothing is not a chart, it is a smudge.** Every day at zero
+   * drew thirty hairlines across the card — which on a fresh install is every
+   * card on the screen, and it reads as a broken rule rather than as "no data".
+   * The number above it already says zero, in the largest type on the region.
+   */
+  if (peak === 0) {
+    return null;
+  }
+
   const width = 100 / days.length;
 
   return (
@@ -255,7 +369,7 @@ function Sparkline({ label, byDay }: { label: string; byDay: Record<string, numb
         {days.map(([day, count], index) => {
           // A day with nothing on it still gets a hairline, so the series
           // reads as a run of days rather than as a shorter chart.
-          const height = peak === 0 ? 0.5 : Math.max(0.5, (count / peak) * 24);
+          const height = Math.max(0.5, (count / peak) * 24);
 
           return (
             <rect
@@ -268,7 +382,7 @@ function Sparkline({ label, byDay }: { label: string; byDay: Record<string, numb
           );
         })}
       </svg>
-      <p className="screen-reader-text">
+      <p className="sr-only">
         {sprintf(
           /* translators: 1: what the number counts, e.g. "Submissions". 2: the highest daily figure. 3: a number of days. */
           __('%1$s per day. Highest day: %2$s, across %3$s days.', 'wconvert'),

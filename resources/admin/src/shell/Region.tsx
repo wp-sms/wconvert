@@ -42,19 +42,45 @@ export function Region({
 /**
  * What this region is, where the page header does not already say it.
  *
- * An `<h2>` because the page header owns the `<h1>` and a region is a level
- * under it — which is also what makes a screen with two regions readable by
- * heading navigation rather than by scrolling.
+ * **`<h2>` by default**, because the page header owns the `<h1>` and a region is
+ * a level under it — which is also what makes a screen with two regions
+ * readable by heading navigation rather than by scrolling.
+ *
+ * `level` exists for a screen whose regions are a repeating SET rather than a
+ * list of unrelated concerns: analytics draws one region per [[Goal]], and
+ * those sit under the page's own subject rather than each introducing a new
+ * one. `dashboard.test.tsx` pins them at level 3, which is the same reading
+ * arrived at from the other side.
+ *
+ * `trailing` is for what belongs on the title's line and is not an action — the
+ * window a set of numbers covers, a badge naming a state. Actions do not go
+ * here: they are page-scoped and belong in the page header, or region-scoped
+ * and belong in a {@see Toolbar} (ADR 0039).
  */
-export function RegionHeader({ title, description }: { title: string; description?: string }) {
+export function RegionHeader({
+  title,
+  description,
+  level = 2,
+  trailing,
+}: {
+  title: string;
+  description?: string;
+  level?: 2 | 3;
+  trailing?: ReactNode;
+}) {
+  const Heading = level === 3 ? 'h3' : 'h2';
+
   return (
-    <div className="border-b border-border px-4 py-3">
-      <h2 className="m-0 text-base font-semibold leading-tight tracking-tight text-foreground">
-        {title}
-      </h2>
-      {description !== undefined && (
-        <p className="mt-1 mb-0 max-w-2xl text-pretty text-muted-foreground">{description}</p>
-      )}
+    <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-1 border-b border-border px-4 py-3">
+      <div className="min-w-0">
+        <Heading className="m-0 text-base font-semibold leading-tight tracking-tight text-foreground">
+          {title}
+        </Heading>
+        {description !== undefined && (
+          <p className="mt-1 mb-0 max-w-2xl text-pretty text-muted-foreground">{description}</p>
+        )}
+      </div>
+      {trailing}
     </div>
   );
 }

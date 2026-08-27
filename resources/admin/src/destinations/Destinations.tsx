@@ -1,6 +1,25 @@
-import { useCallback, useEffect, useState } from 'react';
-import { iconFor } from '../icons';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
+import { CircleAlert, CircleCheck, Plug, RotateCcw, Trash2, TriangleAlert } from 'lucide-react';
+import { iconFor } from '../icons';
+import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
+import { Badge } from '../components/ui/badge';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
+import { ConfirmDialog } from '../shell/ConfirmDialog';
+import {
+  DataTable,
+  DataTableBody,
+  DataTableCell,
+  DataTableColumn,
+  DataTableHead,
+  DataTableRow,
+} from '../shell/DataTable';
+import { EmptyState } from '../shell/EmptyState';
+import { Region, RegionBody, RegionError, RegionErrorState, RegionHeader } from '../shell/Region';
+import { TableSkeleton } from '../shell/TableSkeleton';
+import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
 import {
   deleteDestination,
   readDestinations,
@@ -13,8 +32,6 @@ import {
   type SettingsField,
 } from './api';
 import { renderingFor } from '../goals/availability';
-
-const EMPTY: DestinationsPayload = { types: [], destinations: [], connections: [], failures: [] };
 
 /**
  * **Where a merchant finds out whether pushing is working.**
@@ -34,21 +51,45 @@ const EMPTY: DestinationsPayload = { types: [], destinations: [], connections: [
  * OUTAGES; a Lead rejected for its own sake — a malformed address — leaves it
  * at zero and lands in the ring instead. Showing only one of them would hide
  * exactly one of the two things that go wrong.
+ *
+ * ============================================================================
+ * HEALTH FIRST, SETUP UNDER IT (ADR 0039).
+ * ============================================================================
+ * This screen used to open with the types list and its **Add** buttons, and put
+ * the health of what a merchant already configured underneath. That is
+ * backwards for the reason above: nobody opens this page wanting a fifth
+ * Destination, they open it because something did not arrive. So a configured
+ * Destination is a region of its own — one concern, its own edge — the types
+ * list is one region at the bottom named for what it is, and the terminal ring
+ * is a third.
+ *
+ * That also unpicks the block that fused five concerns: the label, its
+ * availability, its health, its settings form and **Remove** were one
+ * undifferentiated stack. Health leads the region, settings sit under a rule,
+ * and Remove is behind a confirm rather than beside the button that repairs
+ * things.
  */
 export function Destinations() {
-  const [payload, setPayload] = useState<DestinationsPayload>(EMPTY);
+  const [payload, setPayload] = useState<Loadable<DestinationsPayload>>(LOADING);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [report, setReport] = useState<RePushReport | null>(null);
-
-  const say = (cause: unknown) => setError(cause instanceof Error ? cause.message : String(cause));
+  /*
+   * Keyed by Destination, not screen-wide. A re-push report is a fact about ONE
+   * Destination, and the shipped version rendered it after every row and never
+   * cleared it — so a merchant who replayed one integration read the result
+   * under all of them, for the rest of the session (ADR 0039).
+   */
+  const [reports, setReports] = useState<Record<string, RePushReport>>({});
+  const [confirming, setConfirming] = useState<Destination | null>(null);
+  const returnFocus = useRef<HTMLElement | null>(null);
 
   const refresh = useCallback(async () => {
     try {
-      setPayload(await readDestinations());
+      setPayload(ready(await readDestinations()));
       setError(null);
     } catch (cause) {
-      say(cause);
+      setPayload((current) => (current.status === 'ready' ? current : failed(cause)));
+      setError(messageOf(cause));
     }
   }, []);
 
@@ -56,172 +97,172 @@ export function Destinations() {
     void refresh();
   }, [refresh]);
 
-  const add = (type: DestinationType) => {
+  const run = async (action: () => Promise<unknown>) => {
     setBusy(true);
 
-    void (async () => {
-      try {
-        await saveDestination({ type: type.id, label: type.label, settings: {} });
-        await refresh();
-      } catch (cause) {
-        say(cause);
-      } finally {
-        setBusy(false);
-      }
-    })();
+    try {
+      await action();
+      await refresh();
+    } catch (cause) {
+      setError(messageOf(cause));
+    } finally {
+      setBusy(false);
+    }
   };
 
-  const remove = (destination: Destination) => {
-    setBusy(true);
+  const add = (type: DestinationType) =>
+    void run(() => saveDestination({ type: type.id, label: type.label, settings: {} }));
 
-    void (async () => {
-      try {
-        setPayload({ ...payload, destinations: (await deleteDestination(destination.id)).destinations });
-        await refresh();
-      } catch (cause) {
-        say(cause);
-      } finally {
-        setBusy(false);
-      }
-    })();
-  };
+  const remove = (destination: Destination) =>
+    void run(() => deleteDestination(destination.id));
+
+  const save = (destination: Destination, settings: Record<string, unknown>) =>
+    void run(() =>
+      saveDestination({
+        id: destination.id,
+        type: destination.type,
+        label: destination.label,
+        connection: destination.connection,
+        settings,
+      }),
+    );
 
   const replay = (destination: Destination) => {
     setBusy(true);
 
     void (async () => {
       try {
-        setReport(await rePush(destination.id));
+        const report = await rePush(destination.id);
+
+        setReports((current) => ({ ...current, [destination.id]: report }));
+        setError(null);
       } catch (cause) {
-        say(cause);
+        setError(messageOf(cause));
       } finally {
         setBusy(false);
       }
     })();
   };
 
-  const save = (destination: Destination, settings: Record<string, unknown>) => {
-    setBusy(true);
+  if (payload.status === 'failed') {
+    return (
+      <Region label={__('Destinations', 'wconvert')}>
+        <RegionErrorState
+          message={payload.message}
+          hint={__('Reload the page to try again.', 'wconvert')}
+        />
+      </Region>
+    );
+  }
 
-    void (async () => {
-      try {
-        await saveDestination({
-          id: destination.id,
-          type: destination.type,
-          label: destination.label,
-          connection: destination.connection,
-          settings,
-        });
-        await refresh();
-      } catch (cause) {
-        say(cause);
-      } finally {
-        setBusy(false);
-      }
-    })();
-  };
+  const data = payload.status === 'ready' ? payload.data : null;
 
   return (
-    <section className="wconvert-destinations">
+    <div className="flex flex-col gap-5">
       {error !== null && (
-        <div className="notice notice-error">
-          <p>{error}</p>
-        </div>
+        <Region label={__('Destinations', 'wconvert')}>
+          <RegionError message={error} />
+        </Region>
       )}
 
-      <Types types={payload.types} configured={payload.destinations} busy={busy} onAdd={add} />
+      {data === null ? (
+        <Region label={__('Destinations', 'wconvert')}>
+          <DataTable>
+            <TableSkeleton columns={3} rows={2} />
+          </DataTable>
+        </Region>
+      ) : (
+        <>
+          {data.destinations.length === 0 ? (
+            <Region label={__('Destinations', 'wconvert')}>
+              <EmptyState icon={Plug} title={__('Nothing is being pushed on', 'wconvert')}>
+                {__(
+                  'Every capture is written to the Lead log first and always. Add a Destination below to send it somewhere else as well.',
+                  'wconvert',
+                )}
+              </EmptyState>
+            </Region>
+          ) : (
+            data.destinations.map((destination) => (
+              <Configured
+                key={destination.id}
+                destination={destination}
+                schema={
+                  data.types.find((type) => type.id === destination.type)?.settings_schema ?? {}
+                }
+                report={reports[destination.id] ?? null}
+                busy={busy}
+                onSave={save}
+                onRemove={(trigger) => {
+                  returnFocus.current = trigger;
+                  setConfirming(destination);
+                }}
+                onRePush={replay}
+              />
+            ))
+          )}
 
-      {payload.destinations.map((destination) => (
-        <Configured
-          key={destination.id}
-          destination={destination}
-          schema={payload.types.find((type) => type.id === destination.type)?.settings_schema ?? {}}
-          busy={busy}
-          onSave={save}
-          onRemove={remove}
-          onRePush={replay}
-        />
-      ))}
+          <Types
+            types={data.types}
+            configured={data.destinations}
+            busy={busy}
+            onAdd={add}
+          />
 
-      {report !== null && <RePushNotice report={report} />}
+          <Failures failures={data.failures} />
+        </>
+      )}
 
-      <Failures failures={payload.failures} />
-    </section>
+      <ConfirmDialog
+        open={confirming !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setConfirming(null);
+          }
+        }}
+        title={__('Remove this Destination?', 'wconvert')}
+        description={
+          confirming === null
+            ? ''
+            : sprintf(
+                /* translators: %s: the name of a Destination. */
+                __(
+                  'Captures stop being sent to “%s” from now on. Leads already in the log are untouched — the log is not a Destination and is written first and always.',
+                  'wconvert',
+                ),
+                confirming.label,
+              )
+        }
+        confirmLabel={__('Remove Destination', 'wconvert')}
+        returnFocusTo={returnFocus}
+        onConfirm={() => {
+          const destination = confirming;
+
+          setConfirming(null);
+
+          if (destination !== null) {
+            remove(destination);
+          }
+        }}
+      />
+    </div>
   );
 }
 
 /**
- * The types this install can reach.
+ * One configured Destination: whether it is working, what it is set to, and the
+ * one recovery action.
  *
- * `unavailable` is explained and never sold: a merchant with no WP SMS is not
- * missing something we can sell them, and rendering that as an upsell is what
- * ADR 0026 exists to stop.
+ * **Health is the first thing in the region**, because it is the question the
+ * screen exists to answer. It is a `Badge` and a sentence rather than a
+ * paragraph that changes class between `description` and `notice notice-warning`
+ * — the state a merchant is scanning for should be readable without reading
+ * (ADR 0039).
  */
-function Types({
-  types,
-  configured,
-  busy,
-  onAdd,
-}: {
-  types: DestinationType[];
-  configured: Destination[];
-  busy: boolean;
-  onAdd: (type: DestinationType) => void;
-}) {
-  if (types.length === 0) {
-    return <p className="description">{__('No Destination types are available on this site.', 'wconvert')}</p>;
-  }
-
-  return (
-    <ul className="wconvert-destinations__types">
-      {types.map((type) => {
-        const rendering = renderingFor(type.availability, 'settings_list');
-        const TypeIcon = iconFor(type.icon);
-
-        return (
-        <li key={type.id}>
-          <TypeIcon aria-hidden="true" className="inline-block size-4 align-text-bottom" />{' '}
-          <strong>{type.label}</strong>{' '}
-          {/*
-            This is a SETTINGS LIST, so it explains an absence rather than
-            hiding it — the merchant opened this page expecting a list, and
-            silence here is baffling. The cascade is `renderingFor`'s and not
-            one written out again: `locked` and `unavailable` must never
-            collapse into one "not available", because that is exactly how a
-            paying customer gets shown an advertisement for Pro and a merchant
-            gets offered a WP SMS licence we do not sell (ADR 0026).
-          */}
-          {rendering === 'offer' ? (
-            <button
-              type="button"
-              className="button"
-              disabled={busy || configured.some((destination) => destination.type === type.id)}
-              onClick={() => onAdd(type)}
-            >
-              {__('Add', 'wconvert')}
-            </button>
-          ) : rendering === 'upsell' ? (
-            <span className="description">{__('Included with Pro.', 'wconvert')}</span>
-          ) : (
-            <span className="description">
-              {sprintf(
-                /* translators: %s: the plugin or platform the Destination needs, e.g. "WP SMS". */
-                __('Needs %s on this site.', 'wconvert'),
-                type.requires_label ?? __('something this site does not have', 'wconvert')
-              )}
-            </span>
-          )}
-        </li>
-        );
-      })}
-    </ul>
-  );
-}
-
-/** One configured Destination, its health, and the one recovery action. */
 function Configured({
   destination,
   schema,
+  report,
   busy,
   onSave,
   onRemove,
@@ -230,71 +271,126 @@ function Configured({
   destination: Destination;
   /** Every field its TYPE declares, in the order PHP returned them — copy included. */
   schema: DestinationType['settings_schema'];
+  report: RePushReport | null;
   busy: boolean;
   onSave: (destination: Destination, settings: Record<string, unknown>) => void;
-  onRemove: (destination: Destination) => void;
+  onRemove: (trigger: HTMLElement | null) => void;
   onRePush: (destination: Destination) => void;
 }) {
   // Seeded once from what is stored. Keyed by field rather than held as one
   // string, because a type declares as many fields as it likes — the WSMS push
   // has one and the lead magnet email has three.
   const [draft, setDraft] = useState<Record<string, string>>(() => toDraft(schema, destination.settings));
+  const removeTrigger = useRef<HTMLButtonElement>(null);
   const failing = destination.health.consecutive_failures > 0;
   const fields = Object.entries(schema);
 
   return (
-    <div className="wconvert-destinations__row">
-      <h3>
-        {destination.label}{' '}
-        {destination.availability === 'locked' && (
-          <span className="description">
-            {__('Its type is a Pro feature this install does not have, so captures are not being sent.', 'wconvert')}
-          </span>
-        )}
-        {destination.availability === 'unavailable' && (
-          <span className="description">
-            {__('What it needs is not on this site, so captures are not being sent.', 'wconvert')}
-          </span>
-        )}
-      </h3>
+    <Region>
+      <RegionHeader
+        title={destination.label}
+        description={
+          destination.availability === 'locked'
+            ? __(
+                'Its type is a Pro feature this install does not have, so captures are not being sent.',
+                'wconvert',
+              )
+            : destination.availability === 'unavailable'
+              ? __('What it needs is not on this site, so captures are not being sent.', 'wconvert')
+              : undefined
+        }
+        trailing={
+          failing ? (
+            <Badge variant="destructive">{__('Failing', 'wconvert')}</Badge>
+          ) : destination.availability !== 'ready' ? (
+            <Badge variant="warning">{__('Paused', 'wconvert')}</Badge>
+          ) : destination.health.last_success_at === null ? (
+            <Badge variant="secondary">{__('Not used yet', 'wconvert')}</Badge>
+          ) : (
+            <Badge variant="success">{__('Delivering', 'wconvert')}</Badge>
+          )
+        }
+      />
 
-      <p className={failing ? 'notice notice-warning' : 'description'}>
-        {failing
-          ? sprintf(
-              /* translators: 1: number of failures in a row, 2: the last error. */
-              _n(
-                '%1$d failure in a row. Last error: %2$s',
-                '%1$d failures in a row. Last error: %2$s',
+      <RegionBody className="flex flex-col gap-3">
+        {failing ? (
+          <Alert variant="destructive" className="border-destructive/30 bg-destructive/5">
+            <CircleAlert />
+            <AlertTitle>
+              {sprintf(
+                /* translators: 1: number of failures in a row, 2: the last error. */
+                _n(
+                  '%1$d failure in a row. Last error: %2$s',
+                  '%1$d failures in a row. Last error: %2$s',
+                  destination.health.consecutive_failures,
+                  'wconvert',
+                ),
                 destination.health.consecutive_failures,
-                'wconvert'
-              ),
-              destination.health.consecutive_failures,
-              destination.health.last_error ?? ''
-            )
-          : destination.health.last_success_at === null
-            ? __('Nothing has been pushed here yet.', 'wconvert')
-            : sprintf(
-                /* translators: %s: a date and time. */
-                __('Last successful push: %s', 'wconvert'),
-                destination.health.last_success_at
+                destination.health.last_error ?? '',
               )}
-      </p>
+            </AlertTitle>
+          </Alert>
+        ) : (
+          <p className="m-0 flex items-center gap-2 text-muted-foreground">
+            <CircleCheck aria-hidden="true" className="size-4 shrink-0" />
+            {destination.health.last_success_at === null
+              ? __('Nothing has been pushed here yet.', 'wconvert')
+              : sprintf(
+                  /* translators: %s: a date and time. */
+                  __('Last successful push: %s', 'wconvert'),
+                  destination.health.last_success_at,
+                )}
+          </p>
+        )}
 
-      {destination.health.skipped_captures > 0 && (
-        <p className="notice notice-warning">
-          {sprintf(
-            /* translators: 1: number of captures, 2: a date and time. */
-            _n(
-              '%1$d capture was not sent, most recently at %2$s. Fix what this Destination needs, then re-push.',
-              '%1$d captures were not sent, most recently at %2$s. Fix what this Destination needs, then re-push.',
-              destination.health.skipped_captures,
-              'wconvert'
-            ),
-            destination.health.skipped_captures,
-            destination.health.last_skipped_at ?? ''
-          )}
-        </p>
-      )}
+        {destination.health.skipped_captures > 0 && (
+          <Alert className="border-warning/30 bg-warning/5 text-warning">
+            <TriangleAlert />
+            <AlertTitle className="line-clamp-none">
+              {sprintf(
+                /* translators: 1: number of captures, 2: a date and time. */
+                _n(
+                  '%1$d capture was not sent, most recently at %2$s. Fix what this Destination needs, then re-push.',
+                  '%1$d captures were not sent, most recently at %2$s. Fix what this Destination needs, then re-push.',
+                  destination.health.skipped_captures,
+                  'wconvert',
+                ),
+                destination.health.skipped_captures,
+                destination.health.last_skipped_at ?? '',
+              )}
+            </AlertTitle>
+          </Alert>
+        )}
+
+        {/*
+          **The report is this Destination's and it is rendered here**, under
+          the button that produced it, rather than once at the bottom of a
+          screen holding four of them.
+        */}
+        {report !== null && (
+          <Alert
+            className={
+              report.capped
+                ? 'border-warning/30 bg-warning/5 text-warning'
+                : 'border-success/30 bg-success/5 text-success'
+            }
+          >
+            <RotateCcw />
+            <AlertTitle className="line-clamp-none">
+              {sprintf(
+                /* translators: %d: number of pushes queued. */
+                _n('%d Lead queued for re-pushing.', '%d Leads queued for re-pushing.', report.jobs, 'wconvert'),
+                report.jobs,
+              )}
+            </AlertTitle>
+            {report.capped && (
+              <AlertDescription>
+                {__('That is the per-run limit — run it again once these have gone through.', 'wconvert')}
+              </AlertDescription>
+            )}
+          </Alert>
+        )}
+      </RegionBody>
 
       {/*
         **The fields are the schema, drawn in the order PHP returned them.**
@@ -310,43 +406,146 @@ function Configured({
         is nothing to save.
       */}
       {fields.length > 0 && (
-        <>
+        <RegionBody className="flex flex-col gap-4 border-t border-border">
           {fields.map(([key, field]) => (
-            <p key={key}>
-              <label>
-                {field.label}{' '}
-                <SettingsControl
-                  field={field}
-                  value={draft[key] ?? ''}
-                  onChange={(value) => setDraft({ ...draft, [key]: value })}
-                />
-              </label>
-              {field.description !== undefined && <span className="description"> {field.description}</span>}
-            </p>
+            <div key={key} className="flex max-w-xl flex-col gap-1.5">
+              <Label htmlFor={`wconvert-${destination.id}-${key}`}>{field.label}</Label>
+              <SettingsControl
+                id={`wconvert-${destination.id}-${key}`}
+                field={field}
+                value={draft[key] ?? ''}
+                onChange={(value) => setDraft({ ...draft, [key]: value })}
+              />
+              {field.description !== undefined && (
+                <p className="m-0 text-pretty text-muted-foreground">{field.description}</p>
+              )}
+            </div>
           ))}
 
-          <p>
-            <button
-              type="button"
-              className="button"
+          <div>
+            <Button
+              variant="outline"
               disabled={busy}
               onClick={() => onSave(destination, { ...destination.settings, ...fromDraft(schema, draft) })}
             >
               {__('Save', 'wconvert')}
-            </button>
-          </p>
-        </>
+            </Button>
+          </div>
+        </RegionBody>
       )}
 
-      <p>
-        <button type="button" className="button" disabled={busy} onClick={() => onRePush(destination)}>
+      {/*
+        **Re-push repairs and Remove destroys, and they are not the same
+        weight.** They were two `.button`s side by side; now the recovery
+        action is the visible one and Remove is a quiet destructive control at
+        the far edge, behind a confirm (ADR 0039).
+      */}
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-border px-4 py-3">
+        <Button variant="outline" size="sm" disabled={busy} onClick={() => onRePush(destination)}>
+          <RotateCcw aria-hidden="true" />
           {__('Re-push Leads since the last success', 'wconvert')}
-        </button>{' '}
-        <button type="button" className="button-link-delete" disabled={busy} onClick={() => onRemove(destination)}>
+        </Button>
+        <Button
+          ref={removeTrigger}
+          variant="ghost"
+          size="sm"
+          disabled={busy}
+          className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+          onClick={() => onRemove(removeTrigger.current)}
+        >
+          <Trash2 aria-hidden="true" />
           {__('Remove', 'wconvert')}
-        </button>
-      </p>
-    </div>
+        </Button>
+      </div>
+    </Region>
+  );
+}
+
+/**
+ * The types this install can reach.
+ *
+ * `unavailable` is explained and never sold: a merchant with no WP SMS is not
+ * missing something we can sell them, and rendering that as an upsell is what
+ * ADR 0026 exists to stop.
+ *
+ * **It sits below the configured Destinations**, because it is setup and the
+ * screen's subject is health. It reads as a list of rows with an action each,
+ * rather than as a bulleted list with a button loose in the middle of a
+ * sentence.
+ */
+function Types({
+  types,
+  configured,
+  busy,
+  onAdd,
+}: {
+  types: DestinationType[];
+  configured: Destination[];
+  busy: boolean;
+  onAdd: (type: DestinationType) => void;
+}) {
+  return (
+    <Region>
+      <RegionHeader
+        title={__('Add a Destination', 'wconvert')}
+        description={__('Where else a captured Lead can be sent on to.', 'wconvert')}
+      />
+
+      {types.length === 0 ? (
+        <RegionBody className="text-muted-foreground">
+          {__('No Destination types are available on this site.', 'wconvert')}
+        </RegionBody>
+      ) : (
+        <ul className="m-0 list-none p-0">
+          {types.map((type) => {
+            const rendering = renderingFor(type.availability, 'settings_list');
+            const TypeIcon = iconFor(type.icon);
+
+            return (
+              <li
+                key={type.id}
+                className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-border px-4 py-3 last:border-b-0"
+              >
+                <span className="flex min-w-0 items-center gap-2.5">
+                  <TypeIcon aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
+                  <span className="font-medium text-foreground">{type.label}</span>
+                </span>
+
+                {/*
+                  This is a SETTINGS LIST, so it explains an absence rather than
+                  hiding it — the merchant opened this page expecting a list, and
+                  silence here is baffling. The cascade is `renderingFor`'s and not
+                  one written out again: `locked` and `unavailable` must never
+                  collapse into one "not available", because that is exactly how a
+                  paying customer gets shown an advertisement for Pro and a merchant
+                  gets offered a WP SMS licence we do not sell (ADR 0026).
+                */}
+                {rendering === 'offer' ? (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={busy || configured.some((destination) => destination.type === type.id)}
+                    onClick={() => onAdd(type)}
+                  >
+                    {__('Add', 'wconvert')}
+                  </Button>
+                ) : rendering === 'upsell' ? (
+                  <span className="text-muted-foreground">{__('Included with Pro.', 'wconvert')}</span>
+                ) : (
+                  <span className="text-muted-foreground">
+                    {sprintf(
+                      /* translators: %s: the plugin or platform the Destination needs, e.g. "WP SMS". */
+                      __('Needs %s on this site.', 'wconvert'),
+                      type.requires_label ?? __('something this site does not have', 'wconvert'),
+                    )}
+                  </span>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </Region>
   );
 }
 
@@ -371,10 +570,12 @@ function Configured({
  * guessing at whether the options travel in the schema or come off the wire.
  */
 function SettingsControl({
+  id,
   field,
   value,
   onChange,
 }: {
+  id: string;
   field: SettingsField;
   value: string;
   onChange: (value: string) => void;
@@ -386,14 +587,7 @@ function SettingsControl({
      * type a comma without the field reformatting itself under them.
      */
     case 'ids':
-      return (
-        <input
-          type="text"
-          className="regular-text"
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-        />
-      );
+      return <Input id={id} type="text" value={value} onChange={(e) => onChange(e.target.value)} />;
 
     /**
      * `type="url"` for the keyboard and the browser's own hint, and nothing
@@ -402,35 +596,22 @@ function SettingsControl({
      * rest of the settings bag takes.
      */
     case 'url':
-      return (
-        <input
-          type="url"
-          className="regular-text"
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-        />
-      );
+      return <Input id={id} type="url" value={value} onChange={(e) => onChange(e.target.value)} />;
 
     case 'multiline':
       return (
         <textarea
-          className="large-text"
+          id={id}
           rows={5}
+          className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
           value={value}
-          onChange={(event) => onChange(event.target.value)}
+          onChange={(e) => onChange(e.target.value)}
         />
       );
 
     case 'text':
     default:
-      return (
-        <input
-          type="text"
-          className="regular-text"
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-        />
-      );
+      return <Input id={id} type="text" value={value} onChange={(e) => onChange(e.target.value)} />;
   }
 }
 
@@ -505,22 +686,6 @@ function fromDraft(
   return settings;
 }
 
-/** What the replay queued — including, out loud, whether it was truncated. */
-function RePushNotice({ report }: { report: RePushReport }) {
-  return (
-    <div className={report.capped ? 'notice notice-warning' : 'notice notice-success'}>
-      <p>
-        {sprintf(
-          /* translators: %d: number of pushes queued. */
-          _n('%d Lead queued for re-pushing.', '%d Leads queued for re-pushing.', report.jobs, 'wconvert'),
-          report.jobs
-        )}{' '}
-        {report.capped && __('That is the per-run limit — run it again once these have gone through.', 'wconvert')}
-      </p>
-    </div>
-  );
-}
-
 /**
  * The terminal-failure ring.
  *
@@ -535,34 +700,34 @@ function Failures({ failures }: { failures: DestinationsPayload['failures'] }) {
   }
 
   return (
-    <>
-      <h3>{__('Leads that could not be delivered', 'wconvert')}</h3>
-      <p className="description">
-        {__(
+    <Region>
+      <RegionHeader
+        title={__('Leads that could not be delivered', 'wconvert')}
+        description={__(
           'These failed for their own sake rather than because a Destination was down, so they are not counted as outages. The most recent 200 are kept.',
-          'wconvert'
+          'wconvert',
         )}
-      </p>
-      <table className="widefat striped">
-        <thead>
-          <tr>
-            <th>{__('When', 'wconvert')}</th>
-            <th>{__('Lead', 'wconvert')}</th>
-            <th>{__('Why', 'wconvert')}</th>
-          </tr>
-        </thead>
-        <tbody>
+      />
+      <DataTable>
+        <DataTableHead>
+          <DataTableColumn>{__('When', 'wconvert')}</DataTableColumn>
+          <DataTableColumn>{__('Lead', 'wconvert')}</DataTableColumn>
+          <DataTableColumn>{__('Why', 'wconvert')}</DataTableColumn>
+        </DataTableHead>
+        <DataTableBody>
           {failures.map((failure) => (
-            <tr key={`${failure.lead}-${failure.at}`}>
-              <td>{failure.at}</td>
-              <td>
-                <code>{failure.lead}</code>
-              </td>
-              <td>{failure.error}</td>
-            </tr>
+            <DataTableRow key={`${failure.lead}-${failure.at}`}>
+              <DataTableCell label={__('When', 'wconvert')}>{failure.at}</DataTableCell>
+              <DataTableCell label={__('Lead', 'wconvert')}>
+                <code className="font-mono text-xs text-muted-foreground">{failure.lead}</code>
+              </DataTableCell>
+              <DataTableCell label={__('Why', 'wconvert')} className="whitespace-normal">
+                {failure.error}
+              </DataTableCell>
+            </DataTableRow>
           ))}
-        </tbody>
-      </table>
-    </>
+        </DataTableBody>
+      </DataTable>
+    </Region>
   );
 }

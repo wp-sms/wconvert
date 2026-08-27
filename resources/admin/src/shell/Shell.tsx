@@ -106,7 +106,7 @@ function Wordmark() {
     <div className="flex items-center gap-2.5">
       <span
         aria-hidden="true"
-        className="grid size-6 place-items-center rounded-sm bg-card text-xs font-bold text-primary"
+        className="grid size-7 place-items-center rounded-sm bg-card text-sm font-bold text-primary"
       >
         W
       </span>
@@ -190,6 +190,16 @@ function PageHeader({
  * stopped rendering that. They are `aria-hidden`: each one sits beside the
  * label it decorates, so announcing it would read the tab twice.
  *
+ * **The pill is a fixed 2rem and its `<li>` is a flex box**, which is not
+ * decoration: an `inline-flex` anchor inside a block `<li>` sits on a LINE BOX,
+ * and a line box reserves room under the baseline for descenders. That put six
+ * pixels of petrol under every pill and none above it — the bar read as
+ * misaligned because it was, by 6px, and the wordmark beside it was centred
+ * correctly the whole time. A flex `<li>` has no line box, and stating the
+ * height means the two can never drift apart again. 2rem is
+ * `--control-height-sm`, which is what the rest of the admin's secondary
+ * controls stand at (ADR 0039).
+ *
  * **The active section is a WHITE pill, not a lighter shade of the bar.**
  * ACF lightens its bar for the active item, and the same move here measured
  * worse the further it went — white on petrol lightened 22% is 3.78:1, under
@@ -207,12 +217,12 @@ function SectionNav({ current }: { current: SectionId }) {
           const active = entry.id === current;
 
           return (
-            <li key={entry.id}>
+            <li key={entry.id} className="flex">
               <a
                 href={hashFor(entry.id)}
                 aria-current={active ? 'page' : undefined}
                 className={[
-                  'inline-flex items-center gap-2 rounded-sm px-3 py-1.5 font-medium',
+                  'inline-flex h-8 items-center gap-2 rounded-sm px-3 font-medium',
                   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white',
                   active
                     ? 'bg-card text-primary'

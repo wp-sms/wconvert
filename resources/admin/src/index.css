@@ -445,6 +445,15 @@
   border-collapse: collapse;
 }
 
+/*
+ * **A column name wraps, and that is the difference between a table that fits
+ * and one that does not.** These were `white-space: nowrap`, which reads well
+ * until a table has six columns: on the analytics screen "Conversion rate"
+ * claimed 147 unbreakable pixels and pushed the whole page 25px past a 641px
+ * viewport — one pixel above the breakpoint where the row-card treatment would
+ * have rescued it. A header on two lines costs a few pixels of height; a header
+ * that cannot break costs the merchant the whole screen.
+ */
 #wconvert-admin .wconvert-table > thead > tr > th {
   padding: 0.5rem 0.75rem;
   border-block-end: 1px solid var(--border);
@@ -455,7 +464,6 @@
   line-height: 1.4;
   text-align: start;
   text-transform: uppercase;
-  white-space: nowrap;
 }
 
 #wconvert-admin .wconvert-table > tbody > tr {
@@ -605,13 +613,29 @@
     text-align: start;
   }
 
+  /*
+   * The label always reads from the leading edge, even on a numeric cell whose
+   * VALUE is still right-aligned so a column of figures lines up. Without this
+   * the two moved together and "SUBMISSIONS" sat hard against its own number.
+   */
   #wconvert-admin .wconvert-table > tbody > tr > td::before {
     content: attr(data-label);
     color: var(--muted-foreground);
     font-size: 0.75rem;
     font-weight: 600;
     letter-spacing: 0.04em;
+    text-align: start;
     text-transform: uppercase;
+  }
+
+  /*
+   * **A cell with nothing in it has no label either.** In a table an empty cell
+   * is a blank that keeps the column aligned; in a card it is a heading over
+   * nothing — which is what "OVER TIME" with no series under it was, on every
+   * row of a fresh install.
+   */
+  #wconvert-admin .wconvert-table > tbody > tr > td:empty {
+    display: none;
   }
 
   /*
@@ -635,6 +659,65 @@
     flex-wrap: wrap;
     justify-content: flex-start;
   }
+}
+
+/* ---------------------------------------------------------------------------
+ * THE LISTS THIS ADMIN AUTHORS.
+ *
+ * **wp-admin's `common.css` says `li, dd { margin-bottom: 6px }`, unlayered.**
+ * Tailwind's preflight zeroes it in `@layer base`, and an unlayered rule beats
+ * a cascade layer regardless of specificity — which is the property this
+ * stylesheet's own header depends on for the admin menu and relies on NOT
+ * happening here. It is the same mechanism working against us.
+ *
+ * Six pixels under every `<li>`, which is what put the section nav's white pill
+ * 10px below the top of the petrol bar and 16px above the bottom. The bar was
+ * measurably off-centre and it was WordPress's margin doing it, not ours —
+ * found by measuring in a browser after it was reported, having been invisible
+ * in every screenshot review before that.
+ *
+ * Scoped to lists WE draw. `.wconvert-legacy` is deliberately excluded: the
+ * screens still inside it render prose lists that were written expecting
+ * WordPress's rhythm, and taking it away would close their spacing up.
+ * ------------------------------------------------------------------------- */
+#wconvert-admin :not(.wconvert-legacy) > ul > li,
+#wconvert-admin :not(.wconvert-legacy) > ol > li {
+  margin-block-end: 0;
+}
+
+/* ---------------------------------------------------------------------------
+ * THE SPARKLINE.
+ *
+ * **It had no rule anywhere until now**, which is why it rendered as a row of
+ * black dashes across the top of the analytics table: `.wconvert-sparkline` was
+ * one of fourteen class names in this admin with no CSS at all, so its `<svg>`
+ * took the browser's default `fill` — black — and no size of its own.
+ *
+ * The bars are `--chart-1`, which ADR 0037 put first in the ramp for the series
+ * this draws. The height is small on purpose: a sparkline is a shape read at a
+ * glance beside the number it belongs to, and one tall enough to read values
+ * off is a chart pretending to be an annotation.
+ * ------------------------------------------------------------------------- */
+.wconvert-sparkline {
+  display: block;
+  inline-size: 100%;
+  min-inline-size: 4rem;
+}
+
+.wconvert-sparkline > svg {
+  display: block;
+  inline-size: 100%;
+  block-size: 1.5rem;
+  fill: var(--chart-1);
+  opacity: 0.85;
+}
+
+/*
+ * A card's own series is the wider one and gets more room than a row's, which
+ * sits in a table cell beside five numbers.
+ */
+.wconvert-sparkline:not(td .wconvert-sparkline) > svg {
+  block-size: 2.5rem;
 }
 
 /* ---------------------------------------------------------------------------
