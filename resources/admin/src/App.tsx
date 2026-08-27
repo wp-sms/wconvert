@@ -36,8 +36,23 @@ import { sectionFrom, type SectionId } from './nav';
  */
 export function App() {
   const [editing, setEditing] = useState<string | null>(null);
+  /*
+   * Held here rather than inside {@see OptinsSection} because the button that
+   * starts creation now sits in the page header, which is the frame's. The
+   * state and the control that sets it belong on the same side of that line —
+   * the alternative is a button in the header reaching into a child's state,
+   * which is the shape that quietly grows a context.
+   */
+  const [creating, setCreating] = useState(false);
   const [section, setSection] = useState<SectionId>(() =>
     sectionFrom(typeof window === 'undefined' ? '' : window.location.hash),
+  );
+
+  const createButton = (
+    <Button onClick={() => setCreating(true)}>
+      <Plus aria-hidden="true" />
+      {__('Create an Optin', 'wconvert')}
+    </Button>
   );
 
   /*
@@ -59,9 +74,15 @@ export function App() {
   }
 
   return (
-    <Shell section={section}>
+    <Shell section={section} actions={section === 'optins' && !creating ? createButton : undefined}>
       <div className="wconvert-legacy">
-        {section === 'optins' && <OptinsSection onEdit={setEditing} />}
+        {section === 'optins' && (
+          <OptinsSection
+            creating={creating}
+            onCancelCreate={() => setCreating(false)}
+            onEdit={setEditing}
+          />
+        )}
         {section === 'analytics' && <Dashboard />}
         {section === 'leads' && <LeadLog />}
         {section === 'destinations' && <Destinations />}
@@ -123,20 +144,30 @@ function BuilderScreen({ id, onClose }: { id: string; onClose: () => void }) {
  * registry is the drift the registry exists to stop (ADR 0026). This keeps
  * that: the button opens the same goal-first flow, and the only thing it
  * changes is that the flow is not already open.
+ *
+ * The button itself now lives in the page header — a screen's primary action
+ * beside the screen's name, rather than floating above the table it does not
+ * act on.
  */
-function OptinsSection({ onEdit }: { onEdit: (id: string) => void }) {
-  const [creating, setCreating] = useState(false);
-
+function OptinsSection({
+  creating,
+  onCancelCreate,
+  onEdit,
+}: {
+  creating: boolean;
+  onCancelCreate: () => void;
+  onEdit: (id: string) => void;
+}) {
   if (creating) {
     return (
       <>
-        <Button variant="ghost" size="sm" className="mb-4 -ms-3" onClick={() => setCreating(false)}>
+        <Button variant="ghost" size="sm" className="mb-4 -ms-3" onClick={onCancelCreate}>
           <ArrowLeft aria-hidden="true" />
           {__('All Optins', 'wconvert')}
         </Button>
         <GoalScreen
           onCreated={(id) => {
-            setCreating(false);
+            onCancelCreate();
             onEdit(id);
           }}
         />
@@ -144,15 +175,5 @@ function OptinsSection({ onEdit }: { onEdit: (id: string) => void }) {
     );
   }
 
-  return (
-    <>
-      <div className="mb-4 flex justify-end">
-        <Button onClick={() => setCreating(true)}>
-          <Plus aria-hidden="true" />
-          {__('Create an Optin', 'wconvert')}
-        </Button>
-      </div>
-      <OptinList onEdit={onEdit} />
-    </>
-  );
+  return <OptinList onEdit={onEdit} />;
 }

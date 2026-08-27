@@ -64,8 +64,6 @@ export function Dashboard() {
 
   return (
     <section className="wconvert-dashboard">
-      <h2>{__('Analytics', 'wconvert')}</h2>
-
       {error !== null && (
         <div className="notice notice-error">
           <p>{error}</p>

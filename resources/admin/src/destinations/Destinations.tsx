@@ -123,20 +123,11 @@ export function Destinations() {
 
   return (
     <section className="wconvert-destinations">
-      <h2>{__('Destinations', 'wconvert')}</h2>
-
       {error !== null && (
         <div className="notice notice-error">
           <p>{error}</p>
         </div>
       )}
-
-      <p className="description">
-        {__(
-          'Where a captured Lead is sent on to. The Lead log is not one — it is written first and always, whatever happens here.',
-          'wconvert'
-        )}
-      </p>
 
       <Types types={payload.types} configured={payload.destinations} busy={busy} onAdd={add} />
 

@@ -85,8 +85,6 @@ export function OptinList({ onEdit }: { onEdit: (id: string) => void }) {
         </div>
       )}
 
-      <h2>{__('Optins', 'wconvert')}</h2>
-
       <table className="wp-list-table widefat fixed striped">
         <thead>
           <tr>

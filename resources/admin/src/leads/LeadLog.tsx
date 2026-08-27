@@ -123,8 +123,6 @@ export function LeadLog() {
 
   return (
     <>
-      <h2>{__('Leads', 'wconvert')}</h2>
-
       {error !== null && (
         <div className="notice notice-error">
           <p>{error}</p>

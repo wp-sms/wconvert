@@ -392,6 +392,129 @@
 }
 
 /*
+ * **WordPress's controls, wearing WConvert's colours.**
+ *
+ * The screens #64-#72 have not converted yet still render `.button`,
+ * `.button-primary` and bare inputs, and wp-admin paints those its own blue.
+ * Beside a petrol page header that reads as two products on one screen — the
+ * exact seam ADR 0035 refused when it eliminated the hybrid posture.
+ *
+ * **This retargets colour and radius, and touches nothing else.** The box
+ * model, the sizes and the focus behaviour are left exactly as WordPress drew
+ * them, because the control that replaces each of these has not been written
+ * yet and a half-restyled button is still a button a merchant can use. That is
+ * the same line the missing element reset above draws, from the other side:
+ * change what a control LOOKS like now, change what it IS when its replacement
+ * lands.
+ *
+ * `#wconvert-admin` rather than `.wconvert-legacy` for the id's specificity —
+ * wp-admin spells these `.wp-core-ui .button-primary`, and a tie would be
+ * settled by stylesheet order, which is not a thing to depend on.
+ */
+#wconvert-admin :is(.button, .button-secondary) {
+  border-color: var(--input);
+  border-radius: var(--radius);
+  color: var(--foreground);
+  background: var(--card);
+}
+
+#wconvert-admin :is(.button, .button-secondary):hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--accent);
+}
+
+#wconvert-admin .button-primary {
+  border-color: var(--primary);
+  border-radius: var(--radius);
+  color: var(--primary-foreground);
+  background: var(--primary);
+}
+
+#wconvert-admin .button-primary:hover {
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 90%, black);
+  color: var(--primary-foreground);
+}
+
+#wconvert-admin :is(.button-link, a) {
+  color: var(--primary);
+}
+
+#wconvert-admin :is(.button-link-delete, .button-link.button-link-delete) {
+  color: var(--destructive);
+}
+
+/*
+ * One line that removes most of the remaining blue: radios, checkboxes and
+ * progress elements take their tick and fill from the browser, and
+ * `accent-color` is what redirects it without re-drawing the control.
+ */
+#wconvert-admin {
+  accent-color: var(--primary);
+}
+
+/*
+ * **Text-like inputs are named one by one, and a radio is not among them.**
+ * Applying `border-radius` to `input:not([type="hidden"])` squares the radio
+ * buttons — a control whose whole affordance is that it is round, telling a
+ * merchant at a glance that one of these is exclusive and a checkbox is not.
+ * Retargeting colour must not restate shape, and an attribute list is the only
+ * way to say so that cannot quietly widen.
+ */
+#wconvert-admin
+  :is(
+    input:is(
+        [type="text"],
+        [type="search"],
+        [type="url"],
+        [type="email"],
+        [type="number"],
+        [type="password"],
+        [type="tel"],
+        [type="date"],
+        [type="datetime-local"]
+      ),
+    select,
+    textarea
+  ) {
+  border-color: var(--input);
+  border-radius: var(--radius);
+}
+
+#wconvert-admin :is(input, select, textarea):focus {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 1px var(--ring);
+  outline: 2px solid transparent;
+}
+
+/*
+ * **wp-admin paints these itself, so `accent-color` never reaches them.**
+ * That property redirects a control the BROWSER is still drawing; WordPress
+ * replaces both with a background of its own plus a pseudo-element for the dot
+ * and the tick, and its admin colour scheme sets that background from
+ * `--wp-admin-theme-color`. Recolouring the pseudo-element alone left a petrol
+ * dot centred in a blue disc.
+ *
+ * The radio keeps a white field with a petrol ring and a petrol dot, which is
+ * the shape it already had. The checkbox fills petrol, because its tick is
+ * drawn in the field's foreground and a white tick needs something behind it.
+ */
+#wconvert-admin input[type="radio"]:checked {
+  background: var(--card);
+  border-color: var(--primary);
+}
+
+#wconvert-admin input[type="radio"]:checked::before {
+  background-color: var(--primary);
+}
+
+#wconvert-admin input[type="checkbox"]:checked {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+/*
  * Preflight zeroes the margins the browser gave `<p>`, `<h2>` and `<ul>`, and
  * these screens were written expecting them. Restoring a rhythm here keeps
  * them legible for the tickets in between without re-introducing preflight's
@@ -399,6 +522,14 @@
  */
 .wconvert-legacy :is(p, h2, h3, h4, table, ul, ol) {
   margin-block: 1em;
+}
+
+.wconvert-legacy > :first-child {
+  margin-block-start: 0;
+}
+
+.wconvert-legacy > :last-child {
+  margin-block-end: 0;
 }
 
 .wconvert-legacy :is(h2, h3, h4) {
@@ -409,8 +540,33 @@
   font-size: 1.3rem;
 }
 
+/*
+ * An `<h3>` in these screens is a change of subject — "How long leads are
+ * kept" is a settings question sitting under a table of data — and it arrived
+ * with no more weight than the paragraph above it. A rule and the space around
+ * it is what says *this is a different thing*, which is the job #66 and #67
+ * will do properly with real sections.
+ */
 .wconvert-legacy h3 {
-  font-size: 1.1rem;
+  font-size: 1rem;
+  letter-spacing: -0.01em;
+}
+
+.wconvert-legacy > h3 {
+  margin-block-start: 2rem;
+  padding-block-start: 1.5rem;
+  border-block-start: 1px solid var(--border);
+}
+
+/*
+ * The shell already draws a bounded surface around the screen, so a list table
+ * inside it does not need a second box — it needs to read as the grid it is.
+ * The outer border goes and the row rules stay, and the header row keeps the
+ * one line that separates it from the data.
+ */
+.wconvert-legacy table.wp-list-table {
+  border: 0;
+  font-variant-numeric: tabular-nums;
 }
 
 .wconvert-legacy :is(ul, ol):not(.wconvert-gallery, .wconvert-rules) {
