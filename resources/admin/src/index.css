@@ -382,14 +382,26 @@
  * wp-admin's toolbar sits at z-index 99999, which is the number these have to
  * clear. A confirm dialog that opens behind the toolbar is a confirm dialog a
  * merchant cannot answer.
+ *
+ * **Inside `@layer utilities`, and the dialog is why.** The popper wrapper is
+ * Radix's own element and carries no utility, so an unlayered rule reached it
+ * — but a dialog's overlay and content are shadcn's markup and wear `z-50`,
+ * which is a LAYERED `!important` declaration. For important declarations the
+ * cascade runs layers in reverse, so the unlayered version of this rule lost to
+ * a single utility class and the confirm dialog opened at z-index 50, behind
+ * wp-admin's toolbar. Verified in a browser rather than reasoned about: this is
+ * the second time in this stylesheet that reversal has caught a rule out, after
+ * `.fixed` below.
  */
-[data-radix-popper-content-wrapper],
-[data-slot="select-content"],
-[data-slot="dialog-overlay"],
-[data-slot="dialog-content"],
-[data-slot="alert-dialog-overlay"],
-[data-slot="alert-dialog-content"] {
-  z-index: 100300 !important;
+@layer utilities {
+  [data-radix-popper-content-wrapper],
+  [data-slot="select-content"],
+  [data-slot="dialog-overlay"],
+  [data-slot="dialog-content"],
+  [data-slot="alert-dialog-overlay"],
+  [data-slot="alert-dialog-content"] {
+    z-index: 100300 !important;
+  }
 }
 
 /* ---------------------------------------------------------------------------
@@ -477,18 +489,31 @@
 }
 
 /*
- * The actions row is laid out here rather than by utilities because its
+ * **`1%` is what makes the Actions column take its content width.** A table
+ * with no stated widths divides the row between its columns, which gave three
+ * controls a cell narrower than they are and wrapped them onto two lines — with
+ * the third arriving under a button it is meant to sit beside. A percentage
+ * this small resolves to "as narrow as the content allows" and hands every
+ * remaining pixel to the columns holding data, which is where the reading
+ * happens.
+ *
+ * The header and the cell carry the same class so the two halves of the column
+ * cannot be sized apart.
+ *
+ * The actions row itself is laid out here rather than by utilities because its
  * alignment FLIPS below 640px — trailing edge in a table, leading edge in a
  * card — and a Tailwind `justify-end` is an `!important` declaration no media
  * query can take back.
  */
-#wconvert-admin .wconvert-table > tbody > tr > td.wconvert-table__actions {
+#wconvert-admin .wconvert-table :is(th, td).wconvert-table__actions {
+  inline-size: 1%;
   text-align: end;
+  white-space: nowrap;
 }
 
 #wconvert-admin .wconvert-table .wconvert-table__actions-row {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   justify-content: flex-end;
   gap: 0.25rem;
@@ -509,9 +534,31 @@
  */
 @layer utilities {
   #wconvert-admin
-    :is(.wconvert-toolbar, .wconvert-table)
+    :is(.wconvert-page-actions, .wconvert-toolbar, .wconvert-table)
     :is([data-slot="button"], [data-slot="select-trigger"]) {
-    block-size: var(--control-height-sm);
+    /*
+     * **The height is a MINIMUM, and the label may wrap.** "Export CSV" is two
+     * short words in English and *"Erfassungsdatensätze als CSV-Datei
+     * herunterladen"* in German, and the vendored button is `whitespace-nowrap`
+     * and `shrink-0` — so at 360px the page header grew to 394px and the whole
+     * screen scrolled sideways. Measured with artificially long labels rather
+     * than assumed to be saved by `flex-wrap`, which cannot help a box that
+     * refuses to be narrower than its longest line.
+     *
+     * `max-inline-size` is what actually caps it: a `shrink-0` flex item ignores
+     * its container's pressure but not its own maximum. The rest is what makes
+     * the wrapped result look deliberate instead of clipped.
+     */
+    block-size: auto;
+    min-block-size: var(--control-height-sm);
+    max-inline-size: 100%;
+    padding-block: 0.3125rem;
+    white-space: normal;
+  }
+
+  /* A page-header action is the taller of the two heights (ADR 0039). */
+  #wconvert-admin .wconvert-page-actions [data-slot="button"] {
+    min-block-size: var(--control-height);
   }
 }
 
@@ -585,6 +632,7 @@
   }
 
   #wconvert-admin .wconvert-table .wconvert-table__actions-row {
+    flex-wrap: wrap;
     justify-content: flex-start;
   }
 }

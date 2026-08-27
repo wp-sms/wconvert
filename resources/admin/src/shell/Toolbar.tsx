@@ -24,9 +24,9 @@ import type { ReactNode } from 'react';
 export function Toolbar({ children, trailing }: { children?: ReactNode; trailing?: ReactNode }) {
   return (
     <div className="wconvert-toolbar flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-border px-4 py-2.5">
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">{children}</div>
+      <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2">{children}</div>
       {trailing !== undefined && (
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">{trailing}</div>
+        <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2">{trailing}</div>
       )}
     </div>
   );

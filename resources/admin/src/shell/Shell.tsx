@@ -158,7 +158,7 @@ function PageHeader({
 
   return (
     <>
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+      <div className="wconvert-page-actions flex flex-wrap items-center gap-x-3 gap-y-2">
         <h1 className="m-0 me-1 text-2xl font-semibold leading-tight tracking-tight text-foreground">
           {entry?.label}
         </h1>

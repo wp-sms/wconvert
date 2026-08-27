@@ -130,3 +130,26 @@ export function DataTableActions({ children }: { children: ReactNode }) {
     </td>
   );
 }
+
+/**
+ * The heading over the Actions cell — a name for a screen reader and a width
+ * for everything else.
+ *
+ * **The width is the reason this is a component rather than an empty `<th>`.**
+ * `inline-size: 1%` on both halves of the column is what makes a table give
+ * Actions its content width and hand the slack to the columns holding data;
+ * without it the browser divided the row evenly and three controls wrapped onto
+ * two lines inside a cell that had room for one. The header carries the same
+ * class as the cell so the two cannot be sized apart.
+ *
+ * The label is visually hidden rather than absent: the column has no name worth
+ * printing over two buttons that say what they do, and a `<th>` with nothing in
+ * it is a column a screen reader announces as blank.
+ */
+export function DataTableActionsColumn({ children }: { children: ReactNode }) {
+  return (
+    <th role="columnheader" scope="col" className="wconvert-table__actions">
+      <span className="sr-only">{children}</span>
+    </th>
+  );
+}

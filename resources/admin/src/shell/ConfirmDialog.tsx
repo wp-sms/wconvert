@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { ReactNode, RefObject } from 'react';
 import { __ } from '@wordpress/i18n';
 import {
   AlertDialog,
@@ -33,9 +33,17 @@ import {
  * default because that is what this component is for; the safe way out is the
  * cancel, and it is the one focus lands on.
  *
- * Radix supplies the focus trap, the restore, Esc-to-close and the ARIA
- * (ADR 0036). What is left is the words, and the words are the part that
- * matters.
+ * Radix supplies the focus trap, Esc-to-close and the ARIA (ADR 0036). What is
+ * left is the words, and the words are the part that matters.
+ *
+ * **`returnFocusTo` is the one thing Radix cannot supply here**, and it was
+ * found in a browser rather than reasoned about: a triggerless dialog has
+ * nothing to restore focus to, so closing either of this admin's confirms left
+ * the caret on `<body>` and a keyboard merchant back at the top of the
+ * document. Radix restores to the `AlertDialogTrigger` it rendered, and this
+ * component deliberately has none — the Optin list's Delete lives inside a
+ * `DropdownMenu`, which unmounts a trigger under it before it can open. So the
+ * caller names the control that opened it, and this puts the caret back.
  */
 export function ConfirmDialog({
   open,
@@ -45,6 +53,7 @@ export function ConfirmDialog({
   confirmLabel,
   cancelLabel,
   onConfirm,
+  returnFocusTo,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -53,10 +62,20 @@ export function ConfirmDialog({
   confirmLabel: string;
   cancelLabel?: string;
   onConfirm: () => void;
+  returnFocusTo?: RefObject<HTMLElement | null>;
 }) {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
+      <AlertDialogContent
+        onCloseAutoFocus={(event) => {
+          const node = returnFocusTo?.current;
+
+          if (node !== null && node !== undefined) {
+            event.preventDefault();
+            node.focus();
+          }
+        }}
+      >
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
           <AlertDialogDescription>{description}</AlertDialogDescription>

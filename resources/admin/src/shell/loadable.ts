@@ -32,12 +32,38 @@ export const ready = <T>(data: T): Loadable<T> => ({ status: 'ready', data });
 /**
  * A thrown thing, as the sentence a region will show.
  *
- * The `instanceof Error` narrowing was written out in four screens and got the
- * same two lines every time. It lives here because the alternative is a fifth
- * copy that says `String(cause)` for an `Error` and prints `[object Object]`.
+ * **`apiFetch` does not reject with an `Error`.** It rejects with WordPress's
+ * REST error body — a plain `{ code, message, data }` object — so the
+ * `instanceof Error ? cause.message : String(cause)` that all five screens
+ * carried rendered every server-side failure as the string `[object Object]`.
+ * Found in a browser against a real 500, not in a test: the four screens' own
+ * suites all threw `new Error()` at it, which is the one shape it handled.
+ *
+ * So the object's `message` is read before falling back. `String(cause)` stays
+ * as the last resort, because a rejection is not obliged to be either of the
+ * two things above and a banner reading something odd is still better than a
+ * banner reading nothing.
+ *
+ * It lives here rather than in four copies because that is what let one bug be
+ * in four places.
  */
-export const messageOf = (cause: unknown): string =>
-  cause instanceof Error ? cause.message : String(cause);
+export const messageOf = (cause: unknown): string => {
+  if (cause instanceof Error) {
+    return cause.message;
+  }
+
+  if (
+    typeof cause === 'object' &&
+    cause !== null &&
+    'message' in cause &&
+    typeof cause.message === 'string' &&
+    cause.message !== ''
+  ) {
+    return cause.message;
+  }
+
+  return String(cause);
+};
 
 export const failed = (cause: unknown): Loadable<never> => ({
   status: 'failed',

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { Download, Inbox } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -104,6 +104,11 @@ export function LeadLog() {
   const [draftDays, setDraftDays] = useState('');
   const [busy, setBusy] = useState(false);
   const [confirming, setConfirming] = useState(false);
+  /*
+   * The radio that asked the question, so cancelling puts the caret back on it
+   * rather than on `<body>` ({@see ConfirmDialog}).
+   */
+  const deleteRadio = useRef<HTMLInputElement>(null);
 
   const refresh = useCallback(async () => {
     try {
@@ -268,6 +273,7 @@ export function LeadLog() {
                   on every edit is a dialog nobody reads by the third one.
                 */}
                 <input
+                  ref={deleteRadio}
                   type="radio"
                   name="wconvert-retention"
                   checked={typeof period?.days === 'number'}
@@ -316,6 +322,7 @@ export function LeadLog() {
           SUGGESTED_DAYS,
         )}
         confirmLabel={__('Turn on automatic deletion', 'wconvert')}
+        returnFocusTo={deleteRadio}
         onConfirm={() => {
           setConfirming(false);
           commitRetention(SUGGESTED_DAYS);

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { Megaphone, MoreHorizontal, Plus, Trash2 } from 'lucide-react';
 import { listGoals } from '../goals/api';
@@ -13,6 +13,7 @@ import {
 import {
   DataTable,
   DataTableActions,
+  DataTableActionsColumn,
   DataTableBody,
   DataTableCell,
   DataTableColumn,
@@ -77,6 +78,12 @@ export function OptinList({
    */
   const [busyId, setBusyId] = useState<string | null>(null);
   const [confirming, setConfirming] = useState<OptinSummary | null>(null);
+  /*
+   * The control that opened the confirm, so closing it puts the caret back
+   * ({@see ConfirmDialog}). Held here rather than in the row because the
+   * dialog is here — a row hands its trigger up when it asks the question.
+   */
+  const returnFocus = useRef<HTMLElement | null>(null);
 
   const refresh = useCallback(async () => {
     try {
@@ -171,9 +178,7 @@ export function OptinList({
             <DataTableColumn>{__('Name', 'wconvert')}</DataTableColumn>
             <DataTableColumn>{__('Goal', 'wconvert')}</DataTableColumn>
             <DataTableColumn>{__('Status', 'wconvert')}</DataTableColumn>
-            <DataTableColumn>
-              <span className="sr-only">{__('Actions', 'wconvert')}</span>
-            </DataTableColumn>
+            <DataTableActionsColumn>{__('Actions', 'wconvert')}</DataTableActionsColumn>
           </DataTableHead>
 
           {list.status === 'loading' ? (
@@ -189,7 +194,10 @@ export function OptinList({
                   onEdit={() => onEdit(optin.id)}
                   onPublish={() => void run(optin.id, () => publishOptin(optin.id))}
                   onUnpublish={() => void run(optin.id, () => unpublishOptin(optin.id))}
-                  onDelete={() => setConfirming(optin)}
+                  onDelete={(trigger) => {
+                    returnFocus.current = trigger;
+                    setConfirming(optin);
+                  }}
                 />
               ))}
             </DataTableBody>
@@ -225,6 +233,7 @@ export function OptinList({
               )
         }
         confirmLabel={__('Delete Optin', 'wconvert')}
+        returnFocusTo={returnFocus}
         onConfirm={() => {
           const optin = confirming;
 
@@ -264,9 +273,10 @@ function Row({
   onEdit: () => void;
   onPublish: () => void;
   onUnpublish: () => void;
-  onDelete: () => void;
+  onDelete: (trigger: HTMLElement | null) => void;
 }) {
   const status = statusOf(optin);
+  const trigger = useRef<HTMLButtonElement>(null);
 
   return (
     <DataTableRow>
@@ -342,7 +352,7 @@ function Row({
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon-sm" disabled={busy}>
+            <Button ref={trigger} variant="ghost" size="icon-sm" disabled={busy}>
               <MoreHorizontal aria-hidden="true" />
               {/*
                 Named for the row, not just "More": a table of thirty rows
@@ -360,7 +370,7 @@ function Row({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem variant="destructive" onSelect={onDelete}>
+            <DropdownMenuItem variant="destructive" onSelect={() => onDelete(trigger.current)}>
               <Trash2 aria-hidden="true" />
               {__('Delete', 'wconvert')}
             </DropdownMenuItem>
