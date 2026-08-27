@@ -82,20 +82,28 @@ export function App() {
 function BuilderScreen({ id, onClose }: { id: string; onClose: () => void }) {
   const fits = useBuilderViewport();
 
+  if (!fits) {
+    /*
+     * The way out is rendered HERE and only here, because {@see OptinBuilder}
+     * draws its own and it is not on screen. Two back buttons is what the
+     * first version of this shipped.
+     */
+    return (
+      <PlainShell>
+        <Button variant="ghost" size="sm" className="mb-4 -ms-3" onClick={onClose}>
+          <ArrowLeft aria-hidden="true" />
+          {__('All Optins', 'wconvert')}
+        </Button>
+        <NarrowScreenNotice />
+      </PlainShell>
+    );
+  }
+
   return (
     <PlainShell>
-      <Button variant="ghost" size="sm" className="mb-4 -ms-3" onClick={onClose}>
-        <ArrowLeft aria-hidden="true" />
-        {__('All Optins', 'wconvert')}
-      </Button>
-
-      {fits ? (
-        <div className="wconvert-legacy">
-          <OptinBuilder id={id} onClose={onClose} />
-        </div>
-      ) : (
-        <NarrowScreenNotice />
-      )}
+      <div className="wconvert-legacy">
+        <OptinBuilder id={id} onClose={onClose} />
+      </div>
     </PlainShell>
   );
 }

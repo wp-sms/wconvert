@@ -247,6 +247,23 @@
   @apply relative bg-background text-foreground;
   margin-inline-start: -20px;
   width: calc(100% + 20px);
+
+  /*
+   * Tall enough that our background reaches the bottom of the window on a
+   * screen with little on it. Without this the app stops at its content and
+   * wp-admin's grey shows through underneath — a seam across a page that is
+   * supposed to be one surface.
+   */
+  min-block-size: calc(100vh - var(--wp-admin--admin-bar--height, 32px));
+}
+
+/*
+ * The 65px this reserves is the gap wp-admin leaves between a screen and the
+ * footer. Our surface runs to the footer instead, so the reservation is the
+ * seam. The footer itself is untouched and keeps its own backdrop.
+ */
+#wpbody-content {
+  padding-bottom: 0;
 }
 
 /*
@@ -269,10 +286,18 @@
 /*
  * Anything that echoes a notice straight into `admin_head` or
  * `in_admin_header` bypasses the `admin_notices` hook and therefore bypasses
- * {@see \WConvert\Admin\AdminNotices::suppress()}. WConvert's own surviving
- * notice carries none of these classes, so it is not caught by this.
+ * {@see \WConvert\Admin\AdminNotices::suppress()}.
+ *
+ * **`:not(.wconvert-notice)` is what keeps this from silencing us.** The
+ * plugin's own surviving notice wears `.notice notice-error` deliberately —
+ * it has to be legible on the failure where our stylesheet never loaded — and
+ * it is printed by the page callback, which makes it a DIRECT CHILD of
+ * `#wpbody-content` and therefore a match for the selector below. Without the
+ * exclusion this rule hid the very message that exists to survive the
+ * suppression, and hid it only on the failure where the stylesheet WAS
+ * present, which is the half nobody would have tested.
  */
-#wpbody-content > .notice,
+#wpbody-content > .notice:not(.wconvert-notice),
 #wpbody-content > .updated,
 #wpbody-content > .error,
 #wpbody-content > .update-nag {
@@ -306,6 +331,44 @@
  * `#2271b1` blue are now tokens, so the page reads as one palette while the
  * shapes stay exactly where a merchant left them.
  * ------------------------------------------------------------------------- */
+
+/*
+ * **`fixed` means two different things and Tailwind's wins.**
+ *
+ * WordPress spells `table-layout: fixed` as a class — `<table class="wp-list-table
+ * widefat fixed striped">` — and Tailwind spells `position: fixed` the same
+ * way. Ours is `!important` and unlayered, so on every list table in the admin
+ * the utility won: the table left the flow, its `width: 100%` resolved against
+ * the VIEWPORT rather than its column, and it ran off the right of the screen
+ * while the page collapsed underneath it. Three screens — the Optin list, the
+ * lead log and the dashboard, whose table renders only once there is data and
+ * which therefore looked fine on an empty install.
+ *
+ * This is exactly the failure ADR 0035 warned `important` could cause, arriving
+ * through a door nobody was watching: not a specificity fight but a NAME
+ * collision, and one a green suite cannot see. **The lesson generalises past
+ * this rule** — any WordPress class name that happens to be a Tailwind utility
+ * (`block`, `hidden`, `inline`, `sticky`, `container`, `visible`, `border`)
+ * will do the same thing, so a screen converted in #64-#72 that keeps a
+ * WordPress class is carrying the same risk until the class goes.
+ *
+ * `position` is all that is corrected: `table-layout: fixed` comes from
+ * WordPress's own rule for the same class and is what the markup actually
+ * wanted.
+ *
+ * **The override lives INSIDE `@layer utilities`, and that is not decoration.**
+ * For `!important` declarations the cascade runs layers in REVERSE — an
+ * important declaration in a layer beats an important declaration that is
+ * unlayered, however specific the unlayered one is. Written outside the layer
+ * this rule loses to `.fixed` at one class against an id and two, which is
+ * what it did on the first attempt. Inside the same layer the ordinary rules
+ * apply again and specificity decides.
+ */
+@layer utilities {
+  #wconvert-admin table.wp-list-table.fixed {
+    position: static !important;
+  }
+}
 
 /*
  * Preflight zeroes the margins the browser gave `<p>`, `<h2>` and `<ul>`, and

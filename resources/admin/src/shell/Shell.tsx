@@ -20,7 +20,7 @@ import { SECTIONS, hashFor, type SectionId } from '../nav';
  */
 export function Shell({ section, children }: { section: SectionId; children: ReactNode }) {
   return (
-    <div className="min-h-[60vh] font-sans text-[15px] leading-normal text-foreground">
+    <div className="font-sans text-[15px] leading-normal text-foreground">
       <header className="border-b border-border bg-card">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 pt-5 sm:px-6">
           <Wordmark />
@@ -44,7 +44,7 @@ export function Shell({ section, children }: { section: SectionId; children: Rea
  */
 export function PlainShell({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-[60vh] font-sans text-[15px] leading-normal text-foreground">
+    <div className="font-sans text-[15px] leading-normal text-foreground">
       <header className="border-b border-border bg-card">
         <div className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6">
           <Wordmark />
