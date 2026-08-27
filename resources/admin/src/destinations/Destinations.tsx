@@ -351,7 +351,7 @@ function Configured({
                 /* translators: 1: number of captures, 2: a date and time. */
                 _n(
                   '%1$d capture was not sent, most recently at %2$s. Fix what this destination needs, then re-push.',
-                  '%1$d captures were not sent, most recently at %2$s. Fix what this Destination needs, then re-push.',
+                  '%1$d captures were not sent, most recently at %2$s. Fix what this destination needs, then re-push.',
                   destination.health.skipped_captures,
                   'wconvert',
                 ),

@@ -5,6 +5,29 @@ WConvert's admin screen renders **none of WordPress's admin chrome**. No
 whole page and admin notices are suppressed on it. Everything a merchant sees on
 `admin.php?page=wconvert` is WConvert's, drawn from WConvert's own tokens.
 
+_Amended by [#69](https://github.com/navidkashani/wconvert/issues/69), recorded
+here by [#74](https://github.com/navidkashani/wconvert/issues/74): **"no
+`.button`" is not true of the builder's four editors**, and has not been since
+the builder converted. `SettingsPanel`, `RuleRows`, `TargetingEditor` and
+`DestinationsEditor` still emit `.button`, `regular-text`, `description`,
+`widefat` and bare `<select>`s, and `index.css` (~line 872) retargets their
+COLOUR and RADIUS to WConvert's tokens while leaving the box model, the sizes
+and the focus behaviour exactly as WordPress drew them. `table.wp-list-table`
+is likewise styled rather than absent._
+
+_That is a staged boundary, not a reversal of this ADR. The reason it is a
+boundary and not a hybrid — the posture eliminated two sections below — is that
+the hybrid put WordPress's chrome and WConvert's side by side on ONE screen,
+with a seam down the middle where they met. Here the un-converted controls are
+all inside the builder's settings column, wearing WConvert's colours, waiting
+for the component that replaces each one. The rule the CSS states is: change
+what a control LOOKS like now, change what it IS when its replacement lands._
+
+_Written into this ADR rather than left in the stylesheet because a CSS comment
+is the map and this is the territory — the failure `docs/agents/domain.md`
+names. #74 walked the builder and found the ADR still saying the thing the code
+stopped doing._
+
 That is a reversal. The screen shipped as WordPress defaults throughout, and
 [#62](https://github.com/navidkashani/wconvert/pull/62) built its section nav out
 of `nav-tab` markup a fortnight before this was decided. **That nav is

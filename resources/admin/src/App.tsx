@@ -163,9 +163,15 @@ function OptinsSection({
     return (
       <>
         {/*
-          Outside {@see Legacy}, because the way out of the flow is the page's
-          and not the flow's. Inside the wrapper it sat within the card it is
-          meant to be above.
+          Above the region rather than inside it, because the way out of the
+          flow is the PAGE's and not the flow's — it leaves the whole flow, so
+          it cannot sit within the card the flow draws.
+
+          This used to read "outside {@see Legacy}", naming the
+          `.wconvert-legacy` wrapper that put it inside that card. The wrapper
+          left with the last un-converted screen (ADR 0039) and the reference
+          went dead with it; the placement it argued for is still the right
+          one, so the reason is restated rather than deleted.
         */}
         <Button variant="ghost" size="sm" className="mb-4 -ms-3" onClick={onCancelCreate}>
           <ArrowLeft aria-hidden="true" />

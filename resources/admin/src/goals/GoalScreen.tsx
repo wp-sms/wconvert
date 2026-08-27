@@ -186,6 +186,33 @@ function GoalPicker({
               <ChoiceSkeleton key={row} />
             ))}
           </ChoiceGrid>
+        ) : shown.length === 0 ? (
+          /*
+           * **The third state step one was missing.** Loading and failed were
+           * both here; `ready` with nothing in it rendered an empty
+           * `ChoiceGrid` — a blank region under a question nobody could
+           * answer. ADR 0039 asks every region for all three, and this was
+           * the last one on this branch still owing one. Found by #74's pass,
+           * which forced the state rather than waiting for a site to reach it.
+           *
+           * **It carries no action, deliberately.** Every other empty state
+           * here names the door that fixes it, and there is no door: what is
+           * missing is a [[Goal]] registry entry, which arrives from the
+           * plugin or from a third party and never from anything a merchant
+           * can press. The sentence says what would fill it instead — an
+           * honest dead end beats a button that pretends.
+           *
+           * Reachable because `shown` is filtered: [[Availability]]
+           * `unavailable` HIDES rather than explains in a creation flow
+           * (ADR 0026), so a site every Goal is unavailable on empties this
+           * grid rather than shortening it.
+           */
+          <EmptyState icon={Sparkles} title={__('No goals available', 'wconvert')}>
+            {__(
+              'Nothing on this site can be captured against a goal yet. Goals arrive with WConvert and with the plugins that extend it.',
+              'wconvert',
+            )}
+          </EmptyState>
         ) : (
           <ChoiceGrid>
             {shown.map((goal) => {

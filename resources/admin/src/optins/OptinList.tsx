@@ -433,14 +433,6 @@ function Row({
 }
 
 /**
- * The two figures a row carries beside its state.
- *
- * Not `OptinReport`: that carries `headline` and `by_day` as well, and a row
- * has no honest heading for either — `headline` is the Goal's own metric and
- * this list is mixed. Narrowing here is what makes the wrong column
- * unexpressible rather than merely absent.
- */
-/**
  * The badge a state wears.
  *
  * Green for *published* and amber for *suspended* is ADR 0037's reserved

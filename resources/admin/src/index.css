@@ -671,13 +671,25 @@
    * The Actions cell has no label worth repeating — the controls say what they
    * are — so it takes the whole card width and sits under a rule, which is
    * where a card's actions read as the card's rather than as one more field.
+   *
+   * **`inline-size` and `white-space` are taken BACK here, and forgetting them
+   * is what shipped a 3px cell.** Both are set above for the table, where they
+   * are one idea: `1%` is not a width there but a hint the table algorithm
+   * reads as "as narrow as the content allows", and `nowrap` is what stops two
+   * buttons that fit becoming two lines. Neither survives the cell becoming a
+   * block. A block resolves `1%` literally — 1% of the card, which measured
+   * 3.02px — and `nowrap` then carried the buttons out through the card's
+   * leading edge rather than wrapping them. Restoring the initial values is
+   * what makes `display: block` above mean the full card width it says.
    */
   #wconvert-admin .wconvert-table > tbody > tr > td.wconvert-table__actions {
     display: block;
     margin-block-start: 0.5rem;
     padding-block-start: 0.625rem;
     border-block-start: 1px solid var(--border);
+    inline-size: auto;
     text-align: start;
+    white-space: normal;
   }
 
   #wconvert-admin .wconvert-table > tbody > tr > td.wconvert-table__actions::before {
@@ -868,6 +880,12 @@
  * This read "the screens #64-#72 have not converted yet" until those tickets
  * closed. They are converted; the editors inside the builder are the part that
  * is not, which is the boundary stated above rather than a screen left behind.
+ *
+ * **ADR 0035 carries this now, in its opening paragraph.** It said "no
+ * `.button`" flatly and this file was the only place saying otherwise — the
+ * map-not-territory failure `docs/agents/domain.md` names, and the reason that
+ * rule asks for BOTH directions. #74 amended the ADR inline; this is the
+ * pointer back.
  *
  * **This retargets colour and radius, and touches nothing else.** The box
  * model, the sizes and the focus behaviour are left exactly as WordPress drew

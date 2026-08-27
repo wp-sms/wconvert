@@ -128,6 +128,13 @@ export const readDashboard = (days: number | null) =>
  * headline number is not the same number under every Goal — two of the five
  * convert on a click — and a figure shown without the word for it is the
  * ambiguity {@see GoalReport} exists to prevent.
+ *
+ * **Narrower than `OptinReport`, and that is the point.** That carries
+ * `by_day` as well, which an Optin ROW has no honest heading for — so keeping
+ * this shape to what a row can label makes the wrong column unexpressible
+ * rather than merely absent. The argument lived beside `OptinList`'s own copy
+ * of this type until the type moved here; #74 found the docblock still there,
+ * describing nothing, directly above the next declaration's.
  */
 export interface OptinNumbers {
   /** What the headline number is CALLED, off the card this Optin sits in. */
