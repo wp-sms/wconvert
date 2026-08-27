@@ -87,6 +87,45 @@ require_populated_dir() {
 }
 
 # ---------------------------------------------------------------------------
+# A file whose NAME carries a content hash, so the contract names a pattern.
+#
+# `require_file` for everything whose name is fixed; this for the two the admin
+# build writes, whose hashes are what bust a browser cache and, for the entry,
+# what keeps one module from being loaded twice (see `WConvert\Assets\ViteHelper`).
+#
+# It holds the same floor `require_file` does and `require_populated_dir` does
+# not: **a zero-byte match is a failure.** That is what a build interrupted
+# halfway leaves behind, and it passes every existence check ever written.
+#
+#   $1 = tree, $2 = directory relative to it, $3 = find(1) name pattern,
+#   $4 = why it must be there
+# ---------------------------------------------------------------------------
+require_matching_file() {
+    local tree="$1" rel="$2" pattern="$3" why="$4"
+    local dir="$tree/$rel"
+    local match="" rc=0
+
+    if [ ! -d "$dir" ] || [ ! -r "$dir" ] || [ ! -x "$dir" ]; then
+        fail "$rel/ is missing or unreadable — $why"
+        return 1
+    fi
+
+    match="$(find "$dir" -maxdepth 1 -type f -name "$pattern" -size +0c -print -quit)" || rc=$?
+
+    if [ "$rc" -ne 0 ]; then
+        fail "could not search $rel/ for $pattern — cannot verify"
+        return 1
+    fi
+
+    if [ -z "$match" ] || [ ! -r "$match" ]; then
+        fail "$rel/$pattern is missing, empty or unreadable — $why"
+        return 1
+    fi
+
+    return 0
+}
+
+# ---------------------------------------------------------------------------
 # Run one of the Pro scanners over some paths.
 #
 # The THIRD exit code is the important one: 0 clean, 1 offenders (with a

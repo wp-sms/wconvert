@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { ArrowLeft, Plus } from 'lucide-react';
-import { OptinBuilder } from './builder/OptinBuilder';
-import { GoalScreen } from './goals/GoalScreen';
+import { GoalScreen, OptinBuilder } from './builder/lazy';
 import { LeadLog } from './leads/LeadLog';
 import { OptinList } from './optins/OptinList';
 import { Dashboard } from './stats/Dashboard';
@@ -99,12 +98,15 @@ export function App() {
  * to the scroll, none of which is work worth doing behind a message saying it
  * cannot be shown.
  *
- * **That saves the WORK and not the BYTES.** The import above is static, so
- * the builder and the renderer it pulls are in the bundle whatever this
- * decides — which is also why the size printed by every build is the unsplit
- * number. Making it a lazy boundary is
- * [#73](https://github.com/navidkashani/wconvert/issues/73), and it is not a
- * one-line change: the admin is built as an IIFE, and IIFE cannot code-split.
+ * **It now saves the BYTES as well, and that is #73.** The import above is
+ * `builder/lazy`, not the builder — so the four reading screens never fetch
+ * it, and neither does this arm: the chunk is requested when the boundary
+ * mounts, and below 782px the boundary is never rendered at all. The saving
+ * and the work now go together, where the gate used to buy only the second.
+ *
+ * The `Shell` is drawn HERE rather than inside the boundary, so the masthead
+ * and the header band are on screen the instant the merchant clicks. Only the
+ * inside of the page waits.
  */
 function BuilderScreen({ id, onClose }: { id: string; onClose: () => void }) {
   const fits = useBuilderViewport();

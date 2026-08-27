@@ -42,7 +42,17 @@ vi.mock('../../resources/admin/src/templates/api', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../../resources/admin/src/templates/api')>()),
   ...templates,
 }));
-vi.mock('../../resources/admin/src/stats/api', () => stats);
+/*
+ * Spread over the real module rather than replacing it, exactly as
+ * `templates/api` is above. `readDashboard` is the fetch and belongs stubbed;
+ * `numbersByOptin` beside it is a pure walk over the payload this file already
+ * writes by hand, and stubbing the module wholesale replaced it with
+ * `undefined` — a builder that silently showed no numbers at all.
+ */
+vi.mock('../../resources/admin/src/stats/api', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../../resources/admin/src/stats/api')>()),
+  ...stats,
+}));
 vi.mock('../../resources/admin/src/destinations/api', () => destinations);
 
 const { OptinBuilder } = await import('../../resources/admin/src/builder/OptinBuilder');
@@ -208,12 +218,22 @@ describe('the builder shell', () => {
  * of an explicit Save is that the one door out has to ask.
  */
 describe('the way out of the builder', () => {
+  /**
+   * **Waits for the builder before leaving it, and that is not ceremony.** The
+   * skeleton draws its own way out — it has to, since a merchant on a slow
+   * connection must be able to turn back before the Optin arrives (#73) — so
+   * this clicked the placeholder's button on the frame before the real one
+   * existed. React replaces the whole subtree when the skeleton gives way, so
+   * the node it had was detached by the time it was clicked, and the assertion
+   * was about a control nobody could still see.
+   */
   it('leaves at once when there is nothing to lose', async () => {
     const closed = vi.fn();
 
     render(<OptinBuilder id={ID} onClose={closed} />);
 
-    await userEvent.click(await screen.findByRole('button', { name: 'All Optins' }));
+    await screen.findByRole('tab', { name: 'Design' });
+    await userEvent.click(screen.getByRole('button', { name: 'All Optins' }));
 
     expect(closed).toHaveBeenCalled();
   });

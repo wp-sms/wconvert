@@ -5,7 +5,7 @@ import { mount } from '@renderer/mount';
 import type { Template } from '@renderer/types';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
-import { Skeleton } from '../components/ui/skeleton';
+import { ChoiceCard, ChoiceGrid, ChoiceSkeleton } from '../shell/ChoiceGrid';
 import { EmptyState } from '../shell/EmptyState';
 import { Region, RegionBody, RegionError, RegionErrorState, RegionHeader } from '../shell/Region';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
@@ -430,83 +430,6 @@ function StepFooter({
       </Button>
       {forward}
     </div>
-  );
-}
-
-/**
- * The cards a step offers.
- *
- * `auto-fit` with a 16rem floor: four Goals are two rows of two on a laptop and
- * one column at 360px, without a breakpoint anywhere. It was a `<ul>` with
- * bullets and a button loose under each item, and `.wconvert-goal-card` — the
- * class that was supposed to make them cards — had no CSS anywhere in this
- * admin.
- */
-function ChoiceGrid({ children }: { children: React.ReactNode }) {
-  return (
-    /*
-      `auto-fill` rather than `auto-fit`, and the difference shows on a Goal
-      with exactly one Playbook: `auto-fit` collapses the empty tracks and
-      stretches the single card to the full region, so its notes ran at a
-      thousand-pixel measure. `auto-fill` keeps the tracks, so one card is the
-      same card as one of four.
-    */
-    <ul className="m-0 grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-[repeat(auto-fill,minmax(16rem,1fr))]">
-      {children}
-    </ul>
-  );
-}
-
-function ChoiceCard({
-  id,
-  title,
-  notes,
-  badge,
-  action,
-}: {
-  id: string;
-  title: string;
-  notes: string;
-  badge?: React.ReactNode;
-  action: (describedBy: string) => React.ReactNode;
-}) {
-  const titleId = `wconvert-choice-${id}`;
-
-  return (
-    <li className="flex flex-col gap-2 rounded-md border border-border bg-card p-4">
-      <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
-        <h3
-          id={titleId}
-          className="m-0 text-base font-semibold leading-tight tracking-tight text-foreground"
-        >
-          {title}
-        </h3>
-        {badge}
-      </div>
-      <p className="m-0 flex-1 text-pretty text-muted-foreground">{notes}</p>
-      {/*
-        **Four buttons all called "Choose" is four buttons a keyboard user
-        cannot tell apart.** The visible label stays short because the card it
-        sits in is what it refers to; `aria-describedby` is what carries that
-        fact into the accessibility tree, so the button announces as "Choose,
-        Grow my email list" without the card growing a longer label. ADR 0038
-        sets AA as the bar, and this is the shape the ARIA practices give for a
-        list of cards with one action each.
-      */}
-      <div className="mt-1">{action(titleId)}</div>
-    </li>
-  );
-}
-
-/** A card in the shape of the cards that are coming, never the empty state. */
-function ChoiceSkeleton() {
-  return (
-    <li className="flex flex-col gap-3 rounded-md border border-border bg-card p-4">
-      <Skeleton className="h-4 w-40 max-w-full" />
-      <Skeleton className="h-3 w-full" />
-      <Skeleton className="h-3 w-2/3" />
-      <Skeleton className="mt-1 h-9 w-24" />
-    </li>
   );
 }
 

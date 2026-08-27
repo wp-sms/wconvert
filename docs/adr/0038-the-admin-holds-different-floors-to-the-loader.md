@@ -47,6 +47,13 @@ leads — near what it costs today, and puts the weight on the screen that
 justifies it. This is worth more than any budget number would have been, because
 it changes what is loaded rather than arguing about what may be.
 
+> Built in [#73](https://github.com/navidkashani/wconvert/issues/73). What this
+> paragraph did not anticipate is that **the creation flow is on the builder's
+> side of the line**: it ends in the builder by construction and draws a real
+> design at its last step, so it needs the renderer too, and leaving it eager
+> would have put the renderer back on every reading screen. See
+> [ADR 0041](0041-the-admin-ships-as-a-module-so-it-can-split.md).
+
 ## The responsive floor is split because the honesty is in the split
 
 - **Reading screens work to 360px.** Checking a conversion count or yesterday's
@@ -107,17 +114,25 @@ failure, not a line of new code.
   every pull request that the loader's source imports nothing from
   `resources/admin/`.
 - **A build prints the admin bundle's gzipped size**, so growth is visible where
-  it is caused.
+  it is caused. *Amended by
+  [ADR 0041](0041-the-admin-ships-as-a-module-so-it-can-split.md): it prints
+  **two** figures now — what every screen pays and what the builder adds on
+  top — because one total stopped answering the question the moment the split
+  landed.*
 - **The builder is a lazy boundary**, which means it is also the natural place for
   anything else heavy to land later without a conversation about the budget.
-  *Not built as of [#63](https://github.com/navidkashani/wconvert/issues/63),
-  which stood the reporting up; the split is
-  [#73](https://github.com/navidkashani/wconvert/issues/73). Until it lands the
-  printed number is the UNSPLIT bundle, so a reader comparing it against the
-  argument above should know it is the pessimistic figure and not the one a
-  merchant checking yesterday's leads actually pays. The split needs the admin
-  build to stop being an IIFE, which cannot code-split — that is the work #73
-  carries and the reason it is a ticket rather than a line.*
+  *Built in [#73](https://github.com/navidkashani/wconvert/issues/73), and
+  recorded in
+  [ADR 0041](0041-the-admin-ships-as-a-module-so-it-can-split.md). This bullet
+  originally continued: "Not built as of #63, which stood the reporting up …
+  until it lands the printed number is the UNSPLIT bundle … the pessimistic
+  figure and not the one a merchant checking yesterday's leads actually pays."
+  That is no longer true. The reading screens are **132.6 kB** gzipped and the
+  builder is **20.6 kB** fetched on demand, against 150.1 kB when everything
+  loaded together. The obstacle named there — an IIFE cannot code-split — was
+  real and is what made #73 a ticket; ADR 0041 is the three changes it took.
+  The boundary itself is `resources/admin/src/builder/lazy.tsx`, and that is
+  where anything heavy lands.*
 - **A 782px message is a shipped string** and therefore translatable, and it needs
   to say what the merchant should do rather than that something is unsupported.
 - **If someone later shows the admin bundle actually hurting**, the escalation is

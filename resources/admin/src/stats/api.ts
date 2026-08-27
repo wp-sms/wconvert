@@ -119,3 +119,46 @@ export const readDashboard = (days: number | null) =>
   apiFetch<DashboardPayload>({
     path: `/wconvert/v1/dashboard${days === null ? '' : `?days=${encodeURIComponent(String(days))}`}`,
   });
+
+/**
+ * One [[Optin]]'s numbers, and what its [[Goal]] calls the headline one.
+ *
+ * The card is the payload's shape and an Optin's numbers arrive INSIDE it, so
+ * reading one row means walking the cards. `label` is carried down because the
+ * headline number is not the same number under every Goal — two of the five
+ * convert on a click — and a figure shown without the word for it is the
+ * ambiguity {@see GoalReport} exists to prevent.
+ */
+export interface OptinNumbers {
+  /** What the headline number is CALLED, off the card this Optin sits in. */
+  readonly label: string;
+  readonly report: OptinReport;
+}
+
+/**
+ * The dashboard's cards, flattened to one row per [[Optin]].
+ *
+ * ============================================================================
+ * TWO SCREENS READ THIS AND NEITHER WALKS THE PAYLOAD ITSELF.
+ * ============================================================================
+ * The Optin list wants a number beside every row; the builder wants the one row
+ * it is editing. Both were spelling the same walk — `payload.goals`, then
+ * `card.optins` — beside the same swallowed `catch`, and `format.ts` was
+ * already extracted because the same thing had happened to the FORMATTING. The
+ * read is the other half of that.
+ *
+ * **It is still the dashboard's own read, deliberately** (ADR 0034). The
+ * builder fetching a whole dashboard to find one row is more payload than that
+ * screen needs, and the alternative is worse: a second endpoint computing
+ * impressions and conversion rate a second way, which is exactly the drift
+ * ADR 0034 refused when it put the join in PHP. The join is one query over
+ * daily counters, the response is small, and a narrower read would be a second
+ * spelling of the [[Goal]]'s own interpretation of a [[Conversion]] (ADR 0020).
+ * Revisit it when an install's dashboard is slow, not before.
+ */
+export const numbersByOptin = (payload: DashboardPayload): Record<string, OptinNumbers> =>
+  Object.fromEntries(
+    payload.goals.flatMap((card) =>
+      card.optins.map((optin) => [optin.id, { label: card.headline_label, report: optin }]),
+    ),
+  );

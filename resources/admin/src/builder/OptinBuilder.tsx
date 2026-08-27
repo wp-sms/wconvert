@@ -6,13 +6,12 @@ import {
   useState,
   type CSSProperties,
   type ReactNode,
-  type Ref,
 } from 'react';
 import { __ } from '@wordpress/i18n';
-import { ArrowLeft, Check, Monitor, Smartphone } from 'lucide-react';
+import { Check, Monitor, Smartphone } from 'lucide-react';
 import { Button } from '../components/ui/button';
-import { Skeleton } from '../components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
+import { BackLink, BuilderSkeleton } from '../shell/BuilderSkeleton';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { PageAction } from '../shell/PageActions';
 import { Region, RegionBody, RegionError, RegionErrorState } from '../shell/Region';
@@ -28,7 +27,7 @@ import { TargetingEditor, type Targeting } from './TargetingEditor';
 import { getOptin, getRules, saveOptin, type Rule, type RuleVocabulary } from './api';
 import type { Selection, SlotKey } from './slots';
 import { listTemplates, type Gallery as TemplateGallery, type TemplateEntry } from '../templates/api';
-import { readDashboard, type OptinReport } from '../stats/api';
+import { numbersByOptin, readDashboard, type OptinNumbers } from '../stats/api';
 import { formatCount, formatRate } from '../stats/format';
 import { adminSettings } from '../settings';
 import type { Template } from '@renderer/types';
@@ -169,7 +168,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
   const [step, setStep] = useState(0);
   const [device, setDevice] = useState<Device>('desktop');
   const [selection, setSelection] = useState<Selection | null>(null);
-  const [stats, setStats] = useState<{ label: string; report: OptinReport } | null>(null);
+  const [stats, setStats] = useState<OptinNumbers | null>(null);
   const [leaving, setLeaving] = useState(false);
   const back = useRef<HTMLButtonElement>(null);
 
@@ -225,6 +224,12 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
    * {@see OptinList}. Numbers are a nicety on an editing screen; they must not
    * cost the merchant the Save button, and `error` above is reserved for the
    * failure that would.
+   *
+   * The walk from cards to one row is {@see numbersByOptin}, which the Optin
+   * list also reads — this screen had its own copy of it, beside its own copy
+   * of the swallowed `catch`, which is how one read came to be spelled twice.
+   * That comment also records why the whole dashboard is fetched to find one
+   * row, and the answer is ADR 0034.
    */
   useEffect(() => {
     if (publishedAt === null || goal === null) {
@@ -232,17 +237,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
     }
 
     readDashboard(null)
-      .then((payload) => {
-        for (const card of payload.goals) {
-          const found = card.optins.find((optin) => optin.id === id);
-
-          if (found !== undefined) {
-            setStats({ label: card.headline_label, report: found });
-
-            return;
-          }
-        }
-      })
+      .then((payload) => setStats(numbersByOptin(payload)[id] ?? null))
       .catch(() => undefined);
   }, [id, goal, publishedAt]);
 
@@ -309,9 +304,9 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
   if (fatal !== null) {
     return (
       <div className="flex flex-col gap-4">
-        <BuilderBand>
+        <PageAction>
           <BackLink onClose={onClose} />
-        </BuilderBand>
+        </PageAction>
         <Region label={__('Optin builder', 'wconvert')}>
           <RegionErrorState
             message={fatal}
@@ -322,34 +317,34 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
     );
   }
 
+  /*
+   * **The same skeleton the lazy boundary draws while the chunk is in flight**
+   * ({@see BuilderSkeleton}). Opening the builder is two waits end to end — the
+   * chunk, then `getOptin` — and a merchant should see one placeholder across
+   * both rather than one placeholder replaced by a different one at the moment
+   * the code arrives.
+   */
   if (config === null || vocabulary === null || gallery === null) {
-    return (
-      <div className="flex flex-col gap-4">
-        <BuilderBand>
-          <BackLink onClose={onClose} />
-          <Skeleton className="mt-3 h-9 w-72 max-w-full" />
-        </BuilderBand>
-        <Region label={__('Optin builder', 'wconvert')}>
-          <RegionBody className="flex flex-col gap-4">
-            <Skeleton className="h-4 w-full max-w-md" />
-            <Skeleton className="h-48 w-full" />
-          </RegionBody>
-        </Region>
-      </div>
-    );
+    return <BuilderSkeleton onClose={onClose} />;
   }
 
   return (
     <div className="flex flex-col gap-4">
       {/*
-        **The same band every other screen has.** The frame draws a page header
-        for a section and the builder has none — it replaces even the section
-        nav (#62) — so it draws its own, in the same place, on the same surface,
-        with the same rule under it. The negative margins take it full-bleed out
-        of `<main>`'s measure, which is what makes it read as the frame's band
-        rather than as the first card on the page.
+        **The same band every other screen has, and it IS the frame's.** The
+        builder has no `section`, so the frame draws it no title — but it does
+        have a title of its own and an action that acts on the whole Optin, and
+        those belong on the same surface as every other screen's. Drawing a
+        lookalike inside `<main>` got the surface right and the width wrong:
+        `main` is a centred `max-w-6xl`, so the rule under the band stopped a
+        hundred pixels short of the screen. `Shell`'s `bareHeader` renders the
+        real band and {@see PageAction} portals this into it.
+
+        All three arms of this screen portal into the same one — and so does
+        {@see BuilderSkeleton} on the far side of the lazy boundary — so a slow
+        load never draws a header that then moves.
       */}
-      <BuilderBand>
+      <PageAction>
         <BackLink ref={back} onClose={leave} />
 
         {/*
@@ -412,7 +407,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
             />
           </StatRow>
         )}
-      </BuilderBand>
+      </PageAction>
 
       <div className="wconvert-builder">
         <div className="wconvert-builder__tabs">
@@ -523,10 +518,8 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
 
         <PreviewColumn
           entry={entry}
-          step={step}
-          onStep={setStep}
-          device={device}
-          onDevice={setDevice}
+          step={{ value: step, onChange: setStep }}
+          device={{ value: device, onChange: setDevice }}
           selected={selection?.key ?? null}
           onSelect={chooseFromPreview}
         />
@@ -557,6 +550,21 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
 }
 
 /**
+ * A value this column shows and the control that changes it, as one thing.
+ *
+ * The step and the device are two **controlled pairs**: a value the parent
+ * holds and the setter that moves it, meaningless apart. Spelled as four props
+ * they read as four independent inputs, and a caller could hand over a device
+ * with no way to change it — a toggle that does nothing, which the types would
+ * have allowed. `value`/`onChange` rather than names of this file's own,
+ * because that is what every controlled component in this tree already spells.
+ */
+interface Controlled<T> {
+  readonly value: T;
+  readonly onChange: (next: T) => void;
+}
+
+/**
  * The preview, and the two things that decide what it is showing.
  *
  * **Beside the tabs rather than inside one.** A merchant tightening a Trigger
@@ -568,23 +576,19 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
 function PreviewColumn({
   entry,
   step,
-  onStep,
   device,
-  onDevice,
   selected,
   onSelect,
 }: {
   entry: TemplateEntry | null;
-  step: number;
-  onStep: (step: number) => void;
-  device: Device;
-  onDevice: (device: Device) => void;
+  step: Controlled<number>;
+  device: Controlled<Device>;
   selected: SlotKey | null;
   onSelect: (key: SlotKey) => void;
 }) {
   const steps = entry?.tree.steps.length ?? 0;
-  const shown = Math.min(step, Math.max(steps - 1, 0));
-  const measure = device === 'mobile' ? PHONE_WIDTH : (entry?.tokens.width ?? OWN_WIDTH);
+  const shown = Math.min(step.value, Math.max(steps - 1, 0));
+  const measure = device.value === 'mobile' ? PHONE_WIDTH : (entry?.tokens.width ?? OWN_WIDTH);
 
   return (
     <aside className="wconvert-builder__preview" aria-label={__('Preview', 'wconvert')}>
@@ -598,7 +602,7 @@ function PreviewColumn({
                 size="sm"
                 variant={index === shown ? 'secondary' : 'ghost'}
                 aria-pressed={index === shown}
-                onClick={() => onStep(index)}
+                onClick={() => step.onChange(index)}
               >
                 {/*
                   Terminal is STRUCTURAL — the success state is the last step
@@ -618,9 +622,9 @@ function PreviewColumn({
           <Button
             type="button"
             size="icon-sm"
-            variant={device === 'desktop' ? 'secondary' : 'ghost'}
-            aria-pressed={device === 'desktop'}
-            onClick={() => onDevice('desktop')}
+            variant={device.value === 'desktop' ? 'secondary' : 'ghost'}
+            aria-pressed={device.value === 'desktop'}
+            onClick={() => device.onChange('desktop')}
           >
             <Monitor aria-hidden="true" />
             <span className="sr-only">{__('Desktop', 'wconvert')}</span>
@@ -628,9 +632,9 @@ function PreviewColumn({
           <Button
             type="button"
             size="icon-sm"
-            variant={device === 'mobile' ? 'secondary' : 'ghost'}
-            aria-pressed={device === 'mobile'}
-            onClick={() => onDevice('mobile')}
+            variant={device.value === 'mobile' ? 'secondary' : 'ghost'}
+            aria-pressed={device.value === 'mobile'}
+            onClick={() => device.onChange('mobile')}
           >
             <Smartphone aria-hidden="true" />
             <span className="sr-only">{__('Mobile', 'wconvert')}</span>
@@ -640,7 +644,7 @@ function PreviewColumn({
 
       <div
         className="wconvert-builder__stage"
-        data-device={device}
+        data-device={device.value}
         style={{ '--wconvert-stage': measure } as CSSProperties}
       >
         {entry === null ? (
@@ -651,24 +655,6 @@ function PreviewColumn({
       </div>
     </aside>
   );
-}
-
-/**
- * **The frame's own header band, filled by the builder.**
- *
- * The builder has no `section`, so the frame draws it no title — but it does
- * have a title of its own and an action that acts on the whole Optin, and those
- * belong in the same band on the same surface as every other screen's. Drawing
- * a lookalike inside `<main>` got the surface right and the width wrong: `main`
- * is a centred `max-w-6xl`, so the rule under the band stopped short of the
- * screen while every other screen's ran edge to edge. `Shell`'s `bareHeader`
- * renders the real band and {@see PageAction} puts this inside it.
- *
- * All three arms of the builder use it, so a slow load does not draw a header
- * that then moves when the real one replaces it.
- */
-function BuilderBand({ children }: { children: ReactNode }) {
-  return <PageAction>{children}</PageAction>;
 }
 
 /**
@@ -686,27 +672,15 @@ function TabNote({ children }: { children: ReactNode }) {
 }
 
 /**
- * The way out of the builder.
+ * The [[Display Type]] to assume where nothing on screen names one.
  *
- * A `<button>` rather than an `<a>`: the list is a state this bundle holds and
- * the builder has no URL of its own, so an `href="#"` a handler cancels would
- * be a link that lies about being one. {@see App} draws the same control on the
- * narrow-screen notice, and there is exactly one of them on screen at a time.
- *
- * It takes a ref because it is what the unsaved-changes confirm has to put the
- * caret back on — a triggerless dialog restores focus to nothing, which leaves
- * a keyboard merchant on `<body>` ({@see ConfirmDialog}).
+ * **Every install has popups and only Pro has the other three**, so this is the
+ * one answer that is true everywhere — which is why the two readers below reach
+ * for it and why it is spelled once. The comment above `displayTypeOf` used to
+ * claim its fallback avoided "a name spelled here" while spelling it, and
+ * {@see entryFor} spelled it a second time on the next screen down.
  */
-function BackLink({ onClose, ref }: { onClose: () => void; ref?: Ref<HTMLButtonElement> }) {
-  return (
-    <div>
-      <Button ref={ref} variant="ghost" size="sm" className="-ms-3" onClick={onClose}>
-        <ArrowLeft aria-hidden="true" />
-        {__('All Optins', 'wconvert')}
-      </Button>
-    </div>
-  );
-}
+const EVERY_INSTALL_HAS = 'popup';
 
 /**
  * Which [[Display Type]]'s designs the gallery shows.
@@ -714,15 +688,17 @@ function BackLink({ onClose, ref }: { onClose: () => void; ref?: Ref<HTMLButtonE
  * **Not the first question asked.** Users arrive via a [[Goal]] and the type
  * is prefilled by the chosen [[Playbook]]; it is an override and a filter, and
  * never the primary axis of the product (CONTEXT.md, Display Type). So it is
- * read off the Optin, and falls back to whatever the shipped library actually
- * offers rather than to a name spelled here — a free install ships popups, and
- * the day Pro's floating bars and slide-ins land the fallback follows them
- * without this line changing.
+ * read off the Optin first.
+ *
+ * Where the Optin does not declare one, the shipped library decides: the day
+ * Pro's floating bars and slide-ins land, an install whose first entry is one
+ * of them follows it without this line changing. The constant is reached only
+ * by an install shipping no designs at all, which has no gallery to filter.
  */
 function displayTypeOf(config: Config, templates: readonly TemplateEntry[]): string {
   const declared = config.display_type;
 
-  return typeof declared === 'string' ? declared : (templates[0]?.display_type ?? 'popup');
+  return typeof declared === 'string' ? declared : (templates[0]?.display_type ?? EVERY_INSTALL_HAS);
 }
 
 /**
@@ -744,7 +720,7 @@ function entryFor(
   return {
     id: templateId ?? 'optin',
     name: source?.name ?? (templateId ?? ''),
-    display_type: source?.display_type ?? 'popup',
+    display_type: source?.display_type ?? EVERY_INSTALL_HAS,
     tree: template.tree,
     tokens: template.tokens,
   };

@@ -25,7 +25,7 @@ import { EmptyState } from '../shell/EmptyState';
 import { Region, RegionError, RegionErrorState } from '../shell/Region';
 import { TableSkeleton } from '../shell/TableSkeleton';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
-import { readDashboard } from '../stats/api';
+import { numbersByOptin, readDashboard, type OptinNumbers } from '../stats/api';
 import { formatCount, formatRate } from '../stats/format';
 import {
   deleteOptin,
@@ -93,7 +93,7 @@ export function OptinList({
 }) {
   const [list, setList] = useState<Loadable<OptinSummary[]>>(LOADING);
   const [labels, setLabels] = useState<Record<string, string>>({});
-  const [numbers, setNumbers] = useState<Record<string, RowNumbers>>({});
+  const [numbers, setNumbers] = useState<Record<string, OptinNumbers>>({});
   const [error, setError] = useState<string | null>(null);
   /*
    * **Per row, not per screen.** One screen-wide `busy` meant a slow publish on
@@ -149,24 +149,13 @@ export function OptinList({
   }, []);
 
   // The dashboard's own read, over the server's default window, flattened out
-  // of its per-Goal cards into one map by Optin id. Swallowed on failure for
+  // of its per-Goal cards into one map by Optin id. The walk is
+  // {@see numbersByOptin} rather than this file's own, because the builder
+  // needs the same one and had a second copy of it. Swallowed on failure for
   // the reason stated above the component: a row without its numbers is a row
   // that still publishes.
   useEffect(() => {
-    readDashboard(null)
-      .then((payload) =>
-        setNumbers(
-          Object.fromEntries(
-            payload.goals.flatMap((card) =>
-              card.optins.map((optin) => [
-                optin.id,
-                { impressions: optin.impressions, rate: optin.conversion_rate },
-              ]),
-            ),
-          ),
-        ),
-      )
-      .catch(() => undefined);
+    readDashboard(null).then((payload) => setNumbers(numbersByOptin(payload))).catch(() => undefined);
   }, []);
 
   const run = async (id: string, action: () => Promise<unknown>) => {
@@ -315,7 +304,7 @@ function Row({
 }: {
   optin: OptinSummary;
   goal: string | undefined;
-  numbers: RowNumbers | undefined;
+  numbers: OptinNumbers | undefined;
   busy: boolean;
   onEdit: () => void;
   onPublish: () => void;
@@ -385,11 +374,11 @@ function Row({
         thing to tell a merchant about an Optin that never rendered.
       */}
       <DataTableCell label={__('Impressions', 'wconvert')} numeric>
-        {numbers === undefined ? '—' : formatCount(numbers.impressions)}
+        {numbers === undefined ? '—' : formatCount(numbers.report.impressions)}
       </DataTableCell>
 
       <DataTableCell label={__('Conversion rate', 'wconvert')} numeric>
-        {numbers === undefined ? '—' : formatRate(numbers.rate)}
+        {numbers === undefined ? '—' : formatRate(numbers.report.conversion_rate)}
       </DataTableCell>
 
       <DataTableActions>
@@ -451,11 +440,6 @@ function Row({
  * this list is mixed. Narrowing here is what makes the wrong column
  * unexpressible rather than merely absent.
  */
-interface RowNumbers {
-  readonly impressions: number;
-  readonly rate: number | null;
-}
-
 /**
  * The badge a state wears.
  *

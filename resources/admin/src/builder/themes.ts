@@ -123,7 +123,9 @@ export function isApplied(preset: ThemePreset, tokens: Tokens): boolean {
  * drawing one field per manifest entry.
  */
 export function isColour(value: string): boolean {
-  return /^#[0-9a-f]{3,8}$/i.test(value.trim()) || /^rgba?\(/i.test(value.trim());
+  // A hex, or the one other notation the vocabulary uses — which is exactly
+  // what {@see isTranslucent} tests for, so it is tested there and not twice.
+  return /^#[0-9a-f]{3,8}$/i.test(value.trim()) || isTranslucent(value);
 }
 
 /**
