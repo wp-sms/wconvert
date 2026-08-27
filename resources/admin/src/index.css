@@ -545,13 +545,34 @@
 }
 
 /*
- * A row of controls needs a gap between them, and JSX's single space is not
- * one — "…share an email or phone" ended flush against the Export button, so
- * a sentence and a control read as one object. Adjacent-sibling rather than a
- * blanket margin, so nothing gains a trailing indent it did not ask for.
+ * **A row of controls needs a gap, and a wrapped row needs two.**
+ *
+ * JSX's single space is not a gap — "…share an email or phone" ended flush
+ * against the Export button, so a sentence and a control read as one object.
+ * The first attempt used an adjacent-sibling `margin-inline-start`, which is
+ * correct for a row that fits on one line and wrong the moment it does not:
+ * three row actions in a 266px cell wrapped, and the wrapped one arrived
+ * INDENTED by the gap meant to separate it from the button now above it,
+ * with no vertical space at all — 36px tall boxes stacked at exactly 36px
+ * apart, which reads as an overlap.
+ *
+ * A trailing margin has neither problem: the first control in a row is flush,
+ * every gap is equal, and a wrapped control starts where the row starts. The
+ * block margin is what stops two lines of buttons touching.
  */
-#wconvert-admin .wconvert-legacy :is(label, .button, select, a) + :is(label, .button, select) {
-  margin-inline-start: 0.75rem;
+#wconvert-admin
+  .wconvert-legacy
+  :is(
+    label,
+    select,
+    .button,
+    input:is([type="text"], [type="search"], [type="number"], [type="email"], [type="url"])
+  ) {
+  margin-inline-end: 0.625rem;
+}
+
+#wconvert-admin .wconvert-legacy .button {
+  margin-block: 0.125rem;
 }
 
 /*
@@ -595,6 +616,22 @@
  * them legible for the tickets in between without re-introducing preflight's
  * opposite anywhere the shell can see.
  */
+/*
+ * **The surface the shell stopped drawing.**
+ *
+ * An un-converted screen renders straight onto the page background, and text
+ * on grey with no edge reads as loose rather than as a region. This gives it
+ * one card until the ticket that converts it gives it real ones — a table with
+ * its own edges, a settings panel with its own, the way ACF and Gravity Forms
+ * both do it. Every rule under here leaves with the last conversion.
+ */
+.wconvert-legacy {
+  padding: 1.25rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
 /*
  * **One body size across the admin.** wp-admin sets `#wpbody-content p` to
  * 13px, so the un-converted screens rendered two points smaller than the frame
