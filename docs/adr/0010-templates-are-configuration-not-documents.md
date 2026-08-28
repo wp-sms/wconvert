@@ -67,6 +67,14 @@ third-party ones. Under configuration they are properties of the one renderer.
   [[Slot Role]] — `TemplateLibrary::snapshotInto()` now rebinds rather than
   stripping, which is what finally makes CONTEXT.md's "the words survive
   switching Template" true of the one screen where a merchant switches one.*
+  *Amended by [ADR 0043](0043-the-library-is-indexed-and-its-facets-are-derived.md):
+  **the gallery is still the design surface, and it is no longer part of the
+  Design tab.** At three entries a gallery and fifteen token controls in one
+  region was invisible; at forty the gallery swamps the tokens, which is two
+  concerns in one region ([ADR 0039](0039-a-screen-is-regions-and-scope-decides-placement.md)).
+  Choosing a design is a dialog behind "Browse designs" — it owns the screen
+  until it is answered — and the tab keeps the look. The bet is unchanged and
+  the surface moved.*
   *Fixed in [#23](https://github.com/navidkashani/wconvert/issues/23) as six leaf
   nodes — `heading`, `text`, `image`, `field`, `button`, `consent` — and four
   layouts: `stack` (a column), `row` (a wrapping line), `split` (two independent
@@ -104,7 +112,14 @@ third-party ones. Under configuration they are properties of the one renderer.
   than a field on screen at all times. The property is untouched — a merchant
   may still write anything a token can hold — but a box reading `center` under
   three chips reading Left · Centre · Right explained nothing and invited
-  nothing.* A thin vocabulary yields one popup in twelve
+  nothing.* *Extended by
+  [ADR 0043](0043-the-library-is-indexed-and-its-facets-are-derived.md) with a
+  sibling **`facets`** section under the same rule — a control that ENUMERATES
+  reads its enumeration from the manifest — saying which facets the design
+  picker filters by and what each one offers. Its VALUES are not authored:
+  every facet is derived from the tree by `TemplateFacets`, precisely because a
+  Template carries no words and so cannot honestly be tagged by industry or
+  season.* A thin vocabulary yields one popup in twelve
   colours — the "thin or ugly" failure the ticket names. This is why `image` and the
   `split` layout are in v1 rather than deferred: the differentiator that is not
   colour has to exist in the vocabulary, or the gallery is thin no matter how many
@@ -112,6 +127,14 @@ third-party ones. Under configuration they are properties of the one renderer.
 - **The renderer is a pure function of (tree, tokens)**, so the admin imports the
   same module the loader does. Gallery cards and the live settings preview render the
   real template; there are no static thumbnails to produce or to let go stale.
+  *Untouched by [ADR 0043](0043-the-library-is-indexed-and-its-facets-are-derived.md),
+  and worth saying because that ADR introduces a card with no render on it. A
+  **locked** card — a design free ships the advertisement for and not the design
+  — carries its facets in words and a link to a live preview on wconvert.com. It
+  carries **no image at all**, so there is still nothing to produce and nothing
+  to let go stale. What changed is when a real card renders: `TemplateCard`
+  mounts its preview only while near the viewport, because forty on one screen
+  is forty closed shadow roots nobody has scrolled to.*
 - **That module must stay dependency-free.** Two consumers, two bundles — React
   inside it would drag the admin's dependencies into the loader budget.
 - **The renderer and vocabulary are a live reference; a template's tree and tokens

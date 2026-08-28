@@ -5,6 +5,7 @@ namespace WConvert\Tests\Unit\Template;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use WConvert\Support\RejectionReason;
+use WConvert\Template\BundledTemplates;
 use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
 
@@ -34,16 +35,16 @@ final class TemplateRegistrationTest extends TestCase
         $this->tree = (string) tempnam(sys_get_temp_dir(), 'wconvert');
 
         unlink($this->tree);
-        mkdir($this->tree . '/' . TemplateLibrary::PATH, 0o777, true);
+        mkdir($this->tree . '/' . BundledTemplates::PATH, 0o777, true);
     }
 
     protected function tearDown(): void
     {
-        foreach ((array) glob($this->tree . '/' . TemplateLibrary::PATH . '/*.json') as $file) {
+        foreach ((array) glob($this->tree . '/' . BundledTemplates::PATH . '/*.json') as $file) {
             unlink((string) $file);
         }
 
-        foreach (['/' . TemplateLibrary::PATH, '/resources/templates', '/resources', ''] as $suffix) {
+        foreach (['/' . BundledTemplates::PATH, '/resources/templates', '/resources', ''] as $suffix) {
             @rmdir($this->tree . $suffix);
         }
     }
@@ -53,7 +54,7 @@ final class TemplateRegistrationTest extends TestCase
      */
     private function ship(string $id, array $steps): void
     {
-        file_put_contents($this->tree . '/' . TemplateLibrary::PATH . '/' . $id . '.json', (string) json_encode([
+        file_put_contents($this->tree . '/' . BundledTemplates::PATH . '/' . $id . '.json', (string) json_encode([
             'id' => $id,
             'name' => ucfirst($id),
             'display_type' => 'popup',

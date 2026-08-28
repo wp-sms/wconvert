@@ -181,3 +181,139 @@ describe('a slot in the preview', () => {
     expect(outlined.map((slot) => slot.dataset.role)).toEqual(['headline']);
   });
 });
+
+/**
+ * ============================================================================
+ * THE SITE'S PRIVACY POLICY, RESOLVED WHERE IT IS DRAWN AND NOWHERE ELSE (#77).
+ * ============================================================================
+ * `PolicyLink::into()` has two call sites — the published payload and the
+ * capture path — and neither is a path the admin reads. So `link.href` was
+ * always absent here, the renderer did the right thing for an unresolved link
+ * (no anchor at all, never a dead `#`, ADR 0032), and every preview, every
+ * gallery card and the creation flow's last step read:
+ *
+ *     No spam, and you can unsubscribe at any time. See our.
+ *
+ * — under a field labelled *"leave empty for your privacy policy"*.
+ *
+ * **The fix could not be server-side, and that is the half worth asserting.**
+ * `GET /optins/{id}` hands the builder a config it PATCHes straight back, and
+ * `href` is a content key the vocabulary keeps — so an href resolved on the way
+ * out is an href STORED on the way back, frozen at publish, which is exactly
+ * what ADR 0032 exists to prevent. So the admin owns the link at the render,
+ * the same way the renderer does, and what it produces is thrown away with the
+ * render.
+ */
+describe('the consent link the admin draws', () => {
+  const POLICY = 'https://example.test/privacy';
+
+  /**
+   * **A Template carries no words, so the sentence comes from a [[Playbook]]**
+   * — `welcome-discount.php` binds `fine_print` to *"No spam, and you can
+   * unsubscribe at any time. See our %s."* and the site supplies the
+   * destination (ADR 0032). That is the exact shape #77 reported, so it is the
+   * shape asserted rather than a shipped Template's own placeholder, which
+   * carries no `%s` at all.
+   */
+  const prefilled = (): TemplateEntry =>
+    ({
+      ...ENTRY,
+      tree: {
+        steps: [
+          {
+            type: 'stack',
+            children: [
+              {
+                type: 'text',
+                role: 'fine_print',
+                text: 'No spam, and you can unsubscribe at any time. See our %s.',
+                link: { label: 'Privacy Policy' },
+              },
+              { type: 'button', role: 'cta_label', label: 'Go', action: 'submit' },
+            ],
+          },
+          { type: 'stack', children: [] },
+        ],
+      },
+    }) as unknown as TemplateEntry;
+
+  const fineOf = (root: HTMLElement) =>
+    root.querySelector<HTMLElement>('[data-role="fine_print"]');
+
+  beforeEach(() => {
+    window.wconvertAdmin = { exportUrl: '', policyUrl: POLICY };
+  });
+
+  it('renders the site’s policy rather than a sentence ending in “See our.”', () => {
+    render(<Preview template={prefilled()} />);
+
+    const anchor = fineOf(drawn())?.querySelector('a');
+
+    expect(anchor?.getAttribute('href')).toBe(POLICY);
+    expect(fineOf(drawn())?.textContent).toBe(
+      'No spam, and you can unsubscribe at any time. See our Privacy Policy.',
+    );
+  });
+
+  /**
+   * **The tree the builder would SAVE is untouched.** This is the assertion the
+   * whole placement rests on: resolve it into the config and the merchant's
+   * next save freezes last month's policy URL into their Optin.
+   */
+  it('writes the resolved link nowhere the builder could save it', () => {
+    const template = prefilled();
+    const before = JSON.stringify(template);
+
+    render(<Preview template={template} />);
+
+    expect(JSON.stringify(template)).toBe(before);
+    expect(fineOf(drawn())?.querySelector('a')).not.toBeNull();
+  });
+
+  /**
+   * A site with no policy configured has no link to offer, and offering a
+   * broken one is worse than offering none (ADR 0032). The renderer's rule is
+   * untouched; what is asserted is that nothing here invents a destination.
+   */
+  it('adds nothing where the site has no policy', () => {
+    window.wconvertAdmin = { exportUrl: '' };
+
+    render(<Preview template={prefilled()} />);
+
+    expect(fineOf(drawn())?.querySelector('a')).toBeNull();
+  });
+
+  /**
+   * A link that names its OWN destination was written by the merchant and
+   * scheme-validated at write (ADR 0013). The rule is about the link and not
+   * about the node, which is why consent wording and fine print resolve
+   * identically with no table of Slot Roles to keep in step.
+   */
+  it('leaves a link the merchant addressed alone', () => {
+    const own = 'https://example.test/ours';
+    const template = {
+      ...ENTRY,
+      tree: {
+        steps: [
+          {
+            type: 'stack',
+            children: [
+              {
+                type: 'text',
+                role: 'fine_print',
+                text: 'See our %s.',
+                link: { label: 'Terms', href: own },
+              },
+              { type: 'button', role: 'cta_label', label: 'Go', action: 'submit' },
+            ],
+          },
+          { type: 'stack', children: [] },
+        ],
+      },
+    } as unknown as TemplateEntry;
+
+    render(<Preview template={template} />);
+
+    expect(drawn().querySelector<HTMLAnchorElement>('a')?.getAttribute('href')).toBe(own);
+  });
+});

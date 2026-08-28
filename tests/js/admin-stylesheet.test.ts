@@ -121,3 +121,125 @@ describe('anything that can be pressed', () => {
     expect(CSS).toMatch(/:disabled[\s\S]{0,200}cursor:\s*default/);
   });
 });
+
+describe('the design picker', () => {
+  const utilities = [...CSS.matchAll(/@layer utilities \{([\s\S]*?)\n\}/g)].map((m) => m[1]).join('\n');
+
+  /**
+   * ==========================================================================
+   * A CARD NOBODY HAS SCROLLED TO COSTS NO LAYOUT (ADR 0043).
+   * ==========================================================================
+   * `TemplateCard`'s observer stops an off-screen card being BUILT; this stops
+   * one that already exists — the screenful the merchant just scrolled past,
+   * still mounted because it is inside the observer's margin — from being laid
+   * out and painted. Neither alone reaches where the pair does, and the suite
+   * can see neither: Vitest runs jsdom with `css: false` and has no
+   * `IntersectionObserver` at all.
+   *
+   * `contain-intrinsic-size` is not optional beside it. Without it a skipped
+   * card measures zero, the document collapses, and scrolling a library of
+   * forty moves the scrollbar under the merchant's thumb.
+   */
+  it('does not lay out a card that is off screen, and still reserves its height', () => {
+    const rule = /\.wconvert-gallery__card\s*\{([^}]*)\}/.exec(CSS)?.[1] ?? '';
+
+    expect(rule).toMatch(/content-visibility:\s*auto/);
+    expect(rule).toMatch(/contain-intrinsic-size:/);
+  });
+
+  /**
+   * **An override of a vendored utility is `!important` AND layered, or it is
+   * decoration** (ADR 0042 rule 6). `DialogContent` ships `grid`, this admin
+   * compiles utilities as `!important` (ADR 0035), and for important
+   * declarations the cascade runs layers in reverse — so an unlayered rule here
+   * loses to a single class however specific it is. This file has now been
+   * caught by that five times, which is why it is asserted rather than
+   * remembered.
+   */
+  it('turns the vendored dialog into a column from inside the utilities layer', () => {
+    expect(utilities).toMatch(
+      /\.wconvert-picker\[data-slot="dialog-content"\]\s*\{[^}]*display:\s*flex\s*!important/,
+    );
+  });
+
+  /**
+   * ==========================================================================
+   * THE SMALL-HEIGHT RULE SIZED NOTHING FOR AS LONG AS IT HAS EXISTED.
+   * ==========================================================================
+   * ADR 0039 states it once — *a toolbar control stands at the small height,
+   * here, rather than passed as a class at every call site* — and the
+   * declarations were not `!important`, so `h-9` beat every one of them. The
+   * only toolbar that existed when it was written passes `size="sm"` at the
+   * call site, which is precisely what the rule says nobody should have to do,
+   * so nothing looked wrong.
+   *
+   * Measured in a browser on the design picker: chips at 36px and a search box
+   * at 40px under a rule saying 32. That is ADR 0042 rule 6 for the sixth time
+   * — an override of a utility is `!important` and layered, or it is
+   * decoration — so it is asserted here rather than written down again.
+   */
+  it('states the toolbar height with enough force to beat a vendored size', () => {
+    const rule =
+      /:is\(\.wconvert-page-actions[^{]*\{([^}]*)\}/.exec(CSS)?.[1] ?? '';
+
+    expect(rule).toMatch(/min-block-size:\s*var\(--control-height-sm\)\s*!important/);
+    expect(rule).toMatch(/block-size:\s*auto\s*!important/);
+  });
+
+  /**
+   * **A text input in a toolbar is a toolbar control.** The picker's search box
+   * is the admin's first, and the vendored `Input` is `h-9` — 40px beside 36px
+   * chips on one line reads as a control that failed to line up.
+   */
+  it('sizes a toolbar input the way it sizes a toolbar button', () => {
+    expect(CSS).toContain('[data-slot="select-trigger"], [data-slot="input"]');
+  });
+
+  /**
+   * ==========================================================================
+   * A CAP THAT FIRES ON SOMETHING WE SHIP IS SET FROM THE WRONG NUMBER.
+   * ==========================================================================
+   * `index.css` says exactly that about the first time this happened, at 22rem.
+   * It happened again at 30rem the moment the library went from three designs
+   * to twelve: measured in a browser, *Name and email* draws 349px into a 264px
+   * lane and *Photo offer* draws 276px, so two shipped designs were clipped
+   * mid-button on the screen a merchant chooses from.
+   *
+   * Asserted as a floor rather than a fixed value, because the number that
+   * matters is "above the tallest thing we ship" and that grows.
+   */
+  it('caps the card lane above the tallest design the library ships', () => {
+    const rule = /\.wconvert-gallery \.wconvert-preview\s*\{([^}]*)\}/.exec(CSS)?.[1] ?? '';
+    const cap = /max-block-size:\s*([\d.]+)rem/.exec(rule)?.[1];
+
+    expect(cap).toBeDefined();
+    expect(Number(cap)).toBeGreaterThanOrEqual(40);
+  });
+
+  /**
+   * ==========================================================================
+   * WHAT THE ADMIN OWNS IS NOT ALL INSIDE `#wconvert-admin`.
+   * ==========================================================================
+   * A Radix dialog portals to `document.body`. Every rule anchored on the
+   * admin's id therefore stops at the portal boundary, silently — which is how
+   * the picker's chips ended up with neither `--control-height-sm` nor the
+   * segmented group's *selected* treatment, and how the confirm dialog's
+   * buttons have had no hand cursor since ADR 0039 added them.
+   *
+   * `:is()` rather than `:where()`, and that is the load-bearing half: every
+   * one of these rules is an `!important` utility override whose standing
+   * depends on beating a single class inside the same layer, and `:where()`
+   * contributes zero specificity.
+   */
+  it('reaches the controls in a portalled dialog, without giving up specificity', () => {
+    const roots = ':is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"])';
+
+    // The one-of-N strip's `selected`, the small control height, and the hand
+    // cursor — the three a portalled surface needs and the three that were
+    // missing from one.
+    expect(CSS).toContain(`${roots} .wconvert-segmented > :is([data-slot="button"])`);
+    expect(CSS).toContain(`${roots}\n    :is(.wconvert-page-actions, .wconvert-toolbar`);
+    expect(CSS).toMatch(new RegExp(`${roots.replace(/[[\]().*+?^$|\\-]/g, '\\$&')} :is\\(\\s*button,`));
+    expect(CSS).not.toContain(':where(#wconvert-admin,');
+  });
+});

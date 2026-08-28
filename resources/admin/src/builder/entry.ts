@@ -39,6 +39,11 @@ const INDENT = 2;
  * The key order is the order `resources/templates/library/*.json` is written
  * in, so an export can be dropped into that directory and diffed against its
  * neighbours rather than reformatted first.
+ *
+ * **Five keys now, and `tier` is the new one.** A design declares which tier
+ * ships it, `bin/verify-artifact-contract.sh` refuses a `pro` one inside the
+ * free ZIP, and an export that omitted it would produce an entry that reads as
+ * free by default rather than by decision (ADR 0015, ADR 0043).
  */
 export function exportEntry(entry: TemplateEntry): string {
   return JSON.stringify(
@@ -46,6 +51,18 @@ export function exportEntry(entry: TemplateEntry): string {
       id: entry.id,
       name: entry.name,
       display_type: entry.display_type,
+      /*
+       * **Which tier ships this design** — the one AUTHORED fact a library
+       * entry carries, and the third of the three places that move together
+       * (ADR 0043). `TemplateLibrary::read()`'s whitelist and
+       * `TemplateIndexEntry` are the other two; a key added to two of them is
+       * a key dropped on the way through with nothing said.
+       *
+       * `free` where the entry does not say, which is the same default PHP
+       * takes — and stated rather than omitted, because a design's tier is a
+       * decision and an absent key is that decision made by nobody.
+       */
+      tier: entry.tier ?? 'free',
       tokens: entry.tokens,
       tree: entry.tree,
     },
@@ -86,6 +103,7 @@ export function importEntry(json: string): TemplateEntry | null {
     // One Template serves exactly one Display Type (CONTEXT.md, Template), and
     // `popup` is the one every install has — the other three are Pro's.
     display_type: typeof entry.display_type === 'string' ? entry.display_type : 'popup',
+    tier: typeof entry.tier === 'string' ? entry.tier : 'free',
     tree: entry.tree,
     tokens: entry.tokens ?? {},
   };

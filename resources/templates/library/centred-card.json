@@ -2,6 +2,7 @@
   "id": "centred-card",
   "name": "Centred card",
   "display_type": "popup",
+  "tier": "free",
   "tokens": {
     "bg": "#ffffff",
     "fg": "#111827",

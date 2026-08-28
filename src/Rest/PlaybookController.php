@@ -84,9 +84,56 @@ final class PlaybookController implements RestController
         }
 
         return new WP_REST_Response(array_map(
-            static fn (Playbook $playbook): array => $playbook->toArray(),
+            fn (Playbook $playbook): array => $this->withItsDesign($playbook),
             $this->playbooks->servicing($goal)
         ));
+    }
+
+    /**
+     * One Playbook, and **the design it would prefill, with its words in it**.
+     *
+     * ========================================================================
+     * STEP 2 DREW A HEADING, A PARAGRAPH AND A BUTTON (#68, #79).
+     * ========================================================================
+     * The creation flow's second step is where a merchant chooses between
+     * ready-to-run starts, and it showed them as `ChoiceCard`s — while the
+     * product's whole claim is that there are no thumbnails anywhere in this
+     * flow because the REAL thing is cheap to draw (ADR 0010). Step 3 already
+     * renders the real design; step 2 asked the merchant to choose without
+     * seeing one.
+     *
+     * `Playbook::toArray()` carries `template_id`, `display_type` and `copy`
+     * and nothing has ever read them, because none of the three is a design:
+     * binding copy to [[Slot Role]]s is {@see Prefill}'s job and reproducing it
+     * in the browser would be a second implementation of the one thing that
+     * must not have two.
+     *
+     * **So this is prefill's own composition, called here.** What step 2 draws
+     * is byte-identical to what step 3 draws and to what `POST /optins` would
+     * store — not similar to it, the same call — so a merchant cannot be shown
+     * a card and then handed something else.
+     *
+     * The cost is one tree per Playbook on a route that returns the handful
+     * servicing one [[Goal]]. That is a different question from the design
+     * LIBRARY, which is indexed precisely because it is not a handful
+     * (ADR 0043).
+     *
+     * @return array<string, mixed>
+     */
+    private function withItsDesign(Playbook $playbook): array
+    {
+        $entry = $playbook->toArray();
+        $draft = $this->prefill->fromPlaybook($playbook->id);
+        $template = $draft === null ? null : ($draft['config']['template'] ?? null);
+
+        // Absent rather than empty where there is no design behind it: a
+        // Playbook naming a Template this install no longer ships still starts
+        // an Optin, and the card falls back to the words it always had.
+        if (is_array($template)) {
+            $entry['template'] = $template;
+        }
+
+        return $entry;
     }
 
     /**

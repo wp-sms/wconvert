@@ -5,6 +5,7 @@ namespace WConvert\Tests\Unit\Template;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use WConvert\Template\ConvertingAct;
+use WConvert\Template\TemplateFacets;
 use WConvert\Template\TemplateLabels;
 use WConvert\Template\TemplateManifest;
 
@@ -247,6 +248,92 @@ final class TemplateLabelParityTest extends TestCase
             TemplateLabels::params(),
             'button actions'
         );
+    }
+
+    /**
+     * ==========================================================================
+     * THE PICKER'S CHIP STRIP ENUMERATES, SO ITS ENUMERATION IS THE MANIFEST'S.
+     * ==========================================================================
+     * ADR 0010's rule, applied to the toolbar over a library ten times the size
+     * it was: a control that ENUMERATES reads its enumeration from the manifest.
+     * The `facets` section says which facets are offered as filters and what
+     * each one offers; this is the half that says every one of them has a word.
+     *
+     * Both directions, like everything else here. A facet added to the manifest
+     * with no name draws a chip strip headed `has_image`; a name for a facet the
+     * manifest does not offer is a translated string connected to no control.
+     */
+    public function testEveryOfferedFacetIsNamed(): void
+    {
+        /** @var array<string, mixed> $facets */
+        $facets = self::manifest()['facets'];
+
+        $this->assertNamesExactly(array_map('strval', array_keys($facets)), TemplateLabels::facets(), 'facets');
+    }
+
+    /**
+     * And every value each one offers, for the reason `0.35` and `start` both
+     * needed one: `stack` is not a thing to put in front of a merchant.
+     */
+    public function testEveryOfferedFacetValueIsNamed(): void
+    {
+        /** @var array<string, list<string>> $facets */
+        $facets = self::manifest()['facets'];
+        $offered = [];
+
+        foreach ($facets as $facet => $values) {
+            foreach ($values as $value) {
+                $offered[] = $facet . '.' . $value;
+            }
+        }
+
+        $this->assertNamesExactly($offered, TemplateLabels::facetValues(), 'facet values');
+    }
+
+    /**
+     * ==========================================================================
+     * A FACET THE MANIFEST OFFERS IS A FACET THE DERIVATION PRODUCES.
+     * ==========================================================================
+     * The two halves are written in different languages and different files:
+     * `facets` in JSON says what the toolbar draws, and
+     * {@see TemplateFacets::FILTERED} says which keys the walk over a tree
+     * produces. A facet offered by one and not the other is a chip strip with
+     * nothing behind it, or a derived value no control ever shows — and neither
+     * fails anywhere else, because both sides are individually consistent.
+     */
+    public function testEveryOfferedFacetIsOneTheTreeDerivationProduces(): void
+    {
+        /** @var array<string, mixed> $facets */
+        $facets = self::manifest()['facets'];
+        $offered = array_map('strval', array_keys($facets));
+        $derived = TemplateFacets::FILTERED;
+
+        sort($offered);
+        sort($derived);
+
+        $this->assertSame($derived, $offered, 'the manifest and the derivation disagree about which facets filter');
+    }
+
+    /**
+     * **`shape` and `captures` borrow the vocabulary the admin already speaks**,
+     * and this is what holds them to it. A merchant who filtered by *Side by
+     * side* opens the design and finds a block called *Side by side*; a `shape`
+     * list that drifted from the layouts would break that quietly, because both
+     * lists would still be internally valid.
+     */
+    public function testTheShapeAndCaptureFacetsAreTheVocabularyTheyBorrow(): void
+    {
+        $manifest = self::manifest();
+
+        /** @var array<string, list<string>> $facets */
+        $facets = $manifest['facets'];
+        /** @var array<string, mixed> $layouts */
+        $layouts = $manifest['layouts'];
+        /** @var list<string> $fields */
+        $fields = $manifest['fields'];
+
+        $this->assertSame(array_map('strval', array_keys($layouts)), $facets['shape']);
+        $this->assertSame($fields, $facets['captures']);
     }
 
     /**

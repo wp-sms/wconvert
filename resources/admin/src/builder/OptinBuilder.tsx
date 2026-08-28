@@ -18,7 +18,8 @@ import { PageAction } from '../shell/PageActions';
 import { Region, RegionBody, RegionError, RegionErrorState } from '../shell/Region';
 import { Stat, StatRow } from '../shell/Stat';
 import { messageOf } from '../shell/loadable';
-import { Gallery } from './Gallery';
+import { TemplatePickerDialog } from './TemplatePickerDialog';
+import { useTemplateTrees } from './TemplatePicker';
 import { DesignToolbar } from './DesignToolbar';
 import { DestinationsEditor } from './DestinationsEditor';
 import { Preview } from './Preview';
@@ -35,7 +36,13 @@ import { TOKENS, slotsOf, type Path } from './panel';
 import { TargetingEditor, type Targeting } from './TargetingEditor';
 import { getOptin, getRules, saveOptin, type Rule, type RuleVocabulary } from './api';
 import { keyOfSlot, pathOfKey, type Selection, type SlotKey } from './slots';
-import { listTemplates, type Gallery as TemplateGallery, type TemplateEntry } from '../templates/api';
+import {
+  getTemplateTrees,
+  listTemplates,
+  type TemplateIndex,
+  type TemplateIndexEntry,
+  type TemplateEntry,
+} from '../templates/api';
 import { numbersByOptin, readDashboard, type OptinNumbers } from '../stats/api';
 import { formatCount, formatRate } from '../stats/format';
 import { adminSettings } from '../settings';
@@ -218,7 +225,15 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
   const [goal, setGoal] = useState<string | null>(null);
   const [publishedAt, setPublishedAt] = useState<string | null>(null);
   const [vocabulary, setVocabulary] = useState<RuleVocabulary | null>(null);
-  const [gallery, setGallery] = useState<TemplateGallery | null>(null);
+  const [gallery, setGallery] = useState<TemplateIndex | null>(null);
+  /*
+   * **Choosing a design is its own surface now** (ADR 0039, ADR 0043). The
+   * Design tab held two concerns — *choose a design* and *adjust the look* —
+   * which was invisible at three cards and swamps the tokens the tab is named
+   * for at forty.
+   */
+  const [browsing, setBrowsing] = useState(false);
+  const browse = useRef<HTMLButtonElement>(null);
   /*
    * A first read that fails leaves the builder with nothing to draw, so it is
    * held apart from `error` — which is what a SAVE reports, above a screen the
@@ -296,6 +311,25 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
   const template = config?.template as Template | undefined;
   const templateId = typeof config?.template_id === 'string' ? config.template_id : undefined;
   const templates = gallery?.templates;
+
+  /*
+   * **The designs behind the cards on screen, and the one that is in use.**
+   * `GET /templates` is an index now — a card is a name, a Display Type, a
+   * tier and five derived facets, and no tree (ADR 0043) — so the trees arrive
+   * per card, batched, as the grid brings them near the viewport.
+   *
+   * `want(templateId)` outside the picker is what keeps the Design tab's token
+   * controls able to say "what have I actually changed?": that answer is a
+   * comparison against the LIBRARY entry's tokens, and the library entry no
+   * longer travels with the index.
+   */
+  const { trees, want } = useTemplateTrees(getTemplateTrees);
+
+  useEffect(() => {
+    if (templateId !== undefined) {
+      want(templateId);
+    }
+  }, [templateId, want]);
 
   /*
    * **Memoised, because identity is what the preview remounts on.** `Preview`
@@ -1032,14 +1066,33 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
                     gallery teaches it in one press.
                   */}
                   <RegionBody className="flex flex-col gap-4">
-                    <Gallery
-                      templates={gallery.templates}
-                      displayType={displayTypeOf(config, gallery.templates)}
-                      chosen={templateId}
-                      act={act ?? 'submit'}
-                      busy={busy}
-                      onChoose={(chosen) => void save({ ...config, template_id: chosen })}
-                    />
+                    {/*
+                      ============================================================
+                      THE TAB KEEPS THE LOOK. CHOOSING A DESIGN IS ITS OWN SURFACE.
+                      ============================================================
+                      **A region holds exactly one concern** (ADR 0039), and this
+                      one held two: *choose a design* and *adjust the look*. At
+                      three cards that was invisible; at forty the gallery swamps
+                      the tokens the tab is named for, and the merchant who came
+                      to change one colour scrolls past the whole library to
+                      reach it.
+
+                      So the gallery moved behind one button, and what is left is
+                      the name of the design in use beside the way to change it —
+                      which is also the only thing this row has to say. There is
+                      no sentence above it: *"Saves straight away, and keeps your
+                      words"* was deleted for exactly this reason, and the
+                      picker's own header now says the part that is sharp
+                      (ADR 0042 rule 2).
+                    */}
+                    <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                      <span className="min-w-0 text-foreground">
+                        {chosenName(templateId, templates)}
+                      </span>
+                      <Button ref={browse} variant="outline" onClick={() => setBrowsing(true)}>
+                        {__('Browse designs', 'wconvert')}
+                      </Button>
+                    </div>
 
                     {/*
                       **The look, where the word Design already promised it.**
@@ -1068,7 +1121,9 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
                             against, "the merchant's" and "the design's" are
                             indistinguishable and guessing costs more.
                           */
-                          design={gallery.templates.find((each) => each.id === templateId)?.tokens ?? {}}
+                          design={
+                            templateId === undefined ? {} : (trees.get(templateId)?.tokens ?? {})
+                          }
                           onChange={(next) => edit({ template: next })}
                           onError={report}
                         />
@@ -1189,6 +1244,47 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
         onConfirm={() => {
           setLeaving(false);
           onClose();
+        }}
+      />
+
+      {/*
+        **Choosing a design owns the screen until it is answered** (ADR 0042
+        rule 7), and it is the one edit that is not a value in a field: it takes
+        a fresh SNAPSHOT of the design, carrying the merchant's words across by
+        [[Slot Role]], and the snapshot boundary is the server's (ADR 0010).
+        Taking it at the click is what lets the panel underneath show the design
+        that was actually stored rather than a guess at what the save will
+        produce.
+
+        Rendered outside the tabs, like the confirm above it, because a Radix
+        dialog portals to `document.body` and the Design tab lives inside an
+        `<Activity mode="hidden">` — a picker owned by a hidden tab is a picker
+        whose close never re-renders.
+      */}
+      <TemplatePickerDialog
+        open={browsing}
+        onOpenChange={(next) => {
+          setBrowsing(next);
+
+          // Radix restores focus to its own trigger, and this dialog has none:
+          // it is opened from a button that stays on a tab which may itself be
+          // hidden by the time it closes. Naming the control is what puts the
+          // caret back rather than on `<body>` — the same fix `ConfirmDialog`
+          // needed and for the same reason.
+          if (!next) {
+            browse.current?.focus();
+          }
+        }}
+        index={gallery}
+        trees={trees}
+        displayType={displayTypeOf(config, templates)}
+        chosen={templateId}
+        act={act ?? 'submit'}
+        busy={busy}
+        onNear={want}
+        onChoose={(picked) => {
+          setBrowsing(false);
+          void save({ ...config, template_id: picked });
         }}
       />
     </div>
@@ -1413,10 +1509,31 @@ const EVERY_INSTALL_HAS = 'popup';
  * of them follows it without this line changing. The constant is reached only
  * by an install shipping no designs at all, which has no gallery to filter.
  */
-function displayTypeOf(config: Config, templates: readonly TemplateEntry[]): string {
+function displayTypeOf(config: Config, templates: readonly TemplateIndexEntry[] | undefined): string {
   const declared = config.display_type;
 
-  return typeof declared === 'string' ? declared : (templates[0]?.display_type ?? EVERY_INSTALL_HAS);
+  return typeof declared === 'string' ? declared : (templates?.[0]?.display_type ?? EVERY_INSTALL_HAS);
+}
+
+/**
+ * The design in use, by name — the whole of what the Design tab says about
+ * choosing one now that the gallery is behind a button.
+ *
+ * Its own line rather than a heading, because it answers a question the
+ * merchant has (*which one am I on?*) and asserts nothing else. An Optin whose
+ * entry this install no longer ships shows its id, which is the same fallback
+ * {@see entryFor} takes and for the same reason: the id is provenance, and an
+ * Optin that arrived from an entry we no longer carry is not a broken Optin.
+ */
+function chosenName(
+  templateId: string | undefined,
+  templates: readonly TemplateIndexEntry[] | undefined,
+): string {
+  if (templateId === undefined) {
+    return __('No design chosen yet.', 'wconvert');
+  }
+
+  return templates?.find((each) => each.id === templateId)?.name ?? templateId;
 }
 
 /**
@@ -1431,7 +1548,7 @@ function displayTypeOf(config: Config, templates: readonly TemplateEntry[]): str
 function entryFor(
   template: Template,
   templateId: string | undefined,
-  templates: readonly TemplateEntry[],
+  templates: readonly TemplateIndexEntry[],
 ): TemplateEntry {
   const source = templates.find((each) => each.id === templateId);
 
@@ -1439,6 +1556,11 @@ function entryFor(
     id: templateId ?? 'optin',
     name: source?.name ?? (templateId ?? ''),
     display_type: source?.display_type ?? EVERY_INSTALL_HAS,
+    // Carried so the dev-only export writes the library entry a design would
+    // ACTUALLY ship as: `tier` is one of the entry's five keys now, and an
+    // export missing it is an entry that reads as free by default rather than
+    // by decision (`entry.ts`).
+    tier: source?.tier,
     tree: template.tree,
     tokens: template.tokens,
   };

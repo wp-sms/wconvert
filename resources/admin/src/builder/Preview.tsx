@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { mount } from '@renderer/mount';
 import { SLOT_SELECTOR, keyOfElement, type SlotKey } from './slots';
+import { policyUrl, withPolicyLink } from './policy';
 import type { Template } from '@renderer/types';
 
 /**
@@ -50,6 +51,23 @@ import type { Template } from '@renderer/types';
  * and it is what keeps the preview a render of the current tree rather than a
  * patched copy of an older one. Selection is NOT in that dependency list: it
  * paints an outline over a tree that is already on screen.
+ *
+ * ============================================================================
+ * MOUNTING IS THE CALLER'S TO DEFER, AND THE PICKER DEFERS IT (ADR 0043).
+ * ============================================================================
+ * There is no gate in here, and there is deliberately not one: this file mounts
+ * whatever it is handed, the moment it is rendered. A picker holding forty live
+ * renders cannot afford that — forty closed shadow roots, forty stylesheets,
+ * forty trees, none of which anybody has scrolled to — so
+ * {@see TemplateCard} simply does not RENDER a `Preview` for a card that is far
+ * from the viewport, which is the same thing said in the one place that knows
+ * whether a card is near one.
+ *
+ * The remount is what makes that affordable rather than a trade, and the
+ * paragraph above is the argument: `mount()` reads nothing ambient — no
+ * network, no layout measurement — so a card that leaves the viewport and comes
+ * back rebuilds from the same tree and draws the same pixels. There is no
+ * scroll position to lose and no state to restore, because a card is a picture.
  */
 
 /**
@@ -96,8 +114,30 @@ export function Preview({ template, step = 0, selected = null, onSelect }: Previ
    */
   const [root, setRoot] = useState<HTMLElement | null>(null);
 
+  /*
+   * **The site's own privacy policy, filled in at the render** (#77).
+   *
+   * Here rather than on the way out of the server, because the builder PATCHes
+   * the config it was handed straight back — so an href resolved into a config
+   * is an href STORED, frozen at publish, which is what ADR 0032 exists to
+   * prevent. What this produces is thrown away with the render.
+   *
+   * Memoised on the tree's identity because that identity is what the mount
+   * below remounts on, and an unresolved tree comes back unchanged by identity
+   * — so a site with no policy configured pays nothing at all.
+   */
+  const url = policyUrl();
+  const drawn = useMemo(
+    (): Template => {
+      const tree = withPolicyLink(template.tree, url);
+
+      return tree === template.tree ? template : { ...template, tree };
+    },
+    [template, url],
+  );
+
   useEffect(() => {
-    const mounted = mount({ displayType: 'inline', template, anchor: anchor.current });
+    const mounted = mount({ displayType: 'inline', template: drawn, anchor: anchor.current });
 
     mounted.show();
 
@@ -116,7 +156,7 @@ export function Preview({ template, step = 0, selected = null, onSelect }: Previ
       mounted.close();
       setRoot(null);
     };
-  }, [template, step]);
+  }, [drawn, step]);
 
   useEffect(() => {
     if (root === null || onSelect === undefined) {

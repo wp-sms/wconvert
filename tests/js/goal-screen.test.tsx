@@ -68,6 +68,30 @@ const PLAYBOOK = {
   targeting: {},
   destination_hint: {},
   notes: 'A first-order discount is the highest-converting trade there is.',
+  /**
+   * **The design this Playbook would prefill, with its words already in it.**
+   *
+   * Composed by `Prefill` on the server, which is the whole reason it travels:
+   * binding `copy` to [[Slot Role]]s is the one thing that must not have two
+   * implementations, so step 2 draws exactly what step 3 draws and exactly what
+   * creating it would store (#79).
+   */
+  template: {
+    tokens: { bg: '#ffffff' },
+    tree: {
+      steps: [
+        {
+          type: 'stack',
+          children: [
+            { type: 'heading', role: 'headline', text: 'Ten percent off your first order' },
+            { type: 'field', name: 'email', label: 'Email address' },
+            { type: 'button', role: 'cta_label', label: 'Send my code', action: 'submit' },
+          ],
+        },
+        { type: 'stack', children: [{ type: 'heading', role: 'success_headline', text: 'Done' }] },
+      ],
+    },
+  },
 };
 
 const DRAFT = {
@@ -157,6 +181,46 @@ describe('the goal screen', () => {
 
     expect(await screen.findByText('Welcome discount')).toBeInTheDocument();
     expect(screen.getByText(PLAYBOOK.notes)).toBeInTheDocument();
+  });
+
+  /**
+   * ==========================================================================
+   * STEP 2 DREW A HEADING, A PARAGRAPH AND A BUTTON (#68, #79).
+   * ==========================================================================
+   * This is where a merchant chooses between ready-to-run starts, and it showed
+   * them as three lines of text apiece — while step 3, one click later, draws
+   * the real design. The product's whole claim is that there are no thumbnails
+   * anywhere in this flow because the REAL thing is cheap to draw (ADR 0010),
+   * and this was the one screen in the flow not making it.
+   *
+   * Asserted through the shadow HOST rather than its contents: the render lives
+   * in a closed shadow root and that is not loosened for a test (ADR 0009).
+   */
+  it('draws each Playbook’s real design rather than a paragraph about it', async () => {
+    const { container } = render(<GoalScreen onCreated={() => undefined} />);
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Choose' }));
+    await screen.findByText('Welcome discount');
+
+    await waitFor(() =>
+      expect(container.querySelectorAll('.wconvert-gallery__card .wconvert-preview')).toHaveLength(1),
+    );
+  });
+
+  /**
+   * A Playbook naming a Template this install no longer ships still starts a
+   * perfectly good Optin, so the card falls back to the words it always had
+   * rather than becoming a card that loads forever.
+   */
+  it('still offers a Playbook whose design this install no longer ships', async () => {
+    goals.listPlaybooks.mockResolvedValue([{ ...PLAYBOOK, template: undefined }]);
+
+    render(<GoalScreen onCreated={() => undefined} />);
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Choose' }));
+
+    expect(await screen.findByText('Welcome discount')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Use this Playbook/ })).toBeEnabled();
   });
 
   /**

@@ -44,11 +44,36 @@ export function Toolbar({ children, trailing }: { children?: ReactNode; trailing
  * count of *people* (ADR 0021).
  *
  * **A count is stated only where the set can be large enough to need one.** The
- * Optin list has none and is not missing one.
+ * Optin list has none and is not missing one — and the design picker draws its
+ * whole toolbar, count included, on the same test.
  */
-export function ToolbarCount({ children, hint }: { children: string; hint?: string }) {
+export function ToolbarCount({
+  children,
+  hint,
+  live = false,
+}: {
+  children: string;
+  hint?: string;
+  /**
+   * Speak the number when it changes.
+   *
+   * **For a count that moves without the page moving.** The design picker's
+   * chips filter the grid under a toolbar that keeps focus exactly where it
+   * was, so a screen-reader user presses *Side by side* and is told nothing at
+   * all — the content changed and nothing announced it (ADR 0038).
+   *
+   * Off by default, because most counts here change only as the result of a
+   * navigation the reader already heard: the Lead log's number arrives with a
+   * new table, and announcing it again would be the same fact twice.
+   */
+  live?: boolean;
+}) {
   return (
-    <span className="tabular-nums text-muted-foreground" title={hint}>
+    <span
+      className="tabular-nums text-muted-foreground"
+      title={hint}
+      aria-live={live ? 'polite' : undefined}
+    >
       {/*
         **The count keeps a text node of its own**, so it is still findable as
         exactly the words it says. Folding the hint in beside it would make the

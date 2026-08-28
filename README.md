@@ -160,10 +160,34 @@ draws the live Optin, the admin draws gallery cards and previews. There are no
 static thumbnails to produce or to let go stale, and nothing React-shaped may
 enter that tree — two consumers, two bundles, one byte budget.
 
+## The design library, and how a card is drawn without its design
+
+`resources/templates/library/*.json` is what this ZIP ships; **every facet the
+picker filters by is derived from the tree** rather than authored, because a
+Template carries no words and so cannot honestly be tagged by industry or
+season ([ADR 0043](docs/adr/0043-the-library-is-indexed-and-its-facets-are-derived.md)).
+The manifest's sibling `facets` section says which of them are offered as chips.
+
+`GET /wconvert/v1/templates` is an **index** — id, name, Display Type, tier,
+availability and facets, with **no tree** — and `GET /templates/trees?ids=…`
+answers for the cards on screen. A card mounts its live render only while it is
+near the viewport and takes it down again, which is what makes a library ten
+times this size affordable without a virtualization library.
+
+A design declares its `tier`. Free ships free designs and, in
+`resources/templates/locked.json`, the **card** for a premium one — a name, its
+facets and a link to a live preview on wconvert.com, with no tree and no image
+at all. Shipping the design and refusing the save is trialware
+([#7](https://github.com/navidkashani/wconvert/issues/7)), so
+`bin/verify-artifact-contract.sh` check **(e)** refuses a `tier: pro` entry, or
+a `tree` in `locked.json`, inside the free artifact.
+
 ```bash
-tests/js/renderer-manifest-parity.test.ts     # the renderer against the manifest
+tests/js/renderer-manifest-parity.test.ts      # the renderer against the manifest
 tests/unit/Template/TemplateVocabularyTest.php # what validation drops on the way in
 tests/unit/Template/TemplateSnapshotTest.php   # an Optin's copy outlives its entry
+tests/unit/Template/TemplateFacetsTest.php     # every shipped design's facets, from its tree
+tests/unit/Rest/TemplateRoutesTest.php         # the index carries no tree, and locked cards link
 tests/unit/Frontend/PayloadBudgetTest.php      # ten snapshotted trees, ≤2KB gzipped
 ```
 

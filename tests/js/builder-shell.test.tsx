@@ -35,7 +35,7 @@ const builder = vi.hoisted(() => ({
   getThemeTokens: vi.fn(),
 }));
 
-const templates = vi.hoisted(() => ({ listTemplates: vi.fn() }));
+const templates = vi.hoisted(() => ({ listTemplates: vi.fn(), getTemplateTrees: vi.fn() }));
 const stats = vi.hoisted(() => ({ readDashboard: vi.fn() }));
 const destinations = vi.hoisted(() => ({ readDestinations: vi.fn() }));
 
@@ -90,6 +90,37 @@ const LABELS = {
   params: { submit: 'Sends the form', link: 'Goes somewhere else' },
   tokenValues: {},
   tokens: { bg: 'Background' },
+  facets: { shape: 'Shape', captures: 'Asks for', has_image: 'Picture' },
+  facetValues: {
+    'shape.stack': 'Column',
+    'shape.row': 'Row',
+    'shape.split': 'Side by side',
+    'captures.email': 'Email address',
+    'captures.name': 'Name',
+    'captures.phone': 'Phone number',
+    'has_image.true': 'With a picture',
+  },
+};
+
+/**
+ * The gallery route serves an INDEX — a card is a name, a Display Type, a tier
+ * and five derived facets, and **no tree** (ADR 0043). The designs arrive
+ * per-card from `/templates/trees` as the grid brings them near the viewport,
+ * which is what these two fixtures are.
+ */
+const CARD = {
+  id: ENTRY.id,
+  name: ENTRY.name,
+  display_type: ENTRY.display_type,
+  tier: 'free',
+  availability: 'ready' as const,
+  facets: {
+    act: 'submit' as const,
+    captures: ['email'],
+    shape: 'stack',
+    has_image: false,
+    asks_consent: true,
+  },
 };
 
 function optin(over: Record<string, unknown> = {}) {
@@ -110,7 +141,14 @@ beforeEach(() => {
   builder.saveOptin.mockImplementation((_id: string, _name: string, config: Record<string, unknown>) =>
     Promise.resolve({ ...optin(), config }),
   );
-  templates.listTemplates.mockResolvedValue({ templates: [ENTRY], labels: LABELS });
+  templates.listTemplates.mockResolvedValue({
+    templates: [CARD],
+    labels: LABELS,
+    facets: { shape: ['stack', 'row', 'split'], captures: ['email', 'name', 'phone'], has_image: ['true'] },
+  });
+  templates.getTemplateTrees.mockResolvedValue({
+    templates: [{ id: ENTRY.id, tree: ENTRY.tree, tokens: ENTRY.tokens }],
+  });
   stats.readDashboard.mockResolvedValue({ from: '', to: '', days: 30, goals: [] });
   destinations.readDestinations.mockResolvedValue({ destinations: [], types: [] });
 });
@@ -285,6 +323,49 @@ describe('the builder shell', () => {
 
     expect(screen.getByRole('row', { name: /Body text/ })).toHaveAttribute('aria-selected', 'true');
     expect(screen.getByRole('group', { name: 'Body text' })).toBeInTheDocument();
+  });
+
+  /**
+   * ==========================================================================
+   * THE DESIGN TAB HELD TWO CONCERNS, AND A REGION HOLDS ONE (ADR 0039).
+   * ==========================================================================
+   * *Choose a design* and *adjust the look* are two questions. At three cards
+   * that was invisible; at forty the gallery swamps the token controls the tab
+   * is named for, and a merchant who came to change one colour scrolls past the
+   * whole library to reach it.
+   *
+   * So the tab keeps the look, names the design in use, and the gallery is
+   * behind one button on a surface of its own (ADR 0043).
+   */
+  it('names the design in use and puts the gallery behind one button', async () => {
+    open();
+
+    await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
+
+    expect(await screen.findByText('Centred card')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Browse designs' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Use this design/ })).toBeNull();
+  });
+
+  /**
+   * **A modal is for something that owns the screen until it is answered**
+   * (ADR 0042 rule 7), and the sentence it opens with is the sharp edge: the
+   * merchant's words come across by [[Slot Role]], and blocks they added, moved
+   * or deleted do not. That is destructive, and undo is what buys it the
+   * exception ADR 0039 otherwise refuses — so the affordance STATES what it
+   * takes rather than asking a second question in front of the first.
+   */
+  it('opens the picker, and says what picking a design will take', async () => {
+    open();
+
+    await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Browse designs' }));
+
+    const picker = within(await screen.findByRole('dialog'));
+
+    expect(picker.getByText('Browse designs')).toBeInTheDocument();
+    expect(picker.getByText(/Blocks you added, moved or deleted do not/)).toBeInTheDocument();
+    expect(picker.getByRole('button', { name: /In use/ })).toBeInTheDocument();
   });
 
   /**

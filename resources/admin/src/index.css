@@ -699,6 +699,28 @@
   gap: 0.25rem;
 }
 
+/* ---------------------------------------------------------------------------
+ * WHAT THE ADMIN OWNS IS NOT ALL INSIDE `#wconvert-admin`.
+ *
+ * **A Radix dialog portals to `document.body`**, which is outside the admin's
+ * root — the z-index and typography rules above already say so, and name the
+ * portal roots one by one for exactly that reason. Every OTHER rule in this
+ * file anchored on `#wconvert-admin` therefore stops at the portal boundary,
+ * silently, and the design picker is what found it: chips in a dialog toolbar
+ * got neither `--control-height-sm` nor the segmented group's *selected*
+ * treatment, and the confirm dialog's buttons have had no hand cursor since
+ * ADR 0039 added them.
+ *
+ * So the three rules a portalled surface needs take a root LIST rather than the
+ * id. `:is()` and not `:where()`, deliberately: `:where()` contributes zero
+ * specificity, and every one of these is an `!important` utility override whose
+ * whole standing depends on beating a single class inside the same layer.
+ *
+ * It is a list rather than a class the callers add, because a rule that only
+ * applies when somebody remembers to opt in is the rule that was already
+ * missing here.
+ * ------------------------------------------------------------------------- */
+
 /*
  * **A toolbar control and an in-row action stand at the small height**
  * (ADR 0039). Stated once, here, rather than passed as a class at every call
@@ -711,7 +733,25 @@
  * an unlayered rule here would lose to `.h-8` however specific it was. In the
  * same layer the ordinary rules apply again and an id plus a class plus an
  * attribute beats a single utility class.
- */
+ *
+ * ---------------------------------------------------------------------------
+ * **AND IT WAS ONLY HALF THE RULE, WHICH IS WHY IT SIZED NOTHING.**
+ *
+ * The paragraph above is right about the LAYER and stops one step short: in the
+ * same layer an `!important` declaration beats a non-important one **however
+ * specific the loser is** (ADR 0042 rule 6). `h-9` is important; `block-size:
+ * auto` here was not. So this rule has never set a height on anything — the one
+ * toolbar that existed when it was written passes `size="sm"` at the call site,
+ * which is precisely what "stated once, here, rather than passed at every call
+ * site" says it should not have to.
+ *
+ * Found by the design picker, whose chips came out at 36px and whose search box
+ * came out at 40px under a rule saying both should be 32. That is the sixth
+ * time this file has been caught by the layer/important interaction, and every
+ * previous one wrote it down — so the fix is to finish the rule rather than to
+ * record the anecdote again. The two overrides below are `!important` for the
+ * same reason: they now have an important declaration to beat.
+ * ------------------------------------------------------------------------- */
 @layer utilities {
   /*
    * `.wconvert-footer` joins the three, and the reason is the same one: a
@@ -726,9 +766,9 @@
    * tall control and a card's repair action is the small one, and that is the
    * caller's `size` because it is a question about scope.
    */
-  #wconvert-admin
+  :is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"])
     :is(.wconvert-page-actions, .wconvert-toolbar, .wconvert-table, .wconvert-footer)
-    :is([data-slot="button"], [data-slot="select-trigger"]) {
+    :is([data-slot="button"], [data-slot="select-trigger"], [data-slot="input"]) {
     /*
      * **The height is a MINIMUM, and the label may wrap.** "Export CSV" is two
      * short words in English and *"Erfassungsdatensätze als CSV-Datei
@@ -741,17 +781,30 @@
      * `max-inline-size` is what actually caps it: a `shrink-0` flex item ignores
      * its container's pressure but not its own maximum. The rest is what makes
      * the wrapped result look deliberate instead of clipped.
+     *
+     * **`[data-slot="input"]` joined the two, and the design picker is why.**
+     * Its search box is the admin's first text input in a toolbar, and the
+     * vendored `Input` is `h-9` — 40px beside 36px chips on the same line, which
+     * reads as one control that failed to line up rather than as a strip. The
+     * rule is about the toolbar and not about each control that lands in one, so
+     * the kind of control is what was missing from it.
      */
-    block-size: auto;
-    min-block-size: var(--control-height-sm);
-    max-inline-size: 100%;
-    padding-block: 0.3125rem;
-    white-space: normal;
+    block-size: auto !important;
+    min-block-size: var(--control-height-sm) !important;
+    max-inline-size: 100% !important;
+    padding-block: 0.3125rem !important;
+    white-space: normal !important;
   }
 
-  /* A page-header action is the taller of the two heights (ADR 0039). */
+  /*
+   * A page-header action is the taller of the two heights (ADR 0039).
+   *
+   * Same specificity as the rule above — an id, a class and an attribute each —
+   * so this wins on source order, and it has to be `!important` now that the
+   * floor it is raising is.
+   */
   #wconvert-admin .wconvert-page-actions [data-slot="button"] {
-    min-block-size: var(--control-height);
+    min-block-size: var(--control-height) !important;
   }
 
   /*
@@ -763,7 +816,7 @@
    * disagreement.
    */
   #wconvert-admin .wconvert-footer [data-slot="button"][data-size="default"] {
-    min-block-size: var(--control-height);
+    min-block-size: var(--control-height) !important;
   }
 }
 
@@ -1107,6 +1160,28 @@
    * ------------------------------------------------------------------------- */
   .wconvert-picker-pop[data-state="closed"] {
     animation: none !important;
+  }
+
+  /*
+   * -------------------------------------------------------------------------
+   * THE PICKER IS A COLUMN, AND THE VENDORED DIALOG IS A GRID.
+   *
+   * `DialogContent` ships `grid gap-4 p-6 sm:max-w-lg` (ADR 0036), and all four
+   * are wrong for a gallery: 32rem is a two-card grid on a 1440px screen, the
+   * padding fights the toolbar's own strip edges, and a grid cannot give the
+   * body the `1fr` it needs to scroll while the header stays put.
+   *
+   * **`!important` and inside `@layer utilities`, or it does not apply**
+   * (ADR 0042 rule 6). The classes being overridden are Tailwind utilities,
+   * this admin compiles utilities as `!important` (ADR 0035), and for important
+   * declarations the cascade runs layers in reverse — so an unlayered rule here
+   * loses to `grid` however specific it is. That is the fifth time this file
+   * has been caught by it.
+   * -------------------------------------------------------------------------
+   */
+  .wconvert-picker[data-slot="dialog-content"] {
+    display: flex !important;
+    flex-direction: column !important;
   }
 }
 
@@ -1462,6 +1537,123 @@
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
+  /*
+   * ------------------------------------------------------------------------
+   * A CARD NOBODY HAS SCROLLED TO COSTS NO LAYOUT (ADR 0043).
+   * ------------------------------------------------------------------------
+   * **The other half of the deferred mount, and it is not the same half.**
+   * `TemplateCard`'s `IntersectionObserver` stops an off-screen card being
+   * BUILT; this stops one that already exists — the last screenful the merchant
+   * scrolled past, still mounted because it is inside the observer's margin —
+   * from being laid out and painted. Neither alone reaches where the pair does.
+   *
+   * And neither is a virtualization library, which was the third option: the
+   * grid is a responsive `auto-fill`, and adding a dependency to a bundle whose
+   * halves are reported at every build (ADR 0038) to arrive at the same place is
+   * a bad trade.
+   *
+   * `contain-intrinsic-size` is what stops the scrollbar jumping. Without it a
+   * skipped card measures ZERO and the page collapses to nothing, so scrolling
+   * a library of forty is a document whose height changes under the thumb. The
+   * number is a guess at a card and only has to be close: `auto` remembers the
+   * real size once the card has been rendered once, so the guess is wrong at
+   * most on the way down.
+   */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 20rem;
+}
+
+/*
+ * The lane a card holds open for a design that has not arrived — either still
+ * being fetched, or far enough from the viewport that it has been taken down.
+ *
+ * **A shape rather than a spinner** (ADR 0039): a skeleton in the grid's own
+ * shape is what stops the row jumping when a design lands, which is the whole
+ * reason `TableSkeleton` and `ChoiceSkeleton` exist one surface over.
+ *
+ * **The floor is for a card that has never rendered.** A card that HAS and then
+ * scrolled away holds its own measured height, set inline by
+ * {@see TemplateCard} — because this floor cannot be right for every design and
+ * a wrong one is a scroll that jumps under the merchant's thumb. Measured in a
+ * browser: an unmounted card was 212px against a mounted 348px, so scrolling
+ * down pulled the row above up by 136px per card.
+ */
+.wconvert-gallery__waiting {
+  display: flex;
+  flex: 1;
+  min-block-size: 8rem;
+  padding: 0.75rem;
+  background: var(--surface);
+}
+
+/*
+ * What a card shows where the design would be, when the design is **not on this
+ * install and never will be**.
+ *
+ * Free ships the card for a premium design and never the design, because
+ * shipping the tree and refusing the save is trialware (issue #7). So there is
+ * nothing to render and — deliberately — nothing to render INSTEAD: no
+ * thumbnail, no screenshot, no image at all, which is why ADR 0010's *no static
+ * thumbnails anywhere* survives this ticket intact.
+ *
+ * What is here is the facets in the merchant's own words, which is the honest
+ * substitute: with no render to compare, "Side by side · Email · With a
+ * picture" is what a merchant can actually compare against the real cards
+ * beside it.
+ */
+.wconvert-gallery__absent {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  min-block-size: 8rem;
+  padding: 1rem;
+  background: var(--surface);
+}
+
+.wconvert-facets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.wconvert-facets > li {
+  padding: 0.125rem 0.5rem;
+  color: var(--muted-foreground);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: var(--text-sm, 0.8125rem);
+}
+
+/* ---------------------------------------------------------------------------
+ * THE PICKER: THE GRID, ON A SURFACE OF ITS OWN.
+ *
+ * **A region holds exactly one concern and the Design tab held two** — *choose
+ * a design* and *adjust the look* (ADR 0039). At three cards that was
+ * invisible; at forty the gallery swamps the tokens the tab is named for.
+ *
+ * The dialog is what gives the grid the full width the builder caps at, rather
+ * than one pane beside a pinned preview: ADR 0038's answer to a wider screen is
+ * another pane or more air, never a longer line.
+ *
+ * The BODY scrolls rather than the dialog, so the toolbar's chips stay reachable
+ * with forty cards under them — a filter you have to scroll back up to change is
+ * a filter you use once.
+ * ------------------------------------------------------------------------- */
+.wconvert-picker__scroll {
+  display: flex;
+  flex-direction: column;
+  min-block-size: 0;
+  overflow-y: auto;
+}
+
+.wconvert-picker__body {
+  padding: 1rem;
 }
 
 .wconvert-gallery__card.is-chosen {
@@ -1544,9 +1736,18 @@
  * reason on the other axis — the design is narrower than the lane once it is
  * sized to itself, and it sat hard against the leading edge.
  *
- * The cap is in the ZOOMED coordinate space: 30rem declared is 16.5rem drawn.
+ * The cap is in the ZOOMED coordinate space: 44rem declared is 24.2rem drawn.
  * It was 22rem, which clipped the tallest shipped design by 50px — a cap that
  * fires on something we ship is a cap set from the wrong number.
+ *
+ * **And it was set from the wrong number twice.** 30rem was right for a library
+ * of three and wrong the moment it was twelve: measured in a browser, *Name and
+ * email* draws 349px against a 264px lane and *Photo offer* draws 276px, so two
+ * of the designs we ship were clipped mid-button on the screen a merchant
+ * chooses from. The tallest shipped design is 635px declared, and 44rem clears
+ * it with room for the next one — which is the number this cap has to be set
+ * from, because a cap that fires on our own work is not protecting anybody from
+ * a third party's.
  */
 .wconvert-gallery .wconvert-preview {
   zoom: 0.55;
@@ -1554,7 +1755,7 @@
   flex: 1;
   align-items: center;
   justify-content: center;
-  max-block-size: 30rem;
+  max-block-size: 44rem;
   overflow: hidden;
   pointer-events: none;
   background: var(--surface);
@@ -1725,7 +1926,7 @@
  * takes a press gets the hand, and `:disabled` takes it back — a control that
  * cannot be pressed must not invite the press.
  * ------------------------------------------------------------------------- */
-#wconvert-admin :is(
+:is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"]) :is(
     button,
     summary,
     [role="button"],
@@ -1741,7 +1942,7 @@
   cursor: pointer;
 }
 
-#wconvert-admin :is(button, [role="button"], [role="menuitem"], select):is(
+:is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"]) :is(button, [role="button"], [role="menuitem"], select):is(
     :disabled,
     [aria-disabled="true"],
     [data-disabled]
@@ -1815,7 +2016,7 @@
    * down. The rule that generalises: **an override of a utility is `!important`
    * AND layered, or it is decoration.**
    */
-  #wconvert-admin .wconvert-segmented > :is([data-slot="button"]) {
+  :is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"]) .wconvert-segmented > :is([data-slot="button"]) {
     border-radius: max(calc(var(--radius) - 2px), 0px) !important;
     border: 1px solid transparent !important;
     background: transparent !important;
@@ -1824,13 +2025,13 @@
     font-weight: 400 !important;
   }
 
-  #wconvert-admin .wconvert-segmented > [data-slot="button"]:hover {
+  :is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"]) .wconvert-segmented > [data-slot="button"]:hover {
     background: transparent !important;
     color: var(--foreground) !important;
   }
 
   /* The one selected answer, in the one treatment every strip now shares. */
-  #wconvert-admin .wconvert-segmented > [data-slot="button"][aria-pressed="true"],
+  :is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"]) .wconvert-segmented > [data-slot="button"][aria-pressed="true"],
   #wconvert-admin [data-slot="tabs-trigger"][data-state="active"] {
     background: var(--card) !important;
     border-color: var(--border) !important;

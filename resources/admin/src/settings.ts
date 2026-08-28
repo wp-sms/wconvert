@@ -22,6 +22,22 @@ export interface AdminSettings {
    * (ADR 0010).
    */
   readonly dev?: boolean;
+  /**
+   * `get_privacy_policy_url()`, or absent where the site has none configured.
+   *
+   * **The admin has to resolve the consent link itself** (#77). `PolicyLink`
+   * runs on the published payload and on the capture path, and neither is a
+   * path the admin reads — so every preview, every gallery card and the
+   * creation flow's last step rendered the fine print as *"See our."* while the
+   * front end rendered it correctly.
+   *
+   * It is a value beside the bundle rather than a route because it is one
+   * site-wide string that cannot change while the page is open, and because it
+   * must reach the RENDER rather than the config: an href resolved into
+   * something the builder saves back is an href frozen at publish, which is the
+   * thing ADR 0032 exists to prevent. See `builder/policy.ts`.
+   */
+  readonly policyUrl?: string;
 }
 
 declare global {

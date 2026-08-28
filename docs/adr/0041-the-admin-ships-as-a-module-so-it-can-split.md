@@ -136,6 +136,16 @@ script executes where it is written.
   skeleton and the choice-card vocabulary moved out to `shell/` — and the
   builder renders the same skeleton for its own first fetch, so the two waits
   read as one.
+  *Held by [ADR 0043](0043-the-library-is-indexed-and-its-facets-are-derived.md),
+  which adds a second in-chunk skeleton and keeps the rule intact.
+  **`GallerySkeleton` is inside `builder/`** — it pairs with the grid the way
+  `ChoiceSkeleton` pairs with `ChoiceGrid`, and what it waits for is a fetch the
+  chunk itself makes, never the chunk. The chunk-level fallback is still
+  `shell/BuilderSkeleton`. The whole design picker — the dialog, the facet
+  toolbar, the card — is on the far side of the boundary and
+  `tests/js/admin-split.test.ts` passed untouched, which is the assertion that
+  matters: a picker reachable from `main.tsx` would put the renderer back on
+  every reading screen.*
 - **The creation flow is behind the same boundary as the builder.** It ends in
   the builder by construction and draws a real design at its last step
   ([ADR 0010](0010-templates-are-configuration-not-documents.md)), so leaving it

@@ -170,5 +170,20 @@
       "Georgia, 'Times New Roman', Times, serif",
       "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
     ]
+  },
+  "facets": {
+    "shape": [
+      "stack",
+      "row",
+      "split"
+    ],
+    "captures": [
+      "email",
+      "name",
+      "phone"
+    ],
+    "has_image": [
+      "true"
+    ]
   }
 }

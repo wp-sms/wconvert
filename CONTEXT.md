@@ -331,6 +331,16 @@ is never copied into an Optin.
 > **goal-agnostic** — the library is a set of designs per [[Display Type]], not a
 > design for every pairing of Display Type and Goal.
 
+> **Amended: the library is no longer small, and the boundary is what stops the
+> matrix coming back.** It is twelve designs and growing, and what keeps that
+> from becoming Display Type × Goal is that a Template still carries no words —
+> so every facet the picker filters by describes the **design** (how it is
+> arranged, what it captures, whether it has a picture) and never the Goal. That
+> is also why there is no Industry or Season facet: those work for a library
+> whose entries contain a photograph of a bakery, and these contain no words at
+> all. See
+> [ADR 0043](docs/adr/0043-the-library-is-indexed-and-its-facets-are-derived.md).
+
 One Template serves exactly one Display Type. An Optin **takes a copy** of its
 Template rather than a link to it, so improving a Template never restyles an Optin
 already running on it.

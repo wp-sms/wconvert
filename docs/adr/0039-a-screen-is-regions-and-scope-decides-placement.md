@@ -158,6 +158,27 @@ A region that fetches has three renderings and owes all three:
 - **Error** is an alert at the top of **the region that failed**, not the page,
   and it clears on the next successful fetch.
 
+*Applied to the design picker by
+[ADR 0043](0043-the-library-is-indexed-and-its-facets-are-derived.md), where the
+first bullet is a `GallerySkeleton` in the grid's own shape and the second is
+"No designs match" **beside Clear filters**. The third turned out to have
+nothing to draw: the index is fetched before the builder renders, a tree that
+does not arrive leaves one card with its skeleton and is retried by the next
+look, and the save a merchant starts by pressing "Use this design" is a failure
+of the Optin rather than of the gallery — so it lands in the builder's own
+region error, which is this rule read correctly rather than an exception to it.*
+
+***And the Design tab was two concerns in one region*** (ADR 0043). It held
+*choose a design* and *adjust the look*. At three cards that was invisible; at
+forty the gallery swamps the tokens the tab is named for, and the merchant who
+came to change one colour scrolls past the whole library to reach it. Choosing a
+design is a dialog now — ADR 0042 rule 7's test, *something that owns the screen
+until it is answered* — and the tab keeps the look. **The destructive-action
+rule below is where it lands**, and the structure editor's amendment is what
+decides it: picking a design loses blocks the merchant added, moved or deleted,
+undo buys the exception to confirming, and so the affordance **states what it
+takes** rather than asking a second question in front of the first.
+
 The region-scoped error is what makes partial failure survivable, and there is
 already a case in the tree that needs it: `OptinList` swallows a [[Goal]]
 registry failure on purpose, because a registry that did not load costs the

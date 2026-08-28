@@ -391,6 +391,77 @@ final class TemplateLabels
     }
 
     /**
+     * What each FACET the picker filters by is called.
+     *
+     * ============================================================================
+     * THE THREE A MERCHANT COMPARING DESIGNS ACTUALLY USES.
+     * ============================================================================
+     * Six facets are derived from a tree and three of them are offered as
+     * controls ({@see TemplateFacets}). These are the names over those three
+     * chip strips, and each one has to answer ADR 0042 rule 2 — *does knowing
+     * this change what they do next?* — before it earns a line of the toolbar.
+     *
+     * Named for the QUESTION rather than for the key. `has_image` is *"Picture"*
+     * because the strip under it holds one chip and a merchant reads the pair,
+     * not the key.
+     *
+     * @return array<string, string>
+     */
+    public static function facets(): array
+    {
+        return [
+            /* translators: a filter over the design library — how a design is arranged. */
+            'shape' => __('Shape', 'wconvert'),
+            /* translators: a filter over the design library — what the design asks a visitor for. */
+            'captures' => __('Asks for', 'wconvert'),
+            /* translators: a filter over the design library — whether the design has an image in it. */
+            'has_image' => __('Picture', 'wconvert'),
+        ];
+    }
+
+    /**
+     * What each OFFERED FACET VALUE is called, keyed `"{facet}.{value}"`.
+     *
+     * ============================================================================
+     * TWO OF THE THREE BORROW WORDS THE ADMIN ALREADY SAYS, DELIBERATELY.
+     * ============================================================================
+     * A `shape` chip and a row in the structure editor name the same layout, and
+     * a `captures` chip and the ⇄ menu name the same field kind. Composing them
+     * from {@see self::layouts()} and {@see self::fields()} is what makes that
+     * true by construction: a merchant who filtered by *Side by side* and then
+     * opened the design finds a block called *Side by side*, and a translator
+     * has one string to get right rather than two that must agree.
+     *
+     * It also removes the failure the other spelling would have: two lists
+     * whose keys are checked against the manifest separately can both pass
+     * while saying different words for `split`.
+     *
+     * `has_image` is the exception because it has no vocabulary behind it. It is
+     * a boolean, so it offers exactly one chip — the manifest declares `"true"`
+     * and this names it — and *"With a picture"* is the phrase, because a chip
+     * reading *"True"* is a chip nobody presses.
+     *
+     * @return array<string, string>
+     */
+    public static function facetValues(): array
+    {
+        $values = [];
+
+        foreach (self::layouts() as $layout => $label) {
+            $values['shape.' . $layout] = $label;
+        }
+
+        foreach (self::fields() as $field => $label) {
+            $values['captures.' . $field] = $label;
+        }
+
+        /* translators: the one chip under the Picture filter — designs with an image in them. */
+        $values['has_image.true'] = __('With a picture', 'wconvert');
+
+        return $values;
+    }
+
+    /**
      * Every map at once, which is what the gallery route ships.
      *
      * One object rather than five routes: they are read together, once, by one
@@ -413,6 +484,8 @@ final class TemplateLabels
             'params' => self::params(),
             'tokens' => self::tokens(),
             'tokenValues' => self::tokenValues(),
+            'facets' => self::facets(),
+            'facetValues' => self::facetValues(),
         ];
     }
 }

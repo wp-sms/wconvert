@@ -113,6 +113,24 @@ is a stronger guarantee than four numbers that happen to agree today.
 **A variant that means "selected" is a second place for that decision to live.**
 The buttons are all `ghost` now, and the group decides.
 
+*A fifth strip, from
+[ADR 0043](0043-the-library-is-indexed-and-its-facets-are-derived.md): the design
+picker's facet chips. It took the declaration rather than inventing a treatment,
+which is what "one declaration" is for — and it is the first strip that is
+**multi-select**, because pressing Email and Phone number means "asks for
+either". `aria-pressed` carries that; there is no "All" chip, because nothing
+pressed is already no constraint.*
+
+*It also found where the declaration STOPS. A Radix dialog portals to
+`document.body`, and this rule — like `--control-height-sm` and rule 8's hand
+cursor — was anchored on `#wconvert-admin`, so none of the three reached a
+control inside a dialog. The confirm dialog has had no hand cursor since
+[ADR 0039](0039-a-screen-is-regions-and-scope-decides-placement.md) added it, and
+nothing failed. The three rules a portalled surface needs take a root list now,
+and it is `:is()` and never `:where()`: rule 6 is why — a `:where()` root
+contributes zero specificity, and every one of these is an `!important` utility
+override whose whole standing is beating a single class inside the same layer.*
+
 ## 6. An override of a utility is `!important` and layered, or it is decoration
 
 Rule 5 was written, shipped, and **changed nothing on screen**. The declarations

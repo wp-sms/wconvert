@@ -118,6 +118,21 @@ final class AdminMenu
             // no use for the library entry behind their popup, and a control
             // they cannot act on is one they learn to ignore.
             'dev' => defined('WP_DEBUG') && WP_DEBUG,
+            // **The consent link the admin draws, resolved here** (#77).
+            // `PolicyLink::into()` runs on the published payload and on the
+            // capture path, and neither is a path the admin reads — so every
+            // preview, every gallery card and the creation flow's last step
+            // rendered the fine print as "See our." while the front end
+            // rendered it correctly, under a field labelled "leave empty for
+            // your privacy policy".
+            //
+            // It travels as the site's URL rather than as a resolved tree, and
+            // that is the whole of why it is here: the builder PATCHes the
+            // config it was handed straight back, so an href resolved into a
+            // config on the way out is an href stored on the way back —
+            // frozen at publish, which is exactly what ADR 0032 refuses. The
+            // admin resolves it at the render instead (`builder/policy.ts`).
+            'policyUrl' => (string) get_privacy_policy_url(),
         ];
 
         // `wp_add_inline_script()` rather than `wp_localize_script()`, and the

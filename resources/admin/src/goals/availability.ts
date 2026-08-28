@@ -24,8 +24,24 @@
  *
  * The precedence that produces `unavailable` in the first place — it beats
  * `locked` where both reasons apply — is PHP's, in
- * `WConvert\Goal\Availability::of()`. It is resolved once, on the server, so
+ * `WConvert\Support\Availability::of()`. It is resolved once, on the server, so
  * this side never recombines two booleans in an order of its own.
+ *
+ * ============================================================================
+ * A [[Template]] IS A REGISTRY MEMBER TOO, WITH ONE STATE IT CANNOT REACH.
+ * ============================================================================
+ * The design picker renders through this function rather than through a rule of
+ * its own (ADR 0043), and a design is `ready` or `locked` and **never
+ * `unavailable`**: no site capability makes a *design* absent — there is no
+ * WooCommerce a `split` layout needs — so the branch this file spends its last
+ * line on has nothing to decide there.
+ *
+ * The `locked` arm below is the whole of it: free bundles the CARD for a premium
+ * design — a name, its facets, a link to a live preview on wconvert.com — and
+ * never the design, because shipping the tree and refusing the save is
+ * trialware (issue #7). The comment under `locked` about bundled copy is
+ * therefore literal for templates as well: `resources/templates/locked.json` is
+ * in the ZIP.
  */
 
 /**

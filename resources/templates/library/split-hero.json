@@ -1,0 +1,96 @@
+{
+  "id": "split-hero",
+  "name": "Split hero",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#ffffff",
+    "fg": "#0f172a",
+    "muted": "#64748b",
+    "accent": "#0f172a",
+    "accent-fg": "#ffffff",
+    "border": "#e2e8f0",
+    "heading-size": "1.5rem",
+    "radius": "0.75rem",
+    "pad": "0",
+    "gap": "1rem",
+    "width": "38rem",
+    "align": "start",
+    "backdrop": "rgba(15, 23, 42, 0.55)"
+  },
+  "tree": {
+    "steps": [
+      {
+        "type": "split",
+        "ratio": 0.5,
+        "start": [
+          {
+            "type": "image",
+            "src": "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%203%202'%3E%3Crect%20width='3'%20height='2'%20fill='%23cbd5e1'/%3E%3Ccircle%20cx='.8'%20cy='.6'%20r='.26'%20fill='%23f1f5f9'/%3E%3Cpath%20d='M0%202l1-.95.62.52L2.35.75%203%201.4V2z'%20fill='%2394a3b8'/%3E%3C/svg%3E",
+            "alt": "A photograph of the product",
+            "fit": "cover"
+          }
+        ],
+        "end": [
+          {
+            "type": "stack",
+            "children": [
+              {
+                "type": "heading",
+                "role": "headline",
+                "text": "Ten percent off, on us"
+              },
+              {
+                "type": "text",
+                "role": "body",
+                "text": "Join the list and the code lands before you finish reading this."
+              },
+              {
+                "type": "field",
+                "name": "email",
+                "label": "Email address",
+                "placeholder": "you@example.com",
+                "required": true
+              },
+              {
+                "type": "button",
+                "role": "cta_label",
+                "label": "Send my code",
+                "action": "submit"
+              },
+              {
+                "type": "consent",
+                "role": "consent_text",
+                "hidden": true,
+                "text": "Email me offers and news. See our %s.",
+                "link": {
+                  "label": "Privacy Policy"
+                }
+              },
+              {
+                "type": "text",
+                "role": "fine_print",
+                "text": "No spam, and you can unsubscribe at any time."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "stack",
+        "children": [
+          {
+            "type": "heading",
+            "role": "success_headline",
+            "text": "You are on the list"
+          },
+          {
+            "type": "text",
+            "role": "success_body",
+            "text": "Your code is on its way to your inbox."
+          }
+        ]
+      }
+    ]
+  }
+}
