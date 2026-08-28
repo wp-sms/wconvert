@@ -30,6 +30,16 @@ export interface TemplateLabels {
    * did.
    */
   layouts: Record<string, string>;
+  /**
+   * What each layout DOES, in one line with an example.
+   *
+   * **A name is not an explanation.** The Add menu offered *Column*, *Row*,
+   * *Side by side* and *Grid* as four bare words, and two of them are genuinely
+   * hard to tell apart from their names — a Row lays blocks along one line, a
+   * Side by side gives each pane its own stack. A merchant found out which was
+   * which by adding one, looking at the preview and deleting it again.
+   */
+  layoutNotes: Record<string, string>;
   fields: Record<string, string>;
   /**
    * The example wording a field of each kind ships with.

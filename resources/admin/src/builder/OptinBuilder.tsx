@@ -790,7 +790,27 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
         */}
         <h1 className="sr-only">{name === '' ? __('Untitled Optin', 'wconvert') : name}</h1>
 
-        <div className="wconvert-page-actions mt-2 flex flex-wrap items-center gap-x-3 gap-y-2">
+        {/*
+          ======================================================================
+          THE TITLE LEADS, THE ACTIONS TRAIL. THEY ARE NOT "BESIDE" ANYTHING.
+          ======================================================================
+          Two attempts put `Save changes` next to the name — `flex-1` on the
+          input, then a `max-w-sm` cap, then sizing the input to its content —
+          on ADR 0039's reading that *"the eye pairs them"*. All three were
+          wrong for this band, and the reason is what the ADR's own examples
+          have in common and this screen does not: on the reading screens the
+          title is a fixed LABEL and the action is one button, so "beside" is a
+          stable arrangement. Here the title is an editable field whose width is
+          the merchant's, and an action anchored to a moving edge lands
+          somewhere different for every Optin they open.
+
+          So the band is a title and a trailing action group, which is where
+          both the editors worth measuring against put them and where a
+          merchant's hand already is. `justify-between` is the whole of it: the
+          name takes what it needs at the leading edge, the controls sit at the
+          trailing one, and neither depends on the other's length.
+        */}
+        <div className="wconvert-page-actions mt-2 flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
           <label htmlFor="wconvert-optin-name" className="sr-only">
             {__('Name', 'wconvert')}
           </label>
@@ -832,31 +852,39 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
           />
 
           {/*
-            **History sits with the thing it acts on.** Undo and Redo move the
-            whole draft, which is exactly the scope `Save changes` has — so they
-            belong in this band rather than in a region toolbar, where they cost
-            a full-width bordered strip at the top of two tabs for two controls
-            a merchant reaches for occasionally. Icon-only and quiet, in the
-            order every editor puts them, between the title and the commit.
+            The trailing group: what has been saved, what can be taken back, and
+            the commit. All three act on the whole draft, which is why they are
+            one group rather than three things spaced along a band.
           */}
-          <HistoryControls history={history} />
+          <div className="flex flex-wrap items-center justify-end gap-x-3 gap-y-2">
+            {/*
+              **"Saved" says where publishing happens.** Editing is not
+              publishing — `config` is the draft and `published_config` is what
+              the site serves — and a merchant who saved and saw nothing go live
+              needs that sentence here rather than in a support reply.
+            */}
+            {saved && (
+              <span className="flex items-center gap-1.5 text-note text-muted-foreground">
+                <Check aria-hidden="true" className="size-4 shrink-0 text-success" />
+                {__('Saved. Publish it from the list when it is ready.', 'wconvert')}
+              </span>
+            )}
 
-          <Button disabled={busy} onClick={() => void save()}>
-            {__('Save changes', 'wconvert')}
-          </Button>
+            {/*
+              **History sits with the thing it acts on.** Undo and Redo move the
+              whole draft, which is exactly the scope `Save changes` has — so
+              they belong in this band rather than in a region toolbar, where
+              they cost a full-width bordered strip at the top of two tabs for
+              two controls a merchant reaches for occasionally. Icon-only and
+              quiet, immediately before the commit, which is the order every
+              editor uses.
+            */}
+            <HistoryControls history={history} />
 
-          {/*
-            **"Saved" says where publishing happens.** Editing is not publishing
-            — `config` is the draft and `published_config` is what the site
-            serves — and a merchant who saved and saw nothing go live needs that
-            sentence here rather than in a support reply.
-          */}
-          {saved && (
-            <span className="flex items-center gap-1.5 text-muted-foreground">
-              <Check aria-hidden="true" className="size-4 text-success" />
-              {__('Saved. Publish it from the list when it is ready.', 'wconvert')}
-            </span>
-          )}
+            <Button disabled={busy} onClick={() => void save()}>
+              {__('Save changes', 'wconvert')}
+            </Button>
+          </div>
         </div>
 
         {stats !== null && (

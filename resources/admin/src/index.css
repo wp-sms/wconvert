@@ -1730,27 +1730,45 @@
  * however specific it is. This file has now been caught by that four times.
  */
 @layer utilities {
+  /*
+   * **Every declaration here is `!important`, and leaving them off is why the
+   * first attempt changed nothing.**
+   *
+   * Specificity is not the contest. The vendored classes these override —
+   * `bg-secondary`, `data-[state=active]:bg-background`, `p-[3px]` — are
+   * Tailwind utilities, and this admin compiles utilities as `!important`
+   * (ADR 0035). **In the same layer, an important declaration beats a
+   * non-important one however specific the loser is**, so `#wconvert-admin` +
+   * two attributes lost to a single class, and the tab strip kept its
+   * page-coloured active tab while the code said otherwise.
+   *
+   * That is the fourth time this file has been caught by the interaction
+   * between `important` and cascade layers, and the first three all wrote it
+   * down. The rule that generalises: **an override of a utility is `!important`
+   * AND layered, or it is decoration.**
+   */
   #wconvert-admin .wconvert-segmented > :is([data-slot="button"]) {
-    border-radius: max(calc(var(--radius) - 2px), 0px);
-    border: 1px solid transparent;
-    background: transparent;
-    box-shadow: none;
-    color: var(--muted-foreground);
-    font-weight: 400;
+    border-radius: max(calc(var(--radius) - 2px), 0px) !important;
+    border: 1px solid transparent !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: var(--muted-foreground) !important;
+    font-weight: 400 !important;
   }
 
   #wconvert-admin .wconvert-segmented > [data-slot="button"]:hover {
-    background: transparent;
-    color: var(--foreground);
+    background: transparent !important;
+    color: var(--foreground) !important;
   }
 
   /* The one selected answer, in the one treatment every strip now shares. */
   #wconvert-admin .wconvert-segmented > [data-slot="button"][aria-pressed="true"],
   #wconvert-admin [data-slot="tabs-trigger"][data-state="active"] {
-    background: var(--card);
-    border-color: var(--border);
-    color: var(--foreground);
-    font-weight: 500;
+    background: var(--card) !important;
+    border-color: var(--border) !important;
+    color: var(--foreground) !important;
+    font-weight: 500 !important;
+    box-shadow: none !important;
   }
 
   /*
@@ -1760,13 +1778,14 @@
    * inches to its right.
    */
   #wconvert-admin [data-slot="tabs-list"] {
-    padding: 1px;
-    border: 1px solid var(--border);
+    padding: 1px !important;
+    border: 1px solid var(--border) !important;
   }
 
   #wconvert-admin [data-slot="tabs-trigger"] {
-    border-radius: max(calc(var(--radius) - 2px), 0px);
-    color: var(--muted-foreground);
+    border-radius: max(calc(var(--radius) - 2px), 0px) !important;
+    border: 1px solid transparent !important;
+    color: var(--muted-foreground) !important;
   }
 }
 

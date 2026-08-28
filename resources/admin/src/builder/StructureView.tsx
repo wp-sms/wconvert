@@ -597,7 +597,29 @@ function RowAction({
   const copying = whyDuplicationIsRefused(tree, block.path);
 
   return (
-    <DropdownMenu>
+    /*
+      ========================================================================
+      NOT MODAL, AND BOTH SYMPTOMS ARE THE SAME PROPERTY.
+      ========================================================================
+      Radix's `DropdownMenu` is `modal` by default, which does two things a row
+      menu has no use for: it puts `pointer-events: none` on `<body>` and it
+      LOCKS SCROLL.
+
+      The scroll lock is the visible glitch. Locking removes the document
+      scrollbar, so the whole page jumps sideways by its width the moment the
+      menu opens and jumps back when it closes — on a screen where the menu is
+      opened from a row in a long list, which is to say every time.
+
+      The `pointer-events: none` is the other half. A click meant for another
+      row's `⋯` is swallowed by the dismiss layer, so the first press only
+      closes what was open and the merchant has to press again — which reads as
+      "the menu did not respond", and, when they press twice quickly, as two
+      menus fighting.
+
+      Modal is for a dialog that owns the screen until it is answered. This is
+      a row's actions.
+    */
+    <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
         <Button type="button" variant="ghost" size="icon-sm" tabIndex={tabIndex}>
           <MoreHorizontal aria-hidden="true" />
@@ -717,11 +739,19 @@ function RowAction({
  */
 function Refusable({
   reason,
+  note = null,
   destructive = false,
   onSelect,
   children,
 }: {
   reason: string | null;
+  /**
+   * What this item DOES, where its name does not say.
+   *
+   * Shown only when the item is offerable — a refusal is the more urgent
+   * sentence and two notes under one item is a paragraph.
+   */
+  note?: string | null;
   destructive?: boolean;
   onSelect: () => void;
   children: ReactNode;
@@ -734,8 +764,23 @@ function Refusable({
       className="flex-col items-start gap-0.5"
     >
       <span className="flex items-center gap-2">{children}</span>
-      {reason !== null && (
-        <span className="text-pretty whitespace-normal text-muted-foreground">{reason}</span>
+      {/*
+        **The reason is a note, not a second label.** It was body size — the
+        same as the item it explains — so a disabled row read as two equal
+        lines and a menu of six read as a wall. `Description`'s note size is
+        the role (ADR 0042), and it is the same 13px every other explanatory
+        line in this admin uses.
+      */}
+      {reason !== null ? (
+        <Description as="span" className="max-w-none whitespace-normal">
+          {reason}
+        </Description>
+      ) : (
+        note !== null && (
+          <Description as="span" className="max-w-none whitespace-normal">
+            {note}
+          </Description>
+        )
       )}
     </DropdownMenuItem>
   );
@@ -776,6 +821,15 @@ function AddMenu({
           <Refusable
             key={addition.type}
             reason={addition.refused}
+            /*
+              **A layout gets a sentence and a leaf does not**, which is not an
+              inconsistency: *Heading*, *Text*, *Image*, *Field* and *Button*
+              name themselves, while *Row* and *Side by side* are two words a
+              merchant cannot tell apart without being shown. The note is only
+              on the items that need one — printing one under *Heading* would be
+              the wall of text this menu just stopped being.
+            */
+            note={addition.leaf ? null : nameOf(labels.layoutNotes, addition.type)}
             onSelect={() => onAdd(at, addition.type)}
           >
             {addition.leaf

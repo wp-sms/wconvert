@@ -78,6 +78,14 @@ const LABELS = {
     consent: 'Consent checkbox',
   },
   layouts: { stack: 'Column', row: 'Row', split: 'Side by side', grid: 'Grid' },
+  // The menu shows what a layout DOES, because *Row* and *Side by side* are two
+  // words a merchant cannot tell apart from their names alone.
+  layoutNotes: {
+    stack: 'Blocks stacked top to bottom.',
+    row: 'Blocks along one line.',
+    split: 'Two panes, each holding its own blocks.',
+    grid: 'Equal columns that collapse on a phone.',
+  },
   fields: { email: 'Email address', name: 'Name', phone: 'Phone number' },
   keys: {
     text: 'Text',
@@ -1238,5 +1246,35 @@ describe('what a row shows about itself', () => {
     const chip = within(row('Button label')).getByText('counted');
 
     expect(chip).toHaveAttribute('title', expect.stringContaining('conversions are counted'));
+  });
+});
+
+/**
+ * ============================================================================
+ * A NAME IS NOT AN EXPLANATION, AND FOUR OF THE ADD MENU'S WERE ONLY NAMES.
+ * ============================================================================
+ * *Column*, *Row*, *Side by side* and *Grid* arrived as four bare words, and
+ * two of them are genuinely hard to tell apart from their names — a Row lays
+ * blocks along one line, a Side by side gives each pane its own stack. The way
+ * to find out which was which was to add one, look at the preview, and delete
+ * it again.
+ */
+describe('the Add menu', () => {
+  it('says what a layout does, and leaves a leaf to name itself', async () => {
+    await structure();
+
+    await userEvent.click(
+      within(row('Fine print')).getByRole('button', { name: /Add, copy or delete Fine print/ }),
+    );
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Add a block after this' }));
+
+    // A layout carries its sentence…
+    expect(
+      screen.getByRole('menuitem', { name: /Side by side/ }),
+    ).toHaveTextContent('Two panes, each holding its own blocks.');
+
+    // …and a leaf does not, because printing one under "Heading" would be the
+    // wall of text this menu exists not to be.
+    expect(screen.getByRole('menuitem', { name: 'Heading' })).toHaveTextContent(/^Heading$/);
   });
 });

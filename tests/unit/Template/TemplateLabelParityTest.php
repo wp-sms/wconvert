@@ -96,6 +96,24 @@ final class TemplateLabelParityTest extends TestCase
         $this->assertNamesExactly($fields, TemplateLabels::placeholders(), 'field placeholders');
     }
 
+    /**
+     * **A name is not an explanation**, and the Add menu offered four bare
+     * words — two of which (Row, Side by side) are genuinely hard to tell apart
+     * without one. A layout added to the manifest with no note would arrive in
+     * that menu as another bare word, which is the state this exists to end.
+     */
+    public function testEveryLayoutIsExplained(): void
+    {
+        /** @var array<string, mixed> $layouts */
+        $layouts = self::manifest()['layouts'];
+
+        $this->assertNamesExactly(
+            array_map('strval', array_keys($layouts)),
+            TemplateLabels::layoutNotes(),
+            'layout notes'
+        );
+    }
+
     public function testEveryTokenIsNamed(): void
     {
         $this->assertNamesExactly(array_map('strval', array_keys(self::manifest()['tokens'])), TemplateLabels::tokens(), 'tokens');

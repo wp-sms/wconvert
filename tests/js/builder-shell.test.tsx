@@ -71,6 +71,14 @@ const LABELS = {
   roles: { headline: 'Headline', body: 'Body text', fine_print: 'Fine print' },
   nodes: { heading: 'Heading', text: 'Text', button: 'Button', consent: 'Consent checkbox' },
   layouts: { stack: 'Column', row: 'Row', split: 'Side by side', grid: 'Grid' },
+  // The menu shows what a layout DOES, because *Row* and *Side by side* are two
+  // words a merchant cannot tell apart from their names alone.
+  layoutNotes: {
+    stack: 'Blocks stacked top to bottom.',
+    row: 'Blocks along one line.',
+    split: 'Two panes, each holding its own blocks.',
+    grid: 'Equal columns that collapse on a phone.',
+  },
   fields: { email: 'Email address' },
   keys: { text: 'Text', label: 'Label', placeholder: 'Placeholder', link: 'Link' },
   placeholders: { email: 'you@example.com', name: 'Your name', phone: '+44 7700 900000' },

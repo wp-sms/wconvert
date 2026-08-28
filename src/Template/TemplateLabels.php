@@ -96,6 +96,39 @@ final class TemplateLabels
     }
 
     /**
+     * What each layout DOES, in one line with an example.
+     *
+     * ============================================================================
+     * A NAME IS NOT AN EXPLANATION, AND FOUR OF THESE NEEDED ONE.
+     * ============================================================================
+     * *Column*, *Row*, *Side by side* and *Grid* are the four arrangements the
+     * vocabulary offers, and the Add menu offered them as four bare words. Two
+     * of them are genuinely hard to tell apart from their names — a Row lays
+     * blocks along one line, a Side by side gives each pane its own stack — and
+     * the merchant finds out which is which by adding one, looking at the
+     * preview, and deleting it again.
+     *
+     * **The example is the half that teaches.** *"Blocks left to right on one
+     * line"* is a definition; *"an email box beside its button"* is a picture,
+     * and a merchant recognises the thing they were trying to build.
+     *
+     * Its own map rather than an entry in {@see self::layouts()}, which is
+     * pinned to exactly the manifest's layout NAMES — a sentence in there would
+     * be a name, and the block tree prints those on every row.
+     *
+     * @return array<string, string>
+     */
+    public static function layoutNotes(): array
+    {
+        return [
+            'stack' => __('Blocks stacked top to bottom — a headline over body text over a button.', 'wconvert'),
+            'row' => __('Blocks along one line, wrapping when there is no room — an email box beside its button.', 'wconvert'),
+            'split' => __('Two panes, each holding its own blocks — a picture on one side, the form on the other.', 'wconvert'),
+            'grid' => __('Equal columns that collapse on a phone — three short selling points across.', 'wconvert'),
+        ];
+    }
+
+    /**
      * What each field kind captures, in the merchant's words.
      *
      * @return array<string, string>
@@ -307,6 +340,7 @@ final class TemplateLabels
             'roles' => self::roles(),
             'nodes' => self::nodes(),
             'layouts' => self::layouts(),
+            'layoutNotes' => self::layoutNotes(),
             'fields' => self::fields(),
             'placeholders' => self::placeholders(),
             'keys' => self::keys(),

@@ -113,6 +113,40 @@ is a stronger guarantee than four numbers that happen to agree today.
 **A variant that means "selected" is a second place for that decision to live.**
 The buttons are all `ghost` now, and the group decides.
 
+## 6. An override of a utility is `!important` and layered, or it is decoration
+
+Rule 5 was written, shipped, and **changed nothing on screen**. The declarations
+were right and the cascade threw them away.
+
+This admin compiles Tailwind's utilities as `!important`
+([ADR 0035](0035-the-admin-owns-its-page.md)). **In the same cascade layer an
+important declaration beats a non-important one however specific the loser is**
+— so `#wconvert-admin [data-slot="tabs-trigger"][data-state="active"]`, an id
+and two attributes, lost to `data-[state=active]:bg-background`, one class. The
+tab strip kept its page-coloured active tab while the source said otherwise.
+
+`index.css` had already been caught by the layer/important interaction three
+times and written it down each time, and it happened again — which means the
+lesson was recorded as three anecdotes rather than as a rule. It is a rule:
+**anything overriding a vendored component's utilities is `!important` and
+inside `@layer utilities`, or it does not apply.**
+
+## 7. A modal is for something that owns the screen until it is answered
+
+Radix's `DropdownMenu` is `modal` by default. On a row's `⋯` menu that bought
+two defects and no benefit:
+
+- **The scroll lock is the visible glitch.** Locking removes the document
+  scrollbar, so the whole page jumps sideways when the menu opens and jumps back
+  when it closes — on a screen where the menu is opened from a row in a long
+  list, which is every time.
+- **`pointer-events: none` on `<body>` is the other half.** A click aimed at
+  another row's `⋯` is swallowed by the dismiss layer, so the first press only
+  closes what was open. That reads as *"the menu did not respond"*, and when the
+  merchant presses twice quickly, as two menus fighting.
+
+A default that describes a dialog is not a default for a row's actions.
+
 ## Consequences
 
 - **A control that acts on the whole draft sits with the draft's title.** Undo
