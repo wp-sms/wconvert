@@ -1,4 +1,5 @@
 import {
+  Activity,
   useCallback,
   useEffect,
   useMemo,
@@ -22,6 +23,8 @@ import { DestinationsEditor } from './DestinationsEditor';
 import { Preview } from './Preview';
 import { RulesEditor } from './RulesEditor';
 import { SettingsPanel } from './SettingsPanel';
+import { StructureView } from './StructureView';
+import { stepName } from './BlockRow';
 import { TOKENS } from './panel';
 import { TargetingEditor, type Targeting } from './TargetingEditor';
 import { getOptin, getRules, saveOptin, type Rule, type RuleVocabulary } from './api';
@@ -104,8 +107,26 @@ export interface OptinBuilderProps {
 
 type Config = Record<string, unknown>;
 
-/** The four surfaces, in the order a merchant meets them. */
-type TabId = 'design' | 'content' | 'rules' | 'destinations';
+/**
+ * The five surfaces, in the order a merchant meets them.
+ *
+ * **Structure sits beside Content because they are two views of one document.**
+ * Content answers *what does this say*, Structure answers *what is here and in
+ * what order*, and both edit the same `template`. Keeping them adjacent is what
+ * makes the pair legible; keeping them separate is what stops the Content tab
+ * becoming a column of sentences interleaved with move buttons.
+ */
+type TabId = 'design' | 'content' | 'structure' | 'rules' | 'destinations';
+
+/**
+ * The two tabs that hold state worth surviving a switch.
+ *
+ * A merchant moving between *what it says* and *how it is arranged* is doing
+ * one job, and rebuilding the tree's scroll position, its expanded rows and its
+ * selection on every switch would make the pair feel like two screens. The
+ * other three tabs hold nothing a re-mount loses.
+ */
+const KEPT: readonly TabId[] = ['content', 'structure'];
 
 /**
  * Which width the preview is drawn at.
@@ -290,14 +311,32 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
   };
 
   /*
-   * A slot was clicked in the preview. The block that edits it is on the
-   * Content tab, so getting there is part of the act — landing the caret on a
-   * tab the merchant is not looking at would be a selection they never see.
+   * A slot was clicked in the preview. **Where that lands depends on which
+   * question the merchant is already asking.**
+   *
+   * From anywhere else, the block that edits it is on the Content tab, so
+   * getting there is part of the act — landing the caret on a tab the merchant
+   * is not looking at would be a selection they never see. From STRUCTURE it is
+   * not: they are asking *where is this in the list*, and yanking them to
+   * Content answers a question they did not ask and loses the row they were on.
+   *
+   * The current tab is read through `setTab`'s updater rather than captured in
+   * the closure, so this stays stable across renders — which matters because
+   * {@see Preview} re-binds every listener in the shadow tree when it changes.
    */
   const chooseFromPreview = useCallback((key: SlotKey) => {
-    setTab('content');
+    setTab((current) => (current === 'structure' ? current : 'content'));
     setSelection({ key, from: 'preview' });
   }, []);
+
+  /*
+   * A row was clicked in the block tree. It outlines the block in the preview
+   * and moves no caret: the merchant already has focus, on the row.
+   */
+  const chooseFromStructure = useCallback(
+    (key: SlotKey | null) => setSelection(key === null ? null : { key, from: 'structure' }),
+    [],
+  );
 
   const leave = () => (dirty ? setLeaving(true) : onClose());
 
@@ -417,13 +456,18 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
               setTab(value as TabId);
 
               /*
-               * **The outline says "this is the slot you are editing", so it
-               * goes when the merchant stops editing slots.** Left up over the
-               * rules tab it is a highlight with nothing on screen explaining
-               * it — the affordance reading as decoration, which is the one
-               * thing ADR 0037 asks this admin not to do.
+               * **The outline says "this is the block you are working on", so
+               * it goes when the merchant stops working on blocks.** Left up
+               * over the rules tab it is a highlight with nothing on screen
+               * explaining it — the affordance reading as decoration, which is
+               * the one thing ADR 0037 asks this admin not to do.
+               *
+               * Structure joined Content here rather than being added to the
+               * clause: both tabs are ABOUT the outlined block, and clearing
+               * the selection on the way between them would make the two views
+               * disagree about which one a merchant is looking at.
                */
-              if (value !== 'content') {
+              if (!KEPT.includes(value as TabId)) {
                 setSelection(null);
               }
             }}
@@ -431,6 +475,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
             <TabsList className="mb-4">
               <TabsTrigger value="design">{__('Design', 'wconvert')}</TabsTrigger>
               <TabsTrigger value="content">{__('Content', 'wconvert')}</TabsTrigger>
+              <TabsTrigger value="structure">{__('Structure', 'wconvert')}</TabsTrigger>
               <TabsTrigger value="rules">{__('Display rules', 'wconvert')}</TabsTrigger>
               <TabsTrigger value="destinations">{__('Destinations', 'wconvert')}</TabsTrigger>
             </TabsList>
@@ -456,26 +501,70 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
               </Region>
             </TabsContent>
 
-            <TabsContent value="content">
-              <Region label={__('What it says', 'wconvert')}>
-                {entry === null ? (
-                  <RegionBody className="text-muted-foreground">
-                    {__('Pick a design first.', 'wconvert')}
-                  </RegionBody>
-                ) : (
-                  <RegionBody className="wconvert-editor">
-                    <SettingsPanel
-                      entry={entry}
-                      labels={gallery.labels}
-                      dev={adminSettings()?.dev === true}
-                      selection={selection}
-                      onSelect={(key) => setSelection({ key, from: 'panel' })}
-                      onChange={(next) => edit({ template: next })}
-                      onError={report}
-                    />
-                  </RegionBody>
-                )}
-              </Region>
+            {/*
+              ================================================================
+              CONTENT AND STRUCTURE STAY MOUNTED, AND STOP RUNNING WHILE HIDDEN.
+              ================================================================
+              `forceMount` is what keeps them; `<Activity mode="hidden">` is
+              what makes keeping them affordable and, more importantly, SAFE.
+
+              Affordable: React skips rendering a hidden Activity's children at
+              normal priority, so the tab a merchant is not looking at is not
+              re-rendered on every keystroke in the one they are.
+
+              Safe: an Activity's effects are torn down while it is hidden.
+              {@see SettingsPanel} focuses a control whenever the selection
+              arrives from the preview — and with the panel merely `hidden`,
+              clicking a slot in the preview from the Structure tab would send
+              focus into a panel nobody can see. That is not a hypothetical; it
+              is the exact effect, and `hidden` alone does not stop it.
+
+              What survives is what a merchant would be annoyed to lose: the
+              tree's scroll position, which rows are expanded, and the caret.
+            */}
+            <TabsContent value="content" forceMount>
+              <Activity mode={tab === 'content' ? 'visible' : 'hidden'}>
+                <Region label={__('What it says', 'wconvert')}>
+                  {entry === null ? (
+                    <RegionBody className="text-muted-foreground">
+                      {__('Pick a design first.', 'wconvert')}
+                    </RegionBody>
+                  ) : (
+                    <RegionBody className="wconvert-editor">
+                      <SettingsPanel
+                        entry={entry}
+                        labels={gallery.labels}
+                        dev={adminSettings()?.dev === true}
+                        selection={selection}
+                        onSelect={(key) => setSelection({ key, from: 'panel' })}
+                        onChange={(next) => edit({ template: next })}
+                        onError={report}
+                      />
+                    </RegionBody>
+                  )}
+                </Region>
+              </Activity>
+            </TabsContent>
+
+            <TabsContent value="structure" forceMount>
+              <Activity mode={tab === 'structure' ? 'visible' : 'hidden'}>
+                <Region label={__('How it is arranged', 'wconvert')}>
+                  {entry === null ? (
+                    <RegionBody className="text-muted-foreground">
+                      {__('Pick a design first.', 'wconvert')}
+                    </RegionBody>
+                  ) : (
+                    <RegionBody>
+                      <StructureView
+                        template={entry}
+                        labels={gallery.labels}
+                        selected={selection?.key ?? null}
+                        onSelect={chooseFromStructure}
+                      />
+                    </RegionBody>
+                  )}
+                </Region>
+              </Activity>
             </TabsContent>
 
             {/*
@@ -608,9 +697,11 @@ function PreviewColumn({
                   Terminal is STRUCTURAL — the success state is the last step
                   rather than a flagged one (ADR 0025) — so the name follows
                   from the position and there is no second spelling to keep in
-                  step.
+                  step. The block tree names its step rows from the same
+                  function, which is what "no second spelling" now means
+                  literally rather than only in spirit.
                 */}
-                {index === 0 ? __('The form', 'wconvert') : __('After they submit', 'wconvert')}
+                {stepName(index + 1)}
               </Button>
             ))}
           </div>

@@ -1322,6 +1322,143 @@
  */
 
 /* ---------------------------------------------------------------------------
+ * THE BLOCK TREE: A TREEGRID, INDENTED BY A CUSTOM PROPERTY.
+ *
+ * **Every measurement here is logical**, which is not tidiness on this
+ * component in particular: the tree's whole shape is indentation, and a
+ * `padding-left` would put a Persian design's nesting on the wrong side of the
+ * row while the rest of the admin correctly flipped around it (ADR 0038, and
+ * the renderer is verified 44/44 under `fa_IR`).
+ *
+ * Depth arrives as `--wconvert-depth` rather than as a class per level, because
+ * the vocabulary lets a merchant nest as deep as they like and a `.depth-4`
+ * ladder would have a floor nobody chose.
+ * ------------------------------------------------------------------------- */
+.wconvert-structure {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/*
+ * **It scrolls itself, and never the page.** A deeply nested design is wider
+ * than the column below 1024px — where the builder is one column and the tree
+ * sits ABOVE the preview rather than beside it — so the overflow is the tree's
+ * own. That is ADR 0039's rule for a wide table, applied to a wide tree.
+ */
+.wconvert-blocks {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow-x: auto;
+}
+
+.wconvert-block {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-block-size: var(--control-height-sm);
+  padding-inline: 0.5rem;
+  padding-inline-start: calc(0.5rem + var(--wconvert-depth, 0) * 1rem);
+  border-block-start: 1px solid var(--border);
+}
+
+.wconvert-block:first-child {
+  border-block-start: 0;
+}
+
+/*
+ * A step is the thing the blocks are IN rather than a block, so it reads as a
+ * heading over the rows under it — which is also why its row carries only a
+ * name and no move or delete: how many steps a design has follows from its
+ * metric (ADR 0025), not from what a merchant arranges.
+ */
+.wconvert-block[data-step='true'] {
+  background: var(--surface);
+  font-weight: 600;
+}
+
+/*
+ * **The same outline the preview paints, on the same selection.** One string
+ * names the slot on both surfaces (ADR 0040), so the two have to agree about
+ * what "selected" looks like or the merchant sees one highlight and hunts for
+ * the other.
+ */
+.wconvert-block[data-selected='true'] {
+  background: color-mix(in srgb, var(--ring) 12%, transparent);
+  box-shadow: inset 2px 0 0 0 var(--ring);
+}
+
+.wconvert-block__name {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex: 1;
+  min-inline-size: 0;
+}
+
+/*
+ * A fixed box whether or not there is a chevron in it, so the names of blocks
+ * that hold nothing line up with the names of blocks that do.
+ */
+.wconvert-block__twist {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+  flex: none;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--muted-foreground);
+  cursor: pointer;
+}
+
+.wconvert-block__twist > svg {
+  inline-size: 0.875rem;
+  block-size: 0.875rem;
+}
+
+.wconvert-block__label {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex: 1;
+  min-inline-size: 0;
+  padding: 0.25rem;
+  border: 0;
+  border-radius: var(--radius);
+  background: none;
+  text-align: start;
+  cursor: pointer;
+}
+
+.wconvert-block__kind {
+  flex: none;
+  color: var(--foreground);
+}
+
+/*
+ * What the block SAYS, truncated. A row is named by its words rather than by
+ * "item 3 of 5", and a headline long enough to wrap would make the rows
+ * different heights and the tree unreadable as a list.
+ */
+.wconvert-block__says {
+  min-inline-size: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--muted-foreground);
+}
+
+.wconvert-block__action {
+  display: inline-flex;
+  flex: none;
+}
+
+/* ---------------------------------------------------------------------------
  * THE THEME PANEL: PRESETS FIRST, RAW TOKENS BEHIND A DISCLOSURE (#71).
  * ------------------------------------------------------------------------- */
 .wconvert-themes {

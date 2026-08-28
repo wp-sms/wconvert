@@ -61,8 +61,15 @@ export const SLOT_SELECTOR = '[data-role],[data-captures]';
  * PANEL must not then drag the caret back out of the field the merchant just
  * reached. Same key, opposite obligations — so the origin travels with it
  * rather than being guessed from timing.
+ *
+ * `structure` is the third surface and it behaves like `panel` on purpose: a
+ * merchant clicking a row in the block tree already has focus, on the row, and
+ * dragging the caret into a control on a tab they are not looking at would be a
+ * selection they never see. It is named rather than folded into `panel` because
+ * the two are different surfaces and a reader should not have to know that one
+ * of them is currently spelled as the other.
  */
 export interface Selection {
   readonly key: SlotKey;
-  readonly from: 'preview' | 'panel';
+  readonly from: 'preview' | 'panel' | 'structure';
 }

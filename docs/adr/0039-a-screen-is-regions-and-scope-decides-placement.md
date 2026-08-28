@@ -168,8 +168,8 @@ implicit role with it in a real browser, the table's elements carry their roles
 is four tabs"* against WSMS's twenty-five-section rail. That is a statement about
 **top-level sections** and about the scale a rail exists to serve. It is not a
 budget on tabs anywhere in the product, and
-[#69](https://github.com/navidkashani/wconvert/issues/69)'s ~~five~~ **four**
-builder tabs are a level below it.
+[#69](https://github.com/navidkashani/wconvert/issues/69)'s ~~five~~ ~~four~~
+**five** builder tabs are a level below it.
 
 This is written down because the two look like a contradiction and are not, and
 because the cheapest place to lose that distinction is a review comment reading
@@ -185,6 +185,22 @@ is that a count at this level is not the thing being budgeted — and a section
 arguing that, which then silently tracks the number, would be arguing against
 itself. `RulesEditor` and `TargetingEditor` are unchanged: the merge is a tab,
 not a model.*
+
+*Amended again by the structure editor: the builder ships **five** — Design ·
+Content · **Structure** · Display rules · Destinations. Structure is not a sixth
+question. It is the second view of the document *Content* already edits: Content
+answers *what does this say*, Structure answers *what is here and in what
+order*, and both write the same `template`. They sit adjacent for that reason
+and they coexist permanently — a merchant fixing a typo must not have to walk
+past a move button to reach the sentence, and a merchant rearranging must not
+have to read every sentence to find the block.*
+
+*The count has now moved twice, which is the section's own argument arriving
+twice. Both are struck through rather than rewritten for the reason given
+above: a section arguing that a count at this level is not what is being
+budgeted, and then silently tracking the number, would be arguing against
+itself. `tests/js/builder-shell.test.tsx` asserted `four` and is edited in the
+same commit — behaviour moving, recorded rather than quietly fixed.*
 
 ## Consequences
 

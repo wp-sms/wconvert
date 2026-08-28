@@ -13,9 +13,11 @@ import type { TemplateEntry } from '../../resources/admin/src/templates/api';
  * #29 drew the line — *"Not a TDD seam: React component structure, panel
  * layout, gallery chrome"* — and none of these is on the far side of it:
  *
- * - **Four tabs, not five.** Triggers, Conditions and page targeting are three
- *   answers to one question, and a merchant arrives expecting them together.
- *   Whether the two editors reach the same screen is a fact about the product.
+ * - **~~Four~~ five tabs.** Triggers, Conditions and page targeting are three
+ *   answers to one question, and a merchant arrives expecting them together —
+ *   that merge is unchanged. What is new beside it is **Structure**, which is
+ *   the other view of the document Content already edits. Whether these editors
+ *   reach the same screen is a fact about the product.
  * - **The preview is beside every tab.** It lived inside the settings panel, so
  *   editing a Trigger showed no preview at all — the exact failure the pinned
  *   column exists to end.
@@ -100,19 +102,129 @@ const open = () => render(<OptinBuilder id={ID} onClose={vi.fn()} />);
 
 describe('the builder shell', () => {
   /**
-   * **Four, and *Display rules* is the merged one.** "When does this fire",
-   * "who is eligible" and "which pages" were three tabs' worth of one question.
+   * **Five, and the count moved for the second time.**
+   *
+   * *Display rules* is still the merged one — "when does this fire", "who is
+   * eligible" and "which pages" were three tabs' worth of one question — and
+   * that is untouched. **Structure** is the addition, and it is not a sixth
+   * question: it is the second view of the document *Content* already edits,
+   * which is why it sits beside it rather than at the end.
+   *
+   * This assertion previously read `four` and is edited rather than deleted,
+   * because a test breaking here is behaviour moving and ADR 0039 asks that it
+   * be recorded in the commit that moves it rather than quietly rewritten. The
+   * ADR's own tab count is struck through in the same commit.
    */
-  it('offers four tabs, with the three rule surfaces under one of them', async () => {
+  it('offers five tabs, with the three rule surfaces under one of them', async () => {
     open();
 
     expect(await screen.findByRole('tab', { name: 'Design' })).toBeInTheDocument();
     expect(screen.getAllByRole('tab').map((tab) => tab.textContent)).toEqual([
       'Design',
       'Content',
+      'Structure',
       'Display rules',
       'Destinations',
     ]);
+  });
+
+  /**
+   * ========================================================================
+   * THE TREE IS THE DESIGN'S OWN BLOCKS, LAYOUTS INCLUDED.
+   * ========================================================================
+   * `slotsOf` walks leaves and flattens them, which is right for a column of
+   * words. A merchant MOVING the email field is moving it within the `row`, so
+   * the row has to be a row.
+   */
+  it('lists every block of the design, layouts included, as a treegrid', async () => {
+    open();
+
+    await userEvent.click(await screen.findByRole('tab', { name: 'Structure' }));
+
+    const tree = screen.getByRole('treegrid', { name: 'Blocks in this design' });
+
+    expect(within(tree).getByRole('row', { name: /The form/ })).toBeInTheDocument();
+    expect(within(tree).getByRole('row', { name: /Headline/ })).toBeInTheDocument();
+    expect(within(tree).getByRole('row', { name: /Email address/ })).toBeInTheDocument();
+  });
+
+  /**
+   * **Named by what it says, never "item 3 of 5".** Position is announced by
+   * `aria-level`, `aria-posinset` and `aria-setsize` — after the name, rather
+   * than instead of it.
+   */
+  it('names a row by the words the block is showing, and states its place separately', async () => {
+    open();
+
+    await userEvent.click(await screen.findByRole('tab', { name: 'Structure' }));
+
+    const headline = screen.getByRole('row', { name: /Headline/ });
+
+    expect(headline).toHaveAccessibleName(expect.stringContaining('Get 10% off your first order'));
+    expect(headline).toHaveAttribute('aria-level', '2');
+    expect(headline).toHaveAttribute('aria-posinset', '1');
+  });
+
+  /**
+   * **Selection is the one string ADR 0040 built, on a third surface.** It
+   * carries no way to REACH a slot, so nothing that receives one gains the
+   * ability to write — which is why the tree can share it with the preview.
+   */
+  it('marks a block selected when its row is clicked', async () => {
+    open();
+
+    await userEvent.click(await screen.findByRole('tab', { name: 'Structure' }));
+    await userEvent.click(screen.getByRole('button', { name: /Headline/ }));
+
+    expect(screen.getByRole('row', { name: /Headline/ })).toHaveAttribute('aria-selected', 'true');
+  });
+
+  /**
+   * **Exactly one tab stop for the whole grid.** A `tabindex="0"` per control
+   * would put sixty stops between the tab strip and the Save button on a
+   * fifteen-block design.
+   */
+  it('keeps one tab stop across the whole tree', async () => {
+    open();
+
+    await userEvent.click(await screen.findByRole('tab', { name: 'Structure' }));
+
+    const tree = screen.getByRole('treegrid', { name: 'Blocks in this design' });
+    const tabbable = within(tree).getAllByRole('button').filter((button) => button.tabIndex === 0);
+
+    expect(tabbable).toHaveLength(1);
+  });
+
+  /**
+   * ========================================================================
+   * CONTENT AND STRUCTURE ARE TWO VIEWS OF ONE DOCUMENT.
+   * ========================================================================
+   * So the selection survives the walk between them. Clearing it on the way
+   * would make the two views disagree about which block the merchant is on —
+   * and the outline in the preview would blink off and on for no reason the
+   * merchant could name.
+   */
+  it('keeps the selected block while the merchant moves between Content and Structure', async () => {
+    open();
+
+    await userEvent.click(await screen.findByRole('tab', { name: 'Structure' }));
+    await userEvent.click(screen.getByRole('button', { name: /Headline/ }));
+    await userEvent.click(screen.getByRole('tab', { name: 'Content' }));
+    await userEvent.click(screen.getByRole('tab', { name: 'Structure' }));
+
+    expect(screen.getByRole('row', { name: /Headline/ })).toHaveAttribute('aria-selected', 'true');
+  });
+
+  /** And it goes on any tab that is not about the block, as it always did. */
+  it('drops the selection on a tab that is not about a block', async () => {
+    open();
+
+    await userEvent.click(await screen.findByRole('tab', { name: 'Structure' }));
+    await userEvent.click(screen.getByRole('button', { name: /Headline/ }));
+    await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
+    await userEvent.click(screen.getByRole('tab', { name: 'Structure' }));
+
+    expect(screen.getByRole('row', { name: /Headline/ })).toHaveAttribute('aria-selected', 'false');
   });
 
   /**

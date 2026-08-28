@@ -313,7 +313,7 @@ describe('what the catalogue offers', () => {
   });
 
   it('refuses a field once every capture kind is taken', () => {
-    const full = [...(TREE.steps[0] as { children: TemplateNode[] }).children];
+    const full = [...((TREE.steps[0] as unknown) as { children: TemplateNode[] }).children];
     const crowded: TemplateTree = {
       steps: [
         {
