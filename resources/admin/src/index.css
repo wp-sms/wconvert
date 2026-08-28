@@ -1083,6 +1083,31 @@
   #wconvert-admin table.wp-list-table.fixed {
     position: static !important;
   }
+
+  /*
+   * ---------------------------------------------------------------------------
+   * THE COLOUR PICKER DOES NOT ANIMATE OUT, AND THAT IS WHAT UNMOUNTS IT.
+   *
+   * The Design tab lives inside `<Activity mode="hidden">` and this popover
+   * portals to `document.body`, outside it. Radix keeps closed content mounted
+   * until its exit animation ends and then unmounts it in a **re-render** — and
+   * that re-render is the one that never arrives, because the component that
+   * owns it is in a subtree React reconciles at low priority while hidden.
+   * Measured in a browser: `data-state="closed"`, animation finished, node
+   * still painted at full opacity over a tab with no colours in it.
+   *
+   * With no exit animation there is nothing to wait for: the close and the
+   * unmount are one commit, which is the commit `OptinBuilder`'s `flushSync`
+   * forces while the tab is still visible. The enter animation is untouched.
+   *
+   * **Inside `@layer utilities`, and that is the third time this file has been
+   * caught by it.** For `!important` declarations the cascade runs layers in
+   * REVERSE, so an unlayered rule here would lose to `animate-out`, which is a
+   * layered `!important` utility.
+   * ------------------------------------------------------------------------- */
+  .wconvert-picker-pop[data-state="closed"] {
+    animation: none !important;
+  }
 }
 
 /*
@@ -1299,12 +1324,26 @@
  * by until each is rewritten against the component vocabulary.
  * ------------------------------------------------------------------------- */
 /*
- * **One body size across the admin.** wp-admin sets `#wpbody-content p` to
- * 13px, so the un-converted screens rendered two points smaller than the frame
- * around them — a difference that reads as a rendering fault rather than as a
- * hierarchy. The class in the selector is what outranks WordPress's id.
+ * **One body size across the admin, and it is the WHOLE admin now.**
+ *
+ * wp-admin sets `#wpbody-content p` to 13px, unlayered and id-scoped, so any
+ * `<p>` we draw without an explicit size renders two points smaller than the
+ * frame around it — a difference that reads as a rendering fault rather than as
+ * a hierarchy.
+ *
+ * This was scoped to `.wconvert-editor`, which was right for the screens it was
+ * written for and left every `<p>` outside one taking WordPress's number.
+ * Measured in a browser after the type scale landed: `.wconvert-verdict` — a
+ * `<p>` in the builder's toolbar — was rendering at 13px, which is a size this
+ * admin now HAS a meaning for, so it looked deliberate and was not. A value
+ * that lands on a token by coincidence is the worst kind of wrong, because
+ * nothing about it looks wrong.
+ *
+ * The scale still wins wherever a role is stated: Tailwind's utilities are
+ * `!important` (ADR 0035), so `text-note` and `text-micro` are untouched, and
+ * the table's own header rule is more specific than this.
  */
-#wconvert-admin .wconvert-editor :is(p, li, td, th, label, legend, select, input, textarea) {
+#wconvert-admin :is(p, li, td, th, label, legend, select, input, textarea) {
   font-size: inherit;
 }
 
@@ -1474,17 +1513,32 @@
  * It sits on `--surface` so a design with a light background still reads as a
  * picture of something rather than as part of the card holding it.
  * ------------------------------------------------------------------------- */
+/*
+ * **The lane is a stage the design stands on, and it takes the card's slack.**
+ *
+ * Measured after the `zoom` swap: with the lane sized to its own design, the
+ * three shipped designs drew 188, 138 and 244 tall, and a grid row stretches
+ * every card to the tallest — so 57px of the row's height landed under the
+ * SHORT card's footer. The dead space had moved rather than gone. `flex: 1`
+ * puts it in the lane instead, and centring the design in it turns a gap into a
+ * margin: every footer sits on the same line, and a short design reads as a
+ * picture on a stage rather than as a card that failed to fill.
+ *
+ * `justify-content` replaces the `margin-inline: auto` this had for the same
+ * reason on the other axis — the design is narrower than the lane once it is
+ * sized to itself, and it sat hard against the leading edge.
+ *
+ * The cap is in the ZOOMED coordinate space: 30rem declared is 16.5rem drawn.
+ * It was 22rem, which clipped the tallest shipped design by 50px — a cap that
+ * fires on something we ship is a cap set from the wrong number.
+ */
 .wconvert-gallery .wconvert-preview {
   zoom: 0.55;
-  inline-size: fit-content;
-  max-inline-size: 100%;
-  margin-inline: auto;
-  /*
-   * The cap is in the ZOOMED coordinate space, so 22rem of declared height is
-   * 12.1rem drawn — about what the fixed `12rem` used to reserve, arrived at
-   * from the design's own measure rather than imposed on it.
-   */
-  max-block-size: 22rem;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  max-block-size: 30rem;
   overflow: hidden;
   pointer-events: none;
   background: var(--surface);
@@ -1624,10 +1678,17 @@
  * two rounded ones touching. `:where()` keeps the specificity at zero, so a
  * button's own state classes still win.
  * ------------------------------------------------------------------------- */
+/*
+ * **1px of padding, and it is arithmetic rather than taste.** At 2px the group
+ * measured 38px — 32px button, 4px padding, 2px border — which made the preview
+ * header 38 against the tab strip's 36 and left the two builder columns 2px
+ * apart after all the work of §3a. 1px lands it on `--control-height` exactly.
+ * Measured in a browser; nothing in the suite computes it.
+ */
 .wconvert-segmented {
   align-items: center;
   gap: 0;
-  padding: 2px;
+  padding: 1px;
   background: var(--muted);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -2542,10 +2603,11 @@
   cursor: pointer;
 }
 
+/* `- 4px` against the group's 1px padding and 1px border: 32 + 2 + 2 = 36. */
 .wconvert-choice__label {
   display: inline-flex;
   align-items: center;
-  min-block-size: calc(var(--control-height) - 6px);
+  min-block-size: calc(var(--control-height) - 4px);
   padding-inline: 0.625rem;
   border: 1px solid transparent;
   border-radius: max(calc(var(--radius) - 2px), 0px);

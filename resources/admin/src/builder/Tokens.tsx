@@ -1,4 +1,4 @@
-import { useEffect, useId, useState, type CSSProperties } from 'react';
+import { useId, useState, type CSSProperties } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { HexColorInput, HexColorPicker, RgbaStringColorPicker } from 'react-colorful';
 import { Button } from '../components/ui/button';
@@ -84,6 +84,8 @@ export function Tokens({
   template,
   labels,
   design = {},
+  openToken,
+  onOpenToken,
   onChange,
   onError,
 }: {
@@ -107,32 +109,41 @@ export function Tokens({
    * somewhere else.
    */
   design?: TokenMap;
+  /**
+   * ==========================================================================
+   * WHICH PICKER IS OPEN IS THE **SCREEN's** STATE, NOT THIS PANEL's.
+   * ==========================================================================
+   * **A popover outlived its own tab.** Open the colour picker on Design,
+   * switch to Content, and the picker was still on screen — over a tab with no
+   * colours in it. `<Activity mode="hidden">` hides the tab's DOM; a Radix
+   * popover portals to `document.body`, which is not inside it.
+   *
+   * The obvious fix is a local `useState` here cleared by an effect, on the
+   * strength of `Activity` unmounting effects when it hides. **Tried in a
+   * browser, and it does not work** — and the reason is worth writing down
+   * because it will be proposed again. Radix already closes on an outside
+   * click, so the tab click DOES call `onOpenChange(false)`; what does not
+   * happen is the re-render. By the time React processes that update this
+   * component is inside a hidden `Activity`, whose subtree is reconciled at low
+   * priority — so the state changes, the portal is never re-rendered, and the
+   * picker stays exactly where it was. An uncontrolled popover fails the same
+   * way for the same reason, which is why this was a bug before it was
+   * controlled.
+   *
+   * So the state has to live OUTSIDE the hidden subtree, and the honest owner
+   * is the thing that knows a tab changed: {@see OptinBuilder} clears it in the
+   * same handler that sets the tab. That generalises — the next portaled
+   * overlay on a tab gets the same treatment — and it keeps the property this
+   * was worth having anyway: two pickers can never be open at once.
+   */
+  openToken: string | null;
+  onOpenToken: (token: string | null) => void;
   onChange: (template: Template) => void;
   onError: (cause: unknown) => void;
 }) {
   const [copied, setCopied] = useState<number | null>(null);
-  /*
-   * ==========================================================================
-   * ONE OPEN PICKER, HELD BY THE PANEL — WHICH IS ALSO WHAT CLOSES IT.
-   * ==========================================================================
-   * **A popover outlived its own tab.** Open the colour picker on Design,
-   * switch to Content, and the picker was still on screen — over a tab with no
-   * colours in it. `<Activity mode="hidden">` hides the tab's DOM and a Radix
-   * popover portals to `document.body`, which is not inside it.
-   *
-   * The fix needs no workaround and no dependency, because React 19.2's
-   * `Activity` **unmounts effects when it hides**. So an effect here whose
-   * cleanup clears this state closes the picker exactly when the tab goes away
-   * — which means the popover has to be CONTROLLED rather than each swatch
-   * owning its own `open`.
-   *
-   * That is worth having on its own: two pickers can never be open at once.
-   */
-  const [openToken, setOpenToken] = useState<string | null>(null);
   const presets = themePresets();
   const groups = groupsOf();
-
-  useEffect(() => () => setOpenToken(null), []);
 
   const write = (tokens: Readonly<Record<string, string>>) =>
     onChange({
@@ -219,7 +230,7 @@ export function Tokens({
               design={design}
               tokens={group.tokens}
               openToken={openToken}
-              onOpenChange={setOpenToken}
+              onOpenChange={onOpenToken}
               onChange={onChange}
             />
           ) : (
@@ -233,7 +244,7 @@ export function Tokens({
                 design={design[token.name] ?? ''}
                 value={template.tokens[token.name] ?? ''}
                 open={openToken === token.name}
-                onOpenChange={(open) => setOpenToken(open ? token.name : null)}
+                onOpenChange={(open) => onOpenToken(open ? token.name : null)}
                 onChange={(value) =>
                   onChange({ ...template, tokens: withToken(template.tokens, token.name, value) })
                 }
@@ -889,7 +900,18 @@ function ColourField({
           </span>
         </button>
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-auto">
+      {/*
+        `wconvert-picker-pop` is what stops this one popover ANIMATING OUT, and
+        that is the last link in the chain described on `openToken` above. Radix
+        keeps closed content mounted until its exit animation ends and then
+        unmounts it in a re-render — and that re-render is the one that never
+        arrives inside a hidden `Activity`. Measured: the popover reached
+        `data-state="closed"` with the animation finished and the node still on
+        screen at full opacity. With no exit animation there is nothing to wait
+        for, so the close and the unmount are one commit — the one `flushSync`
+        forces while the tab is still visible.
+      */}
+      <PopoverContent align="start" className="wconvert-picker-pop w-auto">
         <div className="wconvert-picker">
           {translucent ? (
             <RgbaStringColorPicker color={shown} onChange={onChange} />

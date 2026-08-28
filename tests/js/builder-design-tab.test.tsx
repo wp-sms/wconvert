@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { useState } from 'react';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -91,7 +92,7 @@ function look(over: Partial<Parameters<typeof Tokens>[0]> = {}) {
   const onChange = vi.fn();
 
   render(
-    <Tokens
+    <Panel
       template={ENTRY}
       labels={LABELS}
       design={ENTRY.tokens}
@@ -102,6 +103,22 @@ function look(over: Partial<Parameters<typeof Tokens>[0]> = {}) {
   );
 
   return onChange;
+}
+
+/**
+ * **The screen holds which picker is open, so the harness has to as well.**
+ *
+ * It is `OptinBuilder`'s state rather than the panel's, because the panel lives
+ * inside an `<Activity mode="hidden">` and a Radix popover portals outside it —
+ * a picker opened on Design outlived the switch to Content, and closing it from
+ * within the hidden subtree does not work (the update lands, the portal is
+ * never re-rendered). This mirrors that ownership rather than papering over it
+ * with a default, so a call site that forgets it is a type error here too.
+ */
+function Panel(props: Omit<Parameters<typeof Tokens>[0], 'openToken' | 'onOpenToken'>) {
+  const [openToken, setOpenToken] = useState<string | null>(null);
+
+  return <Tokens {...props} openToken={openToken} onOpenToken={setOpenToken} />;
 }
 
 beforeEach(() => {
@@ -208,7 +225,7 @@ describe('a length', () => {
 
   it('keeps the text box and drops the slider for a value it cannot say', () => {
     render(
-      <Tokens
+      <Panel
         template={{ ...ENTRY, tokens: { ...ENTRY.tokens, width: 'clamp(20rem, 50vw, 30rem)' } }}
         labels={LABELS}
         onChange={vi.fn()}
@@ -262,7 +279,7 @@ describe('a length', () => {
 describe('the contrast readout', () => {
   it('measures the three pairs a visitor has to read, and says which fail', () => {
     render(
-      <Tokens
+      <Panel
         template={{ ...ENTRY, tokens: { ...ENTRY.tokens, fg: '#111827', muted: '#d4d4d8', bg: '#ffffff' } }}
         labels={LABELS}
         onChange={vi.fn()}
@@ -293,7 +310,7 @@ describe('the contrast readout', () => {
    */
   it('refuses to measure a pair it cannot read rather than reporting a ratio', () => {
     render(
-      <Tokens
+      <Panel
         template={{ ...ENTRY, tokens: { ...ENTRY.tokens, fg: 'rgba(0, 0, 0, 0.8)' } }}
         labels={LABELS}
         onChange={vi.fn()}
@@ -411,7 +428,7 @@ describe('a token the manifest offers choices for', () => {
    */
   it('checks nothing where the value is one it never offered', () => {
     render(
-      <Tokens
+      <Panel
         template={{ ...ENTRY, tokens: { ...ENTRY.tokens, align: 'justify' } }}
         labels={{ ...LABELS, tokens: { ...LABELS.tokens, align: 'Alignment' } }}
         design={ENTRY.tokens}
@@ -441,7 +458,7 @@ describe('the size slider', () => {
 
   it('keeps the same range whatever the merchant has stored', () => {
     const { unmount } = render(
-      <Tokens
+      <Panel
         template={ENTRY}
         labels={LABELS}
         design={ENTRY.tokens}
@@ -455,7 +472,7 @@ describe('the size slider', () => {
     unmount();
 
     render(
-      <Tokens
+      <Panel
         template={{ ...ENTRY, tokens: { ...ENTRY.tokens, width: '40rem' } }}
         labels={LABELS}
         design={ENTRY.tokens}
@@ -476,7 +493,7 @@ describe('the size slider', () => {
    */
   it('steps aside for a length its scale cannot reach', () => {
     render(
-      <Tokens
+      <Panel
         template={{ ...ENTRY, tokens: { ...ENTRY.tokens, width: '80rem' } }}
         labels={LABELS}
         design={ENTRY.tokens}
@@ -492,7 +509,7 @@ describe('the size slider', () => {
   /** And for a length in a unit the design's scale is not written in. */
   it('steps aside for a length in another unit', () => {
     render(
-      <Tokens
+      <Panel
         template={{ ...ENTRY, tokens: { ...ENTRY.tokens, width: '400px' } }}
         labels={LABELS}
         design={ENTRY.tokens}
@@ -518,7 +535,7 @@ describe('the size slider', () => {
 describe('a colour the panel cannot parse', () => {
   it('keeps the text box rather than offering a picker that would clobber it', () => {
     render(
-      <Tokens
+      <Panel
         template={{ ...ENTRY, tokens: { ...ENTRY.tokens, accent: 'var(--brand)' } }}
         labels={LABELS}
         design={ENTRY.tokens}

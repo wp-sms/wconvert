@@ -8,6 +8,7 @@ import {
   type CSSProperties,
   type ReactNode,
 } from 'react';
+import { flushSync } from 'react-dom';
 import { __ } from '@wordpress/i18n';
 import { Check, Monitor, Smartphone } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -241,6 +242,14 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
   const [saved, setSaved] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [tab, setTab] = useState<TabId>('design');
+  /*
+   * **Which colour picker is open, held OUTSIDE the tab that owns it.** The
+   * panel is inside an `<Activity mode="hidden">` and a Radix popover portals
+   * to `document.body`, so a picker opened on Design outlived the switch to
+   * Content — see the `onValueChange` below for why closing it from in there
+   * does not work.
+   */
+  const [openToken, setOpenToken] = useState<string | null>(null);
   const [step, setStep] = useState(0);
   const [device, setDevice] = useState<Device>('desktop');
   const [selection, setSelection] = useState<Selection | null>(null);
@@ -864,7 +873,43 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
           <Tabs
             className="gap-4"
             value={tab}
-            onValueChange={(value) => setTab(value as TabId)}
+            /*
+              **Changing tab closes any overlay the old tab owned**, and that
+              cannot be the tab's own business.
+
+              A Radix popover portals to `document.body`, which is outside the
+              `<Activity mode="hidden">` that hides a tab — so a colour picker
+              opened on **Design** stayed on screen over **Content**, a tab with
+              no colours in it.
+
+              **Two obvious fixes were tried in a browser and neither works**,
+              and both are recorded because both will be proposed again: an
+              effect in the panel whose cleanup clears the state, on the
+              strength of `Activity` unmounting effects when it hides; and
+              holding the state here and clearing it in this handler.
+
+              They fail for one reason. Radix already closes on an outside
+              click, so `onOpenChange(false)` DOES fire on the tab press — what
+              never happens is the re-render. By the time React processes the
+              update the panel is inside a hidden `Activity`, whose subtree
+              reconciles at low priority, so the state changes and the portal is
+              never re-rendered. An uncontrolled popover fails identically,
+              which is why this was a bug before it was controlled.
+
+              `flushSync` is what makes the ORDER real: the close is committed
+              while the tab is still visible, and only then does the tab change
+              and the Activity hide. That is the documented use — forcing a
+              commit before a second update depends on it — rather than a
+              workaround for a slow render.
+
+              The state lives here rather than in the panel because this is
+              where a tab change happens, and the next portaled overlay on a tab
+              joins this line rather than inventing its own escape.
+            */
+            onValueChange={(value) => {
+              flushSync(() => setOpenToken(null));
+              setTab(value as TabId);
+            }}
           >
             <TabsList>
               <TabsTrigger value="design">{__('Design', 'wconvert')}</TabsTrigger>
@@ -945,6 +990,8 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
                         <Tokens
                           template={entry}
                           labels={gallery.labels}
+                          openToken={openToken}
+                          onOpenToken={setOpenToken}
                           /*
                             **The library entry's own tokens**, which is the
                             only thing that can answer "what have I actually
