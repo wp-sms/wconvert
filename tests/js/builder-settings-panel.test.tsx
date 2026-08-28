@@ -33,6 +33,7 @@ const ENTRY = JSON.parse(
 const LABELS: TemplateLabels = {
   roles: { headline: 'Headline', fine_print: 'Fine print', consent_text: 'Consent wording' },
   nodes: { image: 'Image' },
+  layouts: { stack: 'Column', row: 'Row', split: 'Side by side', grid: 'Grid' },
   fields: { email: 'Email address' },
   keys: { text: 'Text', label: 'Label', placeholder: 'Placeholder', link: 'Link', href: 'Where the button goes' },
   tokens: { bg: 'Background', accent: 'Button' },

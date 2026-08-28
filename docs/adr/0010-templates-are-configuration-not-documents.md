@@ -15,6 +15,14 @@ must not preclude a canvas later." Under configuration, a canvas is an editor ov
 a tree that already exists. Under documents, a canvas means parsing HTML that was
 shipped as strings — which is the migration the condition forbids.
 
+*Collected by the structure editor. The condition held for the whole of v1 — the
+settings panel never reshaped a tree, so nothing had to be migrated — and the
+editor that arrived is exactly the one this paragraph describes: an editor over a
+tree that already exists, moving, adding and removing nodes the vocabulary
+already declares. It parses nothing, it migrates nothing, and it cannot express a
+node the manifest does not have. The consequence below that reads "never
+arrangement" is amended where it stands.*
+
 ## Documents were arithmetically dead at about six templates
 
 #10 measured one template's CSS at ~870 bytes gzipped. #9 set two budgets: a ≤8KB
@@ -90,8 +98,12 @@ third-party ones. Under configuration they are properties of the one renderer.
   arrived the same way, and neither is read by anything that renders.*
 - **The renderer skips unknown nodes rather than throwing**, so a snapshot outlives a
   vocabulary change. Same failure posture #4 set for an unavailable Destination.
-- **Registration is where a Template is refused**, on the two questions a renderer
-  cannot answer without showing a blank popup. *Added by
+- **Registration is where a *Template* is refused**, on the two questions a
+  renderer cannot answer without showing a blank popup. *Amended by the
+  structure editor: it is no longer the only place, and it never covered an
+  Optin's own `config` — `TemplateLibrary::refuse()` reads a library entry off
+  disk. An editor that can delete needed the same question asked at the write,
+  which is {@see OptinController::refuseADesignThatCannotConvert()}.* *Added by
   [#27](https://github.com/navidkashani/wconvert/issues/27):
   [`TemplateLibrary`](../../src/Template/TemplateLibrary.php) rejects an entry
   offering two converting acts or none
@@ -115,16 +127,41 @@ third-party ones. Under configuration they are properties of the one renderer.
   to itself in PHP, and every value in it is reachable through a slot in the
   panel's own model (`tests/js/builder-panel.test.ts`).*
 
-- **The panel edits tokens, slot content and slot VISIBILITY — never
-  arrangement.** *Added by
+- **The ~~panel~~ *settings panel* edits tokens, slot content and slot
+  VISIBILITY — never arrangement.** *Added by
   [#29](https://github.com/navidkashani/wconvert/issues/29): a merchant who does
   not want the fine print hides it rather than deleting it, which is what lets
   the panel be complete without a control that reshapes the tree — and it is why
   a canvas can still land later as an editor over a tree that already exists.
-  `hidden` is a param on `heading`, `text`, `image` and `consent` and on nothing
+
+  **Amended by the structure editor, which is that canvas arriving.** The
+  sentence is now a fact about the *Content* tab rather than about the product:
+  `SettingsPanel` still edits words, visibility and tokens and still cannot
+  reshape anything, and `tests/js/builder-settings-panel.test.tsx` still asserts
+  it offers no control reading add, remove, move, up or down. Arrangement moved
+  to a **second view of the same document** — the *Structure* tab — rather than
+  into the panel, which is what keeps the Content column a readable list of
+  sentences.
+
+  Three things are unchanged by that, and they are the three the bargain was
+  actually made of. The vocabulary is still the ceiling: `structure/catalogue.ts`
+  reads `manifest.json` and can express nothing outside it. The gallery is still
+  where a design comes from. And there is still no migration, because the tree
+  the editor edits is the tree that was always stored.
+
+  `hidden` therefore keeps its whole meaning. Hiding a slot and removing it are
+  now both possible and they are different acts: hidden is reversible by the
+  merchant on the Content tab and rides the payload, removed is reversible by
+  Undo and does not.*
+  *`hidden` is a param on `heading`, `text`, `image` and `consent` and on nothing
   else: hiding the button that converts leaves an Optin with no countable act,
   and hiding a required field leaves a form the capture endpoint refuses every
   submission of, so neither declares the key and PHP drops it on the way in.
+  **That non-registration was also the whole of the enforcement, and the
+  structure editor is what made it insufficient** — a Delete key reaches what
+  `hidden` could not express. `OptinController::refuseADesignThatCannotConvert()`
+  now refuses at the write what `TemplateLibrary::refuse()` only ever refused at
+  registration, and `structure/guards.ts` prevents it on the screen.*
   `button` also gained `href` as CONTENT rather than a param, because a
   click-metered CTA's destination is the merchant's to type — and it is
   scheme-validated at write for the same reason a link inside a sentence is

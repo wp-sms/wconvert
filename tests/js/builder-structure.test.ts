@@ -349,7 +349,7 @@ describe('what the catalogue offers', () => {
     };
 
     expect(
-      additionsIn(clicked, at, 'link').find((addition) => addition.type === 'field')?.refused,
+      additionsIn(clicked, at, 'click').find((addition) => addition.type === 'field')?.refused,
     ).toMatch(/captures nothing/i);
   });
 });
@@ -366,7 +366,7 @@ describe('a block the catalogue builds', () => {
   it('gives a button the act its Goal is measured by', () => {
     const empty: TemplateTree = { steps: [{ type: 'stack', children: [] }] };
 
-    expect(nodeFor(empty, 'button', at, 'link')).toMatchObject({ action: 'link' });
+    expect(nodeFor(empty, 'button', at, 'click')).toMatchObject({ action: 'link' });
     expect(nodeFor(empty, 'button', at, 'submit')).toMatchObject({ action: 'submit' });
   });
 
@@ -413,7 +413,9 @@ describe('the safety net', () => {
   it('reads the converting act the same way the renderer and PHP do', () => {
     expect(convertingActOf(TREE)).toEqual(['submit']);
     expect(convertingActOf({ steps: [{ type: 'button', label: 'Go' }] })).toEqual(['submit']);
-    expect(convertingActOf({ steps: [{ type: 'button', action: 'link' }] })).toEqual(['link']);
+    // The METRIC's word, not the node's: `ConvertingAct::collect()` reads
+    // `action === 'link'` and answers `Click`, and this has to agree with it.
+    expect(convertingActOf({ steps: [{ type: 'button', action: 'link' }] })).toEqual(['click']);
     expect(convertingActOf({ steps: [] })).toEqual([]);
   });
 

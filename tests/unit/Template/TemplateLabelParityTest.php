@@ -60,6 +60,21 @@ final class TemplateLabelParityTest extends TestCase
         $this->assertNamesExactly(array_map('strval', array_keys(self::manifest()['nodes'])), TemplateLabels::nodes(), 'leaves');
     }
 
+    /**
+     * **The structure editor lists layouts as rows and offers them in its Add
+     * menu**, so a layout added to the manifest and not named here would draw a
+     * row reading `grid` — the same failure `success_headline` was, one level
+     * of the vocabulary up.
+     */
+    public function testEveryLayoutIsNamed(): void
+    {
+        $this->assertNamesExactly(
+            array_map('strval', array_keys(self::manifest()['layouts'])),
+            TemplateLabels::layouts(),
+            'layouts'
+        );
+    }
+
     public function testEveryFieldKindIsNamed(): void
     {
         /** @var list<string> $fields */

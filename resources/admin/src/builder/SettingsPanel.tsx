@@ -17,19 +17,29 @@ import type { Template } from '@renderer/types';
  * arrangement.**
  *
  * ============================================================================
- * THAT BOUNDARY IS THE WHOLE BARGAIN OF ADR 0010.
+ * THAT IS NOW A DIVISION OF LABOUR, NOT A CEILING ON THE PRODUCT.
  * ============================================================================
- * The vocabulary is the ceiling on design variety and the gallery IS the
- * design surface. A panel that could add, remove or reorder a node would move
- * that ceiling into a builder nobody designed — and it would cost the other
- * half: a canvas lands later as an editor over a tree that already exists,
- * with no migration, precisely because nothing else reshapes the tree in the
- * meantime.
+ * It was both. ADR 0010's bargain was that the gallery IS the design surface and
+ * nothing reshapes a tree, which is what let a canvas land later "as an editor
+ * over a tree that already exists, with no migration". That editor has landed —
+ * {@see StructureView}, on the **Structure** tab — and it collected the bargain
+ * rather than breaking it: it reads the same manifest this file does, so the
+ * vocabulary is still the ceiling, and it edits the tree that was always stored,
+ * so there was nothing to migrate.
  *
- * So a merchant who does not want the fine print HIDES it, and the `consent`
- * checkbox every capture design ships hidden is switched on the same way —
- * which is how ADR 0032's "off by default" and this boundary are both true at
- * once.
+ * What is left here is the reason the two are separate tabs. A merchant fixing a
+ * typo must not have to walk past a move button to reach the sentence, and a
+ * merchant rearranging must not have to read every sentence to find the block.
+ * So this file still writes only what it always wrote, and
+ * `tests/js/builder-settings-panel.test.tsx` still asserts it offers no control
+ * reading add, remove, move, up or down.
+ *
+ * **Hiding did not become redundant either.** A merchant who does not want the
+ * fine print may now hide it OR remove it, and the two are different acts:
+ * hidden is reversible here and rides the payload, removed is reversible by Undo
+ * and does not. The `consent` checkbox every capture design ships hidden is
+ * still switched on here, which is how ADR 0032's "off by default" survives an
+ * editor that could otherwise have been expected to add one.
  *
  * ============================================================================
  * IT IS CONTROLS ONLY. THE PREVIEW BELONGS TO THE BUILDER.

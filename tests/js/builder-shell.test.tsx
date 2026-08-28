@@ -69,7 +69,8 @@ const vocabulary = ruleTypes();
 
 const LABELS = {
   roles: { headline: 'Headline', fine_print: 'Fine print' },
-  nodes: {},
+  nodes: { heading: 'Heading', text: 'Text', button: 'Button', consent: 'Consent checkbox' },
+  layouts: { stack: 'Column', row: 'Row', split: 'Side by side', grid: 'Grid' },
   fields: { email: 'Email address' },
   keys: { text: 'Text', label: 'Label', placeholder: 'Placeholder', link: 'Link' },
   tokens: { bg: 'Background' },
@@ -99,6 +100,18 @@ beforeEach(() => {
 });
 
 const open = () => render(<OptinBuilder id={ID} onClose={vi.fn()} />);
+
+/**
+ * A block row's own name button, as opposed to the three controls beside it
+ * that are also named after the block.
+ *
+ * The move and menu buttons carry the block's name deliberately — fifteen
+ * buttons reading "Move up" are fifteen buttons a screen-reader user cannot
+ * tell apart — so "the button called Headline" is genuinely ambiguous, and this
+ * asks the row for the one that selects.
+ */
+const labelOf = (name: string | RegExp) =>
+  within(screen.getByRole('row', { name })).getAllByRole('button')[0];
 
 describe('the builder shell', () => {
   /**
@@ -174,7 +187,7 @@ describe('the builder shell', () => {
     open();
 
     await userEvent.click(await screen.findByRole('tab', { name: 'Structure' }));
-    await userEvent.click(screen.getByRole('button', { name: /Headline/ }));
+    await userEvent.click(labelOf(/Headline/));
 
     expect(screen.getByRole('row', { name: /Headline/ })).toHaveAttribute('aria-selected', 'true');
   });
@@ -208,7 +221,7 @@ describe('the builder shell', () => {
     open();
 
     await userEvent.click(await screen.findByRole('tab', { name: 'Structure' }));
-    await userEvent.click(screen.getByRole('button', { name: /Headline/ }));
+    await userEvent.click(labelOf(/Headline/));
     await userEvent.click(screen.getByRole('tab', { name: 'Content' }));
     await userEvent.click(screen.getByRole('tab', { name: 'Structure' }));
 
@@ -220,7 +233,7 @@ describe('the builder shell', () => {
     open();
 
     await userEvent.click(await screen.findByRole('tab', { name: 'Structure' }));
-    await userEvent.click(screen.getByRole('button', { name: /Headline/ }));
+    await userEvent.click(labelOf(/Headline/));
     await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
     await userEvent.click(screen.getByRole('tab', { name: 'Structure' }));
 

@@ -333,6 +333,18 @@ function rolesIn(node: TemplateNode): number {
   );
 }
 
+/**
+ * How many blocks sit in one of a node's child arrays.
+ *
+ * What an "add at the end" needs and nothing more. {@link withInserted} clamps
+ * an index past the end anyway, so this exists to let a caller SAY where it
+ * meant rather than to stop it going wrong — a {@link Spot} that reads
+ * `index: 3` is an address a reader can check against the tree, and one that
+ * reads `index: Infinity` is not.
+ */
+export const countAt = (tree: TemplateTree, parent: Path, key: string): number =>
+  childrenAt(nodeAt(tree, parent), key).length;
+
 /** Every Slot Role the tree is already using, so a new block can be given a free one. */
 export function rolesTaken(tree: TemplateTree): string[] {
   return nodesOf(tree)

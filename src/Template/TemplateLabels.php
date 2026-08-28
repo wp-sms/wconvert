@@ -69,6 +69,33 @@ final class TemplateLabels
     }
 
     /**
+     * What each layout is called, for the structure editor's rows and its Add
+     * menu.
+     *
+     * **Needed only because arrangement became visible.** Until the structure
+     * editor existed a layout was a shape the renderer read and nobody named:
+     * the settings panel walks leaves and flattens them, so `stack` never
+     * reached a merchant's eyes. A tree that lists what a design is MADE of
+     * cannot flatten them — a merchant moving the email field is moving it
+     * within the `row` — so each one acquires a name the way a Slot Role did.
+     *
+     * Named for what the merchant SEES rather than for what the renderer does.
+     * `split` is *"Side by side"* and not "Split", because the word a merchant
+     * needs is the arrangement they are looking at.
+     *
+     * @return array<string, string>
+     */
+    public static function layouts(): array
+    {
+        return [
+            'stack' => __('Column', 'wconvert'),
+            'row' => __('Row', 'wconvert'),
+            'split' => __('Side by side', 'wconvert'),
+            'grid' => __('Grid', 'wconvert'),
+        ];
+    }
+
+    /**
      * What each field kind captures, in the merchant's words.
      *
      * @return array<string, string>
@@ -143,6 +170,7 @@ final class TemplateLabels
         return [
             'roles' => self::roles(),
             'nodes' => self::nodes(),
+            'layouts' => self::layouts(),
             'fields' => self::fields(),
             'keys' => self::keys(),
             'tokens' => self::tokens(),

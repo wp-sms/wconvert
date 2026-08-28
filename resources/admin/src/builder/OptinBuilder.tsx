@@ -24,6 +24,9 @@ import { Preview } from './Preview';
 import { RulesEditor } from './RulesEditor';
 import { SettingsPanel } from './SettingsPanel';
 import { StructureView } from './StructureView';
+import { canRedo, canUndo, historyOf, redo, remember, undo, type History } from './structure/history';
+import type { ConvertingAct } from './structure/catalogue';
+import { listGoals } from '../goals/api';
 import { stepName } from './BlockRow';
 import { TOKENS } from './panel';
 import { TargetingEditor, type Targeting } from './TargetingEditor';
@@ -190,6 +193,31 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
   const [device, setDevice] = useState<Device>('desktop');
   const [selection, setSelection] = useState<Selection | null>(null);
   const [stats, setStats] = useState<OptinNumbers | null>(null);
+  /*
+   * ========================================================================
+   * UNDO MOVES THE WORKING DRAFT. SAVE IS WHAT SENDS IT.
+   * ========================================================================
+   * `config` is the draft and `published_config` is what the site serves, so
+   * undoing is not undoing a publish — which is why undoing ACROSS a save is
+   * allowed and re-marks the screen dirty. A history that refused to cross one
+   * would read as "your last save is permanent", which is what a separate draft
+   * column exists to make untrue.
+   *
+   * It lives here rather than in the Structure tab because a design changes from
+   * four places: a keystroke in Content, a block moved in Structure, a Template
+   * repicked on Design, and the server's normalised answer to a save. All four
+   * arrive below as one new `template` identity and all four are one entry —
+   * which is what makes "a template switch is one undo entry, not one per node"
+   * true by construction rather than by counting.
+   */
+  const [past, setPast] = useState<History<Template> | null>(null);
+  /*
+   * Which act this Optin's [[Goal]] is measured by, read off the same route the
+   * creation flow reads. **No Goal id and no act mapping is spelled in this
+   * bundle** — `goals/api.ts` says why, and `GoalParityTest` fails the day one
+   * appears. Null until it lands, which only delays the Add menu's button row.
+   */
+  const [act, setAct] = useState<ConvertingAct | null>(null);
   const [leaving, setLeaving] = useState(false);
   const back = useRef<HTMLButtonElement>(null);
 
@@ -232,6 +260,52 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
       .then(setGallery)
       .catch((cause: unknown) => setFatal(messageOf(cause)));
   }, []);
+
+  /*
+   * **Which converting act this Optin's Goal is measured by**, so the structure
+   * editor can offer the right button and refuse a form on an Optin that
+   * captures nothing (ADR 0025).
+   *
+   * Read from the registry rather than mapped here. Three of the five Goals are
+   * submissions and two are clicks, and a copy of that table in this bundle
+   * would be a cross-language list with nothing asserting the two agree — the
+   * fifth one this project has refused (ADR 0019), and the reason
+   * `goals/api.ts` names no Goal id either.
+   *
+   * Its failure is swallowed, like the numbers below it: without it the Add
+   * menu cannot offer a button, and nothing else on this screen is affected. An
+   * editor that refused to open because a lookup failed would be a worse answer
+   * than an Add menu one item short.
+   */
+  useEffect(() => {
+    if (goal === null) {
+      return;
+    }
+
+    listGoals()
+      .then((goals) => {
+        const found = goals.find((each) => each.id === goal)?.converting_act;
+
+        setAct(found === 'click' || found === 'submit' ? found : null);
+      })
+      .catch(() => undefined);
+  }, [goal]);
+
+  /*
+   * Every change to the design, from wherever it came, as one history entry.
+   *
+   * Watching the VALUE rather than instrumenting the four call sites is what
+   * makes that total: a fifth way to change a design would be remembered
+   * without this line being edited, and `remember` ignores an edit that changed
+   * nothing by identity, so a redraw is not an entry.
+   */
+  useEffect(() => {
+    if (template === undefined) {
+      return;
+    }
+
+    setPast((current) => (current === null ? historyOf(template) : remember(current, template)));
+  }, [template]);
 
   /*
    * **This Optin's own numbers, where it is being edited.** A merchant changing
@@ -337,6 +411,28 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
     (key: SlotKey | null) => setSelection(key === null ? null : { key, from: 'structure' }),
     [],
   );
+
+  /*
+   * Stepping the history moves the pointer FIRST and then writes the design it
+   * points at, so the effect above sees a `template` the history already holds
+   * and remembers nothing. Writing first would push the restored value on as a
+   * new entry, and undo would immediately have something to redo that was not
+   * an edit.
+   */
+  const stepping = (move: (held: History<Template>) => History<Template>) => () => {
+    if (past === null) {
+      return;
+    }
+
+    const next = move(past);
+
+    if (next === past) {
+      return;
+    }
+
+    setPast(next);
+    edit({ template: next.present });
+  };
 
   const leave = () => (dirty ? setLeaving(true) : onClose());
 
@@ -554,14 +650,20 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
                       {__('Pick a design first.', 'wconvert')}
                     </RegionBody>
                   ) : (
-                    <RegionBody>
-                      <StructureView
-                        template={entry}
-                        labels={gallery.labels}
-                        selected={selection?.key ?? null}
-                        onSelect={chooseFromStructure}
-                      />
-                    </RegionBody>
+                    <StructureView
+                      template={entry}
+                      labels={gallery.labels}
+                      act={act ?? 'submit'}
+                      selected={selection?.key ?? null}
+                      onSelect={chooseFromStructure}
+                      onChange={(next) => edit({ template: next })}
+                      history={{
+                        canUndo: past !== null && canUndo(past),
+                        canRedo: past !== null && canRedo(past),
+                        undo: stepping(undo),
+                        redo: stepping(redo),
+                      }}
+                    />
                   )}
                 </Region>
               </Activity>

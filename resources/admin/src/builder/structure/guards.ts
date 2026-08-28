@@ -56,12 +56,12 @@ export function convertingActOf(tree: TemplateTree): ConvertingAct[] {
     collectActs(step, found);
   }
 
-  return (['submit', 'link'] as const).filter((act) => found.includes(act));
+  return (['submit', 'click'] as const).filter((act) => found.includes(act));
 }
 
 function collectActs(node: TemplateNode, found: ConvertingAct[]): void {
   if (node.type === 'button') {
-    const act: ConvertingAct = (node as { action?: string }).action === 'link' ? 'link' : 'submit';
+    const act: ConvertingAct = (node as { action?: string }).action === 'link' ? 'click' : 'submit';
 
     if (!found.includes(act)) {
       found.push(act);

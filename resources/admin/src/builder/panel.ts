@@ -6,18 +6,24 @@ import type { TemplateNode, TemplateTree, Tokens } from '@renderer/types';
  * visibility, over a tree it never restructures.
  *
  * ============================================================================
- * THE PANEL OFFERS NO WAY TO CHANGE ARRANGEMENT, AND THAT IS THE POINT.
+ * THIS FILE STILL OFFERS NO WAY TO CHANGE ARRANGEMENT. `structure/` DOES.
  * ============================================================================
- * The vocabulary is the ceiling on design variety and the gallery IS the
- * design surface (ADR 0010). Editing arrangement here would move that ceiling
- * into a builder nobody designed, and it would cost the other half of the
- * bargain: a canvas lands later as an editor over a tree that already exists,
- * with no migration, precisely because the tree is never reshaped by anything
- * else in the meantime.
+ * Every function here takes a tree and returns one with the SAME shape — same
+ * node types, same order, same nesting. What changes is what a node says and
+ * whether it is shown. That is a fact about the **Content** tab, and it is what
+ * keeps that tab a readable column of sentences rather than a column of
+ * sentences interleaved with move buttons.
  *
- * So every function here takes a tree and returns one with the SAME shape —
- * same node types, same order, same nesting. What changes is what a node says
- * and whether it is shown.
+ * Arrangement lives one directory down, in `structure/`, behind the **Structure**
+ * tab — a second view of the same document. That is ADR 0010's own escape clause
+ * being collected rather than a hole in it: *"a canvas lands later as an editor
+ * over a tree that already exists, with no migration"*, and the tree it edits is
+ * the tree that was always stored.
+ *
+ * The ceiling did not move with it. `structure/catalogue.ts` reads the same
+ * manifest this file does and can express nothing outside it, so the editor
+ * arranges what the vocabulary offers and cannot invent design variety. The
+ * gallery is still where a design comes from.
  *
  * **The vocabulary is imported rather than fetched.** It is a static file with
  * nothing per-install to resolve — unlike the rule vocabulary, whose

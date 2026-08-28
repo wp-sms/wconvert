@@ -20,6 +20,16 @@ export interface TemplateEntry extends Template {
 export interface TemplateLabels {
   roles: Record<string, string>;
   nodes: Record<string, string>;
+  /**
+   * What each layout is called.
+   *
+   * Needed only since arrangement became visible: the settings panel walks
+   * leaves and flattens them, so `stack` never reached a merchant's eyes. The
+   * block tree cannot flatten them — a merchant moving the email field is
+   * moving it within the `row` — so each acquires a name the way a Slot Role
+   * did.
+   */
+  layouts: Record<string, string>;
   fields: Record<string, string>;
   keys: Record<string, string>;
   tokens: Record<string, string>;

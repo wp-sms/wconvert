@@ -82,6 +82,27 @@ drawn, drag a slot, delete a node. That would move the ceiling on design variety
 into a builder nobody designed, and it would cost the no-migration guarantee a
 canvas depends on.
 
+*Amended by the structure editor. Two of those three arrived and the third did
+not, and the difference is the point this section was making.*
+
+*Dragging a slot and deleting a node are now possible — in a **list beside** the
+preview, not in the preview. The `treegrid` is where a block is moved and
+removed; the preview is where the result is seen and where a click still says
+nothing but "this one". So the traffic below is unchanged: one string, naming a
+slot, carrying no way to reach one. Nothing that receives a `SlotKey` gained the
+ability to write, and `Preview.tsx` still writes nothing.*
+
+*Typing into the headline where it is drawn is still refused, and for the reason
+this section gives: it would need the preview to be an editing surface rather
+than a render, which is the fork ADR 0010's "there are no static thumbnails"
+depends on not existing.*
+
+*The ceiling did not move either. `structure/catalogue.ts` reads
+`manifest.json` and can express nothing outside it, so the editor arranges what
+the vocabulary already offers and cannot invent design variety. And there is no
+migration, because the tree it edits is the tree that was always stored — which
+is ADR 0010's own escape clause being collected rather than a hole in it.*
+
 So the traffic in both directions is **one string, and it names a slot**:
 
 - `role:headline`, or `captures:email` for a field.
@@ -115,7 +136,10 @@ design rather than about this render of it.
   relaxed** — see above. Its own note now says so.
 - [ADR 0010](0010-templates-are-configuration-not-documents.md) is untouched:
   selection edits nothing, so the panel is still the only thing that writes and
-  it still writes only content, visibility and tokens.
+  it still writes only content, visibility and tokens. *That last clause is
+  amended by the structure editor — see above. Selection still edits nothing;
+  what changed is that a second surface, which is not the preview, now writes
+  arrangement.*
 
 ## Consequences
 

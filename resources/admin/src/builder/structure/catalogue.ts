@@ -56,12 +56,21 @@ export interface Addition {
 /**
  * Which converting act this Optin's [[Goal]] is measured by.
  *
- * The editor is told rather than guessing, because guessing is exactly the
- * failure this prevents: a `link` button added to a submit-metered Optin makes
- * `refuseAMetricItCannotReport` fail **the whole save**, and the merchant would
- * meet that as a red bar over an editor that had happily let them do it.
+ * **Spelled the way {@see \WConvert\Template\ConvertingAct} spells it** —
+ * `submit` and `click` — rather than the way a `button` node spells its own
+ * `action` param, which is `submit` and **`link`**. Those are two vocabularies
+ * for one distinction and PHP already keeps them apart: `ConvertingAct::collect`
+ * reads `action === 'link'` and answers `Click`. Using the metric's words here
+ * is what lets `converting_act` off `GET /wconvert/v1/goals` be handed straight
+ * in without a translation nobody would remember to keep.
+ *
+ * The editor is TOLD which it is rather than guessing, because guessing is
+ * exactly the failure this prevents: a `link` button added to a submit-metered
+ * Optin makes `refuseAMetricItCannotReport` fail **the whole save**, and the
+ * merchant would meet that as a red bar over an editor that had happily let
+ * them do it.
  */
-export type ConvertingAct = 'submit' | 'link';
+export type ConvertingAct = 'submit' | 'click';
 
 /**
  * Everything that may be added inside this parent, in the manifest's own order.
@@ -122,7 +131,7 @@ function whyRefused(
     const form = formStep(tree);
 
     if (form === null) {
-      return act === 'link'
+      return act === 'click'
         ? __(
             'This Optin converts on a click and captures nothing, so it has no form to add to.',
             'wconvert',
@@ -196,8 +205,9 @@ export function nodeFor(
   if (type === 'button') {
     // The Goal decides, and it decides at the moment of creation because
     // `action` is a param rather than content: the Content tab never offers it,
-    // so a button that arrives wrong stays wrong until a save refuses it.
-    node.action = act;
+    // so a button that arrives wrong stays wrong until a save refuses the whole
+    // config. This is the one place the metric's word becomes the node's.
+    node.action = act === 'click' ? 'link' : 'submit';
   }
 
   // A `consent` node ships hidden, which is the same "off by default" every

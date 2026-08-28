@@ -91,6 +91,26 @@ that costs a merchant real data when it is missed: **a destructive action is
 never primary, never adjacent to the safe action it could be mistaken for, and
 always confirms.**
 
+*Amended by the structure editor, on the last clause only. **Deleting a block
+does not confirm, and undo is what buys that.** The arithmetic is the whole
+argument: a merchant rearranging a design deletes and re-adds a dozen times in a
+minute, and a dialog on every one of them is a dialog they learn to dismiss
+without reading — which is strictly worse than none, because it also trains them
+through the dialog that guards deleting an Optin.*
+
+*This is an exchange rather than an exemption, and the terms are written down so
+a later build cannot take half of it. Undo is the **precondition**:
+`builder/structure/history.ts` ships in the same commit as the Delete, and a
+Delete with no history behind it is an unconfirmed destructive action with no way
+back, which is exactly what the sentence above forbids. The affordance also
+states what the delete takes — "Delete, and the 2 inside it" — because undo is
+the recovery for a surprise the merchant has already noticed, and a row that
+silently swallowed its children is one they might not.*
+
+*The other two clauses are untouched, and hold here. Delete is not primary: it is
+the last item of an overflow menu, marked destructive. It is not adjacent to the
+safe action: Undo and Redo are in the region's toolbar, not in the row.*
+
 ## A count is not a heading
 
 The Lead log's `7 submissions` was the largest text on the screen, above the

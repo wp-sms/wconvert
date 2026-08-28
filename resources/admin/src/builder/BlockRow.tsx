@@ -80,6 +80,7 @@ export function BlockRow({
 }: BlockRowProps) {
   const controls = controlsOf(block);
   const name = nameOfBlock(block, labels);
+  const pane = paneName(block);
 
   return (
     <div
@@ -144,9 +145,24 @@ export function BlockRow({
               className="wconvert-block__label"
               onClick={onSelect}
             >
+              {pane !== null && <span className="wconvert-block__pane">{pane}</span>}
               <span className="wconvert-block__kind">{name}</span>
-              {block.says !== null && (
+              {/*
+                What it says, or — for a layout that holds nothing — the
+                sentence and the fact that fixes it. ADR 0039 asks an empty
+                region for one sentence and the action; the action is the row's
+                own **Add a block inside**, one cell along, which is nearer than
+                a button drawn under the tree would be.
+              */}
+              {block.says !== null ? (
                 <span className="wconvert-block__says">{block.says}</span>
+              ) : (
+                block.holder &&
+                block.holds === 0 && (
+                  <span className="wconvert-block__says">
+                    {__('Empty — add a block inside it.', 'wconvert')}
+                  </span>
+                )
               )}
             </button>
           )}
@@ -227,9 +243,33 @@ export function nameOfBlock(block: Block, labels: TemplateLabels): string {
     return nameOf(labels.roles, block.role);
   }
 
-  return block.captures !== null
-    ? nameOf(labels.fields, block.captures)
-    : nameOf(labels.nodes, block.type);
+  if (block.captures !== null) {
+    return nameOf(labels.fields, block.captures);
+  }
+
+  // A layout's words live in their own map, because a layout is not a leaf and
+  // the parity test that keeps each map honest is asked of the manifest section
+  // it names. `nameOf` falls back to the key either way, so a build whose
+  // vocabulary is ahead of its translations shows `grid` rather than nothing.
+  return block.leaf ? nameOf(labels.nodes, block.type) : nameOf(labels.layouts, block.type);
+}
+
+/**
+ * Which pane of a `split` this block sits in, or null where the question does
+ * not arise.
+ *
+ * **A `split` is the one layout whose children are two lists**, and a tree that
+ * indented both under the same parent with nothing between them would show a
+ * merchant four rows and no boundary. Named first and second rather than left
+ * and right, which is the only naming that survives `fa_IR` — the panes swap
+ * sides and the order does not.
+ */
+export function paneName(block: Block): string | null {
+  if (block.pane === 'start') {
+    return __('First pane', 'wconvert');
+  }
+
+  return block.pane === 'end' ? __('Second pane', 'wconvert') : null;
 }
 
 /**
