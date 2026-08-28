@@ -758,6 +758,16 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
           than in a field labelled "Name" above the design. Borderless until it
           is focused, which is what says "this text is editable" without
           drawing a form on a screen that is not one.
+
+          **It is CAPPED rather than `flex-1`, and that is what puts Save back
+          beside it.** Growing to fill the band pushed the button to the far
+          right edge of a 1440px row — a thousand pixels from the words it acts
+          on — while every reading screen puts its action beside the title, for
+          the reason `Shell`'s own `PageHeader` states at length: the eye pairs
+          them, and a button that far away is a button in the same band rather
+          than a button about that thing. `max-w-sm` is a reading measure for a
+          name; `w-full` keeps it the whole band at 360px, where wrapping is the
+          right answer and there is no "beside" to be had.
         */}
           <input
             id="wconvert-optin-name"
@@ -769,7 +779,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
               setSaved(false);
               setDirty(true);
             }}
-            className="min-w-0 flex-1 rounded-md border border-transparent bg-transparent px-2 py-1 text-2xl font-semibold leading-tight tracking-tight text-foreground hover:border-border focus:border-ring focus:bg-background focus:outline-none"
+            className="w-full min-w-0 max-w-sm rounded-md border border-transparent bg-transparent px-2 py-1 text-title font-semibold leading-tight tracking-tight text-foreground hover:border-border focus:border-ring focus:bg-background focus:outline-none"
           />
 
           <Button disabled={busy} onClick={() => void save()}>

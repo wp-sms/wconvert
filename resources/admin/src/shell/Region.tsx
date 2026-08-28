@@ -92,15 +92,38 @@ export function RegionBody({ className, children }: { className?: string; childr
 }
 
 /**
- * Below the data: a truncation notice today, pagination when it arrives.
+ * Below the data: a truncation notice, a step's Back and Continue, pagination
+ * when it arrives.
  *
  * It exists so #66 does not have to invent a place for the sentence saying the
  * log is capped, and so the next screen that needs one finds it already decided
  * (ADR 0039).
+ *
+ * **Two screens invented one anyway**, at `px-4 py-3` — the creation flow's step
+ * footer and the Destinations card's repair-and-remove row. Neither matched this
+ * one's padding, and neither carried `.wconvert-footer`, so neither got the rule
+ * in `index.css` that lets a button's label WRAP rather than push the strip
+ * sideways: at 360px with a German label, *"Erfassungsdatensätze als CSV-Datei
+ * herunterladen"* in a `whitespace-nowrap shrink-0` button takes the whole
+ * screen with it. The class is what the rule is keyed on, so routing them
+ * through here is what fixes it rather than a note asking them to remember.
+ *
+ * **It states no control height**, and that is deliberate: a step's Back and
+ * Continue are what the merchant came to press and stand at `--control-height`,
+ * while a card's repair action qualifies the card and stands at the small one.
+ * Which of the two is the caller's `size`, because it is a question about the
+ * control's scope rather than about the strip (ADR 0039).
  */
-export function RegionFooter({ children }: { children: ReactNode }) {
+export function RegionFooter({ className, children }: { className?: string; children: ReactNode }) {
   return (
-    <div className="border-t border-border px-4 py-2.5 text-muted-foreground">{children}</div>
+    <div
+      className={cn(
+        'wconvert-footer border-t border-border px-4 py-2.5 text-muted-foreground',
+        className,
+      )}
+    >
+      {children}
+    </div>
   );
 }
 
@@ -121,7 +144,17 @@ export function RegionError({ message }: { message: string }) {
     <div className="border-b border-border p-3">
       <Alert variant="destructive" className="border-destructive/30 bg-destructive/5">
         <CircleAlert />
-        <AlertTitle>{message}</AlertTitle>
+        {/*
+          **`line-clamp-none`, because `AlertTitle` ships `line-clamp-1`.** A
+          region's error is a whole sentence from the server — often the only
+          thing on screen saying what went wrong — and the vendored default
+          truncated every one of them to a single line with an ellipsis. Two
+          call sites in this admin already remembered to undo it and these two
+          did not, which is the argument for undoing it HERE: the component
+          that decides what an error looks like is the one place the decision
+          belongs.
+        */}
+        <AlertTitle className="line-clamp-none">{message}</AlertTitle>
       </Alert>
     </div>
   );
@@ -138,7 +171,7 @@ export function RegionErrorState({ message, hint }: { message: string; hint?: st
     <RegionBody>
       <Alert variant="destructive" className="border-destructive/30 bg-destructive/5">
         <CircleAlert />
-        <AlertTitle>{message}</AlertTitle>
+        <AlertTitle className="line-clamp-none">{message}</AlertTitle>
         {hint !== undefined && <AlertDescription>{hint}</AlertDescription>}
       </Alert>
     </RegionBody>

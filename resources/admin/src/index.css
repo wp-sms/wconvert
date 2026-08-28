@@ -713,8 +713,21 @@
  * attribute beats a single utility class.
  */
 @layer utilities {
+  /*
+   * `.wconvert-footer` joins the three, and the reason is the same one: a
+   * region's footer holds a step's Back and Continue, and *"Erfassungsdaten­sätze
+   * als CSV-Datei herunterladen"* in a `whitespace-nowrap shrink-0` button takes
+   * the whole screen sideways at 360px. It was two hand-rolled `px-4 py-3`
+   * `<div>`s outside every one of these selectors until {@see RegionFooter}
+   * became the one place a footer is drawn.
+   *
+   * **The HEIGHT is not stated for the footer**, only the wrapping — see the
+   * override below, and `RegionFooter`'s own docblock. A step's action is the
+   * tall control and a card's repair action is the small one, and that is the
+   * caller's `size` because it is a question about scope.
+   */
   #wconvert-admin
-    :is(.wconvert-page-actions, .wconvert-toolbar, .wconvert-table)
+    :is(.wconvert-page-actions, .wconvert-toolbar, .wconvert-table, .wconvert-footer)
     :is([data-slot="button"], [data-slot="select-trigger"]) {
     /*
      * **The height is a MINIMUM, and the label may wrap.** "Export CSV" is two
@@ -738,6 +751,18 @@
 
   /* A page-header action is the taller of the two heights (ADR 0039). */
   #wconvert-admin .wconvert-page-actions [data-slot="button"] {
+    min-block-size: var(--control-height);
+  }
+
+  /*
+   * **A footer states no height of its own**, so the `size` the caller passed
+   * is what stands. The rule above gives every control in the four strips the
+   * small height as a floor; here that floor is released again for the one
+   * strip that holds both kinds — a step's Continue (tall) and a card's Re-push
+   * (small) are both footers, and they are different scopes rather than a
+   * disagreement.
+   */
+  #wconvert-admin .wconvert-footer [data-slot="button"][data-size="default"] {
     min-block-size: var(--control-height);
   }
 }
@@ -933,6 +958,54 @@
 #wconvert-admin :is(input[type="radio"], input[type="checkbox"]) {
   vertical-align: middle;
   margin-block: 0;
+}
+
+/*
+ * ---------------------------------------------------------------------------
+ * THE VENDORED CHECKBOX IS 16px DRAWN AND 24px TO A POINTER.
+ *
+ * WCAG 2.2 SC 2.5.8 asks for 24 × 24 CSS px, and `size-4` is 16. The Leads
+ * toolbar's *"Group submissions that share an email or phone"* is the one in
+ * this admin, and none of the exceptions rescues it: there is no equivalent
+ * control on the screen doing the same job, and the Spacing exception is about
+ * an undersized target with 24px of clearance rather than about a small one on
+ * its own.
+ *
+ * **A pseudo-element rather than a bigger box**, so what is drawn is unchanged:
+ * a 24px checkbox beside a 20px `Select` in the same toolbar would be the
+ * heaviest thing on a row of filters.
+ *
+ * **And not by wrapping the pair in one `<label>`**, which is the obvious fix
+ * and is wrong here: Radix draws the checkbox as `<button role="checkbox">`,
+ * and a `<label>` around a labelable element forwards its click to it — so a
+ * press on the box itself is a press the label also forwards, and the merchant
+ * toggles twice. `htmlFor` keeps the text clickable without that; this grows
+ * the box's own target; and the run is given a 24px line below so the LABEL
+ * clears the same bar.
+ * ------------------------------------------------------------------------- */
+#wconvert-admin [data-slot="checkbox"] {
+  position: relative;
+}
+
+#wconvert-admin [data-slot="checkbox"]::after {
+  content: "";
+  position: absolute;
+  /* 16px drawn + 4px each side = 24px of target. */
+  inset: -0.25rem;
+}
+
+#wconvert-admin .wconvert-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-block-size: 1.5rem;
+}
+
+#wconvert-admin .wconvert-check > label {
+  display: flex;
+  align-items: center;
+  align-self: stretch;
+  cursor: pointer;
 }
 
 /*

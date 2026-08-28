@@ -20,12 +20,16 @@ import { Description } from './Description';
  * thousand-pixel measure. `auto-fill` keeps the tracks, so one card is the same
  * card as one of four.
  *
- * A 16rem floor: four Goals are two rows of two on a laptop and one column at
- * 360px, without a breakpoint anywhere.
+ * **A 15rem floor rather than 16rem, and the reason is the fourth card.** At
+ * 1152px a 16rem track gives exactly three columns for four Goals, so the set
+ * read as a row of three with one orphan under it — which is the shape that
+ * says "there are more of these below" about a list that has ended. 15rem fits
+ * four, and it is still one column at 360px and two on a narrow laptop, with no
+ * breakpoint anywhere.
  */
 export function ChoiceGrid({ children }: { children: ReactNode }) {
   return (
-    <ul className="m-0 grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-[repeat(auto-fill,minmax(16rem,1fr))]">
+    <ul className="m-0 grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-[repeat(auto-fill,minmax(15rem,1fr))]">
       {children}
     </ul>
   );

@@ -7,7 +7,14 @@ import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { ChoiceCard, ChoiceGrid, ChoiceSkeleton } from '../shell/ChoiceGrid';
 import { EmptyState } from '../shell/EmptyState';
-import { Region, RegionBody, RegionError, RegionErrorState, RegionHeader } from '../shell/Region';
+import {
+  Region,
+  RegionBody,
+  RegionError,
+  RegionErrorState,
+  RegionFooter,
+  RegionHeader,
+} from '../shell/Region';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
 import { createOptin } from '../optins/api';
 import { renderingFor } from './availability';
@@ -277,7 +284,15 @@ function PlaybookGallery({
   const entries = playbooks.status === 'ready' ? playbooks.data : [];
 
   return (
-    <Region>
+    /*
+      **Capped to a reading measure, because a step is not a chooser.** Step one
+      offers four Goals and wants every pixel of the measure; steps two and three
+      often hold ONE card, and one card in a 1152px region is 400px of content
+      beside 700px of white — which reads as a grid that failed to load rather
+      than as a step with one option. `ChoiceGrid` uses `auto-fill` for exactly
+      this reason one level down; this is the same argument one level up.
+    */
+    <Region className="max-w-3xl">
       <RegionHeader
         title={sprintf(
           /* translators: %s: the chosen Goal, e.g. "Grow my email list". */
@@ -367,7 +382,7 @@ function DraftPreview({
   const template = draft.config.template as Template | undefined;
 
   return (
-    <Region>
+    <Region className="max-w-3xl">
       <RegionHeader
         title={draft.name}
         description={__('Nothing is saved until you create it.', 'wconvert')}
@@ -450,13 +465,13 @@ function StepFooter({
   disabled?: boolean;
 }) {
   return (
-    <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-border px-4 py-3">
+    <RegionFooter className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
       <Button variant="ghost" disabled={disabled} onClick={onBack}>
         <ArrowLeft aria-hidden="true" />
         {backLabel}
       </Button>
       {forward}
-    </div>
+    </RegionFooter>
   );
 }
 

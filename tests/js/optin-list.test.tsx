@@ -81,6 +81,47 @@ describe('a row', () => {
   });
 
   /**
+   * **The raw id must mean "this build has no such Goal" and nothing else.**
+   *
+   * The rows land before `listGoals` resolves, so a cell that falls back
+   * immediately showed every merchant `grow_email_list` and then swapped it for
+   * *Grow my email list* — teaching them that the `<code>` means "wait". The
+   * cell is held until the registry has answered.
+   */
+  it('never flashes the raw id while the registry is still in flight', async () => {
+    type Registry = { id: string; label: string; availability: string }[];
+    let answer: (goals: Registry) => void = () => undefined;
+    goals.listGoals.mockReturnValue(
+      new Promise<Registry>((resolve) => {
+        answer = resolve;
+      }),
+    );
+
+    render(<OptinList onEdit={() => undefined} />);
+
+    // The row is on screen — its name proves the list resolved — and the Goal
+    // cell is still empty rather than showing the id it stores.
+    expect(await screen.findByText('Welcome discount')).toBeInTheDocument();
+    expect(screen.queryByText('grow_email_list')).toBeNull();
+
+    answer([{ id: 'grow_email_list', label: 'Grow my email list', availability: 'ready' }]);
+
+    expect(await screen.findByText('Grow my email list')).toBeInTheDocument();
+  });
+
+  /**
+   * And once it HAS answered, an id it does not name is shown raw — which is
+   * the only honest thing left, and is what the wait above protects.
+   */
+  it('shows the raw id once the registry has answered and has no such Goal', async () => {
+    goals.listGoals.mockResolvedValue([]);
+
+    render(<OptinList onEdit={() => undefined} />);
+
+    expect(await screen.findByText('grow_email_list')).toBeInTheDocument();
+  });
+
+  /**
    * An Optin holding a Goal this build does not have shows the raw value: it
    * is the only honest thing left, and blanking it would read as an Optin with
    * no Goal at all.

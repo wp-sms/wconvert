@@ -426,7 +426,14 @@ function LogRegion({
           </SelectContent>
         </Select>
 
-        <span className="flex items-center gap-2">
+        {/*
+          **A 24px pointer target, drawn at 16px.** `size-4` is under WCAG 2.2
+          SC 2.5.8 and nothing on this screen does the same job at a bigger
+          size, so no exception applies. `.wconvert-check` is where the box's
+          target and the label's line height are grown; see `index.css` for why
+          the pair is NOT wrapped in one `<label>`.
+        */}
+        <span className="wconvert-check">
           <Checkbox
             id="wconvert-lead-grouped"
             checked={grouped}

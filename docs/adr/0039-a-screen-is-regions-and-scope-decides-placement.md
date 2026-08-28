@@ -132,6 +132,18 @@ below the table. **A count is stated only where the set can be large enough to
 need one** — it is not invented for a screen that has none today, which is why
 the Optin list has no count and is not missing one.
 
+_Amended: **a region footer is `RegionFooter` and nothing else**, and two screens
+had drawn their own. The creation flow's step footer and the Destinations card's
+repair-and-remove row were hand-rolled `<div>`s at `px-4 py-3` — a different
+padding from this one, and outside every selector `index.css` keys the
+button-wrapping rule on. So at 360px a long translated label in a
+`whitespace-nowrap shrink-0` button pushed the strip past the viewport, on
+exactly the two strips nobody had checked. The class `.wconvert-footer` is what
+the rule matches, which is why routing them through the component is the fix and
+a note asking the next author to remember is not. The footer states no control
+height of its own: a step's Continue is the tall one and a card's Re-push is the
+small one, and that is scope rather than a disagreement._
+
 ## Every region declares all three states, and loading is not empty
 
 A region that fetches has three renderings and owes all three:
@@ -311,6 +323,14 @@ the selection rather than clearing it.
   amends the *"one control height for the whole admin"* comment
   [#63](https://github.com/navidkashani/wconvert/issues/63) left in `index.css`,
   which was right about the un-converted screens it was written for.
+
+  _Amended: **three controls were stated and did not use them.** Measured in a
+  browser: the theme-preset button was 39px (padding around a line, no stated
+  height), the Design tab's `input[type=range]` stood at the UA default of ~22px,
+  and the gallery card's action changed height with its own state. All three are
+  bound now — a preset and a size slider are controls a merchant came to the tab
+  to use, so both take `--control-height`. A height that is written down and not
+  applied is worse than one that was never written down: it reads as decided._
 - **Status is a `Badge`, never plain text**, and the words are translated. The
   badge is the only thing in a Status column, so an id with no registry entry
   stays a `<code>` in the Goal column and never becomes a badge that would read
