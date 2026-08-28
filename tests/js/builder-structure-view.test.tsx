@@ -427,6 +427,133 @@ describe('adding a block', () => {
   });
 });
 
+/**
+ * ============================================================================
+ * A BLOCK IS EDITED WHERE IT IS SELECTED.
+ * ============================================================================
+ * The tree shipped without this: selecting a row highlighted it in the preview
+ * and stopped, so changing a headline meant switching tabs, finding that block
+ * among all of them, typing, and switching back. Two places to look for one act.
+ */
+describe('the inspector', () => {
+  /** The row's own name button, which is the control that selects. */
+  const select = async (name: string) => {
+    await userEvent.click(within(row(name)).getAllByRole('button')[0]);
+  };
+
+  /**
+   * The inspector, by the block it is showing.
+   *
+   * Scoped rather than queried off the screen: the Content tab is still
+   * mounted beside this one, so a bare `getByLabelText('Text')` finds its
+   * column of slots too.
+   */
+  const inspector = (name: string) => within(screen.getByRole('group', { name }));
+
+  it('puts the selected block\u2019s own controls under the tree', async () => {
+    await structure();
+    await select('Fine print');
+
+    expect(inspector('Fine print').getByLabelText('Text')).toHaveValue(
+      'No spam, and you can unsubscribe at any time.',
+    );
+  });
+
+  /**
+   * **A layout has no slot, so it must not draw an empty box.** `slotsOf`
+   * walks leaves; a panel that drew controls for a `row` anyway would be
+   * promising an edit it cannot make.
+   */
+  it('names a layout and says it holds blocks rather than words', async () => {
+    await structure();
+    await select('Row');
+
+    expect(inspector('Row').getByText(/holds blocks rather than words/)).toBeInTheDocument();
+  });
+
+  it('says what a step is rather than offering it a text box', async () => {
+    await structure();
+    await select('The form');
+
+    expect(inspector('The form').getByText(/A step is what the blocks are in/)).toBeInTheDocument();
+  });
+
+  it('writes what is typed into the tree, and the Save sends it', async () => {
+    await structure();
+    await select('Headline');
+
+    const text = inspector('Headline').getByLabelText('Text');
+
+    await userEvent.clear(text);
+    await userEvent.type(text, 'Half price today');
+    await userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+
+    expect((formChildren(savedTree())[0] as unknown as { text: string }).text).toBe('Half price today');
+  });
+
+  /**
+   * **One Undo removes the word, not the letter.** Every keystroke is a new
+   * tree identity, so without coalescing a sentence would exhaust the fifty
+   * entry cap and undo would be a backspace.
+   */
+  it('takes back a burst of typing in one step', async () => {
+    await structure();
+    await select('Headline');
+
+    const text = inspector('Headline').getByLabelText('Text');
+
+    await userEvent.clear(text);
+    await userEvent.type(text, 'Half price');
+    await userEvent.click(screen.getByRole('button', { name: 'Undo' }));
+
+    expect(inspector('Headline').getByLabelText('Text')).toHaveValue('Get 10% off your first order');
+  });
+
+  /** A hidden block is still edited here, which is the only route to switching it on. */
+  it('edits a block that is switched off, because that is the way to switch it on', async () => {
+    await structure();
+    await select('Consent wording');
+
+    const shown = inspector('Consent wording').getByRole('checkbox', { name: 'Show this' });
+
+    expect(shown).not.toBeChecked();
+
+    await userEvent.click(shown);
+
+    expect(inspector('Consent wording').getByRole('checkbox', { name: 'Show this' })).toBeChecked();
+  });
+
+  /**
+   * **The selection follows the block, not the position it used to hold.** A
+   * `SlotKey` survived a move for free; a path does not.
+   */
+  it('follows the block through a move', async () => {
+    await structure();
+    await select('Headline');
+
+    await userEvent.click(within(row('Headline')).getByRole('button', { name: 'Move Headline down' }));
+
+    expect(screen.getByRole('group', { name: 'Headline' })).toBeInTheDocument();
+  });
+
+  /** And never blanks when what it was showing is deleted. */
+  it('follows a delete to whatever took focus', async () => {
+    await structure();
+    await select('Fine print');
+
+    await userEvent.click(
+      within(row('Fine print')).getByRole('button', { name: 'Add, copy or delete Fine print' }),
+    );
+    await userEvent.click(screen.getByRole('menuitem', { name: /Delete/ }));
+
+    expect(screen.queryByRole('group', { name: 'Fine print' })).toBeNull();
+    // Whatever took focus. The fine print is the last block in its list, so
+    // there is no next sibling and what was holding it takes focus — here the
+    // step itself, which the inspector names rather than blanking.
+    expect(screen.getByRole('group', { name: 'The form' })).toBeInTheDocument();
+  });
+});
+
 describe('undo and redo', () => {
   it('has nothing to undo before anything has changed', async () => {
     await structure();

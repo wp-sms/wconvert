@@ -25,13 +25,14 @@ import { RulesEditor } from './RulesEditor';
 import { SettingsPanel } from './SettingsPanel';
 import { StructureView } from './StructureView';
 import { canRedo, canUndo, historyOf, redo, remember, undo, type History } from './structure/history';
+import { nearestTo, samePath } from './structure/tree';
 import type { ConvertingAct } from './structure/catalogue';
 import { listGoals } from '../goals/api';
 import { stepName } from './BlockRow';
-import { TOKENS } from './panel';
+import { TOKENS, slotsOf, type Path } from './panel';
 import { TargetingEditor, type Targeting } from './TargetingEditor';
 import { getOptin, getRules, saveOptin, type Rule, type RuleVocabulary } from './api';
-import type { Selection, SlotKey } from './slots';
+import { keyOfSlot, pathOfKey, type Selection, type SlotKey } from './slots';
 import { listTemplates, type Gallery as TemplateGallery, type TemplateEntry } from '../templates/api';
 import { numbersByOptin, readDashboard, type OptinNumbers } from '../stats/api';
 import { formatCount, formatRate } from '../stats/format';
@@ -220,6 +221,8 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
   const [act, setAct] = useState<ConvertingAct | null>(null);
   const [leaving, setLeaving] = useState(false);
   const back = useRef<HTMLButtonElement>(null);
+  /** See the history effect below: which control the pending change came from. */
+  const coalescing = useRef<string | null>(null);
 
   const report = useCallback((cause: unknown) => setError(messageOf(cause)), []);
 
@@ -304,7 +307,62 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
       return;
     }
 
-    setPast((current) => (current === null ? historyOf(template) : remember(current, template)));
+    /*
+     * **Which control this change came from, read once and cleared.** A
+     * keystroke sets it just before writing; every other path leaves it null,
+     * which is what makes a move, a save or a template switch break a burst of
+     * typing rather than extend it.
+     *
+     * A ref rather than state, because it is an ANNOTATION on the value this
+     * effect is already watching — a second piece of state would be a second
+     * render and a second chance for the two to disagree about which change
+     * they describe.
+     */
+    const key = coalescing.current;
+
+    coalescing.current = null;
+
+    const into = key === null ? null : { key, at: Date.now() };
+
+    setPast((current) => (current === null ? historyOf(template) : remember(current, template, into)));
+  }, [template]);
+
+  /*
+   * **The selection re-resolved against whatever the tree now is.**
+   *
+   * A key survived every kind of change for free, because it named a slot
+   * rather than a place. A path does not: a save replaces the tree with the
+   * server's normalised copy, and an undo can restore a design the selected
+   * block was never in. Neither may leave the inspector pointing at nothing.
+   *
+   * {@see nearestTo} walks outward rather than clearing — the block, else
+   * whatever was holding it, else the design's first block — because a blank
+   * inspector is a state with nothing on screen to explain it.
+   *
+   * Identity is returned where nothing moved, so this costs a keystroke a walk
+   * of the tree and no render.
+   */
+  useEffect(() => {
+    if (template === undefined) {
+      return;
+    }
+
+    setSelection((current) => {
+      if (current === null) {
+        return current;
+      }
+
+      const path = nearestTo(template.tree, current.path);
+
+      if (path === null) {
+        return null;
+      }
+
+      const slot = slotsOf(template.tree).find((each) => samePath(each.path, path));
+      const key = slot === undefined ? null : keyOfSlot(slot);
+
+      return samePath(path, current.path) && key === current.key ? current : { ...current, path, key };
+    });
   }, [template]);
 
   /*
@@ -361,7 +419,8 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
     return () => window.removeEventListener('beforeunload', warn);
   }, [dirty]);
 
-  const edit = (changes: Config) => {
+  const edit = (changes: Config, coalesce?: string) => {
+    coalescing.current = coalesce ?? null;
     setConfig((current) => (current === null ? current : { ...current, ...changes }));
     setSaved(false);
     setDirty(true);
@@ -400,17 +459,41 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
    */
   const chooseFromPreview = useCallback((key: SlotKey) => {
     setTab((current) => (current === 'structure' ? current : 'content'));
-    setSelection({ key, from: 'preview' });
+    /*
+     * **The key arrives; the path is looked up.** The preview names slots and
+     * only slots (ADR 0040), so it cannot hand over an address — which is
+     * exactly the property that lets it stay unable to write. The tree is read
+     * through the setter so this callback stays stable across renders:
+     * {@see Preview} re-binds every listener in the shadow tree when it changes.
+     */
+    setConfig((current) => {
+      const tree = (current?.template as Template | undefined)?.tree;
+
+      setSelection(
+        tree === undefined ? null : { path: pathOfKey(tree, key) ?? [], key, from: 'preview' },
+      );
+
+      return current;
+    });
   }, []);
 
   /*
    * A row was clicked in the block tree. It outlines the block in the preview
    * and moves no caret: the merchant already has focus, on the row.
    */
-  const chooseFromStructure = useCallback(
-    (key: SlotKey | null) => setSelection(key === null ? null : { key, from: 'structure' }),
-    [],
-  );
+  const chooseFromStructure = useCallback((key: SlotKey | null, path: Path) => {
+    setSelection({ path, key, from: 'structure' });
+
+    /*
+     * **Selecting a block puts the preview on the step it lives in.** A block
+     * on step 2 selected while the preview showed step 1 outlined nothing a
+     * merchant could see, which reads as a broken highlight rather than as a
+     * step they have not switched to.
+     */
+    if (typeof path[0] === 'number') {
+      setStep(path[0]);
+    }
+  }, []);
 
   /*
    * Stepping the history moves the pointer FIRST and then writes the design it
@@ -632,7 +715,9 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
                         labels={gallery.labels}
                         dev={adminSettings()?.dev === true}
                         selection={selection}
-                        onSelect={(key) => setSelection({ key, from: 'panel' })}
+                        onSelect={(key) =>
+                          setSelection({ path: pathOfKey(entry.tree, key) ?? [], key, from: 'panel' })
+                        }
                         onChange={(next) => edit({ template: next })}
                         onError={report}
                       />
@@ -654,9 +739,9 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
                       template={entry}
                       labels={gallery.labels}
                       act={act ?? 'submit'}
-                      selected={selection?.key ?? null}
+                      selected={selection?.path ?? null}
                       onSelect={chooseFromStructure}
-                      onChange={(next) => edit({ template: next })}
+                      onChange={(next, coalesce) => edit({ template: next }, coalesce)}
                       history={{
                         canUndo: past !== null && canUndo(past),
                         canRedo: past !== null && canRedo(past),

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 import { __ } from '@wordpress/i18n';
 import { BlockRow, controlsOf, type Control } from './BlockRow';
-import { nodesOf, type Block } from './structure/tree';
+import { nodesOf, samePath, type Block } from './structure/tree';
 import { keyOfSlot, type SlotKey } from './slots';
 import type { Path } from './panel';
 import type { TemplateLabels } from '../templates/api';
@@ -48,8 +48,16 @@ import type { TemplateTree } from '@renderer/types';
 export interface BlockTreeProps {
   readonly tree: TemplateTree;
   readonly labels: TemplateLabels;
-  /** The slot drawn as selected, named the way `slots.ts` names it. */
-  readonly selected: SlotKey | null;
+  /**
+   * The block drawn as selected, as its {@link Path}.
+   *
+   * **A path and not a `SlotKey`**, because a key cannot name every row: a
+   * block with no [[Slot Role]] has none at all, and two role-less blocks of
+   * one type share the absence. Selecting either would have drawn both — or
+   * neither — as selected. The key still travels beside it for the preview's
+   * benefit, which is where `slots.ts` says it belongs.
+   */
+  readonly selected: Path | null;
   readonly onSelect: (key: SlotKey | null, path: Path) => void;
   /**
    * ↑, ↓ and the menu for one row. Absent while the tree only shows and
@@ -273,7 +281,7 @@ export function BlockTree({
             labels={labels}
             focused={row === current ? at.control : null}
             takeFocus={taking}
-            selected={key !== null && key === selected}
+            selected={selected !== null && samePath(block.path, selected)}
             expanded={block.holds === 0 ? null : !isCollapsed(collapsed, block)}
             onExpand={(open) => expand(block, open)}
             onSelect={() => {

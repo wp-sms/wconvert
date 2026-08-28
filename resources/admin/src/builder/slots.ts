@@ -1,4 +1,6 @@
-import type { Slot } from './panel';
+import { slotsOf } from './panel';
+import type { Path, Slot } from './panel';
+import type { TemplateTree } from '@renderer/types';
 
 /**
  * The one name a slot answers to on both sides of the preview boundary.
@@ -70,6 +72,44 @@ export const SLOT_SELECTOR = '[data-role],[data-captures]';
  * of them is currently spelled as the other.
  */
 export interface Selection {
-  readonly key: SlotKey;
+  /**
+   * **The authoritative address of the selected block**, and what the editor
+   * writes through.
+   *
+   * ==========================================================================
+   * A KEY NAMES A SLOT. IT CANNOT NAME EVERY BLOCK.
+   * ==========================================================================
+   * Selection was a {@link SlotKey} alone, and ADR 0040 chose that
+   * deliberately: it names a slot and carries no way to REACH one, so nothing
+   * receiving a selection could write. That held while the only thing being
+   * selected was a slot the settings panel had a control for.
+   *
+   * It cannot hold for an editor that edits a block where it is selected. A
+   * block with no [[Slot Role]] has no key at all ({@link keyOfSlot} answers
+   * null), and two role-less blocks of the same type are indistinguishable by
+   * one — and those are precisely the blocks that most need editing, because
+   * they are the ones the structure editor's own warning is about.
+   *
+   * **ADR 0040's boundary is untouched in the direction it was written for.**
+   * The PREVIEW still receives a key, and a key still carries no way to reach a
+   * node. What changed is the panel, which was always the thing that writes and
+   * which has addressed nodes by `Path` since `panel.ts` was written.
+   */
+  readonly path: Path;
+  /** What the preview outlines, or null for a block the preview cannot name. */
+  readonly key: SlotKey | null;
   readonly from: 'preview' | 'panel' | 'structure';
+}
+
+/**
+ * Where the slot a key names actually sits, or null where nothing carries it.
+ *
+ * The one direction a key cannot be derived in — {@link keyOfSlot} goes the
+ * other way — and it exists because the PREVIEW still speaks in keys while the
+ * editor now addresses by path. The lookup is the tree's, so a stale key from
+ * before a save resolves to nothing rather than to whatever now occupies a
+ * remembered position.
+ */
+export function pathOfKey(tree: TemplateTree, key: SlotKey): Path | null {
+  return slotsOf(tree).find((slot) => keyOfSlot(slot) === key)?.path ?? null;
 }

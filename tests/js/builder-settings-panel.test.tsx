@@ -138,7 +138,7 @@ describe('the settings panel', () => {
    * travels with it (ADR 0040).
    */
   it('puts the caret in the block a preview click names', () => {
-    panel({ selection: { key: 'role:headline', from: 'preview' } });
+    panel({ selection: { path: [0, 'children', 0], key: 'role:headline', from: 'preview' } });
 
     const slot = screen.getByText('Headline').closest('fieldset') as HTMLElement;
 
@@ -146,7 +146,7 @@ describe('the settings panel', () => {
   });
 
   it('reaches a field by what it captures, which is the only key it has', () => {
-    panel({ selection: { key: 'captures:email', from: 'preview' } });
+    panel({ selection: { path: [0, 'children', 2, 'children', 0], key: 'captures:email', from: 'preview' } });
 
     const slot = screen.getByText('Email address').closest('fieldset') as HTMLElement;
 
@@ -154,7 +154,7 @@ describe('the settings panel', () => {
   });
 
   it('does not move the caret for a selection that started in the panel', () => {
-    panel({ selection: { key: 'role:headline', from: 'panel' } });
+    panel({ selection: { path: [0, 'children', 0], key: 'role:headline', from: 'panel' } });
 
     expect(document.body).toHaveFocus();
   });

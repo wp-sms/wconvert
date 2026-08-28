@@ -345,6 +345,48 @@ function rolesIn(node: TemplateNode): number {
 export const countAt = (tree: TemplateTree, parent: Path, key: string): number =>
   childrenAt(nodeAt(tree, parent), key).length;
 
+/**
+ * The first block a merchant may actually edit, or null for a design with none.
+ *
+ * Not the first ROW: that is a step, and a step is not a block a merchant
+ * arranges — how many a design has follows from its metric (ADR 0025). So the
+ * editor opens on the first thing inside the first step, which is what a
+ * merchant reading the design top to bottom would have clicked.
+ */
+export function firstBlockOf(tree: TemplateTree): Path | null {
+  return nodesOf(tree).find((block) => block.level > 1)?.path ?? nodesOf(tree)[0]?.path ?? null;
+}
+
+/**
+ * The nearest surviving block to a path, or null for a design with none.
+ *
+ * **A save replaces the tree wholesale**, and the server's copy may not hold
+ * what the merchant had selected — `normalize()` drops an unknown type, and a
+ * Slot Role claimed twice loses its later claimant. Clearing the selection
+ * there would blank the inspector for a reason nothing on screen explains, so
+ * the address is walked outward instead: the block, else whatever was holding
+ * it, else the design's first block.
+ */
+export function nearestTo(tree: TemplateTree, path: Path): Path | null {
+  let at: Path = path;
+
+  while (at.length > 0) {
+    if (nodeAt(tree, at) !== null) {
+      return at;
+    }
+
+    // Out one level: a path is `[step, key, index, …]`, so dropping the last
+    // pair leaves whatever was holding this. A bare step index has no pair to
+    // drop and falls through to the design's first block.
+    at = at.length >= 3 ? at.slice(0, -2) : [];
+  }
+
+  return firstBlockOf(tree);
+}
+
+/** Whether two paths address the same node. */
+export const samePath = (a: Path, b: Path): boolean => a.length === b.length && a.join('.') === b.join('.');
+
 /** Every Slot Role the tree is already using, so a new block can be given a free one. */
 export function rolesTaken(tree: TemplateTree): string[] {
   return nodesOf(tree)

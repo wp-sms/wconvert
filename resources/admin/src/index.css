@@ -1522,6 +1522,58 @@
 }
 
 /* ---------------------------------------------------------------------------
+ * THE INSPECTOR: THE SELECTED BLOCK'S CONTROLS, UNDER THE LIST.
+ *
+ * Underneath rather than beside, and that is measured rather than preferred:
+ * the tab column is 616px at its widest (`main` is `max-w-6xl`) and ~392px at
+ * 1024px, so there is no side-by-side split to be had. A list and its detail
+ * stack, which is what the placement rule this settles already implies — a
+ * control that acts on a selection lives under the list the selection is made
+ * in.
+ * ------------------------------------------------------------------------- */
+.wconvert-inspector {
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+}
+
+.wconvert-inspector__head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.wconvert-inspector__name {
+  margin: 0;
+  font-weight: 600;
+}
+
+/*
+ * What KIND of block it is, quietly. A slot named by its Slot Role reads
+ * "Headline", and the merchant reasoning about what may go where is helped by
+ * knowing that is a heading — but it is a footnote to the name rather than a
+ * second name.
+ */
+.wconvert-inspector__kind {
+  padding-inline: 0.375rem;
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--muted-foreground);
+  font-size: 0.75rem;
+}
+
+/*
+ * The first control sits under the heading rather than against it. `SlotFields`
+ * draws no frame of its own, so this is where the gap between the name and the
+ * fields is decided.
+ */
+.wconvert-inspector > :not(.wconvert-inspector__head) {
+  margin-block-start: 0.5rem;
+}
+
+/* ---------------------------------------------------------------------------
  * THE THEME PANEL: PRESETS FIRST, RAW TOKENS BEHIND A DISCLOSURE (#71).
  * ------------------------------------------------------------------------- */
 .wconvert-themes {

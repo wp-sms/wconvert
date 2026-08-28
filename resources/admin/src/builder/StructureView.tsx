@@ -25,6 +25,7 @@ import {
 import { EmptyState } from '../shell/EmptyState';
 import { RegionBody } from '../shell/Region';
 import { Toolbar } from '../shell/Toolbar';
+import { BlockInspector } from './BlockInspector';
 import { BlockTree } from './BlockTree';
 import { useBlockDrag } from './useBlockDrag';
 import { nameOfBlock, sentenceFor, type Control } from './BlockRow';
@@ -35,6 +36,7 @@ import {
   nodeAt,
   nodesOf,
   rolesLostBy,
+  samePath,
   spotOf,
   withDuplicated,
   withInserted,
@@ -45,7 +47,7 @@ import {
 } from './structure/tree';
 import { LEAVES, childKeysOf, type Path } from './panel';
 import { nameOf, type TemplateLabels } from '../templates/api';
-import type { SlotKey } from './slots';
+import { keyOfSlot, type SlotKey } from './slots';
 import type { Template, TemplateTree } from '@renderer/types';
 
 /**
@@ -106,9 +108,15 @@ export interface StructureViewProps {
    * happily let them do it.
    */
   readonly act: ConvertingAct;
-  readonly selected: SlotKey | null;
+  /** Which block is live, as its path. Null only while the design holds none. */
+  readonly selected: Path | null;
   readonly onSelect: (key: SlotKey | null, path: Path) => void;
-  readonly onChange: (template: Template) => void;
+  /**
+   * The design, changed. `coalesce` names the control a keystroke came from,
+   * so a burst of typing in the inspector is one undo entry — see
+   * `structure/history.ts`.
+   */
+  readonly onChange: (template: Template, coalesce?: string) => void;
   /** Undo and redo, held by the screen because they move the whole draft. */
   readonly history: {
     readonly canUndo: boolean;
@@ -164,6 +172,18 @@ export function StructureView({
     onChange({ ...template, tree });
     setFocusOn({ path, control });
     setSaid(sentence);
+
+    /*
+     * **The selection follows the act, not the position it used to hold.** A
+     * key survived a move for free — it named the slot rather than the place —
+     * and a path does not, so the block moved is re-addressed here. It is the
+     * same call for a delete, where the path is deliberately whatever took
+     * focus: the next sibling, else the parent. Either way the inspector shows
+     * a block rather than blanking.
+     */
+    const landed = nodesOf(tree).find((block) => samePath(block.path, path));
+
+    onSelect(landed === undefined ? null : keyOfSlot(landed), path);
   };
 
   const refuse = (reason: string) => {
@@ -393,6 +413,14 @@ export function StructureView({
             />
           )}
         />
+
+        {/*
+          **Under the tree, and after it in the tab order.** Selecting a row
+          must not pull focus down here — focus belongs on the row the merchant
+          is on, which is what makes ↑↓ keep working after a click — so `Tab` is
+          the documented way in and the DOM order is what makes it land.
+        */}
+        <BlockInspector template={template} labels={labels} path={selected} onChange={onChange} />
       </RegionBody>
     </>
   );
