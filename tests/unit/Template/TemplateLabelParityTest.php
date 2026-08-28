@@ -4,6 +4,7 @@ namespace WConvert\Tests\Unit\Template;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use WConvert\Template\ConvertingAct;
 use WConvert\Template\TemplateLabels;
 use WConvert\Template\TemplateManifest;
 
@@ -86,6 +87,31 @@ final class TemplateLabelParityTest extends TestCase
     public function testEveryTokenIsNamed(): void
     {
         $this->assertNamesExactly(array_map('strval', array_keys(self::manifest()['tokens'])), TemplateLabels::tokens(), 'tokens');
+    }
+
+    /**
+     * ==========================================================================
+     * THE ⇄ MENU'S WORDS ARE THEIR OWN MAP, ANCHORED TO THE ENUM.
+     * ==========================================================================
+     * They cannot live in {@see TemplateLabels::keys()}, which the test below
+     * pins to exactly the content keys — a label for `action` in there would be
+     * a control the editor must not offer as words.
+     *
+     * The manifest declares no list of `action` values to assert against, and
+     * adding one would be a fifth hand-maintained cross-cutting list (ADR 0019)
+     * for data PHP already owns: {@see ConvertingAct} is the closed set, and
+     * `action()` is where each act's node spelling lives. So parity is asked of
+     * the enum, in both directions — a third act would arrive unnamed, and a
+     * label for an action nothing produces would be a word for a state that
+     * cannot exist.
+     */
+    public function testEveryButtonActionIsNamedAndNothingElseIs(): void
+    {
+        $this->assertNamesExactly(
+            array_map(static fn (ConvertingAct $act): string => $act->action(), ConvertingAct::cases()),
+            TemplateLabels::params(),
+            'button actions'
+        );
     }
 
     /**

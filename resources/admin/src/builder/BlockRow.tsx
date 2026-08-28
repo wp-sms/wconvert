@@ -1,6 +1,8 @@
 import { useEffect, useRef, type CSSProperties, type ReactNode } from 'react';
-import { __, sprintf } from '@wordpress/i18n';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { __, _n, sprintf } from '@wordpress/i18n';
+import { ChevronDown, ChevronRight, GripVertical } from 'lucide-react';
+import { losesWordsOnSwitch } from './structure/catalogue';
+import { isConvertingAct } from './structure/guards';
 import { nameOf, type TemplateLabels } from '../templates/api';
 import type { Block } from './structure/tree';
 import type { BlockDrag } from './useBlockDrag';
@@ -91,10 +93,19 @@ export function BlockRow({
 }: BlockRowProps) {
   const controls = controlsOf(block);
   const name = nameOfBlock(block, labels);
+  const summary = summaryOf(block, labels);
   const pane = paneName(block);
   const row = useRef<HTMLDivElement>(null);
-  const handle = useRef<HTMLButtonElement>(null);
+  const handle = useRef<HTMLSpanElement>(null);
   const path = block.path.join('.');
+  /*
+   * **A step gets no handle, rather than an inert one.** Steps are not
+   * draggable — how many a design has follows from its metric (ADR 0025), and
+   * `canDrag` already refuses them — so a grip drawn on one would be an
+   * affordance that lies. Nothing is attached either: a step is never a valid
+   * drop target, because a drop only lands between siblings.
+   */
+  const draggable = block.level > 1;
 
   /*
    * **Keyed on the path string, never on the block.** `nodesOf` builds fresh
@@ -103,12 +114,12 @@ export function BlockRow({
    * mid-drag, which ends the drag.
    */
   useEffect(() => {
-    if (drag === undefined || row.current === null || handle.current === null) {
+    if (drag === undefined || !draggable || row.current === null || handle.current === null) {
       return;
     }
 
     return drag.attach(path, row.current, handle.current);
-  }, [drag, path]);
+  }, [drag, draggable, path]);
 
   return (
     <div
@@ -138,6 +149,32 @@ export function BlockRow({
       */
       style={{ '--wconvert-depth': block.level - 1 } as CSSProperties}
     >
+      {/*
+        ====================================================================
+        THE GRIP IS THE DRAG SOURCE, AND IT IS POINTER-ONLY ON PURPOSE.
+        ====================================================================
+        It was the NAME button, which also selects — one control with two
+        meanings, wearing `cursor: grab` while its click did something else. So
+        the grip is its own thing and the name went back to selecting.
+
+        Out of the tab order and out of the accessibility tree, because a drag
+        is the one capability the keyboard already has twice: ↑↓ on the row,
+        Alt+↑↓ anywhere on it, and Move up / Move down in the menu. Announcing
+        a drag a screen-reader user cannot perform is noise on every row.
+
+        Not a `gridcell` either: the treegrid's cell count must not change, or
+        → would walk a different number of controls on a step than on a block.
+      */}
+      {draggable && (
+        <span
+          ref={handle}
+          aria-hidden="true"
+          className="wconvert-block__grip"
+        >
+          <GripVertical />
+        </span>
+      )}
+
       <span role="gridcell" className="wconvert-block__name">
         {expanded === null ? (
           <span aria-hidden="true" className="wconvert-block__twist" />
@@ -177,7 +214,6 @@ export function BlockRow({
         >
           {(tabIndex) => (
             <button
-              ref={handle}
               type="button"
               tabIndex={tabIndex}
               className="wconvert-block__label"
@@ -186,21 +222,40 @@ export function BlockRow({
               {pane !== null && <span className="wconvert-block__pane">{pane}</span>}
               <span className="wconvert-block__kind">{name}</span>
               {/*
-                What it says, or — for a layout that holds nothing — the
-                sentence and the fact that fixes it. ADR 0039 asks an empty
+                What it says, what it holds, or — for a layout holding nothing —
+                the sentence and the fact that fixes it. ADR 0039 asks an empty
                 region for one sentence and the action; the action is the row's
                 own **Add a block inside**, one cell along, which is nearer than
                 a button drawn under the tree would be.
               */}
-              {block.says !== null ? (
-                <span className="wconvert-block__says">{block.says}</span>
-              ) : (
-                block.holder &&
-                block.holds === 0 && (
-                  <span className="wconvert-block__says">
-                    {__('Empty — add a block inside it.', 'wconvert')}
-                  </span>
-                )
+              {summary !== null && <span className="wconvert-block__says">{summary}</span>}
+
+              {/*
+                ================================================================
+                TWO CHIPS, AND NEITHER IS DECORATION.
+                ================================================================
+                **counted** marks the one block this Optin's numbers depend on.
+                It is said once in the status line and then forgotten, and
+                deleting it leaves an Optin that renders, publishes and reports
+                zero forever (ADR 0020) — a list of blocks that does not point
+                at it is a list missing its most important row.
+
+                **words will be lost** is the sharp version of a limit that is
+                otherwise invisible until the fourth template. Slot Roles are a
+                closed list of thirteen, unique across the tree, so there is
+                exactly one fillable body slot — and a block that got none has
+                no seam for its words to travel on. The merchant can type a
+                second paragraph, switch design, and find it gone.
+              */}
+              {isConvertingAct(block) && (
+                <span className="wconvert-block__chip wconvert-block__chip--counted">
+                  {__('counted', 'wconvert')}
+                </span>
+              )}
+              {losesWordsOnSwitch(block) && (
+                <span className="wconvert-block__chip wconvert-block__chip--warn">
+                  {__('words will be lost', 'wconvert')}
+                </span>
               )}
             </button>
           )}
@@ -290,6 +345,48 @@ export function nameOfBlock(block: Block, labels: TemplateLabels): string {
   // it names. `nameOf` falls back to the key either way, so a build whose
   // vocabulary is ahead of its translations shows `grid` rather than nothing.
   return block.leaf ? nameOf(labels.nodes, block.type) : nameOf(labels.layouts, block.type);
+}
+
+/**
+ * The one line under the name: what this block says, or what it holds.
+ *
+ * Three answers, because a row has to be identifiable at a glance and three
+ * kinds of block are identifiable by three different things:
+ *
+ * - **A leaf says its words**, which is what {@link Block.says} already reads
+ *   off the manifest's `copy` keys. A `button` adds what it DOES — *"Send my
+ *   code · sends the form"* — because two buttons with the same label that
+ *   differ in `action` are two different designs, and it is the param that
+ *   decides whether this Optin converts on a submission or on a click.
+ * - **A layout says how much is in it.** Not *"side by side"*: the row is
+ *   already NAMED "Side by side", and repeating the arrangement would be the
+ *   name twice with a number in front. What a merchant cannot see from a
+ *   collapsed row is the count.
+ * - **An empty layout says it is empty**, and the fix is one cell along.
+ */
+export function summaryOf(block: Block, labels: TemplateLabels): string | null {
+  if (block.says !== null) {
+    return block.action === null
+      ? block.says
+      : sprintf(
+          /* translators: 1: what the button says, e.g. “Send my code”. 2: what it does, e.g. “Sends the form”. */
+          __('%1$s · %2$s', 'wconvert'),
+          block.says,
+          nameOf(labels.params, block.action),
+        );
+  }
+
+  if (!block.holder) {
+    return null;
+  }
+
+  return block.holds === 0
+    ? __('Empty — add a block inside it.', 'wconvert')
+    : sprintf(
+        /* translators: %d: how many blocks sit inside this one, at any depth. */
+        _n('%d block inside', '%d blocks inside', block.holds, 'wconvert'),
+        block.holds,
+      );
 }
 
 /**

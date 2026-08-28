@@ -32,6 +32,17 @@ export interface TemplateLabels {
   layouts: Record<string, string>;
   fields: Record<string, string>;
   keys: Record<string, string>;
+  /**
+   * What each choosable PARAM VALUE is called — today, a `button`'s two
+   * actions.
+   *
+   * Its own map rather than an entry in `keys`, which is pinned to exactly the
+   * leaves' `content` keys by `TemplateLabelParityTest`: a label for `action`
+   * in there would be a control the editor must not offer as words. A row says
+   * *"Send my code · sends the form"* and the ⇄ menu offers the other one, and
+   * neither may say `submit` to a merchant.
+   */
+  params: Record<string, string>;
   tokens: Record<string, string>;
 }
 

@@ -60,6 +60,18 @@ export interface BlockTreeProps {
   readonly selected: Path | null;
   readonly onSelect: (key: SlotKey | null, path: Path) => void;
   /**
+   * Move the row that has focus, by `Alt+↑` and `Alt+↓`.
+   *
+   * **A third path to a capability that already has two**, and it is the one a
+   * merchant making several moves in a row reaches for: the ↑↓ buttons are
+   * revealed on hover and focus, so repeating a move by pointer means the row
+   * staying under it, and by keyboard means arrowing to the button first.
+   * Alt+arrow works from wherever in the row focus already is.
+   *
+   * Absent while the tree only shows and selects, like {@link actions}.
+   */
+  readonly onMove?: (block: Block, by: number, control: number) => void;
+  /**
    * ↑, ↓ and the menu for one row. Absent while the tree only shows and
    * selects — the read-only tree is a whole shippable thing, and it is what
    * proves selection travels before anything can move.
@@ -99,6 +111,7 @@ export function BlockTree({
   labels,
   selected,
   onSelect,
+  onMove,
   actions,
   focusOn = null,
   drag,
@@ -176,6 +189,19 @@ export function BlockTree({
       event.preventDefault();
       event.stopPropagation();
     };
+
+    /*
+     * **Alt+↑ and Alt+↓ move the block rather than the cursor.** Not mirrored,
+     * and it does not need to be: a list runs top to bottom in Persian too, so
+     * up is up. Focus is left on whatever control it was on, which is what
+     * makes a second press move the block a second time.
+     */
+    if (event.altKey && (key === 'ArrowUp' || key === 'ArrowDown') && onMove !== undefined) {
+      handled();
+      onMove(block, key === 'ArrowUp' ? -1 : 1, at.control);
+
+      return;
+    }
 
     if (key === 'ArrowDown') {
       handled();
@@ -322,6 +348,13 @@ function shown(blocks: readonly Block[], collapsed: readonly string[]): Block[] 
   );
 }
 
-/** The same arrow, as the direction it means in a right-to-left box. */
-const mirrored = (key: string): string =>
+/**
+ * The same arrow, as the direction it means in a right-to-left box.
+ *
+ * **Exported so the inversion is provable without a browser.** It is the one
+ * piece of RTL behaviour a logical CSS property cannot fix — "next control" is
+ * physically ← in Persian — and a hard-coded `ArrowRight` walks the row
+ * backwards for every RTL merchant and does it silently.
+ */
+export const mirrored = (key: string): string =>
   key === 'ArrowLeft' ? 'ArrowRight' : key === 'ArrowRight' ? 'ArrowLeft' : key;

@@ -207,7 +207,7 @@ export function nodeFor(
     // `action` is a param rather than content: the Content tab never offers it,
     // so a button that arrives wrong stays wrong until a save refuses the whole
     // config. This is the one place the metric's word becomes the node's.
-    node.action = act === 'click' ? 'link' : 'submit';
+    node.action = actionFor(act);
   }
 
   // A `consent` node ships hidden, which is the same "off by default" every
@@ -251,6 +251,49 @@ export function freeRoleFor(tree: TemplateTree, type: string): string | null {
   );
 }
 
+/**
+ * Would this block's words be **lost** the next time the merchant switches
+ * design?
+ *
+ * ============================================================================
+ * THIS IS THE SHARP VERSION OF A LIMIT THAT IS OTHERWISE INVISIBLE.
+ * ============================================================================
+ * [[Slot Role]]s are a closed list of thirteen, unique across the whole tree —
+ * so there is exactly one fillable body slot, one headline, one fine print. A
+ * block whose kind declares Roles and got none has no seam for words to travel
+ * on: {@see \WConvert\Template\SlotRoles} carries copy across a Template
+ * switch **by Role**, and there is no Role to carry this one by.
+ *
+ * So it is not that the block *"is not linked to the preview"*, which is true
+ * and trivial. It is that a merchant can type a second paragraph, switch
+ * design, and find those words gone. `MerchantsOwn` rescues an `image`'s `src`
+ * and a `button`'s `href` precisely because no Role does; a role-less block's
+ * TEXT has no such rescue, and adding one would mean matching prose by ordinal.
+ *
+ * **A kind declaring no Roles is not at risk**, which is why this asks the
+ * manifest rather than asking whether `role` is set. An `image` declares none
+ * because it holds no words, and a `field` declares none because its Roles are
+ * derived from what it captures — both are carried, by `MerchantsOwn` and by
+ * the derived Roles respectively.
+ */
+export function losesWordsOnSwitch(block: { type: string; role: string | null }): boolean {
+  return block.role === null && (LEAVES[block.type]?.roles.length ?? 0) > 0;
+}
+
+/**
+ * The `action` a `button` carries to produce this act.
+ *
+ * **The one place the metric's word becomes the node's**, on this side of the
+ * boundary — the mirror of `ConvertingAct::action()`. `submit` and `click` are
+ * how a [[Goal]] is METERED; `submit` and `link` are what a `button` node
+ * carries, and those are two vocabularies for one distinction that PHP already
+ * keeps apart.
+ */
+export const actionFor = (act: ConvertingAct): string => (act === 'click' ? 'link' : 'submit');
+
+/** Every `action` a `button` may carry, in the order the acts are declared. */
+export const ACTIONS: readonly string[] = ['submit', 'link'];
+
 /** A capture kind no field in the tree is using, or null. */
 export function freeCapture(tree: TemplateTree): string | null {
   const taken = capturesTaken(tree);
@@ -266,7 +309,7 @@ export function freeCapture(tree: TemplateTree): string | null {
  * step captures. A click-metered design has no such step, which is ADR 0025's
  * whole point rather than a missing case.
  */
-function formStep(tree: TemplateTree): number | null {
+export function formStep(tree: TemplateTree): number | null {
   const at = tree.steps.findIndex(submits);
 
   return at === -1 ? null : at;

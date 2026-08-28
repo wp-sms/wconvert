@@ -80,6 +80,21 @@ function collectActs(node: TemplateNode, found: ConvertingAct[]): void {
 }
 
 /**
+ * Is this the block the Optin's conversions are counted on?
+ *
+ * A `button` and nothing else. `ConvertingAct::collect()` and
+ * {@link convertingActOf} both read a tree and answer WHICH act it offers; this
+ * answers *which block it is*, which is what a row needs to say **counted** on
+ * exactly one of them.
+ *
+ * It is said once in the status line today and then forgotten, and it is the
+ * single most consequential fact about any block in the design: delete it and
+ * the Optin reports zero forever (ADR 0020). A list of blocks that does not
+ * point at it is a list missing its most important row.
+ */
+export const isConvertingAct = (block: Block): boolean => block.type === 'button';
+
+/**
  * Why this block may not be removed, or null.
  *
  * ============================================================================

@@ -73,6 +73,7 @@ const LABELS = {
   layouts: { stack: 'Column', row: 'Row', split: 'Side by side', grid: 'Grid' },
   fields: { email: 'Email address' },
   keys: { text: 'Text', label: 'Label', placeholder: 'Placeholder', link: 'Link' },
+  params: { submit: 'Sends the form', link: 'Goes somewhere else' },
   tokens: { bg: 'Background' },
 };
 

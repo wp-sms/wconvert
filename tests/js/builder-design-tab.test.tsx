@@ -53,6 +53,7 @@ const LABELS: TemplateLabels = {
   layouts: {},
   fields: {},
   keys: {},
+  params: { submit: 'Sends the form', link: 'Goes somewhere else' },
   tokens: { bg: 'Background', accent: 'Button' },
 };
 

@@ -1453,9 +1453,100 @@
   color: var(--muted-foreground);
 }
 
+/*
+ * ---------------------------------------------------------------------------
+ * THE GRIP: A DRAG AFFORDANCE THAT IS ONLY A DRAG AFFORDANCE.
+ *
+ * It was the NAME button, which also selects — one control with two meanings,
+ * wearing `cursor: grab` while its click did something else. `aria-hidden` and
+ * out of the tab order, because the keyboard reaches moving three other ways
+ * and announcing a drag nobody can perform is noise on every row.
+ * ------------------------------------------------------------------------- */
+.wconvert-block__grip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 1rem;
+  flex: none;
+  color: var(--muted-foreground);
+  cursor: grab;
+}
+
+.wconvert-block__grip > svg {
+  inline-size: 0.875rem;
+  block-size: 0.875rem;
+}
+
+/*
+ * A step gets none, so the rows that DO drag have to line up with the one that
+ * does not — the grip's width, spent as indentation on a step's own row.
+ */
+.wconvert-block[data-step='true'] .wconvert-block__name {
+  padding-inline-start: 1.25rem;
+}
+
+/*
+ * ---------------------------------------------------------------------------
+ * THE TOOLS ARE THERE, AND THEY ARE QUIET UNTIL THEY ARE WANTED.
+ *
+ * `opacity: 0` and never `display: none` or `visibility: hidden`: the tree is a
+ * treegrid with a roving tabindex, so every row must have the SAME number of
+ * cells and every one of them must stay focusable. A control removed from the
+ * layout would be stepped over by → on some rows and not others, which is worse
+ * than either.
+ *
+ * `:focus-within` is what makes that true rather than merely intended —
+ * arrowing onto a hidden button reveals it — and `[data-selected]` is what
+ * makes it work on a touch screen, where there is no hover and the tap that
+ * selects is the tap that has to bring the tools up.
+ * ------------------------------------------------------------------------- */
 .wconvert-block__action {
   display: inline-flex;
   flex: none;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+/* The menu stays: it is where Move up and Move down live, and it is the path a
+ * pointer can reach without hovering the row first. */
+.wconvert-block__action:last-child,
+.wconvert-block:hover .wconvert-block__action,
+.wconvert-block:focus-within .wconvert-block__action,
+.wconvert-block[data-selected='true'] .wconvert-block__action {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wconvert-block__action {
+    transition: none;
+  }
+}
+
+/*
+ * ---------------------------------------------------------------------------
+ * TWO CHIPS, AND NEITHER IS DECORATION.
+ *
+ * **counted** marks the one block the Optin's numbers depend on; deleting it
+ * leaves an Optin that renders, publishes and reports zero forever (ADR 0020).
+ * **words will be lost** marks a block with no Slot Role, whose text has no
+ * seam to travel on when the merchant switches design.
+ * ------------------------------------------------------------------------- */
+.wconvert-block__chip {
+  flex: none;
+  padding-inline: 0.375rem;
+  border-radius: var(--radius);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.wconvert-block__chip--counted {
+  background: color-mix(in srgb, var(--success) 14%, transparent);
+  color: var(--success);
+}
+
+.wconvert-block__chip--warn {
+  background: color-mix(in srgb, var(--warning) 14%, transparent);
+  color: var(--warning);
 }
 
 /*
@@ -1510,14 +1601,11 @@
 }
 
 /*
- * The name is the drag handle, so it says so under a pointer — and only under
- * one, because there is no such thing as a grab cursor for a keyboard.
+ * The GRIP is the drag handle, so the grab cursor lives on it — and only under
+ * a pointer, because there is no such thing as a grab cursor for a keyboard.
+ * The name went back to meaning one thing: it selects.
  */
-.wconvert-block__label {
-  cursor: grab;
-}
-
-.wconvert-block[data-dragging='true'] .wconvert-block__label {
+.wconvert-block[data-dragging='true'] .wconvert-block__grip {
   cursor: grabbing;
 }
 

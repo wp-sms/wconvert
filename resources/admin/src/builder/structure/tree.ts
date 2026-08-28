@@ -107,6 +107,16 @@ export interface Block {
   /** What a `field` captures, or null. The other half. */
   readonly captures: string | null;
   /**
+   * What a `button` DOES — `submit` or `link` — or null for anything else.
+   *
+   * A param rather than content, and the one param a row has to show: it is
+   * what decides whether this Optin converts on a submission or on a click, and
+   * two buttons reading "Send my code" that differ only in it are two different
+   * designs. Carried here for the same reason {@link captures} is — the row and
+   * the swap both need it, and neither may reach into the node itself.
+   */
+  readonly action: string | null;
+  /**
    * What it SAYS, where it says anything.
    *
    * A row named "item 3 of 5" tells a screen-reader user nothing about which
@@ -152,6 +162,7 @@ function collect(
   const leaf = LEAVES[node.type];
   const role = (node as { role?: string }).role;
   const captures = (node as { name?: string }).name;
+  const action = (node as { action?: string }).action;
 
   blocks.push({
     path,
@@ -163,6 +174,10 @@ function collect(
     pane,
     role: typeof role === 'string' ? role : null,
     captures: node.type === 'field' && typeof captures === 'string' ? captures : null,
+    // An omitted `action` submits, which is what the renderer assumes and what
+    // `ConvertingAct::collect()` assumes — so an absent param cannot mean one
+    // thing to the row and another to whatever counts.
+    action: node.type === 'button' ? (typeof action === 'string' ? action : 'submit') : null,
     says: saysOf(node),
     holds: countIn(node),
     holder: keys.length > 0,

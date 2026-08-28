@@ -401,6 +401,7 @@ export function StructureView({
           labels={labels}
           selected={selected}
           onSelect={onSelect}
+          onMove={move}
           focusOn={focusOn}
           drag={drag}
           actions={(block, { control, tabIndex }) => (
@@ -538,6 +539,40 @@ function RowAction({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="max-w-xs">
+        {/*
+          ==================================================================
+          MOVE UP AND MOVE DOWN, FIRST, AND THEY ARE NOT A DUPLICATE.
+          ==================================================================
+          The row's ↑↓ buttons are hidden at rest and revealed on hover, focus
+          and selection — which is a cleaner list and, on a touch screen, two
+          controls that appear only after the row has been tapped. WCAG 2.2
+          SC 2.5.7 asks for a single-pointer alternative to the drag that is
+          **clickable or tappable**, and the menu is the path that is reachable
+          without hovering anything and without knowing the tools are there.
+
+          So the capability has three pointer paths and two keyboard ones, and
+          the criterion is satisfied several times over rather than narrowly.
+        */}
+        {block.level > 1 && (
+          <>
+            <DropdownMenuItem
+              disabled={block.position === 1}
+              onSelect={() => onMove(block, -1, 0)}
+            >
+              <ArrowUp aria-hidden="true" />
+              {__('Move up', 'wconvert')}
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              disabled={block.position === block.setSize}
+              onSelect={() => onMove(block, 1, 0)}
+            >
+              <ArrowDown aria-hidden="true" />
+              {__('Move down', 'wconvert')}
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+          </>
+        )}
+
         {childKeysOf(block.type).map((key) => (
           <AddMenu
             key={key}

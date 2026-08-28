@@ -176,10 +176,14 @@ export function useBlockDrag({
       draggable({
         element: row,
         /*
-         * **The block's own name is the handle**, rather than a grip column of
-         * its own. A fifth control per row is a fifth thing between a keyboard
-         * merchant and the next row, to reach a capability they already have
-         * twice — and the name is the part of the row a pointer aims at anyway.
+         * **A grip of its own, and it costs the keyboard nothing.**
+         *
+         * The name button was the handle, and the name button also SELECTS —
+         * one control with two meanings, wearing `cursor: grab` while its click
+         * did something else. The grip is `aria-hidden` and out of the tab
+         * order, so it is not a fifth thing between a keyboard merchant and the
+         * next row; it is a pointer affordance for a pointer capability, which
+         * is what a drag is.
          */
         dragHandle: handle,
         // A step is not a block a merchant arranges: how many a design has

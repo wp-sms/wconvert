@@ -46,6 +46,23 @@ enum ConvertingAct: string
     }
 
     /**
+     * The `action` a `button` carries to produce this act.
+     *
+     * **The one place `link` is spelled beside `submit`.** They are the node
+     * param's two values, and they are NOT this enum's two values: a Goal is
+     * metered by `submit` or `click`, and a button that produces a click
+     * carries `action: "link"`. Two vocabularies for one distinction, kept
+     * apart here so nothing downstream has to remember which it is holding —
+     * {@see self::collect()} reads it back, {@see TemplateLabels::params()}
+     * names both, and the editor's `actionFor()` is the mirror on the other
+     * side of the boundary.
+     */
+    public function action(): string
+    {
+        return $this === self::Submit ? 'submit' : 'link';
+    }
+
+    /**
      * Every act a tree offers, once each, in this enum's order.
      *
      * A `button` node is the only thing that converts, and its `action` param
@@ -83,7 +100,7 @@ enum ConvertingAct: string
         }
 
         if (($node['type'] ?? null) === 'button') {
-            $act = ($node['action'] ?? null) === 'link' ? self::Click : self::Submit;
+            $act = ($node['action'] ?? null) === self::Click->action() ? self::Click : self::Submit;
 
             if (!in_array($act, $found, true)) {
                 $found[] = $act;

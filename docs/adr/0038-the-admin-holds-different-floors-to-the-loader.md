@@ -87,6 +87,29 @@ AAA is explicitly not the bar. It would rule out the palette on
 [ADR 0037](0037-the-admin-inherits-token-structure-and-owns-its-values.md)'s own
 numbers, and it is not what a WordPress admin screen is held to anywhere else.
 
+### SC 2.5.7 is why the block tree's ↑↓ buttons survived a drag handle
+
+*Recorded for the next person to tidy that row, so the reason is found before
+the buttons are deleted.*
+
+**WCAG 2.2 SC 2.5.7 (AA) requires a single-pointer alternative to any dragging
+movement**, and W3C is explicit that a keyboard equivalent does not satisfy it
+*"unless that equivalent keyboard operation also provides controls that can be
+clicked or tapped"* — its own cited example being *"sortable lists: adjacent
+controls for moving elements up or down"*.
+
+So when the row adopted a drag grip, the ↑↓ buttons stayed. They are `opacity:
+0` at rest and revealed on `:hover`, `:focus-within` and `[data-selected]`,
+which is a cleaner list and is **not** a way of removing them: they remain in
+the DOM, in the layout and in the focus order, because the treegrid's roving
+tabindex requires every row to have the same cell count. Move up / Move down
+also sit at the top of the row's `⋯` menu, which is the path reachable with no
+hover at all and the one a touch user meets after tapping the row.
+
+Three pointer paths and two keyboard ones (`Alt+↑`/`Alt+↓`, and arrowing to the
+buttons). A row that replaced the buttons with the grip would fail this
+criterion outright, however good it looked.
+
 ## The testing line from #29 holds, and the existing tests become the net
 
 [#29](https://github.com/navidkashani/wconvert/issues/29) says *"Not a TDD seam:

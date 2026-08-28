@@ -80,6 +80,7 @@ const LABELS = {
   layouts: { stack: 'Column', row: 'Row', split: 'Side by side', grid: 'Grid' },
   fields: { email: 'Email address', name: 'Name', phone: 'Phone number' },
   keys: { text: 'Text', label: 'Label', placeholder: 'Placeholder', link: 'Link' },
+  params: { submit: 'Sends the form', link: 'Goes somewhere else' },
   tokens: { bg: 'Background' },
 };
 
@@ -258,6 +259,190 @@ describe('moving a block', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
 
     expect(typesIn(formChildren(savedTree())).slice(0, 2)).toEqual(['text', 'heading']);
+  });
+});
+
+/**
+ * ============================================================================
+ * THE ROW: VERSION C'S LOOK, WITH VERSION A'S GUARANTEES.
+ * ============================================================================
+ * The prototype's version C replaced the ↑↓ buttons with a drag handle, and
+ * that is the one thing this cannot copy: **WCAG 2.2 SC 2.5.7 requires a
+ * single-pointer alternative to any dragging movement**, and W3C is explicit
+ * that keyboard equivalence does not satisfy it *"unless that equivalent
+ * keyboard operation also provides controls that can be clicked or tapped"* —
+ * its own cited example being adjacent up/down controls on a sortable list.
+ *
+ * So the grip is added and the buttons stay. They are quiet until wanted, which
+ * is the prototype's own rule, and the criterion is satisfied three pointer ways
+ * over: the buttons on hover or selection, the menu with no hover at all, and
+ * the drag itself.
+ */
+describe('the row', () => {
+  const select = async (name: string) => {
+    await userEvent.click(within(row(name)).getAllByRole('button')[0]);
+  };
+
+  /**
+   * **`opacity: 0`, never `display: none`.** The treegrid has a roving
+   * tabindex, so every row must have the same number of cells and every one
+   * must stay focusable — a control taken out of the layout would be stepped
+   * over by → on some rows and not others.
+   *
+   * Vitest runs with `css: false`, so the reveal itself is a browser question.
+   * What is provable here is the half that would break the keyboard: that the
+   * controls are in the DOM and reachable at rest.
+   */
+  it('keeps the move buttons in the DOM and focusable when nothing is hovering them', async () => {
+    await structure();
+
+    const up = within(row('Body text')).getByRole('button', { name: 'Move Body text up' });
+
+    expect(up).not.toBeDisabled();
+
+    up.focus();
+
+    expect(up).toHaveFocus();
+  });
+
+  /**
+   * The path a touch user reaches after tapping the row, and the one that needs
+   * no hover at all.
+   */
+  it('offers Move up and Move down in the menu, above everything else', async () => {
+    await structure();
+
+    await userEvent.click(
+      within(row('Body text')).getByRole('button', { name: 'Add, copy or delete Body text' }),
+    );
+
+    expect(screen.getAllByRole('menuitem').slice(0, 2).map((item) => item.textContent)).toEqual([
+      'Move up',
+      'Move down',
+    ]);
+  });
+
+  it('moves the block from the menu, and marks the end of the list', async () => {
+    await structure();
+
+    await userEvent.click(
+      within(row('Headline')).getByRole('button', { name: 'Add, copy or delete Headline' }),
+    );
+
+    expect(screen.getByRole('menuitem', { name: 'Move up' })).toHaveAttribute('aria-disabled', 'true');
+
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Move down' }));
+
+    expect(rowNames().slice(0, 3)).toEqual(['The form', 'Body text', 'Headline']);
+  });
+
+  /** A third pointer-free path, for repeat moves without hunting for a button. */
+  it('moves the block with Alt and an arrow key, from wherever focus is on the row', async () => {
+    await structure();
+    await select('Headline');
+
+    await userEvent.keyboard('{Alt>}{ArrowDown}{/Alt}');
+
+    expect(rowNames().slice(0, 3)).toEqual(['The form', 'Body text', 'Headline']);
+
+    await userEvent.keyboard('{Alt>}{ArrowDown}{/Alt}');
+
+    expect(rowNames().slice(0, 4)).toEqual(['The form', 'Body text', 'Row', 'Email address']);
+  });
+
+  /**
+   * **A step gets no grip rather than an inert one.** Steps are not draggable —
+   * how many a design has follows from its metric (ADR 0025) — so a grip drawn
+   * on one would be an affordance that lies.
+   */
+  it('gives a block a drag grip and a step none', async () => {
+    await structure();
+
+    expect(row('Headline').querySelector('.wconvert-block__grip')).not.toBeNull();
+    expect(row('The form').querySelector('.wconvert-block__grip')).toBeNull();
+  });
+
+  /**
+   * **The name selects and nothing else.** It used to be the drag handle too —
+   * one control with two meanings, wearing `cursor: grab` while its click did
+   * something different.
+   */
+  it('keeps the grip out of the tab order and out of the accessibility tree', async () => {
+    await structure();
+
+    const grip = row('Headline').querySelector('.wconvert-block__grip');
+
+    expect(grip).toHaveAttribute('aria-hidden', 'true');
+    expect(within(row('Headline')).queryByRole('button', { name: /drag|grip|move .* by/i })).toBeNull();
+  });
+
+  /**
+   * ==========================================================================
+   * **counted** IS THE MOST CONSEQUENTIAL FACT ABOUT ANY BLOCK IN THE DESIGN.
+   * ==========================================================================
+   * Delete it and the Optin renders, publishes and reports zero forever
+   * (ADR 0020). It was said once in the status line and then forgotten.
+   */
+  it('marks the block conversions are counted on, and only that one', async () => {
+    await structure();
+
+    expect(within(row('Button label')).getByText('counted')).toBeInTheDocument();
+    expect(screen.getAllByText('counted')).toHaveLength(1);
+  });
+
+  /**
+   * ==========================================================================
+   * THE WARNING SAYS WHAT IT ACTUALLY COSTS.
+   * ==========================================================================
+   * Slot Roles are a closed list of thirteen, unique across the tree — so there
+   * is exactly one fillable body slot, and a block that got none has no seam
+   * for its words to travel on. Type a second paragraph, switch design, and
+   * those words are gone. The old sentence said it was *"not linked to the
+   * preview"*, which is true and trivial beside that.
+   */
+  it('warns on a block whose words a design switch would throw away', async () => {
+    await structure();
+
+    expect(within(row('Fine print')).queryByText('words will be lost')).toBeNull();
+
+    await userEvent.click(
+      within(row('Fine print')).getByRole('button', { name: 'Add, copy or delete Fine print' }),
+    );
+    await userEvent.click(screen.getByRole('menuitem', { name: /Duplicate/ }));
+
+    // The copy comes back with no Role — Roles are unique tree-wide — so it is
+    // exactly the block the warning is about.
+    expect(within(row('Text')).getByText('words will be lost')).toBeInTheDocument();
+  });
+
+  /**
+   * **An image is not at risk and must not be marked as one.** It declares no
+   * Roles because it holds no words, and `MerchantsOwn` carries its `src` and
+   * `alt` across a switch precisely because no Role does.
+   */
+  it('does not warn a kind that declares no Slot Roles at all', async () => {
+    await structure();
+
+    await userEvent.click(
+      within(row('Headline')).getByRole('button', { name: 'Add, copy or delete Headline' }),
+    );
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Add a block after this' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Image' }));
+
+    expect(within(row('Image')).queryByText('words will be lost')).toBeNull();
+  });
+
+  /** What a row says under its name: the words, or how much is inside it. */
+  it('summarises a button by what it says and what it does', async () => {
+    await structure();
+
+    expect(within(row('Button label')).getByText('Send my code · Sends the form')).toBeInTheDocument();
+  });
+
+  it('summarises a layout by how much it holds', async () => {
+    await structure();
+
+    expect(within(row('Row')).getByText('2 blocks inside')).toBeInTheDocument();
   });
 });
 

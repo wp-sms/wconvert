@@ -132,6 +132,37 @@ final class TemplateLabels
     }
 
     /**
+     * What each PARAM VALUE a merchant may choose is called.
+     *
+     * ============================================================================
+     * ITS OWN MAP, BECAUSE {@see self::keys()} MUST STAY EXACTLY THE CONTENT KEYS.
+     * ============================================================================
+     * `keys()` is asserted to be the union of every leaf's `content` list and
+     * nothing beyond it — a label for `action` in there would be a control the
+     * editor must not offer as words. But a `button`'s `action` is now
+     * CHOOSABLE: the ⇄ control changes what a block is, and *"submit"* is not a
+     * sentence to put in front of a merchant.
+     *
+     * So the two vocabularies stay apart. A field's kinds are already named by
+     * {@see self::fields()}; what is left is the button's two, and they are
+     * anchored to {@see ConvertingAct::action()} so a third act could not
+     * arrive unnamed.
+     *
+     * Named for what the button DOES rather than for the value: `link` is the
+     * node's word for a CTA that navigates, and a merchant choosing between
+     * "link" and "submit" is being asked to know the vocabulary.
+     *
+     * @return array<string, string>
+     */
+    public static function params(): array
+    {
+        return [
+            'submit' => __('Sends the form', 'wconvert'),
+            'link' => __('Goes somewhere else', 'wconvert'),
+        ];
+    }
+
+    /**
      * What each token is called.
      *
      * @return array<string, string>
@@ -173,6 +204,7 @@ final class TemplateLabels
             'layouts' => self::layouts(),
             'fields' => self::fields(),
             'keys' => self::keys(),
+            'params' => self::params(),
             'tokens' => self::tokens(),
         ];
     }
