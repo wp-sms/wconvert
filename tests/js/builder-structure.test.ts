@@ -26,6 +26,7 @@ import {
   DEPTH,
   canRedo,
   canUndo,
+  COALESCE_WINDOW,
   historyOf,
   redo,
   remember,
@@ -543,6 +544,80 @@ describe('undo and redo', () => {
 
     expect(canUndo(saved)).toBe(true);
     expect(undo(saved).present).toBe(b);
+  });
+
+  /**
+   * ==========================================================================
+   * A BURST OF TYPING IS ONE ENTRY, OR UNDO IS A BACKSPACE.
+   * ==========================================================================
+   * The editor that types into the tree is the one that moves blocks in it, so
+   * every keystroke arrives as a new tree identity. Remembered one by one, one
+   * Undo removes one character and a single sentence exhausts `DEPTH`.
+   *
+   * `now` is passed in rather than read off a clock, so the window below is a
+   * fact these tests STATE rather than one they wait out.
+   */
+  describe('a burst of typing', () => {
+    const typing = (at: number) => ({ key: 'text:0.children.0:text', at });
+    const other = (at: number) => ({ key: 'text:0.children.1:text', at });
+
+    it('is one entry, so one undo removes the word rather than the letter', () => {
+      const first = remember(historyOf(a), b, typing(0));
+      const second = remember(first, c, typing(100));
+
+      expect(second.present).toBe(c);
+      expect(second.past).toEqual([a]);
+      expect(undo(second).present).toBe(a);
+    });
+
+    it('ends when the merchant stops for longer than the window', () => {
+      const first = remember(historyOf(a), b, typing(0));
+      const second = remember(first, c, typing(COALESCE_WINDOW));
+
+      expect(second.past).toEqual([a, b]);
+      expect(undo(second).present).toBe(b);
+    });
+
+    /** Typing a headline and then a body is two things, not one. */
+    it('does not merge two different controls inside the window', () => {
+      const first = remember(historyOf(a), b, typing(0));
+      const second = remember(first, c, other(100));
+
+      expect(second.past).toEqual([a, b]);
+    });
+
+    /**
+     * **A move breaks the chain**, and so does everything else that carries no
+     * key. Type, move, type is three entries — the move must not be swallowed
+     * by the typing on either side of it.
+     */
+    it('is broken by an edit that is not typing', () => {
+      const typed = remember(historyOf(a), b, typing(0));
+      const moved = remember(typed, c);
+      const again = remember(moved, { n: 4 }, typing(100));
+
+      expect(again.past).toEqual([a, b, c]);
+    });
+
+    /**
+     * **A save breaks it too.** The server replaces the tree wholesale, so the
+     * next keystroke is an edit to what came back rather than a continuation of
+     * what went up.
+     */
+    it('is broken by a save', () => {
+      const typed = remember(historyOf(a), b, typing(0));
+      const saved = remember(typed, c);
+
+      expect(remember(saved, { n: 4 }, typing(50)).past).toEqual([a, b, c]);
+    });
+
+    /** And by stepping the history, or the Redo just earned is eaten. */
+    it('is broken by an undo', () => {
+      const typed = remember(remember(historyOf(a), b, typing(0)), c, typing(100));
+      const stepped = undo(typed);
+
+      expect(remember(stepped, { n: 4 }, typing(150)).past).toEqual([a]);
+    });
   });
 });
 

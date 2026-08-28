@@ -46,15 +46,52 @@
  */
 export const DEPTH = 50;
 
+/**
+ * How long a burst of typing stays one entry.
+ *
+ * Long enough that a sentence typed at any speed a human types at is one Undo,
+ * short enough that a merchant who typed a headline, thought, and then typed a
+ * different one gets two. 900ms is the prototype's own measure and it is what
+ * the tests pin — {@link remember} takes `now` rather than reading a clock, so
+ * the window is a fact a test states rather than one it has to wait out.
+ */
+export const COALESCE_WINDOW = 900;
+
+/**
+ * What the present entry was made by, where it was made by something that can
+ * be typed into.
+ *
+ * `key` names the control — a path and a content key — so two keystrokes merge
+ * only when they are the same merchant typing into the same box. `at` is when
+ * the last of them landed.
+ */
+export interface Coalesce {
+  readonly key: string;
+  readonly at: number;
+}
+
 /** A value, everything it was before, and everything it was undone from. */
 export interface History<T> {
   readonly present: T;
   readonly past: readonly T[];
   readonly future: readonly T[];
+  /**
+   * The typing burst `present` belongs to, or null where it belongs to none.
+   *
+   * Null is what BREAKS a chain, and every non-typing edit sets it: a move, a
+   * delete, a save and an undo all leave it null, so the next keystroke starts
+   * a fresh entry rather than merging into one from before them.
+   */
+  readonly merged: Coalesce | null;
 }
 
 /** A history at rest: one value, nothing to go back to. */
-export const historyOf = <T,>(present: T): History<T> => ({ present, past: [], future: [] });
+export const historyOf = <T,>(present: T): History<T> => ({
+  present,
+  past: [],
+  future: [],
+  merged: null,
+});
 
 /**
  * The same history with a new present, and the old one remembered.
@@ -73,17 +110,61 @@ export const historyOf = <T,>(present: T): History<T> => ({ present, past: [], f
  * and both are edits the merchant made, so both are one entry and both are
  * undoable. A template switch is *one* entry rather than one per node for the
  * same reason: what changed is the design, once.
+ *
+ * ============================================================================
+ * A BURST OF TYPING IS ONE ENTRY, AND THAT IS NOT A NICETY.
+ * ============================================================================
+ * The editor that types into the tree is the same editor that moves blocks in
+ * it, so every keystroke arrives here as a new tree identity. Remembered one by
+ * one, **one Undo would remove one character** and a single sentence would
+ * exhaust {@link DEPTH} — undo becomes a backspace that also loses the last
+ * fifty things the merchant did.
+ *
+ * So an edit may carry a {@link Coalesce}: which control it came from, and
+ * when. Two edits from the same control inside {@link COALESCE_WINDOW} are one
+ * entry. Everything else — a move, a delete, a save, a step of the history
+ * itself — carries none, and carrying none is what BREAKS the chain rather
+ * than merely failing to extend it.
+ *
+ * `now` is passed in rather than read from a clock, so the window is a fact a
+ * test states instead of one it has to wait out, and this file stays pure.
  */
-export function remember<T>(history: History<T>, present: T): History<T> {
+export function remember<T>(history: History<T>, present: T, into: Coalesce | null = null): History<T> {
   if (present === history.present) {
     return history;
+  }
+
+  if (mergesInto(history, into)) {
+    /*
+     * The burst grows in place: the past is untouched, so the entry behind it
+     * is still the design as it stood before the merchant started typing, and
+     * one Undo removes the whole word rather than the last letter of it.
+     */
+    return { ...history, present, future: [], merged: into };
   }
 
   return {
     present,
     past: [...history.past, history.present].slice(-DEPTH),
     future: [],
+    merged: into,
   };
+}
+
+/**
+ * Is this edit a continuation of the one that produced the present?
+ *
+ * Both halves have to hold. **Same control**, or typing a headline and then a
+ * body would be one entry that undoes both. **Inside the window**, or an Optin
+ * left open over lunch would merge this afternoon's edit into this morning's.
+ */
+function mergesInto<T>(history: History<T>, into: Coalesce | null): boolean {
+  return (
+    into !== null &&
+    history.merged !== null &&
+    history.merged.key === into.key &&
+    into.at - history.merged.at < COALESCE_WINDOW
+  );
 }
 
 /**
@@ -105,6 +186,10 @@ export function undo<T>(history: History<T>): History<T> {
     present: previous,
     past: history.past.slice(0, -1),
     future: [history.present, ...history.future],
+    // Stepping the history ends the burst. Typing straight after an Undo has
+    // to start a new entry, or the Redo the merchant just earned is eaten by
+    // the next keystroke.
+    merged: null,
   };
 }
 
@@ -120,6 +205,7 @@ export function redo<T>(history: History<T>): History<T> {
     present: next,
     past: [...history.past, history.present].slice(-DEPTH),
     future: rest,
+    merged: null,
   };
 }
 
