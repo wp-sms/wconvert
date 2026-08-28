@@ -28,17 +28,46 @@ import type { TemplateNode, TemplateTree, Tokens } from '@renderer/types';
  * this).
  */
 
-interface LeafDeclaration {
+export interface LeafDeclaration {
   readonly content: readonly string[];
   readonly copy: readonly string[];
   readonly params: readonly string[];
+  /**
+   * The [[Slot Role]]s this node type may carry, or none where it carries no
+   * `role` key at all.
+   *
+   * `image` has none because it holds no words, and `field` has none because
+   * its Roles are DERIVED from what it captures rather than declared
+   * (CONTEXT.md, Slot Role). Everything else names the Roles that suit it, so
+   * {@see structure/catalogue} can hand a newly added block a Role that is
+   * actually free without a mapping of its own — the same property `TOKENS`
+   * gives the settings panel.
+   */
+  readonly roles: readonly string[];
 }
 
-const LEAVES = vocabulary.nodes as Readonly<Record<string, LeafDeclaration>>;
-const LAYOUTS = vocabulary.layouts as Readonly<Record<string, { readonly children: string }>>;
+/**
+ * The vocabulary's leaves and layouts, as the structure editor reads them.
+ *
+ * **Exported for `structure/`, and that is the whole reason they are not
+ * private any more.** The editor decides what may be added where by reading
+ * this manifest, so a node type added to
+ * `resources/templates/manifest.json` costs the editor nothing — no list to
+ * extend, no switch to widen. A second copy of these two objects under
+ * `structure/` would be the fifth hand-maintained cross-cutting list this
+ * project has refused (ADR 0019).
+ */
+export const LEAVES = vocabulary.nodes as Readonly<Record<string, LeafDeclaration>>;
+export const LAYOUTS = vocabulary.layouts as Readonly<Record<string, { readonly children: string }>>;
 
 /** Where a layout keeps its children. `split` is the one with two. */
-const PANES = ['start', 'end'] as const;
+export const PANES = ['start', 'end'] as const;
+
+/** Every Slot Role the vocabulary declares, in the order it declares them. */
+export const ROLES = vocabulary.roles as readonly string[];
+
+/** What a `field` may capture. Closed, because the capture path canonicalises per kind. */
+export const FIELDS = vocabulary.fields as readonly string[];
 
 /**
  * Every token the vocabulary declares, with the value it falls back to.
@@ -148,7 +177,15 @@ function collect(node: TemplateNode, path: Path, slots: Slot[]): void {
   }
 }
 
-function childKeysOf(type: string): readonly string[] {
+/**
+ * Where a node of this type keeps its children, or nothing where it keeps
+ * none.
+ *
+ * The one answer to "can this hold anything", asked by the slot walk above and
+ * by every function in `structure/`. `split` is the one with two, and it is
+ * exactly the case a second copy of this would forget.
+ */
+export function childKeysOf(type: string): readonly string[] {
   const shape = LAYOUTS[type]?.children;
 
   if (shape === 'panes') {
