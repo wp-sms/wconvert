@@ -1268,7 +1268,7 @@ describe('the Add menu', () => {
     );
     await userEvent.click(screen.getByRole('menuitem', { name: 'Add a block after this' }));
 
-    // A layout carries its sentence…
+    // A layout carries its one short line…
     expect(
       screen.getByRole('menuitem', { name: /Side by side/ }),
     ).toHaveTextContent('Two panes, each holding its own blocks.');

@@ -86,3 +86,38 @@ describe('the colour picker’s popover', () => {
     expect(utilities).toMatch(/\.wconvert-picker-pop\[data-state="closed"\][\s\S]*animation:\s*none/);
   });
 });
+
+describe('the builder’s two columns', () => {
+  /**
+   * **Measured before it was written**: the Content tab's card started at 68px
+   * and the preview's stage at 52px, while the Design tab's two agreed exactly.
+   *
+   * Both design tabs are `forceMount`ed so `<Activity>` can keep their state,
+   * and Radix leaves a force-mounted panel WITHOUT `hidden` while `Activity`
+   * hides the children rather than the wrapper — so the inactive panel was a
+   * `display: block` flex item of height zero between the strip and the visible
+   * panel. **A zero-height flex item still consumes a gap**, so the column's
+   * `gap-4` fired twice: 36 + 16 + 0 + 16 = 68. It only showed on Content
+   * because Design is first, where the empty item's gap falls off the end.
+   */
+  it('does not let a hidden tab panel keep its slot in the column', () => {
+    expect(CSS).toMatch(
+      /\[data-slot="tabs-content"\]\[data-state="inactive"\]\s*\{[^}]*display:\s*none/,
+    );
+  });
+});
+
+describe('anything that can be pressed', () => {
+  /**
+   * 38 of the admin's 98 interactive elements had no hand cursor, counted in a
+   * browser: every vendored `Button`, all four tab triggers and the inspector's
+   * labels. Tailwind v4 gives `button` `cursor: default` in preflight and
+   * shadcn's v4 components dropped the `cursor-pointer` that used to be
+   * implicit — so it is the whole component vocabulary rather than a few call
+   * sites, and it is stated once for the ROLE.
+   */
+  it('says so under the pointer, and stops saying so when disabled', () => {
+    expect(CSS).toMatch(/\[role="menuitem"\][\s\S]{0,600}cursor:\s*pointer/);
+    expect(CSS).toMatch(/:disabled[\s\S]{0,200}cursor:\s*default/);
+  });
+});

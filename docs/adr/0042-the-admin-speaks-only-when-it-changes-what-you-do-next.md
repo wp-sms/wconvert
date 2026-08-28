@@ -147,6 +147,34 @@ two defects and no benefit:
 
 A default that describes a dialog is not a default for a row's actions.
 
+## 8. A hidden thing takes no slot, and a pressable thing says so
+
+Two defects that had nothing in common except that **only a browser could find
+them**, which is the point of writing them here rather than in a commit.
+
+**The Content tab's card sat 16px below the preview beside it**, and three
+rounds of reading the CSS said it should not. Measured: 68px against 52. Both
+design tabs are `forceMount`ed so `<Activity>` can keep their state, Radix
+leaves a force-mounted panel *without* the `hidden` attribute, and `Activity`
+hides the children rather than the wrapper — so the inactive panel was a
+`display: block` flex item of **height zero** between the strip and the visible
+one. A zero-height flex item still consumes a gap, so `gap-4` fired twice. It
+showed only on Content because Design is first, where the empty item's gap falls
+off the end of the column.
+
+**38 of the admin's 98 interactive elements had no hand cursor** — every
+vendored `Button`, all four tab triggers, the inspector's labels. Tailwind v4
+gives `button` `cursor: default` in preflight and shadcn's v4 components dropped
+the `cursor-pointer` that used to be implicit, so this is the vendoring bargain
+([ADR 0036](0036-admin-components-are-vendored-from-upstream.md)) presenting its
+bill: what upstream stops supplying, we supply. Stated once for the ROLE, with
+`:disabled` and `aria-disabled` taking it back — a control that cannot be
+pressed must not invite the press.
+
+**Neither is visible to the suite** (`css: false`, no layout), and neither was
+findable by reading. `admin-stylesheet.test.ts` guards the rules; the browser is
+what found them.
+
 ## Consequences
 
 - **A control that acts on the whole draft sits with the draft's title.** Undo

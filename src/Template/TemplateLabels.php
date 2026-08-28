@@ -109,8 +109,14 @@ final class TemplateLabels
      * preview, and deleting it again.
      *
      * **The example is the half that teaches.** *"Blocks left to right on one
-     * line"* is a definition; *"an email box beside its button"* is a picture,
-     * and a merchant recognises the thing they were trying to build.
+     * line"* is a definition; *"a field, then its button"* is a picture, and a
+     * merchant recognises the thing they were trying to build.
+     *
+     * **One short line each, and the brevity is the design.** The first version
+     * wrote a full sentence with a clause of example, which at a menu's width
+     * wrapped to three lines — so ten items became a wall of prose and the note
+     * that was meant to help had to be read past to reach the thing being
+     * chosen. A note under a menu item is glanced at, not studied.
      *
      * Its own map rather than an entry in {@see self::layouts()}, which is
      * pinned to exactly the manifest's layout NAMES — a sentence in there would
@@ -121,10 +127,14 @@ final class TemplateLabels
     public static function layoutNotes(): array
     {
         return [
-            'stack' => __('Blocks stacked top to bottom — a headline over body text over a button.', 'wconvert'),
-            'row' => __('Blocks along one line, wrapping when there is no room — an email box beside its button.', 'wconvert'),
-            'split' => __('Two panes, each holding its own blocks — a picture on one side, the form on the other.', 'wconvert'),
-            'grid' => __('Equal columns that collapse on a phone — three short selling points across.', 'wconvert'),
+            /* translators: what the Column layout does. Kept to one short line: it sits under a menu item. */
+            'stack' => __('One block under another.', 'wconvert'),
+            /* translators: what the Row layout does. */
+            'row' => __('On one line — a field, then its button.', 'wconvert'),
+            /* translators: what the Side by side layout does. */
+            'split' => __('Two panes — a picture, then the form.', 'wconvert'),
+            /* translators: what the Grid layout does. */
+            'grid' => __('Equal columns, stacking on a phone.', 'wconvert'),
         ];
     }
 

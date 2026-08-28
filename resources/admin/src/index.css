@@ -1682,6 +1682,74 @@
 }
 
 /* ---------------------------------------------------------------------------
+ * A HIDDEN TAB PANEL TAKES NO SLOT, BECAUSE A FLEX GAP DOES NOT SKIP ONE.
+ *
+ * **This is why the Content tab's card sat 16px below the preview beside it**,
+ * measured rather than reasoned about: the tab column's card started at 68px
+ * and the preview's stage at 52px, while the Design tab's two agreed exactly.
+ *
+ * Both design tabs are `forceMount`ed so `<Activity>` can keep their state.
+ * Radix leaves a force-mounted panel WITHOUT the `hidden` attribute, and
+ * `Activity` hides the children rather than the wrapper — so the inactive panel
+ * was a `display: block` flex item of height ZERO, sitting between the strip and
+ * the visible panel. A zero-height flex item still consumes a gap, so the
+ * column's `gap-4` fired twice: 36 + 16 + **0** + 16 = 68.
+ *
+ * It only showed on Content because Design is first: with Design open the empty
+ * item is below the visible one and its gap falls off the end.
+ *
+ * `display: none` is what "inactive" already means — it is what Radix does for
+ * a panel that is not force-mounted — and it costs `Activity` nothing, because
+ * `display: none` is a layout fact and neither React state nor the DOM hears
+ * about it.
+ * ------------------------------------------------------------------------- */
+#wconvert-admin [data-slot="tabs-content"][data-state="inactive"] {
+  display: none;
+}
+
+/* ---------------------------------------------------------------------------
+ * EVERYTHING THAT CAN BE PRESSED SAYS SO UNDER THE POINTER.
+ *
+ * **38 of the admin's 98 interactive elements had no hand cursor**, counted in
+ * a browser: every vendored `Button` (33 of them), all four tab triggers, and
+ * the inspector's own labels. Not a few call sites — the whole component
+ * vocabulary.
+ *
+ * The cause is upstream and version-shaped rather than anybody's oversight:
+ * Tailwind v4 changed preflight to give `button` `cursor: default` (matching
+ * the UA), and shadcn's v4 components dropped the `cursor-pointer` that used to
+ * be implicit. Every project vendoring them inherits it (ADR 0036), which is
+ * exactly the class of thing the vendoring bargain says we own.
+ *
+ * So it is stated once, for the ROLE rather than the component: anything that
+ * takes a press gets the hand, and `:disabled` takes it back — a control that
+ * cannot be pressed must not invite the press.
+ * ------------------------------------------------------------------------- */
+#wconvert-admin :is(
+    button,
+    summary,
+    [role="button"],
+    [role="tab"],
+    [role="menuitem"],
+    [role="menuitemcheckbox"],
+    [role="menuitemradio"],
+    [role="option"],
+    label:has(input:is([type="checkbox"], [type="radio"])),
+    input:is([type="checkbox"], [type="radio"], [type="range"], [type="color"]),
+    select
+  ):not(:disabled, [aria-disabled="true"], [data-disabled]) {
+  cursor: pointer;
+}
+
+#wconvert-admin :is(button, [role="button"], [role="menuitem"], select):is(
+    :disabled,
+    [aria-disabled="true"],
+    [data-disabled]
+  ) {
+  cursor: default;
+}
+
+/* ---------------------------------------------------------------------------
  * ONE SEGMENTED CONTROL, FOR EVERY ONE-OF-N STRIP IN THE ADMIN.
  *
  * **The same job was built three times and looked three ways.** The builder has

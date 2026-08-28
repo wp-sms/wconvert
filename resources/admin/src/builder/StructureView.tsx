@@ -771,16 +771,23 @@ function Refusable({
         the role (ADR 0042), and it is the same 13px every other explanatory
         line in this admin uses.
       */}
-      {reason !== null ? (
-        <Description as="span" className="max-w-none whitespace-normal">
-          {reason}
-        </Description>
-      ) : (
-        note !== null && (
-          <Description as="span" className="max-w-none whitespace-normal">
-            {note}
-          </Description>
-        )
+      {/*
+        **12px, and 13 was not enough.** Measured in a browser: the note was
+        `--text-note` at 13px under a 14px label — a one-pixel difference, which
+        is a token apart and a hierarchy nowhere. In a menu of ten items where
+        several carry a second line, the note has to be obviously subordinate or
+        the merchant reads every word before finding the thing they came to
+        press.
+
+        `text-micro` is the scale's smallest role; `font-normal tracking-normal`
+        take back the small-caps register it carries for table headers and stat
+        labels, which is wrong for a sentence. It stays on the scale — a seventh
+        size for one component would be the thing ADR 0037 exists to stop.
+      */}
+      {(reason ?? note) !== null && (
+        <span className="text-micro font-normal tracking-normal text-pretty whitespace-normal text-muted-foreground">
+          {reason ?? note}
+        </span>
       )}
     </DropdownMenuItem>
   );
@@ -816,7 +823,12 @@ function AddMenu({
         <Plus aria-hidden="true" />
         {label}
       </DropdownMenuSubTrigger>
-      <DropdownMenuSubContent className="max-w-xs">
+      {/*
+        Wide enough that a layout's one-line note stays one line. At `max-w-xs`
+        every one of them wrapped, which is most of what made this menu read as
+        a wall.
+      */}
+      <DropdownMenuSubContent className="max-w-sm">
         {additionsIn(tree, at, act).map((addition) => (
           <Refusable
             key={addition.type}
