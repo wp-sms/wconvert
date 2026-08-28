@@ -598,28 +598,13 @@ function RowAction({
 
   return (
     /*
-      ========================================================================
-      NOT MODAL, AND BOTH SYMPTOMS ARE THE SAME PROPERTY.
-      ========================================================================
-      Radix's `DropdownMenu` is `modal` by default, which does two things a row
-      menu has no use for: it puts `pointer-events: none` on `<body>` and it
-      LOCKS SCROLL.
-
-      The scroll lock is the visible glitch. Locking removes the document
-      scrollbar, so the whole page jumps sideways by its width the moment the
-      menu opens and jumps back when it closes — on a screen where the menu is
-      opened from a row in a long list, which is to say every time.
-
-      The `pointer-events: none` is the other half. A click meant for another
-      row's `⋯` is swallowed by the dismiss layer, so the first press only
-      closes what was open and the merchant has to press again — which reads as
-      "the menu did not respond", and, when they press twice quickly, as two
-      menus fighting.
-
-      Modal is for a dialog that owns the screen until it is answered. This is
-      a row's actions.
+      **Not modal, and the `modal={false}` that used to say so is gone.**
+      It said it here and only here, so the Optin row's `⋯` and the inspector's
+      swap menu kept locking the page — the reason the glitch survived the
+      commit that named it. The default now lives on the vendored
+      {@see DropdownMenu}, which carries the whole argument.
     */
-    <DropdownMenu modal={false}>
+    <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button type="button" variant="ghost" size="icon-sm" tabIndex={tabIndex}>
           <MoreHorizontal aria-hidden="true" />

@@ -13,13 +13,59 @@ import { useDirection } from "@/hooks/useDirection"
  * `DirectionProvider` above it, so under a right-to-left locale every one of
  * those was backwards. Same fix as {@see Tabs}, same reason —
  * {@see useDirection}.
+ *
+ * ==========================================================================
+ * **`modal` DEFAULTS TO FALSE, AND THAT IS THE SECOND WConvert CHANGE.**
+ * ==========================================================================
+ * Radix ships `modal` as `true`, which does two things no menu in this admin
+ * has a use for: it puts `pointer-events: none` on `<body>` and it LOCKS
+ * SCROLL.
+ *
+ * The scroll lock is the glitch merchants report. Locking sets
+ * `overflow: hidden` on `<body>`, which removes the document scrollbar — on a
+ * machine that draws scrollbars in the layout rather than over it, the
+ * viewport widens by 15px and the whole page jumps sideways the moment a menu
+ * opens.
+ *
+ * **And the jump back is late, which is why it reads as a glitch ON CLOSE
+ * rather than as part of the click.** The lock lives in Radix's `RemoveScroll`,
+ * which is unmounted with the menu content — and the content is kept mounted
+ * until its exit animation ends. Measured against a real WordPress: at
+ * `close+0ms` and `close+100ms` `<body>` still carries `data-scroll-locked`,
+ * and it is released somewhere before `close+600ms`. So the page snaps back a
+ * frame or two after the menu has already faded, which is a second, unexplained
+ * movement rather than a consequence of the press.
+ *
+ * The `pointer-events: none` is the other half. A click meant for another
+ * row's `⋯` is swallowed by the dismiss layer, so the first press only closes
+ * what was open and the merchant has to press again — which reads as "the menu
+ * did not respond", and, when they press twice quickly, as two menus fighting.
+ *
+ * **The default is here rather than at the call sites, and that is the point.**
+ * It was written once as `modal={false}` on the block-row menu, and the two
+ * menus that were not edited that day — the Optin row's `⋯` and the
+ * inspector's swap menu — kept the defect and kept the bug report alive. Modal
+ * is for a dialog that owns the screen until it is answered; nothing reached
+ * through `DropdownMenu` is one. {@see Dialog} and {@see AlertDialog} are, and
+ * they are unaffected.
+ *
+ * A caller can still pass `modal` and win, because it is a real prop with a
+ * new default rather than a hard-coded value.
  */
 function DropdownMenu({
+  modal = false,
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Root>) {
   const dir = useDirection()
 
-  return <DropdownMenuPrimitive.Root data-slot="dropdown-menu" dir={dir} {...props} />
+  return (
+    <DropdownMenuPrimitive.Root
+      data-slot="dropdown-menu"
+      dir={dir}
+      modal={modal}
+      {...props}
+    />
+  )
 }
 
 function DropdownMenuPortal({
