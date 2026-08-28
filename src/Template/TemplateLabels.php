@@ -223,6 +223,77 @@ final class TemplateLabels
     }
 
     /**
+     * What each OFFERED TOKEN VALUE is called, keyed `"{token}.{value}"`.
+     *
+     * ============================================================================
+     * `choices` IS WHAT THE PANEL OFFERS. IT IS NEVER WHAT IS ALLOWED.
+     * ============================================================================
+     * Token *names* are checked and their *values are not* — that is what keeps
+     * `clamp(20rem, 50vw, 30rem)` expressible for `width` and an asymmetric
+     * corner expressible for `radius`, and it is deliberate (ADR 0010). So
+     * {@see TemplateVocabulary} does not read `choices` and never will: these
+     * words exist because a merchant cannot be asked to type `start` into a text
+     * box, not because `start` is the only thing `align` may hold.
+     *
+     * **Keyed by the value rather than by an id**, because the value IS the
+     * identity: `align` holds the CSS keyword the renderer's stylesheet reads,
+     * and a font token holds the stack itself. An id would be a second spelling
+     * of a thing the manifest already spells once, and the parity test below
+     * would have nothing to compare.
+     *
+     * **The font stacks are byte-identical to the manifest's**, apostrophes and
+     * all, and that is the one genuinely fragile join in this file. It is a red
+     * build rather than an untranslated chip:
+     * {@see \WConvert\Tests\Unit\Template\TemplateLabelParityTest::testEveryTokenChoiceIsNamed()}
+     * fails in both directions.
+     *
+     * @return array<string, string>
+     */
+    public static function tokenValues(): array
+    {
+        return [
+            /*
+             * ====================================================================
+             * THESE THREE ARE LOGICAL, AND THE ENGLISH WORDS ARE DIRECTIONAL.
+             * ====================================================================
+             * The renderer sets `text-align: var(--wc-align, start)`, and `start`
+             * and `end` are LOGICAL — under `fa_IR` a design set to `start` reads
+             * from the right. So the English word is the one an English reader
+             * needs and the translator resolves it for their own direction; that
+             * is what the comments below are for, and it is why the panel offers
+             * words rather than a mirrored icon it would then have to flip.
+             */
+            /* translators: a text alignment. This is the LOGICAL start of the line, so it reads “Right” in a right-to-left locale. */
+            'align.start' => __('Left', 'wconvert'),
+            /* translators: a text alignment. */
+            'align.center' => __('Centre', 'wconvert'),
+            /* translators: a text alignment. This is the LOGICAL end of the line, so it reads “Left” in a right-to-left locale. */
+            'align.end' => __('Right', 'wconvert'),
+
+            /*
+             * **Every stack here is system-available**, which is a constraint
+             * rather than a preference: ADR 0010 hands the renderer the whole
+             * stylesheet and there is no web font to load, so a stack naming a
+             * face nobody has renders as a fallback the merchant did not pick —
+             * and they would have chosen it by looking at it, because the panel
+             * sets each chip in its own face.
+             *
+             * Named for the REGISTER rather than for a typeface: "Helvetica" on
+             * a Windows machine is Arial, and a label that names one face while
+             * showing another is a label that lies on most installs.
+             */
+            /* translators: a font choice — the operating system's own interface typeface. */
+            "font.system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" => __('System', 'wconvert'),
+            /* translators: a font choice — a typeface with no serifs. */
+            "font.'Helvetica Neue', Helvetica, Arial, sans-serif" => __('Sans serif', 'wconvert'),
+            /* translators: a font choice — a typeface with serifs. */
+            'font.Georgia, \'Times New Roman\', Times, serif' => __('Serif', 'wconvert'),
+            /* translators: a font choice — a typeface whose letters are all one width. */
+            'font.ui-monospace, SFMono-Regular, Menlo, Consolas, monospace' => __('Monospace', 'wconvert'),
+        ];
+    }
+
+    /**
      * Every map at once, which is what the gallery route ships.
      *
      * One object rather than five routes: they are read together, once, by one
@@ -241,6 +312,7 @@ final class TemplateLabels
             'keys' => self::keys(),
             'params' => self::params(),
             'tokens' => self::tokens(),
+            'tokenValues' => self::tokenValues(),
         ];
     }
 }

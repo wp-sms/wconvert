@@ -1,7 +1,15 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { TOKENS, slotsOf, withHidden, withValue } from '../../resources/admin/src/builder/panel';
+import {
+  CHOICES,
+  TOKENS,
+  groupOf,
+  groupsOf,
+  slotsOf,
+  withHidden,
+  withValue,
+} from '../../resources/admin/src/builder/panel';
 import type { TemplateNode, TemplateTree, Tokens } from '@renderer/types';
 
 /**
@@ -118,5 +126,92 @@ describe('every shipped design, through the panel', () => {
     // Not a tautology: the edits have to have landed for the comparison above
     // to mean anything.
     expect(edited).not.toEqual(entry.tree);
+  });
+});
+
+/**
+ * ============================================================================
+ * THE ADR 0010 GUARD: A TOKEN THIS BUNDLE HAS NEVER HEARD OF STILL APPEARS.
+ * ============================================================================
+ * *"A token added to `resources/templates/manifest.json` appears in the editor
+ * with no change to this bundle"* is ADR 0010's promise, and grouping the panel
+ * is the first thing that could quietly break it: a `switch` over three known
+ * groups drops anything it does not recognise on the floor, and the token would
+ * be declared, shipped in the payload, read by the stylesheet — and invisible.
+ *
+ * So the trailing group is load-bearing rather than tidy, and this is the test
+ * that says so.
+ */
+describe('grouping the Design panel', () => {
+  const declared = (name: string, fallback: string) => ({ name, fallback });
+
+  it('puts a token it recognises nothing about in the trailing group', () => {
+    const grouped = groupsOf([declared('shadow', '0 10px 40px rgba(0, 0, 0, 0.18)')]);
+
+    expect(grouped).toHaveLength(1);
+    expect(grouped[0].id).toBe('other');
+    expect(grouped[0].tokens.map((token) => token.name)).toEqual(['shadow']);
+  });
+
+  /**
+   * Each arm is a SHAPE rather than a name, so this file names no token and a
+   * new one lands where its value says it belongs.
+   */
+  it('reads the group off the value, never off the token name', () => {
+    const grouped = groupsOf([
+      declared('brand-tint', '#ff0055'),
+      declared('veil', 'rgba(0, 0, 0, 0.4)'),
+      declared('display-face', "Georgia, 'Times New Roman', serif"),
+      declared('rhythm', '1.25rem'),
+    ]);
+
+    expect(grouped.map((group) => group.id)).toEqual(['colour', 'type', 'space']);
+    expect(grouped[0].tokens.map((token) => token.name)).toEqual(['brand-tint', 'veil']);
+    expect(grouped[1].tokens.map((token) => token.name)).toEqual(['display-face']);
+    expect(grouped[2].tokens.map((token) => token.name)).toEqual(['rhythm']);
+  });
+
+  /**
+   * A keyword the manifest offers a list for is a control even though its value
+   * says nothing — which is the whole reason `choices` exists. `align` is the
+   * one in the shipped vocabulary.
+   */
+  it('groups a keyword the manifest offers choices for, which its value could not', () => {
+    expect(groupOf(declared('align', 'start'))).toBe('space');
+    // The same shape with no choices declared has nothing to go on, so it falls
+    // to the trailing group and gets a text box.
+    expect(groupOf(declared('made-up', 'start'))).toBe('other');
+  });
+
+  /** Every token the manifest declares reaches a group, and none reaches two. */
+  it('places every declared token exactly once', () => {
+    const placed = groupsOf().flatMap((group) => group.tokens.map((token) => token.name));
+
+    expect([...placed].sort()).toEqual(TOKENS.map((token) => token.name).sort());
+    expect(new Set(placed).size).toBe(placed.length);
+  });
+});
+
+/**
+ * `choices` is a SIBLING section rather than `tokens` becoming objects, so it
+ * has to be kept honest against the section it describes: a list for a token
+ * the manifest does not declare would be a control the panel draws for
+ * something the renderer never reads.
+ *
+ * (The mirror assertion — every offered value has a translated name — is PHP's,
+ * because the words are PHP's: `TemplateLabelParityTest::testEveryTokenChoiceIsNamed`.)
+ */
+describe('the manifest’s choices', () => {
+  it('offers nothing for a token the manifest does not declare', () => {
+    const declared = new Set(TOKENS.map((token) => token.name));
+
+    expect(Object.keys(CHOICES).filter((name) => !declared.has(name))).toEqual([]);
+  });
+
+  it('offers at least two values wherever it offers any', () => {
+    for (const [token, values] of Object.entries(CHOICES)) {
+      expect(values.length, token).toBeGreaterThan(1);
+      expect(new Set(values).size, token).toBe(values.length);
+    }
   });
 });

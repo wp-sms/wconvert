@@ -52,6 +52,23 @@ export interface TemplateLabels {
    */
   params: Record<string, string>;
   tokens: Record<string, string>;
+  /**
+   * What each OFFERED TOKEN VALUE is called, keyed `"{token}.{value}"`.
+   *
+   * The Design panel's segmented controls read this: `align.center` is
+   * *"Centre"* and a font stack is *"Serif"*. Keyed by the VALUE because the
+   * value is the identity — `align` holds the CSS keyword the renderer reads,
+   * and a font token holds the stack itself — so there is no id to keep in step
+   * with anything.
+   *
+   * Its own map rather than an entry in `tokens`, which
+   * `TemplateLabelParityTest` pins to exactly the token NAMES.
+   *
+   * **It says what is offered, never what is allowed.** A merchant may still
+   * type a value nothing here names, and the panel keeps a text box beside
+   * every choice control precisely so they can.
+   */
+  tokenValues: Record<string, string>;
 }
 
 /** What `GET /wconvert/v1/templates` returns: the gallery, and its words. */

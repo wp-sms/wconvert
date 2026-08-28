@@ -35,6 +35,7 @@ const LABELS: TemplateLabels = {
   placeholders: { email: 'you@example.com', name: 'Your name', phone: '+44 7700 900000' },
   keys: {},
   params: { submit: 'Sends the form', link: 'Goes somewhere else' },
+  tokenValues: {},
   tokens: {},
 };
 

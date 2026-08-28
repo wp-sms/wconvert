@@ -103,6 +103,65 @@ final class TemplateLabelParityTest extends TestCase
 
     /**
      * ==========================================================================
+     * THE ONE FRAGILE JOIN IN THE VOCABULARY, TURNED INTO A RED BUILD.
+     * ==========================================================================
+     * `choices` names what the Design panel OFFERS for a token — the three
+     * alignments, the four font stacks — and the label key is
+     * `"{token}.{value}"`, because the value IS the identity: `align` holds the
+     * CSS keyword the renderer reads and a font token holds the stack itself.
+     *
+     * So four of those keys are whole font stacks, apostrophes included, and a
+     * single byte out of step in either file would ship an untranslated chip
+     * reading `'Helvetica Neue', Helvetica, Arial, sans-serif` in front of a
+     * merchant. This is what makes that a failed build instead.
+     *
+     * Both directions, like every other method here: a choice added to the
+     * manifest with no word for it, and a word for a choice the manifest does
+     * not offer.
+     *
+     * **It asserts nothing about what a token may HOLD.** `choices` is a
+     * suggestion and token values stay unvalidated ({@see TemplateVocabulary},
+     * which does not read this section), which is what keeps
+     * `clamp(20rem, 50vw, 30rem)` typeable.
+     */
+    public function testEveryTokenChoiceIsNamed(): void
+    {
+        /** @var array<string, list<string>> $choices */
+        $choices = self::manifest()['choices'];
+        $offered = [];
+
+        foreach ($choices as $token => $values) {
+            foreach ($values as $value) {
+                $offered[] = $token . '.' . $value;
+            }
+        }
+
+        $this->assertNamesExactly($offered, TemplateLabels::tokenValues(), 'token choices');
+    }
+
+    /**
+     * A choice for a token the manifest does not declare would be a control the
+     * panel draws for a token the renderer never reads — offered, translated,
+     * and connected to nothing.
+     */
+    public function testEveryTokenWithChoicesIsATokenThatExists(): void
+    {
+        $manifest = self::manifest();
+
+        /** @var array<string, list<string>> $choices */
+        $choices = $manifest['choices'];
+        /** @var array<string, string> $tokens */
+        $tokens = $manifest['tokens'];
+
+        $this->assertSame(
+            [],
+            array_values(array_diff(array_keys($choices), array_keys($tokens))),
+            'every token with choices is a token the manifest declares'
+        );
+    }
+
+    /**
+     * ==========================================================================
      * THE ⇄ MENU'S WORDS ARE THEIR OWN MAP, ANCHORED TO THE ENUM.
      * ==========================================================================
      * They cannot live in {@see TemplateLabels::keys()}, which the test below

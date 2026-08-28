@@ -140,6 +140,25 @@ export function isTranslucent(value: string): boolean {
 }
 
 /**
+ * Does this value name a **font stack**?
+ *
+ * Read off the value, like {@link isColour} and {@link measureOf}, and for the
+ * same reason: a token added to `resources/templates/manifest.json` gets the
+ * right control and lands in the right group with nothing here edited.
+ *
+ * A stack is a comma-separated list of family names. The two exclusions are
+ * what stop it claiming things it is not: a `(` means a function — `rgba()`,
+ * `clamp()`, `var()` — and a digit means a length or a weight rather than a
+ * family. Neither is a heuristic about what fonts are called; both are about
+ * what the other token shapes in this vocabulary look like.
+ */
+export function isFontStack(value: string): boolean {
+  const trimmed = value.trim();
+
+  return trimmed.includes(',') && !trimmed.includes('(') && !/\d/.test(trimmed);
+}
+
+/**
  * A token's value as **one plain number and unit**, or null.
  *
  * ============================================================================

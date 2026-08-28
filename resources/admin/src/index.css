@@ -1380,7 +1380,8 @@
  * marker too many — which is what the destinations picker had, a bullet before
  * every checkbox.
  */
-.wconvert-editor :is(ul, ol):not(.wconvert-gallery, .wconvert-rules, .wconvert-choices) {
+.wconvert-editor
+  :is(ul, ol):not(.wconvert-gallery, .wconvert-rules, .wconvert-choices, .wconvert-contrast) {
   padding-inline-start: 1.5em;
   list-style: revert;
 }
@@ -2279,36 +2280,90 @@
   margin-block: 0.75rem;
 }
 
-/*
- * **Every raw token lives here, once.** Duplicating the "important" colours
- * above the disclosure would give one token two controls a merchant can watch
- * disagree with itself; presets are what carries the median case (#71).
- */
-.wconvert-advanced {
-  margin-block-start: 1rem;
+/* ---------------------------------------------------------------------------
+ * THE GROUPS ARE THE DISCLOSURE NOW.
+ *
+ * **`.wconvert-advanced` is gone, and its absence is the fix.** It was a
+ * `<details>` closed on load holding all fifteen tokens — so the Design tab
+ * opened as a gallery, four presets and three contrast ratios with no controls
+ * on it at all, on the tab whose entire subject those controls are.
+ *
+ * Its argument survives untouched and is what these groups keep: **every token
+ * appears exactly once**, because a token with two controls is a token a
+ * merchant can watch disagree with itself (#71). What was wrong was hiding all
+ * of them behind one summary, not spelling each of them once.
+ *
+ * A heading and a rule per group is enough to skip past. The colour grid below
+ * pays back most of the height the disclosure used to save.
+ * ------------------------------------------------------------------------- */
+.wconvert-group {
+  margin-block-start: 1.25rem;
   padding-block-start: 0.75rem;
   border-block-start: 1px solid var(--border);
 }
 
-.wconvert-advanced > summary {
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.wconvert-token--colour {
-  align-items: start;
-}
-
-.wconvert-token__name {
+.wconvert-group__name {
+  margin: 0 0 0.5rem;
   color: var(--muted-foreground);
+  font-size: var(--text-micro);
+  line-height: var(--text-micro--line-height);
+  letter-spacing: var(--text-micro--letter-spacing);
+  font-weight: var(--text-micro--font-weight);
+  text-transform: uppercase;
 }
 
+/* ---------------------------------------------------------------------------
+ * THE PALETTE: A GRID, BECAUSE COLOURS ARE COMPARED RATHER THAN READ DOWN.
+ *
+ * Six full-width rows for a seven-character value is a column of settings,
+ * which is the right shape for six DIFFERENT questions and the wrong one for
+ * six answers to one. Two lines of swatches is the whole palette at a glance —
+ * and that is what makes the contrast readout under it land as a verdict on
+ * something the merchant can see.
+ *
+ * It also fixes the reset: a colour row was a one-column grid, so applying a
+ * preset dropped eight reset buttons each onto a line of its own.
+ * ------------------------------------------------------------------------- */
+.wconvert-palette {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.5rem;
+  margin-block: 0.5rem;
+}
+
+/*
+ * A cell is the swatch and the way back from it. The reset is `flex: none` and
+ * absent until the value differs from the design's, so a cell with nothing
+ * changed is the swatch at full width.
+ */
+.wconvert-palette > .wconvert-token--colour {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin: 0;
+}
+
+/* Outside the grid — the translucent one, at full width under it. */
+.wconvert-token--colour {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/*
+ * **The name is INSIDE the swatch**, which is what lets the palette be a grid:
+ * a swatch showing only a colour would be a row of coloured boxes nobody could
+ * name. Two lines — the name quietly over the value — because *"Hintergrund
+ * #ffffff"* on one line at an 11rem track is a truncated label in half the
+ * locales this ships in.
+ */
 .wconvert-swatch {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   inline-size: 100%;
-  block-size: var(--control-height);
+  min-block-size: var(--control-height);
+  padding-block: 0.3125rem;
   padding-inline: 0.5rem;
   background: var(--card);
   border: 1px solid var(--input);
@@ -2340,6 +2395,20 @@
   background-size: 0.5rem 0.5rem;
   background-position: 0 0, 0.25rem 0.25rem;
   box-shadow: inset 0 0 0 999px var(--wconvert-chip, transparent);
+}
+
+.wconvert-swatch__text {
+  display: grid;
+  min-inline-size: 0;
+}
+
+.wconvert-swatch__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--muted-foreground);
+  font-size: var(--text-note);
+  line-height: var(--text-note--line-height);
 }
 
 .wconvert-swatch__value {
@@ -2442,6 +2511,75 @@
   flex: none;
 }
 
+/* ---------------------------------------------------------------------------
+ * A SEGMENTED CONTROL, OVER NATIVE RADIOS.
+ *
+ * The input is `sr-only` rather than absent, so the browser keeps everything
+ * that makes a radio group a radio group — arrow keys between the options, one
+ * tab stop for the set, and the set announced as a set. What is drawn is the
+ * label beside it, and the focus ring is drawn from the input's own state so a
+ * keyboard user sees where they are.
+ *
+ * The `font` chips are set in the face they name — which is the whole value of
+ * a font picker, and why this is chips and not a `<select>`, where `font-family`
+ * on an `<option>` is unreliable.
+ * ------------------------------------------------------------------------- */
+.wconvert-choice-set {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 0;
+  padding: 2px;
+  background: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.wconvert-choice {
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+  cursor: pointer;
+}
+
+.wconvert-choice__label {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: calc(var(--control-height) - 6px);
+  padding-inline: 0.625rem;
+  border: 1px solid transparent;
+  border-radius: max(calc(var(--radius) - 2px), 0px);
+  color: var(--muted-foreground);
+  white-space: nowrap;
+}
+
+.wconvert-choice:hover .wconvert-choice__label {
+  color: var(--foreground);
+}
+
+.wconvert-choice > input:checked + .wconvert-choice__label {
+  background: var(--card);
+  border-color: var(--border);
+  color: var(--foreground);
+  font-weight: 500;
+}
+
+.wconvert-choice > input:focus-visible + .wconvert-choice__label {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 1px var(--ring);
+}
+
+/*
+ * **The typed box stays, under the chips.** `choices` is what the panel offers
+ * and never what is allowed — token values are unvalidated on both sides of the
+ * boundary — so a fifth font stack or a fourth alignment has to remain
+ * expressible, and when one is typed no chip is checked, which is the honest
+ * picture rather than a control quietly disagreeing with the value.
+ */
+.wconvert-token__typed {
+  margin-block-start: 0.25rem;
+}
+
 /*
  * **Present only where the value differs from the design's**, which is what
  * makes "what have I actually changed?" answerable at a glance rather than by
@@ -2459,12 +2597,21 @@
  * fail AA for a VISITOR rather than for themselves, so it is measured beside
  * the control rather than discovered from a customer.
  * ------------------------------------------------------------------------- */
+/*
+ * **`padding-inline-start: 0` is load-bearing, not tidiness.** This is a `<ul>`
+ * inside `.wconvert-editor`, whose prose-list rule gives every list
+ * `padding-inline-start: 1.5em` and `list-style: revert` — and this one was
+ * never in that rule's exclusion list, so the readout sat 21px in from
+ * everything it measures, with no marker to explain the indent. The exclusion
+ * is added below; this states the intent locally so it survives being moved.
+ */
 .wconvert-contrast {
   display: flex;
   flex-wrap: wrap;
   gap: 0.25rem 1rem;
-  margin: 0;
-  padding: 0;
+  margin-block: 0.5rem 0;
+  margin-inline: 0;
+  padding-inline-start: 0;
   list-style: none;
   font-size: var(--text-note);
 }
@@ -2476,13 +2623,28 @@
   color: var(--muted-foreground);
 }
 
+/*
+ * **Three answers, painted as three.** *Passes*, *fails* and *cannot be
+ * measured* are different news, and the last two came out in the same amber —
+ * so a design whose accent is `var(--brand)` looked like a design that fails
+ * AA. Green says it passed, amber says it did not, and muted says nobody
+ * measured it.
+ */
 .wconvert-contrast__ratio {
-  color: var(--warning);
   font-variant-numeric: tabular-nums;
 }
 
-.wconvert-contrast__pair[data-passes='true'] .wconvert-contrast__ratio {
+.wconvert-contrast__pair[data-state='pass'] .wconvert-contrast__ratio {
   color: var(--success);
+}
+
+.wconvert-contrast__pair[data-state='fail'] .wconvert-contrast__ratio {
+  color: var(--warning);
+}
+
+.wconvert-contrast__pair[data-state='unknown'] .wconvert-contrast__ratio {
+  color: var(--muted-foreground);
+  font-style: italic;
 }
 
 /*

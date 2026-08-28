@@ -96,7 +96,7 @@ export function OptinList({
   /*
    * **Three states, not two, and the third is what stops the flash.** A plain
    * map starts empty, so every row rendered before `listGoals` resolved showed
-   * the raw `grow_email_list` and then watched it become *Grow my email list*.
+   * the id it stores and then watched it turn into the merchant's word for it.
    * That is not a lookup failure — the route answers 200 — it is a race, and
    * the `<code>` fallback has to mean *"this build does not have that Goal"*
    * and nothing else or it means nothing.

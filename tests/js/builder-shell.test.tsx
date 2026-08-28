@@ -75,6 +75,7 @@ const LABELS = {
   keys: { text: 'Text', label: 'Label', placeholder: 'Placeholder', link: 'Link' },
   placeholders: { email: 'you@example.com', name: 'Your name', phone: '+44 7700 900000' },
   params: { submit: 'Sends the form', link: 'Goes somewhere else' },
+  tokenValues: {},
   tokens: { bg: 'Background' },
 };
 

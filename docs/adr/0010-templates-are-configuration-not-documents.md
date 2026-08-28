@@ -73,7 +73,22 @@ third-party ones. Under configuration they are properties of the one renderer.
   panes, which is what makes an image-led design possible) and `grid` (equal
   collapsing tracks). `resources/templates/manifest.json` is the file, and
   `tests/js/renderer-manifest-parity.test.ts` asserts the renderer implements
-  exactly it.* A thin vocabulary yields one popup in twelve
+  exactly it.* *Widened by [#75](https://github.com/navidkashani/wconvert/issues/75)
+  with a sibling **`choices`** section, which says what the Design panel OFFERS
+  for a token and never what a token may HOLD. The rule it makes explicit: **a
+  control that ENUMERATES reads its enumeration from the manifest; a control
+  that INFERS reads the value.** Two token shapes say nothing about themselves —
+  `align` is a three-value enum that looks like the word `start`, and `font` is
+  a curated choice that looks like any other string — so both were text boxes a
+  merchant had to type `center` into. A control table in the admin bundle was
+  the alternative and is the "second spelling" this codebase refuses everywhere
+  else; a sibling section costs one mapper, because every other reader of
+  `tokens` takes `array_keys`/`Object.keys` of it. **Token values stay
+  unvalidated** — `TemplateVocabulary` does not read `choices` and will not —
+  which is what keeps `clamp(20rem, 50vw, 30rem)` expressible, and every choice
+  control keeps a typed box beside it. A token this bundle has never heard of
+  still lands in the panel's trailing group wearing a text box, which is the
+  promise below kept literally.* A thin vocabulary yields one popup in twelve
   colours — the "thin or ugly" failure the ticket names. This is why `image` and the
   `split` layout are in v1 rather than deferred: the differentiator that is not
   colour has to exist in the vocabulary, or the gallery is thin no matter how many

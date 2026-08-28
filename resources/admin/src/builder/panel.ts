@@ -1,4 +1,5 @@
 import vocabulary from '../../../templates/manifest.json';
+import { isColour, isFontStack, measureOf } from './themes';
 import type { TemplateNode, TemplateTree, Tokens } from '@renderer/types';
 
 /**
@@ -85,9 +86,103 @@ export const FIELDS = vocabulary.fields as readonly string[];
  * cannot hide, because `tests/js/renderer-manifest-parity.test.ts` fails the
  * day the stylesheet stops reading it.
  */
-export const TOKENS: readonly { readonly name: string; readonly fallback: string }[] = Object.entries(
+export interface TokenDeclaration {
+  readonly name: string;
+  readonly fallback: string;
+}
+
+export const TOKENS: readonly TokenDeclaration[] = Object.entries(
   vocabulary.tokens as Readonly<Record<string, string>>,
 ).map(([name, fallback]) => ({ name, fallback }));
+
+/**
+ * What the Design panel OFFERS for a token, where offering a list is the only
+ * usable control.
+ *
+ * ============================================================================
+ * A CONTROL THAT ENUMERATES READS ITS ENUMERATION FROM THE MANIFEST.
+ * ============================================================================
+ * A control that INFERS reads the value — which is how a colour gets a picker
+ * and a length gets a slider, with nothing in this bundle naming either token.
+ * But two shapes say nothing about themselves: `align` is a three-value enum
+ * that looks like the word `start`, and `font` is a curated choice that looks
+ * like any other string. Both were text boxes, and *"type `center` into this
+ * box"* is the defect this whole panel exists to remove.
+ *
+ * A table in `Tokens.tsx` mapping `align → segmented` would be the "second
+ * spelling" this codebase refuses everywhere else. So the manifest says, in a
+ * **sibling section** rather than by `tokens` becoming objects: every reader of
+ * `tokens` today takes `array_keys`/`Object.keys` of it —
+ * `TemplateVocabulary`, `TemplateLabelParityTest`, `renderer-manifest-parity`,
+ * `builder-panel` — except `builder-themes.test.ts`, which types it
+ * `Record<string, string>` and uses the values as strings four more times. A
+ * sibling section breaks none of them.
+ *
+ * **It is never what is ALLOWED.** Token values stay unvalidated on both sides
+ * of the boundary — `TemplateVocabulary` does not read this — which is what
+ * keeps `clamp(20rem, 50vw, 30rem)` typeable, and every choice control keeps a
+ * text box beside it. So a token this bundle has never heard of still gets the
+ * control its VALUE earns it, which is ADR 0010's promise unchanged.
+ */
+export const CHOICES = vocabulary.choices as Readonly<Record<string, readonly string[]>>;
+
+/**
+ * The four groups the Design panel draws, in order.
+ *
+ * `other` is the trailing one and is the whole point: a token added to the
+ * manifest that this bundle recognises nothing about **lands there wearing a
+ * text box**, rather than vanishing from a panel that only knows three groups.
+ * That is ADR 0010's *"a token added to the manifest appears in the editor with
+ * no change to this bundle"*, kept literally.
+ */
+export const TOKEN_GROUPS = ['colour', 'type', 'space', 'other'] as const;
+
+export type TokenGroupId = (typeof TOKEN_GROUPS)[number];
+
+/**
+ * Which group a token belongs to.
+ *
+ * **Decided by the token's FALLBACK — the design's own value, else the
+ * manifest's — and never by what the merchant has typed.** The control is
+ * dispatched on the resolved value (see `Tokens.tsx`), because a merchant who
+ * typed `var(--brand)` must not keep a hex picker that would overwrite it on
+ * the first drag. But a token that changed GROUP as they typed would jump
+ * across the panel mid-edit, so grouping reads the value that does not move.
+ *
+ * Every arm is a shape rather than a name, so this file names no token.
+ */
+export function groupOf(token: TokenDeclaration): TokenGroupId {
+  if (isColour(token.fallback)) {
+    return 'colour';
+  }
+
+  if (isFontStack(token.fallback)) {
+    return 'type';
+  }
+
+  // A length, or a keyword the manifest offers a list for — `align` is the
+  // second, and it is the reason this arm is not `measureOf` alone.
+  if (measureOf(token.fallback) !== null || CHOICES[token.name] !== undefined) {
+    return 'space';
+  }
+
+  return 'other';
+}
+
+/**
+ * Every token the manifest declares, in groups, in the panel's own order.
+ *
+ * Groups with nothing in them are dropped, so the trailing group costs an empty
+ * install nothing and appears the moment something lands in it.
+ */
+export function groupsOf(
+  tokens: readonly TokenDeclaration[] = TOKENS,
+): readonly { readonly id: TokenGroupId; readonly tokens: readonly TokenDeclaration[] }[] {
+  return TOKEN_GROUPS.map((id) => ({
+    id,
+    tokens: tokens.filter((token) => groupOf(token) === id),
+  })).filter((group) => group.tokens.length > 0);
+}
 
 /**
  * Where a node sits, as the keys and indices that reach it.
