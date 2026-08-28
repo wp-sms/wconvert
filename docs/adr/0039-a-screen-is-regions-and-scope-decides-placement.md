@@ -313,6 +313,16 @@ the same kind of thing as a count — a fact about the set the region is showing
 and the slot is where it belongs. An auto-margin is what a control reaches for
 when it is in the wrong group._
 
+_Amended again by [ADR 0042](0042-the-admin-speaks-only-when-it-changes-what-you-do-next.md):
+**the slot is right and the chip should not have been in it, because a sound
+design says nothing at all.** Placing *"This will work"* correctly was solving
+the wrong problem — a green tick on every visit is a permanent line that taxes
+every visit and informs one, which is this ADR's own argument about subtitles
+arriving one component later. The toolbar renders only when there are problems,
+and Undo and Redo left with it: they move the whole DRAFT, the same scope `Save
+changes` has, so they belong in the page-header band. The band those two
+controls were costing was the only reason the strip existed._
+
 `Display rules` and `Destinations` do not get it, by the same test: neither
 edits the design, so neither can produce an entry to step or a problem to
 report.

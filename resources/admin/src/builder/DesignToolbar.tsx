@@ -1,5 +1,5 @@
-import { __, _n, sprintf } from '@wordpress/i18n';
-import { Check, Redo2, TriangleAlert, Undo2 } from 'lucide-react';
+import { _n, sprintf } from '@wordpress/i18n';
+import { TriangleAlert } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
 import { Button } from '../components/ui/button';
 import { Toolbar } from '../shell/Toolbar';
@@ -9,11 +9,32 @@ import type { Path } from './panel';
 import type { Template } from '@renderer/types';
 
 /**
- * Undo, Redo and whether this design will actually work — on **both** tabs that
- * edit the design.
+ * Whether this design will actually work — on **both** tabs that edit the
+ * design, and **only when the answer is no**.
  *
  * ============================================================================
- * IT WAS THE CONTENT TAB'S TOOLBAR, AND ITS SCOPE WAS NEVER THE CONTENT TAB.
+ * A STRIP THAT SAYS "THIS WILL WORK" IS A STRIP THAT SAYS NOTHING.
+ * ============================================================================
+ * This was a full-width bordered band at the top of both tabs, holding Undo,
+ * Redo and a green tick reading *"This will work"* — the first thing a merchant
+ * met on the Design tab, above the gallery they came for. Every part of that
+ * was wrong in the same way:
+ *
+ * - **The tick informed once and taxed every visit.** *"This will work"* is not
+ *   news; it is the state a merchant already assumes and has no action to take
+ *   about. `Shell`'s own subtitle argument names this exact cost, and it
+ *   applies to a status chip as squarely as to a sentence.
+ * - **Undo and Redo were never region-scoped.** They act on the whole draft,
+ *   which is the same scope `Save changes` has — so they belong in the page
+ *   header beside it, and paying a whole band for two controls a merchant
+ *   reaches for occasionally was the price of putting them in the wrong place.
+ *
+ * So the band renders **nothing at all** while the design is sound, and the
+ * problems themselves when it is not. A strip that appears is a strip worth
+ * reading.
+ *
+ * ============================================================================
+ * ITS SCOPE WAS NEVER THE CONTENT TAB EITHER.
  * ============================================================================
  * ADR 0039's placement rule is that a control's SCOPE decides where it goes,
  * and all three of these act on the whole draft. {@see OptinBuilder}'s history
@@ -42,18 +63,10 @@ import type { Template } from '@renderer/types';
 export function DesignToolbar({
   template,
   act,
-  history,
   onGoTo,
 }: {
   readonly template: Template;
   readonly act: ConvertingAct;
-  /** Undo and redo, held by the screen because they move the whole draft. */
-  readonly history: {
-    readonly canUndo: boolean;
-    readonly canRedo: boolean;
-    readonly undo: () => void;
-    readonly redo: () => void;
-  };
   /**
    * Open the block a problem is about.
    *
@@ -63,37 +76,16 @@ export function DesignToolbar({
    */
   readonly onGoTo: (path: Path) => void;
 }) {
+  const problems = problemsIn(template, act);
+
+  // Nothing to say, so nothing on screen — see the docblock above.
+  if (problems.length === 0) {
+    return null;
+  }
+
   return (
-    /*
-      **The verdict is the toolbar's `trailing` slot, and it was in `leading`
-      wearing `margin-inline-start: auto`.** {@see Toolbar} is two groups —
-      controls that move the number, then the fact about the set — and an
-      auto-margin pushes an item to the end of the group it is IN. So the chip
-      landed 12px after Redo rather than at the toolbar's trailing edge, which
-      is where every other region on this screen puts its status. ADR 0039 names
-      the slot; this is the first thing to use it for what it is for.
-    */
-    <Toolbar trailing={<Verdict problems={problemsIn(template, act)} onGoTo={onGoTo} />}>
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        disabled={!history.canUndo}
-        onClick={history.undo}
-      >
-        <Undo2 aria-hidden="true" />
-        {__('Undo', 'wconvert')}
-      </Button>
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        disabled={!history.canRedo}
-        onClick={history.redo}
-      >
-        <Redo2 aria-hidden="true" />
-        {__('Redo', 'wconvert')}
-      </Button>
+    <Toolbar>
+      <Verdict problems={problems} onGoTo={onGoTo} />
     </Toolbar>
   );
 }
@@ -116,9 +108,9 @@ export function DesignToolbar({
  * ever mention either.
  *
  * **In the toolbar, because it is about the whole design** — which is exactly
- * the scope test ADR 0039 gives — in its `trailing` slot, which is where a
- * region-scoped status goes. It sat in the leading group with an auto-margin,
- * which pushed it to the end of THAT group and left it 12px after Redo.
+ * the scope test ADR 0039 gives — and it is the only thing in it. The caller
+ * renders no toolbar at all when there are no problems, so this component is
+ * only ever asked about a design that has some.
  */
 function Verdict({
   problems,
@@ -127,15 +119,6 @@ function Verdict({
   problems: readonly Problem[];
   onGoTo: (path: Path) => void;
 }) {
-  if (problems.length === 0) {
-    return (
-      <p className="wconvert-verdict wconvert-verdict--good">
-        <Check aria-hidden="true" />
-        {__('This will work', 'wconvert')}
-      </p>
-    );
-  }
-
   return (
     <Popover>
       <PopoverTrigger asChild>

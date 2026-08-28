@@ -277,7 +277,15 @@ describe('a length', () => {
  * picker can break them in one click. So it is measured where it is chosen.
  */
 describe('the contrast readout', () => {
-  it('measures the three pairs a visitor has to read, and says which fail', () => {
+  /**
+   * ==========================================================================
+   * A PASSING RATIO IS A FACT NOBODY ACTS ON, SO IT IS NOT PRINTED.
+   * ==========================================================================
+   * All three pairs were listed on every visit — three lines of arithmetic read
+   * once and read past forever, which is the cost `Shell`'s own subtitle
+   * argument names. What is left is the pair that is actually wrong.
+   */
+  it('names the pair that fails, and says nothing about the two that pass', () => {
     render(
       <Panel
         template={{ ...ENTRY, tokens: { ...ENTRY.tokens, fg: '#111827', muted: '#d4d4d8', bg: '#ffffff' } }}
@@ -287,11 +295,24 @@ describe('the contrast readout', () => {
       />,
     );
 
-    expect(screen.getByText('Text on Background').parentElement).toHaveAttribute('data-state', 'pass');
-    expect(screen.getByText('Text on Background').parentElement).toHaveTextContent('passes AA');
-    expect(screen.getByText('Quiet text on Background').parentElement).toHaveAttribute('data-state', 'fail');
-    expect(screen.getByText('Quiet text on Background').parentElement).toHaveTextContent('fails AA');
-    expect(screen.getByText('Button text on Button')).toBeInTheDocument();
+    const failing = screen.getByText('Quiet text on Background').parentElement;
+
+    expect(failing).toHaveAttribute('data-state', 'fail');
+    expect(failing).toHaveTextContent('under AA');
+    expect(screen.queryByText('Text on Background')).toBeNull();
+    expect(screen.queryByText('Button text on Button')).toBeNull();
+  });
+
+  /**
+   * **Silence is not the answer either.** This is the only AA check a merchant
+   * gets on a design they are about to show a stranger, so a clean design says
+   * so — once, quietly, instead of three times.
+   */
+  it('confirms the check ran in one line when every pair passes', () => {
+    look();
+
+    expect(screen.getByText(/Every pair of colours a visitor has to read passes AA/)).toBeInTheDocument();
+    expect(screen.queryByText('Text on Background')).toBeNull();
   });
 
   /**
@@ -328,8 +349,8 @@ describe('the contrast readout', () => {
     const pair = screen.getByText('Text on Background').parentElement;
 
     expect(pair).toHaveAttribute('data-state', 'unknown');
-    expect(pair).toHaveTextContent('no reading');
-    expect(pair).not.toHaveTextContent('fails AA');
+    expect(pair).toHaveTextContent('cannot be measured');
+    expect(pair).not.toHaveTextContent('under AA');
   });
 });
 
@@ -389,17 +410,42 @@ describe('a token the manifest offers choices for', () => {
 
     const group = screen.getByRole('group', { name: 'Alignment' });
 
-    // Three offered, each named by the vocabulary rather than by its CSS
-    // keyword — a merchant chooses "Left", not `start`.
-    expect(within(group).getAllByRole('radio')).toHaveLength(3);
-    // The design ships `center`, so that is the one checked on arrival.
+    // Three offered plus Custom, each named by the vocabulary rather than by
+    // its CSS keyword — a merchant chooses "Left", not `start`.
+    expect(within(group).getAllByRole('radio')).toHaveLength(4);
+    // The design ships `center`, so that is the one checked on arrival — and
+    // Custom is not, because the value IS one of the offered three.
     expect(within(group).getByRole('radio', { name: 'Centre' })).toBeChecked();
+    expect(within(group).getByRole('radio', { name: 'Custom' })).not.toBeChecked();
 
     await userEvent.click(within(group).getByRole('radio', { name: 'Right' }));
 
     expect(changed).toHaveBeenCalledWith(
       expect.objectContaining({ tokens: expect.objectContaining({ align: 'end' }) }),
     );
+  });
+
+  /**
+   * ==========================================================================
+   * THE ESCAPE HATCH IS A CHOICE, NOT PERMANENT FURNITURE.
+   * ==========================================================================
+   * A text box holding `center` sat under *Left · Centre · Right* on every
+   * visit, labelled "Alignment value", and a merchant had no way to know what
+   * it was for. The property it protects — a value the manifest never offered
+   * is still expressible — never required the box being on screen.
+   */
+  it('keeps the typed box out of the way until Custom is chosen', async () => {
+    look({ labels: { ...LABELS, tokens: { ...LABELS.tokens, align: 'Alignment' } } });
+
+    // Scoped to the group: `font` offers choices too, so it has a Custom of
+    // its own — which is the point, and is why the query names the group.
+    const group = screen.getByRole('group', { name: 'Alignment' });
+
+    expect(screen.queryByLabelText('Alignment value')).toBeNull();
+
+    await userEvent.click(within(group).getByRole('radio', { name: 'Custom' }));
+
+    expect(screen.getByLabelText('Alignment value')).toBeInTheDocument();
   });
 
   /**
@@ -414,6 +460,9 @@ describe('a token the manifest offers choices for', () => {
 
     // The design ships `center`, so a keystroke lands on the end of it — which
     // is a value the manifest offers nothing for, and it goes through anyway.
+    const group = screen.getByRole('group', { name: 'Alignment' });
+
+    await userEvent.click(within(group).getByRole('radio', { name: 'Custom' }));
     await userEvent.type(screen.getByLabelText('Alignment value'), 'j');
 
     expect(changed).toHaveBeenCalledWith(
@@ -439,7 +488,12 @@ describe('a token the manifest offers choices for', () => {
 
     const group = screen.getByRole('group', { name: 'Alignment' });
 
-    expect(within(group).queryAllByRole('radio', { checked: true })).toHaveLength(0);
+    /*
+      **Custom is what is checked**, which is the honest picture of this state.
+      Before, nothing was checked and a text box quietly disagreed with a
+      control that looked authoritative.
+    */
+    expect(within(group).getByRole('radio', { name: 'Custom' })).toBeChecked();
     expect(screen.getByLabelText('Alignment value')).toHaveValue('justify');
   });
 });

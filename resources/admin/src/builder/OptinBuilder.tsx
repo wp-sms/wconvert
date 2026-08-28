@@ -6,15 +6,13 @@ import {
   useRef,
   useState,
   type CSSProperties,
-  type ReactNode,
 } from 'react';
 import { flushSync } from 'react-dom';
 import { __ } from '@wordpress/i18n';
-import { Check, Monitor, Smartphone } from 'lucide-react';
+import { Check, Monitor, Redo2, Smartphone, Undo2 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { BackLink, BuilderSkeleton } from '../shell/BuilderSkeleton';
-import { Description } from '../shell/Description';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { PageAction } from '../shell/PageActions';
 import { Region, RegionBody, RegionError, RegionErrorState } from '../shell/Region';
@@ -802,28 +800,46 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
           is focused, which is what says "this text is editable" without
           drawing a form on a screen that is not one.
 
-          **It is CAPPED rather than `flex-1`, and that is what puts Save back
-          beside it.** Growing to fill the band pushed the button to the far
-          right edge of a 1440px row — a thousand pixels from the words it acts
-          on — while every reading screen puts its action beside the title, for
-          the reason `Shell`'s own `PageHeader` states at length: the eye pairs
-          them, and a button that far away is a button in the same band rather
-          than a button about that thing. `max-w-sm` is a reading measure for a
-          name; `w-full` keeps it the whole band at 360px, where wrapping is the
-          right answer and there is no "beside" to be had.
+          **It is sized by its CONTENT, and that is what finally puts Save
+          beside it.**
+
+          `flex-1` put the button at the far right of a 1440px row, a thousand
+          pixels from the words it acts on. Capping it at `max-w-sm` was no
+          better and was wrong in a way worth naming, because it LOOKED fixed:
+          the button then sat beside a 384px box rather than beside the title,
+          so "Welcome discount" left ~180px of nothing between the words and the
+          control. A merchant does not see an input's edge — they see a button
+          floating in the middle of a band.
+
+          `size` is a character count, which is the one width an `<input>` has
+          always been able to derive from what is in it: no measurement, no ref,
+          no layout effect. The floor keeps an empty field big enough to aim at
+          and the ceiling keeps a long name from pushing Save off the band;
+          between them the button tracks the title.
         */}
           <input
             id="wconvert-optin-name"
             type="text"
             value={name}
+            size={Math.min(Math.max(name.length + 1, 16), 40)}
             placeholder={__('Untitled Optin', 'wconvert')}
             onChange={(event) => {
               setName(event.target.value);
               setSaved(false);
               setDirty(true);
             }}
-            className="w-full min-w-0 max-w-sm rounded-md border border-transparent bg-transparent px-2 py-1 text-title font-semibold leading-tight tracking-tight text-foreground hover:border-border focus:border-ring focus:bg-background focus:outline-none"
+            className="wconvert-optin-name min-w-0 max-w-full rounded-md border border-transparent bg-transparent px-2 py-1 text-title font-semibold leading-tight tracking-tight text-foreground hover:border-border focus:border-ring focus:bg-background focus:outline-none"
           />
+
+          {/*
+            **History sits with the thing it acts on.** Undo and Redo move the
+            whole draft, which is exactly the scope `Save changes` has — so they
+            belong in this band rather than in a region toolbar, where they cost
+            a full-width bordered strip at the top of two tabs for two controls
+            a merchant reaches for occasionally. Icon-only and quiet, in the
+            order every editor puts them, between the title and the commit.
+          */}
+          <HistoryControls history={history} />
 
           <Button disabled={busy} onClick={() => void save()}>
             {__('Save changes', 'wconvert')}
@@ -964,16 +980,35 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
                     <DesignToolbar
                       template={entry}
                       act={act ?? 'submit'}
-                      history={history}
                       onGoTo={goTo}
                     />
                   )}
-                  <RegionBody className="wconvert-editor flex flex-col gap-4">
-                    <TabNote>{__('Saves straight away, and keeps your words.', 'wconvert')}</TabNote>
+                  {/*
+                    **No `.wconvert-editor` and no `TabNote`, and both removals
+                    are the same rule.**
+
+                    `.wconvert-editor` supplies a PROSE rhythm — 0.75rem above
+                    and below every `<p>` and heading — to the three editors that
+                    still render WordPress's controls. This tab stopped being one
+                    of those when it was rebuilt against the component
+                    vocabulary, and keeping the class meant those margins landed
+                    on children of a flex column that also had `gap-4`. Flex gaps
+                    do not collapse with margins, so a 16px rhythm rendered as 40
+                    in some places and 28 in others: nothing in the panel was the
+                    distance it was written to be. One container, one rhythm.
+
+                    *"Saves straight away, and keeps your words"* was a sentence
+                    about a mechanism, permanently above a gallery, answering a
+                    question nobody had asked yet — and a merchant who reads it
+                    before their first click learns nothing they can act on. The
+                    gallery teaches it in one press.
+                  */}
+                  <RegionBody className="flex flex-col gap-4">
                     <Gallery
                       templates={gallery.templates}
                       displayType={displayTypeOf(config, gallery.templates)}
                       chosen={templateId}
+                      act={act ?? 'submit'}
                       busy={busy}
                       onChoose={(chosen) => void save({ ...config, template_id: chosen })}
                     />
@@ -1031,7 +1066,6 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
                       <DesignToolbar
                         template={entry}
                         act={act ?? 'submit'}
-                        history={history}
                         onGoTo={goTo}
                       />
                       <StructureView
@@ -1252,18 +1286,76 @@ function PreviewColumn({
 }
 
 /**
- * A sentence a tab needs before its editor starts.
+ * Undo and Redo, beside the title they act on.
  *
- * **The tab regions have no `RegionHeader`, and that is the fix for a heading
- * printed three times.** "Where it shows" was the tab's label, then the
- * region's title, then the editor's own `<h3>` — three lines of the same words
- * before a single control. A tab strip already names what is under it, so the
- * region takes its name as an `aria-label` and the visible naming is left to
- * the one place that was always going to say it.
+ * **Icon-only, because their icons are two of the most universally understood
+ * in software** and a labelled pair in a page header competes with the one
+ * action that matters there. The name is still said — `sr-only` for a screen
+ * reader, `title` for a pointer — so nothing is lost but the width.
+ *
+ * They stand at `--control-height-sm` rather than the band's own height: they
+ * qualify the draft rather than committing it, which is ADR 0039's test, and it
+ * is what keeps `Save changes` the only full-height control on the line.
  */
-function TabNote({ children }: { children: ReactNode }) {
-  return <Description>{children}</Description>;
+function HistoryControls({
+  history,
+}: {
+  readonly history: {
+    readonly canUndo: boolean;
+    readonly canRedo: boolean;
+    readonly undo: () => void;
+    readonly redo: () => void;
+  };
+}) {
+  const label = { undo: __('Undo', 'wconvert'), redo: __('Redo', 'wconvert') };
+
+  return (
+    <span className="wconvert-history">
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon-sm"
+        title={label.undo}
+        disabled={!history.canUndo}
+        onClick={history.undo}
+      >
+        <Undo2 aria-hidden="true" />
+        <span className="sr-only">{label.undo}</span>
+      </Button>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon-sm"
+        title={label.redo}
+        disabled={!history.canRedo}
+        onClick={history.redo}
+      >
+        <Redo2 aria-hidden="true" />
+        <span className="sr-only">{label.redo}</span>
+      </Button>
+    </span>
+  );
 }
+
+/*
+ * ============================================================================
+ * `TabNote` IS GONE, AND THE ARGUMENT THAT KILLED IT IS ITS OWN.
+ * ============================================================================
+ * It existed for *"a sentence a tab needs before its editor starts"*, and its
+ * docblock made the case that a tab strip already names what is under it — the
+ * reason these regions carry no `RegionHeader`, after "Where it shows" was
+ * printed three times before a single control.
+ *
+ * The same argument finishes the job. Its one surviving call site read *"Saves
+ * straight away, and keeps your words"* above the design gallery: a sentence
+ * about a mechanism, permanently on screen, answering a question a merchant has
+ * not asked yet and cannot act on. A tab that needs a sentence before its first
+ * control usually needs a better first control, and the gallery teaches this one
+ * in a single press.
+ *
+ * Restored, if a tab ever genuinely needs one, as {@see Description} — which is
+ * all this was.
+ */
 
 /**
  * The [[Display Type]] to assume where nothing on screen names one.

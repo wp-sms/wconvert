@@ -2,7 +2,7 @@ import { useId, useState, type CSSProperties } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { HexColorInput, HexColorPicker, RgbaStringColorPicker } from 'react-colorful';
 import { Button } from '../components/ui/button';
-import { RotateCcw } from 'lucide-react';
+import { Check, RotateCcw, TriangleAlert } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
 import { CHOICES, TOKENS, groupsOf, withToken, type TokenGroupId } from './panel';
 import { getThemeTokens } from './api';
@@ -165,9 +165,17 @@ export function Tokens({
 
   return (
     <>
-      <h4>{__('How it looks', 'wconvert')}</h4>
+      {/*
+        **No `<h4>How it looks</h4>`.** The tab is called Design, the region is
+        labelled *The design*, and a heading here was the third naming of one
+        thing before a single control — the exact failure {@see TabNote}'s own
+        docblock describes for the tabs that had a `RegionHeader`. The groups
+        below are the structure, in one register, and this is the first of them.
+      */}
+      <section className="wconvert-group" aria-label={__('Ready-made looks', 'wconvert')}>
+        <h5 className="wconvert-group__name">{__('Ready-made looks', 'wconvert')}</h5>
 
-      <div className="wconvert-themes">
+        <div className="wconvert-themes">
         {presets.map((preset) => {
           const current = isApplied(preset, template.tokens);
 
@@ -192,9 +200,9 @@ export function Tokens({
             </button>
           );
         })}
-      </div>
+        </div>
 
-      <p className="wconvert-themes__theme">
+        <p className="wconvert-themes__theme">
         {/*
           **The label names what it actually writes.** It read *"Copy my theme's
           colours"* and `ThemeTokens::fromSite()` writes five things, one of
@@ -207,17 +215,18 @@ export function Tokens({
           It stays here with the presets rather than inside either group,
           because what it writes spans two of them.
         */}
-        <Button type="button" variant="outline" size="sm" onClick={copyTheme}>
-          {__('Copy my theme’s palette and font', 'wconvert')}
-        </Button>{' '}
-        {copied !== null && (
-          <span className="description">
-            {copied === 0
-              ? __('Your theme declares no palette to copy.', 'wconvert')
-              : __('Copied. Check the readings below, and change any of them.', 'wconvert')}
-          </span>
-        )}
-      </p>
+          <Button type="button" variant="outline" size="sm" onClick={copyTheme}>
+            {__('Copy my theme’s palette and font', 'wconvert')}
+          </Button>
+          {copied !== null && (
+            <span className="text-note text-muted-foreground">
+              {copied === 0
+                ? __('Your theme declares no palette to copy.', 'wconvert')
+                : __('Copied. Change any of them below.', 'wconvert')}
+            </span>
+          )}
+        </p>
+      </section>
 
       {groups.map((group) => (
         <section key={group.id} className="wconvert-group" aria-label={groupName(group.id)}>
@@ -623,6 +632,33 @@ function ChoiceField({
   onChange: (value: string) => void;
 }) {
   const named = `${id}-name`;
+  /*
+    ==========================================================================
+    THE ESCAPE HATCH IS A CHOICE, NOT PERMANENT FURNITURE.
+    ==========================================================================
+    A text box sat under the three alignment chips on every visit, holding
+    `center`, labelled *"Alignment value"* — and a merchant looking at *Left ·
+    Centre · Right* has no idea what it is for or what would happen if they
+    typed in it. It is the escape hatch that keeps `choices` a suggestion rather
+    than validation, and that property is load-bearing (ADR 0010: token values
+    are unvalidated on both sides of the boundary) — but keeping the property
+    never required keeping the box on screen.
+
+    So it is a fourth option. **Custom** is checked whenever the stored value is
+    one the manifest never offered — which is also the honest picture of that
+    state, where before no chip was checked and the box quietly disagreed with a
+    control that looked authoritative — and also whenever the merchant has just
+    asked for it.
+
+    That second half needs local state, and the reason is worth a line: this
+    control is otherwise a pure function of the token's value, so pressing
+    Custom while the value is still `center` would write `center`, leave the
+    value on the list, and snap straight back to Centre. *"I want to type
+    something"* is a fact about the merchant rather than about the token, so it
+    is the only thing here that is not derived.
+  */
+  const [asked, setAsked] = useState(false);
+  const custom = !offered.includes(shown) || asked;
 
   return (
     <div className="wconvert-token">
@@ -636,8 +672,11 @@ function ChoiceField({
                 className="sr-only"
                 name={id}
                 value={choice}
-                checked={shown === choice}
-                onChange={() => onChange(choice)}
+                checked={!custom && shown === choice}
+                onChange={() => {
+                  setAsked(false);
+                  onChange(choice);
+                }}
               />
               {/*
                 Set in the face it names, which is the whole point of offering a
@@ -653,22 +692,41 @@ function ChoiceField({
               </span>
             </label>
           ))}
+
+          <label className="wconvert-choice">
+            <input
+              type="radio"
+              className="sr-only"
+              name={id}
+              checked={custom}
+              /*
+                It writes nothing. The token keeps the value it had, which is
+                what the box then opens on — asking to type is not itself an
+                edit, and writing here would put a value in the box the merchant
+                did not choose.
+              */
+              onChange={() => setAsked(true)}
+            />
+            <span className="wconvert-choice__label">{__('Custom', 'wconvert')}</span>
+          </label>
         </span>
         {reset}
       </span>
 
-      <input
-        type="text"
-        className="wconvert-token__typed"
-        aria-label={sprintf(
-          /* translators: %s: what the setting is for, e.g. “Alignment”. */
-          __('%s value', 'wconvert'),
-          label,
-        )}
-        placeholder={fallback}
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-      />
+      {custom && (
+        <input
+          type="text"
+          className="wconvert-token__typed"
+          aria-label={sprintf(
+            /* translators: %s: what the setting is for, e.g. “Alignment”. */
+            __('%s value', 'wconvert'),
+            label,
+          )}
+          placeholder={fallback}
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+        />
+      )}
     </div>
   );
 }
@@ -752,55 +810,77 @@ function Contrast({ template, labels }: { template: Template; labels: TemplateLa
   const value = (name: string) =>
     template.tokens[name] ?? TOKENS.find((token) => token.name === name)?.fallback ?? '';
 
+  const read = PAIRS.map(([fg, bg]) => {
+    const ratio = contrastOf(value(fg), value(bg));
+
+    return {
+      key: `${fg}/${bg}`,
+      ratio,
+      state: ratio === null ? 'unknown' : ratio >= AA_NORMAL ? 'pass' : 'fail',
+      named: sprintf(
+        /* translators: 1: the text colour's name, e.g. “Quiet text”. 2: the surface's, e.g. “Background”. */
+        __('%1$s on %2$s', 'wconvert'),
+        nameOf(labels.tokens, fg),
+        nameOf(labels.tokens, bg),
+      ),
+    };
+  });
+
+  const wrong = read.filter((pair) => pair.state !== 'pass');
+
+  /*
+    ==========================================================================
+    A PASSING RATIO IS A FACT NOBODY ACTS ON, SO IT IS NOT THREE LINES.
+    ==========================================================================
+    Every pair was printed on every visit — *"Text on Background 17.7 to 1 —
+    passes AA"* three times over — which is three lines of arithmetic a merchant
+    reads once and then reads past forever. That is the cost {@see Shell}'s own
+    subtitle argument names: a permanent line that taxes every visit and informs
+    one.
+
+    **But silence is not the answer either**, because then nobody knows the
+    check happened, and this is the only AA check a merchant gets on a design
+    they are about to show a stranger. So: one quiet line when everything
+    passes, and the failures themselves when anything does not.
+  */
+  if (wrong.length === 0) {
+    return (
+      <p className="wconvert-contrast wconvert-contrast--clear">
+        <Check aria-hidden="true" />
+        {__('Every pair of colours a visitor has to read passes AA.', 'wconvert')}
+      </p>
+    );
+  }
+
   return (
     <ul className="wconvert-contrast">
-      {PAIRS.map(([fg, bg]) => {
-        const ratio = contrastOf(value(fg), value(bg));
-        const passes = ratio !== null && ratio >= AA_NORMAL;
-        const named = sprintf(
-          /* translators: 1: the text colour's name, e.g. “Quiet text”. 2: the surface's, e.g. “Background”. */
-          __('%1$s on %2$s', 'wconvert'),
-          nameOf(labels.tokens, fg),
-          nameOf(labels.tokens, bg),
-        );
-
-        return (
-          /*
-            **Three answers, and they used to be painted as two.** `pass`,
-            `fail` and `unknown` are different things — *"we measured it and it
-            is too low"* and *"we cannot measure this"* are not the same news —
-            and both of the latter came out in the same amber. `data-state` is
-            what the stylesheet reads, and it is what the browser pass asserts.
-          */
-          <li
-            key={`${fg}/${bg}`}
-            className="wconvert-contrast__pair"
-            data-state={ratio === null ? 'unknown' : passes ? 'pass' : 'fail'}
-          >
-            <span>{named}</span>
-            {/*
-              **A refusal rather than a wrong number.** A translucent colour
-              composites over whatever is behind it and a named one needs a
-              browser to resolve; either way a ratio here would be a green tick
-              over a design that fails.
-            */}
-            {ratio === null ? (
-              <span className="wconvert-contrast__ratio">
-                {__('no reading — this colour needs a browser to resolve', 'wconvert')}
-              </span>
-            ) : (
-              <span className="wconvert-contrast__ratio">
-                {sprintf(
-                  /* translators: 1: a contrast ratio, e.g. “7.2”. 2: “passes AA” or “fails AA”. */
-                  __('%1$s to 1 — %2$s', 'wconvert'),
-                  ratio.toFixed(1),
-                  passes ? __('passes AA', 'wconvert') : __('fails AA', 'wconvert'),
+      {wrong.map((pair) => (
+        /*
+          **Two answers, and they used to be painted as one.** *"We measured it
+          and it is too low"* and *"we cannot measure this"* are different news,
+          and both came out in the same amber — so a design whose accent is
+          `var(--brand)` looked like a design that fails.
+        */
+        <li key={pair.key} className="wconvert-contrast__pair" data-state={pair.state}>
+          <TriangleAlert aria-hidden="true" />
+          <span>{pair.named}</span>
+          {/*
+            **A refusal rather than a wrong number.** A translucent colour
+            composites over whatever is behind it and a named one needs a
+            browser to resolve; either way a ratio here would be a green tick
+            over a design that fails.
+          */}
+          <span className="wconvert-contrast__ratio">
+            {pair.ratio === null
+              ? __('cannot be measured here', 'wconvert')
+              : sprintf(
+                  /* translators: %s: a contrast ratio, e.g. “3.1”. */
+                  __('%s to 1 — under AA', 'wconvert'),
+                  pair.ratio.toFixed(1),
                 )}
-              </span>
-            )}
-          </li>
-        );
-      })}
+          </span>
+        </li>
+      ))}
     </ul>
   );
 }

@@ -92,14 +92,22 @@ function whatCannotConvert(template: Template, act: ConvertingAct): Problem[] {
 
   return [
     {
+      /*
+        **It names a door that is on this screen.** Both sentences ended "…or
+        change the goal", and there is no control in the builder that changes a
+        Goal — it is chosen at creation. An instruction pointing at something
+        the merchant cannot find is worse than no instruction, because they go
+        looking. The gallery is the door, and it now marks which designs fit
+        before the click rather than refusing after it ({@see Gallery}).
+      */
       said:
         act === 'submit'
           ? __(
-              'Your goal counts form submissions and this design converts on a click, so saving it will be refused. Pick a design that submits, or change the goal.',
+              'Your goal counts form submissions and this design converts on a click, so saving it will be refused. Pick one of the designs on the Design tab that submits.',
               'wconvert',
             )
           : __(
-              'Your goal counts click-throughs and this design converts on a submission, so saving it will be refused. Pick a design that links away, or change the goal.',
+              'Your goal counts click-throughs and this design converts on a submission, so saving it will be refused. Pick one of the designs on the Design tab that links away.',
               'wconvert',
             ),
       path: convertingBlockIn(template),

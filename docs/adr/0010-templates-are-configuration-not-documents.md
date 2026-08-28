@@ -88,7 +88,13 @@ third-party ones. Under configuration they are properties of the one renderer.
   which is what keeps `clamp(20rem, 50vw, 30rem)` expressible, and every choice
   control keeps a typed box beside it. A token this bundle has never heard of
   still lands in the panel's trailing group wearing a text box, which is the
-  promise below kept literally.* A thin vocabulary yields one popup in twelve
+  promise below kept literally.* *Refined by
+  [ADR 0042](0042-the-admin-speaks-only-when-it-changes-what-you-do-next.md):
+  the typed box that keeps a value unvalidated is a **Custom** option rather
+  than a field on screen at all times. The property is untouched — a merchant
+  may still write anything a token can hold — but a box reading `center` under
+  three chips reading Left · Centre · Right explained nothing and invited
+  nothing.* A thin vocabulary yields one popup in twelve
   colours — the "thin or ugly" failure the ticket names. This is why `image` and the
   `split` layout are in v1 rather than deferred: the differentiator that is not
   colour has to exist in the vocabulary, or the gallery is thin no matter how many

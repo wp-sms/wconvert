@@ -427,7 +427,14 @@ final class OptinController implements RestController
                 sprintf(
                     /* translators: %s: the name of the Goal the Optin is filed under. */
                     __(
-                        'This design does not produce the outcome “%s” counts, so the Optin would report nothing. Pick a design that matches the Goal, or change the Goal.',
+                        // **It names no door the merchant cannot reach.** This
+                        // said "…or change the Goal", and nothing in the
+                        // builder changes a Goal — it is chosen at creation. The
+                        // gallery marks which designs match before the click
+                        // now, so a merchant meets this only through a scripted
+                        // call, where the fact is what matters and the
+                        // instruction is noise.
+                        'This design does not produce the outcome “%s” counts, so the Optin would report nothing. Pick a design that matches the Goal.',
                         'wconvert'
                     ),
                     $goal->label()

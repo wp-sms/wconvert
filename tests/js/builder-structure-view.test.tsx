@@ -946,15 +946,25 @@ describe('the verdict', () => {
   };
 
   /**
-   * **Scoped to the open tab, because it is now drawn on two.** Both design
-   * editing tabs are `forceMount`ed, so both chips are in the document at once
-   * and only one of them is in the accessibility tree — which `getByText` does
-   * not know and `within(panel())` does.
+   * ==========================================================================
+   * A STRIP THAT SAYS "THIS WILL WORK" IS A STRIP THAT SAYS NOTHING.
+   * ==========================================================================
+   * This asserted the opposite — a green tick reading *"This will work"* on
+   * every visit, at the top of both design tabs, above the gallery a merchant
+   * came for. It is not news: it is the state they already assume, and there is
+   * no action to take about it. `Shell`'s own subtitle argument names that cost
+   * exactly — a permanent line that taxes every visit and informs one — and it
+   * applies to a status chip as squarely as to a sentence.
+   *
+   * So a sound design says nothing, and the band it used to say it in is not
+   * drawn at all. What the verdict still owes is asserted below, unchanged: it
+   * counts what is wrong, lists it, and takes the merchant to the block.
    */
-  it('says the design will work when nothing is wrong with it', async () => {
+  it('draws no band at all when nothing is wrong with the design', async () => {
     await structure();
 
-    expect(within(panel()).getByText('This will work')).toBeInTheDocument();
+    expect(within(panel()).queryByText('This will work')).toBeNull();
+    expect(within(panel()).queryByText(/thing to fix|things to fix/)).toBeNull();
   });
 
   /**
@@ -972,7 +982,16 @@ describe('the verdict', () => {
 
     await screen.findByRole('tab', { name: 'Design' });
 
-    expect(within(panel()).getByText('This will work')).toBeInTheDocument();
+    // Made unreadable from the tab that CHOOSES the colours, which is the whole
+    // argument above: the one surface that can produce a contrast failure has
+    // to be a surface that can report one.
+    // The stub names no tokens, so `nameOf` falls back to the raw key — which
+    // is what a build whose vocabulary is ahead of its translations shows too.
+    await userEvent.click(screen.getByRole('button', { name: /Choose a colour for muted/ }));
+    await userEvent.clear(screen.getByLabelText('muted value'));
+    await userEvent.type(screen.getByLabelText('muted value'), '#f4f4f5');
+
+    expect(await within(panel()).findByText(/thing to fix|things to fix/)).toBeInTheDocument();
   });
 
   /**
@@ -1069,11 +1088,25 @@ describe('the design toolbar', () => {
     await screen.findByRole('tab', { name: 'Design' });
   }
 
-  it('offers Undo and Redo on the Design tab', async () => {
+  /**
+   * ==========================================================================
+   * HISTORY SITS WITH THE THING IT ACTS ON, WHICH IS NOT A REGION.
+   * ==========================================================================
+   * This asserted Undo and Redo were inside the tab's own panel. They are not
+   * region-scoped: they move the whole draft, which is exactly the scope `Save
+   * changes` has — so a region toolbar was paying a full-width bordered strip
+   * at the top of two tabs for two controls a merchant reaches for
+   * occasionally, and putting them there was what made that band exist.
+   *
+   * In the page-header band they are reachable from every tab, which is also
+   * truthful: the history is the draft's, not the tab's.
+   */
+  it('puts Undo and Redo in the page header, beside the action with the same scope', async () => {
     await design();
 
-    expect(within(panel()).getByRole('button', { name: 'Undo' })).toBeInTheDocument();
-    expect(within(panel()).getByRole('button', { name: 'Redo' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Undo' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Redo' })).toBeInTheDocument();
+    expect(within(panel()).queryByRole('button', { name: 'Undo' })).toBeNull();
   });
 
   /**
@@ -1092,7 +1125,7 @@ describe('the design toolbar', () => {
       'true',
     );
 
-    await userEvent.click(within(panel()).getByRole('button', { name: 'Undo' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Undo' }));
     await userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
 
     expect(savedTokens()).toEqual(ENTRY.tokens);
