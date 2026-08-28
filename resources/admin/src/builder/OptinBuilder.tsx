@@ -692,6 +692,40 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
 
   const leave = () => (dirty ? setLeaving(true) : onClose());
 
+  /*
+   * ==========================================================================
+   * THE BROWSER'S BACK BUTTON LEAVES THE BUILDER, THROUGH THE SAME GUARD.
+   * ==========================================================================
+   * It did nothing. {@see App} listens for `hashchange` and sets `section`, but
+   * its `editing !== null` branch returns before `section` is read — so Back
+   * changed the URL, left the builder open, and asked nothing about the unsaved
+   * work in it, because as far as this screen was concerned no navigation had
+   * happened.
+   *
+   * **The listener is HERE and not in `App`, because the guard is here.** `App`
+   * holds only `onClose`, which closes unconditionally; `leave` is what knows
+   * whether there is anything to lose. Routing Back through `App` would be the
+   * one exit out of four that skips the confirm.
+   *
+   * **`nav.ts` is untouched and the builder still has no URL of its own** —
+   * that is deliberate (#62), and it is what {@see OptinList} relies on when it
+   * opens a row with a `<button>` rather than an `<a href="#">` that lies. Back
+   * is a way OUT of the builder, not a route into it.
+   *
+   * *Known and accepted:* if the merchant cancels the confirm, the hash is
+   * already pointing at the section they asked for while the builder is still
+   * open. Putting it back means writing history for a screen that has no
+   * history entry of its own, which is the route-shape change this deliberately
+   * is not. Pressing Back again simply asks again.
+   */
+  useEffect(() => {
+    const follow = () => leave();
+
+    window.addEventListener('hashchange', follow);
+
+    return () => window.removeEventListener('hashchange', follow);
+  });
+
   if (fatal !== null) {
     return (
       <div className="flex flex-col gap-5">

@@ -1,4 +1,4 @@
-import { useId, useState, type CSSProperties } from 'react';
+import { useEffect, useId, useState, type CSSProperties } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { HexColorInput, HexColorPicker, RgbaStringColorPicker } from 'react-colorful';
 import { Button } from '../components/ui/button';
@@ -92,7 +92,27 @@ export function Tokens({
   onError: (cause: unknown) => void;
 }) {
   const [copied, setCopied] = useState<number | null>(null);
+  /*
+   * ==========================================================================
+   * ONE OPEN PICKER, HELD BY THE PANEL — WHICH IS ALSO WHAT CLOSES IT.
+   * ==========================================================================
+   * **A popover outlived its own tab.** Open the colour picker on Design,
+   * switch to Content, and the picker was still on screen — over a tab with no
+   * colours in it. `<Activity mode="hidden">` hides the tab's DOM and a Radix
+   * popover portals to `document.body`, which is not inside it.
+   *
+   * The fix needs no workaround and no dependency, because React 19.2's
+   * `Activity` **unmounts effects when it hides**. So an effect here whose
+   * cleanup clears this state closes the picker exactly when the tab goes away
+   * — which means the popover has to be CONTROLLED rather than each swatch
+   * owning its own `open`.
+   *
+   * That is worth having on its own: two pickers can never be open at once.
+   */
+  const [openToken, setOpenToken] = useState<string | null>(null);
   const presets = themePresets();
+
+  useEffect(() => () => setOpenToken(null), []);
 
   const write = (tokens: Readonly<Record<string, string>>) =>
     onChange({
@@ -167,6 +187,8 @@ export function Tokens({
             fallback={design[token.name] ?? token.fallback}
             design={design[token.name] ?? ''}
             value={template.tokens[token.name] ?? ''}
+            open={openToken === token.name}
+            onOpenChange={(open) => setOpenToken(open ? token.name : null)}
             onChange={(value) => onChange({ ...template, tokens: withToken(template.tokens, token.name, value) })}
           />
         ))}
@@ -195,6 +217,8 @@ function TokenField({
   fallback,
   design,
   value,
+  open,
+  onOpenChange,
   onChange,
 }: {
   label: string;
@@ -203,6 +227,9 @@ function TokenField({
   /** What the design itself declared, or empty where it declared nothing. */
   design: string;
   value: string;
+  /** Whether THIS token's picker is the one the panel has open. */
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   onChange: (value: string) => void;
 }) {
   const field = useId();
@@ -215,7 +242,14 @@ function TokenField({
     return (
       <div className="wconvert-token wconvert-token--colour">
         <span className="wconvert-token__name">{label}</span>
-        <ColourField label={label} fallback={fallback} value={value} onChange={onChange} />
+        <ColourField
+          label={label}
+          fallback={fallback}
+          value={value}
+          open={open}
+          onOpenChange={onOpenChange}
+          onChange={onChange}
+        />
         {reset}
       </div>
     );
@@ -465,11 +499,21 @@ function ColourField({
   label,
   fallback,
   value,
+  open,
+  onOpenChange,
   onChange,
 }: {
   label: string;
   fallback: string;
   value: string;
+  /**
+   * **Controlled, and the panel is what holds it** — so the effect in
+   * {@see Tokens} can close it when `<Activity>` hides the tab. An uncontrolled
+   * Radix popover portals to `document.body` and survives its own tab being
+   * hidden, which is how a colour picker came to sit over the Content tab.
+   */
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   onChange: (value: string) => void;
 }) {
   // Empty means "whatever the design says", so the swatch and the picker both
@@ -478,7 +522,7 @@ function ColourField({
   const translucent = isTranslucent(shown);
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={onOpenChange}>
         <PopoverTrigger asChild>
           <button type="button" className="wconvert-swatch">
             {/*

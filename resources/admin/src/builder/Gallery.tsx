@@ -1,5 +1,4 @@
 import { __, sprintf } from '@wordpress/i18n';
-import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { Preview } from './Preview';
 import type { TemplateEntry } from '../templates/api';
@@ -58,6 +57,13 @@ export function Gallery({ templates, displayType, chosen, busy, onChoose }: Gall
         return (
           <li
             key={template.id}
+            /*
+              **`aria-current` is what says "this one" to a screen reader.** It
+              was said by a `Badge` and by a border colour, neither of which is
+              in the accessibility tree as a state — so the chosen card was
+              chosen only if you could see it.
+            */
+            aria-current={inUse ? 'true' : undefined}
             className={`wconvert-gallery__card${inUse ? ' is-chosen' : ''}`}
           >
             {/*
@@ -79,24 +85,28 @@ export function Gallery({ templates, displayType, chosen, busy, onChoose }: Gall
               `aria-describedby` is what tells three identically labelled "Use
               this design" buttons apart in the accessibility tree, without
               putting the design's name on every button face.
+
+              **And the comment above was not true until now.** The chosen card
+              rendered a `Badge` where every other rendered a `Button` — 22px
+              against 32px — so it was ~10px shorter than its neighbours, which
+              is exactly the ragged row this layout is described as preventing.
+              It is always a `Button size="sm"`; the state is carried by
+              `variant`, `disabled` and the `aria-current` on the card, none of
+              which changes the box.
             */}
             <div className="flex flex-col items-start gap-2 border-t border-border px-3 py-2.5">
               <span id={`wconvert-design-${template.id}`} className="font-medium text-foreground">
                 {template.name}
               </span>
-              {inUse ? (
-                <Badge variant="success">{__('In use', 'wconvert')}</Badge>
-              ) : (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  aria-describedby={`wconvert-design-${template.id}`}
-                  disabled={busy}
-                  onClick={() => onChoose(template.id)}
-                >
-                  {__('Use this design', 'wconvert')}
-                </Button>
-              )}
+              <Button
+                variant={inUse ? 'secondary' : 'outline'}
+                size="sm"
+                aria-describedby={`wconvert-design-${template.id}`}
+                disabled={busy || inUse}
+                onClick={inUse ? undefined : () => onChoose(template.id)}
+              >
+                {inUse ? __('In use', 'wconvert') : __('Use this design', 'wconvert')}
+              </Button>
             </div>
           </li>
         );

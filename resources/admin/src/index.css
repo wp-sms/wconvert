@@ -1430,23 +1430,75 @@
 }
 
 /*
+ * ---------------------------------------------------------------------------
+ * `zoom`, NOT `transform: scale()`, AND THAT IS THE WHOLE OF THE FIX.
+ *
  * A card is a real render at real width, so it is scaled rather than reflowed:
  * reflowing would show the merchant a layout no visitor gets, which is the one
  * thing a live-rendered gallery exists to avoid.
  *
+ * **`transform` does not affect layout.** So the wrapper reserved `12rem`
+ * (192px) and painted 106px, and every card in the gallery had ~86px of dead
+ * white under a design clipped at the top of it. The width reciprocal
+ * (`calc(100% / 0.55)`) was reasoned about carefully; the HEIGHT was never
+ * reasoned about at all, because a fixed one looked deliberate.
+ *
+ * `zoom` does affect layout: a 448 × 300 child at `zoom: .55` renders 246 × 165
+ * **and its wrapper becomes 165 tall**. Verified in the target browser on the
+ * real gallery rather than reasoned about — which also has to be said the other
+ * way round, because nothing in the suite can see this: Vitest runs jsdom with
+ * `css: false` and computes no layout, so a passing test proves nothing here
+ * either way. It is Baseline 2024 and shipped in every engine.
+ *
+ * With layout following the render, both of the numbers that were compensating
+ * for it go: the reciprocal width and the fixed height. What is left is a cap,
+ * so a tall design cannot make one card twice its neighbours.
+ *
+ * **What `zoom` costs, stated rather than discovered.** It RELAYOUTS at the
+ * reduced size — a 16px headline is laid out at 8.8px — where `transform`
+ * paints a full-size layout smaller. The gallery's invariant survives that,
+ * because the scale is uniform: the container and the type shrink by the same
+ * factor, so the ratio that decides a line break is unchanged and the break
+ * lands in the same place. What is left is sub-pixel rounding at small sizes,
+ * which is a fidelity risk and not a different layout. The other known hazard —
+ * CSS `zoom` breaking Floating UI's positioning, which is what Radix's popover
+ * is built on — cannot reach this: the zoom is on the gallery card's render,
+ * and no Radix trigger is inside one. **Both are things to look at in a
+ * browser** and neither is visible to the suite.
+ *
+ * `margin-inline: auto` because the design is NARROWER than the lane once it is
+ * sized to itself — the experiment showed it sitting hard against the leading
+ * edge with a grey band beside it, which reads as a broken float.
+ *
  * It sits on `--surface` so a design with a light background still reads as a
  * picture of something rather than as part of the card holding it.
- */
+ * ------------------------------------------------------------------------- */
 .wconvert-gallery .wconvert-preview {
-  transform: scale(0.55);
-  transform-origin: top left;
-  block-size: 12rem;
-  /* Exactly the scale's reciprocal: 182% overshot the card by a tenth of a
-   * percent and left a hairline of card showing down the right edge. */
-  inline-size: calc(100% / 0.55);
+  zoom: 0.55;
+  inline-size: fit-content;
+  max-inline-size: 100%;
+  margin-inline: auto;
+  /*
+   * The cap is in the ZOOMED coordinate space, so 22rem of declared height is
+   * 12.1rem drawn — about what the fixed `12rem` used to reserve, arrived at
+   * from the design's own measure rather than imposed on it.
+   */
+  max-block-size: 22rem;
   overflow: hidden;
   pointer-events: none;
   background: var(--surface);
+}
+
+/*
+ * **The cards in a row are the same height, and `zoom` is what made that a
+ * question.** With a fixed preview height every card was the same by
+ * construction; sized to its own design they differ, and a grid row goes ragged
+ * — the same failure the footer's own comment says the layout exists to
+ * prevent, arriving from the other direction. `stretch` is the grid default and
+ * is stated because it is now load-bearing.
+ */
+.wconvert-gallery > .wconvert-gallery__card {
+  align-self: stretch;
 }
 
 /* ---------------------------------------------------------------------------

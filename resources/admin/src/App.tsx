@@ -59,6 +59,14 @@ export function App() {
    * button works without this screen keeping a history of its own. Listening
    * rather than only writing is the whole of it: a `pushState` nobody listens
    * to leaves Back changing the URL and nothing else.
+   *
+   * **It keeps running while the builder is open, and that is what makes Back
+   * land somewhere.** The `editing !== null` branch below returns before
+   * `section` is read, so for a while this looked like the reason Back did
+   * nothing in the builder. It is not: the builder listens for the same event
+   * and leaves through its own unsaved-changes guard ({@see OptinBuilder}),
+   * which is where the guard lives and therefore where the listener has to be.
+   * This one is what decides which section it lands on afterwards.
    */
   useEffect(() => {
     const follow = () => setSection(sectionFrom(window.location.hash));
