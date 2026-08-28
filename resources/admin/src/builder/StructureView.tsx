@@ -395,13 +395,31 @@ export function StructureView({
       </Description>
 
       {/*
-        Present from the first render rather than mounted when there is
-        something to say: a live region a screen reader has not been watching
-        announces nothing the first time it fills.
+        **The region is always here; the SENTENCE is only here when there is
+        one.**
+
+        Present from the first render is not negotiable: a live region a screen
+        reader has not been watching announces nothing the first time it fills,
+        so mounting it when something happens is the same as not having it. But
+        `min-h-[1lh]` reserved a blank line under the hint on every visit — ~45px
+        of nothing between the instructions and the tree, permanently, for a
+        sentence that appears after a move and then goes.
+
+        So the live region takes the `sr-only` recipe and reserves no layout at
+        all, and a second, plain paragraph prints the same words visibly only
+        while there are words. Both read the one `said`, so they cannot say
+        different things — and the visible one is `aria-hidden` because the
+        first one has already announced it.
       */}
-      <p role="status" className="m-0 min-h-[1lh] text-pretty text-foreground">
+      <p role="status" className="sr-only">
         {said}
       </p>
+
+      {said !== null && (
+        <p aria-hidden="true" className="m-0 text-pretty text-note text-foreground">
+          {said}
+        </p>
+      )}
 
       <BlockTree
         tree={template.tree}

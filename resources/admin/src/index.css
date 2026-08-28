@@ -1225,7 +1225,15 @@
   font-size: inherit;
 }
 
-#wconvert-admin .wconvert-editor :is(input[type="radio"], input[type="checkbox"]) {
+/*
+ * **The inspector is named beside the editor, and forgetting it is what left
+ * `Show this` touching its own box.** The only separation between the checkbox
+ * and its label was JSX's `{' '}`, because this rule is scoped to
+ * `.wconvert-editor` and the Content tab's inspector renders outside one.
+ */
+#wconvert-admin
+  :is(.wconvert-editor, .wconvert-inspector)
+  :is(input[type="radio"], input[type="checkbox"]) {
   margin-inline-end: 0.375rem;
 }
 
@@ -1715,11 +1723,21 @@
   overflow-x: auto;
 }
 
+/*
+ * **2.5rem, and the row's height was exactly the button inside it.**
+ *
+ * It was `--control-height-sm` with `padding-block: 0` — so the 32px `icon-sm`
+ * actions touched the border above and the border below, and thirty rows read
+ * as one dense block with no air in it. 40px with 4px of block padding gives a
+ * 32px control room to stand in, and it is what lets the twist below reach
+ * 24 × 24 without any button changing size.
+ */
 .wconvert-block {
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  min-block-size: var(--control-height-sm);
+  min-block-size: 2.5rem;
+  padding-block: 0.25rem;
   padding-inline: 0.5rem;
   padding-inline-start: calc(0.5rem + var(--wconvert-depth, 0) * 1rem);
   border-block-start: 1px solid var(--border);
@@ -1762,19 +1780,52 @@
 /*
  * A fixed box whether or not there is a chevron in it, so the names of blocks
  * that hold nothing line up with the names of blocks that do.
+ *
+ * ===========================================================================
+ * 24 × 24, BECAUSE NOTHING ELSE ON THE PAGE EXPANDS A ROW.
+ * ===========================================================================
+ * It was 20 × 20, under WCAG 2.2 SC 2.5.8, and the exceptions have to be read
+ * one at a time rather than waved at:
+ *
+ * - **Equivalent** is what saves the GRIP beside it — the grip reorders a
+ *   block, and the row's ↑ ↓ buttons and the `⋯` menu's *Move up* / *Move down*
+ *   are 32px pointer controls on the same page doing exactly that job. It is
+ *   the same argument ADR 0038 already makes for SC 2.5.7, and it means the
+ *   grip passes at 16px and is left alone.
+ * - It does **not** save the twist. Expanding a row is done by this control and
+ *   by ← →, and arrow keys are keyboard — which 2.5.8 does not count.
+ * - **Spacing** cannot save it either: a 24px circle centred on a 20px twist
+ *   would intersect the label button 4px away.
+ *
+ * So it grows, and the row's new 40px height is what it grows into. The chevron
+ * inside stays 14px: what changes is the target, not the picture.
  */
 .wconvert-block__twist {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  inline-size: 1.25rem;
-  block-size: 1.25rem;
+  inline-size: 1.5rem;
+  block-size: 1.5rem;
   flex: none;
   padding: 0;
   border: 0;
+  border-radius: var(--radius);
   background: none;
   color: var(--muted-foreground);
   cursor: pointer;
+}
+
+/*
+ * **The `--ring` treatment every other control in this file has.** These two
+ * are bare `<button>`s and fell back to the UA outline — a different shape and
+ * colour from the ring on the buttons beside them, and `.wconvert-blocks` is an
+ * `overflow-x: auto` scroll container, which makes it a scroll container on
+ * BOTH axes: a UA ring on a row at the edge can be clipped by it.
+ */
+.wconvert-block__twist:focus-visible,
+.wconvert-block__label:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: -2px;
 }
 
 .wconvert-block__twist > svg {
@@ -1812,6 +1863,7 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   color: var(--muted-foreground);
+  font-size: var(--text-note);
 }
 
 /*
@@ -1847,6 +1899,13 @@
 }
 
 /*
+ * The words are quieter than the kind, which is the hierarchy the row was
+ * missing: *what it is*, then *what it says*. Both were 14px `--foreground`
+ * against `--muted-foreground`, so a long headline competed with the name of
+ * the thing holding it.
+ */
+
+/*
  * ---------------------------------------------------------------------------
  * THE TOOLS ARE THERE, AND THEY ARE QUIET UNTIL THEY ARE WANTED.
  *
@@ -1861,10 +1920,22 @@
  * makes it work on a touch screen, where there is no hover and the tap that
  * selects is the tap that has to bring the tools up.
  * ------------------------------------------------------------------------- */
+/*
+ * **`pointer-events: none`, because `opacity: 0` does not stop a click.** At
+ * rest every row carried two invisible, clickable buttons — a merchant aiming
+ * at a row's name and landing 30px right of it moved the block instead. The
+ * cells stay in the DOM and in the LAYOUT, which is not negotiable: the
+ * treegrid's roving tabindex needs every row to have the same number of cells
+ * (ADR 0038), so `display: none` and `visibility: hidden` are both out.
+ *
+ * Restored below on the same three states that restore the opacity, so the
+ * property is never on without the other.
+ */
 .wconvert-block__action {
   display: inline-flex;
   flex: none;
   opacity: 0;
+  pointer-events: none;
   transition: opacity 120ms ease;
 }
 
@@ -1875,6 +1946,7 @@
 .wconvert-block:focus-within .wconvert-block__action,
 .wconvert-block[data-selected='true'] .wconvert-block__action {
   opacity: 1;
+  pointer-events: auto;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1892,11 +1964,19 @@
  * **words will be lost** marks a block with no Slot Role, whose text has no
  * seam to travel on when the merchant switches design.
  * ------------------------------------------------------------------------- */
+/*
+ * **Block padding is what makes a chip a chip.** These had `padding-inline`
+ * only, on a baseline-aligned line — so *counted* in green read as a green word
+ * in the block's own copy rather than as a mark on the row, which is the one
+ * thing it must not be mistaken for.
+ */
 .wconvert-block__chip {
   flex: none;
+  padding-block: 0.0625rem;
   padding-inline: 0.375rem;
   border-radius: var(--radius);
   font-size: var(--text-micro);
+  line-height: var(--text-micro--line-height);
   white-space: nowrap;
 }
 
@@ -1917,6 +1997,7 @@
  */
 .wconvert-block__pane {
   flex: none;
+  padding-block: 0.0625rem;
   padding-inline: 0.375rem;
   border-radius: var(--radius);
   background: var(--surface);
@@ -1986,8 +2067,13 @@
  * never in the row, both of which ADR 0039 still rules out for reasons that
  * have nothing to do with width.
  * ------------------------------------------------------------------------- */
+/*
+ * **1rem, matching every other card's body.** It was 0.75rem, which put the
+ * inspector's fields 4px inside the tree's rows beside them — the same 4px
+ * stagger the reading screens' tables had down their left edge.
+ */
 .wconvert-inspector {
-  padding: 0.75rem;
+  padding: 1rem;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--card);
@@ -2013,8 +2099,17 @@
   flex-wrap: wrap;
 }
 
+/*
+ * **A heading with a heading's size.** It is an `<h4>` and it had only a weight,
+ * so it rendered at body size — exactly as large as the field labels under it,
+ * which is a heading that is not one. The rule that gives the builder's editors
+ * their heading size is scoped to `.wconvert-editor` and the inspector is not
+ * inside it, so it is stated here against the same token.
+ */
 .wconvert-inspector__name {
   margin: 0;
+  font-size: var(--text-heading);
+  line-height: var(--text-heading--line-height);
   font-weight: 600;
 }
 
@@ -2338,22 +2433,14 @@
   color: var(--success);
 }
 
-.wconvert-slot {
-  margin-block-end: 1rem;
-  padding: 0.75rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-}
-
 /*
- * The block that edits the slot the preview is outlining. The SAME ring on
- * both sides of the boundary is the whole affordance: one thing is selected
- * and it is legible in two places at once (ADR 0040).
+ * **`.wconvert-slot` and its `[data-selected]` rule are gone.** They drew a
+ * bordered box per slot in the old settings panel, which the block tree and the
+ * inspector replaced — the selection ring now lives on `.wconvert-block`, where
+ * ADR 0040's "one thing selected, legible in two places" is actually drawn.
+ * Nothing in this tree has carried the class since. `.wconvert-slot__key` and
+ * `.wconvert-slot__link` below are still real and are not the same rule.
  */
-.wconvert-slot[data-selected="true"] {
-  border-color: var(--ring);
-  box-shadow: 0 0 0 1px var(--ring);
-}
 
 /*
  * **The link is a part of the slot above it, not a second slot.** It was the
@@ -2481,9 +2568,15 @@
   cursor: pointer;
 }
 
+/*
+ * **It sits UNDER the fields now**, so the space it needs is above it and the
+ * inspector's own `margin-block-start` rule already supplies that. The bottom
+ * margin it used to carry was the gap to the first field and is now a trailing
+ * gap inside the card.
+ */
 .wconvert-slot__shown {
-  display: block;
-  margin-block-end: 0.5rem;
+  display: flex;
+  align-items: center;
 }
 
 .wconvert-rules {

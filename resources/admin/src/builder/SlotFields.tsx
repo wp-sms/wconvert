@@ -40,17 +40,6 @@ export interface SlotFieldsProps {
 export function SlotFields({ slot, labels, onValue, onHidden }: SlotFieldsProps) {
   return (
     <>
-      {slot.hideable && (
-        <label className="wconvert-slot__shown">
-          <input
-            type="checkbox"
-            checked={!slot.hidden}
-            onChange={(event) => onHidden(!event.target.checked)}
-          />{' '}
-          {__('Show this', 'wconvert')}
-        </label>
-      )}
-
       {slot.keys.map((key) => {
         const label = nameOf(labels.keys, key);
         const held = typeof slot.values[key] === 'string' ? (slot.values[key] as string) : '';
@@ -78,6 +67,24 @@ export function SlotFields({ slot, labels, onValue, onHidden }: SlotFieldsProps)
           </label>
         );
       })}
+
+      {/*
+        **Under the fields, not over them.** The thing a merchant opened this
+        panel for is the TEXT; whether the slot is shown at all is a property
+        *of* that text, and a switch above the box it applies to is read as the
+        panel's first question. It also put the one control that can empty the
+        panel where the eye lands first.
+      */}
+      {slot.hideable && (
+        <label className="wconvert-slot__shown">
+          <input
+            type="checkbox"
+            checked={!slot.hidden}
+            onChange={(event) => onHidden(!event.target.checked)}
+          />
+          {__('Show this', 'wconvert')}
+        </label>
+      )}
     </>
   );
 }

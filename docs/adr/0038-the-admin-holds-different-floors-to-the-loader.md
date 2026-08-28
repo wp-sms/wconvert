@@ -163,6 +163,31 @@ Three pointer paths and two keyboard ones (`Alt+↑`/`Alt+↓`, and arrowing to 
 buttons). A row that replaced the buttons with the grip would fail this
 criterion outright, however good it looked.
 
+### SC 2.5.8: the grip passes at 16px and the twist does not
+
+*Completed by #75, which measured the row rather than reasoning about it.* The
+grip is 16 × 14 and the twist was 20 × 20, both under SC 2.5.8's 24 × 24 CSS px.
+**Only one of them is a failure**, and the difference is worth stating rather
+than fixing both blindly.
+
+**The grip passes, under Equivalent.** The exception reads *"the function can be
+achieved through a different control on the same page that meets this
+criterion"* — the grip reorders a block, and the row's ↑ ↓ buttons and the `⋯`
+menu's *Move up* / *Move down* are 32px pointer controls on the same page doing
+exactly that. It is the same three-paths argument the section above makes for
+2.5.7, read against a different criterion.
+
+**The twist does not.** It expands a row, and no other *pointer* control on the
+page does — ← and → are keyboard, which 2.5.8 does not count, exactly as 2.5.7
+does not count `Alt+↑`. Spacing cannot save it either: a 24px circle centred on
+a 20px twist intersects the label button 4px away. So it is 24 × 24, and the
+row's height went to 40px with 4px of block padding to hold it — which the row
+needed anyway, having been exactly as tall as the 32px button inside it.
+
+**The lesson for the next control added to this row:** the exceptions are read
+one at a time against the specific function, and *"there is a keyboard way"* is
+never one of them.
+
 ## The testing line from #29 holds, and the existing tests become the net
 
 [#29](https://github.com/navidkashani/wconvert/issues/29) says *"Not a TDD seam:
