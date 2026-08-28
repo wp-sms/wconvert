@@ -14,11 +14,13 @@ import { slotsOf, withHidden, withValue, type Path } from './panel';
 import { nodesOf, samePath } from './structure/tree';
 import { swapLabel, swapNameOf, swapSaid, swapsFor, withSwapped } from './structure/swap';
 import type { ConvertingAct } from './structure/catalogue';
+import { Description } from '../shell/Description';
 import { nameOf, type TemplateLabels } from '../templates/api';
 import type { Template } from '@renderer/types';
 
 /**
- * The selected block's own controls, under the list it was selected in.
+ * The selected block's own controls, beside the list it was selected in — or
+ * under it, where there is no room beside.
  *
  * ============================================================================
  * A BLOCK IS EDITED WHERE IT IS SELECTED. THAT IS THE WHOLE POINT.
@@ -28,12 +30,28 @@ import type { Template } from '@renderer/types';
  * finding that block among all of them, typing, and coming back. Two places to
  * look for one act.
  *
- * So the controls come to the selection. The tab column is 616px at its widest
- * and ~392px at 1024px (`main` is `max-w-6xl`), which is not enough for a
- * side-by-side split — the inspector goes underneath, which is where a list and
- * its detail belong anyway, and it settles the placement rule ADR 0039's table
- * only answered for bulk actions: **a control that acts on a selection lives
- * under the list the selection is made in.**
+ * So the controls come to the selection, and it settles the placement rule
+ * ADR 0039's table only answered for bulk actions: **a control that acts on a
+ * selection lives WITH the list the selection is made in.**
+ *
+ * ============================================================================
+ * "616px, MEASURED RATHER THAN PREFERRED" WAS TRUE AND IS NOT ANY MORE.
+ * ============================================================================
+ * This said the split was unavailable: *"the tab column is 616px at its widest
+ * (`main` is `max-w-6xl`) and ~392px at 1024px"*. The measurement was honest,
+ * and 616 was arithmetic off a number chosen for a different kind of screen —
+ * `1152 − 48 padding − 24 gap − 464 aside` — not a decision about an editor.
+ * The builder now holds a measure of its own (`Shell`'s `wide`), and above
+ * 48rem of container `index.css` puts the tree and this panel side by side.
+ *
+ * **Beside, and not merely wider.** The fields in here are `widefat`, so a
+ * single column given the extra 288px would spend it turning a *Placeholder*
+ * box into an 870px field for `you@example.com`. The width buys a second
+ * column, and the second column is also what stops a selection made low in a
+ * long tree from putting these controls below the fold.
+ *
+ * Under it below the breakpoint, which is exactly what shipped and is where a
+ * list and its detail belong when there is one column to put them in.
  *
  * ============================================================================
  * IT IS NEVER EMPTY, AND IT NEVER DRAWS AN EMPTY BOX.
@@ -95,9 +113,7 @@ export function BlockInspector({ template, labels, path, act, onChange, onSwap }
   if (block === null || path === null) {
     return (
       <div className="wconvert-inspector">
-        <p className="m-0 text-pretty text-muted-foreground">
-          {__('Pick a block above to edit what it says.', 'wconvert')}
-        </p>
+        <Description>{__('Pick a block to edit what it says.', 'wconvert')}</Description>
       </div>
     );
   }
@@ -115,9 +131,10 @@ export function BlockInspector({ template, labels, path, act, onChange, onSwap }
       <div className="wconvert-inspector__head">
         {/*
           **A heading, not a bolded line.** The inspector is a second region
-          under the tree and a screen reader walking headings has to be able to
-          land on it — and it is where the merchant's focus arrives when they
-          Tab out of the grid.
+          in this tab — under the tree in a narrow container and beside it in a
+          wide one — and a screen reader walking headings has to be able to land
+          on it either way. It is also where the merchant's focus arrives when
+          they Tab out of the grid.
         */}
         <h4 id={heading} className="wconvert-inspector__name">
           {name}
@@ -137,7 +154,7 @@ export function BlockInspector({ template, labels, path, act, onChange, onSwap }
       </div>
 
       {slot === null ? (
-        <p className="m-0 text-pretty text-muted-foreground">
+        <Description>
           {block.level === 1
             ? __(
                 'A step is what the blocks are in. Pick one of the blocks listed under it to edit what it says.',
@@ -148,7 +165,7 @@ export function BlockInspector({ template, labels, path, act, onChange, onSwap }
                 __('%s holds blocks rather than words. Pick one of the blocks inside it.', 'wconvert'),
                 name,
               )}
-        </p>
+        </Description>
       ) : (
         /*
           **Keyed by the path**, so switching blocks builds fresh controls and

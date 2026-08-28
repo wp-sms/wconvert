@@ -21,6 +21,7 @@ import {
   DataTableRow,
 } from '../shell/DataTable';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
+import { Description } from '../shell/Description';
 import { EmptyState } from '../shell/EmptyState';
 import { Region, RegionError, RegionErrorState } from '../shell/Region';
 import { TableSkeleton } from '../shell/TableSkeleton';
@@ -360,9 +361,15 @@ function Row({
       <DataTableCell label={__('Status', 'wconvert')} className="whitespace-normal">
         <Badge variant={BADGE[status]}>{statusLabel(status)}</Badge>
         {status === 'suspended' && optin.suspended !== null && (
-          <span className="mt-1 block text-pretty text-xs text-muted-foreground">
+          /*
+            **The reason comes UP a size, and it was the only 12px body text in
+            the admin.** Why an Optin stopped showing is the most important
+            explanatory line on this screen, and it was set smaller than every
+            other sentence on it. {@see Description} is the role.
+          */
+          <Description as="span" className="mt-1 block">
             {optin.suspended}
-          </span>
+          </Description>
         )}
       </DataTableCell>
 

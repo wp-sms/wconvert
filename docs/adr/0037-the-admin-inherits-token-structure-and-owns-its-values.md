@@ -9,6 +9,20 @@ WConvert's.
 `--primary` is petrol `#0f6e79`. `--radius` stays `0.25rem` and the
 `4px 4px 0` shadow stays, both taken from WSMS deliberately.
 
+_Amended: **type is the fourth axis, and it was missing for as long as this ADR
+existed.** Colour, radius, shadow and control height were tokenised here; type
+was not, so every `text-*` in the admin was stock Tailwind chosen per call site.
+Measured on the builder before it was fixed: 103 of ~115 text elements were 14px,
+and nine sizes were in use — one of which (20.8px) matched no element and one of
+which (18px) existed only because a vendored `AlertDialogTitle` shipped with
+`text-lg`. There is now a six-role scale under `--text-*` in `index.css`
+(`micro` 12, `note` 13, `body` 14, `heading` 16, `title` 24, `figure` 30), and it
+follows the same rule as everything else here: the token NAMES are Tailwind's
+documented `--text-*` contract, so a vendored component's `text-sm` still
+resolves, and the VALUES and the roles are WConvert's. The role that did not
+exist anywhere before is `note` — a description had no size of its own and was
+therefore the same size as the body it explained._
+
 ## Structure is what makes the components portable; values are what make it a product
 
 The two halves of the sibling relationship pull opposite ways. Family
@@ -97,6 +111,13 @@ acquires a `--primary` that fails on the one control nobody screenshotted.
   ([ADR 0010](0010-templates-are-configuration-not-documents.md)), and the two
   vocabularies never meet — the admin's `--primary` has no path into a popup, and
   "copy my theme's colours" copies the *site's* theme, never WConvert's.
+- **A type scale is a named set of ROLES, not a set of sizes.** Six exist and a
+  seventh is a decision rather than a class: `micro` (table headers, chips, stat
+  labels), `note` (descriptions and help), `body`, `heading` (a region's title, a
+  section inside an editor), `title` (the page's `<h1>`, and only that) and
+  `figure` (the one emphasised number per [[Goal]]). Reaching for a raw
+  `text-lg` is what produced the 18px that existed for no reason but an
+  upstream default.
 - **A future WConvert brand does not start from zero.** Whatever a logo and a
   wordmark eventually say, the surface they land on already has a committed
   colour rather than a placeholder to be negotiated then.

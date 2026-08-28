@@ -50,6 +50,29 @@ beforeEach(() => {
 });
 
 describe('a row', () => {
+  /**
+   * **The reason an Optin stopped showing is a description, not fine print.**
+   * It was `text-xs` — the only 12px body text in the admin, and the smallest
+   * thing on the screen carrying its most important explanatory sentence.
+   * {@see Description} is the role, and it renders at `--text-note`.
+   */
+  it('states a suspension reason at the description size, not smaller', async () => {
+    optins.listOptins.mockResolvedValue([
+      {
+        ...OPTIN,
+        published_at: '2026-01-01T00:00:00+00:00',
+        suspended: 'Its Goal is no longer available on this site.',
+      },
+    ]);
+
+    render(<OptinList onEdit={() => undefined} />);
+
+    const reason = await screen.findByText('Its Goal is no longer available on this site.');
+
+    expect(reason).toHaveClass('text-note');
+    expect(reason).not.toHaveClass('text-xs');
+  });
+
   it('names its Goal the way the merchant does', async () => {
     render(<OptinList onEdit={() => undefined} />);
 

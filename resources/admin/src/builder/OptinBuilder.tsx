@@ -13,12 +13,14 @@ import { Check, Monitor, Smartphone } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { BackLink, BuilderSkeleton } from '../shell/BuilderSkeleton';
+import { Description } from '../shell/Description';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { PageAction } from '../shell/PageActions';
 import { Region, RegionBody, RegionError, RegionErrorState } from '../shell/Region';
 import { Stat, StatRow } from '../shell/Stat';
 import { messageOf } from '../shell/loadable';
 import { Gallery } from './Gallery';
+import { DesignToolbar } from './DesignToolbar';
 import { DestinationsEditor } from './DestinationsEditor';
 import { Preview } from './Preview';
 import { RulesEditor } from './RulesEditor';
@@ -171,6 +173,46 @@ const PHONE_WIDTH = '375px';
  */
 const OWN_WIDTH = TOKENS.find((token) => token.name === 'width')?.fallback ?? '28rem';
 
+/**
+ * The `<input>` types a browser keeps its own undo stack for.
+ *
+ * **Listed rather than "is it an input".** A checkbox, a radio and a colour
+ * swatch are `<input>`s with nothing to undo, and a ⌘Z pressed on one of those
+ * should step the DESIGN — which is the whole point of the shortcut. Only a box
+ * you type characters into has a stack of its own to defer to.
+ */
+const TYPES_INTO = new Set(['text', 'search', 'url', 'tel', 'email', 'password', 'number']);
+
+/** Is this where the merchant is typing, and does it already own ⌘Z? */
+function typesInto(target: EventTarget | null): boolean {
+  if (!(target instanceof HTMLElement)) {
+    return false;
+  }
+
+  return (
+    target.isContentEditable ||
+    target instanceof HTMLTextAreaElement ||
+    (target instanceof HTMLInputElement && TYPES_INTO.has(target.type))
+  );
+}
+
+/**
+ * The [[Slot Role]] key at a path, or null where the block has none.
+ *
+ * A layout has no slot and a role-less leaf has no key, and both are addressable
+ * — which is exactly why the selection carries a `Path` beside the key
+ * (`slots.ts`). The preview simply cannot outline what it cannot name.
+ */
+function keyAt(template: Template | undefined, path: Path): SlotKey | null {
+  if (template === undefined) {
+    return null;
+  }
+
+  const slot = slotsOf(template.tree).find((each) => samePath(each.path, path));
+
+  return slot === undefined ? null : keyOfSlot(slot);
+}
+
 export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
   const [name, setName] = useState('');
   const [config, setConfig] = useState<Config | null>(null);
@@ -228,6 +270,15 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
    * appears. Null until it lands, which only delays the Add menu's button row.
    */
   const [act, setAct] = useState<ConvertingAct | null>(null);
+  /*
+   * **A row the screen has asked the tree to put focus on.** The verdict chip
+   * is the only thing that asks: following *"this block will lose its words"*
+   * to the block it names is a selection AND focus on that row, and the chip
+   * now lives in {@see DesignToolbar} on either of two tabs rather than inside
+   * the tree. A fresh object per request, because identity is the signal —
+   * asking twice for the same row has to be two requests.
+   */
+  const [focusRow, setFocusRow] = useState<{ path: Path } | null>(null);
   const [leaving, setLeaving] = useState(false);
   const back = useRef<HTMLButtonElement>(null);
   /** See the history effect below: which control the pending change came from. */
@@ -462,12 +513,17 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
     return () => window.removeEventListener('beforeunload', warn);
   }, [dirty]);
 
-  const edit = (changes: Config, coalesce?: string) => {
+  /*
+   * Memoised so the keyboard shortcut below can list what it depends on and
+   * bind once per history step rather than once per keystroke. Every setter it
+   * reaches is stable and `coalescing` is a ref, so it has nothing to capture.
+   */
+  const edit = useCallback((changes: Config, coalesce?: string) => {
     coalescing.current = coalesce ?? null;
     setConfig((current) => (current === null ? current : { ...current, ...changes }));
     setSaved(false);
     setDirty(true);
-  };
+  }, []);
 
   const save = (next: Config = config ?? {}) => {
     setBusy(true);
@@ -547,26 +603,98 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
    * new entry, and undo would immediately have something to redo that was not
    * an edit.
    */
-  const stepping = (move: (held: History<Template>) => History<Template>) => () => {
-    if (past === null) {
-      return;
-    }
+  const stepping = useCallback(
+    (move: (held: History<Template>) => History<Template>) => () => {
+      if (past === null) {
+        return;
+      }
 
-    const next = move(past);
+      const next = move(past);
 
-    if (next === past) {
-      return;
-    }
+      if (next === past) {
+        return;
+      }
 
-    setPast(next);
-    edit({ template: next.present });
+      setPast(next);
+      edit({ template: next.present });
+    },
+    [past, edit],
+  );
+
+  /*
+   * ========================================================================
+   * ⌘Z AND ⇧⌘Z, WHICH `history.ts` WAS WRITTEN FOR AND NEVER WIRED TO.
+   * ========================================================================
+   * {@link undo} returns its input by identity on a no-op, and its own comment
+   * says that is *"what lets a caller wire a keyboard shortcut without asking
+   * `canUndo` first"*. There was no such caller. In an editor this is expected
+   * rather than a nicety — a merchant who has just deleted a block reaches for
+   * ⌘Z before they look for a button.
+   *
+   * **On `window`, not on the builder's own element.** A keydown is delivered
+   * to whatever holds focus, and after a click on empty page that is `<body>`
+   * — which is an ANCESTOR of this screen, so a listener on the screen would
+   * never see it. The shortcut has to work from wherever the merchant's focus
+   * happens to be, which is what `window` means here.
+   *
+   * **It stands aside for anything with an undo stack of its own.** The name
+   * field and every text box in the inspector have one, and a ⌘Z that stepped
+   * the design instead of the sentence being typed would be a shortcut that
+   * takes back the wrong thing. A checkbox, a radio and a colour swatch have no
+   * such stack, so those keep the design's.
+   */
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (!(event.metaKey || event.ctrlKey) || event.altKey || event.key.toLowerCase() !== 'z') {
+        return;
+      }
+
+      if (typesInto(event.target)) {
+        return;
+      }
+
+      /*
+       * Prevented whether or not there is a step to take. On a fresh screen
+       * ⌘Z does nothing quietly, which is what it does everywhere else — and
+       * what it must NOT do is fall through to the browser's own undo on a
+       * page whose editing surface this is.
+       */
+      event.preventDefault();
+      stepping(event.shiftKey ? redo : undo)();
+    };
+
+    window.addEventListener('keydown', onKeyDown);
+
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [stepping]);
+
+  /**
+   * Open the block a problem is about, from wherever the merchant read about
+   * it.
+   *
+   * **The tab switch is the part only this level can do.** The verdict is on
+   * the Design tab as well now, and a sentence pointing at a block is useless
+   * if following it lands a selection on a list nobody is looking at.
+   */
+  const goTo = (path: Path) => {
+    setTab('content');
+    chooseFromTree(keyAt(template, path), path);
+    setFocusRow({ path });
+  };
+
+  /** Undo and redo as the toolbar takes them, on either tab that draws it. */
+  const history = {
+    canUndo: past !== null && canUndo(past),
+    canRedo: past !== null && canRedo(past),
+    undo: stepping(undo),
+    redo: stepping(redo),
   };
 
   const leave = () => (dirty ? setLeaving(true) : onClose());
 
   if (fatal !== null) {
     return (
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-5">
         <PageAction>
           <BackLink onClose={onClose} />
         </PageAction>
@@ -592,16 +720,18 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-5">
       {/*
         **The same band every other screen has, and it IS the frame's.** The
         builder has no `section`, so the frame draws it no title — but it does
         have a title of its own and an action that acts on the whole Optin, and
         those belong on the same surface as every other screen's. Drawing a
         lookalike inside `<main>` got the surface right and the width wrong:
-        `main` is a centred `max-w-6xl`, so the rule under the band stopped a
+        `main` is a centred measure, so the rule under the band stopped a
         hundred pixels short of the screen. `Shell`'s `bareHeader` renders the
-        real band and {@see PageAction} portals this into it.
+        real band and {@see PageAction} portals this into it — and the band and
+        `main` now read one `--wconvert-measure`, which is what stops that
+        mismatch returning when this screen asks for the wider one.
 
         All three arms of this screen portal into the same one — and so does
         {@see BuilderSkeleton} on the far side of the lazy boundary — so a slow
@@ -718,6 +848,23 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
             <TabsContent value="design" forceMount>
               <Activity mode={tab === 'design' ? 'visible' : 'hidden'}>
                 <Region label={__('The design', 'wconvert')}>
+                  {/*
+                    **The same toolbar the Content tab has, because its scope is
+                    the design and this tab edits the design.** Applying a
+                    preset is one undo entry and so is picking a gallery card;
+                    without this, taking either back meant knowing that Undo
+                    lived on another tab. The verdict is here for the mirror
+                    reason: the contrast failures it reports are caused by the
+                    colours chosen a few inches below it.
+                  */}
+                  {entry !== null && (
+                    <DesignToolbar
+                      template={entry}
+                      act={act ?? 'submit'}
+                      history={history}
+                      onGoTo={goTo}
+                    />
+                  )}
                   <RegionBody className="wconvert-editor flex flex-col gap-4">
                     <TabNote>{__('Saves straight away, and keeps your words.', 'wconvert')}</TabNote>
                     <Gallery
@@ -775,20 +922,23 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
                       {__('Pick a design first.', 'wconvert')}
                     </RegionBody>
                   ) : (
-                    <StructureView
-                      template={entry}
-                      labels={gallery.labels}
-                      act={act ?? 'submit'}
-                      selected={selection?.path ?? null}
-                      onSelect={chooseFromTree}
-                      onChange={(next, coalesce) => edit({ template: next }, coalesce)}
-                      history={{
-                        canUndo: past !== null && canUndo(past),
-                        canRedo: past !== null && canRedo(past),
-                        undo: stepping(undo),
-                        redo: stepping(redo),
-                      }}
-                    />
+                    <>
+                      <DesignToolbar
+                        template={entry}
+                        act={act ?? 'submit'}
+                        history={history}
+                        onGoTo={goTo}
+                      />
+                      <StructureView
+                        template={entry}
+                        labels={gallery.labels}
+                        act={act ?? 'submit'}
+                        selected={selection?.path ?? null}
+                        onSelect={chooseFromTree}
+                        onChange={(next, coalesce) => edit({ template: next }, coalesce)}
+                        focus={focusRow}
+                      />
+                    </>
                   )}
                 </Region>
               </Activity>
@@ -999,7 +1149,7 @@ function PreviewColumn({
  * the one place that was always going to say it.
  */
 function TabNote({ children }: { children: ReactNode }) {
-  return <p className="m-0 text-pretty text-muted-foreground">{children}</p>;
+  return <Description>{children}</Description>;
 }
 
 /**

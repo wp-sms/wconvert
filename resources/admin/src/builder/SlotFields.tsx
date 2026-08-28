@@ -23,9 +23,9 @@ import type { Slot } from './panel';
  *
  * **It draws no heading and no box.** The panel headed each slot with a
  * `<legend>` inside a bordered `<fieldset>`, because it was drawing fifteen of
- * them in a column and they had to be told apart. An inspector under the tree
- * is showing one, already named by the row that selected it, so the frame is
- * the caller's decision rather than this file's.
+ * them in a column and they had to be told apart. An inspector is showing ONE,
+ * already named by the row that selected it, so the frame is the caller's
+ * decision rather than this file's.
  */
 
 export interface SlotFieldsProps {

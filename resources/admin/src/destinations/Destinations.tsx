@@ -16,6 +16,7 @@ import {
   DataTableHead,
   DataTableRow,
 } from '../shell/DataTable';
+import { Description } from '../shell/Description';
 import { EmptyState } from '../shell/EmptyState';
 import { Region, RegionBody, RegionError, RegionErrorState, RegionHeader } from '../shell/Region';
 import { TableSkeleton } from '../shell/TableSkeleton';
@@ -417,7 +418,7 @@ function Configured({
                 onChange={(value) => setDraft({ ...draft, [key]: value })}
               />
               {field.description !== undefined && (
-                <p className="m-0 text-pretty text-muted-foreground">{field.description}</p>
+                <Description>{field.description}</Description>
               )}
             </div>
           ))}

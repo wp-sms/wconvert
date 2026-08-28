@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { CircleAlert } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
+import { Description } from './Description';
 import { cn } from '../lib/utils';
 
 /**
@@ -71,13 +72,13 @@ export function RegionHeader({
   const Heading = level === 3 ? 'h3' : 'h2';
 
   return (
-    <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-1 border-b border-border px-4 py-3">
+    <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-1 border-b border-border px-4 py-2.5">
       <div className="min-w-0">
-        <Heading className="m-0 text-base font-semibold leading-tight tracking-tight text-foreground">
+        <Heading className="m-0 text-heading font-semibold leading-tight tracking-tight text-foreground">
           {title}
         </Heading>
         {description !== undefined && (
-          <p className="mt-1 mb-0 max-w-2xl text-pretty text-muted-foreground">{description}</p>
+          <Description className="mt-1">{description}</Description>
         )}
       </div>
       {trailing}

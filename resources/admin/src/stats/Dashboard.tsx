@@ -218,7 +218,7 @@ function GoalRegion({ card, window }: { card: GoalReport; window: DashboardPaylo
         }
       />
 
-      <RegionBody className="flex flex-col gap-5">
+      <RegionBody className="flex flex-col gap-4">
         <StatRow>
           <Stat label={card.headline_label} value={formatCount(card.headline)} emphasis />
           <Stat label={__('Impressions', 'wconvert')} value={formatCount(card.impressions)} />

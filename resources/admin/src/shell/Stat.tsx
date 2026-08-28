@@ -12,6 +12,12 @@ import { cn } from '../lib/utils';
  * large and lined up, and the label sits under it in the small-caps register the
  * table headers already use (ADR 0039).
  *
+ * **That last claim used to be false.** The label was `text-xs tracking-wide` —
+ * 12px at 0.025em — against the table header's 0.04em, so the docblock named a
+ * register the component did not actually share. `text-micro` is the register,
+ * from the type scale, and the table header reads the same token: one spelling,
+ * so the two cannot drift apart again.
+ *
  * It wraps rather than scrolling: four stats at 360px are two rows of two, and
  * every one of them is still a number with its name under it.
  */
@@ -54,13 +60,22 @@ export function Stat({
 }) {
   return (
     <div className="flex flex-col-reverse gap-0.5">
-      <dt className="text-xs font-semibold uppercase leading-tight tracking-wide text-muted-foreground">
+      <dt className="text-micro uppercase text-muted-foreground">
         {label}
       </dt>
       <dd
         className={cn(
           'm-0 tabular-nums leading-none tracking-tight text-foreground',
-          emphasis ? 'text-3xl font-semibold' : 'text-xl font-medium',
+          /*
+            **Two sizes, both from the scale, and the gap between them is the
+            hierarchy.** The secondary number was `text-xl` — 20px, a size that
+            existed nowhere else in the admin and that read as "slightly less
+            headline". `--text-heading` is the size of a card's title, which is
+            what a stat that is not the headline is: a labelled figure, legible
+            at a glance, not competing with the one number the Goal is judged
+            on.
+          */
+          emphasis ? 'text-figure font-semibold' : 'text-heading font-medium',
         )}
         title={hint}
       >

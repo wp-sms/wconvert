@@ -1,19 +1,14 @@
-import { useMemo, useState, type ReactNode } from 'react';
-import { __, _n, sprintf } from '@wordpress/i18n';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { __, sprintf } from '@wordpress/i18n';
 import {
   ArrowDown,
   ArrowUp,
   Blocks,
-  Check,
   Copy,
   MoreHorizontal,
   Plus,
-  Redo2,
-  TriangleAlert,
   Trash2,
-  Undo2,
 } from 'lucide-react';
-import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
 import { Button } from '../components/ui/button';
 import {
   DropdownMenu,
@@ -25,16 +20,15 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '../components/ui/dropdown-menu';
+import { Description } from '../shell/Description';
 import { EmptyState } from '../shell/EmptyState';
 import { RegionBody } from '../shell/Region';
-import { Toolbar } from '../shell/Toolbar';
 import { BlockInspector } from './BlockInspector';
 import { BlockTree } from './BlockTree';
 import { useBlockDrag } from './useBlockDrag';
 import { nameOfBlock, sentenceFor, type Control } from './BlockRow';
 import { additionsIn, freeRoleFor, nodeFor, type ConvertingAct } from './structure/catalogue';
 import { whyDuplicationIsRefused, whyRemovalIsRefused } from './structure/guards';
-import { problemsIn, type Problem } from './structure/problems';
 import {
   countAt,
   nodeAt,
@@ -56,8 +50,23 @@ import type { Template, TemplateTree } from '@renderer/types';
 
 /**
  * The **Content** tab: what this design is made of, where each part sits, the
- * five things a merchant may do to it — and, under the list, the words of
- * whichever block is selected.
+ * five things a merchant may do to it — and, beside the list or under it, the
+ * words of whichever block is selected.
+ *
+ * ============================================================================
+ * UNDO, REDO AND THE VERDICT ARE NOT IN HERE. THEIR SCOPE IS THE DESIGN.
+ * ============================================================================
+ * They were, in this file's own `Toolbar`, and every one of them acts on the
+ * whole draft rather than on this tab: a token changed on **Design** is a full
+ * undo entry, picking a design is another, and the contrast failures the
+ * verdict reports are caused by colours chosen there. So a merchant who applied
+ * a preset and wanted it back had no Undo, because Undo was on another tab.
+ *
+ * {@see DesignToolbar} is the same three controls, rendered by the screen on
+ * both tabs that edit the design. What is left here is what genuinely belongs
+ * to the tree: the list, the row controls and the panel for the selected block.
+ * {@link StructureViewProps.focus} is the one thread back — following a problem
+ * to the block it names still has to land focus on that block's row.
  *
  * ============================================================================
  * IT IS ONE SCREEN. IT USED TO BE TWO, AND THAT WAS THE MISTAKE.
@@ -126,13 +135,21 @@ export interface StructureViewProps {
    * `structure/history.ts`.
    */
   readonly onChange: (template: Template, coalesce?: string) => void;
-  /** Undo and redo, held by the screen because they move the whole draft. */
-  readonly history: {
-    readonly canUndo: boolean;
-    readonly canRedo: boolean;
-    readonly undo: () => void;
-    readonly redo: () => void;
-  };
+  /**
+   * A row the SCREEN has asked this tree to put focus on, as a fresh object
+   * each time it asks.
+   *
+   * **It exists because the verdict left this file.** Following a problem to
+   * the block it names is a selection *and* focus on that block's row, and the
+   * chip that offers it now sits in {@see DesignToolbar}, on either of two tabs
+   * — so the request crosses the boundary rather than the focus state being
+   * lifted out of the tree that owns it. Identity is the signal: a new object
+   * means a new request, and null means none has been made.
+   *
+   * Nothing else may use it. Selecting a row must NOT pull focus down or
+   * around, which is what keeps ↑↓ working after a click.
+   */
+  readonly focus: { readonly path: Path } | null;
 }
 
 export function StructureView({
@@ -142,7 +159,7 @@ export function StructureView({
   selected,
   onSelect,
   onChange,
-  history,
+  focus,
 }: StructureViewProps) {
   /*
    * **One line that is both the visible answer and the announced one.**
@@ -165,6 +182,17 @@ export function StructureView({
    * and only the caller that deleted it knows what should hold focus instead.
    */
   const [focusOn, setFocusOn] = useState<{ path: Path; control: number } | null>(null);
+
+  /*
+   * The screen asked for a row. **Control 0 is the row's own name button**,
+   * which is the one that selects — the same control the verdict chip aimed at
+   * when it lived in this file.
+   */
+  useEffect(() => {
+    if (focus !== null) {
+      setFocusOn({ path: focus.path, control: 0 });
+    }
+  }, [focus]);
 
   const blocks = useMemo(() => nodesOf(template.tree), [template.tree]);
 
@@ -352,115 +380,85 @@ export function StructureView({
   }
 
   return (
-    <>
+    <RegionBody className="wconvert-structure">
       {/*
-        **Undo and redo are the region's, not a row's.** They act on the whole
-        design rather than on one block, which is exactly the scope test
-        ADR 0039 gives for a toolbar — and putting them beside a Delete they
-        exist to reverse is what makes "no confirm" legible rather than
-        reckless.
+        **"Beside it" rather than "below it".** The inspector is under the tree
+        in a narrow container and beside it in a wide one, so the sentence names
+        neither — a hint that says *below* on a screen where the panel is to the
+        right is a hint the merchant checks and disbelieves.
       */}
-      <Toolbar>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          disabled={!history.canUndo}
-          onClick={history.undo}
-        >
-          <Undo2 aria-hidden="true" />
-          {__('Undo', 'wconvert')}
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          disabled={!history.canRedo}
-          onClick={history.redo}
-        >
-          <Redo2 aria-hidden="true" />
-          {__('Redo', 'wconvert')}
-        </Button>
+      <Description>
+        {__(
+          'Pick a block to edit it and see it highlighted in the preview. Arrow keys move through the list; the buttons on each row move a block within the one it is in, and it can be dragged there by its name.',
+          'wconvert',
+        )}
+      </Description>
 
-        <Verdict
-          problems={problemsIn(template, act)}
-          onGoTo={(path) => {
-            const block = nodesOf(template.tree).find((each) => samePath(each.path, path));
+      {/*
+        Present from the first render rather than mounted when there is
+        something to say: a live region a screen reader has not been watching
+        announces nothing the first time it fills.
+      */}
+      <p role="status" className="m-0 min-h-[1lh] text-pretty text-foreground">
+        {said}
+      </p>
 
-            onSelect(block === undefined ? null : keyOfSlot(block), path);
-            setFocusOn({ path, control: 0 });
-          }}
-        />
-      </Toolbar>
+      <BlockTree
+        tree={template.tree}
+        labels={labels}
+        selected={selected}
+        onSelect={onSelect}
+        onMove={move}
+        focusOn={focusOn}
+        drag={drag}
+        actions={(block, { control, tabIndex }) => (
+          <RowAction
+            block={block}
+            control={control}
+            tabIndex={tabIndex}
+            labels={labels}
+            tree={template.tree}
+            act={act}
+            onMove={move}
+            onAdd={add}
+            onDuplicate={duplicate}
+            onRemove={remove}
+          />
+        )}
+      />
 
-      <RegionBody className="wconvert-structure">
-        <p className="m-0 text-pretty text-muted-foreground">
-          {__(
-            'Pick a block to edit it below and see it highlighted in the preview. Arrow keys move through the list; the buttons on each row move a block within the one it is in, and it can be dragged there by its name.',
-            'wconvert',
-          )}
-        </p>
+      {/*
+        **After the tree in the DOM, and therefore after it in the tab order.**
+        Selecting a row must not pull focus into here — focus belongs on the row
+        the merchant is on, which is what makes ↑↓ keep working after a click —
+        so `Tab` is the documented way in and the source order is what makes it
+        land.
 
-        {/*
-          Present from the first render rather than mounted when there is
-          something to say: a live region a screen reader has not been watching
-          announces nothing the first time it fills.
-        */}
-        <p role="status" className="m-0 min-h-[1lh] text-pretty text-foreground">
-          {said}
-        </p>
-
-        <BlockTree
-          tree={template.tree}
-          labels={labels}
-          selected={selected}
-          onSelect={onSelect}
-          onMove={move}
-          focusOn={focusOn}
-          drag={drag}
-          actions={(block, { control, tabIndex }) => (
-            <RowAction
-              block={block}
-              control={control}
-              tabIndex={tabIndex}
-              labels={labels}
-              tree={template.tree}
-              act={act}
-              onMove={move}
-              onAdd={add}
-              onDuplicate={duplicate}
-              onRemove={remove}
-            />
-          )}
-        />
-
-        {/*
-          **Under the tree, and after it in the tab order.** Selecting a row
-          must not pull focus down here — focus belongs on the row the merchant
-          is on, which is what makes ↑↓ keep working after a click — so `Tab` is
-          the documented way in and the DOM order is what makes it land.
-        */}
-        <BlockInspector
-          template={template}
-          labels={labels}
-          path={selected}
-          act={act}
-          onChange={onChange}
-          /*
-            A swap is worth saying out loud: it renames the row and it changes
-            the Slot Roles derived from what a field captures, so the preview's
-            key moves under a selection that has not. The row keeps focus — the
-            merchant is in the inspector, and yanking them back to the list
-            after an edit they made in the panel would be the tree answering a
-            question they asked somewhere else.
-          */
-          onSwap={(next, sentence) => {
-            onChange(next);
-            setSaid(sentence);
-          }}
-        />
-      </RegionBody>
-    </>
+        That holds at both arrangements, which is why the split is a grid over
+        this order rather than a reordering of it: the tree takes column one and
+        this takes column two, so *beside* and *under* read the same to a
+        keyboard and to a screen reader.
+      */}
+      <BlockInspector
+        template={template}
+        labels={labels}
+        path={selected}
+        act={act}
+        onChange={onChange}
+        /*
+          A swap is worth saying out loud: it renames the row and it changes
+          the Slot Roles derived from what a field captures, so the preview's
+          key moves under a selection that has not. The row keeps focus — the
+          merchant is in the inspector, and yanking them back to the list
+          after an edit they made in the panel would be the tree answering a
+          question they asked somewhere else.
+        */
+        onSwap={(next, sentence) => {
+          onChange(next);
+          setSaid(sentence);
+        }}
+      />
+    </RegionBody>
   );
 }
 
@@ -750,82 +748,4 @@ function nextTo(block: Block): Spot {
   return spot === null
     ? { parent: block.path, key: 'children', index: 0 }
     : { ...spot, index: spot.index + 1 };
-}
-
-/**
- * Whether this design will actually work, and what to do about it if not.
- *
- * ============================================================================
- * THE SAVE ALREADY KNOWS. IT JUST TELLS THE MERCHANT TOO LATE.
- * ============================================================================
- * `OptinController` refuses a design with no converting act and one whose act
- * its [[Goal]] cannot report, and it is right to — *"a screen is not an
- * enforcement mechanism"* (ADR 0026). But the merchant meets that refusal as a
- * red bar over an editor that had let them get there, having already done the
- * work. This is the same knowledge, said while it is still cheap to act on.
- *
- * Two of what it reports are not refusals at all and never will be: a block
- * that will lose its words at the next design switch, and a colour pair a
- * visitor cannot read. Both save happily. Nothing else in the product would
- * ever mention either.
- *
- * **In the toolbar, because it is about the whole design** — which is exactly
- * the scope test ADR 0039 gives — and beside Undo, because both are things a
- * merchant reaches for after doing something rather than while doing it.
- */
-function Verdict({
-  problems,
-  onGoTo,
-}: {
-  problems: readonly Problem[];
-  onGoTo: (path: Path) => void;
-}) {
-  if (problems.length === 0) {
-    return (
-      <p className="wconvert-verdict wconvert-verdict--good">
-        <Check aria-hidden="true" />
-        {__('This will work', 'wconvert')}
-      </p>
-    );
-  }
-
-  return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button type="button" variant="outline" size="sm" className="wconvert-verdict--bad">
-          <TriangleAlert aria-hidden="true" />
-          {sprintf(
-            /* translators: %d: how many things are wrong with the design. */
-            _n('%d thing to fix', '%d things to fix', problems.length, 'wconvert'),
-            problems.length,
-          )}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent align="start" className="max-w-sm">
-        <ul className="wconvert-verdict__list">
-          {problems.map((problem) => (
-            <li key={problem.said}>
-              {/*
-                **A sentence, and a way to the block it is about.** A problem
-                the merchant cannot navigate to is a problem they have to hunt
-                for, and the tree is right there — so where it names a block,
-                the sentence is the button that selects it.
-              */}
-              {problem.path === null ? (
-                problem.said
-              ) : (
-                <button
-                  type="button"
-                  className="wconvert-verdict__go"
-                  onClick={() => onGoTo(problem.path as Path)}
-                >
-                  {problem.said}
-                </button>
-              )}
-            </li>
-          ))}
-        </ul>
-      </PopoverContent>
-    </Popover>
-  );
 }

@@ -234,24 +234,66 @@ being budgeted, and then silently tracking the number, would be arguing against
 itself. `tests/js/builder-shell.test.tsx` is edited in the same commit each time
 — behaviour moving, recorded rather than quietly fixed.*
 
-## A control that acts on a selection lives under the list the selection is made in
+## A control that acts on a selection lives ~~under~~ **with** the list the selection is made in
 
 The table above answers placement for a control that acts on **the whole
 region** (its toolbar) and on **one row** (in the row). It does not answer the
 third case, which the block tree is the first screen to have: a control that
 acts on *whichever* row is currently selected.
 
-It goes **under the list**, in the same region, after it in the tab order.
+It goes **with the list** — beside it where there is room, under it where there
+is not — in the same region, after it in the tab order.
 
 - **Not in the row.** The controls for a block are a heading, several text boxes
   and a visibility checkbox. Fifteen rows each carrying that is not a list any
   more, and the treegrid's roving tabindex — one tab stop for the whole grid —
   cannot survive rows whose cell count depends on which one is selected.
-- **Not beside the list.** The tab column is 616px at its widest (`main` is
+- ~~**Not beside the list.** The tab column is 616px at its widest (`main` is
   `max-w-6xl`) and ~392px at 1024px. A side-by-side split is not available at
-  either width, so it is not a preference between two layouts.
+  either width, so it is not a preference between two layouts.~~
 - **Not on another tab**, which is what the editor did before this and what the
   amendment above undoes.
+
+> **Amended: 616px was arithmetic off a measure chosen for the reading screens,
+> and the builder no longer holds that measure.**
+>
+> The number was honest and it was derived, not designed:
+> `1152 − 48 padding − 24 gap − 464 aside = 616`, where 1152 is `max-w-6xl` —
+> right for four screens that are tables and prose, and never chosen for an
+> editor. Nothing in this ADR ever owned measure, and
+> [ADR 0038](0038-the-admin-holds-different-floors-to-the-loader.md)'s whole
+> posture is that the builder is allowed different numbers from the reading
+> screens; this section's own *"levels are not a cap"* argument is the same
+> move in the other direction.
+>
+> The builder now takes 1440px, and above 48rem of container the tree and the
+> block inspector sit side by side. **The placement rule is re-derived rather
+> than repealed**: a control that acts on a selection lives *with* the list the
+> selection is made in, and the two bullets that survive — not in the row, not
+> on another tab — never rested on width at all. What the split changes is
+> which of *beside* and *under* the rule resolves to at a given width, not what
+> the rule is.
+>
+> The consequence below is untouched and is if anything sharper: a panel that
+> sits permanently beside the list has no scroll position to hide an empty
+> state in.
+
+### Undo, Redo and the verdict are the DESIGN's, not the Content tab's
+
+The same scope test, applied to three controls that were failing it in this
+ADR's own editor. They shipped in the Content tab's toolbar, and all three act
+on the whole draft: the builder's history watches `template`, so a token
+changed on **Design** is a full undo entry and so is picking a design, while
+the verdict's contrast failures are *caused* by colours chosen there.
+
+So a merchant who applied a preset and wanted it back had no Undo, because Undo
+was on another tab. `DesignToolbar` is the same toolbar rendered on both tabs
+that edit the design — the rule applied honestly, not a new concept. It stays
+out of the page-header band, which this ADR caps at two whole-screen actions.
+
+`Display rules` and `Destinations` do not get it, by the same test: neither
+edits the design, so neither can produce an entry to step or a problem to
+report.
 
 The consequence for anything that follows: **the selection must never be
 empty** where a screen does this. A list with a panel under it that says

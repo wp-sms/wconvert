@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Skeleton } from '../components/ui/skeleton';
+import { Description } from './Description';
 
 /**
  * A set of cards, each offering one way forward, and the placeholder for the
@@ -50,13 +51,13 @@ export function ChoiceCard({
       <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
         <h3
           id={titleId}
-          className="m-0 text-base font-semibold leading-tight tracking-tight text-foreground"
+          className="m-0 text-heading font-semibold leading-tight tracking-tight text-foreground"
         >
           {title}
         </h3>
         {badge}
       </div>
-      <p className="m-0 flex-1 text-pretty text-muted-foreground">{notes}</p>
+      <Description className="flex-1">{notes}</Description>
       {/*
         **Four buttons all called "Choose" is four buttons a keyboard user
         cannot tell apart.** The visible label stays short because the card it

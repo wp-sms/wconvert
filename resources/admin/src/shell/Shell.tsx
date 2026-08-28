@@ -3,6 +3,7 @@ import { __ } from '@wordpress/i18n';
 import { ChartColumn, Inbox, Megaphone, Send } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { SECTIONS, hashFor, type SectionId } from '../nav';
+import { Description } from './Description';
 import { PageActionSlotProvider } from './PageActions';
 
 /**
@@ -49,11 +50,18 @@ import { PageActionSlotProvider } from './PageActions';
  * header, page body — and inside the body, regions the SCREEN owns. The first
  * three are this file's and a screen may not draw them; the regions are the
  * screen's and this file may not draw those.
+ *
+ * **The measure is one number, declared once, and a screen may ask for the
+ * wider one.** It was `max-w-6xl` written out three times — masthead, band and
+ * `main` — with nothing linking them, which is how the band's rule came to stop
+ * a hundred pixels short of the page body's edge once already (`44cf71e`). It
+ * is now `--wconvert-measure`, and `wide` is the only escape from it.
  */
 export function Shell({
   section,
   actions,
   bareHeader = false,
+  wide = false,
   children,
 }: {
   section?: SectionId;
@@ -65,12 +73,43 @@ export function Shell({
    * has no `section` — it replaces even the nav (#62) — so it has no title for
    * the frame to draw, but it does have a title of its own and an action that
    * acts on the whole Optin. Reproducing the band inside `<main>` got the
-   * surface right and the WIDTH wrong: `main` is `max-w-6xl` and centred, so a
-   * band drawn inside it stops where the measure does, and the rule under it
-   * stopped a hundred pixels short of the screen. The band belongs to the
-   * frame, so the frame draws it.
+   * surface right and the WIDTH wrong: `main` is a centred measure, so a band
+   * drawn inside it stops where the measure does, and the rule under it stopped
+   * a hundred pixels short of the screen. The band belongs to the frame, so the
+   * frame draws it — and it reads the same `--wconvert-measure` `main` does,
+   * which is what stops the two drifting apart a second time.
    */
   bareHeader?: boolean;
+  /**
+   * Draw this screen at the wider measure.
+   *
+   * ==========================================================================
+   * THE BUILDER IS A PLACE RATHER THAN A LIST, SO IT GETS ITS OWN MEASURE.
+   * ==========================================================================
+   * 1152px is right for the four reading screens — they are tables and prose,
+   * and the line-length research is unambiguous about not widening those. It
+   * was never chosen for an editor, and three things followed from applying it
+   * to one anyway: the tab column came out at 616px, which is quoted in three
+   * places as the reason the block inspector sits UNDER the tree rather than
+   * beside it; selecting a block low in a long tree put its controls below the
+   * fold; and the live preview was clamped ~4% under the width every shipped
+   * design asks for.
+   *
+   * So this screen gets 1440px, and the extra buys a third pane rather than a
+   * wider single column — see `.wconvert-structure`'s container query in
+   * `index.css`, and the field cap that stops the inspector's `widefat` inputs
+   * growing past a readable measure with it.
+   *
+   * **Nothing forbade this.** ADR 0038 owns the responsive FLOORS and its whole
+   * posture is that the builder is allowed different numbers from the reading
+   * screens; ADR 0039 owns anatomy and ordering and says nothing about measure.
+   * `index.css` carried a dead comment describing exactly this rule, justified
+   * in exactly these terms, left behind when the two measures converged. WSMS
+   * does the same thing from the other end — `app-shell.tsx` defaults to
+   * `max-w-5xl` and keeps a `FULL_WIDTH_SECTIONS` allowlist; this is the same
+   * mechanism with a cap instead of no cap.
+   */
+  wide?: boolean;
   children: ReactNode;
 }) {
   /*
@@ -85,9 +124,21 @@ export function Shell({
 
   return (
     <PageActionSlotProvider value={slot}>
-      <div className="font-sans text-sm leading-normal text-foreground">
+      {/*
+        **The three bands read one number, and they must move together.** The
+        band's width is declared here and `main`'s is declared below it, and the
+        builder portals its title, its Save and its stats into the band — so a
+        measure applied to one and not the other is the bug `44cf71e` fixed
+        once: the rule under the band stopping short of where every other
+        screen's page body runs to. `data-measure` is what the three read, and
+        it is the only place the choice is expressed.
+      */}
+      <div
+        data-measure={wide ? 'wide' : 'default'}
+        className="font-sans text-body leading-normal text-foreground"
+      >
         <div className="bg-primary">
-          <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-2.5 sm:px-6">
+          <div className="wconvert-measure mx-auto flex w-full flex-wrap items-center gap-x-6 gap-y-2 px-4 py-2.5 sm:px-6">
             <Wordmark />
             {section !== undefined && <SectionNav current={section} />}
           </div>
@@ -95,7 +146,7 @@ export function Shell({
 
         {banded && (
           <div className="border-b border-border bg-card">
-            <div className="mx-auto w-full max-w-6xl px-4 py-4 sm:px-6">
+            <div className="wconvert-measure mx-auto w-full px-4 py-4 sm:px-6">
               {section === undefined ? (
                 <div ref={setTarget} />
               ) : (
@@ -105,7 +156,7 @@ export function Shell({
           </div>
         )}
 
-        <main className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6">{children}</main>
+        <main className="wconvert-measure mx-auto w-full px-4 py-5 sm:px-6">{children}</main>
       </div>
     </PageActionSlotProvider>
   );
@@ -123,11 +174,11 @@ function Wordmark() {
     <div className="flex items-center gap-2.5">
       <span
         aria-hidden="true"
-        className="grid size-7 place-items-center rounded-sm bg-card text-sm font-bold text-primary"
+        className="grid size-7 place-items-center rounded-sm bg-card text-body font-bold text-primary"
       >
         W
       </span>
-      <span className="text-base font-semibold tracking-tight text-primary-foreground">
+      <span className="text-heading font-semibold tracking-tight text-primary-foreground">
         {__('WConvert', 'wconvert')}
       </span>
     </div>
@@ -176,15 +227,13 @@ function PageHeader({
   return (
     <>
       <div className="wconvert-page-actions flex flex-wrap items-center gap-x-3 gap-y-2">
-        <h1 className="m-0 me-1 text-2xl font-semibold leading-tight tracking-tight text-foreground">
+        <h1 className="m-0 me-1 text-title font-semibold leading-tight tracking-tight text-foreground">
           {entry?.label}
         </h1>
         {actions}
         <div ref={actionSlot} className="contents" />
       </div>
-      <p className="mt-1.5 mb-0 max-w-2xl text-pretty text-muted-foreground">
-        {descriptionFor(section)}
-      </p>
+      <Description className="mt-1.5">{descriptionFor(section)}</Description>
     </>
   );
 }

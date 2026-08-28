@@ -158,6 +158,89 @@
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/*
+ * ============================================================================
+ * THE TYPE SCALE. SIX ROLES, AND EVERY SIZE IN THE ADMIN IS ONE OF THEM.
+ * ============================================================================
+ * **The block above owns colour, radius, shadow and control height, and never
+ * owned type** — so every `text-*` in this admin was stock Tailwind, chosen per
+ * call site. Measured on the builder before this landed: 103 of ~115 text
+ * elements were 14px, and region headings, body copy, field labels,
+ * descriptions, button labels and the tab strip were separated only by weight
+ * and colour. Nine sizes existed; one (20.8px) matched no element, one (18px)
+ * existed because shadcn's `AlertDialogTitle` shipped with `text-lg`, and the
+ * single 12px outlier was the *suspension reason* on the Optin list — the most
+ * important explanatory line on that screen, set in its smallest text.
+ *
+ * ADR 0037 now names type as the fourth axis this admin owns: the token NAMES
+ * follow Tailwind's `--text-*` contract, and the VALUES are WConvert's.
+ *
+ * **A plain `@theme` and not the `@theme inline` above, and the distinction is
+ * load-bearing.** `inline` exists for a variable that REFERENCES another
+ * variable, and it stops utilities resolving the token through `var()` — so the
+ * custom property is never emitted. These are literal values, and
+ * `.wconvert-editor :is(h2, h3, h4)` below reads `var(--text-heading)` from
+ * hand-written CSS, which needs the property to actually exist.
+ *
+ * `static` rather than bare, so a token read only from hand-written CSS is
+ * still emitted: Tailwind drops theme variables it cannot see referenced from a
+ * utility, and `--text-heading` is exactly that case.
+ *
+ * The `--<token>--line-height` / `--letter-spacing` / `--font-weight` modifiers
+ * are Tailwind's documented way to pair the rest of the register with the size,
+ * so `text-micro` is one class rather than four that a call site can get half
+ * right.
+ */
+@theme static {
+  /*
+   * 12 — table headers, chips, badges, stat labels.
+   *
+   * **One line-height, one letter-spacing, one weight**, because today the same
+   * 12px carries three different line-heights and two different
+   * letter-spacings: `Stat`'s docblock claims its label matches the table
+   * header's small-caps register while using `tracking-wide` (0.025em) against
+   * the table's 0.04em. The token is what makes that docblock true.
+   */
+  --text-micro: 0.75rem;
+  --text-micro--line-height: 1rem;
+  --text-micro--letter-spacing: 0.04em;
+  --text-micro--font-weight: 600;
+
+  /*
+   * 13 — descriptions, notes, help text, a block's own words in the tree.
+   *
+   * **The role that did not exist.** Every description in this admin was 14px
+   * by inheritance, which is the same size as the body it explains — so the
+   * only thing separating a sentence about a thing from the thing was colour.
+   * {@see Description} is the one component that spends it.
+   */
+  --text-note: 0.8125rem;
+  --text-note--line-height: 1.25rem;
+
+  /* 14 — the body of the admin. Unchanged; it is the right size. */
+  --text-body: 0.875rem;
+  --text-body--line-height: 1.3125rem;
+
+  /*
+   * 16 — a region's heading, a card's title, a section inside an editor.
+   *
+   * It existed for `RegionHeader` and was silently dropped for every heading in
+   * the builder: `.wconvert-editor` set a `font-weight` for `h2/h3/h4` and a
+   * `font-size` for only `h2` and `h3`, so `<h4>How it looks</h4>` rendered at
+   * body size in semibold and read as a bolder paragraph.
+   */
+  --text-heading: 1rem;
+  --text-heading--line-height: 1.25rem;
+
+  /* 24 — the page title, and only that. */
+  --text-title: 1.5rem;
+  --text-title--line-height: 1.875rem;
+
+  /* 30 — the one emphasised figure per Goal (see {@see Stat}'s `emphasis`). */
+  --text-figure: 1.875rem;
+  --text-figure--line-height: 1;
+}
+
 :root {
   /*
    * Taken from WSMS deliberately: a tight radius and a hard offset shadow are
@@ -292,6 +375,21 @@
   width: calc(100% + 20px);
 
   /*
+   * ========================================================================
+   * THE MEASURE. ONE NUMBER, AND A SCREEN MAY ASK FOR THE WIDER ONE.
+   * ========================================================================
+   * 72rem (1152px) is the reading measure and the default: the Optin list,
+   * Analytics, the Lead log and Destinations are tables and prose, and the
+   * line-length research is unambiguous about not widening those.
+   *
+   * It was spelled `max-w-6xl` three times in `Shell.tsx` — masthead, page
+   * header band, `<main>` — with nothing linking them, which is how the band's
+   * rule came to stop a hundred pixels short of the page body's edge once
+   * already. One custom property is what stops the three drifting apart again.
+   */
+  --wconvert-measure: 72rem;
+
+  /*
    * Tall enough that our background reaches the bottom of the window on a
    * screen with little on it. Without this the app stops at its content and
    * wp-admin's grey shows through underneath — a seam across a page that is
@@ -321,6 +419,39 @@
    * wrapping.
    */
   padding-block-end: 65px;
+}
+
+/*
+ * **The builder is the one screen that is a place rather than a list, so it
+ * gets the width the gallery and the live preview need.**
+ *
+ * That sentence sat lower in this file for months as a comment over nothing:
+ * the rule it described was dropped when the two measures converged, and the
+ * reasoning was left behind with no rule under it. It was never repudiated —
+ * ADR 0038 owns the responsive floors and is explicit that the builder holds
+ * different numbers from the reading screens; ADR 0039 owns anatomy and says
+ * nothing about measure. So the rule is back, and the reasoning is here with
+ * it rather than three hundred lines away from it.
+ *
+ * 90rem is 1440px. What the extra 288px buys is a THIRD PANE and not a wider
+ * column — see `.wconvert-structure`'s container query below, and the field cap
+ * on `.wconvert-inspector` that stops a `widefat` input growing with it.
+ *
+ * `data-measure` is written by the frame and by nothing else, on the element
+ * the three bands all sit inside — so the wider number reaches the masthead,
+ * the page-header band and `<main>` together or it reaches none of them.
+ */
+#wconvert-admin [data-measure='wide'] {
+  --wconvert-measure: 90rem;
+}
+
+/*
+ * The measure, applied. The masthead, the page-header band and `<main>` each
+ * carry this and nothing else about width; which number it resolves to is the
+ * screen's answer, above.
+ */
+.wconvert-measure {
+  max-inline-size: var(--wconvert-measure);
 }
 
 /*
@@ -484,12 +615,24 @@
  * that cannot break costs the merchant the whole screen.
  */
 #wconvert-admin .wconvert-table > thead > tr > th {
-  padding: 0.5rem 0.75rem;
+  /*
+   * **1rem of inline padding, matching the header, toolbar and footer strips
+   * of the same card.** It was 0.75rem, which put a 4px stagger down the left
+   * edge of all four reading screens: a region's title started at 16px and the
+   * first column of the table under it started at 12px, so the card had two
+   * left edges. A column of settings is read down its leading edge, and there
+   * has to be exactly one.
+   */
+  padding: 0.5rem 1rem;
   border-block-end: 1px solid var(--border);
   color: var(--muted-foreground);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
+  /*
+   * The small-caps register, from the scale rather than spelled here — which
+   * is what lets {@see Stat}'s label claim to match it and be right.
+   */
+  font-size: var(--text-micro);
+  font-weight: var(--text-micro--font-weight);
+  letter-spacing: var(--text-micro--letter-spacing);
   line-height: 1.4;
   text-align: start;
   text-transform: uppercase;
@@ -509,7 +652,7 @@
  * as a minimum on the buttons inside it.
  */
 #wconvert-admin .wconvert-table > tbody > tr > td {
-  padding: 0.6875rem 0.75rem;
+  padding: 0.6875rem 1rem;
   font-size: inherit;
   text-align: start;
   vertical-align: middle;
@@ -1096,12 +1239,24 @@
   margin-block-end: 0;
 }
 
+/*
+ * **A heading in here has a SIZE, and until now two of the three did not.**
+ *
+ * This rule set a weight for all three and a size for only `h2` and `h3`, so
+ * every `<h4>` in the builder — *"How it looks"* on the Design tab, the block
+ * inspector's own name — rendered at body size in semibold and read as a bolder
+ * paragraph rather than as a heading. The `h2` size that WAS stated was
+ * `1.3rem`: 20.8px, matching no other element anywhere in the admin.
+ *
+ * One size for the three, from the scale, because an editor's headings are all
+ * the same thing — the name of a section inside a region — and the region's own
+ * `<h2>` above them is what the level is measured against.
+ */
 .wconvert-editor :is(h2, h3, h4) {
+  font-size: var(--text-heading);
+  line-height: var(--text-heading--line-height);
   font-weight: 600;
-}
-
-.wconvert-editor h2 {
-  font-size: 1.3rem;
+  letter-spacing: -0.01em;
 }
 
 /*
@@ -1110,10 +1265,6 @@
  * above it. A rule and the space around it is what says *this is a different
  * thing*.
  */
-.wconvert-editor h3 {
-  font-size: 1rem;
-  letter-spacing: -0.01em;
-}
 
 .wconvert-editor > h3 {
   margin-block-start: 1.25rem;
@@ -1161,13 +1312,6 @@
   padding: 0;
   list-style: none;
 }
-
-/*
- * The builder is the one screen that is a place rather than a list, so it gets
- * the width the gallery and the live preview need. The class is no longer
- * rendered — the frame's own `max-w-6xl` is the same measure — and it is kept
- * out of the stylesheet rather than kept as a rule nothing matches.
- */
 
 /*
  * The gallery: real designs, drawn by the renderer the loader imports. There
@@ -1253,17 +1397,41 @@
  * anything.** Every shipped design asks for `--wc-width: 28rem` and `.wc-root`
  * takes `min(that, 100%)` — so in a column narrower than 28rem the desktop
  * preview is ALREADY narrower than a phone, and switching to Mobile changes
- * nothing a merchant can see. At 29rem the stage holds the design at its own
- * measure and 375px is visibly narrower than it.
+ * nothing a merchant can see.
+ *
+ * **31rem rather than 29rem, and the two rem are not cosmetic.** The stage has
+ * `padding: 1rem` and a 1px border, so a 29rem (464px) aside leaves 430px of
+ * inner measure against a design asking for 448px — the desktop preview was
+ * clamped ~4% under the width the design itself declares, which is the one
+ * thing a live-rendered preview exists not to do. 31rem (496px) leaves 462px
+ * and the design renders at its own measure. The room comes from the builder's
+ * own 90rem, above.
  */
 @media (min-width: 1280px) {
   .wconvert-builder {
-    grid-template-columns: minmax(0, 1fr) 29rem;
+    grid-template-columns: minmax(0, 1fr) 31rem;
   }
 }
 
+/*
+ * **The container the block editor's split is measured against.**
+ *
+ * A CONTAINER query and not a media query, and that is load-bearing rather than
+ * modern for its own sake: wp-admin's menu is 160px expanded and 36px folded,
+ * so the column actually available to this element varies by ~124px at a fixed
+ * viewport. Every other breakpoint in this file is viewport-keyed and therefore
+ * already wrong by that much on a folded menu; the new one does not repeat it.
+ *
+ * This element is a real wrapper that already existed, so it can be the
+ * container without a `<div>` being added to hold a query.
+ *
+ * `inline-size` rather than `size`: containment in the block axis would need
+ * this element's height to be independent of its contents, which for a column
+ * of tabs it is not.
+ */
 .wconvert-builder__tabs {
   min-inline-size: 0;
+  container-type: inline-size;
 }
 
 /*
@@ -1338,6 +1506,68 @@
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+}
+
+/* ---------------------------------------------------------------------------
+ * THE SPLIT: THE TREE AND THE INSPECTOR SIDE BY SIDE, ONCE THERE IS ROOM.
+ *
+ * **48rem is derived, not chosen.** `768 − 352 inspector − 24 gap = 392`, which
+ * is precisely the tree width this editor already survives at the 1024px
+ * stacking point. The rule that produced it: never split until the tree would
+ * be narrower than a width it already works at.
+ *
+ * **22rem (352px) for the inspector** sits with Gutenberg's ~350px block
+ * settings sidebar, which is the closest comparable there is — a panel of
+ * controls for one selected node, in a WordPress admin.
+ *
+ * Below the query this collapses to the flex column above, which is not a
+ * fallback invented here: it is exactly the arrangement that shipped, and the
+ * one ADR 0039's placement rule was written for.
+ * ------------------------------------------------------------------------- */
+@container (min-width: 48rem) {
+  .wconvert-structure {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 22rem;
+    /*
+     * `start` rather than the default stretch, which is what makes the sticky
+     * inspector below work at all: a stretched item is as tall as the row and
+     * so has nothing to travel within. It is the same recipe the preview column
+     * uses against `.wconvert-builder`.
+     */
+    align-items: start;
+  }
+
+  /*
+   * The hint and the live region are about the whole tab, so they span it. The
+   * two panes then claim a column each — stated rather than left to auto
+   * placement, so a paragraph added here later does not silently push the
+   * inspector into a row of its own.
+   */
+  .wconvert-structure > * {
+    grid-column: 1 / -1;
+  }
+
+  .wconvert-structure > .wconvert-blocks {
+    grid-column: 1;
+  }
+
+  .wconvert-structure > .wconvert-inspector {
+    grid-column: 2;
+    /*
+     * **The problem the width was spent on.** The preview is sticky and stays;
+     * the inspector was not and did not, so selecting a block low in a fifteen
+     * block design scrolled the merchant away from the row they had just
+     * clicked to reach the box they clicked it for.
+     *
+     * `4rem` clears wp-admin's own sticky toolbar, which is the one piece of
+     * chrome ADR 0035 deliberately leaves in place — the same number, for the
+     * same reason, as the preview column's.
+     */
+    position: sticky;
+    inset-block-start: 4rem;
+    /* The cap below is a stacked-column concern; the track is the measure here. */
+    max-inline-size: none;
+  }
 }
 
 /*
@@ -1535,7 +1765,7 @@
   flex: none;
   padding-inline: 0.375rem;
   border-radius: var(--radius);
-  font-size: 0.75rem;
+  font-size: var(--text-micro);
   white-space: nowrap;
 }
 
@@ -1560,7 +1790,7 @@
   border-radius: var(--radius);
   background: var(--surface);
   color: var(--muted-foreground);
-  font-size: 0.75rem;
+  font-size: var(--text-micro);
 }
 
 /* ---------------------------------------------------------------------------
@@ -1610,20 +1840,39 @@
 }
 
 /* ---------------------------------------------------------------------------
- * THE INSPECTOR: THE SELECTED BLOCK'S CONTROLS, UNDER THE LIST.
+ * THE INSPECTOR: THE SELECTED BLOCK'S CONTROLS, BESIDE THE LIST OR UNDER IT.
  *
- * Underneath rather than beside, and that is measured rather than preferred:
- * the tab column is 616px at its widest (`main` is `max-w-6xl`) and ~392px at
- * 1024px, so there is no side-by-side split to be had. A list and its detail
- * stack, which is what the placement rule this settles already implies — a
- * control that acts on a selection lives under the list the selection is made
- * in.
+ * **This said "under the list, and that is measured rather than preferred: the
+ * tab column is 616px at its widest".** The measurement was honest and the
+ * number is gone: 616 was arithmetic off a measure chosen for the four reading
+ * screens — `1152 − 48 padding − 24 gap − 464 aside` — and the builder now
+ * holds a measure of its own. Above 48rem of container there IS a split to be
+ * had, and the container query above takes it.
+ *
+ * **The placement rule is re-derived rather than repealed.** A control that
+ * acts on a selection lives WITH the list the selection is made in — beside it
+ * where there is room, under it where there is not. Never on another tab, and
+ * never in the row, both of which ADR 0039 still rules out for reasons that
+ * have nothing to do with width.
  * ------------------------------------------------------------------------- */
 .wconvert-inspector {
   padding: 0.75rem;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--card);
+  /*
+   * **The field cap, and it only ever binds in the stacked arrangement.**
+   *
+   * The inputs in here are `widefat` — 100% of what holds them — so stacked
+   * under the tree they are as wide as the tab column, and the tab column grows
+   * with the builder's new measure. Without this a *Placeholder* field becomes
+   * an 870px box for the word `you@example.com`, which is well past the 45–75
+   * character measure every form-usability source gives.
+   *
+   * 44rem (704px) keeps a field scannable at every width between 616px and the
+   * split. Above the split the 22rem track is the measure and this is released.
+   */
+  max-inline-size: 44rem;
 }
 
 .wconvert-inspector__head {
@@ -1658,7 +1907,7 @@
   border-radius: var(--radius);
   background: var(--surface);
   color: var(--muted-foreground);
-  font-size: 0.75rem;
+  font-size: var(--text-micro);
 }
 
 /*
@@ -1680,20 +1929,47 @@
   margin-block: 0.75rem;
 }
 
+/*
+ * **A preset is a control a merchant came to this tab to press, so it stands at
+ * `--control-height`** (ADR 0039). It was 39px — padding around a line, no
+ * stated height — which is neither of the two heights this admin has and three
+ * pixels off one of them, so a row of presets sat a little taller than the
+ * swatches under it for no reason anybody chose.
+ *
+ * `min-block-size` rather than `block-size`, because the label wraps: a preset
+ * name is one word in English and may not be in German, and a control that
+ * refuses to grow clips it.
+ */
 .wconvert-theme {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
+  min-block-size: var(--control-height);
+  padding: 0.25rem 0.75rem;
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   font-weight: 500;
   text-align: start;
+  cursor: pointer;
 }
 
 .wconvert-theme:hover {
   border-color: var(--ring);
+}
+
+/*
+ * **The focus treatment every other control in this file already has.** These
+ * two are bare `<button>`s, so without it they fall back to the UA ring — which
+ * is a different shape and a different colour from the ring on the input beside
+ * them, and inside a scroll container can be clipped at its edge.
+ */
+.wconvert-theme:focus-visible,
+.wconvert-swatch:focus-visible {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 1px var(--ring);
+  outline: 2px solid transparent;
+  outline-offset: 2px;
 }
 
 /*
@@ -1762,6 +2038,7 @@
   color: var(--foreground);
   font-variant-numeric: tabular-nums;
   text-align: start;
+  cursor: pointer;
 }
 
 .wconvert-swatch:hover {
@@ -1851,11 +2128,37 @@
   gap: 0.5rem;
 }
 
+/*
+ * **It was 0px wide, and what a merchant saw was the thumb.**
+ *
+ * `.wconvert-token__exact` declares `inline-size: 7rem` at specificity `0,1,0`
+ * and lost to `.wconvert-token__row > :is(input, …) { inline-size: 100% }` at
+ * `0,1,1` — both added in the same commit — so the text box took 100% with
+ * `flex: none` and starved the slider of every pixel. The only way to set a
+ * size was to type `1.625rem` into a box.
+ *
+ * The fix is stated at the RULE rather than won as a specificity race: the
+ * 100% rule now excludes these two by name (see THE FIELD, below), and the
+ * floor here is what stops a sibling added later starving it again.
+ *
+ * The height is `--control-height` because a `input[type=range]` at the UA
+ * default is ~22px, and this is a control a merchant came to the tab to use —
+ * which is ADR 0039's own test for which of the two heights applies.
+ */
 .wconvert-token__slider {
   flex: 1;
-  min-inline-size: 0;
+  min-inline-size: 6rem;
+  block-size: var(--control-height);
+  margin: 0;
+  cursor: pointer;
 }
 
+/*
+ * **7rem, and for the first time this is true.** The declaration has been here
+ * since the slider landed and never won: the 100% rule below outranked it, so
+ * the box took the whole row. The exclusion in that rule is what delivers the
+ * number this comment always claimed.
+ */
 .wconvert-token__exact {
   inline-size: 7rem;
   flex: none;
@@ -1885,7 +2188,7 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  font-size: 0.8125rem;
+  font-size: var(--text-note);
 }
 
 .wconvert-contrast__pair {
@@ -1955,10 +2258,24 @@
   color: var(--muted-foreground);
 }
 
+/*
+ * **The exclusion is spelled HERE, where the 100% is**, and not as a louder
+ * selector on the two controls it would otherwise flatten. A rule that claims
+ * every input in a row and an exception that fights it on specificity is a pair
+ * that only one reader at a time understands; a rule that states its own
+ * exception is one thing to read. See `.wconvert-token__slider` above for what
+ * this cost before it said so.
+ */
 .wconvert-slot__key > :is(input, select, textarea),
 .wconvert-token > :is(input, select, textarea),
-.wconvert-token__row > :is(input, select, textarea) {
+.wconvert-token__row
+  > :is(input, select, textarea):not(.wconvert-token__exact, .wconvert-token__slider) {
   inline-size: 100%;
+  margin-inline-end: 0;
+  color: var(--foreground);
+}
+
+.wconvert-token__row > :is(.wconvert-token__exact, .wconvert-token__slider) {
   margin-inline-end: 0;
   color: var(--foreground);
 }

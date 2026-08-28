@@ -165,9 +165,33 @@ function row(name: string): HTMLElement {
   return found[0];
 }
 
+/**
+ * The tab the merchant is actually looking at.
+ *
+ * **Both design-editing tabs stay mounted**, so the toolbar's three controls
+ * are in the document twice — once behind an `<Activity mode="hidden">`, which
+ * takes its CONTENTS out of the accessibility tree but leaves the panel itself
+ * in it. So a role query for a button inside finds one and a query for the
+ * panel finds two, and `data-state` is what tells them apart.
+ */
+function panel(): HTMLElement {
+  const open = screen
+    .getAllByRole('tabpanel')
+    .filter((each) => each.dataset.state === 'active');
+
+  expect(open, 'expected exactly one open tab panel').toHaveLength(1);
+
+  return open[0];
+}
+
 /** What the last Save sent, as a tree. */
 const savedTree = (): TemplateTree =>
   (builder.saveOptin.mock.calls.at(-1)?.[2] as { template: { tree: TemplateTree } }).template.tree;
+
+/** What the last Save sent, as the design's token map. */
+const savedTokens = (): Record<string, string> =>
+  (builder.saveOptin.mock.calls.at(-1)?.[2] as { template: { tokens: Record<string, string> } })
+    .template.tokens;
 
 const typesIn = (nodes: readonly TemplateNode[] | undefined): string[] =>
   (nodes ?? []).map((node) => node.type);
@@ -920,10 +944,34 @@ describe('the verdict', () => {
     );
   };
 
+  /**
+   * **Scoped to the open tab, because it is now drawn on two.** Both design
+   * editing tabs are `forceMount`ed, so both chips are in the document at once
+   * and only one of them is in the accessibility tree — which `getByText` does
+   * not know and `within(panel())` does.
+   */
   it('says the design will work when nothing is wrong with it', async () => {
     await structure();
 
-    expect(screen.getByText('This will work')).toBeInTheDocument();
+    expect(within(panel()).getByText('This will work')).toBeInTheDocument();
+  });
+
+  /**
+   * ==========================================================================
+   * IT REPORTS COLOURS CHOSEN ON DESIGN, AND WAS ONLY READABLE FROM CONTENT.
+   * ==========================================================================
+   * `problemsIn` counts a contrast failure between two tokens, and the tokens
+   * are edited on the **Design** tab — so the one surface that can produce that
+   * problem was the one surface that could not show it. ADR 0039's own test is
+   * that a control's SCOPE decides its placement, and this one's scope is the
+   * whole design.
+   */
+  it('is on the Design tab too, where the colours that fail it are chosen', async () => {
+    render(<OptinBuilder id={ID} onClose={vi.fn()} />);
+
+    await screen.findByRole('tab', { name: 'Design' });
+
+    expect(within(panel()).getByText('This will work')).toBeInTheDocument();
   });
 
   /**
@@ -998,5 +1046,101 @@ describe('undo and redo', () => {
 
     expect(rowNames().slice(0, 3)).toEqual(['The form', 'Headline', 'Body text']);
     expect(screen.queryByText(/Saved\./)).toBeNull();
+  });
+});
+
+/**
+ * ============================================================================
+ * THE TOOLBAR'S SCOPE IS THE DESIGN, SO IT IS ON BOTH TABS THAT EDIT ONE.
+ * ============================================================================
+ * Undo, Redo and the verdict were rendered by the Content tab, and none of them
+ * is scoped to it: the screen's history watches `template`, so a token changed
+ * on **Design** is a full undo entry and so is picking a design. A merchant who
+ * applied a preset and wanted it back had no Undo, because Undo was on the
+ * other tab — which is ADR 0039's own scope test failing on the screen the ADR
+ * was written for.
+ */
+describe('the design toolbar', () => {
+  /** The builder as it opens, which is on the Design tab. */
+  async function design() {
+    render(<OptinBuilder id={ID} onClose={vi.fn()} />);
+
+    await screen.findByRole('tab', { name: 'Design' });
+  }
+
+  it('offers Undo and Redo on the Design tab', async () => {
+    await design();
+
+    expect(within(panel()).getByRole('button', { name: 'Undo' })).toBeInTheDocument();
+    expect(within(panel()).getByRole('button', { name: 'Redo' })).toBeInTheDocument();
+  });
+
+  /**
+   * **The case the placement was wrong for.** A preset is a bundle of token
+   * values written straight into the draft, so it is one entry in exactly the
+   * same history a block move is — and taking it back had to be done from a tab
+   * the merchant would have to leave the gallery to reach.
+   */
+  it('takes a preset back, from the tab the preset was applied on', async () => {
+    await design();
+
+    await userEvent.click(screen.getByRole('button', { name: /Midnight/ }));
+
+    expect(screen.getByRole('button', { name: /Midnight/ })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+
+    await userEvent.click(within(panel()).getByRole('button', { name: 'Undo' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+
+    expect(savedTokens()).toEqual(ENTRY.tokens);
+  });
+});
+
+/**
+ * ============================================================================
+ * ⌘Z, WHICH `history.ts` WAS WRITTEN FOR AND WAS NEVER WIRED TO.
+ * ============================================================================
+ * `undo` returns its input by identity on a no-op, and its own comment says
+ * that is *"what lets a caller wire a keyboard shortcut without asking `canUndo`
+ * first"*. There was no such caller.
+ */
+describe('⌘Z', () => {
+  const deleteFinePrint = async () => {
+    await userEvent.click(
+      within(row('Fine print')).getByRole('button', { name: 'Add, copy or delete Fine print' }),
+    );
+    await userEvent.click(screen.getByRole('menuitem', { name: /Delete/ }));
+  };
+
+  it('steps the history back, and ⇧⌘Z steps it forward', async () => {
+    await structure();
+    await deleteFinePrint();
+
+    expect(rowNames()).not.toContain('Fine print');
+
+    await userEvent.keyboard('{Meta>}z{/Meta}');
+
+    expect(rowNames()).toContain('Fine print');
+
+    await userEvent.keyboard('{Meta>}{Shift>}z{/Shift}{/Meta}');
+
+    expect(rowNames()).not.toContain('Fine print');
+  });
+
+  /**
+   * **A box you type into keeps its own ⌘Z.** Stepping the design instead of
+   * the sentence being typed is a shortcut that takes back the wrong thing, and
+   * the merchant has no way to tell which one they are about to get.
+   */
+  it('stands aside where the focus is a text box', async () => {
+    await structure();
+    await deleteFinePrint();
+
+    await userEvent.click(screen.getByLabelText('Name'));
+    await userEvent.keyboard('{Meta>}z{/Meta}');
+
+    expect(rowNames()).not.toContain('Fine print');
   });
 });

@@ -1,5 +1,6 @@
 import type { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
+import { Description } from './Description';
 
 /**
  * What a region shows when it has nothing, and the way out of it.
@@ -38,10 +39,8 @@ export function EmptyState({
   return (
     <div className="mx-auto flex max-w-md flex-col items-center gap-3 px-5 py-12 text-center">
       <Icon aria-hidden="true" className="size-8 text-muted-foreground" />
-      <p className="m-0 text-base font-semibold text-foreground">{title}</p>
-      {children !== undefined && (
-        <p className="m-0 text-pretty text-muted-foreground">{children}</p>
-      )}
+      <p className="m-0 text-heading font-semibold text-foreground">{title}</p>
+      {children !== undefined && <Description>{children}</Description>}
       {action}
     </div>
   );

@@ -1,5 +1,6 @@
 import { MonitorSmartphone } from 'lucide-react';
 import { widerScreenMessage } from '../viewport';
+import { Description } from './Description';
 
 /**
  * What stands where the builder would, on a screen too narrow for it.
@@ -19,7 +20,7 @@ export function NarrowScreenNotice() {
   return (
     <div className="mx-auto flex max-w-md flex-col items-center gap-3 rounded-md border border-border bg-card px-5 py-10 text-center">
       <MonitorSmartphone aria-hidden="true" className="size-8 text-muted-foreground" />
-      <p className="text-pretty text-muted-foreground">{widerScreenMessage()}</p>
+      <Description>{widerScreenMessage()}</Description>
     </div>
   );
 }
