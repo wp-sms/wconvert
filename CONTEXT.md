@@ -373,6 +373,13 @@ Because copy is snapshotted separately from design, a Playbook keys its words to
 [[Slot Role]]s rather than to one Template's structure — so the words survive
 switching Template, and a Playbook is not married to a single design.
 
+The words are the Playbook's mechanism and not the whole of what survives. Two
+things a *merchant* supplies are content without being words — an `image`'s
+`src` and `alt`, and a `button`'s `href` — so no Role binds to them and nothing
+carried them across a switch. `MerchantsOwn` carries what the merchant
+**changed**, measured against the entry their copy was taken for, and leaves the
+new design's own asset standing where they changed nothing.
+
 A Playbook cannot name anything that only exists on a particular site: no post or
 term ids in its targeting, no [[Destination]] ids, and no privacy-policy link —
 the consent *wording* is generic copy a Playbook supplies like any other, but the

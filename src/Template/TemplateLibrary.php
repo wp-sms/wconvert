@@ -216,8 +216,25 @@ final class TemplateLibrary
         // colours is picking neither.
         $carried = SlotRoles::copyFrom($config['template']['tree'] ?? [], $this->vocabulary);
 
+        // **And two things a merchant supplies that are not words.** An
+        // `image`'s `src`/`alt` and a `button`'s `href` are content, but not
+        // `copy` — so no Role binds to them and nothing carried them, and a
+        // merchant who uploaded a photo and then picked a nicer design watched
+        // it be replaced by that design's stock artwork. {@see MerchantsOwn}
+        // carries what they CHANGED, comparing against the entry their copy was
+        // taken for, and leaves the new design's own asset standing where they
+        // changed nothing — which is ADR 0013's rule rather than an exception
+        // to it.
+        $mine = MerchantsOwn::changedIn(
+            $config['template']['tree'] ?? [],
+            $pickedBefore === null ? null : ($this->find($pickedBefore)['tree'] ?? null)
+        );
+
         $config['template'] = [
-            'tree' => SlotRoles::bind($this->vocabulary->withoutCopy($entry['tree']), $carried, $this->vocabulary),
+            'tree' => MerchantsOwn::writeInto(
+                SlotRoles::bind($this->vocabulary->withoutCopy($entry['tree']), $carried, $this->vocabulary),
+                $mine
+            ),
             'tokens' => $entry['tokens'],
         ];
 
