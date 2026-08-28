@@ -51,18 +51,23 @@ import { keyOfSlot, type SlotKey } from './slots';
 import type { Template, TemplateTree } from '@renderer/types';
 
 /**
- * The **Structure** tab: what this design is made of, where each part sits, and
- * the five things a merchant may do to it.
+ * The **Content** tab: what this design is made of, where each part sits, the
+ * five things a merchant may do to it — and, under the list, the words of
+ * whichever block is selected.
  *
  * ============================================================================
- * IT IS A SECOND VIEW OF ONE DOCUMENT, NOT A SECOND DOCUMENT.
+ * IT IS ONE SCREEN. IT USED TO BE TWO, AND THAT WAS THE MISTAKE.
  * ============================================================================
- * Content and Structure edit the same `template`. Content answers *what does
- * this say*; Structure answers *what is here and in what order*. Splitting them
- * is what keeps the Content tab a readable column of words rather than a column
- * of words interleaved with move buttons — and it is why both stay: a merchant
- * fixing a typo should never have to walk past an arrangement control to reach
- * the sentence.
+ * *Content* and *Structure* shipped as separate tabs over one `template`, on
+ * the argument that a merchant fixing a typo must not walk past a move button
+ * to reach the sentence. That argument was true of a Structure tab **you could
+ * not type in** — and the fix for that is to let a block be edited where it is
+ * selected, not to keep a second copy of the document on another tab.
+ *
+ * With {@see BlockInspector} under the tree, the two were one screen drawn
+ * twice, and a merchant changing a headline had to pick which copy to open. So
+ * there is one, and it keeps the word merchants already have. The look went the
+ * other way, to **Design**, which is what that word already promised.
  *
  * ============================================================================
  * ↑ AND ↓ ARE MANDATORY. DRAG IS THE ADDITION.
@@ -377,7 +382,7 @@ export function StructureView({
       <RegionBody className="wconvert-structure">
         <p className="m-0 text-pretty text-muted-foreground">
           {__(
-            'Click a block to see it highlighted in the preview. Arrow keys move through the list; the buttons on each row move a block within the one it is in, and it can be dragged there by its name.',
+            'Pick a block to edit it below and see it highlighted in the preview. Arrow keys move through the list; the buttons on each row move a block within the one it is in, and it can be dragged there by its name.',
             'wconvert',
           )}
         </p>

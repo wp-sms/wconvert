@@ -1,192 +1,29 @@
-import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { useState, type CSSProperties } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { HexColorInput, HexColorPicker, RgbaStringColorPicker } from 'react-colorful';
 import { Button } from '../components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
-import { TOKENS, slotsOf, withHidden, withToken, withValue } from './panel';
-import { SlotFields, nameOfSlot } from './SlotFields';
-import { exportEntry, importEntry } from './entry';
+import { TOKENS, withToken } from './panel';
 import { getThemeTokens } from './api';
 import { isApplied, isColour, isTranslucent, themePresets } from './themes';
-import { keyOfSlot, type Selection, type SlotKey } from './slots';
-import type { Path } from './panel';
-import { nameOf, type TemplateEntry, type TemplateLabels } from '../templates/api';
+import { nameOf, type TemplateLabels } from '../templates/api';
 import type { Template } from '@renderer/types';
 
 /**
- * The settings panel: **tokens, slot content and slot visibility. Never
- * arrangement.**
- *
  * ============================================================================
- * THAT IS NOW A DIVISION OF LABOUR, NOT A CEILING ON THE PRODUCT.
+ * THE LOOK LIVES ON THE **DESIGN** TAB, BECAUSE THAT IS WHAT DESIGN MEANS.
  * ============================================================================
- * It was both. ADR 0010's bargain was that the gallery IS the design surface and
- * nothing reshapes a tree, which is what let a canvas land later "as an editor
- * over a tree that already exists, with no migration". That editor has landed —
- * {@see StructureView}, on the **Structure** tab — and it collected the bargain
- * rather than breaking it: it reads the same manifest this file does, so the
- * vocabulary is still the ceiling, and it edits the tree that was always stored,
- * so there was nothing to migrate.
+ * It was the second half of a tab called *Content*, under a heading reading
+ * *"How it looks"* — which is the one question Content is not about. The tab
+ * called Design meanwhile only picked a template, so a merchant who had chosen
+ * one and wanted it in their brand colours had to leave the tab named after the
+ * thing they were doing.
  *
- * What is left here is the reason the two are separate tabs. A merchant fixing a
- * typo must not have to walk past a move button to reach the sentence, and a
- * merchant rearranging must not have to read every sentence to find the block.
- * So this file still writes only what it always wrote, and
- * `tests/js/builder-settings-panel.test.tsx` still asserts it offers no control
- * reading add, remove, move, up or down.
- *
- * **Hiding did not become redundant either.** A merchant who does not want the
- * fine print may now hide it OR remove it, and the two are different acts:
- * hidden is reversible here and rides the payload, removed is reversible by Undo
- * and does not. The `consent` checkbox every capture design ships hidden is
- * still switched on here, which is how ADR 0032's "off by default" survives an
- * editor that could otherwise have been expected to add one.
- *
- * ============================================================================
- * IT IS CONTROLS ONLY. THE PREVIEW BELONGS TO THE BUILDER.
- * ============================================================================
- * The preview used to live in here, which meant that editing a Trigger showed
- * no preview at all: the merchant was changing an Optin with the picture of it
- * on another tab. {@see OptinBuilder} pins it beside all four tabs instead, and
- * what is left here is the column of controls.
- *
- * The two still talk, in both directions and through one string (`slots.ts`):
- * focusing a block reports which slot it edits, so the preview outlines it, and
- * a click in the preview brings the caret here. **Selection edits nothing**, so
- * the boundary above is untouched by it (ADR 0040).
+ * Nothing about the model moved with it. A preset is a bundle of token VALUES,
+ * the raw tokens are the same fifteen the manifest declares, and neither can
+ * express a shape — so ADR 0010's boundary is exactly where it was and this is
+ * a tab, not a capability.
  */
-
-export interface SettingsPanelProps {
-  readonly entry: TemplateEntry;
-  readonly labels: TemplateLabels;
-  /** `WP_DEBUG`. The export is for whoever is authoring the library. */
-  readonly dev: boolean;
-  /** Which slot is live, and which side asked — see `slots.ts`. */
-  readonly selection?: Selection | null;
-  readonly onSelect?: (key: SlotKey) => void;
-  readonly onChange: (template: Template) => void;
-  readonly onError: (cause: unknown) => void;
-}
-
-export function SettingsPanel({
-  entry,
-  labels,
-  dev,
-  selection = null,
-  onSelect,
-  onChange,
-  onError,
-}: SettingsPanelProps) {
-  return (
-    <div className="wconvert-panel__controls">
-      <Slots
-        template={entry}
-        labels={labels}
-        selection={selection}
-        onSelect={onSelect}
-        onChange={onChange}
-      />
-      <Tokens template={entry} labels={labels} onChange={onChange} onError={onError} />
-      {dev && <DevExport entry={entry} onChange={onChange} />}
-    </div>
-  );
-}
-
-/**
- * What each slot says, and whether it is shown.
- *
- * Headed by its [[Slot Role]] where it has one, because that is what the slot
- * IS — a `field`'s Roles are derived from what it captures rather than
- * declared, so it is headed by the kind it captures instead (CONTEXT.md, Slot
- * Role).
- *
- * **Each block carries the key the preview knows it by**, which is what makes
- * the two surfaces one surface: `data-slot-key` is how a click over there finds
- * the caret's destination over here, and `onFocus` is how the caret's arrival
- * here reaches the outline over there. Focus rather than click, because tabbing
- * into a field is the same act as reaching it with a mouse and a keyboard user
- * must not lose the preview's answer to "which one am I editing?".
- */
-function Slots({
-  template,
-  labels,
-  selection,
-  onSelect,
-  onChange,
-}: {
-  template: Template;
-  labels: TemplateLabels;
-  selection: Selection | null;
-  onSelect?: (key: SlotKey) => void;
-  onChange: (template: Template) => void;
-}) {
-  const slots = slotsOf(template.tree);
-  const column = useRef<HTMLDivElement>(null);
-
-  /*
-   * **Only a selection made in the PREVIEW moves the caret.** One made here
-   * already has it, and pulling focus back to the top of the block on every
-   * keystroke's re-render would take it out of the field being typed in.
-   */
-  useEffect(() => {
-    if (selection === null || selection.from !== 'preview' || column.current === null) {
-      return;
-    }
-
-    const block = Array.from(column.current.querySelectorAll<HTMLElement>('[data-slot-key]')).find(
-      (candidate) => candidate.dataset.slotKey === selection.key,
-    );
-
-    // `scrollIntoView` is absent in jsdom and optional everywhere else: getting
-    // the caret there is the guarantee, and getting it on screen is the polish.
-    block?.scrollIntoView?.({ block: 'nearest' });
-
-    /*
-     * **The words, not the visibility switch.** A slot the panel may hide leads
-     * with a "Show this" checkbox, and a merchant who clicked a headline in the
-     * preview wants to edit what it says — landing them on the control that
-     * would make it disappear is the wrong answer to the right click.
-     */
-    const control =
-      block?.querySelector<HTMLElement>('input[type="text"], textarea, select') ??
-      block?.querySelector<HTMLElement>('input');
-
-    control?.focus();
-  }, [selection]);
-
-  const edit = (path: Path, key: string, value: unknown) =>
-    onChange({ ...template, tree: withValue(template.tree, path, key, value) });
-
-  return (
-    <div ref={column}>
-      <h4>{__('What it says', 'wconvert')}</h4>
-      {slots.map((slot) => {
-        const slotKey = keyOfSlot(slot);
-
-        return (
-          <fieldset
-            key={slot.path.join('.')}
-            className="wconvert-slot"
-            data-slot-key={slotKey ?? undefined}
-            data-selected={slotKey !== null && slotKey === selection?.key ? 'true' : undefined}
-            onFocus={slotKey === null || onSelect === undefined ? undefined : () => onSelect(slotKey)}
-          >
-            <legend>{nameOfSlot(slot, labels)}</legend>
-
-            <SlotFields
-              slot={slot}
-              labels={labels}
-              onValue={(key, value) => edit(slot.path, key, value)}
-              onHidden={(hidden) =>
-                onChange({ ...template, tree: withHidden(template.tree, slot.path, hidden) })
-              }
-            />
-          </fieldset>
-        );
-      })}
-    </div>
-  );
-}
 
 /**
  * The look: four ready-made bundles, the site's own palette, and every raw
@@ -222,7 +59,7 @@ function Slots({
  * never WConvert's own admin palette, which are different things that both
  * answer to the word "theme".
  */
-function Tokens({
+export function Tokens({
   template,
   labels,
   onChange,
@@ -472,67 +309,3 @@ function ColourField({
   );
 }
 
-/**
- * The dev-only export, and the import that reads one back.
- *
- * **Authoring is the settings panel plus a dev-only export, not hand-written
- * JSON** (ADR 0010) — which is what makes the vocabulary self-testing: a
- * design arrived at here comes out as the library entry it would ship as, so
- * every shipped Template is provably reachable through this panel.
- */
-function DevExport({ entry, onChange }: { entry: TemplateEntry; onChange: (template: Template) => void }) {
-  const [draft, setDraft] = useState<string | null>(null);
-  const [refused, setRefused] = useState(false);
-
-  return (
-    <details className="wconvert-export">
-      <summary>{__('Library entry (developers)', 'wconvert')}</summary>
-      {/*
-       * **The `<summary>` is not this control's name**, which is the whole
-       * reason for the `aria-label`. A `<details>` summary labels the
-       * disclosure, not the fields inside it, so a screen reader reaching this
-       * textarea announced "edit text, blank" — a control with no accessible
-       * name, and a WCAG 2.1 AA failure (4.1.2) rather than a rough edge.
-       *
-       * It is spelled as a label rather than by pairing an `id` with the
-       * summary, because the summary names the disclosure correctly and would
-       * then be doing two jobs. Found by #74's keyboard pass; the
-       * `widefat code` class beside it is the staged boundary this deliberately
-       * does not touch.
-       */}
-      <textarea
-        aria-label={__('Library entry JSON', 'wconvert')}
-        className="widefat code"
-        rows={12}
-        spellCheck={false}
-        value={draft ?? exportEntry(entry)}
-        onChange={(event) => {
-          setDraft(event.target.value);
-          setRefused(false);
-        }}
-      />
-      <p>
-        <button
-          type="button"
-          className="button"
-          onClick={() => {
-            const read = draft === null ? entry : importEntry(draft);
-
-            if (read === null) {
-              setRefused(true);
-
-              return;
-            }
-
-            onChange({ tree: read.tree, tokens: read.tokens });
-            setDraft(null);
-            setRefused(false);
-          }}
-        >
-          {__('Load this design', 'wconvert')}
-        </button>{' '}
-        {refused && <span className="description">{__('That is not a library entry.', 'wconvert')}</span>}
-      </p>
-    </details>
-  );
-}

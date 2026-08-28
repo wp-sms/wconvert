@@ -9,7 +9,7 @@ import type { TemplateNode, TemplateTree } from '@renderer/types';
 
 /**
  * ============================================================================
- * WHAT THE STRUCTURE TAB DOES TO THE DESIGN, THROUGH THE WHOLE SCREEN.
+ * WHAT THE CONTENT TAB DOES TO THE DESIGN, THROUGH THE WHOLE SCREEN.
  * ============================================================================
  * The tree walking, the guards and the history are tested as pure functions in
  * `builder-structure.test.ts`, which is where the logic lives and where jsdom's
@@ -112,11 +112,17 @@ beforeEach(() => {
   goals.listGoals.mockResolvedValue(GOALS);
 });
 
-/** Open the builder and land on the Structure tab. */
+/**
+ * Open the builder and land on the editing tab.
+ *
+ * **Called `structure()` still, and the tab is called Content.** That is the
+ * merge: the tree, the row controls and the inspector are one screen, and it
+ * kept the word merchants already had.
+ */
 async function structure() {
   render(<OptinBuilder id={ID} onClose={vi.fn()} />);
 
-  await userEvent.click(await screen.findByRole('tab', { name: 'Structure' }));
+  await userEvent.click(await screen.findByRole('tab', { name: 'Content' }));
 }
 
 /**

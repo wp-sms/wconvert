@@ -189,7 +189,7 @@ is four tabs"* against WSMS's twenty-five-section rail. That is a statement abou
 **top-level sections** and about the scale a rail exists to serve. It is not a
 budget on tabs anywhere in the product, and
 [#69](https://github.com/navidkashani/wconvert/issues/69)'s ~~five~~ ~~four~~
-**five** builder tabs are a level below it.
+~~five~~ **four** builder tabs are a level below it.
 
 This is written down because the two look like a contradiction and are not, and
 because the cheapest place to lose that distinction is a review comment reading
@@ -215,12 +215,49 @@ and they coexist permanently — a merchant fixing a typo must not have to walk
 past a move button to reach the sentence, and a merchant rearranging must not
 have to read every sentence to find the block.*
 
-*The count has now moved twice, which is the section's own argument arriving
-twice. Both are struck through rather than rewritten for the reason given
-above: a section arguing that a count at this level is not what is being
-budgeted, and then silently tracking the number, would be arguing against
-itself. `tests/js/builder-shell.test.tsx` asserted `four` and is edited in the
-same commit — behaviour moving, recorded rather than quietly fixed.*
+*Amended a third time by the editor merge: the builder ships **four** again —
+Design · Content · Display rules · Destinations. The paragraph above was right
+that Content and Structure were two views of one document and wrong about what
+follows from it. Its own justification — *"a merchant fixing a typo must not
+have to walk past a move button to reach the sentence"* — was an argument
+against a Structure tab **you cannot type in**, and the fix for that is to let a
+block be edited where it is selected rather than to keep a second copy of the
+document on another tab. With an inspector under the tree, the two tabs were one
+screen drawn twice and a merchant changing a headline had to pick which copy to
+open. The look moved the other way, from Content to **Design**, which is what
+that word already promised.*
+
+*The count has now moved three times, which is the section's own argument
+arriving three times. Every one is struck through rather than rewritten for the
+reason given above: a section arguing that a count at this level is not what is
+being budgeted, and then silently tracking the number, would be arguing against
+itself. `tests/js/builder-shell.test.tsx` is edited in the same commit each time
+— behaviour moving, recorded rather than quietly fixed.*
+
+## A control that acts on a selection lives under the list the selection is made in
+
+The table above answers placement for a control that acts on **the whole
+region** (its toolbar) and on **one row** (in the row). It does not answer the
+third case, which the block tree is the first screen to have: a control that
+acts on *whichever* row is currently selected.
+
+It goes **under the list**, in the same region, after it in the tab order.
+
+- **Not in the row.** The controls for a block are a heading, several text boxes
+  and a visibility checkbox. Fifteen rows each carrying that is not a list any
+  more, and the treegrid's roving tabindex — one tab stop for the whole grid —
+  cannot survive rows whose cell count depends on which one is selected.
+- **Not beside the list.** The tab column is 616px at its widest (`main` is
+  `max-w-6xl`) and ~392px at 1024px. A side-by-side split is not available at
+  either width, so it is not a preference between two layouts.
+- **Not on another tab**, which is what the editor did before this and what the
+  amendment above undoes.
+
+The consequence for anything that follows: **the selection must never be
+empty** where a screen does this. A list with a panel under it that says
+*"select something"* is a screen whose bottom half is an instruction, so the
+first row is selected on arrival and every act that changes the list re-points
+the selection rather than clearing it.
 
 ## Consequences
 

@@ -68,7 +68,7 @@ const ID = '01JQ00000000000000000000AA';
 const vocabulary = ruleTypes();
 
 const LABELS = {
-  roles: { headline: 'Headline', fine_print: 'Fine print' },
+  roles: { headline: 'Headline', body: 'Body text', fine_print: 'Fine print' },
   nodes: { heading: 'Heading', text: 'Text', button: 'Button', consent: 'Consent checkbox' },
   layouts: { stack: 'Column', row: 'Row', split: 'Side by side', grid: 'Grid' },
   fields: { email: 'Email address' },
@@ -115,27 +115,26 @@ const labelOf = (name: string | RegExp) =>
 
 describe('the builder shell', () => {
   /**
-   * **Five, and the count moved for the second time.**
+   * **~~Four~~ ~~five~~ four, and the count has now moved three times.**
    *
    * *Display rules* is still the merged one — "when does this fire", "who is
    * eligible" and "which pages" were three tabs' worth of one question — and
-   * that is untouched. **Structure** is the addition, and it is not a sixth
-   * question: it is the second view of the document *Content* already edits,
-   * which is why it sits beside it rather than at the end.
+   * that is untouched. What went is **Structure**: with an inspector under the
+   * tree it and *Content* were one screen drawn twice, and a merchant changing
+   * a headline had to pick which copy of it to open.
    *
-   * This assertion previously read `four` and is edited rather than deleted,
-   * because a test breaking here is behaviour moving and ADR 0039 asks that it
-   * be recorded in the commit that moves it rather than quietly rewritten. The
-   * ADR's own tab count is struck through in the same commit.
+   * This assertion is edited rather than deleted each time, because a test
+   * breaking here is behaviour moving and ADR 0039 asks that it be recorded in
+   * the commit that moves it rather than quietly rewritten. The ADR's own tab
+   * count is struck through again in the same commit.
    */
-  it('offers five tabs, with the three rule surfaces under one of them', async () => {
+  it('offers four tabs, with the three rule surfaces under one of them', async () => {
     open();
 
     expect(await screen.findByRole('tab', { name: 'Design' })).toBeInTheDocument();
     expect(screen.getAllByRole('tab').map((tab) => tab.textContent)).toEqual([
       'Design',
       'Content',
-      'Structure',
       'Display rules',
       'Destinations',
     ]);
@@ -152,7 +151,7 @@ describe('the builder shell', () => {
   it('lists every block of the design, layouts included, as a treegrid', async () => {
     open();
 
-    await userEvent.click(await screen.findByRole('tab', { name: 'Structure' }));
+    await userEvent.click(await screen.findByRole('tab', { name: 'Content' }));
 
     const tree = screen.getByRole('treegrid', { name: 'Blocks in this design' });
 
@@ -169,7 +168,7 @@ describe('the builder shell', () => {
   it('names a row by the words the block is showing, and states its place separately', async () => {
     open();
 
-    await userEvent.click(await screen.findByRole('tab', { name: 'Structure' }));
+    await userEvent.click(await screen.findByRole('tab', { name: 'Content' }));
 
     const headline = screen.getByRole('row', { name: /Headline/ });
 
@@ -186,7 +185,7 @@ describe('the builder shell', () => {
   it('marks a block selected when its row is clicked', async () => {
     open();
 
-    await userEvent.click(await screen.findByRole('tab', { name: 'Structure' }));
+    await userEvent.click(await screen.findByRole('tab', { name: 'Content' }));
     await userEvent.click(labelOf(/Headline/));
 
     expect(screen.getByRole('row', { name: /Headline/ })).toHaveAttribute('aria-selected', 'true');
@@ -200,7 +199,7 @@ describe('the builder shell', () => {
   it('keeps one tab stop across the whole tree', async () => {
     open();
 
-    await userEvent.click(await screen.findByRole('tab', { name: 'Structure' }));
+    await userEvent.click(await screen.findByRole('tab', { name: 'Content' }));
 
     const tree = screen.getByRole('treegrid', { name: 'Blocks in this design' });
     const tabbable = within(tree).getAllByRole('button').filter((button) => button.tabIndex === 0);
@@ -210,34 +209,78 @@ describe('the builder shell', () => {
 
   /**
    * ========================================================================
-   * CONTENT AND STRUCTURE ARE TWO VIEWS OF ONE DOCUMENT.
+   * THE EDITOR IS NEVER A LIST WITH AN INSTRUCTION UNDER IT.
    * ========================================================================
-   * So the selection survives the walk between them. Clearing it on the way
-   * would make the two views disagree about which block the merchant is on —
-   * and the outline in the preview would blink off and on for no reason the
-   * merchant could name.
+   * A merchant opening the tab is already editing the first block. Not the
+   * first ROW — that is a step, and a step is not a block a merchant arranges
+   * (ADR 0025) — but the first thing inside it, which is what someone reading
+   * the design top to bottom would have clicked.
    */
-  it('keeps the selected block while the merchant moves between Content and Structure', async () => {
+  it('has the first block selected on arrival, so the inspector is never empty', async () => {
     open();
 
-    await userEvent.click(await screen.findByRole('tab', { name: 'Structure' }));
-    await userEvent.click(labelOf(/Headline/));
-    await userEvent.click(screen.getByRole('tab', { name: 'Content' }));
-    await userEvent.click(screen.getByRole('tab', { name: 'Structure' }));
+    await userEvent.click(await screen.findByRole('tab', { name: 'Content' }));
 
     expect(screen.getByRole('row', { name: /Headline/ })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('group', { name: 'Headline' })).toBeInTheDocument();
   });
 
-  /** And it goes on any tab that is not about the block, as it always did. */
-  it('drops the selection on a tab that is not about a block', async () => {
+  /**
+   * **The selection survives a walk to the look and back.** Design holds the
+   * tokens now, and a merchant who went to change a colour and came back should
+   * find the block they were on still open — the outline in the preview must
+   * not blink off and on for no reason they could name.
+   */
+  it('keeps the selected block while the merchant goes to the design and back', async () => {
     open();
 
-    await userEvent.click(await screen.findByRole('tab', { name: 'Structure' }));
-    await userEvent.click(labelOf(/Headline/));
-    await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
-    await userEvent.click(screen.getByRole('tab', { name: 'Structure' }));
+    await userEvent.click(await screen.findByRole('tab', { name: 'Content' }));
+    await userEvent.click(labelOf(/Body text/));
+    await userEvent.click(screen.getByRole('tab', { name: 'Design' }));
+    await userEvent.click(screen.getByRole('tab', { name: 'Content' }));
 
-    expect(screen.getByRole('row', { name: /Headline/ })).toHaveAttribute('aria-selected', 'false');
+    expect(screen.getByRole('row', { name: /Body text/ })).toHaveAttribute('aria-selected', 'true');
+  });
+
+  /**
+   * ========================================================================
+   * THE OUTLINE GOES; THE SELECTION DOES NOT.
+   * ========================================================================
+   * They used to be one thing. The outline says *this is the block you are
+   * working on*, and left up over the rules tab it is a highlight with nothing
+   * on screen explaining it — so the selection was cleared on the way out.
+   *
+   * That answer stopped working when the selection also decided what the
+   * inspector was showing: a merchant coming back from the rules would find an
+   * editor with no block open, which is the empty panel the arrival selection
+   * exists to prevent. So the tab decides what the PREVIEW is handed, and the
+   * selection survives the walk.
+   *
+   * What the preview does with a null is inside a closed shadow root and is not
+   * observable from here — it is on the browser pass with the rest of the CSS.
+   */
+  it('keeps the block open while the merchant is away editing the rules', async () => {
+    open();
+
+    await userEvent.click(await screen.findByRole('tab', { name: 'Content' }));
+    await userEvent.click(labelOf(/Body text/));
+    await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
+    await userEvent.click(screen.getByRole('tab', { name: 'Content' }));
+
+    expect(screen.getByRole('row', { name: /Body text/ })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('group', { name: 'Body text' })).toBeInTheDocument();
+  });
+
+  /**
+   * **Authoring is the editor plus a DEV-ONLY export** (ADR 0010), and a
+   * merchant has no use for the library entry behind their popup.
+   */
+  it('keeps the library entry off the design tab unless WP_DEBUG is on', async () => {
+    open();
+
+    await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
+
+    expect(screen.queryByText(/Library entry/)).toBeNull();
   });
 
   /**

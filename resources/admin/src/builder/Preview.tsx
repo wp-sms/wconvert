@@ -31,21 +31,21 @@ import type { Template } from '@renderer/types';
  * *"handed to the caller rather than the shadow root itself, so `closed` still
  * means what it says to everything that did not mount this"* — and the
  * renderer already stamps `data-role` for exactly this reader, its own comment
- * naming *"the settings panel, which edits slot content BY Role"*. This file
- * simply stopped discarding both.
+ * naming *"the settings panel, which edits slot content BY Role"* — the editor
+ * that inherited that job. This file simply stopped discarding both.
  *
  * ADR 0009's reason for `closed` is a theme script on a VISITOR's page
  * sweeping `querySelectorAll('input')` and rebinding the capture field. Nothing
  * here is on a visitor's page and nothing here is reachable from one; the
  * boundary is as closed to the outside as it ever was.
  *
- * ADR 0010's boundary holds for the same reason it always did: **selection
- * edits nothing.** A click reports which slot was clicked and stops there. The
- * panel is still the only thing that writes, and it still writes only content,
- * visibility and tokens.
+ * ADR 0010's boundary holds for the same reason it always did: **this file
+ * edits nothing.** A click reports which slot was clicked and stops there. What
+ * it hands over is a name for a slot and no way to reach one, which is why the
+ * preview can stay a closed shadow root and still be an input.
  *
  * Remounted whenever the design or the step changes, which is every keystroke
- * in the settings panel. That is affordable because the renderer builds DOM
+ * in the inspector. That is affordable because the renderer builds DOM
  * and reads nothing — no network, no layout measurement, no ambient state —
  * and it is what keeps the preview a render of the current tree rather than a
  * patched copy of an older one. Selection is NOT in that dependency list: it
@@ -162,8 +162,8 @@ export function Preview({ template, step = 0, selected = null, onSelect }: Previ
        * CTA are real focusable controls, because the preview is the real
        * render: giving those a `tabindex` and `role="button"` of their own
        * would put a button around an input and announce it as one. They are
-       * selected by being focused, which is the same signal the settings panel
-       * sends from its side.
+       * selected by being focused, which is the same signal a row in the block
+       * tree sends from its side.
        *
        * A heading or a line of fine print is focusable by nothing, so it is
        * made so — one tab stop, named for what it says, activated by Enter or

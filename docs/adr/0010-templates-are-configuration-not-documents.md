@@ -135,24 +135,36 @@ third-party ones. Under configuration they are properties of the one renderer.
   a canvas can still land later as an editor over a tree that already exists.
 
   **Amended by the structure editor, which is that canvas arriving.** The
-  sentence is now a fact about the *Content* tab rather than about the product:
-  `SettingsPanel` still edits words, visibility and tokens and still cannot
-  reshape anything, and `tests/js/builder-settings-panel.test.tsx` still asserts
-  it offers no control reading add, remove, move, up or down. Arrangement moved
-  to a **second view of the same document** — the *Structure* tab — rather than
-  into the panel, which is what keeps the Content column a readable list of
-  sentences.
+  sentence became a fact about the *Content* tab rather than about the product:
+  `SettingsPanel` still edited words, visibility and tokens and still could not
+  reshape anything, and `tests/js/builder-settings-panel.test.tsx` asserted it
+  offered no control reading add, remove, move, up or down. Arrangement moved to
+  a **second view of the same document** — the *Structure* tab — rather than
+  into the panel.
 
-  Three things are unchanged by that, and they are the three the bargain was
-  actually made of. The vocabulary is still the ceiling: `structure/catalogue.ts`
-  reads `manifest.json` and can express nothing outside it. The gallery is still
-  where a design comes from. And there is still no migration, because the tree
-  the editor edits is the tree that was always stored.
+  **Amended again by the editor merge, and that reading is now dead.** There is
+  one surface, and it edits words **and** arrangement: the block tree with an
+  inspector under it, on the tab called *Content*. `SettingsPanel.tsx` no longer
+  exists — it dissolved into `SlotFields` (the controls for one slot, in the
+  inspector), `Tokens` and `DevExport` (the look, on *Design*). The assertion
+  named above went with it, **deleted rather than moved**, because it stopped
+  being true on purpose; the deletion is recorded at the head of
+  `tests/js/builder-design-tab.test.tsx`.
+
+  **The substance of this bargain is untouched, and it is worth restating
+  exactly.** Three things were what it was made of, and none of them moved:
+
+  1. **The vocabulary is still the ceiling.** `structure/catalogue.ts` reads
+     `manifest.json` and can express nothing outside it. The editor arranges
+     what the vocabulary offers; it cannot invent design variety.
+  2. **The gallery is still where a design comes from.** A merchant adjusts one
+     here; they choose one there.
+  3. **There is still no migration**, because the tree the editor edits is the
+     tree that was always stored.
 
   `hidden` therefore keeps its whole meaning. Hiding a slot and removing it are
-  now both possible and they are different acts: hidden is reversible by the
-  merchant on the Content tab and rides the payload, removed is reversible by
-  Undo and does not.*
+  both possible and they are different acts: hidden is reversible in the
+  inspector and rides the payload, removed is reversible by Undo and does not.*
   *`hidden` is a param on `heading`, `text`, `image` and `consent` and on nothing
   else: hiding the button that converts leaves an Optin with no countable act,
   and hiding a required field leaves a form the capture endpoint refuses every

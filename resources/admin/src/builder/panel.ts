@@ -2,7 +2,7 @@ import vocabulary from '../../../templates/manifest.json';
 import type { TemplateNode, TemplateTree, Tokens } from '@renderer/types';
 
 /**
- * The settings panel's model of a design: tokens, slot content and slot
+ * The model of a design a merchant EDITS: tokens, slot content and slot
  * visibility, over a tree it never restructures.
  *
  * ============================================================================
@@ -10,15 +10,17 @@ import type { TemplateNode, TemplateTree, Tokens } from '@renderer/types';
  * ============================================================================
  * Every function here takes a tree and returns one with the SAME shape — same
  * node types, same order, same nesting. What changes is what a node says and
- * whether it is shown. That is a fact about the **Content** tab, and it is what
- * keeps that tab a readable column of sentences rather than a column of
- * sentences interleaved with move buttons.
+ * whether it is shown.
  *
- * Arrangement lives one directory down, in `structure/`, behind the **Structure**
- * tab — a second view of the same document. That is ADR 0010's own escape clause
- * being collected rather than a hole in it: *"a canvas lands later as an editor
- * over a tree that already exists, with no migration"*, and the tree it edits is
- * the tree that was always stored.
+ * That is a division of labour rather than a ceiling on the product. The two
+ * halves meet on one screen now: {@see BlockTree} lists the blocks and moves
+ * them, and {@see BlockInspector} under it writes what the selected one says
+ * through the functions below. Keeping them in separate files is what stops a
+ * change to the words being able to change the shape by accident.
+ *
+ * That is ADR 0010's own escape clause collected rather than a hole in it:
+ * *"a canvas lands later as an editor over a tree that already exists, with no
+ * migration"*, and the tree it edits is the tree that was always stored.
  *
  * The ceiling did not move with it. `structure/catalogue.ts` reads the same
  * manifest this file does and can express nothing outside it, so the editor
@@ -47,7 +49,7 @@ export interface LeafDeclaration {
    * (CONTEXT.md, Slot Role). Everything else names the Roles that suit it, so
    * {@see structure/catalogue} can hand a newly added block a Role that is
    * actually free without a mapping of its own — the same property `TOKENS`
-   * gives the settings panel.
+   * gives the token list.
    */
   readonly roles: readonly string[];
 }
@@ -78,8 +80,8 @@ export const FIELDS = vocabulary.fields as readonly string[];
 /**
  * Every token the vocabulary declares, with the value it falls back to.
  *
- * The panel draws one control per entry, so a token added to the manifest
- * appears here without anything else being edited — and an unconsumed one
+ * The Design tab draws one control per entry, so a token added to the manifest
+ * appears there without anything else being edited — and an unconsumed one
  * cannot hide, because `tests/js/renderer-manifest-parity.test.ts` fails the
  * day the stylesheet stops reading it.
  */
@@ -120,7 +122,7 @@ export interface Slot {
   /** What is in them now. */
   readonly values: Readonly<Record<string, unknown>>;
   /**
-   * Whether the panel may switch it off.
+   * Whether the merchant may switch it off.
    *
    * False for `button` and `field`, and not by omission: hiding the button
    * that converts leaves an Optin with no countable act, and hiding a required
@@ -138,6 +140,11 @@ export interface Slot {
  * The walk covers both of a `split`'s panes, which is exactly where a second
  * reader forgets to look — the same argument `ConvertingAct::offeredIn()`
  * makes on the other side of the boundary.
+ *
+ * Leaves only, which is the difference from `nodesOf`: a slot is something with
+ * words in it, and a `row` has none. The inspector asks this what the selected
+ * block may say and gets nothing back for a layout, which is why it says so
+ * rather than drawing an empty box.
  */
 export function slotsOf(tree: TemplateTree): Slot[] {
   const slots: Slot[] = [];

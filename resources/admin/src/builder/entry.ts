@@ -6,11 +6,11 @@ import type { TemplateEntry } from '../templates/api';
  * ============================================================================
  * THIS IS WHAT MAKES THE VOCABULARY SELF-TESTING.
  * ============================================================================
- * **Authoring is the settings panel plus a dev-only export, not hand-written
- * JSON** (ADR 0010). A design is arrived at in the panel and comes back out as
- * the library entry it would ship as, which is what proves every shipped
- * Template is expressible in the panel — so we never ship a design the
- * merchant cannot adjust. Hand-written entries would make that a habit rather
+ * **Authoring is the editor plus a dev-only export, not hand-written JSON**
+ * (ADR 0010). A design is arrived at in the editor and comes back out as the
+ * library entry it would ship as, which is what proves every shipped Template
+ * is expressible there — so we never ship a design the merchant cannot
+ * adjust. Hand-written entries would make that a habit rather
  * than a property.
  *
  * **Dev-only, and gated on `WP_DEBUG` rather than on a capability.** It is not

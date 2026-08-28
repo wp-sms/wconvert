@@ -267,10 +267,10 @@ function Control({
 /**
  * What this block is CALLED, in the vocabulary's own words.
  *
- * The same three-step answer the settings panel gives — [[Slot Role]] first,
+ * The same three-step answer {@see nameOfSlot} gives — [[Slot Role]] first,
  * capture kind where a `field` has no Role of its own, node type where neither
- * — because a block called "Headline" in one column and "Heading" in the other
- * is two names for one thing on one screen.
+ * — because a block called "Headline" on the row and "Heading" in the inspector
+ * under it is two names for one thing, six inches apart.
  */
 export function nameOfBlock(block: Block, labels: TemplateLabels): string {
   if (block.level === 1) {

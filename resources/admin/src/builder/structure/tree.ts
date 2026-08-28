@@ -45,7 +45,7 @@ import type { TemplateNode, TemplateTree } from '@renderer/types';
 /**
  * Where a node sits inside its parent: which array, and where in it.
  *
- * A {@link Path} names a NODE, which is all the settings panel ever needed —
+ * A {@link Path} names a NODE, which is all the slot editor ever needed —
  * `editNode` walks to one and replaces it. Inserting has no node to walk to
  * yet, and a position past the end of an array is a real destination with no
  * node at it, so the structure editor needs the other half of the address.
@@ -85,10 +85,9 @@ export const sameSpot = (a: Spot, b: Spot): boolean =>
 /**
  * One node, with everything a row needs to draw itself and nothing it does not.
  *
- * **Layouts are in it, and that is the difference from `slotsOf`.** The
- * settings panel walks leaves only and flattens them, because a merchant
- * editing words does not care that the email field sits in a `row`. A merchant
- * MOVING it does: the row is what they are moving it within, and a tree that
+ * **Layouts are in it, and that is the difference from `slotsOf`.** `slotsOf`
+ * walks leaves only, because a merchant editing words does not care that the
+ * email field sits in a `row`. A merchant MOVING it does: the row is what they are moving it within, and a tree that
  * hid the row would offer no way to say so.
  */
 export interface Block {

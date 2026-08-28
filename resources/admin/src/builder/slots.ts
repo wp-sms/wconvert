@@ -5,8 +5,8 @@ import type { TemplateTree } from '@renderer/types';
 /**
  * The one name a slot answers to on both sides of the preview boundary.
  *
- * The settings panel holds a {@link Slot} — a path into the tree, a Role, a
- * capture kind. The preview holds DOM the renderer stamped. Neither can see the
+ * The editor holds a {@link Slot} — a path into the tree, a Role, a capture
+ * kind. The preview holds DOM the renderer stamped. Neither can see the
  * other's handle: a `Path` is meaningless to an element, and an element is not
  * something the panel may hold a reference to across a remount, because the
  * preview is re-rendered on every keystroke.
@@ -59,17 +59,15 @@ export const SLOT_SELECTOR = '[data-role],[data-captures]';
 /**
  * Where a selection came from, which decides who moves.
  *
- * A click in the PREVIEW has to put the caret in the panel; a focus in the
- * PANEL must not then drag the caret back out of the field the merchant just
- * reached. Same key, opposite obligations — so the origin travels with it
- * rather than being guessed from timing.
+ * A click in the PREVIEW has to bring the editor to the block it names; a click
+ * in the TREE already has focus, on the row, and must not drag the caret down
+ * into the inspector — arrow keys have to keep walking the list after it.
+ * Same block, opposite obligations, so the origin travels with it rather than
+ * being guessed from timing.
  *
- * `structure` is the third surface and it behaves like `panel` on purpose: a
- * merchant clicking a row in the block tree already has focus, on the row, and
- * dragging the caret into a control on a tab they are not looking at would be a
- * selection they never see. It is named rather than folded into `panel` because
- * the two are different surfaces and a reader should not have to know that one
- * of them is currently spelled as the other.
+ * Two arms rather than three, because there are two surfaces now. `panel` and
+ * `structure` were the two halves of one editor split across two tabs, and
+ * both meant *the merchant is already here*.
  */
 export interface Selection {
   /**
@@ -82,7 +80,7 @@ export interface Selection {
    * Selection was a {@link SlotKey} alone, and ADR 0040 chose that
    * deliberately: it names a slot and carries no way to REACH one, so nothing
    * receiving a selection could write. That held while the only thing being
-   * selected was a slot the settings panel had a control for.
+   * selected was a slot the old settings panel had a control for.
    *
    * It cannot hold for an editor that edits a block where it is selected. A
    * block with no [[Slot Role]] has no key at all ({@link keyOfSlot} answers
@@ -98,7 +96,7 @@ export interface Selection {
   readonly path: Path;
   /** What the preview outlines, or null for a block the preview cannot name. */
   readonly key: SlotKey | null;
-  readonly from: 'preview' | 'panel' | 'structure';
+  readonly from: 'preview' | 'tree';
 }
 
 /**
