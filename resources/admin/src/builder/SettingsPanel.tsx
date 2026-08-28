@@ -4,11 +4,12 @@ import { HexColorInput, HexColorPicker, RgbaStringColorPicker } from 'react-colo
 import { Button } from '../components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
 import { TOKENS, slotsOf, withHidden, withToken, withValue } from './panel';
+import { SlotFields, nameOfSlot } from './SlotFields';
 import { exportEntry, importEntry } from './entry';
 import { getThemeTokens } from './api';
 import { isApplied, isColour, isTranslucent, themePresets } from './themes';
 import { keyOfSlot, type Selection, type SlotKey } from './slots';
-import type { Path, Slot } from './panel';
+import type { Path } from './panel';
 import { nameOf, type TemplateEntry, type TemplateLabels } from '../templates/api';
 import type { Template } from '@renderer/types';
 
@@ -170,109 +171,20 @@ function Slots({
             data-selected={slotKey !== null && slotKey === selection?.key ? 'true' : undefined}
             onFocus={slotKey === null || onSelect === undefined ? undefined : () => onSelect(slotKey)}
           >
-            <legend>{headingFor(slot, labels)}</legend>
+            <legend>{nameOfSlot(slot, labels)}</legend>
 
-            {slot.hideable && (
-              <label className="wconvert-slot__shown">
-                <input
-                  type="checkbox"
-                  checked={!slot.hidden}
-                  onChange={(event) =>
-                    onChange({ ...template, tree: withHidden(template.tree, slot.path, !event.target.checked) })
-                  }
-                />{' '}
-                {__('Show this', 'wconvert')}
-              </label>
-            )}
-
-            {slot.keys.map((key) =>
-              key === 'link' ? (
-                <LinkControl
-                  key={key}
-                  label={nameOf(labels.keys, key)}
-                  value={slot.values[key]}
-                  onChange={(value) => edit(slot.path, key, value)}
-                />
-              ) : (
-                <label key={key} className="wconvert-slot__key">
-                  {nameOf(labels.keys, key)}
-                  <input
-                    type="text"
-                    className="widefat"
-                    value={typeof slot.values[key] === 'string' ? (slot.values[key] as string) : ''}
-                    onChange={(event) => edit(slot.path, key, event.target.value)}
-                  />
-                </label>
-              ),
-            )}
+            <SlotFields
+              slot={slot}
+              labels={labels}
+              onValue={(key, value) => edit(slot.path, key, value)}
+              onHidden={(hidden) =>
+                onChange({ ...template, tree: withHidden(template.tree, slot.path, hidden) })
+              }
+            />
           </fieldset>
         );
       })}
     </div>
-  );
-}
-
-function headingFor(slot: Slot, labels: TemplateLabels): string {
-  if (slot.role !== null) {
-    return nameOf(labels.roles, slot.role);
-  }
-
-  if (slot.captures !== null) {
-    return nameOf(labels.fields, slot.captures);
-  }
-
-  return nameOf(labels.nodes, slot.type);
-}
-
-/**
- * A link inside a sentence, expressed as STRUCTURE rather than markup
- * (ADR 0013) — which is why it is two controls and not a rich-text box.
- *
- * The sentence carries `%s` where the link goes, and the renderer splits on it
- * and builds the anchor itself, so no code path reaches `innerHTML`. Leaving
- * the address empty is the ordinary case for a privacy-policy link: the
- * renderer fills it from the site's own configured policy, and with none
- * configured the link renders nothing rather than a dead `#` (ADR 0032).
- */
-function LinkControl({
-  label,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: unknown;
-  onChange: (value: unknown) => void;
-}) {
-  const link = (value ?? {}) as { label?: string; href?: string };
-
-  const write = (next: { label?: string; href?: string }) =>
-    onChange(next.label === undefined || next.label === '' ? undefined : next);
-
-  return (
-    <fieldset className="wconvert-slot__link">
-      <legend>{label}</legend>
-      <label className="wconvert-slot__key">
-        {__('Link text', 'wconvert')}
-        <input
-          type="text"
-          className="widefat"
-          value={link.label ?? ''}
-          onChange={(event) => write({ ...link, label: event.target.value })}
-        />
-      </label>
-      <label className="wconvert-slot__key">
-        {__('Address — leave empty for your privacy policy', 'wconvert')}
-        <input
-          type="text"
-          className="widefat"
-          value={link.href ?? ''}
-          onChange={(event) => write({ ...link, href: event.target.value === '' ? undefined : event.target.value })}
-        />
-      </label>
-      <p className="description">
-        {__('Put %s in the sentence above where the link should sit.', 'wconvert')}
-      </p>
-    </fieldset>
   );
 }
 
