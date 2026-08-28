@@ -295,23 +295,30 @@ describe('the contrast readout', () => {
       />,
     );
 
-    const failing = screen.getByText('Quiet text on Background').parentElement;
+    const failing = screen.getByText('Quiet text on Background').closest('li');
 
     expect(failing).toHaveAttribute('data-state', 'fail');
-    expect(failing).toHaveTextContent('under AA');
+    expect(failing).toHaveTextContent('Under AA');
+    // The ratio, and the sample that is the row's real argument.
+    expect(failing).toHaveTextContent('1.48:1');
+    expect(failing).toHaveTextContent('Aa');
     expect(screen.queryByText('Text on Background')).toBeNull();
     expect(screen.queryByText('Button text on Button')).toBeNull();
   });
 
   /**
-   * **Silence is not the answer either.** This is the only AA check a merchant
-   * gets on a design they are about to show a stranger, so a clean design says
-   * so — once, quietly, instead of three times.
+   * ==========================================================================
+   * A CLEAN DESIGN SAYS NOTHING AT ALL.
+   * ==========================================================================
+   * This asserted one line confirming the check had run, which was the first
+   * attempt at not printing three passing ratios. It was still a line nobody
+   * acts on. The check announces itself the only way that matters — by
+   * appearing the moment something is wrong.
    */
-  it('confirms the check ran in one line when every pair passes', () => {
+  it('is not on screen at all when every pair passes', () => {
     look();
 
-    expect(screen.getByText(/Every pair of colours a visitor has to read passes AA/)).toBeInTheDocument();
+    expect(screen.queryByText('Can it be read')).toBeNull();
     expect(screen.queryByText('Text on Background')).toBeNull();
   });
 
@@ -346,11 +353,11 @@ describe('the contrast readout', () => {
       looked like a design that fails. `data-state` is what the stylesheet
       reads, and it is what the browser pass measures the colour of.
     */
-    const pair = screen.getByText('Text on Background').parentElement;
+    const pair = screen.getByText('Text on Background').closest('li');
 
     expect(pair).toHaveAttribute('data-state', 'unknown');
-    expect(pair).toHaveTextContent('cannot be measured');
-    expect(pair).not.toHaveTextContent('under AA');
+    expect(pair).toHaveTextContent('No reading');
+    expect(pair).not.toHaveTextContent('Under AA');
   });
 });
 

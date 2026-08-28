@@ -2,7 +2,7 @@ import { useId, useState, type CSSProperties } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { HexColorInput, HexColorPicker, RgbaStringColorPicker } from 'react-colorful';
 import { Button } from '../components/ui/button';
-import { Check, RotateCcw, TriangleAlert } from 'lucide-react';
+import { RotateCcw } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
 import { CHOICES, TOKENS, groupsOf, withToken, type TokenGroupId } from './panel';
 import { getThemeTokens } from './api';
@@ -810,11 +810,14 @@ function Contrast({ template, labels }: { template: Template; labels: TemplateLa
   const value = (name: string) =>
     template.tokens[name] ?? TOKENS.find((token) => token.name === name)?.fallback ?? '';
 
-  const read = PAIRS.map(([fg, bg]) => {
+  const read = PAIRS.map(([fg, bg, sample]) => {
     const ratio = contrastOf(value(fg), value(bg));
 
     return {
       key: `${fg}/${bg}`,
+      fg,
+      bg,
+      sample,
       ratio,
       state: ratio === null ? 'unknown' : ratio >= AA_NORMAL ? 'pass' : 'fail',
       named: sprintf(
@@ -830,66 +833,96 @@ function Contrast({ template, labels }: { template: Template; labels: TemplateLa
 
   /*
     ==========================================================================
-    A PASSING RATIO IS A FACT NOBODY ACTS ON, SO IT IS NOT THREE LINES.
+    A PASSING RATIO IS A FACT NOBODY ACTS ON, SO IT IS NOT ON SCREEN AT ALL.
     ==========================================================================
     Every pair was printed on every visit — *"Text on Background 17.7 to 1 —
     passes AA"* three times over — which is three lines of arithmetic a merchant
-    reads once and then reads past forever. That is the cost {@see Shell}'s own
+    reads once and reads past forever. That is the cost {@see Shell}'s own
     subtitle argument names: a permanent line that taxes every visit and informs
     one.
 
-    **But silence is not the answer either**, because then nobody knows the
-    check happened, and this is the only AA check a merchant gets on a design
-    they are about to show a stranger. So: one quiet line when everything
-    passes, and the failures themselves when anything does not.
+    The first fix replaced it with one line saying everything passed, on the
+    reasoning that silence would hide the check. That was still a line nobody
+    acts on. **A clean design says nothing**, and the check announces itself the
+    only way that matters: by appearing the moment something is wrong.
   */
   if (wrong.length === 0) {
-    return (
-      <p className="wconvert-contrast wconvert-contrast--clear">
-        <Check aria-hidden="true" />
-        {__('Every pair of colours a visitor has to read passes AA.', 'wconvert')}
-      </p>
-    );
+    return null;
   }
 
   return (
-    <ul className="wconvert-contrast">
-      {wrong.map((pair) => (
-        /*
-          **Two answers, and they used to be painted as one.** *"We measured it
-          and it is too low"* and *"we cannot measure this"* are different news,
-          and both came out in the same amber — so a design whose accent is
-          `var(--brand)` looked like a design that fails.
-        */
-        <li key={pair.key} className="wconvert-contrast__pair" data-state={pair.state}>
-          <TriangleAlert aria-hidden="true" />
-          <span>{pair.named}</span>
-          {/*
-            **A refusal rather than a wrong number.** A translucent colour
-            composites over whatever is behind it and a named one needs a
-            browser to resolve; either way a ratio here would be a green tick
-            over a design that fails.
-          */}
-          <span className="wconvert-contrast__ratio">
-            {pair.ratio === null
-              ? __('cannot be measured here', 'wconvert')
-              : sprintf(
-                  /* translators: %s: a contrast ratio, e.g. “3.1”. */
-                  __('%s to 1 — under AA', 'wconvert'),
-                  pair.ratio.toFixed(1),
+    <div className="wconvert-contrast">
+      {/*
+        Named, because a group of rows that appears out of nowhere under a
+        palette needs to say what it is measuring. Micro register, like every
+        other group name in this panel.
+      */}
+      <h6 className="wconvert-contrast__name">{__('Can it be read', 'wconvert')}</h6>
+
+      <ul className="wconvert-contrast__list">
+        {wrong.map((pair) => (
+          /*
+            **The sample is the point.** A ratio is a number a merchant has no
+            intuition for; two letters drawn in the actual pair, at the actual
+            size, is the same fact in a form they can judge in a glance — and it
+            is the only part of this row that would still mean something with
+            the numbers removed.
+          */
+          <li key={pair.key} className="wconvert-contrast__pair" data-state={pair.state}>
+            <span
+              aria-hidden="true"
+              className="wconvert-contrast__sample"
+              style={
+                {
+                  '--wconvert-sample-fg': value(pair.fg),
+                  '--wconvert-sample-bg': value(pair.bg),
+                } as CSSProperties
+              }
+            >
+              {pair.sample}
+            </span>
+
+            <span className="wconvert-contrast__what">{pair.named}</span>
+
+            {pair.ratio !== null && (
+              <span className="wconvert-contrast__ratio">
+                {sprintf(
+                  /* translators: %s: a contrast ratio, e.g. “4.8”. */
+                  __('%s:1', 'wconvert'),
+                  pair.ratio.toFixed(2),
                 )}
-          </span>
-        </li>
-      ))}
-    </ul>
+              </span>
+            )}
+
+            {/*
+              **A refusal rather than a wrong number.** A translucent colour
+              composites over whatever is behind it and a named one needs a
+              browser to resolve; either way a ratio here would be a green tick
+              over a design that fails.
+            */}
+            <span className="wconvert-contrast__badge">
+              {pair.ratio === null ? __('No reading', 'wconvert') : __('Under AA', 'wconvert')}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
-/** Every place the renderer paints words on a surface. */
-const PAIRS: readonly (readonly [string, string])[] = [
-  ['fg', 'bg'],
-  ['muted', 'bg'],
-  ['accent-fg', 'accent'],
+/**
+ * Every place the renderer paints words on a surface, and the two characters
+ * that stand for what is painted there.
+ *
+ * The sample is not decoration: a ratio is a number nobody has an intuition
+ * for, and the same pair drawn as letters is a judgement a merchant can make
+ * without knowing what 4.5 means. `Go` for the button, because that is what a
+ * button says.
+ */
+const PAIRS: readonly (readonly [string, string, string])[] = [
+  ['fg', 'bg', 'Aa'],
+  ['muted', 'bg', 'Aa'],
+  ['accent-fg', 'accent', 'Go'],
 ];
 
 /**

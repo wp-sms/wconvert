@@ -528,7 +528,7 @@ describe('deleting a block', () => {
     const refused = screen.getByRole('menuitem', { name: /Delete/ });
 
     expect(refused).toHaveAttribute('aria-disabled', 'true');
-    expect(refused).toHaveTextContent('reporting nothing');
+    expect(refused).toHaveTextContent('counts as a conversion');
   });
 
   /** And the same refusal reaches a layout that HOLDS the only button. */
@@ -1176,5 +1176,67 @@ describe('⌘Z', () => {
     await userEvent.keyboard('{Meta>}z{/Meta}');
 
     expect(rowNames()).not.toContain('Fine print');
+  });
+});
+
+/**
+ * ============================================================================
+ * A NEW FIELD ARRIVES WORDED, AND A HIDDEN BLOCK SAYS SO IN THE LIST.
+ * ============================================================================
+ * Two states the tree was not showing, both found by using the screen rather
+ * than by reading it.
+ */
+describe('what a row shows about itself', () => {
+  it('gives a new field the vocabulary’s own label and example', async () => {
+    await structure();
+
+    await userEvent.click(
+      within(row('Fine print')).getByRole('button', { name: /Add, copy or delete Fine print/ }),
+    );
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Add a block after this' }));
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Field' }));
+
+    /*
+      `freeCapture` hands out the first kind nothing has claimed, in the
+      manifest's own order — the design already captures an email, so this is
+      the name. Its label and example are the pair `TemplateLabels` already
+      ships, which is the same pair the ⇄ control writes when a field CHANGES
+      kind. Neither is empty, which is the whole point.
+    */
+    expect((screen.getByRole('textbox', { name: 'Label' }) as HTMLInputElement).value).toBe('Name');
+    expect((screen.getByRole('textbox', { name: 'Placeholder' }) as HTMLInputElement).value).toBe(
+      'Your name',
+    );
+  });
+
+  /**
+   * *Show this* is a per-block switch whose only trace was the inspector for
+   * the one block selected — so a merchant who hid the fine print and clicked
+   * away had no way to find it again except by opening every row, and the
+   * preview cannot help because the block is not in it.
+   */
+  it('marks a block the merchant switched off, in the list and to a screen reader', async () => {
+    await structure();
+
+    // The row's own label button, which is what selects — not the ⋯ menu
+    // beside it, which also carries the block's name.
+    await userEvent.click(within(row('Fine print')).getAllByRole('button')[0]);
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Show this' }));
+
+    expect(row('Fine print')).toHaveAttribute('data-hidden', 'true');
+    expect(within(row('Fine print')).getByText('Hidden')).toBeInTheDocument();
+  });
+
+  /**
+   * **`counted` alone is a word with no referent.** It is the only chip in the
+   * admin naming a concept the merchant has not met, so the sentence travels
+   * with it rather than living in a docblock.
+   */
+  it('says what “counted” means, rather than only that a row is counted', async () => {
+    await structure();
+
+    const chip = within(row('Button label')).getByText('counted');
+
+    expect(chip).toHaveAttribute('title', expect.stringContaining('conversions are counted'));
   });
 });

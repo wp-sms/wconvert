@@ -323,11 +323,40 @@ export function StructureView({
   };
 
   const add = (at: Spot, type: string) => {
-    const node = nodeFor(template.tree, type, at, act);
+    const bare = nodeFor(template.tree, type, at, act);
 
-    if (node === null) {
+    if (bare === null) {
       return;
     }
+
+    /*
+      ========================================================================
+      A NEW FIELD ARRIVES WORDED, BECAUSE THE WORDS ALREADY EXIST.
+      ========================================================================
+      `nodeFor` gave a field its `name` and `required` and nothing else, so it
+      landed on the design as an unlabelled box with an empty placeholder — and
+      the merchant's first act after adding one was always to type the two most
+      predictable strings in the product.
+
+      **This is not a new decision, it is the same one made a second time.** The
+      ⇄ control already rewrites both from `labels.fields` and
+      `labels.placeholders` when a field changes kind ({@see rewritten}), on the
+      argument that *"an email field that becomes a phone field must not keep
+      `you@example.com` in front of the visitor"*. An email field that is BORN
+      must not arrive with nothing in front of the visitor either.
+
+      It stays out of `nodeFor` because that function is pure over the tree and
+      the vocabulary, and these are the vocabulary's WORDS — which are the
+      server's, translated, and reach this screen as `labels`.
+    */
+    const node =
+      type === 'field' && typeof (bare as { name?: string }).name === 'string'
+        ? ({
+            ...bare,
+            label: nameOf(labels.fields, (bare as { name: string }).name),
+            placeholder: nameOf(labels.placeholders, (bare as { name: string }).name),
+          } as typeof bare)
+        : bare;
 
     const nameless = LEAVES[type] !== undefined && LEAVES[type].roles.length > 0 && freeRoleFor(template.tree, type) === null;
     const kind = LEAVES[type] === undefined ? nameOf(labels.layouts, type) : nameOf(labels.nodes, type);

@@ -1,6 +1,6 @@
 import { useEffect, useRef, type CSSProperties, type ReactNode } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { ChevronDown, ChevronRight, GripVertical } from 'lucide-react';
+import { ChevronDown, ChevronRight, EyeOff, GripVertical } from 'lucide-react';
 import { losesWordsOnSwitch } from './structure/catalogue';
 import { isConvertingAct } from './structure/guards';
 import { nameOf, type TemplateLabels } from '../templates/api';
@@ -147,6 +147,15 @@ export function BlockRow({
         would have a floor nobody chose. `padding-inline-start` is what makes it
         invert under `fa_IR` without a second rule (ADR 0038).
       */
+      /*
+        **A hidden block is marked in the LIST, not only in its own panel.**
+        *Show this* is a per-block switch whose only trace was the inspector for
+        the one block selected — so a merchant who hid the fine print and
+        clicked away had no way to find it again except by opening every row,
+        and the preview cannot help because the block is not in it. The row is
+        the one place that can say so.
+      */
+      data-hidden={block.hidden ? 'true' : undefined}
       style={{ '--wconvert-depth': block.level - 1 } as CSSProperties}
     >
       {/*
@@ -231,6 +240,19 @@ export function BlockRow({
               {summary !== null && <span className="wconvert-block__says">{summary}</span>}
 
               {/*
+                An icon rather than a chip: it is a STATE of the row rather than
+                a fact about the block, so it reads as a property of the whole
+                line — and it is the eye's affordance, with the word carried for
+                a screen reader, which cannot see the dimming.
+              */}
+              {block.hidden && (
+                <span className="wconvert-block__off">
+                  <EyeOff aria-hidden="true" />
+                  <span className="sr-only">{__('Hidden', 'wconvert')}</span>
+                </span>
+              )}
+
+              {/*
                 ================================================================
                 TWO CHIPS, AND NEITHER IS DECORATION.
                 ================================================================
@@ -247,9 +269,25 @@ export function BlockRow({
                 no seam for its words to travel on. The merchant can type a
                 second paragraph, switch design, and find it gone.
               */}
+              {/*
+                **`counted` alone is a word with no referent.** It is the only
+                chip in the admin naming a concept the merchant has not met — a
+                merchant reading it asks *"counted where? by what?"* — so the
+                sentence travels with it: as a `title` for a pointer and in the
+                accessibility tree for everyone else. The chip stays two
+                syllables because it is on every row of a list that is read by
+                scanning.
+              */}
               {isConvertingAct(block) && (
-                <span className="wconvert-block__chip wconvert-block__chip--counted">
+                <span
+                  className="wconvert-block__chip wconvert-block__chip--counted"
+                  title={__('This Optin’s conversions are counted on this block.', 'wconvert')}
+                >
                   {__('counted', 'wconvert')}
+                  <span className="sr-only">
+                    {' '}
+                    {__('— this Optin’s conversions are counted on this block.', 'wconvert')}
+                  </span>
                 </span>
               )}
               {losesWordsOnSwitch(block) && (

@@ -1420,7 +1420,7 @@
  * every checkbox.
  */
 .wconvert-editor
-  :is(ul, ol):not(.wconvert-gallery, .wconvert-rules, .wconvert-choices, .wconvert-contrast) {
+  :is(ul, ol):not(.wconvert-gallery, .wconvert-rules, .wconvert-choices, .wconvert-contrast__list) {
   padding-inline-start: 1.5em;
   list-style: revert;
 }
@@ -1681,18 +1681,30 @@
   min-block-size: var(--control-height);
 }
 
-/*
- * ---------------------------------------------------------------------------
- * A SEGMENTED CONTROL: ONE QUESTION, N ANSWERS, IN ONE BOX.
+/* ---------------------------------------------------------------------------
+ * ONE SEGMENTED CONTROL, FOR EVERY ONE-OF-N STRIP IN THE ADMIN.
  *
- * The device toggle and the step buttons were pairs of ghost buttons with a 4px
- * gap — `aria-pressed` told a screen reader they were a one-of-N choice and
- * nothing told anybody else. A shared edge is what says the two belong to one
- * question; the button's own `variant` still says which answer is current.
+ * **The same job was built three times and looked three ways.** The builder has
+ * four of these — the tab strip, the preview's step switcher, the device
+ * toggle, and the Design panel's choice chips — and each had its own idea of
+ * what *selected* looks like. A merchant reading two of them side by side got
+ * two different affordances for the same question.
  *
- * The inner radii are squared so the group reads as one control rather than as
- * two rounded ones touching. `:where()` keeps the specificity at zero, so a
- * button's own state classes still win.
+ * **And two of them showed no selection at all.** The step and device buttons
+ * marked the current one with `variant="secondary"`, which paints
+ * `--secondary` — and `--secondary`, `--muted` and the segmented group's own
+ * background are all `#eef3f4`. The selected chip was exactly the colour of the
+ * box it sat in. That is not a taste failure; it is a token collision nobody
+ * would find by reading either file alone, and it is the argument for one
+ * definition rather than four.
+ *
+ * So *selected* is decided **here**, once, for all four: white card, a real
+ * edge, foreground text. Everything else in the group is quiet. The inner radii
+ * are squared so the group reads as one control rather than as chips touching.
+ *
+ * `--card` rather than `--background`: the vendored tab strip used the PAGE
+ * colour for its active tab, which on a `--muted` strip is a two-percent
+ * difference and reads as nothing.
  * ------------------------------------------------------------------------- */
 /*
  * **1px of padding, and it is arithmetic rather than taste.** At 2px the group
@@ -1710,8 +1722,52 @@
   border-radius: var(--radius);
 }
 
-.wconvert-segmented > :where([data-slot="button"]) {
-  border-radius: max(calc(var(--radius) - 2px), 0px);
+/*
+ * **Inside `@layer utilities`, because the state has to beat a variant.** The
+ * buttons in these groups are vendored `Button`s whose `variant` compiles to
+ * `!important` utilities, and for important declarations the cascade runs
+ * layers in reverse — so an unlayered rule here loses to `bg-secondary`
+ * however specific it is. This file has now been caught by that four times.
+ */
+@layer utilities {
+  #wconvert-admin .wconvert-segmented > :is([data-slot="button"]) {
+    border-radius: max(calc(var(--radius) - 2px), 0px);
+    border: 1px solid transparent;
+    background: transparent;
+    box-shadow: none;
+    color: var(--muted-foreground);
+    font-weight: 400;
+  }
+
+  #wconvert-admin .wconvert-segmented > [data-slot="button"]:hover {
+    background: transparent;
+    color: var(--foreground);
+  }
+
+  /* The one selected answer, in the one treatment every strip now shares. */
+  #wconvert-admin .wconvert-segmented > [data-slot="button"][aria-pressed="true"],
+  #wconvert-admin [data-slot="tabs-trigger"][data-state="active"] {
+    background: var(--card);
+    border-color: var(--border);
+    color: var(--foreground);
+    font-weight: 500;
+  }
+
+  /*
+   * The tab strip is the same control, so it is the same box: a `--muted` band
+   * with one raised answer in it. It was `p-[3px]` with a page-coloured active
+   * tab, which is why it read as a different component from the switcher eight
+   * inches to its right.
+   */
+  #wconvert-admin [data-slot="tabs-list"] {
+    padding: 1px;
+    border: 1px solid var(--border);
+  }
+
+  #wconvert-admin [data-slot="tabs-trigger"] {
+    border-radius: max(calc(var(--radius) - 2px), 0px);
+    color: var(--muted-foreground);
+  }
 }
 
 @media (min-width: 1024px) {
@@ -1875,6 +1931,31 @@
 
 .wconvert-block:first-child {
   border-block-start: 0;
+}
+
+/*
+ * **A block the merchant switched off, said in the list.** Dimmed rather than
+ * struck through or greyed to unreadable: it is still a row they can select,
+ * rename and move — the only thing that changed is whether a visitor sees it —
+ * so it stays legible and stops competing with the rows that are live.
+ *
+ * The eye gets the dimming and the icon; a screen reader gets the word, because
+ * neither of those reaches it.
+ */
+.wconvert-block[data-hidden='true'] .wconvert-block__label {
+  opacity: 0.6;
+}
+
+.wconvert-block__off {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  color: var(--muted-foreground);
+}
+
+.wconvert-block__off > svg {
+  inline-size: 0.875rem;
+  block-size: 0.875rem;
 }
 
 /*
@@ -2675,6 +2756,12 @@
   color: var(--foreground);
 }
 
+/*
+ * The same *selected* the strips above use. It is spelled twice because this
+ * one hangs off a checked `<input>` rather than off `aria-pressed`, and a
+ * radio's state has no attribute on the element being painted — but the VALUES
+ * are the group's, so the two cannot drift on colour.
+ */
 .wconvert-choice > input:checked + .wconvert-choice__label {
   background: var(--card);
   border-color: var(--border);
@@ -2709,88 +2796,126 @@
 }
 
 /* ---------------------------------------------------------------------------
- * THE CONTRAST READOUT.
+ * THE CONTRAST READOUT: A SAMPLE, A SENTENCE, A NUMBER, A VERDICT.
  *
  * The colour picker is the first control in this product that lets a merchant
  * fail AA for a VISITOR rather than for themselves, so it is measured beside
  * the control rather than discovered from a customer.
+ *
+ * **It only exists when something is wrong**, so every row on screen is a row
+ * to act on — see {@see Contrast}. What made the old one hard to read was not
+ * the styling but the census: three passing ratios printed as inline runs of
+ * text, wrapping into each other, with the one that mattered indistinguishable
+ * from the two that did not.
+ *
+ * `padding-inline-start: 0` is load-bearing rather than tidiness: this list
+ * sits inside `.wconvert-editor` on the tabs that still carry the class, whose
+ * prose-list rule gives every list `1.5em` of indent and a marker.
  * ------------------------------------------------------------------------- */
-/*
- * **`padding-inline-start: 0` is load-bearing, not tidiness.** This is a `<ul>`
- * inside `.wconvert-editor`, whose prose-list rule gives every list
- * `padding-inline-start: 1.5em` and `list-style: revert` — and this one was
- * never in that rule's exclusion list, so the readout sat 21px in from
- * everything it measures, with no marker to explain the indent. The exclusion
- * is added below; this states the intent locally so it survives being moved.
- */
 .wconvert-contrast {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem 1rem;
+  flex-direction: column;
+  gap: 0.375rem;
+  margin: 0;
+}
+
+.wconvert-contrast__name {
+  margin: 0;
+  color: var(--muted-foreground);
+  font-size: var(--text-micro);
+  line-height: var(--text-micro--line-height);
+  letter-spacing: var(--text-micro--letter-spacing);
+  font-weight: var(--text-micro--font-weight);
+  text-transform: uppercase;
+}
+
+.wconvert-contrast__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
   margin: 0;
   padding-inline-start: 0;
   list-style: none;
+}
+
+/*
+ * A row, not a run of text. The sample leads, the sentence takes the slack, and
+ * the number and the verdict sit at the trailing edge where a column of them
+ * lines up — which is what makes two failing rows comparable at a glance.
+ */
+.wconvert-contrast__pair {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.375rem 0.625rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   font-size: var(--text-note);
 }
 
 /*
- * **The clean state is one line and the failing state is a list**, which is the
- * whole shape of the change: three passing ratios were printed on every visit,
- * and a passing ratio is a fact nobody acts on.
+ * **The sample is the row's argument.** Two letters in the actual pair, at a
+ * size a person reads at, is the same fact as the ratio in a form that needs no
+ * training — and it is the only part of the row that would still mean something
+ * with the numbers removed. Its border is `--border` and never the pair's, so a
+ * design whose colours are both pale still reads as a chip rather than a smudge.
  */
-.wconvert-contrast--clear {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  color: var(--muted-foreground);
-}
-
-.wconvert-contrast--clear > svg {
-  inline-size: 0.875rem;
-  block-size: 0.875rem;
+.wconvert-contrast__sample {
+  display: grid;
+  place-items: center;
   flex: none;
-  color: var(--success);
+  inline-size: 2.75rem;
+  block-size: 2rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--wconvert-sample-bg, transparent);
+  color: var(--wconvert-sample-fg, inherit);
+  font-size: var(--text-body);
+  font-weight: 600;
 }
 
-.wconvert-contrast__pair {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
+.wconvert-contrast__what {
+  flex: 1;
+  min-inline-size: 0;
   color: var(--foreground);
+  text-wrap: pretty;
 }
 
-.wconvert-contrast__pair > svg {
-  inline-size: 0.875rem;
-  block-size: 0.875rem;
-  flex: none;
-}
-
-.wconvert-contrast__pair[data-state='fail'] > svg {
-  color: var(--warning);
-}
-
-.wconvert-contrast__pair[data-state='unknown'] > svg {
-  color: var(--muted-foreground);
-}
-
-/*
- * **Three answers, painted as three.** *Passes*, *fails* and *cannot be
- * measured* are different news, and the last two came out in the same amber —
- * so a design whose accent is `var(--brand)` looked like a design that fails
- * AA. Green says it passed, amber says it did not, and muted says nobody
- * measured it.
- */
 .wconvert-contrast__ratio {
+  flex: none;
+  color: var(--muted-foreground);
   font-variant-numeric: tabular-nums;
 }
 
-.wconvert-contrast__pair[data-state='fail'] .wconvert-contrast__ratio {
+/*
+ * The verdict as a chip rather than a sentence, so the eye finds the answer
+ * before it reads the number.
+ */
+.wconvert-contrast__badge {
+  flex: none;
+  padding: 0.0625rem 0.375rem;
+  border-radius: var(--radius);
+  font-size: var(--text-micro);
+  line-height: var(--text-micro--line-height);
+  font-weight: var(--text-micro--font-weight);
+  white-space: nowrap;
+}
+
+/*
+ * **Two answers, and they used to be painted as one.** *"We measured it and it
+ * is too low"* and *"we cannot measure this"* are different news, and both came
+ * out in the same amber — so a design whose accent is `var(--brand)` looked
+ * like a design that fails.
+ */
+.wconvert-contrast__pair[data-state='fail'] .wconvert-contrast__badge {
+  background: color-mix(in srgb, var(--warning) 14%, transparent);
   color: var(--warning);
 }
 
-.wconvert-contrast__pair[data-state='unknown'] .wconvert-contrast__ratio {
+.wconvert-contrast__pair[data-state='unknown'] .wconvert-contrast__badge {
+  background: var(--surface);
   color: var(--muted-foreground);
-  font-style: italic;
 }
 
 /*

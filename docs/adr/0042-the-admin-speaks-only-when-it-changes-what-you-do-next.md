@@ -91,6 +91,28 @@ empty-state rule generalised: *"No Optins yet."* is a dead end because it names
 the state and not the door. An error has the same obligation and a sharper one,
 because it arrives at the moment the merchant is already stuck.
 
+## 5. One job, one control — and *selected* is decided in one place
+
+The builder has four one-of-N strips: the tab strip, the preview's step
+switcher, the device toggle, and the Design panel's choice chips. Each had its
+own idea of what *selected* looks like, so a merchant reading two of them side by
+side got two affordances for the same question.
+
+**Two of them showed no selection at all**, and the cause is worth recording
+because no amount of reading either file would find it: the step and device
+buttons marked the current one with `variant="secondary"`, and `--secondary`,
+`--muted` and the segmented group's own background are all `#eef3f4`. The
+selected chip was exactly the colour of the box it sat in. A token collision
+across two files is invisible to both.
+
+So *selected* is one declaration — white card, a real edge, foreground text —
+and every strip reads it. That also settles the alignment complaint for free:
+four strips built from one definition are the same height by construction, which
+is a stronger guarantee than four numbers that happen to agree today.
+
+**A variant that means "selected" is a second place for that decision to live.**
+The buttons are all `ghost` now, and the group decides.
+
 ## Consequences
 
 - **A control that acts on the whole draft sits with the draft's title.** Undo

@@ -130,6 +130,16 @@ export interface Block {
   readonly holds: number;
   /** Whether it may hold blocks at all — a layout, whatever it holds now. */
   readonly holder: boolean;
+  /**
+   * Whether the merchant has switched it off.
+   *
+   * **A tree that does not show this is a tree that lies.** The inspector's
+   * *Show this* is a per-block switch whose only trace was the panel for the
+   * ONE block selected — so a merchant who hid the fine print and clicked away
+   * had no way to find it again except by opening every row, and the preview
+   * cannot help, because the block is not in it.
+   */
+  readonly hidden: boolean;
 }
 
 /**
@@ -178,6 +188,7 @@ function collect(
     // `ConvertingAct::collect()` assumes — so an absent param cannot mean one
     // thing to the row and another to whatever counts.
     action: node.type === 'button' ? (typeof action === 'string' ? action : 'submit') : null,
+    hidden: (node as { hidden?: boolean }).hidden === true,
     says: saysOf(node),
     holds: countIn(node),
     holder: keys.length > 0,

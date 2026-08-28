@@ -126,17 +126,19 @@ export function whyRemovalIsRefused(tree: TemplateTree, path: Path): string | nu
   const after = withRemoved(tree, path);
 
   if (convertingActOf(tree).length > 0 && convertingActOf(after).length === 0) {
-    return __(
-      'This is the only thing on the design that counts as a conversion, so removing it would leave the Optin reporting nothing. Change what it says instead, or pick a different design.',
-      'wconvert',
-    );
+    /*
+      **Shortened, and the cut is the rule rather than a word count.** These
+      sentences print under a disabled menu item, in a menu of six — so a
+      merchant reads them while hunting for a control, not while studying. Each
+      one now says the fact and the door, and nothing else: the paragraph the
+      first version added ("change what it says instead, or pick a different
+      design") is two doors for a state where the first one is enough.
+    */
+    return __('The only thing here that counts as a conversion.', 'wconvert');
   }
 
   if (convertingActOf(after).includes('submit') && fieldsIn(after) === 0 && fieldsIn(tree) > 0) {
-    return __(
-      'A form with no fields captures nothing. Add another field before removing this one.',
-      'wconvert',
-    );
+    return __('The only field. A form with none captures nothing.', 'wconvert');
   }
 
   return null;
@@ -163,17 +165,11 @@ export function whyDuplicationIsRefused(tree: TemplateTree, path: Path): string 
   }
 
   if (typesUnder(node).includes('button')) {
-    return __(
-      'An Optin has exactly one thing that counts as a conversion, so its button cannot be copied.',
-      'wconvert',
-    );
+    return __('An Optin counts exactly one conversion, so it has one button.', 'wconvert');
   }
 
   if (typesUnder(node).includes('field')) {
-    return __(
-      'Two fields capturing the same detail collide, so a field is added rather than copied.',
-      'wconvert',
-    );
+    return __('Two fields capturing the same detail collide. Add one instead.', 'wconvert');
   }
 
   return null;

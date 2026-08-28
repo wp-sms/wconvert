@@ -429,12 +429,12 @@ describe('the safety net', () => {
    * because nothing could remove the button until this editor existed.
    */
   it('refuses removing the only converting act', () => {
-    expect(whyRemovalIsRefused(TREE, BUTTON)).toMatch(/reporting nothing/i);
+    expect(whyRemovalIsRefused(TREE, BUTTON)).toMatch(/counts as a conversion/i);
   });
 
   /** Asked of the tree that would RESULT, so a layout holding the button counts. */
   it('refuses removing a layout that holds the only converting act', () => {
-    expect(whyRemovalIsRefused(TREE, ROW)).toMatch(/reporting nothing/i);
+    expect(whyRemovalIsRefused(TREE, ROW)).toMatch(/counts as a conversion/i);
   });
 
   it('refuses removing the last field while the form still submits', () => {

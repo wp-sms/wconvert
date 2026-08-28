@@ -1212,12 +1212,16 @@ function PreviewColumn({
     <aside className="wconvert-builder__preview" aria-label={__('Preview', 'wconvert')}>
       <div className="wconvert-builder__bar flex flex-wrap items-center justify-between gap-2">
         {/*
-          **A bordered group, because a pair of ghost buttons 4px apart does not
-          read as a toggle.** Both of these are one-of-N choices — which step is
-          on the stage, which width it is judged at — and `aria-pressed` said so
-          to a screen reader while a sighted merchant saw two unrelated icons.
-          The container is what makes "these are the same question" visible; the
-          `variant` still says which answer is current.
+          **`.wconvert-segmented` is the same control the tab strip is**, and
+          which answer is current is decided there rather than here — see
+          `index.css`. It was `variant="secondary"` on the selected one, which
+          paints `--secondary`: the same `#eef3f4` as `--muted` and as the
+          group's own background, so the selection was exactly the colour of the
+          box it sat in and a merchant could not tell which step they were
+          looking at.
+
+          Every button is `ghost` now. A variant that means "selected" is a
+          second place for that decision to live, and this screen had four.
         */}
         {steps > 1 ? (
           <div className="wconvert-segmented flex flex-wrap">
@@ -1226,7 +1230,7 @@ function PreviewColumn({
                 key={index}
                 type="button"
                 size="sm"
-                variant={index === shown ? 'secondary' : 'ghost'}
+                variant="ghost"
                 aria-pressed={index === shown}
                 onClick={() => step.onChange(index)}
               >
@@ -1250,7 +1254,7 @@ function PreviewColumn({
           <Button
             type="button"
             size="icon-sm"
-            variant={device.value === 'desktop' ? 'secondary' : 'ghost'}
+            variant="ghost"
             aria-pressed={device.value === 'desktop'}
             onClick={() => device.onChange('desktop')}
           >
@@ -1260,7 +1264,7 @@ function PreviewColumn({
           <Button
             type="button"
             size="icon-sm"
-            variant={device.value === 'mobile' ? 'secondary' : 'ghost'}
+            variant="ghost"
             aria-pressed={device.value === 'mobile'}
             onClick={() => device.onChange('mobile')}
           >
