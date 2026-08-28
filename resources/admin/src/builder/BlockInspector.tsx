@@ -10,8 +10,8 @@ import {
 } from '../components/ui/dropdown-menu';
 import { SlotFields } from './SlotFields';
 import { nameOfBlock } from './BlockRow';
-import { slotsOf, withHidden, withValue, type Path } from './panel';
-import { nodesOf, samePath } from './structure/tree';
+import { LAYOUTS, slotsOf, withHidden, withValue, type Path } from './panel';
+import { nodeAt, nodesOf, samePath } from './structure/tree';
 import { swapLabel, swapNameOf, swapSaid, swapsFor, withSwapped } from './structure/swap';
 import type { ConvertingAct } from './structure/catalogue';
 import { Description } from '../shell/Description';
@@ -154,18 +154,40 @@ export function BlockInspector({ template, labels, path, act, onChange, onSwap }
       </div>
 
       {slot === null ? (
-        <Description>
-          {block.level === 1
-            ? __(
-                'A step is what the blocks are in. Pick one of the blocks listed under it to edit what it says.',
-                'wconvert',
-              )
-            : sprintf(
-                /* translators: %s: what the layout is called, e.g. “Row”. */
-                __('%s holds blocks rather than words. Pick one of the blocks inside it.', 'wconvert'),
-                name,
-              )}
-        </Description>
+        <>
+          <Description>
+            {block.level === 1
+              ? __(
+                  'A step is what the blocks are in. Pick one of the blocks listed under it to edit what it says.',
+                  'wconvert',
+                )
+              : sprintf(
+                  /* translators: %s: what the layout is called, e.g. “Row”. */
+                  __('%s holds blocks rather than words. Pick one of the blocks inside it.', 'wconvert'),
+                  name,
+                )}
+          </Description>
+
+          {/*
+            **A layout holds no words and it does have SETTINGS**, and the
+            editor offered none of them. `split` declares `ratio`, the renderer
+            reads it, and no control in this admin reached it — so a Side by
+            side was a fixed 50/50 forever and the manifest described a
+            capability nobody had. (`grid`'s `columns` was the same, and is one
+            of the reasons that layout is gone rather than fixed.)
+
+            "Holds blocks rather than words" was true and was being used as a
+            reason to draw nothing.
+          */}
+          <LayoutParams
+            type={block.type}
+            labels={labels}
+            onParam={(key, value) =>
+              onChange({ ...template, tree: withValue(template.tree, path, key, value) })
+            }
+            valueOf={(key) => (nodeAt(template.tree, path) as Record<string, unknown> | null)?.[key]}
+          />
+        </>
       ) : (
         /*
           **Keyed by the path**, so switching blocks builds fresh controls and
@@ -188,6 +210,91 @@ export function BlockInspector({ template, labels, path, act, onChange, onSwap }
         />
       )}
     </div>
+  );
+}
+
+/**
+ * A layout's own settings, as the controls the manifest says it has.
+ *
+ * ============================================================================
+ * THE SAME DISPATCH THE DESIGN PANEL MAKES, ONE LEVEL IN.
+ * ============================================================================
+ * A control that ENUMERATES reads its enumeration from the manifest (ADR 0010,
+ * ADR 0042). `split.choices.ratio` is the list, `TemplateLabels` has the words,
+ * and neither is spelled in this bundle — so a param added to a layout arrives
+ * with a control and nothing here is edited.
+ *
+ * **And it is a suggestion, never a limit.** The renderer takes any fraction
+ * for `ratio`, so a design shipping `0.4` keeps it and simply shows nothing
+ * checked — the same bargain the token panel makes, for the same reason.
+ */
+function LayoutParams({
+  type,
+  labels,
+  valueOf,
+  onParam,
+}: {
+  type: string;
+  labels: TemplateLabels;
+  valueOf: (key: string) => unknown;
+  onParam: (key: string, value: unknown) => void;
+}) {
+  const declared = LAYOUTS[type];
+  const params: readonly string[] = declared?.params ?? [];
+
+  if (params.length === 0) {
+    return null;
+  }
+
+  return (
+    <>
+      {params.map((param: string) => {
+        const offered: readonly string[] = declared?.choices?.[param] ?? [];
+
+        if (offered.length === 0) {
+          return null;
+        }
+
+        const held = valueOf(param);
+        const shown = held === undefined ? '' : String(held);
+
+        return (
+          <div key={param} className="wconvert-token">
+            <span id={`wconvert-param-${type}-${param}`}>
+              {nameOf(labels.layoutParams, `${type}.${param}`)}
+            </span>
+            <span
+              role="group"
+              aria-labelledby={`wconvert-param-${type}-${param}`}
+              className="wconvert-choice-set"
+            >
+              {offered.map((choice: string) => (
+                <label key={choice} className="wconvert-choice">
+                  <input
+                    type="radio"
+                    className="sr-only"
+                    name={`wconvert-param-${type}-${param}`}
+                    value={choice}
+                    /*
+                      Compared as NUMBERS, because the manifest spells the
+                      offered values as strings and the tree stores them as
+                      numbers — `0.5` and `"0.50"` are the same split and a
+                      string compare would leave nothing checked on a design
+                      that shipped one.
+                    */
+                    checked={shown !== '' && Number(shown) === Number(choice)}
+                    onChange={() => onParam(param, Number(choice))}
+                  />
+                  <span className="wconvert-choice__label">
+                    {nameOf(labels.layoutParamValues, `${type}.${param}.${choice}`)}
+                  </span>
+                </label>
+              ))}
+            </span>
+          </div>
+        );
+      })}
+    </>
   );
 }
 

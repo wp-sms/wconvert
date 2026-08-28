@@ -87,10 +87,18 @@ export function additionsIn(tree: TemplateTree, at: Spot, act: ConvertingAct): A
     return [];
   }
 
-  return [
-    ...Object.keys(LEAVES).map((type) => ({ type, leaf: true, refused: whyRefused(tree, type, at, act) })),
-    ...Object.keys(LAYOUTS).map((type) => ({ type, leaf: false, refused: null })),
-  ];
+  /*
+    **A layout is asked the same question a leaf is**, and it used to be handed
+    `refused: null` unconditionally. That was fine while nothing could refuse
+    one and became a hole the moment something could: `nodeFor` has always
+    consulted `whyRefused` for every type, so a layout the guard refused was
+    offered by the menu and then silently built nothing when pressed.
+  */
+  return [...Object.keys(LEAVES), ...Object.keys(LAYOUTS)].map((type) => ({
+    type,
+    leaf: LEAVES[type] !== undefined,
+    refused: whyRefused(tree, type, at, act),
+  }));
 }
 
 /**
@@ -146,6 +154,28 @@ function whyRefused(
 
   if (type === 'field' && freeCapture(tree) === null) {
     return __('Every kind of detail this vocabulary can capture is already on the form.', 'wconvert');
+  }
+
+  /*
+    ==========================================================================
+    A COLUMN AT THE TOP OF A STEP IS A NO-OP, SO IT IS NOT OFFERED THERE.
+    ==========================================================================
+    **Every step IS a column** — `.wc-stack` is `flex-direction: column`, and a
+    step renders as one. So adding a Column directly inside a step produces a
+    column inside a column: nothing a merchant can see, on the one menu item
+    they meet most often. That is most of why *"what is Column for?"* was the
+    hardest question this vocabulary asked.
+
+    Its real job is GROUPING — making several blocks behave as one item inside a
+    `row`, or as one pane's contents — and that is exactly where it is still
+    offered. Refusing it elsewhere is not a narrowing of the vocabulary: the
+    tree it would have produced renders identically without it.
+  */
+  if (type === 'stack' && at.parent.length === 1) {
+    return __(
+      'A step is already a column. Add one inside a Row, to group blocks into a single item.',
+      'wconvert',
+    );
   }
 
   return null;

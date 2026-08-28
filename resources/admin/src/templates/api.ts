@@ -40,6 +40,21 @@ export interface TemplateLabels {
    * which by adding one, looking at the preview and deleting it again.
    */
   layoutNotes: Record<string, string>;
+  /**
+   * What a layout's own setting is called, keyed `"{layout}.{param}"`.
+   *
+   * **A layout has settings and the editor never offered them.** `split`
+   * declares `ratio`, the renderer reads it, and no control reached it — so a
+   * Side by side was a fixed 50/50 and the manifest described a capability
+   * nobody had.
+   */
+  layoutParams: Record<string, string>;
+  /**
+   * What each offered value of one is called, keyed
+   * `"{layout}.{param}.{value}"` — because `0.35` is not a thing to put in
+   * front of a merchant.
+   */
+  layoutParamValues: Record<string, string>;
   fields: Record<string, string>;
   /**
    * The example wording a field of each kind ships with.

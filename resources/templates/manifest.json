@@ -12,13 +12,14 @@
       "children": "panes",
       "params": [
         "ratio"
-      ]
-    },
-    "grid": {
-      "children": "list",
-      "params": [
-        "columns"
-      ]
+      ],
+      "choices": {
+        "ratio": [
+          "0.35",
+          "0.5",
+          "0.65"
+        ]
+      }
     }
   },
   "nodes": {

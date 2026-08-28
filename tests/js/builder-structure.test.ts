@@ -289,8 +289,34 @@ describe('what the catalogue offers', () => {
       'stack',
       'row',
       'split',
-      'grid',
     ]);
+  });
+
+  /**
+   * ==========================================================================
+   * A COLUMN AT THE TOP OF A STEP IS A NO-OP, SO IT IS NOT OFFERED THERE.
+   * ==========================================================================
+   * Every step IS a column — `.wc-stack` is `flex-direction: column` and a step
+   * renders as one — so adding a Column directly inside a step produces a
+   * column inside a column: nothing a merchant can see, on the menu item they
+   * meet most often.
+   *
+   * It is still OFFERED (with the reason) rather than dropped, which is this
+   * menu's own rule: *"a refusal is shown rather than the row being dropped,
+   * because 'you cannot add a second email field' is an answer and a missing
+   * menu row is not."*
+   */
+  it('says why a Column at the top of a step would do nothing', () => {
+    const top = additionsIn(TREE, at, 'submit').find((addition) => addition.type === 'stack');
+
+    expect(top?.refused).toMatch(/already a column/i);
+
+    // One level in — inside the row — it groups, so it is offered.
+    const inside = additionsIn(TREE, { parent: ROW, key: 'children', index: 0 }, 'submit').find(
+      (addition) => addition.type === 'stack',
+    );
+
+    expect(inside?.refused).toBeNull();
   });
 
   /** One Optin has exactly one converting act (CONTEXT.md, Conversion). */
@@ -399,7 +425,12 @@ describe('a block the catalogue builds', () => {
   /** So the walk finds the arrays, and the merchant can put something in them. */
   it('gives a layout its child arrays, present and empty', () => {
     expect(nodeFor(TREE, 'split', at, 'submit')).toEqual({ type: 'split', start: [], end: [] });
-    expect(nodeFor(TREE, 'stack', at, 'submit')).toEqual({ type: 'stack', children: [] });
+    // A Column is refused at the top of a step, so it is asked for one level in
+    // — where it groups, which is the only place it does anything.
+    expect(nodeFor(TREE, 'stack', { parent: ROW, key: 'children', index: 0 }, 'submit')).toEqual({
+      type: 'stack',
+      children: [],
+    });
   });
 
   /** Only keys the manifest declares — anything else vanishes at the first save. */

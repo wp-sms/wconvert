@@ -173,13 +173,25 @@ export interface SplitNode {
   readonly ratio?: number;
 }
 
-export interface GridNode {
-  readonly type: 'grid';
-  readonly children?: readonly TemplateNode[];
-  readonly columns?: 2 | 3;
-}
-
-export type LayoutNode = StackNode | RowNode | SplitNode | GridNode;
+/*
+ * ============================================================================
+ * `grid` IS GONE, AND IT IS WORTH SAYING WHY RATHER THAN JUST DELETING IT.
+ * ============================================================================
+ * It declared `repeat(columns, 1fr)` — equal tracks, always N across — and that
+ * is the wrong shape for the surface this vocabulary draws on. A popup is
+ * `min(28rem, 100%)` wide, so a two-column grid stays two columns at 320px and
+ * hands a phone two 140px columns of prose. `split` solves the same problem and
+ * WRAPS, which is why it is the one that survives.
+ *
+ * It also overlapped `row` from the other side: a Row lays several things
+ * across and wraps, which is the useful half of a grid at this width.
+ *
+ * Nothing shipped used it, and its one option — `columns` — was reachable from
+ * nowhere in the admin, so no merchant could ever have made it a three-column
+ * anything. A layout that cannot be configured and is demonstrated by no design
+ * is a fourth word in a menu and not a capability.
+ */
+export type LayoutNode = StackNode | RowNode | SplitNode;
 
 /**
  * Any node. `{ type: string }` is deliberately part of the union: a snapshot

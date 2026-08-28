@@ -77,7 +77,12 @@ const LABELS = {
     stack: 'Blocks stacked top to bottom.',
     row: 'Blocks along one line.',
     split: 'Two panes, each holding its own blocks.',
-    grid: 'Equal columns that collapse on a phone.',
+  },
+  layoutParams: { 'split.ratio': 'How the space is divided' },
+  layoutParamValues: {
+    'split.ratio.0.35': 'Narrow left',
+    'split.ratio.0.5': 'Even',
+    'split.ratio.0.65': 'Narrow right',
   },
   fields: { email: 'Email address' },
   keys: { text: 'Text', label: 'Label', placeholder: 'Placeholder', link: 'Link' },

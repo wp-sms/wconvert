@@ -88,7 +88,17 @@ third-party ones. Under configuration they are properties of the one renderer.
   which is what keeps `clamp(20rem, 50vw, 30rem)` expressible, and every choice
   control keeps a typed box beside it. A token this bundle has never heard of
   still lands in the panel's trailing group wearing a text box, which is the
-  promise below kept literally.* *Refined by
+  promise below kept literally.* *Narrowed to **three layouts** by #75:
+  `grid` is gone. It declared `repeat(columns, 1fr)` — equal tracks, always N
+  across — which at a popup's `min(28rem, 100%)` hands a phone two 140px columns
+  of prose, while `split` solves the same problem and WRAPS. Nothing shipped
+  used it, and its one option was reachable from nowhere in the admin, so no
+  merchant could ever have made it three columns: a layout that cannot be
+  configured and is demonstrated by no design is a fourth word in a menu rather
+  than a capability. `split.ratio` is now a real control, which is the same
+  finding acted on rather than deleted. **A snapshot holding a `grid` still
+  renders** — the renderer skips a node type it does not know, which is the
+  clause that makes narrowing the vocabulary safe at all.* *Refined by
   [ADR 0042](0042-the-admin-speaks-only-when-it-changes-what-you-do-next.md):
   the typed box that keeps a value unvalidated is a **Custom** option rather
   than a field on screen at all times. The property is untouched — a merchant

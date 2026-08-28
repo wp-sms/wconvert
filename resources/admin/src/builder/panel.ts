@@ -67,7 +67,24 @@ export interface LeafDeclaration {
  * project has refused (ADR 0019).
  */
 export const LEAVES = vocabulary.nodes as Readonly<Record<string, LeafDeclaration>>;
-export const LAYOUTS = vocabulary.layouts as Readonly<Record<string, { readonly children: string }>>;
+export const LAYOUTS = vocabulary.layouts as Readonly<
+  Record<
+    string,
+    {
+      readonly children: string;
+      /** Its own settings — `split`'s `ratio` is the one the vocabulary declares. */
+      readonly params?: readonly string[];
+      /**
+       * What the editor OFFERS for each of those settings.
+       *
+       * A suggestion and never a limit, exactly like a token's `choices`: the
+       * renderer takes any fraction for `ratio`, so a design shipping `0.4`
+       * keeps it and the control simply shows nothing checked.
+       */
+      readonly choices?: Readonly<Record<string, readonly string[]>>;
+    }
+  >
+>;
 
 /** Where a layout keeps its children. `split` is the one with two. */
 export const PANES = ['start', 'end'] as const;

@@ -201,11 +201,34 @@ describe('the layout vocabulary', () => {
     expect(split.children[1].textContent).toBe('Join');
   });
 
-  it('carries a grid column count as a custom property, not as a class', () => {
-    const tree = oneStep({ type: 'grid', columns: 3, children: [] } as TemplateTree['steps'][number]);
-    const grid = render(tree, TOKENS).firstElementChild as HTMLElement;
+  /**
+   * ==========================================================================
+   * `grid` IS GONE, AND A SNAPSHOT THAT STILL HOLDS ONE MUST NOT THROW.
+   * ==========================================================================
+   * This asserted `grid` carried its column count as a custom property. The
+   * layout was dropped: it declared equal tracks always N across, which at a
+   * popup's `min(28rem, 100%)` hands a phone two 140px columns of prose, while
+   * `split` solves the same problem and WRAPS. Nothing shipped used it and its
+   * one option was reachable from nowhere in the admin.
+   *
+   * What replaces the assertion is the property that made dropping it safe:
+   * **an unknown node type is SKIPPED, not thrown on** (ADR 0010), which is
+   * what lets a snapshot outlive the vocabulary it was drawn from. An Optin
+   * saved with a `grid` in it still renders everything around it.
+   */
+  it('skips a layout this build no longer has, and renders the rest', () => {
+    const tree = oneStep({
+      type: 'stack',
+      children: [
+        { type: 'grid', columns: 3, children: [{ type: 'heading', text: 'Lost' }] },
+        { type: 'heading', text: 'Kept' },
+      ],
+    } as TemplateTree['steps'][number]);
 
-    expect(grid.style.getPropertyValue('--wc-columns')).toBe('3');
+    const stack = render(tree, TOKENS).firstElementChild as HTMLElement;
+
+    expect(stack.textContent).toBe('Kept');
+    expect(stack.querySelector('.wc-grid')).toBeNull();
   });
 });
 

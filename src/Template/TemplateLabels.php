@@ -91,7 +91,6 @@ final class TemplateLabels
             'stack' => __('Column', 'wconvert'),
             'row' => __('Row', 'wconvert'),
             'split' => __('Side by side', 'wconvert'),
-            'grid' => __('Grid', 'wconvert'),
         ];
     }
 
@@ -127,14 +126,69 @@ final class TemplateLabels
     public static function layoutNotes(): array
     {
         return [
-            /* translators: what the Column layout does. Kept to one short line: it sits under a menu item. */
-            'stack' => __('One block under another.', 'wconvert'),
+            /*
+             * **Column says what it is FOR, not what it looks like.** Every step
+             * is already a column, so *"one block under another"* described
+             * something the merchant already had and made the menu item read as
+             * a no-op — which it is, at the top level. Its real job is grouping,
+             * and it is only offered where grouping does something.
+             */
+            /* translators: what the Column layout is for. It groups blocks so a Row treats them as one item. */
+            'stack' => __('Groups blocks into one item.', 'wconvert'),
             /* translators: what the Row layout does. */
             'row' => __('On one line — a field, then its button.', 'wconvert'),
             /* translators: what the Side by side layout does. */
             'split' => __('Two panes — a picture, then the form.', 'wconvert'),
-            /* translators: what the Grid layout does. */
-            'grid' => __('Equal columns, stacking on a phone.', 'wconvert'),
+        ];
+    }
+
+    /**
+     * What a layout's own setting is called, keyed `"{layout}.{param}"`.
+     *
+     * **A layout has settings and the editor never offered them.** `split`
+     * declares `ratio` and the renderer reads it, and no control in the admin
+     * reached it — so a Side by side was a fixed 50/50 forever and the manifest
+     * described a capability nobody had. (`grid`'s `columns` was the same, and
+     * it is one of the reasons that layout is gone rather than fixed.)
+     *
+     * Keyed by layout AND param because a param name is only meaningful under
+     * its layout: `ratio` means nothing on its own.
+     *
+     * @return array<string, string>
+     */
+    public static function layoutParams(): array
+    {
+        return [
+            'split.ratio' => __('How the space is divided', 'wconvert'),
+        ];
+    }
+
+    /**
+     * What each OFFERED value of a layout's setting is called, keyed
+     * `"{layout}.{param}.{value}"`.
+     *
+     * **Named for what a merchant SEES, not for the number.** `ratio` is the
+     * first pane's share of the line, so `0.35` is a narrow first pane — and
+     * *"0.35"* is not a thing to put in front of anybody. The words are
+     * directional the way `align`'s are, and the translator resolves them for
+     * their own reading direction; the panes themselves are `start` and `end`
+     * and never `left` and `right` (ADR 0009).
+     *
+     * **These are what the panel OFFERS and never what is allowed.** The
+     * renderer takes any fraction, so a design shipping `0.4` keeps it — the
+     * same bargain token `choices` make.
+     *
+     * @return array<string, string>
+     */
+    public static function layoutParamValues(): array
+    {
+        return [
+            /* translators: a side-by-side split. The LOGICAL first pane is narrower — it reads “right” in a right-to-left locale. */
+            'split.ratio.0.35' => __('Narrow left', 'wconvert'),
+            /* translators: a side-by-side split where both panes are the same width. */
+            'split.ratio.0.5' => __('Even', 'wconvert'),
+            /* translators: a side-by-side split. The LOGICAL second pane is narrower — it reads “left” in a right-to-left locale. */
+            'split.ratio.0.65' => __('Narrow right', 'wconvert'),
         ];
     }
 
@@ -351,6 +405,8 @@ final class TemplateLabels
             'nodes' => self::nodes(),
             'layouts' => self::layouts(),
             'layoutNotes' => self::layoutNotes(),
+            'layoutParams' => self::layoutParams(),
+            'layoutParamValues' => self::layoutParamValues(),
             'fields' => self::fields(),
             'placeholders' => self::placeholders(),
             'keys' => self::keys(),

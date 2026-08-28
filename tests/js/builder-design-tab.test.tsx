@@ -53,6 +53,8 @@ const LABELS: TemplateLabels = {
   nodes: {},
   layouts: {},
   layoutNotes: {},
+  layoutParams: {},
+  layoutParamValues: {},
   fields: {},
   keys: {},
   placeholders: { email: 'you@example.com', name: 'Your name', phone: '+44 7700 900000' },

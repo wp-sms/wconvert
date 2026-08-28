@@ -56,7 +56,6 @@ export const SHADOW_CSS = [
 
   `.wc-stack{display:flex;flex-direction:column;gap:var(--wc-gap,.75rem)}`,
   `.wc-row{display:flex;flex-wrap:wrap;align-items:center;gap:var(--wc-gap,.75rem)}`,
-  `.wc-grid{display:grid;grid-template-columns:repeat(var(--wc-columns,2),minmax(0,1fr));gap:var(--wc-gap,.75rem)}`,
 
   // `flex-basis` plus `wrap` is what stacks the two panes on a narrow screen,
   // with no media query and no container query to keep in step.

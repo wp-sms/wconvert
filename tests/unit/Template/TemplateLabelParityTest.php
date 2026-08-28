@@ -114,6 +114,52 @@ final class TemplateLabelParityTest extends TestCase
         );
     }
 
+    /**
+     * **A layout's own settings, which the editor never offered.** `split`
+     * declares `ratio`, the renderer reads it, and no control reached it — so a
+     * Side by side was a fixed 50/50 and the manifest described a capability
+     * nobody had. Both directions, so a param added to the manifest arrives
+     * named and a name for a param nothing declares is a dead string.
+     */
+    public function testEveryLayoutParamIsNamed(): void
+    {
+        /** @var array<string, array<string, mixed>> $layouts */
+        $layouts = self::manifest()['layouts'];
+        $declared = [];
+
+        foreach ($layouts as $layout => $entry) {
+            foreach ((array) ($entry['params'] ?? []) as $param) {
+                $declared[] = $layout . '.' . $param;
+            }
+        }
+
+        $this->assertNamesExactly($declared, TemplateLabels::layoutParams(), 'layout params');
+    }
+
+    /**
+     * And every value a layout param OFFERS, for the same reason token choices
+     * are named: `0.35` is not a thing to put in front of a merchant.
+     */
+    public function testEveryLayoutParamChoiceIsNamed(): void
+    {
+        /** @var array<string, array<string, mixed>> $layouts */
+        $layouts = self::manifest()['layouts'];
+        $offered = [];
+
+        foreach ($layouts as $layout => $entry) {
+            /** @var array<string, list<string>> $choices */
+            $choices = (array) ($entry['choices'] ?? []);
+
+            foreach ($choices as $param => $values) {
+                foreach ($values as $value) {
+                    $offered[] = $layout . '.' . $param . '.' . $value;
+                }
+            }
+        }
+
+        $this->assertNamesExactly($offered, TemplateLabels::layoutParamValues(), 'layout param choices');
+    }
+
     public function testEveryTokenIsNamed(): void
     {
         $this->assertNamesExactly(array_map('strval', array_keys(self::manifest()['tokens'])), TemplateLabels::tokens(), 'tokens');

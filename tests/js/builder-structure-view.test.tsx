@@ -84,7 +84,12 @@ const LABELS = {
     stack: 'Blocks stacked top to bottom.',
     row: 'Blocks along one line.',
     split: 'Two panes, each holding its own blocks.',
-    grid: 'Equal columns that collapse on a phone.',
+  },
+  layoutParams: { 'split.ratio': 'How the space is divided' },
+  layoutParamValues: {
+    'split.ratio.0.35': 'Narrow left',
+    'split.ratio.0.5': 'Even',
+    'split.ratio.0.65': 'Narrow right',
   },
   fields: { email: 'Email address', name: 'Name', phone: 'Phone number' },
   keys: {
@@ -594,9 +599,24 @@ describe('adding a block', () => {
     );
     await userEvent.click(screen.getByRole('menuitem', { name: 'Add a block after this' }));
 
-    for (const kind of ['Heading', 'Text', 'Image', 'Field', 'Button', 'Consent checkbox', 'Column', 'Row', 'Grid']) {
-      expect(await screen.findByRole('menuitem', { name: new RegExp(kind) })).toBeInTheDocument();
+    /*
+      Exact names, because the notes under them now contain each other's words —
+      "Row" appears inside *"In one line — a field, then its button"* only by
+      accident today, but a loose regex over a menu that explains itself is a
+      test that passes for the wrong reason.
+
+      `Grid` is not here: it declared equal tracks always N across, which at a
+      popup's width hands a phone two columns of prose, while `split` solves the
+      same problem and wraps. Nothing shipped used it and its one option was
+      reachable from nowhere.
+    */
+    for (const kind of ['Heading', 'Text', 'Image', 'Field', 'Button', 'Consent checkbox', 'Column', 'Row', 'Side by side']) {
+      expect(
+        await screen.findByRole('menuitem', { name: new RegExp(`^${kind}\\b`) }),
+      ).toBeInTheDocument();
     }
+
+    expect(screen.queryByRole('menuitem', { name: /^Grid/ })).toBeNull();
   });
 
   /** One Optin has exactly one converting act (CONTEXT.md, Conversion). */
@@ -1276,5 +1296,64 @@ describe('the Add menu', () => {
     // …and a leaf does not, because printing one under "Heading" would be the
     // wall of text this menu exists not to be.
     expect(screen.getByRole('menuitem', { name: 'Heading' })).toHaveTextContent(/^Heading$/);
+  });
+});
+
+/**
+ * ============================================================================
+ * A LAYOUT HAS SETTINGS, AND THE EDITOR OFFERED NONE OF THEM.
+ * ============================================================================
+ * `split` declares `ratio` in the manifest and the renderer reads it — and no
+ * control in this admin reached it, so a Side by side was a fixed 50/50 forever
+ * and the manifest described a capability nobody had. (`grid`'s `columns` was
+ * the same, and is one of the reasons that layout is gone rather than fixed.)
+ *
+ * *"Holds blocks rather than words"* was true, and was being used as a reason to
+ * draw nothing.
+ */
+describe('a layout’s own settings', () => {
+  async function withSplit() {
+    await structure();
+
+    await userEvent.click(
+      within(row('Fine print')).getByRole('button', { name: /Add, copy or delete Fine print/ }),
+    );
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Add a block after this' }));
+    await userEvent.click(screen.getByRole('menuitem', { name: /^Side by side/ }));
+  }
+
+  it('offers Side by side the split it always declared', async () => {
+    await withSplit();
+
+    const group = screen.getByRole('group', { name: 'How the space is divided' });
+
+    expect(within(group).getAllByRole('radio')).toHaveLength(3);
+    // Nothing is checked on a fresh one: the node carries no `ratio`, so the
+    // renderer's own default stands and the panel claims nothing.
+    expect(within(group).queryAllByRole('radio', { checked: true })).toHaveLength(0);
+  });
+
+  it('writes the chosen split as the number the renderer reads', async () => {
+    await withSplit();
+
+    await userEvent.click(screen.getByRole('radio', { name: 'Narrow left' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+
+    const split = formChildren(savedTree()).find((node) => node.type === 'split') as
+      | { ratio?: unknown }
+      | undefined;
+
+    // A number and not the manifest's string — `render.ts` checks `typeof
+    // node.ratio === 'number'` and ignores anything else.
+    expect(split?.ratio).toBe(0.35);
+  });
+
+  /** A Row declares no params, so it draws no settings rather than an empty box. */
+  it('draws nothing for a layout that declares none', async () => {
+    await structure();
+
+    await userEvent.click(within(row('Row')).getAllByRole('button')[0]);
+
+    expect(screen.queryByRole('group', { name: 'How the space is divided' })).toBeNull();
   });
 });
