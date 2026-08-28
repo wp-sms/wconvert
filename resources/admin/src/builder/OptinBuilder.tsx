@@ -814,11 +814,25 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
 
       <div className="wconvert-builder">
         <div className="wconvert-builder__tabs">
+          {/*
+            **The space under the tab strip is spelled ONCE, here, and `mb-4` on
+            the strip was a trap.** The vendored `Tabs` root is a flex column
+            that already carries `gap-2`, and a flex gap does not collapse with
+            a margin — so `mb-4` READ as 16px and RENDERED as 24px. Together
+            with the strip standing 4px taller than the preview's button row,
+            that is the whole of the 16px by which the two columns disagreed:
+            60px to the left card, 44px to the right.
+
+            `gap-4` on the root, `gap: 1rem` on the preview column, and a
+            `min-block-size` on the preview's header row so its 32px controls
+            sit centred in a 36px band. Both cards then start at 52px.
+          */}
           <Tabs
+            className="gap-4"
             value={tab}
             onValueChange={(value) => setTab(value as TabId)}
           >
-            <TabsList className="mb-4">
+            <TabsList>
               <TabsTrigger value="design">{__('Design', 'wconvert')}</TabsTrigger>
               <TabsTrigger value="content">{__('Content', 'wconvert')}</TabsTrigger>
               <TabsTrigger value="rules">{__('Display rules', 'wconvert')}</TabsTrigger>
@@ -1081,9 +1095,17 @@ function PreviewColumn({
 
   return (
     <aside className="wconvert-builder__preview" aria-label={__('Preview', 'wconvert')}>
-      <div className="flex flex-wrap items-center justify-between gap-2">
+      <div className="wconvert-builder__bar flex flex-wrap items-center justify-between gap-2">
+        {/*
+          **A bordered group, because a pair of ghost buttons 4px apart does not
+          read as a toggle.** Both of these are one-of-N choices — which step is
+          on the stage, which width it is judged at — and `aria-pressed` said so
+          to a screen reader while a sighted merchant saw two unrelated icons.
+          The container is what makes "these are the same question" visible; the
+          `variant` still says which answer is current.
+        */}
         {steps > 1 ? (
-          <div className="flex flex-wrap gap-1">
+          <div className="wconvert-segmented flex flex-wrap">
             {entry?.tree.steps.map((_node, index) => (
               <Button
                 key={index}
@@ -1109,7 +1131,7 @@ function PreviewColumn({
           <span />
         )}
 
-        <div className="flex gap-1">
+        <div className="wconvert-segmented flex">
           <Button
             type="button"
             size="icon-sm"

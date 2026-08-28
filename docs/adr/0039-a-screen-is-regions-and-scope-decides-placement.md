@@ -303,6 +303,16 @@ was on another tab. `DesignToolbar` is the same toolbar rendered on both tabs
 that edit the design — the rule applied honestly, not a new concept. It stays
 out of the page-header band, which this ADR caps at two whole-screen actions.
 
+_Amended: **`Toolbar`'s `trailing` slot is where a region-scoped status chip
+goes**, and the verdict was not in it. It rendered inside the LEADING group
+wearing `margin-inline-start: auto`, which pushes an item to the end of the
+group it is in — so it sat 12px after Redo rather than at the toolbar's trailing
+edge, where the Lead log's count and every other region's status sit. "Filters
+lead, the count trails" was already this ADR's rule for that slot; a verdict is
+the same kind of thing as a count — a fact about the set the region is showing —
+and the slot is where it belongs. An auto-margin is what a control reaches for
+when it is in the wrong group._
+
 `Display rules` and `Destinations` do not get it, by the same test: neither
 edits the design, so neither can produce an entry to step or a problem to
 report.

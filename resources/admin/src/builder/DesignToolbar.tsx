@@ -64,7 +64,16 @@ export function DesignToolbar({
   readonly onGoTo: (path: Path) => void;
 }) {
   return (
-    <Toolbar>
+    /*
+      **The verdict is the toolbar's `trailing` slot, and it was in `leading`
+      wearing `margin-inline-start: auto`.** {@see Toolbar} is two groups —
+      controls that move the number, then the fact about the set — and an
+      auto-margin pushes an item to the end of the group it is IN. So the chip
+      landed 12px after Redo rather than at the toolbar's trailing edge, which
+      is where every other region on this screen puts its status. ADR 0039 names
+      the slot; this is the first thing to use it for what it is for.
+    */
+    <Toolbar trailing={<Verdict problems={problemsIn(template, act)} onGoTo={onGoTo} />}>
       <Button
         type="button"
         variant="outline"
@@ -85,8 +94,6 @@ export function DesignToolbar({
         <Redo2 aria-hidden="true" />
         {__('Redo', 'wconvert')}
       </Button>
-
-      <Verdict problems={problemsIn(template, act)} onGoTo={onGoTo} />
     </Toolbar>
   );
 }
@@ -109,8 +116,9 @@ export function DesignToolbar({
  * ever mention either.
  *
  * **In the toolbar, because it is about the whole design** — which is exactly
- * the scope test ADR 0039 gives — and beside Undo, because both are things a
- * merchant reaches for after doing something rather than while doing it.
+ * the scope test ADR 0039 gives — in its `trailing` slot, which is where a
+ * region-scoped status goes. It sat in the leading group with an auto-margin,
+ * which pushed it to the end of THAT group and left it 12px after Redo.
  */
 function Verdict({
   problems,

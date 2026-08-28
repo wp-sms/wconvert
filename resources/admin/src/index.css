@@ -1514,8 +1514,66 @@
 .wconvert-builder__preview {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  /*
+   * **1rem, matching the `gap-4` under the tab strip.** It was 0.75rem, and
+   * that 4px was half of the 16px by which the two columns disagreed — see the
+   * header row below, and the comment over `<Tabs>` in `OptinBuilder` for the
+   * other half.
+   */
+  gap: 1rem;
   min-inline-size: 0;
+}
+
+/*
+ * ---------------------------------------------------------------------------
+ * THE TWO COLUMNS START AT THE SAME y, AND THE FIX IS THE BANDS.
+ *
+ * Measured in a browser at 1680px: the left card's top edge was at 60px and the
+ * right card's at 44px. Two independent causes, and neither was a control being
+ * the wrong size —
+ *
+ * - the `TabsList` is a 36px band (`h-9`) and this header row was 32px, because
+ *   it is buttons at `size="sm"` and nothing stated a band around them;
+ * - the space under the strip was `mb-4` (16px) PLUS the `Tabs` root's own
+ *   `gap-2` (8px), because flex gaps do not collapse with margins — while this
+ *   column's was `gap: 0.75rem`.
+ *
+ * The controls are correctly `sm`: both qualify what is already on screen,
+ * which is ADR 0039's own test. The tab strip is correctly the taller band. So
+ * what changes is the BANDS, not the controls — a 36px row with 32px buttons
+ * centred in it, against a 36px strip, and one 1rem gap under each.
+ *
+ * A `RegionError` between the strip and the tab's content pushes the left
+ * column down and is correct to; the columns agree in the state without one.
+ * ------------------------------------------------------------------------- */
+.wconvert-builder__bar {
+  min-block-size: var(--control-height);
+}
+
+/*
+ * ---------------------------------------------------------------------------
+ * A SEGMENTED CONTROL: ONE QUESTION, N ANSWERS, IN ONE BOX.
+ *
+ * The device toggle and the step buttons were pairs of ghost buttons with a 4px
+ * gap — `aria-pressed` told a screen reader they were a one-of-N choice and
+ * nothing told anybody else. A shared edge is what says the two belong to one
+ * question; the button's own `variant` still says which answer is current.
+ *
+ * The inner radii are squared so the group reads as one control rather than as
+ * two rounded ones touching. `:where()` keeps the specificity at zero, so a
+ * button's own state classes still win.
+ * ------------------------------------------------------------------------- */
+.wconvert-segmented {
+  align-items: center;
+  gap: 0;
+  padding: 2px;
+  background: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.wconvert-segmented > :where([data-slot="button"]) {
+  border-radius: max(calc(var(--radius) - 2px), 0px);
 }
 
 @media (min-width: 1024px) {
