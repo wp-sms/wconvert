@@ -5,6 +5,7 @@ import { nodesOf, type Block } from './structure/tree';
 import { keyOfSlot, type SlotKey } from './slots';
 import type { Path } from './panel';
 import type { TemplateLabels } from '../templates/api';
+import type { BlockDrag } from './useBlockDrag';
 import type { TemplateTree } from '@renderer/types';
 
 /**
@@ -65,6 +66,15 @@ export interface BlockTreeProps {
    * that out afterwards, because by then the row is gone.
    */
   readonly focusOn?: Path | null;
+  /**
+   * Dragging, where it is switched on.
+   *
+   * Optional, and handed straight to each row. Drag is strictly additive
+   * (WCAG 2.2 SC 2.5.7) — the tree navigates and reorders identically without
+   * it, which is the acceptance criterion {@see useBlockDrag} is written
+   * against.
+   */
+  readonly drag?: BlockDrag;
 }
 
 export function BlockTree({
@@ -74,6 +84,7 @@ export function BlockTree({
   onSelect,
   actions,
   focusOn = null,
+  drag,
 }: BlockTreeProps) {
   const grid = useRef<HTMLDivElement>(null);
   const [collapsed, setCollapsed] = useState<readonly string[]>([]);
@@ -262,6 +273,7 @@ export function BlockTree({
             }}
             onFocusControl={(control) => setAt({ path: keyFor(block.path), control })}
             actions={actions === undefined ? undefined : (props) => actions(block, props)}
+            drag={drag}
           />
         );
       })}

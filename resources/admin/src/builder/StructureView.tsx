@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import {
   ArrowDown,
@@ -26,12 +26,14 @@ import { EmptyState } from '../shell/EmptyState';
 import { RegionBody } from '../shell/Region';
 import { Toolbar } from '../shell/Toolbar';
 import { BlockTree } from './BlockTree';
+import { useBlockDrag } from './useBlockDrag';
 import { nameOfBlock, sentenceFor, type Control } from './BlockRow';
 import { additionsIn, freeRoleFor, nodeFor, type ConvertingAct } from './structure/catalogue';
 import { whyDuplicationIsRefused, whyRemovalIsRefused } from './structure/guards';
 import {
   countAt,
   nodeAt,
+  nodesOf,
   rolesLostBy,
   spotOf,
   withDuplicated,
@@ -147,15 +149,7 @@ export function StructureView({
    */
   const [focusOn, setFocusOn] = useState<Path | null>(null);
 
-  if (template.tree.steps.length === 0) {
-    return (
-      <RegionBody>
-        <EmptyState icon={Blocks} title={__('This design has nothing in it yet.', 'wconvert')}>
-          {__('Pick a design on the Design tab and its blocks will be listed here.', 'wconvert')}
-        </EmptyState>
-      </RegionBody>
-    );
-  }
+  const blocks = useMemo(() => nodesOf(template.tree), [template.tree]);
 
   const write = (tree: TemplateTree, focus: Path, sentence: string) => {
     onChange({ ...template, tree });
@@ -290,6 +284,26 @@ export function StructureView({
     );
   };
 
+  /*
+   * **Drag, over the same `withMoved` the buttons call.** It is switched on
+   * here and nowhere else: {@see useBlockDrag} writes no tree of its own, and
+   * removing this call and the effect in {@see BlockRow} leaves an editor that
+   * moves, adds, deletes and copies exactly as it did. That is the acceptance
+   * criterion, and it is what "strictly additive" has to mean for WCAG 2.2
+   * SC 2.5.7 to be satisfied by the ↑↓ buttons rather than merely accompanied.
+   */
+  const drag = useBlockDrag({ blocks, onMove: move });
+
+  if (template.tree.steps.length === 0) {
+    return (
+      <RegionBody>
+        <EmptyState icon={Blocks} title={__('This design has nothing in it yet.', 'wconvert')}>
+          {__('Pick a design on the Design tab and its blocks will be listed here.', 'wconvert')}
+        </EmptyState>
+      </RegionBody>
+    );
+  }
+
   return (
     <>
       {/*
@@ -325,7 +339,7 @@ export function StructureView({
       <RegionBody className="wconvert-structure">
         <p className="m-0 text-pretty text-muted-foreground">
           {__(
-            'Click a block to see it highlighted in the preview. Arrow keys move through the list; the buttons on each row move a block within the one it is in.',
+            'Click a block to see it highlighted in the preview. Arrow keys move through the list; the buttons on each row move a block within the one it is in, and it can be dragged there by its name.',
             'wconvert',
           )}
         </p>
@@ -345,6 +359,7 @@ export function StructureView({
           selected={selected}
           onSelect={onSelect}
           focusOn={focusOn}
+          drag={drag}
           actions={(block, { control, tabIndex }) => (
             <RowAction
               block={block}

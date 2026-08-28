@@ -168,4 +168,18 @@ describe('the lazy boundary', () => {
     expect([...graph.packages]).not.toContain('react-colorful');
     expect([...graph.packages]).not.toContain('radix-ui');
   });
+
+  /**
+   * **The drag library, which only the structure editor has.** Named for the
+   * same reason the two above are: a package is where a static import is least
+   * visible, and this one arrives at the top of one hook. It is matched by
+   * prefix because the entry points are subpaths —
+   * `.../adapter/element-adapter` and `.../utils/combine` — and a rule naming
+   * only the bare package would pass while both of them were in `main.js`.
+   */
+  it('keeps the drag library off them', () => {
+    expect(
+      [...graph.packages].filter((name) => name.startsWith('@atlaskit/pragmatic-drag-and-drop')),
+    ).toEqual([]);
+  });
 });

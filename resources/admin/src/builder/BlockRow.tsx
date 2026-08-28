@@ -3,6 +3,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { nameOf, type TemplateLabels } from '../templates/api';
 import type { Block } from './structure/tree';
+import type { BlockDrag } from './useBlockDrag';
 
 /**
  * One row of the block tree: what this block is, and what it says.
@@ -64,6 +65,15 @@ export interface BlockRowProps {
   readonly onFocusControl: (control: number) => void;
   /** ↑, ↓ and the menu. Absent while the tree is read-only. */
   readonly actions?: (props: { control: Control; tabIndex: number }) => ReactNode;
+  /**
+   * Dragging, where it is switched on.
+   *
+   * **Optional, and the row does not need it.** Drag is strictly additive
+   * (WCAG 2.2 SC 2.5.7): passing nothing leaves a row that moves by its ↑↓
+   * buttons exactly as it did, which is the acceptance criterion
+   * {@see useBlockDrag} is written against.
+   */
+  readonly drag?: BlockDrag;
 }
 
 export function BlockRow({
@@ -77,13 +87,32 @@ export function BlockRow({
   onSelect,
   onFocusControl,
   actions,
+  drag,
 }: BlockRowProps) {
   const controls = controlsOf(block);
   const name = nameOfBlock(block, labels);
   const pane = paneName(block);
+  const row = useRef<HTMLDivElement>(null);
+  const handle = useRef<HTMLButtonElement>(null);
+  const path = block.path.join('.');
+
+  /*
+   * **Keyed on the path string, never on the block.** `nodesOf` builds fresh
+   * objects on every render, so an effect depending on `block` would tear down
+   * and rebuild every drag listener in the tree on every keystroke — including
+   * mid-drag, which ends the drag.
+   */
+  useEffect(() => {
+    if (drag === undefined || row.current === null || handle.current === null) {
+      return;
+    }
+
+    return drag.attach(path, row.current, handle.current);
+  }, [drag, path]);
 
   return (
     <div
+      ref={row}
       role="row"
       aria-level={block.level}
       aria-posinset={block.position}
@@ -93,6 +122,14 @@ export function BlockRow({
       className="wconvert-block"
       data-selected={selected ? 'true' : undefined}
       data-step={block.level === 1 ? 'true' : undefined}
+      data-dragging={drag?.dragging === path ? 'true' : undefined}
+      /*
+        Which side the block would land on, as an attribute the stylesheet
+        turns into a rule across the row. Vertical, so it is the one measurement
+        in this editor that does not invert under RTL — a list runs top to
+        bottom in Persian too.
+      */
+      data-drop-edge={drag?.over?.path === path ? drag.over.edge : undefined}
       /*
         **Depth is a custom property, not a class per level.** The tree nests as
         deep as the vocabulary lets a merchant nest it, so a `.depth-4` ladder
@@ -140,6 +177,7 @@ export function BlockRow({
         >
           {(tabIndex) => (
             <button
+              ref={handle}
               type="button"
               tabIndex={tabIndex}
               className="wconvert-block__label"
