@@ -117,6 +117,28 @@ against a real library entry through the real renderer, because a disagreement
 throws nothing and looks like nothing: clicking a headline would simply do
 nothing, silently, forever.
 
+*Amended by the editor merge: **a selection is now a `Path` with the `SlotKey`
+derived from it**, and this section is still true of the direction it was
+written for.*
+
+*A key cannot name every block, which is what forced it. `keyOfSlot` answers
+null for a block with no [[Slot Role]], and two role-less blocks of one type
+share that absence — so a key-based selection drew both as selected, or neither,
+and left exactly those blocks uneditable. They are also precisely the blocks the
+editor now warns about, because their words are lost at the next design switch.*
+
+*What the boundary above was protecting is untouched. **The preview still
+receives a key**, still cannot reach a node, and still writes nothing. What
+gained a path is the panel — the thing that was always the only writer, and
+which has addressed nodes by `Path` since `panel.ts` was written. The key
+travels beside the path for the preview's benefit and for nothing else.*
+
+*Two consequences a key handled for free and a path does not, both now handled
+explicitly: a move changes the address, so the selection is re-pointed at the
+block rather than at the position it held; and a save replaces the tree, so the
+path is re-resolved outward — the block, else whatever held it, else the
+design's first block — rather than cleared.*
+
 ## Why a string and not an element reference
 
 The preview is remounted on every keystroke — the renderer builds DOM and reads
@@ -139,7 +161,9 @@ design rather than about this render of it.
   it still writes only content, visibility and tokens. *That last clause is
   amended by the structure editor — see above. Selection still edits nothing;
   what changed is that a second surface, which is not the preview, now writes
-  arrangement.*
+  arrangement. Amended again by the editor merge: that second surface and the
+  panel are one, on the tab called Content, and it writes words and arrangement
+  both. The preview is still not it.*
 
 ## Consequences
 

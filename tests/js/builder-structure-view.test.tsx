@@ -830,6 +830,51 @@ describe('the inspector', () => {
   });
 
   /**
+   * ==========================================================================
+   * SELECTING A ROW MUST NOT PULL FOCUS INTO THE INSPECTOR.
+   * ==========================================================================
+   * Focus belongs on the row the merchant is on — that is what keeps ↑↓ walking
+   * the list after a click — so `Tab` is the documented way down, and the DOM
+   * order is what makes it land there.
+   */
+  it('leaves focus on the row, and Tab from it reaches the controls below', async () => {
+    await structure();
+    await select('Headline');
+
+    expect(within(row('Headline')).getAllByRole('button')[0]).toHaveFocus();
+
+    await userEvent.tab();
+
+    /*
+     * Into the inspector rather than onto a particular control in it: which
+     * comes first is the SLOT's shape — a hideable one leads with its
+     * visibility checkbox — and the guarantee is that one Tab leaves the grid
+     * and arrives here, which is what the roving tabindex is for.
+     */
+    expect(screen.getByRole('group', { name: 'Headline' })).toContainElement(
+      document.activeElement as HTMLElement,
+    );
+  });
+
+  /**
+   * **Selecting a block puts the preview on the step it lives in.** A block on
+   * step 2 selected while the preview showed step 1 outlined nothing anyone
+   * could see, which reads as a broken highlight rather than as a step nobody
+   * switched to.
+   */
+  it('takes the preview to the step the selected block lives on', async () => {
+    await structure();
+    await select('Headline after they submit');
+
+    const preview = screen.getByRole('complementary', { name: 'Preview' });
+
+    expect(within(preview).getByRole('button', { name: 'After they submit' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+  });
+
+  /**
    * **The selection follows the block, not the position it used to hold.** A
    * `SlotKey` survived a move for free; a path does not.
    */
