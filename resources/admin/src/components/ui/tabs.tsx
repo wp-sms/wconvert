@@ -5,17 +5,31 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { Tabs as TabsPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
+import { useDirection } from "@/hooks/useDirection"
 
+/**
+ * **`dir` is passed, and that is a WConvert change to the vendored component.**
+ *
+ * Radix resolves direction through `useDirection()`, which falls back to `ltr`
+ * with no `DirectionProvider` above it — and then writes that answer onto the
+ * DOM as a real `dir` attribute, which beats the inheritance the browser had
+ * right. Under `fa_IR` the whole builder read left-to-right inside an admin
+ * that read right-to-left. See {@see useDirection} for why the hook rather than
+ * Radix's own provider.
+ */
 function Tabs({
   className,
   orientation = "horizontal",
   ...props
 }: React.ComponentProps<typeof TabsPrimitive.Root>) {
+  const dir = useDirection()
+
   return (
     <TabsPrimitive.Root
       data-slot="tabs"
       data-orientation={orientation}
       orientation={orientation}
+      dir={dir}
       className={cn(
         "group/tabs flex gap-2 data-[orientation=horizontal]:flex-col",
         className

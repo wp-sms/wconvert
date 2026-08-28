@@ -147,13 +147,22 @@ export function StructureView({
    * **It must never land on `<body>`.** A deleted block takes its row with it,
    * and only the caller that deleted it knows what should hold focus instead.
    */
-  const [focusOn, setFocusOn] = useState<Path | null>(null);
+  const [focusOn, setFocusOn] = useState<{ path: Path; control: number } | null>(null);
 
   const blocks = useMemo(() => nodesOf(template.tree), [template.tree]);
 
-  const write = (tree: TemplateTree, focus: Path, sentence: string) => {
+  /**
+   * Write the design, say what happened, and put focus where the merchant
+   * would reach for it next.
+   *
+   * `control` is the row's control index. A move asks for the button that was
+   * just pressed, so pressing ↓ three times moves a block three places; every
+   * other act asks for the block's name, because the block under focus is a
+   * different block from the one the act was aimed at.
+   */
+  const write = (tree: TemplateTree, path: Path, control: number, sentence: string) => {
     onChange({ ...template, tree });
-    setFocusOn(focus);
+    setFocusOn({ path, control });
     setSaid(sentence);
   };
 
@@ -162,7 +171,7 @@ export function StructureView({
     setSaid(reason);
   };
 
-  const move = (block: Block, by: number) => {
+  const move = (block: Block, by: number, control: number) => {
     const moved = withMoved(template.tree, block.path, by);
     const spot = spotOf(block.path);
 
@@ -176,6 +185,7 @@ export function StructureView({
     write(
       moved,
       [...spot.parent, spot.key, spot.index + by],
+      control,
       sprintf(
         /* translators: 1: the block, e.g. “Headline, “Join””. 2: “up” or “down”. 3: its new position. 4: how many blocks share the list. */
         __('%1$s, moved %2$s, %3$d of %4$d', 'wconvert'),
@@ -205,6 +215,7 @@ export function StructureView({
       // The next sibling has shifted into the index this one held. Where there
       // is none, the block that was holding it — never `<body>`.
       nodeAt(removed, sibling) === null ? spot.parent : sibling,
+      0,
       sprintf(
         /* translators: %s: the block that was removed. */
         __('%s removed. Undo brings it back.', 'wconvert'),
@@ -228,6 +239,7 @@ export function StructureView({
     write(
       withDuplicated(template.tree, block.path),
       [...spot.parent, spot.key, spot.index + 1],
+      0,
       lost === 0
         ? sprintf(
             /* translators: %s: the block that was copied. */
@@ -266,6 +278,7 @@ export function StructureView({
     write(
       withInserted(template.tree, at, node),
       [...at.parent, at.key, at.index],
+      0,
       nameless
         ? sprintf(
             /* translators: 1: the kind of block added, e.g. “Heading”. 2: the same word again. */
@@ -292,7 +305,12 @@ export function StructureView({
    * criterion, and it is what "strictly additive" has to mean for WCAG 2.2
    * SC 2.5.7 to be satisfied by the ↑↓ buttons rather than merely accompanied.
    */
-  const drag = useBlockDrag({ blocks, onMove: move });
+  const drag = useBlockDrag({
+    // A drop leaves focus nowhere in particular — the pointer did the work —
+    // so it asks for the moved block's name rather than a button beside it.
+    onMove: (block, by) => move(block, by, 0),
+    blocks,
+  });
 
   if (template.tree.steps.length === 0) {
     return (
@@ -414,7 +432,7 @@ function RowAction({
   labels: TemplateLabels;
   tree: TemplateTree;
   act: ConvertingAct;
-  onMove: (block: Block, by: number) => void;
+  onMove: (block: Block, by: number, control: number) => void;
   onAdd: (at: Spot, type: string) => void;
   onDuplicate: (block: Block) => void;
   onRemove: (block: Block) => void;
@@ -432,7 +450,12 @@ function RowAction({
         size="icon-sm"
         tabIndex={tabIndex}
         aria-disabled={stuck}
-        onClick={() => (stuck ? undefined : onMove(block, up ? -1 : 1))}
+        /*
+          The control index is handed back so focus returns to THIS button
+          after the row moves: pressing ↓ three times moves a block three
+          places, rather than costing two arrow presses per move.
+        */
+        onClick={() => (stuck ? undefined : onMove(block, up ? -1 : 1, up ? 1 : 2))}
       >
         {up ? <ArrowUp aria-hidden="true" /> : <ArrowDown aria-hidden="true" />}
         {/*

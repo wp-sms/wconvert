@@ -28,6 +28,24 @@ import { describe, expect, it } from 'vitest';
  * `import type` is skipped because TypeScript erases it — `templates/api.ts`
  * imports the renderer's types and carries none of its code, and a test that
  * could not tell the two apart would forbid the thing that is already free.
+ *
+ * ============================================================================
+ * IT READ ONLY SINGLE-QUOTED IMPORTS, AND THE VENDORED FILES USE DOUBLE.
+ * ============================================================================
+ * The scanner was written against this repo's own style, which is single
+ * quotes, and every file under `components/ui/` is vendored from upstream
+ * unchanged (ADR 0036) — in double quotes. So the walk stopped dead at each of
+ * them and never saw what they import.
+ *
+ * That is the exact failure this file exists to catch, in the file that catches
+ * it. It is why `radix-ui` was asserted absent from the reading screens for as
+ * long as it has been present on them: `OptinList` reaches
+ * `components/ui/dropdown-menu.tsx`, the scanner could not read that file, and
+ * the assertion passed on a graph with a hole in it.
+ *
+ * The regex now takes either quote, and the last test in this file fails the
+ * day it stops — because a scanner that silently covers less is worth
+ * less than no scanner at all.
  */
 
 const SRC = resolve(import.meta.dirname, '../../resources/admin/src');
@@ -50,7 +68,9 @@ function specifiersOf(file: string): string[] {
   const source = readFileSync(file, 'utf8');
   const found: string[] = [];
 
-  for (const match of source.matchAll(/^(?:import|export)\s+([^;]*?)\s*from\s*'([^']+)'/gm)) {
+  // Either quote: this repo writes single, and every file vendored from
+  // upstream under `components/ui/` writes double.
+  for (const match of source.matchAll(/^(?:import|export)\s+([^;]*?)\s*from\s*['"]([^'"]+)['"]/gm)) {
     const [, clause, specifier] = match;
 
     // `import type { X } from` and `export type { X } from` are erased; an
@@ -61,7 +81,7 @@ function specifiersOf(file: string): string[] {
   }
 
   // A bare `import './index.css'` has no `from` clause and still pulls a file.
-  for (const match of source.matchAll(/^import\s+'([^']+)'/gm)) {
+  for (const match of source.matchAll(/^import\s+['"]([^'"]+)['"]/gm)) {
     found.push(match[1]);
   }
 
@@ -160,13 +180,51 @@ describe('the lazy boundary', () => {
   });
 
   /**
-   * The two dependencies only the settings panel has. Named rather than
-   * inferred, because a package is where a static import is least visible: it
-   * arrives at the top of one editor and costs every screen in the admin.
+   * **The dependency only the settings panel has.** Named rather than inferred,
+   * because a package is where a static import is least visible: it arrives at
+   * the top of one editor and costs every screen in the admin.
    */
-  it('keeps the colour picker and the popover off them', () => {
+  it('keeps the colour picker off them', () => {
     expect([...graph.packages]).not.toContain('react-colorful');
-    expect([...graph.packages]).not.toContain('radix-ui');
+  });
+
+  /**
+   * ==========================================================================
+   * `radix-ui` IS ON THE READING SCREENS, AND THIS RECORDS IT RATHER THAN
+   * ASSERTING OTHERWISE.
+   * ==========================================================================
+   * It was asserted ABSENT here, beside the colour picker, and the assertion
+   * was true when it was written: the settings panel's Popover was the only
+   * Radix component in the admin.
+   *
+   * [ADR 0039](../../docs/adr/0039-a-screen-is-regions-and-scope-decides-placement.md)
+   * moved Delete behind an overflow menu on the Optin list, which is a reading
+   * screen — so from that commit the package was shared, and the assertion was
+   * false. Nobody found out, because the scanner could not read
+   * `components/ui/dropdown-menu.tsx` at all: it is vendored from upstream in
+   * double quotes, and the regex above took single ones only.
+   *
+   * This is written as the fact it is rather than deleted, because a package
+   * moving across this line is exactly what this file is for — and an
+   * assertion nobody can see fail is not one. Getting Radix back off the
+   * reading screens is a real question about ADR 0039's overflow menu and is
+   * not this pull request's to answer.
+   */
+  it('records that the reading screens do share Radix, through the Optin list’s overflow menu', () => {
+    expect([...graph.packages]).toContain('radix-ui');
+    expect(inside(resolve(SRC, 'components/ui'))).toContain('components/ui/dropdown-menu.tsx');
+  });
+
+  /**
+   * The scanner reads the vendored files, which is the property that failed
+   * silently for as long as it did.
+   *
+   * Asserted against a file that is definitely vendored and definitely
+   * imported by a reading screen, so this fails if the regex narrows again,
+   * whatever else it is doing.
+   */
+  it('reads the vendored components, which is what it silently stopped doing', () => {
+    expect(specifiersOf(resolve(SRC, 'components/ui/dropdown-menu.tsx'))).toContain('radix-ui');
   });
 
   /**

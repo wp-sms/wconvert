@@ -58,14 +58,23 @@ export interface BlockTreeProps {
    */
   readonly actions?: (block: Block, props: { control: Control; tabIndex: number }) => ReactNode;
   /**
-   * Where focus should be after the tree redraws, as a path.
+   * Where focus should be after the tree redraws: a row, and which of its
+   * controls.
    *
    * **Focus must never land on `<body>`.** A block that was deleted takes its
    * row with it, and a caller that knows what it deleted knows what should hold
    * focus instead — the next sibling, else the parent. The tree cannot work
    * that out afterwards, because by then the row is gone.
+   *
+   * **The control is named, and that is not a detail.** A merchant moving a
+   * block three places presses ↓ three times, and the row moves under the
+   * pointer each time — so landing them back on the block's NAME would cost two
+   * arrow presses per move for a keyboard merchant and a re-aim for everyone
+   * else. Pressing a button and having it still be under you afterwards is what
+   * makes the buttons the primary mechanism rather than a technicality that
+   * satisfies SC 2.5.7.
    */
-  readonly focusOn?: Path | null;
+  readonly focusOn?: { readonly path: Path; readonly control: number } | null;
   /**
    * Dragging, where it is switched on.
    *
@@ -123,7 +132,7 @@ export function BlockTree({
       return;
     }
 
-    setAt({ path: keyFor(focusOn), control: 0 });
+    setAt({ path: keyFor(focusOn.path), control: focusOn.control });
     setTaking(true);
   }, [focusOn]);
 

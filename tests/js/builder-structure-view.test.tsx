@@ -215,6 +215,35 @@ describe('moving a block', () => {
     expect(rowNames().slice(0, 3)).toEqual(['The form', 'Headline', 'Body text']);
   });
 
+  /**
+   * **Pressing ↓ three times moves a block three places.** The row moves out
+   * from under the pointer on every press, so landing focus back on the
+   * block's NAME would cost a keyboard merchant two arrow presses per move and
+   * everyone else a re-aim — which would make the buttons a technicality that
+   * satisfies SC 2.5.7 rather than the mechanism.
+   */
+  it('leaves focus on the button that was pressed, so it can be pressed again', async () => {
+    await structure();
+
+    const down = () =>
+      within(row('Headline')).getByRole('button', { name: 'Move Headline down' });
+
+    await userEvent.click(down());
+    await userEvent.click(down());
+
+    // Past the `row`, whose own two children sit between them in the list —
+    // the block moved two places among its SIBLINGS, which is what ↓ means.
+    expect(rowNames().slice(0, 6)).toEqual([
+      'The form',
+      'Body text',
+      'Row',
+      'Email address',
+      'Button label',
+      'Headline',
+    ]);
+    expect(down()).toHaveFocus();
+  });
+
   /** Whatever is moved is still what the Save sends. */
   it('sends the rearranged design when the merchant saves', async () => {
     await structure();

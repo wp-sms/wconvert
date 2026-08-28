@@ -3,11 +3,23 @@ import { CheckIcon, ChevronRightIcon, CircleIcon } from "lucide-react"
 import { DropdownMenu as DropdownMenuPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
+import { useDirection } from "@/hooks/useDirection"
 
+/**
+ * **`dir` is passed, and that is a WConvert change to the vendored component.**
+ *
+ * A menu's direction decides which way it opens, which way a submenu flies out
+ * and which way its own arrow keys walk. Radix falls back to `ltr` with no
+ * `DirectionProvider` above it, so under a right-to-left locale every one of
+ * those was backwards. Same fix as {@see Tabs}, same reason —
+ * {@see useDirection}.
+ */
 function DropdownMenu({
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Root>) {
-  return <DropdownMenuPrimitive.Root data-slot="dropdown-menu" {...props} />
+  const dir = useDirection()
+
+  return <DropdownMenuPrimitive.Root data-slot="dropdown-menu" dir={dir} {...props} />
 }
 
 function DropdownMenuPortal({
