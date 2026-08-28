@@ -232,6 +232,110 @@ final class OptinWriteTest extends TestCase
         $this->assertSame('wconvert_optin_metric_mismatch', $refusal->get_error_code());
     }
 
+    // ========================================================================
+    // AND THE HOLE THE STRUCTURE EDITOR OPENS, CLOSED ON THE SAME DAY.
+    // ========================================================================
+
+    /**
+     * **`TemplateLibrary::refuse()` does not cover this and never did.** It
+     * refuses a Template offering no converting act at REGISTRATION, of a
+     * library entry read off disk. An Optin's own `config` never passed
+     * through it — and never needed to, because before the structure editor
+     * there was no way for an Optin's tree to lose its button: the settings
+     * panel could not remove a node (ADR 0010), and `hidden` is not a param
+     * `button` declares, so hiding it was inexpressible rather than merely
+     * disallowed.
+     *
+     * An editor that can delete closes neither door, and the resulting Optin
+     * renders, publishes, shows and reports **zero forever** — ADR 0020's
+     * failure that looks broken while being right.
+     */
+    public function testADesignWithNothingThatConvertsIsRefused(): void
+    {
+        $refusal = $this->create(Goal::GrowEmailList, [
+            'template' => [
+                'tree' => [
+                    'steps' => [
+                        [
+                            'type' => 'stack',
+                            'children' => [
+                                ['type' => 'heading', 'role' => 'headline', 'text' => 'Join'],
+                                ['type' => 'field', 'name' => 'email', 'label' => 'Email'],
+                            ],
+                        ],
+                    ],
+                ],
+                'tokens' => [],
+            ],
+        ]);
+
+        $this->assertInstanceOf(WP_Error::class, $refusal);
+        $this->assertSame('wconvert_optin_cannot_convert', $refusal->get_error_code());
+    }
+
+    /**
+     * **The client-side guard is not the enforcement.** `PUT
+     * /wconvert/v1/optins/{id}` takes a whole `config` and is scriptable by
+     * anyone holding `manage_options` — ADR 0026's *"a screen is not an
+     * enforcement mechanism"*, applied to the act rather than to the Goal.
+     */
+    public function testAnEditThatDeletesTheOnlyConvertingActIsRefused(): void
+    {
+        $created = $this->create(Goal::GrowEmailList, ['template_id' => 'stacked-signup']);
+
+        $this->assertIsArray($created);
+
+        $config = $created['config'];
+        $config['template']['tree']['steps'] = [
+            ['type' => 'stack', 'children' => [['type' => 'heading', 'text' => 'Join']]],
+        ];
+
+        $request = new WP_REST_Request();
+        $request->set_param('id', $created['id']);
+        $request->set_param('config', $config);
+
+        $refusal = $this->controller->update($request);
+
+        $this->assertInstanceOf(WP_Error::class, $refusal);
+        $this->assertSame('wconvert_optin_cannot_convert', $refusal->get_error_code());
+    }
+
+    /**
+     * **A config with no design is still saved**, which is the distinction the
+     * refusal turns on: a draft mid-creation has no template yet, and refusing
+     * one would block the save that is about to add it. What is refused is a
+     * design that EXISTS and offers nothing.
+     */
+    public function testADraftWithNoDesignIsNotCaughtByTheConvertingActCheck(): void
+    {
+        $this->assertIsArray($this->create(Goal::GrowEmailList, ['template' => ['tree' => ['steps' => []]]]));
+    }
+
+    /**
+     * **It asks no Goal, and that is deliberate.** "Reports nothing at all" is
+     * wrong under every Goal, including one this install can no longer
+     * resolve — so a check that depended on a Goal would lapse on precisely
+     * the rows ADR 0026 keeps working.
+     */
+    public function testTheConvertingActCheckSurvivesAnEditThatNamesNoGoal(): void
+    {
+        $created = $this->create(Goal::PromoteOffer, ['template_id' => 'offer-panel']);
+
+        $this->assertIsArray($created);
+
+        $config = $created['config'];
+        $config['template']['tree']['steps'] = [['type' => 'stack', 'children' => []]];
+
+        $request = new WP_REST_Request();
+        $request->set_param('id', $created['id']);
+        $request->set_param('config', $config);
+
+        $refusal = $this->controller->update($request);
+
+        $this->assertInstanceOf(WP_Error::class, $refusal);
+        $this->assertSame('wconvert_optin_cannot_convert', $refusal->get_error_code());
+    }
+
     /** An edit that changes neither is left alone. */
     public function testAnEditThatTouchesNeitherIsAccepted(): void
     {
