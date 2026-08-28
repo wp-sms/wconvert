@@ -80,6 +80,7 @@ const LABELS = {
   layouts: { stack: 'Column', row: 'Row', split: 'Side by side', grid: 'Grid' },
   fields: { email: 'Email address', name: 'Name', phone: 'Phone number' },
   keys: { text: 'Text', label: 'Label', placeholder: 'Placeholder', link: 'Link' },
+  placeholders: { email: 'you@example.com', name: 'Your name', phone: '+44 7700 900000' },
   params: { submit: 'Sends the form', link: 'Goes somewhere else' },
   tokens: { bg: 'Background' },
 };
@@ -712,6 +713,77 @@ describe('the inspector', () => {
     await userEvent.click(shown);
 
     expect(inspector('Consent wording').getByRole('checkbox', { name: 'Show this' })).toBeChecked();
+  });
+
+  /**
+   * ==========================================================================
+   * ⇄ IS THE ONLY WAY TO CHANGE WHAT A BLOCK IS.
+   * ==========================================================================
+   * A `field`'s capture kind and a `button`'s action are params, so no control
+   * anywhere in the plugin has ever offered either — an email field could never
+   * become a phone field except by deleting it, which loses the wording.
+   */
+  it('changes what a field captures, and keeps what the merchant wrote', async () => {
+    await structure();
+    await select('Email address');
+
+    const label = inspector('Email address').getByLabelText('Label');
+
+    await userEvent.clear(label);
+    await userEvent.type(label, 'Where do we send it?');
+
+    await userEvent.click(screen.getByRole('button', { name: 'Capture something else' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: /Phone number/ }));
+
+    expect(screen.getByRole('status')).toHaveTextContent('Changed to Phone number');
+    // The Slot Roles derived from the kind moved with it, so the row renamed
+    // itself — and the merchant's own label came along.
+    expect(inspector('Phone number').getByLabelText('Label')).toHaveValue('Where do we send it?');
+    // The placeholder was the design's, so it became the new kind's.
+    expect(inspector('Phone number').getByLabelText('Placeholder')).toHaveValue('+44 7700 900000');
+  });
+
+  /**
+   * **The refusals are the save's, met early.** A `link` button on a
+   * submit-metered Optin fails the WHOLE save through
+   * `refuseAMetricItCannotReport`, which is the error this editor exists to
+   * prevent a merchant ever meeting.
+   */
+  it('refuses to make the button a link, with the reason where the pointer is', async () => {
+    await structure();
+    await select('Button label');
+
+    await userEvent.click(screen.getByRole('button', { name: 'Change what this button does' }));
+
+    const refused = await screen.findByRole('menuitem', { name: /Goes somewhere else/ });
+
+    expect(refused).toHaveAttribute('aria-disabled', 'true');
+    expect(refused).toHaveTextContent('counts form submissions');
+  });
+
+  /** A block with no such question is not offered one. */
+  it('offers nothing to change on a heading or a layout', async () => {
+    await structure();
+    await select('Headline');
+
+    expect(screen.queryByRole('button', { name: /Capture something else|Change what/ })).toBeNull();
+
+    await select('Row');
+
+    expect(screen.queryByRole('button', { name: /Capture something else|Change what/ })).toBeNull();
+  });
+
+  it('sends the swapped field when the merchant saves', async () => {
+    await structure();
+    await select('Email address');
+
+    await userEvent.click(screen.getByRole('button', { name: 'Capture something else' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: /Phone number/ }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+
+    const row = (formChildren(savedTree())[2] as unknown as { children: TemplateNode[] }).children[0];
+
+    expect(row).toMatchObject({ type: 'field', name: 'phone', label: 'Phone number' });
   });
 
   /**

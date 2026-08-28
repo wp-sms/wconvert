@@ -31,6 +31,14 @@ export interface TemplateLabels {
    */
   layouts: Record<string, string>;
   fields: Record<string, string>;
+  /**
+   * The example wording a field of each kind ships with.
+   *
+   * A default to COMPARE against as much as one to write: the ⇄ control
+   * rewrites a field's placeholder only where the old kind's was still there,
+   * which is how a merchant's own wording survives a swap.
+   */
+  placeholders: Record<string, string>;
   keys: Record<string, string>;
   /**
    * What each choosable PARAM VALUE is called — today, a `button`'s two

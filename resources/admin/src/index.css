@@ -1644,6 +1644,15 @@
  * knowing that is a heading — but it is a footnote to the name rather than a
  * second name.
  */
+/*
+ * ⇄ — the only control that changes what a block IS. Pushed to the trailing
+ * edge, because it is a different question from the name beside it: the header
+ * says what this is, and this offers what else it could be.
+ */
+.wconvert-inspector__swap {
+  margin-inline-start: auto;
+}
+
 .wconvert-inspector__kind {
   padding-inline: 0.375rem;
   border-radius: var(--radius);

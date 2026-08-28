@@ -148,6 +148,83 @@ final class OptinWriteTest extends TestCase
     }
 
     // ========================================================================
+    // A SWAPPED FIELD SURVIVES THE ROUND TRIP, AND ITS ROLES FOLLOW THE KIND.
+    // ========================================================================
+
+    /**
+     * **The editor's ⇄ changes what a field captures**, which is a param the
+     * server rewrites the tree around: `normalize()` keeps only declared keys,
+     * and a `field`'s [[Slot Role]]s are DERIVED from `name` rather than
+     * declared on the node (CONTEXT.md, Slot Role).
+     *
+     * So this is the half the browser cannot answer: that a design arriving
+     * with `name: "phone"` and the merchant's own wording comes back with all
+     * three intact, and that what a [[Playbook]] would bind to it moved with
+     * the kind.
+     */
+    public function testAFieldSwappedToAnotherKindKeepsItsWordingThroughTheSave(): void
+    {
+        $created = $this->create(Goal::GrowEmailList, [
+            'template_id' => 'centred-card',
+            'template' => [
+                'tokens' => [],
+                'tree' => [
+                    'steps' => [
+                        [
+                            'type' => 'stack',
+                            'children' => [
+                                [
+                                    'type' => 'field',
+                                    'name' => 'phone',
+                                    'label' => 'Where do we text it?',
+                                    'placeholder' => '+44 7700 900000',
+                                    'required' => true,
+                                ],
+                                ['type' => 'button', 'role' => 'cta_label', 'label' => 'Send it', 'action' => 'submit'],
+                            ],
+                        ],
+                        ['type' => 'stack', 'children' => [['type' => 'heading', 'role' => 'success_headline', 'text' => 'Done']]],
+                    ],
+                ],
+            ],
+        ]);
+
+        $this->assertIsArray($created);
+
+        /** @var array<string, mixed> $field */
+        $field = $created['config']['template']['tree']['steps'][0]['children'][0];
+
+        $this->assertSame('phone', $field['name']);
+        $this->assertSame('Where do we text it?', $field['label']);
+        $this->assertSame('+44 7700 900000', $field['placeholder']);
+    }
+
+    /**
+     * The other half: the Roles a Playbook binds to are the PHONE's, and the
+     * email's are gone — a swap that left `email_label` behind would bind an
+     * email Playbook's wording onto a phone field.
+     */
+    public function testASwappedFieldOffersTheRolesOfItsNewKind(): void
+    {
+        $vocabulary = TemplateVocabulary::fromManifest(self::PLUGIN_DIR);
+        $tree = [
+            'steps' => [
+                [
+                    'type' => 'stack',
+                    'children' => [
+                        ['type' => 'field', 'name' => 'phone', 'label' => 'Where do we text it?'],
+                    ],
+                ],
+            ],
+        ];
+
+        $roles = \WConvert\Template\SlotRoles::declaredIn($tree, $vocabulary);
+
+        $this->assertContains('phone_label', $roles);
+        $this->assertNotContains('email_label', $roles);
+    }
+
+    // ========================================================================
     // AND IT HOLDS NO DESTINATION IDS.
     // ========================================================================
 

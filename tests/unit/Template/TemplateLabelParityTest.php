@@ -84,6 +84,18 @@ final class TemplateLabelParityTest extends TestCase
         $this->assertNamesExactly($fields, TemplateLabels::fields(), 'field kinds');
     }
 
+    /**
+     * **The ⇄ control writes these**, so a kind added to the manifest without
+     * one would swap a field into a kind whose example is the word `phone`.
+     */
+    public function testEveryFieldKindHasAnExample(): void
+    {
+        /** @var list<string> $fields */
+        $fields = self::manifest()['fields'];
+
+        $this->assertNamesExactly($fields, TemplateLabels::placeholders(), 'field placeholders');
+    }
+
     public function testEveryTokenIsNamed(): void
     {
         $this->assertNamesExactly(array_map('strval', array_keys(self::manifest()['tokens'])), TemplateLabels::tokens(), 'tokens');

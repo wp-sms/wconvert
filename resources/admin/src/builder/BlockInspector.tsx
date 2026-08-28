@@ -1,9 +1,19 @@
 import { useId } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
+import { ArrowLeftRight, Check } from 'lucide-react';
+import { Button } from '../components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '../components/ui/dropdown-menu';
 import { SlotFields } from './SlotFields';
 import { nameOfBlock } from './BlockRow';
 import { slotsOf, withHidden, withValue, type Path } from './panel';
 import { nodesOf, samePath } from './structure/tree';
+import { swapLabel, swapNameOf, swapSaid, swapsFor, withSwapped } from './structure/swap';
+import type { ConvertingAct } from './structure/catalogue';
 import { nameOf, type TemplateLabels } from '../templates/api';
 import type { Template } from '@renderer/types';
 
@@ -51,6 +61,14 @@ export interface BlockInspectorProps {
   /** Which block is being edited, or null while the design holds none. */
   readonly path: Path | null;
   /**
+   * Which act this Optin's [[Goal]] is measured by.
+   *
+   * **Told rather than derived**, for the reason {@see StructureView} gives: a
+   * button swapped to `link` on a submit-metered Optin fails the WHOLE save,
+   * and the merchant must meet the refusal here rather than a red bar there.
+   */
+  readonly act: ConvertingAct;
+  /**
    * The design, changed.
    *
    * `coalesce` names the control the change came from, so a burst of typing is
@@ -58,9 +76,18 @@ export interface BlockInspectorProps {
    * Absent for anything that is not typing, which is what breaks the chain.
    */
   readonly onChange: (template: Template, coalesce?: string) => void;
+  /**
+   * A block was changed into something else.
+   *
+   * Separate from {@link onChange} because a swap is worth SAYING: it renames
+   * the row, and it changes the [[Slot Role]]s derived from what a field
+   * captures — so the preview's key changes under a selection that has not
+   * moved. One live region says both, in the words the tree already uses.
+   */
+  readonly onSwap: (template: Template, said: string) => void;
 }
 
-export function BlockInspector({ template, labels, path, onChange }: BlockInspectorProps) {
+export function BlockInspector({ template, labels, path, act, onChange, onSwap }: BlockInspectorProps) {
   const heading = useId();
   const block = path === null ? null : nodesOf(template.tree).find((each) => samePath(each.path, path)) ?? null;
   const slot = path === null ? null : slotsOf(template.tree).find((each) => samePath(each.path, path)) ?? null;
@@ -105,6 +132,8 @@ export function BlockInspector({ template, labels, path, onChange }: BlockInspec
         {block.leaf && block.role !== null && (
           <span className="wconvert-inspector__kind">{nameOf(labels.nodes, block.type)}</span>
         )}
+
+        <SwapMenu template={template} labels={labels} path={path} act={act} onSwap={onSwap} />
       </div>
 
       {slot === null ? (
@@ -153,3 +182,85 @@ export function BlockInspector({ template, labels, path, onChange }: BlockInspec
  * into the same headline twice must be one.
  */
 export const typingKey = (path: Path, key: string): string => `text:${path.join('.')}:${key}`;
+
+/**
+ * The ⇄ control: what this block could be instead.
+ *
+ * ============================================================================
+ * IT IS ONLY DRAWN WHERE THERE IS SUCH A QUESTION.
+ * ============================================================================
+ * A `field`'s capture kind and a `button`'s action are the two params that
+ * decide what a block IS, and neither has had a control anywhere in this plugin
+ * — so an email field could never become a phone field except by deleting it,
+ * which loses the merchant's wording. A `heading` has no such axis: it and
+ * `text` differ in what the renderer draws rather than in a param.
+ *
+ * **Refusals are shown rather than filtered out**, which is the Add menu's own
+ * rule and matters more here: the refusals are the only place a merchant ever
+ * learns why their button is the kind of button it is, and *"your goal counts
+ * submissions"* is an answer where a missing row is not.
+ */
+function SwapMenu({
+  template,
+  labels,
+  path,
+  act,
+  onSwap,
+}: {
+  template: Template;
+  labels: TemplateLabels;
+  path: Path;
+  act: ConvertingAct;
+  onSwap: (template: Template, said: string) => void;
+}) {
+  const name = swapNameOf(template.tree, path);
+  const swaps = swapsFor(template.tree, path, act);
+
+  if (name === null || swaps.length === 0) {
+    return null;
+  }
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button type="button" variant="ghost" size="sm" className="wconvert-inspector__swap">
+          <ArrowLeftRight aria-hidden="true" />
+          {name}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="max-w-xs">
+        {swaps.map((swap) => {
+          const said = swapLabel(template.tree, path, swap.to, labels);
+
+          return (
+            <DropdownMenuItem
+              key={swap.to}
+              disabled={swap.refused !== null || swap.current}
+              className="flex-col items-start gap-0.5"
+              onSelect={() =>
+                onSwap(
+                  { ...template, tree: withSwapped(template.tree, path, swap.to, act, labels) },
+                  swapSaid(said),
+                )
+              }
+            >
+              <span className="flex items-center gap-2">
+                {/*
+                  A tick on what it already is, rather than the row being left
+                  out: a menu of two that shows one is a menu that looks broken,
+                  and "this is what it is" is the answer to half of why anyone
+                  opened it.
+                */}
+                {swap.current ? <Check aria-hidden="true" /> : <span className="size-4" aria-hidden="true" />}
+                {said}
+              </span>
+              {swap.refused !== null && (
+                <span className="text-pretty whitespace-normal text-muted-foreground">{swap.refused}</span>
+              )}
+            </DropdownMenuItem>
+          );
+        })}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}

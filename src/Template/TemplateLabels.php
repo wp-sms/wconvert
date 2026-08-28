@@ -110,6 +110,40 @@ final class TemplateLabels
     }
 
     /**
+     * The example wording a field of each kind ships with.
+     *
+     * ============================================================================
+     * IT IS A DEFAULT TO COMPARE AGAINST, NOT ONLY ONE TO WRITE.
+     * ============================================================================
+     * The ⇄ control changes what a field captures, and an email field that
+     * becomes a phone field must not keep `you@example.com` in front of the
+     * visitor. So the new kind's example is written in — but only where the old
+     * kind's was still there, which is the same comparison
+     * {@see MerchantsOwn} makes across a Template switch: different from what
+     * was shipped means the merchant's, and it stays.
+     *
+     * A design shipping its own wording — `stacked-signup` says
+     * *"+44 7700 900000"* — therefore reads as the merchant's and is kept. That
+     * is the safe direction, chosen rather than tolerated: the two are
+     * indistinguishable from here, and silently overwriting words somebody
+     * wrote is the failure that costs more.
+     *
+     * Separate from {@see self::keys()}, whose `placeholder` entry names the
+     * CONTROL rather than saying what goes in it, and separate from
+     * {@see self::fields()}, which is the label rather than the example.
+     *
+     * @return array<string, string>
+     */
+    public static function placeholders(): array
+    {
+        return [
+            'email' => __('you@example.com', 'wconvert'),
+            'name' => __('Your name', 'wconvert'),
+            'phone' => __('+44 7700 900000', 'wconvert'),
+        ];
+    }
+
+    /**
      * What each editable key on a leaf is called.
      *
      * Keyed by the key alone rather than by `type.key`, because these mean the
@@ -203,6 +237,7 @@ final class TemplateLabels
             'nodes' => self::nodes(),
             'layouts' => self::layouts(),
             'fields' => self::fields(),
+            'placeholders' => self::placeholders(),
             'keys' => self::keys(),
             'params' => self::params(),
             'tokens' => self::tokens(),

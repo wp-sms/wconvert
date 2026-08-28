@@ -426,7 +426,25 @@ export function StructureView({
           is on, which is what makes ↑↓ keep working after a click — so `Tab` is
           the documented way in and the DOM order is what makes it land.
         */}
-        <BlockInspector template={template} labels={labels} path={selected} onChange={onChange} />
+        <BlockInspector
+          template={template}
+          labels={labels}
+          path={selected}
+          act={act}
+          onChange={onChange}
+          /*
+            A swap is worth saying out loud: it renames the row and it changes
+            the Slot Roles derived from what a field captures, so the preview's
+            key moves under a selection that has not. The row keeps focus — the
+            merchant is in the inspector, and yanking them back to the list
+            after an edit they made in the panel would be the tree answering a
+            question they asked somewhere else.
+          */
+          onSwap={(next, sentence) => {
+            onChange(next);
+            setSaid(sentence);
+          }}
+        />
       </RegionBody>
     </>
   );
