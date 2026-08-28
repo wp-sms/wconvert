@@ -740,6 +740,20 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
                         <Tokens
                           template={entry}
                           labels={gallery.labels}
+                          /*
+                            **The library entry's own tokens**, which is the
+                            only thing that can answer "what have I actually
+                            changed?" — an Optin's map is a snapshot of the
+                            design's, so measuring against the manifest would
+                            call every token the design set an override.
+
+                            Empty where this install no longer ships the entry,
+                            which is the same stance `MerchantsOwn` takes for
+                            the same comparison: without something to compare
+                            against, "the merchant's" and "the design's" are
+                            indistinguishable and guessing costs more.
+                          */
+                          design={gallery.templates.find((each) => each.id === templateId)?.tokens ?? {}}
                           onChange={(next) => edit({ template: next })}
                           onError={report}
                         />

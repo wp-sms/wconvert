@@ -1827,6 +1827,74 @@
   color: var(--muted-foreground);
 }
 
+/* ---------------------------------------------------------------------------
+ * A TOKEN'S ROW: THE CONTROL, THE EXACT VALUE, AND THE WAY BACK.
+ *
+ * A length gets a slider AND the box it always had, because both write the one
+ * token and cannot disagree — which is what keeps `clamp(20rem, 50vw, 30rem)`
+ * typeable after a slider appears over `28rem`. Token names are checked and
+ * their values are not, and a slider must never be able to clobber a value it
+ * cannot express.
+ * ------------------------------------------------------------------------- */
+.wconvert-token__row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.wconvert-token__slider {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.wconvert-token__exact {
+  inline-size: 7rem;
+  flex: none;
+}
+
+/*
+ * **Present only where the value differs from the design's**, which is what
+ * makes "what have I actually changed?" answerable at a glance rather than by
+ * opening fifteen controls.
+ */
+.wconvert-token__reset {
+  flex: none;
+  color: var(--muted-foreground);
+}
+
+/* ---------------------------------------------------------------------------
+ * THE CONTRAST READOUT.
+ *
+ * The colour picker is the first control in this product that lets a merchant
+ * fail AA for a VISITOR rather than for themselves, so it is measured beside
+ * the control rather than discovered from a customer.
+ * ------------------------------------------------------------------------- */
+.wconvert-contrast {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8125rem;
+}
+
+.wconvert-contrast__pair {
+  display: flex;
+  align-items: baseline;
+  gap: 0.375rem;
+  color: var(--muted-foreground);
+}
+
+.wconvert-contrast__ratio {
+  color: var(--warning);
+  font-variant-numeric: tabular-nums;
+}
+
+.wconvert-contrast__pair[data-passes='true'] .wconvert-contrast__ratio {
+  color: var(--success);
+}
+
 .wconvert-slot {
   margin-block-end: 1rem;
   padding: 0.75rem;
@@ -1879,7 +1947,8 @@
 }
 
 .wconvert-slot__key > :is(input, select, textarea),
-.wconvert-token > :is(input, select, textarea) {
+.wconvert-token > :is(input, select, textarea),
+.wconvert-token__row > :is(input, select, textarea) {
   inline-size: 100%;
   margin-inline-end: 0;
   color: var(--foreground);

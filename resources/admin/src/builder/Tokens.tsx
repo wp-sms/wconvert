@@ -1,13 +1,15 @@
-import { useState, type CSSProperties } from 'react';
+import { useId, useState, type CSSProperties } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { HexColorInput, HexColorPicker, RgbaStringColorPicker } from 'react-colorful';
 import { Button } from '../components/ui/button';
+import { RotateCcw } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
 import { TOKENS, withToken } from './panel';
 import { getThemeTokens } from './api';
-import { isApplied, isColour, isTranslucent, themePresets } from './themes';
+import { isApplied, isColour, isTranslucent, measureOf, rangeFor, themePresets } from './themes';
+import { AA_NORMAL, contrastOf } from './contrast';
 import { nameOf, type TemplateLabels } from '../templates/api';
-import type { Template } from '@renderer/types';
+import type { Template, Tokens as TokenMap } from '@renderer/types';
 
 /**
  * ============================================================================
@@ -62,11 +64,30 @@ import type { Template } from '@renderer/types';
 export function Tokens({
   template,
   labels,
+  design = {},
   onChange,
   onError,
 }: {
   template: Template;
   labels: TemplateLabels;
+  /**
+   * What the LIBRARY ENTRY this Optin's copy was taken for declares, which is
+   * the only thing that can answer *"what have I actually changed?"*.
+   *
+   * An Optin's `tokens` map is a snapshot of the design's, so every token the
+   * design set looks "set" here on day one — measuring against the manifest's
+   * fallback instead would put a reset control on thirteen of fifteen tokens
+   * before the merchant touched anything, and clearing one would jump the value
+   * to a default the design never used.
+   *
+   * This is the same comparison {@see \WConvert\Template\MerchantsOwn} makes
+   * on the other side of the boundary, and it takes the same stance where the
+   * entry cannot be resolved: **empty, so nothing is claimed.** An install that
+   * no longer ships the design has no way to tell the merchant's value from the
+   * design's, and guessing would offer a "back to the design's own" that goes
+   * somewhere else.
+   */
+  design?: TokenMap;
   onChange: (template: Template) => void;
   onError: (cause: unknown) => void;
 }) {
@@ -135,13 +156,16 @@ export function Tokens({
         )}
       </p>
 
+      <Contrast template={template} labels={labels} />
+
       <details className="wconvert-advanced">
         <summary>{__('Every setting', 'wconvert')}</summary>
         {TOKENS.map((token) => (
           <TokenField
             key={token.name}
             label={nameOf(labels.tokens, token.name)}
-            fallback={token.fallback}
+            fallback={design[token.name] ?? token.fallback}
+            design={design[token.name] ?? ''}
             value={template.tokens[token.name] ?? ''}
             onChange={(value) => onChange({ ...template, tokens: withToken(template.tokens, token.name, value) })}
           />
@@ -154,45 +178,269 @@ export function Tokens({
 /**
  * One token, drawn as what it holds.
  *
- * A colour gets a picker; everything else gets the text box it always had,
- * because `1.5rem` and a font stack are typed values with no visual control
- * that would be an improvement rather than a guess.
+ * A colour gets a picker. A **plain number and unit** gets a slider with the
+ * value beside it, because `26rem` is a thing a merchant drags to rather than a
+ * thing they know. Anything else — a font stack, `clamp(20rem, 50vw, 30rem)`,
+ * an asymmetric radius — gets the text box it always had.
  *
- * **Which is which is read off the manifest's own fallback**, so a token added
- * to `resources/templates/manifest.json` arrives wearing the right control with
- * nothing here edited — the same property `TOKENS` already gives the list.
+ * **Which is which is read off the value**, so a token added to
+ * `resources/templates/manifest.json` arrives wearing the right control with
+ * nothing here edited — the same property `TOKENS` already gives the list. The
+ * fallback decides for a token the merchant has not touched; the STORED value
+ * decides once they have, which is what stops a slider appearing over a
+ * `clamp()` it could not express.
  */
 function TokenField({
   label,
   fallback,
+  design,
   value,
   onChange,
 }: {
   label: string;
+  /** What this token resolves to with nothing stored — the design's, else the manifest's. */
   fallback: string;
+  /** What the design itself declared, or empty where it declared nothing. */
+  design: string;
   value: string;
   onChange: (value: string) => void;
 }) {
-  if (!isColour(fallback)) {
+  const field = useId();
+  // Empty means "whatever the design says", so every control below opens on the
+  // design's own value while the STORED value stays empty.
+  const shown = value === '' ? fallback : value;
+  const reset = <Reset label={label} value={value} design={design} onChange={onChange} />;
+
+  if (isColour(fallback)) {
     return (
-      <label className="wconvert-token">
-        {label}
-        <input
-          type="text"
-          className="regular-text"
-          // The template's own value is the placeholder rather than the value,
-          // so an empty control means "whatever the design says" and clearing
-          // one is how a merchant undoes an edit.
-          placeholder={fallback}
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-        />
-      </label>
+      <div className="wconvert-token wconvert-token--colour">
+        <span className="wconvert-token__name">{label}</span>
+        <ColourField label={label} fallback={fallback} value={value} onChange={onChange} />
+        {reset}
+      </div>
     );
   }
 
-  return <ColourField label={label} fallback={fallback} value={value} onChange={onChange} />;
+  const measure = measureOf(shown);
+
+  return (
+    /*
+      **An explicit label, and the reset OUTSIDE it.** A `<label>` wrapping the
+      row would take its accessible name from all of its text — so the slider
+      announced itself as "Width Put Width back to the design's own", which is
+      the name of the control beside it read out as part of its own.
+    */
+    <div className="wconvert-token">
+      <label htmlFor={field}>{label}</label>
+      <span className="wconvert-token__row">
+        {measure === null ? (
+          <input
+            id={field}
+            type="text"
+            className="regular-text"
+            // The design's own value is the placeholder rather than the value,
+            // so an empty control means "whatever the design says".
+            placeholder={fallback}
+            value={value}
+            onChange={(event) => onChange(event.target.value)}
+          />
+        ) : (
+          <MeasureField
+            id={field}
+            label={label}
+            fallback={fallback}
+            value={value}
+            measure={measure}
+            onChange={onChange}
+          />
+        )}
+        {reset}
+      </span>
+    </div>
+  );
 }
+
+/**
+ * A length, dragged — with the exact value still typeable beside it.
+ *
+ * **Both controls, and they cannot disagree**, because both write the one
+ * token. That is what makes the slider strictly additive: a merchant on `28rem`
+ * can still type a `clamp()` and watch the slider step aside, which is the
+ * escape hatch a slider on its own would have quietly closed.
+ *
+ * The range comes from the DESIGN's own value rather than from a table of token
+ * names — see {@link rangeFor}.
+ */
+function MeasureField({
+  id,
+  label,
+  fallback,
+  value,
+  measure,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  fallback: string;
+  value: string;
+  measure: { amount: number; unit: string };
+  onChange: (value: string) => void;
+}) {
+  const { min, max, step } = rangeFor(measure);
+
+  return (
+    <>
+      <input
+        id={id}
+        type="range"
+        className="wconvert-token__slider"
+        min={min}
+        max={max}
+        step={step}
+        value={measure.amount}
+        onChange={(event) => onChange(`${event.target.value}${measure.unit}`)}
+      />
+      {/*
+        Named for the TOKEN, because two controls sharing one label is a screen
+        reader announcing "Width" twice with no way to tell which is which.
+      */}
+      <input
+        type="text"
+        className="wconvert-token__exact"
+        aria-label={sprintf(
+          /* translators: %s: what the setting is for, e.g. “Width”. */
+          __('%s value', 'wconvert'),
+          label,
+        )}
+        placeholder={fallback}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+      />
+    </>
+  );
+}
+
+/**
+ * The way back to the design's own value, shown only where there is one.
+ *
+ * **Its presence is the answer to "what have I actually changed?"**, which was
+ * otherwise unanswerable without opening fifteen controls and remembering what
+ * each design shipped. The panel stores an ABSENCE rather than a copy of the
+ * fallback, so clearing a token is also what lets an improved Template reach an
+ * Optin the merchant never overrode.
+ */
+function Reset({
+  label,
+  value,
+  design,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  /** What the design declared, or empty where it declared nothing. */
+  design: string;
+  onChange: (value: string) => void;
+}) {
+  if (value === '' || value === design) {
+    return null;
+  }
+
+  return (
+    <Button
+      type="button"
+      variant="ghost"
+      size="icon-sm"
+      className="wconvert-token__reset"
+      /*
+        **It writes the design's value back rather than clearing**, because
+        clearing means "whatever the manifest declares" and that is a different
+        number: a design shipping `width: 26rem` would jump to the manifest's
+        28rem, which is neither what the merchant had nor what they asked for.
+        Where the design declared nothing, absence IS its own value.
+      */
+      onClick={() => onChange(design)}
+    >
+      <RotateCcw aria-hidden="true" />
+      <span className="sr-only">
+        {sprintf(
+          /* translators: %s: what the setting is for, e.g. “Background”. */
+          __('Put %s back to the design’s own', 'wconvert'),
+          label,
+        )}
+      </span>
+    </Button>
+  );
+}
+
+/**
+ * The three pairs a visitor has to be able to READ, measured against AA.
+ *
+ * ============================================================================
+ * MEASURED WHERE IT IS CHOSEN, BECAUSE NOTHING DOWNSTREAM WILL CATCH IT.
+ * ============================================================================
+ * ADR 0038 holds this admin to AA and measures contrast at its own tokens. The
+ * Optin's tokens are the merchant's and go to a visitor, and the colour picker
+ * is the first control in this product that lets someone fail AA for somebody
+ * else — in one click, silently, discovered later from a customer.
+ *
+ * **Three pairs, and `backdrop` is deliberately not one of them.** It sits
+ * behind the popup rather than behind text, so a ratio for it would be a number
+ * about nothing. The three that are here are every place the renderer paints
+ * words on a surface.
+ */
+function Contrast({ template, labels }: { template: Template; labels: TemplateLabels }) {
+  // The Optin's own value, else what the manifest declares — which is exactly
+  // what the renderer resolves, so the ratio is the one a visitor gets rather
+  // than the one an empty control implies.
+  const value = (name: string) =>
+    template.tokens[name] ?? TOKENS.find((token) => token.name === name)?.fallback ?? '';
+
+  return (
+    <ul className="wconvert-contrast">
+      {PAIRS.map(([fg, bg]) => {
+        const ratio = contrastOf(value(fg), value(bg));
+        const passes = ratio !== null && ratio >= AA_NORMAL;
+        const named = sprintf(
+          /* translators: 1: the text colour's name, e.g. “Quiet text”. 2: the surface's, e.g. “Background”. */
+          __('%1$s on %2$s', 'wconvert'),
+          nameOf(labels.tokens, fg),
+          nameOf(labels.tokens, bg),
+        );
+
+        return (
+          <li key={`${fg}/${bg}`} className="wconvert-contrast__pair" data-passes={passes}>
+            <span>{named}</span>
+            {/*
+              **A refusal rather than a wrong number.** A translucent colour
+              composites over whatever is behind it and a named one needs a
+              browser to resolve; either way a ratio here would be a green tick
+              over a design that fails.
+            */}
+            {ratio === null ? (
+              <span className="wconvert-contrast__ratio">{__('not measurable', 'wconvert')}</span>
+            ) : (
+              <span className="wconvert-contrast__ratio">
+                {sprintf(
+                  /* translators: 1: a contrast ratio, e.g. “7.2”. 2: “passes AA” or “fails AA”. */
+                  __('%1$s to 1 — %2$s', 'wconvert'),
+                  ratio.toFixed(1),
+                  passes ? __('passes AA', 'wconvert') : __('fails AA', 'wconvert'),
+                )}
+              </span>
+            )}
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+/** Every place the renderer paints words on a surface. */
+const PAIRS: readonly (readonly [string, string])[] = [
+  ['fg', 'bg'],
+  ['muted', 'bg'],
+  ['accent-fg', 'accent'],
+];
 
 /**
  * A colour, chosen rather than typed — with the hex still typeable.
@@ -210,6 +458,8 @@ function TokenField({
  *
  * The trigger is a swatch and the token's name, so the list still reads down
  * its left edge as a column of settings rather than as a row of coloured boxes.
+ * The name and the reset are the caller's; this is the swatch and what opens
+ * behind it.
  */
 function ColourField({
   label,
@@ -228,9 +478,7 @@ function ColourField({
   const translucent = isTranslucent(shown);
 
   return (
-    <div className="wconvert-token wconvert-token--colour">
-      <span className="wconvert-token__name">{label}</span>
-      <Popover>
+    <Popover>
         <PopoverTrigger asChild>
           <button type="button" className="wconvert-swatch">
             {/*
@@ -292,20 +540,14 @@ function ColourField({
             </label>
 
             {/*
-              The way back to the design's own colour. Clearing the token is
-              what "undo my edit" means here — the panel stores an ABSENCE
-              rather than a copy of the fallback, so an improved Template still
-              reaches an Optin the merchant never overrode.
+              The way back to the design's own colour is {@see Reset}, in the
+              row beside the swatch rather than a click deep inside the picker
+              — which is what makes "what have I actually changed?" answerable
+              by looking rather than by opening fifteen popovers.
             */}
-            {value !== '' && (
-              <Button type="button" variant="ghost" size="sm" onClick={() => onChange('')}>
-                {__('Back to the design’s own', 'wconvert')}
-              </Button>
-            )}
           </div>
         </PopoverContent>
       </Popover>
-    </div>
   );
 }
 

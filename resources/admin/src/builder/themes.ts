@@ -138,3 +138,65 @@ export function isColour(value: string): boolean {
 export function isTranslucent(value: string): boolean {
   return /^rgba?\(/i.test(value.trim());
 }
+
+/**
+ * A token's value as **one plain number and unit**, or null.
+ *
+ * ============================================================================
+ * A SLIDER MUST NEVER BE ABLE TO CLOBBER A VALUE IT CANNOT EXPRESS.
+ * ============================================================================
+ * Token *names* are checked and their *values are not*: they land straight on
+ * the element as custom properties, so `clamp(20rem, 50vw, 30rem)` for `width`
+ * and an asymmetric `radius` already work today. That freedom is real and this
+ * must not quietly end it.
+ *
+ * So the slider appears only where the stored value is something a slider can
+ * say. Anything else keeps the text box it always had — the same shape
+ * {@link isColour} already uses to decide picker versus not-picker, read off the
+ * value rather than off a list of token names spelled here, so a token added to
+ * `resources/templates/manifest.json` gets the right control with nothing in
+ * this file edited.
+ *
+ * The text box stays beside the slider even when the slider appears, which is
+ * what makes that true in both directions: a merchant on `28rem` can still type
+ * a `clamp()` and watch the slider step aside. They cannot disagree, because
+ * both write the one value.
+ */
+export function measureOf(value: string): { readonly amount: number; readonly unit: string } | null {
+  const found = /^(-?\d*\.?\d+)(px|rem|em|%|ch|vw|vh)$/.exec(value.trim());
+
+  if (found === null) {
+    return null;
+  }
+
+  return { amount: Number(found[1]), unit: found[2] };
+}
+
+/**
+ * The range a slider offers for a measure, derived from the DESIGN's own value.
+ *
+ * No per-token table, deliberately: `width` is 28rem and `gap` is 0.75rem, and
+ * a hand-written min/max for each would be a sixth cross-cutting list that a
+ * token added to the manifest would arrive missing from. Twice the design's own
+ * value is a range wide enough to be useful and narrow enough that the whole
+ * slider is not spent on the first tenth.
+ *
+ * The floor is zero because every one of these measures is a length that may be
+ * absent — a square corner, no gap — and a slider that could not reach zero
+ * would be a control with a value the text box has and it does not.
+ */
+export function rangeFor(measure: { amount: number; unit: string }): {
+  readonly min: number;
+  readonly max: number;
+  readonly step: number;
+} {
+  const step = measure.unit === 'px' ? 1 : 0.125;
+
+  return {
+    min: 0,
+    // `+ 2` so a design whose value is 0 — a square corner — still has a range
+    // to drag along rather than a slider pinned at both ends.
+    max: Math.max(measure.amount * 2, measure.amount + 2),
+    step,
+  };
+}

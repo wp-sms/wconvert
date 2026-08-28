@@ -54,7 +54,14 @@ const LABELS: TemplateLabels = {
   fields: {},
   keys: {},
   params: { submit: 'Sends the form', link: 'Goes somewhere else' },
-  tokens: { bg: 'Background', accent: 'Button' },
+  tokens: {
+    bg: 'Background',
+    fg: 'Text',
+    muted: 'Quiet text',
+    accent: 'Button',
+    'accent-fg': 'Button text',
+    width: 'Width',
+  },
 };
 
 function look(over: Partial<Parameters<typeof Tokens>[0]> = {}) {
@@ -125,6 +132,125 @@ describe('the look', () => {
     // The stub names only two tokens, so the rest fall back to their raw key —
     // which is what `nameOf` does on a real install missing a label too.
     expect(screen.getByLabelText('font')).toBeInTheDocument();
+  });
+});
+
+/**
+ * ============================================================================
+ * A SLIDER MUST NEVER BE ABLE TO CLOBBER A VALUE IT CANNOT EXPRESS.
+ * ============================================================================
+ * Token *names* are checked and their *values are not* — they land straight on
+ * the element as custom properties — so `clamp(20rem, 50vw, 30rem)` for `width`
+ * and an asymmetric `radius` already work today. Adding the slider has to take
+ * nothing away.
+ */
+describe('a length', () => {
+  const widthSlider = () => screen.getByRole('slider', { name: 'Width' });
+
+  it('is dragged, with the exact value still typeable beside it', () => {
+    look();
+
+    // 26rem, the design's own, on a range twice as wide.
+    expect(widthSlider()).toHaveValue('26');
+    expect(widthSlider()).toHaveAttribute('max', '52');
+    // The escape hatch, which is what keeps a `clamp()` reachable from here.
+    expect(screen.getByLabelText('Width value')).toBeInTheDocument();
+  });
+
+  it('keeps the text box and drops the slider for a value it cannot say', () => {
+    render(
+      <Tokens
+        template={{ ...ENTRY, tokens: { ...ENTRY.tokens, width: 'clamp(20rem, 50vw, 30rem)' } }}
+        labels={LABELS}
+        onChange={vi.fn()}
+        onError={vi.fn()}
+      />,
+    );
+
+    expect(screen.queryByRole('slider', { name: 'Width' })).toBeNull();
+    expect(screen.getByLabelText('Width')).toHaveValue('clamp(20rem, 50vw, 30rem)');
+  });
+
+  /**
+   * **Its presence is the answer to "what have I actually changed?"** The panel
+   * stores an absence rather than a copy of the fallback, so clearing a token
+   * is also what lets an improved Template reach an Optin nobody overrode.
+   */
+  it('offers no way back where the merchant has changed nothing', () => {
+    look({ design: ENTRY.tokens });
+
+    expect(screen.queryByRole('button', { name: /Put Width back to the design/ })).toBeNull();
+  });
+
+  /**
+   * **It writes the design's value back rather than clearing it.** Clearing
+   * means "whatever the manifest declares", and this design ships `26rem`
+   * against a manifest default of `28rem` — so a reset that cleared would land
+   * on a number neither the merchant nor the design ever chose.
+   */
+  it('puts a changed token back to what the design itself declared', async () => {
+    const changed = look({
+      template: { ...ENTRY, tokens: { ...ENTRY.tokens, width: '32rem' } },
+      design: ENTRY.tokens,
+    });
+
+    await userEvent.click(screen.getByRole('button', { name: /Put Width back to the design/ }));
+
+    expect(changed).toHaveBeenCalledWith(
+      expect.objectContaining({ tokens: expect.objectContaining({ width: '26rem' }) }),
+    );
+  });
+});
+
+/**
+ * ============================================================================
+ * THE FIRST CONTROL THAT LETS A MERCHANT FAIL AA FOR SOMEBODY ELSE.
+ * ============================================================================
+ * ADR 0038 holds this admin to AA and measures contrast at its own tokens. The
+ * Optin's tokens are the merchant's and are shipped to a visitor, and the
+ * picker can break them in one click. So it is measured where it is chosen.
+ */
+describe('the contrast readout', () => {
+  it('measures the three pairs a visitor has to read, and says which fail', () => {
+    render(
+      <Tokens
+        template={{ ...ENTRY, tokens: { ...ENTRY.tokens, fg: '#111827', muted: '#d4d4d8', bg: '#ffffff' } }}
+        labels={LABELS}
+        onChange={vi.fn()}
+        onError={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText('Text on Background').parentElement).toHaveTextContent('passes AA');
+    expect(screen.getByText('Quiet text on Background').parentElement).toHaveTextContent('fails AA');
+    expect(screen.getByText('Button text on Button')).toBeInTheDocument();
+  });
+
+  /**
+   * **`backdrop` is not one of the three.** It sits behind the popup rather
+   * than behind text, so a ratio for it would be a number about nothing.
+   */
+  it('says nothing about the backdrop, which is behind the popup and not behind text', () => {
+    look();
+
+    expect(screen.queryByText(/on Backdrop/)).toBeNull();
+  });
+
+  /**
+   * A refusal rather than a wrong number: a translucent colour composites over
+   * whatever is behind it, and this cannot know what that is.
+   */
+  it('refuses to measure a pair it cannot read rather than reporting a ratio', () => {
+    render(
+      <Tokens
+        template={{ ...ENTRY, tokens: { ...ENTRY.tokens, fg: 'rgba(0, 0, 0, 0.8)' } }}
+        labels={LABELS}
+        onChange={vi.fn()}
+        onError={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText('Text on Background').parentElement).toHaveTextContent('not measurable');
   });
 });
 
