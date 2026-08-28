@@ -79,7 +79,15 @@ const LABELS = {
   },
   layouts: { stack: 'Column', row: 'Row', split: 'Side by side', grid: 'Grid' },
   fields: { email: 'Email address', name: 'Name', phone: 'Phone number' },
-  keys: { text: 'Text', label: 'Label', placeholder: 'Placeholder', link: 'Link' },
+  keys: {
+    text: 'Text',
+    label: 'Label',
+    placeholder: 'Placeholder',
+    link: 'Link',
+    src: 'Image address',
+    alt: 'Alt text',
+    href: 'Where the button goes',
+  },
   placeholders: { email: 'you@example.com', name: 'Your name', phone: '+44 7700 900000' },
   params: { submit: 'Sends the form', link: 'Goes somewhere else' },
   tokens: { bg: 'Background' },
@@ -701,6 +709,41 @@ describe('the inspector', () => {
     expect(inspector('Headline').getByLabelText('Text')).toHaveValue('Get 10% off your first order');
   });
 
+  /**
+   * **A body paragraph is not a headline.** A single-line box for a sentence
+   * that wraps is a control hiding most of what it holds; a heading is one line
+   * by construction and keeps the box it had.
+   */
+  it('gives a wrapping sentence room and a headline a single line', async () => {
+    await structure();
+    await select('Body text');
+
+    expect(inspector('Body text').getByLabelText('Text').tagName).toBe('TEXTAREA');
+
+    await select('Headline');
+
+    expect(inspector('Headline').getByLabelText('Text')).toHaveAttribute('type', 'text');
+  });
+
+  /**
+   * **An address is not a sentence.** `type="url"` is a keyboard on a phone and
+   * a validity hint on a desktop, and it costs nothing where it is neither. The
+   * media picker is WordPress's own and is absent here, which is exactly the
+   * degradation the control is written for: the address is still typeable.
+   */
+  it('asks for an address as an address, and still takes one typed by hand', async () => {
+    await structure();
+
+    await userEvent.click(
+      within(row('Headline')).getByRole('button', { name: 'Add, copy or delete Headline' }),
+    );
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Add a block after this' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Image' }));
+
+    expect(inspector('Image').getByLabelText('Image address')).toHaveAttribute('type', 'url');
+    expect(inspector('Image').getByLabelText('Alt text')).toHaveAttribute('type', 'text');
+  });
+
   /** A hidden block is still edited here, which is the only route to switching it on. */
   it('edits a block that is switched off, because that is the way to switch it on', async () => {
     await structure();
@@ -814,6 +857,53 @@ describe('the inspector', () => {
     // there is no next sibling and what was holding it takes focus — here the
     // step itself, which the inspector names rather than blanking.
     expect(screen.getByRole('group', { name: 'The form' })).toBeInTheDocument();
+  });
+});
+
+/**
+ * ============================================================================
+ * THE VERDICT: WHETHER THIS DESIGN WILL ACTUALLY WORK.
+ * ============================================================================
+ * The save already knows, and it tells the merchant as a red bar over an editor
+ * that had let them get there. This is the same knowledge, said while it is
+ * still cheap to act on — plus two things nothing else will ever mention.
+ */
+describe('the verdict', () => {
+  const menu = async (name: string) => {
+    await userEvent.click(
+      within(row(name)).getByRole('button', { name: `Add, copy or delete ${name}` }),
+    );
+  };
+
+  it('says the design will work when nothing is wrong with it', async () => {
+    await structure();
+
+    expect(screen.getByText('This will work')).toBeInTheDocument();
+  });
+
+  /**
+   * Deleting the only button is refused, so the way to a design with no
+   * converting act is to delete what HOLDS it — which the guards allow only
+   * once nothing else depends on it. The row is the whole form here, so the
+   * refusal stands and the verdict is asked of a different failure: a colour
+   * pair a visitor cannot read, which nothing refuses.
+   */
+  it('counts what is wrong and lists it, with a way to the block', async () => {
+    await structure();
+    await menu('Fine print');
+    await userEvent.click(screen.getByRole('menuitem', { name: /Duplicate/ }));
+
+    // The copy has no Slot Role, so its words are lost at the next design
+    // switch — a problem that saves happily and that nothing else mentions.
+    await userEvent.click(screen.getByRole('button', { name: '1 thing to fix' }));
+
+    const problem = screen.getByRole('button', { name: /no name of its own/ });
+
+    expect(problem).toBeInTheDocument();
+
+    await userEvent.click(problem);
+
+    expect(screen.getByRole('group', { name: 'Text' })).toBeInTheDocument();
   });
 });
 

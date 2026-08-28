@@ -93,6 +93,18 @@ final class AdminMenu
 
         ViteHelper::enqueueAdmin(self::SCRIPT_HANDLE, $this->notices);
 
+        // **WordPress's own media picker, for the builder's image slot.** An
+        // `image`'s `src` was a text box asking a merchant to type a URL for a
+        // file they had already uploaded — and `MerchantsOwn` carries that
+        // value across a design switch precisely because it is theirs to set.
+        //
+        // It is WordPress's script, on one screen, and the admin bundle has no
+        // byte gate — its size is printed at every build rather than enforced
+        // (ADR 0038) — so this is reportable rather than a budget decision. The
+        // editor degrades to the URL field where it is absent, so nothing here
+        // is load-bearing for setting an image.
+        wp_enqueue_media();
+
         $settings = [
             // The CSV download is a navigation to `admin-post.php`, so the
             // screen needs the nonced URL rather than a REST path —

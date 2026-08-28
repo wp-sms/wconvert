@@ -1,16 +1,19 @@
 import { useMemo, useState, type ReactNode } from 'react';
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 import {
   ArrowDown,
   ArrowUp,
   Blocks,
+  Check,
   Copy,
   MoreHorizontal,
   Plus,
   Redo2,
+  TriangleAlert,
   Trash2,
   Undo2,
 } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
 import { Button } from '../components/ui/button';
 import {
   DropdownMenu,
@@ -31,6 +34,7 @@ import { useBlockDrag } from './useBlockDrag';
 import { nameOfBlock, sentenceFor, type Control } from './BlockRow';
 import { additionsIn, freeRoleFor, nodeFor, type ConvertingAct } from './structure/catalogue';
 import { whyDuplicationIsRefused, whyRemovalIsRefused } from './structure/guards';
+import { problemsIn, type Problem } from './structure/problems';
 import {
   countAt,
   nodeAt,
@@ -377,6 +381,16 @@ export function StructureView({
           <Redo2 aria-hidden="true" />
           {__('Redo', 'wconvert')}
         </Button>
+
+        <Verdict
+          problems={problemsIn(template, act)}
+          onGoTo={(path) => {
+            const block = nodesOf(template.tree).find((each) => samePath(each.path, path));
+
+            onSelect(block === undefined ? null : keyOfSlot(block), path);
+            setFocusOn({ path, control: 0 });
+          }}
+        />
       </Toolbar>
 
       <RegionBody className="wconvert-structure">
@@ -736,4 +750,82 @@ function nextTo(block: Block): Spot {
   return spot === null
     ? { parent: block.path, key: 'children', index: 0 }
     : { ...spot, index: spot.index + 1 };
+}
+
+/**
+ * Whether this design will actually work, and what to do about it if not.
+ *
+ * ============================================================================
+ * THE SAVE ALREADY KNOWS. IT JUST TELLS THE MERCHANT TOO LATE.
+ * ============================================================================
+ * `OptinController` refuses a design with no converting act and one whose act
+ * its [[Goal]] cannot report, and it is right to — *"a screen is not an
+ * enforcement mechanism"* (ADR 0026). But the merchant meets that refusal as a
+ * red bar over an editor that had let them get there, having already done the
+ * work. This is the same knowledge, said while it is still cheap to act on.
+ *
+ * Two of what it reports are not refusals at all and never will be: a block
+ * that will lose its words at the next design switch, and a colour pair a
+ * visitor cannot read. Both save happily. Nothing else in the product would
+ * ever mention either.
+ *
+ * **In the toolbar, because it is about the whole design** — which is exactly
+ * the scope test ADR 0039 gives — and beside Undo, because both are things a
+ * merchant reaches for after doing something rather than while doing it.
+ */
+function Verdict({
+  problems,
+  onGoTo,
+}: {
+  problems: readonly Problem[];
+  onGoTo: (path: Path) => void;
+}) {
+  if (problems.length === 0) {
+    return (
+      <p className="wconvert-verdict wconvert-verdict--good">
+        <Check aria-hidden="true" />
+        {__('This will work', 'wconvert')}
+      </p>
+    );
+  }
+
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button type="button" variant="outline" size="sm" className="wconvert-verdict--bad">
+          <TriangleAlert aria-hidden="true" />
+          {sprintf(
+            /* translators: %d: how many things are wrong with the design. */
+            _n('%d thing to fix', '%d things to fix', problems.length, 'wconvert'),
+            problems.length,
+          )}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent align="start" className="max-w-sm">
+        <ul className="wconvert-verdict__list">
+          {problems.map((problem) => (
+            <li key={problem.said}>
+              {/*
+                **A sentence, and a way to the block it is about.** A problem
+                the merchant cannot navigate to is a problem they have to hunt
+                for, and the tree is right there — so where it names a block,
+                the sentence is the button that selects it.
+              */}
+              {problem.path === null ? (
+                problem.said
+              ) : (
+                <button
+                  type="button"
+                  className="wconvert-verdict__go"
+                  onClick={() => onGoTo(problem.path as Path)}
+                >
+                  {problem.said}
+                </button>
+              )}
+            </li>
+          ))}
+        </ul>
+      </PopoverContent>
+    </Popover>
+  );
 }
