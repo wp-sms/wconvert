@@ -5,6 +5,9 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '../../resources/admin/src/components/ui/dropdown-menu';
 
@@ -22,7 +25,7 @@ import {
  * and the content is held until its exit animation ends — measured against a
  * real WordPress, `<body>` still carried `data-scroll-locked` 100ms after the
  * click that dismissed the menu. So the page moves a second time, after the
- * menu has already faded, which is the "glitch on close" as a merchant sees it.
+ * menu has already faded, which makes that separate page jump most visible on close.
  *
  * This was diagnosed once and fixed at ONE of the three call sites, as
  * `modal={false}` on the block-row menu. The Optin row's `⋯` and the
@@ -59,6 +62,42 @@ afterEach(() => {
 });
 
 describe('the vendored DropdownMenu', () => {
+  it('does not leave a ghost menu behind while an outside click is handled', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <>
+        <button type="button">Outside</button>
+        <DropdownMenu>
+          <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>More</DropdownMenuSubTrigger>
+              <DropdownMenuSubContent>
+                <DropdownMenuItem>Nested action</DropdownMenuItem>
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
+            <DropdownMenuItem>Delete</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </>,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Open' }));
+
+    const menu = await screen.findByRole('menu');
+    expect(menu.className).not.toContain('data-[state=closed]:animate-out');
+
+    await user.hover(screen.getByRole('menuitem', { name: /More/ }));
+    const nestedAction = await screen.findByRole('menuitem', { name: 'Nested action' });
+    const submenu = nestedAction.closest('[data-slot="dropdown-menu-sub-content"]');
+
+    expect(submenu?.className).not.toContain('data-[state=closed]:animate-out');
+
+    await user.click(screen.getByRole('button', { name: 'Outside' }));
+    expect(screen.queryByRole('menuitem', { name: 'Delete' })).toBeNull();
+  });
+
   it('leaves the page scrollable and clickable while it is open', async () => {
     const user = userEvent.setup();
 
