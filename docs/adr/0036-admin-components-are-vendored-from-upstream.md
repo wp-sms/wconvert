@@ -91,6 +91,14 @@ checking against the thing it solved.
 - **`components/ui/` is vendored, not a dependency**, so it is read and reviewed
   like the rest of the tree and shows up in `bin/verify-source-contract.sh`'s
   scan like any other file under `resources/`.
+- **Layers animate in and dismiss immediately.** Radix keeps content mounted
+  while a CSS exit animation runs. Once dismissal has moved focus and revealed
+  the underlying screen, that delay paints a shrinking translucent copy of
+  stale UI over the control the merchant just reached; modal layers also retain
+  their body scroll lock for the stale frame. Dialogs, alert dialogs, menus,
+  popovers and selects therefore keep their upstream entry animation and remove
+  every `data-[state=closed]` animation at the vendored primitive, never at a
+  call site. `tests/js/admin-overlay-motion.test.ts` guards the complete set.
 - **Icons come from lucide**, not dashicons — dashicons is WordPress chrome, and
   [ADR 0035](0035-the-admin-owns-its-page.md) stopped rendering that. The one
   dashicon that stays is the menu icon in WordPress's own sidebar, which is

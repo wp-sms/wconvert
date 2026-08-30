@@ -1013,18 +1013,7 @@ function ColourField({
           </span>
         </button>
       </PopoverTrigger>
-      {/*
-        `wconvert-picker-pop` is what stops this one popover ANIMATING OUT, and
-        that is the last link in the chain described on `openToken` above. Radix
-        keeps closed content mounted until its exit animation ends and then
-        unmounts it in a re-render — and that re-render is the one that never
-        arrives inside a hidden `Activity`. Measured: the popover reached
-        `data-state="closed"` with the animation finished and the node still on
-        screen at full opacity. With no exit animation there is nothing to wait
-        for, so the close and the unmount are one commit — the one `flushSync`
-        forces while the tab is still visible.
-      */}
-      <PopoverContent align="start" className="wconvert-picker-pop w-auto">
+      <PopoverContent align="start" className="w-auto">
         <div className="wconvert-picker">
           {translucent ? (
             <RgbaStringColorPicker color={shown} onChange={onChange} />

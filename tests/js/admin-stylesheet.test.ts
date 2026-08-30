@@ -70,23 +70,6 @@ describe('the gallery preview', () => {
   });
 });
 
-describe('the colour picker’s popover', () => {
-  /**
-   * Radix keeps closed content mounted until its exit animation ends and then
-   * unmounts it in a re-render — the one that never arrives while the Design tab
-   * is inside a hidden `<Activity>`. With no exit animation the close and the
-   * unmount are one commit.
-   *
-   * **Inside `@layer utilities`**, because for `!important` declarations the
-   * cascade runs layers in reverse and an unlayered rule loses to `animate-out`.
-   */
-  it('does not animate out, and says so from inside the utilities layer', () => {
-    const utilities = [...CSS.matchAll(/@layer utilities \{([\s\S]*?)\n\}/g)].map((m) => m[1]).join('\n');
-
-    expect(utilities).toMatch(/\.wconvert-picker-pop\[data-state="closed"\][\s\S]*animation:\s*none/);
-  });
-});
-
 describe('the builder’s two columns', () => {
   /**
    * **Measured before it was written**: the Content tab's card started at 68px

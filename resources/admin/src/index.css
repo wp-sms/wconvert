@@ -24,11 +24,12 @@
 @import 'tailwindcss' important;
 
 /*
- * The enter/exit animations the vendored dialog, popover and select reference
- * by class (`animate-in`, `fade-in-0`, `slide-in-from-top-2`). They are
+ * The entry animations the vendored layers reference by class (`animate-in`,
+ * `fade-in-0`, `slide-in-from-top-2`). They are
  * Tailwind 4's replacement for `tailwindcss-animate` and shadcn's components
  * are written against them, so without this import those classes compile to
- * nothing and every overlay in the admin snaps rather than opens.
+ * nothing and every overlay in the admin snaps rather than opens. Dismissal is
+ * deliberately immediate; ADR 0036 records why.
  */
 @import 'tw-animate-css';
 
@@ -1135,31 +1136,6 @@
 @layer utilities {
   #wconvert-admin table.wp-list-table.fixed {
     position: static !important;
-  }
-
-  /*
-   * ---------------------------------------------------------------------------
-   * THE COLOUR PICKER DOES NOT ANIMATE OUT, AND THAT IS WHAT UNMOUNTS IT.
-   *
-   * The Design tab lives inside `<Activity mode="hidden">` and this popover
-   * portals to `document.body`, outside it. Radix keeps closed content mounted
-   * until its exit animation ends and then unmounts it in a **re-render** — and
-   * that re-render is the one that never arrives, because the component that
-   * owns it is in a subtree React reconciles at low priority while hidden.
-   * Measured in a browser: `data-state="closed"`, animation finished, node
-   * still painted at full opacity over a tab with no colours in it.
-   *
-   * With no exit animation there is nothing to wait for: the close and the
-   * unmount are one commit, which is the commit `OptinBuilder`'s `flushSync`
-   * forces while the tab is still visible. The enter animation is untouched.
-   *
-   * **Inside `@layer utilities`, and that is the third time this file has been
-   * caught by it.** For `!important` declarations the cascade runs layers in
-   * REVERSE, so an unlayered rule here would lose to `animate-out`, which is a
-   * layered `!important` utility.
-   * ------------------------------------------------------------------------- */
-  .wconvert-picker-pop[data-state="closed"] {
-    animation: none !important;
   }
 
   /*
