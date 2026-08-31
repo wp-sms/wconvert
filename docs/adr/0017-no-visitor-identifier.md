@@ -78,6 +78,16 @@ value that identifies a browser rather than a person.
 - Free's per-visitor storage is therefore entirely `functional`: it records a
   choice the visitor made by clicking the close button, and withholding it means
   the popup reappears — worse for the visitor on every axis.
+  *Extended to a second scope by
+  [ADR 0047](0047-site-wide-frequency-is-the-same-shape-at-a-second-scope.md),
+  and this sentence is the reason it lands in the same category. The site-wide
+  allowance is **the same four fields held once for the whole site** rather than
+  once per Optin — so it records the same act read more broadly, and withholding
+  it makes the visitor meet six different Optins across six pages instead of
+  one. It is in fact **less** identifying than the state it sits beside: four
+  values in total, saying nothing about which campaigns this device has met. The
+  claim above is now about two keys and not one, which is why it is noted here
+  rather than only there.*
   *Completed by [#22](https://github.com/navidkashani/wconvert/issues/22), which
   built it: the record is `{impressions, last-seen, dismissed, converted}` per
   Optin, and **last-seen is a whole day number rather than a timestamp**. A
@@ -93,3 +103,12 @@ value that identifies a browser rather than a person.
   always on: both record something the visitor DID, and both mean stop. The two
   numbers, `maxImpressions` and `cooldownDays`, stay off — those are a merchant's
   pacing decision rather than a visitor's answer.*
+  *That ON default is **per Optin only**.
+  [ADR 0047](0047-site-wide-frequency-is-the-same-shape-at-a-second-scope.md)
+  ships all four **off** at site scope, which is a deliberate asymmetry rather
+  than an inconsistency: the per-Optin default honours a visitor saying "stop
+  showing me **this**", which costs the merchant nothing they did not accept by
+  putting a close button on it, while the site default would read the same click
+  as "stop showing me **anything**, for a week" — a claim about what the visitor
+  meant that they did not make. OptinMonster ships both of its global cookies
+  off for the same reason.*

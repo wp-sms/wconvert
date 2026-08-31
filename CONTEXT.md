@@ -226,6 +226,52 @@ under a set of display rules, serving one [[Goal]], pushing to one or more
 > docs, support tickets, and REST routes. `Campaign` stays batch-send; WConvert
 > uses `Optin`.
 
+An Optin is never hard-deleted. Its counters reference it by id, so a removed row
+would make every count naming it uninterpretable — which is also why ending an
+A/B test cannot delete the losing [[Variant]].
+
+### Variant
+
+One arm of an A/B test — **and a whole [[Optin]]**, not a shape inside one. It
+has its own id, its own row, and therefore its own counters, because
+`wconvert_stats` is keyed by `optin_id` and that key is what makes the counter
+upsert atomic. Two designs behind one id could not be told apart, which is the
+entire point of the test.
+
+A Variant names its parent in its own `config`, the way `template_id` and
+`playbook_id` are held — all three are *provenance*. The Optins list shows
+parentless Optins only and nests each test's arms beneath their parent, so a
+merchant sees one campaign with two arms rather than two campaigns. That is a
+query condition; storage does not constrain the screen.
+
+Ending a test **never deletes the loser**: the arm that lost is a month of the
+merchant's own history, and an Optin is never hard-deleted anyway. See
+[ADR 0045](docs/adr/0045-an-ab-variant-is-a-whole-optin.md).
+
+### Frequency
+
+The allowance — how often this device may be shown something — checked before any
+[[Trigger]] or [[Condition]] is evaluated. Four fields: a maximum number of
+impressions, a cooldown in days, stop after a [[Dismissal]], and stop after a
+[[Conversion]].
+
+It has **two scopes and one shape**. Per [[Optin]], the two switches default *on*
+and the two numbers *off*, because a visitor who closed something said stop
+showing me *this*. Site-wide, the same four fields are held once for the whole
+site and **all of them default off**, because reading one dismissal as "show me
+nothing anywhere for a week" is a claim about what the visitor meant that they
+did not make.
+
+Site scope is a **veto**, checked first: an Optin cannot opt out of it, since a
+per-Optin *ignore the site setting* is the configuration having two scopes exists
+to delete. A visitor stopped by either scope is `capped` — the standing
+`resources/loader/src/decide.ts` already gives an Optin whose allowance is spent
+and cannot change on this page view — and never a seventh word.
+
+Frequency is not a [[Trigger]] or a [[Condition]]: it is not a question about
+this page view, it is what this device has already been shown. See
+[ADR 0047](docs/adr/0047-site-wide-frequency-is-the-same-shape-at-a-second-scope.md).
+
 ### Display Type
 
 *How* an Optin appears: `popup`, `floating_bar`, `slide_in`, or `inline`.
@@ -479,6 +525,22 @@ subscribed, and it reads nothing at all on the capture path. Admin-time metadata
 reads are permitted and expected: listing a provider's audiences or custom fields
 to populate the configuration UI, and testing a connection. Those are reads of
 the provider's *shape*, never of a person's state.
+
+A Destination failing is **invisible to the visitor**. That is what "fallible
+without the capture failing" means followed through: the [[Lead]] is already
+written, the push is queued and retried, and the visitor is on the list — so
+there is no error state in a [[Template]] and there will not be one. The only
+thing such a state could report is the local write failing, which is an outage
+rather than a step in anyone's journey
+([ADR 0044](docs/adr/0044-there-is-no-visitor-facing-error-state.md)). Failure is
+visible to the *merchant*, on Destination health and in the failure ring, which
+is where it can be acted on.
+
+A **test send** is the merchant's own address pushed to a Destination to prove it
+works. It writes no Lead — a Lead has exactly one origin and carries a
+[[Consent Record]] that cannot be invented — it is answered immediately rather
+than queued, and it moves no counter at all: a failed test is a question
+answered, not an outage.
 
 ### Connection
 

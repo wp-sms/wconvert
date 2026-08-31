@@ -6,7 +6,7 @@ use WConvert\Destination\CanonicalFields;
 use WConvert\Destination\DestinationType;
 use WConvert\Destination\PushContext;
 use WConvert\Destination\PushResult;
-use WConvert\Lead\Lead;
+use WConvert\Destination\PushSubject;
 use WConvert\Support\SiteDependency;
 use WConvert\Support\Tier;
 
@@ -231,9 +231,9 @@ final class LeadMagnetDestinationType implements DestinationType
      * genuinely re-sends, and that seam is recorded in ADR 0008 rather than
      * hidden.
      */
-    public function push(Lead $lead, PushContext $context): PushResult
+    public function push(PushSubject $subject, PushContext $context): PushResult
     {
-        $email = CanonicalFields::of($lead)[CanonicalFields::EMAIL] ?? null;
+        $email = $subject->values[CanonicalFields::EMAIL] ?? null;
 
         if ($email === null) {
             return PushResult::skipped('The Lead carries no email address, and the lead magnet goes out by email.');

@@ -1,4 +1,4 @@
-import { LEAVES, childKeysOf, type Path } from '../panel';
+import { IDENTITY, LEAVES, childKeysOf, type Path } from '../panel';
 import type { TemplateNode, TemplateTree } from '@renderer/types';
 
 /**
@@ -40,6 +40,14 @@ import type { TemplateNode, TemplateTree } from '@renderer/types';
  *
  * That is why every function below addresses a node by {@link Path} and why the
  * UI re-resolves after a save rather than holding one across it.
+ *
+ * > **A leaf now carries `id`, and this rule is what decides who writes it.**
+ * > It is the name a translation is attached to, so it must outlive every
+ * > rearrangement — which means the server mints it
+ * > (`WConvert\Template\NodeIdentities`) and nothing here ever does. The
+ * > editor's one obligation is the mirror image: {@link withDuplicated} STRIPS
+ * > it from a copy, exactly as it strips a Slot Role, so the copy is given a
+ * > fresh id instead of pointing at the original's words.
  */
 
 /**
@@ -334,11 +342,24 @@ export function rolesLostBy(tree: TemplateTree, path: Path): number {
   return node === null ? 0 : rolesIn(node);
 }
 
-/** The same node, and everything under it, carrying no `role` key. */
+/**
+ * The same node, and everything under it, carrying neither a `role` nor an
+ * `id`.
+ *
+ * **The two are stripped for opposite reasons and it is worth keeping them
+ * apart.** A Role is stripped because the server would drop it anyway and the
+ * merchant would watch the copy quietly lose its heading one save later — a
+ * visible loss, which is why {@link rolesLostBy} exists to announce it. An id
+ * is stripped because the server would *keep* it: `normalize()` hands the
+ * duplicate the same id it found on the original, and two nodes behind one name
+ * is one translation shared by two sentences. Nothing announces that one,
+ * because an id is not a thing the merchant can see or has an opinion about.
+ */
 function withoutRoles(node: TemplateNode): TemplateNode {
   const next = { ...node } as Record<string, unknown>;
 
   delete next.role;
+  delete next[IDENTITY];
 
   for (const key of childKeysOf(node.type)) {
     if (Array.isArray(next[key])) {

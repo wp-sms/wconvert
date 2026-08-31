@@ -23,10 +23,10 @@
       {
         "type": "stack",
         "children": [
-          { "type": "heading", "role": "headline", "text": "Midseason sale" },
-          { "type": "text", "role": "body", "text": "Everything reduced for the next three days." },
-          { "type": "button", "role": "cta_label", "label": "Shop the sale", "action": "link" },
-          { "type": "text", "role": "fine_print", "text": "Discount applied at the checkout." }
+          { "type": "heading", "id": "n1", "role": "headline", "text": "Midseason sale" },
+          { "type": "text", "id": "n2", "role": "body", "text": "Everything reduced for the next three days." },
+          { "type": "button", "id": "n3", "role": "cta_label", "label": "Shop the sale", "action": "link" },
+          { "type": "text", "id": "n4", "role": "fine_print", "text": "Discount applied at the checkout." }
         ]
       }
     ]

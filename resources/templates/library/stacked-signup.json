@@ -23,31 +23,33 @@
       {
         "type": "stack",
         "children": [
-          { "type": "heading", "role": "headline", "text": "Text me the drops" },
-          { "type": "text", "role": "body", "text": "One message when something new lands. Nothing else." },
+          { "type": "heading", "id": "n1", "role": "headline", "text": "Text me the drops" },
+          { "type": "text", "id": "n2", "role": "body", "text": "One message when something new lands. Nothing else." },
           {
             "type": "field",
+            "id": "n3",
             "name": "phone",
             "label": "Mobile number",
             "placeholder": "+44 7700 900000",
             "required": true
           },
-          { "type": "button", "role": "cta_label", "label": "Sign me up", "action": "submit" },
+          { "type": "button", "id": "n4", "role": "cta_label", "label": "Sign me up", "action": "submit" },
           {
             "type": "consent",
+            "id": "n5",
             "role": "consent_text",
             "hidden": true,
             "text": "Email me offers and news. See our %s.",
             "link": { "label": "Privacy Policy" }
           },
-          { "type": "text", "role": "fine_print", "text": "Message rates may apply. Stop at any time." }
+          { "type": "text", "id": "n6", "role": "fine_print", "text": "Message rates may apply. Stop at any time." }
         ]
       },
       {
         "type": "stack",
         "children": [
-          { "type": "heading", "role": "success_headline", "text": "You are signed up" },
-          { "type": "text", "role": "success_body", "text": "Watch out for a message when the next drop lands." }
+          { "type": "heading", "id": "n7", "role": "success_headline", "text": "You are signed up" },
+          { "type": "text", "id": "n8", "role": "success_body", "text": "Watch out for a message when the next drop lands." }
         ]
       }
     ]

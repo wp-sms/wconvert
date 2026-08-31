@@ -2,7 +2,6 @@
 
 namespace WConvert\Destination;
 
-use WConvert\Lead\Lead;
 use WConvert\Support\SiteDependency;
 use WConvert\Support\Tier;
 
@@ -101,21 +100,29 @@ interface DestinationType
     public function testConnection(array $credentials): void;
 
     /**
-     * Push one Lead. **This must be idempotent.**
+     * Push one {@see PushSubject}. **This must be idempotent.**
      *
      * That is contract and not an implementation note. A push is not one HTTP
      * call — some vendors need two or three — so a retry re-runs a sequence
      * that may already be half done, and no vendor offers an idempotency
      * header. Every implementation therefore keys on the vendor's own
-     * email-keyed upsert, and running this twice for one Lead must leave one
+     * email-keyed upsert, and running this twice for one subject must leave one
      * Contact (ADR 0008).
      *
      * Everything downstream stands on that clause: it is what makes retries
      * safe, what makes bulk re-push a support tool rather than a duplicate
      * generator, and what made a `wconvert_lead_deliveries` table buy
      * efficiency rather than correctness.
+     *
+     * **It takes a subject rather than a [[Lead]], and that is a decision
+     * rather than a widening.** A merchant proving their credentials work sends
+     * a test, and a test with a `Lead` in this signature would have to write a
+     * row — a capture event that never happened, carrying a [[Consent Record]]
+     * nobody was shown (ADR 0031). So what a type receives is the canonical
+     * values and a flag saying where they came from; a type reads
+     * `$subject->values` exactly as it used to read `CanonicalFields::of()`.
      */
-    public function push(Lead $lead, PushContext $context): PushResult;
+    public function push(PushSubject $subject, PushContext $context): PushResult;
 
     /**
      * Sustained jobs per minute this type can take.

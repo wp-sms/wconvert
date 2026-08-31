@@ -242,6 +242,38 @@ third-party ones. Under configuration they are properties of the one renderer.
   it delays. This applies to both click Goals — "Promote a sale or offer" and
   "Bring shoppers back to their cart" — so it is a property of the metric, not of
   WooCommerce.*
+- **Every leaf now carries an `id`, and it is the one key validation ADDS rather
+  than drops.** *This ADR's closure rule is that an unknown node type, token,
+  param or Slot Role is dropped on the way in
+  ([`TemplateVocabulary`](../../src/Template/TemplateVocabulary.php)). `id` runs
+  the other way: a leaf that arrives without one leaves with a minted one
+  ([`NodeIdentities`](../../src/Template/NodeIdentities.php)), unique across the
+  whole tree exactly as a Slot Role is.*
+
+  *The reason is translation, and it is a consequence of "configuration, not
+  documents" rather than a departure from it. Merchant copy lives inside
+  `wconvert_optins.config` as JSON, and WPML and Polylang both register a string
+  by a **name** — `wpml_register_single_string(context, name, value)`. The only
+  name a node had was its position, `steps[0].children[0]`, and the structure
+  editor above is precisely the thing that moves positions: reorder the design
+  and the French headline attaches to the fine print. With ids the name is
+  `optin-01HA/n3.text` and rearranging changes nothing.*
+
+  *Minted in PHP rather than in the admin, and that follows from a rule
+  `resources/admin/src/builder/structure/tree.ts` already stated at length:
+  **nothing in the editor may invent a key**, because a save replaces `config`
+  with what came back and only manifest-declared keys survive. So the server
+  mints, and the editor's one obligation is the mirror image — `withDuplicated`
+  **strips** the id from a copy, as it already strips a Role, so two sentences
+  never sit behind one name.*
+
+  *This is what makes the WPML/Polylang integration a later ticket instead of a
+  later **migration**. Every tree passes through `normalize()`, so a snapshot
+  written before the key existed acquires ids the first time it is saved rather
+  than needing a walk over every Optin on every site. Layouts carry none — an id
+  names a string and a `stack` says nothing — and the cost against the payload
+  budget was measured rather than assumed: **29 bytes gzipped** across ten
+  worst-case trees, which the bullet below has the room for.*
 - **The vocabulary gained a `consent` leaf node** after this ADR, paired with a
   `consent_text` Slot Role — see
   [ADR 0032](0032-consent-capture-is-first-class-in-the-template.md). Consent
@@ -259,6 +291,10 @@ third-party ones. Under configuration they are properties of the one renderer.
   frequency, measure **13,044 bytes raw compressing to 1,072 bytes** — 52% of the
   budget, gzipped in isolation rather than against the surrounding HTML, so the real
   figure is lower still. `tests/unit/Frontend/PayloadBudgetTest.php` holds it.*
+  *Re-measured when node ids landed: **1,173 bytes**, against 1,144 before them.
+  Eighty ids across ten trees cost **29 bytes gzipped**, because `"id":"n` is the
+  most compressible thing in the payload — which is the same self-similarity
+  argument this bullet was uncertain about, holding a second time.*
   The recorded fix if it ever fails is unchanged: delta-encoding each Optin against its
   `template_id`, rejected now because snapshots diverge from their source by design and
   the delta would need the source *version* too.

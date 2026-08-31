@@ -6,7 +6,7 @@ use WConvert\Destination\CanonicalFields;
 use WConvert\Destination\DestinationType;
 use WConvert\Destination\PushContext;
 use WConvert\Destination\PushResult;
-use WConvert\Lead\Lead;
+use WConvert\Destination\PushSubject;
 use WConvert\Support\SiteDependency;
 use WConvert\Support\Tier;
 
@@ -112,9 +112,9 @@ final class WsmsDestinationType implements DestinationType
         unset($credentials);
     }
 
-    public function push(Lead $lead, PushContext $context): PushResult
+    public function push(PushSubject $subject, PushContext $context): PushResult
     {
-        $values = CanonicalFields::of($lead);
+        $values = $subject->values;
 
         // WSMS's `create()` hard-requires one of the two identifiers, so a
         // Lead carrying neither has nothing to send. **Skipped, not failed**:

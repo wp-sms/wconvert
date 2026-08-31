@@ -26,6 +26,7 @@
         "start": [
           {
             "type": "image",
+            "id": "n1",
             "src": "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%203%202'%3E%3Crect%20width='3'%20height='2'%20fill='%23cbd5e1'/%3E%3Ccircle%20cx='.8'%20cy='.6'%20r='.26'%20fill='%23f1f5f9'/%3E%3Cpath%20d='M0%202l1-.95.62.52L2.35.75%203%201.4V2z'%20fill='%2394a3b8'/%3E%3C/svg%3E",
             "alt": "A photograph of the product",
             "fit": "cover"
@@ -37,16 +38,19 @@
             "children": [
               {
                 "type": "heading",
+                "id": "n2",
                 "role": "headline",
                 "text": "Ten percent off, on us"
               },
               {
                 "type": "text",
+                "id": "n3",
                 "role": "body",
                 "text": "Join the list and the code lands before you finish reading this."
               },
               {
                 "type": "field",
+                "id": "n4",
                 "name": "email",
                 "label": "Email address",
                 "placeholder": "you@example.com",
@@ -54,12 +58,14 @@
               },
               {
                 "type": "button",
+                "id": "n5",
                 "role": "cta_label",
                 "label": "Send my code",
                 "action": "submit"
               },
               {
                 "type": "consent",
+                "id": "n6",
                 "role": "consent_text",
                 "hidden": true,
                 "text": "Email me offers and news. See our %s.",
@@ -69,6 +75,7 @@
               },
               {
                 "type": "text",
+                "id": "n7",
                 "role": "fine_print",
                 "text": "No spam, and you can unsubscribe at any time."
               }
@@ -81,11 +88,13 @@
         "children": [
           {
             "type": "heading",
+            "id": "n8",
             "role": "success_headline",
             "text": "You are on the list"
           },
           {
             "type": "text",
+            "id": "n9",
             "role": "success_body",
             "text": "Your code is on its way to your inbox."
           }

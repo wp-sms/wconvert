@@ -18,6 +18,16 @@ implementation: the null one.
 **The glossary was wrong, not the contract.** A Destination is defined by being
 **outbound and fallible**. The local Lead log is the *Lead store*.
 
+> **Completed by [ADR 0044](0044-there-is-no-visitor-facing-error-state.md),
+> which follows "fallible without the capture failing" all the way to the
+> visitor.** Because the local row is the capture and a push is not, **a
+> Destination failing is invisible to the visitor by construction** — there is
+> no error step in a [[Template]] and there is never going to be one. The only
+> thing a visitor-facing error could report here is the local write failing,
+> which is an outage rather than a state in their journey. Claspo, the one
+> competitor of eighteen that has such a state, has it because in Claspo the ESP
+> push *is* the capture — the exact model this ADR rejected.
+
 The criterion was chosen over the obvious alternative — "a Destination is an
 external system" — because the lead-magnet delivery email is outbound, per-Lead,
 configurable and fallible, but is not external: it goes through `wp_mail`. Under

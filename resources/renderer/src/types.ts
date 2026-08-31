@@ -55,6 +55,31 @@ export interface SlotLink {
 interface BaseNode {
   readonly type: string;
   readonly role?: SlotRole;
+  /**
+   * A name for this node's words, stable across every rearrangement.
+   *
+   * ==========================================================================
+   * NOTHING IN THE RENDERER READS THIS, AND IT IS ON THE PAYLOAD ANYWAY.
+   * ==========================================================================
+   * It exists for translation. WPML and Polylang both register a string by a
+   * NAME — `wpml_register_single_string(context, name, value)` — and a string
+   * named by its position in `steps[]` moves the moment the merchant reorders
+   * their design, attaching the French headline to the fine print. So a leaf
+   * carries `n1`, `n2`, and the name becomes `optin-01HA/n3.text`.
+   *
+   * That translation happens in PHP, before the payload is built, so the loader
+   * genuinely never needs it. It rides along because stripping it would mean a
+   * second walk of every tree on every page build to save bytes the budget has
+   * (`tests/unit/Frontend/PayloadBudgetTest.php`), and because the id is what a
+   * later feature — an inspector naming a block, a per-block override — would
+   * address a node by from the browser.
+   *
+   * **The renderer must never mint one, and neither may the admin.** They are
+   * minted on the way in by `WConvert\Template\NodeIdentities`, which is what
+   * makes them unique across the whole tree and stable across a save (ADR 0010, amended).
+   * Layouts carry none: an id names a string, and a `stack` says nothing.
+   */
+  readonly id?: string;
 }
 
 /**

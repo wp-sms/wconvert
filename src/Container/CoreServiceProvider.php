@@ -382,7 +382,8 @@ final class CoreServiceProvider implements ServiceProvider
                 $c->resolve(DestinationStore::class),
                 $c->resolve(OptinRepository::class),
                 $c->resolve(HealthStore::class),
-                $c->resolve(Queue::class)
+                $c->resolve(Queue::class),
+                $c->resolve(ConnectionStore::class)
             )
         );
 

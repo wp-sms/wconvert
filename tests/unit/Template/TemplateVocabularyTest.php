@@ -49,7 +49,7 @@ final class TemplateVocabularyTest extends TestCase
         ]);
 
         $this->assertSame(
-            [['type' => 'heading', 'text' => 'Join']],
+            [['type' => 'heading', 'text' => 'Join', 'id' => 'n1']],
             $normalized['tree']['steps'][0]['children']
         );
     }
@@ -67,7 +67,7 @@ final class TemplateVocabularyTest extends TestCase
             'tree' => ['steps' => [['type' => 'heading', 'text' => 'Join', 'onclick' => 'alert(1)']]],
         ]);
 
-        $this->assertSame(['type' => 'heading', 'text' => 'Join'], $normalized['tree']['steps'][0]);
+        $this->assertSame(['type' => 'heading', 'text' => 'Join', 'id' => 'n1'], $normalized['tree']['steps'][0]);
     }
 
     public function testAnUnknownSlotRoleIsDroppedButTheNodeSurvives(): void
@@ -76,7 +76,7 @@ final class TemplateVocabularyTest extends TestCase
             'tree' => ['steps' => [['type' => 'heading', 'role' => 'shout', 'text' => 'Join']]],
         ]);
 
-        $this->assertSame(['type' => 'heading', 'text' => 'Join'], $normalized['tree']['steps'][0]);
+        $this->assertSame(['type' => 'heading', 'text' => 'Join', 'id' => 'n1'], $normalized['tree']['steps'][0]);
     }
 
     /**

@@ -5,7 +5,7 @@ namespace WConvert\Tests\Unit\Support;
 use WConvert\Destination\DestinationType;
 use WConvert\Destination\PushContext;
 use WConvert\Destination\PushResult;
-use WConvert\Lead\Lead;
+use WConvert\Destination\PushSubject;
 use WConvert\Support\SiteDependency;
 use WConvert\Support\Tier;
 
@@ -21,8 +21,11 @@ final class FakeDestinationType implements DestinationType
     /** @var list<PushResult> Answers, taken in order; the last one repeats. */
     public array $answers = [];
 
-    /** @var list<Lead> Every Lead it was handed. */
+    /** @var list<PushSubject> Every subject it was handed, test sends included. */
     public array $pushed = [];
+
+    /** @var list<PushContext> The context each push arrived with, in the same order. */
+    public array $contexts = [];
 
     public function __construct(
         private readonly string $id = 'fake',
@@ -73,11 +76,10 @@ final class FakeDestinationType implements DestinationType
         unset($credentials);
     }
 
-    public function push(Lead $lead, PushContext $context): PushResult
+    public function push(PushSubject $subject, PushContext $context): PushResult
     {
-        unset($context);
-
-        $this->pushed[] = $lead;
+        $this->pushed[] = $subject;
+        $this->contexts[] = $context;
 
         return count($this->answers) > 1 ? array_shift($this->answers) : ($this->answers[0] ?? PushResult::success('ref'));
     }
