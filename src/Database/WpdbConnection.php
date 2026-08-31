@@ -34,7 +34,56 @@ final class WpdbConnection implements Connection
      */
     public function results(string $table, string $sql, ...$params): array
     {
+        // ====================================================================
+        // WHY EVERY QUERY IN THIS CLASS CARRIES A `phpcs:ignore`.
+        // ====================================================================
+        // Not a disagreement with the sniff — `WordPress.DB.PreparedSQL` is
+        // structurally unable to see the preparation that is here.
+        //
+        // **It matches the LITERAL VARIABLE `$wpdb`**: its test is
+        // `'$wpdb' === $this->tokens[$this->i]['content']`. This class holds
+        // the handle as `$this->wpdb`, so the sniff sees an unrecognised
+        // method call on an unrecognised object and reports every argument of
+        // it — `$this`, `prepare`, `$table`, `$sql`, `$params`, five findings
+        // for one call — and it cannot step one frame into
+        // {@see self::prepare()} to find the `$wpdb->prepare()` that is
+        // actually there. WPCS publishes no property for naming a database
+        // wrapper; it has `customCacheGetFunctions` and sanitizing and
+        // escaping equivalents, and no database one.
+        //
+        // What is true instead, and where it is enforced:
+        //
+        //   1. **`$sql` is `literal-string`** on all four SQL-taking methods
+        //      of {@see Connection}, so PHPStan rejects any query a variable
+        //      helped build AT THE CALL SITE — the only place an injection
+        //      could be introduced. All 22 of them pass a literal, a
+        //      concatenation of literals with a `self::*_COLUMNS` constant, or
+        //      a whole class constant; the one variable that appears
+        //      ({@see \WConvert\Optin\OptinRepository::summaries()}) is a
+        //      ternary over two literals.
+        //   2. **The table never enters the query text.** It is passed
+        //      separately and bound as `%i` by {@see self::prepare()} — the
+        //      same machinery that escapes the values.
+        //   3. **Every value is bound.** There is no path through this class
+        //      that reaches the database without `$wpdb->prepare()`.
+        //
+        // Restructuring cannot fix it. Inlining `$this->wpdb->prepare(...)` at
+        // each call still fails, because the sniff wants the literal `$wpdb`
+        // and not a property. Writing `global $wpdb;` in each method would
+        // satisfy it, at the cost of the injectable constructor three tests
+        // and both `bin/verify-lead-log.php` and `bin/verify-stats.php` pass a
+        // handle through. And inlining `prepare()` would make four copies of
+        // the {@see self::bindings()} splat — the logic whose binding-order
+        // bug once made a query filter on the table name and select `FROM` an
+        // Optin id.
+        //
+        // So it is suppressed per line, each carrying its reason, rather than
+        // by an `--ignore-codes` list on the checker. ADR 0029 refuses that
+        // list: a gate with an exception file is a gate that quietly grows
+        // one. This is its opposite — local, visible at the line, and read in
+        // place by the reviewer who asks this same question next.
         /** @var list<array<string, string|null>> $rows */
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- prepare() binds every value through $wpdb->prepare() and the table as %i; the sniff cannot see it. See the note above.
         $rows = $this->wpdb->get_results($this->prepare($table, $sql, $params), ARRAY_A) ?: [];
 
         return $rows;
@@ -48,6 +97,7 @@ final class WpdbConnection implements Connection
     public function row(string $table, string $sql, ...$params): ?array
     {
         /** @var array<string, string|null>|null $row */
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- prepare() binds every value through $wpdb->prepare() and the table as %i; the sniff cannot see it. See the note in results().
         $row = $this->wpdb->get_row($this->prepare($table, $sql, $params), ARRAY_A);
 
         return $row;
@@ -85,6 +135,7 @@ final class WpdbConnection implements Connection
             throw new \LogicException('WConvert\\Database\\Connection::delete() runs DELETE statements and nothing else.');
         }
 
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- prepare() binds every value through $wpdb->prepare() and the table as %i; the sniff cannot see it. See the note in results().
         return (int) $this->wpdb->query($this->prepare($table, $sql, $params));
     }
 
@@ -105,6 +156,7 @@ final class WpdbConnection implements Connection
             );
         }
 
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- prepare() binds every value through $wpdb->prepare() and the table as %i; the sniff cannot see it. See the note in results().
         $this->wpdb->query($this->prepare($table, $sql, $params));
     }
 
@@ -114,6 +166,7 @@ final class WpdbConnection implements Connection
      */
     private function prepare(string $table, string $sql, array $params): string
     {
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- this IS the $wpdb->prepare() the sniff asks for; it flags $sql only because the call is on a property. $sql is literal-string. See the note in results().
         return $this->wpdb->prepare($sql, ...self::bindings($sql, $this->wpdb->prefix . $table, $params));
     }
 
