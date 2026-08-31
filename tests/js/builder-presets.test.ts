@@ -18,13 +18,17 @@ const queryParam: RuleType = {
   type: 'query_param',
   kind: 'condition',
   label: 'Query parameter',
+  phrase: '%1$s is %2$s',
   tier: 'pro',
   availability: 'ready',
+  requires_label: null,
   params: {
     key: { control: 'text', label: 'Key', authored: false, options: [] },
     value: { control: 'text_set', label: 'Value', authored: false, options: [] },
   },
-  presets: [{ id: 'utm_source', label: 'Came from a campaign source', fixed: { key: 'utm_source' } }],
+  presets: [
+    { id: 'utm_source', label: 'Came from a campaign source', phrase: 'they came from %1$s', fixed: { key: 'utm_source' } },
+  ],
 };
 
 describe('a preset, expanded to its general form', () => {

@@ -78,6 +78,17 @@ export interface RuleParam {
 export interface RulePreset {
   id: string;
   label: string;
+  /**
+   * The preset read inside a sentence, or **null where it offers none** — in
+   * which case the summary falls back to its type's phrase with the fixed
+   * values substituted back in, which reads correctly.
+   *
+   * Its placeholders are the params the preset does NOT fix, in declared
+   * order. That is what makes a preset a shortcut rather than a second
+   * spelling of its type: *"after a few seconds"* rather than *"after 5
+   * seconds on the page"*, which is the general form with extra steps.
+   */
+  phrase: string | null;
   /** The params it decides, leaving the rest to the merchant. */
   fixed: Record<string, unknown>;
 }
@@ -86,10 +97,60 @@ export interface RuleType {
   type: string;
   kind: string;
   label: string;
+  /**
+   * The same rule read INSIDE a sentence — "after %1$s seconds on the page"
+   * where {@link label} says "Time on the page".
+   *
+   * A second word for one rule rather than a transformation of the first,
+   * because neither can be derived from the other in any language: a name is a
+   * heading over a control and a phrase is a clause in a summary, and
+   * substituting one for the other produces "Fires Time on the page". Both are
+   * `WConvert\Rules\RuleLabels`', where `wp i18n make-pot` can see them.
+   *
+   * A Targeting type's phrase falls back to its name, because the Where
+   * section summarises itself by counting rather than by reading them.
+   */
+  phrase: string;
   tier: string;
   availability: Availability;
+  /**
+   * What the SITE is missing, in words — and **null unless that is why this
+   * type is absent**. `locked` reads null here, because the cause is then the
+   * tier and the tier is ours to sell (ADR 0026).
+   *
+   * The rules panel is a settings list, so it EXPLAINS the gap rather than
+   * hiding it — and an explanation that cannot name the missing plugin leaves
+   * a merchant who deactivated WooCommerce to guess which of their plugins did
+   * it. `WConvert\Optin\Suspension` already names it on the Optin list; this
+   * is what stops the two screens disagreeing.
+   */
+  requires_label: string | null;
   params: Record<string, RuleParam>;
   presets: RulePreset[];
+}
+
+/**
+ * One [[Starting point]]: a named set of rules to begin from.
+ *
+ * **Not a preset.** `preset` already means a per-type shortcut on this very
+ * screen ({@link RulePreset}), and two meanings of one word is what the
+ * glossary exists to prevent.
+ *
+ * **It carries exactly the sections it fills**, so "applying replaces the axes
+ * it names" is readable off the response: a bundle with no `triggers` key
+ * leaves the merchant's Triggers alone, which is what stops a starting point
+ * from landing an Optin that can never fire.
+ */
+export interface RuleBundle {
+  id: string;
+  label: string;
+  description: string;
+  availability: Availability;
+  requires_label: string | null;
+  triggers?: Rule[];
+  conditions?: Rule[];
+  targeting?: Targeting;
+  frequency?: Frequency;
 }
 
 /** The rule vocabulary, by axis, as `GET /wconvert/v1/rules` resolves it. */
@@ -97,7 +158,62 @@ export interface RuleVocabulary {
   targeting: RuleType[];
   triggers: RuleType[];
   conditions: RuleType[];
+  bundles: RuleBundle[];
 }
+
+/**
+ * *Where* an Optin is allowed to appear, as it is stored.
+ *
+ * Two lists of page rules with exclude beating include, plus one visitor
+ * predicate held APART from them: an include list is a union of page SETS, so
+ * a visitor rule dropped into it would widen the Optin to the whole site for
+ * anyone matching it. Read whole, the axis is `page-set AND logged_in`
+ * (ADR 0005). Mirrors `WConvert\Targeting\Targeting`.
+ */
+export interface Targeting {
+  include?: { type: string; value: unknown }[];
+  exclude?: { type: string; value: unknown }[];
+  logged_in?: boolean;
+}
+
+/**
+ * The allowance — how often this device may be shown the Optin at all.
+ *
+ * ============================================================================
+ * ONE SHAPE IN THREE LANGUAGES, AND A TEST HOLDS THEM TOGETHER.
+ * ============================================================================
+ * `resources/loader/src/types.ts` declares it for the engine that reads it,
+ * `src/Optin/Frequency.php` normalises it on the way in, and this is the
+ * surface that writes it. Same four names in the same casing, because the
+ * payload is inlined into every matching page verbatim — a translation layer
+ * between any two of them would be a second vocabulary.
+ *
+ * `tests/js/builder-frequency.test.ts` asserts the three agree.
+ *
+ * **The two switches default TRUE and `true` is never stored.** `frequency.ts`
+ * tests `!== false`, so an absent key and a stored `true` are the same answer
+ * and only one of them costs bytes on every page view.
+ */
+export interface Frequency {
+  maxImpressions?: number;
+  cooldownDays?: number;
+  stopAfterDismiss?: boolean;
+  stopAfterConversion?: boolean;
+}
+
+/**
+ * The four field names, as a value rather than only as a type.
+ *
+ * A TypeScript interface is erased at build, so nothing could assert it
+ * against the loader's declaration or PHP's. This is what the parity test
+ * reads.
+ */
+export const FREQUENCY_FIELDS = [
+  'maxImpressions',
+  'cooldownDays',
+  'stopAfterDismiss',
+  'stopAfterConversion',
+] as const;
 
 export const getRules = () => apiFetch<RuleVocabulary>({ path: '/wconvert/v1/rules' });
 

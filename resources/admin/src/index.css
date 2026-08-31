@@ -3459,6 +3459,157 @@
   font-weight: 500;
 }
 
+/*
+ * The card that names what the SITE is missing, beside the one that names what
+ * PRO is. Two cards rather than one list, because `locked` is buyable from us
+ * and `unavailable` is not — collapsing them is how a merchant with no store
+ * gets offered a WooCommerce licence we do not sell (ADR 0026).
+ */
+.wconvert-locked__reason {
+  color: var(--muted-foreground);
+}
+
+/* ---------------------------------------------------------------------------
+ * THE FOUR DISCLOSURES: WHERE, WHEN, WHO, HOW OFTEN.
+ *
+ * The collapsed row IS the sentence, so it carries the weight a heading would
+ * — it is what a merchant reads to decide whether to open the section at all.
+ *
+ * **Every measurement is logical.** The eyebrow sits before the sentence and
+ * the chevron after it, and in Persian all three flip; `index.css` already
+ * records why a `padding-left` is wrong in this admin, and this component is
+ * three things in a row.
+ * ------------------------------------------------------------------------- */
+.wconvert-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.wconvert-section {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+/*
+ * A `<button>` spanning the row, because the whole summary is the disclosure's
+ * label — a chevron alone would be a 16px target for a decision the merchant
+ * makes on every visit to this tab.
+ */
+#wconvert-admin .wconvert-section__summary {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  inline-size: 100%;
+  padding: 0.75rem 1rem;
+  background: none;
+  border: 0;
+  color: var(--foreground);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+#wconvert-admin .wconvert-section__summary:hover {
+  background: var(--surface);
+}
+
+.wconvert-section__eyebrow {
+  flex: none;
+  min-inline-size: 5.5rem;
+  color: var(--muted-foreground);
+  font-weight: 600;
+}
+
+.wconvert-section__sentence {
+  flex: 1;
+}
+
+/*
+ * Something in this section can never answer — a Trigger with no selector, an
+ * Optin with no Trigger at all. The summary already SAYS so in words; what
+ * this adds is the emphasis, so the merchant's eye lands on the one section
+ * that needs them before they open any of the four.
+ */
+.wconvert-section[data-incomplete] .wconvert-section__sentence {
+  color: var(--destructive);
+}
+
+/*
+ * It turns because the disclosure is open, and `aria-expanded` on this same
+ * button is what says so to anything not looking at the screen.
+ */
+.wconvert-section__chevron {
+  flex: none;
+  inline-size: 1rem;
+  block-size: 1rem;
+  color: var(--muted-foreground);
+  transition: transform 150ms ease;
+}
+
+.wconvert-section__summary[data-state='open'] .wconvert-section__chevron {
+  transform: rotate(180deg);
+}
+
+.wconvert-section__body {
+  padding: 0 1rem 1rem;
+  border-block-start: 1px solid var(--border);
+}
+
+.wconvert-section__body > :first-child {
+  margin-block-start: 0.75rem;
+}
+
+/*
+ * Not one of the four. The four answer questions a merchant asks; this answers
+ * one they did not, so it sits below them with no summary of its own.
+ */
+.wconvert-rules__unknown {
+  margin-block-start: 1rem;
+}
+
+/* ---------------------------------------------------------------------------
+ * STARTING POINTS — NOT "PRESETS", WHICH ALREADY MEANS THE PER-TYPE SHORTCUT
+ * INSIDE EVERY ONE OF THESE SECTIONS.
+ * ------------------------------------------------------------------------- */
+.wconvert-starters {
+  margin-block-start: 1.5rem;
+}
+
+.wconvert-starters__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 0.75rem;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.wconvert-starters__card {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 0.375rem;
+  margin: 0;
+  padding: 0.75rem 1rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.wconvert-starters__name {
+  margin: 0;
+  font-weight: 600;
+}
+
+.wconvert-starters__what,
+.wconvert-starters__sections,
+.wconvert-starters__reason {
+  margin: 0;
+  color: var(--muted-foreground);
+}
+
 .wconvert-option-set {
   display: inline-flex;
   gap: 0.75rem;

@@ -131,7 +131,7 @@ final class RuleCatalogueTest extends TestCase
                 'label' => 'On mobile only',
                 // The same preset read inside a sentence rather than over a
                 // control — "Fires ... on mobile", never "Fires On mobile only".
-                'phrase' => 'on mobile',
+                'phrase' => 'they are on mobile',
                 'fixed' => ['in' => ['mobile']],
             ],
             $device['presets'][0]

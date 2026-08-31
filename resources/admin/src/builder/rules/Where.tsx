@@ -1,10 +1,10 @@
 import { __ } from '@wordpress/i18n';
-import { ParamField } from './controls';
-import { RuleRows, type Row } from './RuleRows';
-import type { RuleType } from './api';
+import { ParamField } from '../controls';
+import { RuleRows, type Row } from '../RuleRows';
+import type { RuleType, Targeting } from '../api';
 
 /**
- * *Where* an Optin is allowed to appear.
+ * *Where* it may appear — the Targeting axis, as the Where section's body.
  *
  * ============================================================================
  * EXCLUDE BEATS INCLUDE, AND THE SCREEN SAYS SO.
@@ -23,15 +23,11 @@ import type { RuleType } from './api';
  * The lists are a union of page SETS, so a visitor rule dropped into the
  * include list would widen the Optin to the whole site for anyone matching it.
  * Read whole, the axis is `page-set AND logged_in` (ADR 0005).
+ *
+ * This was `TargetingEditor`, whole; what it lost is its own `<h3>`, because
+ * the section above it is the heading now.
  */
-
-export interface Targeting {
-  include?: { type: string; value: unknown }[];
-  exclude?: { type: string; value: unknown }[];
-  logged_in?: boolean;
-}
-
-export interface TargetingEditorProps {
+export interface WhereProps {
   readonly types: readonly RuleType[];
   readonly targeting: Targeting;
   readonly onChange: (targeting: Targeting) => void;
@@ -51,7 +47,7 @@ const SIGNED_IN = [
   { value: 'no', label: __('Only signed-out visitors', 'wconvert') },
 ];
 
-export function TargetingEditor({ types, targeting, onChange }: TargetingEditorProps) {
+export function Where({ types, targeting, onChange }: WhereProps) {
   // The five page rules. `logged_in` is on this axis only because the client
   // cannot read WordPress's HttpOnly auth cookie, and it is not a page set.
   const pages = types.filter((type) => type.kind === 'page');
@@ -62,7 +58,6 @@ export function TargetingEditor({ types, targeting, onChange }: TargetingEditorP
 
   return (
     <>
-      <h3>{__('Where it shows', 'wconvert')}</h3>
       <p className="description">
         {__('Empty means everywhere. Exclusions always win.', 'wconvert')}
       </p>
@@ -130,9 +125,10 @@ interface RuleListProps {
  * One list, typed.
  *
  * A Targeting rule is `{type, value}` and nothing else, and the control its
- * value takes follows from the type — a post id is a number, a content type is
- * a select of what this site registers, a path is a glob. Which is what makes
- * this a picker rather than a pair of free-text boxes.
+ * value takes follows from the type — a post id is a picker over
+ * `wp/v2/search`, a content type is a select of what this site registers, a
+ * path is a glob. Which is what makes this a picker rather than a pair of
+ * free-text boxes.
  */
 function RuleList({ list, heading, empty, types, rules, onChange }: RuleListProps) {
   const rows: Row[] = rules.map((rule, at) => {

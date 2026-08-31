@@ -1,5 +1,5 @@
 import manifest from '../../../resources/rules/manifest.json';
-import type { Control, RuleType, RuleVocabulary } from '../../../resources/admin/src/builder/api';
+import type { Control, RuleBundle, RuleType, RuleVocabulary } from '../../../resources/admin/src/builder/api';
 import type { Availability } from '../../../resources/admin/src/goals/availability';
 
 /**
@@ -17,6 +17,7 @@ import type { Availability } from '../../../resources/admin/src/goals/availabili
 interface Declared {
   readonly kind: string;
   readonly tier: string;
+  readonly requires?: string | null;
   readonly params: Record<string, { control: string; options?: string[]; authored?: boolean }>;
   readonly presets: Record<string, Record<string, unknown>>;
 }
@@ -34,8 +35,10 @@ export function ruleTypes(
       type,
       kind: entry.kind,
       label: type,
+      phrase: phraseFor(type, Object.keys(entry.params)),
       tier: entry.tier,
       availability: availability[entry.tier] ?? 'ready',
+      requires_label: entry.requires === null || entry.requires === undefined ? null : 'WooCommerce',
       params: Object.fromEntries(
         Object.entries(entry.params).map(([name, param]) => [
           name,
@@ -47,11 +50,52 @@ export function ruleTypes(
           },
         ]),
       ),
-      presets: Object.entries(entry.presets).map(([id, fixed]) => ({ id, label: id, fixed })),
+      presets: Object.entries(entry.presets).map(([id, fixed]) => ({
+        id,
+        label: id,
+        // A preset's phrase takes the params it does NOT fix, in declared
+        // order — which is the rule `RuleLabelParityTest` pins in PHP and the
+        // one the sentence depends on to substitute the right value.
+        phrase: phraseFor(id, Object.keys(entry.params).filter((param) => !(param in fixed))),
+        fixed,
+      })),
     }));
 
-  return { targeting: axis('targeting'), triggers: axis('triggers'), conditions: axis('conditions') };
+  return {
+    targeting: axis('targeting'),
+    triggers: axis('triggers'),
+    conditions: axis('conditions'),
+    bundles: [],
+  };
 }
+
+/**
+ * A stand-in phrase: the key, then one positional placeholder per open param.
+ *
+ * ============================================================================
+ * GENERATED RATHER THAN COPIED, FOR THE SAME REASON THE REST OF THIS FILE IS.
+ * ============================================================================
+ * The real phrases are `WConvert\Rules\RuleLabels`', where `make-pot` can see
+ * them, and hand-copying English here would let a test pass against words the
+ * product does not have. What the summary logic actually depends on is the
+ * ARITY and the ORDER of the placeholders — that `time_on_page` takes one and
+ * `query_param` takes two, and that `%2$s` is the second declared param — and
+ * that is exactly what this reproduces. PHP asserts the shipped phrases have
+ * the same arity, from the same manifest.
+ */
+const phraseFor = (key: string, open: readonly string[]): string =>
+  [key, ...open.map((_param, index) => `%${index + 1}$s`)].join(' ');
+
+/** A Starting point, for the one screen that renders them. */
+export const ruleBundle = (bundle: Partial<RuleBundle> = {}): RuleBundle => ({
+  id: 'after-a-read',
+  label: 'Once they have read a while',
+  description: 'Waits fifteen seconds.',
+  availability: 'ready',
+  requires_label: null,
+  triggers: [{ type: 'time_on_page', seconds: 15 }],
+  ...bundle,
+});
 
 /** Every type across every axis, which is what the row reader is given. */
 export const allRuleTypes = (availability?: Readonly<Record<string, Availability>>): RuleType[] =>

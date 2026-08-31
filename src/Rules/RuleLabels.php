@@ -158,7 +158,7 @@ final class RuleLabels
             'exit_intent' => __('when they are about to leave', 'wconvert'),
             'scroll_up' => __('when they scroll back up', 'wconvert'),
             /* translators: %1$s: one or more device names, already joined, e.g. “mobile or tablet”. */
-            'device' => __('on %1$s', 'wconvert'),
+            'device' => __('they are on %1$s', 'wconvert'),
             /* translators: 1: a URL parameter name, e.g. “utm_source”. 2: one or more values, already joined. */
             'query_param' => __('%1$s is %2$s', 'wconvert'),
             'cart_has_items' => __('their cart is not empty', 'wconvert'),
@@ -187,9 +187,9 @@ final class RuleLabels
             'time_on_page.after_a_read' => __('once they have read a while', 'wconvert'),
             'scroll_depth.halfway_down' => __('half way down the page', 'wconvert'),
             'scroll_depth.near_the_end' => __('near the end of the page', 'wconvert'),
-            'device.mobile_only' => __('on mobile', 'wconvert'),
-            'device.not_on_mobile' => __('anywhere but mobile', 'wconvert'),
-            'device.desktop_only' => __('on desktop', 'wconvert'),
+            'device.mobile_only' => __('they are on mobile', 'wconvert'),
+            'device.not_on_mobile' => __('they are not on mobile', 'wconvert'),
+            'device.desktop_only' => __('they are on desktop', 'wconvert'),
             /* translators: %1$s: one or more campaign sources, already joined, e.g. “google or bing”. */
             'query_param.utm_source' => __('they came from %1$s', 'wconvert'),
             /* translators: %1$s: one or more campaign mediums, already joined. */
