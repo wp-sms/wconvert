@@ -272,6 +272,12 @@ Frequency is not a [[Trigger]] or a [[Condition]]: it is not a question about
 this page view, it is what this device has already been shown. See
 [ADR 0047](docs/adr/0047-site-wide-frequency-is-the-same-shape-at-a-second-scope.md).
 
+**Only what differs from the engine's defaults is ever stored.** Both switches
+default *on* per Optin and the loader tests `!== false`, so a stored `true` is
+bytes on every matching page view that cannot change an answer — the payload is
+inlined into every page an Optin matches. `src/Optin/Frequency.php` is the one
+place that arithmetic lives, and it is the shape the site-wide scope reuses.
+
 ### Display Type
 
 *How* an Optin appears: `popup`, `floating_bar`, `slide_in`, or `inline`.
@@ -414,6 +420,37 @@ is off by default and one click from on ([ADR 0032](docs/adr/0032-consent-captur
 > went. **The vocabulary is still the ceiling** — a merchant may only add what
 > `manifest.json` declares, and [ADR 0010](docs/adr/0010-templates-are-configuration-not-documents.md)
 > is untouched on that. Every other sentence above stands as written.
+
+### Starting point
+
+A named set of display rules a merchant can begin from — *"Once they have read a
+while"*, *"Only on blog posts"*, *"Rescue an abandoned cart"* — offered in the
+rules panel and applied with one click.
+
+**It is not a preset, and the word is the decision.** *Preset* already means a
+per-type shortcut over one rule's general form: `time_on_page {seconds: 5}` is
+"after a few seconds", and that is what `RulePreset` and `RuleLabels::presets()`
+name. Both would be on this screen at once, since a Starting point that lands
+"after a few seconds" is a bundle whose content is a preset. Two meanings of one
+word on one screen is what this glossary exists to prevent.
+
+A Starting point **names sections and replaces only the ones it names**. The
+rules panel is four sections — Where, When, Who, How often — and one carrying
+Conditions leaves the merchant's [[Trigger]]s alone: an [[Optin]] with no Trigger
+can never fire and the save route refuses one, so a button that wiped them would
+break the Optin it was offered to improve. Which sections it names is readable
+off what it carries, and applying one **confirms first**, because the builder's
+history watches the design and rules are not undoable.
+
+Like a [[Playbook]] it is bundled PHP returning an array — `wp i18n make-pot`
+cannot see a string in JSON — and like a Playbook it may not name anything only
+one site has: no post ids, no CSS selectors, no cart totals in the store's own
+currency. **Unlike** a Playbook it touches no copy and no [[Template]]: applying
+one changes rules and nothing else, because there is no reading under which
+"start from this" means "replace my headline".
+
+Its [[Availability]] is the least of its rules', so a site with no store is never
+offered one that would [[Suspend]] the Optin on the spot.
 
 ### Playbook
 

@@ -38,6 +38,29 @@ already built, already deterministic, already tie-broken by id.
 So the gap is not a missing model. It is one scope missing from a model that has
 everything else.
 
+*Amended by [#83](https://github.com/navidkashani/wconvert/issues/83): **the
+per-Optin authoring surface this ADR assumed already existed has now landed**,
+and it did not exist when this was written. `frequency.ts` had honoured all four
+fields since #3 and `priority` had been sorted on since the engine was built —
+and **nothing had ever written either**. No control produced them, and
+`OptinController::normalizeConfig()` validated `targeting`, `rules`,
+`destinations` and `template` and let `frequency` and `priority` through as
+unvalidated passthrough out of the config blob. Every merchant Optin shipped
+uncapped and unprioritised.*
+
+*The author is `builder/rules/HowOften.tsx`, the fourth of the rules panel's
+four sections; the normaliser is **`src/Optin/Frequency.php`**, and it is the
+shape this ADR's second scope reuses rather than re-derives. That is why it is a
+file rather than six lines in the REST controller: the site-wide surface is not
+a REST controller, so a normaliser inlined in one would have been rewritten the
+day this ADR shipped.*
+
+*One decision inside it is worth carrying forward. **`true` is never stored.**
+Both switches default on because `frequency.ts` tests `!== false`, so an absent
+key and a stored `true` are the same answer to the engine and only one of them
+costs bytes on every matching page view. The site-wide key should be written the
+same way.*
+
 ## Why it is `functional`, and why that is not a loophole
 
 [ADR 0017](0017-no-visitor-identifier.md) put per-Optin frequency state in
