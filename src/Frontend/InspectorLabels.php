@@ -1,0 +1,170 @@
+<?php
+
+namespace WConvert\Frontend;
+
+use WConvert\Rules\RuleLabels;
+use WConvert\Targeting\TargetingExplainer;
+
+defined('ABSPATH') || exit;
+
+/**
+ * Every word the eligibility inspector puts on screen.
+ *
+ * ============================================================================
+ * MINTED IN PHP BECAUSE `wp i18n make-pot` CANNOT SEE A STRING IN A TS BUNDLE.
+ * ============================================================================
+ * The inspector's panel is TypeScript — it has to be, because half of what it
+ * reports is browser state PHP cannot reach — but a translated string has to
+ * be somewhere the POT scanner walks. So the panel is handed a dictionary and
+ * spells no merchant-facing word of its own, which is the same split
+ * {@see RuleLabels} already carries for the rule vocabulary (ADR 0013, read
+ * from the other end).
+ *
+ * **The templates carry one `%s` and never two.** The panel substitutes with a
+ * single `String.replace`, because the inspector bundle takes no
+ * `@wordpress/i18n` — it is composed from the loader's own module set, which
+ * has no dependencies at all (ADR 0004). One placeholder is what that
+ * substitution can do honestly; a second would need a formatter, and a
+ * formatter in this bundle is a dependency in the loader's graph.
+ *
+ * @since 0.1.0
+ */
+final class InspectorLabels
+{
+    /**
+     * @return array<string, mixed>
+     */
+    public static function all(): array
+    {
+        return [
+            'title' => __('Why each popup did or did not show', 'wconvert'),
+            'intro' => __(
+                'This page only. Nothing here is stored, and only you can see it.',
+                'wconvert'
+            ),
+            'close' => __('Close', 'wconvert'),
+            'collapse' => __('Collapse', 'wconvert'),
+            'expand' => __('Expand', 'wconvert'),
+            'nothing' => __('This site has no Optins yet.', 'wconvert'),
+
+            // ================================================================
+            // THE FUNNEL. THE FIRST GATE THAT CLOSES IS THE ANSWER.
+            // ================================================================
+            'gates' => [
+                'published' => __('Published', 'wconvert'),
+                'suspended' => __('Not suspended', 'wconvert'),
+                'targeting' => __('Allowed on this page', 'wconvert'),
+                'payload' => __('Reached the browser', 'wconvert'),
+                'frequency' => __('Allowance not spent', 'wconvert'),
+                'consent' => __('Consent given', 'wconvert'),
+                'trigger' => __('Has a trigger this site can fire', 'wconvert'),
+                'conditions' => __('Conditions hold', 'wconvert'),
+                'fired' => __('A trigger fired', 'wconvert'),
+                'won' => __('Won the page view', 'wconvert'),
+            ],
+
+            /**
+             * Why it stopped, one per gate.
+             *
+             * **A draft is the commonest confusion of all**, which is why the
+             * funnel starts before publication rather than at the published
+             * set: a merchant asking "why doesn't my popup show" has very
+             * often not published it, and a screen that silently omitted their
+             * draft would leave the likeliest cause unsaid.
+             */
+            'stopped' => [
+                'draft' => __('Not published yet, so it shows nowhere.', 'wconvert'),
+                'deleted' => __('Deleted.', 'wconvert'),
+                TargetingExplainer::EXCLUDED => __('This page is in its exclusion list.', 'wconvert'),
+                TargetingExplainer::NOT_INCLUDED => __('This page is not in the pages it shows on.', 'wconvert'),
+                // ============================================================
+                // THE ONE QUESTION THIS SCREEN CANNOT ANSWER, SAID OUT LOUD.
+                // ============================================================
+                // The merchant is signed in — that is what let them open this
+                // panel — so "what does a signed-out visitor see" is
+                // unanswerable here and is never simulated. It is reported as
+                // a fact about THIS request instead.
+                'wants_signed_out' => __(
+                    'It shows only to signed-out visitors. You are signed in, so it is not showing to you.',
+                    'wconvert'
+                ),
+                'wants_signed_in' => __(
+                    'It shows only to signed-in visitors, and you are signed out.',
+                    'wconvert'
+                ),
+                'not_in_payload' => __('It did not reach this page.', 'wconvert'),
+                'capped' => __('This browser has already had its allowance.', 'wconvert'),
+                'blocked' => __(
+                    'One of its rules needs storage consent this visit has not given. Not evaluated, not failed.',
+                    'wconvert'
+                ),
+                'inert' => __('It has no trigger this site can fire, so it can never show.', 'wconvert'),
+                'ineligible' => __('A condition does not hold right now.', 'wconvert'),
+                'waiting' => __('Waiting for a trigger to fire.', 'wconvert'),
+                'shown' => __('Already shown on this page view.', 'wconvert'),
+                /* translators: %s: the name of the Optin that took the page view. */
+                'lost' => __('Ready, but “%s” took the page view.', 'wconvert'),
+                'showing' => __('Showing now.', 'wconvert'),
+            ],
+
+            // ================================================================
+            // THREE ANSWERS PER RULE, NEVER TWO.
+            // ================================================================
+            // `null` is NOT EVALUATED and is not a failure. A red cross beside
+            // a rule a consent plugin withheld teaches a merchant to go and
+            // fix a rule that is perfectly fine.
+            'answer' => [
+                'yes' => __('Holds', 'wconvert'),
+                'no' => __('Does not hold', 'wconvert'),
+                'unknown' => __('Not evaluated', 'wconvert'),
+                'unsupported' => __('No module on this site evaluates this rule', 'wconvert'),
+            ],
+
+            'sections' => [
+                'request' => __('This page, as the server sees it', 'wconvert'),
+                'targeting' => __('Where it is allowed', 'wconvert'),
+                'triggers' => __('When it fires', 'wconvert'),
+                'conditions' => __('Who sees it', 'wconvert'),
+                'include' => __('Shows on', 'wconvert'),
+                'exclude' => __('But never on', 'wconvert'),
+                'server_only' => __('It never reached the browser, so there is nothing more to report.', 'wconvert'),
+            ],
+
+            'request' => [
+                'path' => __('Path', 'wconvert'),
+                'isSingular' => __('A single item', 'wconvert'),
+                'postId' => __('Post ID', 'wconvert'),
+                'postType' => __('Post type', 'wconvert'),
+                'archivePostType' => __('Archive of', 'wconvert'),
+                'termIds' => __('Terms', 'wconvert'),
+                'isLoggedIn' => __('You are signed in', 'wconvert'),
+                'yes' => __('Yes', 'wconvert'),
+                'no' => __('No', 'wconvert'),
+                'none' => __('None', 'wconvert'),
+            ],
+
+            /**
+             * The panel is missing, and the likeliest cause is the cache.
+             *
+             * `DONOTCACHEPAGE` is set at enqueue, which is **too late if a
+             * cached file already exists** — the cache layer answers before
+             * PHP runs at all. In practice the `wordpress_logged_in` cookie
+             * bypasses full-page cache in every mainstream plugin, which is
+             * why the admin bar works on the front end; where a host caches
+             * for signed-in users too, the symptom is no panel AND no admin
+             * bar. This is the sentence that names it, and it is shown where
+             * the merchant asks for the inspector rather than in the panel
+             * that would not be there.
+             */
+            'cache_warning' => __(
+                'If neither this panel nor the admin bar appears, a cache is serving this page before WordPress runs. Clear it, or check that it is set to skip signed-in visitors.',
+                'wconvert'
+            ),
+
+            // The rule vocabulary's own names, so the panel spells no rule
+            // type of its own. Shipped whole rather than per-rule: it is the
+            // same table for every Optin on the page.
+            'rules' => RuleLabels::types(),
+        ];
+    }
+}

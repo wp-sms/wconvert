@@ -36,6 +36,7 @@ use WConvert\Destination\PushDispatcher;
 use WConvert\Destination\PushWorker;
 use WConvert\Destination\Wsms\WpWsmsContacts;
 use WConvert\Destination\Wsms\WsmsDestinationType;
+use WConvert\Frontend\InspectorEnqueue;
 use WConvert\Frontend\LoaderEnqueue;
 use WConvert\Goal\GoalRegistry;
 use WConvert\Lead\LeadCapture;
@@ -207,6 +208,21 @@ final class CoreServiceProvider implements ServiceProvider
             static fn (ServiceContainer $c): LoaderEnqueue => new LoaderEnqueue(
                 $c->resolve(PublishedSet::class),
                 $c->resolve(Degradation::class)
+            )
+        );
+
+        // The eligibility inspector, which runs on the REAL page — a merchant
+        // does not describe a URL, they visit it. Registered beside the loader
+        // because it is the same front-end read path with one more question
+        // asked of it, and it prints nothing at all unless an administrator
+        // asked (ADR 0048).
+        $container->register(
+            InspectorEnqueue::class,
+            static fn (ServiceContainer $c): InspectorEnqueue => new InspectorEnqueue(
+                $c->resolve(OptinRepository::class),
+                $c->resolve(PublishedSet::class),
+                $c->resolve(Degradation::class),
+                $c->resolve(RuleCatalogue::class)
             )
         );
 
@@ -561,6 +577,11 @@ final class CoreServiceProvider implements ServiceProvider
 
         if (!is_admin()) {
             $container->resolve(LoaderEnqueue::class)->hooks();
+            // Beside the loader, and after it: the panel reads the ordinary
+            // payload tag rather than a copy, so the payload has to have been
+            // decided first. It costs an ordinary page view one capability
+            // check and one `isset($_GET[...])`.
+            $container->resolve(InspectorEnqueue::class)->hooks();
         }
     }
 }

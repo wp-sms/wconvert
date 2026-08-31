@@ -113,6 +113,72 @@ if (!function_exists('is_admin')) {
     }
 }
 
+/*
+ * ============================================================================
+ * WHO THIS REQUEST IS, DECIDED BY THE TEST.
+ * ============================================================================
+ * One surface in this plugin checks a capability OUTSIDE the REST layer: the
+ * eligibility inspector prints a report of every Optin on the site — published
+ * and draft, with the rules behind each — into a front-end page. That gate is
+ * the single richest thing WConvert could accidentally put on a public URL,
+ * and it is enforced by `current_user_can()` at enqueue rather than by a
+ * `permission_callback` a route test would cover.
+ *
+ * So the suite has to be able to be a logged-out visitor and a subscriber, and
+ * assert that neither gets a byte.
+ *
+ * @var list<string> $wconvertTestCapabilities
+ */
+$GLOBALS['wconvertTestCapabilities'] = [];
+
+if (!function_exists('current_user_can')) {
+    /** @param mixed ...$args */
+    function current_user_can(string $capability, ...$args): bool
+    {
+        return in_array($capability, (array) $GLOBALS['wconvertTestCapabilities'], true);
+    }
+}
+
+/*
+ * The three request kinds a script tag must never be printed into.
+ *
+ * A feed, a robots.txt or an oEmbed response is not a page a visitor is
+ * looking at, and printing markup into one corrupts it. Both enqueue paths
+ * return early on all three, so the suite has to be able to be each of them.
+ *
+ * @var array<string, bool> $wconvertTestRequestKind
+ */
+$GLOBALS['wconvertTestRequestKind'] = [];
+
+if (!function_exists('is_feed')) {
+    function is_feed(): bool
+    {
+        return (bool) ($GLOBALS['wconvertTestRequestKind']['is_feed'] ?? false);
+    }
+}
+
+if (!function_exists('is_robots')) {
+    function is_robots(): bool
+    {
+        return (bool) ($GLOBALS['wconvertTestRequestKind']['is_robots'] ?? false);
+    }
+}
+
+if (!function_exists('is_embed')) {
+    function is_embed(): bool
+    {
+        return (bool) ($GLOBALS['wconvertTestRequestKind']['is_embed'] ?? false);
+    }
+}
+
+if (!function_exists('nocache_headers')) {
+    /** Recorded rather than sent — headers are not a thing a unit suite has. */
+    function nocache_headers(): void
+    {
+        $GLOBALS['wconvertTestNocache'] = true;
+    }
+}
+
 if (!function_exists('remove_all_actions')) {
     function remove_all_actions(string $hook, ?int $priority = null): bool
     {

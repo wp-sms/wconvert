@@ -47,7 +47,18 @@ final class TargetingEvaluator
         return false;
     }
 
-    private static function ruleMatches(TargetingRule $rule, RequestContext $context): bool
+    /**
+     * Does this ONE rule match?
+     *
+     * Public because the eligibility inspector reports the per-rule table
+     * ADR 0005 predicted — *"a flat list yields a readable per-rule pass/fail
+     * table"* — and it must read the same answers this evaluator gave rather
+     * than compute its own. {@see \WConvert\Targeting\TargetingExplainer}
+     * takes the VERDICT from {@see self::matches()} and only the per-rule
+     * detail from here, so a table that disagreed with the verdict would be a
+     * bug in the explainer rather than two implementations drifting.
+     */
+    public static function ruleMatches(TargetingRule $rule, RequestContext $context): bool
     {
         return match ($rule->type) {
             TargetingType::Post => $context->isSingular && (string) $context->postId === $rule->value,
