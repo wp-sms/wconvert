@@ -184,10 +184,11 @@ final class OptinController implements RestController
             return self::needsATrigger();
         }
 
-        $mismatch = self::refuseAMetricItCannotReport($normalized, $goal);
+        $refusal = self::refuseAMetricItCannotReport($normalized, $goal)
+            ?? self::refuseADesignThatCannotConvert($normalized);
 
-        if ($mismatch !== null) {
-            return $mismatch;
+        if ($refusal !== null) {
+            return $refusal;
         }
 
         $optin = $this->optins->create((string) $request->get_param('name'), $goal->value, $normalized);
@@ -246,12 +247,13 @@ final class OptinController implements RestController
         // stored Goal is what makes editing a design on an Optin nobody is
         // re-goaling still answerable.
         $held = $checked ?? ($stored === null ? null : Goal::tryFrom($stored->goal));
-        $mismatch = $normalized === null || $held === null
+        $refusal = $normalized === null
             ? null
-            : self::refuseAMetricItCannotReport($normalized, $held);
+            : (($held === null ? null : self::refuseAMetricItCannotReport($normalized, $held))
+                ?? self::refuseADesignThatCannotConvert($normalized));
 
-        if ($mismatch !== null) {
-            return $mismatch;
+        if ($refusal !== null) {
+            return $refusal;
         }
 
         $optin = $this->optins->saveDraft(
@@ -425,7 +427,14 @@ final class OptinController implements RestController
                 sprintf(
                     /* translators: %s: the name of the Goal the Optin is filed under. */
                     __(
-                        'This design does not produce the outcome “%s” counts, so the Optin would report nothing. Pick a design that matches the Goal, or change the Goal.',
+                        // **It names no door the merchant cannot reach.** This
+                        // said "…or change the Goal", and nothing in the
+                        // builder changes a Goal — it is chosen at creation. The
+                        // gallery marks which designs match before the click
+                        // now, so a merchant meets this only through a scripted
+                        // call, where the fact is what matters and the
+                        // instruction is noise.
+                        'This design does not produce the outcome “%s” counts, so the Optin would report nothing. Pick a design that matches the Goal.',
                         'wconvert'
                     ),
                     $goal->label()
@@ -456,6 +465,68 @@ final class OptinController implements RestController
         }
 
         return null;
+    }
+
+    /**
+     * ========================================================================
+     * A DESIGN THAT OFFERS NO CONVERTING ACT AT ALL IS REFUSED AT THE WRITE.
+     * ========================================================================
+     * **This is the hole the structure editor opens, closed on the same day it
+     * opens.**
+     *
+     * {@see TemplateLibrary::refuse()} already refuses a Template offering no
+     * converting act — but it refuses it **at registration**, of a library
+     * entry read from a JSON file, and it has never applied to an Optin's own
+     * `config`. It did not need to. Before the structure editor there was no
+     * way for an Optin's tree to lose its button: the settings panel could not
+     * remove a node (ADR 0010), and `hidden` is not a param `button` declares,
+     * so hiding it was inexpressible rather than merely disallowed.
+     *
+     * An editor that can delete closes neither door. Deleting the only button
+     * leaves an Optin that renders, publishes, shows, and reports **zero
+     * forever** — ADR 0020's exact failure, the one that looks broken while
+     * being right — and nothing in this path refused it.
+     *
+     * The editor refuses it first ({@see whyRemovalIsRefused} in
+     * `builder/structure/guards.ts`), and that is not the enforcement. `PUT
+     * /wconvert/v1/optins/{id}` takes a whole `config` and is scriptable by
+     * anyone holding `manage_options`, which is the same argument ADR 0026
+     * made about the goal screen — *"a screen is not an enforcement
+     * mechanism"* — and the reason
+     * {@see self::refuseAMetricItCannotReport()} exists one method up.
+     *
+     * **A config with no design is still not refused**, exactly as above: a
+     * draft mid-creation has no template yet, and refusing one would block the
+     * save that is about to add it. What is refused is a design that EXISTS
+     * and offers nothing — steps that render, with no act among them.
+     *
+     * It asks no Goal, deliberately. "Reports nothing at all" is wrong under
+     * every Goal, including one this install can no longer resolve, so making
+     * the check depend on a Goal would let it lapse on precisely the rows
+     * ADR 0026 keeps working.
+     *
+     * @param array<string, mixed> $config Already normalised.
+     */
+    private static function refuseADesignThatCannotConvert(array $config): ?WP_Error
+    {
+        $steps = $config['template']['tree']['steps'] ?? null;
+
+        if (!is_array($steps) || $steps === []) {
+            return null;
+        }
+
+        if (ConvertingAct::offeredIn($config['template']['tree']) !== []) {
+            return null;
+        }
+
+        return new WP_Error(
+            'wconvert_optin_cannot_convert',
+            __(
+                'This design has nothing on it that counts as a conversion, so the Optin would report zero however many people saw it. Add the button back, or pick a design that has one.',
+                'wconvert'
+            ),
+            ['status' => 400]
+        );
     }
 
     private static function needsATrigger(): WP_Error

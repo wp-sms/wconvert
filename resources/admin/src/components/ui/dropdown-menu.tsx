@@ -3,11 +3,69 @@ import { CheckIcon, ChevronRightIcon, CircleIcon } from "lucide-react"
 import { DropdownMenu as DropdownMenuPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
+import { useDirection } from "@/hooks/useDirection"
 
+/**
+ * **`dir` is passed, and that is a WConvert change to the vendored component.**
+ *
+ * A menu's direction decides which way it opens, which way a submenu flies out
+ * and which way its own arrow keys walk. Radix falls back to `ltr` with no
+ * `DirectionProvider` above it, so under a right-to-left locale every one of
+ * those was backwards. Same fix as {@see Tabs}, same reason —
+ * {@see useDirection}.
+ *
+ * ==========================================================================
+ * **`modal` DEFAULTS TO FALSE, AND THAT IS THE SECOND WConvert CHANGE.**
+ * ==========================================================================
+ * Radix ships `modal` as `true`, which does two things no menu in this admin
+ * has a use for: it puts `pointer-events: none` on `<body>` and it LOCKS
+ * SCROLL.
+ *
+ * The scroll lock causes a separate page-jump glitch. Locking sets
+ * `overflow: hidden` on `<body>`, which removes the document scrollbar — on a
+ * machine that draws scrollbars in the layout rather than over it, the
+ * viewport widens by 15px and the whole page jumps sideways the moment a menu
+ * opens.
+ *
+ * **And the jump back is late, which is why that jump reads as a glitch ON CLOSE
+ * rather than as part of the click.** The lock lives in Radix's `RemoveScroll`,
+ * which is unmounted with the menu content — and the content is kept mounted
+ * until its exit animation ends. Measured against a real WordPress: at
+ * `close+0ms` and `close+100ms` `<body>` still carries `data-scroll-locked`,
+ * and it is released somewhere before `close+600ms`. So the page snaps back a
+ * frame or two after the menu has already faded, which is a second, unexplained
+ * movement rather than a consequence of the press.
+ *
+ * The `pointer-events: none` is the other half. A click meant for another
+ * row's `⋯` is swallowed by the dismiss layer, so the first press only closes
+ * what was open and the merchant has to press again — which reads as "the menu
+ * did not respond", and, when they press twice quickly, as two menus fighting.
+ *
+ * **The default is here rather than at the call sites, and that is the point.**
+ * It was written once as `modal={false}` on the block-row menu, and the two
+ * menus that were not edited that day — the Optin row's `⋯` and the
+ * inspector's swap menu — kept the defect and kept the bug report alive. Modal
+ * is for a dialog that owns the screen until it is answered; nothing reached
+ * through `DropdownMenu` is one. {@see Dialog} and {@see AlertDialog} are, and
+ * they are unaffected.
+ *
+ * A caller can still pass `modal` and win, because it is a real prop with a
+ * new default rather than a hard-coded value.
+ */
 function DropdownMenu({
+  modal = false,
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Root>) {
-  return <DropdownMenuPrimitive.Root data-slot="dropdown-menu" {...props} />
+  const dir = useDirection()
+
+  return (
+    <DropdownMenuPrimitive.Root
+      data-slot="dropdown-menu"
+      dir={dir}
+      modal={modal}
+      {...props}
+    />
+  )
 }
 
 function DropdownMenuPortal({
@@ -34,13 +92,18 @@ function DropdownMenuContent({
   sideOffset = 4,
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Content>) {
+  /*
+   * Opening may animate; closing must not. Radix keeps content mounted while a
+   * CSS exit animation runs, so light-dismiss otherwise paints a shrinking,
+   * translucent menu over the control the merchant has already clicked.
+   */
   return (
     <DropdownMenuPrimitive.Portal>
       <DropdownMenuPrimitive.Content
         data-slot="dropdown-menu-content"
         sideOffset={sideOffset}
         className={cn(
-          "z-50 max-h-(--radix-dropdown-menu-content-available-height) min-w-[8rem] origin-(--radix-dropdown-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border bg-popover p-1 text-popover-foreground shadow-md data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",
+          "z-50 max-h-(--radix-dropdown-menu-content-available-height) min-w-[8rem] origin-(--radix-dropdown-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border bg-popover p-1 text-popover-foreground shadow-md data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",
           className
         )}
         {...props}
@@ -228,7 +291,7 @@ function DropdownMenuSubContent({
     <DropdownMenuPrimitive.SubContent
       data-slot="dropdown-menu-sub-content"
       className={cn(
-        "z-50 min-w-[8rem] origin-(--radix-dropdown-menu-content-transform-origin) overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-lg data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",
+        "z-50 min-w-[8rem] origin-(--radix-dropdown-menu-content-transform-origin) overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-lg data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",
         className
       )}
       {...props}

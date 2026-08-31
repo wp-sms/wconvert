@@ -91,6 +91,26 @@ that costs a merchant real data when it is missed: **a destructive action is
 never primary, never adjacent to the safe action it could be mistaken for, and
 always confirms.**
 
+*Amended by the structure editor, on the last clause only. **Deleting a block
+does not confirm, and undo is what buys that.** The arithmetic is the whole
+argument: a merchant rearranging a design deletes and re-adds a dozen times in a
+minute, and a dialog on every one of them is a dialog they learn to dismiss
+without reading — which is strictly worse than none, because it also trains them
+through the dialog that guards deleting an Optin.*
+
+*This is an exchange rather than an exemption, and the terms are written down so
+a later build cannot take half of it. Undo is the **precondition**:
+`builder/structure/history.ts` ships in the same commit as the Delete, and a
+Delete with no history behind it is an unconfirmed destructive action with no way
+back, which is exactly what the sentence above forbids. The affordance also
+states what the delete takes — "Delete, and the 2 inside it" — because undo is
+the recovery for a surprise the merchant has already noticed, and a row that
+silently swallowed its children is one they might not.*
+
+*The other two clauses are untouched, and hold here. Delete is not primary: it is
+the last item of an overflow menu, marked destructive. It is not adjacent to the
+safe action: Undo and Redo are in the region's toolbar, not in the row.*
+
 ## A count is not a heading
 
 The Lead log's `7 submissions` was the largest text on the screen, above the
@@ -112,6 +132,18 @@ below the table. **A count is stated only where the set can be large enough to
 need one** — it is not invented for a screen that has none today, which is why
 the Optin list has no count and is not missing one.
 
+_Amended: **a region footer is `RegionFooter` and nothing else**, and two screens
+had drawn their own. The creation flow's step footer and the Destinations card's
+repair-and-remove row were hand-rolled `<div>`s at `px-4 py-3` — a different
+padding from this one, and outside every selector `index.css` keys the
+button-wrapping rule on. So at 360px a long translated label in a
+`whitespace-nowrap shrink-0` button pushed the strip past the viewport, on
+exactly the two strips nobody had checked. The class `.wconvert-footer` is what
+the rule matches, which is why routing them through the component is the fix and
+a note asking the next author to remember is not. The footer states no control
+height of its own: a step's Continue is the tall one and a card's Re-push is the
+small one, and that is scope rather than a disagreement._
+
 ## Every region declares all three states, and loading is not empty
 
 A region that fetches has three renderings and owes all three:
@@ -125,6 +157,27 @@ A region that fetches has three renderings and owes all three:
   dead end and *"No Optins yet — create one"* is a screen.
 - **Error** is an alert at the top of **the region that failed**, not the page,
   and it clears on the next successful fetch.
+
+*Applied to the design picker by
+[ADR 0043](0043-the-library-is-indexed-and-its-facets-are-derived.md), where the
+first bullet is a `GallerySkeleton` in the grid's own shape and the second is
+"No designs match" **beside Clear filters**. The third turned out to have
+nothing to draw: the index is fetched before the builder renders, a tree that
+does not arrive leaves one card with its skeleton and is retried by the next
+look, and the save a merchant starts by pressing "Use this design" is a failure
+of the Optin rather than of the gallery — so it lands in the builder's own
+region error, which is this rule read correctly rather than an exception to it.*
+
+***And the Design tab was two concerns in one region*** (ADR 0043). It held
+*choose a design* and *adjust the look*. At three cards that was invisible; at
+forty the gallery swamps the tokens the tab is named for, and the merchant who
+came to change one colour scrolls past the whole library to reach it. Choosing a
+design is a dialog now — ADR 0042 rule 7's test, *something that owns the screen
+until it is answered* — and the tab keeps the look. **The destructive-action
+rule below is where it lands**, and the structure editor's amendment is what
+decides it: picking a design loses blocks the merchant added, moved or deleted,
+undo buys the exception to confirming, and so the affordance **states what it
+takes** rather than asking a second question in front of the first.
 
 The region-scoped error is what makes partial failure survivable, and there is
 already a case in the tree that needs it: `OptinList` swallows a [[Goal]]
@@ -168,8 +221,8 @@ implicit role with it in a real browser, the table's elements carry their roles
 is four tabs"* against WSMS's twenty-five-section rail. That is a statement about
 **top-level sections** and about the scale a rail exists to serve. It is not a
 budget on tabs anywhere in the product, and
-[#69](https://github.com/navidkashani/wconvert/issues/69)'s ~~five~~ **four**
-builder tabs are a level below it.
+[#69](https://github.com/navidkashani/wconvert/issues/69)'s ~~five~~ ~~four~~
+~~five~~ **four** builder tabs are a level below it.
 
 This is written down because the two look like a contradiction and are not, and
 because the cheapest place to lose that distinction is a review comment reading
@@ -186,6 +239,121 @@ arguing that, which then silently tracks the number, would be arguing against
 itself. `RulesEditor` and `TargetingEditor` are unchanged: the merge is a tab,
 not a model.*
 
+*Amended again by the structure editor: the builder ships **five** — Design ·
+Content · **Structure** · Display rules · Destinations. Structure is not a sixth
+question. It is the second view of the document *Content* already edits: Content
+answers *what does this say*, Structure answers *what is here and in what
+order*, and both write the same `template`. They sit adjacent for that reason
+and they coexist permanently — a merchant fixing a typo must not have to walk
+past a move button to reach the sentence, and a merchant rearranging must not
+have to read every sentence to find the block.*
+
+*Amended a third time by the editor merge: the builder ships **four** again —
+Design · Content · Display rules · Destinations. The paragraph above was right
+that Content and Structure were two views of one document and wrong about what
+follows from it. Its own justification — *"a merchant fixing a typo must not
+have to walk past a move button to reach the sentence"* — was an argument
+against a Structure tab **you cannot type in**, and the fix for that is to let a
+block be edited where it is selected rather than to keep a second copy of the
+document on another tab. With an inspector under the tree, the two tabs were one
+screen drawn twice and a merchant changing a headline had to pick which copy to
+open. The look moved the other way, from Content to **Design**, which is what
+that word already promised.*
+
+*The count has now moved three times, which is the section's own argument
+arriving three times. Every one is struck through rather than rewritten for the
+reason given above: a section arguing that a count at this level is not what is
+being budgeted, and then silently tracking the number, would be arguing against
+itself. `tests/js/builder-shell.test.tsx` is edited in the same commit each time
+— behaviour moving, recorded rather than quietly fixed.*
+
+## A control that acts on a selection lives ~~under~~ **with** the list the selection is made in
+
+The table above answers placement for a control that acts on **the whole
+region** (its toolbar) and on **one row** (in the row). It does not answer the
+third case, which the block tree is the first screen to have: a control that
+acts on *whichever* row is currently selected.
+
+It goes **with the list** — beside it where there is room, under it where there
+is not — in the same region, after it in the tab order.
+
+- **Not in the row.** The controls for a block are a heading, several text boxes
+  and a visibility checkbox. Fifteen rows each carrying that is not a list any
+  more, and the treegrid's roving tabindex — one tab stop for the whole grid —
+  cannot survive rows whose cell count depends on which one is selected.
+- ~~**Not beside the list.** The tab column is 616px at its widest (`main` is
+  `max-w-6xl`) and ~392px at 1024px. A side-by-side split is not available at
+  either width, so it is not a preference between two layouts.~~
+- **Not on another tab**, which is what the editor did before this and what the
+  amendment above undoes.
+
+> **Amended: 616px was arithmetic off a measure chosen for the reading screens,
+> and the builder no longer holds that measure.**
+>
+> The number was honest and it was derived, not designed:
+> `1152 − 48 padding − 24 gap − 464 aside = 616`, where 1152 is `max-w-6xl` —
+> right for four screens that are tables and prose, and never chosen for an
+> editor. Nothing in this ADR ever owned measure, and
+> [ADR 0038](0038-the-admin-holds-different-floors-to-the-loader.md)'s whole
+> posture is that the builder is allowed different numbers from the reading
+> screens; this section's own *"levels are not a cap"* argument is the same
+> move in the other direction.
+>
+> The builder now takes 1440px, and above 48rem of container the tree and the
+> block inspector sit side by side. **The placement rule is re-derived rather
+> than repealed**: a control that acts on a selection lives *with* the list the
+> selection is made in, and the two bullets that survive — not in the row, not
+> on another tab — never rested on width at all. What the split changes is
+> which of *beside* and *under* the rule resolves to at a given width, not what
+> the rule is.
+>
+> The consequence below is untouched and is if anything sharper: a panel that
+> sits permanently beside the list has no scroll position to hide an empty
+> state in.
+
+### Undo, Redo and the verdict are the DESIGN's, not the Content tab's
+
+The same scope test, applied to three controls that were failing it in this
+ADR's own editor. They shipped in the Content tab's toolbar, and all three act
+on the whole draft: the builder's history watches `template`, so a token
+changed on **Design** is a full undo entry and so is picking a design, while
+the verdict's contrast failures are *caused* by colours chosen there.
+
+So a merchant who applied a preset and wanted it back had no Undo, because Undo
+was on another tab. `DesignToolbar` is the same toolbar rendered on both tabs
+that edit the design — the rule applied honestly, not a new concept. It stays
+out of the page-header band, which this ADR caps at two whole-screen actions.
+
+_Amended: **`Toolbar`'s `trailing` slot is where a region-scoped status chip
+goes**, and the verdict was not in it. It rendered inside the LEADING group
+wearing `margin-inline-start: auto`, which pushes an item to the end of the
+group it is in — so it sat 12px after Redo rather than at the toolbar's trailing
+edge, where the Lead log's count and every other region's status sit. "Filters
+lead, the count trails" was already this ADR's rule for that slot; a verdict is
+the same kind of thing as a count — a fact about the set the region is showing —
+and the slot is where it belongs. An auto-margin is what a control reaches for
+when it is in the wrong group._
+
+_Amended again by [ADR 0042](0042-the-admin-speaks-only-when-it-changes-what-you-do-next.md):
+**the slot is right and the chip should not have been in it, because a sound
+design says nothing at all.** Placing *"This will work"* correctly was solving
+the wrong problem — a green tick on every visit is a permanent line that taxes
+every visit and informs one, which is this ADR's own argument about subtitles
+arriving one component later. The toolbar renders only when there are problems,
+and Undo and Redo left with it: they move the whole DRAFT, the same scope `Save
+changes` has, so they belong in the page-header band. The band those two
+controls were costing was the only reason the strip existed._
+
+`Display rules` and `Destinations` do not get it, by the same test: neither
+edits the design, so neither can produce an entry to step or a problem to
+report.
+
+The consequence for anything that follows: **the selection must never be
+empty** where a screen does this. A list with a panel under it that says
+*"select something"* is a screen whose bottom half is an instruction, so the
+first row is selected on arrival and every act that changes the list re-points
+the selection rather than clearing it.
+
 ## Consequences
 
 - **Two control heights, not one.** `--control-height` (2.25rem) for page-header
@@ -196,6 +364,14 @@ not a model.*
   amends the *"one control height for the whole admin"* comment
   [#63](https://github.com/navidkashani/wconvert/issues/63) left in `index.css`,
   which was right about the un-converted screens it was written for.
+
+  _Amended: **three controls were stated and did not use them.** Measured in a
+  browser: the theme-preset button was 39px (padding around a line, no stated
+  height), the Design tab's `input[type=range]` stood at the UA default of ~22px,
+  and the gallery card's action changed height with its own state. All three are
+  bound now — a preset and a size slider are controls a merchant came to the tab
+  to use, so both take `--control-height`. A height that is written down and not
+  applied is worse than one that was never written down: it reads as decided._
 - **Status is a `Badge`, never plain text**, and the words are translated. The
   badge is the only thing in a Status column, so an id with no registry entry
   stays a `<code>` in the Goal column and never becomes a badge that would read

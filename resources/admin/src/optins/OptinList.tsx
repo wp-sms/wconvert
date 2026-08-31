@@ -21,6 +21,7 @@ import {
   DataTableRow,
 } from '../shell/DataTable';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
+import { Description } from '../shell/Description';
 import { EmptyState } from '../shell/EmptyState';
 import { Region, RegionError, RegionErrorState } from '../shell/Region';
 import { TableSkeleton } from '../shell/TableSkeleton';
@@ -92,7 +93,15 @@ export function OptinList({
   onCreate?: () => void;
 }) {
   const [list, setList] = useState<Loadable<OptinSummary[]>>(LOADING);
-  const [labels, setLabels] = useState<Record<string, string>>({});
+  /*
+   * **Three states, not two, and the third is what stops the flash.** A plain
+   * map starts empty, so every row rendered before `listGoals` resolved showed
+   * the id it stores and then watched it turn into the merchant's word for it.
+   * That is not a lookup failure — the route answers 200 — it is a race, and
+   * the `<code>` fallback has to mean *"this build does not have that Goal"*
+   * and nothing else or it means nothing.
+   */
+  const [labels, setLabels] = useState<Loadable<Record<string, string>>>(LOADING);
   const [numbers, setNumbers] = useState<Record<string, OptinNumbers>>({});
   const [error, setError] = useState<string | null>(null);
   /*
@@ -144,8 +153,12 @@ export function OptinList({
   // a screen that is working into a screen announcing it is broken.
   useEffect(() => {
     listGoals()
-      .then((goals) => setLabels(Object.fromEntries(goals.map((goal) => [goal.id, goal.label]))))
-      .catch(() => undefined);
+      .then((goals) => setLabels(ready(Object.fromEntries(goals.map((goal) => [goal.id, goal.label])))))
+      // **Failure resolves to an empty registry rather than staying in flight.**
+      // A cell held forever is a column that never fills; a registry that
+      // answered nothing is one this build genuinely cannot name a Goal from,
+      // which is exactly what the `<code>` says.
+      .catch(() => setLabels(ready({})));
   }, []);
 
   // The dashboard's own read, over the server's default window, flattened out
@@ -222,7 +235,7 @@ export function OptinList({
                 <Row
                   key={optin.id}
                   optin={optin}
-                  goal={labels[optin.goal]}
+                  goal={labels.status === 'ready' ? labels.data[optin.goal] ?? null : undefined}
                   numbers={numbers[optin.id]}
                   busy={busyId === optin.id}
                   onEdit={() => onEdit(optin.id)}
@@ -303,7 +316,13 @@ function Row({
   onDelete,
 }: {
   optin: OptinSummary;
-  goal: string | undefined;
+  /**
+   * The merchant's word for this row's [[Goal]] — `null` where the registry has
+   * answered and has no such Goal, and `undefined` while it has not answered at
+   * all. The three are different things and the cell shows three different
+   * things.
+   */
+  goal: string | null | undefined;
   numbers: OptinNumbers | undefined;
   busy: boolean;
   onEdit: () => void;
@@ -340,9 +359,15 @@ function Row({
         Goal at all. It stays a `<code>` and never becomes a Badge: a badge in
         this table is a STATUS, and dressing an unknown id as one would say the
         Optin is in a state called `from_a_plugin_we_lack`.
+
+        **And it is held back until the registry has answered.** The rows land
+        before `listGoals` does, so showing the fallback immediately meant every
+        merchant read a raw id and then watched it turn into a label — which
+        teaches them that the `<code>` means "wait" rather than what it says.
+        An empty cell for a few frames says nothing false.
       */}
       <DataTableCell label={__('Goal', 'wconvert')}>
-        {goal ?? <code className="font-mono text-xs">{optin.goal}</code>}
+        {goal === undefined ? null : (goal ?? <code className="font-mono text-xs">{optin.goal}</code>)}
       </DataTableCell>
 
       {/*
@@ -360,9 +385,15 @@ function Row({
       <DataTableCell label={__('Status', 'wconvert')} className="whitespace-normal">
         <Badge variant={BADGE[status]}>{statusLabel(status)}</Badge>
         {status === 'suspended' && optin.suspended !== null && (
-          <span className="mt-1 block text-pretty text-xs text-muted-foreground">
+          /*
+            **The reason comes UP a size, and it was the only 12px body text in
+            the admin.** Why an Optin stopped showing is the most important
+            explanatory line on this screen, and it was set smaller than every
+            other sentence on it. {@see Description} is the role.
+          */
+          <Description as="span" className="mt-1 block">
             {optin.suspended}
-          </span>
+          </Description>
         )}
       </DataTableCell>
 

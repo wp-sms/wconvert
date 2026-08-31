@@ -24,11 +24,12 @@
 @import 'tailwindcss' important;
 
 /*
- * The enter/exit animations the vendored dialog, popover and select reference
- * by class (`animate-in`, `fade-in-0`, `slide-in-from-top-2`). They are
+ * The entry animations the vendored layers reference by class (`animate-in`,
+ * `fade-in-0`, `slide-in-from-top-2`). They are
  * Tailwind 4's replacement for `tailwindcss-animate` and shadcn's components
  * are written against them, so without this import those classes compile to
- * nothing and every overlay in the admin snaps rather than opens.
+ * nothing and every overlay in the admin snaps rather than opens. Dismissal is
+ * deliberately immediate; ADR 0036 records why.
  */
 @import 'tw-animate-css';
 
@@ -156,6 +157,89 @@
   --duration-base: 200ms;
   --duration-slow: 300ms;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/*
+ * ============================================================================
+ * THE TYPE SCALE. SIX ROLES, AND EVERY SIZE IN THE ADMIN IS ONE OF THEM.
+ * ============================================================================
+ * **The block above owns colour, radius, shadow and control height, and never
+ * owned type** — so every `text-*` in this admin was stock Tailwind, chosen per
+ * call site. Measured on the builder before this landed: 103 of ~115 text
+ * elements were 14px, and region headings, body copy, field labels,
+ * descriptions, button labels and the tab strip were separated only by weight
+ * and colour. Nine sizes existed; one (20.8px) matched no element, one (18px)
+ * existed because shadcn's `AlertDialogTitle` shipped with `text-lg`, and the
+ * single 12px outlier was the *suspension reason* on the Optin list — the most
+ * important explanatory line on that screen, set in its smallest text.
+ *
+ * ADR 0037 now names type as the fourth axis this admin owns: the token NAMES
+ * follow Tailwind's `--text-*` contract, and the VALUES are WConvert's.
+ *
+ * **A plain `@theme` and not the `@theme inline` above, and the distinction is
+ * load-bearing.** `inline` exists for a variable that REFERENCES another
+ * variable, and it stops utilities resolving the token through `var()` — so the
+ * custom property is never emitted. These are literal values, and
+ * `.wconvert-editor :is(h2, h3, h4)` below reads `var(--text-heading)` from
+ * hand-written CSS, which needs the property to actually exist.
+ *
+ * `static` rather than bare, so a token read only from hand-written CSS is
+ * still emitted: Tailwind drops theme variables it cannot see referenced from a
+ * utility, and `--text-heading` is exactly that case.
+ *
+ * The `--<token>--line-height` / `--letter-spacing` / `--font-weight` modifiers
+ * are Tailwind's documented way to pair the rest of the register with the size,
+ * so `text-micro` is one class rather than four that a call site can get half
+ * right.
+ */
+@theme static {
+  /*
+   * 12 — table headers, chips, badges, stat labels.
+   *
+   * **One line-height, one letter-spacing, one weight**, because today the same
+   * 12px carries three different line-heights and two different
+   * letter-spacings: `Stat`'s docblock claims its label matches the table
+   * header's small-caps register while using `tracking-wide` (0.025em) against
+   * the table's 0.04em. The token is what makes that docblock true.
+   */
+  --text-micro: 0.75rem;
+  --text-micro--line-height: 1rem;
+  --text-micro--letter-spacing: 0.04em;
+  --text-micro--font-weight: 600;
+
+  /*
+   * 13 — descriptions, notes, help text, a block's own words in the tree.
+   *
+   * **The role that did not exist.** Every description in this admin was 14px
+   * by inheritance, which is the same size as the body it explains — so the
+   * only thing separating a sentence about a thing from the thing was colour.
+   * {@see Description} is the one component that spends it.
+   */
+  --text-note: 0.8125rem;
+  --text-note--line-height: 1.25rem;
+
+  /* 14 — the body of the admin. Unchanged; it is the right size. */
+  --text-body: 0.875rem;
+  --text-body--line-height: 1.3125rem;
+
+  /*
+   * 16 — a region's heading, a card's title, a section inside an editor.
+   *
+   * It existed for `RegionHeader` and was silently dropped for every heading in
+   * the builder: `.wconvert-editor` set a `font-weight` for `h2/h3/h4` and a
+   * `font-size` for only `h2` and `h3`, so `<h4>How it looks</h4>` rendered at
+   * body size in semibold and read as a bolder paragraph.
+   */
+  --text-heading: 1rem;
+  --text-heading--line-height: 1.25rem;
+
+  /* 24 — the page title, and only that. */
+  --text-title: 1.5rem;
+  --text-title--line-height: 1.875rem;
+
+  /* 30 — the one emphasised figure per Goal (see {@see Stat}'s `emphasis`). */
+  --text-figure: 1.875rem;
+  --text-figure--line-height: 1;
 }
 
 :root {
@@ -292,6 +376,21 @@
   width: calc(100% + 20px);
 
   /*
+   * ========================================================================
+   * THE MEASURE. ONE NUMBER, AND A SCREEN MAY ASK FOR THE WIDER ONE.
+   * ========================================================================
+   * 72rem (1152px) is the reading measure and the default: the Optin list,
+   * Analytics, the Lead log and Destinations are tables and prose, and the
+   * line-length research is unambiguous about not widening those.
+   *
+   * It was spelled `max-w-6xl` three times in `Shell.tsx` — masthead, page
+   * header band, `<main>` — with nothing linking them, which is how the band's
+   * rule came to stop a hundred pixels short of the page body's edge once
+   * already. One custom property is what stops the three drifting apart again.
+   */
+  --wconvert-measure: 72rem;
+
+  /*
    * Tall enough that our background reaches the bottom of the window on a
    * screen with little on it. Without this the app stops at its content and
    * wp-admin's grey shows through underneath — a seam across a page that is
@@ -321,6 +420,39 @@
    * wrapping.
    */
   padding-block-end: 65px;
+}
+
+/*
+ * **The builder is the one screen that is a place rather than a list, so it
+ * gets the width the gallery and the live preview need.**
+ *
+ * That sentence sat lower in this file for months as a comment over nothing:
+ * the rule it described was dropped when the two measures converged, and the
+ * reasoning was left behind with no rule under it. It was never repudiated —
+ * ADR 0038 owns the responsive floors and is explicit that the builder holds
+ * different numbers from the reading screens; ADR 0039 owns anatomy and says
+ * nothing about measure. So the rule is back, and the reasoning is here with
+ * it rather than three hundred lines away from it.
+ *
+ * 90rem is 1440px. What the extra 288px buys is a THIRD PANE and not a wider
+ * column — see `.wconvert-structure`'s container query below, and the field cap
+ * on `.wconvert-inspector` that stops a `widefat` input growing with it.
+ *
+ * `data-measure` is written by the frame and by nothing else, on the element
+ * the three bands all sit inside — so the wider number reaches the masthead,
+ * the page-header band and `<main>` together or it reaches none of them.
+ */
+#wconvert-admin [data-measure='wide'] {
+  --wconvert-measure: 90rem;
+}
+
+/*
+ * The measure, applied. The masthead, the page-header band and `<main>` each
+ * carry this and nothing else about width; which number it resolves to is the
+ * screen's answer, above.
+ */
+.wconvert-measure {
+  max-inline-size: var(--wconvert-measure);
 }
 
 /*
@@ -484,12 +616,24 @@
  * that cannot break costs the merchant the whole screen.
  */
 #wconvert-admin .wconvert-table > thead > tr > th {
-  padding: 0.5rem 0.75rem;
+  /*
+   * **1rem of inline padding, matching the header, toolbar and footer strips
+   * of the same card.** It was 0.75rem, which put a 4px stagger down the left
+   * edge of all four reading screens: a region's title started at 16px and the
+   * first column of the table under it started at 12px, so the card had two
+   * left edges. A column of settings is read down its leading edge, and there
+   * has to be exactly one.
+   */
+  padding: 0.5rem 1rem;
   border-block-end: 1px solid var(--border);
   color: var(--muted-foreground);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
+  /*
+   * The small-caps register, from the scale rather than spelled here — which
+   * is what lets {@see Stat}'s label claim to match it and be right.
+   */
+  font-size: var(--text-micro);
+  font-weight: var(--text-micro--font-weight);
+  letter-spacing: var(--text-micro--letter-spacing);
   line-height: 1.4;
   text-align: start;
   text-transform: uppercase;
@@ -509,7 +653,7 @@
  * as a minimum on the buttons inside it.
  */
 #wconvert-admin .wconvert-table > tbody > tr > td {
-  padding: 0.6875rem 0.75rem;
+  padding: 0.6875rem 1rem;
   font-size: inherit;
   text-align: start;
   vertical-align: middle;
@@ -556,6 +700,28 @@
   gap: 0.25rem;
 }
 
+/* ---------------------------------------------------------------------------
+ * WHAT THE ADMIN OWNS IS NOT ALL INSIDE `#wconvert-admin`.
+ *
+ * **A Radix dialog portals to `document.body`**, which is outside the admin's
+ * root — the z-index and typography rules above already say so, and name the
+ * portal roots one by one for exactly that reason. Every OTHER rule in this
+ * file anchored on `#wconvert-admin` therefore stops at the portal boundary,
+ * silently, and the design picker is what found it: chips in a dialog toolbar
+ * got neither `--control-height-sm` nor the segmented group's *selected*
+ * treatment, and the confirm dialog's buttons have had no hand cursor since
+ * ADR 0039 added them.
+ *
+ * So the three rules a portalled surface needs take a root LIST rather than the
+ * id. `:is()` and not `:where()`, deliberately: `:where()` contributes zero
+ * specificity, and every one of these is an `!important` utility override whose
+ * whole standing depends on beating a single class inside the same layer.
+ *
+ * It is a list rather than a class the callers add, because a rule that only
+ * applies when somebody remembers to opt in is the rule that was already
+ * missing here.
+ * ------------------------------------------------------------------------- */
+
 /*
  * **A toolbar control and an in-row action stand at the small height**
  * (ADR 0039). Stated once, here, rather than passed as a class at every call
@@ -568,11 +734,42 @@
  * an unlayered rule here would lose to `.h-8` however specific it was. In the
  * same layer the ordinary rules apply again and an id plus a class plus an
  * attribute beats a single utility class.
- */
+ *
+ * ---------------------------------------------------------------------------
+ * **AND IT WAS ONLY HALF THE RULE, WHICH IS WHY IT SIZED NOTHING.**
+ *
+ * The paragraph above is right about the LAYER and stops one step short: in the
+ * same layer an `!important` declaration beats a non-important one **however
+ * specific the loser is** (ADR 0042 rule 6). `h-9` is important; `block-size:
+ * auto` here was not. So this rule has never set a height on anything — the one
+ * toolbar that existed when it was written passes `size="sm"` at the call site,
+ * which is precisely what "stated once, here, rather than passed at every call
+ * site" says it should not have to.
+ *
+ * Found by the design picker, whose chips came out at 36px and whose search box
+ * came out at 40px under a rule saying both should be 32. That is the sixth
+ * time this file has been caught by the layer/important interaction, and every
+ * previous one wrote it down — so the fix is to finish the rule rather than to
+ * record the anecdote again. The two overrides below are `!important` for the
+ * same reason: they now have an important declaration to beat.
+ * ------------------------------------------------------------------------- */
 @layer utilities {
-  #wconvert-admin
-    :is(.wconvert-page-actions, .wconvert-toolbar, .wconvert-table)
-    :is([data-slot="button"], [data-slot="select-trigger"]) {
+  /*
+   * `.wconvert-footer` joins the three, and the reason is the same one: a
+   * region's footer holds a step's Back and Continue, and *"Erfassungsdaten­sätze
+   * als CSV-Datei herunterladen"* in a `whitespace-nowrap shrink-0` button takes
+   * the whole screen sideways at 360px. It was two hand-rolled `px-4 py-3`
+   * `<div>`s outside every one of these selectors until {@see RegionFooter}
+   * became the one place a footer is drawn.
+   *
+   * **The HEIGHT is not stated for the footer**, only the wrapping — see the
+   * override below, and `RegionFooter`'s own docblock. A step's action is the
+   * tall control and a card's repair action is the small one, and that is the
+   * caller's `size` because it is a question about scope.
+   */
+  :is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"])
+    :is(.wconvert-page-actions, .wconvert-toolbar, .wconvert-table, .wconvert-footer)
+    :is([data-slot="button"], [data-slot="select-trigger"], [data-slot="input"]) {
     /*
      * **The height is a MINIMUM, and the label may wrap.** "Export CSV" is two
      * short words in English and *"Erfassungsdatensätze als CSV-Datei
@@ -585,17 +782,42 @@
      * `max-inline-size` is what actually caps it: a `shrink-0` flex item ignores
      * its container's pressure but not its own maximum. The rest is what makes
      * the wrapped result look deliberate instead of clipped.
+     *
+     * **`[data-slot="input"]` joined the two, and the design picker is why.**
+     * Its search box is the admin's first text input in a toolbar, and the
+     * vendored `Input` is `h-9` — 40px beside 36px chips on the same line, which
+     * reads as one control that failed to line up rather than as a strip. The
+     * rule is about the toolbar and not about each control that lands in one, so
+     * the kind of control is what was missing from it.
      */
-    block-size: auto;
-    min-block-size: var(--control-height-sm);
-    max-inline-size: 100%;
-    padding-block: 0.3125rem;
-    white-space: normal;
+    block-size: auto !important;
+    min-block-size: var(--control-height-sm) !important;
+    max-inline-size: 100% !important;
+    padding-block: 0.3125rem !important;
+    white-space: normal !important;
   }
 
-  /* A page-header action is the taller of the two heights (ADR 0039). */
+  /*
+   * A page-header action is the taller of the two heights (ADR 0039).
+   *
+   * Same specificity as the rule above — an id, a class and an attribute each —
+   * so this wins on source order, and it has to be `!important` now that the
+   * floor it is raising is.
+   */
   #wconvert-admin .wconvert-page-actions [data-slot="button"] {
-    min-block-size: var(--control-height);
+    min-block-size: var(--control-height) !important;
+  }
+
+  /*
+   * **A footer states no height of its own**, so the `size` the caller passed
+   * is what stands. The rule above gives every control in the four strips the
+   * small height as a floor; here that floor is released again for the one
+   * strip that holds both kinds — a step's Continue (tall) and a card's Re-push
+   * (small) are both footers, and they are different scopes rather than a
+   * disagreement.
+   */
+  #wconvert-admin .wconvert-footer [data-slot="button"][data-size="default"] {
+    min-block-size: var(--control-height) !important;
   }
 }
 
@@ -793,6 +1015,54 @@
 }
 
 /*
+ * ---------------------------------------------------------------------------
+ * THE VENDORED CHECKBOX IS 16px DRAWN AND 24px TO A POINTER.
+ *
+ * WCAG 2.2 SC 2.5.8 asks for 24 × 24 CSS px, and `size-4` is 16. The Leads
+ * toolbar's *"Group submissions that share an email or phone"* is the one in
+ * this admin, and none of the exceptions rescues it: there is no equivalent
+ * control on the screen doing the same job, and the Spacing exception is about
+ * an undersized target with 24px of clearance rather than about a small one on
+ * its own.
+ *
+ * **A pseudo-element rather than a bigger box**, so what is drawn is unchanged:
+ * a 24px checkbox beside a 20px `Select` in the same toolbar would be the
+ * heaviest thing on a row of filters.
+ *
+ * **And not by wrapping the pair in one `<label>`**, which is the obvious fix
+ * and is wrong here: Radix draws the checkbox as `<button role="checkbox">`,
+ * and a `<label>` around a labelable element forwards its click to it — so a
+ * press on the box itself is a press the label also forwards, and the merchant
+ * toggles twice. `htmlFor` keeps the text clickable without that; this grows
+ * the box's own target; and the run is given a 24px line below so the LABEL
+ * clears the same bar.
+ * ------------------------------------------------------------------------- */
+#wconvert-admin [data-slot="checkbox"] {
+  position: relative;
+}
+
+#wconvert-admin [data-slot="checkbox"]::after {
+  content: "";
+  position: absolute;
+  /* 16px drawn + 4px each side = 24px of target. */
+  inset: -0.25rem;
+}
+
+#wconvert-admin .wconvert-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-block-size: 1.5rem;
+}
+
+#wconvert-admin .wconvert-check > label {
+  display: flex;
+  align-items: center;
+  align-self: stretch;
+  cursor: pointer;
+}
+
+/*
  * The radio keeps a white field with a petrol ring and a petrol dot, which is
  * the shape it already had. The checkbox fills petrol, because its tick is
  * drawn in the field's foreground and a white tick needs something behind it.
@@ -866,6 +1136,28 @@
 @layer utilities {
   #wconvert-admin table.wp-list-table.fixed {
     position: static !important;
+  }
+
+  /*
+   * -------------------------------------------------------------------------
+   * THE PICKER IS A COLUMN, AND THE VENDORED DIALOG IS A GRID.
+   *
+   * `DialogContent` ships `grid gap-4 p-6 sm:max-w-lg` (ADR 0036), and all four
+   * are wrong for a gallery: 32rem is a two-card grid on a 1440px screen, the
+   * padding fights the toolbar's own strip edges, and a grid cannot give the
+   * body the `1fr` it needs to scroll while the header stays put.
+   *
+   * **`!important` and inside `@layer utilities`, or it does not apply**
+   * (ADR 0042 rule 6). The classes being overridden are Tailwind utilities,
+   * this admin compiles utilities as `!important` (ADR 0035), and for important
+   * declarations the cascade runs layers in reverse — so an unlayered rule here
+   * loses to `grid` however specific it is. That is the fifth time this file
+   * has been caught by it.
+   * -------------------------------------------------------------------------
+   */
+  .wconvert-picker[data-slot="dialog-content"] {
+    display: flex !important;
+    flex-direction: column !important;
   }
 }
 
@@ -1009,7 +1301,15 @@
   font-size: inherit;
 }
 
-#wconvert-admin .wconvert-editor :is(input[type="radio"], input[type="checkbox"]) {
+/*
+ * **The inspector is named beside the editor, and forgetting it is what left
+ * `Show this` touching its own box.** The only separation between the checkbox
+ * and its label was JSX's `{' '}`, because this rule is scoped to
+ * `.wconvert-editor` and the Content tab's inspector renders outside one.
+ */
+#wconvert-admin
+  :is(.wconvert-editor, .wconvert-inspector)
+  :is(input[type="radio"], input[type="checkbox"]) {
   margin-inline-end: 0.375rem;
 }
 
@@ -1075,12 +1375,26 @@
  * by until each is rewritten against the component vocabulary.
  * ------------------------------------------------------------------------- */
 /*
- * **One body size across the admin.** wp-admin sets `#wpbody-content p` to
- * 13px, so the un-converted screens rendered two points smaller than the frame
- * around them — a difference that reads as a rendering fault rather than as a
- * hierarchy. The class in the selector is what outranks WordPress's id.
+ * **One body size across the admin, and it is the WHOLE admin now.**
+ *
+ * wp-admin sets `#wpbody-content p` to 13px, unlayered and id-scoped, so any
+ * `<p>` we draw without an explicit size renders two points smaller than the
+ * frame around it — a difference that reads as a rendering fault rather than as
+ * a hierarchy.
+ *
+ * This was scoped to `.wconvert-editor`, which was right for the screens it was
+ * written for and left every `<p>` outside one taking WordPress's number.
+ * Measured in a browser after the type scale landed: `.wconvert-verdict` — a
+ * `<p>` in the builder's toolbar — was rendering at 13px, which is a size this
+ * admin now HAS a meaning for, so it looked deliberate and was not. A value
+ * that lands on a token by coincidence is the worst kind of wrong, because
+ * nothing about it looks wrong.
+ *
+ * The scale still wins wherever a role is stated: Tailwind's utilities are
+ * `!important` (ADR 0035), so `text-note` and `text-micro` are untouched, and
+ * the table's own header rule is more specific than this.
  */
-#wconvert-admin .wconvert-editor :is(p, li, td, th, label, legend, select, input, textarea) {
+#wconvert-admin :is(p, li, td, th, label, legend, select, input, textarea) {
   font-size: inherit;
 }
 
@@ -1096,12 +1410,24 @@
   margin-block-end: 0;
 }
 
+/*
+ * **A heading in here has a SIZE, and until now two of the three did not.**
+ *
+ * This rule set a weight for all three and a size for only `h2` and `h3`, so
+ * every `<h4>` in the builder — *"How it looks"* on the Design tab, the block
+ * inspector's own name — rendered at body size in semibold and read as a bolder
+ * paragraph rather than as a heading. The `h2` size that WAS stated was
+ * `1.3rem`: 20.8px, matching no other element anywhere in the admin.
+ *
+ * One size for the three, from the scale, because an editor's headings are all
+ * the same thing — the name of a section inside a region — and the region's own
+ * `<h2>` above them is what the level is measured against.
+ */
 .wconvert-editor :is(h2, h3, h4) {
+  font-size: var(--text-heading);
+  line-height: var(--text-heading--line-height);
   font-weight: 600;
-}
-
-.wconvert-editor h2 {
-  font-size: 1.3rem;
+  letter-spacing: -0.01em;
 }
 
 /*
@@ -1110,10 +1436,6 @@
  * above it. A rule and the space around it is what says *this is a different
  * thing*.
  */
-.wconvert-editor h3 {
-  font-size: 1rem;
-  letter-spacing: -0.01em;
-}
 
 .wconvert-editor > h3 {
   margin-block-start: 1.25rem;
@@ -1148,7 +1470,8 @@
  * marker too many — which is what the destinations picker had, a bullet before
  * every checkbox.
  */
-.wconvert-editor :is(ul, ol):not(.wconvert-gallery, .wconvert-rules, .wconvert-choices) {
+.wconvert-editor
+  :is(ul, ol):not(.wconvert-gallery, .wconvert-rules, .wconvert-choices, .wconvert-contrast__list) {
   padding-inline-start: 1.5em;
   list-style: revert;
 }
@@ -1161,13 +1484,6 @@
   padding: 0;
   list-style: none;
 }
-
-/*
- * The builder is the one screen that is a place rather than a list, so it gets
- * the width the gallery and the live preview need. The class is no longer
- * rendered — the frame's own `max-w-6xl` is the same measure — and it is kept
- * out of the stylesheet rather than kept as a rule nothing matches.
- */
 
 /*
  * The gallery: real designs, drawn by the renderer the loader imports. There
@@ -1197,6 +1513,123 @@
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
+  /*
+   * ------------------------------------------------------------------------
+   * A CARD NOBODY HAS SCROLLED TO COSTS NO LAYOUT (ADR 0043).
+   * ------------------------------------------------------------------------
+   * **The other half of the deferred mount, and it is not the same half.**
+   * `TemplateCard`'s `IntersectionObserver` stops an off-screen card being
+   * BUILT; this stops one that already exists — the last screenful the merchant
+   * scrolled past, still mounted because it is inside the observer's margin —
+   * from being laid out and painted. Neither alone reaches where the pair does.
+   *
+   * And neither is a virtualization library, which was the third option: the
+   * grid is a responsive `auto-fill`, and adding a dependency to a bundle whose
+   * halves are reported at every build (ADR 0038) to arrive at the same place is
+   * a bad trade.
+   *
+   * `contain-intrinsic-size` is what stops the scrollbar jumping. Without it a
+   * skipped card measures ZERO and the page collapses to nothing, so scrolling
+   * a library of forty is a document whose height changes under the thumb. The
+   * number is a guess at a card and only has to be close: `auto` remembers the
+   * real size once the card has been rendered once, so the guess is wrong at
+   * most on the way down.
+   */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 20rem;
+}
+
+/*
+ * The lane a card holds open for a design that has not arrived — either still
+ * being fetched, or far enough from the viewport that it has been taken down.
+ *
+ * **A shape rather than a spinner** (ADR 0039): a skeleton in the grid's own
+ * shape is what stops the row jumping when a design lands, which is the whole
+ * reason `TableSkeleton` and `ChoiceSkeleton` exist one surface over.
+ *
+ * **The floor is for a card that has never rendered.** A card that HAS and then
+ * scrolled away holds its own measured height, set inline by
+ * {@see TemplateCard} — because this floor cannot be right for every design and
+ * a wrong one is a scroll that jumps under the merchant's thumb. Measured in a
+ * browser: an unmounted card was 212px against a mounted 348px, so scrolling
+ * down pulled the row above up by 136px per card.
+ */
+.wconvert-gallery__waiting {
+  display: flex;
+  flex: 1;
+  min-block-size: 8rem;
+  padding: 0.75rem;
+  background: var(--surface);
+}
+
+/*
+ * What a card shows where the design would be, when the design is **not on this
+ * install and never will be**.
+ *
+ * Free ships the card for a premium design and never the design, because
+ * shipping the tree and refusing the save is trialware (issue #7). So there is
+ * nothing to render and — deliberately — nothing to render INSTEAD: no
+ * thumbnail, no screenshot, no image at all, which is why ADR 0010's *no static
+ * thumbnails anywhere* survives this ticket intact.
+ *
+ * What is here is the facets in the merchant's own words, which is the honest
+ * substitute: with no render to compare, "Side by side · Email · With a
+ * picture" is what a merchant can actually compare against the real cards
+ * beside it.
+ */
+.wconvert-gallery__absent {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  min-block-size: 8rem;
+  padding: 1rem;
+  background: var(--surface);
+}
+
+.wconvert-facets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.wconvert-facets > li {
+  padding: 0.125rem 0.5rem;
+  color: var(--muted-foreground);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: var(--text-sm, 0.8125rem);
+}
+
+/* ---------------------------------------------------------------------------
+ * THE PICKER: THE GRID, ON A SURFACE OF ITS OWN.
+ *
+ * **A region holds exactly one concern and the Design tab held two** — *choose
+ * a design* and *adjust the look* (ADR 0039). At three cards that was
+ * invisible; at forty the gallery swamps the tokens the tab is named for.
+ *
+ * The dialog is what gives the grid the full width the builder caps at, rather
+ * than one pane beside a pinned preview: ADR 0038's answer to a wider screen is
+ * another pane or more air, never a longer line.
+ *
+ * The BODY scrolls rather than the dialog, so the toolbar's chips stay reachable
+ * with forty cards under them — a filter you have to scroll back up to change is
+ * a filter you use once.
+ * ------------------------------------------------------------------------- */
+.wconvert-picker__scroll {
+  display: flex;
+  flex-direction: column;
+  min-block-size: 0;
+  overflow-y: auto;
+}
+
+.wconvert-picker__body {
+  padding: 1rem;
 }
 
 .wconvert-gallery__card.is-chosen {
@@ -1205,23 +1638,115 @@
 }
 
 /*
+ * **A design this Optin's Goal cannot use, said before the click.** Quiet
+ * rather than hidden: a merchant comparing three designs and finding two has no
+ * way to know the third exists or why — and the reason is about their Goal, so
+ * it is worth reading. The render itself keeps its full contrast, because what
+ * is being explained is that this design does a different job, not that it is
+ * broken.
+ */
+.wconvert-gallery__card[data-refused] {
+  background: var(--surface);
+}
+
+.wconvert-gallery__card[data-refused] .wconvert-preview {
+  opacity: 0.55;
+}
+
+/*
+ * ---------------------------------------------------------------------------
+ * `zoom`, NOT `transform: scale()`, AND THAT IS THE WHOLE OF THE FIX.
+ *
  * A card is a real render at real width, so it is scaled rather than reflowed:
  * reflowing would show the merchant a layout no visitor gets, which is the one
  * thing a live-rendered gallery exists to avoid.
  *
+ * **`transform` does not affect layout.** So the wrapper reserved `12rem`
+ * (192px) and painted 106px, and every card in the gallery had ~86px of dead
+ * white under a design clipped at the top of it. The width reciprocal
+ * (`calc(100% / 0.55)`) was reasoned about carefully; the HEIGHT was never
+ * reasoned about at all, because a fixed one looked deliberate.
+ *
+ * `zoom` does affect layout: a 448 × 300 child at `zoom: .55` renders 246 × 165
+ * **and its wrapper becomes 165 tall**. Verified in the target browser on the
+ * real gallery rather than reasoned about — which also has to be said the other
+ * way round, because nothing in the suite can see this: Vitest runs jsdom with
+ * `css: false` and computes no layout, so a passing test proves nothing here
+ * either way. It is Baseline 2024 and shipped in every engine.
+ *
+ * With layout following the render, both of the numbers that were compensating
+ * for it go: the reciprocal width and the fixed height. What is left is a cap,
+ * so a tall design cannot make one card twice its neighbours.
+ *
+ * **What `zoom` costs, stated rather than discovered.** It RELAYOUTS at the
+ * reduced size — a 16px headline is laid out at 8.8px — where `transform`
+ * paints a full-size layout smaller. The gallery's invariant survives that,
+ * because the scale is uniform: the container and the type shrink by the same
+ * factor, so the ratio that decides a line break is unchanged and the break
+ * lands in the same place. What is left is sub-pixel rounding at small sizes,
+ * which is a fidelity risk and not a different layout. The other known hazard —
+ * CSS `zoom` breaking Floating UI's positioning, which is what Radix's popover
+ * is built on — cannot reach this: the zoom is on the gallery card's render,
+ * and no Radix trigger is inside one. **Both are things to look at in a
+ * browser** and neither is visible to the suite.
+ *
+ * `margin-inline: auto` because the design is NARROWER than the lane once it is
+ * sized to itself — the experiment showed it sitting hard against the leading
+ * edge with a grey band beside it, which reads as a broken float.
+ *
  * It sits on `--surface` so a design with a light background still reads as a
  * picture of something rather than as part of the card holding it.
+ * ------------------------------------------------------------------------- */
+/*
+ * **The lane is a stage the design stands on, and it takes the card's slack.**
+ *
+ * Measured after the `zoom` swap: with the lane sized to its own design, the
+ * three shipped designs drew 188, 138 and 244 tall, and a grid row stretches
+ * every card to the tallest — so 57px of the row's height landed under the
+ * SHORT card's footer. The dead space had moved rather than gone. `flex: 1`
+ * puts it in the lane instead, and centring the design in it turns a gap into a
+ * margin: every footer sits on the same line, and a short design reads as a
+ * picture on a stage rather than as a card that failed to fill.
+ *
+ * `justify-content` replaces the `margin-inline: auto` this had for the same
+ * reason on the other axis — the design is narrower than the lane once it is
+ * sized to itself, and it sat hard against the leading edge.
+ *
+ * The cap is in the ZOOMED coordinate space: 44rem declared is 24.2rem drawn.
+ * It was 22rem, which clipped the tallest shipped design by 50px — a cap that
+ * fires on something we ship is a cap set from the wrong number.
+ *
+ * **And it was set from the wrong number twice.** 30rem was right for a library
+ * of three and wrong the moment it was twelve: measured in a browser, *Name and
+ * email* draws 349px against a 264px lane and *Photo offer* draws 276px, so two
+ * of the designs we ship were clipped mid-button on the screen a merchant
+ * chooses from. The tallest shipped design is 635px declared, and 44rem clears
+ * it with room for the next one — which is the number this cap has to be set
+ * from, because a cap that fires on our own work is not protecting anybody from
+ * a third party's.
  */
 .wconvert-gallery .wconvert-preview {
-  transform: scale(0.55);
-  transform-origin: top left;
-  block-size: 12rem;
-  /* Exactly the scale's reciprocal: 182% overshot the card by a tenth of a
-   * percent and left a hairline of card showing down the right edge. */
-  inline-size: calc(100% / 0.55);
+  zoom: 0.55;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  max-block-size: 44rem;
   overflow: hidden;
   pointer-events: none;
   background: var(--surface);
+}
+
+/*
+ * **The cards in a row are the same height, and `zoom` is what made that a
+ * question.** With a fixed preview height every card was the same by
+ * construction; sized to its own design they differ, and a grid row goes ragged
+ * — the same failure the footer's own comment says the layout exists to
+ * prevent, arriving from the other direction. `stretch` is the grid default and
+ * is stated because it is now load-bearing.
+ */
+.wconvert-gallery > .wconvert-gallery__card {
+  align-self: stretch;
 }
 
 /* ---------------------------------------------------------------------------
@@ -1253,17 +1778,41 @@
  * anything.** Every shipped design asks for `--wc-width: 28rem` and `.wc-root`
  * takes `min(that, 100%)` — so in a column narrower than 28rem the desktop
  * preview is ALREADY narrower than a phone, and switching to Mobile changes
- * nothing a merchant can see. At 29rem the stage holds the design at its own
- * measure and 375px is visibly narrower than it.
+ * nothing a merchant can see.
+ *
+ * **31rem rather than 29rem, and the two rem are not cosmetic.** The stage has
+ * `padding: 1rem` and a 1px border, so a 29rem (464px) aside leaves 430px of
+ * inner measure against a design asking for 448px — the desktop preview was
+ * clamped ~4% under the width the design itself declares, which is the one
+ * thing a live-rendered preview exists not to do. 31rem (496px) leaves 462px
+ * and the design renders at its own measure. The room comes from the builder's
+ * own 90rem, above.
  */
 @media (min-width: 1280px) {
   .wconvert-builder {
-    grid-template-columns: minmax(0, 1fr) 29rem;
+    grid-template-columns: minmax(0, 1fr) 31rem;
   }
 }
 
+/*
+ * **The container the block editor's split is measured against.**
+ *
+ * A CONTAINER query and not a media query, and that is load-bearing rather than
+ * modern for its own sake: wp-admin's menu is 160px expanded and 36px folded,
+ * so the column actually available to this element varies by ~124px at a fixed
+ * viewport. Every other breakpoint in this file is viewport-keyed and therefore
+ * already wrong by that much on a folded menu; the new one does not repeat it.
+ *
+ * This element is a real wrapper that already existed, so it can be the
+ * container without a `<div>` being added to hold a query.
+ *
+ * `inline-size` rather than `size`: containment in the block axis would need
+ * this element's height to be independent of its contents, which for a column
+ * of tabs it is not.
+ */
 .wconvert-builder__tabs {
   min-inline-size: 0;
+  container-type: inline-size;
 }
 
 /*
@@ -1273,8 +1822,216 @@
 .wconvert-builder__preview {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  /*
+   * **1rem, matching the `gap-4` under the tab strip.** It was 0.75rem, and
+   * that 4px was half of the 16px by which the two columns disagreed — see the
+   * header row below, and the comment over `<Tabs>` in `OptinBuilder` for the
+   * other half.
+   */
+  gap: 1rem;
   min-inline-size: 0;
+}
+
+/*
+ * ---------------------------------------------------------------------------
+ * THE TWO COLUMNS START AT THE SAME y, AND THE FIX IS THE BANDS.
+ *
+ * Measured in a browser at 1680px: the left card's top edge was at 60px and the
+ * right card's at 44px. Two independent causes, and neither was a control being
+ * the wrong size —
+ *
+ * - the `TabsList` is a 36px band (`h-9`) and this header row was 32px, because
+ *   it is buttons at `size="sm"` and nothing stated a band around them;
+ * - the space under the strip was `mb-4` (16px) PLUS the `Tabs` root's own
+ *   `gap-2` (8px), because flex gaps do not collapse with margins — while this
+ *   column's was `gap: 0.75rem`.
+ *
+ * The controls are correctly `sm`: both qualify what is already on screen,
+ * which is ADR 0039's own test. The tab strip is correctly the taller band. So
+ * what changes is the BANDS, not the controls — a 36px row with 32px buttons
+ * centred in it, against a 36px strip, and one 1rem gap under each.
+ *
+ * A `RegionError` between the strip and the tab's content pushes the left
+ * column down and is correct to; the columns agree in the state without one.
+ * ------------------------------------------------------------------------- */
+.wconvert-builder__bar {
+  min-block-size: var(--control-height);
+}
+
+/* ---------------------------------------------------------------------------
+ * A HIDDEN TAB PANEL TAKES NO SLOT, BECAUSE A FLEX GAP DOES NOT SKIP ONE.
+ *
+ * **This is why the Content tab's card sat 16px below the preview beside it**,
+ * measured rather than reasoned about: the tab column's card started at 68px
+ * and the preview's stage at 52px, while the Design tab's two agreed exactly.
+ *
+ * Both design tabs are `forceMount`ed so `<Activity>` can keep their state.
+ * Radix leaves a force-mounted panel WITHOUT the `hidden` attribute, and
+ * `Activity` hides the children rather than the wrapper — so the inactive panel
+ * was a `display: block` flex item of height ZERO, sitting between the strip and
+ * the visible panel. A zero-height flex item still consumes a gap, so the
+ * column's `gap-4` fired twice: 36 + 16 + **0** + 16 = 68.
+ *
+ * It only showed on Content because Design is first: with Design open the empty
+ * item is below the visible one and its gap falls off the end.
+ *
+ * `display: none` is what "inactive" already means — it is what Radix does for
+ * a panel that is not force-mounted — and it costs `Activity` nothing, because
+ * `display: none` is a layout fact and neither React state nor the DOM hears
+ * about it.
+ * ------------------------------------------------------------------------- */
+#wconvert-admin [data-slot="tabs-content"][data-state="inactive"] {
+  display: none;
+}
+
+/* ---------------------------------------------------------------------------
+ * EVERYTHING THAT CAN BE PRESSED SAYS SO UNDER THE POINTER.
+ *
+ * **38 of the admin's 98 interactive elements had no hand cursor**, counted in
+ * a browser: every vendored `Button` (33 of them), all four tab triggers, and
+ * the inspector's own labels. Not a few call sites — the whole component
+ * vocabulary.
+ *
+ * The cause is upstream and version-shaped rather than anybody's oversight:
+ * Tailwind v4 changed preflight to give `button` `cursor: default` (matching
+ * the UA), and shadcn's v4 components dropped the `cursor-pointer` that used to
+ * be implicit. Every project vendoring them inherits it (ADR 0036), which is
+ * exactly the class of thing the vendoring bargain says we own.
+ *
+ * So it is stated once, for the ROLE rather than the component: anything that
+ * takes a press gets the hand, and `:disabled` takes it back — a control that
+ * cannot be pressed must not invite the press.
+ * ------------------------------------------------------------------------- */
+:is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"]) :is(
+    button,
+    summary,
+    [role="button"],
+    [role="tab"],
+    [role="menuitem"],
+    [role="menuitemcheckbox"],
+    [role="menuitemradio"],
+    [role="option"],
+    label:has(input:is([type="checkbox"], [type="radio"])),
+    input:is([type="checkbox"], [type="radio"], [type="range"], [type="color"]),
+    select
+  ):not(:disabled, [aria-disabled="true"], [data-disabled]) {
+  cursor: pointer;
+}
+
+:is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"]) :is(button, [role="button"], [role="menuitem"], select):is(
+    :disabled,
+    [aria-disabled="true"],
+    [data-disabled]
+  ) {
+  cursor: default;
+}
+
+/* ---------------------------------------------------------------------------
+ * ONE SEGMENTED CONTROL, FOR EVERY ONE-OF-N STRIP IN THE ADMIN.
+ *
+ * **The same job was built three times and looked three ways.** The builder has
+ * four of these — the tab strip, the preview's step switcher, the device
+ * toggle, and the Design panel's choice chips — and each had its own idea of
+ * what *selected* looks like. A merchant reading two of them side by side got
+ * two different affordances for the same question.
+ *
+ * **And two of them showed no selection at all.** The step and device buttons
+ * marked the current one with `variant="secondary"`, which paints
+ * `--secondary` — and `--secondary`, `--muted` and the segmented group's own
+ * background are all `#eef3f4`. The selected chip was exactly the colour of the
+ * box it sat in. That is not a taste failure; it is a token collision nobody
+ * would find by reading either file alone, and it is the argument for one
+ * definition rather than four.
+ *
+ * So *selected* is decided **here**, once, for all four: white card, a real
+ * edge, foreground text. Everything else in the group is quiet. The inner radii
+ * are squared so the group reads as one control rather than as chips touching.
+ *
+ * `--card` rather than `--background`: the vendored tab strip used the PAGE
+ * colour for its active tab, which on a `--muted` strip is a two-percent
+ * difference and reads as nothing.
+ * ------------------------------------------------------------------------- */
+/*
+ * **1px of padding, and it is arithmetic rather than taste.** At 2px the group
+ * measured 38px — 32px button, 4px padding, 2px border — which made the preview
+ * header 38 against the tab strip's 36 and left the two builder columns 2px
+ * apart after all the work of §3a. 1px lands it on `--control-height` exactly.
+ * Measured in a browser; nothing in the suite computes it.
+ */
+.wconvert-segmented {
+  align-items: center;
+  gap: 0;
+  padding: 1px;
+  background: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+/*
+ * **Inside `@layer utilities`, because the state has to beat a variant.** The
+ * buttons in these groups are vendored `Button`s whose `variant` compiles to
+ * `!important` utilities, and for important declarations the cascade runs
+ * layers in reverse — so an unlayered rule here loses to `bg-secondary`
+ * however specific it is. This file has now been caught by that four times.
+ */
+@layer utilities {
+  /*
+   * **Every declaration here is `!important`, and leaving them off is why the
+   * first attempt changed nothing.**
+   *
+   * Specificity is not the contest. The vendored classes these override —
+   * `bg-secondary`, `data-[state=active]:bg-background`, `p-[3px]` — are
+   * Tailwind utilities, and this admin compiles utilities as `!important`
+   * (ADR 0035). **In the same layer, an important declaration beats a
+   * non-important one however specific the loser is**, so `#wconvert-admin` +
+   * two attributes lost to a single class, and the tab strip kept its
+   * page-coloured active tab while the code said otherwise.
+   *
+   * That is the fourth time this file has been caught by the interaction
+   * between `important` and cascade layers, and the first three all wrote it
+   * down. The rule that generalises: **an override of a utility is `!important`
+   * AND layered, or it is decoration.**
+   */
+  :is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"]) .wconvert-segmented > :is([data-slot="button"]) {
+    border-radius: max(calc(var(--radius) - 2px), 0px) !important;
+    border: 1px solid transparent !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: var(--muted-foreground) !important;
+    font-weight: 400 !important;
+  }
+
+  :is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"]) .wconvert-segmented > [data-slot="button"]:hover {
+    background: transparent !important;
+    color: var(--foreground) !important;
+  }
+
+  /* The one selected answer, in the one treatment every strip now shares. */
+  :is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"]) .wconvert-segmented > [data-slot="button"][aria-pressed="true"],
+  #wconvert-admin [data-slot="tabs-trigger"][data-state="active"] {
+    background: var(--card) !important;
+    border-color: var(--border) !important;
+    color: var(--foreground) !important;
+    font-weight: 500 !important;
+    box-shadow: none !important;
+  }
+
+  /*
+   * The tab strip is the same control, so it is the same box: a `--muted` band
+   * with one raised answer in it. It was `p-[3px]` with a page-coloured active
+   * tab, which is why it read as a different component from the switcher eight
+   * inches to its right.
+   */
+  #wconvert-admin [data-slot="tabs-list"] {
+    padding: 1px !important;
+    border: 1px solid var(--border) !important;
+  }
+
+  #wconvert-admin [data-slot="tabs-trigger"] {
+    border-radius: max(calc(var(--radius) - 2px), 0px) !important;
+    border: 1px solid transparent !important;
+    color: var(--muted-foreground) !important;
+  }
 }
 
 @media (min-width: 1024px) {
@@ -1322,29 +2079,598 @@
  */
 
 /* ---------------------------------------------------------------------------
+ * THE BLOCK TREE: A TREEGRID, INDENTED BY A CUSTOM PROPERTY.
+ *
+ * **Every measurement here is logical**, which is not tidiness on this
+ * component in particular: the tree's whole shape is indentation, and a
+ * `padding-left` would put a Persian design's nesting on the wrong side of the
+ * row while the rest of the admin correctly flipped around it (ADR 0038, and
+ * the renderer is verified 44/44 under `fa_IR`).
+ *
+ * Depth arrives as `--wconvert-depth` rather than as a class per level, because
+ * the vocabulary lets a merchant nest as deep as they like and a `.depth-4`
+ * ladder would have a floor nobody chose.
+ * ------------------------------------------------------------------------- */
+.wconvert-structure {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* ---------------------------------------------------------------------------
+ * THE SPLIT: THE TREE AND THE INSPECTOR SIDE BY SIDE, ONCE THERE IS ROOM.
+ *
+ * **48rem is derived, not chosen.** `768 − 352 inspector − 24 gap = 392`, which
+ * is precisely the tree width this editor already survives at the 1024px
+ * stacking point. The rule that produced it: never split until the tree would
+ * be narrower than a width it already works at.
+ *
+ * **22rem (352px) for the inspector** sits with Gutenberg's ~350px block
+ * settings sidebar, which is the closest comparable there is — a panel of
+ * controls for one selected node, in a WordPress admin.
+ *
+ * Below the query this collapses to the flex column above, which is not a
+ * fallback invented here: it is exactly the arrangement that shipped, and the
+ * one ADR 0039's placement rule was written for.
+ * ------------------------------------------------------------------------- */
+@container (min-width: 48rem) {
+  .wconvert-structure {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 22rem;
+    /*
+     * `start` rather than the default stretch, which is what makes the sticky
+     * inspector below work at all: a stretched item is as tall as the row and
+     * so has nothing to travel within. It is the same recipe the preview column
+     * uses against `.wconvert-builder`.
+     */
+    align-items: start;
+  }
+
+  /*
+   * The hint and the live region are about the whole tab, so they span it. The
+   * two panes then claim a column each — stated rather than left to auto
+   * placement, so a paragraph added here later does not silently push the
+   * inspector into a row of its own.
+   */
+  .wconvert-structure > * {
+    grid-column: 1 / -1;
+  }
+
+  .wconvert-structure > .wconvert-blocks {
+    grid-column: 1;
+  }
+
+  .wconvert-structure > .wconvert-inspector {
+    grid-column: 2;
+    /*
+     * **The problem the width was spent on.** The preview is sticky and stays;
+     * the inspector was not and did not, so selecting a block low in a fifteen
+     * block design scrolled the merchant away from the row they had just
+     * clicked to reach the box they clicked it for.
+     *
+     * `4rem` clears wp-admin's own sticky toolbar, which is the one piece of
+     * chrome ADR 0035 deliberately leaves in place — the same number, for the
+     * same reason, as the preview column's.
+     */
+    position: sticky;
+    inset-block-start: 4rem;
+    /* The cap below is a stacked-column concern; the track is the measure here. */
+    max-inline-size: none;
+  }
+}
+
+/*
+ * **It scrolls itself, and never the page.** A deeply nested design is wider
+ * than the column below 1024px — where the builder is one column and the tree
+ * sits ABOVE the preview rather than beside it — so the overflow is the tree's
+ * own. That is ADR 0039's rule for a wide table, applied to a wide tree.
+ */
+.wconvert-blocks {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow-x: auto;
+}
+
+/*
+ * **2.5rem, and the row's height was exactly the button inside it.**
+ *
+ * It was `--control-height-sm` with `padding-block: 0` — so the 32px `icon-sm`
+ * actions touched the border above and the border below, and thirty rows read
+ * as one dense block with no air in it. 40px with 4px of block padding gives a
+ * 32px control room to stand in, and it is what lets the twist below reach
+ * 24 × 24 without any button changing size.
+ */
+.wconvert-block {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-block-size: 2.5rem;
+  padding-block: 0.25rem;
+  padding-inline: 0.5rem;
+  padding-inline-start: calc(0.5rem + var(--wconvert-depth, 0) * 1rem);
+  border-block-start: 1px solid var(--border);
+}
+
+.wconvert-block:first-child {
+  border-block-start: 0;
+}
+
+/*
+ * **A block the merchant switched off, said in the list.** Dimmed rather than
+ * struck through or greyed to unreadable: it is still a row they can select,
+ * rename and move — the only thing that changed is whether a visitor sees it —
+ * so it stays legible and stops competing with the rows that are live.
+ *
+ * The eye gets the dimming and the icon; a screen reader gets the word, because
+ * neither of those reaches it.
+ */
+.wconvert-block[data-hidden='true'] .wconvert-block__label {
+  opacity: 0.6;
+}
+
+.wconvert-block__off {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  color: var(--muted-foreground);
+}
+
+.wconvert-block__off > svg {
+  inline-size: 0.875rem;
+  block-size: 0.875rem;
+}
+
+/*
+ * A step is the thing the blocks are IN rather than a block, so it reads as a
+ * heading over the rows under it — which is also why its row carries only a
+ * name and no move or delete: how many steps a design has follows from its
+ * metric (ADR 0025), not from what a merchant arranges.
+ */
+.wconvert-block[data-step='true'] {
+  background: var(--surface);
+  font-weight: 600;
+}
+
+/*
+ * **The same outline the preview paints, on the same selection.** One string
+ * names the slot on both surfaces (ADR 0040), so the two have to agree about
+ * what "selected" looks like or the merchant sees one highlight and hunts for
+ * the other.
+ */
+.wconvert-block[data-selected='true'] {
+  background: color-mix(in srgb, var(--ring) 12%, transparent);
+  box-shadow: inset 2px 0 0 0 var(--ring);
+}
+
+.wconvert-block__name {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex: 1;
+  min-inline-size: 0;
+}
+
+/*
+ * A fixed box whether or not there is a chevron in it, so the names of blocks
+ * that hold nothing line up with the names of blocks that do.
+ *
+ * ===========================================================================
+ * 24 × 24, BECAUSE NOTHING ELSE ON THE PAGE EXPANDS A ROW.
+ * ===========================================================================
+ * It was 20 × 20, under WCAG 2.2 SC 2.5.8, and the exceptions have to be read
+ * one at a time rather than waved at:
+ *
+ * - **Equivalent** is what saves the GRIP beside it — the grip reorders a
+ *   block, and the row's ↑ ↓ buttons and the `⋯` menu's *Move up* / *Move down*
+ *   are 32px pointer controls on the same page doing exactly that job. It is
+ *   the same argument ADR 0038 already makes for SC 2.5.7, and it means the
+ *   grip passes at 16px and is left alone.
+ * - It does **not** save the twist. Expanding a row is done by this control and
+ *   by ← →, and arrow keys are keyboard — which 2.5.8 does not count.
+ * - **Spacing** cannot save it either: a 24px circle centred on a 20px twist
+ *   would intersect the label button 4px away.
+ *
+ * So it grows, and the row's new 40px height is what it grows into. The chevron
+ * inside stays 14px: what changes is the target, not the picture.
+ */
+.wconvert-block__twist {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 1.5rem;
+  block-size: 1.5rem;
+  flex: none;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius);
+  background: none;
+  color: var(--muted-foreground);
+  cursor: pointer;
+}
+
+/*
+ * **The `--ring` treatment every other control in this file has.** These two
+ * are bare `<button>`s and fell back to the UA outline — a different shape and
+ * colour from the ring on the buttons beside them, and `.wconvert-blocks` is an
+ * `overflow-x: auto` scroll container, which makes it a scroll container on
+ * BOTH axes: a UA ring on a row at the edge can be clipped by it.
+ */
+.wconvert-block__twist:focus-visible,
+.wconvert-block__label:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: -2px;
+}
+
+.wconvert-block__twist > svg {
+  inline-size: 0.875rem;
+  block-size: 0.875rem;
+}
+
+.wconvert-block__label {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex: 1;
+  min-inline-size: 0;
+  padding: 0.25rem;
+  border: 0;
+  border-radius: var(--radius);
+  background: none;
+  text-align: start;
+  cursor: pointer;
+}
+
+.wconvert-block__kind {
+  flex: none;
+  color: var(--foreground);
+}
+
+/*
+ * What the block SAYS, truncated. A row is named by its words rather than by
+ * "item 3 of 5", and a headline long enough to wrap would make the rows
+ * different heights and the tree unreadable as a list.
+ */
+.wconvert-block__says {
+  min-inline-size: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--muted-foreground);
+  font-size: var(--text-note);
+}
+
+/*
+ * ---------------------------------------------------------------------------
+ * THE GRIP: A DRAG AFFORDANCE THAT IS ONLY A DRAG AFFORDANCE.
+ *
+ * It was the NAME button, which also selects — one control with two meanings,
+ * wearing `cursor: grab` while its click did something else. `aria-hidden` and
+ * out of the tab order, because the keyboard reaches moving three other ways
+ * and announcing a drag nobody can perform is noise on every row.
+ * ------------------------------------------------------------------------- */
+.wconvert-block__grip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 1rem;
+  flex: none;
+  color: var(--muted-foreground);
+  cursor: grab;
+}
+
+.wconvert-block__grip > svg {
+  inline-size: 0.875rem;
+  block-size: 0.875rem;
+}
+
+/*
+ * A step gets none, so the rows that DO drag have to line up with the one that
+ * does not — the grip's width, spent as indentation on a step's own row.
+ */
+.wconvert-block[data-step='true'] .wconvert-block__name {
+  padding-inline-start: 1.25rem;
+}
+
+/*
+ * The words are quieter than the kind, which is the hierarchy the row was
+ * missing: *what it is*, then *what it says*. Both were 14px `--foreground`
+ * against `--muted-foreground`, so a long headline competed with the name of
+ * the thing holding it.
+ */
+
+/*
+ * ---------------------------------------------------------------------------
+ * THE TOOLS ARE THERE, AND THEY ARE QUIET UNTIL THEY ARE WANTED.
+ *
+ * `opacity: 0` and never `display: none` or `visibility: hidden`: the tree is a
+ * treegrid with a roving tabindex, so every row must have the SAME number of
+ * cells and every one of them must stay focusable. A control removed from the
+ * layout would be stepped over by → on some rows and not others, which is worse
+ * than either.
+ *
+ * `:focus-within` is what makes that true rather than merely intended —
+ * arrowing onto a hidden button reveals it — and `[data-selected]` is what
+ * makes it work on a touch screen, where there is no hover and the tap that
+ * selects is the tap that has to bring the tools up.
+ * ------------------------------------------------------------------------- */
+/*
+ * **`pointer-events: none`, because `opacity: 0` does not stop a click.** At
+ * rest every row carried two invisible, clickable buttons — a merchant aiming
+ * at a row's name and landing 30px right of it moved the block instead. The
+ * cells stay in the DOM and in the LAYOUT, which is not negotiable: the
+ * treegrid's roving tabindex needs every row to have the same number of cells
+ * (ADR 0038), so `display: none` and `visibility: hidden` are both out.
+ *
+ * Restored below on the same three states that restore the opacity, so the
+ * property is never on without the other.
+ */
+.wconvert-block__action {
+  display: inline-flex;
+  flex: none;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease;
+}
+
+/* The menu stays: it is where Move up and Move down live, and it is the path a
+ * pointer can reach without hovering the row first. */
+.wconvert-block__action:last-child,
+.wconvert-block:hover .wconvert-block__action,
+.wconvert-block:focus-within .wconvert-block__action,
+.wconvert-block[data-selected='true'] .wconvert-block__action {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wconvert-block__action {
+    transition: none;
+  }
+}
+
+/*
+ * ---------------------------------------------------------------------------
+ * TWO CHIPS, AND NEITHER IS DECORATION.
+ *
+ * **counted** marks the one block the Optin's numbers depend on; deleting it
+ * leaves an Optin that renders, publishes and reports zero forever (ADR 0020).
+ * **words will be lost** marks a block with no Slot Role, whose text has no
+ * seam to travel on when the merchant switches design.
+ * ------------------------------------------------------------------------- */
+/*
+ * **Block padding is what makes a chip a chip.** These had `padding-inline`
+ * only, on a baseline-aligned line — so *counted* in green read as a green word
+ * in the block's own copy rather than as a mark on the row, which is the one
+ * thing it must not be mistaken for.
+ */
+.wconvert-block__chip {
+  flex: none;
+  padding-block: 0.0625rem;
+  padding-inline: 0.375rem;
+  border-radius: var(--radius);
+  font-size: var(--text-micro);
+  line-height: var(--text-micro--line-height);
+  white-space: nowrap;
+}
+
+.wconvert-block__chip--counted {
+  background: color-mix(in srgb, var(--success) 14%, transparent);
+  color: var(--success);
+}
+
+.wconvert-block__chip--warn {
+  background: color-mix(in srgb, var(--warning) 14%, transparent);
+  color: var(--warning);
+}
+
+/*
+ * Which pane of a `split` a block sits in. Named first and second rather than
+ * left and right, which is the only naming that survives `fa_IR` — the panes
+ * swap sides and the order does not.
+ */
+.wconvert-block__pane {
+  flex: none;
+  padding-block: 0.0625rem;
+  padding-inline: 0.375rem;
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--muted-foreground);
+  font-size: var(--text-micro);
+}
+
+/* ---------------------------------------------------------------------------
+ * DRAGGING, WHICH IS THE SECOND WAY TO DO WHAT ↑ AND ↓ ALREADY DO.
+ *
+ * WCAG 2.2 SC 2.5.7 requires a single-pointer alternative to any drag, and W3C
+ * is explicit that keyboard equivalence does not satisfy it without controls
+ * that can be clicked or tapped. So these rules decorate an affordance that is
+ * additive: with every one of them deleted, the buttons still reorder the list.
+ * ------------------------------------------------------------------------- */
+.wconvert-block[data-dragging='true'] {
+  opacity: 0.4;
+}
+
+/*
+ * **The indicator is a rule across the row, on the block axis.** A list runs
+ * top to bottom in Persian too, so this is the one measurement in the editor
+ * that does not invert — the indentation and the ← → keys, which do, are
+ * handled where they live.
+ */
+.wconvert-block[data-drop-edge='before'] {
+  box-shadow: inset 0 2px 0 0 var(--ring);
+}
+
+.wconvert-block[data-drop-edge='after'] {
+  box-shadow: inset 0 -2px 0 0 var(--ring);
+}
+
+/*
+ * The only movement this editor draws, and it is opt-in. A merchant who has
+ * asked their system for less motion gets the same information with none:
+ * the row still fades and the rule still appears, they simply arrive.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .wconvert-block {
+    transition: opacity 120ms ease, box-shadow 120ms ease;
+  }
+}
+
+/*
+ * The GRIP is the drag handle, so the grab cursor lives on it — and only under
+ * a pointer, because there is no such thing as a grab cursor for a keyboard.
+ * The name went back to meaning one thing: it selects.
+ */
+.wconvert-block[data-dragging='true'] .wconvert-block__grip {
+  cursor: grabbing;
+}
+
+/* ---------------------------------------------------------------------------
+ * THE INSPECTOR: THE SELECTED BLOCK'S CONTROLS, BESIDE THE LIST OR UNDER IT.
+ *
+ * **This said "under the list, and that is measured rather than preferred: the
+ * tab column is 616px at its widest".** The measurement was honest and the
+ * number is gone: 616 was arithmetic off a measure chosen for the four reading
+ * screens — `1152 − 48 padding − 24 gap − 464 aside` — and the builder now
+ * holds a measure of its own. Above 48rem of container there IS a split to be
+ * had, and the container query above takes it.
+ *
+ * **The placement rule is re-derived rather than repealed.** A control that
+ * acts on a selection lives WITH the list the selection is made in — beside it
+ * where there is room, under it where there is not. Never on another tab, and
+ * never in the row, both of which ADR 0039 still rules out for reasons that
+ * have nothing to do with width.
+ * ------------------------------------------------------------------------- */
+/*
+ * **1rem, matching every other card's body.** It was 0.75rem, which put the
+ * inspector's fields 4px inside the tree's rows beside them — the same 4px
+ * stagger the reading screens' tables had down their left edge.
+ */
+.wconvert-inspector {
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  /*
+   * **The field cap, and it only ever binds in the stacked arrangement.**
+   *
+   * The inputs in here are `widefat` — 100% of what holds them — so stacked
+   * under the tree they are as wide as the tab column, and the tab column grows
+   * with the builder's new measure. Without this a *Placeholder* field becomes
+   * an 870px box for the word `you@example.com`, which is well past the 45–75
+   * character measure every form-usability source gives.
+   *
+   * 44rem (704px) keeps a field scannable at every width between 616px and the
+   * split. Above the split the 22rem track is the measure and this is released.
+   */
+  max-inline-size: 44rem;
+}
+
+.wconvert-inspector__head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/*
+ * **A heading with a heading's size.** It is an `<h4>` and it had only a weight,
+ * so it rendered at body size — exactly as large as the field labels under it,
+ * which is a heading that is not one. The rule that gives the builder's editors
+ * their heading size is scoped to `.wconvert-editor` and the inspector is not
+ * inside it, so it is stated here against the same token.
+ */
+.wconvert-inspector__name {
+  margin: 0;
+  font-size: var(--text-heading);
+  line-height: var(--text-heading--line-height);
+  font-weight: 600;
+}
+
+/*
+ * What KIND of block it is, quietly. A slot named by its Slot Role reads
+ * "Headline", and the merchant reasoning about what may go where is helped by
+ * knowing that is a heading — but it is a footnote to the name rather than a
+ * second name.
+ */
+/*
+ * ⇄ — the only control that changes what a block IS. Pushed to the trailing
+ * edge, because it is a different question from the name beside it: the header
+ * says what this is, and this offers what else it could be.
+ */
+.wconvert-inspector__swap {
+  margin-inline-start: auto;
+}
+
+.wconvert-inspector__kind {
+  padding-inline: 0.375rem;
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--muted-foreground);
+  font-size: var(--text-micro);
+}
+
+/*
+ * The first control sits under the heading rather than against it. `SlotFields`
+ * draws no frame of its own, so this is where the gap between the name and the
+ * fields is decided.
+ */
+.wconvert-inspector > :not(.wconvert-inspector__head) {
+  margin-block-start: 0.5rem;
+}
+
+/* ---------------------------------------------------------------------------
  * THE THEME PANEL: PRESETS FIRST, RAW TOKENS BEHIND A DISCLOSURE (#71).
  * ------------------------------------------------------------------------- */
 .wconvert-themes {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
   gap: 0.5rem;
-  margin-block: 0.75rem;
+  margin: 0;
 }
 
+/*
+ * **A preset is a control a merchant came to this tab to press, so it stands at
+ * `--control-height`** (ADR 0039). It was 39px — padding around a line, no
+ * stated height — which is neither of the two heights this admin has and three
+ * pixels off one of them, so a row of presets sat a little taller than the
+ * swatches under it for no reason anybody chose.
+ *
+ * `min-block-size` rather than `block-size`, because the label wraps: a preset
+ * name is one word in English and may not be in German, and a control that
+ * refuses to grow clips it.
+ */
 .wconvert-theme {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
+  min-block-size: var(--control-height);
+  padding: 0.25rem 0.75rem;
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   font-weight: 500;
   text-align: start;
+  cursor: pointer;
 }
 
 .wconvert-theme:hover {
   border-color: var(--ring);
+}
+
+/*
+ * **The focus treatment every other control in this file already has.** These
+ * two are bare `<button>`s, so without it they fall back to the UA ring — which
+ * is a different shape and a different colour from the ring on the input beside
+ * them, and inside a scroll container can be clipped at its edge.
+ */
+.wconvert-theme:focus-visible,
+.wconvert-swatch:focus-visible {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 1px var(--ring);
+  outline: 2px solid transparent;
+  outline-offset: 2px;
 }
 
 /*
@@ -1372,40 +2698,134 @@
   margin-inline-start: -0.3125rem;
 }
 
+/* The Copy-theme control and whatever it has to say afterwards. */
 .wconvert-themes__theme {
-  margin-block: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
 }
 
-/*
- * **Every raw token lives here, once.** Duplicating the "important" colours
- * above the disclosure would give one token two controls a merchant can watch
- * disagree with itself; presets are what carries the median case (#71).
- */
-.wconvert-advanced {
-  margin-block-start: 1rem;
-  padding-block-start: 0.75rem;
+/* ---------------------------------------------------------------------------
+ * ONE CONTAINER OWNS THE RHYTHM. ITS CHILDREN OWN NONE.
+ *
+ * **This is the rule the Design tab was breaking three ways at once**, and it
+ * is worth stating before the rules that follow it because every one of them
+ * depends on it.
+ *
+ * The panel's body is a flex column with `gap-4`. Inside it,
+ * `.wconvert-editor :is(p, h2, h3, h4, …)` added 0.75rem above and below every
+ * paragraph and heading, and half the components below added a `margin-block`
+ * of their own. **Flex gaps do not collapse with margins** — the same trap that
+ * made `mb-4` under the tab strip render as 24px — so the space between *"How
+ * it looks"* and the presets under it was 16 + 12 + 12 = 40px, and the space
+ * between any two other things was whatever their particular margins summed to.
+ * Nothing in the panel was the distance it was written to be.
+ *
+ * So: **a box with a `gap` contains no child that sets a block margin.** Every
+ * container below is a flex or grid with its own gap, and every component in
+ * one is at zero. A margin left on a child is not a smaller mistake than the
+ * wrong number — it is the number becoming unpredictable.
+ *
+ * The prose rhythm on `.wconvert-editor` is not repealed: it is for PROSE, in
+ * the three editors that still render WordPress's controls. The Design tab
+ * stopped being one of those when it was rebuilt against the component
+ * vocabulary, and it no longer carries the class.
+ * ------------------------------------------------------------------------- */
+
+/* ---------------------------------------------------------------------------
+ * THE GROUPS ARE THE DISCLOSURE NOW.
+ *
+ * **`.wconvert-advanced` is gone, and its absence is the fix.** It was a
+ * `<details>` closed on load holding all fifteen tokens — so the Design tab
+ * opened as a gallery, four presets and three contrast ratios with no controls
+ * on it at all, on the tab whose entire subject those controls are.
+ *
+ * Its argument survives untouched and is what these groups keep: **every token
+ * appears exactly once**, because a token with two controls is a token a
+ * merchant can watch disagree with itself (#71). What was wrong was hiding all
+ * of them behind one summary, not spelling each of them once.
+ *
+ * A heading and a rule per group is enough to skip past. The colour grid below
+ * pays back most of the height the disclosure used to save.
+ * ------------------------------------------------------------------------- */
+.wconvert-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-block-start: 1rem;
   border-block-start: 1px solid var(--border);
 }
 
-.wconvert-advanced > summary {
-  cursor: pointer;
-  font-weight: 600;
+/* The first group opens the panel and divides nothing above it. */
+.wconvert-group:first-child {
+  padding-block-start: 0;
+  border-block-start: 0;
 }
 
-.wconvert-token--colour {
-  align-items: start;
-}
-
-.wconvert-token__name {
+.wconvert-group__name {
+  margin: 0;
   color: var(--muted-foreground);
+  font-size: var(--text-micro);
+  line-height: var(--text-micro--line-height);
+  letter-spacing: var(--text-micro--letter-spacing);
+  font-weight: var(--text-micro--font-weight);
+  text-transform: uppercase;
 }
 
+/* ---------------------------------------------------------------------------
+ * THE PALETTE: A GRID, BECAUSE COLOURS ARE COMPARED RATHER THAN READ DOWN.
+ *
+ * Six full-width rows for a seven-character value is a column of settings,
+ * which is the right shape for six DIFFERENT questions and the wrong one for
+ * six answers to one. Two lines of swatches is the whole palette at a glance —
+ * and that is what makes the contrast readout under it land as a verdict on
+ * something the merchant can see.
+ *
+ * It also fixes the reset: a colour row was a one-column grid, so applying a
+ * preset dropped eight reset buttons each onto a line of its own.
+ * ------------------------------------------------------------------------- */
+.wconvert-palette {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.5rem;
+  margin: 0;
+}
+
+/*
+ * A cell is the swatch and the way back from it. The reset is `flex: none` and
+ * absent until the value differs from the design's, so a cell with nothing
+ * changed is the swatch at full width.
+ */
+.wconvert-palette > .wconvert-token--colour {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin: 0;
+}
+
+/* Outside the grid — the translucent one, at full width under it. */
+.wconvert-token--colour {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/*
+ * **The name is INSIDE the swatch**, which is what lets the palette be a grid:
+ * a swatch showing only a colour would be a row of coloured boxes nobody could
+ * name. Two lines — the name quietly over the value — because *"Hintergrund
+ * #ffffff"* on one line at an 11rem track is a truncated label in half the
+ * locales this ships in.
+ */
 .wconvert-swatch {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   inline-size: 100%;
-  block-size: var(--control-height);
+  min-block-size: var(--control-height);
+  padding-block: 0.3125rem;
   padding-inline: 0.5rem;
   background: var(--card);
   border: 1px solid var(--input);
@@ -1413,6 +2833,7 @@
   color: var(--foreground);
   font-variant-numeric: tabular-nums;
   text-align: start;
+  cursor: pointer;
 }
 
 .wconvert-swatch:hover {
@@ -1436,6 +2857,20 @@
   background-size: 0.5rem 0.5rem;
   background-position: 0 0, 0.25rem 0.25rem;
   box-shadow: inset 0 0 0 999px var(--wconvert-chip, transparent);
+}
+
+.wconvert-swatch__text {
+  display: grid;
+  min-inline-size: 0;
+}
+
+.wconvert-swatch__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--muted-foreground);
+  font-size: var(--text-note);
+  line-height: var(--text-note--line-height);
 }
 
 .wconvert-swatch__value {
@@ -1487,22 +2922,274 @@
   color: var(--muted-foreground);
 }
 
-.wconvert-slot {
-  margin-block-end: 1rem;
-  padding: 0.75rem;
+/* ---------------------------------------------------------------------------
+ * A TOKEN'S ROW: THE CONTROL, THE EXACT VALUE, AND THE WAY BACK.
+ *
+ * A length gets a slider AND the box it always had, because both write the one
+ * token and cannot disagree — which is what keeps `clamp(20rem, 50vw, 30rem)`
+ * typeable after a slider appears over `28rem`. Token names are checked and
+ * their values are not, and a slider must never be able to clobber a value it
+ * cannot express.
+ * ------------------------------------------------------------------------- */
+.wconvert-token__row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/*
+ * **It was 0px wide, and what a merchant saw was the thumb.**
+ *
+ * `.wconvert-token__exact` declares `inline-size: 7rem` at specificity `0,1,0`
+ * and lost to `.wconvert-token__row > :is(input, …) { inline-size: 100% }` at
+ * `0,1,1` — both added in the same commit — so the text box took 100% with
+ * `flex: none` and starved the slider of every pixel. The only way to set a
+ * size was to type `1.625rem` into a box.
+ *
+ * The fix is stated at the RULE rather than won as a specificity race: the
+ * 100% rule now excludes these two by name (see THE FIELD, below), and the
+ * floor here is what stops a sibling added later starving it again.
+ *
+ * The height is `--control-height` because a `input[type=range]` at the UA
+ * default is ~22px, and this is a control a merchant came to the tab to use —
+ * which is ADR 0039's own test for which of the two heights applies.
+ */
+.wconvert-token__slider {
+  flex: 1;
+  min-inline-size: 6rem;
+  block-size: var(--control-height);
+  margin: 0;
+  cursor: pointer;
+}
+
+/*
+ * **7rem, and for the first time this is true.** The declaration has been here
+ * since the slider landed and never won: the 100% rule below outranked it, so
+ * the box took the whole row. The exclusion in that rule is what delivers the
+ * number this comment always claimed.
+ */
+.wconvert-token__exact {
+  inline-size: 7rem;
+  flex: none;
+}
+
+/* ---------------------------------------------------------------------------
+ * A SEGMENTED CONTROL, OVER NATIVE RADIOS.
+ *
+ * The input is `sr-only` rather than absent, so the browser keeps everything
+ * that makes a radio group a radio group — arrow keys between the options, one
+ * tab stop for the set, and the set announced as a set. What is drawn is the
+ * label beside it, and the focus ring is drawn from the input's own state so a
+ * keyboard user sees where they are.
+ *
+ * The `font` chips are set in the face they name — which is the whole value of
+ * a font picker, and why this is chips and not a `<select>`, where `font-family`
+ * on an `<option>` is unreliable.
+ * ------------------------------------------------------------------------- */
+.wconvert-choice-set {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 0;
+  padding: 2px;
+  background: var(--muted);
   border: 1px solid var(--border);
   border-radius: var(--radius);
 }
 
+.wconvert-choice {
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+  cursor: pointer;
+}
+
+/* `- 4px` against the group's 1px padding and 1px border: 32 + 2 + 2 = 36. */
+.wconvert-choice__label {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: calc(var(--control-height) - 4px);
+  padding-inline: 0.625rem;
+  border: 1px solid transparent;
+  border-radius: max(calc(var(--radius) - 2px), 0px);
+  color: var(--muted-foreground);
+  white-space: nowrap;
+}
+
+.wconvert-choice:hover .wconvert-choice__label {
+  color: var(--foreground);
+}
+
 /*
- * The block that edits the slot the preview is outlining. The SAME ring on
- * both sides of the boundary is the whole affordance: one thing is selected
- * and it is legible in two places at once (ADR 0040).
+ * The same *selected* the strips above use. It is spelled twice because this
+ * one hangs off a checked `<input>` rather than off `aria-pressed`, and a
+ * radio's state has no attribute on the element being painted — but the VALUES
+ * are the group's, so the two cannot drift on colour.
  */
-.wconvert-slot[data-selected="true"] {
+.wconvert-choice > input:checked + .wconvert-choice__label {
+  background: var(--card);
+  border-color: var(--border);
+  color: var(--foreground);
+  font-weight: 500;
+}
+
+.wconvert-choice > input:focus-visible + .wconvert-choice__label {
   border-color: var(--ring);
   box-shadow: 0 0 0 1px var(--ring);
 }
+
+/*
+ * **The typed box stays, under the chips.** `choices` is what the panel offers
+ * and never what is allowed — token values are unvalidated on both sides of the
+ * boundary — so a fifth font stack or a fourth alignment has to remain
+ * expressible, and when one is typed no chip is checked, which is the honest
+ * picture rather than a control quietly disagreeing with the value.
+ */
+.wconvert-token__typed {
+  margin: 0;
+}
+
+/*
+ * **Present only where the value differs from the design's**, which is what
+ * makes "what have I actually changed?" answerable at a glance rather than by
+ * opening fifteen controls.
+ */
+.wconvert-token__reset {
+  flex: none;
+  color: var(--muted-foreground);
+}
+
+/* ---------------------------------------------------------------------------
+ * THE CONTRAST READOUT: A SAMPLE, A SENTENCE, A NUMBER, A VERDICT.
+ *
+ * The colour picker is the first control in this product that lets a merchant
+ * fail AA for a VISITOR rather than for themselves, so it is measured beside
+ * the control rather than discovered from a customer.
+ *
+ * **It only exists when something is wrong**, so every row on screen is a row
+ * to act on — see {@see Contrast}. What made the old one hard to read was not
+ * the styling but the census: three passing ratios printed as inline runs of
+ * text, wrapping into each other, with the one that mattered indistinguishable
+ * from the two that did not.
+ *
+ * `padding-inline-start: 0` is load-bearing rather than tidiness: this list
+ * sits inside `.wconvert-editor` on the tabs that still carry the class, whose
+ * prose-list rule gives every list `1.5em` of indent and a marker.
+ * ------------------------------------------------------------------------- */
+.wconvert-contrast {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  margin: 0;
+}
+
+.wconvert-contrast__name {
+  margin: 0;
+  color: var(--muted-foreground);
+  font-size: var(--text-micro);
+  line-height: var(--text-micro--line-height);
+  letter-spacing: var(--text-micro--letter-spacing);
+  font-weight: var(--text-micro--font-weight);
+  text-transform: uppercase;
+}
+
+.wconvert-contrast__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  margin: 0;
+  padding-inline-start: 0;
+  list-style: none;
+}
+
+/*
+ * A row, not a run of text. The sample leads, the sentence takes the slack, and
+ * the number and the verdict sit at the trailing edge where a column of them
+ * lines up — which is what makes two failing rows comparable at a glance.
+ */
+.wconvert-contrast__pair {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.375rem 0.625rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: var(--text-note);
+}
+
+/*
+ * **The sample is the row's argument.** Two letters in the actual pair, at a
+ * size a person reads at, is the same fact as the ratio in a form that needs no
+ * training — and it is the only part of the row that would still mean something
+ * with the numbers removed. Its border is `--border` and never the pair's, so a
+ * design whose colours are both pale still reads as a chip rather than a smudge.
+ */
+.wconvert-contrast__sample {
+  display: grid;
+  place-items: center;
+  flex: none;
+  inline-size: 2.75rem;
+  block-size: 2rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--wconvert-sample-bg, transparent);
+  color: var(--wconvert-sample-fg, inherit);
+  font-size: var(--text-body);
+  font-weight: 600;
+}
+
+.wconvert-contrast__what {
+  flex: 1;
+  min-inline-size: 0;
+  color: var(--foreground);
+  text-wrap: pretty;
+}
+
+.wconvert-contrast__ratio {
+  flex: none;
+  color: var(--muted-foreground);
+  font-variant-numeric: tabular-nums;
+}
+
+/*
+ * The verdict as a chip rather than a sentence, so the eye finds the answer
+ * before it reads the number.
+ */
+.wconvert-contrast__badge {
+  flex: none;
+  padding: 0.0625rem 0.375rem;
+  border-radius: var(--radius);
+  font-size: var(--text-micro);
+  line-height: var(--text-micro--line-height);
+  font-weight: var(--text-micro--font-weight);
+  white-space: nowrap;
+}
+
+/*
+ * **Two answers, and they used to be painted as one.** *"We measured it and it
+ * is too low"* and *"we cannot measure this"* are different news, and both came
+ * out in the same amber — so a design whose accent is `var(--brand)` looked
+ * like a design that fails.
+ */
+.wconvert-contrast__pair[data-state='fail'] .wconvert-contrast__badge {
+  background: color-mix(in srgb, var(--warning) 14%, transparent);
+  color: var(--warning);
+}
+
+.wconvert-contrast__pair[data-state='unknown'] .wconvert-contrast__badge {
+  background: var(--surface);
+  color: var(--muted-foreground);
+}
+
+/*
+ * **`.wconvert-slot` and its `[data-selected]` rule are gone.** They drew a
+ * bordered box per slot in the old settings panel, which the block tree and the
+ * inspector replaced — the selection ring now lives on `.wconvert-block`, where
+ * ADR 0040's "one thing selected, legible in two places" is actually drawn.
+ * Nothing in this tree has carried the class since. `.wconvert-slot__key` and
+ * `.wconvert-slot__link` below are still real and are not the same rule.
+ */
 
 /*
  * **The link is a part of the slot above it, not a second slot.** It was the
@@ -1530,24 +3217,147 @@
  * different x. A column of settings is read down its left edge, and there was
  * no left edge to read.
  */
+/*
+ * **The token keeps no margin and the slot key does**, and the difference is
+ * the rule above rather than an inconsistency: a token sits in
+ * `.wconvert-group`, which is a flex column with a gap, and a slot key sits in
+ * the inspector, which is not.
+ */
 .wconvert-slot__key,
 .wconvert-token {
   display: grid;
   gap: 0.25rem;
-  margin-block-start: 0.5rem;
   color: var(--muted-foreground);
 }
 
+.wconvert-slot__key {
+  margin-block-start: 0.5rem;
+}
+
+/*
+ * **The exclusion is spelled HERE, where the 100% is**, and not as a louder
+ * selector on the two controls it would otherwise flatten. A rule that claims
+ * every input in a row and an exception that fights it on specificity is a pair
+ * that only one reader at a time understands; a rule that states its own
+ * exception is one thing to read. See `.wconvert-token__slider` above for what
+ * this cost before it said so.
+ */
 .wconvert-slot__key > :is(input, select, textarea),
-.wconvert-token > :is(input, select, textarea) {
+.wconvert-token > :is(input, select, textarea),
+.wconvert-token__row
+  > :is(input, select, textarea):not(.wconvert-token__exact, .wconvert-token__slider) {
   inline-size: 100%;
   margin-inline-end: 0;
   color: var(--foreground);
 }
 
+.wconvert-token__row > :is(.wconvert-token__exact, .wconvert-token__slider) {
+  margin-inline-end: 0;
+  color: var(--foreground);
+}
+
+/*
+ * An image address and the button that fills it from the media library. The
+ * address stays visible: a merchant pasting a CDN URL is a real case, and the
+ * picker is absent wherever `wp_enqueue_media()` was not asked for.
+ */
+.wconvert-slot__media {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.wconvert-slot__media > input {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+/* ---------------------------------------------------------------------------
+ * THE VERDICT: WHETHER THIS DESIGN WILL ACTUALLY WORK.
+ *
+ * In the toolbar because it is about the whole design, which is ADR 0039's own
+ * scope test — and beside Undo, because both are things a merchant reaches for
+ * after doing something rather than while doing it.
+ * ------------------------------------------------------------------------- */
+/*
+ * **The editable title, sized by what is in it.** `size` on the input is the
+ * width that actually lands; `field-sizing` refines it to the pixel where a
+ * browser has it, and where one does not the character count is already close.
+ * Both are needed: without them `Save changes` sits beside the input's EDGE
+ * rather than beside the words, which reads as a button floating in a band.
+ */
+.wconvert-optin-name {
+  field-sizing: content;
+  min-inline-size: 12ch;
+}
+
+/*
+ * Undo and Redo, in the page-header band with `Save changes`. Tight together,
+ * because they are one control with two directions, and spaced from the title
+ * by the band's own gap.
+ */
+.wconvert-history {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+}
+
+.wconvert-verdict {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin: 0;
+  margin-inline-start: auto;
+}
+
+.wconvert-verdict--good {
+  color: var(--success);
+}
+
+.wconvert-verdict--bad {
+  margin-inline-start: auto;
+  color: var(--warning);
+}
+
+.wconvert-verdict > svg {
+  inline-size: 1rem;
+  block-size: 1rem;
+}
+
+.wconvert-verdict__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-wrap: pretty;
+}
+
+/*
+ * A problem a merchant cannot navigate to is a problem they have to hunt for,
+ * and the tree is right there — so where a sentence names a block, the sentence
+ * is the button that selects it.
+ */
+.wconvert-verdict__go {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  text-align: start;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/*
+ * **It sits UNDER the fields now**, so the space it needs is above it and the
+ * inspector's own `margin-block-start` rule already supplies that. The bottom
+ * margin it used to carry was the gap to the first field and is now a trailing
+ * gap inside the card.
+ */
 .wconvert-slot__shown {
-  display: block;
-  margin-block-end: 0.5rem;
+  display: flex;
+  align-items: center;
 }
 
 .wconvert-rules {

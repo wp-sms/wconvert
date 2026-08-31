@@ -1,0 +1,81 @@
+{
+  "id": "inline-signup",
+  "name": "Inline signup",
+  "display_type": "inline",
+  "tier": "free",
+  "tokens": {
+    "bg": "#f8fafc",
+    "fg": "#0f172a",
+    "muted": "#64748b",
+    "accent": "#0f172a",
+    "accent-fg": "#ffffff",
+    "border": "#e2e8f0",
+    "heading-size": "1.375rem",
+    "radius": "0.5rem",
+    "pad": "1.5rem",
+    "gap": "0.875rem",
+    "width": "34rem",
+    "align": "start"
+  },
+  "tree": {
+    "steps": [
+      {
+        "type": "stack",
+        "children": [
+          {
+            "type": "heading",
+            "role": "headline",
+            "text": "Liked this? There is more."
+          },
+          {
+            "type": "text",
+            "role": "body",
+            "text": "We send one of these every fortnight."
+          },
+          {
+            "type": "field",
+            "name": "email",
+            "label": "Email address",
+            "placeholder": "you@example.com",
+            "required": true
+          },
+          {
+            "type": "button",
+            "role": "cta_label",
+            "label": "Send them to me",
+            "action": "submit"
+          },
+          {
+            "type": "consent",
+            "role": "consent_text",
+            "hidden": true,
+            "text": "Email me offers and news. See our %s.",
+            "link": {
+              "label": "Privacy Policy"
+            }
+          },
+          {
+            "type": "text",
+            "role": "fine_print",
+            "text": "No spam, and you can unsubscribe at any time."
+          }
+        ]
+      },
+      {
+        "type": "stack",
+        "children": [
+          {
+            "type": "heading",
+            "role": "success_headline",
+            "text": "That is you signed up"
+          },
+          {
+            "type": "text",
+            "role": "success_body",
+            "text": "The next one is already being written."
+          }
+        ]
+      }
+    ]
+  }
+}

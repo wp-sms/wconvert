@@ -1,0 +1,93 @@
+{
+  "id": "inline-phone",
+  "name": "Inline text alerts",
+  "display_type": "inline",
+  "tier": "free",
+  "tokens": {
+    "bg": "#f5f3ff",
+    "fg": "#2e1065",
+    "muted": "#6d28d9",
+    "accent": "#7c3aed",
+    "accent-fg": "#ffffff",
+    "border": "#ddd6fe",
+    "heading-size": "1.375rem",
+    "radius": "0.75rem",
+    "pad": "1.5rem",
+    "gap": "0.875rem",
+    "width": "34rem",
+    "align": "start"
+  },
+  "tree": {
+    "steps": [
+      {
+        "type": "stack",
+        "children": [
+          {
+            "type": "heading",
+            "role": "headline",
+            "text": "Text me when it is back"
+          },
+          {
+            "type": "text",
+            "role": "body",
+            "text": "One message the moment it is in stock. Nothing else, ever."
+          },
+          {
+            "type": "row",
+            "children": [
+              {
+                "type": "field",
+                "name": "name",
+                "label": "First name",
+                "placeholder": "Your name",
+                "required": false
+              },
+              {
+                "type": "field",
+                "name": "phone",
+                "label": "Mobile number",
+                "placeholder": "+44 7700 900000",
+                "required": true
+              }
+            ]
+          },
+          {
+            "type": "button",
+            "role": "cta_label",
+            "label": "Alert me",
+            "action": "submit"
+          },
+          {
+            "type": "consent",
+            "role": "consent_text",
+            "hidden": true,
+            "text": "Email me offers and news. See our %s.",
+            "link": {
+              "label": "Privacy Policy"
+            }
+          },
+          {
+            "type": "text",
+            "role": "fine_print",
+            "text": "Message rates may apply. Stop at any time."
+          }
+        ]
+      },
+      {
+        "type": "stack",
+        "children": [
+          {
+            "type": "heading",
+            "role": "success_headline",
+            "text": "We will be in touch"
+          },
+          {
+            "type": "text",
+            "role": "success_body",
+            "text": "You will hear from us the moment it lands."
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -4,6 +4,7 @@ namespace WConvert\Template;
 
 use WConvert\Support\Rejection;
 use WConvert\Support\RejectionReason;
+use WConvert\Support\Tier;
 
 defined('ABSPATH') || exit;
 
@@ -32,50 +33,110 @@ defined('ABSPATH') || exit;
  */
 final class TemplateLibrary
 {
-    public const PATH = 'resources/templates/library';
-
     /**
-     * @param array<string, array<string, mixed>> $templates
+     * @param array<string, array<string, mixed>> $templates Registered designs, with trees.
+     * @param array<string, array<string, mixed>> $locked Designs this install did not get, as metadata.
      * @param list<Rejection> $rejections
      */
     private function __construct(
         private readonly TemplateVocabulary $vocabulary,
         private readonly array $templates,
+        private readonly array $locked = [],
         private readonly array $rejections = [],
     ) {
     }
 
+    /**
+     * The library this install ships: the bundled designs, and the metadata for
+     * the ones it did not get.
+     *
+     * The convenience constructor over {@see self::from()}, kept because it is
+     * what the container and every test calls and because "one ZIP" is still
+     * the common case. What changed under it is that the glob is now one
+     * {@see TemplateSource} among several rather than the only one there can be
+     * — [[Pro]] composes its own beside these, and the fetched index will
+     * compose a third (ADR 0043).
+     */
     public static function fromDirectory(TemplateVocabulary $vocabulary, string $pluginDir = WCONVERT_DIR): self
     {
-        $files = glob(rtrim($pluginDir, '/') . '/' . self::PATH . '/*.json');
+        return self::from($vocabulary, new BundledTemplates($pluginDir), new LockedTemplates($pluginDir));
+    }
+
+    /**
+     * Every source, composed, validated identically.
+     *
+     * ========================================================================
+     * A SHIPPED TEMPLATE GETS NO EXEMPTION, AND NEITHER DOES A FETCHED ONE.
+     * ========================================================================
+     * Whatever produced a candidate, it is normalised against the vocabulary
+     * and then asked {@see self::refuse()}. That is what makes the vocabulary
+     * self-testing for the bundled set (ADR 0010) and what makes a *fetched*
+     * set safe by construction rather than by intention: `normalize()` drops
+     * every node, token, param and Slot Role outside the manifest, so a remote
+     * index can deliver **content and never capability**, which is the
+     * constraint issue #7 recorded.
+     *
+     * **Order decides collisions, and only among entries of the same kind.**
+     * The first source to claim an id keeps it and a later claim is a
+     * {@see RejectionReason::DuplicateId} — a second entry silently replacing
+     * the first is a gallery that lost a card with nothing to read. Locked
+     * metadata is not in that contest: a stub whose id a real entry holds is
+     * simply never returned ({@see self::locked()}), because that is a Pro
+     * install seeing the design rather than the advertisement for it.
+     */
+    public static function from(TemplateVocabulary $vocabulary, TemplateSource ...$sources): self
+    {
         $templates = [];
+        $locked = [];
         $rejections = [];
 
-        foreach ($files === false ? [] : $files as $file) {
-            $entry = self::read($file, $vocabulary);
+        foreach ($sources as $source) {
+            foreach ($source->entries() as $candidate) {
+                $id = is_string($candidate['id'] ?? null) ? $candidate['id'] : '';
 
-            if ($entry === null) {
-                continue;
+                if ($id === '') {
+                    $rejections[] = new Rejection('', RejectionReason::Malformed);
+                    continue;
+                }
+
+                // **No `tree` is the whole discriminator.** A candidate with no
+                // tree is a design this install did not get, and the card for
+                // it is bundled metadata pointing at a live preview on
+                // wconvert.com ({@see LockedTemplates}).
+                if (!is_array($candidate['tree'] ?? null)) {
+                    if (!isset($locked[$id])) {
+                        $locked[$id] = self::stub($id, $candidate, $vocabulary);
+                    }
+
+                    continue;
+                }
+
+                if (isset($templates[$id])) {
+                    $rejections[] = new Rejection($id, RejectionReason::DuplicateId);
+                    continue;
+                }
+
+                $entry = self::read($id, $candidate, $vocabulary);
+                $reason = self::refuse($entry['tree']);
+
+                if ($reason !== null) {
+                    $rejections[] = new Rejection($id, $reason);
+                    continue;
+                }
+
+                $templates[$id] = $entry;
             }
-
-            $reason = self::refuse($entry['tree']);
-
-            if ($reason !== null) {
-                $rejections[] = new Rejection((string) $entry['id'], $reason);
-                continue;
-            }
-
-            $templates[(string) $entry['id']] = $entry;
         }
 
         ksort($templates);
+        ksort($locked);
         usort($rejections, static fn (Rejection $a, Rejection $b): int => strcmp($a->id, $b->id));
 
         foreach ($rejections as $rejection) {
             $rejection->warn(__METHOD__);
         }
 
-        return new self($vocabulary, $templates, $rejections);
+        return new self($vocabulary, $templates, $locked, $rejections);
     }
 
     /**
@@ -86,6 +147,28 @@ final class TemplateLibrary
     public function all(): array
     {
         return $this->templates;
+    }
+
+    /**
+     * The designs this install did not get, keyed by id — metadata only, never
+     * a tree.
+     *
+     * **A stub whose id a registered entry already holds is not returned**, and
+     * that one line is how a [[Pro]] install stops seeing upsell cards. Pro
+     * registers the real designs through the same {@see TemplateSource} seam,
+     * so the id collides and the advertisement drops out — rather than a tier
+     * check on a surface, which is the thing that eventually shows a paying
+     * customer an advertisement for what they bought (ADR 0026).
+     *
+     * Kept out of {@see self::all()} on purpose. Everything that reads `all()`
+     * — {@see self::snapshotInto()}, {@see \WConvert\Playbook\PlaybookLibrary},
+     * the prefill path — wants a design it can render, and a stub is not one.
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    public function locked(): array
+    {
+        return array_diff_key($this->locked, $this->templates);
     }
 
     /**
@@ -216,8 +299,25 @@ final class TemplateLibrary
         // colours is picking neither.
         $carried = SlotRoles::copyFrom($config['template']['tree'] ?? [], $this->vocabulary);
 
+        // **And two things a merchant supplies that are not words.** An
+        // `image`'s `src`/`alt` and a `button`'s `href` are content, but not
+        // `copy` — so no Role binds to them and nothing carried them, and a
+        // merchant who uploaded a photo and then picked a nicer design watched
+        // it be replaced by that design's stock artwork. {@see MerchantsOwn}
+        // carries what they CHANGED, comparing against the entry their copy was
+        // taken for, and leaves the new design's own asset standing where they
+        // changed nothing — which is ADR 0013's rule rather than an exception
+        // to it.
+        $mine = MerchantsOwn::changedIn(
+            $config['template']['tree'] ?? [],
+            $pickedBefore === null ? null : ($this->find($pickedBefore)['tree'] ?? null)
+        );
+
         $config['template'] = [
-            'tree' => SlotRoles::bind($this->vocabulary->withoutCopy($entry['tree']), $carried, $this->vocabulary),
+            'tree' => MerchantsOwn::writeInto(
+                SlotRoles::bind($this->vocabulary->withoutCopy($entry['tree']), $carried, $this->vocabulary),
+                $mine
+            ),
             'tokens' => $entry['tokens'],
         ];
 
@@ -232,28 +332,90 @@ final class TemplateLibrary
      * it says is an entry the settings panel could not have produced, and
      * `tests/unit/Template/TemplateLibraryTest.php` fails on it (ADR 0010).
      *
-     * @return array<string, mixed>|null
+     * **`tier` is the ONE authored fact and `facets` is the one derived fact**,
+     * and the two are opposite on purpose. A tier is a statement about
+     * distribution that no tree can answer; every facet is read off the tree
+     * precisely so it cannot drift from the design it describes
+     * ({@see TemplateFacets}).
+     *
+     * @param array<string, mixed> $decoded
+     * @return array<string, mixed>
      */
-    private static function read(string $file, TemplateVocabulary $vocabulary): ?array
+    private static function read(string $id, array $decoded, TemplateVocabulary $vocabulary): array
     {
-        $raw = is_readable($file) ? file_get_contents($file) : false;
-        $decoded = $raw === false ? null : json_decode($raw, true);
-
-        if (!is_array($decoded) || !is_string($decoded['id'] ?? null) || $decoded['id'] === '') {
-            return null;
-        }
-
         $normalized = $vocabulary->normalize($decoded);
 
         return [
-            'id' => $decoded['id'],
-            'name' => is_string($decoded['name'] ?? null) ? $decoded['name'] : $decoded['id'],
+            'id' => $id,
+            'name' => is_string($decoded['name'] ?? null) ? $decoded['name'] : $id,
             // One Template serves exactly one Display Type (CONTEXT.md,
             // Template), so this is a property of the entry rather than
             // something the merchant picks afterwards.
             'display_type' => is_string($decoded['display_type'] ?? null) ? $decoded['display_type'] : 'popup',
+            'tier' => self::tierOf($decoded, Tier::Free),
+            'facets' => TemplateFacets::of($normalized['tree'], $vocabulary->fields()),
             'tree' => $normalized['tree'],
             'tokens' => $normalized['tokens'],
         ];
+    }
+
+    /**
+     * One design this install did not get, as the card for it.
+     *
+     * ========================================================================
+     * ITS FACETS ARE AUTHORED, WHICH IS THE ONE PLACE THEY CAN BE.
+     * ========================================================================
+     * Everywhere else a facet is derived from a tree so it cannot drift
+     * ({@see TemplateFacets}) — and this is the entry that has no tree, because
+     * shipping premium trees in the free ZIP and refusing the save is trialware
+     * (issue #7). So the facets are written into `locked.json` beside the name.
+     *
+     * They are still **normalised against the manifest**, which is what stops
+     * that exception from becoming a hole: a stub claiming a `shape` no layout
+     * declares or a `captures` no field kind declares would draw a chip nothing
+     * in this admin can name, and it is dropped here instead. The values that
+     * survive are exactly the ones the picker's own chip strip enumerates.
+     *
+     * `preview_url` is where *"See this design"* goes, and it is the whole
+     * substitute for a preview: no tree, no thumbnail, no image of any kind, so
+     * ADR 0010's *no static thumbnails anywhere* survives intact. Admin-side
+     * links to your own site are explicitly welcomed by wp.org Guideline 10.
+     *
+     * @param array<string, mixed> $decoded
+     * @return array<string, mixed>
+     */
+    private static function stub(string $id, array $decoded, TemplateVocabulary $vocabulary): array
+    {
+        $url = $decoded['preview_url'] ?? null;
+
+        return [
+            'id' => $id,
+            'name' => is_string($decoded['name'] ?? null) ? $decoded['name'] : $id,
+            'display_type' => is_string($decoded['display_type'] ?? null) ? $decoded['display_type'] : 'popup',
+            // A stub exists BECAUSE it is premium. `pro` is the default rather
+            // than an assertion, so a free design that somehow arrived without
+            // a tree is a card the merchant cannot use either way and is at
+            // least labelled honestly.
+            'tier' => self::tierOf($decoded, Tier::Pro),
+            'facets' => TemplateFacets::authored($decoded['facets'] ?? null, $vocabulary->facets()),
+            'preview_url' => is_string($url) && $url !== '' ? $url : null,
+        ];
+    }
+
+    /**
+     * Which tier declared this entry, defaulting to the caller's expectation.
+     *
+     * `Tier` is shared rather than spelled per registry, so the rule manifest,
+     * the [[Goal]] registry and the library cannot disagree about what "pro" is
+     * spelled like (ADR 0015). An unrecognised word takes the default rather
+     * than inventing a third tier.
+     *
+     * @param array<string, mixed> $decoded
+     */
+    private static function tierOf(array $decoded, Tier $fallback): string
+    {
+        $tier = $decoded['tier'] ?? null;
+
+        return (is_string($tier) ? Tier::tryFrom($tier) ?? $fallback : $fallback)->value;
     }
 }

@@ -16,8 +16,16 @@ import {
   DataTableHead,
   DataTableRow,
 } from '../shell/DataTable';
+import { Description } from '../shell/Description';
 import { EmptyState } from '../shell/EmptyState';
-import { Region, RegionBody, RegionError, RegionErrorState, RegionHeader } from '../shell/Region';
+import {
+  Region,
+  RegionBody,
+  RegionError,
+  RegionErrorState,
+  RegionFooter,
+  RegionHeader,
+} from '../shell/Region';
 import { TableSkeleton } from '../shell/TableSkeleton';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
 import {
@@ -417,7 +425,7 @@ function Configured({
                 onChange={(value) => setDraft({ ...draft, [key]: value })}
               />
               {field.description !== undefined && (
-                <p className="m-0 text-pretty text-muted-foreground">{field.description}</p>
+                <Description>{field.description}</Description>
               )}
             </div>
           ))}
@@ -440,7 +448,7 @@ function Configured({
         action is the visible one and Remove is a quiet destructive control at
         the far edge, behind a confirm (ADR 0039).
       */}
-      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-border px-4 py-3">
+      <RegionFooter className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
         <Button variant="outline" size="sm" disabled={busy} onClick={() => onRePush(destination)}>
           <RotateCcw aria-hidden="true" />
           {__('Re-push leads since the last success', 'wconvert')}
@@ -456,7 +464,7 @@ function Configured({
           <Trash2 aria-hidden="true" />
           {__('Remove', 'wconvert')}
         </Button>
-      </div>
+      </RegionFooter>
     </Region>
   );
 }

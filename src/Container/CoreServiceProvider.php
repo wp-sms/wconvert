@@ -467,7 +467,9 @@ final class CoreServiceProvider implements ServiceProvider
         $container->register(
             TemplateController::class,
             static fn (ServiceContainer $c): TemplateController => new TemplateController(
-                $c->resolve(TemplateLibrary::class)
+                $c->resolve(TemplateLibrary::class),
+                $c->resolve(TemplateVocabulary::class),
+                $c->resolve(ProPresence::class)
             )
         );
 

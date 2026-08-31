@@ -13,9 +13,11 @@ import type { TemplateEntry } from '../../resources/admin/src/templates/api';
  * #29 drew the line — *"Not a TDD seam: React component structure, panel
  * layout, gallery chrome"* — and none of these is on the far side of it:
  *
- * - **Four tabs, not five.** Triggers, Conditions and page targeting are three
- *   answers to one question, and a merchant arrives expecting them together.
- *   Whether the two editors reach the same screen is a fact about the product.
+ * - **~~Four~~ five tabs.** Triggers, Conditions and page targeting are three
+ *   answers to one question, and a merchant arrives expecting them together —
+ *   that merge is unchanged. What is new beside it is **Structure**, which is
+ *   the other view of the document Content already edits. Whether these editors
+ *   reach the same screen is a fact about the product.
  * - **The preview is beside every tab.** It lived inside the settings panel, so
  *   editing a Trigger showed no preview at all — the exact failure the pinned
  *   column exists to end.
@@ -33,7 +35,7 @@ const builder = vi.hoisted(() => ({
   getThemeTokens: vi.fn(),
 }));
 
-const templates = vi.hoisted(() => ({ listTemplates: vi.fn() }));
+const templates = vi.hoisted(() => ({ listTemplates: vi.fn(), getTemplateTrees: vi.fn() }));
 const stats = vi.hoisted(() => ({ readDashboard: vi.fn() }));
 const destinations = vi.hoisted(() => ({ readDestinations: vi.fn() }));
 
@@ -66,11 +68,59 @@ const ID = '01JQ00000000000000000000AA';
 const vocabulary = ruleTypes();
 
 const LABELS = {
-  roles: { headline: 'Headline', fine_print: 'Fine print' },
-  nodes: {},
+  roles: { headline: 'Headline', body: 'Body text', fine_print: 'Fine print' },
+  nodes: { heading: 'Heading', text: 'Text', button: 'Button', consent: 'Consent checkbox' },
+  layouts: { stack: 'Column', row: 'Row', split: 'Side by side', grid: 'Grid' },
+  // The menu shows what a layout DOES, because *Row* and *Side by side* are two
+  // words a merchant cannot tell apart from their names alone.
+  layoutNotes: {
+    stack: 'Blocks stacked top to bottom.',
+    row: 'Blocks along one line.',
+    split: 'Two panes, each holding its own blocks.',
+  },
+  layoutParams: { 'split.ratio': 'How the space is divided' },
+  layoutParamValues: {
+    'split.ratio.0.35': 'Narrow left',
+    'split.ratio.0.5': 'Even',
+    'split.ratio.0.65': 'Narrow right',
+  },
   fields: { email: 'Email address' },
   keys: { text: 'Text', label: 'Label', placeholder: 'Placeholder', link: 'Link' },
+  placeholders: { email: 'you@example.com', name: 'Your name', phone: '+44 7700 900000' },
+  params: { submit: 'Sends the form', link: 'Goes somewhere else' },
+  tokenValues: {},
   tokens: { bg: 'Background' },
+  facets: { shape: 'Shape', captures: 'Asks for', has_image: 'Picture' },
+  facetValues: {
+    'shape.stack': 'Column',
+    'shape.row': 'Row',
+    'shape.split': 'Side by side',
+    'captures.email': 'Email address',
+    'captures.name': 'Name',
+    'captures.phone': 'Phone number',
+    'has_image.true': 'With a picture',
+  },
+};
+
+/**
+ * The gallery route serves an INDEX — a card is a name, a Display Type, a tier
+ * and five derived facets, and **no tree** (ADR 0043). The designs arrive
+ * per-card from `/templates/trees` as the grid brings them near the viewport,
+ * which is what these two fixtures are.
+ */
+const CARD = {
+  id: ENTRY.id,
+  name: ENTRY.name,
+  display_type: ENTRY.display_type,
+  tier: 'free',
+  availability: 'ready' as const,
+  facets: {
+    act: 'submit' as const,
+    captures: ['email'],
+    shape: 'stack',
+    has_image: false,
+    asks_consent: true,
+  },
 };
 
 function optin(over: Record<string, unknown> = {}) {
@@ -91,17 +141,46 @@ beforeEach(() => {
   builder.saveOptin.mockImplementation((_id: string, _name: string, config: Record<string, unknown>) =>
     Promise.resolve({ ...optin(), config }),
   );
-  templates.listTemplates.mockResolvedValue({ templates: [ENTRY], labels: LABELS });
+  templates.listTemplates.mockResolvedValue({
+    templates: [CARD],
+    labels: LABELS,
+    facets: { shape: ['stack', 'row', 'split'], captures: ['email', 'name', 'phone'], has_image: ['true'] },
+  });
+  templates.getTemplateTrees.mockResolvedValue({
+    templates: [{ id: ENTRY.id, tree: ENTRY.tree, tokens: ENTRY.tokens }],
+  });
   stats.readDashboard.mockResolvedValue({ from: '', to: '', days: 30, goals: [] });
   destinations.readDestinations.mockResolvedValue({ destinations: [], types: [] });
 });
 
 const open = () => render(<OptinBuilder id={ID} onClose={vi.fn()} />);
 
+/**
+ * A block row's own name button, as opposed to the three controls beside it
+ * that are also named after the block.
+ *
+ * The move and menu buttons carry the block's name deliberately — fifteen
+ * buttons reading "Move up" are fifteen buttons a screen-reader user cannot
+ * tell apart — so "the button called Headline" is genuinely ambiguous, and this
+ * asks the row for the one that selects.
+ */
+const labelOf = (name: string | RegExp) =>
+  within(screen.getByRole('row', { name })).getAllByRole('button')[0];
+
 describe('the builder shell', () => {
   /**
-   * **Four, and *Display rules* is the merged one.** "When does this fire",
-   * "who is eligible" and "which pages" were three tabs' worth of one question.
+   * **~~Four~~ ~~five~~ four, and the count has now moved three times.**
+   *
+   * *Display rules* is still the merged one — "when does this fire", "who is
+   * eligible" and "which pages" were three tabs' worth of one question — and
+   * that is untouched. What went is **Structure**: with an inspector under the
+   * tree it and *Content* were one screen drawn twice, and a merchant changing
+   * a headline had to pick which copy of it to open.
+   *
+   * This assertion is edited rather than deleted each time, because a test
+   * breaking here is behaviour moving and ADR 0039 asks that it be recorded in
+   * the commit that moves it rather than quietly rewritten. The ADR's own tab
+   * count is struck through again in the same commit.
    */
   it('offers four tabs, with the three rule surfaces under one of them', async () => {
     open();
@@ -113,6 +192,192 @@ describe('the builder shell', () => {
       'Display rules',
       'Destinations',
     ]);
+  });
+
+  /**
+   * ========================================================================
+   * THE TREE IS THE DESIGN'S OWN BLOCKS, LAYOUTS INCLUDED.
+   * ========================================================================
+   * `slotsOf` walks leaves and flattens them, which is right for a column of
+   * words. A merchant MOVING the email field is moving it within the `row`, so
+   * the row has to be a row.
+   */
+  it('lists every block of the design, layouts included, as a treegrid', async () => {
+    open();
+
+    await userEvent.click(await screen.findByRole('tab', { name: 'Content' }));
+
+    const tree = screen.getByRole('treegrid', { name: 'Blocks in this design' });
+
+    expect(within(tree).getByRole('row', { name: /The form/ })).toBeInTheDocument();
+    expect(within(tree).getByRole('row', { name: /Headline/ })).toBeInTheDocument();
+    expect(within(tree).getByRole('row', { name: /Email address/ })).toBeInTheDocument();
+  });
+
+  /**
+   * **Named by what it says, never "item 3 of 5".** Position is announced by
+   * `aria-level`, `aria-posinset` and `aria-setsize` — after the name, rather
+   * than instead of it.
+   */
+  it('names a row by the words the block is showing, and states its place separately', async () => {
+    open();
+
+    await userEvent.click(await screen.findByRole('tab', { name: 'Content' }));
+
+    const headline = screen.getByRole('row', { name: /Headline/ });
+
+    expect(headline).toHaveAccessibleName(expect.stringContaining('Get 10% off your first order'));
+    expect(headline).toHaveAttribute('aria-level', '2');
+    expect(headline).toHaveAttribute('aria-posinset', '1');
+  });
+
+  /**
+   * **Selection is the one string ADR 0040 built, on a third surface.** It
+   * carries no way to REACH a slot, so nothing that receives one gains the
+   * ability to write — which is why the tree can share it with the preview.
+   */
+  it('marks a block selected when its row is clicked', async () => {
+    open();
+
+    await userEvent.click(await screen.findByRole('tab', { name: 'Content' }));
+    await userEvent.click(labelOf(/Headline/));
+
+    expect(screen.getByRole('row', { name: /Headline/ })).toHaveAttribute('aria-selected', 'true');
+  });
+
+  /**
+   * **Exactly one tab stop for the whole grid.** A `tabindex="0"` per control
+   * would put sixty stops between the tab strip and the Save button on a
+   * fifteen-block design.
+   */
+  it('keeps one tab stop across the whole tree', async () => {
+    open();
+
+    await userEvent.click(await screen.findByRole('tab', { name: 'Content' }));
+
+    const tree = screen.getByRole('treegrid', { name: 'Blocks in this design' });
+    const tabbable = within(tree).getAllByRole('button').filter((button) => button.tabIndex === 0);
+
+    expect(tabbable).toHaveLength(1);
+  });
+
+  /**
+   * ========================================================================
+   * THE EDITOR IS NEVER A LIST WITH AN INSTRUCTION UNDER IT.
+   * ========================================================================
+   * A merchant opening the tab is already editing the first block. Not the
+   * first ROW — that is a step, and a step is not a block a merchant arranges
+   * (ADR 0025) — but the first thing inside it, which is what someone reading
+   * the design top to bottom would have clicked.
+   */
+  it('has the first block selected on arrival, so the inspector is never empty', async () => {
+    open();
+
+    await userEvent.click(await screen.findByRole('tab', { name: 'Content' }));
+
+    expect(screen.getByRole('row', { name: /Headline/ })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('group', { name: 'Headline' })).toBeInTheDocument();
+  });
+
+  /**
+   * **The selection survives a walk to the look and back.** Design holds the
+   * tokens now, and a merchant who went to change a colour and came back should
+   * find the block they were on still open — the outline in the preview must
+   * not blink off and on for no reason they could name.
+   */
+  it('keeps the selected block while the merchant goes to the design and back', async () => {
+    open();
+
+    await userEvent.click(await screen.findByRole('tab', { name: 'Content' }));
+    await userEvent.click(labelOf(/Body text/));
+    await userEvent.click(screen.getByRole('tab', { name: 'Design' }));
+    await userEvent.click(screen.getByRole('tab', { name: 'Content' }));
+
+    expect(screen.getByRole('row', { name: /Body text/ })).toHaveAttribute('aria-selected', 'true');
+  });
+
+  /**
+   * ========================================================================
+   * THE OUTLINE GOES; THE SELECTION DOES NOT.
+   * ========================================================================
+   * They used to be one thing. The outline says *this is the block you are
+   * working on*, and left up over the rules tab it is a highlight with nothing
+   * on screen explaining it — so the selection was cleared on the way out.
+   *
+   * That answer stopped working when the selection also decided what the
+   * inspector was showing: a merchant coming back from the rules would find an
+   * editor with no block open, which is the empty panel the arrival selection
+   * exists to prevent. So the tab decides what the PREVIEW is handed, and the
+   * selection survives the walk.
+   *
+   * What the preview does with a null is inside a closed shadow root and is not
+   * observable from here — it is on the browser pass with the rest of the CSS.
+   */
+  it('keeps the block open while the merchant is away editing the rules', async () => {
+    open();
+
+    await userEvent.click(await screen.findByRole('tab', { name: 'Content' }));
+    await userEvent.click(labelOf(/Body text/));
+    await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
+    await userEvent.click(screen.getByRole('tab', { name: 'Content' }));
+
+    expect(screen.getByRole('row', { name: /Body text/ })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('group', { name: 'Body text' })).toBeInTheDocument();
+  });
+
+  /**
+   * ==========================================================================
+   * THE DESIGN TAB HELD TWO CONCERNS, AND A REGION HOLDS ONE (ADR 0039).
+   * ==========================================================================
+   * *Choose a design* and *adjust the look* are two questions. At three cards
+   * that was invisible; at forty the gallery swamps the token controls the tab
+   * is named for, and a merchant who came to change one colour scrolls past the
+   * whole library to reach it.
+   *
+   * So the tab keeps the look, names the design in use, and the gallery is
+   * behind one button on a surface of its own (ADR 0043).
+   */
+  it('names the design in use and puts the gallery behind one button', async () => {
+    open();
+
+    await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
+
+    expect(await screen.findByText('Centred card')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Browse designs' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Use this design/ })).toBeNull();
+  });
+
+  /**
+   * **A modal is for something that owns the screen until it is answered**
+   * (ADR 0042 rule 7), and the sentence it opens with is the sharp edge: the
+   * merchant's words come across by [[Slot Role]], and blocks they added, moved
+   * or deleted do not. That is destructive, and undo is what buys it the
+   * exception ADR 0039 otherwise refuses — so the affordance STATES what it
+   * takes rather than asking a second question in front of the first.
+   */
+  it('opens the picker, and says what picking a design will take', async () => {
+    open();
+
+    await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Browse designs' }));
+
+    const picker = within(await screen.findByRole('dialog'));
+
+    expect(picker.getByText('Browse designs')).toBeInTheDocument();
+    expect(picker.getByText(/Blocks you added, moved or deleted do not/)).toBeInTheDocument();
+    expect(picker.getByRole('button', { name: /In use/ })).toBeInTheDocument();
+  });
+
+  /**
+   * **Authoring is the editor plus a DEV-ONLY export** (ADR 0010), and a
+   * merchant has no use for the library entry behind their popup.
+   */
+  it('keeps the library entry off the design tab unless WP_DEBUG is on', async () => {
+    open();
+
+    await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
+
+    expect(screen.queryByText(/Library entry/)).toBeNull();
   });
 
   /**

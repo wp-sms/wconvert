@@ -119,7 +119,6 @@ function elementFor(node: TemplateNode): HTMLElement | null {
   switch (node.type) {
     case 'stack':
     case 'row':
-    case 'grid':
       return layout(node);
     case 'split':
       return split(node as SplitNode);
@@ -140,17 +139,10 @@ function elementFor(node: TemplateNode): HTMLElement | null {
   }
 }
 
-function layout(node: TemplateNode & { children?: readonly TemplateNode[]; columns?: number }): HTMLElement {
+function layout(node: TemplateNode & { children?: readonly TemplateNode[] }): HTMLElement {
   const element = document.createElement('div');
 
   element.className = `wc-${node.type}`;
-
-  // A count, not a class per count. `wc-grid-2` and `wc-grid-3` would be two
-  // rules in the stylesheet for one idea, and the stylesheet is the thing the
-  // whole vocabulary is budgeted against (ADR 0010).
-  if (typeof node.columns === 'number') {
-    element.style.setProperty(TOKEN_PREFIX + 'columns', String(node.columns));
-  }
 
   for (const child of node.children ?? []) {
     appendNode(element, child);

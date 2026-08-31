@@ -17,6 +17,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@atlaskit/pragmatic-drag-and-drop": "^3.0.0",
     "@tailwindcss/vite": "^4.3.3",
     "@wordpress/api-fetch": "^7.53.0",
     "@wordpress/i18n": "^6.15.0",

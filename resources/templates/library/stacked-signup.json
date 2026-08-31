@@ -2,6 +2,7 @@
   "id": "stacked-signup",
   "name": "Stacked signup",
   "display_type": "popup",
+  "tier": "free",
   "tokens": {
     "bg": "#ffffff",
     "fg": "#0f172a",

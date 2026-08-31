@@ -31,7 +31,7 @@ import { Region, RegionBody } from './Region';
  */
 export function BuilderSkeleton({ onClose }: { onClose: () => void }) {
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-5">
       <PageAction>
         <BackLink onClose={onClose} />
         <Skeleton aria-hidden="true" className="mt-3 h-9 w-72 max-w-full" />

@@ -1,0 +1,614 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { useState } from 'react';
+import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type { TemplateEntry, TemplateLabels } from '../../resources/admin/src/templates/api';
+
+/**
+ * ============================================================================
+ * THE LOOK, ON THE TAB THE WORD DESIGN ALREADY PROMISED.
+ * ============================================================================
+ * These assertions were `tests/js/builder-settings-panel.test.tsx`, over a
+ * component that held two halves of two different questions: what the design
+ * says, and how it looks. The first half moved to the inspector under the block
+ * tree (`builder-structure-view.test.tsx`); this is the second.
+ *
+ * ============================================================================
+ * ONE ASSERTION WAS DELETED RATHER THAN MOVED, AND IT IS NAMED HERE.
+ * ============================================================================
+ * **`'offers nothing that adds, removes or moves a slot'`** guarded ADR 0010's
+ * *"the panel edits tokens, slot content and slot visibility — never
+ * arrangement"* by sweeping every button on the screen for the words *add*,
+ * *remove*, *delete*, *move*, *up* and *down*.
+ *
+ * It is gone because it stopped being true, deliberately: one surface now edits
+ * words **and** arrangement, and the tab it guards has a Delete on every row.
+ * The substance of ADR 0010 is untouched and is asserted elsewhere — the
+ * vocabulary is still the ceiling (`builder-structure.test.ts`,
+ * `catalogue.ts` reads the manifest), the gallery is still where a design comes
+ * from, and a preset still cannot express a shape, which is the one clause this
+ * file still holds.
+ */
+
+const api = vi.hoisted(() => ({ getThemeTokens: vi.fn() }));
+
+vi.mock('../../resources/admin/src/builder/api', () => api);
+
+const { Tokens } = await import('../../resources/admin/src/builder/Tokens');
+const { DevExport } = await import('../../resources/admin/src/builder/DevExport');
+
+const ENTRY = JSON.parse(
+  readFileSync(resolve(import.meta.dirname, '../../resources/templates/library/centred-card.json'), 'utf8'),
+) as TemplateEntry;
+
+/**
+ * Stand-ins for the words the gallery route serves. The real ones are PHP's,
+ * where `wp i18n make-pot` can see them, and are asserted against the manifest
+ * in `tests/unit/Template/TemplateLabelParityTest.php`.
+ */
+const LABELS: TemplateLabels = {
+  roles: {},
+  nodes: {},
+  layouts: {},
+  layoutNotes: {},
+  layoutParams: {},
+  layoutParamValues: {},
+  fields: {},
+  keys: {},
+  placeholders: { email: 'you@example.com', name: 'Your name', phone: '+44 7700 900000' },
+  params: { submit: 'Sends the form', link: 'Goes somewhere else' },
+  // Keyed `"{token}.{value}"`, exactly as `TemplateLabels::tokenValues()`
+  // spells them. The font stacks are left out on purpose: `nameOf` falls back
+  // to the key, which is what a build whose vocabulary is ahead of its
+  // translations actually shows.
+  tokenValues: {
+    'align.start': 'Left',
+    'align.center': 'Centre',
+    'align.end': 'Right',
+  },
+  tokens: {
+    bg: 'Background',
+    fg: 'Text',
+    muted: 'Quiet text',
+    accent: 'Button',
+    'accent-fg': 'Button text',
+    width: 'Width',
+  },
+};
+
+/**
+ * **`design` is the entry's own tokens by default, which is what a real Optin
+ * has.**
+ *
+ * It used to be omitted, so every fallback in these assertions resolved to the
+ * MANIFEST's value rather than the design's — and *"the slider's range is
+ * derived from the design's own value"* was being asserted against a number the
+ * design never declared. `max: '52'` (twice `26rem`) passed only because the
+ * manifest's `28rem` happened to be close; it now passes because it is true.
+ *
+ * A test that wants the other case — an install that no longer ships the entry,
+ * where the panel claims nothing — passes `design: {}` explicitly.
+ */
+function look(over: Partial<Parameters<typeof Tokens>[0]> = {}) {
+  const onChange = vi.fn();
+
+  render(
+    <Panel
+      template={ENTRY}
+      labels={LABELS}
+      design={ENTRY.tokens}
+      onChange={onChange}
+      onError={vi.fn()}
+      {...over}
+    />,
+  );
+
+  return onChange;
+}
+
+/**
+ * **The screen holds which picker is open, so the harness has to as well.**
+ *
+ * It is `OptinBuilder`'s state rather than the panel's, because the panel lives
+ * inside an `<Activity mode="hidden">` and a Radix popover portals outside it —
+ * a picker opened on Design outlived the switch to Content, and closing it from
+ * within the hidden subtree does not work (the update lands, the portal is
+ * never re-rendered). This mirrors that ownership rather than papering over it
+ * with a default, so a call site that forgets it is a type error here too.
+ */
+function Panel(props: Omit<Parameters<typeof Tokens>[0], 'openToken' | 'onOpenToken'>) {
+  const [openToken, setOpenToken] = useState<string | null>(null);
+
+  return <Tokens {...props} openToken={openToken} onOpenToken={setOpenToken} />;
+}
+
+beforeEach(() => {
+  vi.clearAllMocks();
+  api.getThemeTokens.mockResolvedValue({ tokens: { bg: '#101820', accent: '#f2aa4c' } });
+});
+
+describe('the look', () => {
+  /**
+   * ==========================================================================
+   * PRESETS CARRY THE MEDIAN CASE; THE RAW TOKENS KEEP THE TAIL (#71).
+   * ==========================================================================
+   * A preset is a bundle of token VALUES and nothing else, so it changes no
+   * shape and needs no new vocabulary — which is the clause of ADR 0010 that
+   * survived the merge intact.
+   */
+  it('applies a preset as token values, and touches nothing else', async () => {
+    const changed = look();
+
+    await userEvent.click(screen.getByRole('button', { name: /Midnight/ }));
+
+    const [next] = changed.mock.calls[0] as [{ tokens: Record<string, string>; tree: unknown }];
+
+    expect(next.tokens.bg).toBe('#0f172a');
+    expect(next.tokens.accent).toBe('#38bdf8');
+    // The tree is the SAME object: a preset cannot express arrangement, because
+    // there is nowhere in a token bundle to put one.
+    expect(next.tree).toBe(ENTRY.tree);
+  });
+
+  /**
+   * **Theme inheritance is opt-in, and off until it is asked for.** A stored
+   * "inherit" flag would restyle every running Optin the day the merchant
+   * switches theme — the surprise ADR 0010 keeps a Template's snapshot away
+   * from — so this is a button that copies values once.
+   */
+  it('reads nothing from the theme until the merchant asks for it', async () => {
+    const changed = look();
+
+    expect(api.getThemeTokens).not.toHaveBeenCalled();
+
+    await userEvent.click(screen.getByRole('button', { name: /Copy my theme/ }));
+
+    expect(api.getThemeTokens).toHaveBeenCalled();
+    await vi.waitFor(() =>
+      expect(changed).toHaveBeenCalledWith(
+        expect.objectContaining({ tokens: expect.objectContaining({ bg: '#101820', accent: '#f2aa4c' }) }),
+      ),
+    );
+  });
+
+  /**
+   * **Every raw token is still reachable, once** (#71).
+   *
+   * ==========================================================================
+   * "BEHIND THE DISCLOSURE" IS DELETED, AND THE DELETION IS THE POINT.
+   * ==========================================================================
+   * This assertion used to say the tokens were behind `<details>Every
+   * setting</details>`. That disclosure is gone: closed on load, it opened the
+   * Design tab as a gallery, four presets and three contrast ratios with no
+   * controls on it at all — on the tab whose entire subject those controls are.
+   * Its argument survives and is what this still asserts: every token appears
+   * **exactly once**, because a token with two controls is a token a merchant
+   * can watch disagree with itself.
+   *
+   * `font` also stops being a text box here. It is a `role="group"` of chips
+   * now, because the manifest offers choices for it — see the group below.
+   */
+  it('keeps every token the manifest declares, once', () => {
+    look();
+
+    // A colour is a picker rather than a text box, and it is not behind
+    // anything: no disclosure has to be opened first.
+    expect(screen.getByRole('button', { name: /Choose a colour for Background/ })).toBeInTheDocument();
+    // The stub names only two tokens, so the rest fall back to their raw key —
+    // which is what `nameOf` does on a real install missing a label too.
+    expect(screen.getByRole('group', { name: 'font' })).toBeInTheDocument();
+    // Once, and not once per group.
+    expect(screen.getAllByRole('button', { name: /Choose a colour for Background/ })).toHaveLength(1);
+  });
+});
+
+/**
+ * ============================================================================
+ * A SLIDER MUST NEVER BE ABLE TO CLOBBER A VALUE IT CANNOT EXPRESS.
+ * ============================================================================
+ * Token *names* are checked and their *values are not* — they land straight on
+ * the element as custom properties — so `clamp(20rem, 50vw, 30rem)` for `width`
+ * and an asymmetric `radius` already work today. Adding the slider has to take
+ * nothing away.
+ */
+describe('a length', () => {
+  const widthSlider = () => screen.getByRole('slider', { name: 'Width' });
+
+  it('is dragged, with the exact value still typeable beside it', () => {
+    look();
+
+    // 26rem, the design's own, on a range twice as wide.
+    expect(widthSlider()).toHaveValue('26');
+    expect(widthSlider()).toHaveAttribute('max', '52');
+    // The escape hatch, which is what keeps a `clamp()` reachable from here.
+    expect(screen.getByLabelText('Width value')).toBeInTheDocument();
+  });
+
+  it('keeps the text box and drops the slider for a value it cannot say', () => {
+    render(
+      <Panel
+        template={{ ...ENTRY, tokens: { ...ENTRY.tokens, width: 'clamp(20rem, 50vw, 30rem)' } }}
+        labels={LABELS}
+        onChange={vi.fn()}
+        onError={vi.fn()}
+      />,
+    );
+
+    expect(screen.queryByRole('slider', { name: 'Width' })).toBeNull();
+    expect(screen.getByLabelText('Width')).toHaveValue('clamp(20rem, 50vw, 30rem)');
+  });
+
+  /**
+   * **Its presence is the answer to "what have I actually changed?"** The panel
+   * stores an absence rather than a copy of the fallback, so clearing a token
+   * is also what lets an improved Template reach an Optin nobody overrode.
+   */
+  it('offers no way back where the merchant has changed nothing', () => {
+    look({ design: ENTRY.tokens });
+
+    expect(screen.queryByRole('button', { name: /Put Width back to the design/ })).toBeNull();
+  });
+
+  /**
+   * **It writes the design's value back rather than clearing it.** Clearing
+   * means "whatever the manifest declares", and this design ships `26rem`
+   * against a manifest default of `28rem` — so a reset that cleared would land
+   * on a number neither the merchant nor the design ever chose.
+   */
+  it('puts a changed token back to what the design itself declared', async () => {
+    const changed = look({
+      template: { ...ENTRY, tokens: { ...ENTRY.tokens, width: '32rem' } },
+      design: ENTRY.tokens,
+    });
+
+    await userEvent.click(screen.getByRole('button', { name: /Put Width back to the design/ }));
+
+    expect(changed).toHaveBeenCalledWith(
+      expect.objectContaining({ tokens: expect.objectContaining({ width: '26rem' }) }),
+    );
+  });
+});
+
+/**
+ * ============================================================================
+ * THE FIRST CONTROL THAT LETS A MERCHANT FAIL AA FOR SOMEBODY ELSE.
+ * ============================================================================
+ * ADR 0038 holds this admin to AA and measures contrast at its own tokens. The
+ * Optin's tokens are the merchant's and are shipped to a visitor, and the
+ * picker can break them in one click. So it is measured where it is chosen.
+ */
+describe('the contrast readout', () => {
+  /**
+   * ==========================================================================
+   * A PASSING RATIO IS A FACT NOBODY ACTS ON, SO IT IS NOT PRINTED.
+   * ==========================================================================
+   * All three pairs were listed on every visit — three lines of arithmetic read
+   * once and read past forever, which is the cost `Shell`'s own subtitle
+   * argument names. What is left is the pair that is actually wrong.
+   */
+  it('names the pair that fails, and says nothing about the two that pass', () => {
+    render(
+      <Panel
+        template={{ ...ENTRY, tokens: { ...ENTRY.tokens, fg: '#111827', muted: '#d4d4d8', bg: '#ffffff' } }}
+        labels={LABELS}
+        onChange={vi.fn()}
+        onError={vi.fn()}
+      />,
+    );
+
+    const failing = screen.getByText('Quiet text on Background').closest('li');
+
+    expect(failing).toHaveAttribute('data-state', 'fail');
+    expect(failing).toHaveTextContent('Under AA');
+    // The ratio, and the sample that is the row's real argument.
+    expect(failing).toHaveTextContent('1.48:1');
+    expect(failing).toHaveTextContent('Aa');
+    expect(screen.queryByText('Text on Background')).toBeNull();
+    expect(screen.queryByText('Button text on Button')).toBeNull();
+  });
+
+  /**
+   * ==========================================================================
+   * A CLEAN DESIGN SAYS NOTHING AT ALL.
+   * ==========================================================================
+   * This asserted one line confirming the check had run, which was the first
+   * attempt at not printing three passing ratios. It was still a line nobody
+   * acts on. The check announces itself the only way that matters — by
+   * appearing the moment something is wrong.
+   */
+  it('is not on screen at all when every pair passes', () => {
+    look();
+
+    expect(screen.queryByText('Can it be read')).toBeNull();
+    expect(screen.queryByText('Text on Background')).toBeNull();
+  });
+
+  /**
+   * **`backdrop` is not one of the three.** It sits behind the popup rather
+   * than behind text, so a ratio for it would be a number about nothing.
+   */
+  it('says nothing about the backdrop, which is behind the popup and not behind text', () => {
+    look();
+
+    expect(screen.queryByText(/on Backdrop/)).toBeNull();
+  });
+
+  /**
+   * A refusal rather than a wrong number: a translucent colour composites over
+   * whatever is behind it, and this cannot know what that is.
+   */
+  it('refuses to measure a pair it cannot read rather than reporting a ratio', () => {
+    render(
+      <Panel
+        template={{ ...ENTRY, tokens: { ...ENTRY.tokens, fg: 'rgba(0, 0, 0, 0.8)' } }}
+        labels={LABELS}
+        onChange={vi.fn()}
+        onError={vi.fn()}
+      />,
+    );
+
+    /*
+      **Three answers, and the copy says which one this is.** It read *"not
+      measurable"* in the same amber as *"fails AA"* — two different pieces of
+      news painted identically, so a design whose accent is `var(--brand)`
+      looked like a design that fails. `data-state` is what the stylesheet
+      reads, and it is what the browser pass measures the colour of.
+    */
+    const pair = screen.getByText('Text on Background').closest('li');
+
+    expect(pair).toHaveAttribute('data-state', 'unknown');
+    expect(pair).toHaveTextContent('No reading');
+    expect(pair).not.toHaveTextContent('Under AA');
+  });
+});
+
+/** **Authoring is the editor plus a DEV-ONLY export** (ADR 0010). */
+describe('the library entry', () => {
+  it('reads a design back out as the entry it would ship as', async () => {
+    const changed = vi.fn();
+
+    render(<DevExport entry={ENTRY} onChange={changed} />);
+
+    // The entry as it would ship, in the key order the library files use — so
+    // an export can be dropped into `resources/templates/library/` and diffed
+    // against its neighbours rather than reformatted first.
+    expect((screen.getByLabelText('Library entry JSON') as HTMLTextAreaElement).value).toContain(
+      '"id": "centred-card"',
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: 'Load this design' }));
+
+    expect(changed).toHaveBeenCalledWith(expect.objectContaining({ tree: expect.anything() }));
+  });
+
+  it('says so rather than throwing when what was pasted is not one', async () => {
+    const changed = vi.fn();
+
+    render(<DevExport entry={ENTRY} onChange={changed} />);
+
+    await userEvent.clear(screen.getByLabelText('Library entry JSON'));
+    await userEvent.type(screen.getByLabelText('Library entry JSON'), 'not json');
+    await userEvent.click(screen.getByRole('button', { name: 'Load this design' }));
+
+    expect(screen.getByText('That is not a library entry.')).toBeInTheDocument();
+    expect(changed).not.toHaveBeenCalled();
+  });
+});
+
+/**
+ * ============================================================================
+ * A CONTROL THAT ENUMERATES READS THE MANIFEST. ONE THAT INFERS READS THE VALUE.
+ * ============================================================================
+ * `align` is a three-value enum that looks like the word `start` and `font` is
+ * a curated choice that looks like any other string, so neither shape says what
+ * it is — which is why both were text boxes asking a merchant to type `center`.
+ * The manifest now says, in a sibling `choices` section.
+ *
+ * **`choices` is what the panel OFFERS and never what is allowed.** Token
+ * values stay unvalidated on both sides of the boundary (ADR 0010), which is
+ * what keeps `clamp(20rem, 50vw, 30rem)` typeable — so every one of these has
+ * a text box beside it and nothing here refuses a value the manifest never
+ * named.
+ */
+describe('a token the manifest offers choices for', () => {
+  it('is a group of chips rather than a box to type a keyword into', async () => {
+    const changed = look({
+      labels: { ...LABELS, tokens: { ...LABELS.tokens, align: 'Alignment' } },
+    });
+
+    const group = screen.getByRole('group', { name: 'Alignment' });
+
+    // Three offered plus Custom, each named by the vocabulary rather than by
+    // its CSS keyword — a merchant chooses "Left", not `start`.
+    expect(within(group).getAllByRole('radio')).toHaveLength(4);
+    // The design ships `center`, so that is the one checked on arrival — and
+    // Custom is not, because the value IS one of the offered three.
+    expect(within(group).getByRole('radio', { name: 'Centre' })).toBeChecked();
+    expect(within(group).getByRole('radio', { name: 'Custom' })).not.toBeChecked();
+
+    await userEvent.click(within(group).getByRole('radio', { name: 'Right' }));
+
+    expect(changed).toHaveBeenCalledWith(
+      expect.objectContaining({ tokens: expect.objectContaining({ align: 'end' }) }),
+    );
+  });
+
+  /**
+   * ==========================================================================
+   * THE ESCAPE HATCH IS A CHOICE, NOT PERMANENT FURNITURE.
+   * ==========================================================================
+   * A text box holding `center` sat under *Left · Centre · Right* on every
+   * visit, labelled "Alignment value", and a merchant had no way to know what
+   * it was for. The property it protects — a value the manifest never offered
+   * is still expressible — never required the box being on screen.
+   */
+  it('keeps the typed box out of the way until Custom is chosen', async () => {
+    look({ labels: { ...LABELS, tokens: { ...LABELS.tokens, align: 'Alignment' } } });
+
+    // Scoped to the group: `font` offers choices too, so it has a Custom of
+    // its own — which is the point, and is why the query names the group.
+    const group = screen.getByRole('group', { name: 'Alignment' });
+
+    expect(screen.queryByLabelText('Alignment value')).toBeNull();
+
+    await userEvent.click(within(group).getByRole('radio', { name: 'Custom' }));
+
+    expect(screen.getByLabelText('Alignment value')).toBeInTheDocument();
+  });
+
+  /**
+   * The escape hatch, and it is what makes `choices` a suggestion: a merchant
+   * may type a value the manifest never offered, and it reaches `onChange`
+   * unaltered.
+   */
+  it('still accepts a value nothing offered', async () => {
+    const changed = look({
+      labels: { ...LABELS, tokens: { ...LABELS.tokens, align: 'Alignment' } },
+    });
+
+    // The design ships `center`, so a keystroke lands on the end of it — which
+    // is a value the manifest offers nothing for, and it goes through anyway.
+    const group = screen.getByRole('group', { name: 'Alignment' });
+
+    await userEvent.click(within(group).getByRole('radio', { name: 'Custom' }));
+    await userEvent.type(screen.getByLabelText('Alignment value'), 'j');
+
+    expect(changed).toHaveBeenCalledWith(
+      expect.objectContaining({ tokens: expect.objectContaining({ align: 'centerj' }) }),
+    );
+  });
+
+  /**
+   * And when the stored value is one nothing offered, **no chip is checked** —
+   * which is the honest picture, rather than a control quietly disagreeing with
+   * the value beside it.
+   */
+  it('checks nothing where the value is one it never offered', () => {
+    render(
+      <Panel
+        template={{ ...ENTRY, tokens: { ...ENTRY.tokens, align: 'justify' } }}
+        labels={{ ...LABELS, tokens: { ...LABELS.tokens, align: 'Alignment' } }}
+        design={ENTRY.tokens}
+        onChange={vi.fn()}
+        onError={vi.fn()}
+      />,
+    );
+
+    const group = screen.getByRole('group', { name: 'Alignment' });
+
+    /*
+      **Custom is what is checked**, which is the honest picture of this state.
+      Before, nothing was checked and a text box quietly disagreed with a
+      control that looked authoritative.
+    */
+    expect(within(group).getByRole('radio', { name: 'Custom' })).toBeChecked();
+    expect(screen.getByLabelText('Alignment value')).toHaveValue('justify');
+  });
+});
+
+/**
+ * ============================================================================
+ * THE SCALE CANNOT MOVE UNDER THE THUMB.
+ * ============================================================================
+ * A range derived from what is currently STORED grows every time the merchant
+ * drags right — so the thumb slides back towards the middle as they pull it,
+ * and the control never arrives anywhere. It comes from the DESIGN's own value,
+ * which does not move while the panel is open.
+ */
+describe('the size slider', () => {
+  const widthSlider = () => screen.getByRole('slider', { name: 'Width' });
+
+  it('keeps the same range whatever the merchant has stored', () => {
+    const { unmount } = render(
+      <Panel
+        template={ENTRY}
+        labels={LABELS}
+        design={ENTRY.tokens}
+        onChange={vi.fn()}
+        onError={vi.fn()}
+      />,
+    );
+
+    // The design ships 26rem, so the range is 0–52 whatever is stored on top.
+    expect(widthSlider()).toHaveAttribute('max', '52');
+    unmount();
+
+    render(
+      <Panel
+        template={{ ...ENTRY, tokens: { ...ENTRY.tokens, width: '40rem' } }}
+        labels={LABELS}
+        design={ENTRY.tokens}
+        onChange={vi.fn()}
+        onError={vi.fn()}
+      />,
+    );
+
+    expect(widthSlider()).toHaveValue('40');
+    expect(widthSlider()).toHaveAttribute('max', '52');
+  });
+
+  /**
+   * **Outside the design's scale, the slider goes and the box stays.** Pinning
+   * the thumb at the end while the box says `80rem` would be a control lying
+   * about its own value — the same refusal the panel already makes for a
+   * `clamp()`, arriving from the other direction.
+   */
+  it('steps aside for a length its scale cannot reach', () => {
+    render(
+      <Panel
+        template={{ ...ENTRY, tokens: { ...ENTRY.tokens, width: '80rem' } }}
+        labels={LABELS}
+        design={ENTRY.tokens}
+        onChange={vi.fn()}
+        onError={vi.fn()}
+      />,
+    );
+
+    expect(screen.queryByRole('slider', { name: 'Width' })).toBeNull();
+    expect(screen.getByLabelText('Width')).toHaveValue('80rem');
+  });
+
+  /** And for a length in a unit the design's scale is not written in. */
+  it('steps aside for a length in another unit', () => {
+    render(
+      <Panel
+        template={{ ...ENTRY, tokens: { ...ENTRY.tokens, width: '400px' } }}
+        labels={LABELS}
+        design={ENTRY.tokens}
+        onChange={vi.fn()}
+        onError={vi.fn()}
+      />,
+    );
+
+    expect(screen.queryByRole('slider', { name: 'Width' })).toBeNull();
+    expect(screen.getByLabelText('Width')).toHaveValue('400px');
+  });
+});
+
+/**
+ * ============================================================================
+ * A COLOUR CONTROL MUST NOT BE OFFERED OVER A VALUE IT WOULD DESTROY.
+ * ============================================================================
+ * `isColour` was asked about the FALLBACK, so a merchant who typed
+ * `var(--brand)` into `accent` kept a hex picker sitting over it — one drag
+ * from overwriting a working reference with `#3f8ea3`. It branches on what is
+ * actually stored now, the same way the length side already did.
+ */
+describe('a colour the panel cannot parse', () => {
+  it('keeps the text box rather than offering a picker that would clobber it', () => {
+    render(
+      <Panel
+        template={{ ...ENTRY, tokens: { ...ENTRY.tokens, accent: 'var(--brand)' } }}
+        labels={LABELS}
+        design={ENTRY.tokens}
+        onChange={vi.fn()}
+        onError={vi.fn()}
+      />,
+    );
+
+    expect(screen.queryByRole('button', { name: /Choose a colour for Button$/ })).toBeNull();
+    expect(screen.getByLabelText('Button')).toHaveValue('var(--brand)');
+  });
+});

@@ -1,11 +1,103 @@
 import apiFetch from '@wordpress/api-fetch';
 import type { Template } from '@renderer/types';
+import type { Availability } from '../goals/availability';
 
-/** One entry of the shipped gallery. */
+/**
+ * What a Template IS, derived from its own tree on the server.
+ *
+ * ============================================================================
+ * DERIVED, NOT AUTHORED — WHICH IS WHY THERE IS NO GOAL FACET AND NEVER WILL BE.
+ * ============================================================================
+ * A [[Template]] is the design of an Optin **with no words in it** (CONTEXT.md,
+ * Template), so the facets a competitor filters by — Goal, Industry, Season —
+ * describe something these files do not contain. What a tree CAN answer is what
+ * it captures, how it is arranged and whether it has a picture, and every one of
+ * these is read off it by `WConvert\Template\TemplateFacets` rather than typed
+ * into a JSON file somebody then has to keep true.
+ *
+ * **Computed on the server even though this bundle could do it.** The client has
+ * `convertingActOf` and the tree walk beside it — but {@link listTemplates}
+ * deliberately withholds trees, so there would be nothing here to read. That is
+ * the whole index/tree split, seen from this end.
+ */
+export interface TemplateFacets {
+  /**
+   * `submit` or `click` — the one act this design converts on, singular by
+   * construction because an entry offering two or none is refused at
+   * registration (ADR 0020).
+   *
+   * **Not a filter.** It is the refusal marking: a design converting on a click
+   * cannot serve a [[Goal]] that counts submissions, and that is said on the
+   * card with the reason rather than hidden by a control (ADR 0025). Null on a
+   * locked card, which is never offered and so is never refused.
+   */
+  act: 'submit' | 'click' | null;
+  /** What a visitor is asked for, in manifest order. */
+  captures: string[];
+  /** Step 0's root layout — `stack`, `row` or `split`. */
+  shape: string | null;
+  has_image: boolean;
+  /** Derived and carried, and never a chip: nobody browses designs by this. */
+  asks_consent: boolean;
+}
+
+/**
+ * One CARD of the library — everything the grid needs, and no design.
+ *
+ * ============================================================================
+ * NO `tree`, NO `tokens`, AND THAT IS THE TICKET.
+ * ============================================================================
+ * `GET /templates` used to return every tree on every request, which is free at
+ * three entries and is the picker's whole cost at forty — paid before the
+ * merchant has read a card and paid again on every builder load. The trees for
+ * the cards actually near the viewport come from {@link getTemplateTrees}, and
+ * `Preview` mounts against an `IntersectionObserver` from the other end
+ * (ADR 0043).
+ *
+ * **Three places move together or a new field vanishes in silence**:
+ * `TemplateLibrary::read()`'s whitelist, this interface, and `exportEntry()`.
+ */
+export interface TemplateIndexEntry {
+  id: string;
+  name: string;
+  display_type: string;
+  /** `free` or `pro`. The one AUTHORED fact about an entry. */
+  tier: string;
+  /**
+   * `ready` or `locked`, resolved on the server, and never `unavailable`: no
+   * site capability makes a *design* absent (ADR 0026). The surface renders it
+   * through `renderingFor`, which is the doctrine this admin already has —
+   * there is no second rule for templates.
+   */
+  availability: Availability;
+  facets: TemplateFacets;
+  /**
+   * Where *"See this design"* goes, on a card whose design this install did not
+   * get. Bundled beside the name, never fetched — a free wp.org plugin phoning
+   * home for advertising copy is a different conversation with the review team
+   * (ADR 0015).
+   */
+  preview_url?: string;
+}
+
+/**
+ * One entry WITH its design — what a card actually renders, and what the
+ * builder holds.
+ *
+ * The full shape, kept as it was: `Preview` takes a `Template` and the dev-only
+ * export writes one back out as the library entry it would ship as.
+ */
 export interface TemplateEntry extends Template {
   id: string;
   name: string;
   display_type: string;
+  /** Present on an entry the builder assembled from an index card. */
+  tier?: string;
+}
+
+/** One design, as `GET /templates/trees` hands it back. */
+export interface TemplateDesign extends Template {
+  id: string;
 }
 
 /**
@@ -20,18 +112,134 @@ export interface TemplateEntry extends Template {
 export interface TemplateLabels {
   roles: Record<string, string>;
   nodes: Record<string, string>;
+  /**
+   * What each layout is called.
+   *
+   * Needed only since arrangement became visible: the settings panel walks
+   * leaves and flattens them, so `stack` never reached a merchant's eyes. The
+   * block tree cannot flatten them — a merchant moving the email field is
+   * moving it within the `row` — so each acquires a name the way a Slot Role
+   * did.
+   */
+  layouts: Record<string, string>;
+  /**
+   * What each layout DOES, in one line with an example.
+   *
+   * **A name is not an explanation.** The Add menu offered *Column*, *Row*,
+   * *Side by side* and *Grid* as four bare words, and two of them are genuinely
+   * hard to tell apart from their names — a Row lays blocks along one line, a
+   * Side by side gives each pane its own stack. A merchant found out which was
+   * which by adding one, looking at the preview and deleting it again.
+   */
+  layoutNotes: Record<string, string>;
+  /**
+   * What a layout's own setting is called, keyed `"{layout}.{param}"`.
+   *
+   * **A layout has settings and the editor never offered them.** `split`
+   * declares `ratio`, the renderer reads it, and no control reached it — so a
+   * Side by side was a fixed 50/50 and the manifest described a capability
+   * nobody had.
+   */
+  layoutParams: Record<string, string>;
+  /**
+   * What each offered value of one is called, keyed
+   * `"{layout}.{param}.{value}"` — because `0.35` is not a thing to put in
+   * front of a merchant.
+   */
+  layoutParamValues: Record<string, string>;
   fields: Record<string, string>;
+  /**
+   * The example wording a field of each kind ships with.
+   *
+   * A default to COMPARE against as much as one to write: the ⇄ control
+   * rewrites a field's placeholder only where the old kind's was still there,
+   * which is how a merchant's own wording survives a swap.
+   */
+  placeholders: Record<string, string>;
   keys: Record<string, string>;
+  /**
+   * What each choosable PARAM VALUE is called — today, a `button`'s two
+   * actions.
+   *
+   * Its own map rather than an entry in `keys`, which is pinned to exactly the
+   * leaves' `content` keys by `TemplateLabelParityTest`: a label for `action`
+   * in there would be a control the editor must not offer as words. A row says
+   * *"Send my code · sends the form"* and the ⇄ menu offers the other one, and
+   * neither may say `submit` to a merchant.
+   */
+  params: Record<string, string>;
   tokens: Record<string, string>;
+  /**
+   * What each OFFERED TOKEN VALUE is called, keyed `"{token}.{value}"`.
+   *
+   * The Design panel's segmented controls read this: `align.center` is
+   * *"Centre"* and a font stack is *"Serif"*. Keyed by the VALUE because the
+   * value is the identity — `align` holds the CSS keyword the renderer reads,
+   * and a font token holds the stack itself — so there is no id to keep in step
+   * with anything.
+   *
+   * Its own map rather than an entry in `tokens`, which
+   * `TemplateLabelParityTest` pins to exactly the token NAMES.
+   *
+   * **It says what is offered, never what is allowed.** A merchant may still
+   * type a value nothing here names, and the panel keeps a text box beside
+   * every choice control precisely so they can.
+   */
+  tokenValues: Record<string, string>;
 }
 
-/** What `GET /wconvert/v1/templates` returns: the gallery, and its words. */
-export interface Gallery {
-  templates: TemplateEntry[];
-  labels: TemplateLabels;
+/**
+ * What each FACET the picker filters by is called, and what each value is.
+ *
+ * `facetValues` is keyed `"{facet}.{value}"`, the same shape `tokenValues` and
+ * `layoutParamValues` take — because the value IS the identity and an id would
+ * be a second spelling of something the manifest already spells once.
+ *
+ * Two of the three borrow words the admin already says: a `shape` chip and a
+ * row in the structure editor name the same layout, composed from one string on
+ * the server so a translator has one to get right rather than two that must
+ * agree.
+ */
+export interface TemplateLabelsWithFacets extends TemplateLabels {
+  facets: Record<string, string>;
+  facetValues: Record<string, string>;
 }
 
-export const listTemplates = () => apiFetch<Gallery>({ path: '/wconvert/v1/templates' });
+/**
+ * What `GET /wconvert/v1/templates` returns: the library as an INDEX, its
+ * words, and the facet vocabulary the chip strip enumerates.
+ *
+ * The vocabulary comes from `resources/templates/manifest.json` rather than
+ * from this bundle, which is ADR 0010's rule read literally: a control that
+ * ENUMERATES reads its enumeration from the manifest. A facet added there
+ * arrives as a chip strip with nothing in this file edited.
+ */
+export interface TemplateIndex {
+  templates: TemplateIndexEntry[];
+  labels: TemplateLabelsWithFacets;
+  /** `{ shape: [...], captures: [...], has_image: ['true'] }`, in chip order. */
+  facets: Record<string, string[]>;
+}
+
+export const listTemplates = () => apiFetch<TemplateIndex>({ path: '/wconvert/v1/templates' });
+
+/**
+ * The designs behind a handful of cards — the ones on screen.
+ *
+ * Batched into one request because a grid brings a row into view at a time and
+ * one fetch per card is a request storm the moment somebody scrolls. Capped on
+ * the server at what a full screen of cards can be, so a hand-written URL
+ * cannot ask for the whole library back through the route built to avoid
+ * sending it.
+ *
+ * An id with no design behind it — a locked card, an entry this install no
+ * longer ships — is simply absent from the answer rather than an error. The
+ * card that asked keeps what it had.
+ */
+export const getTemplateTrees = (ids: readonly string[]) =>
+  apiFetch<{ templates: TemplateDesign[] }>({
+    path: `/wconvert/v1/templates/trees?ids=${encodeURIComponent(ids.join(','))}`,
+  });
 
 /**
  * One label, or the key itself where nothing names it.

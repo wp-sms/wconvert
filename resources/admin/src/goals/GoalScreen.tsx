@@ -1,13 +1,22 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { ArrowLeft, Sparkles } from 'lucide-react';
-import { mount } from '@renderer/mount';
 import type { Template } from '@renderer/types';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { ChoiceCard, ChoiceGrid, ChoiceSkeleton } from '../shell/ChoiceGrid';
+import { GallerySkeleton } from '../builder/Gallery';
+import { Preview } from '../builder/Preview';
+import { TemplateCard } from '../builder/TemplateCard';
 import { EmptyState } from '../shell/EmptyState';
-import { Region, RegionBody, RegionError, RegionErrorState, RegionHeader } from '../shell/Region';
+import {
+  Region,
+  RegionBody,
+  RegionError,
+  RegionErrorState,
+  RegionFooter,
+  RegionHeader,
+} from '../shell/Region';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
 import { createOptin } from '../optins/api';
 import { renderingFor } from './availability';
@@ -255,6 +264,27 @@ function GoalPicker({
  * Step two — the gallery, **filtered on Goal only**. The server did the
  * filtering, and there is no second control here to make Display Type an axis.
  *
+ * ============================================================================
+ * IT DREW A HEADING, A PARAGRAPH AND A BUTTON (#68, #79).
+ * ============================================================================
+ * This is where a merchant chooses between ready-to-run starts, and it showed
+ * them as `ChoiceCard`s — three lines of text apiece — while step 3, one click
+ * later, draws the real design. The product's whole claim is that there are no
+ * thumbnails anywhere in this flow because the REAL thing is cheap to draw
+ * (ADR 0010), and this was the one screen in the flow not making it.
+ *
+ * So each card is the design this Playbook would prefill, **with that
+ * Playbook's words already in it** — which is a different object from a
+ * [[Template]] and is why {@see TemplateCard} is shared and the picker's facet
+ * toolbar is not. The composition is `Prefill`'s own, called on the server, so
+ * what is drawn here is byte-identical to step 3 and to what creating it
+ * stores.
+ *
+ * **No dialog, because this is not the builder.** The picker opens one to buy
+ * the grid the width the builder's pinned preview leaves it (ADR 0038); this
+ * step already has the full width and no pinned preview, so the grid renders
+ * inline — and, unlike the builder, it has to work to 360px.
+ *
  * "Start from scratch" sits in the region's footer rather than replacing the
  * cards, because it skips the Playbook and not the Goal: the merchant has
  * already answered the one question that is asked before anything else. It is
@@ -277,7 +307,17 @@ function PlaybookGallery({
   const entries = playbooks.status === 'ready' ? playbooks.data : [];
 
   return (
-    <Region>
+    /*
+      **Capped to a reading measure, because a step is not a chooser.** Step one
+      offers four Goals and wants every pixel of the measure; steps two and three
+      often hold ONE card, and one card in a 1152px region is 400px of content
+      beside 700px of white — which reads as a grid that failed to load rather
+      than as a step with one option. `ChoiceGrid` uses `auto-fill` for exactly
+      this reason one level down; this is the same argument one level up, and
+      `.wconvert-gallery` — which this step draws now — uses `auto-fill` for the
+      same reason again.
+    */
+    <Region className="max-w-3xl">
       <RegionHeader
         title={sprintf(
           /* translators: %s: the chosen Goal, e.g. "Grow my email list". */
@@ -292,12 +332,15 @@ function PlaybookGallery({
       {playbooks.status === 'failed' ? (
         <RegionErrorState message={playbooks.message} />
       ) : playbooks.status === 'loading' ? (
+        /*
+          **The skeleton is in the shape of what is coming**, which is now a
+          grid of rendered designs rather than a grid of paragraphs — so it is
+          `GallerySkeleton` and not `ChoiceSkeleton` (ADR 0039). Two, because
+          most Goals have one or two Playbooks and a screen of six placeholders
+          would promise a library this step does not have.
+        */
         <RegionBody>
-          <ChoiceGrid>
-            {[0, 1].map((row) => (
-              <ChoiceSkeleton key={row} />
-            ))}
-          </ChoiceGrid>
+          <GallerySkeleton cards={2} />
         </RegionBody>
       ) : entries.length === 0 ? (
         <EmptyState icon={Sparkles} title={__('Nothing ready-made yet', 'wconvert')}>
@@ -308,13 +351,14 @@ function PlaybookGallery({
         </EmptyState>
       ) : (
         <RegionBody>
-          <ChoiceGrid>
+          <ul className="wconvert-gallery">
             {entries.map((playbook) => (
-              <ChoiceCard
+              <TemplateCard
                 key={playbook.id}
                 id={playbook.id}
-                title={playbook.name}
+                name={playbook.name}
                 notes={playbook.notes}
+                template={playbook.template}
                 action={(describedBy) => (
                   <Button aria-describedby={describedBy} onClick={() => onStart(playbook.id)}>
                     {__('Use this Playbook', 'wconvert')}
@@ -322,7 +366,7 @@ function PlaybookGallery({
                 )}
               />
             ))}
-          </ChoiceGrid>
+          </ul>
         </RegionBody>
       )}
 
@@ -367,7 +411,7 @@ function DraftPreview({
   const template = draft.config.template as Template | undefined;
 
   return (
-    <Region>
+    <Region className="max-w-3xl">
       <RegionHeader
         title={draft.name}
         description={__('Nothing is saved until you create it.', 'wconvert')}
@@ -450,26 +494,29 @@ function StepFooter({
   disabled?: boolean;
 }) {
   return (
-    <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-border px-4 py-3">
+    <RegionFooter className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
       <Button variant="ghost" disabled={disabled} onClick={onBack}>
         <ArrowLeft aria-hidden="true" />
         {backLabel}
       </Button>
       {forward}
-    </div>
+    </RegionFooter>
   );
 }
 
+/**
+ * The prefilled design, drawn by {@see Preview} rather than by a `mount()` of
+ * its own.
+ *
+ * It had its own copy of the mount effect, which was three lines and looked
+ * harmless — and then #77 landed: the admin has to resolve the site's privacy
+ * policy at the render, because resolving it into a config the flow POSTs back
+ * would freeze the href at publish (ADR 0032). A second mount is a second place
+ * that has to remember, and this one did not: step 3's fine print read *"See
+ * our."* while the front end read it correctly.
+ *
+ * One call site for the renderer in the admin is what makes that unrepeatable.
+ */
 function PrefilledCard({ template }: { template: Template }) {
-  const anchor = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const mounted = mount({ displayType: 'inline', template, anchor: anchor.current });
-
-    mounted.show();
-
-    return () => mounted.close();
-  }, [template]);
-
-  return <div ref={anchor} />;
+  return <Preview template={template} />;
 }

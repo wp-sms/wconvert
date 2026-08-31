@@ -169,4 +169,82 @@ final class PayloadBudgetTest extends TestCase
         $this->assertStringContainsString('"steps"', $rendered);
         $this->assertGreaterThan(self::BUDGET, strlen($rendered), 'uncompressed, ten trees are well over the budget');
     }
+
+    /**
+     * ==========================================================================
+     * THE LIBRARY GREW FOUR TIMES AND THE PAYLOAD DID NOT MOVE. IT MUST NOT.
+     * ==========================================================================
+     * `template_id` is **provenance** (ADR 0010, CONTEXT.md Template): an Optin
+     * carries a COPY of the design it started from, and the registry is not
+     * consulted at render time. That is why three designs became twelve — with
+     * nine more advertised — without a byte of it reaching a visitor's page.
+     *
+     * The way that would break is not a design decision anybody would argue
+     * for; it is a convenience. A future ticket wants the design's NAME on a
+     * beacon, or its `tier` for a report, or its `facets` for a segment — each
+     * is one line in a projection, each is per-entry, and every one of them is
+     * paid by every visitor of every matching page against a 2KB budget.
+     *
+     * So the assertion is about the KEYS the index route added, named
+     * individually: they are the ones that exist now and could be reached for.
+     * The budget test above would eventually catch it, in the sense that a
+     * failing budget catches everything — this says which line did it.
+     */
+    public function testNothingAboutTheLIBRARYReachesTheBrowser(): void
+    {
+        $entries = Payload::forRequest(self::worstCase(), new RequestContext(path: '/pricing/'), InstalledRules::free());
+        $rendered = PayloadTag::render(
+            $entries,
+            'https://example.test/wp-json/wconvert/v1/capture',
+            'https://example.test/wp-json/wconvert/v1/beacon'
+        );
+
+        // Not `"name"`: a `field` node carries one, and it is what the capture
+        // path requires the visitor to fill in. The entry NAMES are asserted
+        // absent below, where the comparison is against the library itself.
+        foreach (['"tier"', '"facets"', '"availability"', '"preview_url"'] as $key) {
+            $this->assertStringNotContainsString(
+                $key,
+                $rendered,
+                $key . ' is an index field and belongs to the admin, not to a visitor\'s page'
+            );
+        }
+
+        // And the provenance that IS carried, so the assertion above cannot be
+        // satisfied by a payload that stopped naming its design at all.
+        $this->assertStringContainsString('"template_id":"centred-card"', $rendered);
+    }
+
+    /**
+     * **A design nobody picked never reaches a page**, however many the library
+     * holds. Measured rather than argued: the same ten Optins render the same
+     * bytes with twelve designs shipped as they would with three, because the
+     * registry is not in this path at all.
+     */
+    public function testAnUnpickedDesignCostsAVisitorNothing(): void
+    {
+        $vocabulary = TemplateVocabulary::fromManifest(self::PLUGIN_DIR);
+        $library = TemplateLibrary::fromDirectory($vocabulary, self::PLUGIN_DIR);
+
+        $this->assertGreaterThan(1, count($library->all()), 'this asserts nothing on a one-design library');
+
+        $entries = Payload::forRequest(self::worstCase(), new RequestContext(path: '/pricing/'), InstalledRules::free());
+        $rendered = PayloadTag::render(
+            $entries,
+            'https://example.test/wp-json/wconvert/v1/capture',
+            'https://example.test/wp-json/wconvert/v1/beacon'
+        );
+
+        foreach ($library->all() as $id => $entry) {
+            if ($id === 'centred-card') {
+                continue;
+            }
+
+            $this->assertStringNotContainsString((string) $entry['name'], $rendered, $id . ' reached the page');
+        }
+
+        foreach ($library->locked() as $id => $entry) {
+            $this->assertStringNotContainsString((string) $entry['name'], $rendered, $id . ' reached the page');
+        }
+    }
 }

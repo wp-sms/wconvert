@@ -1,4 +1,5 @@
 import apiFetch from '@wordpress/api-fetch';
+import type { Template } from '@renderer/types';
 import type { Availability } from './availability';
 
 /**
@@ -43,6 +44,19 @@ export interface PlaybookEntry {
   destination_hint: Record<string, unknown>;
   /** Why it works, in the merchant's language. */
   notes: string;
+  /**
+   * **The design this Playbook would prefill, with its words already in it.**
+   *
+   * Composed by `Prefill` on the server and not here, which is the whole point:
+   * binding `copy` to [[Slot Role]]s is the one thing that must not have two
+   * implementations, and this is prefill's own call. So step 2 draws exactly
+   * what step 3 draws and exactly what creating it would store.
+   *
+   * Absent where the Playbook names a Template this install no longer ships —
+   * which still starts a perfectly good Optin, so the card falls back to the
+   * words it always had (#79).
+   */
+  template?: Template;
 }
 
 /** What prefill hands back: an Optin nobody has saved. */

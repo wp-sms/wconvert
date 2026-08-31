@@ -41,6 +41,7 @@ final class TemplateVocabulary
      * @param list<string> $roles
      * @param list<string> $schemes
      * @param list<string> $fields
+     * @param array<string, list<string>> $facets
      */
     private function __construct(
         private readonly array $layouts,
@@ -49,6 +50,7 @@ final class TemplateVocabulary
         private readonly array $roles,
         private readonly array $schemes,
         private readonly array $fields,
+        private readonly array $facets = [],
     ) {
     }
 
@@ -83,6 +85,31 @@ final class TemplateVocabulary
     public function schemes(): array
     {
         return $this->schemes;
+    }
+
+    /**
+     * The facets a gallery OFFERS as filters, and what each one enumerates.
+     *
+     * ADR 0010's rule, read literally: a control that ENUMERATES reads its
+     * enumeration from the manifest. The chip strip over the picker is such a
+     * control, so the manifest declares which facets it draws and which values
+     * each offers — and {@see TemplateFacets} derives exactly those keys from a
+     * tree, with {@see \WConvert\Tests\Unit\Template\TemplateLabelParityTest}
+     * failing in both directions.
+     *
+     * **It is not a list of every facet.** `act`, `asks_consent` and
+     * `display_type` are derived and travel with an index entry, and none of
+     * them is a chip — see {@see TemplateFacets} for why each is not.
+     *
+     * Unvalidated as VALUES, exactly as `choices` is: `shape` enumerates the
+     * layouts the manifest already declares, and holding this to them is the
+     * parity test's job rather than this class's.
+     *
+     * @return array<string, list<string>>
+     */
+    public function facets(): array
+    {
+        return $this->facets;
     }
 
     /**
@@ -152,6 +179,10 @@ final class TemplateVocabulary
             self::strings($manifest['roles'] ?? []),
             self::strings($manifest['schemes'] ?? []),
             self::strings($manifest['fields'] ?? []),
+            array_map(
+                static fn ($values): array => self::strings($values),
+                array_filter(self::section($manifest, 'facets'), 'is_array')
+            ),
         );
     }
 

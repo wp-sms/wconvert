@@ -127,7 +127,8 @@ final class ArtifactContractTest extends TestCase
             'resources/renderer/src/render.ts' => "export const render = () => {};\n",
             'resources/rules/manifest.json' => "{\"targeting\":{}}\n",
             'resources/templates/manifest.json' => "{\"slots\":{}}\n",
-            'resources/templates/library/centred-card.json' => "{}\n",
+            'resources/templates/library/centred-card.json' => "{\"tier\":\"free\"}\n",
+            'resources/templates/locked.json' => "{\"designs\":[]}\n",
             'resources/playbooks/welcome.php' => "<?php\nreturn [];\n",
             ...$overrides,
         ]);
@@ -162,6 +163,79 @@ final class ArtifactContractTest extends TestCase
     public function testPassesOnAProTree(): void
     {
         $result = $this->verify($this->stagedPro());
+
+        $this->assertSame(0, $result['status'], $result['output']);
+    }
+
+    // =========================================================================
+    // (e) NO PREMIUM DESIGN IN THE FREE ZIP.
+    //
+    // Issue #7's rule, in the newest place it can be broken: "if the free ZIP
+    // ships exit-intent code and refuses to run it, that is trialware". A
+    // design is a JSON file, and a JSON file looks harmless in a diff.
+    // =========================================================================
+
+    public function testFailsWhenTheFreeTreeBundlesAPremiumDesign(): void
+    {
+        $result = $this->verify($this->stagedFree([
+            'resources/templates/library/spin-to-win.json' => "{\"id\":\"spin\",\"tier\":\"pro\",\"tree\":{}}\n",
+        ]));
+
+        $this->assertSame(1, $result['status'], $result['output']);
+        $this->assertStringContainsString('premium design', $result['output']);
+    }
+
+    /**
+     * `Tier::tryFrom()` reads an unrecognised word as free, so an entry
+     * declaring one would ship as free without anybody deciding that. It is a
+     * red build rather than a silent reclassification.
+     */
+    public function testFailsWhenABundledDesignDeclaresATierNobodyCanClassify(): void
+    {
+        $result = $this->verify($this->stagedFree([
+            'resources/templates/library/agency.json' => "{\"id\":\"agency\",\"tier\":\"enterprise\"}\n",
+        ]));
+
+        $this->assertSame(1, $result['status'], $result['output']);
+    }
+
+    /**
+     * **The trialware shape arriving through the file written to prevent it.**
+     * `locked.json` carries the CARD — a name, its facets, a link to a live
+     * preview on wconvert.com — and never the design. A tree in it is a premium
+     * design in the free ZIP by another route.
+     */
+    public function testFailsWhenTheLockedMetadataCarriesADesign(): void
+    {
+        $result = $this->verify($this->stagedFree([
+            'resources/templates/locked.json' =>
+                "{\"designs\":[{\"id\":\"slide-in-card\",\"tree\":{\"steps\":[]}}]}\n",
+        ]));
+
+        $this->assertSame(1, $result['status'], $result['output']);
+        $this->assertStringContainsString('locked.json', $result['output']);
+    }
+
+    /** Fail-closed: a library that was not inspected is not a library that passed. */
+    public function testFailsWhenTheDesignLibraryIsAbsentEntirely(): void
+    {
+        $result = $this->verify($this->stagedFree([
+            'resources/templates/library/centred-card.json' => null,
+        ]));
+
+        $this->assertSame(1, $result['status'], $result['output']);
+    }
+
+    /**
+     * Pro is where the premium designs ship, so (e) asserts nothing there — the
+     * same asymmetry (c) and (d) already have, said out loud rather than left
+     * as an omission.
+     */
+    public function testAProTreeMayCarryPremiumDesigns(): void
+    {
+        $result = $this->verify($this->stagedPro([
+            'resources/templates/library/spin-to-win.json' => "{\"id\":\"spin\",\"tier\":\"pro\",\"tree\":{}}\n",
+        ]));
 
         $this->assertSame(0, $result['status'], $result['output']);
     }

@@ -12,13 +12,14 @@
       "children": "panes",
       "params": [
         "ratio"
-      ]
-    },
-    "grid": {
-      "children": "list",
-      "params": [
-        "columns"
-      ]
+      ],
+      "choices": {
+        "ratio": [
+          "0.35",
+          "0.5",
+          "0.65"
+        ]
+      }
     }
   },
   "nodes": {
@@ -34,7 +35,8 @@
         "hidden"
       ],
       "roles": [
-        "role"
+        "headline",
+        "success_headline"
       ]
     },
     "text": {
@@ -50,7 +52,9 @@
         "hidden"
       ],
       "roles": [
-        "role"
+        "body",
+        "fine_print",
+        "success_body"
       ]
     },
     "image": {
@@ -92,7 +96,7 @@
         "action"
       ],
       "roles": [
-        "role"
+        "cta_label"
       ]
     },
     "consent": {
@@ -108,7 +112,7 @@
         "hidden"
       ],
       "roles": [
-        "role"
+        "consent_text"
       ]
     }
   },
@@ -153,5 +157,33 @@
     "http",
     "https",
     "mailto"
-  ]
+  ],
+  "choices": {
+    "align": [
+      "start",
+      "center",
+      "end"
+    ],
+    "font": [
+      "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
+      "'Helvetica Neue', Helvetica, Arial, sans-serif",
+      "Georgia, 'Times New Roman', Times, serif",
+      "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+    ]
+  },
+  "facets": {
+    "shape": [
+      "stack",
+      "row",
+      "split"
+    ],
+    "captures": [
+      "email",
+      "name",
+      "phone"
+    ],
+    "has_image": [
+      "true"
+    ]
+  }
 }

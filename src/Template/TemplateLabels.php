@@ -69,6 +69,130 @@ final class TemplateLabels
     }
 
     /**
+     * What each layout is called, for the structure editor's rows and its Add
+     * menu.
+     *
+     * **Needed only because arrangement became visible.** Until the structure
+     * editor existed a layout was a shape the renderer read and nobody named:
+     * the settings panel walks leaves and flattens them, so `stack` never
+     * reached a merchant's eyes. A tree that lists what a design is MADE of
+     * cannot flatten them — a merchant moving the email field is moving it
+     * within the `row` — so each one acquires a name the way a Slot Role did.
+     *
+     * Named for what the merchant SEES rather than for what the renderer does.
+     * `split` is *"Side by side"* and not "Split", because the word a merchant
+     * needs is the arrangement they are looking at.
+     *
+     * @return array<string, string>
+     */
+    public static function layouts(): array
+    {
+        return [
+            'stack' => __('Column', 'wconvert'),
+            'row' => __('Row', 'wconvert'),
+            'split' => __('Side by side', 'wconvert'),
+        ];
+    }
+
+    /**
+     * What each layout DOES, in one line with an example.
+     *
+     * ============================================================================
+     * A NAME IS NOT AN EXPLANATION, AND FOUR OF THESE NEEDED ONE.
+     * ============================================================================
+     * *Column*, *Row*, *Side by side* and *Grid* are the four arrangements the
+     * vocabulary offers, and the Add menu offered them as four bare words. Two
+     * of them are genuinely hard to tell apart from their names — a Row lays
+     * blocks along one line, a Side by side gives each pane its own stack — and
+     * the merchant finds out which is which by adding one, looking at the
+     * preview, and deleting it again.
+     *
+     * **The example is the half that teaches.** *"Blocks left to right on one
+     * line"* is a definition; *"a field, then its button"* is a picture, and a
+     * merchant recognises the thing they were trying to build.
+     *
+     * **One short line each, and the brevity is the design.** The first version
+     * wrote a full sentence with a clause of example, which at a menu's width
+     * wrapped to three lines — so ten items became a wall of prose and the note
+     * that was meant to help had to be read past to reach the thing being
+     * chosen. A note under a menu item is glanced at, not studied.
+     *
+     * Its own map rather than an entry in {@see self::layouts()}, which is
+     * pinned to exactly the manifest's layout NAMES — a sentence in there would
+     * be a name, and the block tree prints those on every row.
+     *
+     * @return array<string, string>
+     */
+    public static function layoutNotes(): array
+    {
+        return [
+            /*
+             * **Column says what it is FOR, not what it looks like.** Every step
+             * is already a column, so *"one block under another"* described
+             * something the merchant already had and made the menu item read as
+             * a no-op — which it is, at the top level. Its real job is grouping,
+             * and it is only offered where grouping does something.
+             */
+            /* translators: what the Column layout is for. It groups blocks so a Row treats them as one item. */
+            'stack' => __('Groups blocks into one item.', 'wconvert'),
+            /* translators: what the Row layout does. */
+            'row' => __('On one line — a field, then its button.', 'wconvert'),
+            /* translators: what the Side by side layout does. */
+            'split' => __('Two panes — a picture, then the form.', 'wconvert'),
+        ];
+    }
+
+    /**
+     * What a layout's own setting is called, keyed `"{layout}.{param}"`.
+     *
+     * **A layout has settings and the editor never offered them.** `split`
+     * declares `ratio` and the renderer reads it, and no control in the admin
+     * reached it — so a Side by side was a fixed 50/50 forever and the manifest
+     * described a capability nobody had. (`grid`'s `columns` was the same, and
+     * it is one of the reasons that layout is gone rather than fixed.)
+     *
+     * Keyed by layout AND param because a param name is only meaningful under
+     * its layout: `ratio` means nothing on its own.
+     *
+     * @return array<string, string>
+     */
+    public static function layoutParams(): array
+    {
+        return [
+            'split.ratio' => __('How the space is divided', 'wconvert'),
+        ];
+    }
+
+    /**
+     * What each OFFERED value of a layout's setting is called, keyed
+     * `"{layout}.{param}.{value}"`.
+     *
+     * **Named for what a merchant SEES, not for the number.** `ratio` is the
+     * first pane's share of the line, so `0.35` is a narrow first pane — and
+     * *"0.35"* is not a thing to put in front of anybody. The words are
+     * directional the way `align`'s are, and the translator resolves them for
+     * their own reading direction; the panes themselves are `start` and `end`
+     * and never `left` and `right` (ADR 0009).
+     *
+     * **These are what the panel OFFERS and never what is allowed.** The
+     * renderer takes any fraction, so a design shipping `0.4` keeps it — the
+     * same bargain token `choices` make.
+     *
+     * @return array<string, string>
+     */
+    public static function layoutParamValues(): array
+    {
+        return [
+            /* translators: a side-by-side split. The LOGICAL first pane is narrower — it reads “right” in a right-to-left locale. */
+            'split.ratio.0.35' => __('Narrow left', 'wconvert'),
+            /* translators: a side-by-side split where both panes are the same width. */
+            'split.ratio.0.5' => __('Even', 'wconvert'),
+            /* translators: a side-by-side split. The LOGICAL second pane is narrower — it reads “left” in a right-to-left locale. */
+            'split.ratio.0.65' => __('Narrow right', 'wconvert'),
+        ];
+    }
+
+    /**
      * What each field kind captures, in the merchant's words.
      *
      * @return array<string, string>
@@ -79,6 +203,40 @@ final class TemplateLabels
             'email' => __('Email address', 'wconvert'),
             'name' => __('Name', 'wconvert'),
             'phone' => __('Phone number', 'wconvert'),
+        ];
+    }
+
+    /**
+     * The example wording a field of each kind ships with.
+     *
+     * ============================================================================
+     * IT IS A DEFAULT TO COMPARE AGAINST, NOT ONLY ONE TO WRITE.
+     * ============================================================================
+     * The ⇄ control changes what a field captures, and an email field that
+     * becomes a phone field must not keep `you@example.com` in front of the
+     * visitor. So the new kind's example is written in — but only where the old
+     * kind's was still there, which is the same comparison
+     * {@see MerchantsOwn} makes across a Template switch: different from what
+     * was shipped means the merchant's, and it stays.
+     *
+     * A design shipping its own wording — `stacked-signup` says
+     * *"+44 7700 900000"* — therefore reads as the merchant's and is kept. That
+     * is the safe direction, chosen rather than tolerated: the two are
+     * indistinguishable from here, and silently overwriting words somebody
+     * wrote is the failure that costs more.
+     *
+     * Separate from {@see self::keys()}, whose `placeholder` entry names the
+     * CONTROL rather than saying what goes in it, and separate from
+     * {@see self::fields()}, which is the label rather than the example.
+     *
+     * @return array<string, string>
+     */
+    public static function placeholders(): array
+    {
+        return [
+            'email' => __('you@example.com', 'wconvert'),
+            'name' => __('Your name', 'wconvert'),
+            'phone' => __('+44 7700 900000', 'wconvert'),
         ];
     }
 
@@ -101,6 +259,37 @@ final class TemplateLabels
             'src' => __('Image address', 'wconvert'),
             'alt' => __('Alt text', 'wconvert'),
             'href' => __('Where the button goes', 'wconvert'),
+        ];
+    }
+
+    /**
+     * What each PARAM VALUE a merchant may choose is called.
+     *
+     * ============================================================================
+     * ITS OWN MAP, BECAUSE {@see self::keys()} MUST STAY EXACTLY THE CONTENT KEYS.
+     * ============================================================================
+     * `keys()` is asserted to be the union of every leaf's `content` list and
+     * nothing beyond it — a label for `action` in there would be a control the
+     * editor must not offer as words. But a `button`'s `action` is now
+     * CHOOSABLE: the ⇄ control changes what a block is, and *"submit"* is not a
+     * sentence to put in front of a merchant.
+     *
+     * So the two vocabularies stay apart. A field's kinds are already named by
+     * {@see self::fields()}; what is left is the button's two, and they are
+     * anchored to {@see ConvertingAct::action()} so a third act could not
+     * arrive unnamed.
+     *
+     * Named for what the button DOES rather than for the value: `link` is the
+     * node's word for a CTA that navigates, and a merchant choosing between
+     * "link" and "submit" is being asked to know the vocabulary.
+     *
+     * @return array<string, string>
+     */
+    public static function params(): array
+    {
+        return [
+            'submit' => __('Sends the form', 'wconvert'),
+            'link' => __('Goes somewhere else', 'wconvert'),
         ];
     }
 
@@ -131,6 +320,148 @@ final class TemplateLabels
     }
 
     /**
+     * What each OFFERED TOKEN VALUE is called, keyed `"{token}.{value}"`.
+     *
+     * ============================================================================
+     * `choices` IS WHAT THE PANEL OFFERS. IT IS NEVER WHAT IS ALLOWED.
+     * ============================================================================
+     * Token *names* are checked and their *values are not* — that is what keeps
+     * `clamp(20rem, 50vw, 30rem)` expressible for `width` and an asymmetric
+     * corner expressible for `radius`, and it is deliberate (ADR 0010). So
+     * {@see TemplateVocabulary} does not read `choices` and never will: these
+     * words exist because a merchant cannot be asked to type `start` into a text
+     * box, not because `start` is the only thing `align` may hold.
+     *
+     * **Keyed by the value rather than by an id**, because the value IS the
+     * identity: `align` holds the CSS keyword the renderer's stylesheet reads,
+     * and a font token holds the stack itself. An id would be a second spelling
+     * of a thing the manifest already spells once, and the parity test below
+     * would have nothing to compare.
+     *
+     * **The font stacks are byte-identical to the manifest's**, apostrophes and
+     * all, and that is the one genuinely fragile join in this file. It is a red
+     * build rather than an untranslated chip:
+     * {@see \WConvert\Tests\Unit\Template\TemplateLabelParityTest::testEveryTokenChoiceIsNamed()}
+     * fails in both directions.
+     *
+     * @return array<string, string>
+     */
+    public static function tokenValues(): array
+    {
+        return [
+            /*
+             * ====================================================================
+             * THESE THREE ARE LOGICAL, AND THE ENGLISH WORDS ARE DIRECTIONAL.
+             * ====================================================================
+             * The renderer sets `text-align: var(--wc-align, start)`, and `start`
+             * and `end` are LOGICAL — under `fa_IR` a design set to `start` reads
+             * from the right. So the English word is the one an English reader
+             * needs and the translator resolves it for their own direction; that
+             * is what the comments below are for, and it is why the panel offers
+             * words rather than a mirrored icon it would then have to flip.
+             */
+            /* translators: a text alignment. This is the LOGICAL start of the line, so it reads “Right” in a right-to-left locale. */
+            'align.start' => __('Left', 'wconvert'),
+            /* translators: a text alignment. */
+            'align.center' => __('Centre', 'wconvert'),
+            /* translators: a text alignment. This is the LOGICAL end of the line, so it reads “Left” in a right-to-left locale. */
+            'align.end' => __('Right', 'wconvert'),
+
+            /*
+             * **Every stack here is system-available**, which is a constraint
+             * rather than a preference: ADR 0010 hands the renderer the whole
+             * stylesheet and there is no web font to load, so a stack naming a
+             * face nobody has renders as a fallback the merchant did not pick —
+             * and they would have chosen it by looking at it, because the panel
+             * sets each chip in its own face.
+             *
+             * Named for the REGISTER rather than for a typeface: "Helvetica" on
+             * a Windows machine is Arial, and a label that names one face while
+             * showing another is a label that lies on most installs.
+             */
+            /* translators: a font choice — the operating system's own interface typeface. */
+            "font.system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" => __('System', 'wconvert'),
+            /* translators: a font choice — a typeface with no serifs. */
+            "font.'Helvetica Neue', Helvetica, Arial, sans-serif" => __('Sans serif', 'wconvert'),
+            /* translators: a font choice — a typeface with serifs. */
+            'font.Georgia, \'Times New Roman\', Times, serif' => __('Serif', 'wconvert'),
+            /* translators: a font choice — a typeface whose letters are all one width. */
+            'font.ui-monospace, SFMono-Regular, Menlo, Consolas, monospace' => __('Monospace', 'wconvert'),
+        ];
+    }
+
+    /**
+     * What each FACET the picker filters by is called.
+     *
+     * ============================================================================
+     * THE THREE A MERCHANT COMPARING DESIGNS ACTUALLY USES.
+     * ============================================================================
+     * Six facets are derived from a tree and three of them are offered as
+     * controls ({@see TemplateFacets}). These are the names over those three
+     * chip strips, and each one has to answer ADR 0042 rule 2 — *does knowing
+     * this change what they do next?* — before it earns a line of the toolbar.
+     *
+     * Named for the QUESTION rather than for the key. `has_image` is *"Picture"*
+     * because the strip under it holds one chip and a merchant reads the pair,
+     * not the key.
+     *
+     * @return array<string, string>
+     */
+    public static function facets(): array
+    {
+        return [
+            /* translators: a filter over the design library — how a design is arranged. */
+            'shape' => __('Shape', 'wconvert'),
+            /* translators: a filter over the design library — what the design asks a visitor for. */
+            'captures' => __('Asks for', 'wconvert'),
+            /* translators: a filter over the design library — whether the design has an image in it. */
+            'has_image' => __('Picture', 'wconvert'),
+        ];
+    }
+
+    /**
+     * What each OFFERED FACET VALUE is called, keyed `"{facet}.{value}"`.
+     *
+     * ============================================================================
+     * TWO OF THE THREE BORROW WORDS THE ADMIN ALREADY SAYS, DELIBERATELY.
+     * ============================================================================
+     * A `shape` chip and a row in the structure editor name the same layout, and
+     * a `captures` chip and the ⇄ menu name the same field kind. Composing them
+     * from {@see self::layouts()} and {@see self::fields()} is what makes that
+     * true by construction: a merchant who filtered by *Side by side* and then
+     * opened the design finds a block called *Side by side*, and a translator
+     * has one string to get right rather than two that must agree.
+     *
+     * It also removes the failure the other spelling would have: two lists
+     * whose keys are checked against the manifest separately can both pass
+     * while saying different words for `split`.
+     *
+     * `has_image` is the exception because it has no vocabulary behind it. It is
+     * a boolean, so it offers exactly one chip — the manifest declares `"true"`
+     * and this names it — and *"With a picture"* is the phrase, because a chip
+     * reading *"True"* is a chip nobody presses.
+     *
+     * @return array<string, string>
+     */
+    public static function facetValues(): array
+    {
+        $values = [];
+
+        foreach (self::layouts() as $layout => $label) {
+            $values['shape.' . $layout] = $label;
+        }
+
+        foreach (self::fields() as $field => $label) {
+            $values['captures.' . $field] = $label;
+        }
+
+        /* translators: the one chip under the Picture filter — designs with an image in them. */
+        $values['has_image.true'] = __('With a picture', 'wconvert');
+
+        return $values;
+    }
+
+    /**
      * Every map at once, which is what the gallery route ships.
      *
      * One object rather than five routes: they are read together, once, by one
@@ -143,9 +474,18 @@ final class TemplateLabels
         return [
             'roles' => self::roles(),
             'nodes' => self::nodes(),
+            'layouts' => self::layouts(),
+            'layoutNotes' => self::layoutNotes(),
+            'layoutParams' => self::layoutParams(),
+            'layoutParamValues' => self::layoutParamValues(),
             'fields' => self::fields(),
+            'placeholders' => self::placeholders(),
             'keys' => self::keys(),
+            'params' => self::params(),
             'tokens' => self::tokens(),
+            'tokenValues' => self::tokenValues(),
+            'facets' => self::facets(),
+            'facetValues' => self::facetValues(),
         ];
     }
 }

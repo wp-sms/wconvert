@@ -1,0 +1,89 @@
+{
+  "id": "name-and-email",
+  "name": "Name and email",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#fffbeb",
+    "fg": "#1c1917",
+    "muted": "#78716c",
+    "accent": "#b45309",
+    "accent-fg": "#ffffff",
+    "border": "#fde68a",
+    "heading-size": "1.5rem",
+    "radius": "0.5rem",
+    "pad": "2rem",
+    "gap": "0.875rem",
+    "width": "26rem",
+    "align": "start",
+    "backdrop": "rgba(28, 25, 23, 0.55)"
+  },
+  "tree": {
+    "steps": [
+      {
+        "type": "stack",
+        "children": [
+          {
+            "type": "heading",
+            "role": "headline",
+            "text": "Let us get your name right"
+          },
+          {
+            "type": "text",
+            "role": "body",
+            "text": "We will use it on everything we send you."
+          },
+          {
+            "type": "field",
+            "name": "name",
+            "label": "First name",
+            "placeholder": "Your name",
+            "required": false
+          },
+          {
+            "type": "field",
+            "name": "email",
+            "label": "Email address",
+            "placeholder": "you@example.com",
+            "required": true
+          },
+          {
+            "type": "button",
+            "role": "cta_label",
+            "label": "Join the list",
+            "action": "submit"
+          },
+          {
+            "type": "consent",
+            "role": "consent_text",
+            "hidden": true,
+            "text": "Email me offers and news. See our %s.",
+            "link": {
+              "label": "Privacy Policy"
+            }
+          },
+          {
+            "type": "text",
+            "role": "fine_print",
+            "text": "No spam, and you can unsubscribe at any time."
+          }
+        ]
+      },
+      {
+        "type": "stack",
+        "children": [
+          {
+            "type": "heading",
+            "role": "success_headline",
+            "text": "Welcome aboard"
+          },
+          {
+            "type": "text",
+            "role": "success_body",
+            "text": "Look out for our first email in the next day or so."
+          }
+        ]
+      }
+    ]
+  }
+}

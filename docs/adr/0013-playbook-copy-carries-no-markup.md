@@ -78,6 +78,15 @@ the same move ADR 0010 made on templates, applied one layer up.
   missed in practice; not worth an `innerHTML` sink up front.
 - **Playbooks never supply images**, for the adjacent reason plus bytes and
   licensing. A template's image slot keeps the template's own asset or stays empty.
+  *Still true, and amended once the merchant became a third source. A [[Playbook]]
+  supplies no image and a [[Template]] supplies its own — but a merchant may
+  upload one, and until the structure editor landed that upload was destroyed by
+  the next design they picked, because `image` declares no `copy` and no
+  [[Slot Role]] binds to it. [`MerchantsOwn`](../../src/Template/MerchantsOwn.php)
+  carries an `image`'s `src`/`alt` and a `button`'s `href` across a switch,
+  and it carries only what the merchant CHANGED — measured against the entry
+  their copy was taken for. Where they changed nothing the new design's own
+  asset stands, which is this sentence being honoured rather than excepted.*
 - **~~The residual `href` exposure is bounded and stated~~**: a remote Playbook can
   render a link to an arbitrary URL on the merchant's site. Scheme validation
   closes `javascript:`; it does not stop a link to a bad destination. Accepted

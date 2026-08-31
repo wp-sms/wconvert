@@ -9,6 +9,10 @@ Alongside it, the other floors the admin holds: **WCAG 2.1 AA**, enforced by
 lint; **360px on the reading screens and 782px on the builder**; and **no dark
 mode in 0.1.0**.
 
+*The responsive range is split at both ends. The ceiling — 1152px on the reading
+screens, 1440px on the builder — is [its own section](#the-measure-is-split-for-the-same-reason-the-floor-is)
+below, added later and by the same argument.*
+
 ## The budget answers to who pays it
 
 The loader's 8KB is paid by **every visitor on every page view of every install**,
@@ -69,6 +73,55 @@ draws and the honest place to draw this one. **Saying so on screen is the load-
 bearing half** — a builder that silently degrades on a narrow viewport is a bug
 report; one that says what it needs is a product decision the merchant can act on.
 
+## The measure is split for the same reason the floor is
+
+The floors above are the same decision at the bottom of the range, and the
+argument does not stop being true at the top of it. So the **ceiling** is split
+too, and by the same test — what is this screen, and what does it need?
+
+- **Reading screens cap at 72rem (1152px).** They are tables and prose, and the
+  line-length research is unambiguous: widening a column of sentences makes it
+  harder to read, not easier.
+- **The builder caps at 90rem (1440px).** It is a place rather than a list —
+  a block tree, the controls for whichever block is selected, and a live preview
+  of the design, three things a merchant works between rather than reads down.
+
+**What the extra 288px buys is a third pane, not a wider column.** That
+distinction is the whole of the decision. The block inspector's text inputs are
+`widefat`, so a single column handed the extra width spends it turning a
+*Placeholder* field into an 870px box for the word `you@example.com` — past
+every measure form-usability research gives, and worse than what it replaced.
+Spent on a column split instead it buys two things at once: the inspector stops
+sitting below the fold on a long tree, and it sits next to the preview, which is
+the shortest eye travel there is between typing a headline and seeing it.
+
+The order is **tree · inspector · preview**, which is deliberately not the
+tool convention. Figma, Divi 5 and Gutenberg all put structure left, canvas
+centre, properties right, and the rationale is reading order — organisation
+where you start, properties where you finish. We take the rationale and reject
+the arrangement, because our canvas is an *output*: selection edits nothing in
+it ([ADR 0040](0040-the-builders-preview-is-an-input.md)), so left-to-right
+reads as the actual workflow — pick a block, change its words, see the result.
+The preview is also pinned beside all four tabs, and a centre column belonging
+to the screen flanked by two belonging to one tab is not a layout that survives
+switching to Display rules.
+
+**The split fires on a container query, not a media query, and that is
+load-bearing.** wp-admin's menu is 160px expanded and 36px folded, so the column
+actually available to the editor varies by ~124px at a fixed viewport width. The
+existing `1024px` and `1280px` breakpoints in `index.css` are viewport-keyed and
+therefore already wrong by that much on a folded menu; converting them moves
+behaviour at every width and is not part of this, but the new breakpoint does
+not repeat the mistake. The threshold — 48rem of container — is derived rather
+than chosen: `768 − 352 inspector − 24 gap = 392`, which is precisely the tree
+width the editor already survives at the 1024px stacking point. **Never split
+until the tree would be narrower than a width it already works at.**
+
+The cap stays a cap. At 2560px an uncapped row is ~1700px with a block's name at
+one end and its `⋯` at the other, which is the failure a measure exists to
+prevent — the answer to a wider screen is another pane or more air, never a
+longer line.
+
 ## Accessibility gets a lint gate because intentions do not survive a deadline
 
 [ADR 0035](0035-the-admin-owns-its-page.md) gave up what wp-admin was providing
@@ -86,6 +139,54 @@ free. **WCAG 2.1 AA** is the replacement bar, and it is held three ways:
 AAA is explicitly not the bar. It would rule out the palette on
 [ADR 0037](0037-the-admin-inherits-token-structure-and-owns-its-values.md)'s own
 numbers, and it is not what a WordPress admin screen is held to anywhere else.
+
+### SC 2.5.7 is why the block tree's ↑↓ buttons survived a drag handle
+
+*Recorded for the next person to tidy that row, so the reason is found before
+the buttons are deleted.*
+
+**WCAG 2.2 SC 2.5.7 (AA) requires a single-pointer alternative to any dragging
+movement**, and W3C is explicit that a keyboard equivalent does not satisfy it
+*"unless that equivalent keyboard operation also provides controls that can be
+clicked or tapped"* — its own cited example being *"sortable lists: adjacent
+controls for moving elements up or down"*.
+
+So when the row adopted a drag grip, the ↑↓ buttons stayed. They are `opacity:
+0` at rest and revealed on `:hover`, `:focus-within` and `[data-selected]`,
+which is a cleaner list and is **not** a way of removing them: they remain in
+the DOM, in the layout and in the focus order, because the treegrid's roving
+tabindex requires every row to have the same cell count. Move up / Move down
+also sit at the top of the row's `⋯` menu, which is the path reachable with no
+hover at all and the one a touch user meets after tapping the row.
+
+Three pointer paths and two keyboard ones (`Alt+↑`/`Alt+↓`, and arrowing to the
+buttons). A row that replaced the buttons with the grip would fail this
+criterion outright, however good it looked.
+
+### SC 2.5.8: the grip passes at 16px and the twist does not
+
+*Completed by #75, which measured the row rather than reasoning about it.* The
+grip is 16 × 14 and the twist was 20 × 20, both under SC 2.5.8's 24 × 24 CSS px.
+**Only one of them is a failure**, and the difference is worth stating rather
+than fixing both blindly.
+
+**The grip passes, under Equivalent.** The exception reads *"the function can be
+achieved through a different control on the same page that meets this
+criterion"* — the grip reorders a block, and the row's ↑ ↓ buttons and the `⋯`
+menu's *Move up* / *Move down* are 32px pointer controls on the same page doing
+exactly that. It is the same three-paths argument the section above makes for
+2.5.7, read against a different criterion.
+
+**The twist does not.** It expands a row, and no other *pointer* control on the
+page does — ← and → are keyboard, which 2.5.8 does not count, exactly as 2.5.7
+does not count `Alt+↑`. Spacing cannot save it either: a 24px circle centred on
+a 20px twist intersects the label button 4px away. So it is 24 × 24, and the
+row's height went to 40px with 4px of block padding to hold it — which the row
+needed anyway, having been exactly as tall as the 32px button inside it.
+
+**The lesson for the next control added to this row:** the exceptions are read
+one at a time against the specific function, and *"there is a keyboard way"* is
+never one of them.
 
 ## The testing line from #29 holds, and the existing tests become the net
 
@@ -135,6 +236,19 @@ failure, not a line of new code.
   where anything heavy lands.*
 - **A 782px message is a shipped string** and therefore translatable, and it needs
   to say what the merchant should do rather than that something is unsupported.
+- **A per-screen measure is one prop and one custom property**, not a fork.
+  `Shell` takes `wide` and `--wconvert-measure` answers it, and the masthead,
+  the page-header band and `<main>` all read the same property — the three used
+  to spell `max-w-6xl` separately, which is how the band's rule came to stop a
+  hundred pixels short of the page body's edge once already. The convention
+  source does the same thing from the other end: WSMS's `app-shell.tsx` defaults
+  to `max-w-5xl` and keeps a `FULL_WIDTH_SECTIONS` allowlist. A second screen
+  wanting the wider measure is one more call site, and any screen wanting a
+  *third* number is a conversation rather than another literal.
+- **A drag-resizable split is additive on top of this and is not it.** Figma's
+  UI3 went that way; it needs a keyboard-operable resizer (SC 2.1.1), a decision
+  about persistence, and a sensible default anyway — which is what the fixed
+  22rem is.
 - **If someone later shows the admin bundle actually hurting**, the escalation is
   a number in CI and a conversation — the same posture
   [ADR 0034](0034-the-dashboard-joins-in-php.md) takes on the index it did not

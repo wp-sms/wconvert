@@ -312,7 +312,8 @@ if [ "$tier" = "free" ]; then
     # missing one is a plugin that cannot draw a template or evaluate a rule.
     require_file resources/rules/manifest.json "WConvert\\Rules\\RuleManifest::PATH reads it" || true
     require_file resources/templates/manifest.json "WConvert\\Template\\TemplateManifest::PATH reads it" || true
-    require_populated_dir "$TREE" resources/templates/library '*.json' "WConvert\\Template\\TemplateLibrary::PATH reads it" || true
+    require_populated_dir "$TREE" resources/templates/library '*.json' "WConvert\\Template\\BundledTemplates::PATH reads it" || true
+    require_file resources/templates/locked.json "WConvert\\Template\\LockedTemplates::PATH reads it" || true
     require_populated_dir "$TREE" resources/playbooks '*.php' "WConvert\\Playbook\\PlaybookLibrary::PATH reads it" || true
 
     if section_clean; then
@@ -321,6 +322,72 @@ if [ "$tier" = "free" ]; then
 else
     echo "  ! (d) asserted nothing: Pro's loader source is free's plus its own (ADR 0028),"
     echo "    so 'its un-minified source tree' is not a property of Pro's directory."
+fi
+
+verdict
+
+# --- [5] (e) NO PREMIUM DESIGN IN THE FREE ZIP -------------------------------
+#
+# FREE ONLY, AND IT IS THE TRIALWARE GATE.
+#
+# Issue #7 states the rule this enforces: "if the free ZIP ships exit-intent
+# code and refuses to run it, that is trialware". ADR 0015 answers it with
+# enforcement-by-non-registration — a premium capability is ABSENT from a free
+# install rather than present and guarded — and the design library is the
+# newest place that rule can be broken, because a design is a JSON file that
+# looks harmless in a diff.
+#
+# Two halves, and they fail differently:
+#
+#   1. A bundled entry declaring anything but `tier: free`. That is a premium
+#      DESIGN in the free artifact, whatever the admin then does with it.
+#   2. A `tree` anywhere in locked.json. That file exists precisely to carry
+#      the CARD and not the design — a name, its facets and a link to a live
+#      preview on wconvert.com — so a tree in it is the trialware shape
+#      arriving through the file written to prevent it.
+#
+# Grepped rather than parsed, deliberately. A shell program that decoded JSON
+# would need a decoder in the release environment, and what is being looked for
+# is a literal key: `"tier": "pro"` cannot appear in a free entry for any
+# reason, and neither can `"tree"` in locked.json.
+section
+
+if [ "$tier" = "free" ]; then
+    if [ -d "$TREE/resources/templates/library" ]; then
+        premium="$(grep -REl '"tier"[[:space:]]*:[[:space:]]*"pro"' "$TREE/resources/templates/library" 2>/dev/null || true)"
+
+        if [ -n "$premium" ]; then
+            fail "the free artifact bundles a premium design: $(echo "$premium" | tr '\n' ' ')"
+        fi
+
+        # An entry with no `tier` at all defaults to free and is fine; one
+        # declaring a word that is neither is an entry nobody can classify, and
+        # `Tier::tryFrom()` would silently read it as free.
+        unknown="$(grep -REl '"tier"[[:space:]]*:[[:space:]]*"' "$TREE/resources/templates/library" 2>/dev/null \
+            | while read -r entry; do
+                grep -Eq '"tier"[[:space:]]*:[[:space:]]*"(free|pro)"' "$entry" || echo "$entry"
+            done)"
+
+        if [ -n "$unknown" ]; then
+            fail "a bundled design declares a tier that is neither free nor pro: $(echo "$unknown" | tr '\n' ' ')"
+        fi
+    else
+        fail "resources/templates/library/ is missing — the design library was not inspected"
+    fi
+
+    if [ -r "$TREE/resources/templates/locked.json" ]; then
+        if grep -Eq '"tree"[[:space:]]*:' "$TREE/resources/templates/locked.json"; then
+            fail "resources/templates/locked.json carries a tree — locked designs ship as metadata, never as designs"
+        fi
+    else
+        fail "resources/templates/locked.json is missing — the locked metadata was not inspected"
+    fi
+
+    if section_clean; then
+        pass "no premium design in the free artifact"
+    fi
+else
+    echo "  ! (e) asserted nothing: Pro IS where the premium designs ship."
 fi
 
 verdict

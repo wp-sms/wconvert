@@ -1,0 +1,258 @@
+<?php
+
+namespace WConvert\Tests\Unit\Rest;
+
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\TestCase;
+use WConvert\Rest\Routes;
+use WConvert\Rest\TemplateController;
+use WConvert\Template\TemplateLibrary;
+use WConvert\Template\TemplateVocabulary;
+use WConvert\Tests\Unit\Support\FakeProPresence;
+use WP_REST_Request;
+
+/**
+ * The index / tree split, which is the whole reason the picker can grow.
+ *
+ * ============================================================================
+ * THE FAILURE IS A NUMBER NOBODY LOOKS AT, WHICH IS WHY IT IS ASSERTED.
+ * ============================================================================
+ * `GET /templates` returned every tree on every request. That is free at three
+ * entries and is the picker's entire cost at forty — paid before the merchant
+ * has read a card, and paid again on every builder load. The regression that
+ * undoes it is one line: an `index()` that starts including `tree` again
+ * because something downstream found it convenient. Nothing breaks. Every
+ * screen still works. So it is asserted here rather than measured later, the
+ * same argument `tests/js/admin-split.test.ts` makes about the bundle.
+ */
+#[CoversClass(TemplateController::class)]
+final class TemplateRoutesTest extends TestCase
+{
+    private const PLUGIN_DIR = __DIR__ . '/../../..';
+
+    protected function setUp(): void
+    {
+        $GLOBALS['wconvertTestRoutes'] = [];
+    }
+
+    private static function controller(bool $pro = false): TemplateController
+    {
+        $vocabulary = TemplateVocabulary::fromManifest(self::PLUGIN_DIR);
+
+        return new TemplateController(
+            TemplateLibrary::fromDirectory($vocabulary, self::PLUGIN_DIR),
+            $vocabulary,
+            new FakeProPresence($pro)
+        );
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private static function index(bool $pro = false): array
+    {
+        /** @var array<string, mixed> $data */
+        $data = self::controller($pro)->index()->get_data();
+
+        return $data;
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private static function cards(bool $pro = false): array
+    {
+        /** @var list<array<string, mixed>> $cards */
+        $cards = self::index($pro)['templates'];
+
+        return $cards;
+    }
+
+    public function testBothAreReadsUnderOneNamespaceAndOneCapability(): void
+    {
+        self::controller()->registerRoutes();
+
+        /** @var list<array{namespace: string, route: string, args: array<mixed>}> $routes */
+        $routes = $GLOBALS['wconvertTestRoutes'];
+
+        $this->assertSame(['/templates', '/templates/trees'], array_column($routes, 'route'));
+
+        foreach ($routes as $registered) {
+            $this->assertSame(Routes::NAMESPACE, $registered['namespace']);
+            $this->assertSame('GET', $registered['args'][0]['methods'], $registered['route'] . ' is not a read');
+            $this->assertSame([Routes::class, 'canManage'], $registered['args'][0]['permission_callback']);
+        }
+    }
+
+    /**
+     * **The assertion the ticket exists for.** An index entry is what a card
+     * needs to be drawn, filtered and counted, and nothing else.
+     */
+    public function testTheIndexCarriesNoTreeAndNoTokens(): void
+    {
+        foreach (self::cards() as $card) {
+            $this->assertArrayNotHasKey('tree', $card, $card['id'] . ' shipped its design in the index');
+            $this->assertArrayNotHasKey('tokens', $card, $card['id'] . ' shipped its tokens in the index');
+        }
+    }
+
+    public function testEveryCardCarriesWhatTheGridDrawsItFrom(): void
+    {
+        foreach (self::cards() as $card) {
+            foreach (['id', 'name', 'display_type', 'tier', 'availability', 'facets'] as $key) {
+                $this->assertArrayHasKey($key, $card, $card['id'] . ' cannot be drawn without ' . $key);
+            }
+        }
+    }
+
+    /**
+     * The words and the facet vocabulary travel with the index, because one
+     * screen reads all three together and neither is a fact about the install.
+     */
+    public function testTheWordsAndTheFacetVocabularyTravelWithIt(): void
+    {
+        $index = self::index();
+
+        $this->assertArrayHasKey('roles', $index['labels']);
+        $this->assertArrayHasKey('facets', $index['labels']);
+        $this->assertArrayHasKey('facetValues', $index['labels']);
+        $this->assertSame(['shape', 'captures', 'has_image'], array_keys($index['facets']));
+    }
+
+    /**
+     * ==========================================================================
+     * A FREE INSTALL SEES THE PREMIUM DESIGNS AND CANNOT RENDER ONE.
+     * ==========================================================================
+     * Which is the point: shipping the tree and refusing the save is trialware
+     * (issue #7). What is bundled is the card — a name, its facets and a link to
+     * a live preview on wconvert.com — and never the design.
+     */
+    public function testAFreeInstallIsOfferedLockedCardsWithSomewhereToGo(): void
+    {
+        $locked = array_values(array_filter(self::cards(), static fn (array $c): bool => $c['availability'] === 'locked'));
+
+        $this->assertNotSame([], $locked, 'a free install is shown no premium designs at all');
+
+        foreach ($locked as $card) {
+            $this->assertSame('pro', $card['tier']);
+            $this->assertArrayNotHasKey('tree', $card);
+            $this->assertNotEmpty($card['preview_url'] ?? null, $card['id'] . ' is locked with nowhere to send the merchant');
+        }
+    }
+
+    /** Every design free actually ships is `ready` — never `unavailable`. */
+    public function testEveryBundledDesignIsReadyOnAFreeInstall(): void
+    {
+        $ready = array_values(array_filter(self::cards(), static fn (array $c): bool => $c['tier'] === 'free'));
+
+        $this->assertNotSame([], $ready);
+
+        foreach ($ready as $card) {
+            $this->assertSame('ready', $card['availability'], $card['id'] . ' is not offered on the install that ships it');
+        }
+    }
+
+    /**
+     * **No design is ever `unavailable`.** No site capability makes a design
+     * absent — there is no WooCommerce a `split` layout needs — so the third
+     * state does not arise, and a surface will never have to decide whether to
+     * hide or explain one (ADR 0026).
+     */
+    public function testNoDesignIsEverUnavailable(): void
+    {
+        foreach (self::cards() as $card) {
+            $this->assertContains($card['availability'], ['ready', 'locked'], $card['id']);
+        }
+    }
+
+    /**
+     * ==========================================================================
+     * A PAYING CUSTOMER IS NEVER SHOWN AN ADVERTISEMENT FOR WHAT THEY BOUGHT.
+     * ==========================================================================
+     * On this install Pro is loaded and ships nothing, which is the harder half
+     * of the case: a stub whose real design is still absent must stay `locked`
+     * rather than resolving to `ready` and drawing a card with no tree behind
+     * it. The upsell disappears when Pro REGISTERS the design, by id collision,
+     * and not when a licence flag flips.
+     */
+    public function testALoadedProDoesNotResolveAStubItDidNotShip(): void
+    {
+        foreach (self::cards(true) as $card) {
+            if ($card['tier'] !== 'pro') {
+                continue;
+            }
+
+            $this->assertSame('locked', $card['availability'], $card['id'] . ' resolved ready with no design behind it');
+        }
+    }
+
+    /** Interleaved, so a premium design is not an advertisement at the bottom. */
+    public function testLockedCardsSitInOrderWithTheRest(): void
+    {
+        $ids = array_column(self::cards(), 'id');
+        $sorted = $ids;
+        sort($sorted);
+
+        $this->assertSame($sorted, $ids);
+    }
+
+    private static function trees(string $ids): WP_REST_Request
+    {
+        $request = new WP_REST_Request('GET', '/wconvert/v1/templates/trees');
+        $request->set_param('ids', $ids);
+
+        return $request;
+    }
+
+    public function testTheTreeRouteAnswersOnlyWhatWasAskedFor(): void
+    {
+        /** @var array{templates: list<array<string, mixed>>} $data */
+        $data = self::controller()->trees(self::trees('centred-card,offer-panel'))->get_data();
+
+        $this->assertSame(['centred-card', 'offer-panel'], array_column($data['templates'], 'id'));
+
+        foreach ($data['templates'] as $entry) {
+            $this->assertArrayHasKey('tree', $entry);
+            $this->assertArrayHasKey('tokens', $entry);
+            $this->assertArrayNotHasKey('name', $entry, 'the index already said the name');
+        }
+    }
+
+    /**
+     * A locked id and an id this install never shipped behave identically:
+     * absent from the answer, never an error. The card that asked keeps its
+     * *"See this design"* link, which is what it had before it asked.
+     */
+    public function testAnIdWithNoDesignBehindItIsSimplyAbsent(): void
+    {
+        /** @var array{templates: list<array<string, mixed>>} $data */
+        $data = self::controller()->trees(self::trees('slide-in-card,nothing-at-all,centred-card'))->get_data();
+
+        $this->assertSame(['centred-card'], array_column($data['templates'], 'id'));
+    }
+
+    /**
+     * The cap is on the RESPONSE, not on the picker: the grid asks for what is
+     * near the viewport, and this is what stops a hand-written URL asking for
+     * the whole library back through the route built to avoid sending it.
+     */
+    public function testItWillNotHandBackTheWholeLibraryInOneRequest(): void
+    {
+        $ids = implode(',', array_map(static fn (int $n): string => 'filler-' . $n, range(1, 40))) . ',centred-card';
+
+        /** @var array{templates: list<array<string, mixed>>} $data */
+        $data = self::controller()->trees(self::trees($ids))->get_data();
+
+        // `centred-card` is past the cap, so it is not in the answer — which is
+        // the assertion: the slice happens before the lookup, not after.
+        $this->assertSame([], $data['templates']);
+    }
+
+    public function testAnEmptyAskIsAnEmptyAnswer(): void
+    {
+        /** @var array{templates: list<array<string, mixed>>} $data */
+        $data = self::controller()->trees(self::trees(''))->get_data();
+
+        $this->assertSame([], $data['templates']);
+    }
+}

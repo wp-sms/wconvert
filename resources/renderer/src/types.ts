@@ -61,15 +61,20 @@ interface BaseNode {
  * A slot the settings panel may switch off.
  *
  * ============================================================================
- * VISIBILITY IS WHY THE PANEL NEEDS NO WAY TO ADD OR REMOVE A NODE.
+ * HIDING AND REMOVING ARE TWO ACTS, AND `hidden` IS THE REVERSIBLE ONE.
  * ============================================================================
- * The panel edits tokens, slot content and slot visibility, and never
- * arrangement — that boundary is what keeps the vocabulary the ceiling on
- * design variety and keeps a canvas landing later as an editor over a tree
- * that already exists (ADR 0010). A merchant who does not want the fine print
- * therefore hides it rather than deleting it, and a `consent` node ships
- * hidden so ADR 0032's "off by default" and "the panel never changes
- * arrangement" can both be true at once.
+ * This was once the reason the admin needed no way to add or remove a node at
+ * all: the settings panel edits words, visibility and tokens and never
+ * arrangement (ADR 0010), so a merchant who did not want the fine print hid it.
+ * The structure editor changed that — it collects ADR 0010's own escape clause,
+ * landing as an editor over a tree that already exists — and `hidden` did not
+ * become redundant when it did.
+ *
+ * Hidden is undone by the merchant on the Content tab, at any time, and the node
+ * still rides the payload. Removed is undone by Undo while the screen is open,
+ * and the node is gone from what the site serves. A `consent` node still ships
+ * hidden, which is how ADR 0032's "off by default" survives an editor that could
+ * otherwise have been expected to make the merchant add one.
  *
  * **`button` and `field` do NOT extend this, deliberately.** Hiding the button
  * that converts leaves an Optin with no countable act, which is exactly what
@@ -78,6 +83,12 @@ interface BaseNode {
  * `hidden` in `resources/templates/manifest.json` either, so PHP drops the key
  * on the way in and the state is not merely disallowed but inexpressible —
  * enforcement by non-registration, one layer down from where ADR 0015 puts it.
+ *
+ * **That non-registration was also the whole of the enforcement, and a Delete
+ * key reaches what `hidden` could not express.** So the same refusal is now
+ * asked at the write, by
+ * `WConvert\Rest\OptinController::refuseADesignThatCannotConvert()`, and
+ * prevented on the screen by `builder/structure/guards.ts`.
  */
 interface HideableNode extends BaseNode {
   /** Absent and `false` are the same thing: shown. */
@@ -162,13 +173,25 @@ export interface SplitNode {
   readonly ratio?: number;
 }
 
-export interface GridNode {
-  readonly type: 'grid';
-  readonly children?: readonly TemplateNode[];
-  readonly columns?: 2 | 3;
-}
-
-export type LayoutNode = StackNode | RowNode | SplitNode | GridNode;
+/*
+ * ============================================================================
+ * `grid` IS GONE, AND IT IS WORTH SAYING WHY RATHER THAN JUST DELETING IT.
+ * ============================================================================
+ * It declared `repeat(columns, 1fr)` — equal tracks, always N across — and that
+ * is the wrong shape for the surface this vocabulary draws on. A popup is
+ * `min(28rem, 100%)` wide, so a two-column grid stays two columns at 320px and
+ * hands a phone two 140px columns of prose. `split` solves the same problem and
+ * WRAPS, which is why it is the one that survives.
+ *
+ * It also overlapped `row` from the other side: a Row lays several things
+ * across and wraps, which is the useful half of a grid at this width.
+ *
+ * Nothing shipped used it, and its one option — `columns` — was reachable from
+ * nowhere in the admin, so no merchant could ever have made it a three-column
+ * anything. A layout that cannot be configured and is demonstrated by no design
+ * is a fourth word in a menu and not a capability.
+ */
+export type LayoutNode = StackNode | RowNode | SplitNode;
 
 /**
  * Any node. `{ type: string }` is deliberately part of the union: a snapshot

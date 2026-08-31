@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { mount } from '@renderer/mount';
 import { SLOT_SELECTOR, keyOfElement, type SlotKey } from './slots';
+import { policyUrl, withPolicyLink } from './policy';
 import type { Template } from '@renderer/types';
 
 /**
@@ -31,25 +32,42 @@ import type { Template } from '@renderer/types';
  * *"handed to the caller rather than the shadow root itself, so `closed` still
  * means what it says to everything that did not mount this"* — and the
  * renderer already stamps `data-role` for exactly this reader, its own comment
- * naming *"the settings panel, which edits slot content BY Role"*. This file
- * simply stopped discarding both.
+ * naming *"the settings panel, which edits slot content BY Role"* — the editor
+ * that inherited that job. This file simply stopped discarding both.
  *
  * ADR 0009's reason for `closed` is a theme script on a VISITOR's page
  * sweeping `querySelectorAll('input')` and rebinding the capture field. Nothing
  * here is on a visitor's page and nothing here is reachable from one; the
  * boundary is as closed to the outside as it ever was.
  *
- * ADR 0010's boundary holds for the same reason it always did: **selection
- * edits nothing.** A click reports which slot was clicked and stops there. The
- * panel is still the only thing that writes, and it still writes only content,
- * visibility and tokens.
+ * ADR 0010's boundary holds for the same reason it always did: **this file
+ * edits nothing.** A click reports which slot was clicked and stops there. What
+ * it hands over is a name for a slot and no way to reach one, which is why the
+ * preview can stay a closed shadow root and still be an input.
  *
  * Remounted whenever the design or the step changes, which is every keystroke
- * in the settings panel. That is affordable because the renderer builds DOM
+ * in the inspector. That is affordable because the renderer builds DOM
  * and reads nothing — no network, no layout measurement, no ambient state —
  * and it is what keeps the preview a render of the current tree rather than a
  * patched copy of an older one. Selection is NOT in that dependency list: it
  * paints an outline over a tree that is already on screen.
+ *
+ * ============================================================================
+ * MOUNTING IS THE CALLER'S TO DEFER, AND THE PICKER DEFERS IT (ADR 0043).
+ * ============================================================================
+ * There is no gate in here, and there is deliberately not one: this file mounts
+ * whatever it is handed, the moment it is rendered. A picker holding forty live
+ * renders cannot afford that — forty closed shadow roots, forty stylesheets,
+ * forty trees, none of which anybody has scrolled to — so
+ * {@see TemplateCard} simply does not RENDER a `Preview` for a card that is far
+ * from the viewport, which is the same thing said in the one place that knows
+ * whether a card is near one.
+ *
+ * The remount is what makes that affordable rather than a trade, and the
+ * paragraph above is the argument: `mount()` reads nothing ambient — no
+ * network, no layout measurement — so a card that leaves the viewport and comes
+ * back rebuilds from the same tree and draws the same pixels. There is no
+ * scroll position to lose and no state to restore, because a card is a picture.
  */
 
 /**
@@ -96,8 +114,30 @@ export function Preview({ template, step = 0, selected = null, onSelect }: Previ
    */
   const [root, setRoot] = useState<HTMLElement | null>(null);
 
+  /*
+   * **The site's own privacy policy, filled in at the render** (#77).
+   *
+   * Here rather than on the way out of the server, because the builder PATCHes
+   * the config it was handed straight back — so an href resolved into a config
+   * is an href STORED, frozen at publish, which is what ADR 0032 exists to
+   * prevent. What this produces is thrown away with the render.
+   *
+   * Memoised on the tree's identity because that identity is what the mount
+   * below remounts on, and an unresolved tree comes back unchanged by identity
+   * — so a site with no policy configured pays nothing at all.
+   */
+  const url = policyUrl();
+  const drawn = useMemo(
+    (): Template => {
+      const tree = withPolicyLink(template.tree, url);
+
+      return tree === template.tree ? template : { ...template, tree };
+    },
+    [template, url],
+  );
+
   useEffect(() => {
-    const mounted = mount({ displayType: 'inline', template, anchor: anchor.current });
+    const mounted = mount({ displayType: 'inline', template: drawn, anchor: anchor.current });
 
     mounted.show();
 
@@ -116,7 +156,7 @@ export function Preview({ template, step = 0, selected = null, onSelect }: Previ
       mounted.close();
       setRoot(null);
     };
-  }, [template, step]);
+  }, [drawn, step]);
 
   useEffect(() => {
     if (root === null || onSelect === undefined) {
@@ -162,8 +202,8 @@ export function Preview({ template, step = 0, selected = null, onSelect }: Previ
        * CTA are real focusable controls, because the preview is the real
        * render: giving those a `tabindex` and `role="button"` of their own
        * would put a button around an input and announce it as one. They are
-       * selected by being focused, which is the same signal the settings panel
-       * sends from its side.
+       * selected by being focused, which is the same signal a row in the block
+       * tree sends from its side.
        *
        * A heading or a line of fine print is focusable by nothing, so it is
        * made so — one tab stop, named for what it says, activated by Enter or

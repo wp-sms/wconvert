@@ -1,0 +1,90 @@
+{
+  "id": "inline-split",
+  "name": "Inline split",
+  "display_type": "inline",
+  "tier": "free",
+  "tokens": {
+    "bg": "#ffffff",
+    "fg": "#1f2937",
+    "muted": "#6b7280",
+    "accent": "#4f46e5",
+    "accent-fg": "#ffffff",
+    "border": "#e5e7eb",
+    "heading-size": "1.375rem",
+    "radius": "0.75rem",
+    "pad": "1.5rem",
+    "gap": "1.25rem",
+    "width": "44rem",
+    "align": "start"
+  },
+  "tree": {
+    "steps": [
+      {
+        "type": "split",
+        "ratio": 0.35,
+        "start": [
+          {
+            "type": "image",
+            "src": "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%203%202'%3E%3Crect%20width='3'%20height='2'%20fill='%23cbd5e1'/%3E%3Ccircle%20cx='.8'%20cy='.6'%20r='.26'%20fill='%23f1f5f9'/%3E%3Cpath%20d='M0%202l1-.95.62.52L2.35.75%203%201.4V2z'%20fill='%2394a3b8'/%3E%3C/svg%3E",
+            "alt": "The guide, on a desk",
+            "fit": "cover"
+          }
+        ],
+        "end": [
+          {
+            "type": "stack",
+            "children": [
+              {
+                "type": "heading",
+                "role": "headline",
+                "text": "The forty-page guide, free"
+              },
+              {
+                "type": "text",
+                "role": "body",
+                "text": "Everything we know about getting started, in one PDF."
+              },
+              {
+                "type": "field",
+                "name": "email",
+                "label": "Email address",
+                "placeholder": "you@example.com",
+                "required": true
+              },
+              {
+                "type": "button",
+                "role": "cta_label",
+                "label": "Email me the guide",
+                "action": "submit"
+              },
+              {
+                "type": "consent",
+                "role": "consent_text",
+                "hidden": true,
+                "text": "Email me offers and news. See our %s.",
+                "link": {
+                  "label": "Privacy Policy"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "stack",
+        "children": [
+          {
+            "type": "heading",
+            "role": "success_headline",
+            "text": "Check your inbox"
+          },
+          {
+            "type": "text",
+            "role": "success_body",
+            "text": "The guide is on its way to you now."
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -2,6 +2,7 @@
   "id": "offer-panel",
   "name": "Offer panel",
   "display_type": "popup",
+  "tier": "free",
   "tokens": {
     "bg": "#0f172a",
     "fg": "#f8fafc",

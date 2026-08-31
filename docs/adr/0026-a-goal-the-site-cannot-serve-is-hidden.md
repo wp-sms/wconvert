@@ -72,6 +72,31 @@ widened audience trades a missing feature for a factually false one.
 - **A Goal is a registry member subject to Availability**, like a Trigger type or a
   Destination type. There is still no separate list of premium capabilities.
 
+  ***And so is a [[Template]], as of
+  [ADR 0043](0043-the-library-is-indexed-and-its-facets-are-derived.md)** — with
+  one state it cannot reach. A design is `ready` or `locked` and **never
+  `unavailable`**: no site capability makes a *design* absent, because there is
+  no WooCommerce a `split` layout needs. `renderingFor(availability, surface)` is
+  reused rather than a second rule being invented, so a locked design is an
+  upsell on both surfaces and the precedence this ADR settles has nothing to
+  decide.
+
+  The **upsell metadata stays bundled**, which is the half worth restating here:
+  `resources/templates/locked.json` carries a premium design's name, its facets
+  and a link to a live preview on wconvert.com, and free ships it rather than
+  fetching it. What free does **not** ship is the design — shipping the tree and
+  refusing the save is trialware
+  ([#7](https://github.com/navidkashani/wconvert/issues/7)) and rendering a real
+  control `disabled` is what Guideline 9 fires on, so a locked card is a link and
+  never a greyed-out button.
+
+  And a **Pro install sees no locked cards at all**, which falls out of
+  availability resolving server-side exactly as this ADR requires — Pro
+  registers the real design through the same source seam, the stub's id
+  collides, and the advertisement is never composed. A paying customer is never
+  shown an advertisement for what they bought, and no surface had to remember
+  that.*
+
   ***And so is a rule type, on both halves, as of
   [#36](https://github.com/navidkashani/wconvert/issues/36).*** *Until then
   [`RuleCatalogue::availabilityOf()`](../../src/Rules/RuleCatalogue.php) passed a

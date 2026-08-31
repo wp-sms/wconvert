@@ -14,7 +14,7 @@ an `if`.
 |---|---|
 | `exit_intent`, `scroll_up` | `tier: pro` entries in the one manifest, implemented only in Pro's module tree, which free's source never imports ([ADR 0028](0028-the-free-loader-source-carries-no-premium-code.md), amending [ADR 0014](0014-pro-replaces-the-loader.md)), and registered into [`SuppliedRules`](../../src/Rules/SuppliedRules.php) by Pro's own provider — *corrected, see below* |
 | Premium conditions (the advanced-targeting set) | same |
-| `floating_bar`, `slide_in` | templates free does not ship, and the `[popover=manual]` renderer path ([ADR 0011](0011-non-modal-overlays-use-the-popover-top-layer.md)) |
+| `floating_bar`, `slide_in` | templates free does not ship, and the `[popover=manual]` renderer path ([ADR 0011](0011-non-modal-overlays-use-the-popover-top-layer.md)) — *made literal by [ADR 0043](0043-the-library-is-indexed-and-its-facets-are-derived.md): a design now declares **`tier`**, `resources/templates/locked.json` bundles the CARD for a premium design with no `tree` in it, and `bin/verify-artifact-contract.sh` check (e) refuses a `tier: pro` entry or a tree in `locked.json` inside the free ZIP. The row said "templates free does not ship" and nothing proved it* |
 | A/B testing | REST routes free never registers — so there is no permission callback to write |
 | The four ESPs and the generic Webhook | Destination types Pro binds into the shared container ([ADR 0007](0007-destinations-are-outbound-and-fallible.md)) |
 | The *Bring shoppers back to their cart* Goal | a Goal registry entry marked `tier: pro`, and absent outright on a site with no WooCommerce, where `unavailable` beats `locked` ([ADR 0026](0026-a-goal-the-site-cannot-serve-is-hidden.md)) — *built in [#27](https://github.com/navidkashani/wconvert/issues/27): the tier flag is [`Goal::tier()`](../../src/Goal/Goal.php) and the site half is [`SiteDependency`](../../src/Support/SiteDependency.php), asked through a [`SitePresence`](../../src/Support/SitePresence.php) seam beside `ProPresence`* |
@@ -65,10 +65,28 @@ and would put a branch on the request path 0004 exists to protect.
 - **That data is bundled, never fetched.** A free wp.org plugin phoning home for
   *upsell copy* is a different conversation with the review team than fetching a
   template library the user asked for.
+  *Both halves acted on by
+  [ADR 0043](0043-the-library-is-indexed-and-its-facets-are-derived.md), and the
+  distinction this sentence draws is the one it splits on. The **locked
+  metadata** — a premium design's name, its facets and a link to a live preview
+  on wconvert.com — is `resources/templates/locked.json`, bundled and never
+  fetched. The **library** may grow from a WConvert-hosted index over the
+  `TemplateSource` seam, transient-cached, degrading to the bundled set on any
+  failure; that is the template library the user asked for, and it ships with
+  the `readme.txt` disclosure the review team expects rather than beside the
+  upsell copy.*
 - **No cross-cutting capability vocabulary.** Each registry declares `tier` locally on
   members it already enumerates, so the premium split adds **zero new lists** — the
   same drift argument that rejected a second rule list in 0005 and a standalone
   substitution table in 0012.
+  *Held again by [ADR 0043](0043-the-library-is-indexed-and-its-facets-are-derived.md)
+  for the design library, which is the registry most tempted to invent one: a
+  design declares `tier` in its own JSON, the shared
+  [`Tier`](../../src/Support/Tier.php) enum is the only spelling, and
+  `Availability::of()` does the arithmetic. `TemplateController` never asks
+  whether a design is premium — it asks whether the tier is supplied, and a
+  locked stub is `locked` because it has **no tree**, which is what "this install
+  did not get it" means rather than a flag somebody set.*
   *Held through [#33](https://github.com/navidkashani/wconvert/issues/33), which is
   where it was most at risk: the degradation resolver needs to know which rule types
   this install can EVALUATE, and the obvious spelling of that is a list. It is

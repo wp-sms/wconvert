@@ -59,6 +59,14 @@ export function App() {
    * button works without this screen keeping a history of its own. Listening
    * rather than only writing is the whole of it: a `pushState` nobody listens
    * to leaves Back changing the URL and nothing else.
+   *
+   * **It keeps running while the builder is open, and that is what makes Back
+   * land somewhere.** The `editing !== null` branch below returns before
+   * `section` is read, so for a while this looked like the reason Back did
+   * nothing in the builder. It is not: the builder listens for the same event
+   * and leaves through its own unsaved-changes guard ({@see OptinBuilder}),
+   * which is where the guard lives and therefore where the listener has to be.
+   * This one is what decides which section it lands on afterwards.
    */
   useEffect(() => {
     const follow = () => setSection(sectionFrom(window.location.hash));
@@ -107,6 +115,17 @@ export function App() {
  * The `Shell` is drawn HERE rather than inside the boundary, so the masthead
  * and the header band are on screen the instant the merchant clicks. Only the
  * inside of the page waits.
+ *
+ * **`wide` is set on this arm and nowhere else**, which is the whole of the
+ * per-screen measure: the builder is the one screen that is a place rather than
+ * a list, and 1440px is what buys it a tree, an inspector and a preview side by
+ * side instead of one column with the controls below the fold. This branch
+ * already renders a `Shell` of its own — `bareHeader` is the other thing only
+ * the builder asks for — so it is one more prop on the call site that is
+ * already the exception, rather than a new fork.
+ *
+ * The narrow arm above stays at the reading measure deliberately: it is a
+ * sentence and a button, and there is nothing there to spend width on.
  */
 function BuilderScreen({ id, onClose }: { id: string; onClose: () => void }) {
   const fits = useBuilderViewport();
@@ -129,7 +148,7 @@ function BuilderScreen({ id, onClose }: { id: string; onClose: () => void }) {
   }
 
   return (
-    <Shell bareHeader>
+    <Shell bareHeader wide>
       <OptinBuilder id={id} onClose={onClose} />
     </Shell>
   );

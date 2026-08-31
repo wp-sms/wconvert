@@ -331,6 +331,16 @@ is never copied into an Optin.
 > **goal-agnostic** — the library is a set of designs per [[Display Type]], not a
 > design for every pairing of Display Type and Goal.
 
+> **Amended: the library is no longer small, and the boundary is what stops the
+> matrix coming back.** It is twelve designs and growing, and what keeps that
+> from becoming Display Type × Goal is that a Template still carries no words —
+> so every facet the picker filters by describes the **design** (how it is
+> arranged, what it captures, whether it has a picture) and never the Goal. That
+> is also why there is no Industry or Season facet: those work for a library
+> whose entries contain a photograph of a bakery, and these contain no words at
+> all. See
+> [ADR 0043](docs/adr/0043-the-library-is-indexed-and-its-facets-are-derived.md).
+
 One Template serves exactly one Display Type. An Optin **takes a copy** of its
 Template rather than a link to it, so improving a Template never restyles an Optin
 already running on it.
@@ -338,15 +348,26 @@ already running on it.
 A Template declares its slots as [[Slot Role]]s, which is what lets a [[Playbook]]
 carry copy without being bound to one design.
 
-A slot may be **hidden** rather than removed. The settings panel edits tokens,
-slot content and slot visibility and never *arrangement*, so hiding is how a
-merchant drops a slot they do not want — which keeps the vocabulary the ceiling
-on design variety, and keeps a canvas landing later as an editor over a tree
-that already exists. Hiding is offered only where the design survives it: not
-the button that converts, and not a field, because an Optin with no countable
-act and a form that captures nothing are both refused elsewhere. It is also how
-consent capture is off by default and one click from on — every capture design
-ships the `consent` node hidden.
+A slot may be **hidden** rather than removed. Hiding is how a merchant drops a
+slot they do not want — which keeps the vocabulary the ceiling on design
+variety, and keeps a canvas landing later as an editor over a tree that already
+exists. Hiding is offered only where the design survives it: not the button that
+converts, and not a field, because an Optin with no countable act and a form
+that captures nothing are both refused elsewhere. It is also how consent capture
+is off by default and one click from on ([ADR 0032](docs/adr/0032-consent-capture-is-first-class-in-the-template.md))
+— every capture design ships the `consent` node hidden.
+
+> **Corrected.** This paragraph opened *"The settings panel edits tokens, slot
+> content and slot visibility and never* arrangement*"*, and both halves of that
+> stopped being true at the Content/Structure merge: `SettingsPanel` no longer
+> exists, and one surface — the **Content** tab, a block tree with an inspector
+> beside it — now edits words **and** arrangement, with an ↑, a ↓ and a Delete
+> on every row. Four ADRs were amended in that work and the glossary was not.
+>
+> What is corrected is only the clause naming a component and a limit that both
+> went. **The vocabulary is still the ceiling** — a merchant may only add what
+> `manifest.json` declares, and [ADR 0010](docs/adr/0010-templates-are-configuration-not-documents.md)
+> is untouched on that. Every other sentence above stands as written.
 
 ### Playbook
 
@@ -372,6 +393,13 @@ untouched — so `playbook_id` is *provenance*, exactly as `template_id` is.
 Because copy is snapshotted separately from design, a Playbook keys its words to
 [[Slot Role]]s rather than to one Template's structure — so the words survive
 switching Template, and a Playbook is not married to a single design.
+
+The words are the Playbook's mechanism and not the whole of what survives. Two
+things a *merchant* supplies are content without being words — an `image`'s
+`src` and `alt`, and a `button`'s `href` — so no Role binds to them and nothing
+carried them across a switch. `MerchantsOwn` carries what the merchant
+**changed**, measured against the entry their copy was taken for, and leaves the
+new design's own asset standing where they changed nothing.
 
 A Playbook cannot name anything that only exists on a particular site: no post or
 term ids in its targeting, no [[Destination]] ids, and no privacy-policy link —
