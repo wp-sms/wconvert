@@ -82,8 +82,18 @@ export function HowOften({ frequency, priority, overlay, onFrequency, onPriority
     <>
       <Description>{__('Left alone, it stops once the visitor closes it or signs up.', 'wconvert')}</Description>
 
-      <p>
-        <label>
+      {/*
+        ====================================================================
+        THREE COLUMNS: THE LABELS, THE FIELDS, AND THE HINTS.
+        ====================================================================
+        Each setting was `<label> <input> <hint>` in its own paragraph, so
+        every field started wherever its own label ended and the longest hint
+        wrapped back to the far-left margin — landing a second line of
+        explanation under the label of the setting above it. A grid puts each
+        in one place and lets a hint wrap inside its own column.
+      */}
+      <div className="wconvert-allowance">
+        <label className="wconvert-allowance__switch text-body">
           <input
             type="checkbox"
             checked={frequency.stopAfterDismiss !== false}
@@ -91,10 +101,8 @@ export function HowOften({ frequency, priority, overlay, onFrequency, onPriority
           />{' '}
           {__('Stop showing it once they close it', 'wconvert')}
         </label>
-      </p>
 
-      <p>
-        <label>
+        <label className="wconvert-allowance__switch text-body">
           <input
             type="checkbox"
             checked={frequency.stopAfterConversion !== false}
@@ -102,10 +110,8 @@ export function HowOften({ frequency, priority, overlay, onFrequency, onPriority
           />{' '}
           {__('Stop showing it once they sign up', 'wconvert')}
         </label>
-      </p>
 
-      <p>
-        <label htmlFor="wconvert-frequency-max">{__('Show it at most this many times', 'wconvert')}</label>{' '}
+        <label htmlFor="wconvert-frequency-max">{__('Show it at most this many times', 'wconvert')}</label>
         <input
           id="wconvert-frequency-max"
           type="number"
@@ -113,12 +119,10 @@ export function HowOften({ frequency, priority, overlay, onFrequency, onPriority
           min={1}
           value={frequency.maxImpressions ?? ''}
           onChange={(event) => setCount('maxImpressions', event.target.value)}
-        />{' '}
+        />
         <Description as="span">{__('Empty means no limit.', 'wconvert')}</Description>
-      </p>
 
-      <p>
-        <label htmlFor="wconvert-frequency-cooldown">{__('Days to wait between showings', 'wconvert')}</label>{' '}
+        <label htmlFor="wconvert-frequency-cooldown">{__('Days to wait between showings', 'wconvert')}</label>
         <input
           id="wconvert-frequency-cooldown"
           type="number"
@@ -126,9 +130,8 @@ export function HowOften({ frequency, priority, overlay, onFrequency, onPriority
           min={1}
           value={frequency.cooldownDays ?? ''}
           onChange={(event) => setCount('cooldownDays', event.target.value)}
-        />{' '}
+        />
         <Description as="span">{__('Empty means no wait.', 'wconvert')}</Description>
-      </p>
 
       {/*
         **Only for an Optin that competes.** `arbitrate()` sorts overlays and
@@ -136,28 +139,29 @@ export function HowOften({ frequency, priority, overlay, onFrequency, onPriority
         decide nothing at all — and the summary above says nothing about it
         either, for the same reason.
       */}
-      {overlay && (
-        <p>
-          <label htmlFor="wconvert-priority">{__('Priority against other popups', 'wconvert')}</label>{' '}
-          <input
-            id="wconvert-priority"
-            type="number"
-            className="small-text"
-            value={priority === 0 ? '' : priority}
-            onChange={(event) => {
-              const next = Number(event.target.value);
+        {overlay && (
+          <>
+            <label htmlFor="wconvert-priority">{__('Priority against other popups', 'wconvert')}</label>
+            <input
+              id="wconvert-priority"
+              type="number"
+              className="small-text"
+              value={priority === 0 ? '' : priority}
+              onChange={(event) => {
+                const next = Number(event.target.value);
 
-              // Empty and zero are the same rule: `arbitrate()` reads
-              // `priority ?? 0`, and the save route drops a stored 0 for
-              // exactly that reason.
-              onPriority(event.target.value === '' || !Number.isFinite(next) ? 0 : Math.trunc(next));
-            }}
-          />{' '}
-          <Description as="span">
-            {__('Only one popup shows per page view. The highest number wins.', 'wconvert')}
-          </Description>
-        </p>
-      )}
+                // Empty and zero are the same rule: `arbitrate()` reads
+                // `priority ?? 0`, and the save route drops a stored 0 for
+                // exactly that reason.
+                onPriority(event.target.value === '' || !Number.isFinite(next) ? 0 : Math.trunc(next));
+              }}
+            />
+            <Description as="span">
+              {__('Only one popup shows per page view. The highest number wins.', 'wconvert')}
+            </Description>
+          </>
+        )}
+      </div>
     </>
   );
 }

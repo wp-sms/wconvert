@@ -59,7 +59,15 @@ export function Where({ types, targeting, onChange }: WhereProps) {
 
   return (
     <>
-      <Description>{__('Empty means everywhere. Exclusions always win.', 'wconvert')}</Description>
+      {/*
+        `mb-3` rather than a margin in the stylesheet: `Description` carries
+        `m-0` as a Tailwind utility, which is `!important` (ADR 0035), so no
+        hand-written rule can reach it. Without this the sentence sat directly
+        on top of "SHOW IT ON" with no gap at all.
+      */}
+      <Description className="mb-3">
+        {__('Empty means everywhere. Exclusions always win.', 'wconvert')}
+      </Description>
 
       <RuleList
         list="include"
@@ -79,8 +87,15 @@ export function Where({ types, targeting, onChange }: WhereProps) {
         onChange={(rules) => setList('exclude', rules)}
       />
 
+      {/*
+        A third group, not a stray field. `logged_in` is held APART from the two
+        lists — they are a union of page SETS and a visitor rule dropped into
+        one would widen the Optin to the whole site for anyone matching it
+        (ADR 0005) — so it needs the same separation between it and them that
+        they have between each other.
+      */}
       {visitor !== undefined && (
-        <p>
+        <p className="wconvert-rules__group">
           <label>
             {visitor.label}{' '}
             <select
@@ -154,21 +169,23 @@ function RuleList({ list, heading, empty, types, rules, onChange }: RuleListProp
   });
 
   return (
-    <>
-      {/*
-        ==================================================================
-        A GROUP LABEL, NOT A HEADING — AND IT USED TO BE BOTH.
-        ==================================================================
-        `.wconvert-editor :is(h2, h3, h4)` sets `--text-heading` (16px), so
-        `<h4>Show it on</h4>` rendered LARGER than the section's own summary
-        that contains it. The hierarchy read backwards: the child announced
-        itself more loudly than the parent.
+    /*
+      ==================================================================
+      ONE GROUP PER LIST, AND A LABEL RATHER THAN A HEADING.
+      ==================================================================
+      The two lists rendered as one run of rows down the left margin —
+      label, card, Add, label, empty state, Add — with nothing saying where
+      "Show it on" ended and "But never on" began. The GROUP is what carries
+      "these three belong together"; the label alone was carrying it and
+      could not.
 
-        It is not a heading in the first place. "Show it on" names the list
-        under it the way a field's label names its input, which is
-        `--text-micro`'s role — the same register the table headers and
-        `Stat`'s labels use (ADR 0037).
-      */}
+      And it is not a heading. `.wconvert-editor :is(h2, h3, h4)` sets 16px,
+      so `<h4>Show it on</h4>` rendered LARGER than the section summary that
+      contains it — the child announcing itself more loudly than the parent.
+      "Show it on" names the list under it the way a field's label names its
+      input, which is `--text-micro`'s role (ADR 0037).
+    */
+    <div className="wconvert-rules__group">
       <p className="wconvert-rules__label text-micro uppercase text-muted-foreground">{heading}</p>
       <RuleRows rows={rows} empty={empty} />
       <p>
@@ -191,6 +208,6 @@ function RuleList({ list, heading, empty, types, rules, onChange }: RuleListProp
           </select>
         </label>
       </p>
-    </>
+    </div>
   );
 }

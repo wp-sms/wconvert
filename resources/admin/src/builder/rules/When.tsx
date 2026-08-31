@@ -96,43 +96,52 @@ export function When({ types, entries, replace, remove, add, all }: WhenProps) {
 
   return (
     <>
-      <fieldset className="wconvert-choice">
+      {/*
+        `wconvert-wait`, not `wconvert-choice` — that class is already the
+        segmented control in `Tokens` and `BlockInspector`, and a second
+        component wearing it inherits a border, a hover and a checked state
+        written for something else. Measured on the built screen before it was
+        renamed.
+      */}
+      <fieldset className="wconvert-wait">
         {/*
           The section's own label already says "When", so this legend names the
           decision rather than repeating it. It is a real `<legend>` because
           two radios with no group name are two unrelated controls to anything
           not looking at the screen.
         */}
-        <legend className="wconvert-choice__legend text-micro uppercase text-muted-foreground">
+        <legend className="wconvert-wait__legend text-micro uppercase text-muted-foreground">
           {__('Does it wait?', 'wconvert')}
         </legend>
 
-        <label className="wconvert-choice__option text-body">
-          <input
-            type="radio"
-            name="wconvert-when"
-            checked={immediate !== undefined}
-            onChange={() => immediate === undefined && add({ type: IMMEDIATELY })}
-          />{' '}
-          {immediately?.label ?? __('Shows immediately', 'wconvert')}
-        </label>
+        <div className="wconvert-wait__options">
+          <label className="wconvert-wait__option text-body">
+            <input
+              type="radio"
+              name="wconvert-when"
+              checked={immediate !== undefined}
+              onChange={() => immediate === undefined && add({ type: IMMEDIATELY })}
+            />{' '}
+            {immediately?.label ?? __('Shows immediately', 'wconvert')}
+          </label>
 
-        <label className="wconvert-choice__option text-body">
-          <input
-            type="radio"
-            name="wconvert-when"
-            checked={immediate === undefined}
-            // Removes ONLY `page_load`. The merchant's other Triggers are
-            // theirs, and this is a question about waiting rather than a
-            // clear-and-start-again.
-            onChange={() => immediate !== undefined && remove(immediate[1])}
-          />{' '}
-          {__('Waits for one of these', 'wconvert')}
-        </label>
+          <label className="wconvert-wait__option text-body">
+            <input
+              type="radio"
+              name="wconvert-when"
+              checked={immediate === undefined}
+              // Removes ONLY `page_load`. The merchant's other Triggers are
+              // theirs, and this is a question about waiting rather than a
+              // clear-and-start-again.
+              onChange={() => immediate !== undefined && remove(immediate[1])}
+            />{' '}
+            {__('Waits for one of these', 'wconvert')}
+          </label>
+        </div>
       </fieldset>
 
       {immediate === undefined && (
-        <Description>{__('Any one of them fires it.', 'wconvert')}</Description>
+        <Description className="mb-1">{__('Any one of them fires it.', 'wconvert')}</Description>
       )}
 
       <RuleRows

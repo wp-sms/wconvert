@@ -28,7 +28,10 @@ export interface Row {
 
 export function RuleRows({ rows, empty }: { rows: readonly Row[]; empty: string }) {
   if (rows.length === 0) {
-    return <p className="wconvert-rules__empty">{empty}</p>;
+    // A description by role — *"Nowhere is excluded."* explains the list it
+    // stands in for, and at body size it read as content rather than as the
+    // absence of it (ADR 0037's `note`).
+    return <p className="wconvert-rules__empty text-note">{empty}</p>;
   }
 
   return (

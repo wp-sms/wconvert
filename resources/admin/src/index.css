@@ -3399,6 +3399,37 @@
  * red, which made it the loudest thing in every rule and left the amber
  * caution above it competing with a control for the merchant's eye.
  */
+/*
+ * ---------------------------------------------------------------------------
+ * THE ALLOWANCE: THREE SETTINGS IN COLUMNS, BECAUSE INLINE THEY RAGGED.
+ *
+ * Each was `<label> <input> <hint>` in a paragraph, so every control started
+ * wherever its own label happened to end and the longest hint wrapped back to
+ * the far-left margin — a second line of explanation sitting under the label
+ * of the setting above it. Three columns put the labels, the fields and the
+ * hints each in one place, and let a hint wrap inside its own column.
+ * ------------------------------------------------------------------------- */
+#wconvert-admin .wconvert-allowance {
+  display: grid;
+  grid-template-columns: max-content max-content 1fr;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin-block-start: 0.75rem;
+}
+
+/*
+ * The two switches span the whole row: a checkbox names itself and has no
+ * field to line up with, so holding a column open for one would be an empty
+ * column on every row.
+ */
+#wconvert-admin .wconvert-allowance__switch {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
 #wconvert-admin .wconvert-rule__remove {
   color: var(--muted-foreground);
 }
@@ -3408,8 +3439,8 @@
   color: var(--destructive);
 }
 
-.wconvert-rule__note {
-  margin: 0.5rem 0 0;
+#wconvert-admin .wconvert-rule__note {
+  margin: 0.375rem 0 0;
   color: var(--muted-foreground);
   font-style: italic;
 }
@@ -3431,10 +3462,9 @@
   margin-block: 0.75rem;
 }
 
-.wconvert-locked__heading {
+#wconvert-admin .wconvert-locked__heading {
   margin: 0 0 0.5rem;
   color: var(--muted-foreground);
-  font-weight: 600;
 }
 
 .wconvert-locked__list {
@@ -3479,6 +3509,27 @@
  * and `unavailable` is not — collapsing them is how a merchant with no store
  * gets offered a WooCommerce licence we do not sell (ADR 0026).
  */
+/*
+ * ---------------------------------------------------------------------------
+ * THE CARD THAT NAMES WHAT THE *SITE* IS MISSING STACKS. THE PRO ONE DOES NOT.
+ *
+ * `.wconvert-locked__card` is a centred flex row, which is right for the Pro
+ * card — a lock and a name, one line. The site card carries a name AND a
+ * reason, and inheriting the row split them into two hard columns with the
+ * name wrapping to two lines beside its own explanation. Measured on the built
+ * screen; it looked like a table nobody had designed.
+ * ------------------------------------------------------------------------- */
+#wconvert-admin .wconvert-locked--site .wconvert-locked__card {
+  flex-direction: column;
+  align-items: start;
+  gap: 0.125rem;
+}
+
+/* Room for a name and a plugin name under it, without either wrapping. */
+#wconvert-admin .wconvert-locked--site .wconvert-locked__list {
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+}
+
 .wconvert-locked__reason {
   color: var(--muted-foreground);
 }
@@ -3512,6 +3563,9 @@
  * makes on every visit to this tab.
  */
 #wconvert-admin .wconvert-section__summary {
+  /* A comfortable target: this is the control a merchant hits on every visit
+     to this tab, and 45px was the row rather than a decision. */
+  min-block-size: 2.75rem;
   display: flex;
   align-items: center;
   gap: 0.625rem;
@@ -3587,8 +3641,26 @@
  * input, so it is a `micro` label — the register `Stat` and the table headers
  * already use (ADR 0037).
  * ------------------------------------------------------------------------- */
-.wconvert-rules__label {
-  margin: 0.75rem 0 0.25rem;
+/*
+ * ---------------------------------------------------------------------------
+ * "SHOW IT ON" AND "BUT NEVER ON" ARE TWO GROUPS, AND THEY READ AS ONE RUN.
+ *
+ * Label, card, Add, label, empty state, Add, and a field — seven rows down the
+ * left margin with nothing saying where the first list ended. The group is
+ * what carries "these three belong together"; the label alone was carrying it
+ * and could not.
+ * ------------------------------------------------------------------------- */
+#wconvert-admin .wconvert-rules__group + .wconvert-rules__group {
+  margin-block-start: 1.25rem;
+}
+
+#wconvert-admin .wconvert-rules__label {
+  margin: 0 0 0.375rem;
+}
+
+/* The `Add` under a list belongs to it, not to the next thing down. */
+#wconvert-admin .wconvert-rules__group > p:last-child {
+  margin: 0.5rem 0 0;
 }
 
 /*
@@ -3602,22 +3674,37 @@
  *
  * A fieldset with a real legend, because two radios with no group name are two
  * unrelated controls to anything not looking at the screen.
+ *
+ * **`wait`, not `choice`.** `.wconvert-choice` is already the segmented control
+ * in `Tokens` and `BlockInspector`; this fieldset wore it for one commit and
+ * inherited a border, a hover and a checked state written for something else.
  * ------------------------------------------------------------------------- */
-.wconvert-choice {
+#wconvert-admin .wconvert-wait {
   margin: 0 0 0.75rem;
   padding: 0;
   border: 0;
 }
 
-.wconvert-choice__legend {
+#wconvert-admin .wconvert-wait__legend {
   padding: 0;
 }
 
-.wconvert-choice__option {
+/*
+ * The two answers on one line: they are one decision, and stacked they read as
+ * two unrelated checkboxes.
+ */
+#wconvert-admin .wconvert-wait__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.25rem;
+  margin-block-start: 0.375rem;
+}
+
+#wconvert-admin .wconvert-wait__option {
   display: flex;
   align-items: center;
   gap: 0.375rem;
-  margin-block-start: 0.25rem;
+  margin: 0;
 }
 
 /*
@@ -3636,13 +3723,32 @@
   transform: rotate(180deg);
 }
 
-.wconvert-section__body {
-  padding: 0 1rem 1rem;
-  border-block-start: 1px solid var(--border);
-}
+/*
+ * ---------------------------------------------------------------------------
+ * EVERY MARGIN BELOW IS `#wconvert-admin`-PREFIXED, AND IT IS THE SAME TRAP
+ * THE TYPE ROLES FELL INTO ONE COMMIT EARLIER.
+ * ---------------------------------------------------------------------------
+ * `.wconvert-editor :is(p, h2, h3, h4, table, ul, ol) { margin-block: 0.75rem }`
+ * is (0,2,0). A bare `.wconvert-starters__name { margin: 0 }` is (0,1,0), so it
+ * LOSES — and the rule looks exactly like it works. Measured on the built
+ * screen: every `<p>` in a Starting-point card was 12px/12px on top of the
+ * flex gap, which made a 90px card 245px tall and left the name, the
+ * description and the label floating apart with no relationship to each other.
+ *
+ * The prose rhythm that rule sets is right for PROSE. These are components, and
+ * a component owns its own spacing — so the ID takes it back rather than each
+ * declaration racing a selector it cannot beat.
+ * ------------------------------------------------------------------------- */
 
-.wconvert-section__body > :first-child {
-  margin-block-start: 0.75rem;
+/*
+ * The body opens with its own breathing room rather than borrowing the first
+ * child's margin: `Description` is `m-0` from a Tailwind utility, which is
+ * `!important` (ADR 0035), so a `> :first-child` rule could never reach it and
+ * the first line sat flush against the divider.
+ */
+.wconvert-section__body {
+  padding: 0.875rem 1rem 1rem;
+  border-block-start: 1px solid var(--border);
 }
 
 /*
@@ -3655,7 +3761,7 @@
  * margin: these two sit at the top of their own block rather than in prose.
  */
 .wconvert-rules__unknown > h3,
-.wconvert-starters > h3 {
+#wconvert-admin .wconvert-starters > h3 {
   margin-block: 0 0.25rem;
 }
 
@@ -3680,16 +3786,22 @@
  * STARTING POINTS — NOT "PRESETS", WHICH ALREADY MEANS THE PER-TYPE SHORTCUT
  * INSIDE EVERY ONE OF THESE SECTIONS.
  * ------------------------------------------------------------------------- */
-.wconvert-starters__list {
+/*
+ * A grid of cards, and NOT a prose list — `.wconvert-editor :is(ul, ol):not(…)`
+ * gives every other list in an editor a marker and a 1.5em indent, and this one
+ * inherited both. Measured: a 21px left indent that pushed the whole grid off
+ * the heading above it.
+ */
+#wconvert-admin .wconvert-starters__list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
   gap: 0.75rem;
   margin: 0.75rem 0 0;
   padding: 0;
   list-style: none;
 }
 
-.wconvert-starters__card {
+#wconvert-admin .wconvert-starters__card {
   display: flex;
   flex-direction: column;
   align-items: start;
@@ -3702,22 +3814,52 @@
 }
 
 /*
+ * The pitch takes the room; the button sits at the bottom of every card in the
+ * row whatever the pitch's length, so a grid of cards reads as a row of
+ * choices rather than as seven ragged boxes.
+ */
+#wconvert-admin .wconvert-starters__what {
+  flex: 1;
+}
+
+#wconvert-admin .wconvert-starters__card > button {
+  margin-block-start: 0.5rem;
+}
+
+/*
+ * Which sections applying it replaces — a label about the card rather than more
+ * of its pitch, so it gets the break the label register implies. Against the
+ * prose it read as a third line of it.
+ */
+#wconvert-admin .wconvert-starters__sections {
+  margin-block-start: 0.25rem;
+}
+
+/*
+ * A `p` sits where the button does on the cards this install cannot run, so it
+ * takes the same offset — otherwise the row of cards has its last line at two
+ * different heights depending on whether the merchant may use it.
+ */
+#wconvert-admin .wconvert-starters__reason {
+  margin-block-start: 0.5rem;
+}
+
+/*
  * A card's name is the body it is, in semibold — NOT a heading. It sits inside
  * a list of peers under one `<h3>`, and giving each card `--text-heading`
  * would put four things the size of the block's own title inside it.
  */
-.wconvert-starters__name {
-  margin: 0;
-}
+
 
 /*
  * And everything explaining it is a description, at the role's own size — the
  * `note` step that exists precisely so a sentence about a thing is not the
  * same size as the thing (ADR 0037).
  */
-.wconvert-starters__what,
-.wconvert-starters__sections,
-.wconvert-starters__reason {
+#wconvert-admin .wconvert-starters__name,
+#wconvert-admin .wconvert-starters__what,
+#wconvert-admin .wconvert-starters__sections,
+#wconvert-admin .wconvert-starters__reason {
   margin: 0;
 }
 
@@ -3761,7 +3903,7 @@
   color: var(--muted-foreground);
 }
 
-.wconvert-picker__empty {
+#wconvert-admin .wconvert-picker__empty {
   margin: 0;
   padding: 0.375rem 0.5rem;
 }
