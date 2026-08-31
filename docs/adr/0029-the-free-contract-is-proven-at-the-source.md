@@ -205,6 +205,37 @@ check has an opt-out, the opt-out is what runs on the day it matters.
   CODE**, not by file and line — everything but the code moves when the source moves,
   and a weekly job that cries drift every week is a weekly job nobody opens.*
 
+  *Amended by [#60](https://github.com/navidkashani/wconvert/issues/60), which is
+  the first time this gate had to be argued with rather than obeyed. Blocking on
+  `error` says nothing about **what to do when the checker is wrong**, and it can
+  be: `WordPress.DB.PreparedSQL` matches the literal variable `$wpdb` and cannot
+  follow `$this->wpdb`, so every query in `src/Database/WpdbConnection.php` — all
+  of them prepared, the table bound as `%i` — reported five findings apiece, 21 in
+  one file. WPCS publishes no property for naming a database wrapper, so there is
+  no configuration that fixes it, and the restructurings that would satisfy the
+  sniff each cost something real: `global $wpdb;` costs the injectable constructor
+  the tests inject through, inlining `prepare()` costs four copies of the binding
+  splat whose ordering bug once made a query select `FROM` an Optin id.*
+
+  ***The sanctioned form is a per-line `phpcs:ignore` carrying its reason — never
+  `--ignore-codes` on the runner.*** The two are not the same concession one layer
+  apart. A checker-level list is exactly the **exception list** this ADR's own
+  source contract refuses above: it lives away from the code, it applies to files
+  nobody was thinking about when it was written, and it is one line of diff to
+  grow. An in-file annotation is its opposite — scoped to the single line, unable
+  to spread by accident, visible to the wp.org reviewer reading that line, and it
+  disappears on its own when the code moves. Plugin Check honours them: its
+  `Abstract_PHP_CodeSniffer_Check` sets no `ignoreAnnotations` and passes no
+  `--ignore-annotations`, so what the annotation silences is silenced in the gate
+  as well as locally, which is the whole point — a suppression the gate ignores is
+  a comment, and a suppression only the gate sees is a lie to the reader.
+
+  *The bar is the annotation's reason, and it is the same bar as an ADR's: say why
+  the sniff cannot see what is true, and where the thing it is asking for is
+  actually enforced. `bin/plugin-check.sh` is unchanged and takes no new flag —
+  which is the test of whether this stayed a decision about code or became one
+  about the gate.*
+
 ## Consequences
 
 - **A stray premium import is caught by whoever wrote it.** WSMS finds one only when

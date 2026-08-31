@@ -79,8 +79,29 @@ import { renderingFor } from '../goals/availability';
  */
 export function Destinations() {
   const [payload, setPayload] = useState<Loadable<DestinationsPayload>>(LOADING);
-  const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
+  /*
+   * **The read's own failure, and the only screen-wide one left.** A refresh
+   * that fails is a fact about the whole payload — every region on the screen
+   * is now showing something that may have moved — so it belongs above all of
+   * them rather than inside one. Every failure a BUTTON caused is keyed below.
+   */
+  const [fetchError, setFetchError] = useState<string | null>(null);
+  /*
+   * **Keyed by what the action ran against, not one string for the screen.**
+   * One `error` meant a failed save on the third Destination reported at the
+   * top of the page, four regions away from the Save button that caused it,
+   * and the merchant had to guess which row it was about — the placement
+   * failure ADR 0039 names. The key is the Destination, or the TYPE for an
+   * Add, which is the one action that has no Destination yet.
+   */
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  /*
+   * **Per row, not per screen.** One boolean was handed to every Configured
+   * region and to the types list, so saving one Destination disabled Save,
+   * Re-push, Remove and every Add button on the screen for the length of that
+   * one request. Same shape, and the same reason, as {@see OptinList}.
+   */
+  const [busyId, setBusyId] = useState<string | null>(null);
   /*
    * Keyed by Destination, not screen-wide. A re-push report is a fact about ONE
    * Destination, and the shipped version rendered it after every row and never
@@ -94,10 +115,19 @@ export function Destinations() {
   const refresh = useCallback(async () => {
     try {
       setPayload(ready(await readDestinations()));
-      setError(null);
+      setFetchError(null);
+      /*
+       * **A report does not outlive the read that makes it stale.** It says
+       * how many Leads were queued a moment ago, and after this read the
+       * health sitting beside it has moved on while the sentence has not.
+       * `setReports` only ever ADDS, so without this the merchant who
+       * re-pushed once read that count under the same Destination for the
+       * rest of the session — including after later refreshes made it wrong.
+       */
+      setReports({});
     } catch (cause) {
       setPayload((current) => (current.status === 'ready' ? current : failed(cause)));
-      setError(messageOf(cause));
+      setFetchError(messageOf(cause));
     }
   }, []);
 
@@ -105,27 +135,34 @@ export function Destinations() {
     void refresh();
   }, [refresh]);
 
-  const run = async (action: () => Promise<unknown>) => {
-    setBusy(true);
+  // Cleared on the retry that works, and only for the thing that was retried:
+  // a successful save on one Destination says nothing about the one that
+  // failed two regions up.
+  const cleared = (current: Record<string, string>, id: string): Record<string, string> =>
+    Object.fromEntries(Object.entries(current).filter(([key]) => key !== id));
+
+  const run = async (id: string, action: () => Promise<unknown>) => {
+    setBusyId(id);
 
     try {
       await action();
+      setErrors((current) => cleared(current, id));
       await refresh();
     } catch (cause) {
-      setError(messageOf(cause));
+      setErrors((current) => ({ ...current, [id]: messageOf(cause) }));
     } finally {
-      setBusy(false);
+      setBusyId(null);
     }
   };
 
   const add = (type: DestinationType) =>
-    void run(() => saveDestination({ type: type.id, label: type.label, settings: {} }));
+    void run(type.id, () => saveDestination({ type: type.id, label: type.label, settings: {} }));
 
   const remove = (destination: Destination) =>
-    void run(() => deleteDestination(destination.id));
+    void run(destination.id, () => deleteDestination(destination.id));
 
   const save = (destination: Destination, settings: Record<string, unknown>) =>
-    void run(() =>
+    void run(destination.id, () =>
       saveDestination({
         id: destination.id,
         type: destination.type,
@@ -135,19 +172,21 @@ export function Destinations() {
       }),
     );
 
+  // Not `run()`, because a re-push has a RESULT and refreshing would throw it
+  // away — the read that follows a save is what clears the reports.
   const replay = (destination: Destination) => {
-    setBusy(true);
+    setBusyId(destination.id);
 
     void (async () => {
       try {
         const report = await rePush(destination.id);
 
         setReports((current) => ({ ...current, [destination.id]: report }));
-        setError(null);
+        setErrors((current) => cleared(current, destination.id));
       } catch (cause) {
-        setError(messageOf(cause));
+        setErrors((current) => ({ ...current, [destination.id]: messageOf(cause) }));
       } finally {
-        setBusy(false);
+        setBusyId(null);
       }
     })();
   };
@@ -167,9 +206,9 @@ export function Destinations() {
 
   return (
     <div className="flex flex-col gap-5">
-      {error !== null && (
+      {fetchError !== null && (
         <Region label={__('Destinations', 'wconvert')}>
-          <RegionError message={error} />
+          <RegionError message={fetchError} />
         </Region>
       )}
 
@@ -199,7 +238,8 @@ export function Destinations() {
                   data.types.find((type) => type.id === destination.type)?.settings_schema ?? {}
                 }
                 report={reports[destination.id] ?? null}
-                busy={busy}
+                error={errors[destination.id] ?? null}
+                busy={busyId === destination.id}
                 onSave={save}
                 onRemove={(trigger) => {
                   returnFocus.current = trigger;
@@ -213,7 +253,8 @@ export function Destinations() {
           <Types
             types={data.types}
             configured={data.destinations}
-            busy={busy}
+            errors={errors}
+            busyId={busyId}
             onAdd={add}
           />
 
@@ -271,6 +312,7 @@ function Configured({
   destination,
   schema,
   report,
+  error,
   busy,
   onSave,
   onRemove,
@@ -280,6 +322,8 @@ function Configured({
   /** Every field its TYPE declares, in the order PHP returned them — copy included. */
   schema: DestinationType['settings_schema'];
   report: RePushReport | null;
+  /** What the last save, remove or re-push against THIS Destination failed with. */
+  error: string | null;
   busy: boolean;
   onSave: (destination: Destination, settings: Record<string, unknown>) => void;
   onRemove: (trigger: HTMLElement | null) => void;
@@ -295,6 +339,14 @@ function Configured({
 
   return (
     <Region>
+      {/*
+        **The failure sits in the region that failed**, above the health it
+        contradicts and under the label saying which Destination this is. A
+        merchant whose Save just errored reads it beside the Save button
+        (ADR 0039).
+      */}
+      {error !== null && <RegionError message={error} />}
+
       <RegionHeader
         title={destination.label}
         description={
@@ -484,16 +536,30 @@ function Configured({
 function Types({
   types,
   configured,
-  busy,
+  errors,
+  busyId,
   onAdd,
 }: {
   types: DestinationType[];
   configured: Destination[];
-  busy: boolean;
+  /**
+   * Every keyed failure on the screen. This region reads only the entries
+   * keyed by a TYPE it draws — a Destination's id is a ULID and a type's is a
+   * slug, so the two halves of the map cannot be mistaken for each other.
+   */
+  errors: Record<string, string>;
+  /** The one Destination or type with a request in flight, if any. */
+  busyId: string | null;
   onAdd: (type: DestinationType) => void;
 }) {
   return (
     <Region>
+      {types.map((type) =>
+        errors[type.id] === undefined ? null : (
+          <RegionError key={type.id} message={errors[type.id]} />
+        ),
+      )}
+
       <RegionHeader
         title={__('Add a destination', 'wconvert')}
         description={__('Where else a captured lead can go.', 'wconvert')}
@@ -532,7 +598,10 @@ function Types({
                   <Button
                     variant="outline"
                     size="sm"
-                    disabled={busy || configured.some((destination) => destination.type === type.id)}
+                    disabled={
+                      busyId === type.id ||
+                      configured.some((destination) => destination.type === type.id)
+                    }
                     onClick={() => onAdd(type)}
                   >
                     {__('Add', 'wconvert')}

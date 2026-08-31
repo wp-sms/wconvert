@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 /**
@@ -16,6 +16,12 @@ import userEvent from '@testing-library/user-event';
  * leaves it at zero and lands in the terminal-failure ring instead. A screen
  * showing only one of them hides exactly one of the two things that go wrong
  * (ADR 0008).
+ *
+ * **Three: this screen holds more than one Destination at a time, and every
+ * per-Destination fact has to be keyed by one.** Busy, the failure a button
+ * caused, and the re-push report are each about ONE integration — the shipped
+ * version held all three screen-wide, so one slow save froze four regions and
+ * one failed save reported at the top of the page (#78, ADR 0039).
  */
 const api = vi.hoisted(() => ({
   readDestinations: vi.fn(),
@@ -95,6 +101,32 @@ const LEAD_MAGNET_BOUND = {
     subject: 'Your download',
     body: 'Here you go: {link}',
   },
+};
+
+/**
+ * The region a Destination's heading sits in.
+ *
+ * `Configured` renders a `Region` with no `label`, because its `RegionHeader`
+ * IS the name — which also means the `<section>` has no accessible name and no
+ * `region` role to query by. The heading is the anchor instead, and asserting
+ * *inside* the section around it is the only way to tell "in that
+ * Destination's region" from "somewhere on the page".
+ */
+const regionFor = (heading: HTMLElement): HTMLElement => {
+  const section = heading.closest('section');
+
+  if (section === null) {
+    throw new Error(`No region around “${heading.textContent ?? ''}”.`);
+  }
+
+  return section;
+};
+
+const TWO_DESTINATIONS = {
+  types: [WSMS_READY, LEAD_MAGNET],
+  destinations: [HEALTHY, LEAD_MAGNET_BOUND],
+  connections: [],
+  failures: [],
 };
 
 describe('the destinations screen', () => {
@@ -391,5 +423,96 @@ describe('the destinations screen', () => {
     });
 
     expect(api.rePush).toHaveBeenCalledWith(HEALTHY.id);
+  });
+
+  /**
+   * **Busy is per row.** One screen-wide boolean was handed to every region
+   * and to the types list, so a merchant saving the tags on one integration
+   * watched Save, Re-push, Remove and every Add button on the screen go dead
+   * for the length of that one request — with nothing saying why, because the
+   * request was four regions away (#78, ADR 0039).
+   */
+  it('disables only the destination that is saving', async () => {
+    api.readDestinations.mockResolvedValue(TWO_DESTINATIONS);
+    // A save that never settles, so the busy window stays open to look at.
+    api.saveDestination.mockReturnValue(new Promise(() => {}));
+
+    render(<Destinations />);
+
+    const wsms = regionFor(await screen.findByRole('heading', { name: 'WP SMS contacts' }));
+    const magnet = regionFor(screen.getByRole('heading', { name: 'Lead magnet email' }));
+
+    await userEvent.click(within(wsms).getByRole('button', { name: 'Save' }));
+
+    await waitFor(() => {
+      expect(within(wsms).getByRole('button', { name: 'Save' })).toBeDisabled();
+    });
+
+    // The other Destination is untouched — all three of its controls still work.
+    expect(within(magnet).getByRole('button', { name: 'Save' })).not.toBeDisabled();
+    expect(within(magnet).getByRole('button', { name: /Re-push leads/ })).not.toBeDisabled();
+    expect(within(magnet).getByRole('button', { name: 'Remove' })).not.toBeDisabled();
+  });
+
+  /**
+   * **A failure renders in the region that produced it.** The shipped version
+   * held one `error` and rendered it in a region of its own above all the
+   * others, so a failed save on the third Destination reported at the top of
+   * the screen and the merchant had to guess which row it was about — the
+   * placement failure ADR 0039 exists to name.
+   */
+  it('reports a failed save in the destination that failed, and nowhere else', async () => {
+    api.readDestinations.mockResolvedValue(TWO_DESTINATIONS);
+    api.saveDestination.mockRejectedValue(new Error('That file link is not reachable.'));
+
+    render(<Destinations />);
+
+    const magnet = regionFor(await screen.findByRole('heading', { name: 'Lead magnet email' }));
+
+    await userEvent.click(within(magnet).getByRole('button', { name: 'Save' }));
+
+    await waitFor(() => {
+      expect(within(magnet).getByText('That file link is not reachable.')).toBeInTheDocument();
+    });
+
+    // Once, in that one region. Not above the page, and not beside the
+    // Destination that is delivering fine.
+    expect(screen.getAllByText('That file link is not reachable.')).toHaveLength(1);
+    expect(
+      within(regionFor(screen.getByRole('heading', { name: 'WP SMS contacts' })))
+        .queryByText('That file link is not reachable.'),
+    ).not.toBeInTheDocument();
+  });
+
+  /**
+   * **A re-push report does not outlive the read that makes it stale.**
+   * `setReports` only ever adds and `refresh()` never cleared it, so the count
+   * a merchant read after replaying one integration stayed under that
+   * Destination for the rest of the session — including after later refreshes
+   * had moved the health sitting beside it (#78, ADR 0039).
+   */
+  it('drops a re-push report on the next read', async () => {
+    api.readDestinations.mockResolvedValue(TWO_DESTINATIONS);
+    api.rePush.mockResolvedValue({ jobs: 4, capped: false, since: '2026-08-22 10:00:00' });
+    api.saveDestination.mockResolvedValue(undefined);
+
+    render(<Destinations />);
+
+    const wsms = regionFor(await screen.findByRole('heading', { name: 'WP SMS contacts' }));
+
+    await userEvent.click(within(wsms).getByRole('button', { name: /Re-push leads/ }));
+
+    expect(await within(wsms).findByText(/4 Leads queued for re-pushing/)).toBeInTheDocument();
+
+    // Saving anything at all re-reads the payload, and the report is a fact
+    // about the moment before that read.
+    await userEvent.click(
+      within(regionFor(screen.getByRole('heading', { name: 'Lead magnet email' })))
+        .getByRole('button', { name: 'Save' }),
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByText(/queued for re-pushing/)).not.toBeInTheDocument();
+    });
   });
 });
