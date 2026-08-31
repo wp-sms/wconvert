@@ -48,7 +48,14 @@ final class RuleCatalogue
     }
 
     /**
-     * Every axis, and every type under each, in manifest order.
+     * Every axis, every type under each in manifest order — and the
+     * [[Starting point]]s.
+     *
+     * A fourth key on the same response rather than a route of its own. It is
+     * read by one screen at the same moment as the three axes, it is derived
+     * from the same vocabulary against the same install, and a second route
+     * would be a second permission check and a second round trip for a list
+     * the panel cannot render without.
      *
      * @return array<string, list<array<string, mixed>>>
      */
@@ -60,7 +67,100 @@ final class RuleCatalogue
             $described[$axis] = array_map(fn (string $type): array => $this->describe($type), $types);
         }
 
+        $described['bundles'] = $this->bundles();
+
         return $described;
+    }
+
+    /**
+     * The [[Starting point]]s, each resolved against this install.
+     *
+     * ========================================================================
+     * A BUNDLE IS AS AVAILABLE AS ITS LEAST AVAILABLE RULE.
+     * ========================================================================
+     * Offering "Rescue an abandoned cart" on a site with no store would land
+     * two rules the site cannot evaluate and [[Suspend]] the Optin on the
+     * spot. So the arithmetic runs here, over {@see self::availabilityOf()},
+     * which keeps the ADR 0026 precedence in the one place that owns it: a
+     * bundle whose rules are missing WooCommerce is `unavailable` and is never
+     * sold as Pro, even when one of its other rules is genuinely premium.
+     *
+     * The sections a bundle NAMES are exactly the keys it comes back with, so
+     * "applying replaces the axes it names" is readable off the response
+     * rather than being a list the client keeps in step.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function bundles(): array
+    {
+        $described = [];
+
+        foreach (RuleBundles::all() as $id => $bundle) {
+            $availability = $this->leastOf(RuleBundles::typesIn($bundle));
+            $partitioned = array_filter($this->vocabulary->partition($bundle['rules'] ?? []));
+
+            $described[] = [
+                'id' => (string) $id,
+                'label' => (string) $bundle['label'],
+                'description' => (string) $bundle['description'],
+                'availability' => $availability->value,
+                // The cause where the SITE is why, and null where the tier is
+                // — the same one-fact-or-nothing shape {@see self::missingDependencyOf()}
+                // answers with, so the card never has to recombine two
+                // coordinates of its own.
+                'requires_label' => $availability === Availability::Unavailable
+                    ? $this->missingDependencyIn(RuleBundles::typesIn($bundle))?->label()
+                    : null,
+            ] + $partitioned + array_filter([
+                'targeting' => $bundle['targeting'] ?? [],
+                'frequency' => $bundle['frequency'] ?? [],
+            ]);
+        }
+
+        return $described;
+    }
+
+    /**
+     * The worst Availability among these rule types.
+     *
+     * Built from the same two booleans {@see Availability::of()} takes rather
+     * than from a comparison over the three states, so `unavailable` beats
+     * `locked` here for exactly the reason it does everywhere else and not
+     * because an ordering was written out a second time (ADR 0026).
+     *
+     * @param list<string> $types
+     */
+    private function leastOf(array $types): Availability
+    {
+        $siteCanServeThemAll = true;
+        $installHasEveryTier = true;
+
+        foreach ($types as $type) {
+            $availability = $this->availabilityOf($type);
+
+            $siteCanServeThemAll = $siteCanServeThemAll && $availability !== Availability::Unavailable;
+            $installHasEveryTier = $installHasEveryTier && $availability !== Availability::Locked;
+        }
+
+        return Availability::of($siteCanServeThemAll, $installHasEveryTier);
+    }
+
+    /**
+     * The first dependency missing among these types, for a bundle to name.
+     *
+     * @param list<string> $types
+     */
+    private function missingDependencyIn(array $types): ?SiteDependency
+    {
+        foreach ($types as $type) {
+            $dependency = $this->missingDependencyOf($type);
+
+            if ($dependency !== null) {
+                return $dependency;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -140,8 +240,31 @@ final class RuleCatalogue
             'type' => $type,
             'kind' => $this->vocabulary->kindOf($type)?->value,
             'label' => RuleLabels::type($type),
+            // The same rule read inside a sentence rather than over a control.
+            // The rules panel's four section summaries are built from these,
+            // and neither spelling can be derived from the other in any
+            // language ({@see RuleLabels::phrases()}).
+            'phrase' => RuleLabels::phrase($type),
             'tier' => $this->vocabulary->tierOf($type)?->value,
             'availability' => $this->availabilityOf($type)->value,
+            // What the SITE is missing, in words, and **null unless that is
+            // why this type is absent** — the cause or nothing, exactly as
+            // {@see self::missingDependencyOf()} answers it.
+            //
+            // Without this the rules panel can name the gap for a `locked`
+            // type and not for an `unavailable` one, which is how the two
+            // screens came to disagree: {@see \WConvert\Optin\Suspension}
+            // already tells this merchant their cart Condition needs
+            // WooCommerce, while the panel that holds the rule said nothing
+            // at all. Applying ADR 0026 rather than amending it — the
+            // settings list explains a gap, and an explanation that cannot
+            // name the missing plugin leaves them to guess which of their
+            // plugins did it.
+            //
+            // The key is `requires_label` because
+            // {@see \WConvert\Rest\DestinationController} already ships one
+            // under that name for the same fact.
+            'requires_label' => $this->missingDependencyOf($type)?->label(),
             'params' => $this->params($type),
             'presets' => $this->presets($type),
         ];
@@ -179,6 +302,11 @@ final class RuleCatalogue
             $described[] = [
                 'id' => $id,
                 'label' => RuleLabels::preset($type, (string) $id),
+                // Null where a preset offers no phrase of its own, in which
+                // case the summary falls back to the type's with the preset's
+                // fixed values substituted back in. Not the same as an empty
+                // string, which would summarise the rule as nothing at all.
+                'phrase' => RuleLabels::presetPhrase($type, (string) $id),
                 'fixed' => $fixed,
             ];
         }

@@ -117,6 +117,89 @@ final class RuleLabels
     }
 
     /**
+     * What each rule type reads as **inside a sentence**, keyed by type.
+     *
+     * ========================================================================
+     * A NAME AND A PHRASE ARE DIFFERENT WORDS FOR THE SAME RULE, AND BOTH ARE
+     * NEEDED.
+     * ========================================================================
+     * {@see self::types()} names a rule where it is being CHOSEN — "Time on
+     * the page", a heading over a control. This is the same rule read where a
+     * summary describes an Optin — *"Fires after 5 seconds on the page"* — and
+     * a name substituted into that sentence produces "Fires Time on the page".
+     * Neither spelling can be derived from the other in any language, which is
+     * why this is a second table rather than a transformation.
+     *
+     * **The two client axes only.** The When and Who sections summarise
+     * themselves by reading their rules; the Where section summarises itself
+     * by COUNTING them, because naming pages needs an async lookup that would
+     * flicker and would go blank the day it 500s. So a Targeting type has no
+     * phrase and {@see self::phrase()} falls back to its name — which is
+     * honest rather than empty, and is what the parity test pins.
+     *
+     * **Positional placeholders, in declared param order.** `%1$s` rather than
+     * `%s` throughout, including where there is only one: a translator whose
+     * language puts the object first cannot reorder bare placeholders, and
+     * `query_param` needs two. {@see \WConvert\Optin\Suspension::reason()}
+     * already sets that house style.
+     *
+     * @return array<string, string>
+     */
+    public static function phrases(): array
+    {
+        return [
+            'page_load' => __('as soon as the page loads', 'wconvert'),
+            /* translators: %1$s: a number of seconds. */
+            'time_on_page' => __('after %1$s seconds on the page', 'wconvert'),
+            /* translators: %1$s: a percentage of the page height, without the sign. */
+            'scroll_depth' => __('once they scroll %1$s%% down the page', 'wconvert'),
+            /* translators: %1$s: a CSS selector, e.g. “.pricing-button”. */
+            'click_element' => __('when someone clicks %1$s', 'wconvert'),
+            'exit_intent' => __('when they are about to leave', 'wconvert'),
+            'scroll_up' => __('when they scroll back up', 'wconvert'),
+            /* translators: %1$s: one or more device names, already joined, e.g. “mobile or tablet”. */
+            'device' => __('on %1$s', 'wconvert'),
+            /* translators: 1: a URL parameter name, e.g. “utm_source”. 2: one or more values, already joined. */
+            'query_param' => __('%1$s is %2$s', 'wconvert'),
+            'cart_has_items' => __('their cart is not empty', 'wconvert'),
+            /* translators: %1$s: a cart total in the store’s own currency, unformatted. */
+            'cart_value_min' => __('their cart is worth at least %1$s', 'wconvert'),
+        ];
+    }
+
+    /**
+     * What each preset reads as inside a sentence, keyed `type.preset`.
+     *
+     * **Its placeholders are the params the preset does NOT fix, in declared
+     * order** — which is the whole reason a preset gets its own phrase rather
+     * than borrowing its type's. A preset exists to spare the merchant the
+     * general form (ADR 0005), and *"after 5 seconds on the page"* with the 5
+     * substituted back in is the general form with extra steps. So
+     * `after_a_moment` fixes `seconds` and reads with no placeholder at all,
+     * and `utm_source` fixes `key` and reads with one — the value.
+     *
+     * @return array<string, string>
+     */
+    public static function presetPhrases(): array
+    {
+        return [
+            'time_on_page.after_a_moment' => __('after a few seconds', 'wconvert'),
+            'time_on_page.after_a_read' => __('once they have read a while', 'wconvert'),
+            'scroll_depth.halfway_down' => __('half way down the page', 'wconvert'),
+            'scroll_depth.near_the_end' => __('near the end of the page', 'wconvert'),
+            'device.mobile_only' => __('on mobile', 'wconvert'),
+            'device.not_on_mobile' => __('anywhere but mobile', 'wconvert'),
+            'device.desktop_only' => __('on desktop', 'wconvert'),
+            /* translators: %1$s: one or more campaign sources, already joined, e.g. “google or bing”. */
+            'query_param.utm_source' => __('they came from %1$s', 'wconvert'),
+            /* translators: %1$s: one or more campaign mediums, already joined. */
+            'query_param.utm_medium' => __('they arrived through %1$s', 'wconvert'),
+            /* translators: %1$s: one or more campaign names, already joined. */
+            'query_param.utm_campaign' => __('they came from the %1$s campaign', 'wconvert'),
+        ];
+    }
+
+    /**
      * What each value of a closed option set is called, keyed `control.value`.
      *
      * Only controls whose options are known when the vocabulary is written are
@@ -168,5 +251,25 @@ final class RuleLabels
     public static function option(string $control, string $value): string
     {
         return self::options()[$control . '.' . $value] ?? $value;
+    }
+
+    /**
+     * One phrase, **falling back to the rule's NAME** rather than to its key.
+     *
+     * Different from every fallback above, and deliberately. A Targeting type
+     * genuinely has no phrase — its section counts rather than reads — so this
+     * fallback is the normal case there rather than a build being ahead of its
+     * translations, and a summary reading *"Fires post"* would be worse than
+     * one reading *"Fires A specific page or post"*.
+     */
+    public static function phrase(string $type): string
+    {
+        return self::phrases()[$type] ?? self::type($type);
+    }
+
+    /** One preset's phrase, or null where the preset has none to offer. */
+    public static function presetPhrase(string $type, string $preset): ?string
+    {
+        return self::presetPhrases()[$type . '.' . $preset] ?? null;
     }
 }

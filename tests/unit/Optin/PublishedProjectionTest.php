@@ -145,7 +145,13 @@ final class PublishedProjectionTest extends TestCase
             'rules' => [['type' => 'page_load']],
             'template' => ['tree' => ['steps' => []], 'tokens' => []],
             'display_type' => 'popup',
-            'frequency' => ['once_per' => 'session'],
+            // The shape `resources/loader/src/types.ts` declares and
+            // `frequency.ts` reads — which this fixture did NOT carry until
+            // #83. It said `['once_per' => 'session']`, a key nothing has ever
+            // read on either side, and the test passed anyway because it
+            // asserts which keys travel rather than what is in them.
+            'frequency' => ['maxImpressions' => 3],
+            'priority' => 10,
             // Everything below is authoring state. None of it renders.
             'template_id' => 'centred-card',
             'playbook_id' => 'welcome-discount',
@@ -155,7 +161,7 @@ final class PublishedProjectionTest extends TestCase
         $payload = self::build([self::row(['published_config' => (string) json_encode($config)])])[0]['payload'];
 
         $this->assertSame(
-            ['template', 'display_type', 'frequency', 'triggers', 'conditions'],
+            ['template', 'display_type', 'frequency', 'priority', 'triggers', 'conditions'],
             array_keys($payload),
             'a key reaching the browser is a decision; add it here and say why it renders'
         );

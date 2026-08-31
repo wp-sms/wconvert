@@ -5,6 +5,7 @@ namespace WConvert\Rest;
 use WConvert\Destination\OptinBinding;
 use WConvert\Goal\Goal;
 use WConvert\Goal\GoalRegistry;
+use WConvert\Optin\Frequency;
 use WConvert\Optin\Optin;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
@@ -319,6 +320,42 @@ final class OptinController implements RestController
 
         if (isset($config['rules'])) {
             $config['rules'] = $this->vocabulary->normalize($config['rules']);
+        }
+
+        // **The allowance, which reached the browser unvalidated until now.**
+        // The loader has honoured all four fields since #3 and nothing has
+        // ever written them, so `frequency` travelled out of the config blob
+        // exactly as the client sent it. Rounded through the value object the
+        // same way `targeting` is, one branch up.
+        //
+        // The KEY IS UNSET when nothing was set, rather than stored as `[]`.
+        // An empty object is bytes on every matching page view that cannot
+        // change an answer, and the payload is inlined against a 2KB budget
+        // (ADR 0014).
+        if (isset($config['frequency'])) {
+            $frequency = Frequency::fromArray((array) $config['frequency'])->toArray();
+
+            if ($frequency === []) {
+                unset($config['frequency']);
+            } else {
+                $config['frequency'] = $frequency;
+            }
+        }
+
+        // **Priority, and absent IS zero.** `arbitrate()` reads `priority ?? 0`
+        // when it sorts overlays, so a stored 0 and no key at all are the same
+        // rule — and the one that costs nothing on every page view is the one
+        // to store. Negatives are kept: a merchant deliberately pushing one
+        // Optin behind the rest has said something, and clamping it would
+        // silently make two Optins tie.
+        if (isset($config['priority'])) {
+            $priority = is_numeric($config['priority']) ? (int) $config['priority'] : 0;
+
+            if ($priority === 0) {
+                unset($config['priority']);
+            } else {
+                $config['priority'] = $priority;
+            }
         }
 
         // **[[Destination]] ids and nothing more** (CONTEXT.md, Destination).
