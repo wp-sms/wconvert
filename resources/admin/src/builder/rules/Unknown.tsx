@@ -1,4 +1,5 @@
 import { __ } from '@wordpress/i18n';
+import { Description } from '../../shell/Description';
 import { RuleRows, type Row } from '../RuleRows';
 import { RuleRow } from './RuleRow';
 import type { Entry } from './axis';
@@ -39,9 +40,7 @@ export function Unknown({ entries, remove, all }: UnknownProps) {
   return (
     <div className="wconvert-rules__unknown">
       <h3>{__('Not available on this site', 'wconvert')}</h3>
-      <p className="description">
-        {__('Still saved with the Optin. Remove one you no longer want.', 'wconvert')}
-      </p>
+      <Description>{__('Still saved with the Optin. Remove one you no longer want.', 'wconvert')}</Description>
       <RuleRows rows={rows} empty="" />
     </div>
   );

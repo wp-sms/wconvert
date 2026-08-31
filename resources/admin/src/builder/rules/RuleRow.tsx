@@ -105,7 +105,7 @@ export function RuleRow({ rule, at, types, onChange }: RuleRowProps) {
         Both are persistent `<p>`s and neither has a dismiss control.
       */}
       {substitutedFor !== null && (
-        <p className="wconvert-rule__note">
+        <p className="wconvert-rule__note text-note">
           {sprintf(
             /* translators: %s: the premium rule this one was substituted for, e.g. “Exit intent”. */
             __('Standing in for “%s”, which is available with WConvert Pro.', 'wconvert'),
@@ -114,7 +114,7 @@ export function RuleRow({ rule, at, types, onChange }: RuleRowProps) {
         </p>
       )}
       {type.availability === 'locked' && (
-        <p className="wconvert-rule__note">{__('Needs WConvert Pro to run.', 'wconvert')}</p>
+        <p className="wconvert-rule__note text-note">{__('Needs WConvert Pro to run.', 'wconvert')}</p>
       )}
       {/*
         ====================================================================
@@ -137,7 +137,7 @@ export function RuleRow({ rule, at, types, onChange }: RuleRowProps) {
         something we can sell.
       */}
       {type.availability === 'unavailable' && (
-        <p className="wconvert-rule__note">
+        <p className="wconvert-rule__note text-note">
           {sprintf(
             /* translators: %s: the plugin the site needs, e.g. “WooCommerce”. */
             __('Needs %s on this site, which is not active.', 'wconvert'),

@@ -3394,6 +3394,20 @@
  * dismissed once leaves the Optin carrying an invisible substitution forever
  * (ADR 0012).
  */
+/*
+ * The way out of a row, quietly. See `RuleRows`: this was WordPress's delete
+ * red, which made it the loudest thing in every rule and left the amber
+ * caution above it competing with a control for the merchant's eye.
+ */
+#wconvert-admin .wconvert-rule__remove {
+  color: var(--muted-foreground);
+}
+
+#wconvert-admin .wconvert-rule__remove:hover,
+#wconvert-admin .wconvert-rule__remove:focus-visible {
+  color: var(--destructive);
+}
+
 .wconvert-rule__note {
   margin: 0.5rem 0 0;
   color: var(--muted-foreground);
@@ -3515,11 +3529,23 @@
   background: var(--surface);
 }
 
+/*
+ * ---------------------------------------------------------------------------
+ * THE TYPE ROLES ARE STATED AS UTILITIES IN THE COMPONENTS, NOT HERE.
+ *
+ * `#wconvert-admin :is(p, li, td, th, label, legend, …)` forces
+ * `font-size: inherit` at ID specificity, and Tailwind's utilities are
+ * `!important` (ADR 0035) — so a `font-size` written here loses on every `<p>`
+ * and `<label>` while looking exactly like it works. `Stat`'s
+ * `text-micro uppercase text-muted-foreground` is the shape, and the four
+ * sections follow it.
+ *
+ * What is left here is layout: the eyebrow's column width, and the sentence
+ * taking the rest of the row.
+ * ------------------------------------------------------------------------- */
 .wconvert-section__eyebrow {
   flex: none;
   min-inline-size: 5.5rem;
-  color: var(--muted-foreground);
-  font-weight: 600;
 }
 
 .wconvert-section__sentence {
@@ -3527,13 +3553,71 @@
 }
 
 /*
- * Something in this section can never answer — a Trigger with no selector, an
- * Optin with no Trigger at all. The summary already SAYS so in words; what
- * this adds is the emphasis, so the merchant's eye lands on the one section
- * that needs them before they open any of the four.
- */
-.wconvert-section[data-incomplete] .wconvert-section__sentence {
-  color: var(--destructive);
+ * ---------------------------------------------------------------------------
+ * AMBER, NOT RED — AND THE DISTINCTION IS ADR 0037's RESERVED PALETTE.
+ *
+ * Something in this section will not do what it looks like it does: a Trigger
+ * with no selector, a Trigger sitting behind "shows immediately", an Optin with
+ * no Trigger at all. None of those is a failure or a destruction, which is what
+ * `--destructive` means everywhere else in this admin — they are the site
+ * holding something back, which is exactly the reading amber already carries on
+ * the Optin list's *Suspended* badge.
+ *
+ * The summary already SAYS it in words; what this adds is the emphasis, so a
+ * merchant's eye lands on the one section that needs them before they open any
+ * of the four.
+ * ------------------------------------------------------------------------- */
+.wconvert-section[data-attention] .wconvert-section__sentence {
+  color: var(--warning);
+}
+
+/*
+ * ---------------------------------------------------------------------------
+ * THE HIERARCHY INSIDE A SECTION, WHICH WAS INVERTED.
+ *
+ * `.wconvert-editor :is(h2, h3, h4)` sets `--text-heading` (16px) for every
+ * heading in an editor, and it is right for the editors it was written for —
+ * their headings are direct children of the region. Inside a disclosure it is
+ * backwards: the section's own summary is body size, so an `<h4>` in its body
+ * rendered LARGER than the row that contains it and the child announced itself
+ * more loudly than the parent.
+ *
+ * The fix is not a smaller heading, it is that these were never headings.
+ * "Show it on" labels the list under it the way a field's label names its
+ * input, so it is a `micro` label — the register `Stat` and the table headers
+ * already use (ADR 0037).
+ * ------------------------------------------------------------------------- */
+.wconvert-rules__label {
+  margin: 0.75rem 0 0.25rem;
+}
+
+/*
+ * ---------------------------------------------------------------------------
+ * "DOES IT WAIT?" — THE ONE QUESTION THE TRIGGER AXIS IS ACTUALLY ASKING.
+ *
+ * `page_load` is `holds: () => true`, so an Optin carrying it fires the moment
+ * its Conditions hold and no other Trigger can ever be the reason. Offered as
+ * one entry in a list, it let a merchant choose "shows immediately" AND "after
+ * a few seconds" — a combination in which the seconds decide nothing.
+ *
+ * A fieldset with a real legend, because two radios with no group name are two
+ * unrelated controls to anything not looking at the screen.
+ * ------------------------------------------------------------------------- */
+.wconvert-choice {
+  margin: 0 0 0.75rem;
+  padding: 0;
+  border: 0;
+}
+
+.wconvert-choice__legend {
+  padding: 0;
+}
+
+.wconvert-choice__option {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-block-start: 0.25rem;
 }
 
 /*
@@ -3565,18 +3649,37 @@
  * Not one of the four. The four answer questions a merchant asks; this answers
  * one they did not, so it sits below them with no summary of its own.
  */
-.wconvert-rules__unknown {
-  margin-block-start: 1rem;
+/*
+ * A heading is not in the `font-size: inherit` list above, so it keeps the size
+ * `.wconvert-editor :is(h2, h3, h4)` gives it. What it needs here is the
+ * margin: these two sit at the top of their own block rather than in prose.
+ */
+.wconvert-rules__unknown > h3,
+.wconvert-starters > h3 {
+  margin-block: 0 0.25rem;
+}
+
+/*
+ * ---------------------------------------------------------------------------
+ * THE DIVIDER A CHANGE OF SUBJECT GETS, WHICH THESE TWO LOST BY BEING NESTED.
+ *
+ * `.wconvert-editor > h3` draws a rule above every change of subject in an
+ * editor, and it is a CHILD selector — so it stopped applying the moment these
+ * blocks moved inside `.wconvert-sections`' sibling. Stated here against the
+ * same border, so "Starting points" reads as a different thing from the four
+ * sections above it rather than as more of them.
+ * ------------------------------------------------------------------------- */
+.wconvert-rules__unknown,
+.wconvert-starters {
+  margin-block-start: 1.25rem;
+  padding-block-start: 1rem;
+  border-block-start: 1px solid var(--border);
 }
 
 /* ---------------------------------------------------------------------------
  * STARTING POINTS — NOT "PRESETS", WHICH ALREADY MEANS THE PER-TYPE SHORTCUT
  * INSIDE EVERY ONE OF THESE SECTIONS.
  * ------------------------------------------------------------------------- */
-.wconvert-starters {
-  margin-block-start: 1.5rem;
-}
-
 .wconvert-starters__list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
@@ -3598,16 +3701,24 @@
   border-radius: var(--radius);
 }
 
+/*
+ * A card's name is the body it is, in semibold — NOT a heading. It sits inside
+ * a list of peers under one `<h3>`, and giving each card `--text-heading`
+ * would put four things the size of the block's own title inside it.
+ */
 .wconvert-starters__name {
   margin: 0;
-  font-weight: 600;
 }
 
+/*
+ * And everything explaining it is a description, at the role's own size — the
+ * `note` step that exists precisely so a sentence about a thing is not the
+ * same size as the thing (ADR 0037).
+ */
 .wconvert-starters__what,
 .wconvert-starters__sections,
 .wconvert-starters__reason {
   margin: 0;
-  color: var(--muted-foreground);
 }
 
 /* ---------------------------------------------------------------------------
@@ -3641,7 +3752,11 @@
   color: var(--accent-foreground);
 }
 
-/* Two pages genuinely do share a title, so the id is always shown. */
+/*
+ * Two pages genuinely do share a title, so the id is always shown — quietly,
+ * and a step down, because it is what tells two identical titles apart rather
+ * than something the merchant reads first.
+ */
 .wconvert-picker__id {
   color: var(--muted-foreground);
 }
@@ -3649,7 +3764,6 @@
 .wconvert-picker__empty {
   margin: 0;
   padding: 0.375rem 0.5rem;
-  color: var(--muted-foreground);
 }
 
 .wconvert-option-set {

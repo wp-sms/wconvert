@@ -1,4 +1,5 @@
 import { __ } from '@wordpress/i18n';
+import { Description } from '../../shell/Description';
 import { ParamField } from '../controls';
 import { RuleRows, type Row } from '../RuleRows';
 import type { RuleType, Targeting } from '../api';
@@ -58,9 +59,7 @@ export function Where({ types, targeting, onChange }: WhereProps) {
 
   return (
     <>
-      <p className="description">
-        {__('Empty means everywhere. Exclusions always win.', 'wconvert')}
-      </p>
+      <Description>{__('Empty means everywhere. Exclusions always win.', 'wconvert')}</Description>
 
       <RuleList
         list="include"
@@ -156,7 +155,21 @@ function RuleList({ list, heading, empty, types, rules, onChange }: RuleListProp
 
   return (
     <>
-      <h4>{heading}</h4>
+      {/*
+        ==================================================================
+        A GROUP LABEL, NOT A HEADING — AND IT USED TO BE BOTH.
+        ==================================================================
+        `.wconvert-editor :is(h2, h3, h4)` sets `--text-heading` (16px), so
+        `<h4>Show it on</h4>` rendered LARGER than the section's own summary
+        that contains it. The hierarchy read backwards: the child announced
+        itself more loudly than the parent.
+
+        It is not a heading in the first place. "Show it on" names the list
+        under it the way a field's label names its input, which is
+        `--text-micro`'s role — the same register the table headers and
+        `Stat`'s labels use (ADR 0037).
+      */}
+      <p className="wconvert-rules__label text-micro uppercase text-muted-foreground">{heading}</p>
       <RuleRows rows={rows} empty={empty} />
       <p>
         <label>

@@ -3,6 +3,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { Button } from '../../components/ui/button';
 import { renderingFor } from '../../goals/availability';
 import { ConfirmDialog } from '../../shell/ConfirmDialog';
+import { Description } from '../../shell/Description';
 import { listWithAnd } from './sentence';
 import type { Frequency, RuleBundle, Targeting } from '../api';
 
@@ -59,9 +60,9 @@ export function StartingPoints({ bundles, onApply }: StartingPointsProps) {
   return (
     <div className="wconvert-starters">
       <h3>{__('Starting points', 'wconvert')}</h3>
-      <p className="description">
+      <Description>
         {__('A ready-made set of rules. Applying one replaces only the sections it names.', 'wconvert')}
-      </p>
+      </Description>
 
       <ul className="wconvert-starters__list">
         {bundles.map((bundle) => {
@@ -69,9 +70,9 @@ export function StartingPoints({ bundles, onApply }: StartingPointsProps) {
 
           return (
             <li key={bundle.id} className="wconvert-starters__card">
-              <p className="wconvert-starters__name">{bundle.label}</p>
-              <p className="wconvert-starters__what">{bundle.description}</p>
-              <p className="wconvert-starters__sections">{sectionsIn(bundle)}</p>
+              <p className="wconvert-starters__name text-body font-semibold">{bundle.label}</p>
+              <p className="wconvert-starters__what text-note text-muted-foreground">{bundle.description}</p>
+              <p className="wconvert-starters__sections text-micro uppercase text-muted-foreground">{sectionsIn(bundle)}</p>
 
               {/*
                 The cascade is `renderingFor`'s rather than one written out
@@ -86,9 +87,9 @@ export function StartingPoints({ bundles, onApply }: StartingPointsProps) {
                   {__('Use this', 'wconvert')}
                 </Button>
               ) : rendering === 'upsell' ? (
-                <span className="wconvert-starters__reason">{__('Included with Pro.', 'wconvert')}</span>
+                <span className="wconvert-starters__reason text-note text-muted-foreground">{__('Included with Pro.', 'wconvert')}</span>
               ) : (
-                <span className="wconvert-starters__reason">
+                <span className="wconvert-starters__reason text-note text-muted-foreground">
                   {sprintf(
                     /* translators: %s: the plugin the site needs, e.g. “WooCommerce”. */
                     __('Needs %s on this site.', 'wconvert'),

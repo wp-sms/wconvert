@@ -116,7 +116,7 @@ function LockedTypes({ types }: { types: readonly RuleType[] }) {
 
   return (
     <div className="wconvert-locked">
-      <p className="wconvert-locked__heading">{__('With WConvert Pro:', 'wconvert')}</p>
+      <p className="wconvert-locked__heading text-micro uppercase">{__('With WConvert Pro:', 'wconvert')}</p>
       <ul className="wconvert-locked__list">
         {types.map((type) => (
           <li key={type.type} className="wconvert-locked__card">
@@ -159,12 +159,12 @@ function UnavailableTypes({ types }: { types: readonly RuleType[] }) {
 
   return (
     <div className="wconvert-locked wconvert-locked--site">
-      <p className="wconvert-locked__heading">{__('Not available on this site:', 'wconvert')}</p>
+      <p className="wconvert-locked__heading text-micro uppercase">{__('Not available on this site:', 'wconvert')}</p>
       <ul className="wconvert-locked__list">
         {types.map((type) => (
           <li key={type.type} className="wconvert-locked__card">
             <span className="wconvert-locked__label">{type.label}</span>{' '}
-            <span className="wconvert-locked__reason">
+            <span className="wconvert-locked__reason text-note">
               {sprintf(
                 /* translators: %s: the plugin the site needs, e.g. “WooCommerce”. */
                 __('Needs %s on this site.', 'wconvert'),

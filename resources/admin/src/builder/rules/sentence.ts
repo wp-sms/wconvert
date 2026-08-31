@@ -36,19 +36,26 @@ import type { Frequency, Rule, RuleParam, RuleType, Targeting } from '../api';
  * reaching `wp.i18n` through `wp_set_script_translations`.
  */
 
-/** One section's summary, and whether anything in it stops the Optin working. */
+/** One section's summary, and whether the merchant should open it. */
 export interface Summary {
   readonly text: string;
   /**
-   * A rule in this section is missing a value it needs, so it can never
-   * answer true.
+   * Something in this section will not do what it looks like it does.
    *
-   * Reported on the COLLAPSED row, which is the whole point: ADR 0042 rule 3
-   * asks that a control which cannot do its job say so before the click, not
-   * after it. A section that reads *"Fires when someone clicks"* with nothing
-   * after it is a merchant about to publish an Optin that never shows.
+   * ==========================================================================
+   * TWO CAUSES, ONE FLAG, AND THE NAME COVERS BOTH.
+   * ==========================================================================
+   * It was called `incomplete`, which described only the first: a rule missing
+   * a value it needs, so it can never answer true. The second is a rule that
+   * is complete and **unreachable** — a Trigger sitting beside "shows
+   * immediately", which fires first every time.
+   *
+   * Both are the same thing to the merchant: a rule they believe is doing
+   * something that is not. Reported on the COLLAPSED row, which is the whole
+   * point — ADR 0042 rule 3 asks that a control which cannot do its job say so
+   * before the click rather than after it.
    */
-  readonly incomplete: boolean;
+  readonly attention: boolean;
 }
 
 // ============================================================================
@@ -98,7 +105,7 @@ export function whereSummary(targeting: Targeting): Summary {
             );
 
   if (targeting.logged_in === undefined) {
-    return { text: pages, incomplete: false };
+    return { text: pages, attention: false };
   }
 
   return {
@@ -110,7 +117,7 @@ export function whereSummary(targeting: Targeting): Summary {
         ? __('signed-in visitors only', 'wconvert')
         : __('signed-out visitors only', 'wconvert'),
     ),
-    incomplete: false,
+    attention: false,
   };
 }
 
@@ -139,7 +146,50 @@ const countOfPages = (count: number): string =>
  */
 export function whenSummary(entries: readonly Entry[], types: readonly RuleType[]): Summary {
   if (entries.length === 0) {
-    return { text: __('Never — it has no trigger yet', 'wconvert'), incomplete: true };
+    return { text: __('Never — it has no trigger yet', 'wconvert'), attention: true };
+  }
+
+  // ==========================================================================
+  // "SHOWS IMMEDIATELY" IS NOT ONE TRIGGER AMONG MANY. IT IS THE ABSENCE OF A
+  // WAIT, AND IT SUBSUMES EVERY OTHER TRIGGER ON THE OPTIN.
+  // ==========================================================================
+  // `page_load`'s module is `holds: () => true` — constantly, on every pass.
+  // Triggers are ORed, so an Optin carrying it fires the instant its
+  // Conditions hold and **no other Trigger can ever be the reason it fired**.
+  // Removing the others would change nothing.
+  //
+  // Which made the old summary a sentence that was true and useless: *"Fires
+  // as soon as the page loads or after 5 seconds on the page"* reads as though
+  // the five seconds decides something. It decides nothing, and a merchant who
+  // set both is looking at a screen that agreed with them.
+  //
+  // So the sentence says what actually happens, and then says how many rules
+  // are along for the ride.
+  const immediate = entries.find(([rule]) => rule.type === IMMEDIATELY);
+
+  if (immediate !== undefined) {
+    const idle = entries.length - 1;
+    const fires = sprintf(
+      /* translators: %s: a trigger phrase, e.g. “as soon as the page loads”. */
+      __('Fires %s', 'wconvert'),
+      phraseOf(immediate[0], types).text,
+    );
+
+    return idle === 0
+      ? { text: fires, attention: false }
+      : {
+          text: sprintf(
+            /* translators: 1: what it does, e.g. “Fires as soon as the page loads”. 2: how many other triggers never run. */
+            __('%1$s — %2$s', 'wconvert'),
+            fires,
+            sprintf(
+              /* translators: %d: a number of triggers that can never fire. */
+              _n('%d other trigger never runs', '%d other triggers never run', idle, 'wconvert'),
+              idle,
+            ),
+          ),
+          attention: true,
+        };
   }
 
   const read = entries.map(([rule]) => phraseOf(rule, types));
@@ -150,9 +200,22 @@ export function whenSummary(entries: readonly Entry[], types: readonly RuleType[
       __('Fires %s', 'wconvert'),
       join(read.map((each) => each.text), _x('or', 'joins triggers, any one of which fires', 'wconvert')),
     ),
-    incomplete: read.some((each) => each.incomplete),
+    attention: read.some((each) => each.attention),
   };
 }
+
+/**
+ * The rule type that means "do not wait".
+ *
+ * Spelled once, here, and imported by the When section — the two places that
+ * have to agree about which Trigger is a MODE rather than a member of the set.
+ * It is the one rule type this bundle names, and it earns it: `page_load` is
+ * the explicit spelling of "shows immediately" precisely so that "fires at
+ * once" and "can never fire" are not the same value (CONTEXT.md, Trigger), and
+ * a surface that could not tell it from the others would offer the merchant a
+ * choice that decides nothing.
+ */
+export const IMMEDIATELY = 'page_load';
 
 /**
  * *Who* sees it: every Condition holds at the instant a Trigger fires, so the
@@ -160,7 +223,7 @@ export function whenSummary(entries: readonly Entry[], types: readonly RuleType[
  */
 export function whoSummary(entries: readonly Entry[], types: readonly RuleType[]): Summary {
   if (entries.length === 0) {
-    return { text: __('Anyone who reaches it', 'wconvert'), incomplete: false };
+    return { text: __('Anyone who reaches it', 'wconvert'), attention: false };
   }
 
   const read = entries.map(([rule]) => phraseOf(rule, types));
@@ -171,7 +234,7 @@ export function whoSummary(entries: readonly Entry[], types: readonly RuleType[]
       __('Only when %s', 'wconvert'),
       join(read.map((each) => each.text), _x('and', 'joins conditions, all of which must hold', 'wconvert')),
     ),
-    incomplete: read.some((each) => each.incomplete),
+    attention: read.some((each) => each.attention),
   };
 }
 
@@ -225,7 +288,11 @@ export function howOftenSummary(frequency: Frequency, priority: number, overlay:
   }
 
   if (frequency.stopAfterConversion !== false) {
-    stoppers.push(__('they sign up', 'wconvert'));
+    // No second "they": the sentence reads *"until they close it or sign up"*,
+    // and the subject carries across the conjunction. Its own string rather
+    // than a fragment of the first, because a language that does not carry it
+    // has to be able to repeat it.
+    stoppers.push(__('sign up', 'wconvert'));
   }
 
   const and = _x('and', 'joins two limits on how often an Optin shows', 'wconvert');
@@ -254,7 +321,7 @@ export function howOftenSummary(frequency: Frequency, priority: number, overlay:
           );
 
   if (!overlay || priority === 0) {
-    return { text, incomplete: false };
+    return { text, attention: false };
   }
 
   return {
@@ -264,7 +331,7 @@ export function howOftenSummary(frequency: Frequency, priority: number, overlay:
       text,
       priority,
     ),
-    incomplete: false,
+    attention: false,
   };
 }
 
@@ -288,7 +355,7 @@ export function phraseOf(rule: Rule, types: readonly RuleType[]): Summary {
   const read = fromRule(rule, types);
 
   if (read === null) {
-    return { text: rule.type, incomplete: true };
+    return { text: rule.type, attention: true };
   }
 
   const { type, preset } = read;
@@ -313,14 +380,14 @@ export function phraseOf(rule: Rule, types: readonly RuleType[]): Summary {
           _x('and', 'joins the settings a rule is still missing', 'wconvert'),
         ),
       ),
-      incomplete: true,
+      attention: true,
     };
   }
 
   // A phrase with no placeholders is passed through untouched rather than
   // through `sprintf`, which would eat a literal `%` out of a merchant's own
   // CSS selector.
-  return { text: values.length === 0 ? phrase : fill(phrase, ...values), incomplete: false };
+  return { text: values.length === 0 ? phrase : fill(phrase, ...values), attention: false };
 }
 
 /**

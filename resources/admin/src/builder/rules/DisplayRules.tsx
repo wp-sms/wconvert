@@ -87,11 +87,11 @@ export function DisplayRules({ vocabulary, value, overlay, onChange }: DisplayRu
 
   return (
     <div className="wconvert-sections">
-      <Section id="where" eyebrow={__('Where', 'wconvert')} summary={where.text} incomplete={where.incomplete}>
+      <Section id="where" eyebrow={__('Where', 'wconvert')} summary={where.text} attention={where.attention}>
         <Where types={vocabulary.targeting} targeting={targeting} onChange={(next) => onChange({ targeting: next })} />
       </Section>
 
-      <Section id="when" eyebrow={__('When', 'wconvert')} summary={when.text} incomplete={when.incomplete}>
+      <Section id="when" eyebrow={__('When', 'wconvert')} summary={when.text} attention={when.attention}>
         <When
           types={vocabulary.triggers}
           entries={triggers}
@@ -102,7 +102,7 @@ export function DisplayRules({ vocabulary, value, overlay, onChange }: DisplayRu
         />
       </Section>
 
-      <Section id="who" eyebrow={__('Who', 'wconvert')} summary={who.text} incomplete={who.incomplete}>
+      <Section id="who" eyebrow={__('Who', 'wconvert')} summary={who.text} attention={who.attention}>
         <Who
           types={vocabulary.conditions}
           entries={conditions}

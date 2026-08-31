@@ -26,8 +26,9 @@ import { Collapsible } from 'radix-ui';
  * unchanged (ADR 0036) and this is one component with a job specific to this
  * screen.
  *
- * **`data-incomplete` rather than a second sentence.** Where a section holds a
- * rule that can never answer — a Trigger with no selector, an Optin with no
+ * **`data-attention` rather than a second sentence.** Where a section holds a
+ * rule that will not do what it looks like it does — a Trigger with no
+ * selector, a Trigger sitting behind "shows immediately", an Optin with no
  * Trigger at all — the summary already SAYS so, in words the merchant can act
  * on. Repeating it as a badge would be the same fact twice; what the attribute
  * buys is the emphasis, which is CSS's to give.
@@ -39,18 +40,18 @@ export interface SectionProps {
   readonly eyebrow: string;
   /** The section, read as prose. This is the button's accessible name. */
   readonly summary: string;
-  /** Something in here can never answer, and the merchant should look. */
-  readonly incomplete?: boolean;
+  /** Something in here will not do what it looks like it does. */
+  readonly attention?: boolean;
   readonly defaultOpen?: boolean;
   readonly children: ReactNode;
 }
 
-export function Section({ id, eyebrow, summary, incomplete = false, defaultOpen = false, children }: SectionProps) {
+export function Section({ id, eyebrow, summary, attention = false, defaultOpen = false, children }: SectionProps) {
   return (
-    <Collapsible.Root className="wconvert-section" defaultOpen={defaultOpen} data-incomplete={incomplete || undefined}>
+    <Collapsible.Root className="wconvert-section" defaultOpen={defaultOpen} data-attention={attention || undefined}>
       <Collapsible.Trigger className="wconvert-section__summary">
-        <span className="wconvert-section__eyebrow">{eyebrow}</span>
-        <span className="wconvert-section__sentence">{summary}</span>
+        <span className="wconvert-section__eyebrow text-micro uppercase text-muted-foreground">{eyebrow}</span>
+        <span className="wconvert-section__sentence text-body">{summary}</span>
         {/*
           Decorative: the state it depicts is on `aria-expanded`, which Radix
           puts on this same button, so announcing the chevron would say it

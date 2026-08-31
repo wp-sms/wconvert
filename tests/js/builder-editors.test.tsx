@@ -67,7 +67,7 @@ describe('the four sections', () => {
   });
 
   it('starts collapsed and opens on click', async () => {
-    panel({ rules: [{ type: 'page_load' }] });
+    panel({ rules: [{ type: 'time_on_page', seconds: 20 }] });
 
     expect(screen.queryByLabelText('Add a trigger')).toBeNull();
 
@@ -100,7 +100,7 @@ describe('what each section says about itself', () => {
     panel();
 
     expect(screen.getByRole('button', { name: /^How often/ })).toHaveTextContent(
-      'Every time, until they close it or they sign up',
+      'Every time, until they close it or sign up',
     );
   });
 
@@ -148,7 +148,7 @@ describe('when it shows and who sees it', () => {
    * from "ineligible", and neither can the merchant looking at the screen.
    */
   it('draws them as two sections with their own add controls', async () => {
-    panel({ rules: [{ type: 'page_load' }] });
+    panel({ rules: [{ type: 'time_on_page', seconds: 20 }] });
 
     await open('When');
     await open('Who');
@@ -158,16 +158,23 @@ describe('when it shows and who sees it', () => {
   });
 
   /**
-   * **"Shows immediately" is the explicit `page_load` Trigger, never an empty
-   * list** (CONTEXT.md, Trigger). An empty list would make "fires at once" and
-   * "can never fire" the same value, so the merchant has to be able to say the
-   * first one out loud.
+   * ==========================================================================
+   * "SHOWS IMMEDIATELY" IS A MODE, NOT AN ITEM IN THE LIST.
+   * ==========================================================================
+   * It is still the explicit `page_load` Trigger and never an empty list
+   * (CONTEXT.md, Trigger) — an empty list would make "fires at once" and "can
+   * never fire" the same value. What changed is where the merchant says it.
+   *
+   * As one entry among many it let them choose *shows immediately* AND *after
+   * a few seconds*, which is not a preference: `page_load` is
+   * `holds: () => true`, Triggers are ORed, and the seconds decide nothing.
+   * The screen agreed with them anyway.
    */
-  it('offers showing immediately as a choice a merchant can make', async () => {
+  it('asks whether it waits, and writes page_load for the answer that does not', async () => {
     const changed = panel({ rules: [{ type: 'time_on_page', seconds: 8 }] });
 
     await open('When');
-    await userEvent.selectOptions(screen.getByLabelText('Add a trigger'), 'page_load|');
+    await userEvent.click(screen.getByRole('radio', { name: 'page_load' }));
 
     expect(changed).toHaveBeenCalledWith({
       rules: [{ type: 'time_on_page', seconds: 8 }, { type: 'page_load' }],
@@ -175,16 +182,76 @@ describe('when it shows and who sees it', () => {
   });
 
   /**
+   * **Neither answer deletes a rule.** Flipping back removes `page_load` and
+   * only `page_load` — a merchant experimenting with the two loses nothing,
+   * which is what makes the radio safe without a confirm.
+   */
+  it('removes only page_load when it is told to wait again', async () => {
+    const changed = panel({
+      rules: [{ type: 'device', in: ['mobile'] }, { type: 'page_load' }, { type: 'scroll_up' }],
+    });
+
+    await open('When');
+    await userEvent.click(screen.getByRole('radio', { name: 'Waits for one of these' }));
+
+    expect(changed).toHaveBeenCalledWith({
+      rules: [{ type: 'device', in: ['mobile'] }, { type: 'scroll_up' }],
+    });
+  });
+
+  /**
+   * **A rule that never runs is shown, not hidden.** An Optin saved before
+   * this screen existed, or prefilled by a Playbook, can carry both — and
+   * hiding the unreachable ones would be the failure the Unknown section
+   * exists to prevent: still in `config`, still saved back, nothing on screen
+   * to act on.
+   */
+  it('lists a trigger that page_load has made unreachable, and says so', async () => {
+    panel({ rules: [{ type: 'page_load' }, { type: 'time_on_page', seconds: 8 }] });
+
+    await open('When');
+
+    expect(screen.getByText(/This never runs/)).toBeInTheDocument();
+    // And nothing offers to add another, because anything added would be one
+    // more rule that never runs — offered by us.
+    expect(screen.queryByLabelText('Add a trigger')).toBeNull();
+  });
+
+  /** `page_load` is never in the add control: it is the radio, and one decision gets one control. */
+  it('keeps page_load out of the list it is not a member of', async () => {
+    panel({ rules: [{ type: 'time_on_page', seconds: 8 }] });
+
+    await open('When');
+
+    const add = screen.getByLabelText('Add a trigger');
+
+    expect(within(add).queryByRole('option', { name: 'page_load' })).toBeNull();
+  });
+
+  /**
    * **Every Optin has at least one Trigger.** The screen stops the merchant
    * reaching zero and the save route refuses the same state — one of those is
    * a courtesy and the other is the guarantee.
    */
-  it('will not remove the only trigger, and will remove one of two', async () => {
-    panel({ rules: [{ type: 'page_load' }] });
+  it('will not remove the only trigger', async () => {
+    panel({ rules: [{ type: 'time_on_page', seconds: 20 }] });
 
     await open('When');
 
     expect(screen.queryByRole('button', { name: 'Remove' })).toBeNull();
+  });
+
+  /**
+   * **Every row IS removable once `page_load` is carrying the Optin**, because
+   * none of them is doing anything — the guarantee is that the Optin keeps a
+   * Trigger it can act on, and `page_load` is one.
+   */
+  it('lets the last unreachable trigger go, because it was never the one firing', async () => {
+    panel({ rules: [{ type: 'page_load' }, { type: 'time_on_page', seconds: 20 }] });
+
+    await open('When');
+
+    expect(screen.getAllByRole('button', { name: 'Remove' }).length).toBeGreaterThan(0);
   });
 
   /**
@@ -201,7 +268,7 @@ describe('when it shows and who sees it', () => {
     const changed = panel({
       rules: [
         { type: 'device', in: ['mobile'] },
-        { type: 'page_load' },
+        { type: 'scroll_up' },
         { type: 'time_on_page', seconds: 8 },
       ],
     });
@@ -296,7 +363,10 @@ describe('a rule type this install cannot run', () => {
    * merchant who went hunting for it (ADR 0026).
    */
   it('names a locked type as an upsell rather than offering it', async () => {
-    panel({ rules: [{ type: 'page_load' }] }, { types: ruleTypes({ free: 'ready', pro: 'locked' }) });
+    panel(
+      { rules: [{ type: 'time_on_page', seconds: 20 }] },
+      { types: ruleTypes({ free: 'ready', pro: 'locked' }) },
+    );
 
     await open('When');
 

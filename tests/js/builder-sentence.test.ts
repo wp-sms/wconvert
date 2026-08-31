@@ -79,7 +79,7 @@ describe('when it fires', () => {
     const summary = whenSummary([], types);
 
     expect(summary.text).toBe('Never — it has no trigger yet');
-    expect(summary.incomplete).toBe(true);
+    expect(summary.attention).toBe(true);
   });
 
   /**
@@ -91,19 +91,63 @@ describe('when it fires', () => {
    * here is the joiner.
    */
   it('joins triggers with or', () => {
-    expect(whenSummary(entries({ type: 'page_load' }), types).text).toBe('Fires page_load');
+    expect(whenSummary(entries({ type: 'time_on_page', seconds: 20 }), types).text).toBe(
+      'Fires time_on_page 20',
+    );
     expect(
-      whenSummary(entries({ type: 'page_load' }, { type: 'time_on_page', seconds: 20 }), types).text,
-    ).toBe('Fires page_load or time_on_page 20');
+      whenSummary(entries({ type: 'time_on_page', seconds: 20 }, { type: 'scroll_up' }), types).text,
+    ).toBe('Fires time_on_page 20 or scroll_up');
   });
 
   it('reads three or more as a list', () => {
     expect(
       whenSummary(
-        entries({ type: 'page_load' }, { type: 'time_on_page', seconds: 20 }, { type: 'scroll_depth', percent: 33 }),
+        entries({ type: 'scroll_up' }, { type: 'time_on_page', seconds: 20 }, { type: 'scroll_depth', percent: 33 }),
         types,
       ).text,
-    ).toBe('Fires page_load, time_on_page 20 or scroll_depth 33');
+    ).toBe('Fires scroll_up, time_on_page 20 or scroll_depth 33');
+  });
+
+  // ==========================================================================
+  // "SHOWS IMMEDIATELY" SUBSUMES EVERY OTHER TRIGGER, AND THE SENTENCE SAYS SO.
+  // ==========================================================================
+  // `page_load`'s module is `holds: () => true`. Triggers are ORed, so an Optin
+  // carrying it fires the instant its Conditions hold and no other Trigger can
+  // ever be the reason it fired. The old summary read *"Fires as soon as the
+  // page loads or after 5 seconds on the page"* — true, and useless: it reads
+  // as though the five seconds decides something.
+
+  it('reads an immediate Optin as immediate, with nothing after it', () => {
+    const summary = whenSummary(entries({ type: 'page_load' }), types);
+
+    expect(summary.text).toBe('Fires page_load');
+    expect(summary.attention).toBe(false);
+  });
+
+  /**
+   * And it counts the rules along for the ride rather than listing them as
+   * though they mattered — flagged, because a merchant who set both is looking
+   * at rules they believe are doing something.
+   */
+  it('says how many other triggers never run, and flags the section', () => {
+    const one = whenSummary(entries({ type: 'page_load' }, { type: 'time_on_page', seconds: 20 }), types);
+
+    expect(one.text).toBe('Fires page_load — 1 other trigger never runs');
+    expect(one.attention).toBe(true);
+
+    const two = whenSummary(
+      entries({ type: 'time_on_page', seconds: 20 }, { type: 'page_load' }, { type: 'scroll_up' }),
+      types,
+    );
+
+    expect(two.text).toBe('Fires page_load — 2 other triggers never run');
+  });
+
+  /** Wherever it sits in the merchant's own order. */
+  it('finds it whether it was written first or last', () => {
+    expect(whenSummary(entries({ type: 'scroll_up' }, { type: 'page_load' }), types).text).toMatch(
+      /^Fires page_load/,
+    );
   });
 });
 
@@ -169,15 +213,15 @@ describe('one rule, read', () => {
   it('says a rule needs a value rather than reading past a blank one', () => {
     const missing = phraseOf({ type: 'click_element' }, types);
 
-    expect(missing.incomplete).toBe(true);
+    expect(missing.attention).toBe(true);
     expect(missing.text).toBe('click_element — needs selector');
-    expect(phraseOf({ type: 'click_element', selector: '' }, types).incomplete).toBe(true);
-    expect(phraseOf({ type: 'device', in: [] }, types).incomplete).toBe(true);
+    expect(phraseOf({ type: 'click_element', selector: '' }, types).attention).toBe(true);
+    expect(phraseOf({ type: 'device', in: [] }, types).attention).toBe(true);
   });
 
   it('treats zero and false as values somebody meant', () => {
-    expect(phraseOf({ type: 'scroll_depth', percent: 0 }, types).incomplete).toBe(false);
-    expect(phraseOf({ type: 'logged_in', value: false }, types).incomplete).toBe(false);
+    expect(phraseOf({ type: 'scroll_depth', percent: 0 }, types).attention).toBe(false);
+    expect(phraseOf({ type: 'logged_in', value: false }, types).attention).toBe(false);
   });
 
   /** It names every missing setting, not just the first. */
@@ -190,7 +234,7 @@ describe('one rule, read', () => {
     const unknown = phraseOf({ type: 'moon_phase' }, types);
 
     expect(unknown.text).toBe('moon_phase');
-    expect(unknown.incomplete).toBe(true);
+    expect(unknown.attention).toBe(true);
   });
 });
 
@@ -206,7 +250,7 @@ describe('how often', () => {
    * would be a lie on the commonest Optin there is.
    */
   it('reads an untouched allowance as stopping, not as unlimited', () => {
-    expect(howOftenSummary({}, 0, true).text).toBe('Every time, until they close it or they sign up');
+    expect(howOftenSummary({}, 0, true).text).toBe('Every time, until they close it or sign up');
   });
 
   it('reads both switches off as genuinely every time', () => {
@@ -223,7 +267,7 @@ describe('how often', () => {
 
   it('reads both counts and both switches together', () => {
     expect(howOftenSummary({ maxImpressions: 3, cooldownDays: 7 }, 0, true).text).toBe(
-      'Shows at most 3 times and at most once every 7 days, and stops once they close it or they sign up',
+      'Shows at most 3 times and at most once every 7 days, and stops once they close it or sign up',
     );
   });
 

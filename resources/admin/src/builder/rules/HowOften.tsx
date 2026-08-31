@@ -1,4 +1,5 @@
 import { __ } from '@wordpress/i18n';
+import { Description } from '../../shell/Description';
 import type { Frequency } from '../api';
 
 /**
@@ -79,9 +80,7 @@ export function HowOften({ frequency, priority, overlay, onFrequency, onPriority
 
   return (
     <>
-      <p className="description">
-        {__('Left alone, it stops once the visitor closes it or signs up.', 'wconvert')}
-      </p>
+      <Description>{__('Left alone, it stops once the visitor closes it or signs up.', 'wconvert')}</Description>
 
       <p>
         <label>
@@ -115,7 +114,7 @@ export function HowOften({ frequency, priority, overlay, onFrequency, onPriority
           value={frequency.maxImpressions ?? ''}
           onChange={(event) => setCount('maxImpressions', event.target.value)}
         />{' '}
-        <span className="description">{__('Empty means no limit.', 'wconvert')}</span>
+        <Description as="span">{__('Empty means no limit.', 'wconvert')}</Description>
       </p>
 
       <p>
@@ -128,7 +127,7 @@ export function HowOften({ frequency, priority, overlay, onFrequency, onPriority
           value={frequency.cooldownDays ?? ''}
           onChange={(event) => setCount('cooldownDays', event.target.value)}
         />{' '}
-        <span className="description">{__('Empty means no wait.', 'wconvert')}</span>
+        <Description as="span">{__('Empty means no wait.', 'wconvert')}</Description>
       </p>
 
       {/*
@@ -154,9 +153,9 @@ export function HowOften({ frequency, priority, overlay, onFrequency, onPriority
               onPriority(event.target.value === '' || !Number.isFinite(next) ? 0 : Math.trunc(next));
             }}
           />{' '}
-          <span className="description">
+          <Description as="span">
             {__('Only one popup shows per page view. The highest number wins.', 'wconvert')}
-          </span>
+          </Description>
         </p>
       )}
     </>

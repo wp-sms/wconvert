@@ -36,8 +36,25 @@ export function RuleRows({ rows, empty }: { rows: readonly Row[]; empty: string 
       {rows.map((row) => (
         <li key={row.key} className="wconvert-rule">
           {row.content}
+          {/*
+            ================================================================
+            NOT `button-link-delete`, AND THE RED WAS DOING REAL DAMAGE.
+            ================================================================
+            WordPress's delete red is right for a control that destroys stored
+            data — the Optin list's Delete earns it. Taking a rule out of a
+            draft list does not: nothing is destroyed, the change is not saved
+            until the merchant saves, and the rule can be added back from the
+            control directly below.
+
+            What it cost was the one thing red is for. Measured on the built
+            screen, `Remove` was the loudest element in every row and sat
+            immediately under the amber caution on a section that needed
+            attention — so the row read as an error state and the sentence
+            that WAS the warning had to compete with it. A quiet control puts
+            the emphasis back on the thing that earned it.
+          */}
           {row.onRemove !== null && (
-            <button type="button" className="button-link button-link-delete" onClick={row.onRemove}>
+            <button type="button" className="button-link wconvert-rule__remove" onClick={row.onRemove}>
               {__('Remove', 'wconvert')}
             </button>
           )}

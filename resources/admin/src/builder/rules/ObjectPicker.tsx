@@ -242,7 +242,7 @@ export function ObjectPicker({ id, kind, value, onChange }: ObjectPickerProps) {
         onCloseAutoFocus={(event) => event.preventDefault()}
       >
         {hits.length === 0 ? (
-          <p className="wconvert-picker__empty">
+          <p className="wconvert-picker__empty text-note text-muted-foreground">
             {busy ? __('Searching…', 'wconvert') : __('Nothing found. Only published items can be found by name.', 'wconvert')}
           </p>
         ) : (
@@ -278,7 +278,7 @@ export function ObjectPicker({ id, kind, value, onChange }: ObjectPickerProps) {
             >
               <span className="wconvert-picker__title">{hit.title}</span>{' '}
               {/* The id, always. Two pages genuinely do share a title. */}
-              <span className="wconvert-picker__id">#{hit.id}</span>
+              <span className="wconvert-picker__id text-micro">#{hit.id}</span>
             </div>
           ))
         )}

@@ -327,6 +327,19 @@ An Optin fires when **any one** of its Triggers fires. Every Optin has at least
 one; "shows immediately" is the explicit `page_load` Trigger, never an empty
 list.
 
+**`page_load` is not one Trigger among many — it is the absence of a wait, and
+it subsumes every other Trigger on the Optin.** Its evaluator holds constantly,
+and Triggers are ORed, so an Optin carrying it fires the instant its
+[[Condition]]s hold and no other Trigger can ever be the reason it fired.
+*"Shows immediately AND after a few seconds"* is therefore not a preference, it
+is a mistake: the seconds decide nothing.
+
+So the authoring surface asks **whether it waits** before it asks what for, and
+the two answers are `page_load` and a list. The model is unchanged — still one
+flat, ORed axis — and an Optin that already carries both still shows every rule
+it has, each saying that it never runs. Hiding one would be a rule still in
+`config`, still saved back, with nothing on screen to act on.
+
 ### Condition
 
 *Whether* a visitor is eligible to see an [[Optin]] — device, referrer, cart

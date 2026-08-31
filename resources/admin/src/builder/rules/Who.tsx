@@ -1,4 +1,5 @@
 import { __ } from '@wordpress/i18n';
+import { Description } from '../../shell/Description';
 import { RuleRows, type Row } from '../RuleRows';
 import { AddRule } from './AddRule';
 import { RuleRow } from './RuleRow';
@@ -37,7 +38,7 @@ export function Who({ types, entries, replace, remove, add, all }: WhoProps) {
 
   return (
     <>
-      <p className="description">{__('All of these must be true when it fires.', 'wconvert')}</p>
+      <Description>{__('All of these must be true when it fires.', 'wconvert')}</Description>
       <RuleRows rows={rows} empty={__('Nothing yet.', 'wconvert')} />
       <AddRule axis={types} label={__('Add a condition', 'wconvert')} onAdd={add} />
     </>
