@@ -162,6 +162,19 @@ require_populated_dir "$TREE" src '*.php' "this artifact ships no PHP" || true
 # function 0004 exists to prevent, arriving through a missing file".
 require_file public/loader/loader.js "the shipped loader is built, never committed — run the build" || true
 
+# THE ELIGIBILITY INSPECTOR, BOTH TIERS, AND PRO'S IS NOT OPTIONAL EITHER.
+# Pro dequeues free's inspector and enqueues its own for the same reason it
+# does with the loader (ADR 0014, ADR 0048) — and a Pro ZIP missing this file
+# is worse than one missing the panel entirely: free's inspector has no
+# `exit_intent` module, so it would report every exit-intent Optin on the site
+# as "it has no trigger this site can fire" while those Optins worked
+# perfectly. A diagnostic that is confidently wrong is acted on.
+#
+# It is a separate directory from the loader rather than a second file beside
+# it because both Vite builds set `emptyOutDir`, so a shared directory would
+# leave whichever ran last as the only survivor.
+require_file public/inspector/inspector.js "the eligibility inspector is built, never committed — run the build" || true
+
 if [ "$tier" = "free" ]; then
     # Free's wconvert.php requires vendor/autoload.php and renders an admin
     # notice instead of booting when it is absent. It is also what check (c)

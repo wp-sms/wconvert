@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
-import { Megaphone, MoreHorizontal, Plus, Trash2 } from 'lucide-react';
+import { Megaphone, MoreHorizontal, Plus, Stethoscope, Trash2 } from 'lucide-react';
 import { listGoals } from '../goals/api';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
@@ -21,6 +21,7 @@ import {
   DataTableRow,
 } from '../shell/DataTable';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
+import { InspectDialog } from './InspectDialog';
 import { Description } from '../shell/Description';
 import { EmptyState } from '../shell/EmptyState';
 import { Region, RegionError, RegionErrorState } from '../shell/Region';
@@ -111,6 +112,20 @@ export function OptinList({
    */
   const [busyId, setBusyId] = useState<string | null>(null);
   const [confirming, setConfirming] = useState<OptinSummary | null>(null);
+  /*
+   * **The door into the eligibility inspector**, which has to ask which page
+   * before it can open one. Held at the screen rather than at a row for the
+   * reason the confirm is: a `DropdownMenu` unmounts everything under it when
+   * an item is selected, so a dialog opened from inside one is torn down
+   * before it can appear (ADR 0039).
+   *
+   * It is not per-row, and that is the shape of the answer rather than a
+   * simplification: the panel reports EVERY Optin on the page at once, because
+   * "why did nothing show" is a question about the page and not about one
+   * campaign — nine of the ten reasons involve another Optin, the visitor, or
+   * the request.
+   */
+  const [inspecting, setInspecting] = useState(false);
   /*
    * The control that opened the confirm, so closing it puts the caret back
    * ({@see ConfirmDialog}). Held here rather than in the row because the
@@ -245,6 +260,7 @@ export function OptinList({
                     returnFocus.current = trigger;
                     setConfirming(optin);
                   }}
+                  onInspect={() => setInspecting(true)}
                 />
               ))}
             </DataTableBody>
@@ -259,6 +275,13 @@ export function OptinList({
         menu item sets the row being confirmed; this renders the question
         (ADR 0039).
       */}
+      {/*
+        Hoisted out of the row's menu for the same reason the confirm is: a
+        `DropdownMenu` unmounts everything under it when an item is selected
+        (ADR 0039).
+      */}
+      <InspectDialog open={inspecting} onOpenChange={setInspecting} />
+
       <ConfirmDialog
         open={confirming !== null}
         onOpenChange={(open) => {
@@ -314,6 +337,7 @@ function Row({
   onPublish,
   onUnpublish,
   onDelete,
+  onInspect,
 }: {
   optin: OptinSummary;
   /**
@@ -329,6 +353,8 @@ function Row({
   onPublish: () => void;
   onUnpublish: () => void;
   onDelete: (trigger: HTMLElement | null) => void;
+  /** Opens the page picker. Not per-row: the panel reports every Optin at once. */
+  onInspect: () => void;
 }) {
   const status = statusOf(optin);
   const trigger = useRef<HTMLButtonElement>(null);
@@ -452,6 +478,10 @@ function Row({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
+            <DropdownMenuItem onSelect={onInspect}>
+              <Stethoscope aria-hidden="true" />
+              {__('Why did nothing show?', 'wconvert')}
+            </DropdownMenuItem>
             <DropdownMenuItem variant="destructive" onSelect={() => onDelete(trigger.current)}>
               <Trash2 aria-hidden="true" />
               {__('Delete', 'wconvert')}

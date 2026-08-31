@@ -38,6 +38,8 @@
 /vite.config.admin.mjs
 /vite.config.loader.mjs
 /vite.config.loader-pro.mjs
+/vite.config.inspector.mjs
+/vite.config.inspector-pro.mjs
 /vite.loader-config.mjs
 /package.json
 /package-lock.json

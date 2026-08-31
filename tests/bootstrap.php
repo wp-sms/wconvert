@@ -179,6 +179,187 @@ if (!function_exists('nocache_headers')) {
     }
 }
 
+/*
+ * ============================================================================
+ * WORDPRESS'S QUERY STATE, DECIDED BY THE TEST.
+ * ============================================================================
+ * `RequestContextFactory` is the ONE place in the front-end path that touches
+ * WordPress globals — that is what keeps `TargetingEvaluator` pure and lets it
+ * be tested with no WordPress at all. The eligibility inspector is the first
+ * thing in the suite that has to reach THROUGH it, because its whole design is
+ * that the context is the served one rather than one built from a URL
+ * (ADR 0048).
+ *
+ * The defaults are a plain front-page request by an anonymous visitor. A test
+ * that wants a different page says so; nothing here guesses.
+ *
+ * @var array<string, mixed> $wconvertTestQuery
+ */
+$GLOBALS['wconvertTestQuery'] = [];
+
+/**
+ * @param mixed $default
+ * @return mixed
+ */
+function wconvertTestQueried(string $key, $default = false)
+{
+    return $GLOBALS['wconvertTestQuery'][$key] ?? $default;
+}
+
+if (!function_exists('is_singular')) {
+    /** @param string|list<string> $post_types */
+    function is_singular($post_types = ''): bool
+    {
+        return (bool) wconvertTestQueried('is_singular');
+    }
+}
+
+if (!function_exists('is_post_type_archive')) {
+    /** @param string|list<string> $post_types */
+    function is_post_type_archive($post_types = ''): bool
+    {
+        return (bool) wconvertTestQueried('is_post_type_archive');
+    }
+}
+
+if (!function_exists('is_home')) {
+    function is_home(): bool
+    {
+        return (bool) wconvertTestQueried('is_home');
+    }
+}
+
+if (!function_exists('is_category')) {
+    /** @param mixed $category */
+    function is_category($category = ''): bool
+    {
+        return (bool) wconvertTestQueried('is_category');
+    }
+}
+
+if (!function_exists('is_tag')) {
+    /** @param mixed $tag */
+    function is_tag($tag = ''): bool
+    {
+        return (bool) wconvertTestQueried('is_tag');
+    }
+}
+
+if (!function_exists('is_tax')) {
+    /**
+     * @param mixed $taxonomy
+     * @param mixed $term
+     */
+    function is_tax($taxonomy = '', $term = ''): bool
+    {
+        return (bool) wconvertTestQueried('is_tax');
+    }
+}
+
+if (!function_exists('is_user_logged_in')) {
+    function is_user_logged_in(): bool
+    {
+        return (bool) wconvertTestQueried('is_user_logged_in');
+    }
+}
+
+if (!function_exists('get_queried_object_id')) {
+    function get_queried_object_id(): int
+    {
+        return (int) wconvertTestQueried('queried_object_id', 0);
+    }
+}
+
+if (!function_exists('get_queried_object')) {
+    /** @return mixed */
+    function get_queried_object()
+    {
+        return wconvertTestQueried('queried_object', null);
+    }
+}
+
+if (!function_exists('get_post_type')) {
+    /**
+     * @param mixed $post
+     * @return string|false
+     */
+    function get_post_type($post = null)
+    {
+        $type = wconvertTestQueried('post_type', false);
+
+        return is_string($type) ? $type : false;
+    }
+}
+
+if (!function_exists('get_query_var')) {
+    /**
+     * @param mixed $default_value
+     * @return mixed
+     */
+    function get_query_var(string $query_var, $default_value = '')
+    {
+        return $GLOBALS['wconvertTestQuery']['vars'][$query_var] ?? $default_value;
+    }
+}
+
+if (!function_exists('get_object_taxonomies')) {
+    /**
+     * @param string|list<string>|object $object_type
+     * @return list<string>
+     */
+    function get_object_taxonomies($object_type, string $output = 'names'): array
+    {
+        return [];
+    }
+}
+
+if (!function_exists('home_url')) {
+    /** The site root, which a subdirectory install makes interesting. */
+    function home_url(string $path = '', ?string $scheme = null): string
+    {
+        return rtrim((string) wconvertTestQueried('home_url', 'https://example.test'), '/') . $path;
+    }
+}
+
+/*
+ * The admin bar, as the one node WConvert puts on it.
+ *
+ * A `class_alias` would need the real WordPress class; what the suite needs is
+ * somewhere for `add_node()` to land, so a test can read what was offered
+ * rather than assert that a method was called.
+ */
+if (!class_exists('WP_Admin_Bar')) {
+    class WP_Admin_Bar
+    {
+        /** @var list<array<string, mixed>> */
+        public array $nodes = [];
+
+        /** @param array<string, mixed> $args */
+        public function add_node(array $args): void
+        {
+            $this->nodes[] = $args;
+        }
+    }
+}
+
+if (!function_exists('add_query_arg')) {
+    /**
+     * One key, one value, one URL — which is the whole of what WConvert uses.
+     *
+     * WordPress's own signature is variadic and can read the CURRENT request
+     * when called with fewer arguments; nothing here does that, and a stub
+     * that pretended to would be modelling a behaviour no caller relies on.
+     *
+     * @param mixed $value
+     */
+    function add_query_arg(string $key, $value, string $url): string
+    {
+        $separator = str_contains($url, '?') ? '&' : '?';
+
+        return $url . $separator . rawurlencode($key) . '=' . rawurlencode((string) $value);
+    }
+}
+
 if (!function_exists('remove_all_actions')) {
     function remove_all_actions(string $hook, ?int $priority = null): bool
     {
@@ -497,6 +678,16 @@ defined('WCONVERT_VERSION') || define('WCONVERT_VERSION', '0.1.0');
 // services with the same directory this constant holds — buys the signal back
 // by weakening the one claim the boot test exists to make.
 defined('WCONVERT_DIR') || define('WCONVERT_DIR', dirname(__DIR__) . '/');
+
+// And where it is on the web, which is what an enqueue turns a path into.
+//
+// It was not needed until the eligibility inspector: every other enqueue path
+// in this suite returns before it reaches a URL, because the bundle it looks
+// for is gitignored and a clean checkout has none. The inspector's test asserts
+// the OPPOSITE — that an administrator who asked gets through — so on a machine
+// that has run the build it reaches the enqueue, and a suite whose result
+// depended on whether `npm run build` had been run is worse than either answer.
+defined('WCONVERT_URL') || define('WCONVERT_URL', 'https://example.test/wp-content/plugins/wconvert/');
 
 // WordPress's own time constants, which any plugin may assume are defined.
 defined('HOUR_IN_SECONDS') || define('HOUR_IN_SECONDS', 3600);

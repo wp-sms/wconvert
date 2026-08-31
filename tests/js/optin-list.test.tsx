@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 /**
  * The Optin list, and the one thing on it that is a decision rather than a
@@ -210,5 +211,64 @@ describe('a suspended row', () => {
     render(<OptinList onEdit={() => undefined} />);
 
     expect(await screen.findByText('Published')).toBeInTheDocument();
+  });
+});
+
+describe('the door into the eligibility inspector', () => {
+  /**
+   * ==========================================================================
+   * IT ASKS WHICH PAGE, AND THEN GOES THERE. IT NEVER EVALUATES ONE.
+   * ==========================================================================
+   * A `RequestContext` cannot honestly be built from a URL — `url_to_postid()`
+   * returns 0 for archives, terms, the blog index and the shop page — so the
+   * merchant does not DESCRIBE a page to the inspector, they OPEN one
+   * (ADR 0048). The dialog's entire job is to feed `window.location`: there is
+   * no route behind it and no answer comes back to this screen.
+   */
+  it('asks which page and navigates to it with the parameter on', async () => {
+    optins.listOptins.mockResolvedValue([OPTIN]);
+    window.wconvertAdmin = { exportUrl: '', homeUrl: 'https://example.test/', inspectParam: 'wconvert-inspect' };
+
+    const assign = vi.fn();
+
+    Object.defineProperty(window, 'location', { value: { assign }, writable: true });
+
+    render(<OptinList onEdit={() => undefined} />);
+
+    await userEvent.click(await screen.findByRole('button', { name: /More actions/ }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Why did nothing show?' }));
+
+    const field = await screen.findByLabelText('Page to open');
+
+    // Prefilled from `home_url()` rather than from `location.origin`, so a
+    // subdirectory install lands on the SITE rather than on the domain root.
+    expect(field).toHaveValue('https://example.test/');
+
+    await userEvent.clear(field);
+    await userEvent.type(field, 'https://example.test/shop?filter=sale');
+    await userEvent.click(screen.getByRole('button', { name: 'Open the page' }));
+
+    // The page's own query string survives: a merchant asking about
+    // `?filter=sale` is asking about that page, and appending with a `?` would
+    // produce a different one.
+    expect(assign).toHaveBeenCalledWith('https://example.test/shop?filter=sale&wconvert-inspect=1');
+  });
+
+  /**
+   * **The cache sentence is on the dialog, not in the panel.**
+   * `DONOTCACHEPAGE` is set during PHP, and a full-page cache holding a file
+   * for that URL answers before PHP runs at all — so the symptom is that no
+   * panel appears, and a warning inside the panel is one nobody could read.
+   */
+  it('warns about the cache where the merchant can still read it', async () => {
+    optins.listOptins.mockResolvedValue([OPTIN]);
+    window.wconvertAdmin = { exportUrl: '', homeUrl: 'https://example.test/', inspectParam: 'wconvert-inspect' };
+
+    render(<OptinList onEdit={() => undefined} />);
+
+    await userEvent.click(await screen.findByRole('button', { name: /More actions/ }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Why did nothing show?' }));
+
+    expect(await screen.findByText(/a cache is serving that page before WordPress runs/)).toBeInTheDocument();
   });
 });

@@ -38,6 +38,28 @@ export interface AdminSettings {
    * thing ADR 0032 exists to prevent. See `builder/policy.ts`.
    */
   readonly policyUrl?: string;
+  /**
+   * `home_url('/')` — where the eligibility inspector's dialog starts.
+   *
+   * The merchant does not describe a page to the inspector, they open one: a
+   * `RequestContext` cannot honestly be built from a URL (ADR 0048), so the
+   * dialog's only job is to feed `window.location`.
+   *
+   * It comes from WordPress rather than from `location.origin` because a
+   * subdirectory install has to land on the SITE rather than on the domain
+   * root — `/blog/pricing` against `/pricing` is what half the real Targeting
+   * confusion is about.
+   */
+  readonly homeUrl?: string;
+  /**
+   * The query parameter that turns the inspector on, spelled in PHP.
+   *
+   * `InspectorEnqueue::PARAM` is the one place it is decided, and it travels
+   * here rather than being written a second time in TypeScript — a renamed
+   * parameter would otherwise leave this screen linking to a page that
+   * renders no panel, silently.
+   */
+  readonly inspectParam?: string;
 }
 
 declare global {

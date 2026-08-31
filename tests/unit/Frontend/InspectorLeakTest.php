@@ -164,6 +164,40 @@ final class InspectorLeakTest extends TestCase
         $this->assertSame(true, constant('DONOTCACHEPAGE'), 'a page cache was not told to skip this response');
     }
 
+    /**
+     * And the whole path runs: the bundle is queued and the report is printed.
+     *
+     * Skipped where the bundle has not been built, because `public/` is
+     * gitignored and a clean checkout has none — the same reason
+     * `bin/verify-artifact-contract.sh` is the place that asserts it exists.
+     * What this covers is the wiring between the gate and the tag, which is
+     * the part no other test can see.
+     */
+    public function testTheReportIsPrintedIntoTheHeadOfThePageItExplains(): void
+    {
+        if (!is_file(WCONVERT_DIR . 'public/inspector/inspector.js')) {
+            $this->markTestSkipped('the inspector bundle is built, never committed — run `npm run build:inspector`');
+        }
+
+        $GLOBALS['wconvertTestCapabilities'] = [Routes::MANAGE_CAPABILITY];
+        $_GET[InspectorEnqueue::PARAM] = '1';
+
+        $this->inspector()->enqueue();
+
+        $this->assertArrayHasKey(InspectorEnqueue::HANDLE, $GLOBALS['wconvertTestScripts']['enqueued']);
+
+        ob_start();
+        do_action('wp_head');
+        $head = (string) ob_get_clean();
+
+        $this->assertStringContainsString('id="' . InspectorTag::ELEMENT_ID . '"', $head);
+        // The words are PHP's, because `wp i18n make-pot` cannot see a string
+        // in a TypeScript bundle — so they travel on the tag rather than
+        // being spelled in the panel.
+        $this->assertStringContainsString('"labels"', $head);
+        $this->assertStringContainsString('"request"', $head);
+    }
+
     /** And nobody else gets that far, which is what makes the control a control. */
     public function testNobodyElseReachesTheCacheHeaders(): void
     {

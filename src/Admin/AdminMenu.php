@@ -3,6 +3,7 @@
 namespace WConvert\Admin;
 
 use WConvert\Assets\ViteHelper;
+use WConvert\Frontend\InspectorEnqueue;
 
 defined('ABSPATH') || exit;
 
@@ -133,6 +134,20 @@ final class AdminMenu
             // frozen at publish, which is exactly what ADR 0032 refuses. The
             // admin resolves it at the render instead (`builder/policy.ts`).
             'policyUrl' => (string) get_privacy_policy_url(),
+            // **Where the eligibility inspector opens.** The merchant does not
+            // describe a URL — they visit one, because a `RequestContext`
+            // cannot be built from a URL and must not be faked (ADR 0048). So
+            // the list offers a door, and the door needs somewhere to start.
+            //
+            // The home URL rather than the parameter appended to it: the
+            // dialog takes whichever page the merchant is asking about, and
+            // this is only what its field is prefilled with. And it comes from
+            // `home_url()` rather than from `location.origin`, so a
+            // subdirectory install lands on the site rather than on the domain
+            // root — which is the same `/blog/pricing` confusion half the real
+            // Targeting tickets are about.
+            'homeUrl' => (string) home_url('/'),
+            'inspectParam' => InspectorEnqueue::PARAM,
         ];
 
         // `wp_add_inline_script()` rather than `wp_localize_script()`, and the
