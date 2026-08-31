@@ -942,6 +942,15 @@
  * Scoped to lists WE draw. `.wconvert-editor` is deliberately excluded: the
  * builder's editors render prose lists that were written expecting WordPress's
  * rhythm, and taking it away would close their spacing up.
+ *
+ * **THE EXCLUSION IS WRITTEN AS A PARENT CHECK AND MEANS "NOT INSIDE ONE".**
+ * `:not(.wconvert-editor) > ul` only spares a list whose DIRECT parent is the
+ * editor, so every list nested one level deeper inside one — which is all of
+ * them in the rules panel — is zeroed after all. It is left as it is on
+ * purpose: this rule fixed a measured off-centre nav bar across the whole
+ * admin, and rewriting its reach is not a change to make from inside one
+ * screen. A component that wants its own spacing beats it on specificity
+ * instead, and `.wconvert-rules > .wconvert-rule` below is the one that does.
  * ------------------------------------------------------------------------- */
 #wconvert-admin :not(.wconvert-editor) > ul > li,
 #wconvert-admin :not(.wconvert-editor) > ol > li {
@@ -3366,12 +3375,60 @@
   list-style: none;
 }
 
-.wconvert-rule {
+/*
+ * ---------------------------------------------------------------------------
+ * THE GAP BETWEEN TWO RULE CARDS, WHICH WAS ZERO.
+ *
+ * `.wconvert-rule { margin-block-end: 0.5rem }` is (0,1,0) and lost to
+ * `#wconvert-admin :not(.wconvert-editor) > ul > li` at (1,1,2) — the rule that
+ * zeroes wp-admin's 6px `li` margin, whose "not inside an editor" exclusion
+ * only reaches one level (see it, above). Measured on the built screen: two
+ * cards at `bottom: 535` and `top: 535`, borders touching, reading as one box
+ * with a line through it.
+ *
+ * `.wconvert-rules > .wconvert-rule` is (1,2,0), and a class outweighs any
+ * number of element selectors — so this wins without widening the reach of a
+ * rule the whole admin depends on.
+ * ------------------------------------------------------------------------- */
+#wconvert-admin .wconvert-rules > .wconvert-rule {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.5rem;
   margin-block-end: 0.5rem;
   padding: 0.5rem 0.75rem;
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
+}
+
+/*
+ * ---------------------------------------------------------------------------
+ * `Remove` SITS AT THE END OF THE CONTROLS, ALWAYS — NOT WHEREVER THE FLOW
+ * LEFT IT.
+ *
+ * The row was a block, so the button followed whatever came before it: after
+ * the last field on a plain rule, and on a line of its own under a rule that
+ * carries a note. Two rows in one list with the way out in two different
+ * places, and which one a merchant got depended on whether their rule happened
+ * to be substituted, locked, or behind another trigger.
+ *
+ * `order` puts it at the end of the FIRST line and pushes every note below,
+ * whatever order they arrive in the markup.
+ * ------------------------------------------------------------------------- */
+#wconvert-admin .wconvert-rule > .wconvert-rule__remove {
+  order: 1;
+  margin-inline-start: auto;
+}
+
+#wconvert-admin .wconvert-rule > p.wconvert-rule__note {
+  order: 2;
+  flex-basis: 100%;
+  margin: 0;
+}
+
+#wconvert-admin .wconvert-rules > .wconvert-rule:last-child {
+  margin-block-end: 0;
 }
 
 .wconvert-param {

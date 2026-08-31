@@ -217,6 +217,67 @@ describe('when it shows and who sees it', () => {
     expect(screen.queryByLabelText('Add a trigger')).toBeNull();
   });
 
+  /**
+   * ==========================================================================
+   * NOTHING IS OFFERED THAT COULD ONLY EVER BE A DUPLICATE.
+   * ==========================================================================
+   * A Trigger with no params has exactly one spelling, so a second is the SAME
+   * rule and can never be the reason anything fired — offering it is us handing
+   * the merchant a dead rule.
+   *
+   * A type that HAS params stays on offer however many are already there: a
+   * second `time_on_page` may well be lower than the first, and a second
+   * `click_element` is a different selector. Where one of those does turn out
+   * to be idle the ROW says so, which is the right order — only then is it
+   * knowable.
+   */
+  it('stops offering a parameterless trigger once the Optin has it', async () => {
+    panel({ rules: [{ type: 'scroll_up' }] });
+
+    await open('When');
+
+    const add = screen.getByLabelText('Add a trigger');
+
+    expect(within(add).queryByRole('option', { name: 'scroll_up' })).toBeNull();
+    // ...and still offers the ones a second of could differ.
+    expect(within(add).getAllByRole('option', { name: 'Set it myself' }).length).toBeGreaterThan(0);
+  });
+
+  it('keeps offering a trigger a second of could differ from the first', async () => {
+    panel({ rules: [{ type: 'click_element', selector: '.a' }] });
+
+    await open('When');
+
+    expect(within(screen.getByLabelText('Add a trigger')).queryByRole('option', { name: 'click_element' }))
+      .not.toBeNull();
+  });
+
+  /**
+   * **A threshold behind a lower one of its own kind says so on its row.**
+   * *"After 8 seconds or after 20 seconds"* is *"after 8 seconds"*, and the
+   * merchant's next move is to change a number rather than to touch the radio
+   * — so it is a different sentence from the `page_load` one.
+   */
+  it('says which rows never run when two thresholds of one type are set', async () => {
+    panel({
+      rules: [
+        { type: 'time_on_page', seconds: 8 },
+        { type: 'time_on_page', seconds: 20 },
+      ],
+    });
+
+    expect(screen.getByRole('button', { name: /^When/ })).toHaveTextContent(
+      '1 other trigger never runs',
+    );
+
+    await open('When');
+
+    const notes = screen.getAllByText(/This never runs/);
+
+    expect(notes).toHaveLength(1);
+    expect(notes[0]).toHaveTextContent('a trigger of the same kind always fires before it');
+  });
+
   /** `page_load` is never in the add control: it is the radio, and one decision gets one control. */
   it('keeps page_load out of the list it is not a member of', async () => {
     panel({ rules: [{ type: 'time_on_page', seconds: 8 }] });

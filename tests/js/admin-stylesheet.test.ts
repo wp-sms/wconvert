@@ -256,6 +256,10 @@ describe('the rules panel against the editor’s blanket rules', () => {
     '.wconvert-starters__list',
     '.wconvert-starters__card',
     '.wconvert-rule__note',
+    // The card gap, which was zero: `.wconvert-rule` at (0,1,0) lost to
+    // `#wconvert-admin :not(.wconvert-editor) > ul > li` at (1,1,2), and two
+    // cards rendered with their borders touching.
+    '.wconvert-rules > .wconvert-rule',
     '.wconvert-picker__empty',
     '.wconvert-allowance',
   ];

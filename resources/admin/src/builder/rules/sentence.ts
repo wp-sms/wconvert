@@ -149,59 +149,165 @@ export function whenSummary(entries: readonly Entry[], types: readonly RuleType[
     return { text: __('Never — it has no trigger yet', 'wconvert'), attention: true };
   }
 
-  // ==========================================================================
-  // "SHOWS IMMEDIATELY" IS NOT ONE TRIGGER AMONG MANY. IT IS THE ABSENCE OF A
-  // WAIT, AND IT SUBSUMES EVERY OTHER TRIGGER ON THE OPTIN.
-  // ==========================================================================
-  // `page_load`'s module is `holds: () => true` — constantly, on every pass.
-  // Triggers are ORed, so an Optin carrying it fires the instant its
-  // Conditions hold and **no other Trigger can ever be the reason it fired**.
-  // Removing the others would change nothing.
-  //
-  // Which made the old summary a sentence that was true and useless: *"Fires
-  // as soon as the page loads or after 5 seconds on the page"* reads as though
-  // the five seconds decides something. It decides nothing, and a merchant who
-  // set both is looking at a screen that agreed with them.
-  //
-  // So the sentence says what actually happens, and then says how many rules
-  // are along for the ride.
-  const immediate = entries.find(([rule]) => rule.type === IMMEDIATELY);
+  const idle = idleTriggers(entries, types);
+  const firing = entries.filter(([, at]) => !idle.has(at));
+  const read = firing.map(([rule]) => phraseOf(rule, types));
+  const fires = sprintf(
+    /* translators: %s: one or more trigger phrases joined by “or”, e.g. “after 15 seconds on the page”. */
+    __('Fires %s', 'wconvert'),
+    join(read.map((each) => each.text), _x('or', 'joins triggers, any one of which fires', 'wconvert')),
+  );
 
-  if (immediate !== undefined) {
-    const idle = entries.length - 1;
-    const fires = sprintf(
-      /* translators: %s: a trigger phrase, e.g. “as soon as the page loads”. */
-      __('Fires %s', 'wconvert'),
-      phraseOf(immediate[0], types).text,
-    );
-
-    return idle === 0
-      ? { text: fires, attention: false }
-      : {
-          text: sprintf(
-            /* translators: 1: what it does, e.g. “Fires as soon as the page loads”. 2: how many other triggers never run. */
-            __('%1$s — %2$s', 'wconvert'),
-            fires,
-            sprintf(
-              /* translators: %d: a number of triggers that can never fire. */
-              _n('%d other trigger never runs', '%d other triggers never run', idle, 'wconvert'),
-              idle,
-            ),
-          ),
-          attention: true,
-        };
+  if (idle.size === 0) {
+    return { text: fires, attention: read.some((each) => each.attention) };
   }
-
-  const read = entries.map(([rule]) => phraseOf(rule, types));
 
   return {
     text: sprintf(
-      /* translators: %s: one or more trigger phrases joined by “or”, e.g. “after 15 seconds on the page”. */
-      __('Fires %s', 'wconvert'),
-      join(read.map((each) => each.text), _x('or', 'joins triggers, any one of which fires', 'wconvert')),
+      /* translators: 1: what it does, e.g. “Fires as soon as the page loads”. 2: how many other triggers never run. */
+      __('%1$s — %2$s', 'wconvert'),
+      fires,
+      sprintf(
+        /* translators: %d: a number of triggers that can never fire. */
+        _n('%d other trigger never runs', '%d other triggers never run', idle.size, 'wconvert'),
+        idle.size,
+      ),
     ),
-    attention: read.some((each) => each.attention),
+    attention: true,
   };
+}
+
+/**
+ * The Triggers that can never be the reason this Optin fired — by their own
+ * flat index.
+ *
+ * ============================================================================
+ * ONLY THE ONE THAT FIRES FIRST MATTERS, AND WITHIN A TYPE THAT IS DECIDABLE.
+ * ============================================================================
+ * Triggers are ORed, so the Optin shows the moment the earliest of them fires
+ * and every other one is along for the ride. **Across types that is not
+ * knowable** — whether `scroll_depth 50` beats `time_on_page 8` is a fact about
+ * one visitor, so two different types are a real choice and are left alone.
+ *
+ * Within one type it is knowable, and there are three cases:
+ *
+ * - **`page_load` beats everything.** Its evaluator is `holds: () => true`, so
+ *   it fires at the instant the Conditions do and nothing else ever gets to.
+ * - **A THRESHOLD is crossed once, lowest first.** *"After 8 seconds"* or
+ *   *"after 20 seconds"* is *"after 8 seconds"* — the 20 can never be the one,
+ *   because by the time it is true the 8 already was. Read off the CONTROL
+ *   rather than off a list of type names here, so it is the shared vocabulary
+ *   deciding (`resources/rules/manifest.json`) and a future threshold trigger
+ *   is covered the day it lands.
+ * - **Everything else: an exact duplicate.** Two `exit_intent`s are one
+ *   `exit_intent`; two `click_element`s on different selectors are genuinely
+ *   two triggers and are left alone.
+ *
+ * The FIRST of a tie survives, so the merchant's own order decides and the
+ * answer does not move while they are editing.
+ */
+export function idleTriggers(entries: readonly Entry[], types: readonly RuleType[]): ReadonlySet<number> {
+  const idle = new Set<number>();
+  const immediate = entries.find(([rule]) => rule.type === IMMEDIATELY);
+
+  if (immediate !== undefined) {
+    for (const [, at] of entries) {
+      if (at !== immediate[1]) {
+        idle.add(at);
+      }
+    }
+
+    return idle;
+  }
+
+  for (const [type, group] of groupByType(entries)) {
+    if (group.length < 2) {
+      continue;
+    }
+
+    const declaration = types.find((each) => each.type === type);
+    const params = Object.keys(declaration?.params ?? {});
+    const threshold =
+      params.length === 1 && THRESHOLDS.has(declaration?.params[params[0]].control ?? 'text')
+        ? params[0]
+        : null;
+
+    const survivor =
+      threshold === null
+        ? // No threshold to compare, so only an exact duplicate is idle — and
+          // "exact" is over the params the type DECLARES, so a `degraded_from`
+          // marker beside one of them does not make two rules different.
+          null
+        : lowest(group, threshold);
+
+    for (const [rule, at] of group) {
+      if (survivor === null ? isDuplicateOf(rule, group, at, params) : at !== survivor) {
+        idle.add(at);
+      }
+    }
+  }
+
+  return idle;
+}
+
+/**
+ * Controls whose value is a threshold the visitor crosses once, lowest first.
+ *
+ * Keyed on the control rather than on the rule type, because that is the
+ * shared vocabulary both runtimes read — a list of type names here would be a
+ * second manifest with nothing asserting the two agree (ADR 0005).
+ */
+const THRESHOLDS: ReadonlySet<string> = new Set(['seconds', 'percent']);
+
+function groupByType(entries: readonly Entry[]): Map<string, Entry[]> {
+  const groups = new Map<string, Entry[]>();
+
+  for (const entry of entries) {
+    const group = groups.get(entry[0].type);
+
+    if (group === undefined) {
+      groups.set(entry[0].type, [entry]);
+    } else {
+      group.push(entry);
+    }
+  }
+
+  return groups;
+}
+
+/** The index of the lowest threshold in the group, first of a tie. */
+function lowest(group: readonly Entry[], param: string): number | null {
+  let at: number | null = null;
+  let best = Number.POSITIVE_INFINITY;
+
+  for (const [rule, index] of group) {
+    const value = Number(rule[param]);
+
+    // A rule with no value yet cannot be the survivor: it can never fire at
+    // all, which `phraseOf` reports separately on its own row.
+    if (Number.isFinite(value) && value < best) {
+      best = value;
+      at = index;
+    }
+  }
+
+  return at;
+}
+
+/** Is an earlier rule in this group identical over the params the type declares? */
+function isDuplicateOf(rule: Rule, group: readonly Entry[], at: number, params: readonly string[]): boolean {
+  return group.some(
+    ([other, index]) => index < at && params.every((param) => same(other[param], rule[param])),
+  );
+}
+
+/** Value equality, one level of array deep — the whole depth the model has. */
+function same(left: unknown, right: unknown): boolean {
+  if (Array.isArray(left) && Array.isArray(right)) {
+    return left.length === right.length && left.every((value, index) => value === right[index]);
+  }
+
+  return left === right;
 }
 
 /**

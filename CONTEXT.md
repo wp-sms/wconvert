@@ -334,6 +334,14 @@ and Triggers are ORed, so an Optin carrying it fires the instant its
 *"Shows immediately AND after a few seconds"* is therefore not a preference, it
 is a mistake: the seconds decide nothing.
 
+That generalises within a type, and only within one. **Across** types which
+fires first is a fact about one visitor — whether they scroll past half way
+before eight seconds elapse is not knowable here — so two different types are a
+real choice. Within one type it is decidable: a threshold is crossed once and
+the lowest wins, so *"after 8 seconds or after 20 seconds"* is *"after 8
+seconds"*; and a Trigger with no params has one spelling, so a second is the
+same rule.
+
 So the authoring surface asks **whether it waits** before it asks what for, and
 the two answers are `page_load` and a list. The model is unchanged — still one
 flat, ORed axis — and an Optin that already carries both still shows every rule

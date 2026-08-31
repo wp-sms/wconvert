@@ -3,7 +3,7 @@ import { Description } from '../../shell/Description';
 import { RuleRows, type Row } from '../RuleRows';
 import { AddRule } from './AddRule';
 import { RuleRow } from './RuleRow';
-import { IMMEDIATELY } from './sentence';
+import { IMMEDIATELY, idleTriggers } from './sentence';
 import type { Entry } from './axis';
 import type { Rule, RuleType } from '../api';
 
@@ -62,6 +62,10 @@ export interface WhenProps {
 export function When({ types, entries, replace, remove, add, all }: WhenProps) {
   const immediate = entries.find(([rule]) => rule.type === IMMEDIATELY);
   const waiting = entries.filter(([rule]) => rule.type !== IMMEDIATELY);
+  // Which of them can never be the reason it fired. `page_load` makes every
+  // other one idle; so does a lower threshold of the same type — *"after 8
+  // seconds or after 20 seconds"* is *"after 8 seconds"*.
+  const idle = idleTriggers(entries, all);
 
   // The vocabulary's own words for it — "Shows immediately" is `RuleLabels`',
   // where `make-pot` can see it, so this option is not a second spelling of a
@@ -83,10 +87,17 @@ export function When({ types, entries, replace, remove, add, all }: WhenProps) {
           Not a warning about a broken rule — the rule is fine. It is a rule
           that cannot be the reason anything happened, and saying so on its own
           row is what stops the merchant tuning a number that decides nothing.
+
+          Two sentences rather than one, because the merchant's next move
+          differs: an Optin that shows immediately is fixed by the radio above,
+          and a trigger behind an earlier one of its own kind is fixed by
+          changing either number.
         */}
-        {immediate !== undefined && (
+        {idle.has(at) && (
           <p className="wconvert-rule__note text-note">
-            {__('This never runs — the Optin already shows as soon as the page loads.', 'wconvert')}
+            {immediate !== undefined
+              ? __('This never runs — the Optin already shows as soon as the page loads.', 'wconvert')
+              : __('This never runs — a trigger of the same kind always fires before it.', 'wconvert')}
           </p>
         )}
       </>
@@ -161,7 +172,27 @@ export function When({ types, entries, replace, remove, add, all }: WhenProps) {
       */}
       {immediate === undefined && (
         <AddRule
-          axis={types.filter((type) => type.type !== IMMEDIATELY)}
+          axis={types.filter(
+            (type) =>
+              // `page_load` is the radio above, and one decision gets one
+              // control.
+              type.type !== IMMEDIATELY &&
+              // ==================================================================
+              // AND NOTHING IS OFFERED THAT COULD ONLY BE A DUPLICATE.
+              // ==================================================================
+              // A Trigger with no params — *About to leave*, *Scrolls back up* —
+              // has exactly one spelling, so a second is the SAME rule and can
+              // never be the reason anything fired. Offering it is us handing
+              // the merchant a dead rule.
+              //
+              // A type that HAS params stays on offer however many are already
+              // there: a second `time_on_page` may well be lower than the first,
+              // and a second `click_element` is a different selector. Where one
+              // of those does turn out to be idle, the row says so — which is
+              // the right order, because only then is it knowable.
+              (Object.keys(type.params).length > 0 ||
+                !waiting.some(([rule]) => rule.type === type.type)),
+          )}
           label={__('Add a trigger', 'wconvert')}
           onAdd={add}
         />

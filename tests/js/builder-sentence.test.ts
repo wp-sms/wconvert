@@ -149,6 +149,118 @@ describe('when it fires', () => {
       /^Fires page_load/,
     );
   });
+
+  // ==========================================================================
+  // AND THE SAME RULE WITHIN ONE TYPE, WHICH IS THE OTHER HALF OF IT.
+  // ==========================================================================
+  // Triggers are ORed, so the earliest one fires and the rest are along for the
+  // ride. ACROSS types that is unknowable — whether `scroll_depth 50` beats
+  // `time_on_page 8` is a fact about one visitor — so two types are a real
+  // choice. Within one type it is decidable, and the screen has to say so.
+
+  /**
+   * A threshold is crossed once, lowest first. *"After 8 seconds or after 20
+   * seconds"* is *"after 8 seconds"*: by the time the 20 is true the 8 already
+   * was.
+   */
+  it('reads two thresholds of one type as the lower one', () => {
+    const summary = whenSummary(
+      entries({ type: 'time_on_page', seconds: 8 }, { type: 'time_on_page', seconds: 20 }),
+      types,
+    );
+
+    expect(summary.text).toBe('Fires time_on_page 8 — 1 other trigger never runs');
+    expect(summary.attention).toBe(true);
+  });
+
+  /** Whichever order they were written in. */
+  it('finds the lowest threshold wherever it sits', () => {
+    expect(
+      whenSummary(
+        entries({ type: 'time_on_page', seconds: 20 }, { type: 'time_on_page', seconds: 8 }),
+        types,
+      ).text,
+    ).toBe('Fires time_on_page 8 — 1 other trigger never runs');
+  });
+
+  it('does the same for a scroll threshold', () => {
+    expect(
+      whenSummary(
+        entries({ type: 'scroll_depth', percent: 80 }, { type: 'scroll_depth', percent: 33 }),
+        types,
+      ).text,
+    ).toBe('Fires scroll_depth 33 — 1 other trigger never runs');
+  });
+
+  /**
+   * **Two different types are a real choice and are left alone**, because
+   * which of them fires first is a fact about the visitor rather than about
+   * the rules.
+   */
+  it('leaves two different types alone, because their order is the visitor’s', () => {
+    const summary = whenSummary(
+      entries({ type: 'time_on_page', seconds: 20 }, { type: 'scroll_depth', percent: 33 }),
+      types,
+    );
+
+    expect(summary.text).toBe('Fires time_on_page 20 or scroll_depth 33');
+    expect(summary.attention).toBe(false);
+  });
+
+  /** A type with no params has one spelling, so a second is the same rule. */
+  it('reads two of a parameterless trigger as one', () => {
+    expect(whenSummary(entries({ type: 'scroll_up' }, { type: 'scroll_up' }), types).text).toBe(
+      'Fires scroll_up — 1 other trigger never runs',
+    );
+  });
+
+  /**
+   * **Two `click_element`s on different selectors are genuinely two
+   * triggers.** There is no threshold to compare and they are not duplicates,
+   * so nothing here may call either of them idle.
+   */
+  it('leaves two selectors alone, and folds two identical ones together', () => {
+    expect(
+      whenSummary(
+        entries({ type: 'click_element', selector: '.a' }, { type: 'click_element', selector: '.b' }),
+        types,
+      ).attention,
+    ).toBe(false);
+
+    expect(
+      whenSummary(
+        entries({ type: 'click_element', selector: '.a' }, { type: 'click_element', selector: '.a' }),
+        types,
+      ).text,
+    ).toBe('Fires click_element .a — 1 other trigger never runs');
+  });
+
+  /**
+   * A threshold with no value yet can never be the survivor — it cannot fire
+   * at all, and `phraseOf` reports that on its own row.
+   */
+  it('does not let an unfilled threshold win the comparison', () => {
+    const summary = whenSummary(
+      entries({ type: 'time_on_page' }, { type: 'time_on_page', seconds: 20 }),
+      types,
+    );
+
+    expect(summary.text).toBe('Fires time_on_page 20 — 1 other trigger never runs');
+  });
+
+  /** Three of a kind leave one, and the count says how many did not survive. */
+  it('counts every trigger that never runs', () => {
+    expect(
+      whenSummary(
+        entries(
+          { type: 'time_on_page', seconds: 30 },
+          { type: 'time_on_page', seconds: 8 },
+          { type: 'time_on_page', seconds: 20 },
+        ),
+        types,
+      ).text,
+    ).toBe('Fires time_on_page 8 — 2 other triggers never run');
+  });
 });
 
 describe('who sees it', () => {
