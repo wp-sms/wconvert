@@ -1,4 +1,5 @@
 import { __ } from '@wordpress/i18n';
+import { ObjectPicker } from './rules/ObjectPicker';
 import type { RuleParam } from './api';
 
 /**
@@ -78,20 +79,24 @@ export function ParamControl({ id, param, value, onChange }: ParamControlProps) 
         />
       );
 
+    /**
+     * ========================================================================
+     * BOTH OF THESE WERE `<input type="number" min={1}>`.
+     * ========================================================================
+     * Which meant "show this on the pricing page" was: leave the builder, find
+     * the post id, come back and type it. The value is still a STRING, because
+     * that is what a Targeting rule stores — `TargetingRule` casts its scalar
+     * to one on the way in, and a number here would round-trip to a different
+     * value than the one that was saved.
+     */
     case 'post_id':
     case 'term_id':
       return (
-        <input
+        <ObjectPicker
           id={id}
-          type="number"
-          className="small-text"
-          min={1}
-          // Held as a string, because that is what a Targeting rule stores:
-          // `TargetingRule` casts its scalar to one on the way in, and a
-          // number here would round-trip to a different value than the one
-          // that was saved.
+          kind={param.control === 'post_id' ? 'post' : 'term'}
           value={typeof value === 'string' ? value : ''}
-          onChange={(event) => onChange(event.target.value)}
+          onChange={onChange}
         />
       );
 

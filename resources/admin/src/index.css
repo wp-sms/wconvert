@@ -3610,6 +3610,48 @@
   color: var(--muted-foreground);
 }
 
+/* ---------------------------------------------------------------------------
+ * THE OBJECT PICKER — TARGETING A PAGE BY ITS NAME.
+ *
+ * The popup is `components/ui/popover.tsx`'s content with `role="listbox"`
+ * over it, so the positioning and collision handling are vendored and only the
+ * rows are ours. DOM focus never enters this list — the highlight is
+ * `aria-activedescendant` on the input — which is why the active row is styled
+ * off `data-active` rather than off `:focus`.
+ * ------------------------------------------------------------------------- */
+.wconvert-picker {
+  display: inline-block;
+}
+
+#wconvert-admin .wconvert-picker__list {
+  inline-size: min(24rem, 90vw);
+  max-block-size: 16rem;
+  padding: 0.25rem;
+  overflow-y: auto;
+}
+
+.wconvert-picker__option {
+  padding: 0.375rem 0.5rem;
+  border-radius: calc(var(--radius) - 2px);
+  cursor: pointer;
+}
+
+.wconvert-picker__option[data-active] {
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+
+/* Two pages genuinely do share a title, so the id is always shown. */
+.wconvert-picker__id {
+  color: var(--muted-foreground);
+}
+
+.wconvert-picker__empty {
+  margin: 0;
+  padding: 0.375rem 0.5rem;
+  color: var(--muted-foreground);
+}
+
 .wconvert-option-set {
   display: inline-flex;
   gap: 0.75rem;
