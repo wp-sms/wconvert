@@ -17,9 +17,24 @@ const root = import.meta.dirname;
  * the free loader and Pro's is which modules their entries import, decided in
  * source, not by a build-time branch (ADR 0028).
  *
- * @param {{ entry: string, outDir: string, name: string }} options
+ * ============================================================================
+ * THE ELIGIBILITY INSPECTOR IS A THIRD AND FOURTH BUILD THROUGH THIS SAME
+ * FACTORY, AND IT WRITES TO A DIRECTORY OF ITS OWN.
+ * ============================================================================
+ * It composes the same modules and calls the same `decide()`, so it is the
+ * same kind of artifact — but `emptyOutDir` is true here, which means two
+ * builds sharing an output directory would leave whichever ran last as the
+ * only survivor. `public/inspector/` rather than a second file beside the
+ * loader is what makes that impossible rather than order-dependent, exactly as
+ * the two plugins' separate directories already do (ADR 0014).
+ *
+ * It carries NO byte budget, and that is not an oversight: the 8KB limit is
+ * about what every visitor of every matching page downloads, and this is
+ * enqueued only for an administrator who asked for it by name.
+ *
+ * @param {{ entry: string, outDir: string, name: string, fileName?: string }} options
  */
-export function loaderConfig({ entry, outDir, name }) {
+export function loaderConfig({ entry, outDir, name, fileName = 'loader.js' }) {
   return defineConfig({
     // There is no static asset directory to copy; without this Vite treats the
     // plugin's public/ build root as one and warns that it overlaps outDir.
@@ -45,7 +60,7 @@ export function loaderConfig({ entry, outDir, name }) {
         entry: resolve(root, entry),
         formats: ['iife'],
         name,
-        fileName: () => 'loader.js',
+        fileName: () => fileName,
       },
       minify: 'terser',
       // The loader is subject to a hard 8KB gzipped budget, per build

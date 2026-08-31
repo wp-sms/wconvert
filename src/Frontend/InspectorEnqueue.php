@@ -86,7 +86,7 @@ final class InspectorEnqueue
      */
     private const HEAD_PRIORITY = 6;
 
-    private const DIST = 'public/loader/inspector.js';
+    private const DIST = 'public/inspector/inspector.js';
 
     public function __construct(
         private readonly OptinRepository $optins,

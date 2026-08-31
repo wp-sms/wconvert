@@ -144,6 +144,31 @@ final class InspectorLabels
             ],
 
             /**
+             * ================================================================
+             * ADR 0004's THREE FAILURE MODES, NAMED ON SCREEN.
+             * ================================================================
+             * A JS optimiser that aggregates, relocates or strips `defer` from
+             * the loader is the failure ADR 0004 calls *silent, total, and
+             * with nothing in any log*. The loader survives all three — that
+             * is what `boot.ts`'s retry is for — so none of these is an error.
+             * They are the observations a merchant has no other way to make.
+             */
+            'arrival' => [
+                'aggregated' => __(
+                    'The loader’s own script tag is not on this page, so something has combined it into a bundle. WConvert copes with that.',
+                    'wconvert'
+                ),
+                'defer' => __(
+                    'Something removed the loader’s “defer”. WConvert copes with that, but a script optimiser is rewriting its tags.',
+                    'wconvert'
+                ),
+                'order' => __(
+                    'The loader is above the data it reads, which is what “force JavaScript in head” does. WConvert copes with that.',
+                    'wconvert'
+                ),
+            ],
+
+            /**
              * The panel is missing, and the likeliest cause is the cache.
              *
              * `DONOTCACHEPAGE` is set at enqueue, which is **too late if a

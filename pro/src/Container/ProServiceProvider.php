@@ -4,6 +4,7 @@ namespace WConvert\Pro\Container;
 
 use WConvert\Container\ServiceContainer;
 use WConvert\Container\ServiceProvider;
+use WConvert\Pro\Frontend\ProInspectorEnqueue;
 use WConvert\Pro\Frontend\ProLoaderEnqueue;
 use WConvert\Pro\WooCommerce\CartCookie;
 use WConvert\Rules\RuleVocabulary;
@@ -41,6 +42,14 @@ final class ProServiceProvider implements ServiceProvider
         $container->register(
             ProLoaderEnqueue::class,
             static fn (): ProLoaderEnqueue => new ProLoaderEnqueue(WCONVERT_PRO_DIR, WCONVERT_PRO_URL)
+        );
+
+        // And the inspector's replacement, which is not optional: Pro's loader
+        // beside free's inspector would report every `exit_intent` Optin as
+        // `inert` while it worked perfectly.
+        $container->register(
+            ProInspectorEnqueue::class,
+            static fn (): ProInspectorEnqueue => new ProInspectorEnqueue(WCONVERT_PRO_DIR, WCONVERT_PRO_URL)
         );
 
         // The whole of WConvert's coupling to WooCommerce: one cookie, so the
@@ -129,5 +138,6 @@ final class ProServiceProvider implements ServiceProvider
         }
 
         $container->resolve(ProLoaderEnqueue::class)->hooks();
+        $container->resolve(ProInspectorEnqueue::class)->hooks();
     }
 }
