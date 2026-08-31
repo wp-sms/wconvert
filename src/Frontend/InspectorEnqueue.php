@@ -67,22 +67,42 @@ final class InspectorEnqueue
     public const PARAM = 'wconvert-inspect';
 
     /**
-     * After {@see LoaderEnqueue}, always.
+     * ========================================================================
+     * BEFORE {@see LoaderEnqueue}, AND THE ORDER IS A CORRECTNESS BUG THAT WAS
+     * FOUND ON A REAL PAGE.
+     * ========================================================================
+     * Footer scripts execute in the order they were enqueued, and free's
+     * loader `boot()`s at module scope — so by the time a script enqueued
+     * AFTER it runs, the loader has already decided, already shown whatever it
+     * was going to show, and already written that impression to the visitor's
+     * device.
      *
-     * The panel reads the ordinary payload tag rather than a copy of it, so
-     * the payload has to have been decided first. Pro replaces the loader on
-     * this same hook at `LoaderEnqueue::PRIORITY + 10`, and replaces the
-     * inspector at `self::PRIORITY + 10` for the same reason — see
-     * `WConvert\Pro\Frontend\ProInspectorEnqueue`.
+     * The inspector read the allowance after that, and an Optin with
+     * `maxImpressions: 1` that was **on screen at that moment** reported *"this
+     * browser has already had its allowance"*. True about the next page view,
+     * and exactly backwards as an answer to *"why didn't it show"*.
+     *
+     * Running first is what makes the panel's question — *as this page view
+     * began* — a fact rather than nearly one. It reads its own tag and the
+     * payload tag, both of which are printed in `wp_head` and are in the
+     * document long before either bundle executes, so nothing about running
+     * earlier costs it anything.
+     *
+     * Pro replaces the loader on this same hook at `LoaderEnqueue::PRIORITY + 10`
+     * and replaces the inspector at `self::PRIORITY + 10`, which still lands
+     * before Pro's loader — see `WConvert\Pro\Frontend\ProInspectorEnqueue`.
      */
-    public const PRIORITY = LoaderEnqueue::PRIORITY + 1;
+    public const PRIORITY = LoaderEnqueue::PRIORITY - 1;
 
     /**
      * `wp_head` priority, after {@see LoaderEnqueue}'s payload at 5.
      *
-     * The panel needs both tags and reads them once; printing this first would
-     * work, but the payload is the document of record and reading it in DOM
-     * order is one fewer thing to be careful about.
+     * Independent of {@see self::PRIORITY} above: both callbacks are
+     * registered during `wp_enqueue_scripts` and `wp_head` sorts them itself,
+     * so this one prints second however the two enqueues were ordered. The
+     * panel needs both tags and reads them once; the payload is the document
+     * of record and reading it in DOM order is one fewer thing to be careful
+     * about.
      */
     private const HEAD_PRIORITY = 6;
 

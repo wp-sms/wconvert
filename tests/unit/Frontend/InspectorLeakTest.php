@@ -209,6 +209,30 @@ final class InspectorLeakTest extends TestCase
     }
 
     /**
+     * ========================================================================
+     * IT IS ENQUEUED BEFORE THE LOADER, AND THAT ORDER IS A CORRECTNESS BUG
+     * THAT WAS FOUND ON A REAL PAGE.
+     * ========================================================================
+     * Footer scripts execute in enqueue order, and free's loader `boot()`s at
+     * module scope — so a bundle enqueued after it runs once the loader has
+     * already decided, already shown, and already written that impression to
+     * the visitor's device. The panel read the allowance after that and
+     * reported an Optin with `maxImpressions: 1` as *"this browser has already
+     * had its allowance"* while it was on screen.
+     *
+     * A number rather than a description, because "before" is the whole of the
+     * fix and an off-by-one here is silent.
+     */
+    public function testItIsEnqueuedBeforeTheLoaderSoItSeesTheAllowanceUntouched(): void
+    {
+        $this->assertLessThan(
+            \WConvert\Frontend\LoaderEnqueue::PRIORITY,
+            InspectorEnqueue::PRIORITY,
+            'the loader writes this page view’s impression before a later script can read it'
+        );
+    }
+
+    /**
      * **The gate is the one the admin screens use**, named rather than
      * written out — so the inspector and the routes can never come to disagree
      * about who may see this.

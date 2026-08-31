@@ -8,7 +8,7 @@ import { onConsentChange } from '../consent';
 import { persistentStore } from '../storage';
 import { STATE_KEY, dayOf, loadState } from '../state';
 import { rulesOf } from '../decide';
-import type { Loader, RuleEvaluator } from '../types';
+import type { Loader, RuleEvaluator, VisitorState } from '../types';
 import type { ServerReport } from './report';
 
 /**
@@ -28,13 +28,29 @@ import type { ServerReport } from './report';
  * second reader anyway. Both sets start at page load, so what they observe
  * agrees.
  *
- * **The decision is asked fresh, as this page view began** — `shown` empty and
- * `overlayDone` false. The engine's own copies of those are per-page-view
- * in-memory state the inspector cannot see, and the question a merchant is
- * asking is "why didn't it show", which is a question about the start of the
- * page view. The allowance is re-read from storage on every pass, so an
- * impression the real loader has just recorded IS reflected.
+ * ============================================================================
+ * THE WHOLE PANEL ANSWERS ONE QUESTION: *AS THIS PAGE VIEW BEGAN*.
+ * ============================================================================
+ * `shown` is empty, `overlayDone` is false, and **the visitor's state is read
+ * ONCE, here, at module scope** — before anything else has had a chance to
+ * move it.
+ *
+ * That last part is a correctness fix rather than an optimisation, and it was
+ * found on a real page. Re-reading the allowance on every render meant the
+ * panel reported an Optin with `maxImpressions: 1` as *"this browser has
+ * already had its allowance"* **while it was on screen**, because the loader
+ * had recorded that very impression a moment earlier. True about the next page
+ * view; exactly backwards as an answer to "why didn't it show".
+ *
+ * Module scope is deliberate and is not the thing ADR 0004 forbids. That rule
+ * is about reading the PAYLOAD ELEMENT before the document is ready, because
+ * an optimiser may have moved this script above it — a position-dependent
+ * read. `localStorage` has no position. `InspectorEnqueue` enqueues this
+ * bundle BEFORE the loader for the same reason, so the snapshot is taken
+ * before the loader's own `boot()` can write to it.
  */
+const AT_THE_START: VisitorState = loadState(persistentStore(STATE_KEY));
+
 const INSPECTOR_ELEMENT_ID = 'wconvert-inspector';
 
 export function runInspector(loader: Loader): void {
@@ -49,7 +65,6 @@ export function runInspector(loader: Loader): void {
   const arrival = readArrival();
   const panel = createPanel(server.labels);
 
-  const store = persistentStore(STATE_KEY);
   const evaluators = new Map<string, RuleEvaluator>();
   const inPlay = new Set(entries.flatMap((entry) => rulesOf(entry).map((rule) => rule.type)));
 
@@ -76,10 +91,9 @@ export function runInspector(loader: Loader): void {
       entries,
       evaluators,
       withheld,
-      // Re-read every pass: the REAL loader writes impressions and dismissals
-      // into this same store, so a merchant who watches their popup show and
-      // then closes it sees the allowance change under the panel.
-      state: loadState(store),
+      // The snapshot, not a fresh read. See the docblock: re-reading it is
+      // what made the panel report a showing Optin as capped.
+      state: AT_THE_START,
       day: dayOf(Date.now()),
       shown: new Set(),
       overlayDone: false,
