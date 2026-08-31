@@ -387,7 +387,7 @@ describe('the builder shell', () => {
    * The three `<h3>`s became four disclosures whose LABEL is the question and
    * whose body is the form, so this reads the buttons rather than the
    * headings — and the fourth, How often, is the section that had no author
-   * anywhere before #83.
+   * anywhere before the rules panel was split into four.
    */
   it('puts where, when, who and how often on that one tab', async () => {
     open();

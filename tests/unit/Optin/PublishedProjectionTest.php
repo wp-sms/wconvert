@@ -147,7 +147,8 @@ final class PublishedProjectionTest extends TestCase
             'display_type' => 'popup',
             // The shape `resources/loader/src/types.ts` declares and
             // `frequency.ts` reads — which this fixture did NOT carry until
-            // #83. It said `['once_per' => 'session']`, a key nothing has ever
+            // the allowance gained an author. It said
+            // `['once_per' => 'session']`, a key nothing has ever
             // read on either side, and the test passed anyway because it
             // asserts which keys travel rather than what is in them.
             'frequency' => ['maxImpressions' => 3],

@@ -428,7 +428,8 @@ final class OptinWriteTest extends TestCase
     }
 
     // ========================================================================
-    // THE ALLOWANCE AND THE PRIORITY, WHICH TRAVELLED UNVALIDATED UNTIL #83.
+    // THE ALLOWANCE AND THE PRIORITY, WHICH TRAVELLED UNVALIDATED UNTIL THEY
+    // GAINED AN AUTHOR (ADR 0047's amendment).
     // ========================================================================
 
     /**
