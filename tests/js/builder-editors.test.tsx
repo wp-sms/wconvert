@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
@@ -47,6 +48,32 @@ function panel(
   render(<DisplayRules vocabulary={types} value={value(over)} overlay={overlay} onChange={onChange} />);
 
   return onChange;
+}
+
+/**
+ * The panel wired to real state, for the handful of assertions that are about
+ * what happens on the SECOND interaction.
+ *
+ * {@link panel} holds `value` fixed and records the patches, which is right for
+ * "what does this control emit" — most of this file. It cannot answer "and then
+ * what does the screen show", because the row never receives the rule it just
+ * produced.
+ */
+function livePanel(over: Partial<DisplayRulesValue> = {}, types: RuleVocabulary = vocabulary) {
+  function Harness() {
+    const [state, setState] = useState(value(over));
+
+    return (
+      <DisplayRules
+        vocabulary={types}
+        value={state}
+        overlay
+        onChange={(patch) => setState((current) => ({ ...current, ...patch }))}
+      />
+    );
+  }
+
+  render(<Harness />);
 }
 
 /** Open one disclosure by the question it answers. */
@@ -435,6 +462,105 @@ describe('when it shows and who sees it', () => {
 
     expect(screen.getByText(/Standing in for/)).toHaveTextContent('exit_intent');
     expect(screen.queryByRole('button', { name: /Dismiss|Got it|Hide/ })).toBeNull();
+  });
+
+  /**
+   * ==========================================================================
+   * "SET IT MYSELF" HAS TO STICK, AND IT COULD NOT.
+   * ==========================================================================
+   * Which preset a row is wearing is DERIVED from the rule's values
+   * (`fromRule`), so choosing the general form re-emitted the same values, the
+   * same preset matched them again, and the select snapped straight back with
+   * no controls drawn. Nothing happened, on every rule type — every
+   * `device`, `time_on_page` and `scroll_depth` preset fixes all of its
+   * params, so this was a menu item that could never do anything.
+   *
+   * A merchant who wants their own `utm_term` is not locked out of one
+   * (ADR 0005: a preset is a shortcut over the engine type, never a
+   * replacement for it), so this is the assertion that keeps that true.
+   */
+  it('drops to the general form and stays there, with the preset’s values to edit', async () => {
+    const changed = panel({ rules: [{ type: 'device', in: ['desktop'] }] });
+
+    await open('Who');
+
+    // It reads back as the preset that matches it.
+    const select = screen.getByLabelText('device');
+
+    expect(select).toHaveValue('desktop_only');
+    expect(screen.queryByLabelText('in')).toBeNull();
+
+    await userEvent.selectOptions(select, '');
+
+    // The choice sticks even though the values still match `desktop_only`...
+    expect(select).toHaveValue('');
+    // ...and the params it was hiding are now there to edit, carrying what the
+    // preset had set rather than nothing.
+    expect(screen.getByText('in')).toBeInTheDocument();
+    expect(screen.getByRole('checkbox', { name: 'desktop' })).toBeChecked();
+
+    // Nothing was written by dropping to the general form: it is the same rule.
+    expect(changed).toHaveBeenCalledWith({ rules: [{ type: 'device', in: ['desktop'] }] });
+  });
+
+  /** And editing from there produces the merchant's own values. */
+  it('lets the merchant set a combination no preset offers', async () => {
+    const changed = panel({ rules: [{ type: 'device', in: ['desktop'] }] });
+
+    await open('Who');
+    await userEvent.selectOptions(screen.getByLabelText('device'), '');
+    await userEvent.click(screen.getByRole('checkbox', { name: 'mobile' }));
+
+    expect(changed).toHaveBeenLastCalledWith({
+      rules: [{ type: 'device', in: ['mobile', 'desktop'] }],
+    });
+  });
+
+  /** Choosing a named preset again puts the row back on it. */
+  it('goes back to a preset when one is chosen', async () => {
+    livePanel({ rules: [{ type: 'device', in: ['desktop'] }] });
+
+    await open('Who');
+
+    const select = screen.getByLabelText('device');
+
+    await userEvent.selectOptions(select, '');
+
+    expect(select).toHaveValue('');
+
+    await userEvent.selectOptions(select, 'mobile_only');
+
+    expect(select).toHaveValue('mobile_only');
+    // And the params it fixes are hidden again, because the preset is what
+    // sets them now.
+    expect(screen.queryByText('in')).toBeNull();
+  });
+
+  /**
+   * ==========================================================================
+   * CONTROLS DO NOT VANISH UNDER THE CURSOR.
+   * ==========================================================================
+   * Unticking one of three device boxes lands on `['tablet', 'desktop']`,
+   * which IS the "anywhere but mobile" preset — so the row snapped onto it and
+   * the checkboxes being used disappeared mid-edit. Touching a param is
+   * setting it yourself, and the row stays in that mode until a preset is
+   * chosen from the select.
+   */
+  it('keeps the controls in place while the merchant is using them', async () => {
+    livePanel({ rules: [{ type: 'device', in: ['mobile', 'tablet', 'desktop'] }] });
+
+    await open('Who');
+
+    await userEvent.click(screen.getByRole('checkbox', { name: 'mobile' }));
+
+    // The remaining boxes are still there, and still reflect the rule.
+    expect(screen.getByRole('checkbox', { name: 'mobile' })).not.toBeChecked();
+    expect(screen.getByRole('checkbox', { name: 'tablet' })).toBeChecked();
+    expect(screen.getByLabelText('device')).toHaveValue('');
+
+    await userEvent.click(screen.getByRole('checkbox', { name: 'tablet' }));
+
+    expect(screen.getByRole('checkbox', { name: 'desktop' })).toBeChecked();
   });
 
   /** A rule the merchant asked for carries no such note. */

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { ParamField } from '../controls';
 import { fromRule, toRule } from '../presets';
@@ -21,6 +22,30 @@ export interface RuleRowProps {
 }
 
 export function RuleRow({ rule, at, types, onChange }: RuleRowProps) {
+  // ==========================================================================
+  // "SET IT MYSELF" IS A CHOICE THE ROW REMEMBERS, BECAUSE IT CANNOT BE READ
+  // BACK OFF THE RULE.
+  // ==========================================================================
+  // Which preset a row is wearing is DERIVED from the rule's values
+  // ({@link fromRule}), and that is right — it is what stops a preset becoming
+  // a second engine type (ADR 0005). But it leaves no way to spell "none of
+  // them, I am setting this myself" when the values happen to match one: the
+  // general form re-emitted the same values, the same preset matched them
+  // again, and the select snapped back with no controls drawn.
+  //
+  // Every `device`, `time_on_page` and `scroll_depth` preset fixes all of its
+  // params, so this was a menu item that could never do anything on any rule
+  // type. A merchant who wants their own combination is not locked out of one
+  // — "a preset is a shortcut over the engine type and never a replacement for
+  // it" — so the row holds the choice.
+  //
+  // **Component state and not a stored key.** It is a fact about what this
+  // merchant is looking at, not about the Optin: nothing here changes the rule,
+  // and `DEGRADED_FROM` stays the only key a rule carries that is not a param
+  // of its type. Reopening the builder shows the preset again, which is the
+  // honest answer — the rule IS that preset's values.
+  const [custom, setCustom] = useState(false);
+
   const read = fromRule(rule, types);
 
   if (read === null) {
@@ -36,7 +61,13 @@ export function RuleRow({ rule, at, types, onChange }: RuleRowProps) {
     );
   }
 
-  const { type, preset, values, filled, degradedFrom } = read;
+  const { type, preset: matched, values, filled, degradedFrom } = read;
+
+  const preset = custom ? null : matched;
+  // What the controls are given: with a preset on, the params it leaves open;
+  // without one, everything the rule holds — so dropping to the general form
+  // hands the merchant the preset's own values to edit rather than a blank.
+  const shown = preset === null ? values : filled;
   const editable = Object.entries(type.params).filter(([param]) => !(preset !== null && param in preset.fixed));
   // The rule this one stands in for, by its own name where this install knows
   // it. `RuleCatalogue` describes a `locked` type rather than filtering it out
@@ -54,16 +85,20 @@ export function RuleRow({ rule, at, types, onChange }: RuleRowProps) {
         <select
           aria-label={type.label}
           value={preset?.id ?? ''}
-          onChange={(event) =>
+          onChange={(event) => {
+            const chosen = type.presets.find((each) => each.id === event.target.value) ?? null;
+
+            // Choosing the empty option IS the choice, and it is the only way
+            // the row can know it was made.
+            setCustom(chosen === null);
+
             // The rule's OWN values, not just the ones outside the old preset:
             // dropping from "came from a particular source" to the general form
             // must hand the merchant `utm_source` to edit rather than an empty
             // key and a rule that matches every visitor. A preset's fixed
             // params still win, so this changes nothing when one is chosen.
-            onChange(
-              toRule(type, type.presets.find((each) => each.id === event.target.value) ?? null, values, degradedFrom)
-            )
-          }
+            onChange(toRule(type, chosen, values, degradedFrom));
+          }}
         >
           {type.presets.map((each) => (
             <option key={each.id} value={each.id}>
@@ -81,8 +116,24 @@ export function RuleRow({ rule, at, types, onChange }: RuleRowProps) {
           key={param}
           id={`wconvert-rule-${at}-${param}`}
           param={declaration}
-          value={filled[param]}
-          onChange={(value) => onChange(toRule(type, preset, { ...filled, [param]: value }, degradedFrom))}
+          value={shown[param]}
+          onChange={(value) => {
+            // ==============================================================
+            // TOUCHING A PARAM IS SETTING IT YOURSELF, AND THE CONTROLS MUST
+            // NOT VANISH UNDER THE CURSOR.
+            // ==============================================================
+            // Without this, a merchant unticking one of three device boxes
+            // lands on `['tablet', 'desktop']`, which IS the "anywhere but
+            // mobile" preset — so the row snapped onto it and the checkboxes
+            // they were using disappeared mid-edit.
+            //
+            // The cost is that the select then reads "Set it myself" rather
+            // than naming the preset their values happen to equal. That is the
+            // better half of the trade: the values are on screen right beside
+            // it, and controls that move while being used are not.
+            setCustom(true);
+            onChange(toRule(type, preset, { ...shown, [param]: value }, degradedFrom));
+          }}
         />
       ))}
       {/*
