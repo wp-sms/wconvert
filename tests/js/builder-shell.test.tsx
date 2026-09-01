@@ -690,6 +690,23 @@ describe('the readiness panel', () => {
   });
 
   /**
+   * **A registry outage costs the panel two rows and nothing else.** The same
+   * deliberate degradation {@see OptinList} takes for the same read: numbers
+   * and labels are a nicety on an editing screen, and neither may cost the
+   * merchant their Save button.
+   */
+  it('keeps the rest of the panel when the goal registry does not answer', async () => {
+    goals.listGoals.mockRejectedValue(new Error('nope'));
+
+    open();
+
+    expect(await screen.findByText('Draft')).toBeInTheDocument();
+    expect(screen.getByText('On every page')).toBeInTheDocument();
+    expect(screen.queryByText(/^Counts /)).toBeNull();
+    expect(screen.getByRole('button', { name: 'Save changes' })).toBeInTheDocument();
+  });
+
+  /**
    * The same four sentences the Display rules tab draws as its disclosure
    * labels, from the same `summarise()` — so the two cannot come to word one
    * axis differently, and a merchant can read the whole answer without opening

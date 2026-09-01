@@ -224,8 +224,15 @@ export function destinationsSaid(
     );
   }
 
+  /*
+   * **Every binding points at something that is gone.** *"Leads go to 2
+   * destinations"* would be a sentence contradicted by the line under it, and
+   * *"Nowhere"* would be the answer for an Optin nobody ever bound — which is
+   * not this one. The problem below already counts them; this says what is
+   * true of the push.
+   */
   if (found.length === 0) {
-    return { said: countOfDestinations(bound.length), empty: false, problems };
+    return { said: __('Nothing that still exists.', 'wconvert'), empty: false, problems };
   }
 
   return {

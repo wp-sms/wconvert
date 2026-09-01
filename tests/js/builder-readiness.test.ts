@@ -202,6 +202,19 @@ describe('where the leads go', () => {
   });
 
   /**
+   * **Every binding gone at once.** *"Leads go to 2 destinations"* is a sentence
+   * the line under it contradicts, and *"Nowhere"* is the answer for an Optin
+   * nobody ever bound — which is not this one.
+   */
+  it('says nothing still exists where every binding has been deleted', () => {
+    const said = destinationsSaid(['gone', 'also-gone'], []);
+
+    expect(said.empty).toBe(false);
+    expect(said.said).toBe('Nothing that still exists.');
+    expect(said.problems[0]).toContain('2 destinations');
+  });
+
+  /**
    * The read is swallowed on failure and is null while in flight. The panel
    * still knows the Optin is bound to something, and saying how many is honest
    * where naming them is not yet possible — an empty *"Nowhere"* would be a
