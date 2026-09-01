@@ -41,14 +41,53 @@ final class Schema
 
     /**
      * `wconvert_optins` — an Optin is user-authored content that outlives the
-     * request, queryable by `goal`, and joined at report time by analytics.
+     * request, and is joined at report time by analytics.
      *
-     * The seven columns are the whole approved shape. There is no `created_at`
+     * The eight columns are the whole approved shape. There is no `created_at`
      * and no `updated_at`: the id is a ULID, so its leading 48 bits already
      * are the creation time and `ORDER BY id` already is `ORDER BY created_at`.
      *
      * `deleted_at` is how an Optin is deleted, and the only way. A hard delete
      * orphans every conversion count that references it (ADR 0020).
+     *
+     * ========================================================================
+     * `parent_id` IS A COLUMN BECAUSE THE LIST PROJECTION CANNOT READ A BLOB.
+     * ========================================================================
+     * ADR 0045 puts the A/B link in `config` and argues it well — `parent` is
+     * provenance, the way `template_id` and `playbook_id` are — and its "no
+     * schema change" claim is about `wconvert_stats`, where it is right and
+     * stays right: a [[Variant]] that IS an Optin gets its own counters out of
+     * the existing `(optin_id, stat_date, kind)` key.
+     *
+     * The other half of that ADR cannot be built from `config`. The same
+     * document promises the Optins list filters to parentless Optins, and
+     * {@see \WConvert\Optin\OptinRepository}'s `SUMMARY_COLUMNS` deliberately
+     * excludes both LONGTEXT columns, because dragging config blobs across a
+     * list is what exhausted PHP's memory at a few hundred rows (ADR 0001).
+     * So the filter had exactly two implementations: put `config` back in the
+     * list projection — the thing ADR 0001 forbids by name — or a column.
+     *
+     * **It is a column now rather than when A/B ships**, and the timing is the
+     * whole argument. Nothing writes the link yet, so there are zero rows to
+     * backfill; the day Pro's A/B starts writing it, adding this column means
+     * reading every `config` to populate it, and `dbDelta` has no data step to
+     * do that in. `NULL` is "no parent", which is what every existing row
+     * already means without anything having to touch it.
+     *
+     * ========================================================================
+     * AND `idx_goal` IS GONE, WHICH `dbDelta` CANNOT DO FOR AN EXISTING SITE.
+     * ========================================================================
+     * It was signed off for the Optin list and the per-Goal metrics, and
+     * **neither filters on it**: `INTERPRETATION_COLUMNS` and
+     * `PROJECTION_COLUMNS` read `goal` as a projected column and never as a
+     * predicate, and the list orders by the primary key. It was a write paid
+     * on every save to serve nothing.
+     *
+     * `dbDelta` adds and alters and **never removes**, so taking the line out
+     * means a fresh install never creates the index while an existing install
+     * keeps a harmless orphan. That asymmetry is free before release and
+     * impossible after it — dropping it later needs a raw `ALTER` and a data
+     * step this plugin deliberately does not have.
      */
     private static function optins(string $prefix, string $charsetCollate): string
     {
@@ -56,12 +95,12 @@ final class Schema
 id CHAR(26) NOT NULL,
 name VARCHAR(255) NOT NULL,
 goal VARCHAR(64) NOT NULL,
+parent_id CHAR(26) NULL,
 config LONGTEXT,
 published_config LONGTEXT,
 published_at DATETIME NULL,
 deleted_at DATETIME NULL,
-PRIMARY KEY  (id),
-KEY idx_goal (goal)
+PRIMARY KEY  (id)
 ) {$charsetCollate};\n";
     }
 

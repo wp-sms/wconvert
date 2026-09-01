@@ -7,13 +7,36 @@ on every load — which is exactly what the WordPress support-topic evidence
 complains about, in the words merchants actually use: *"it keeps popping up"*.
 
 The fix is **the four fields [[Frequency]] already has, held once for the whole
-site**, in one more storage key, in the `functional` category, with both
-switches **off by default**.
+site**, in one more slot of the storage key the loader already writes, in the
+`functional` category, with both switches **off by default**.
 
 ```
-TODAY   wc_o_01HA = { d, c, i, l }   per Optin, dismiss + convert default ON
-AFTER   wc_site   = { d, c, i, l }   the same four fields, one extra key
+TODAY   localStorage['wcv1'] = { "01HA…": { i, l, d, c } }
+AFTER   localStorage['wcv1'] = { "01HA…": { i, l, d, c },
+                                 "site":  { i, l, d, c } }   the same four fields, one reserved slot
 ```
+
+*Corrected. This diagram originally read `wc_o_01HA` and `wc_site`, as though
+the loader kept one `localStorage` key per Optin and would gain a second kind
+alongside them. **It has never had either.**
+[`state.ts`](../../resources/loader/src/state.ts) has exactly one persistent
+key — `STATE_KEY = 'wcv1'` — holding a map of Optin id to record, and grepping
+the repository for `wc_o_` or `wc_site` returns prose and nothing else. The
+notation spread from here into [ADR 0017](0017-no-visitor-identifier.md),
+[ADR 0045](0045-an-ab-variant-is-a-whole-optin.md), `CONTEXT.md` and the bodies
+of two unbuilt tickets, which is how a diagram becomes a specification. The
+site-wide allowance is a **reserved key inside `wcv1`** — a name no ULID can
+take, `site` being the obvious one — and not a second key, so it costs no
+second read, no second write and no second entry on the
+`localStorage → cookie → in-memory` ladder.*
+
+*And the key carries its own version, which is why this is the least urgent of
+WConvert's four storage layers. A change to this shape that cannot be made
+compatible is a bump to `wcv2`: old records are abandoned rather than migrated,
+every visitor looks new once, and a frequency cap is precisely the kind of state
+that can afford that. The server's three tables, its seven options and the
+published set have no such escape hatch, which is where the pre-release audit
+spent its attention instead.*
 
 ## No new vocabulary is needed, and that is the finding
 
@@ -84,7 +107,9 @@ checking one at a time rather than asserting:
   since the epoch, because a cooldown is expressed in days. A per-device value
   at millisecond precision is most of the way back to the artefact ADR 0017
   removed.
-- **It is one more key, not a new kind of thing.** It goes through the same
+- **It is one more slot, not a new kind of thing.** *(Corrected: "one more
+  key". It is a reserved entry inside `wcv1`, which is the loader's only
+  persistent key — see the diagram above.)* It goes through the same
   `localStorage → cookie → in-memory` ladder, failing open
   ([`storage.ts`](../../resources/loader/src/storage.ts)), because a visitor
   with both stores blocked seeing an extra popup is annoying and a visitor
@@ -133,7 +158,9 @@ distinction the inspector can render as a sentence beside the one word.
 
 ## Consequences
 
-- **One storage key, one consent call, no schema change.** The setting itself is
+- **No new storage key at all, one consent call, no schema change.** *(This
+  said "one storage key". There is already exactly one — `wcv1` — and the
+  allowance is a reserved slot in it.)* The setting itself is
   a WordPress option, the way
   [`RetentionPeriod`](../../src/Retention/RetentionPeriod.php) is — a
   site-wide decision has no Optin to hang on, which is the argument

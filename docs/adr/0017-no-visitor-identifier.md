@@ -7,7 +7,7 @@ this device has seen and dismissed — never a key pointing at a record.
 
 *The "record itself" distinction has a third caller, and the first one that is
 Pro's: [ADR 0045](0045-an-ab-variant-is-a-whole-optin.md) resolved A/B
-assignment to `wc_o_<parentId>.v`, a field on the per-Optin record naming the
+assignment to `wcv1[parentId].v`, a field on the per-Optin record naming the
 arm this browser drew. It is read against this sentence and passes — an arm of
 one experiment is not a key pointing at a visitor — and the consequence, that
 the split unit is the browser record and not the person, is accepted there

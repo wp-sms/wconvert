@@ -1,20 +1,26 @@
-# An A/B variant is a whole Optin, linked in `config` and nested in the UI
+# An A/B variant is a whole Optin, linked by `parent_id` and nested in the UI
 
 A/B testing is a [[Pro]] feature that has not been built. What is decided here
-is the **shape it will arrive in**, because the alternative shape needs a schema
-change and every saved Optin makes that change more expensive.
+is the **shape it will arrive in**, because the alternative shape needs a change
+to the COUNTERS and every saved Optin makes that change more expensive.
 
 **A variant is an [[Optin]] in its own right**, with its own id, its own row in
-`wconvert_optins`, and its own counters. It names its parent inside its own
-`config`. The Optins list shows parentless Optins only, so a test appears as one
+`wconvert_optins`, and its own counters. It names its parent in a column of that
+row. The Optins list shows parentless Optins only, so a test appears as one
 campaign with two children rather than as two campaigns.
 
 ```
 STORAGE                             UI — Optins list
-  01HA "Welcome"      parentless      ▸ Welcome        A/B · live · 412
-  01HB "Welcome (B)"                     └ A  Welcome       206 · 4.2%
-       config.parent = 01HA              └ B  Welcome (B)   206 · 5.1%
+  01HA "Welcome"      parent_id NULL   ▸ Welcome        A/B · live · 412
+  01HB "Welcome (B)"                      └ A  Welcome       206 · 4.2%
+       parent_id = 01HA                   └ B  Welcome (B)   206 · 5.1%
 ```
+
+*The title and this section said `config.parent`, and the link is
+`wconvert_optins.parent_id` — see the correction under Consequences, which is
+where the argument for the change is. The half this ADR spends most of its words
+on is unaffected: **the counters need nothing**, because a variant that IS an
+Optin already has its own `(optin_id, stat_date, kind)` rows.*
 
 ## The primary key already does the work
 
@@ -25,9 +31,16 @@ mechanism, not decoration"* — it is what makes
 with no increment lost and no read-modify-write race.
 
 That key takes an `optin_id`. A variant that **is** an Optin therefore gets
-per-variant impressions, conversions and dismissals with **no schema change at
-all** — no `variant_id` column, no widened key, no second counter table, and no
-sign-off, because there is nothing new to sign off.
+per-variant impressions, conversions and dismissals with **no change to the
+counters at all** — no `variant_id` column, no widened key, no second counter
+table.
+
+*Amended: this said "no schema change at all", and it is right about
+`wconvert_stats` and was wrong about `wconvert_optins`, where the LINK needed a
+column and therefore a sign-off ([`parent_id`](../../src/Database/Schema.php),
+and the correction under Consequences). The distinction is worth keeping
+straight, because it is the one that decided the design: this section's argument
+is that the hottest write in the system is untouched, and it stays untouched.*
 
 The alternative — a variant as a shape *inside* one Optin's `config`, the way
 its Template and rules are — cannot count. Two designs behind one `optin_id`
@@ -46,10 +59,19 @@ Their variant is a campaign with a parent, and their reporting is per-campaign.
 The obvious objection is that a merchant with three tests would see six rows in
 a list of campaigns, which is a worse screen than the one they have.
 
-That is a **query condition, not a schema decision**. The list filters to Optins
-with no parent, and each parent draws its variants nested beneath it. The
-merchant never meets "Welcome" and "Welcome (B)" as separate things, and the
+That is a **query condition, not a screen the storage forced**. The list filters
+to Optins with no parent, and each parent draws its variants nested beneath it.
+The merchant never meets "Welcome" and "Welcome (B)" as separate things, and the
 per-variant numbers appear exactly where the comparison is being made.
+
+*Amended: "a query condition, not a schema decision". Both, as it turns out —
+and the reason is the one thing this ADR did not check. A query condition has to
+be expressible in a query, and the list's projection deliberately reads neither
+LONGTEXT column ([ADR 0001](0001-custom-tables-not-custom-post-types.md)), so
+`config.parent` could not be filtered on without undoing that. The claim this
+section is actually making survives intact — storage does not dictate the screen
+— but it cost a column to keep, which is the opposite of what "not a schema
+decision" implied.*
 
 Naming follows the same rule. A variant is not asked for a name; it takes its
 parent's with a suffix, so a merchant is never asked to name a thing they think
@@ -87,14 +109,24 @@ feature. It is named here so nobody reads this document as having answered it.
 
 *Sticky assignment is now decided, and the answer is the one this paragraph
 predicted: **it is the record itself.** Assignment is a field on the existing
-per-Optin client record — `wc_o_<parentId>.v`, holding the variant it drew —
+per-Optin client record — `wcv1[parentId].v`, holding the variant it drew —
 written through the same `localStorage → cookie → in-memory` ladder as `i`, `l`,
-`d` and `c`, and it fails open like them. It is a new FIELD on a key that
+`d` and `c`, and it fails open like them. It is a new FIELD on a record that
 already exists, not a new key and not a new store.*
+
+*Corrected: this said `wc_o_<parentId>.v`, notation inherited from
+[ADR 0047](0047-site-wide-frequency-is-the-same-shape-at-a-second-scope.md)'s
+diagram and sharpened here into something more precise and therefore more
+wrong. The loader has **one** persistent key,
+[`STATE_KEY = 'wcv1'`](../../resources/loader/src/state.ts), holding a map of
+Optin id to record; there is no `wc_o_` key and never has been. The arm is a
+fifth field on the parent's entry in that map, beside `i`, `l`, `d` and `c` —
+which is what the sentence above already claimed, spelled in a notation that
+denied it.*
 
 *It is not the identifier this ADR's own constraint forbids, and the three
 properties [ADR 0047](0047-site-wide-frequency-is-the-same-shape-at-a-second-scope.md)
-checks one at a time for `wc_site` hold here too. It is not an identifier — it
+checks one at a time for the site-wide slot hold here too. It is not an identifier — it
 names an arm of one experiment, not a device. It carries no more precision than
 the question needs — one variant per parent Optin, and nothing about when it was
 drawn. And it joins to nothing: it is scoped to a single parent, it is
@@ -116,17 +148,44 @@ the building ticket's.*
 
 ## Consequences
 
-- **No schema change, now or when it ships.** `tests/unit/Database/SchemaTest.php`
-  passing untouched is the check that this stayed true.
-- **`config.parent` is the link**, holding a ULID, and it is the only new stored
+- **No change to the COUNTERS, now or when it ships.** `wconvert_stats` is
+  untouched: no `variant_id`, no widened key, no second table. *Amended: this
+  said "no schema change" and named `SchemaTest` passing untouched as the
+  check. The counters half holds; the LINK needed a column, for the reason
+  spelled out two bullets down, and `SchemaTest` was edited deliberately to
+  take `parent_id` and to spend back the index budget `idx_goal` was wasting.
+  The check for the counters is the assertion that `wconvert_stats` still
+  carries four columns and no secondary index, which it does.*
+- **`parent_id` is the link**, holding a ULID, and it is the only new stored
   fact *on the server*. *Amended: there is now one on the client too —
-  `wc_o_<parentId>.v`, the drawn arm, argued in "What this does not decide"
+  `wcv1[parentId].v`, the drawn arm, argued in "What this does not decide"
   above. It is a field on an existing record rather than a key, and it changes
-  no schema.* It lives in `config` rather than in a column because it is a property of
-  how an Optin was authored — the same place `template_id` and `playbook_id`
-  live, and provenance is what all three are.
+  no schema.*
+
+  *Corrected, and this is the one place this ADR was wrong about storage rather
+  than about notation. It said `config.parent`, on the argument that the link
+  is provenance and belongs where `template_id` and `playbook_id` live. The
+  argument is good and the placement does not work: **the Optins list cannot
+  see `config`.** `OptinRepository::SUMMARY_COLUMNS` excludes both LONGTEXT
+  columns because dragging config blobs through a list is what exhausted PHP's
+  memory at a few hundred rows ([ADR 0001](0001-custom-tables-not-custom-post-types.md)),
+  so "the list filters to parentless Optins" — the next bullet, and the entire
+  UI half of this decision — had exactly two implementations: put `config` back
+  into the list projection, which ADR 0001 forbids by name, or a column. It is
+  now `wconvert_optins.parent_id CHAR(26) NULL`, signed off in the pre-release
+  audit and added while **nothing writes it**, so there are zero rows to
+  backfill; adding it after this feature ships would mean reading every
+  `config` to populate it, in a data step `dbDelta` has nowhere to put.*
+
+  *The "no schema change" claim above is about `wconvert_stats`, and **there it
+  is untouched and still right**: a Variant that IS an Optin gets its counters
+  out of the existing `(optin_id, stat_date, kind)` key. That is the half this
+  ADR was actually arguing, and it stands.*
 - **The Optins list gains a parentless filter**, which is where the entire UI
-  half of this decision lives.
+  half of this decision lives. *Built, ahead of the feature:
+  `OptinRepository::summaries()` filters `parent_id IS NULL` today, over a
+  table where every row is parentless — which is what makes it a filter nobody
+  has to remember to add on the day the first variant is written.*
 - **Ending a test never deletes a row.** ADR 0020 carries the inline note,
   because its no-hard-delete rule was argued from analytics and now has a second
   caller that would look like an exception.

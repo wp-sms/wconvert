@@ -7,7 +7,11 @@ use WConvert\Container\CoreServiceProvider;
 use WConvert\Container\PrivacyServiceProvider;
 use WConvert\Container\ServiceContainer;
 use WConvert\Database\Installer;
+use WConvert\Database\WpdbConnection;
+use WConvert\Optin\OptinRepository;
+use WConvert\Optin\PublishedSet;
 use WConvert\Retention\LeadPruner;
+use WConvert\Rules\RuleVocabulary;
 use WConvert\Storage\WpOptionStore;
 
 defined('ABSPATH') || exit;
@@ -87,14 +91,56 @@ final class Bootstrap
     }
 
     /**
-     * Create WConvert's tables.
+     * Create WConvert's tables, and rebuild the derived state that depends on
+     * them.
      *
      * Runs before `plugins_loaded`, so it builds what it needs by hand rather
-     * than reaching for a container that does not exist yet.
+     * than reaching for a container that does not exist yet. The graph is
+     * spelled out because it has to be: {@see Installer} rebuilds the
+     * published set now, which means it needs the repository, which needs the
+     * connection, the option store and the rule manifest. Four lines that
+     * duplicate {@see \WConvert\Container\CoreServiceProvider}'s factories is
+     * the price of the hook firing this early, and it is cheaper than teaching
+     * activation to boot a container.
+     *
+     * ========================================================================
+     * `$networkWide` IS ACCEPTED AND DELIBERATELY NOT ACTED ON.
+     * ========================================================================
+     * **Multisite is out of scope for v1**, and this argument is where that
+     * decision has to be visible, because ignoring a parameter you never named
+     * is indistinguishable from not knowing it exists.
+     *
+     * Network-activating installs tables for whichever site's `$wpdb->prefix`
+     * is current and for no other. The rest are not left broken forever —
+     * {@see \WConvert\Storage\OptionStore} reads per-site options and
+     * `admin_init` fires per site, so a site whose `wconvert_db_version` is
+     * missing installs on its first dashboard visit. What that does not cover
+     * is a site **nobody has opened the admin of**, whose front end is live and
+     * has no tables under it, and there is no missing-table guard anywhere in
+     * the capture path.
+     *
+     * So the failure mode is not "it breaks", it is "it works on the sites you
+     * looked at" — which is worse than either honest alternative, and is
+     * addressed by saying so rather than by half-fixing it:
+     * {@see \WConvert\Admin\AdminNotices::warnAboutNetworkActivation()} tells
+     * a network administrator on the screen where they did it, and
+     * `readme.txt` says it before they install.
+     *
+     * The full job is ~20-30 lines — loop `get_sites()` here, and hook
+     * `wp_initialize_site` for sites created later (**not** `wpmu_new_blog`,
+     * deprecated since WP 5.1 and still the one most tutorials show) — and
+     * nothing in this decision makes it harder to do in 1.2, once there is
+     * evidence anyone wants it.
      */
-    public static function activate(): void
+    public static function activate(bool $networkWide = false): void
     {
-        (new Installer(new WpOptionStore()))->install();
+        $options = new WpOptionStore();
+
+        (new Installer($options, new OptinRepository(
+            new WpdbConnection(),
+            new PublishedSet($options),
+            RuleVocabulary::fromManifest()
+        )))->install();
     }
 
     /**

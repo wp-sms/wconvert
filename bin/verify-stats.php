@@ -158,7 +158,14 @@ global $wpdb;
 $options = new WpOptionStore();
 $db = new WpdbConnection($wpdb);
 
-(new Installer($options))->install();
+// The Optin repository, hoisted above the install because the installer now
+// takes one: `install()` rebuilds the published set, which is the one piece of
+// WConvert's derived state nothing rewrites on its own (ADR 0003). It is the
+// same object the read checks use further down — one of it, so the rows this
+// script writes and the rows it reads back cannot come from two graphs.
+$optins = new OptinRepository($db, new PublishedSet($options), RuleVocabulary::fromManifest());
+
+(new Installer($options, $optins))->install();
 
 $statsTable = $wpdb->prefix . Connection::TABLE_STATS;
 
@@ -361,7 +368,6 @@ echo "The dashboard\n";
 //
 // The unit suite proves the same arithmetic against rows it handed itself.
 // What it cannot prove is that the rows arriving from MySQL are those rows.
-$optins = new OptinRepository($db, new PublishedSet($options), RuleVocabulary::fromManifest());
 $dashboard = new Dashboard($stats, $optins);
 
 $reported = $optins->create('Reported', 'grow_email_list', []);
