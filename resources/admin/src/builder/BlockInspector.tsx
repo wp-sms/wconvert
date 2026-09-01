@@ -8,6 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '../components/ui/dropdown-menu';
+import { ParamChoice } from './ParamChoice';
 import { SlotFields } from './SlotFields';
 import { nameOfBlock } from './BlockRow';
 import { LAYOUTS, slotsOf, withHidden, withValue, type Path } from './panel';
@@ -206,6 +207,15 @@ export function BlockInspector({ template, labels, path, act, onChange, onSwap }
               typingKey(slot.path, key),
             )
           }
+          /*
+            **No coalescing key**, which is the whole reason this is not
+            `onValue`. A setting is a radio press rather than a keystroke, and
+            folding one into the burst of typing beside it would make a single
+            ⌘Z take back both the sentence and the choice.
+          */
+          onParam={(param, value) =>
+            onChange({ ...template, tree: withValue(template.tree, slot.path, param, value) })
+          }
           onHidden={(hidden) => onChange({ ...template, tree: withHidden(template.tree, slot.path, hidden) })}
         />
       )}
@@ -224,9 +234,13 @@ export function BlockInspector({ template, labels, path, act, onChange, onSwap }
  * and neither is spelled in this bundle — so a param added to a layout arrives
  * with a control and nothing here is edited.
  *
- * **And it is a suggestion, never a limit.** The renderer takes any fraction
- * for `ratio`, so a design shipping `0.4` keeps it and simply shows nothing
- * checked — the same bargain the token panel makes, for the same reason.
+ * **The control itself is {@see ParamChoice}, shared with the LEAF settings**
+ * that landed beside these. It was written out here, with a `Number(choice)`
+ * comparison and a comment about `0.50`: correct for the one param that
+ * existed, and the wrong coercion for a boolean and a keyword. `panel.ts`
+ * reads the value's shape instead, and both levels of the vocabulary now go
+ * through one radio group rather than two with their own idea of what
+ * *selected* looks like (ADR 0042 rule 5).
  */
 function LayoutParams({
   type,
@@ -242,58 +256,19 @@ function LayoutParams({
   const declared = LAYOUTS[type];
   const params: readonly string[] = declared?.params ?? [];
 
-  if (params.length === 0) {
-    return null;
-  }
-
   return (
     <>
-      {params.map((param: string) => {
-        const offered: readonly string[] = declared?.choices?.[param] ?? [];
-
-        if (offered.length === 0) {
-          return null;
-        }
-
-        const held = valueOf(param);
-        const shown = held === undefined ? '' : String(held);
-
-        return (
-          <div key={param} className="wconvert-token">
-            <span id={`wconvert-param-${type}-${param}`}>
-              {nameOf(labels.layoutParams, `${type}.${param}`)}
-            </span>
-            <span
-              role="group"
-              aria-labelledby={`wconvert-param-${type}-${param}`}
-              className="wconvert-choice-set"
-            >
-              {offered.map((choice: string) => (
-                <label key={choice} className="wconvert-choice">
-                  <input
-                    type="radio"
-                    className="sr-only"
-                    name={`wconvert-param-${type}-${param}`}
-                    value={choice}
-                    /*
-                      Compared as NUMBERS, because the manifest spells the
-                      offered values as strings and the tree stores them as
-                      numbers — `0.5` and `"0.50"` are the same split and a
-                      string compare would leave nothing checked on a design
-                      that shipped one.
-                    */
-                    checked={shown !== '' && Number(shown) === Number(choice)}
-                    onChange={() => onParam(param, Number(choice))}
-                  />
-                  <span className="wconvert-choice__label">
-                    {nameOf(labels.layoutParamValues, `${type}.${param}.${choice}`)}
-                  </span>
-                </label>
-              ))}
-            </span>
-          </div>
-        );
-      })}
+      {params.map((param: string) => (
+        <ParamChoice
+          key={param}
+          id={`${type}-${param}`}
+          label={nameOf(labels.layoutParams, `${type}.${param}`)}
+          offered={declared?.choices?.[param] ?? []}
+          held={valueOf(param)}
+          nameOfValue={(choice) => nameOf(labels.layoutParamValues, `${type}.${param}.${choice}`)}
+          onChange={(value) => onParam(param, value)}
+        />
+      ))}
     </>
   );
 }

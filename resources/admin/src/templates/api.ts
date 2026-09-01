@@ -147,6 +147,27 @@ export interface TemplateLabels {
    * front of a merchant.
    */
   layoutParamValues: Record<string, string>;
+  /**
+   * What a LEAF's own setting is called, keyed `"{node}.{param}"`.
+   *
+   * **Three of them had no control at all**: `heading.level` decides whether a
+   * headline is the Optin's `h2` or an `h3` under it, `image.fit` decides
+   * whether a picture is cropped or letterboxed, and `field.required` is read
+   * by the capture endpoint, which refuses a submission that left one empty.
+   * All three are declared in the manifest and honoured at both ends, and the
+   * only way to set any of them was to author a [[Template]] by hand.
+   *
+   * Keyed on the manifest's per-node `choices` rather than on its `params`,
+   * because `hidden`, `name` and `action` are drawn by controls that already
+   * have their own words — the *Show this* switch and the ⇄ menu.
+   */
+  nodeParams: Record<string, string>;
+  /**
+   * What each offered value of one is called, keyed
+   * `"{node}.{param}.{value}"` — because `contain` and `true` are not words
+   * anybody writes on a form, the same reason `0.35` needed *"Narrow left"*.
+   */
+  nodeParamValues: Record<string, string>;
   fields: Record<string, string>;
   /**
    * The example wording a field of each kind ships with.

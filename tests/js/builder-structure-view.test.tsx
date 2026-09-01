@@ -91,6 +91,19 @@ const LABELS = {
     'split.ratio.0.5': 'Even',
     'split.ratio.0.65': 'Narrow right',
   },
+  nodeParams: {
+    'heading.level': 'Heading rank',
+    'image.fit': 'How the picture fills its space',
+    'field.required': 'Must they fill this in?',
+  },
+  nodeParamValues: {
+    'heading.level.1': 'Main heading',
+    'heading.level.2': 'Sub-heading',
+    'image.fit.cover': 'Fill the space, cropping',
+    'image.fit.contain': 'Fit the whole picture in',
+    'field.required.true': 'Required',
+    'field.required.false': 'Optional',
+  },
   fields: { email: 'Email address', name: 'Name', phone: 'Phone number' },
   keys: {
     text: 'Text',
@@ -984,15 +997,14 @@ describe('the verdict', () => {
    * exactly — a permanent line that taxes every visit and informs one — and it
    * applies to a status chip as squarely as to a sentence.
    *
-   * So a sound design says nothing, and the band it used to say it in is not
-   * drawn at all. What the verdict still owes is asserted below, unchanged: it
-   * counts what is wrong, lists it, and takes the merchant to the block.
+   * That still holds where the verdict now lives. The readiness panel is
+   * permanent; its **To fix** block is not, and a sound design draws none of it.
    */
-  it('draws no band at all when nothing is wrong with the design', async () => {
+  it('says nothing at all when nothing is wrong with the design', async () => {
     await structure();
 
-    expect(within(panel()).queryByText('This will work')).toBeNull();
-    expect(within(panel()).queryByText(/thing to fix|things to fix/)).toBeNull();
+    expect(screen.queryByText('This will work')).toBeNull();
+    expect(screen.queryByText('To fix')).toBeNull();
   });
 
   /**
@@ -1000,43 +1012,47 @@ describe('the verdict', () => {
    * IT REPORTS COLOURS CHOSEN ON DESIGN, AND WAS ONLY READABLE FROM CONTENT.
    * ==========================================================================
    * `problemsIn` counts a contrast failure between two tokens, and the tokens
-   * are edited on the **Design** tab — so the one surface that can produce that
-   * problem was the one surface that could not show it. ADR 0039's own test is
-   * that a control's SCOPE decides its placement, and this one's scope is the
-   * whole design.
+   * are edited on the **Design** tab — so the one surface that could produce
+   * that problem was, at first, the one surface that could not show it. It was
+   * then drawn on both design tabs and on neither of the other two.
+   *
+   * Above the tab strip it is readable from all four, which is the scope test
+   * followed all the way: *"a visitor may not be able to read this"* is a fact
+   * about the Optin rather than about the tab that caused it.
    */
-  it('is on the Design tab too, where the colours that fail it are chosen', async () => {
+  it('is readable from every tab, including the ones that cannot cause it', async () => {
     render(<OptinBuilder id={ID} onClose={vi.fn()} />);
 
     await screen.findByRole('tab', { name: 'Design' });
 
-    // Made unreadable from the tab that CHOOSES the colours, which is the whole
-    // argument above: the one surface that can produce a contrast failure has
-    // to be a surface that can report one.
     // The stub names no tokens, so `nameOf` falls back to the raw key — which
     // is what a build whose vocabulary is ahead of its translations shows too.
     await userEvent.click(screen.getByRole('button', { name: /Choose a colour for muted/ }));
     await userEvent.clear(screen.getByLabelText('muted value'));
     await userEvent.type(screen.getByLabelText('muted value'), '#f4f4f5');
 
-    expect(await within(panel()).findByText(/thing to fix|things to fix/)).toBeInTheDocument();
+    expect(await screen.findByText(/too close to the background/)).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
+
+    expect(screen.getByText(/too close to the background/)).toBeInTheDocument();
   });
 
   /**
-   * Deleting the only button is refused, so the way to a design with no
-   * converting act is to delete what HOLDS it — which the guards allow only
-   * once nothing else depends on it. The row is the whole form here, so the
-   * refusal stands and the verdict is asked of a different failure: a colour
-   * pair a visitor cannot read, which nothing refuses.
+   * **Read out rather than behind a press.** It was a popover, which is right
+   * for a chip in a toolbar and wrong for a panel with room: a merchant should
+   * not have to press anything to find out what is stopping their Optin
+   * working.
+   *
+   * Deleting the only button is refused, so the way to a design with a problem
+   * is to duplicate a block that carries a [[Slot Role]] — the copy has none,
+   * so its words are lost at the next design switch. That saves happily and
+   * nothing else in the product would ever mention it.
    */
-  it('counts what is wrong and lists it, with a way to the block', async () => {
+  it('lists what is wrong, with a way to the block', async () => {
     await structure();
     await menu('Fine print');
     await userEvent.click(screen.getByRole('menuitem', { name: /Duplicate/ }));
-
-    // The copy has no Slot Role, so its words are lost at the next design
-    // switch — a problem that saves happily and that nothing else mentions.
-    await userEvent.click(screen.getByRole('button', { name: '1 thing to fix' }));
 
     const problem = screen.getByRole('button', { name: /no name of its own/ });
 
@@ -1108,7 +1124,7 @@ describe('undo and redo', () => {
  * other tab — which is ADR 0039's own scope test failing on the screen the ADR
  * was written for.
  */
-describe('the design toolbar', () => {
+describe('undo and redo, where they act on the whole draft', () => {
   /** The builder as it opens, which is on the Design tab. */
   async function design() {
     render(<OptinBuilder id={ID} onClose={vi.fn()} />);
@@ -1355,5 +1371,153 @@ describe('a layout’s own settings', () => {
     await userEvent.click(within(row('Row')).getAllByRole('button')[0]);
 
     expect(screen.queryByRole('group', { name: 'How the space is divided' })).toBeNull();
+  });
+});
+
+/**
+ * ============================================================================
+ * A LEAF HAS SETTINGS TOO, AND THREE OF THEM REACHED NO CONTROL EITHER.
+ * ============================================================================
+ * `heading.level`, `image.fit` and `field.required` are declared in the
+ * manifest and honoured at both ends — `required` by the CAPTURE endpoint,
+ * which refuses a submission that left one empty — and the only way to set any
+ * of them was to author a [[Template]] by hand. Exactly the hole `split.ratio`
+ * was in one level of the vocabulary up.
+ *
+ * Each test asserts what is SAVED as well as what is drawn, because the failure
+ * these controls could ship with is a value of the wrong type: the manifest
+ * spells every choice as a string, and the renderer tests `level === 2` and
+ * `required === true`. A control writing `"2"` and `"true"` draws correctly,
+ * saves cleanly, normalises cleanly and does nothing at all.
+ */
+describe('a leaf’s own settings', () => {
+  /** The block a slot's settings belong to, opened in the inspector. */
+  async function selecting(name: string) {
+    await structure();
+    await userEvent.click(within(row(name)).getAllByRole('button')[0]);
+  }
+
+  /** The leaf at the top of the form step, whatever the test put there. */
+  const firstLeaf = (): Record<string, unknown> =>
+    formChildren(savedTree())[0] as unknown as Record<string, unknown>;
+
+  const save = () => userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+
+  it('offers a heading the rank the renderer has always read', async () => {
+    await selecting('Headline');
+
+    const group = screen.getByRole('group', { name: 'Heading rank' });
+
+    expect(within(group).getAllByRole('radio')).toHaveLength(2);
+    /*
+      Nothing checked on the shipped design: `centred-card`'s headline carries
+      no `level`, so the renderer's own default stands and the panel claims
+      nothing rather than ticking the answer it guesses.
+    */
+    expect(within(group).queryAllByRole('radio', { checked: true })).toHaveLength(0);
+  });
+
+  it('writes a heading rank as the number the renderer compares', async () => {
+    await selecting('Headline');
+
+    await userEvent.click(screen.getByRole('radio', { name: 'Sub-heading' }));
+    await save();
+
+    // `render.ts` reads `node.level === 2`; the string "2" is not that.
+    expect(firstLeaf().level).toBe(2);
+  });
+
+  /**
+   * **The one that is not cosmetic.** `CaptureForm` reads
+   * `$node['required'] === true` and refuses the submission that left it empty,
+   * so a control writing the string `"true"` would silently make every field on
+   * the site optional.
+   */
+  it('writes a field’s requiredness as the boolean the capture endpoint reads', async () => {
+    await selecting('Email address');
+
+    const group = screen.getByRole('group', { name: 'Must they fill this in?' });
+
+    // `centred-card` ships `required: true`, so the panel starts on it.
+    expect(within(group).getByRole('radio', { name: 'Required' })).toBeChecked();
+
+    await userEvent.click(within(group).getByRole('radio', { name: 'Optional' }));
+    await save();
+
+    const field = formChildren(savedTree()).find((node) => node.type === 'row') as unknown as {
+      children: Record<string, unknown>[];
+    };
+
+    expect(field.children[0].required).toBe(false);
+  });
+
+  /**
+   * A picture, on a design that has one. `centred-card` does not, which is the
+   * point of overriding the config rather than adding a block: a stored `fit`
+   * is what proves the control reads the tree rather than only writing to it.
+   */
+  it('reads a picture’s fit off the design and writes the other one back', async () => {
+    builder.getOptin.mockResolvedValue(
+      optin({
+        config: {
+          template_id: 'centred-card',
+          template: {
+            tokens: ENTRY.tokens,
+            tree: {
+              steps: [
+                {
+                  type: 'stack',
+                  children: [{ type: 'image', id: 'n1', src: '/x.png', alt: '', fit: 'cover' }],
+                },
+              ],
+            },
+          },
+        },
+      }),
+    );
+
+    await selecting('Image');
+
+    const group = screen.getByRole('group', { name: 'How the picture fills its space' });
+
+    expect(within(group).getByRole('radio', { name: 'Fill the space, cropping' })).toBeChecked();
+
+    await userEvent.click(within(group).getByRole('radio', { name: 'Fit the whole picture in' }));
+    await save();
+
+    expect(firstLeaf().fit).toBe('contain');
+  });
+
+  /**
+   * **A leaf that declares no choices draws no settings**, which is what keeps
+   * `hidden`, `name` and `action` out of here: each is already drawn by a
+   * control with words of its own, and a second one would be two ways to ask
+   * one question.
+   */
+  it('draws nothing for a leaf that offers none', async () => {
+    await selecting('Body text');
+
+    expect(screen.queryByRole('group', { name: 'Heading rank' })).toBeNull();
+    expect(screen.queryByRole('group', { name: 'Must they fill this in?' })).toBeNull();
+  });
+
+  /**
+   * **A setting is its own undo entry, not the tail of a sentence.** The
+   * inspector's text boxes coalesce a burst of typing into one entry; a radio
+   * press sharing that key would make a single ⌘Z take back both the words and
+   * the choice.
+   */
+  it('is a separate step from the typing before it', async () => {
+    await selecting('Headline');
+
+    await userEvent.type(screen.getByRole('textbox', { name: 'Text' }), '!');
+    await userEvent.click(screen.getByRole('radio', { name: 'Sub-heading' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Undo' }));
+    await save();
+
+    const heading = firstLeaf();
+
+    expect(heading.level).toBeUndefined();
+    expect(heading.text).toBe('Get 10% off your first order!');
   });
 });

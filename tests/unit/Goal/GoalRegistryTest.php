@@ -177,4 +177,29 @@ final class GoalRegistryTest extends TestCase
         $this->assertSame('recover_cart', $entries[2]['id']);
         $this->assertSame(Availability::Unavailable->value, $entries[2]['availability']);
     }
+
+    /**
+     * **Every Goal carries the WORD for its headline number, not just the
+     * kind.**
+     *
+     * The kind is a value the admin computes nothing from; the word is one
+     * somebody wrote, and `wp i18n make-pot` can only see it here. The builder's
+     * readiness panel says what an Optin will be judged on before it has been
+     * published — so there is no dashboard card to read the word off, and a
+     * `match` in TypeScript would be the second spelling
+     * {@see GoalParityTest::testNoGoalIsSpelledInTheAdminBundle()} forbids.
+     *
+     * Asserted for every case rather than for one, because the failure is a
+     * Goal added later with no word: the panel would then head the number it
+     * reports with an empty string.
+     */
+    public function testEveryGoalCarriesTheWordForItsHeadlineNumber(): void
+    {
+        foreach ($this->registry()->toArray() as $entry) {
+            $goal = Goal::from((string) $entry['id']);
+
+            $this->assertSame($goal->headlineLabel(), $entry['headline_label']);
+            $this->assertNotSame('', $entry['headline_label']);
+        }
+    }
 }

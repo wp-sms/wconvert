@@ -366,6 +366,27 @@ controls were costing was the only reason the strip existed._
 edits the design, so neither can produce an entry to step or a problem to
 report.
 
+_Amended again, and this one deletes the component. **The design was the
+SMALLER scope all along, and the verdict's is the Optin.** *"Nothing on this
+design counts as a conversion, so it would report zero forever"* answers **is
+this Optin ready**, which is the question the readiness panel above the tab
+strip asks — and a merchant reading a Trigger on `Display rules` could not
+reach the answer at all, which is the same fault this section opened by naming
+one tab over. So the problems are listed in that panel, above all four tabs,
+read out rather than behind a press, and each still opens the block it names.
+`DesignToolbar` held nothing else and is gone; `problemsIn` is untouched. Undo
+and Redo stay in the page-header band, where the paragraph above put them._
+
+_The panel itself is [ADR 0048](0048-the-eligibility-inspector-runs-on-the-real-page.md)'s
+extension of this ADR — **scope decides where a FACT goes** — applied to the
+editor: a [[Goal]], a [[Playbook]], the four rule sentences and whether the site
+is serving this Optin are identical for every tab, so they belong above the
+tabs. It spans **both columns of the builder** rather than sitting over the tab
+strip alone, and that is a measurement rather than a preference: in the tab
+column it is 712px wide at a 1440px viewport, so nearly every rule sentence
+wrapped and the panel stood 313px tall permanently, on a screen whose own floor
+is 782px ([ADR 0038](0038-the-admin-holds-different-floors-to-the-loader.md))._
+
 The consequence for anything that follows: **the selection must never be
 empty** where a screen does this. A list with a panel under it that says
 *"select something"* is a screen whose bottom half is an instruction, so the

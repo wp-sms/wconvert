@@ -161,6 +161,86 @@ final class TemplateLabelParityTest extends TestCase
         $this->assertNamesExactly($offered, TemplateLabels::layoutParamValues(), 'layout param choices');
     }
 
+    /**
+     * ==========================================================================
+     * A LEAF HAS SETTINGS TOO, AND THREE OF THEM REACHED NO CONTROL EITHER.
+     * ==========================================================================
+     * `heading.level`, `image.fit` and `field.required` are declared in the
+     * manifest and read by the renderer — `required` is read by the CAPTURE
+     * endpoint, which refuses a submission that left one empty — and no control
+     * in this admin ever set any of them. Same hole `split.ratio` was in, one
+     * level of the vocabulary down.
+     *
+     * **Keyed on `choices` rather than on `params`, and that is the decision.**
+     * A leaf's `params` list also holds `hidden`, `name` and `action`, each of
+     * which is already drawn by a control with words of its own — the *Show
+     * this* switch and the ⇄ menu. Naming those here would be a second word for
+     * one control. So the manifest's per-node `choices` section is what declares
+     * "this param has a control", and both directions are asserted: a choice
+     * added with no name draws a chip reading `contain`, and a name for a param
+     * that offers no choices is a translated string connected to nothing.
+     */
+    public function testEveryNodeParamWithChoicesIsNamed(): void
+    {
+        /** @var array<string, array<string, mixed>> $nodes */
+        $nodes = self::manifest()['nodes'];
+        $declared = [];
+
+        foreach ($nodes as $node => $entry) {
+            foreach (array_keys((array) ($entry['choices'] ?? [])) as $param) {
+                $declared[] = $node . '.' . $param;
+            }
+        }
+
+        $this->assertNamesExactly($declared, TemplateLabels::nodeParams(), 'node params');
+    }
+
+    /** And every value one of them offers, for the reason `0.35` needed a word. */
+    public function testEveryNodeParamChoiceIsNamed(): void
+    {
+        /** @var array<string, array<string, mixed>> $nodes */
+        $nodes = self::manifest()['nodes'];
+        $offered = [];
+
+        foreach ($nodes as $node => $entry) {
+            /** @var array<string, list<string>> $choices */
+            $choices = (array) ($entry['choices'] ?? []);
+
+            foreach ($choices as $param => $values) {
+                foreach ($values as $value) {
+                    $offered[] = $node . '.' . $param . '.' . $value;
+                }
+            }
+        }
+
+        $this->assertNamesExactly($offered, TemplateLabels::nodeParamValues(), 'node param choices');
+    }
+
+    /**
+     * A choice for a param the node does not declare would draw a control the
+     * vocabulary drops on the way in — offered, translated, and thrown away by
+     * {@see \WConvert\Template\TemplateVocabulary}, which keeps only the keys a
+     * node's `content` and `params` lists name.
+     */
+    public function testEveryNodeParamWithChoicesIsAParamThatExists(): void
+    {
+        /** @var array<string, array<string, mixed>> $nodes */
+        $nodes = self::manifest()['nodes'];
+        $undeclared = [];
+
+        foreach ($nodes as $node => $entry) {
+            $params = array_map('strval', (array) ($entry['params'] ?? []));
+
+            foreach (array_keys((array) ($entry['choices'] ?? [])) as $param) {
+                if (!in_array((string) $param, $params, true)) {
+                    $undeclared[] = $node . '.' . $param;
+                }
+            }
+        }
+
+        $this->assertSame([], $undeclared, 'every node param with choices is a param the node declares');
+    }
+
     public function testEveryTokenIsNamed(): void
     {
         $this->assertNamesExactly(array_map('strval', array_keys(self::manifest()['tokens'])), TemplateLabels::tokens(), 'tokens');

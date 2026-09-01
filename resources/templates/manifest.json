@@ -37,7 +37,13 @@
       "roles": [
         "headline",
         "success_headline"
-      ]
+      ],
+      "choices": {
+        "level": [
+          "1",
+          "2"
+        ]
+      }
     },
     "text": {
       "content": [
@@ -67,7 +73,13 @@
         "fit",
         "hidden"
       ],
-      "roles": []
+      "roles": [],
+      "choices": {
+        "fit": [
+          "cover",
+          "contain"
+        ]
+      }
     },
     "field": {
       "content": [
@@ -82,7 +94,13 @@
         "name",
         "required"
       ],
-      "roles": []
+      "roles": [],
+      "choices": {
+        "required": [
+          "true",
+          "false"
+        ]
+      }
     },
     "button": {
       "content": [

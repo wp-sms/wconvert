@@ -27,6 +27,18 @@ export interface GoalEntry {
   converting_act: string;
   /** The counted kind this Goal's headline number is read from. */
   headline_kind: string;
+  /**
+   * What that number is CALLED — *"Submissions"*, *"Deliveries"*,
+   * *"Click-throughs to the offer"*.
+   *
+   * The dashboard receives it per card, which is enough for a screen reporting
+   * counts and useless to the builder: a DRAFT has no card, and *"what will
+   * this be judged on?"* is a question about the Goal rather than about a
+   * window. It travels with the Goal for the same reason its label does — the
+   * words are PHP's, and a `match` over Goal ids in this bundle is what
+   * `GoalParityTest` fails on.
+   */
+  headline_label: string;
   tier: string;
   availability: Availability;
 }

@@ -193,6 +193,82 @@ final class TemplateLabels
     }
 
     /**
+     * What a LEAF's own setting is called, keyed `"{node}.{param}"`.
+     *
+     * ============================================================================
+     * THREE PARAMS THE RENDERER READS AND NO CONTROL EVER REACHED.
+     * ============================================================================
+     * `heading.level` decides whether a headline is the Optin's `h2` or an `h3`
+     * under it, `image.fit` decides whether a picture is cropped or letterboxed,
+     * and `field.required` is read by {@see \WConvert\Lead\CaptureForm}, which
+     * refuses a submission that left one empty. All three are declared in the
+     * manifest, all three are honoured at both ends, and until now the only way
+     * to set any of them was to author a [[Template]] by hand — which is exactly
+     * the state `split.ratio` was in one level up.
+     *
+     * ============================================================================
+     * KEYED ON `choices`, WHICH IS WHAT SAYS "THIS PARAM HAS A CONTROL".
+     * ============================================================================
+     * A leaf's `params` list is not the surface: `hidden` is drawn by the
+     * inspector's *Show this* switch and `name` and `action` are drawn by the ⇄
+     * menu, each of which already has words of its own. A name for those here
+     * would be a second word for one control, which is the failure
+     * {@see self::keys()} is pinned against one section over.
+     *
+     * So the manifest's per-node `choices` section is the declaration, exactly as
+     * a layout's is, and {@see \WConvert\Tests\Unit\Template\TemplateLabelParityTest}
+     * holds these two maps to it in both directions.
+     *
+     * @return array<string, string>
+     */
+    public static function nodeParams(): array
+    {
+        return [
+            /* translators: a heading's rank inside the Optin — whether it is the main heading or one under it. Not its size, which is a token. */
+            'heading.level' => __('Heading rank', 'wconvert'),
+            /* translators: how a picture fills the space it is given. */
+            'image.fit' => __('How the picture fills its space', 'wconvert'),
+            /* translators: whether a visitor must fill a form field in before they can submit. */
+            'field.required' => __('Must they fill this in?', 'wconvert'),
+        ];
+    }
+
+    /**
+     * What each OFFERED value of a leaf's setting is called, keyed
+     * `"{node}.{param}.{value}"`.
+     *
+     * **Named for what the merchant sees, never for the stored value.** `1` and
+     * `2` are heading ranks, `cover` and `contain` are CSS keywords, and `true`
+     * and `false` are not words anybody writes on a form — the same reason
+     * `0.35` needed *"Narrow left"*.
+     *
+     * The values are the manifest's spellings and are compared as VALUES rather
+     * than as strings on the way in, so `level` stores the number `1` while the
+     * manifest offers `"1"` — see `builder/panel.ts`'s `valueOfChoice`.
+     *
+     * @return array<string, string>
+     */
+    public static function nodeParamValues(): array
+    {
+        return [
+            /* translators: a heading rank. This heading is the Optin's own main heading. */
+            'heading.level.1' => __('Main heading', 'wconvert'),
+            /* translators: a heading rank. This heading sits under the main one. */
+            'heading.level.2' => __('Sub-heading', 'wconvert'),
+
+            /* translators: a picture is scaled up until it fills the space, and the overflow is cropped away. */
+            'image.fit.cover' => __('Fill the space, cropping', 'wconvert'),
+            /* translators: a picture is scaled down until all of it fits, leaving space around it. */
+            'image.fit.contain' => __('Fit the whole picture in', 'wconvert'),
+
+            /* translators: a form field a visitor cannot leave empty. */
+            'field.required.true' => __('Required', 'wconvert'),
+            /* translators: a form field a visitor may leave empty. */
+            'field.required.false' => __('Optional', 'wconvert'),
+        ];
+    }
+
+    /**
      * What each field kind captures, in the merchant's words.
      *
      * @return array<string, string>
@@ -478,6 +554,8 @@ final class TemplateLabels
             'layoutNotes' => self::layoutNotes(),
             'layoutParams' => self::layoutParams(),
             'layoutParamValues' => self::layoutParamValues(),
+            'nodeParams' => self::nodeParams(),
+            'nodeParamValues' => self::nodeParamValues(),
             'fields' => self::fields(),
             'placeholders' => self::placeholders(),
             'keys' => self::keys(),

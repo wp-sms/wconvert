@@ -531,8 +531,19 @@ generic entry asks the site for the one it cannot know. A destination hint names
 Destination *types* and the [[Lead]] fields the Playbook needs, and prefill never
 binds a Destination invisibly — which is a rule about the *values* as much as the
 shape, since a Destination id is most likely to arrive dressed as a type. The
-hint is also authoring state and never reaches the browser: nothing that renders
-an Optin reads it, and the payload is inlined into every matching page.
+hint is also authoring state and never reaches the **visitor's** browser:
+nothing that renders an Optin reads it, and the payload is inlined into every
+matching page.
+
+> **Corrected: "never reaches the browser" was too strong, and it had made the
+> hint unreadable by anything at all.** `PublishedProjection` strips it from
+> what the site serves and always will — that is the half that matters — but the
+> admin is a browser too, and for as long as the sentence read as written the
+> hint was written by prefill on every Playbook-started Optin and opened by
+> nothing. It is read now on the **Destinations tab of the builder**, where the
+> decision it is about is made: it names the types this install can name and the
+> fields the Playbook needs, and it is shown only while no Destination is bound,
+> because once one is what the Playbook wanted is history.
 
 **Degradation is visible, and it applies to rules — not to shape.** A Playbook
 wanting a feature the install lacks substitutes the best available rule and says

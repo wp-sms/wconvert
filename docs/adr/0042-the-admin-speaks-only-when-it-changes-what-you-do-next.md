@@ -200,6 +200,19 @@ what found them.
   changes`, which has the same scope. They were costing a full-width bordered
   strip at the top of two tabs for two controls reached occasionally — and that
   strip existed *only* because they were in the wrong place. It is gone.
+
+  _Followed up: the verdict left too, and `DesignToolbar` with it. Its scope was
+  never the design either — *"nothing on this design counts as a conversion"* is
+  the answer to whether the Optin is ready — so it is a list in the readiness
+  panel above the tab strip, readable from all four tabs
+  ([ADR 0039](0039-a-screen-is-regions-and-scope-decides-placement.md))._
+
+  _Rule 2 came back on the same panel, wearing no words. The problems block was
+  guarded and its `RegionBody` wrapper was not, so a sound design drew a
+  bordered 35px band of nothing at the foot of the panel — the *"This will
+  work"* strip again, with the sentence removed and the tax left in. Found by
+  measuring the box in a browser, invisible to the suite. **A conditional line
+  and its container are one decision.**_
 - **A width that looks fixed is not the same as one that is.** `Save changes` was
   moved beside the name and still read as floating, because it sat beside a
   384px `max-w-sm` **box** rather than beside the words — and a merchant does not

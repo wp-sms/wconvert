@@ -151,13 +151,36 @@ final class OptinController implements RestController
     }
 
     /**
+     * One Optin, whole — **with [[Suspended]] resolved, exactly as the list
+     * resolves it.**
+     *
+     * The builder's readiness panel is the one place an editor says whether
+     * this Optin is on the site, and `published_at` alone cannot answer that: a
+     * suspended Optin IS published and is on no page at all (CONTEXT.md,
+     * Suspended). A panel reading the column would say *"Live"* about an Optin
+     * the site is holding back, which is worse than saying nothing — and worse
+     * than the list, which has said the true thing since ADR 0027.
+     *
+     * Computed and stored nowhere, off the same published set {@see self::index()}
+     * reads, so the two screens cannot disagree about one row. The key is
+     * present including as null, for the reason the list's is: a key that
+     * appeared only on the bad rows is a key the client tests for existence,
+     * and "absent" and "not suspended" would be one thing until a request
+     * half-failed.
+     *
      * @return WP_REST_Response|WP_Error
      */
     public function show(WP_REST_Request $request)
     {
         $optin = $this->optins->find((string) $request->get_param('id'));
 
-        return $optin === null ? self::notFound() : new WP_REST_Response($optin->toArray());
+        if ($optin === null) {
+            return self::notFound();
+        }
+
+        $suspended = Suspension::reasonsIn($this->publishedSet->all(), $this->degradation, $this->rules);
+
+        return new WP_REST_Response($optin->toArray() + ['suspended' => $suspended[$optin->id] ?? null]);
     }
 
     /**

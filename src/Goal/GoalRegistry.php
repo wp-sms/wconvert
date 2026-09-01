@@ -77,6 +77,15 @@ final class GoalRegistry
      * gallery filters on Goal only, so nothing else about a Goal needs to
      * reach the browser.
      *
+     * **`headline_label` travels beside the kind**, because a kind is a value
+     * this bundle computes and the word for it is one somebody wrote. The
+     * dashboard already receives it per card ({@see \WConvert\Stats\GoalReport}),
+     * which is fine for a screen reporting numbers and useless to the builder:
+     * a DRAFT has no card, and *"what will this Optin be judged on?"* is a
+     * question about the Goal rather than about a window of counts. Spelling
+     * the mapping in TypeScript instead is the second cross-language list
+     * {@see \WConvert\Tests\Unit\Goal\GoalParityTest} exists to prevent.
+     *
      * @return list<array<string, mixed>>
      */
     public function toArray(): array
@@ -87,6 +96,7 @@ final class GoalRegistry
             'description' => $goal->description(),
             'converting_act' => $goal->convertingAct()->value,
             'headline_kind' => $goal->headlineKind()->value,
+            'headline_label' => $goal->headlineLabel(),
             'tier' => $goal->tier()->value,
             'availability' => $this->availabilityOf($goal)->value,
         ], Goal::cases());

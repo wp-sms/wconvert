@@ -1,10 +1,16 @@
 import apiFetch from '@wordpress/api-fetch';
 
-/** What `GET /wconvert/v1/optins` returns: the list projection, no config blobs. */
-export interface OptinSummary {
-  id: string;
-  name: string;
-  goal: string;
+/**
+ * The three facts an Optin's state is read from, **wherever the row came
+ * from.**
+ *
+ * The list projection carries them and so does the whole Optin the builder
+ * reads, and both screens have to reach the same answer about one campaign:
+ * the list's *Suspended* badge and the editor's readiness panel disagreeing
+ * would be worse than either being absent. {@see statusOf} takes this rather
+ * than the summary so there is one implementation and no second reading.
+ */
+export interface OptinState {
   published_at: string | null;
   deleted_at: string | null;
   /**
@@ -21,6 +27,13 @@ export interface OptinSummary {
   suspended: string | null;
 }
 
+/** What `GET /wconvert/v1/optins` returns: the list projection, no config blobs. */
+export interface OptinSummary extends OptinState {
+  id: string;
+  name: string;
+  goal: string;
+}
+
 /**
  * The four states a row can be in, in the order they OVERRIDE one another.
  *
@@ -33,7 +46,7 @@ export interface OptinSummary {
  */
 export type OptinStatus = 'published' | 'suspended' | 'draft' | 'deleted';
 
-export function statusOf(optin: OptinSummary): OptinStatus {
+export function statusOf(optin: OptinState): OptinStatus {
   if (optin.deleted_at !== null) {
     return 'deleted';
   }
