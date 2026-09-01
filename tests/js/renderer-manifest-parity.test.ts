@@ -86,6 +86,104 @@ describe('every member the manifest declares', () => {
 });
 
 /**
+ * ============================================================================
+ * A DECLARED DEFAULT IS WHAT THE RENDERER DOES WITH NOTHING.
+ * ============================================================================
+ * The block inspector ticks the declared default where a param is absent, so a
+ * merchant opening a stock heading is told the rank a visitor will actually
+ * see. That is only honest while the manifest and `render.ts` agree — and they
+ * are written in different files with nothing between them, which is exactly
+ * the arrangement every other section here exists to hold together.
+ *
+ * **Asserted behaviourally**, like the rest of this file: a node with the key
+ * ABSENT is rendered beside one carrying the declared default, and the two must
+ * produce the same markup. A list against a list would be the second spelling
+ * (ADR 0019); this cannot be satisfied by a wrong default that happens to be
+ * spelled twice.
+ *
+ * It covers the layouts too, where `split.ratio` lives — the param that started
+ * this whole line of work by being declared, read, and reachable from nothing.
+ */
+describe('every default the manifest declares', () => {
+  /** `{node|layout}.{param}` → the manifest's spelling of what absence means. */
+  const declared = [
+    ...Object.entries(manifest.nodes),
+    ...Object.entries(manifest.layouts),
+  ].flatMap(([type, entry]) =>
+    Object.entries(('defaults' in entry ? entry.defaults : {}) as Record<string, string>).map(
+      ([param, value]) => ({ type, param, value }),
+    ),
+  );
+
+  it('declares at least one, so the cases below assert something', () => {
+    expect(declared.length).toBeGreaterThan(0);
+  });
+
+  /**
+   * **A param is honoured in one of two places, and the assertion follows
+   * which.** `level`, `fit` and `required` are decided in `render.ts`, so
+   * absence is checked against the markup. `ratio` is written out as a custom
+   * property the STYLESHEET reads with its own fallback —
+   * `var(--wc-ratio,.5)` — so the node carrying the default renders one extra
+   * attribute and looks nothing like the node without it, while a visitor sees
+   * the same design.
+   *
+   * Read off whether the stylesheet reads the property, so it is the shared
+   * vocabulary deciding and a param that moves between the two is covered on
+   * the day it moves.
+   */
+  const readByTheStylesheet = (param: string) => CSS.includes(`var(--wc-${param},`);
+
+  it.each(declared.filter(({ param }) => !readByTheStylesheet(param)))(
+    'renders the same with $param absent as with it set: $type',
+    ({ type, param, value }) => {
+      const shape =
+        type in manifest.nodes
+          ? (extra: object) => ({ type: 'stack', children: [{ type, ...MINIMAL[type], ...extra }] })
+          : (extra: object) => ({ type, children: [], start: [], end: [], ...extra });
+
+      /*
+       * The manifest spells every value as a string and the tree stores three
+       * types — the same coercion the control writes through
+       * (`builder/panel.ts`'s `valueOfChoice`), read off the shape here rather
+       * than from a table of param names.
+       */
+      const stored =
+        value === 'true' || value === 'false'
+          ? value === 'true'
+          : Number.isFinite(Number(value))
+            ? Number(value)
+            : value;
+
+      expect(renderStep(shape({ [param]: stored }))?.outerHTML).toBe(
+        renderStep(shape({}))?.outerHTML,
+      );
+    },
+  );
+
+  it.each(declared.filter(({ param }) => readByTheStylesheet(param)))(
+    'declares the same default the stylesheet falls back to: $type.$param',
+    ({ param, value }) => {
+      const fallback = new RegExp(`var\\(--wc-${param},([^)]+)\\)`).exec(CSS);
+
+      expect(fallback).not.toBeNull();
+      // `.5` and `0.5` are one number written two ways, and the CSS spelling is
+      // bytes in a budgeted stylesheet rather than a value to match literally.
+      expect(Number(fallback?.[1])).toBe(Number(value));
+    },
+  );
+
+  /** And a default is one of the values the panel actually offers. */
+  it.each(declared)('is one of the offered choices: $type.$param', ({ type, param, value }) => {
+    const entry = { ...manifest.nodes, ...manifest.layouts }[type] as {
+      choices?: Record<string, string[]>;
+    };
+
+    expect(entry.choices?.[param]).toContain(value);
+  });
+});
+
+/**
  * Tokens are the other half of the vocabulary, and an unconsumed one is worse
  * than a missing one: it rides the payload on every page view, is offered in
  * the settings panel, and changes nothing on screen.

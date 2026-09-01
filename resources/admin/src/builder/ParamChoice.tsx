@@ -20,19 +20,26 @@ import { isChoiceHeld, valueOfChoice } from './panel';
  * nor its callers spell a param or a value of their own.
  *
  * ============================================================================
- * IT SHOWS NOTHING CHECKED RATHER THAN GUESSING.
+ * ABSENT IS AN ANSWER. OFF-LIST IS NOT.
  * ============================================================================
  * `choices` is what the panel OFFERS and never what is allowed — the vocabulary
  * does not validate a param's value, so a design shipping `ratio: 0.4` or
  * `fit: "none"` keeps it. The control then has no answer to highlight, and the
  * honest thing is to highlight none: checking the nearest one would be the
  * screen quietly telling the merchant their design is something it is not.
+ *
+ * **An ABSENT key is the opposite case and was being given the same answer.**
+ * No shipped [[Template]] carries a `level`, so every heading in the library
+ * drew two chips with neither ticked while the renderer drew an unambiguous
+ * `h2`. `fallback` is the manifest's declared default — what the renderer does
+ * with nothing — and it is what a merchant is actually looking at.
  */
 export function ParamChoice({
   id,
   label,
   offered,
   held,
+  fallback,
   nameOfValue,
   onChange,
 }: {
@@ -42,6 +49,11 @@ export function ParamChoice({
   readonly offered: readonly string[];
   /** What the node holds, which may be absent and may be off the list. */
   readonly held: unknown;
+  /**
+   * What the renderer draws where it holds nothing — the manifest's declared
+   * default, never a guess made here.
+   */
+  readonly fallback?: string;
   readonly nameOfValue: (choice: string) => string;
   readonly onChange: (value: unknown) => void;
 }) {
@@ -66,7 +78,7 @@ export function ParamChoice({
               className="sr-only"
               name={`wconvert-param-${id}`}
               value={choice}
-              checked={isChoiceHeld(held, choice)}
+              checked={isChoiceHeld(held, choice, fallback)}
               onChange={() => onChange(valueOfChoice(choice))}
             />
             <span className="wconvert-choice__label">{nameOfValue(choice)}</span>

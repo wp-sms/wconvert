@@ -265,6 +265,7 @@ function LayoutParams({
           label={nameOf(labels.layoutParams, `${type}.${param}`)}
           offered={declared?.choices?.[param] ?? []}
           held={valueOf(param)}
+          fallback={declared?.defaults?.[param]}
           nameOfValue={(choice) => nameOf(labels.layoutParamValues, `${type}.${param}.${choice}`)}
           onChange={(value) => onParam(param, value)}
         />

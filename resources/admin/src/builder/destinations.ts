@@ -3,15 +3,23 @@ import { listWithAnd } from './rules/sentence';
 import type { Destination, DestinationType } from '../destinations/api';
 
 /**
- * What the readiness panel says about where the [[Lead]]s go — and about the
- * [[Playbook]]'s expectation, which until now nothing read at all.
+ * What the builder says about this [[Optin]]'s [[Destination]]s: where the
+ * [[Lead]]s go, what is stopping them getting there, and what the [[Playbook]]
+ * expected — the last of which nothing read at all until now.
+ *
+ * ============================================================================
+ * NAMED FOR THE SUBJECT, NOT FOR EITHER OF THE TWO SCREENS THAT READ IT.
+ * ============================================================================
+ * The readiness panel takes the first two sentences and the Destinations tab
+ * takes the third, so a file named for either would fit half of itself. What
+ * every function here has in common is the noun.
  *
  * ============================================================================
  * PURE, BECAUSE THE SENTENCES ARE THE PART WORTH PINNING.
  * ============================================================================
- * The panel itself is a `<dl>`; everything decidable about it is here. That is
- * the same split `rules/sentence.ts` makes one screen over, and for the same
- * reason: *"nothing is bound, and the Playbook wanted an email address to go
+ * Both callers are components; everything decidable is here. That is the same
+ * split `rules/sentence.ts` makes one screen over, and for the same reason:
+ * *"nothing is bound, and the Playbook wanted an email address to go
  * somewhere"* is a sentence with four cases in it, and a component test that
  * had to render a whole builder to check one of them would check none of them.
  */

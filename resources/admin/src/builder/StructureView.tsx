@@ -62,9 +62,12 @@ import type { Template, TemplateTree } from '@renderer/types';
  * verdict reports are caused by colours chosen there. So a merchant who applied
  * a preset and wanted it back had no Undo, because Undo was on another tab.
  *
- * {@see DesignToolbar} is the same three controls, rendered by the screen on
- * both tabs that edit the design. What is left here is what genuinely belongs
- * to the tree: the list, the row controls and the panel for the selected block.
+ * Undo and Redo are in the page-header band with `Save changes`, which has the
+ * same scope, and the verdict is a list in {@see ReadinessPanel} above the tab
+ * strip: *"nothing on this design counts as a conversion"* answers **is this
+ * Optin ready**, so it is readable from all four tabs rather than from the two
+ * that edit the design. What is left here is what genuinely belongs to the
+ * tree: the list, the row controls and the panel for the selected block.
  * {@link StructureViewProps.focus} is the one thread back — following a problem
  * to the block it names still has to land focus on that block's row.
  *
@@ -141,10 +144,10 @@ export interface StructureViewProps {
    *
    * **It exists because the verdict left this file.** Following a problem to
    * the block it names is a selection *and* focus on that block's row, and the
-   * chip that offers it now sits in {@see DesignToolbar}, on either of two tabs
-   * — so the request crosses the boundary rather than the focus state being
-   * lifted out of the tree that owns it. Identity is the signal: a new object
-   * means a new request, and null means none has been made.
+   * list that offers it now sits in {@see ReadinessPanel}, above every tab — so
+   * the request crosses the boundary rather than the focus state being lifted
+   * out of the tree that owns it. Identity is the signal: a new object means a
+   * new request, and null means none has been made.
    *
    * Nothing else may use it. Selecting a row must NOT pull focus down or
    * around, which is what keeps ↑↓ working after a click.

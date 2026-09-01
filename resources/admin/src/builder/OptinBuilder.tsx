@@ -17,12 +17,12 @@ import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { PageAction } from '../shell/PageActions';
 import { Region, RegionBody, RegionError, RegionErrorState } from '../shell/Region';
 import { Stat, StatRow } from '../shell/Stat';
-import { messageOf } from '../shell/loadable';
+import { LOADING, messageOf, ready, type Loadable } from '../shell/loadable';
 import { TemplatePickerDialog } from './TemplatePickerDialog';
 import { useTemplateTrees } from './TemplatePicker';
 import { DestinationsEditor } from './DestinationsEditor';
 import { ReadinessPanel } from './ReadinessPanel';
-import { hintIn, hintSaid } from './readiness';
+import { hintIn, hintSaid } from './destinations';
 import { Preview } from './Preview';
 import { DisplayRules } from './rules/DisplayRules';
 import { DevExport } from './DevExport';
@@ -313,7 +313,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
    * beside it, and picking three fields out of one entry into three pieces of
    * state would be three chances for them to describe different Goals.
    */
-  const [goalEntry, setGoalEntry] = useState<GoalEntry | null>(null);
+  const [goalEntry, setGoalEntry] = useState<Loadable<GoalEntry | null>>(LOADING);
   /*
    * **What the [[Playbook]] this Optin started from is called.** Provenance,
    * exactly as `template_id` is: prefill snapshots a Playbook's values and the
@@ -326,7 +326,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
    * omits the row: a Playbook that has been unregistered still leaves a
    * perfectly good Optin behind, and its id is not a word.
    */
-  const [playbook, setPlaybook] = useState<string | null>(null);
+  const [playbook, setPlaybook] = useState<Loadable<string | null>>(LOADING);
   /*
    * **The site's [[Destination]]s, read once for the two surfaces that need
    * them.** `DestinationsEditor` owned this read; the readiness panel needs the
@@ -357,17 +357,35 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
    * Goals. `null` where the registry has not answered, and where it answered
    * with something this build does not recognise as an act.
    */
+  const entryOfGoal = goalEntry.status === 'ready' ? goalEntry.data : null;
   const act: ConvertingAct | null =
-    goalEntry?.converting_act === 'click' || goalEntry?.converting_act === 'submit'
-      ? goalEntry.converting_act
+    entryOfGoal?.converting_act === 'click' || entryOfGoal?.converting_act === 'submit'
+      ? entryOfGoal.converting_act
       : null;
 
   /** The [[Destination]] ids this Optin pushes to, as `config` holds them. */
   const bound = Array.isArray(config?.destinations) ? (config.destinations as string[]) : [];
 
+  /*
+   * **The four axes, read out of `config` ONCE.** Both the rules editor and the
+   * readiness panel above it need them, and *"an absent `priority` is 0"* is a
+   * decision rather than a formality — `arbitrate()` reads `priority ?? 0` and
+   * the save route drops a stored 0 for exactly that reason. Spelling that
+   * twice is two places for one reading to stop agreeing.
+   */
+  const displayRules = {
+    rules: Array.isArray(config?.rules) ? (config.rules as Rule[]) : [],
+    targeting: (config?.targeting ?? {}) as Targeting,
+    frequency: (config?.frequency ?? {}) as Frequency,
+    priority: typeof config?.priority === 'number' ? config.priority : 0,
+  };
+
   const template = config?.template as Template | undefined;
   const templateId = typeof config?.template_id === 'string' ? config.template_id : undefined;
   const templates = gallery?.templates;
+
+  /** Whether this Optin competes for the screen — only an overlay does. */
+  const overlay = config === null || displayTypeOf(config, templates) !== 'inline';
 
   /*
    * **The designs behind the cards on screen, and the one that is in use.**
@@ -445,8 +463,15 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
     }
 
     listGoals()
-      .then((goals) => setGoalEntry(goals.find((each) => each.id === goal) ?? null))
-      .catch(() => undefined);
+      .then((goals) => setGoalEntry(ready(goals.find((each) => each.id === goal) ?? null)))
+      /*
+       * **Failure RESOLVES rather than staying in flight**, which is the same
+       * fix {@see OptinList} made for the same read: a row held forever is a
+       * cell that never fills, while a registry that answered nothing is one
+       * this build genuinely cannot name a Goal from — which is exactly what
+       * the `<code>` fallback says.
+       */
+      .catch(() => setGoalEntry(ready(null)));
   }, [goal]);
 
   /*
@@ -465,13 +490,25 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
   useEffect(() => {
     const from = config?.playbook_id;
 
-    if (goal === null || typeof from !== 'string' || from === '') {
+    if (typeof from !== 'string' || from === '') {
+      /*
+       * Most Optins started from scratch. Resolving to "no name" rather than
+       * leaving the read in flight is what lets the panel tell *"there is no
+       * Playbook"* from *"we have not looked yet"* — and the row is drawn off
+       * the stored id, so neither draws anything here.
+       */
+      setPlaybook(ready(null));
+
+      return;
+    }
+
+    if (goal === null) {
       return;
     }
 
     listPlaybooks(goal)
-      .then((entries) => setPlaybook(entries.find((each) => each.id === from)?.name ?? null))
-      .catch(() => undefined);
+      .then((entries) => setPlaybook(ready(entries.find((each) => each.id === from)?.name ?? null)))
+      .catch(() => setPlaybook(ready(null)));
     /*
      * Keyed on the id rather than on `config`, which changes on every
      * keystroke. `playbook_id` is provenance and cannot change while this
@@ -1059,9 +1096,11 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
           goal={goalEntry}
           goalId={goal ?? ''}
           playbook={playbook}
-          config={config}
+          playbookId={typeof config.playbook_id === 'string' ? config.playbook_id : ''}
+          rules={displayRules}
           vocabulary={vocabulary}
-          overlay={displayTypeOf(config, templates) !== 'inline'}
+          overlay={overlay}
+          bound={bound}
           template={template}
           act={act}
           destinations={destinations?.destinations ?? null}
@@ -1301,18 +1340,10 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
                 <RegionBody className="wconvert-editor">
                   <DisplayRules
                     vocabulary={vocabulary}
-                    value={{
-                      rules: Array.isArray(config.rules) ? (config.rules as Rule[]) : [],
-                      targeting: (config.targeting ?? {}) as Targeting,
-                      frequency: (config.frequency ?? {}) as Frequency,
-                      // Absent and zero are the same rule — `arbitrate()`
-                      // reads `priority ?? 0`, and the save route drops a
-                      // stored 0 for exactly that reason.
-                      priority: typeof config.priority === 'number' ? config.priority : 0,
-                    }}
+                    value={displayRules}
                     // Only an overlay competes for the screen, so only an
                     // overlay has a priority worth drawing.
-                    overlay={displayTypeOf(config, templates) !== 'inline'}
+                    overlay={overlay}
                     onChange={(patch) => edit(patch as Config)}
                   />
                 </RegionBody>

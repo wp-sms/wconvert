@@ -1344,8 +1344,53 @@ describe('a layout’s own settings', () => {
     const group = screen.getByRole('group', { name: 'How the space is divided' });
 
     expect(within(group).getAllByRole('radio')).toHaveLength(3);
-    // Nothing is checked on a fresh one: the node carries no `ratio`, so the
-    // renderer's own default stands and the panel claims nothing.
+    /*
+     * **The declared default is checked on a fresh one**, and this assertion is
+     * the inverse of what it used to be. A fresh `split` carries no `ratio`, and
+     * the panel claimed nothing — on the argument that the vocabulary does not
+     * validate a param's value, which is an argument about an OFF-LIST value
+     * being applied to an ABSENT one. `.wc-pane` reads `var(--wc-ratio,.5)`, so
+     * the merchant is looking at an even split and the control now says so.
+     */
+    expect(within(group).getByRole('radio', { name: 'Even' })).toBeChecked();
+  });
+
+  /**
+   * And a value the manifest does not offer still checks nothing. That is the
+   * case the old assertion was really written for: the renderer takes any
+   * fraction, so a design shipping `0.4` keeps it, and ticking the nearest chip
+   * would be the screen telling a merchant their design is something it is not.
+   */
+  it('checks nothing on a split the manifest does not offer', async () => {
+    builder.getOptin.mockResolvedValue(
+      optin({
+        config: {
+          template_id: 'centred-card',
+          template: {
+            tokens: ENTRY.tokens,
+            /*
+              Nested rather than at the top of the step: a step's root layout is
+              the step's own row ("The form"), so a `split` there has no row of
+              its own to select.
+            */
+            tree: {
+              steps: [
+                {
+                  type: 'stack',
+                  children: [{ type: 'split', ratio: 0.4, start: [], end: [] }],
+                },
+              ],
+            },
+          },
+        },
+      }),
+    );
+
+    await structure();
+    await userEvent.click(within(row('Side by side')).getAllByRole('button')[0]);
+
+    const group = screen.getByRole('group', { name: 'How the space is divided' });
+
     expect(within(group).queryAllByRole('radio', { checked: true })).toHaveLength(0);
   });
 
@@ -1410,11 +1455,14 @@ describe('a leaf’s own settings', () => {
 
     expect(within(group).getAllByRole('radio')).toHaveLength(2);
     /*
-      Nothing checked on the shipped design: `centred-card`'s headline carries
-      no `level`, so the renderer's own default stands and the panel claims
-      nothing rather than ticking the answer it guesses.
+      **The declared default is checked.** No shipped design carries a `level`
+      at all — `"level"` appears zero times in the twelve library templates — so
+      claiming nothing would have left every heading in the library drawing two
+      chips with neither ticked, while `render.ts` drew an unambiguous `h2`.
+      `tests/js/renderer-manifest-parity.test.ts` is what holds the manifest's
+      declared default to what the renderer actually does with an absent key.
     */
-    expect(within(group).queryAllByRole('radio', { checked: true })).toHaveLength(0);
+    expect(within(group).getByRole('radio', { name: 'Main heading' })).toBeChecked();
   });
 
   it('writes a heading rank as the number the renderer compares', async () => {

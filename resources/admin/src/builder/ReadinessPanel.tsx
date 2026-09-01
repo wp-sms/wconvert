@@ -5,12 +5,14 @@ import { Description } from '../shell/Description';
 import { Region, RegionBody } from '../shell/Region';
 import { StatusBadge } from '../optins/StatusBadge';
 import { statusOf, type OptinState } from '../optins/api';
-import { destinationsSaid } from './readiness';
+import type { Loadable } from '../shell/loadable';
+import { destinationsSaid } from './destinations';
 import { problemsIn, type Problem } from './structure/problems';
 import { summarise } from './rules/summaries';
 import type { ConvertingAct } from './structure/catalogue';
 import type { Path } from './panel';
-import type { Frequency, Rule, RuleVocabulary, Targeting } from './api';
+import type { RuleVocabulary } from './api';
+import type { DisplayRulesValue } from './rules/summaries';
 import type { Destination } from '../destinations/api';
 import type { GoalEntry } from '../goals/api';
 import type { Template } from '@renderer/types';
@@ -67,22 +69,57 @@ export interface ReadinessPanelProps {
   /** Whether the site is serving this Optin, and why not where it is not. */
   readonly optin: OptinState;
   /**
-   * The [[Goal]] this Optin serves, as the registry resolved it — or null
-   * while `GET /goals` has not answered, and after one that failed.
+   * The [[Goal]] this Optin serves, as the registry resolved it.
    *
-   * **Its absence costs the panel two rows and nothing else**, which is the
-   * same deliberate degradation {@see OptinList} takes for the same read: a
-   * registry outage must not cost a merchant their Save button.
+   * ==========================================================================
+   * THREE STATES, NOT TWO, AND THE THIRD IS WHAT STOPS THE FLASH.
+   * ==========================================================================
+   * `loading` while `GET /goals` is in flight, `ready(null)` where it answered
+   * and has no such Goal, `ready(entry)` otherwise. {@see OptinList} needed the
+   * same three for the same reason and this panel shipped with two: the Optin
+   * lands with `getOptin` and the registry answers later, so a `null` meaning
+   * both "not yet" and "no such Goal" printed the raw id on **every** load and
+   * then watched it turn into a label — which teaches a merchant that the
+   * `<code>` means *wait* rather than what it says.
+   *
+   * `failed` renders as `ready(null)` does: a registry that answered nothing is
+   * one this build genuinely cannot name a Goal from, and its outage must cost
+   * the panel a row rather than cost the merchant their Save button.
    */
-  readonly goal: GoalEntry | null;
+  readonly goal: Loadable<GoalEntry | null>;
   /** The Optin's stored `goal`, which is what a missing registry entry shows. */
   readonly goalId: string;
-  /** What the [[Playbook]] it started from is called, where it started from one. */
-  readonly playbook: string | null;
-  readonly config: Record<string, unknown>;
+  /**
+   * What the [[Playbook]] it started from is called — three states again, and
+   * for the sharper version of the same reason.
+   *
+   * A `playbook_id` is provenance and the entry behind it may be gone: the
+   * install stopped shipping it, or the [[Goal]] was corrected afterwards so it
+   * is filed under a different one. **The row is drawn from `playbookId`
+   * rather than from the name**, so a Playbook this build cannot name still
+   * shows its id — the same fallback the Goal row takes, and what keeps
+   * *"read-only is fine; invisible is not"* true rather than true-when-the-
+   * lookup-happens-to-work.
+   */
+  readonly playbook: Loadable<string | null>;
+  /** The stored `playbook_id`, or empty where this Optin started from none. */
+  readonly playbookId: string;
+  /**
+   * The four axes as they are stored, already read out of `config` by the
+   * screen that holds it.
+   *
+   * **Not the `config` blob**, which this panel used to take and read for
+   * itself: the builder hands the same four values to {@see DisplayRules} one
+   * level down, so a blob here meant the same defensive read spelled twice —
+   * *"an absent `priority` is 0"* is a decision, and two copies of it is two
+   * places for it to stop agreeing.
+   */
+  readonly rules: DisplayRulesValue;
   readonly vocabulary: RuleVocabulary;
   /** Whether this Optin competes for the screen — see {@see DisplayRules}. */
   readonly overlay: boolean;
+  /** The [[Destination]] ids this Optin pushes to, as `config` holds them. */
+  readonly bound: readonly string[];
   /** The design, or undefined before one is picked. */
   readonly template: Template | undefined;
   /**
@@ -104,28 +141,19 @@ export function ReadinessPanel({
   goal,
   goalId,
   playbook,
-  config,
+  playbookId,
+  rules,
   vocabulary,
   overlay,
+  bound,
   template,
   act,
   destinations,
   onGoTo,
 }: ReadinessPanelProps) {
   const status = statusOf(optin);
-  const bound = Array.isArray(config.destinations) ? (config.destinations as string[]) : [];
   const where = destinationsSaid(bound, destinations);
-
-  const summaries = summarise(
-    {
-      rules: Array.isArray(config.rules) ? (config.rules as Rule[]) : [],
-      targeting: (config.targeting ?? {}) as Targeting,
-      frequency: (config.frequency ?? {}) as Frequency,
-      priority: typeof config.priority === 'number' ? config.priority : 0,
-    },
-    vocabulary,
-    overlay,
-  );
+  const summaries = summarise(rules, vocabulary, overlay);
 
   const problems: Problem[] = [
     ...(template === undefined || act === null ? [] : problemsIn(template, act)),
@@ -174,9 +202,15 @@ export function ReadinessPanel({
             an Optin holding a Goal this build does not have, which is the only
             honest thing left to show.
           */}
-          {goal !== null && (
+          {goal.status !== 'loading' && named(goal) === null && goalId !== '' && (
             <Fact label={__('Goal', 'wconvert')}>
-              {goal.label}
+              <Unnamed id={goalId} />
+            </Fact>
+          )}
+
+          {goal.status === 'ready' && goal.data !== null && (
+            <Fact label={__('Goal', 'wconvert')}>
+              {goal.data.label}
               {/*
                 **What it will be judged on, named by the Goal itself.** Two of
                 the five convert on a click, so one word for all of them would
@@ -192,15 +226,9 @@ export function ReadinessPanel({
                 {sprintf(
                   /* translators: %s: what a Goal's headline number is called, e.g. “Submissions”. */
                   __('Counts %s.', 'wconvert'),
-                  goal.headline_label,
+                  goal.data.headline_label,
                 )}
               </Description>
-            </Fact>
-          )}
-
-          {goal === null && goalId !== '' && (
-            <Fact label={__('Goal', 'wconvert')}>
-              <code className="font-mono text-xs">{goalId}</code>
             </Fact>
           )}
 
@@ -211,8 +239,18 @@ export function ReadinessPanel({
             there is nothing here to edit and everything to say. It was
             invisible: chosen in a wizard that cannot be re-entered, stored, and
             never shown again.
+
+            **The ROW follows the stored id and only the NAME waits for the
+            lookup**, which is the difference between "read-only" and
+            "invisible": an entry this install no longer ships, or one filed
+            under a Goal that has since been corrected, still started this
+            Optin.
           */}
-          {playbook !== null && <Fact label={__('Started from', 'wconvert')}>{playbook}</Fact>}
+          {playbookId !== '' && playbook.status !== 'loading' && (
+            <Fact label={__('Started from', 'wconvert')}>
+              {named(playbook) ?? <Unnamed id={playbookId} />}
+            </Fact>
+          )}
 
           {/*
             **The sentence, and not the [[Playbook]]'s hint beside it.** The
@@ -247,6 +285,29 @@ export function ReadinessPanel({
       )}
     </Region>
   );
+}
+
+/**
+ * What a registry answered with, or null where it answered nothing.
+ *
+ * `failed` and `ready(null)` are one answer here and `loading` is not — a read
+ * that failed is a build that cannot name the member, which is what the id
+ * fallback says, while a read still in flight has said nothing yet.
+ */
+const named = <T,>(read: Loadable<T | null>): T | null =>
+  read.status === 'ready' ? read.data : null;
+
+/**
+ * A registry member this build cannot name, shown as the id it stores.
+ *
+ * `<code>` rather than a blank, for {@see OptinList}'s reason: the raw value is
+ * the only honest thing left to show, and blanking it would read as an Optin
+ * with no Goal and no [[Playbook]] at all. It never becomes a badge — a badge
+ * in this admin is a STATE, and dressing an unknown id as one would say the
+ * Optin is in a state called `from_a_plugin_we_lack`.
+ */
+function Unnamed({ id }: { readonly id: string }) {
+  return <code className="font-mono text-xs">{id}</code>;
 }
 
 /**
@@ -331,7 +392,7 @@ function Problems({
             ) : (
               <button
                 type="button"
-                className="wconvert-verdict__go"
+                className="wconvert-readiness__go"
                 onClick={() => onGoTo(problem.path as Path)}
               >
                 {problem.said}

@@ -19,6 +19,9 @@
           "0.5",
           "0.65"
         ]
+      },
+      "defaults": {
+        "ratio": "0.5"
       }
     }
   },
@@ -43,6 +46,9 @@
           "1",
           "2"
         ]
+      },
+      "defaults": {
+        "level": "1"
       }
     },
     "text": {
@@ -79,6 +85,9 @@
           "cover",
           "contain"
         ]
+      },
+      "defaults": {
+        "fit": "cover"
       }
     },
     "field": {
@@ -100,6 +109,9 @@
           "true",
           "false"
         ]
+      },
+      "defaults": {
+        "required": "false"
       }
     },
     "button": {

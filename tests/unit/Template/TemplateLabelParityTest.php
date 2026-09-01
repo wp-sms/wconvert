@@ -241,6 +241,59 @@ final class TemplateLabelParityTest extends TestCase
         $this->assertSame([], $undeclared, 'every node param with choices is a param the node declares');
     }
 
+    /**
+     * ==========================================================================
+     * A DEFAULT IS ONE OF THE CHOICES, AND IT IS DECLARED WHEREVER ONE IS.
+     * ==========================================================================
+     * `defaults` says what the RENDERER does with an absent key, so the block
+     * inspector can tick the rank a visitor will actually see rather than
+     * leaving a stock heading with neither chip ticked. That the declared value
+     * matches the renderer is asserted behaviourally in
+     * `tests/js/renderer-manifest-parity.test.ts`; what belongs here is the
+     * shape — a default for a param the panel does not offer would be a value
+     * no control could ever show, and a default outside its own choice list
+     * would tick nothing while claiming to.
+     *
+     * **Both maps or neither**, per param: a `choices` entry with no default is
+     * the state every one of these was in before, which is the state this
+     * closed.
+     */
+    public function testEveryDefaultIsOneOfTheChoicesOffered(): void
+    {
+        $manifest = self::manifest();
+        /** @var array<string, array<string, mixed>> $members */
+        $members = array_merge((array) $manifest['nodes'], (array) $manifest['layouts']);
+        $withChoices = [];
+        $withDefaults = [];
+
+        foreach ($members as $type => $entry) {
+            /** @var array<string, list<string>> $choices */
+            $choices = (array) ($entry['choices'] ?? []);
+            /** @var array<string, string> $defaults */
+            $defaults = (array) ($entry['defaults'] ?? []);
+
+            foreach (array_keys($choices) as $param) {
+                $withChoices[] = $type . '.' . $param;
+            }
+
+            foreach ($defaults as $param => $value) {
+                $withDefaults[] = $type . '.' . $param;
+
+                $this->assertContains(
+                    $value,
+                    $choices[$param] ?? [],
+                    sprintf('%s.%s defaults to a value it does not offer', $type, $param)
+                );
+            }
+        }
+
+        sort($withChoices);
+        sort($withDefaults);
+
+        $this->assertNotSame([], $withChoices, 'the manifest offers no choices, so this asserts nothing');
+        $this->assertSame($withChoices, $withDefaults, 'every offered param declares what absence means');
+    }
+
     public function testEveryTokenIsNamed(): void
     {
         $this->assertNamesExactly(array_map('strval', array_keys(self::manifest()['tokens'])), TemplateLabels::tokens(), 'tokens');

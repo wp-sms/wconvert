@@ -105,6 +105,7 @@ export function SlotFields({ slot, labels, onValue, onParam, onHidden }: SlotFie
           label={nameOf(labels.nodeParams, `${slot.type}.${setting.param}`)}
           offered={setting.offered}
           held={setting.held}
+          fallback={setting.fallback}
           nameOfValue={(choice) =>
             nameOf(labels.nodeParamValues, `${slot.type}.${setting.param}.${choice}`)
           }

@@ -76,6 +76,28 @@ export interface LeafDeclaration {
    * nothing checked.
    */
   readonly choices?: Readonly<Record<string, readonly string[]>>;
+  /**
+   * What the RENDERER does with each of those params when the key is absent.
+   *
+   * ==========================================================================
+   * AN ABSENT VALUE IS NOT AN UNKNOWN ONE, AND THE CONTROL HAD CONFLATED THEM.
+   * ==========================================================================
+   * `split.ratio` shows nothing checked on a design carrying `0.4`, and the
+   * reason is sound: the vocabulary does not validate a param's value, so the
+   * panel must not claim a design is something it is not. That argument is
+   * about an OFF-LIST value and was being applied to an ABSENT one — and no
+   * shipped [[Template]] carries a `level` at all, so every heading in the
+   * library offered *Main heading* and *Sub-heading* with neither ticked while
+   * the renderer drew an unambiguous `h2`.
+   *
+   * The default cannot be spelled in this bundle: `render.ts` decides it, and
+   * a copy here would be the cross-language list ADR 0019 has refused five
+   * times. So the manifest declares it and
+   * `tests/js/renderer-manifest-parity.test.ts` asserts that a node with the
+   * key absent renders identically to one carrying the declared default —
+   * behaviour rather than a list against a list.
+   */
+  readonly defaults?: Readonly<Record<string, string>>;
 }
 
 /**
@@ -102,9 +124,11 @@ export const LAYOUTS = vocabulary.layouts as Readonly<
        *
        * A suggestion and never a limit, exactly like a token's `choices`: the
        * renderer takes any fraction for `ratio`, so a design shipping `0.4`
-       * keeps it and the control simply shows nothing checked.
+       * keeps it and the control shows nothing checked.
        */
       readonly choices?: Readonly<Record<string, readonly string[]>>;
+      /** What the renderer draws where the key is absent. {@see LeafDeclaration.defaults}. */
+      readonly defaults?: Readonly<Record<string, string>>;
     }
   >
 >;
@@ -143,13 +167,26 @@ export function valueOfChoice(choice: string): unknown {
 }
 
 /**
- * Is this what the node already holds?
+ * Is this what the node already holds — or, where it holds nothing, what the
+ * renderer will draw?
  *
+ * ============================================================================
+ * ABSENT IS AN ANSWER. OFF-LIST IS NOT.
+ * ============================================================================
  * Compared as the VALUES they become rather than as strings, which is what
  * makes `0.5` and `"0.50"` the same split — the comparison `LayoutParams`
  * already made, now made the same way for every param.
+ *
+ * `fallback` is the manifest's declared default and is what closes the case
+ * the control used to get wrong. A design carrying `ratio: 0.4` still shows
+ * nothing checked, because the panel must not claim a design is something it
+ * is not; a design carrying no `level` shows *Main heading*, because that is
+ * what a visitor will actually see. The two were one branch and are two facts.
  */
-export const isChoiceHeld = (held: unknown, choice: string): boolean => held === valueOfChoice(choice);
+export const isChoiceHeld = (held: unknown, choice: string, fallback?: string): boolean =>
+  held === undefined
+    ? fallback !== undefined && fallback === choice
+    : held === valueOfChoice(choice);
 
 /** Every Slot Role the vocabulary declares, in the order it declares them. */
 export const ROLES = vocabulary.roles as readonly string[];
@@ -343,6 +380,8 @@ export interface Setting {
   readonly offered: readonly string[];
   /** What the node holds, which may be nothing and may be off the list. */
   readonly held: unknown;
+  /** What the renderer draws where it holds nothing. {@see isChoiceHeld}. */
+  readonly fallback: string | undefined;
 }
 
 /**
@@ -401,6 +440,7 @@ function collect(node: TemplateNode, path: Path, slots: Slot[]): void {
           param,
           offered,
           held: (node as Record<string, unknown>)[param],
+          fallback: leaf.defaults?.[param],
         })),
     });
 

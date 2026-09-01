@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { destinationsSaid, hintIn, hintSaid } from '../../resources/admin/src/builder/readiness';
+import { destinationsSaid, hintIn, hintSaid } from '../../resources/admin/src/builder/destinations';
 import type { Destination, DestinationType } from '../../resources/admin/src/destinations/api';
 
 /**
- * The readiness panel's two sentences, as pure functions.
+ * What the builder says about an [[Optin]]'s [[Destination]]s, as pure
+ * functions — the readiness panel takes two of these sentences and the
+ * Destinations tab takes the third.
  *
  * ============================================================================
  * ONE OF THEM READS A KEY THAT HAS BEEN WRITTEN AND NEVER READ.
@@ -113,6 +115,17 @@ describe('the playbook’s destination hint', () => {
     const said = hintSaid({ types: ['email_service_provider'], fields: ['email'] }, [], FIELDS);
 
     expect(said).toBe('The playbook this started from captures Email address.');
+  });
+
+  /**
+   * A Playbook may name types and no fields — nothing in `HINT_KEYS` requires
+   * both. The clause exists so that entry gets a sentence rather than silence,
+   * and this is what stops it being a translated string with no reader.
+   */
+  it('says only what it expects where the playbook named no fields', () => {
+    const said = hintSaid({ types: ['wsms'], fields: [] }, TYPES, FIELDS);
+
+    expect(said).toBe('The playbook this started from expects a destination like WP SMS.');
   });
 
   it('says nothing at all where there is nothing to say', () => {
