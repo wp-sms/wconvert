@@ -25,16 +25,19 @@
         "children": [
           {
             "type": "heading",
+            "id": "n1",
             "role": "headline",
             "text": "Let us get your name right"
           },
           {
             "type": "text",
+            "id": "n2",
             "role": "body",
             "text": "We will use it on everything we send you."
           },
           {
             "type": "field",
+            "id": "n3",
             "name": "name",
             "label": "First name",
             "placeholder": "Your name",
@@ -42,6 +45,7 @@
           },
           {
             "type": "field",
+            "id": "n4",
             "name": "email",
             "label": "Email address",
             "placeholder": "you@example.com",
@@ -49,12 +53,14 @@
           },
           {
             "type": "button",
+            "id": "n5",
             "role": "cta_label",
             "label": "Join the list",
             "action": "submit"
           },
           {
             "type": "consent",
+            "id": "n6",
             "role": "consent_text",
             "hidden": true,
             "text": "Email me offers and news. See our %s.",
@@ -64,6 +70,7 @@
           },
           {
             "type": "text",
+            "id": "n7",
             "role": "fine_print",
             "text": "No spam, and you can unsubscribe at any time."
           }
@@ -74,11 +81,13 @@
         "children": [
           {
             "type": "heading",
+            "id": "n8",
             "role": "success_headline",
             "text": "Welcome aboard"
           },
           {
             "type": "text",
+            "id": "n9",
             "role": "success_body",
             "text": "Look out for our first email in the next day or so."
           }

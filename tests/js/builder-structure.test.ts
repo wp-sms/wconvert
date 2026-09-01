@@ -85,6 +85,12 @@ const IMAGE = [0, 'children', 3, 'start', 0] as const;
 
 const typesOf = (tree: TemplateTree) => nodesOf(tree).map((block) => block.type);
 
+/** Every node of one type, by the `id` it carries — `undefined` where it has none. */
+const idsOf = (tree: TemplateTree, type: string) =>
+  nodesOf(tree)
+    .filter((block) => block.type === type)
+    .map((block) => (nodeAt(tree, block.path) as { id?: string } | null)?.id);
+
 describe('the blocks of a design', () => {
   /**
    * **Layouts are in it, and that is the whole difference from `slotsOf`.** A
@@ -267,6 +273,40 @@ describe('duplicating a block', () => {
     expect(rolesLostBy(TREE, HEADLINE)).toBe(1);
     expect(rolesLostBy(TREE, ROW)).toBe(1);
     expect(rolesLostBy(TREE, IMAGE)).toBe(0);
+  });
+
+  /**
+   * ==========================================================================
+   * AND THE COPY LOSES ITS `id`, FOR THE OPPOSITE REASON IT LOSES ITS ROLE.
+   * ==========================================================================
+   * A Role is stripped because the server would DROP it; an id is stripped
+   * because the server would KEEP it. `normalize()` hands a node back the id it
+   * arrived with, so a copy that kept the original's would leave two sentences
+   * behind one translation name — and the merchant edits one of them and
+   * watches the other change language (ADR 0010, amended).
+   *
+   * Nothing announces this the way `rolesLostBy` announces the Role, because an
+   * id is not a thing the merchant can see or has an opinion about. The copy
+   * simply gets a fresh one on the next save.
+   */
+  it('strips the node id from the copy, at any depth', () => {
+    const named: TemplateTree = {
+      steps: [
+        {
+          type: 'stack',
+          children: [
+            { type: 'heading', id: 'n1', text: 'Join' },
+            { type: 'split', start: [{ type: 'image', id: 'n2', src: '/t.png', alt: 'A tote' }], end: [] },
+          ],
+        },
+      ],
+    };
+
+    const doubledLeaf = withDuplicated(named, [0, 'children', 0]);
+    const doubledLayout = withDuplicated(named, [0, 'children', 1]);
+
+    expect(idsOf(doubledLeaf, 'heading')).toEqual(['n1', undefined]);
+    expect(idsOf(doubledLayout, 'image')).toEqual(['n2', undefined]);
   });
 });
 

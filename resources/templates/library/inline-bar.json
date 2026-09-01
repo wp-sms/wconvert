@@ -27,11 +27,13 @@
             "children": [
               {
                 "type": "heading",
+                "id": "n1",
                 "role": "headline",
                 "text": "Get the weekly round-up"
               },
               {
                 "type": "text",
+                "id": "n2",
                 "role": "body",
                 "text": "Five links, every Thursday."
               }
@@ -39,6 +41,7 @@
           },
           {
             "type": "field",
+            "id": "n3",
             "name": "email",
             "label": "Email address",
             "placeholder": "you@example.com",
@@ -46,12 +49,14 @@
           },
           {
             "type": "button",
+            "id": "n4",
             "role": "cta_label",
             "label": "Sign up",
             "action": "submit"
           },
           {
             "type": "consent",
+            "id": "n5",
             "role": "consent_text",
             "hidden": true,
             "text": "Email me offers and news. See our %s.",
@@ -66,11 +71,13 @@
         "children": [
           {
             "type": "heading",
+            "id": "n6",
             "role": "success_headline",
             "text": "Thanks — you are in"
           },
           {
             "type": "text",
+            "id": "n7",
             "role": "success_body",
             "text": "Thursday's round-up will be the first one you get."
           }

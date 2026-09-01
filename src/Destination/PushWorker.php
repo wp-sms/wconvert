@@ -19,6 +19,12 @@ defined('ABSPATH') || exit;
  * tables (ADR 0008), and a Lead erased between capture and job is simply not
  * found — which is the correct outcome and needs no special case.
  *
+ * **Everything below is about a QUEUED push, which is to say about a Lead.** A
+ * test send is the other entrance and it does not come through here: it has no
+ * row to key on, it is answered while the merchant is still looking at the
+ * screen, and it must move none of the counters this class moves. It lives on
+ * {@see PushDispatcher::test()}, beside the dispatch it is the sibling of.
+ *
  * ========================================================================
  * THE FAILURE SPLIT, WHICH IS THE WHOLE OF ADR 0008.
  * ========================================================================
@@ -100,7 +106,7 @@ final class PushWorker
             return;
         }
 
-        $this->record($job, $lead->optinId, $destination->type, $type->push($lead, new PushContext(
+        $this->record($job, $lead->optinId, $destination->type, $type->push(PushSubject::of($lead), new PushContext(
             // One name, by primary key. An Optin is never hard-deleted, so
             // this is null only where something removed a row nothing should
             // remove — and an empty `source_ref` would then assert provenance

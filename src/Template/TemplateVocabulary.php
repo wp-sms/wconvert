@@ -27,6 +27,15 @@ defined('ABSPATH') || exit;
  * vocabulary to begin with. Both are needed and they answer different
  * questions.
  *
+ * **One key is ADDED here rather than dropped, and it is the only one.** Every
+ * leaf leaves with an `id` — its own where it had a usable one, a minted one
+ * where it did not ({@see NodeIdentities}). That inverts the usual direction
+ * for a reason worth stating: an id is what a translation is attached to, and
+ * a tree that acquires ids only when someone remembers to write them is a tree
+ * where some strings are addressable and others are not. Minting on the way in
+ * makes it true of every tree this plugin stores, including the ones written
+ * before the key existed — which is a data migration this does not have to run.
+ *
  * @since 0.1.0
  */
 final class TemplateVocabulary
@@ -42,6 +51,7 @@ final class TemplateVocabulary
      * @param list<string> $schemes
      * @param list<string> $fields
      * @param array<string, list<string>> $facets
+     * @param string $identity The key a leaf carries to name itself, or '' where the manifest declares none.
      */
     private function __construct(
         private readonly array $layouts,
@@ -51,7 +61,21 @@ final class TemplateVocabulary
         private readonly array $schemes,
         private readonly array $fields,
         private readonly array $facets = [],
+        private readonly string $identity = '',
     ) {
+    }
+
+    /**
+     * The key every leaf carries to name itself — `id`.
+     *
+     * Declared in the manifest rather than hardcoded on both sides, for the
+     * reason every other member of the vocabulary is: the admin has to strip it
+     * when it duplicates a block, and a second spelling of the key is a second
+     * place for it to drift ({@see NodeIdentities}).
+     */
+    public function identity(): string
+    {
+        return $this->identity;
     }
 
     /**
@@ -183,6 +207,7 @@ final class TemplateVocabulary
                 static fn ($values): array => self::strings($values),
                 array_filter(self::section($manifest, 'facets'), 'is_array')
             ),
+            is_string($manifest['identity'] ?? null) ? $manifest['identity'] : '',
         );
     }
 
@@ -211,8 +236,13 @@ final class TemplateVocabulary
         $seenRoles = [];
         $normalized = [];
 
+        // Pre-scanned over the whole tree before a single node is rewritten, so
+        // a leaf with no id cannot be minted one that a leaf further down
+        // already holds ({@see NodeIdentities::in()}).
+        $ids = NodeIdentities::in($steps, $this->identity);
+
         foreach (is_array($steps) ? $steps : [] as $step) {
-            $node = $this->node($step, $seenRoles);
+            $node = $this->node($step, $seenRoles, $ids);
 
             if ($node !== null) {
                 $normalized[] = $node;
@@ -299,7 +329,7 @@ final class TemplateVocabulary
      * @param list<string> $seenRoles
      * @return array<string, mixed>|null
      */
-    private function node($node, array &$seenRoles): ?array
+    private function node($node, array &$seenRoles, NodeIdentities $ids): ?array
     {
         if (!is_array($node) || !is_string($node['type'] ?? null)) {
             return null;
@@ -351,6 +381,13 @@ final class TemplateVocabulary
             $kept[$key] = $node[$key];
         }
 
+        // Every leaf carries one, minted here where it has none. Layouts do
+        // not: an id names a STRING for a translator, and a `stack` says
+        // nothing (ADR 0010, amended).
+        if ($leaf !== null && $this->identity !== '') {
+            $kept[$this->identity] = $ids->claim($node[$this->identity] ?? null);
+        }
+
         $role = $node['role'] ?? null;
 
         if (
@@ -366,7 +403,7 @@ final class TemplateVocabulary
 
         if ($layout !== null) {
             foreach ($this->childKeysOf($layout['children']) as $key) {
-                $kept[$key] = $this->children($node[$key] ?? [], $seenRoles);
+                $kept[$key] = $this->children($node[$key] ?? [], $seenRoles, $ids);
             }
         }
 
@@ -378,12 +415,12 @@ final class TemplateVocabulary
      * @param list<string> $seenRoles
      * @return list<array<string, mixed>>
      */
-    private function children($children, array &$seenRoles): array
+    private function children($children, array &$seenRoles, NodeIdentities $ids): array
     {
         $kept = [];
 
         foreach (is_array($children) ? $children : [] as $child) {
-            $node = $this->node($child, $seenRoles);
+            $node = $this->node($child, $seenRoles, $ids);
 
             if ($node !== null) {
                 $kept[] = $node;

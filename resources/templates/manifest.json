@@ -116,6 +116,7 @@
       ]
     }
   },
+  "identity": "id",
   "tokens": {
     "bg": "#ffffff",
     "fg": "#111827",

@@ -33,6 +33,15 @@ defined('ABSPATH') || exit;
  * would fill a 200-entry ring in an afternoon and bury every genuine terminal
  * failure under it (#4, ADR 0008).
  *
+ * ========================================================================
+ * TWO ENTRANCES, AND THIS CLASS HOLDS BOTH SO THERE IS NEVER A THIRD.
+ * ========================================================================
+ * {@see self::dispatch()} is a captured [[Lead]]: queued, retried, counted.
+ * {@see self::test()} is a merchant proving a [[Destination]] works: immediate,
+ * unqueued, counted nowhere. They sit together because the interesting property
+ * is the one they do NOT share, and a reader who finds only one of them will
+ * write the other badly.
+ *
  * @since 0.1.0
  */
 final class PushDispatcher
@@ -43,6 +52,7 @@ final class PushDispatcher
         private readonly OptinRepository $optins,
         private readonly HealthStore $health,
         private readonly Queue $queue,
+        private readonly ConnectionStore $connections,
     ) {
     }
 
@@ -78,5 +88,66 @@ final class PushDispatcher
 
             $this->queue->dispatch(PushJob::HOOK, (new PushJob($lead->id, $destinationId))->toArgs());
         }
+    }
+
+    /**
+     * Send one test — **the merchant's own address, with no [[Lead]] behind
+     * it.**
+     *
+     * ========================================================================
+     * A TEST SEND NEVER WRITES A LEAD, AND IT IS NOT A POLICY, IT IS A SHAPE.
+     * ========================================================================
+     * A [[Lead]] has exactly one origin — a visitor submitting a form on a page
+     * WConvert served — and that is total because a [[Consent Record]] is the
+     * wording shown to a person at an instant (ADR 0031). A test Lead would
+     * carry wording nobody was shown, which is manufactured evidence. So this
+     * takes VALUES and builds its own {@see PushSubject}: there is no argument
+     * a caller can pass that makes a real capture take this path, and none that
+     * makes a test take the queue.
+     *
+     * **It is synchronous, and that is the same posture
+     * {@see DestinationType::testConnection()} already has.** A merchant who
+     * pressed a button is owed an answer while they are still looking at the
+     * screen; a queued test would report success the moment it was queued and
+     * say nothing about whether it landed, which is the one thing the button is
+     * for. It also means no payload sits in `actionscheduler_actions`, so
+     * {@see PushJob}'s no-Lead-data-in-arguments rule needs no exception.
+     *
+     * **It records NOTHING.** Not health, not a {@see DeliveryFailures} entry,
+     * not a delivery count. A test that failed is not an outage — the merchant
+     * asked a question and got an answer — and a merchant pressing it four
+     * times while fixing an API key must not walk away with a Destination
+     * marked unhealthy and a failure ring full of a Lead id that does not
+     * exist. Delivery state is about Leads that were captured (ADR 0008), and
+     * nothing was.
+     *
+     * @param array<string, mixed> $values Canonical keys; anything else is dropped.
+     */
+    public function test(string $destinationId, array $values): PushResult
+    {
+        $destination = $this->destinations->find($destinationId);
+
+        if ($destination === null) {
+            return PushResult::terminal('There is no Destination with that id.');
+        }
+
+        $type = $this->registry->find($destination->type);
+
+        if ($type === null || !$this->registry->isDispatchable($destination->type)) {
+            // The same answer `dispatch()` gives, minus the recording: a type
+            // that cannot run is a skip and not a failure. Here it is simply
+            // handed back, because the merchant is the one who can act on it.
+            return PushResult::skipped('This Destination’s type is not available on this site.');
+        }
+
+        return $type->push(PushSubject::test($values), new PushContext(
+            // Null, and deliberately so. `optinName` becomes `source_ref` on
+            // the WSMS push, and a test send has no [[Optin]] — writing one
+            // would assert provenance that does not exist, which is the case
+            // {@see PushContext} already documents null for (ADR 0023).
+            null,
+            $destination->settings,
+            $this->connections->credentialsFor($destination)
+        ));
     }
 }

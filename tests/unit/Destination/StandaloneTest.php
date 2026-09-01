@@ -3,6 +3,7 @@
 namespace WConvert\Tests\Unit\Destination;
 
 use PHPUnit\Framework\TestCase;
+use WConvert\Destination\ConnectionStore;
 use WConvert\Destination\DestinationRegistry;
 use WConvert\Destination\DestinationStore;
 use WConvert\Destination\HealthStore;
@@ -119,7 +120,8 @@ final class StandaloneTest extends TestCase
             new DestinationStore($this->options),
             $optins,
             $health,
-            $this->queue
+            $this->queue,
+            new ConnectionStore($this->options)
         ))->hooks();
 
         $lead = (new LeadCapture(new LeadRepository($this->db)))->record(

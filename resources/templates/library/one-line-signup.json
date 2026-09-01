@@ -25,11 +25,13 @@
         "children": [
           {
             "type": "heading",
+            "id": "n1",
             "role": "headline",
             "text": "One email a week. That is all."
           },
           {
             "type": "field",
+            "id": "n2",
             "name": "email",
             "label": "Email address",
             "placeholder": "you@example.com",
@@ -37,12 +39,14 @@
           },
           {
             "type": "button",
+            "id": "n3",
             "role": "cta_label",
             "label": "Subscribe",
             "action": "submit"
           },
           {
             "type": "consent",
+            "id": "n4",
             "role": "consent_text",
             "hidden": true,
             "text": "Email me offers and news. See our %s.",
@@ -57,11 +61,13 @@
         "children": [
           {
             "type": "heading",
+            "id": "n5",
             "role": "success_headline",
             "text": "Subscribed"
           },
           {
             "type": "text",
+            "id": "n6",
             "role": "success_body",
             "text": "The next issue will be with you on Friday."
           }

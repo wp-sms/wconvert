@@ -24,16 +24,19 @@
         "children": [
           {
             "type": "heading",
+            "id": "n1",
             "role": "headline",
             "text": "Liked this? There is more."
           },
           {
             "type": "text",
+            "id": "n2",
             "role": "body",
             "text": "We send one of these every fortnight."
           },
           {
             "type": "field",
+            "id": "n3",
             "name": "email",
             "label": "Email address",
             "placeholder": "you@example.com",
@@ -41,12 +44,14 @@
           },
           {
             "type": "button",
+            "id": "n4",
             "role": "cta_label",
             "label": "Send them to me",
             "action": "submit"
           },
           {
             "type": "consent",
+            "id": "n5",
             "role": "consent_text",
             "hidden": true,
             "text": "Email me offers and news. See our %s.",
@@ -56,6 +61,7 @@
           },
           {
             "type": "text",
+            "id": "n6",
             "role": "fine_print",
             "text": "No spam, and you can unsubscribe at any time."
           }
@@ -66,11 +72,13 @@
         "children": [
           {
             "type": "heading",
+            "id": "n7",
             "role": "success_headline",
             "text": "That is you signed up"
           },
           {
             "type": "text",
+            "id": "n8",
             "role": "success_body",
             "text": "The next one is already being written."
           }

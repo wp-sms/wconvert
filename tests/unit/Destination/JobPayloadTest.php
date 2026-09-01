@@ -3,6 +3,7 @@
 namespace WConvert\Tests\Unit\Destination;
 
 use PHPUnit\Framework\TestCase;
+use WConvert\Destination\ConnectionStore;
 use WConvert\Destination\DestinationRegistry;
 use WConvert\Destination\DestinationStore;
 use WConvert\Destination\HealthStore;
@@ -87,7 +88,8 @@ final class JobPayloadTest extends TestCase
             new DestinationStore($this->options),
             new OptinRepository($this->db, new PublishedSet($this->options), RuleVocabulary::fromManifest(dirname(__DIR__, 3))),
             new HealthStore($this->options),
-            $this->queue
+            $this->queue,
+            new ConnectionStore($this->options)
         ))->dispatch(new Lead(
             Ulid::generate(),
             $this->optinId,

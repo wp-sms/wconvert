@@ -96,6 +96,21 @@ export const ROLES = vocabulary.roles as readonly string[];
 export const FIELDS = vocabulary.fields as readonly string[];
 
 /**
+ * The key a leaf carries to name itself, for a translator — `id`.
+ *
+ * **The editor never mints one.** They are minted on the way in by
+ * `WConvert\Template\NodeIdentities`, because a save replaces `config` with
+ * what came back and an admin-invented key would survive exactly until then
+ * (see `structure/tree.ts`). What the editor has to do is the opposite: STRIP
+ * it from a duplicated block, so the copy is given a fresh one rather than
+ * sharing the original's translation.
+ *
+ * Read from the manifest rather than written here, for the reason every other
+ * member of the vocabulary is: one spelling, on both sides of the boundary.
+ */
+export const IDENTITY = vocabulary.identity as string;
+
+/**
  * Every token the vocabulary declares, with the value it falls back to.
  *
  * The Design tab draws one control per entry, so a token added to the manifest

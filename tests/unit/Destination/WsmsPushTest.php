@@ -5,6 +5,7 @@ namespace WConvert\Tests\Unit\Destination;
 use PHPUnit\Framework\TestCase;
 use WConvert\Destination\PushContext;
 use WConvert\Destination\PushOutcome;
+use WConvert\Destination\PushSubject;
 use WConvert\Destination\Wsms\WsmsDestinationType;
 use WConvert\Lead\Lead;
 use WConvert\Tests\Unit\Support\FakeWsmsContacts;
@@ -18,9 +19,9 @@ final class WsmsPushTest extends TestCase
     /**
      * @param array<string, string> $fields
      */
-    private function lead(?string $email, ?string $phone, array $fields = []): Lead
+    private function subject(?string $email, ?string $phone, array $fields = []): PushSubject
     {
-        return new Lead('01LEAD', '01OPTIN', $email, $phone, $fields, '2026-08-25 10:00:00');
+        return PushSubject::of(new Lead('01LEAD', '01OPTIN', $email, $phone, $fields, '2026-08-25 10:00:00'));
     }
 
     /**
@@ -56,7 +57,7 @@ final class WsmsPushTest extends TestCase
         $type = new WsmsDestinationType($contacts);
 
         $result = $type->push(
-            $this->lead('sarah@example.com', '+447911123456', ['name' => 'Typo Sarah']),
+            $this->subject('sarah@example.com', '+447911123456', ['name' => 'Typo Sarah']),
             $this->context()
         );
 
@@ -88,7 +89,7 @@ final class WsmsPushTest extends TestCase
         $type = new WsmsDestinationType($contacts);
 
         $result = $type->push(
-            $this->lead('new@example.com', null, ['name' => 'New Person']),
+            $this->subject('new@example.com', null, ['name' => 'New Person']),
             $this->context(['tags' => ['tag-7', 'tag-9']])
         );
 
@@ -134,7 +135,7 @@ final class WsmsPushTest extends TestCase
 
         $type = new WsmsDestinationType($contacts);
 
-        $type->push($this->lead('left@example.com', null, ['name' => 'Still Here']), $this->context());
+        $type->push($this->subject('left@example.com', null, ['name' => 'Still Here']), $this->context());
 
         $patch = $contacts->updated[0]['data'];
 
@@ -162,7 +163,7 @@ final class WsmsPushTest extends TestCase
         $type = new WsmsDestinationType($contacts);
 
         $result = $type->push(
-            $this->lead('sarah@example.com', '+447911123456', ['name' => 'Sarah']),
+            $this->subject('sarah@example.com', '+447911123456', ['name' => 'Sarah']),
             $this->context(['tags' => ['tag-7']])
         );
 
@@ -193,7 +194,7 @@ final class WsmsPushTest extends TestCase
 
         $type = new WsmsDestinationType($contacts);
 
-        $result = $type->push($this->lead('race@example.com', null), $this->context(['tags' => ['tag-7']]));
+        $result = $type->push($this->subject('race@example.com', null), $this->context(['tags' => ['tag-7']]));
 
         self::assertSame(PushOutcome::Success, $result->outcome);
         self::assertSame('existing', $result->providerRef);
@@ -215,12 +216,12 @@ final class WsmsPushTest extends TestCase
     {
         $contacts = new FakeWsmsContacts();
         $type = new WsmsDestinationType($contacts);
-        $lead = $this->lead('sarah@example.com', null, ['name' => 'Sarah']);
+        $subject = $this->subject('sarah@example.com', null, ['name' => 'Sarah']);
 
         // The Contact lands, and the sequence dies before its tag does.
         $contacts->tagFailures = ['WSMS went away'];
 
-        $first = $type->push($lead, $this->context(['tags' => ['tag-7']]));
+        $first = $type->push($subject, $this->context(['tags' => ['tag-7']]));
 
         self::assertSame(PushOutcome::Failed, $first->outcome);
         self::assertTrue($first->retryable);
@@ -228,7 +229,7 @@ final class WsmsPushTest extends TestCase
 
         // The retry re-runs the WHOLE of push(), which is exactly what makes
         // the flag safe to set.
-        $second = $type->push($lead, $this->context(['tags' => ['tag-7']]));
+        $second = $type->push($subject, $this->context(['tags' => ['tag-7']]));
 
         self::assertSame(PushOutcome::Success, $second->outcome);
         self::assertCount(1, $contacts->contacts, 'Two pushes, one Contact.');
@@ -254,7 +255,7 @@ final class WsmsPushTest extends TestCase
         $contacts = new FakeWsmsContacts();
         $type = new WsmsDestinationType($contacts);
 
-        $result = $type->push($this->lead(null, null, ['name' => 'Nobody']), $this->context());
+        $result = $type->push($this->subject(null, null, ['name' => 'Nobody']), $this->context());
 
         self::assertSame(PushOutcome::Skipped, $result->outcome);
         self::assertFalse($result->isFailure());
@@ -273,7 +274,7 @@ final class WsmsPushTest extends TestCase
 
         $type = new WsmsDestinationType($contacts);
 
-        $result = $type->push($this->lead('sarah@example.com', null), $this->context());
+        $result = $type->push($this->subject('sarah@example.com', null), $this->context());
 
         self::assertSame(PushOutcome::Failed, $result->outcome);
         self::assertTrue($result->retryable);
@@ -309,7 +310,7 @@ final class WsmsPushTest extends TestCase
         $contacts->failures = [$message];
 
         $ordinary = (new WsmsDestinationType($contacts))
-            ->push($this->lead('sarah@example.com', null), $this->context());
+            ->push($this->subject('sarah@example.com', null), $this->context());
 
         self::assertSame($message, $ordinary->reason, 'an ordinary WSMS throw was rewritten on the way out');
 
@@ -320,7 +321,7 @@ final class WsmsPushTest extends TestCase
         $raced->createConflicts = [$message];
 
         $unresolvable = (new WsmsDestinationType($raced))
-            ->push($this->lead('sarah@example.com', null), $this->context());
+            ->push($this->subject('sarah@example.com', null), $this->context());
 
         self::assertSame(PushOutcome::Failed, $unresolvable->outcome);
         self::assertTrue($unresolvable->retryable);

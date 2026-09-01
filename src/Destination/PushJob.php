@@ -24,6 +24,15 @@ defined('ABSPATH') || exit;
  * has since been erased or pruned simply is not there — which is the correct
  * outcome rather than a race to handle.
  *
+ * **`$leadId` is not nullable, and a test send is why that is worth saying.**
+ * A merchant proving a [[Destination]] works pushes values with no row behind
+ * them, and the obvious accommodation — a null `leadId` and the payload in the
+ * arguments — is the one thing this class exists to refuse. So a test send is
+ * never a job at all: it runs synchronously on
+ * {@see PushDispatcher::test()}, answers the merchant while they are looking,
+ * and touches Action Scheduler not at all. Every job here still keys a Lead
+ * row, which is what keeps the rule above absolute rather than usual.
+ *
  * `tests/unit/Destination/JobPayloadTest.php` holds this from both sides: the
  * shape of the args, and a dispatch of a Lead stuffed with personal data whose
  * queued arguments contain none of it.

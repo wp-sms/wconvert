@@ -4,6 +4,14 @@ A row in `wconvert_stats` is `(optin_id, kind, stat_date, count)`. It carries
 **no `goal`, no `had_email`, no `had_phone`, and no display type.** Everything
 needed to interpret it is read from `wconvert_optins` at report time.
 
+*Extended to money by [ADR 0046](0046-wconvert-stores-no-money.md): **it carries
+no amount either, and never will.** If revenue is ever reported, WConvert tags
+the WooCommerce order with the Optin that earned it and sums real orders at read
+— the same rule this document argues, applied to a second question. A stored
+amount would be the frozen-at-write shape rejected below, with the same defect,
+and it would survive the order's own deletion, which makes it a claim rather
+than a record.*
+
 ## The collision that forced the question
 
 [#2](https://github.com/navidkashani/wconvert/issues/2) fixed the per-[[Goal]]
@@ -128,6 +136,15 @@ see its own inline correction.*
   preserving the Optin's name for CSV export; it is now load-bearing for
   analytics as well, because a removed row makes every count referencing it
   uninterpretable.
+  *Given a second caller by
+  [ADR 0045](0045-an-ab-variant-is-a-whole-optin.md), which is the one most
+  likely to look like an exception: **an A/B variant is a whole Optin**, so
+  ending a test and declaring a winner must not delete the loser. It is a row
+  with a month of counters behind it, and "tidy up the finished test" reads as
+  housekeeping right up to the moment it deletes the comparison the test was
+  run to produce. Soft-deleted at most — at which point it behaves like any
+  other tidied Optin, keeping its counts in the per-Goal total and dropping out
+  of the per-Optin list, with no special case anywhere.*
 - **Soft-deleted Optins keep their counts in per-Goal totals** and drop out of
   the per-Optin list. A merchant tidying up in March must not watch February's
   goal total fall.

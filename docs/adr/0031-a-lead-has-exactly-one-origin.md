@@ -46,6 +46,47 @@ merchant hands a regulator.
 So a Lead cannot be imported. Not "should not" on cost or taste — the record
 required to make one honest describes an event that did not happen.
 
+> **Collected by the test send, and this is where the rule stopped being free.**
+>
+> A merchant configuring a [[Destination]] wants to press *Send a test* and see
+> whether their credentials work. The obvious implementation writes a Lead and
+> pushes it — and that Lead carries consent wording nobody was shown, which is
+> the manufactured evidence this document refuses. A `[TEST]` prefix does not
+> help: the row is in `wconvert_leads`, it exports to CSV, it answers a personal
+> data request, and it is counted by nothing only because somebody remembered.
+>
+> The signature is what forced it.
+> [`DestinationType::push()`](../../src/Destination/DestinationType.php) took a
+> `Lead`, so **every push was keyed by a row**. That is now
+> [`PushSubject`](../../src/Destination/PushSubject.php) — the canonical values,
+> plus whether there is a row behind them — and the two entrances sit together
+> on [`PushDispatcher`](../../src/Destination/PushDispatcher.php): `dispatch()`
+> for a capture (queued, retried, counted) and `test()` for a merchant
+> (immediate, unqueued, counted nowhere).
+>
+> **It is done BEFORE the four ESP adapters exist**
+> ([#35](https://github.com/navidkashani/wconvert/issues/35)), which is the only
+> reason it is cheap. Written around `leadId` first, all four would be reworked
+> the day the button arrived.
+>
+> Three properties are load-bearing and each is asserted in
+> `tests/unit/Destination/TestSendTest.php`, with the no-row claim asserted
+> against a real table in `bin/verify-destinations.php` — because "nothing was
+> written" is a thing only a database can be watched not doing:
+>
+> - **No row.** `test()` takes values and builds its own subject, so there is no
+>   argument a caller can pass that routes a capture through it or a test
+>   through the queue.
+> - **No counter.** Not health, not the failure ring, not a delivery count. A
+>   failed test is not an outage — a merchant pressing the button four times
+>   while pasting an API key must not end up with a Destination reading four
+>   consecutive outages, and the ring is keyed by a Lead id that does not exist.
+> - **Synchronous**, the same posture `testConnection()` already has. A queued
+>   test would report success the moment it was queued, which is not the
+>   question the button asks — and it would put the merchant's address in
+>   `actionscheduler_actions`, which is the rule
+>   [`PushJob`](../../src/Destination/PushJob.php) exists to keep absolute.
+
 ## What was on the table
 
 Three requests, all of which will arrive:

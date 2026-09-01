@@ -61,15 +61,43 @@ final class CanonicalFields
      */
     public static function of(Lead $lead): array
     {
-        $values = [
+        return self::present([
             self::EMAIL => $lead->email,
             self::PHONE => $lead->phone,
             self::NAME => $lead->fields[self::NAME] ?? null,
-        ];
+        ]);
+    }
 
-        return array_filter(
-            $values,
-            static fn (?string $value): bool => $value !== null && trim($value) !== ''
-        );
+    /**
+     * The canonical values in any map — **the filter, with the [[Lead]] taken
+     * out of it.**
+     *
+     * {@see PushSubject::test()} is the second caller and the reason this is
+     * not simply the body of {@see self::of()}: a test send has no Lead row
+     * behind it (ADR 0031), and putting the merchant's own address through the
+     * same filter is what stops a test reaching a [[Destination]] carrying a
+     * key the vocabulary does not have.
+     *
+     * The enumeration is here rather than at the call site so both entrances
+     * agree on which keys exist. {@see self::CONSENT} is deliberately not among
+     * them: it is reserved and written by nothing, and enumerating it would let
+     * a caller supply the one value that must only ever come from a submission.
+     *
+     * @param array<string, mixed> $values
+     * @return array<string, string>
+     */
+    public static function present(array $values): array
+    {
+        $kept = [];
+
+        foreach ([self::EMAIL, self::PHONE, self::NAME] as $key) {
+            $value = $values[$key] ?? null;
+
+            if (is_string($value) && trim($value) !== '') {
+                $kept[$key] = $value;
+            }
+        }
+
+        return $kept;
     }
 }

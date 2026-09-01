@@ -7,6 +7,7 @@ use PHPUnit\Framework\TestCase;
 use WConvert\Destination\LeadMagnet\LeadMagnetDestinationType;
 use WConvert\Destination\PushContext;
 use WConvert\Destination\PushOutcome;
+use WConvert\Destination\PushSubject;
 use WConvert\Lead\Lead;
 use WConvert\Tests\Unit\Support\FakeMailer;
 
@@ -47,7 +48,7 @@ final class LeadMagnetDeliveryTest extends TestCase
     {
         $lead = new Lead('01LEAD', '01OPTIN', $email, null, ['name' => 'Sarah'], '2026-08-25 10:00:00');
 
-        return $this->type()->push($lead, new PushContext('Guide download', $settings));
+        return $this->type()->push(PushSubject::of($lead), new PushContext('Guide download', $settings));
     }
 
     /**

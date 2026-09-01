@@ -164,10 +164,10 @@ $registry->register(new class () implements \WConvert\Destination\DestinationTyp
     }
 
     public function push(
-        \WConvert\Lead\Lead $lead,
+        \WConvert\Destination\PushSubject $subject,
         \WConvert\Destination\PushContext $context
     ): \WConvert\Destination\PushResult {
-        unset($lead, $context);
+        unset($subject, $context);
 
         return \WConvert\Destination\PushResult::success('verified');
     }
@@ -337,6 +337,43 @@ $worker->run((new PushJob($otherLead->id, $delivery->id, 1))->toArgs());
 
 $verify->check('a delivery on another Goal still sends', 2, count($mail));
 $verify->check('and counts nothing', 0, $deliveries($optin->id));
+
+echo "\nThe test send\n";
+
+// **The claim is that no row was written, and only a database can be watched
+// not writing one.** ADR 0031 makes a [[Lead]] a capture event with exactly one
+// origin, so a merchant proving their credentials work must leave
+// `wconvert_leads` exactly as they found it — and a fake that models the table
+// cannot prove that about the table.
+$leadsBefore = (int) $wpdb->get_var("SELECT COUNT(*) FROM `{$leadTable}`");
+$queuedBefore = count(as_get_scheduled_actions(
+    ['hook' => PushJob::HOOK, 'group' => ActionSchedulerQueue::GROUP, 'per_page' => 50],
+    OBJECT
+));
+$countedBefore = $deliveries($magnetOptin->id);
+
+/** @var \WConvert\Destination\PushDispatcher $dispatcher */
+$dispatcher = $container->get(\WConvert\Destination\PushDispatcher::class);
+
+$sent = $dispatcher->test($delivery->id, ['email' => 'merchant@example.com', 'nickname' => 'Dropped']);
+
+$verify->check('a test send reaches the Destination', 'success', $sent->outcome->value);
+$verify->check('and sent a third email', 3, count($mail));
+$verify->check('and it went to the merchant, not to a Lead', 'merchant@example.com', $mail[2]['to'] ?? null);
+$verify->check(
+    'a test send writes no Lead row',
+    $leadsBefore,
+    (int) $wpdb->get_var("SELECT COUNT(*) FROM `{$leadTable}`")
+);
+$verify->check(
+    'and queues nothing',
+    $queuedBefore,
+    count(as_get_scheduled_actions(
+        ['hook' => PushJob::HOOK, 'group' => ActionSchedulerQueue::GROUP, 'per_page' => 50],
+        OBJECT
+    ))
+);
+$verify->check('and moves no delivery counter', $countedBefore, $deliveries($magnetOptin->id));
 
 echo "\nCleaning up\n";
 

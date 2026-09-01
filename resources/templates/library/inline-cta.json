@@ -24,22 +24,26 @@
         "children": [
           {
             "type": "heading",
+            "id": "n1",
             "role": "headline",
             "text": "The sale ends on Sunday"
           },
           {
             "type": "text",
+            "id": "n2",
             "role": "body",
             "text": "Everything reduced, while it lasts."
           },
           {
             "type": "button",
+            "id": "n3",
             "role": "cta_label",
             "label": "Shop the sale",
             "action": "link"
           },
           {
             "type": "text",
+            "id": "n4",
             "role": "fine_print",
             "text": "Discount applied at the checkout."
           }

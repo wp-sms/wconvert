@@ -23,36 +23,38 @@
       {
         "type": "stack",
         "children": [
-          { "type": "heading", "role": "headline", "text": "Get 10% off your first order" },
-          { "type": "text", "role": "body", "text": "Join the list and we will send the code straight over." },
+          { "type": "heading", "id": "n1", "role": "headline", "text": "Get 10% off your first order" },
+          { "type": "text", "id": "n2", "role": "body", "text": "Join the list and we will send the code straight over." },
           {
             "type": "row",
             "children": [
               {
                 "type": "field",
+                "id": "n3",
                 "name": "email",
                 "label": "Email address",
                 "placeholder": "you@example.com",
                 "required": true
               },
-              { "type": "button", "role": "cta_label", "label": "Send my code", "action": "submit" }
+              { "type": "button", "id": "n4", "role": "cta_label", "label": "Send my code", "action": "submit" }
             ]
           },
           {
             "type": "consent",
+            "id": "n5",
             "role": "consent_text",
             "hidden": true,
             "text": "Email me offers and news. See our %s.",
             "link": { "label": "Privacy Policy" }
           },
-          { "type": "text", "role": "fine_print", "text": "No spam, and you can unsubscribe at any time." }
+          { "type": "text", "id": "n6", "role": "fine_print", "text": "No spam, and you can unsubscribe at any time." }
         ]
       },
       {
         "type": "stack",
         "children": [
-          { "type": "heading", "role": "success_headline", "text": "You are on the list" },
-          { "type": "text", "role": "success_body", "text": "Your code is on its way to your inbox." }
+          { "type": "heading", "id": "n7", "role": "success_headline", "text": "You are on the list" },
+          { "type": "text", "id": "n8", "role": "success_body", "text": "Your code is on its way to your inbox." }
         ]
       }
     ]

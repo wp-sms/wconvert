@@ -24,11 +24,13 @@
         "children": [
           {
             "type": "heading",
+            "id": "n1",
             "role": "headline",
             "text": "Text me when it is back"
           },
           {
             "type": "text",
+            "id": "n2",
             "role": "body",
             "text": "One message the moment it is in stock. Nothing else, ever."
           },
@@ -37,6 +39,7 @@
             "children": [
               {
                 "type": "field",
+                "id": "n3",
                 "name": "name",
                 "label": "First name",
                 "placeholder": "Your name",
@@ -44,6 +47,7 @@
               },
               {
                 "type": "field",
+                "id": "n4",
                 "name": "phone",
                 "label": "Mobile number",
                 "placeholder": "+44 7700 900000",
@@ -53,12 +57,14 @@
           },
           {
             "type": "button",
+            "id": "n5",
             "role": "cta_label",
             "label": "Alert me",
             "action": "submit"
           },
           {
             "type": "consent",
+            "id": "n6",
             "role": "consent_text",
             "hidden": true,
             "text": "Email me offers and news. See our %s.",
@@ -68,6 +74,7 @@
           },
           {
             "type": "text",
+            "id": "n7",
             "role": "fine_print",
             "text": "Message rates may apply. Stop at any time."
           }
@@ -78,11 +85,13 @@
         "children": [
           {
             "type": "heading",
+            "id": "n8",
             "role": "success_headline",
             "text": "We will be in touch"
           },
           {
             "type": "text",
+            "id": "n9",
             "role": "success_body",
             "text": "You will hear from us the moment it lands."
           }
