@@ -245,7 +245,14 @@ merchant sees one campaign with two arms rather than two campaigns. That is a
 query condition; storage does not constrain the screen.
 
 Ending a test **never deletes the loser**: the arm that lost is a month of the
-merchant's own history, and an Optin is never hard-deleted anyway. See
+merchant's own history, and an Optin is never hard-deleted anyway.
+
+Which arm a browser draws is held as `v` on the parent's own client record —
+`wc_o_<parentId>.v` — beside the impressions and dismissals already there. So
+the split unit is **the browser record, not the person**: one visitor on two
+devices can meet both arms and be counted twice. That is the same limit
+[[Impression]] and [[Conversion]] already carry, for the same reason, and it is
+why there is no honest count of people anywhere in WConvert. See
 [ADR 0045](docs/adr/0045-an-ab-variant-is-a-whole-optin.md).
 
 ### Frequency
