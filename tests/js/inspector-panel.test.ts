@@ -36,6 +36,18 @@ const LABELS: Labels = {
   stopped: { blocked: 'Needs consent this visit has not given.', showing: 'Showing now.' },
   answer: { yes: 'Holds', no: 'Does not hold', unknown: 'Not evaluated', unsupported: 'No module here' },
   sections: { targeting: 'Where', triggers: 'When', conditions: 'Who', include: 'On', exclude: 'Never on', server_only: 'Never reached the browser.' },
+  gates: {
+    published: 'Published',
+    suspended: 'Not suspended',
+    targeting: 'Allowed on this page',
+    payload: 'Reached the browser',
+    frequency: 'Allowance not spent',
+    consent: 'Consent given',
+    trigger: 'Has a trigger this site can fire',
+    conditions: 'Conditions hold',
+    fired: 'A trigger fired',
+    won: 'Won the page view',
+  },
   arrival: { aggregated: 'Combined into a bundle.', defer: 'defer removed.', order: 'Above its data.' },
   rules: { device: 'Device', cart_has_items: 'Has something in their cart', time_on_page: 'Time on the page' },
 };
@@ -171,6 +183,52 @@ describe('the panel', () => {
 
     expect(root.textContent).toContain('Never reached the browser.');
     expect(root.querySelector('.item')).toBeNull();
+  });
+
+  /**
+   * ==========================================================================
+   * THE FUNNEL RENDERS, AND IT NAMES WHAT IS ALREADY FINE.
+   * ==========================================================================
+   * The ten gate labels were minted in PHP and read by nothing: the report
+   * returned one string that named a STAGE for some stops and a CAUSE for
+   * others, so the panel had no gate to draw. "This browser has already had
+   * its allowance" answers what stopped it; the gates answer what is already
+   * fine, which is most of what a merchant debugging a popup needs.
+   */
+  it('draws every gate, marking the ones it passed and the one that closed', () => {
+    const { root } = draw([optin()], [entry({ standing: 'blocked' })]);
+    const gates = [...root.querySelectorAll('.gate')].map((g) => [
+      g.className.replace('gate ', ''),
+      g.textContent,
+    ]);
+
+    expect(gates).toHaveLength(10);
+    // Everything up to consent opened...
+    expect(gates[0]).toEqual(['gate--open', '✓Published']);
+    expect(gates[3]).toEqual(['gate--open', '✓Reached the browser']);
+    // ...consent is where it stopped...
+    expect(gates[5]).toEqual(['gate--shut', '✕Consent given']);
+    // ...and nothing past it was ever asked.
+    expect(gates[6]).toEqual(['gate', '·Has a trigger this site can fire']);
+  });
+
+  /** An Optin that is showing passed all ten, and none is marked closed. */
+  it('marks nothing closed for one that is showing', () => {
+    const { root } = draw([optin()], [entry({ standing: 'ready' })]);
+
+    expect(root.querySelectorAll('.gate--open')).toHaveLength(10);
+    expect(root.querySelector('.gate--shut')).toBeNull();
+  });
+
+  /**
+   * It is INSIDE the disclosure. The collapsed row is what a merchant scans to
+   * find the Optin they care about, and ten rows per Optin there would bury it.
+   */
+  it('keeps the funnel out of the collapsed summary', () => {
+    const { root } = draw();
+
+    expect(root.querySelector('summary .gate')).toBeNull();
+    expect(root.querySelector('details .gates')).not.toBeNull();
   });
 
   /** ADR 0004's failure modes, named rather than left to be debugged. */

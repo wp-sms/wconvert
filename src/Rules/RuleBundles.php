@@ -45,6 +45,20 @@ defined('ABSPATH') || exit;
  * under a section by hand: kind is a fixed property of the type, so a bundle
  * cannot file a Condition under When by mistake (ADR 0005).
  *
+ * ============================================================================
+ * A RULE NAMES A PRESET WHERE ONE EXISTS. IT DOES NOT RETYPE ITS VALUES.
+ * ============================================================================
+ * `['type' => 'time_on_page', 'preset' => 'after_a_read']` rather than
+ * `['seconds' => 15]`. The manifest already says what `after_a_read` fixes, and
+ * a second copy of 15 here is a number that drifts the day somebody retunes the
+ * preset — silently, because both are valid rules and nothing compares them.
+ * {@see RuleCatalogue::bundles()} expands it against the vocabulary, so the
+ * manifest stays the one place a preset's values are written (ADR 0005).
+ *
+ * Params are still written out where the type has no preset to name — a
+ * `singular` targeting rule, an allowance. What is forbidden is retyping values
+ * the manifest already holds.
+ *
  * **No `authored` param is ever supplied.** `post.value`, `term.value`,
  * `click_element.selector` and `cart_value_min.amount` name something only one
  * site has, and a bundle is written here, once, for every install — the same
@@ -58,7 +72,7 @@ final class RuleBundles
      * Every Starting point, in the order the panel offers them.
      *
      * Free ones first, which is not decoration: a free install's list would
-     * otherwise open with three cards it cannot use.
+     * otherwise open with the ones it cannot use.
      *
      * @return array<string, array<string, mixed>>
      */
@@ -66,21 +80,24 @@ final class RuleBundles
     {
         return [
             'after-a-read' => [
-                'label' => __('Once they have read a while', 'wconvert'),
+                // NOT "Once they have read a while" — that is `time_on_page`'s
+                // own preset label, and both render in this panel. A Starting
+                // point names an OUTCOME; a preset names a rule setting.
+                'label' => __('Give them time to read', 'wconvert'),
                 'description' => __(
                     'Waits fifteen seconds before showing, so it never interrupts someone who has only just arrived.',
                     'wconvert'
                 ),
-                'rules' => [['type' => 'time_on_page', 'seconds' => 15]],
+                'rules' => [['type' => 'time_on_page', 'preset' => 'after_a_read']],
             ],
 
             'halfway-down' => [
-                'label' => __('Half way down the page', 'wconvert'),
+                'label' => __('Wait until they scroll', 'wconvert'),
                 'description' => __(
                     'Shows once the visitor has scrolled past the middle — a sign they are actually reading.',
                     'wconvert'
                 ),
-                'rules' => [['type' => 'scroll_depth', 'percent' => 50]],
+                'rules' => [['type' => 'scroll_depth', 'preset' => 'halfway_down']],
             ],
 
             'blog-posts-only' => [
@@ -104,7 +121,7 @@ final class RuleBundles
             'mobile-visitors' => [
                 'label' => __('Mobile visitors only', 'wconvert'),
                 'description' => __('Shows on phones and nowhere else.', 'wconvert'),
-                'rules' => [['type' => 'device', 'in' => ['mobile']]],
+                'rules' => [['type' => 'device', 'preset' => 'mobile_only']],
             ],
 
             'on-the-way-out' => [

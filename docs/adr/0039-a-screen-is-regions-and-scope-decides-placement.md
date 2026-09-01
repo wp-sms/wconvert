@@ -9,7 +9,8 @@ And where a control goes is not a question of where it fits. **It is decided by
 what the control acts on**: the screen, a region's data set, one row, or a
 selection. Each of those has exactly one home.
 
-*Extended: **the same rule decides where a FACT goes.** A fact that is identical
+*Extended by [ADR 0048](0048-the-eligibility-inspector-runs-on-the-real-page.md):
+**the same rule decides where a FACT goes.** A fact that is identical
 for every item in a group belongs to the group; only what differs per item goes
 on the item. The rules panel had it the other way round and it cost the screen
 twice — every "not available" card repeated `Needs WooCommerce on this site.`

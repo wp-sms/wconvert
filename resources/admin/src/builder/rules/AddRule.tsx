@@ -42,6 +42,21 @@ export function AddRule({ axis, label, onAdd }: AddRuleProps) {
 
   const offered = on('offer');
 
+  // ==========================================================================
+  // THE CHOICES, BY KEY — NOT A TYPE AND A PRESET ID PACKED INTO ONE STRING.
+  // ==========================================================================
+  // An `<option value>` is a string, so a menu offering "type X with preset Y"
+  // has to key the pair somehow. It was `` `${type}|${preset}` `` and a
+  // `split('|')` on the way back, which is a wire format invented for one
+  // control — it makes the empty preset a trailing separator, and it breaks
+  // silently the day a manifest id contains the character.
+  //
+  // An index into a list the same render built has no format to get wrong.
+  const choices = offered.flatMap((type) => [
+    ...type.presets.map((preset) => ({ type, preset })),
+    { type, preset: null },
+  ]);
+
   return (
     <>
       <p>
@@ -50,25 +65,27 @@ export function AddRule({ axis, label, onAdd }: AddRuleProps) {
           <select
             value=""
             onChange={(event) => {
-              const [type, presetId] = event.target.value.split('|');
-              const chosen = offered.find((each) => each.type === type);
+              const chosen = choices[Number(event.target.value)];
 
               if (chosen !== undefined) {
-                onAdd(toRule(chosen, chosen.presets.find((each) => each.id === presetId) ?? null, {}));
+                onAdd(toRule(chosen.type, chosen.preset, {}));
               }
             }}
           >
             <option value="">{__('Choose…', 'wconvert')}</option>
             {offered.map((type) => (
               <optgroup key={type.type} label={type.label}>
-                {type.presets.map((preset) => (
-                  <option key={preset.id} value={`${type.type}|${preset.id}`}>
-                    {preset.label}
-                  </option>
-                ))}
-                <option value={`${type.type}|`}>
-                  {type.presets.length === 0 ? type.label : __('Set it myself', 'wconvert')}
-                </option>
+                {choices.map((choice, at) =>
+                  choice.type !== type ? null : (
+                    <option key={choice.preset?.id ?? ''} value={at}>
+                      {choice.preset !== null
+                        ? choice.preset.label
+                        : type.presets.length === 0
+                          ? type.label
+                          : __('Set it myself', 'wconvert')}
+                    </option>
+                  ),
+                )}
               </optgroup>
             ))}
           </select>

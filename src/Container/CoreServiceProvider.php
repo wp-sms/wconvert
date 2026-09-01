@@ -577,9 +577,12 @@ final class CoreServiceProvider implements ServiceProvider
 
         if (!is_admin()) {
             $container->resolve(LoaderEnqueue::class)->hooks();
-            // Beside the loader, and after it: the panel reads the ordinary
-            // payload tag rather than a copy, so the payload has to have been
-            // decided first. It costs an ordinary page view one capability
+            // Beside the loader, because it is the same front-end read path
+            // with one more question asked of it. WHEN it runs relative to the
+            // loader is `InspectorEnqueue::PRIORITY`'s to state and is not
+            // restated here — this comment said "and after it" for one commit
+            // after that constant became `- 1`, which is how a duplicated
+            // fact goes stale. It costs an ordinary page view one capability
             // check and one `isset($_GET[...])`.
             $container->resolve(InspectorEnqueue::class)->hooks();
         }

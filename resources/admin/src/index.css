@@ -3757,10 +3757,6 @@
 }
 
 /*
- * Not one of the four. The four answer questions a merchant asks; this answers
- * one they did not, so it sits below them with no summary of its own.
- */
-/*
  * A heading is not in the `font-size: inherit` list above, so it keeps the size
  * `.wconvert-editor :is(h2, h3, h4)` gives it. What it needs here is the
  * margin: these two sit at the top of their own block rather than in prose.
@@ -3780,6 +3776,10 @@
  * same border, so "Starting points" reads as a different thing from the four
  * sections above it rather than as more of them.
  * ------------------------------------------------------------------------- */
+/*
+ * Not one of the four. The four answer questions a merchant asks; this answers
+ * one they did not, so it sits below them with no summary of its own.
+ */
 .wconvert-rules__unknown,
 .wconvert-starters {
   margin-block-start: 1.25rem;
@@ -3791,12 +3791,6 @@
  * STARTING POINTS — NOT "PRESETS", WHICH ALREADY MEANS THE PER-TYPE SHORTCUT
  * INSIDE EVERY ONE OF THESE SECTIONS.
  * ------------------------------------------------------------------------- */
-/*
- * A grid of cards, and NOT a prose list — `.wconvert-editor :is(ul, ol):not(…)`
- * gives every other list in an editor a marker and a 1.5em indent, and this one
- * inherited both. Measured: a 21px left indent that pushed the whole grid off
- * the heading above it.
- */
 /*
  * A grid of cards, and NOT a prose list — `.wconvert-editor :is(ul, ol):not(…)`
  * gives every other list in an editor a marker and a 1.5em indent, and this one

@@ -6,6 +6,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use WConvert\Rules\RuleBundles;
 use WConvert\Rules\RuleCatalogue;
+use WConvert\Rules\RuleLabels;
 use WConvert\Rules\RuleVocabulary;
 use WConvert\Support\SiteDependency;
 use WConvert\Tests\Unit\Support\FakeProPresence;
@@ -183,6 +184,110 @@ final class RuleBundlesTest extends TestCase
                 $id . ' lands a rule whose defining param a bundle may not supply'
             );
         }
+    }
+
+    /**
+     * ========================================================================
+     * A STARTING POINT'S NAME MAY NOT BE A PRESET'S NAME. THEY SHARE A SCREEN.
+     * ========================================================================
+     * The whole reason these are not called presets is that `preset` already
+     * means a per-type shortcut, and *"two meanings of one word on one screen
+     * is what the glossary exists to prevent"* (CONTEXT.md, Starting point).
+     * That argument is worth nothing if the LABELS collide — and two of them
+     * did, byte for byte: `Once they have read a while` and `Half way down the
+     * page` were both a bundle and a `time_on_page` / `scroll_depth` preset,
+     * rendering a few centimetres apart in the same panel.
+     *
+     * A Starting point names an OUTCOME; a preset names a rule setting. This is
+     * what keeps them telling those apart.
+     */
+    public function testNoStartingPointWearsANameThatAlreadyMeansSomethingElse(): void
+    {
+        $taken = array_map('strtolower', [...array_values(RuleLabels::types()), ...array_values(RuleLabels::presets())]);
+
+        $this->assertNotSame([], $taken, 'no vocabulary to collide with, so this asserts nothing');
+
+        foreach (RuleBundles::all() as $id => $bundle) {
+            $this->assertNotContains(
+                strtolower((string) $bundle['label']),
+                $taken,
+                sprintf('the Starting point “%s” is already the name of a rule or a preset', $id)
+            );
+        }
+    }
+
+    /**
+     * ========================================================================
+     * A BUNDLE NAMES A PRESET; IT DOES NOT RETYPE ONE.
+     * ========================================================================
+     * `['type' => 'time_on_page', 'preset' => 'after_a_read']`, never
+     * `['seconds' => 15]`. The manifest already says what `after_a_read`
+     * fixes, and a second copy of 15 in PHP is a number that drifts the day
+     * somebody retunes the preset — silently, because both are valid rules and
+     * nothing compares them.
+     *
+     * Both directions. A preset that does not exist expands to nothing and
+     * lands the type's bare general form, which is a Starting point that
+     * quietly does less than it says.
+     */
+    public function testEveryNamedPresetIsOneTheManifestDeclares(): void
+    {
+        $vocabulary = RuleVocabulary::fromManifest(self::PLUGIN_DIR);
+        $named = 0;
+
+        foreach (RuleBundles::all() as $id => $bundle) {
+            foreach (is_array($bundle['rules'] ?? null) ? $bundle['rules'] : [] as $rule) {
+                $preset = $rule['preset'] ?? null;
+
+                if (!is_string($preset)) {
+                    continue;
+                }
+
+                $this->assertArrayHasKey(
+                    $preset,
+                    $vocabulary->presetsOf((string) $rule['type']),
+                    sprintf('%s names %s.%s, which the manifest does not declare', $id, $rule['type'], $preset)
+                );
+
+                $named++;
+            }
+        }
+
+        $this->assertGreaterThan(0, $named, 'no bundle names a preset, so this asserts nothing');
+    }
+
+    /**
+     * And a rule whose type HAS a preset fixing exactly those values must name
+     * it rather than spell it — which is the direction that stops the copy
+     * coming back one rule at a time.
+     */
+    public function testNoBundleSpellsOutWhatAPresetAlreadyFixes(): void
+    {
+        $vocabulary = RuleVocabulary::fromManifest(self::PLUGIN_DIR);
+        $spelled = [];
+
+        foreach (RuleBundles::all() as $id => $bundle) {
+            foreach (is_array($bundle['rules'] ?? null) ? $bundle['rules'] : [] as $rule) {
+                if (isset($rule['preset'])) {
+                    continue;
+                }
+
+                $params = $rule;
+                unset($params['type']);
+
+                foreach ($vocabulary->presetsOf((string) $rule['type']) as $preset => $fixed) {
+                    if ($fixed === $params) {
+                        $spelled[] = sprintf('%s spells out what %s.%s already fixes', $id, $rule['type'], $preset);
+                    }
+                }
+            }
+        }
+
+        // Collected rather than asserted in the loop, because every rule left
+        // written out is of a type with NO presets — `exit_intent`,
+        // `cart_has_items`, `singular` — so an assertion inside would never
+        // run and the test would pass by never looking.
+        $this->assertSame([], $spelled, 'name the preset instead of copying what it fixes');
     }
 
     /** Every rule a bundle names is one the vocabulary declares. */

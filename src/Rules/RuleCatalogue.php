@@ -97,7 +97,7 @@ final class RuleCatalogue
 
         foreach (RuleBundles::all() as $id => $bundle) {
             $availability = $this->leastOf(RuleBundles::typesIn($bundle));
-            $partitioned = array_filter($this->vocabulary->partition($bundle['rules'] ?? []));
+            $partitioned = array_filter($this->vocabulary->partition($this->expand($bundle['rules'] ?? [])));
 
             $described[] = [
                 'id' => (string) $id,
@@ -118,6 +118,47 @@ final class RuleCatalogue
         }
 
         return $described;
+    }
+
+    /**
+     * A bundle's rules, with every named preset replaced by what it fixes.
+     *
+     * ========================================================================
+     * THE MANIFEST STAYS THE ONE PLACE A PRESET'S VALUES ARE WRITTEN.
+     * ========================================================================
+     * A [[Starting point]] says `['type' => 'time_on_page', 'preset' =>
+     * 'after_a_read']` and this turns it into `['seconds' => 15]`. Written out
+     * in {@see RuleBundles} instead, the 15 would be a second copy that drifts
+     * the day somebody retunes the preset — silently, because both are valid
+     * rules and nothing would compare them (ADR 0005).
+     *
+     * **An unknown preset contributes nothing rather than a broken rule.** The
+     * rule keeps its type and loses the reference, so it lands as the type's
+     * general form with no params — which the builder draws and the merchant
+     * can complete. `RuleBundlesTest` fails on one, so this is the shape of a
+     * mistake that cannot ship rather than a fallback anybody relies on.
+     *
+     * @param mixed $rules
+     * @return list<array<string, mixed>>
+     */
+    private function expand($rules): array
+    {
+        $expanded = [];
+
+        foreach (is_array($rules) ? $rules : [] as $rule) {
+            if (!is_array($rule) || !is_string($rule['type'] ?? null)) {
+                continue;
+            }
+
+            $named = $rule['preset'] ?? null;
+            unset($rule['preset']);
+
+            $expanded[] = is_string($named)
+                ? $rule + ($this->vocabulary->presetsOf($rule['type'])[$named] ?? [])
+                : $rule;
+        }
+
+        return $expanded;
     }
 
     /**

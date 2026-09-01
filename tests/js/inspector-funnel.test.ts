@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { funnel, type ServerOptin, type ServerReport } from '@loader/inspect/report';
+import { GATES, funnel, type ServerOptin, type ServerReport } from '@loader/inspect/report';
 import type { Arrival } from '@loader/inspect/arrival';
 import type { EntryReport } from '@loader/inspect/explain';
 
@@ -149,6 +149,63 @@ describe('the gate with no word in the product', () => {
     expect(rows[0].subject).toBe('Welcome');
     expect(rows[1].stopped).toBeNull();
     expect(rows[1].subject).toBeNull();
+  });
+});
+
+describe('how far it got', () => {
+  /**
+   * ==========================================================================
+   * THE GATE AND THE REASON ARE DIFFERENT QUESTIONS.
+   * ==========================================================================
+   * They were one value, and it was a string that named a STAGE for some stops
+   * (`draft`, `not_in_payload`) and a CAUSE for others (`excluded`, `capped`).
+   * So there was nowhere to put "how far did it get", the funnel had no
+   * renderer, and ten minted gate labels shipped with no reader at all.
+   */
+  it.each([
+    ['published', () => first([optin({ published: false })], [], new Set())],
+    ['suspended', () => first([optin({ suspended: 'Suspended — needs Pro' })], [], new Set())],
+    [
+      'targeting',
+      () =>
+        first([
+          optin({ targeting: { admits: false, reason: 'excluded', logged_in: null, include: [], exclude: [] } }),
+        ], [], new Set()),
+    ],
+    ['payload', () => first([optin()], [], new Set())],
+    ['frequency', () => first([optin()], [entry({ standing: 'capped' })])],
+    ['consent', () => first([optin()], [entry({ standing: 'blocked' })])],
+    ['trigger', () => first([optin()], [entry({ standing: 'inert' })])],
+    ['conditions', () => first([optin()], [entry({ standing: 'ineligible' })])],
+    ['fired', () => first([optin()], [entry({ standing: 'waiting' })])],
+    ['won', () => first([optin()], [entry({ lostArbitration: true })])],
+  ])('reports %s as the gate that closed', (gate, build) => {
+    expect(build().gate).toBe(gate);
+  });
+
+  /** Every gate opened, so there is no gate to name. */
+  it('names no gate for one that is showing', () => {
+    expect(first([optin()]).gate).toBeNull();
+  });
+
+  /**
+   * The sequence is the order the gates are actually applied, and the panel
+   * renders it in that order — so a gate map naming something outside it would
+   * silently render nothing.
+   */
+  it('only ever names a gate the sequence contains', () => {
+    const rows = funnel(
+      server(optin({ published: false }), optin({ suspended: 'x' }), optin()),
+      [entry({ id: 'A' })],
+      new Set(['A']),
+      ARRIVAL,
+    ).rows;
+
+    for (const row of rows) {
+      if (row.gate !== null) {
+        expect(GATES).toContain(row.gate);
+      }
+    }
   });
 });
 

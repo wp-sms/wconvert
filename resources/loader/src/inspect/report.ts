@@ -60,9 +60,50 @@ export interface Labels {
   readonly [key: string]: string | Labels;
 }
 
+/**
+ * The funnel, in the order it is applied.
+ *
+ * ============================================================================
+ * THE SEQUENCE IS THE ANSWER, WHICH IS WHY IT IS A LIST AND NOT A CASCADE OF
+ * `if`s WITH A STRING AT THE END.
+ * ============================================================================
+ * A merchant asking why nothing showed needs two facts, and they are different
+ * questions: **how far it got**, and **what stopped it**. This is the first.
+ * Naming the gate is what turns "your allowance is spent" into "it was
+ * published, not suspended, allowed on this page, it reached the browser — and
+ * then its allowance was spent", which is the sentence that tells them the
+ * other nine things are fine.
+ *
+ * Keyed to `InspectorLabels::all()['gates']`, which mints the words.
+ */
+export const GATES = [
+  'published',
+  'suspended',
+  'targeting',
+  'payload',
+  'frequency',
+  'consent',
+  'trigger',
+  'conditions',
+  'fired',
+  'won',
+] as const;
+
+export type Gate = (typeof GATES)[number];
+
 /** Where an Optin stopped, and what to say about it. */
 export interface Row {
   readonly optin: ServerOptin;
+  /**
+   * Which gate closed — **null where every one of them opened**.
+   *
+   * Held apart from {@link stopped} because they answer different questions
+   * and were one value until the funnel had no renderer: `stoppedAt` returned
+   * a string that was sometimes a stage (`draft`, `not_in_payload`) and
+   * sometimes a cause (`excluded`, `capped`), so there was nowhere to put the
+   * stage and ten minted gate labels shipped with no reader.
+   */
+  readonly gate: Gate | null;
   /** The key into `labels.stopped`, or null where it is showing. */
   readonly stopped: string | null;
   /**
@@ -107,9 +148,12 @@ export function funnel(
     rows: server.optins.map((optin) => {
       const entry = byId.get(optin.id) ?? null;
 
+      const closed = stoppedAt(optin, entry, reached);
+
       return {
         optin,
-        stopped: stoppedAt(optin, entry, reached),
+        gate: closed.gate,
+        stopped: closed.reason,
         subject:
           entry !== null && entry.lostArbitration && winner !== undefined
             ? (names.get(winner.id) ?? winner.id)
@@ -123,44 +167,76 @@ export function funnel(
 }
 
 /**
- * The first gate that closed, in the order they are actually applied.
+ * The first gate that closed, and what to say about it.
  *
- * Order is the whole content of this function. An Optin that is both a draft
- * and suspended is a DRAFT — telling its author it is suspended sends them to
- * reactivate a plugin when what they needed was the Publish button.
+ * ============================================================================
+ * ORDER IS THE WHOLE CONTENT OF THIS FUNCTION.
+ * ============================================================================
+ * An Optin that is both a draft and suspended is a DRAFT — telling its author
+ * it is suspended sends them to reactivate a plugin when what they needed was
+ * the Publish button.
+ *
+ * **Two values and not one.** The gate is a fact about the SEQUENCE and the
+ * reason is a fact about this Optin, and folding them into one string is what
+ * left the funnel unrenderable: `draft` and `not_in_payload` named stages
+ * while `excluded` and `capped` named causes, so a caller could not ask "how
+ * far did it get" at all.
  */
-function stoppedAt(optin: ServerOptin, entry: EntryReport | null, reached: ReadonlySet<string>): string | null {
+function stoppedAt(
+  optin: ServerOptin,
+  entry: EntryReport | null,
+  reached: ReadonlySet<string>,
+): { gate: Gate | null; reason: string | null } {
   if (!optin.published) {
-    return 'draft';
+    return { gate: 'published', reason: 'draft' };
   }
 
   if (optin.suspended !== null) {
     // The sentence is the Optin list's own, carried verbatim, so the two
     // screens cannot disagree about why. There is no key for it.
-    return 'suspended';
+    return { gate: 'suspended', reason: 'suspended' };
   }
 
   if (optin.targeting !== null && !optin.targeting.admits) {
-    return targetingKey(optin.targeting);
+    return { gate: 'targeting', reason: targetingKey(optin.targeting) };
   }
 
-  if (!reached.has(optin.id)) {
-    return 'not_in_payload';
-  }
-
-  if (entry === null) {
-    return 'not_in_payload';
+  // Absent from the payload after Targeting admitted it: something between the
+  // two dropped it, and "it did not arrive" is the honest report rather than a
+  // guess about which cache did it.
+  if (!reached.has(optin.id) || entry === null) {
+    return { gate: 'payload', reason: 'not_in_payload' };
   }
 
   if (entry.lostArbitration) {
-    return 'lost';
+    return { gate: 'won', reason: 'lost' };
   }
 
-  // The engine's own word for it, one to one — `capped`, `blocked`, `inert`,
-  // `ineligible`, `waiting`, `shown`. Never re-derived from the rules, because
+  if (entry.standing === 'ready') {
+    return { gate: null, reason: null };
+  }
+
+  // The engine's own word for it, one to one, never re-derived from the rules:
   // `Standing` is what `decide` concluded and this screen exists to report it.
-  return entry.standing === 'ready' ? null : entry.standing;
+  // What the gate map adds is WHERE in the sequence each standing sits, which
+  // is a fact about the funnel rather than about the Optin.
+  return { gate: GATE_OF[entry.standing] ?? null, reason: entry.standing };
 }
+
+/**
+ * Which gate each engine standing sits behind.
+ *
+ * `ready` is absent because it is not a stop — it is every gate open, and
+ * {@link stoppedAt} returns before reaching here.
+ */
+const GATE_OF: Readonly<Record<string, Gate>> = {
+  capped: 'frequency',
+  blocked: 'consent',
+  inert: 'trigger',
+  ineligible: 'conditions',
+  waiting: 'fired',
+  shown: 'won',
+};
 
 /**
  * Which Targeting gate closed.

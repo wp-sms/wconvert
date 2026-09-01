@@ -1,3 +1,4 @@
+import { GATES } from './report';
 import type { Funnel, Labels, Row, TargetingRow } from './report';
 import type { RuleReport } from './explain';
 
@@ -150,7 +151,7 @@ function rowOf(row: Row, labels: Labels): HTMLElement {
 
   verdict.textContent = sentenceFor(row, labels);
   summary.append(name, verdict);
-  details.append(summary);
+  details.append(summary, gatesOf(row, labels));
 
   if (row.optin.targeting !== null) {
     details.append(targetingOf(row, labels));
@@ -197,6 +198,45 @@ function sentenceFor(row: Row, labels: Labels): string {
   // placeholder is what a single `replace` can do honestly, and
   // `InspectorLabels` is written to that limit.
   return row.subject === null ? sentence : sentence.replace('%s', row.subject);
+}
+
+/**
+ * How far this Optin got, as the sequence it had to pass.
+ *
+ * ============================================================================
+ * THE GATES IT PASSED ARE THE HALF A SENTENCE CANNOT CARRY.
+ * ============================================================================
+ * "This browser has already had its allowance" answers *what stopped it*. It
+ * does not answer *what is already fine*, and that is most of what a merchant
+ * debugging a popup needs: the Optin is published, not suspended, allowed on
+ * this page, and it reached the browser. Nine facts they no longer have to
+ * check by hand.
+ *
+ * It lives INSIDE the disclosure. The collapsed row is what a merchant scans
+ * to find the Optin they care about, and ten rows per Optin there would bury
+ * it; open, this is the first thing under the summary, because it is the
+ * shape of the answer.
+ */
+function gatesOf(row: Row, labels: Labels): HTMLElement {
+  const list = el('ol', 'gates');
+  // Null means every gate opened, so nothing is marked closed and the whole
+  // sequence reads as passed.
+  const closed = row.gate === null ? GATES.length : GATES.indexOf(row.gate);
+
+  GATES.forEach((gate, at) => {
+    const item = el('li', at < closed ? 'gate gate--open' : at === closed ? 'gate gate--shut' : 'gate');
+    const mark = el('span', at < closed ? 'yes' : at === closed ? 'no' : 'unknown');
+
+    mark.textContent = at < closed ? '✓' : at === closed ? '✕' : '·';
+
+    const words = el('span', 'gate__name');
+
+    words.textContent = text(labels, 'gates', gate);
+    item.append(mark, words);
+    list.append(item);
+  });
+
+  return list;
 }
 
 function targetingOf(row: Row, labels: Labels): HTMLElement {
@@ -401,6 +441,11 @@ const CSS = `
 .stop { color: #646970; }
 .section { margin-block-start: .5rem; }
 .section-title { margin: 0 0 .25rem; font-size: 12px; font-weight: 600; color: #646970; }
+/* The funnel: how far it got, and where it stopped. */
+.gates { margin: .375rem 0 0; padding: 0; list-style: none; }
+.gate { display: flex; gap: .375rem; align-items: baseline; color: #646970; }
+/* The one that closed is the answer, so it is the only line at full weight. */
+.gate--shut { color: #1e1e1e; font-weight: 600; }
 .list { margin: 0; padding: 0; list-style: none; }
 .item { display: flex; gap: .375rem; align-items: baseline; }
 .rule { flex: 1; }

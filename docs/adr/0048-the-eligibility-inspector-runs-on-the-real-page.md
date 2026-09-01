@@ -110,11 +110,15 @@ be cached.
 - **[ADR 0005](0005-the-rule-model-is-three-flat-closed-axes.md) is amended**, inline.
   Targeting is now sent to the browser on an admin-gated, parameter-gated,
   uncached request. The ordinary payload still carries none of it.
-- **Every merchant word is minted in PHP** (`InspectorLabels`), because
-  `wp i18n make-pot` cannot see a string in a TypeScript bundle. The panel is
-  handed a dictionary and spells no merchant-facing word of its own. Templates
-  carry **one `%s` and never two**: the bundle takes no `@wordpress/i18n`, so a
-  single `String.replace` is what it can do honestly.
+- **Every merchant word is minted in PHP** (`InspectorLabels`) — and the reason
+  is the BUNDLE, not `make-pot`. The admin translates in TypeScript perfectly
+  well (`builder/rules/sentence.ts` does, reaching `wp.i18n` through
+  `wp_set_script_translations`). The inspector cannot: it is composed from the
+  loader's own module set, which has no dependencies at all (ADR 0004), so it
+  carries no `@wordpress/i18n` to translate with. The panel is handed a
+  dictionary and spells no merchant-facing word of its own. For the same
+  reason its templates carry **one `%s` and never two** — a single
+  `String.replace` is what a bundle with no formatter can do honestly.
 - **[[Pro]] replaces the inspector on the hook it replaces the loader**, and it
   is not optional. Pro's loader beside free's inspector would report every
   `exit_intent` Optin as `inert` — *"it has no trigger this site can fire"* —
@@ -140,3 +144,24 @@ be cached.
   warning inside a panel that did not render is one nobody can read.
 - **`tests/unit/Database/SchemaTest.php` passes untouched.** Nothing here stores
   anything.
+
+## What this amends, and where to read it
+
+`docs/agents/domain.md` asks for both directions, every time — the amending ADR
+names what it amends, and the amended one names what amends it. This is that
+side of it.
+
+- **[ADR 0005](0005-the-rule-model-is-three-flat-closed-axes.md)** — *"never
+  sent to the browser"* is now almost true, and the exception is the tag
+  described above. It also built the per-rule table 0005 predicted and nobody
+  had written.
+- **[ADR 0047](0047-site-wide-frequency-is-the-same-shape-at-a-second-scope.md)**
+  — the per-Optin authoring surface it assumed already existed did not. It
+  landed with this work, and `src/Optin/Frequency.php` is the shape its second
+  scope reuses.
+- **[ADR 0039](0039-a-screen-is-regions-and-scope-decides-placement.md)** —
+  extended: scope decides where a FACT goes as well as where a control goes. A
+  fact identical for every item in a group belongs to the group.
+- **[ADR 0026](0026-a-goal-the-site-cannot-serve-is-hidden.md)**
+  is APPLIED rather than amended. The `unavailable` rules panel branch is the
+  rendering it already required and nothing had built.

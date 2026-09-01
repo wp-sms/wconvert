@@ -38,7 +38,8 @@ already built, already deterministic, already tie-broken by id.
 So the gap is not a missing model. It is one scope missing from a model that has
 everything else.
 
-*Amended by the pull request that split the rules panel into four sections: **the
+*Amended by [ADR 0048](0048-the-eligibility-inspector-runs-on-the-real-page.md), which
+landed the rules panel this ADR's scope sits inside: **the
 per-Optin authoring surface this ADR assumed already existed has now landed**,
 and it did not exist when this was written. `frequency.ts` had honoured all four
 fields since #3 and `priority` had been sorted on since the engine was built —
