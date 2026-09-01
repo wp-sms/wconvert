@@ -1,6 +1,7 @@
 import { useBlockProps } from '@wordpress/block-editor';
 import { Notice, Placeholder, SelectControl } from '@wordpress/components';
 import { __, sprintf } from '@wordpress/i18n';
+import type { InlineOptin } from './optins';
 import { publishedInlineOptins } from './optins';
 
 /**
@@ -48,23 +49,35 @@ export function Edit({
   setAttributes: (next: { optinId?: string }) => void;
 }): React.JSX.Element {
   const blockProps = useBlockProps();
-  const optins = publishedInlineOptins();
+  // Null is "the list never arrived", which is not the same as "there are
+  // none" and must not be reported as though the merchant's Optin is gone —
+  // `optins.ts` argues that at length. While it is null this block knows
+  // nothing about any id, so it claims nothing about the one it holds.
+  const provided = publishedInlineOptins();
+  const optins = provided ?? [];
   const chosen = attributes.optinId ?? '';
   const resolved = optins.find((optin) => optin.id === chosen);
+  const unresolvable = provided !== null && chosen !== '' && resolved === undefined;
 
   return (
     <div {...blockProps}>
       <Placeholder
         icon="feedback"
+        /*
+          The same words as `block.json`'s `title`, and spelled again rather
+          than imported from it — because the two are translated out of
+          DIFFERENT catalogues. WordPress translates the metadata through its
+          i18n schema when the block is registered; this is translated by
+          `wp_set_script_translations` against the bundle's. `metadata.title`
+          here would be the raw English string, shipped untranslated beside an
+          inserter entry that was translated.
+
+          `tests/js/block-shortcode-parity.test.ts` holds the two spellings
+          together, since the drift they permit is a merchant inserting one
+          name and landing on a block headed another.
+        */
         label={__('Inline Optin', 'wconvert')}
-        instructions={
-          optins.length === 0
-            ? __(
-                'This site has no published inline Optin yet. Create one in WConvert and publish it, then choose it here.',
-                'wconvert',
-              )
-            : __('Choose which of your inline Optins appears at this point in the page.', 'wconvert')
-        }
+        instructions={instructionsFor(provided)}
       >
         {/*
           ====================================================================
@@ -86,7 +99,7 @@ export function Edit({
           signup was unpublished" is recoverable by republishing and an
           attribute silently reset to nothing is not.
         */}
-        {chosen !== '' && resolved === undefined && (
+        {unresolvable && (
           <Notice status="warning" isDismissible={false}>
             {sprintf(
               /* translators: %s: the stored Optin id. */
@@ -106,10 +119,7 @@ export function Edit({
           value={resolved === undefined ? '' : chosen}
           options={[
             {
-              label:
-                optins.length === 0
-                  ? __('No published inline Optins', 'wconvert')
-                  : __('Choose an Optin…', 'wconvert'),
+              label: optins.length === 0 ? emptyOptionLabel(provided) : __('Choose an Optin…', 'wconvert'),
               value: '',
               disabled: optins.length === 0,
             },
@@ -142,7 +152,7 @@ export function Edit({
           browsers that refuse it, to save a double-click.
         */}
         {resolved !== undefined && (
-          <p className="wconvert-inline-optin__shortcode">
+          <p>
             {__('Elsewhere on this site, use:', 'wconvert')}{' '}
             <code>{`[${SHORTCODE_TAG} id="${resolved.id}"]`}</code>
           </p>
@@ -150,4 +160,36 @@ export function Edit({
       </Placeholder>
     </div>
   );
+}
+
+/**
+ * What the placeholder says above the picker, for each of the three states.
+ *
+ * Three rather than two, because the third is the one that used to be
+ * misreported: a list that never arrived is a broken editor, not an empty
+ * site, and the merchant's Optins are all still on their pages.
+ */
+function instructionsFor(provided: InlineOptin[] | null): string {
+  if (provided === null) {
+    return __(
+      'WConvert could not load your list of Optins on this screen, so this block cannot be changed here. Anything already placed is unaffected and still shows on the page. Reload the editor, and if it persists, check for a plugin that combines or defers admin scripts.',
+      'wconvert',
+    );
+  }
+
+  if (provided.length === 0) {
+    return __(
+      'This site has no published inline Optin yet. Create one in WConvert and publish it, then choose it here.',
+      'wconvert',
+    );
+  }
+
+  return __('Choose which of your inline Optins appears at this point in the page.', 'wconvert');
+}
+
+/** The disabled first option, which is the only one there is in two of the three states. */
+function emptyOptionLabel(provided: InlineOptin[] | null): string {
+  return provided === null
+    ? __('Optins unavailable', 'wconvert')
+    : __('No published inline Optins', 'wconvert');
 }

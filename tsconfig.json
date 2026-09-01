@@ -19,7 +19,8 @@
     "paths": {
       "@loader/*": ["./resources/loader/src/*"],
       "@renderer/*": ["./resources/renderer/src/*"],
-      "@/*": ["./resources/admin/src/*"]
+      "@/*": ["./resources/admin/src/*"],
+      "@block/*": ["./resources/blocks/inline-optin/src/*"]
     }
   },
   "include": [

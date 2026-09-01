@@ -34,22 +34,39 @@ declare global {
 }
 
 /**
- * What the page provided, or an empty list.
+ * What the page provided, or **null where it provided nothing at all**.
  *
- * **Empty is a real answer and not a failure**, which is why nothing here
- * throws or reports: a site that has published no inline Optin yet is the
- * ordinary state of a fresh install, and it renders as the placeholder's
- * "there is nothing to place yet" rather than as an error. The narrowing is
- * defensive for the other case — another plugin, or a stale cached script,
- * putting something else on that name.
+ * ============================================================================
+ * "NO OPTINS" AND "NO LIST" ARE DIFFERENT ANSWERS AND MUST NOT COLLAPSE.
+ * ============================================================================
+ * An empty array is a real answer: a site that has published no inline Optin
+ * yet is the ordinary state of a fresh install, and it renders as *there is
+ * nothing to place yet*.
+ *
+ * Null is not an answer at all. The inline script did not arrive — stripped by
+ * a JS optimizer, lost to a stale cached bundle, or overwritten by something
+ * else on that name. Returning `[]` for it made the two indistinguishable, and
+ * the consequence lands on the one message that is supposed to be
+ * trustworthy: **every block on the site would report that its Optin is no
+ * longer published**, while the front end went on rendering all of them
+ * perfectly. A diagnostic that is confidently wrong is acted on — a merchant
+ * republishes an Optin that was never unpublished, or rebuilds a page that was
+ * never broken.
+ *
+ * So the caller is handed the distinction and decides. Nothing here throws or
+ * reports: this runs in the post editor, and an editor that cannot draw a
+ * picker must still let somebody write their post.
  */
-export function publishedInlineOptins(): InlineOptin[] {
+export function publishedInlineOptins(): InlineOptin[] | null {
   const provided = window.wconvertInlineOptins;
 
   if (!Array.isArray(provided)) {
-    return [];
+    return null;
   }
 
+  // The narrowing is defensive for the half-way case the check above cannot
+  // see: an array of the wrong shape. An entry that is not an `{id, name}` is
+  // dropped rather than rendered as `undefined — undefined` in the picker.
   return provided.filter(
     (optin): optin is InlineOptin =>
       typeof optin === 'object' &&

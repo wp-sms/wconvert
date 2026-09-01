@@ -12,7 +12,8 @@ once, because the first two look like they cannot be.
 *Completed by the post editor's block. **There is now a second place in
 wp-admin where an Optin appears beside the words "editor canvas", and this ADR
 does not reach it.** `wconvert/inline-optin` draws a labelled placeholder and a
-picker — never a render — and the distinction is the one this ADR opens with.*
+picker — never a render — and the distinction is the one this ADR opens with — and `CONTEXT.md`'s **Anchor** is where the vocabulary
+for it now lives.*
 
 *The preview earns the real renderer by being an **input**: clicking a headline
 puts the caret in the block that edits it. Nothing on the post editor's screen
@@ -24,9 +25,10 @@ act on.*
 
 *So the rule this ADR is read for is not "an Optin is drawn wherever it is
 referenced in wp-admin". It is that the renderer goes where the picture is
-something the merchant works ON, and that is one screen. `src/Frontend/InlineOptinBlock.php`
-and `resources/blocks/inline-optin/src/Edit.tsx` carry the same argument at
-their own end.*
+something the merchant works ON, and that is one screen.
+[`src/Frontend/InlineOptinBlock.php`](../../src/Frontend/InlineOptinBlock.php)
+and [`resources/blocks/inline-optin/src/Edit.tsx`](../../resources/blocks/inline-optin/src/Edit.tsx)
+carry the same argument at their own end.*
 
 ## The problem it solves
 

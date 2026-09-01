@@ -38,8 +38,6 @@ declare module '@wordpress/blocks' {
 
 declare module '@wordpress/block-editor' {
   export function useBlockProps(props?: Record<string, unknown>): Record<string, unknown>;
-
-  export const InspectorControls: (props: { children?: React.ReactNode }) => JSX.Element;
 }
 
 declare module '@wordpress/components' {
@@ -47,15 +45,12 @@ declare module '@wordpress/components' {
     icon?: string;
     label?: string;
     instructions?: string;
-    className?: string;
     children?: React.ReactNode;
   }) => JSX.Element;
 
   export const SelectControl: (props: {
     label?: string;
-    hideLabelFromVision?: boolean;
     value?: string;
-    help?: string;
     options: { label: string; value: string; disabled?: boolean }[];
     onChange: (value: string) => void;
     __next40pxDefaultSize?: boolean;
@@ -67,10 +62,6 @@ declare module '@wordpress/components' {
     isDismissible?: boolean;
     children?: React.ReactNode;
   }) => JSX.Element;
-
-  export const PanelBody: (props: { title?: string; children?: React.ReactNode }) => JSX.Element;
-
-  export const ExternalLink: (props: { href: string; children?: React.ReactNode }) => JSX.Element;
 }
 
 /*

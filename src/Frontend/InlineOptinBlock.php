@@ -215,14 +215,14 @@ final class InlineOptinBlock
         $inline = [];
 
         foreach (PublishedOptin::fromSet($this->publishedSet->all()) as $optin) {
-            $payload = $optin->toPayloadEntry();
-
-            // Absence is `popup` on both sides of the wire, which is what
-            // makes this a positive test rather than a "not one of the other
-            // three": an entry naming a placement nothing recognises is
-            // dropped at the write, so what is left here is either a word this
-            // build has or none at all ({@see DisplayType}).
-            if (DisplayType::of($payload['display_type'] ?? null) !== DisplayType::Inline) {
+            // Asked of the Optin rather than read out of the entry it would
+            // send to the browser. Absence is `popup` on both sides of the
+            // wire, which is what makes this a positive test rather than a
+            // "not one of the other three": an entry naming a placement
+            // nothing recognises is dropped at the write, so what is left here
+            // is either a word this build has or none at all
+            // ({@see DisplayType}).
+            if ($optin->displayType() !== DisplayType::Inline) {
                 continue;
             }
 

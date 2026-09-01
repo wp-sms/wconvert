@@ -67,6 +67,42 @@ describe('the block editor and PHP agree about what things are called', () => {
   });
 
   /**
+   * **The third cross-language pair, and the one with no UI to notice it.**
+   *
+   * PHP writes `window.wconvertInlineOptins` and the bundle reads it. A
+   * disagreement is not an error anywhere: the reader narrows a `undefined` to
+   * an empty list, so the picker renders "No published inline Optins" on a
+   * site that has published several, and the merchant concludes the block is
+   * broken rather than that two files stopped agreeing about a name.
+   */
+  it('reads the global PHP writes', () => {
+    const name = phpConstant(read('src/Frontend/InlineOptinBlock.php'), 'DATA');
+
+    expect(read('resources/blocks/inline-optin/src/optins.ts')).toContain(`window.${name}`);
+  });
+
+  /**
+   * **The title is spelled twice on purpose, and has to say the same thing.**
+   *
+   * `block.json`'s `title` is what the inserter shows, translated by
+   * WordPress's own i18n schema at `register_block_type()`. The placeholder's
+   * heading is translated by `wp_set_script_translations` against the
+   * bundle's catalogue instead — so `metadata.title` cannot be used there: it
+   * is the raw English string, and it would ship untranslated on every
+   * localised site while the inserter beside it was translated.
+   *
+   * Two catalogues, therefore two spellings, and the drift they permit is a
+   * merchant inserting one name and landing on a block headed another.
+   */
+  it('heads the placeholder with the title its metadata declares', () => {
+    const metadata = JSON.parse(read('resources/blocks/inline-optin/block.json'));
+
+    expect(read('resources/blocks/inline-optin/src/Edit.tsx')).toContain(
+      `__('${metadata.title}', 'wconvert')`,
+    );
+  });
+
+  /**
    * **The shortcode the placeholder offers is the shortcode PHP answers to.**
    *
    * This is the one that has no single declaration to fall back on: the tag is
