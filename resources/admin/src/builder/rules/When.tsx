@@ -3,7 +3,7 @@ import { Description } from '../../shell/Description';
 import { RuleRows, type Row } from '../RuleRows';
 import { AddRule } from './AddRule';
 import { RuleRow } from './RuleRow';
-import { IMMEDIATELY, idleTriggers } from './sentence';
+import { IMMEDIATELY, idleTriggers, repeatable } from './sentence';
 import type { Entry } from './axis';
 import type { Rule, RuleType } from '../api';
 
@@ -178,20 +178,19 @@ export function When({ types, entries, replace, remove, add, all }: WhenProps) {
               // control.
               type.type !== IMMEDIATELY &&
               // ==================================================================
-              // AND NOTHING IS OFFERED THAT COULD ONLY BE A DUPLICATE.
+              // AND A TYPE THAT CAN ONLY BE SET ONCE IS OFFERED ONCE.
               // ==================================================================
-              // A Trigger with no params — *About to leave*, *Scrolls back up* —
-              // has exactly one spelling, so a second is the SAME rule and can
-              // never be the reason anything fired. Offering it is us handing
-              // the merchant a dead rule.
+              // A second *Time on the page* is never what anyone wants: the
+              // lower threshold always fires and the other is dead. A second
+              // *About to leave* is the same rule written twice. Only a type
+              // whose params say WHICH thing — a selector — is two triggers
+              // when there are two of it.
               //
-              // A type that HAS params stays on offer however many are already
-              // there: a second `time_on_page` may well be lower than the first,
-              // and a second `click_element` is a different selector. Where one
-              // of those does turn out to be idle, the row says so — which is
-              // the right order, because only then is it knowable.
-              (Object.keys(type.params).length > 0 ||
-                !waiting.some(([rule]) => rule.type === type.type)),
+              // Offered and then explained was the shape before this: the
+              // merchant could make the mistake and got a notice about it. Not
+              // offering it is the better screen, and the notice stays only for
+              // rules that were already stored.
+              (repeatable(type) || !waiting.some(([rule]) => rule.type === type.type)),
           )}
           label={__('Add a trigger', 'wconvert')}
           onAdd={add}

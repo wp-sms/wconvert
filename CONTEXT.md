@@ -342,6 +342,20 @@ the lowest wins, so *"after 8 seconds or after 20 seconds"* is *"after 8
 seconds"*; and a Trigger with no params has one spelling, so a second is the
 same rule.
 
+**So a rule type is offered once**, and the exception is a type whose params
+say WHICH thing rather than how much: two `click_element`s are two selectors
+and two `query_param`s are two parameters, both real. Everything else — two
+thresholds, two of a type with no params — is one rule written twice, and the
+merchant is not offered the mistake rather than being told about it after they
+make it. A pair already stored is still shown, with a note, because a rule in
+`config` with nothing on screen to act on is worse than a rule that reads
+oddly.
+
+The mirror holds on the [[Condition]] axis and the trap there is sharper: they
+are ANDed, so a second of a kind NARROWS the first — `device [mobile]` beside
+`device [desktop]` holds for nobody. One rule carrying several values is what
+that merchant meant, which is what a set-valued scalar is for (ADR 0005).
+
 So the authoring surface asks **whether it waits** before it asks what for, and
 the two answers are `page_load` and a list. The model is unchanged — still one
 flat, ORed axis — and an Optin that already carries both still shows every rule

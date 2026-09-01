@@ -273,6 +273,36 @@ describe('who sees it', () => {
   });
 });
 
+describe('who sees it, when a kind is set twice', () => {
+  /**
+   * **Conditions are ANDed, so a second of a kind NARROWS the first.** *"On
+   * mobile or tablet"* AND *"on desktop"* holds for nobody, and every rule in
+   * it is individually fine — which is exactly why the section has to say so.
+   * One rule carrying several values is what the merchant meant (ADR 0005).
+   */
+  it('flags the section, even though each rule on its own is fine', () => {
+    const summary = whoSummary(
+      entries({ type: 'device', in: ['mobile'] }, { type: 'device', in: ['desktop'] }),
+      types,
+    );
+
+    expect(summary.attention).toBe(true);
+  });
+
+  /** Two of a kind that says WHICH thing are two real conditions. */
+  it('says nothing of the sort about two different parameters', () => {
+    expect(
+      whoSummary(
+        entries(
+          { type: 'query_param', key: 'utm_source', value: ['a'] },
+          { type: 'query_param', key: 'utm_medium', value: ['b'] },
+        ),
+        types,
+      ).attention,
+    ).toBe(false);
+  });
+});
+
 describe('one rule, read', () => {
   /**
    * ==========================================================================

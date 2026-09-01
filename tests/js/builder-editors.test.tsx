@@ -52,6 +52,18 @@ function panel(
 /** Open one disclosure by the question it answers. */
 const open = (eyebrow: string) => userEvent.click(screen.getByRole('button', { name: new RegExp(`^${eyebrow}`) }));
 
+/**
+ * Which rule types an add control is offering.
+ *
+ * Read off the `<optgroup>` labels rather than through `getByRole`: an
+ * `optgroup` maps to the ARIA `group` role and Testing Library does not expose
+ * it inside a `<select>`, so a query for one is null whether it is there or
+ * not — which would make the assertions below pass on a control offering
+ * nothing at all.
+ */
+const offered = (label: string): string[] =>
+  [...screen.getByLabelText(label).querySelectorAll('optgroup')].map((group) => group.label);
+
 describe('the four sections', () => {
   it('asks Where, When, Who and How often, in that order', () => {
     panel();
@@ -231,25 +243,65 @@ describe('when it shows and who sees it', () => {
    * to be idle the ROW says so, which is the right order — only then is it
    * knowable.
    */
-  it('stops offering a parameterless trigger once the Optin has it', async () => {
-    panel({ rules: [{ type: 'scroll_up' }] });
+  it.each([['scroll_up'], ['exit_intent']])('stops offering %s once the Optin has it', async (type) => {
+    panel({ rules: [{ type }] });
 
     await open('When');
 
-    const add = screen.getByLabelText('Add a trigger');
-
-    expect(within(add).queryByRole('option', { name: 'scroll_up' })).toBeNull();
-    // ...and still offers the ones a second of could differ.
-    expect(within(add).getAllByRole('option', { name: 'Set it myself' }).length).toBeGreaterThan(0);
+    expect(offered('Add a trigger')).not.toContain(type);
   });
 
-  it('keeps offering a trigger a second of could differ from the first', async () => {
+  /**
+   * **A threshold too, which is the case the merchant actually hits.** A
+   * second *Time on the page* is never what anyone wants: the lower one always
+   * fires and the other is dead. Offering it and then explaining the mistake
+   * was the shape before this.
+   */
+  it('stops offering a threshold trigger once the Optin has one', async () => {
+    panel({ rules: [{ type: 'time_on_page', seconds: 8 }] });
+
+    await open('When');
+
+    expect(offered('Add a trigger')).not.toContain('time_on_page');
+    // ...and the ones that ARE two different things stay on offer.
+    expect(offered('Add a trigger')).toContain('scroll_depth');
+  });
+
+  it('keeps offering a trigger whose params say WHICH thing', async () => {
     panel({ rules: [{ type: 'click_element', selector: '.a' }] });
 
     await open('When');
 
-    expect(within(screen.getByLabelText('Add a trigger')).queryByRole('option', { name: 'click_element' }))
-      .not.toBeNull();
+    expect(offered('Add a trigger')).toContain('click_element');
+  });
+
+  /**
+   * ==========================================================================
+   * AND THE SAME ON THE CONDITION AXIS, WHERE THE TRAP IS WORSE.
+   * ==========================================================================
+   * Conditions are ANDed, so `device [mobile]` beside `device [desktop]` is a
+   * rule that can never hold for anybody. One rule carrying several values is
+   * what the merchant meant, and a set-valued scalar is exactly what ADR 0005
+   * provides for it.
+   */
+  it('offers a condition once, and a second of the ones that differ', async () => {
+    panel({ rules: [{ type: 'device', in: ['mobile'] }, { type: 'query_param', key: 'utm_source', value: ['a'] }] });
+
+    await open('Who');
+
+    expect(offered('Add a condition')).not.toContain('device');
+    expect(offered('Add a condition')).toContain('query_param');
+  });
+
+  /** A pair already stored is shown and explained, never hidden. */
+  it('explains a stored second condition of a kind that may only be set once', async () => {
+    panel({ rules: [{ type: 'device', in: ['mobile'] }, { type: 'device', in: ['desktop'] }] });
+
+    await open('Who');
+
+    const notes = screen.getAllByText(/narrows the one above it/);
+
+    expect(notes).toHaveLength(1);
   });
 
   /**

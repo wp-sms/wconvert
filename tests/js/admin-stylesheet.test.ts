@@ -260,6 +260,12 @@ describe('the rules panel against the editor’s blanket rules', () => {
     // `#wconvert-admin :not(.wconvert-editor) > ul > li` at (1,1,2), and two
     // cards rendered with their borders touching.
     '.wconvert-rules > .wconvert-rule',
+    // Both found by walking every element on every screen and comparing what
+    // each component DECLARED against what the browser computed. `.wconvert-rules`
+    // asked for `margin: 0` and rendered 12px; `.wconvert-locked__list` asked
+    // for no marker indent and rendered 21px of one.
+    '.wconvert-rules',
+    '.wconvert-locked__list',
     '.wconvert-picker__empty',
     '.wconvert-allowance',
   ];

@@ -3,6 +3,7 @@ import { Description } from '../../shell/Description';
 import { RuleRows, type Row } from '../RuleRows';
 import { AddRule } from './AddRule';
 import { RuleRow } from './RuleRow';
+import { repeatable, surplus } from './sentence';
 import type { Entry } from './axis';
 import type { Rule, RuleType } from '../api';
 
@@ -30,9 +31,27 @@ export interface WhoProps {
 }
 
 export function Who({ types, entries, replace, remove, add, all }: WhoProps) {
+  // Which of them is a second of a kind that may only be set once. See
+  // {@link surplus}: on this axis the trap is worse than on the Trigger one —
+  // Conditions are ANDed, so `device [mobile]` beside `device [desktop]` is a
+  // rule that can never hold.
+  const extra = surplus(entries, all);
+
   const rows: Row[] = entries.map(([rule, at]) => ({
     key: String(at),
-    content: <RuleRow rule={rule} at={at} types={all} onChange={(next) => replace(at, next)} />,
+    content: (
+      <>
+        <RuleRow rule={rule} at={at} types={all} onChange={(next) => replace(at, next)} />
+        {extra.has(at) && (
+          <p className="wconvert-rule__note text-note">
+            {__(
+              'Combined with “and” — a second rule of this kind narrows the one above it rather than widening it.',
+              'wconvert',
+            )}
+          </p>
+        )}
+      </>
+    ),
     onRemove: () => remove(at),
   }));
 
@@ -40,7 +59,23 @@ export function Who({ types, entries, replace, remove, add, all }: WhoProps) {
     <>
       <Description>{__('All of these must be true when it fires.', 'wconvert')}</Description>
       <RuleRows rows={rows} empty={__('Nothing yet.', 'wconvert')} />
-      <AddRule axis={types} label={__('Add a condition', 'wconvert')} onAdd={add} />
+      {/*
+        ======================================================================
+        ONE OF EACH, UNLESS TWO OF IT COULD MEAN DIFFERENT THINGS.
+        ======================================================================
+        Two `query_param`s are two different parameters and are real. Two
+        `device`s are an INTERSECTION — "mobile AND desktop" holds for nobody —
+        and one rule carrying several values is what the merchant meant, which
+        is exactly what a set-valued scalar is for (ADR 0005). So the second is
+        not offered.
+      */}
+      <AddRule
+        axis={types.filter(
+          (type) => repeatable(type) || !entries.some(([rule]) => rule.type === type.type),
+        )}
+        label={__('Add a condition', 'wconvert')}
+        onAdd={add}
+      />
     </>
   );
 }

@@ -311,6 +311,79 @@ function same(left: unknown, right: unknown): boolean {
 }
 
 /**
+ * Can this rule type usefully appear more than once on one axis?
+ *
+ * ============================================================================
+ * ALMOST NONE OF THEM CAN, AND THE ADD CONTROL IS WHERE THAT BELONGS.
+ * ============================================================================
+ * A second *Time on the page* is never what anyone wants: Triggers are ORed
+ * and a threshold is crossed once, so the lower one always fires and the other
+ * is dead. A second *Device* is worse — Conditions are ANDed, so
+ * `device [mobile]` AND `device [desktop]` is a rule that can never hold, which
+ * is exactly what a set-valued scalar exists to prevent (ADR 0005: *"the real
+ * OR cases are set-valued scalars"* — one rule carrying several values, never
+ * several rules).
+ *
+ * **So a merchant is not offered the mistake**, rather than being told about it
+ * after they make it. A notice explaining a rule that should not have been
+ * addable is a worse screen than one that never offered it.
+ *
+ * The line is between a param that says WHICH thing the rule is about and one
+ * that says HOW MUCH or HOW MANY. Two `click_element`s are two different
+ * selectors and two `query_param`s are two different parameters — both real.
+ * Two `time_on_page`s, two `scroll_depth`s, two `device`s, two
+ * `cart_value_min`s and two of anything with no params at all are one rule
+ * written twice.
+ *
+ * Keyed on the CONTROL, so the shared vocabulary decides it and a rule type
+ * added to the manifest tomorrow is classified without touching this file
+ * (ADR 0005). It is asked of Targeting too, where every page rule names a
+ * page and so every one of them repeats — which is what a page list is.
+ */
+export const repeatable = (type: RuleType): boolean =>
+  Object.values(type.params).some((param) => IDENTIFYING.has(param.control));
+
+/** Controls that name WHICH thing, as against how much of it. */
+const IDENTIFYING: ReadonlySet<string> = new Set([
+  'text',
+  'selector',
+  'path_glob',
+  'post_id',
+  'term_id',
+  'post_type',
+]);
+
+/**
+ * The second and later of any rule whose type may appear only once.
+ *
+ * The counterpart of {@link repeatable} for rules that are ALREADY stored —
+ * saved before this screen existed, or prefilled by a [[Playbook]]. They are
+ * shown with a note rather than hidden, because a rule still in `config` with
+ * nothing on screen to act on is the failure the Unknown section exists to
+ * prevent.
+ */
+export function surplus(entries: readonly Entry[], types: readonly RuleType[]): ReadonlySet<number> {
+  const seen = new Set<string>();
+  const extra = new Set<number>();
+
+  for (const [rule, at] of entries) {
+    const declaration = types.find((each) => each.type === rule.type);
+
+    if (declaration !== undefined && repeatable(declaration)) {
+      continue;
+    }
+
+    if (seen.has(rule.type)) {
+      extra.add(at);
+    }
+
+    seen.add(rule.type);
+  }
+
+  return extra;
+}
+
+/**
  * The rule type that means "do not wait".
  *
  * Spelled once, here, and imported by the When section — the two places that
@@ -340,7 +413,10 @@ export function whoSummary(entries: readonly Entry[], types: readonly RuleType[]
       __('Only when %s', 'wconvert'),
       join(read.map((each) => each.text), _x('and', 'joins conditions, all of which must hold', 'wconvert')),
     ),
-    attention: read.some((each) => each.attention),
+    // A second Condition of a kind that may only be set once NARROWS the first
+    // — *"on mobile or tablet AND on desktop"* holds for nobody — so the
+    // section is flagged even though every rule in it is individually fine.
+    attention: read.some((each) => each.attention) || surplus(entries, types).size > 0,
   };
 }
 
