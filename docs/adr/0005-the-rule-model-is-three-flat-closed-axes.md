@@ -6,6 +6,23 @@ any one), and **Conditions** (*whether* the visitor is eligible — all must hol
 at the instant a Trigger fires). Within each axis the rules are a **flat list of
 `{type, scalar}` entries with implicit AND** — no groups, no nesting, ever.
 
+*Amended by [ADR 0048](0048-the-eligibility-inspector-runs-on-the-real-page.md):
+"never sent to the browser" is now **almost** true, and the exception is
+deliberate and narrow. The eligibility inspector prints the Targeting axis —
+with each rule's pass/fail against this request — into a second JSON tag, on a
+request that is admin-gated by `current_user_can()`, parameter-gated by
+`?wconvert-inspect=1`, and marked uncacheable. The ORDINARY payload still
+carries no Targeting at all: it is stripped in `PublishedOptin::toPayloadEntry()`
+and `tests/unit/Optin/PublishedProjectionTest.php` pins the keys that travel.
+What this ADR was protecting was the byte budget and the reason for it — nobody
+should pay for a rule the server already answered — and a tag nobody but an
+administrator can cause to exist pays none of it.*
+
+*The other half of this ADR that went unbuilt for as long: "a flat list yields a
+readable per-rule pass/fail table". That table is
+`WConvert\Targeting\TargetingExplainer` and the panel that draws it. The
+flatness is what made it a table.*
+
 *Completed by [#21](https://github.com/navidkashani/wconvert/issues/21) for the
 Targeting axis: "implicit AND" is the rule for the two CLIENT axes, and this
 originally read as though it were the rule for all three. Targeting is a **page

@@ -381,18 +381,22 @@ describe('the builder shell', () => {
   });
 
   /**
-   * The merge is a TAB and not a model: the two editors render unchanged, one
-   * under the other, still over the two client axes and the server one
-   * (ADR 0005).
+   * The merge is a TAB and not a model: all four questions are still over the
+   * two client axes, the server one and the allowance (ADR 0005).
+   *
+   * The three `<h3>`s became four disclosures whose LABEL is the question and
+   * whose body is the form, so this reads the buttons rather than the
+   * headings — and the fourth, How often, is the section that had no author
+   * anywhere before the rules panel was split into four.
    */
-  it('puts triggers, conditions and page targeting on that one tab', async () => {
+  it('puts where, when, who and how often on that one tab', async () => {
     open();
 
     await userEvent.click(await screen.findByRole('tab', { name: 'Display rules' }));
 
-    expect(screen.getByRole('heading', { name: 'When it shows' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Who sees it' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Where it shows' })).toBeInTheDocument();
+    for (const question of ['Where', 'When', 'Who', 'How often']) {
+      expect(await screen.findByRole('button', { name: new RegExp(`^${question}`) })).toBeInTheDocument();
+    }
   });
 
   /**

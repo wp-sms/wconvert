@@ -942,6 +942,15 @@
  * Scoped to lists WE draw. `.wconvert-editor` is deliberately excluded: the
  * builder's editors render prose lists that were written expecting WordPress's
  * rhythm, and taking it away would close their spacing up.
+ *
+ * **THE EXCLUSION IS WRITTEN AS A PARENT CHECK AND MEANS "NOT INSIDE ONE".**
+ * `:not(.wconvert-editor) > ul` only spares a list whose DIRECT parent is the
+ * editor, so every list nested one level deeper inside one — which is all of
+ * them in the rules panel — is zeroed after all. It is left as it is on
+ * purpose: this rule fixed a measured off-centre nav bar across the whole
+ * admin, and rewriting its reach is not a change to make from inside one
+ * screen. A component that wants its own spacing beats it on specificity
+ * instead, and `.wconvert-rules > .wconvert-rule` below is the one that does.
  * ------------------------------------------------------------------------- */
 #wconvert-admin :not(.wconvert-editor) > ul > li,
 #wconvert-admin :not(.wconvert-editor) > ol > li {
@@ -3360,18 +3369,84 @@
   align-items: center;
 }
 
-.wconvert-rules {
+/*
+ * ---------------------------------------------------------------------------
+ * A LIST OF CONTROLS, WHOSE OWN SPACING WAS A LIE FOR AS LONG AS IT EXISTED.
+ *
+ * `margin: 0` here is (0,1,0) and loses to `.wconvert-editor :is(p, h2, h3,
+ * h4, table, ul, ol)` at (0,2,0), so the list rendered with WordPress's 12px
+ * prose rhythm above and below it while the stylesheet said zero. The gap
+ * looked deliberate and was not — which is the worst kind of wrong, because
+ * nothing about it looks wrong.
+ *
+ * Found by walking every element on every screen and comparing what each
+ * component DECLARED against what the browser computed; the rules panel was
+ * the only place in the admin where any declaration lost, because it is the
+ * only screen still built from hand-written CSS rather than from the shared
+ * components.
+ *
+ * The value it now takes is the one it wanted: the group below owns the gap.
+ * ------------------------------------------------------------------------- */
+#wconvert-admin .wconvert-rules {
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.wconvert-rule {
+/*
+ * ---------------------------------------------------------------------------
+ * THE GAP BETWEEN TWO RULE CARDS, WHICH WAS ZERO.
+ *
+ * `.wconvert-rule { margin-block-end: 0.5rem }` is (0,1,0) and lost to
+ * `#wconvert-admin :not(.wconvert-editor) > ul > li` at (1,1,2) — the rule that
+ * zeroes wp-admin's 6px `li` margin, whose "not inside an editor" exclusion
+ * only reaches one level (see it, above). Measured on the built screen: two
+ * cards at `bottom: 535` and `top: 535`, borders touching, reading as one box
+ * with a line through it.
+ *
+ * `.wconvert-rules > .wconvert-rule` is (1,2,0), and a class outweighs any
+ * number of element selectors — so this wins without widening the reach of a
+ * rule the whole admin depends on.
+ * ------------------------------------------------------------------------- */
+#wconvert-admin .wconvert-rules > .wconvert-rule {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.5rem;
   margin-block-end: 0.5rem;
   padding: 0.5rem 0.75rem;
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
+}
+
+/*
+ * ---------------------------------------------------------------------------
+ * `Remove` SITS AT THE END OF THE CONTROLS, ALWAYS — NOT WHEREVER THE FLOW
+ * LEFT IT.
+ *
+ * The row was a block, so the button followed whatever came before it: after
+ * the last field on a plain rule, and on a line of its own under a rule that
+ * carries a note. Two rows in one list with the way out in two different
+ * places, and which one a merchant got depended on whether their rule happened
+ * to be substituted, locked, or behind another trigger.
+ *
+ * `order` puts it at the end of the FIRST line and pushes every note below,
+ * whatever order they arrive in the markup.
+ * ------------------------------------------------------------------------- */
+#wconvert-admin .wconvert-rule > .wconvert-rule__remove {
+  order: 1;
+  margin-inline-start: auto;
+}
+
+#wconvert-admin .wconvert-rule > p.wconvert-rule__note {
+  order: 2;
+  flex-basis: 100%;
+  margin: 0;
+}
+
+#wconvert-admin .wconvert-rules > .wconvert-rule:last-child {
+  margin-block-end: 0;
 }
 
 .wconvert-param {
@@ -3394,8 +3469,53 @@
  * dismissed once leaves the Optin carrying an invisible substitution forever
  * (ADR 0012).
  */
-.wconvert-rule__note {
-  margin: 0.5rem 0 0;
+/*
+ * The way out of a row, quietly. See `RuleRows`: this was WordPress's delete
+ * red, which made it the loudest thing in every rule and left the amber
+ * caution above it competing with a control for the merchant's eye.
+ */
+/*
+ * ---------------------------------------------------------------------------
+ * THE ALLOWANCE: THREE SETTINGS IN COLUMNS, BECAUSE INLINE THEY RAGGED.
+ *
+ * Each was `<label> <input> <hint>` in a paragraph, so every control started
+ * wherever its own label happened to end and the longest hint wrapped back to
+ * the far-left margin — a second line of explanation sitting under the label
+ * of the setting above it. Three columns put the labels, the fields and the
+ * hints each in one place, and let a hint wrap inside its own column.
+ * ------------------------------------------------------------------------- */
+#wconvert-admin .wconvert-allowance {
+  display: grid;
+  grid-template-columns: max-content max-content 1fr;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin-block-start: 0.75rem;
+}
+
+/*
+ * The two switches span the whole row: a checkbox names itself and has no
+ * field to line up with, so holding a column open for one would be an empty
+ * column on every row.
+ */
+#wconvert-admin .wconvert-allowance__switch {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+#wconvert-admin .wconvert-rule__remove {
+  color: var(--muted-foreground);
+}
+
+#wconvert-admin .wconvert-rule__remove:hover,
+#wconvert-admin .wconvert-rule__remove:focus-visible {
+  color: var(--destructive);
+}
+
+#wconvert-admin .wconvert-rule__note {
+  margin: 0.375rem 0 0;
   color: var(--muted-foreground);
   font-style: italic;
 }
@@ -3406,57 +3526,433 @@
 }
 
 /* ---------------------------------------------------------------------------
- * LOCKED RULE TYPES, AS CARDS FROM THE MANIFEST (#72, ADR 0015).
+ * `.wconvert-locked*` WAS HERE, AND IT IS GONE WITH THE COMPONENT IT DRESSED.
  *
- * They were a comma list appended to the sentence holding the add control —
- * three distinct capabilities read as a run-on. A card each is what ADR 0015
- * specified, and it is metadata rather than a disabled control: the premium
- * code is genuinely not in this bundle, so there is nothing here to disable.
+ * Ninety lines drawing two grids of cards — one for the premium types, one for
+ * the ones the site cannot serve — where every card repeated the reason its
+ * neighbour had just given. `.wconvert-absent` above replaced it: the reason
+ * once, as the label of the group, and each capability as a chip.
+ *
+ * ADR 0015's requirement is unchanged and still met — free's admin renders the
+ * `locked` card from the shared manifest, as metadata rather than a disabled
+ * control, with nothing a click could reach. A chip is that card at the size
+ * the fact deserves.
  * ------------------------------------------------------------------------- */
-.wconvert-locked {
-  margin-block: 0.75rem;
-}
 
-.wconvert-locked__heading {
-  margin: 0 0 0.5rem;
-  color: var(--muted-foreground);
-  font-weight: 600;
-}
-
-.wconvert-locked__list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+/* ---------------------------------------------------------------------------
+ * THE FOUR DISCLOSURES: WHERE, WHEN, WHO, HOW OFTEN.
+ *
+ * The collapsed row IS the sentence, so it carries the weight a heading would
+ * — it is what a merchant reads to decide whether to open the section at all.
+ *
+ * **Every measurement is logical.** The eyebrow sits before the sentence and
+ * the chevron after it, and in Persian all three flip; `index.css` already
+ * records why a `padding-left` is wrong in this admin, and this component is
+ * three things in a row.
+ * ------------------------------------------------------------------------- */
+.wconvert-sections {
+  display: flex;
+  flex-direction: column;
   gap: 0.5rem;
+}
+
+.wconvert-section {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+/*
+ * A `<button>` spanning the row, because the whole summary is the disclosure's
+ * label — a chevron alone would be a 16px target for a decision the merchant
+ * makes on every visit to this tab.
+ */
+#wconvert-admin .wconvert-section__summary {
+  /* A comfortable target: this is the control a merchant hits on every visit
+     to this tab, and 45px was the row rather than a decision. */
+  min-block-size: 2.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  inline-size: 100%;
+  padding: 0.75rem 1rem;
+  background: none;
+  border: 0;
+  color: var(--foreground);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+#wconvert-admin .wconvert-section__summary:hover {
+  background: var(--surface);
+}
+
+/*
+ * ---------------------------------------------------------------------------
+ * THE TYPE ROLES ARE STATED AS UTILITIES IN THE COMPONENTS, NOT HERE.
+ *
+ * `#wconvert-admin :is(p, li, td, th, label, legend, …)` forces
+ * `font-size: inherit` at ID specificity, and Tailwind's utilities are
+ * `!important` (ADR 0035) — so a `font-size` written here loses on every `<p>`
+ * and `<label>` while looking exactly like it works. `Stat`'s
+ * `text-micro uppercase text-muted-foreground` is the shape, and the four
+ * sections follow it.
+ *
+ * What is left here is layout: the eyebrow's column width, and the sentence
+ * taking the rest of the row.
+ * ------------------------------------------------------------------------- */
+.wconvert-section__eyebrow {
+  flex: none;
+  min-inline-size: 5.5rem;
+}
+
+.wconvert-section__sentence {
+  flex: 1;
+}
+
+/*
+ * ---------------------------------------------------------------------------
+ * AMBER, NOT RED — AND THE DISTINCTION IS ADR 0037's RESERVED PALETTE.
+ *
+ * Something in this section will not do what it looks like it does: a Trigger
+ * with no selector, a Trigger sitting behind "shows immediately", an Optin with
+ * no Trigger at all. None of those is a failure or a destruction, which is what
+ * `--destructive` means everywhere else in this admin — they are the site
+ * holding something back, which is exactly the reading amber already carries on
+ * the Optin list's *Suspended* badge.
+ *
+ * The summary already SAYS it in words; what this adds is the emphasis, so a
+ * merchant's eye lands on the one section that needs them before they open any
+ * of the four.
+ * ------------------------------------------------------------------------- */
+.wconvert-section[data-attention] .wconvert-section__sentence {
+  color: var(--warning);
+}
+
+/*
+ * ---------------------------------------------------------------------------
+ * THE HIERARCHY INSIDE A SECTION, WHICH WAS INVERTED.
+ *
+ * `.wconvert-editor :is(h2, h3, h4)` sets `--text-heading` (16px) for every
+ * heading in an editor, and it is right for the editors it was written for —
+ * their headings are direct children of the region. Inside a disclosure it is
+ * backwards: the section's own summary is body size, so an `<h4>` in its body
+ * rendered LARGER than the row that contains it and the child announced itself
+ * more loudly than the parent.
+ *
+ * The fix is not a smaller heading, it is that these were never headings.
+ * "Show it on" labels the list under it the way a field's label names its
+ * input, so it is a `micro` label — the register `Stat` and the table headers
+ * already use (ADR 0037).
+ * ------------------------------------------------------------------------- */
+/*
+ * ---------------------------------------------------------------------------
+ * "SHOW IT ON" AND "BUT NEVER ON" ARE TWO GROUPS, AND THEY READ AS ONE RUN.
+ *
+ * Label, card, Add, label, empty state, Add, and a field — seven rows down the
+ * left margin with nothing saying where the first list ended. The group is
+ * what carries "these three belong together"; the label alone was carrying it
+ * and could not.
+ * ------------------------------------------------------------------------- */
+#wconvert-admin .wconvert-rules__group + .wconvert-rules__group {
+  margin-block-start: 1.25rem;
+}
+
+#wconvert-admin .wconvert-rules__label {
+  margin: 0 0 0.375rem;
+}
+
+/* The `Add` under a list belongs to it, not to the next thing down. */
+#wconvert-admin .wconvert-rules__group > p:last-child {
+  margin: 0.5rem 0 0;
+}
+
+/*
+ * ---------------------------------------------------------------------------
+ * "DOES IT WAIT?" — THE ONE QUESTION THE TRIGGER AXIS IS ACTUALLY ASKING.
+ *
+ * `page_load` is `holds: () => true`, so an Optin carrying it fires the moment
+ * its Conditions hold and no other Trigger can ever be the reason. Offered as
+ * one entry in a list, it let a merchant choose "shows immediately" AND "after
+ * a few seconds" — a combination in which the seconds decide nothing.
+ *
+ * A fieldset with a real legend, because two radios with no group name are two
+ * unrelated controls to anything not looking at the screen.
+ *
+ * **`wait`, not `choice`.** `.wconvert-choice` is already the segmented control
+ * in `Tokens` and `BlockInspector`; this fieldset wore it for one commit and
+ * inherited a border, a hover and a checked state written for something else.
+ * ------------------------------------------------------------------------- */
+#wconvert-admin .wconvert-wait {
+  margin: 0 0 0.75rem;
+  padding: 0;
+  border: 0;
+}
+
+#wconvert-admin .wconvert-wait__legend {
+  padding: 0;
+}
+
+/*
+ * The two answers on one line: they are one decision, and stacked they read as
+ * two unrelated checkboxes.
+ */
+#wconvert-admin .wconvert-wait__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.25rem;
+  margin-block-start: 0.375rem;
+}
+
+#wconvert-admin .wconvert-wait__option {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
   margin: 0;
+}
+
+/*
+ * It turns because the disclosure is open, and `aria-expanded` on this same
+ * button is what says so to anything not looking at the screen.
+ */
+.wconvert-section__chevron {
+  flex: none;
+  inline-size: 1rem;
+  block-size: 1rem;
+  color: var(--muted-foreground);
+  transition: transform 150ms ease;
+}
+
+.wconvert-section__summary[data-state='open'] .wconvert-section__chevron {
+  transform: rotate(180deg);
+}
+
+/*
+ * ---------------------------------------------------------------------------
+ * EVERY MARGIN BELOW IS `#wconvert-admin`-PREFIXED, AND IT IS THE SAME TRAP
+ * THE TYPE ROLES FELL INTO ONE COMMIT EARLIER.
+ * ---------------------------------------------------------------------------
+ * `.wconvert-editor :is(p, h2, h3, h4, table, ul, ol) { margin-block: 0.75rem }`
+ * is (0,2,0). A bare `.wconvert-starters__name { margin: 0 }` is (0,1,0), so it
+ * LOSES — and the rule looks exactly like it works. Measured on the built
+ * screen: every `<p>` in a Starting-point card was 12px/12px on top of the
+ * flex gap, which made a 90px card 245px tall and left the name, the
+ * description and the label floating apart with no relationship to each other.
+ *
+ * The prose rhythm that rule sets is right for PROSE. These are components, and
+ * a component owns its own spacing — so the ID takes it back rather than each
+ * declaration racing a selector it cannot beat.
+ * ------------------------------------------------------------------------- */
+
+/*
+ * The body opens with its own breathing room rather than borrowing the first
+ * child's margin: `Description` is `m-0` from a Tailwind utility, which is
+ * `!important` (ADR 0035), so a `> :first-child` rule could never reach it and
+ * the first line sat flush against the divider.
+ */
+.wconvert-section__body {
+  padding: 0.875rem 1rem 1rem;
+  border-block-start: 1px solid var(--border);
+}
+
+/*
+ * A heading is not in the `font-size: inherit` list above, so it keeps the size
+ * `.wconvert-editor :is(h2, h3, h4)` gives it. What it needs here is the
+ * margin: these two sit at the top of their own block rather than in prose.
+ */
+.wconvert-rules__unknown > h3,
+#wconvert-admin .wconvert-starters > h3 {
+  margin-block: 0 0.25rem;
+}
+
+/*
+ * ---------------------------------------------------------------------------
+ * THE DIVIDER A CHANGE OF SUBJECT GETS, WHICH THESE TWO LOST BY BEING NESTED.
+ *
+ * `.wconvert-editor > h3` draws a rule above every change of subject in an
+ * editor, and it is a CHILD selector — so it stopped applying the moment these
+ * blocks moved inside `.wconvert-sections`' sibling. Stated here against the
+ * same border, so "Starting points" reads as a different thing from the four
+ * sections above it rather than as more of them.
+ * ------------------------------------------------------------------------- */
+/*
+ * Not one of the four. The four answer questions a merchant asks; this answers
+ * one they did not, so it sits below them with no summary of its own.
+ */
+.wconvert-rules__unknown,
+.wconvert-starters {
+  margin-block-start: 1.25rem;
+  padding-block-start: 1rem;
+  border-block-start: 1px solid var(--border);
+}
+
+/* ---------------------------------------------------------------------------
+ * STARTING POINTS — NOT "PRESETS", WHICH ALREADY MEANS THE PER-TYPE SHORTCUT
+ * INSIDE EVERY ONE OF THESE SECTIONS.
+ * ------------------------------------------------------------------------- */
+/*
+ * A grid of cards, and NOT a prose list — `.wconvert-editor :is(ul, ol):not(…)`
+ * gives every other list in an editor a marker and a 1.5em indent, and this one
+ * inherited both. Measured: a 21px left indent that pushed the whole grid off
+ * the heading above it.
+ */
+#wconvert-admin .wconvert-starters__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 0.5rem;
+  margin: 0.75rem 0 0;
   padding: 0;
   list-style: none;
 }
 
+/* ---------------------------------------------------------------------------
+ * ONE STARTING POINT: TWO ROWS, AND THE CARD IS THE BUTTON.
+ *
+ * It was four stacked rows — name, pitch, a small-caps line naming the
+ * sections, and a `Use this` button — 155px of card for about 45px of content,
+ * with seven copies of one word down a grid where the card is obviously the
+ * thing you press.
+ *
+ * The button went (the card was already the affordance) and the sections
+ * became a badge on the name's own line, which is what a classification looks
+ * like. Two rows, ~80px, and the pitch is what the eye lands on.
+ * ------------------------------------------------------------------------- */
 /*
- * Quiet on purpose: it names something absent, and a card that competes with
- * the controls beside it would read as one of them.
+ * Equal heights across a row: the grid stretches the `<li>` and the card fills
+ * it, so a row of choices reads as a row rather than as boxes that happened to
+ * end where their text did.
  */
-.wconvert-locked__card {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+#wconvert-admin .wconvert-starters__list > li {
+  display: grid;
   margin: 0;
-  padding: 0.5rem 0.75rem;
-  background: var(--surface);
-  border: 1px dashed var(--border);
+}
+
+#wconvert-admin .wconvert-starter {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 0.125rem;
+  inline-size: 100%;
+  padding: 0.625rem 0.75rem;
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+#wconvert-admin .wconvert-starter:hover {
+  border-color: var(--primary);
+}
+
+#wconvert-admin .wconvert-starter:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 1px;
+}
+
+/*
+ * Nothing to press: the premium code is not in this bundle and the missing
+ * plugin is not ours to install. Quiet, and no pointer — a card that looked
+ * pressable and was not would be the disabled control wp.org Guideline 9 is
+ * about, one step removed.
+ */
+#wconvert-admin .wconvert-starter--absent {
+  background: var(--surface);
+  border-style: dashed;
+  cursor: default;
+}
+
+/*
+ * The name and its badge share a line and WRAP rather than compete. A grid
+ * column gave the badge its natural width whatever happened, so a long one —
+ * *Needs WooCommerce* — squeezed the name into breaking mid-phrase: "Rescue an
+ * abandoned / cart". Wrapping puts the badge on its own line instead, which
+ * costs a row on one card rather than a bad line break on it.
+ */
+#wconvert-admin .wconvert-starter__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.25rem 0.5rem;
+  inline-size: 100%;
+}
+
+/* ---------------------------------------------------------------------------
+ * WHAT THIS INSTALL CANNOT RUN: THE REASON ONCE, THEN THE CHIPS.
+ *
+ * Two blocks of grid cards, each card repeating the sentence its neighbour had
+ * just made, under a heading that said it a third time — two hundred pixels to
+ * say one thing twice. A definition list is what the content is: the reason is
+ * the term, the capabilities are its description.
+ * ------------------------------------------------------------------------- */
+#wconvert-admin .wconvert-absent {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  align-items: baseline;
+  gap: 0.375rem 0.75rem;
+  margin: 0.75rem 0 0;
+}
+
+/*
+ * wp-admin's `common.css` says `dd, li { margin-bottom: 6px }` UNLAYERED, and
+ * an unlayered rule beats a cascade layer whatever its specificity — so
+ * Tailwind's preflight does not reach it. A `<dd>` also carries the UA's 40px
+ * indent. Both are taken back here rather than left to look deliberate.
+ */
+#wconvert-admin .wconvert-absent dd {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin: 0;
+}
+
+/* ---------------------------------------------------------------------------
+ * THE OBJECT PICKER — TARGETING A PAGE BY ITS NAME.
+ *
+ * The popup is `components/ui/popover.tsx`'s content with `role="listbox"`
+ * over it, so the positioning and collision handling are vendored and only the
+ * rows are ours. DOM focus never enters this list — the highlight is
+ * `aria-activedescendant` on the input — which is why the active row is styled
+ * off `data-active` rather than off `:focus`.
+ * ------------------------------------------------------------------------- */
+.wconvert-picker {
+  display: inline-block;
+}
+
+#wconvert-admin .wconvert-picker__list {
+  inline-size: min(24rem, 90vw);
+  max-block-size: 16rem;
+  padding: 0.25rem;
+  overflow-y: auto;
+}
+
+.wconvert-picker__option {
+  padding: 0.375rem 0.5rem;
+  border-radius: calc(var(--radius) - 2px);
+  cursor: pointer;
+}
+
+.wconvert-picker__option[data-active] {
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+
+/*
+ * Two pages genuinely do share a title, so the id is always shown — quietly,
+ * and a step down, because it is what tells two identical titles apart rather
+ * than something the merchant reads first.
+ */
+.wconvert-picker__id {
   color: var(--muted-foreground);
 }
 
-.wconvert-locked__icon {
-  flex: none;
-  inline-size: 0.875rem;
-  block-size: 0.875rem;
-}
-
-.wconvert-locked__label {
-  color: var(--foreground);
-  font-weight: 500;
+#wconvert-admin .wconvert-picker__empty {
+  margin: 0;
+  padding: 0.375rem 0.5rem;
 }
 
 .wconvert-option-set {

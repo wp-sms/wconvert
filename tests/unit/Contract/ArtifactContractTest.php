@@ -120,6 +120,11 @@ final class ArtifactContractTest extends TestCase
             'vendor/autoload.php' => "<?php\n// composer\n",
             'vendor/composer/autoload_psr4.php' => "<?php\nreturn array('WConvert\\\\' => array('/src'));\n",
             'public/loader/loader.js' => "console.log('loader');\n",
+            // Pro replaces this one on the same hook it replaces the loader
+            // (ADR 0048), so a ZIP missing it on EITHER tier is a real
+            // failure — and free's inspector on a Pro install would report
+            // every exit-intent Optin as inert while it worked.
+            'public/inspector/inspector.js' => "console.log('inspector');\n",
             'public/admin/main-abc12345.js' => "console.log('admin');\n",
             'public/admin/builder-def67890.js' => "console.log('builder');\n",
             'resources/loader/src/main.ts' => "export const boot = () => {};\n",
@@ -143,6 +148,7 @@ final class ArtifactContractTest extends TestCase
             'wconvert-pro.php' => "<?php\n// the plugin\n",
             'src/Bootstrap.php' => "<?php\nnamespace WConvert\\Pro;\nfinal class Bootstrap {}\n",
             'public/loader/loader.js' => "console.log('pro loader');\n",
+            'public/inspector/inspector.js' => "console.log('pro inspector');\n",
             'resources/loader/src/main.ts' => "export const boot = () => {};\n",
             ...$overrides,
         ]);

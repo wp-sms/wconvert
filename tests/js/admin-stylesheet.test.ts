@@ -226,3 +226,88 @@ describe('the design picker', () => {
     expect(CSS).not.toContain(':where(#wconvert-admin,');
   });
 });
+
+/**
+ * ============================================================================
+ * THE SPECIFICITY TRAP THAT CAUGHT THE RULES PANEL TWICE IN ONE PULL REQUEST.
+ * ============================================================================
+ * `.wconvert-editor` sets two blanket rules over the elements inside it —
+ * `:is(h2, h3, h4)` for size and `:is(p, h2, h3, h4, table, ul, ol)` for
+ * margin — and `#wconvert-admin :is(p, li, td, th, label, legend, …)` forces
+ * `font-size: inherit` on top of that. All three are (0,2,0) or (1,1,0).
+ *
+ * A component rule written as a bare class is (0,1,0) and **loses to every one
+ * of them while looking exactly like it works.** It caught the four sections
+ * on type first — the eyebrow rendered at body size and `<h4>Show it on</h4>`
+ * rendered LARGER than the section containing it — and then again on spacing:
+ * every `<p>` in a Starting-point card came out at 12px/12px, which made a
+ * 90px card 245px tall.
+ *
+ * Neither was visible to this suite, because Vitest computes no layout. What a
+ * source-text assertion CAN see is the shape of the fix, and that is what these
+ * hold: the type role is a Tailwind utility (they are `!important`, ADR 0035),
+ * and the box rule carries the ID.
+ */
+describe('the rules panel against the editor’s blanket rules', () => {
+  /** Every selector here sets a margin on an element the editor also matches. */
+  const BOXED = [
+    '.wconvert-rules__label',
+    '.wconvert-rules__group + .wconvert-rules__group',
+    '.wconvert-starters__list',
+    '.wconvert-starter',
+    '.wconvert-absent',
+    '.wconvert-rule__note',
+    // The card gap, which was zero: `.wconvert-rule` at (0,1,0) lost to
+    // `#wconvert-admin :not(.wconvert-editor) > ul > li` at (1,1,2), and two
+    // cards rendered with their borders touching.
+    '.wconvert-rules > .wconvert-rule',
+    // Both found by walking every element on every screen and comparing what
+    // each component DECLARED against what the browser computed. `.wconvert-rules`
+    // asked for `margin: 0` and rendered 12px; `.wconvert-locked__list` asked
+    // for no marker indent and rendered 21px of one.
+    '.wconvert-rules',
+    '.wconvert-picker__empty',
+    '.wconvert-allowance',
+  ];
+
+  it.each(BOXED)('carries the id on %s, or its margin silently loses', (selector) => {
+    const rules = [...CSS.matchAll(new RegExp(`([^\n{}]*${selector.replace(/[.+]/g, '\\$&')})\\s*\\{`, 'g'))];
+
+    expect(rules.length, `${selector} is not in the stylesheet`).toBeGreaterThan(0);
+
+    for (const [, matched] of rules) {
+      expect(matched.trim(), selector).toMatch(/#wconvert-admin/);
+    }
+  });
+
+  /**
+   * The type roles are stated as utilities in the components, so the
+   * stylesheet must not be trying to state them again — a `font-size` on any
+   * of these is a declaration that cannot win.
+   */
+  it('states no font-size for the roles the components carry as utilities', () => {
+    for (const selector of [
+      '.wconvert-section__eyebrow',
+      '.wconvert-section__sentence',
+      '.wconvert-rules__label',
+      '.wconvert-starter__name',
+      '.wconvert-starter__what',
+    ]) {
+      const block = new RegExp(`\\${selector}\\s*\\{[^}]*\\}`, 'g');
+
+      for (const [matched] of CSS.matchAll(block)) {
+        expect(matched, selector).not.toMatch(/font-size:/);
+      }
+    }
+  });
+
+  /**
+   * **One class, one component.** `.wconvert-choice` is the segmented control
+   * in `Tokens` and `BlockInspector`; the When section wore it for one commit
+   * and inherited a border, a hover and a checked state written for something
+   * else.
+   */
+  it('does not let two components share the segmented control’s class', () => {
+    expect([...CSS.matchAll(/^\.wconvert-choice\s*\{/gm)].length).toBe(1);
+  });
+});

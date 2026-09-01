@@ -9,6 +9,24 @@ And where a control goes is not a question of where it fits. **It is decided by
 what the control acts on**: the screen, a region's data set, one row, or a
 selection. Each of those has exactly one home.
 
+*Extended by [ADR 0048](0048-the-eligibility-inspector-runs-on-the-real-page.md):
+**the same rule decides where a FACT goes.** A fact that is identical
+for every item in a group belongs to the group; only what differs per item goes
+on the item. The rules panel had it the other way round and it cost the screen
+twice — every "not available" card repeated `Needs WooCommerce on this site.`
+under a heading that had just said it, and every Starting point carried a
+`Use this` button in a grid where the card was already the thing you press.
+Roughly 200px and 60px per card respectively, spent saying one thing several
+times.*
+
+*Two corollaries worth having by name. **Group by the fact, not by the state**:
+absent capabilities are grouped by WHICH plugin they are waiting on rather than
+lumped under "not available", which is ADR 0026's "do not make them guess which
+of their plugins did it" applied to the shape rather than only to the words.
+And **a classification is a badge, not a row** — "When", "Where", "Needs
+WooCommerce" are metadata about the card and sat on lines of their own,
+at the same weight as the sentence that was the point of the card.*
+
 [ADR 0035](0035-the-admin-owns-its-page.md) made the page WConvert's and
 [ADR 0037](0037-the-admin-inherits-token-structure-and-owns-its-values.md) gave
 it a palette. Neither said where anything goes. This is that, and it is written

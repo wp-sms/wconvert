@@ -426,4 +426,77 @@ final class OptinWriteTest extends TestCase
 
         $this->assertNotInstanceOf(WP_Error::class, $this->controller->update($request));
     }
+
+    // ========================================================================
+    // THE ALLOWANCE AND THE PRIORITY, WHICH TRAVELLED UNVALIDATED UNTIL THEY
+    // GAINED AN AUTHOR (ADR 0047's amendment).
+    // ========================================================================
+
+    /**
+     * @param array<string, mixed> $config
+     * @return array<string, mixed>
+     */
+    private function savedConfig(array $config): array
+    {
+        $created = $this->create(Goal::PromoteOffer, $config);
+
+        $this->assertIsArray($created, 'the fixture must save, or nothing below is about normalisation');
+
+        /** @var array<string, mixed> $saved */
+        $saved = $created['config'];
+
+        return $saved;
+    }
+
+    /**
+     * **The four fields the loader has always read, now validated on the way
+     * in.** Until this, `frequency` was whatever the client posted: a config
+     * blob key with no branch anywhere in PHP, reaching
+     * `resources/loader/src/frequency.ts` as passthrough.
+     */
+    public function testTheAllowanceIsNormalisedOnTheWayIn(): void
+    {
+        $saved = $this->savedConfig(['frequency' => [
+            'maxImpressions' => '3',
+            'cooldownDays' => 0,
+            'stopAfterDismiss' => true,
+            'stopAfterConversion' => false,
+            'once_per' => 'session',
+        ]]);
+
+        $this->assertSame(
+            ['maxImpressions' => 3, 'stopAfterConversion' => false],
+            $saved['frequency'] ?? null
+        );
+    }
+
+    /**
+     * **An allowance that says nothing loses its key entirely**, rather than
+     * being stored as `[]`. The payload is inlined into every matching page
+     * against a 2KB budget, and an empty object is bytes with no reader.
+     */
+    public function testAnAllowanceWithNothingInItIsDroppedRatherThanStoredEmpty(): void
+    {
+        $saved = $this->savedConfig(['frequency' => ['stopAfterDismiss' => true, 'maxImpressions' => 0]]);
+
+        $this->assertArrayNotHasKey('frequency', $saved);
+    }
+
+    /**
+     * **Absent and zero are the same rule**, because `arbitrate()` reads
+     * `priority ?? 0` — so the spelling that costs nothing is the one to
+     * store.
+     */
+    public function testAZeroPriorityIsDroppedAndANegativeOneIsKept(): void
+    {
+        $this->assertArrayNotHasKey('priority', $this->savedConfig(['priority' => 0]));
+        $this->assertSame(-5, $this->savedConfig(['priority' => -5])['priority'] ?? null);
+        $this->assertSame(10, $this->savedConfig(['priority' => '10'])['priority'] ?? null);
+    }
+
+    /** A priority that is not a number is not a priority. */
+    public function testANonNumericPriorityIsDropped(): void
+    {
+        $this->assertArrayNotHasKey('priority', $this->savedConfig(['priority' => 'urgent']));
+    }
 }

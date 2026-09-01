@@ -20,6 +20,17 @@ final class Routes
     public const NAMESPACE = 'wconvert/v1';
 
     /**
+     * The one capability every administration surface is gated on.
+     *
+     * Named rather than written out at each `current_user_can()`, because the
+     * eligibility inspector is gated on it OUTSIDE the REST layer — it prints
+     * a report of every Optin on the site into a front-end page, and the day
+     * this capability changes, that gate and the routes must change together
+     * or the quietest surface is the one left open.
+     */
+    public const MANAGE_CAPABILITY = 'manage_options';
+
+    /**
      * Everything WConvert exposes is an administration surface, so one
      * capability covers all of it — with exactly two exceptions,
      * {@see self::canCapture()} and {@see self::canBeacon()} below. Both are
@@ -28,7 +39,7 @@ final class Routes
      */
     public static function canManage(): bool
     {
-        return current_user_can('manage_options');
+        return current_user_can(self::MANAGE_CAPABILITY);
     }
 
     /**

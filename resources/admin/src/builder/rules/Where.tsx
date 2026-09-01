@@ -1,10 +1,11 @@
 import { __ } from '@wordpress/i18n';
-import { ParamField } from './controls';
-import { RuleRows, type Row } from './RuleRows';
-import type { RuleType } from './api';
+import { Description } from '../../shell/Description';
+import { ParamField } from '../controls';
+import { RuleRows, type Row } from '../RuleRows';
+import type { RuleType, Targeting } from '../api';
 
 /**
- * *Where* an Optin is allowed to appear.
+ * *Where* it may appear — the Targeting axis, as the Where section's body.
  *
  * ============================================================================
  * EXCLUDE BEATS INCLUDE, AND THE SCREEN SAYS SO.
@@ -23,15 +24,11 @@ import type { RuleType } from './api';
  * The lists are a union of page SETS, so a visitor rule dropped into the
  * include list would widen the Optin to the whole site for anyone matching it.
  * Read whole, the axis is `page-set AND logged_in` (ADR 0005).
+ *
+ * This was `TargetingEditor`, whole; what it lost is its own `<h3>`, because
+ * the section above it is the heading now.
  */
-
-export interface Targeting {
-  include?: { type: string; value: unknown }[];
-  exclude?: { type: string; value: unknown }[];
-  logged_in?: boolean;
-}
-
-export interface TargetingEditorProps {
+export interface WhereProps {
   readonly types: readonly RuleType[];
   readonly targeting: Targeting;
   readonly onChange: (targeting: Targeting) => void;
@@ -51,7 +48,7 @@ const SIGNED_IN = [
   { value: 'no', label: __('Only signed-out visitors', 'wconvert') },
 ];
 
-export function TargetingEditor({ types, targeting, onChange }: TargetingEditorProps) {
+export function Where({ types, targeting, onChange }: WhereProps) {
   // The five page rules. `logged_in` is on this axis only because the client
   // cannot read WordPress's HttpOnly auth cookie, and it is not a page set.
   const pages = types.filter((type) => type.kind === 'page');
@@ -62,10 +59,15 @@ export function TargetingEditor({ types, targeting, onChange }: TargetingEditorP
 
   return (
     <>
-      <h3>{__('Where it shows', 'wconvert')}</h3>
-      <p className="description">
+      {/*
+        `mb-3` rather than a margin in the stylesheet: `Description` carries
+        `m-0` as a Tailwind utility, which is `!important` (ADR 0035), so no
+        hand-written rule can reach it. Without this the sentence sat directly
+        on top of "SHOW IT ON" with no gap at all.
+      */}
+      <Description className="mb-3">
         {__('Empty means everywhere. Exclusions always win.', 'wconvert')}
-      </p>
+      </Description>
 
       <RuleList
         list="include"
@@ -85,8 +87,15 @@ export function TargetingEditor({ types, targeting, onChange }: TargetingEditorP
         onChange={(rules) => setList('exclude', rules)}
       />
 
+      {/*
+        A third group, not a stray field. `logged_in` is held APART from the two
+        lists — they are a union of page SETS and a visitor rule dropped into
+        one would widen the Optin to the whole site for anyone matching it
+        (ADR 0005) — so it needs the same separation between it and them that
+        they have between each other.
+      */}
       {visitor !== undefined && (
-        <p>
+        <p className="wconvert-rules__group">
           <label>
             {visitor.label}{' '}
             <select
@@ -130,9 +139,10 @@ interface RuleListProps {
  * One list, typed.
  *
  * A Targeting rule is `{type, value}` and nothing else, and the control its
- * value takes follows from the type — a post id is a number, a content type is
- * a select of what this site registers, a path is a glob. Which is what makes
- * this a picker rather than a pair of free-text boxes.
+ * value takes follows from the type — a post id is a picker over
+ * `wp/v2/search`, a content type is a select of what this site registers, a
+ * path is a glob. Which is what makes this a picker rather than a pair of
+ * free-text boxes.
  */
 function RuleList({ list, heading, empty, types, rules, onChange }: RuleListProps) {
   const rows: Row[] = rules.map((rule, at) => {
@@ -159,8 +169,24 @@ function RuleList({ list, heading, empty, types, rules, onChange }: RuleListProp
   });
 
   return (
-    <>
-      <h4>{heading}</h4>
+    /*
+      ==================================================================
+      ONE GROUP PER LIST, AND A LABEL RATHER THAN A HEADING.
+      ==================================================================
+      The two lists rendered as one run of rows down the left margin —
+      label, card, Add, label, empty state, Add — with nothing saying where
+      "Show it on" ended and "But never on" began. The GROUP is what carries
+      "these three belong together"; the label alone was carrying it and
+      could not.
+
+      And it is not a heading. `.wconvert-editor :is(h2, h3, h4)` sets 16px,
+      so `<h4>Show it on</h4>` rendered LARGER than the section summary that
+      contains it — the child announcing itself more loudly than the parent.
+      "Show it on" names the list under it the way a field's label names its
+      input, which is `--text-micro`'s role (ADR 0037).
+    */
+    <div className="wconvert-rules__group">
+      <p className="wconvert-rules__label text-micro uppercase text-muted-foreground">{heading}</p>
       <RuleRows rows={rows} empty={empty} />
       <p>
         <label>
@@ -182,6 +208,6 @@ function RuleList({ list, heading, empty, types, rules, onChange }: RuleListProp
           </select>
         </label>
       </p>
-    </>
+    </div>
   );
 }

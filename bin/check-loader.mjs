@@ -29,6 +29,20 @@
 //      opposite verdicts; WSMS's own script warns against exactly the unscoped
 //      version.
 //
+//      AND DO NOT SCAN THE INSPECTOR BUNDLE EITHER, for the admin bundle's
+//      reason rather than the loader's. `public/inspector/inspector.js` is
+//      admin-gated and parameter-gated (ADR 0048): it is enqueued only for a
+//      merchant holding `manage_options` who asked for it by name, never for a
+//      visitor. Its whole job is to EXPLAIN, which on a free install includes
+//      naming the premium rule types this site cannot run — the same honest
+//      upsell the admin bundle carries. Scanning it would fail the build on
+//      the feature working correctly.
+//
+//      It is not exempt from everything: `bin/verify-artifact-contract.sh`
+//      requires it in both ZIPs, and `tests/js/inspector-parity.test.ts` walks
+//      the import graph from each LOADER entry and asserts it never reaches
+//      `inspect/` — which is what keeps the budget below honest.
+//
 // IT FAILS CLOSED. A check that cannot inspect what it was asked to inspect
 // FAILS, because "couldn't look" reading as "clean" is how a leak ships the
 // one time a build is incomplete.
@@ -49,7 +63,13 @@ import { fileURLToPath } from 'node:url';
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const ROOT = process.argv[2] ? resolve(process.argv[2]) : REPO_ROOT;
 
-/** Free's and Pro's shipped loader, gzip -9, per build (ADR 0014, ADR 0029). */
+/**
+ * Free's and Pro's shipped loader, gzip -9, per build (ADR 0014, ADR 0029).
+ *
+ * The eligibility inspector carries no budget and is not listed below. The
+ * 8KB limit is about what every visitor of every matching page downloads, and
+ * that bundle is enqueued only for an administrator who asked for it.
+ */
 const BYTE_BUDGET = 8192;
 
 const BUNDLES = [

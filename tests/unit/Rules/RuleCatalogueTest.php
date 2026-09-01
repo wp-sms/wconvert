@@ -64,9 +64,9 @@ final class RuleCatalogueTest extends TestCase
         self::fail(sprintf('%s declares no %s', $axis, $type));
     }
 
-    public function testItCarriesAllThreeAxes(): void
+    public function testItCarriesAllThreeAxesAndTheStartingPoints(): void
     {
-        $this->assertSame(['targeting', 'triggers', 'conditions'], array_keys(self::catalogue()));
+        $this->assertSame(['targeting', 'triggers', 'conditions', 'bundles'], array_keys(self::catalogue()));
     }
 
     /**
@@ -126,7 +126,14 @@ final class RuleCatalogueTest extends TestCase
             $device['params']['in']['options']
         );
         $this->assertSame(
-            ['id' => 'mobile_only', 'label' => 'On mobile only', 'fixed' => ['in' => ['mobile']]],
+            [
+                'id' => 'mobile_only',
+                'label' => 'On mobile only',
+                // The same preset read inside a sentence rather than over a
+                // control — "Fires ... on mobile", never "Fires On mobile only".
+                'phrase' => 'they are on mobile',
+                'fixed' => ['in' => ['mobile']],
+            ],
             $device['presets'][0]
         );
     }
@@ -279,5 +286,62 @@ final class RuleCatalogueTest extends TestCase
 
         $this->assertSame('unavailable', $described['availability']);
         $this->assertSame('Has something in their cart', $described['label']);
+    }
+
+    /**
+     * **And it NAMES what is missing**, which is what stops the rules panel and
+     * the Optin list disagreeing.
+     *
+     * {@see \WConvert\Optin\Suspension::reason()} already tells this same
+     * merchant *"the “Has something in their cart” rule needs WooCommerce"*.
+     * Without this key the panel holding the rule could say only "not
+     * available", which is the sentence ADR 0026 rejects on the list for
+     * leaving them to guess which of their plugins did it.
+     */
+    public function testAnUnavailableRuleNamesTheDependencyItIsMissing(): void
+    {
+        $described = self::type(self::catalogue(true, false), 'conditions', 'cart_has_items');
+
+        $this->assertSame('WooCommerce', $described['requires_label']);
+    }
+
+    /**
+     * **`locked` names nothing**, because the cause is the tier and the tier is
+     * ours to sell. The precedence is {@see Availability::of()}'s and is not
+     * re-derived here: a rule declaring a dependency the site HAS is `locked`,
+     * and a free install with a store must never be told it needs WooCommerce.
+     */
+    public function testALockedRuleNamesNoDependency(): void
+    {
+        $this->assertNull(self::type(self::catalogue(false), 'conditions', 'cart_has_items')['requires_label']);
+        $this->assertNull(self::type(self::catalogue(false), 'triggers', 'exit_intent')['requires_label']);
+    }
+
+    /** And a rule that runs here has nothing to explain. */
+    public function testAReadyRuleNamesNoDependency(): void
+    {
+        $this->assertNull(self::type(self::catalogue(true), 'triggers', 'page_load')['requires_label']);
+    }
+
+    /**
+     * **Every described type carries the key**, present or null, so the admin
+     * reads one shape. A key that appears only on the rules that need it is a
+     * key the client has to test for existence AND for null.
+     */
+    public function testEveryDescribedTypeCarriesTheKey(): void
+    {
+        foreach ([self::catalogue(true, false), self::catalogue(false), self::catalogue(true)] as $catalogue) {
+            foreach ($catalogue as $axis => $types) {
+                // The Starting points are on the same response and are not
+                // rule types; they carry the key too, but keyed by `id`.
+                if ($axis === 'bundles') {
+                    continue;
+                }
+
+                foreach ($types as $described) {
+                    $this->assertArrayHasKey('requires_label', $described, $axis . '.' . $described['type']);
+                }
+            }
+        }
     }
 }

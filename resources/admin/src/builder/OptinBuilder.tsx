@@ -23,7 +23,7 @@ import { useTemplateTrees } from './TemplatePicker';
 import { DesignToolbar } from './DesignToolbar';
 import { DestinationsEditor } from './DestinationsEditor';
 import { Preview } from './Preview';
-import { RulesEditor } from './RulesEditor';
+import { DisplayRules } from './rules/DisplayRules';
 import { DevExport } from './DevExport';
 import { StructureView } from './StructureView';
 import { Tokens } from './Tokens';
@@ -33,8 +33,15 @@ import type { ConvertingAct } from './structure/catalogue';
 import { listGoals } from '../goals/api';
 import { stepName } from './BlockRow';
 import { TOKENS, slotsOf, type Path } from './panel';
-import { TargetingEditor, type Targeting } from './TargetingEditor';
-import { getOptin, getRules, saveOptin, type Rule, type RuleVocabulary } from './api';
+import {
+  getOptin,
+  getRules,
+  saveOptin,
+  type Frequency,
+  type Rule,
+  type RuleVocabulary,
+  type Targeting,
+} from './api';
 import { keyOfSlot, pathOfKey, type Selection, type SlotKey } from './slots';
 import {
   getTemplateTrees,
@@ -1175,16 +1182,21 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
             <TabsContent value="rules">
               <Region label={__('Display rules', 'wconvert')}>
                 <RegionBody className="wconvert-editor">
-                  <RulesEditor
-                    triggers={vocabulary.triggers}
-                    conditions={vocabulary.conditions}
-                    rules={Array.isArray(config.rules) ? (config.rules as Rule[]) : []}
-                    onChange={(rules) => edit({ rules })}
-                  />
-                  <TargetingEditor
-                    types={vocabulary.targeting}
-                    targeting={(config.targeting ?? {}) as Targeting}
-                    onChange={(targeting) => edit({ targeting })}
+                  <DisplayRules
+                    vocabulary={vocabulary}
+                    value={{
+                      rules: Array.isArray(config.rules) ? (config.rules as Rule[]) : [],
+                      targeting: (config.targeting ?? {}) as Targeting,
+                      frequency: (config.frequency ?? {}) as Frequency,
+                      // Absent and zero are the same rule — `arbitrate()`
+                      // reads `priority ?? 0`, and the save route drops a
+                      // stored 0 for exactly that reason.
+                      priority: typeof config.priority === 'number' ? config.priority : 0,
+                    }}
+                    // Only an overlay competes for the screen, so only an
+                    // overlay has a priority worth drawing.
+                    overlay={displayTypeOf(config, templates) !== 'inline'}
+                    onChange={(patch) => edit(patch as Config)}
                   />
                 </RegionBody>
               </Region>
