@@ -1004,7 +1004,7 @@ describe('the verdict', () => {
     await structure();
 
     expect(screen.queryByText('This will work')).toBeNull();
-    expect(screen.queryByText('To fix')).toBeNull();
+    expect(screen.queryByText(/thing to fix|things to fix/)).toBeNull();
   });
 
   /**
@@ -1031,9 +1031,19 @@ describe('the verdict', () => {
     await userEvent.clear(screen.getByLabelText('muted value'));
     await userEvent.type(screen.getByLabelText('muted value'), '#f4f4f5');
 
-    expect(await screen.findByText(/too close to the background/)).toBeInTheDocument();
+    /*
+      **On the collapsed row**, which is what a merchant sees on every visit:
+      the panel opens closed, so the count is the part that has to reach them
+      without a press. The sentence itself is one click away, and readable from
+      whichever tab they are on rather than from the two that edit the design.
+    */
+    expect(await screen.findByText('1 thing to fix')).toBeInTheDocument();
 
     await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
+
+    expect(screen.getByText('1 thing to fix')).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: /thing to fix/ }));
 
     expect(screen.getByText(/too close to the background/)).toBeInTheDocument();
   });
@@ -1053,6 +1063,7 @@ describe('the verdict', () => {
     await structure();
     await menu('Fine print');
     await userEvent.click(screen.getByRole('menuitem', { name: /Duplicate/ }));
+    await userEvent.click(screen.getByRole('button', { name: /thing to fix/ }));
 
     const problem = screen.getByRole('button', { name: /no name of its own/ });
 

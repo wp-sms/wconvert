@@ -3565,6 +3565,86 @@
 
 /*
  * ---------------------------------------------------------------------------
+ * THE COLLAPSED ROW, WHICH IS THE PANEL MOST OF THE TIME.
+ * ---------------------------------------------------------------------------
+ * Open, the panel is ~174px above the tab strip on every visit. Collapsed it is
+ * 44px and still answers what the campaign is for and whether the site is
+ * serving it — which is the whole reason it exists, so hiding it behind an icon
+ * would have restored the fault it was built for.
+ *
+ * A `<button>` spanning the row, because the whole summary is the disclosure's
+ * label: a chevron alone is a 16px target for a decision a merchant makes on
+ * every visit. Measured against `.wconvert-section__summary`, which is the same
+ * control on the rules tab and where these numbers come from.
+ */
+#wconvert-admin .wconvert-readiness__summary {
+  min-block-size: 2.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  inline-size: 100%;
+  padding: 0.5rem 1rem;
+  background: none;
+  border: 0;
+  color: var(--foreground);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+#wconvert-admin .wconvert-readiness__summary:hover {
+  background: var(--surface);
+}
+
+/* The sentence takes the row; the badge and the flag take what they need. */
+.wconvert-readiness__line {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+/*
+ * ---------------------------------------------------------------------------
+ * AMBER, AND ONLY WHERE THERE IS SOMETHING TO SAY.
+ * ---------------------------------------------------------------------------
+ * The same reading the four disclosures give the same flag: not a failure and
+ * not a destruction, which is what `--destructive` means everywhere else — it
+ * is something that will not do what it looks like it does. A merchant who has
+ * collapsed the panel still sees that one thing.
+ */
+.wconvert-readiness__flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex: none;
+  color: var(--warning);
+}
+
+/*
+ * It turns because the disclosure is open, and `aria-expanded` on this same
+ * button is what says so to anything not looking at the screen.
+ */
+.wconvert-readiness__chevron {
+  flex: none;
+  inline-size: 1rem;
+  block-size: 1rem;
+  color: var(--muted-foreground);
+  transition: transform 150ms ease;
+}
+
+.wconvert-readiness__summary[data-state='open'] .wconvert-readiness__chevron {
+  transform: rotate(180deg);
+}
+
+/*
+ * The body opens under a rule, so the summary above reads as the label of what
+ * follows rather than as the first of its rows.
+ */
+.wconvert-readiness__summary[data-state='open'] {
+  border-block-end: 1px solid var(--border);
+}
+
+/*
+ * ---------------------------------------------------------------------------
  * TWO GROUPS: WHAT THIS OPTIN IS, AND WHEN IT SHOWS.
  * ---------------------------------------------------------------------------
  * Declared rather than left to a flowing grid, and that was measured too: one

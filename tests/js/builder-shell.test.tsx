@@ -639,11 +639,48 @@ describe('the readiness panel', () => {
   const fact = (name: string) =>
     screen.getByText(name, { selector: 'dt' }).nextElementSibling;
 
-  it('says what the Optin is for, and what it will be judged on', async () => {
+  /**
+   * Open the panel.
+   *
+   * **It is collapsed on arrival**, because open it is ~174px above the tab
+   * strip on every visit and most of what it holds answers a question a
+   * merchant asks once. What survives the collapse is asserted first, below.
+   */
+  const expand = async () =>
+    userEvent.click(await screen.findByRole('button', { name: /Grow my email list|Draft|Suspended/ }));
+
+  /**
+   * ==========================================================================
+   * WHAT SURVIVES THE COLLAPSE IS THE WHOLE DESIGN DECISION.
+   * ==========================================================================
+   * Hiding the panel behind an icon would restore the fault it was built for: a
+   * merchant who cannot see what the campaign is for or whether the site is
+   * serving it. The collapsed row keeps exactly those, in one line, and costs a
+   * quarter of the height.
+   */
+  it('says what the Optin is for and whether it is live without being opened', async () => {
     open();
 
-    expect(await screen.findByText('Grow my email list')).toBeInTheDocument();
-    expect(screen.getByText('Counts Submissions.')).toBeInTheDocument();
+    expect(await screen.findByText(/Grow my email list · counts Submissions/)).toBeInTheDocument();
+    expect(screen.getByText('Draft')).toBeInTheDocument();
+
+    // And the detail is genuinely away rather than merely hidden.
+    expect(screen.queryByText('On every page')).toBeNull();
+  });
+
+  /**
+   * **And it is not said twice.** The summary row carries the Goal and its
+   * metric whether the panel is open or shut, so a row for them inside would be
+   * the same fact repeated the moment a merchant opened it — which is what the
+   * state badge was doing until it moved up there for the same reason.
+   */
+  it('does not repeat the goal inside once the panel is opened', async () => {
+    open();
+    await expand();
+
+    expect(await screen.findByText('On every page')).toBeInTheDocument();
+    expect(screen.queryByText('Grow my email list', { selector: 'dd' })).toBeNull();
+    expect(screen.getAllByText(/Grow my email list/)).toHaveLength(1);
   });
 
   it('names the playbook it was started from', async () => {
@@ -658,6 +695,7 @@ describe('the readiness panel', () => {
     );
 
     open();
+    await expand();
 
     expect(await screen.findByText('Welcome discount', { selector: 'dd' })).toBeInTheDocument();
   });
@@ -679,7 +717,16 @@ describe('the readiness panel', () => {
 
     open();
 
+    // The badge is on the collapsed row, so the state survives the collapse.
     expect(await screen.findByText('Suspended')).toBeInTheDocument();
+
+    /*
+     * And the CAUSE is inside, because it is the half that only exists
+     * sometimes — a second badge in there was the same fact twice the moment
+     * the panel was opened.
+     */
+    await expand();
+
     expect(screen.getByText('Suspended — WConvert Pro is not active.')).toBeInTheDocument();
   });
 
@@ -699,6 +746,7 @@ describe('the readiness panel', () => {
     goals.listGoals.mockRejectedValue(new Error('nope'));
 
     open();
+    await expand();
 
     expect(await screen.findByText('Draft')).toBeInTheDocument();
     expect(screen.getByText('On every page')).toBeInTheDocument();
@@ -724,6 +772,7 @@ describe('the readiness panel', () => {
     );
 
     open();
+    await expand();
 
     expect(await screen.findByText('On every page')).toBeInTheDocument();
     expect(fact('When')?.textContent).toContain('8');
@@ -822,6 +871,8 @@ describe('the readiness panel', () => {
     );
 
     open();
+
+    await expand();
 
     expect(await screen.findByText('WP SMS contacts', { selector: 'dd' })).toBeInTheDocument();
 

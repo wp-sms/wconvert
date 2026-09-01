@@ -387,6 +387,22 @@ column it is 712px wide at a 1440px viewport, so nearly every rule sentence
 wrapped and the panel stood 313px tall permanently, on a screen whose own floor
 is 782px ([ADR 0038](0038-the-admin-holds-different-floors-to-the-loader.md))._
 
+_And it **opens on a press**, which is the second measurement. Even across both
+columns it is ~190px of permanent panel above the tab strip, and most of what it
+holds answers a question a merchant asks on arrival rather than on every
+keystroke. **What it collapses TO is the decision**, not that it collapses:
+hiding it behind an icon would restore the fault it was built for — a merchant
+who cannot see what the campaign is for or whether the site is serving it — so
+the collapsed row keeps the state badge, the [[Goal]] and what it counts, and
+the count of anything wrong, in one line at 46px. A quarter of the height, none
+of the answer, and the same `Collapsible` the four rule sections already use._
+
+_Which forces the rule the other way, twice: **the summary row owns a fact and
+the body must not repeat it.** The state badge and the Goal were in both, and
+each was the same fact twice the moment a merchant opened the panel. What is
+left inside is what one line cannot hold — the provenance, where the Leads go,
+the four rule sentences, and a [[Suspended]] Optin's cause._
+
 The consequence for anything that follows: **the selection must never be
 empty** where a screen does this. A list with a panel under it that says
 *"select something"* is a screen whose bottom half is an instruction, so the

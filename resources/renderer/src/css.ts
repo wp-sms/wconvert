@@ -65,6 +65,21 @@ export const SHADOW_CSS = [
   `.wc-pane:last-child{flex-grow:calc(1 - var(--wc-ratio,.5))}`,
 
   `.wc-heading{margin:0;font-size:var(--wc-heading-size,1.5rem);font-weight:700;line-height:1.2}`,
+  /*
+   * **A sub-heading is smaller, or `level` is a control that does nothing.**
+   * `render.ts` draws an `h3` for `level: 2` and an `h2` otherwise, and both
+   * wore this one size — so a design with two headings rendered them
+   * identically, and the block inspector's *Main heading / Sub-heading* switch
+   * changed the document outline and not one pixel. A merchant pressing it saw
+   * nothing happen.
+   *
+   * Derived from the token rather than given a size of its own, so
+   * `heading-size` still decides the scale and the sub-heading follows it. The
+   * ratio is the one this admin's own type scale uses between its title and its
+   * heading role (1.5rem → 1rem is .67; .72 keeps a sub-heading clearly a
+   * heading rather than body text at the default 1.5rem).
+   */
+  `h3.wc-heading{font-size:calc(var(--wc-heading-size,1.5rem)*.72)}`,
   `.wc-text{margin:0}`,
   `[data-role=fine_print]{font-size:.8125em;color:var(--wc-muted,#6b7280)}`,
   `.wc-link{color:inherit}`,

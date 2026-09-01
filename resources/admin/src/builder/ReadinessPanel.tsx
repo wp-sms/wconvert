@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
-import { __, sprintf } from '@wordpress/i18n';
-import { TriangleAlert } from 'lucide-react';
-import { Description } from '../shell/Description';
+import { __, _n, sprintf } from '@wordpress/i18n';
+import { ChevronDown, TriangleAlert } from 'lucide-react';
+import { Collapsible } from 'radix-ui';
 import { Region, RegionBody } from '../shell/Region';
 import { StatusBadge } from '../optins/StatusBadge';
 import { statusOf, type OptinState } from '../optins/api';
@@ -162,6 +162,60 @@ export function ReadinessPanel({
 
   return (
     <Region label={__('This Optin, summarised', 'wconvert')} className="wconvert-readiness">
+      {/*
+        ====================================================================
+        COLLAPSED BY DEFAULT, AND THE COLLAPSED ROW IS NOT AN ICON.
+        ====================================================================
+        Open, this is ~174px of permanent panel above a tab strip on a screen
+        whose own floor is 782px (ADR 0038) — and most of what it holds is the
+        answer to a question a merchant asks on arrival rather than on every
+        keystroke. So it opens on a press.
+
+        **What it collapses TO is the whole design decision.** Hiding it behind
+        an icon would restore the fault this panel was built for: a merchant who
+        cannot see what the campaign is for or whether the site is serving it.
+        The summary row keeps exactly those — the state, the [[Goal]] and what
+        it counts — in one line at 44px, and expanding reveals the rules, the
+        [[Destination]]s and the provenance. A quarter of the height, none of
+        the answer.
+
+        That is the same shape the four disclosures on the rules tab already
+        take, from the same `Collapsible`: the collapsed row IS the sentence,
+        and it carries the weight a heading would because it is what a merchant
+        reads to decide whether to open anything.
+      */}
+      <Collapsible.Root defaultOpen={false} data-attention={problems.length > 0 || undefined}>
+        <Collapsible.Trigger className="wconvert-readiness__summary">
+          <StatusBadge status={status} />
+
+          {/*
+            **The one line that has to survive the collapse.** `Counts
+            Submissions` is the metric — two of the five Goals convert on a
+            click, so it is not the same number under every Goal and a figure
+            with no word for it is the ambiguity the panel exists to remove.
+          */}
+          <span className="wconvert-readiness__line text-body">{headline(goal, goalId)}</span>
+
+          {problems.length > 0 && (
+            <span className="wconvert-readiness__flag text-note">
+              <TriangleAlert aria-hidden="true" className="size-4 shrink-0" />
+              {sprintf(
+                /* translators: %d: how many things are wrong with this Optin. */
+                _n('%d thing to fix', '%d things to fix', problems.length, 'wconvert'),
+                problems.length,
+              )}
+            </span>
+          )}
+
+          {/*
+            Decorative: the state it depicts is on `aria-expanded`, which Radix
+            puts on this same button, so announcing the chevron would say it
+            twice.
+          */}
+          <ChevronDown aria-hidden="true" className="wconvert-readiness__chevron" />
+        </Collapsible.Trigger>
+
+        <Collapsible.Content>
       <RegionBody className="wconvert-readiness__groups">
         {/*
           ==================================================================
@@ -178,59 +232,36 @@ export function ReadinessPanel({
           Optin is, and when it shows.
         */}
         <dl className="wconvert-readiness__facts">
-          <Fact label={__('State', 'wconvert')}>
-            <StatusBadge status={status} />
-            {/*
-              **The state AND its cause, never the state alone** — the rule the
-              Optin list already follows (ADR 0027). A [[Suspended]] Optin is
-              one the merchant did not stop, so a bare badge here is a merchant
-              with nowhere to ask why their popup went dark. The sentence is
-              PHP's, already translated.
-            */}
-            {optin.suspended !== null && (
-              <Description as="span" className="mt-1 block">
-                {optin.suspended}
-              </Description>
-            )}
-          </Fact>
+          {/*
+            **The state AND its cause, never the state alone** — the rule the
+            Optin list already follows (ADR 0027). A [[Suspended]] Optin is one
+            the merchant did not stop, so a bare badge is a merchant with
+            nowhere to ask why their popup went dark.
+            {@see Suspension::reason()} writes both halves into one sentence,
+            which is why this row needs no badge of its own: the summary above
+            carries the state on every visit, and the cause is the half that
+            only exists sometimes. A second badge in here was the same fact
+            twice the moment the panel was opened.
+          */}
+          {optin.suspended !== null && (
+            <Fact label={__('State', 'wconvert')} attention>
+              {optin.suspended}
+            </Fact>
+          )}
 
           {/*
-            **Held back until the registry has answered**, exactly as the Optin
-            list's Goal cell is: the rows land before `GET /goals` does, and
-            showing the raw id first teaches a merchant that a `<code>` means
-            "wait" rather than what it says. An id with no entry behind it is
-            an Optin holding a Goal this build does not have, which is the only
-            honest thing left to show.
+            **The [[Goal]] and its metric are NOT repeated here.** The summary
+            row above carries both on every visit, open or closed, so a row for
+            them inside is the same fact twice the moment the panel is opened —
+            which is what the state badge was doing until it moved up there for
+            the same reason. What is left in this group is what the one line
+            cannot hold.
+
+            An id with no registry entry behind it still reaches the merchant:
+            {@see headline} falls back to it, for {@see OptinList}'s reason —
+            the raw value is the only honest thing left to show, and blanking
+            it would read as an Optin with no Goal at all.
           */}
-          {goal.status !== 'loading' && named(goal) === null && goalId !== '' && (
-            <Fact label={__('Goal', 'wconvert')}>
-              <Unnamed id={goalId} />
-            </Fact>
-          )}
-
-          {goal.status === 'ready' && goal.data !== null && (
-            <Fact label={__('Goal', 'wconvert')}>
-              {goal.data.label}
-              {/*
-                **What it will be judged on, named by the Goal itself.** Two of
-                the five convert on a click, so one word for all of them would
-                report zero forever under the other two and look broken while
-                being right. The word travels on the registry entry; no Goal id
-                is spelled in this bundle.
-
-                Under the Goal rather than beside it, because it is a property
-                OF the Goal — the same shape the suspension reason takes under
-                the state, and one row rather than two.
-              */}
-              <Description as="span" className="mt-1 block">
-                {sprintf(
-                  /* translators: %s: what a Goal's headline number is called, e.g. “Submissions”. */
-                  __('Counts %s.', 'wconvert'),
-                  goal.data.headline_label,
-                )}
-              </Description>
-            </Fact>
-          )}
 
           {/*
             **Provenance, and read-only on purpose.** A `playbook_id` records
@@ -283,7 +314,36 @@ export function ReadinessPanel({
           <Problems problems={problems} onGoTo={onGoTo} />
         </RegionBody>
       )}
+        </Collapsible.Content>
+      </Collapsible.Root>
     </Region>
+  );
+}
+
+/**
+ * The one line the collapsed row shows: what this Optin is for, and what it
+ * will be judged on.
+ *
+ * **A sentence rather than the two `<dt>`s inside**, because a collapsed row is
+ * read at a glance and a two-column grid at 44px is not a glance. The joiner is
+ * the same `·` {@see howOftenSummary} already uses for the same job.
+ *
+ * Empty while the registry has not answered — the badge beside it is the news
+ * on a first load, and a raw id flashing into a label teaches a merchant that
+ * the `<code>` means *wait* (see the Goal row's own comment).
+ */
+function headline(goal: Loadable<GoalEntry | null>, goalId: string): string {
+  const entry = named(goal);
+
+  if (entry === null) {
+    return goal.status === 'loading' || goalId === '' ? '' : goalId;
+  }
+
+  return sprintf(
+    /* translators: 1: a Goal, e.g. “Grow my email list”. 2: what its number is called, e.g. “Submissions”. */
+    __('%1$s · counts %2$s', 'wconvert'),
+    entry.label,
+    entry.headline_label,
   );
 }
 
