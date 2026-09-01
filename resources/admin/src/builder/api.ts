@@ -1,6 +1,7 @@
 import apiFetch from '@wordpress/api-fetch';
 import type { Template } from '@renderer/types';
 import type { Availability } from '../goals/availability';
+import type { OptinState } from '../optins/api';
 
 /**
  * What the builder reads, and the one shape the rule vocabulary reaches it in.
@@ -217,13 +218,22 @@ export const FREQUENCY_FIELDS = [
 
 export const getRules = () => apiFetch<RuleVocabulary>({ path: '/wconvert/v1/rules' });
 
-/** One Optin, whole — the working draft the builder edits. */
-export interface OptinDraft {
+/**
+ * One Optin, whole — the working draft the builder edits.
+ *
+ * **It extends {@link OptinState}, which is what lets the editor say whether
+ * this Optin is on the site.** `published_at` cannot answer that on its own: a
+ * [[Suspended]] Optin *is* published and is on no page at all, so a readiness
+ * panel reading the column would print *"Live"* over an Optin the site is
+ * holding back. `OptinController::show()` resolves the sentence off the same
+ * published set the list reads, so the two screens cannot disagree about one
+ * campaign.
+ */
+export interface OptinDraft extends OptinState {
   id: string;
   name: string;
   goal: string;
   config: Record<string, unknown>;
-  published_at: string | null;
 }
 
 export const getOptin = (id: string) => apiFetch<OptinDraft>({ path: `/wconvert/v1/optins/${id}` });

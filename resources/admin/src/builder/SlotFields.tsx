@@ -1,11 +1,13 @@
 import { __, sprintf } from '@wordpress/i18n';
 import { ImagePlus } from 'lucide-react';
 import { Button } from '../components/ui/button';
+import { ParamChoice } from './ParamChoice';
 import { nameOf, type TemplateLabels } from '../templates/api';
 import type { Slot } from './panel';
 
 /**
- * The controls for **one slot** — what it says, and whether it is shown.
+ * The controls for **one slot** — what it says, how it behaves, and whether it
+ * is shown.
  *
  * ============================================================================
  * ONE IMPLEMENTATION OF "THE CONTROLS FOR A SLOT", BECAUSE TWO WOULD DRIFT.
@@ -33,11 +35,22 @@ export interface SlotFieldsProps {
   readonly labels: TemplateLabels;
   /** Write one of the slot's content keys. */
   readonly onValue: (key: string, value: unknown) => void;
+  /**
+   * Write one of the slot's SETTINGS.
+   *
+   * **Its own callback rather than {@link onValue}, and the reason is the undo
+   * history.** A caller wires `onValue` with a coalescing key, so a burst of
+   * typing in one box is one entry — and a radio press is not typing. Sharing
+   * the callback would fold *"made this field optional"* into whatever sentence
+   * the merchant had been writing a moment earlier, and one ⌘Z would take both
+   * back. `onHidden` is spelled separately for exactly the same reason.
+   */
+  readonly onParam: (param: string, value: unknown) => void;
   /** Switch the slot off, or back on. Never called for a slot that cannot hide. */
   readonly onHidden: (hidden: boolean) => void;
 }
 
-export function SlotFields({ slot, labels, onValue, onHidden }: SlotFieldsProps) {
+export function SlotFields({ slot, labels, onValue, onParam, onHidden }: SlotFieldsProps) {
   return (
     <>
       {slot.keys.map((key) => {
@@ -67,6 +80,38 @@ export function SlotFields({ slot, labels, onValue, onHidden }: SlotFieldsProps)
           </label>
         );
       })}
+
+      {/*
+        ======================================================================
+        THE THREE SETTINGS THE RENDERER READS AND NOTHING EVER SET.
+        ======================================================================
+        `heading.level`, `image.fit` and `field.required` are declared in
+        `resources/templates/manifest.json`, honoured by the renderer, and —
+        for `required` — enforced by the capture endpoint, which refuses a
+        submission that left one empty. Until now the only way to set any of
+        them was to author a [[Template]] by hand, which is exactly the hole
+        `split.ratio` was in one level up.
+
+        **Under the words and above the switch**, which is the order of what
+        the merchant came for: what it says, then how it behaves, then whether
+        it is shown at all. Which settings exist is the manifest's answer
+        ({@see Slot.settings}) and neither the params nor their values are
+        spelled in this bundle.
+      */}
+      {slot.settings.map((setting) => (
+        <ParamChoice
+          key={setting.param}
+          id={`${slot.type}-${setting.param}`}
+          label={nameOf(labels.nodeParams, `${slot.type}.${setting.param}`)}
+          offered={setting.offered}
+          held={setting.held}
+          fallback={setting.fallback}
+          nameOfValue={(choice) =>
+            nameOf(labels.nodeParamValues, `${slot.type}.${setting.param}.${choice}`)
+          }
+          onChange={(value) => onParam(setting.param, value)}
+        />
+      ))}
 
       {/*
         **Under the fields, not over them.** The thing a merchant opened this

@@ -1393,8 +1393,8 @@
  *
  * This was scoped to `.wconvert-editor`, which was right for the screens it was
  * written for and left every `<p>` outside one taking WordPress's number.
- * Measured in a browser after the type scale landed: `.wconvert-verdict` — a
- * `<p>` in the builder's toolbar — was rendering at 13px, which is a size this
+ * Measured in a browser after the type scale landed: the builder toolbar's
+ * verdict chip — a `<p>` — was rendering at 13px, which is a size this
  * admin now HAS a meaning for, so it looked deliberate and was not. A value
  * that lands on a token by coincidence is the worst kind of wrong, because
  * nothing about it looks wrong.
@@ -3311,44 +3311,23 @@
   gap: 0.125rem;
 }
 
-.wconvert-verdict {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  margin: 0;
-  margin-inline-start: auto;
-}
-
-.wconvert-verdict--good {
-  color: var(--success);
-}
-
-.wconvert-verdict--bad {
-  margin-inline-start: auto;
-  color: var(--warning);
-}
-
-.wconvert-verdict > svg {
-  inline-size: 1rem;
-  block-size: 1rem;
-}
-
-.wconvert-verdict__list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  text-wrap: pretty;
-}
+/*
+ * ---------------------------------------------------------------------------
+ * `.wconvert-verdict*` IS GONE WITH THE COMPONENT THAT WORE IT.
+ * ---------------------------------------------------------------------------
+ * The chip, its two states, its icon size and its popover list were
+ * `DesignToolbar`'s, and the verdict is a list in the readiness panel now. Only
+ * the sentence-as-a-button survives, and it moved to that panel's own prefix:
+ * a class named after a deleted component is the map outliving the territory,
+ * which is what a stylesheet full of rules nothing selects is made of.
+ */
 
 /*
  * A problem a merchant cannot navigate to is a problem they have to hunt for,
  * and the tree is right there — so where a sentence names a block, the sentence
  * is the button that selects it.
  */
-.wconvert-verdict__go {
+.wconvert-readiness__go {
   padding: 0;
   border: 0;
   background: none;
@@ -3538,6 +3517,205 @@
  * control, with nothing a click could reach. A chip is that card at the size
  * the fact deserves.
  * ------------------------------------------------------------------------- */
+
+/* ---------------------------------------------------------------------------
+ * THE READINESS PANEL: WHAT THIS OPTIN IS FOR, AND WHETHER IT IS LIVE.
+ *
+ * It sits above the tab strip, so its scope is the whole Optin rather than any
+ * one tab (ADR 0039). Everything in it is one shape — what the fact is called,
+ * and the fact — which is the language the four disclosures below already
+ * speak.
+ *
+ * ---------------------------------------------------------------------------
+ * EVERY TYPE ROLE IS A UTILITY IN THE TSX. NOT ONE OF THEM IS HERE.
+ * ---------------------------------------------------------------------------
+ * `#wconvert-admin :is(p, li, td, th, label, legend, select, input, textarea)`
+ * forces `font-size: inherit` at ID specificity and Tailwind's utilities are
+ * `!important` (ADR 0035), so a `font-size` written in this file loses to it on
+ * every `<dd>` while looking exactly like it works. `ReadinessPanel.tsx` states
+ * `text-micro` and `text-body` where the elements are, the same way `Stat` does.
+ *
+ * What is left here is layout — and every margin below is `#wconvert-admin`
+ * prefixed for the mirror reason: `.wconvert-editor :is(p, h2, h3, h4, table,
+ * ul, ol) { margin-block: 0.75rem }` is (0,2,0) and a bare class is (0,1,0).
+ * ------------------------------------------------------------------------- */
+/*
+ * ---------------------------------------------------------------------------
+ * THE TRIGGER, WHICH IS THE ONLY PART OF THIS ON THE SCREEN.
+ * ---------------------------------------------------------------------------
+ * Amber where something is wrong, which is ADR 0037's reserved palette used for
+ * its reserved meaning: not a failure and not a destruction — something that
+ * will not do what it looks like it does. The same reading the four rule
+ * disclosures and the Optin list's *Suspended* badge already carry.
+ *
+ * `!important`, and that is ADR 0042 rule 6 rather than a shortcut: this admin
+ * compiles Tailwind's utilities as important, and `Button`'s own `ghost`
+ * variant sets a colour through one — so a plain declaration here would lose to
+ * a single class while looking exactly like it works.
+ */
+#wconvert-admin .wconvert-readiness__trigger--bad {
+  color: var(--warning) !important;
+}
+
+/*
+ * The dialog is the container its own two-column grid is measured against.
+ * A viewport query would be wrong by the dialog's own padding and by whatever
+ * `sm:max-w-2xl` resolves to, and this element is already a real wrapper.
+ */
+.wconvert-readiness[data-slot='dialog-content'] {
+  container-type: inline-size;
+}
+
+/*
+ * ---------------------------------------------------------------------------
+ * THE SUBJECT LINE: WHAT THIS OPTIN IS FOR, AND WHETHER IT IS LIVE.
+ * ---------------------------------------------------------------------------
+ * In the header rather than in the list, because every fact below is a property
+ * of an Optin serving this [[Goal]] and the state is a fact about the whole
+ * thing. Two rows in a list of eight made them look like two more properties.
+ */
+.wconvert-readiness__subject {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.wconvert-readiness__for {
+  min-inline-size: 0;
+  color: var(--foreground);
+}
+
+/*
+ * ---------------------------------------------------------------------------
+ * THE LABEL SITS OVER THE VALUE, AND TWO FACTS SIT ON A LINE.
+ * ---------------------------------------------------------------------------
+ * This drew eight rows of `LABEL⇥value` down a fixed 6.5rem column, which put
+ * eight small-caps eyebrows in a stack at the leading edge competing with the
+ * sentences that are the point of the dialog. `Stat` settles the arrangement
+ * for a fact and its name: the value leads and the name sits with it in the
+ * `micro` register, quiet enough to skip once you know where you are.
+ *
+ * One column below 30rem of dialog, which is where two columns of clause stop
+ * being two columns and start being wrapping.
+ */
+.wconvert-readiness__facts {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.875rem 1.5rem;
+  margin: 0;
+}
+
+@container (min-width: 30rem) {
+  .wconvert-readiness__facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.wconvert-readiness__fact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-inline-size: 0;
+}
+
+/*
+ * `dt` and `dd` are both in the `font-size: inherit` list above, so their
+ * spacing is all this can set. `dd` carries a browser `margin-inline-start` of
+ * 40px that would push every value out of its column.
+ *
+ * **The ROOT LIST and not `#wconvert-admin`, and this is the trap that rule was
+ * written for.** The summary is a Radix dialog now, so it portals to
+ * `document.body` — outside the admin's root — and every one of these rules
+ * stopped at the boundary while reading exactly as though it worked. Found by
+ * screenshotting the dialog: the ⚠ sat on its own line above *TO FIX*, the
+ * divider above it was missing, and the list had lost its reset.
+ */
+:is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"]) .wconvert-readiness__fact > dt,
+:is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"]) .wconvert-readiness__value {
+  margin: 0;
+}
+
+/*
+ * **The colour is set HERE and not as a utility on the `<dd>`, and that is the
+ * whole reason the amber below works.** It was `text-foreground` in the TSX,
+ * which is `!important` (ADR 0035) — so the attention rule under it lost while
+ * looking exactly like it worked, and the amber state rendered in the ordinary
+ * text colour on a screen whose whole suite was green. Measured in a browser.
+ */
+.wconvert-readiness__value {
+  min-inline-size: 0;
+  color: var(--foreground);
+  text-wrap: pretty;
+}
+
+/*
+ * ---------------------------------------------------------------------------
+ * AMBER, AND IT IS ADR 0037'S RESERVED PALETTE USED FOR ITS RESERVED MEANING.
+ * ---------------------------------------------------------------------------
+ * Exactly the treatment the four disclosures give the same flag, because it is
+ * the same flag: a rule that will not do what it looks like it does. None of
+ * these is a failure or a destruction, which is what `--destructive` means
+ * everywhere else in this admin.
+ */
+.wconvert-readiness__fact[data-attention] .wconvert-readiness__value {
+  color: var(--warning);
+}
+
+/*
+ * Why a [[Suspended]] Optin is held back, under the badge that says it is.
+ * `#wconvert-admin`'s `<p>` margin rule does not reach into a portal, so the
+ * spacing is the header's own `gap` — see the root-list note above.
+ */
+:is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"]) .wconvert-readiness__cause {
+  margin: 0;
+  color: var(--warning);
+}
+
+/*
+ * ---------------------------------------------------------------------------
+ * WHAT IS WRONG, BELOW A RULE, AND ONLY WHEN THERE IS SOMETHING.
+ * ---------------------------------------------------------------------------
+ * A change of subject gets a divider — the same one `.wconvert-starters` takes
+ * — because *"to fix"* is a different kind of thing from the facts above it.
+ * The block is not drawn at all while the design is sound, which is ADR 0042
+ * rule 2: a permanent line saying nothing is wrong informs once and taxes every
+ * visit.
+ */
+:is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"]) .wconvert-readiness__foot {
+  padding-block-start: 0.875rem;
+  border-block-start: 1px solid var(--border);
+  color: var(--warning);
+}
+
+:is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"]) .wconvert-readiness__problems-head {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin: 0 0 0.375rem;
+}
+
+/*
+ * A plain list. `#wconvert-admin :not(.wconvert-editor) > ul > li` gives every
+ * list this admin draws a marker and an indent, and this one is a set of
+ * sentences under a label rather than a bulleted list, so it resets both.
+ */
+:is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"]) .wconvert-readiness__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-wrap: pretty;
+  color: var(--foreground);
+}
+
+:is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"]) .wconvert-readiness__list > li {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
 
 /* ---------------------------------------------------------------------------
  * THE FOUR DISCLOSURES: WHERE, WHEN, WHO, HOW OFTEN.

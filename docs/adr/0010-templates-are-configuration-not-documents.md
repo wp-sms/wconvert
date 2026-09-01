@@ -119,7 +119,18 @@ third-party ones. Under configuration they are properties of the one renderer.
   picker filters by and what each one offers. Its VALUES are not authored:
   every facet is derived from the tree by `TemplateFacets`, precisely because a
   Template carries no words and so cannot honestly be tagged by industry or
-  season.* A thin vocabulary yields one popup in twelve
+  season.* *Extended once more, one level down: a **`choices` section on each
+  LEAF**, saying what the block inspector offers for that node's own params.
+  `split.ratio` was found by that same reading — a param the renderer read and
+  no control reached — and the leaves had three more of exactly it:
+  `heading.level`, `image.fit` and `field.required`, the last of which
+  `WConvert\Lead\CaptureForm` enforces at capture. **`choices` is what declares
+  that a param has a control**, rather than `params`: `hidden` is the inspector's
+  *Show this* switch and `name` and `action` are its ⇄ menu, each with words of
+  its own, so naming them again would be a second control for one question.
+  `TemplateLabelParityTest` holds both directions, and the values stay
+  unvalidated exactly as a token's do — a design shipping a `fit` nothing offers
+  keeps it and the control shows nothing checked.* A thin vocabulary yields one popup in twelve
   colours — the "thin or ugly" failure the ticket names. This is why `image` and the
   `split` layout are in v1 rather than deferred: the differentiator that is not
   colour has to exist in the vocabulary, or the gallery is thin no matter how many

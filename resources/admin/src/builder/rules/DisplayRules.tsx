@@ -1,4 +1,3 @@
-import { __ } from '@wordpress/i18n';
 import { entriesOffEveryAxis, entriesOn } from './axis';
 import { HowOften } from './HowOften';
 import { Section } from './Section';
@@ -7,8 +6,8 @@ import { Unknown } from './Unknown';
 import { When } from './When';
 import { Where } from './Where';
 import { Who } from './Who';
-import { howOftenSummary, whenSummary, whereSummary, whoSummary } from './sentence';
-import type { Frequency, Rule, RuleVocabulary, Targeting } from '../api';
+import { summarise, type DisplayRulesValue } from './summaries';
+import type { Rule, RuleVocabulary } from '../api';
 
 /**
  * Display rules: four questions, four disclosures, one flat list underneath.
@@ -47,12 +46,12 @@ import type { Frequency, Rule, RuleVocabulary, Targeting } from '../api';
  * allowance at once. Four callbacks would be four saves and four undo steps
  * for one click, so what leaves here is a patch of everything that changed.
  */
-export interface DisplayRulesValue {
-  readonly rules: readonly Rule[];
-  readonly targeting: Targeting;
-  readonly frequency: Frequency;
-  readonly priority: number;
-}
+/**
+ * **The value moved to `summaries.ts`, which is where the four sentences are
+ * now built.** Re-exported here because this is where a caller looks for it,
+ * and because moving a name is not the same as moving a screen.
+ */
+export type { DisplayRulesValue } from './summaries';
 
 export interface DisplayRulesProps {
   readonly vocabulary: RuleVocabulary;
@@ -80,18 +79,21 @@ export function DisplayRules({ vocabulary, value, overlay, onChange }: DisplayRu
   const triggers = entriesOn(rules, vocabulary.triggers);
   const conditions = entriesOn(rules, vocabulary.conditions);
 
-  const where = whereSummary(targeting);
-  const when = whenSummary(triggers, all);
-  const who = whoSummary(conditions, all);
-  const often = howOftenSummary(frequency, priority, overlay);
+  /*
+   * **Built by `summaries.ts`, which the readiness panel above these tabs
+   * reads too.** The four sentences and the four questions were spelled here
+   * and would have been spelled a second time up there — same axes, same
+   * order, and two chances to call one of them something different.
+   */
+  const [where, when, who, often] = summarise(value, vocabulary, overlay);
 
   return (
     <div className="wconvert-sections">
-      <Section id="where" eyebrow={__('Where', 'wconvert')} summary={where.text} attention={where.attention}>
+      <Section id={where.id} eyebrow={where.eyebrow} summary={where.text} attention={where.attention}>
         <Where types={vocabulary.targeting} targeting={targeting} onChange={(next) => onChange({ targeting: next })} />
       </Section>
 
-      <Section id="when" eyebrow={__('When', 'wconvert')} summary={when.text} attention={when.attention}>
+      <Section id={when.id} eyebrow={when.eyebrow} summary={when.text} attention={when.attention}>
         <When
           types={vocabulary.triggers}
           entries={triggers}
@@ -102,7 +104,7 @@ export function DisplayRules({ vocabulary, value, overlay, onChange }: DisplayRu
         />
       </Section>
 
-      <Section id="who" eyebrow={__('Who', 'wconvert')} summary={who.text} attention={who.attention}>
+      <Section id={who.id} eyebrow={who.eyebrow} summary={who.text} attention={who.attention}>
         <Who
           types={vocabulary.conditions}
           entries={conditions}
@@ -113,7 +115,7 @@ export function DisplayRules({ vocabulary, value, overlay, onChange }: DisplayRu
         />
       </Section>
 
-      <Section id="how-often" eyebrow={__('How often', 'wconvert')} summary={often.text}>
+      <Section id={often.id} eyebrow={often.eyebrow} summary={often.text}>
         <HowOften
           frequency={frequency}
           priority={priority}

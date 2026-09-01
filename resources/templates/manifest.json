@@ -19,6 +19,9 @@
           "0.5",
           "0.65"
         ]
+      },
+      "defaults": {
+        "ratio": "0.5"
       }
     }
   },
@@ -37,7 +40,16 @@
       "roles": [
         "headline",
         "success_headline"
-      ]
+      ],
+      "choices": {
+        "level": [
+          "1",
+          "2"
+        ]
+      },
+      "defaults": {
+        "level": "1"
+      }
     },
     "text": {
       "content": [
@@ -67,7 +79,16 @@
         "fit",
         "hidden"
       ],
-      "roles": []
+      "roles": [],
+      "choices": {
+        "fit": [
+          "cover",
+          "contain"
+        ]
+      },
+      "defaults": {
+        "fit": "cover"
+      }
     },
     "field": {
       "content": [
@@ -82,7 +103,16 @@
         "name",
         "required"
       ],
-      "roles": []
+      "roles": [],
+      "choices": {
+        "required": [
+          "true",
+          "false"
+        ]
+      },
+      "defaults": {
+        "required": "false"
+      }
     },
     "button": {
       "content": [

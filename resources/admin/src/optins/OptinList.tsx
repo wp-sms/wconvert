@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { Megaphone, MoreHorizontal, Plus, Stethoscope, Trash2 } from 'lucide-react';
 import { listGoals } from '../goals/api';
-import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import {
   DropdownMenu,
@@ -22,6 +21,7 @@ import {
 } from '../shell/DataTable';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { InspectDialog } from './InspectDialog';
+import { StatusBadge } from './StatusBadge';
 import { Description } from '../shell/Description';
 import { EmptyState } from '../shell/EmptyState';
 import { Region, RegionError, RegionErrorState } from '../shell/Region';
@@ -36,7 +36,6 @@ import {
   publishOptin,
   statusOf,
   unpublishOptin,
-  type OptinStatus,
   type OptinSummary,
 } from './api';
 
@@ -409,7 +408,7 @@ function Row({
         two would eventually answer differently.
       */}
       <DataTableCell label={__('Status', 'wconvert')} className="whitespace-normal">
-        <Badge variant={BADGE[status]}>{statusLabel(status)}</Badge>
+        <StatusBadge status={status} />
         {status === 'suspended' && optin.suspended !== null && (
           /*
             **The reason comes UP a size, and it was the only 12px body text in
@@ -491,46 +490,4 @@ function Row({
       </DataTableActions>
     </DataTableRow>
   );
-}
-
-/**
- * The badge a state wears.
- *
- * Green for *published* and amber for *suspended* is ADR 0037's reserved
- * palette being spent on the meaning it was reserved for — the site is serving
- * one and holding the other back, and that is what a merchant scanning this
- * column is reading for. A draft and a deleted Optin have no such meaning and
- * are deliberately quiet.
- */
-const BADGE: Record<OptinStatus, 'success' | 'warning' | 'secondary' | 'outline'> = {
-  published: 'success',
-  suspended: 'warning',
-  draft: 'secondary',
-  deleted: 'outline',
-};
-
-/**
- * A state, in the merchant's language.
- *
- * **The screen used to render the raw token** — `published`, `draft`,
- * `deleted` — which are values this bundle computes, not words anybody wrote,
- * and therefore untranslated in every locale (ADR 0039). A `switch` rather than
- * a map, so adding a state to `OptinStatus` is a type error here rather than a
- * blank badge on a real install.
- *
- * A function rather than a constant because `__()` must not run at module
- * scope: the catalogue is not loaded when the bundle is evaluated, so a
- * top-level call would freeze the English string into every locale.
- */
-function statusLabel(status: OptinStatus): string {
-  switch (status) {
-    case 'published':
-      return __('Published', 'wconvert');
-    case 'suspended':
-      return __('Suspended', 'wconvert');
-    case 'draft':
-      return __('Draft', 'wconvert');
-    case 'deleted':
-      return __('Deleted', 'wconvert');
-  }
 }

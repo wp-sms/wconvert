@@ -38,8 +38,18 @@ const builder = vi.hoisted(() => ({
 const templates = vi.hoisted(() => ({ listTemplates: vi.fn(), getTemplateTrees: vi.fn() }));
 const stats = vi.hoisted(() => ({ readDashboard: vi.fn() }));
 const destinations = vi.hoisted(() => ({ readDestinations: vi.fn() }));
+const goals = vi.hoisted(() => ({ listGoals: vi.fn(), listPlaybooks: vi.fn() }));
 
-vi.mock('../../resources/admin/src/builder/api', () => builder);
+/*
+ * Spread over the real module, like the three below it. `DEGRADED_FROM` is a
+ * VALUE this module exports and `presets.ts` reads it while building a rule's
+ * sentence — replacing the module wholesale left it undefined, which the
+ * readiness panel is the first thing on this screen to walk into.
+ */
+vi.mock('../../resources/admin/src/builder/api', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../../resources/admin/src/builder/api')>()),
+  ...builder,
+}));
 vi.mock('../../resources/admin/src/templates/api', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../../resources/admin/src/templates/api')>()),
   ...templates,
@@ -56,6 +66,10 @@ vi.mock('../../resources/admin/src/stats/api', async (importOriginal) => ({
   ...stats,
 }));
 vi.mock('../../resources/admin/src/destinations/api', () => destinations);
+vi.mock('../../resources/admin/src/goals/api', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../../resources/admin/src/goals/api')>()),
+  ...goals,
+}));
 
 const { OptinBuilder } = await import('../../resources/admin/src/builder/OptinBuilder');
 
@@ -83,6 +97,19 @@ const LABELS = {
     'split.ratio.0.35': 'Narrow left',
     'split.ratio.0.5': 'Even',
     'split.ratio.0.65': 'Narrow right',
+  },
+  nodeParams: {
+    'heading.level': 'Heading rank',
+    'image.fit': 'How the picture fills its space',
+    'field.required': 'Must they fill this in?',
+  },
+  nodeParamValues: {
+    'heading.level.1': 'Main heading',
+    'heading.level.2': 'Sub-heading',
+    'image.fit.cover': 'Fill the space, cropping',
+    'image.fit.contain': 'Fit the whole picture in',
+    'field.required.true': 'Required',
+    'field.required.false': 'Optional',
   },
   fields: { email: 'Email address' },
   keys: { text: 'Text', label: 'Label', placeholder: 'Placeholder', link: 'Link' },
@@ -123,12 +150,46 @@ const CARD = {
   },
 };
 
+/**
+ * The [[Goal]] registry entry this Optin's `goal` points at.
+ *
+ * `headline_label` travels with it, which is the addition: the readiness panel
+ * says what a DRAFT will be judged on, and a draft has no dashboard card to
+ * read that word off.
+ */
+const GOAL = {
+  id: 'grow_email_list',
+  label: 'Grow my email list',
+  description: 'Capture email addresses and count every submission.',
+  converting_act: 'submit',
+  headline_kind: 'conversion',
+  headline_label: 'Submissions',
+  tier: 'free',
+  availability: 'ready' as const,
+};
+
+/** The [[Playbook]] `playbook_id` is provenance of. */
+const PLAYBOOK = {
+  id: 'welcome-discount',
+  name: 'Welcome discount',
+  goal: 'grow_email_list',
+  template_id: 'centred-card',
+  display_type: 'popup',
+  copy: {},
+  rules: [],
+  targeting: {},
+  destination_hint: { types: ['wsms', 'email_service_provider'], fields: ['email'] },
+  notes: '',
+};
+
 function optin(over: Record<string, unknown> = {}) {
   return {
     id: ID,
     name: 'Welcome discount',
     goal: 'grow_email_list',
     published_at: null,
+    deleted_at: null,
+    suspended: null,
     config: { template_id: 'centred-card', template: { tree: ENTRY.tree, tokens: ENTRY.tokens } },
     ...over,
   };
@@ -151,6 +212,8 @@ beforeEach(() => {
   });
   stats.readDashboard.mockResolvedValue({ from: '', to: '', days: 30, goals: [] });
   destinations.readDestinations.mockResolvedValue({ destinations: [], types: [] });
+  goals.listGoals.mockResolvedValue([GOAL]);
+  goals.listPlaybooks.mockResolvedValue([PLAYBOOK]);
 });
 
 const open = () => render(<OptinBuilder id={ID} onClose={vi.fn()} />);
@@ -547,5 +610,295 @@ describe('the way out of the builder', () => {
     await userEvent.click(screen.getByRole('button', { name: 'All Optins' }));
 
     expect(closed).toHaveBeenCalled();
+  });
+});
+
+/**
+ * ============================================================================
+ * WHAT THIS OPTIN IS FOR, AND WHETHER IT IS LIVE.
+ * ============================================================================
+ * Three facts the editor could not state. [[Goal]] and [[Playbook]] are chosen
+ * in a three-step creation wizard that cannot be re-entered, and publishing
+ * lives on the Optin list — so a merchant editing a campaign could see its
+ * design, its words, its rules and its Destinations, and nowhere at all what it
+ * exists to produce, what number it will be judged on, or whether the site was
+ * serving it.
+ *
+ * They are read-only here on purpose. A `playbook_id` is provenance and the two
+ * never speak again; the Goal is corrected from creation. What was wrong was
+ * that they were invisible, not that they were fixed.
+ */
+describe('the summary', () => {
+  /**
+   * The one fact under a given name, as the dialog's definition list holds it.
+   *
+   * By the `<dt>`'s text rather than by role and accessible name: a `dt` has
+   * role `term` and no accessible name computed from its contents, so a role
+   * query for one named *"When"* matches nothing at all.
+   */
+  const fact = (name: string) =>
+    screen.getByText(name, { selector: 'dt' }).nextElementSibling;
+
+  /**
+   * Press the trigger in the page-header band.
+   *
+   * **It costs the screen a button and nothing else.** This shipped twice as a
+   * permanent panel above the tab strip — a card, then a disclosure whose
+   * collapsed row was 46px — and both times the room was the objection: it
+   * answers a question a merchant asks on arrival rather than on every
+   * keystroke, and the editor's own floor is 782px (ADR 0038).
+   */
+  const summary = async () =>
+    userEvent.click(await screen.findByRole('button', { name: /Summary|thing to fix/ }));
+
+  it('costs the screen one button until it is asked for', async () => {
+    open();
+
+    expect(await screen.findByRole('button', { name: 'Summary' })).toBeInTheDocument();
+    expect(screen.queryByText('On every page')).toBeNull();
+    expect(screen.queryByText('Grow my email list')).toBeNull();
+  });
+
+  /**
+   * **The Goal is the SUBJECT of the dialog, not a row in it.** Every fact in
+   * the list is a property of an Optin serving it, and the state is a fact
+   * about the whole thing — so both are in the header, which is what a dialog
+   * header is for. As two rows among eight they read as two more properties.
+   */
+  it('says what the Optin is for, and what it will be judged on', async () => {
+    open();
+    await summary();
+
+    const dialog = await screen.findByRole('dialog');
+
+    expect(within(dialog).getByText('Grow my email list · counts Submissions')).toBeInTheDocument();
+    expect(within(dialog).queryByText('Goal', { selector: 'dt' })).toBeNull();
+  });
+
+  it('names the playbook it was started from', async () => {
+    builder.getOptin.mockResolvedValue(
+      optin({
+        config: {
+          template_id: 'centred-card',
+          playbook_id: 'welcome-discount',
+          template: { tree: ENTRY.tree, tokens: ENTRY.tokens },
+        },
+      }),
+    );
+
+    open();
+    await summary();
+
+    expect(await screen.findByRole('dialog')).toBeInTheDocument();
+    expect(fact('Started from')?.textContent).toBe('Welcome discount');
+  });
+
+  /**
+   * **A [[Playbook]] this build cannot name still reaches the merchant.** The
+   * row follows the stored id and only the NAME waits for the lookup — an entry
+   * this install no longer ships, or one filed under a [[Goal]] since
+   * corrected, still started this Optin, and *"read-only is fine, invisible is
+   * not"* has to survive a lookup that answers nothing.
+   */
+  it('shows the stored id where the playbook registry cannot name it', async () => {
+    goals.listPlaybooks.mockResolvedValue([]);
+    builder.getOptin.mockResolvedValue(
+      optin({
+        config: {
+          template_id: 'centred-card',
+          playbook_id: 'welcome-discount',
+          template: { tree: ENTRY.tree, tokens: ENTRY.tokens },
+        },
+      }),
+    );
+
+    open();
+    await summary();
+
+    expect(await screen.findByRole('dialog')).toBeInTheDocument();
+    expect(fact('Started from')?.textContent).toBe('welcome-discount');
+  });
+
+  /**
+   * **`published_at` cannot answer "is the site serving this".** A
+   * [[Suspended]] Optin *is* published and is on no page at all, so a summary
+   * reading the column alone would print *"Published"* over an Optin the site
+   * is holding back — and it is always shown with its cause, because it is not
+   * a state the merchant chose (ADR 0027).
+   */
+  it('reads the state off the same two facts the Optin list does', async () => {
+    builder.getOptin.mockResolvedValue(
+      optin({
+        published_at: '2026-01-01 00:00:00',
+        suspended: 'Suspended — WConvert Pro is not active.',
+      }),
+    );
+
+    open();
+    await summary();
+
+    expect(await screen.findByText('Suspended')).toBeInTheDocument();
+    expect(screen.getByText('Suspended — WConvert Pro is not active.')).toBeInTheDocument();
+  });
+
+  it('says Draft on an Optin that has never been published', async () => {
+    open();
+    await summary();
+
+    expect(await screen.findByText('Draft')).toBeInTheDocument();
+  });
+
+  /**
+   * **A registry outage costs the summary two rows and nothing else.** The same
+   * deliberate degradation {@see OptinList} takes for the same read: labels are
+   * a nicety on an editing screen, and they must not cost the merchant their
+   * Save button.
+   */
+  it('keeps the rest of the summary when the goal registry does not answer', async () => {
+    goals.listGoals.mockRejectedValue(new Error('nope'));
+
+    open();
+
+    // Asserted before the dialog opens: it is modal, so everything outside it
+    // is `aria-hidden` and a role query would find no Save button by design.
+    expect(await screen.findByRole('button', { name: 'Save changes' })).toBeInTheDocument();
+
+    await summary();
+
+    expect(await screen.findByText('Draft')).toBeInTheDocument();
+    expect(screen.getByText('On every page')).toBeInTheDocument();
+    expect(screen.queryByText(/counts Submissions/)).toBeNull();
+  });
+
+  /**
+   * The same four sentences the Display rules tab draws as its disclosure
+   * labels, from the same `summarise()` — so the two cannot come to word one
+   * axis differently, and a merchant can read the whole answer without opening
+   * the tab.
+   */
+  it('reads out the four rule sentences without opening the rules tab', async () => {
+    builder.getOptin.mockResolvedValue(
+      optin({
+        config: {
+          template_id: 'centred-card',
+          template: { tree: ENTRY.tree, tokens: ENTRY.tokens },
+          rules: [{ type: 'time_on_page', seconds: 8 }],
+        },
+      }),
+    );
+
+    open();
+    await summary();
+
+    expect(await screen.findByRole('dialog')).toBeInTheDocument();
+    expect(fact('Where')?.textContent).toBe('On every page');
+    expect(fact('When')?.textContent).toContain('8');
+    expect(fact('Who')?.textContent).toBe('Anyone who reaches it');
+    expect(fact('How often')?.textContent).toContain('until they close it');
+  });
+
+  /**
+   * ==========================================================================
+   * THE [[PLAYBOOK]]'S DESTINATION HINT, WHICH NOTHING HAS EVER READ.
+   * ==========================================================================
+   * `Prefill::fromPlaybook()` has written it into every Playbook-started Optin
+   * since prefill shipped and no screen has ever opened it.
+   *
+   * **On the Destinations tab and not in the readiness panel**, which is
+   * ADR 0042 rule 2 read strictly: it is an instruction about a choice, and the
+   * control that makes that choice is on that tab. A copy above the tabs would
+   * be the same instruction permanently, on the surface that cannot act on it.
+   */
+  it('says what the playbook expected while no destination is bound', async () => {
+    destinations.readDestinations.mockResolvedValue({
+      destinations: [],
+      types: [
+        {
+          id: 'wsms',
+          label: 'WP SMS',
+          icon: 'send',
+          tier: 'free',
+          requires: null,
+          requires_label: null,
+          availability: 'ready',
+          needs_connection: false,
+          settings_schema: {},
+        },
+      ],
+    });
+    builder.getOptin.mockResolvedValue(
+      optin({
+        config: {
+          template_id: 'centred-card',
+          playbook_id: 'welcome-discount',
+          destination_hint: { types: ['wsms', 'email_service_provider'], fields: ['email'] },
+          template: { tree: ENTRY.tree, tokens: ENTRY.tokens },
+        },
+      }),
+    );
+
+    open();
+
+    await userEvent.click(await screen.findByRole('tab', { name: 'Destinations' }));
+
+    // Named where the install has the type; `email_service_provider` is the id
+    // of no registered type on any install, and an unresolved key is our own
+    // vocabulary rather than a merchant's word.
+    expect(
+      await screen.findByText(/expects a destination like WP SMS/),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/email_service_provider/)).toBeNull();
+  });
+
+  /**
+   * And it stops the moment the merchant has chosen. The hint is an
+   * instruction; once it has been followed it is a permanent line that changes
+   * nothing about what they do next.
+   */
+  it('says nothing about the playbook once a destination is bound', async () => {
+    destinations.readDestinations.mockResolvedValue({
+      destinations: [
+        {
+          id: 'd1',
+          type: 'wsms',
+          label: 'WP SMS contacts',
+          connection: null,
+          settings: {},
+          availability: 'ready',
+          health: {
+            last_success_at: null,
+            last_error: null,
+            last_error_at: null,
+            consecutive_failures: 0,
+            skipped_captures: 0,
+            last_skipped_at: null,
+          },
+        },
+      ],
+      types: [],
+    });
+    builder.getOptin.mockResolvedValue(
+      optin({
+        config: {
+          template_id: 'centred-card',
+          destinations: ['d1'],
+          destination_hint: { types: ['wsms'], fields: ['email'] },
+          template: { tree: ENTRY.tree, tokens: ENTRY.tokens },
+        },
+      }),
+    );
+
+    open();
+
+    await summary();
+
+    expect(await screen.findByText('WP SMS contacts', { selector: 'dd' })).toBeInTheDocument();
+
+    // Out of the modal before touching the screen behind it.
+    await userEvent.keyboard('{Escape}');
+    await userEvent.click(await screen.findByRole('tab', { name: 'Destinations' }));
+
+    expect(await screen.findByRole('checkbox', { name: /WP SMS contacts/ })).toBeChecked();
+    expect(screen.queryByText(/The playbook this started from/)).toBeNull();
   });
 });

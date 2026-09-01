@@ -20,6 +20,7 @@ use WConvert\Tests\Unit\Support\FakeProPresence;
 use WConvert\Tests\Unit\Support\FakeSitePresence;
 use WConvert\Tests\Unit\Support\InstalledRules;
 use WP_REST_Request;
+use WP_REST_Response;
 
 /**
  * =============================================================================
@@ -89,6 +90,19 @@ final class SuspendedOnTheListTest extends TestCase
      */
     private function listedOn(bool $proLoaded, bool $hasStore = true): array
     {
+        /** @var list<array<string, mixed>> $rows */
+        $rows = $this->controllerOn($proLoaded, $hasStore)->index(new WP_REST_Request())->get_data();
+
+        return $rows;
+    }
+
+    /**
+     * The controller wired for an install described by the two facts that
+     * decide [[Availability]] — shared by the list and the single read, so
+     * neither can be asked about a different install than the other.
+     */
+    private function controllerOn(bool $proLoaded, bool $hasStore): OptinController
+    {
         $templates = TemplateVocabulary::fromManifest(self::PLUGIN_DIR);
         $pro = new FakeProPresence($proLoaded);
         $site = new FakeSitePresence($hasStore ? [SiteDependency::WooCommerce] : []);
@@ -102,7 +116,7 @@ final class SuspendedOnTheListTest extends TestCase
                 : InstalledRules::withProButNoStore($vocabulary);
         }
 
-        $controller = new OptinController(
+        return new OptinController(
             $this->optins,
             $vocabulary,
             $templates,
@@ -112,11 +126,6 @@ final class SuspendedOnTheListTest extends TestCase
             $degradation,
             new RuleCatalogue($vocabulary, $pro, $site)
         );
-
-        /** @var list<array<string, mixed>> $rows */
-        $rows = $controller->index(new WP_REST_Request())->get_data();
-
-        return $rows;
     }
 
     /** @param list<array<string, mixed>> $rows */
@@ -280,5 +289,63 @@ final class SuspendedOnTheListTest extends TestCase
         foreach ($this->listedOn(false) as $row) {
             $this->assertArrayHasKey('suspended', $row);
         }
+    }
+
+    // ========================================================================
+    // AND THE EDITOR ASKS THE SAME QUESTION OF ONE OPTIN.
+    // ========================================================================
+
+    /**
+     * One Optin, as `GET /wconvert/v1/optins/{id}` answers it.
+     *
+     * @return array<string, mixed>
+     */
+    private function shown(string $id, bool $proLoaded): array
+    {
+        $request = new WP_REST_Request();
+        $request->set_param('id', $id);
+
+        $response = $this->controllerOn($proLoaded, true)->show($request);
+
+        $this->assertInstanceOf(WP_REST_Response::class, $response);
+
+        /** @var array<string, mixed> $row */
+        $row = $response->get_data();
+
+        return $row;
+    }
+
+    /**
+     * **The builder's readiness panel is the only place an editor says whether
+     * this Optin is on the site**, and `published_at` cannot answer that: a
+     * suspended Optin *is* published and is on no page at all. Reading the
+     * column alone would print *"Live"* over an Optin the site is holding back.
+     *
+     * Resolved from the same published set the list reads, so the two screens
+     * cannot disagree about one row.
+     */
+    public function testTheEditorReadsTheSameSuspensionTheListDoes(): void
+    {
+        $id = $this->publish([['type' => 'click_element', 'selector' => '#buy']]);
+
+        $reason = $this->shown($id, false)['suspended'];
+
+        $this->assertIsString($reason);
+        $this->assertSame(self::suspensionOf($this->listedOn(false), $id), $reason);
+    }
+
+    /**
+     * And it is present as null on an Optin that is running, for the reason the
+     * list's is: a key that appeared only on the bad rows is a key the client
+     * tests for existence, so "absent" and "not suspended" would be one thing
+     * until the day a request half-failed.
+     */
+    public function testTheEditorAnswersTheQuestionEvenWhenTheAnswerIsNo(): void
+    {
+        $id = $this->publish([['type' => 'page_load']]);
+        $row = $this->shown($id, false);
+
+        $this->assertArrayHasKey('suspended', $row);
+        $this->assertNull($row['suspended']);
     }
 }

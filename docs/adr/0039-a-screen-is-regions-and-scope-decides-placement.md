@@ -366,6 +366,76 @@ controls were costing was the only reason the strip existed._
 edits the design, so neither can produce an entry to step or a problem to
 report.
 
+_Amended again, and this one deletes the component. **The design was the
+SMALLER scope all along, and the verdict's is the Optin.** *"Nothing on this
+design counts as a conversion, so it would report zero forever"* answers **is
+this Optin ready**, which is the question the readiness panel above the tab
+strip asks — and a merchant reading a Trigger on `Display rules` could not
+reach the answer at all, which is the same fault this section opened by naming
+one tab over. So the problems are listed in that panel, above all four tabs,
+read out rather than behind a press, and each still opens the block it names.
+`DesignToolbar` held nothing else and is gone; `problemsIn` is untouched. Undo
+and Redo stay in the page-header band, where the paragraph above put them._
+
+_The panel itself is [ADR 0048](0048-the-eligibility-inspector-runs-on-the-real-page.md)'s
+extension of this ADR — **scope decides where a FACT goes** — applied to the
+editor: a [[Goal]], a [[Playbook]], the four rule sentences and whether the site
+is serving this Optin are identical for every tab, so they belong above the
+tabs. It spans **both columns of the builder** rather than sitting over the tab
+strip alone, and that is a measurement rather than a preference: in the tab
+column it is 712px wide at a 1440px viewport, so nearly every rule sentence
+wrapped and the panel stood 313px tall permanently, on a screen whose own floor
+is 782px ([ADR 0038](0038-the-admin-holds-different-floors-to-the-loader.md))._
+
+_And it **opens on a press**, which is the second measurement. Even across both
+columns it is ~190px of permanent panel above the tab strip, and most of what it
+holds answers a question a merchant asks on arrival rather than on every
+keystroke. **What it collapses TO is the decision**, not that it collapses:
+hiding it behind an icon would restore the fault it was built for — a merchant
+who cannot see what the campaign is for or whether the site is serving it — so
+the collapsed row keeps the state badge, the [[Goal]] and what it counts, and
+the count of anything wrong, in one line at 46px. A quarter of the height, none
+of the answer, and the same `Collapsible` the four rule sections already use._
+
+_Which forces the rule the other way, twice: **the summary row owns a fact and
+the body must not repeat it.** The state badge and the Goal were in both, and
+each was the same fact twice the moment a merchant opened the panel._
+
+_**And then it stopped costing room at all.** Both shapes were rejected on the
+same ground and the ground is sound: it answers a question a merchant asks on
+ARRIVAL, not on every keystroke, and a screen that spends permanent room on an
+occasional question has spent it badly. So it is a control in the page-header
+band — same scope as `Save changes` and the history pair, which is this ADR's
+own test — and a dialog behind it. The tab strip is back at 209px from 407._
+
+_**One thing does not wait for the click**, and that is ADR 0042 rule 3 rather
+than a hedge: a design that cannot convert is not a question the merchant
+thought to ask, so the trigger reads *"2 things to fix"* in amber when there are
+any and *"Summary"* when there are none — the noun when there is no news, and
+the news when there is._
+
+_Inside it, **`Stat`'s arrangement settles a fact and its name**: the value
+leads and the label sits with it in the `micro` register. Eight rows of
+`LABEL⇥value` down a fixed column put eight small-caps eyebrows in a stack at
+the leading edge, competing with the sentences that are the point. Two per line
+and the label above, which also halves the height. **And the [[Goal]] is the
+dialog's SUBJECT rather than a row in it** — every fact in the list is a
+property of an Optin serving it — which takes the list from eight to six and
+lets the grid read as three tidy rows._
+
+_The trigger lost its icon in the quiet state for ADR 0042 rule 2's reason, one
+notch down: a clipboard beside the word *Summary* is decoration standing in for
+a word already there, on a band whose other controls are icon-only or text-only.
+The warning triangle stays, because it is the register the amber is in and the
+only thing on the band a merchant must notice without reading._
+
+_The dialog re-found the trap the section above this one already records:
+**Radix portals to `document.body`**, so every rule anchored on
+`#wconvert-admin` stopped at the boundary while reading exactly as though it
+worked. The ⚠ sat on its own line above *TO FIX*, the divider was missing, and
+the list had lost its reset. The root list exists for this; anchoring on the id
+was the mistake, and only a screenshot found it._
+
 The consequence for anything that follows: **the selection must never be
 empty** where a screen does this. A list with a panel under it that says
 *"select something"* is a screen whose bottom half is an instruction, so the

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { render } from '@renderer/render';
+import { SHADOW_CSS } from '@renderer/css';
 import type { TemplateTree } from '@renderer/types';
 
 /**
@@ -24,6 +25,37 @@ describe('render', () => {
     const element = render(tree, TOKENS);
 
     expect(element.textContent).toBe('Join the list');
+  });
+
+  /**
+   * ==========================================================================
+   * A SUB-HEADING IS SMALLER, OR `level` IS A CONTROL THAT DOES NOTHING.
+   * ==========================================================================
+   * The rank decides the TAG — an `h3` under the Optin's own `h2` — and that is
+   * a document-outline fact a screen reader reads. It was also the whole of the
+   * effect: `.wc-heading` set one `font-size` for both, so a design with two
+   * headings drew them identically and the block inspector's *Main heading /
+   * Sub-heading* switch changed not one pixel. A merchant pressed it and saw
+   * nothing happen, which is a worse control than none.
+   *
+   * Both halves are asserted, because either alone would let the other rot: the
+   * tag is what makes the outline correct, and the size is what makes the
+   * control worth offering.
+   */
+  it('draws a sub-heading as a rank BELOW the headline, and smaller', () => {
+    const tree = oneStep({
+      type: 'stack',
+      children: [
+        { type: 'heading', text: 'Main' },
+        { type: 'heading', level: 2, text: 'Under it' },
+      ],
+    });
+
+    const [main, under] = [...render(tree, TOKENS).querySelectorAll('.wc-heading')];
+
+    expect(main.tagName).toBe('H2');
+    expect(under.tagName).toBe('H3');
+    expect(SHADOW_CSS).toContain('h3.wc-heading{font-size:calc(');
   });
 });
 

@@ -53,6 +53,51 @@ export interface LeafDeclaration {
    * gives the token list.
    */
   readonly roles: readonly string[];
+  /**
+   * What the editor OFFERS for each of this leaf's own settings.
+   *
+   * ==========================================================================
+   * `choices` IS WHAT SAYS "THIS PARAM HAS A CONTROL". `params` IS NOT.
+   * ==========================================================================
+   * `params` also holds `hidden`, which the *Show this* switch draws, and
+   * `name` and `action`, which the ⇄ menu draws — each already has words of
+   * its own, and a second control for either would be two ways to ask one
+   * question. What was left over was `heading.level`, `image.fit` and
+   * `field.required`: three settings the renderer reads, one of which the
+   * CAPTURE endpoint enforces, and none of which any control in this admin
+   * ever reached.
+   *
+   * So the manifest declares the offer, exactly as {@link LAYOUTS} does one
+   * level up, and this bundle names no param and no value.
+   *
+   * **A suggestion and never a limit**, the same bargain a token's `choices`
+   * make: `TemplateVocabulary` does not read this section, so a design
+   * shipping a value nothing here offers keeps it and the control simply shows
+   * nothing checked.
+   */
+  readonly choices?: Readonly<Record<string, readonly string[]>>;
+  /**
+   * What the RENDERER does with each of those params when the key is absent.
+   *
+   * ==========================================================================
+   * AN ABSENT VALUE IS NOT AN UNKNOWN ONE, AND THE CONTROL HAD CONFLATED THEM.
+   * ==========================================================================
+   * `split.ratio` shows nothing checked on a design carrying `0.4`, and the
+   * reason is sound: the vocabulary does not validate a param's value, so the
+   * panel must not claim a design is something it is not. That argument is
+   * about an OFF-LIST value and was being applied to an ABSENT one — and no
+   * shipped [[Template]] carries a `level` at all, so every heading in the
+   * library offered *Main heading* and *Sub-heading* with neither ticked while
+   * the renderer drew an unambiguous `h2`.
+   *
+   * The default cannot be spelled in this bundle: `render.ts` decides it, and
+   * a copy here would be the cross-language list ADR 0019 has refused five
+   * times. So the manifest declares it and
+   * `tests/js/renderer-manifest-parity.test.ts` asserts that a node with the
+   * key absent renders identically to one carrying the declared default —
+   * behaviour rather than a list against a list.
+   */
+  readonly defaults?: Readonly<Record<string, string>>;
 }
 
 /**
@@ -79,15 +124,69 @@ export const LAYOUTS = vocabulary.layouts as Readonly<
        *
        * A suggestion and never a limit, exactly like a token's `choices`: the
        * renderer takes any fraction for `ratio`, so a design shipping `0.4`
-       * keeps it and the control simply shows nothing checked.
+       * keeps it and the control shows nothing checked.
        */
       readonly choices?: Readonly<Record<string, readonly string[]>>;
+      /** What the renderer draws where the key is absent. {@see LeafDeclaration.defaults}. */
+      readonly defaults?: Readonly<Record<string, string>>;
     }
   >
 >;
 
 /** Where a layout keeps its children. `split` is the one with two. */
 export const PANES = ['start', 'end'] as const;
+
+/**
+ * A manifest choice as the tree actually stores it.
+ *
+ * ============================================================================
+ * DECIDED BY THE VALUE'S SHAPE, SO NOTHING NAMES A PARAM.
+ * ============================================================================
+ * The manifest spells every offered value as a string — JSON has one place to
+ * put a list of them — and the tree stores three different types: `ratio` is a
+ * number, `level` is a number, `fit` is a string and `required` is a boolean.
+ * A control writing the string would store `"true"` for a flag the renderer
+ * tests with `=== true`, and `"2"` for a rank it tests with `=== 2`: both save,
+ * both normalise, and both silently stop doing anything.
+ *
+ * `LayoutParams` had half of this as a bare `Number(choice)` with a comment
+ * about `0.50`, which is right for the one param that existed and wrong for
+ * every param since. Reading the SHAPE is what makes it total —
+ * {@see groupOf} decides a token's group the same way and for the same reason.
+ *
+ * The empty string is left alone rather than becoming `0`: {@see withValue}
+ * reads it as "clear this key", and a choice that coerced to a number would
+ * take that meaning away.
+ */
+export function valueOfChoice(choice: string): unknown {
+  if (choice === 'true' || choice === 'false') {
+    return choice === 'true';
+  }
+
+  return choice !== '' && Number.isFinite(Number(choice)) ? Number(choice) : choice;
+}
+
+/**
+ * Is this what the node already holds — or, where it holds nothing, what the
+ * renderer will draw?
+ *
+ * ============================================================================
+ * ABSENT IS AN ANSWER. OFF-LIST IS NOT.
+ * ============================================================================
+ * Compared as the VALUES they become rather than as strings, which is what
+ * makes `0.5` and `"0.50"` the same split — the comparison `LayoutParams`
+ * already made, now made the same way for every param.
+ *
+ * `fallback` is the manifest's declared default and is what closes the case
+ * the control used to get wrong. A design carrying `ratio: 0.4` still shows
+ * nothing checked, because the panel must not claim a design is something it
+ * is not; a design carrying no `level` shows *Main heading*, because that is
+ * what a visitor will actually see. The two were one branch and are two facts.
+ */
+export const isChoiceHeld = (held: unknown, choice: string, fallback?: string): boolean =>
+  held === undefined
+    ? fallback !== undefined && fallback === choice
+    : held === valueOfChoice(choice);
 
 /** Every Slot Role the vocabulary declares, in the order it declares them. */
 export const ROLES = vocabulary.roles as readonly string[];
@@ -259,6 +358,30 @@ export interface Slot {
    */
   readonly hideable: boolean;
   readonly hidden: boolean;
+  /**
+   * The leaf's own settings the merchant may choose from a closed list, in the
+   * order the manifest offers them.
+   *
+   * **Not the same set as the node type's `params`**, and the difference is
+   * {@see LeafDeclaration.choices}: `hidden` is the switch below these
+   * controls and `name` and `action` are the ⇄ menu above them, so what
+   * reaches here is what nothing else already draws.
+   *
+   * Empty for a leaf with no such setting, which is `text`, `button` and
+   * `consent` — so the panel draws nothing rather than an empty group.
+   */
+  readonly settings: readonly Setting[];
+}
+
+/** One closed-list setting of a leaf, and what it holds now. */
+export interface Setting {
+  readonly param: string;
+  /** What the manifest offers, as it spells it. {@see valueOfChoice}. */
+  readonly offered: readonly string[];
+  /** What the node holds, which may be nothing and may be off the list. */
+  readonly held: unknown;
+  /** What the renderer draws where it holds nothing. {@see isChoiceHeld}. */
+  readonly fallback: string | undefined;
 }
 
 /**
@@ -303,6 +426,22 @@ function collect(node: TemplateNode, path: Path, slots: Slot[]): void {
       values,
       hideable: leaf.params.includes('hidden'),
       hidden: (node as { hidden?: boolean }).hidden === true,
+      /*
+       * Read off `choices` and intersected with `params`, so a choice for a
+       * setting the node does not declare draws no control — the vocabulary
+       * would drop the key on the way in, and a control whose value is thrown
+       * away at the boundary is worse than no control.
+       * `TemplateLabelParityTest` fails on that pairing anyway; this is what
+       * keeps the screen honest if it ever ships.
+       */
+      settings: Object.entries(leaf.choices ?? {})
+        .filter(([param]) => leaf.params.includes(param))
+        .map(([param, offered]) => ({
+          param,
+          offered,
+          held: (node as Record<string, unknown>)[param],
+          fallback: leaf.defaults?.[param],
+        })),
     });
 
     return;
