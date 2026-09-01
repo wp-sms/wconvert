@@ -659,13 +659,20 @@ describe('the summary', () => {
     expect(screen.queryByText('Grow my email list')).toBeNull();
   });
 
+  /**
+   * **The Goal is the SUBJECT of the dialog, not a row in it.** Every fact in
+   * the list is a property of an Optin serving it, and the state is a fact
+   * about the whole thing — so both are in the header, which is what a dialog
+   * header is for. As two rows among eight they read as two more properties.
+   */
   it('says what the Optin is for, and what it will be judged on', async () => {
     open();
     await summary();
 
-    expect(await screen.findByRole('dialog')).toBeInTheDocument();
-    expect(fact('Goal')?.textContent).toBe('Grow my email list');
-    expect(fact('Counts')?.textContent).toBe('Submissions');
+    const dialog = await screen.findByRole('dialog');
+
+    expect(within(dialog).getByText('Grow my email list · counts Submissions')).toBeInTheDocument();
+    expect(within(dialog).queryByText('Goal', { selector: 'dt' })).toBeNull();
   });
 
   it('names the playbook it was started from', async () => {
@@ -760,7 +767,7 @@ describe('the summary', () => {
 
     expect(await screen.findByText('Draft')).toBeInTheDocument();
     expect(screen.getByText('On every page')).toBeInTheDocument();
-    expect(screen.queryByText('Counts', { selector: 'dt' })).toBeNull();
+    expect(screen.queryByText(/counts Submissions/)).toBeNull();
   });
 
   /**

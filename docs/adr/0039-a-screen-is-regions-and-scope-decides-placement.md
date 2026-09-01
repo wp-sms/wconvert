@@ -414,6 +414,21 @@ thought to ask, so the trigger reads *"2 things to fix"* in amber when there are
 any and *"Summary"* when there are none — the noun when there is no news, and
 the news when there is._
 
+_Inside it, **`Stat`'s arrangement settles a fact and its name**: the value
+leads and the label sits with it in the `micro` register. Eight rows of
+`LABEL⇥value` down a fixed column put eight small-caps eyebrows in a stack at
+the leading edge, competing with the sentences that are the point. Two per line
+and the label above, which also halves the height. **And the [[Goal]] is the
+dialog's SUBJECT rather than a row in it** — every fact in the list is a
+property of an Optin serving it — which takes the list from eight to six and
+lets the grid read as three tidy rows._
+
+_The trigger lost its icon in the quiet state for ADR 0042 rule 2's reason, one
+notch down: a clipboard beside the word *Summary* is decoration standing in for
+a word already there, on a band whose other controls are icon-only or text-only.
+The warning triangle stays, because it is the register the amber is in and the
+only thing on the band a merchant must notice without reading._
+
 _The dialog re-found the trap the section above this one already records:
 **Radix portals to `document.body`**, so every rule anchored on
 `#wconvert-admin` stopped at the boundary while reading exactly as though it

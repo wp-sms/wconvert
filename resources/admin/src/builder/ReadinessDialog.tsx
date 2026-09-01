@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { ClipboardList, TriangleAlert } from 'lucide-react';
+import { TriangleAlert } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import {
   Dialog,
@@ -167,11 +167,20 @@ export function ReadinessDialog({
   return (
     <>
       {/*
-        **The noun when there is no news, and the news when there is.** A
-        merchant did not think to ask whether their design can convert, so a
+        ==================================================================
+        THE NOUN WHEN THERE IS NO NEWS, AND THE NEWS WHEN THERE IS.
+        ==================================================================
+        A merchant did not think to ask whether their design can convert, so a
         problem is marked before the click and with its count (ADR 0042 rule 3);
-        everything else in here is an answer to a question they DID ask, and a
-        button called *Summary* is the honest label for that.
+        everything else in here answers a question they DID ask, and a button
+        called *Summary* is the honest label for that.
+
+        **The icon appears exactly when it means something.** It carried a
+        clipboard in the quiet state — decoration standing in for a word that
+        was already there, on a band whose other controls are either icon-ONLY
+        (Undo, Redo) or text-only (`Save changes`). The warning triangle is not
+        decoration: it is the register the amber is in, and it is the only
+        thing on this band a merchant has to notice without reading.
       */}
       <Button
         type="button"
@@ -190,75 +199,81 @@ export function ReadinessDialog({
             )}
           </>
         ) : (
-          <>
-            <ClipboardList aria-hidden="true" />
-            {__('Summary', 'wconvert')}
-          </>
+          __('Summary', 'wconvert')
         )}
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
         {/*
-          **Narrow, and a single column.** The facts are short lines and this is
-          read at a glance; a two-column grid would be the layout the permanent
-          panel needed to earn its height, kept after the height stopped being
-          the problem.
+          **Wide enough for two columns of sentences.** Every value in here is a
+          clause rather than a figure — *"Every time, until they close it or
+          sign up"* — and at `sm:max-w-lg` a two-up grid is two 190px columns of
+          wrapped text. `2xl` gives each value ~300px, which is one line for
+          most of them.
         */}
-        <DialogContent className="wconvert-readiness sm:max-w-lg">
+        <DialogContent className="wconvert-readiness sm:max-w-2xl">
           <DialogHeader>
-            <DialogTitle>{__('This Optin, summarised', 'wconvert')}</DialogTitle>
+            <DialogTitle>{__('Summary', 'wconvert')}</DialogTitle>
+
             {/*
-              **The state is the description slot's**, which is where a fact
-              about the whole subject goes — and it is the one thing a merchant
-              opening this is most likely to have come for.
+              ============================================================
+              THE GOAL IS THE SUBJECT OF THIS DIALOG, NOT A ROW IN IT.
+              ============================================================
+              It was two rows — *Goal* and *Counts* — in a list of eight, at the
+              same weight as *How often*. But every other fact in here is a
+              property of an Optin serving that Goal, and the state is a fact
+              about the whole thing rather than about any one of them. Both
+              belong in the header, which is what a dialog header is FOR.
+
+              That also takes the list from eight rows to six, which is what
+              makes the two-column grid below read as three tidy rows rather
+              than as a wall.
             */}
             <DialogDescription asChild>
-              <span className="flex flex-wrap items-center gap-2">
+              <div className="wconvert-readiness__subject">
                 <StatusBadge status={status} />
-                {/*
-                  **The state AND its cause, never the state alone** — the rule
-                  the Optin list already follows (ADR 0027). A [[Suspended]]
-                  Optin is one the merchant did not stop, so a bare badge is a
-                  merchant with nowhere to ask why their popup went dark.
-                  {@see Suspension::reason()} writes both halves into one
-                  sentence, so the badge beside it is the state said twice and
-                  the sentence is trimmed of its opening word by nobody: it is
-                  shown whole, because it is PHP's and already translated.
-                */}
-                {optin.suspended !== null && (
-                  <span className="wconvert-readiness__cause">{optin.suspended}</span>
-                )}
-              </span>
+                <span className="wconvert-readiness__for">{subject(goal, goalId)}</span>
+              </div>
             </DialogDescription>
+
+            {/*
+              **The state AND its cause, never the state alone** — the rule the
+              Optin list already follows (ADR 0027). A [[Suspended]] Optin is
+              one the merchant did not stop, so a bare badge is a merchant with
+              nowhere to ask why their popup went dark. The sentence is PHP's,
+              already translated, and says both halves.
+            */}
+            {optin.suspended !== null && (
+              <p className="wconvert-readiness__cause text-note">{optin.suspended}</p>
+            )}
           </DialogHeader>
 
-          <dl className="wconvert-readiness__facts">
-            {/*
-              **Held back until the registry has answered**, exactly as the
-              Optin list's Goal cell is: showing the raw id first teaches a
-              merchant that a `<code>` means "wait" rather than what it says. An
-              id with no entry behind it is an Optin holding a Goal this build
-              does not have, which is the only honest thing left to show.
-            */}
-            {goal.status !== 'loading' && named(goal) === null && goalId !== '' && (
-              <Fact label={__('Goal', 'wconvert')}>
-                <Unnamed id={goalId} />
-              </Fact>
-            )}
+          {/*
+            ==============================================================
+            THE LABEL SITS OVER THE VALUE, AND THE VALUE IS WHAT IS READ.
+            ==============================================================
+            This was eight rows of `LABEL⇥value` down a fixed 6.5rem column —
+            eight small-caps eyebrows stacked at the leading edge, competing
+            with the sentences that are the point of the dialog. {@see Stat}
+            settles the arrangement for a fact and its name: the value leads and
+            the name sits with it in the `micro` register, quiet enough to skip
+            once you know where you are.
 
-            {goal.status === 'ready' && goal.data !== null && (
-              <>
-                <Fact label={__('Goal', 'wconvert')}>{goal.data.label}</Fact>
-                {/*
-                  **What it will be judged on, named by the Goal itself.** Two
-                  of the five convert on a click, so one word for all of them
-                  would report zero forever under the other two and look broken
-                  while being right. The word travels on the registry entry; no
-                  Goal id is spelled in this bundle.
-                */}
-                <Fact label={__('Counts', 'wconvert')}>{goal.data.headline_label}</Fact>
-              </>
-            )}
+            Two columns, because these are short clauses and six of them in one
+            column is a scroll for no reason.
+
+            **The four rule facts come first and fill whole rows**, which is
+            what keeps the grid stable: an Optin that started from no
+            [[Playbook]] drops a row from the END rather than shifting the run
+            of four across columns — the scattering a flowing grid does when
+            something in the middle disappears.
+          */}
+          <dl className="wconvert-readiness__facts">
+            {summaries.map((summary) => (
+              <Fact key={summary.id} label={summary.eyebrow} attention={summary.attention}>
+                {summary.text}
+              </Fact>
+            ))}
 
             {/*
               **Provenance, and read-only on purpose.** A `playbook_id` records
@@ -279,12 +294,6 @@ export function ReadinessDialog({
                 {named(playbook) ?? <Unnamed id={playbookId} />}
               </Fact>
             )}
-
-            {summaries.map((summary) => (
-              <Fact key={summary.id} label={summary.eyebrow} attention={summary.attention}>
-                {summary.text}
-              </Fact>
-            ))}
 
             {/*
               **The sentence, and not the [[Playbook]]'s hint beside it.** The
@@ -316,6 +325,35 @@ export function ReadinessDialog({
         </DialogContent>
       </Dialog>
     </>
+  );
+}
+
+/**
+ * What this Optin is for, in the header where its subject belongs.
+ *
+ * **The [[Goal]] and the word for its number, as one clause.** Two of the five
+ * Goals convert on a click, so the headline figure is not the same number under
+ * every Goal and a Goal named without it is half an answer — but they are one
+ * fact about one thing, and two rows in a list of six made them look like two.
+ *
+ * An id with no registry entry behind it is shown as the id, for
+ * {@see OptinList}'s reason: the raw value is the only honest thing left, and
+ * blanking it would read as an Optin with no Goal at all. Empty while the
+ * registry has not answered, because a raw id flashing into a label teaches a
+ * merchant that it means *wait* rather than what it says.
+ */
+function subject(goal: Loadable<GoalEntry | null>, goalId: string): string {
+  const entry = named(goal);
+
+  if (entry === null) {
+    return goal.status === 'loading' ? '' : goalId;
+  }
+
+  return sprintf(
+    /* translators: 1: a Goal, e.g. “Grow my email list”. 2: what its number is called, e.g. “Submissions”. */
+    __('%1$s · counts %2$s', 'wconvert'),
+    entry.label,
+    entry.headline_label,
   );
 }
 
