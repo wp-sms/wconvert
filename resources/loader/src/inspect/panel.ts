@@ -70,20 +70,50 @@ export function createPanel(labels: Labels): Panel {
 
   const body = el('div', 'body');
 
-  toggle.addEventListener('click', () => {
-    const open = toggle.getAttribute('aria-expanded') !== 'true';
+  /** Shut or open the body, and keep the control saying which. */
+  const collapse = (shut: boolean) => {
+    toggle.setAttribute('aria-expanded', shut ? 'false' : 'true');
+    toggle.textContent = shut ? '+' : '–';
+    toggle.title = text(labels, shut ? 'expand' : 'collapse');
+    body.hidden = shut;
+  };
 
-    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-    toggle.textContent = open ? '–' : '+';
-    toggle.title = text(labels, open ? 'collapse' : 'expand');
-    body.hidden = !open;
-  });
+  toggle.addEventListener('click', () => collapse(toggle.getAttribute('aria-expanded') === 'true'));
 
   header.append(heading, toggle, close);
   frame.append(header, body);
   root.append(frame);
 
   document.body.append(host);
+
+  /*
+    ==========================================================================
+    WCAG 2.2 SC 2.4.11 — IT GETS OUT OF THE WAY OF FOCUS, IT DOES NOT MERELY
+    SIT IN A CORNER.
+    ==========================================================================
+    A focused element must not be ENTIRELY hidden by author content. Capping
+    the panel at 60vh and putting it in the corner is necessary and it is not
+    sufficient: measured on a real page, tabbing the theme's own navigation put
+    three links completely behind it.
+
+    So the panel collapses the moment focus lands somewhere it covers. It does
+    NOT restore itself — the merchant re-opens it with the toggle — because
+    content that pops back is content the criterion is still about.
+
+    `focusin` rather than `focus`, because focus does not bubble; the capture
+    phase would work too but this fires on the document either way.
+  */
+  document.addEventListener('focusin', () => {
+    const focused = document.activeElement;
+
+    if (focused === null || focused === document.body || focused === host || body.hidden) {
+      return;
+    }
+
+    if (entirelyBehind(focused.getBoundingClientRect(), frame.getBoundingClientRect())) {
+      collapse(true);
+    }
+  });
 
   return {
     render(funnel: Funnel): void {
@@ -330,6 +360,20 @@ function ruleTable(heading: string, rules: readonly RuleReport[], labels: Labels
 
   return section;
 }
+
+/**
+ * Is this box completely inside that one?
+ *
+ * "Entirely" is the whole of SC 2.4.11: a focused element half behind the
+ * panel still shows a focus ring, and hiding the panel for that would make it
+ * flicker away on most of the page. Only a element with nothing visible left
+ * of it is a failure.
+ */
+const entirelyBehind = (focused: DOMRect, panel: DOMRect): boolean =>
+  focused.left >= panel.left &&
+  focused.right <= panel.right &&
+  focused.top >= panel.top &&
+  focused.bottom <= panel.bottom;
 
 function note(words: string): HTMLElement {
   const paragraph = el('p', 'note');

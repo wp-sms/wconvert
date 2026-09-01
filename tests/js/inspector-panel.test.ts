@@ -231,6 +231,73 @@ describe('the panel', () => {
     expect(root.querySelector('details .gates')).not.toBeNull();
   });
 
+  /**
+   * ==========================================================================
+   * WCAG 2.2 SC 2.4.11 — IT GETS OUT OF THE WAY, IT DOES NOT MERELY SIT IN A
+   * CORNER.
+   * ==========================================================================
+   * Capping the panel at 60vh and putting it bottom-right is necessary and is
+   * not sufficient. Measured on a real page: tabbing the theme's own
+   * navigation put three links ENTIRELY behind it, which is the failure this
+   * criterion names.
+   *
+   * jsdom computes no layout, so the rectangles are stubbed — what is under
+   * test is the RULE (entirely behind → collapse; partly visible → leave it),
+   * and the browser pass is what measured the fault in the first place.
+   */
+  const focusBehind = (root: ShadowRoot, box: Partial<DOMRect>) => {
+    const link = document.createElement('a');
+
+    link.href = '#';
+    link.getBoundingClientRect = () => ({ left: 100, right: 200, top: 100, bottom: 120, ...box }) as DOMRect;
+    document.body.append(link);
+
+    (root.querySelector('.panel') as HTMLElement).getBoundingClientRect = () =>
+      ({ left: 50, right: 300, top: 50, bottom: 400 }) as DOMRect;
+
+    link.focus();
+
+    return link;
+  };
+
+  it('collapses when focus lands somewhere it completely covers', () => {
+    const { root } = draw();
+
+    expect((root.querySelector('.body') as HTMLElement).hidden).toBe(false);
+
+    focusBehind(root, {});
+
+    expect((root.querySelector('.body') as HTMLElement).hidden).toBe(true);
+    // And the control says so, so the merchant can put it back.
+    expect(root.querySelector('button')?.getAttribute('aria-expanded')).toBe('false');
+  });
+
+  /**
+   * A focused element only PARTLY behind the panel still shows a focus ring,
+   * and collapsing for that would make the panel flicker away on most of the
+   * page. "Entirely" is the whole of the criterion.
+   */
+  it('stays open when the focused element is only partly behind it', () => {
+    const { root } = draw();
+
+    focusBehind(root, { left: 10, right: 120 });
+
+    expect((root.querySelector('.body') as HTMLElement).hidden).toBe(false);
+  });
+
+  /**
+   * **It does not restore itself.** Content that pops back is content the
+   * criterion is still about, so the merchant re-opens it with the toggle.
+   */
+  it('does not reopen when focus moves away again', () => {
+    const { root } = draw();
+
+    focusBehind(root, {});
+    document.body.focus();
+
+    expect((root.querySelector('.body') as HTMLElement).hidden).toBe(true);
+  });
+
   /** ADR 0004's failure modes, named rather than left to be debugged. */
   it('names a stripped defer and a relocated loader', () => {
     const server: ServerReport = { request: {}, optins: [optin()], labels: LABELS };

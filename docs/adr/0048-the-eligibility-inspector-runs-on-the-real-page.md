@@ -131,10 +131,15 @@ be cached.
   names the WINNER rather than saying "priority", because two overlays at equal
   priority are broken by the ULID and telling a merchant they lost on priority
   when both were zero sends them to change a number that decides nothing.
-- **The panel is collapsible, dismissible and capped at 60vh.**
+- **The panel gets out of the way of focus**, which is more than being small.
   WCAG 2.2 SC 2.4.11 (Focus Not Obscured, AA) says a focused element must not be
-  *entirely* hidden by author content, and this is a fixed-position box on a page
-  whose whole point is that a popup is about to appear on it.
+  *entirely* hidden by author content. Capping the panel at 60vh and putting it
+  in a corner is necessary and is not sufficient — measured on a real page, it
+  occupied 9% of the viewport and still buried three of the theme's own
+  navigation links completely. So it collapses the moment focus lands somewhere
+  it covers, and does **not** restore itself: content that pops back is content
+  the criterion is still about. Re-measured against the live box afterwards:
+  zero.
 - **A cache can still beat it.** `DONOTCACHEPAGE` is set during PHP, and a
   full-page cache holding a file for that URL answers before PHP runs at all. In
   practice the `wordpress_logged_in` cookie bypasses full-page cache in every
