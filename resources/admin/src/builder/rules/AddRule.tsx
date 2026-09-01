@@ -1,5 +1,7 @@
+import { Fragment } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { Lock } from 'lucide-react';
+import { Badge } from '../../components/ui/badge';
 import { renderingFor, type Rendering } from '../../goals/availability';
 import { toRule } from '../presets';
 import type { Rule, RuleType } from '../api';
@@ -73,107 +75,122 @@ export function AddRule({ axis, label, onAdd }: AddRuleProps) {
         </label>
       </p>
 
-      <LockedTypes types={on('upsell')} />
-      <UnavailableTypes types={on('explain')} />
+      <Absent locked={on('upsell')} unavailable={on('explain')} />
     </>
   );
 }
 
 /**
- * The premium rule types this install cannot run, as **cards from the
- * manifest**.
+ * What this install cannot run, as one compact list.
  *
  * ============================================================================
- * A RUN-ON SENTENCE IS NOT WHAT ADR 0015 SPECIFIED.
+ * THE REASON IS THE SAME FOR EVERY ITEM IN A GROUP, SO IT IS SAID ONCE.
  * ============================================================================
- * What shipped was *"With WConvert Pro: Clicks an element, About to leave,
- * Scrolls back up"* appended to the paragraph holding the add control — three
- * distinct capabilities as a comma list in a sentence about something else,
- * which is drift from ADR 0015's *"free's admin renders the `locked` card from
- * the shared manifest"* ([#72](https://github.com/navidkashani/wconvert/issues/72)).
+ * This was two blocks of grid cards, each card repeating the sentence its
+ * neighbour had just made: *"Cart is worth at least — Needs WooCommerce on
+ * this site."* beside *"Has something in their cart — Needs WooCommerce on
+ * this site."* Two hundred pixels to say one thing twice, under a heading that
+ * said it a third time.
+ *
+ * A definition list is what the content actually is: the reason is the TERM
+ * and the capabilities it covers are the description. So the reason is stated
+ * once, as the label of the group, and each capability is a chip.
+ *
+ * **And the unavailable ones are grouped BY what they need.** An install
+ * missing WooCommerce and WP SMS gets two honest lines rather than one lumped
+ * "not available on this site", which is ADR 0026's own argument — a merchant
+ * who deactivated something should not have to guess which of their plugins
+ * did it — applied to the shape rather than only to the words.
+ *
+ * ============================================================================
+ * TWO GROUPS AND NEVER ONE.
+ * ============================================================================
+ * `locked` is buyable from us and `unavailable` is not. Collapsing them offers
+ * a merchant with no store a WooCommerce licence we do not sell, and shows a
+ * paying Pro customer an advertisement for Pro. The cascade is
+ * `renderingFor`'s, shared with the goal screen and the Destinations list.
  *
  * **The heading keeps the words.** *With WConvert Pro:* is what named this on
- * screen before and it is what `builder-editors.test.tsx` reads, so the phrase
- * survives the change of shape — the test is asserting that a premium type is
- * NAMED, and it still is.
+ * screen before and it is what `builder-editors.test.tsx` reads — the test
+ * asserts that a premium type is NAMED, and it still is.
  *
- * **Metadata, never a disabled control.** wp.org Guideline 9 fires on showing a
- * real control the user cannot use, and the premium code genuinely is not in
- * this bundle — there is nothing here to disable. A card carries the type's
- * label from PHP and nothing a click could reach, which is what makes the
- * upsell honest rather than trialware (ADR 0015).
- *
- * **Named rather than hidden**, which is the other half: a settings list the
- * merchant went hunting through explains the gap, where the creation flow's
- * front door hides one (ADR 0026). There is no link, because the upgrade
- * destination does not exist yet and "upgrade here" beside nothing to click is
- * worse than saying nothing.
+ * **Metadata, never a disabled control.** wp.org Guideline 9 fires on showing
+ * a real control the user cannot use, and the premium code genuinely is not in
+ * this bundle — there is nothing here to disable. A chip carries the type's
+ * label from PHP and nothing a click could reach (ADR 0015). There is no link,
+ * because the upgrade destination does not exist yet and "upgrade here" beside
+ * nothing to click is worse than saying nothing.
  */
-function LockedTypes({ types }: { types: readonly RuleType[] }) {
-  if (types.length === 0) {
+function Absent({ locked, unavailable }: { locked: readonly RuleType[]; unavailable: readonly RuleType[] }) {
+  if (locked.length === 0 && unavailable.length === 0) {
     return null;
   }
 
   return (
-    <div className="wconvert-locked">
-      <p className="wconvert-locked__heading text-micro uppercase">{__('With WConvert Pro:', 'wconvert')}</p>
-      <ul className="wconvert-locked__list">
-        {types.map((type) => (
-          <li key={type.type} className="wconvert-locked__card">
-            <Lock aria-hidden="true" className="wconvert-locked__icon" />
-            <span className="wconvert-locked__label">{type.label}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <dl className="wconvert-absent">
+      {locked.length > 0 && (
+        <>
+          <dt className="text-micro uppercase text-muted-foreground">
+            {__('With WConvert Pro:', 'wconvert')}
+          </dt>
+          <dd>
+            {locked.map((type) => (
+              <Badge key={type.type} variant="secondary">
+                <Lock aria-hidden="true" />
+                {type.label}
+              </Badge>
+            ))}
+          </dd>
+        </>
+      )}
+
+      {[...byDependency(unavailable)].map(([needs, types]) => (
+        <Fragment key={needs}>
+          <dt className="text-micro uppercase text-muted-foreground">
+            {sprintf(
+              /* translators: %s: the plugin the site needs, e.g. “WooCommerce”. */
+              __('Needs %s:', 'wconvert'),
+              needs
+            )}
+          </dt>
+          <dd>
+            {types.map((type) => (
+              // Amber is the meaning it already carries on the Optin list: the
+              // SITE is holding this back, and it is not ours to sell
+              // (ADR 0026, ADR 0037). No lock — a lock says "buy it".
+              <Badge key={type.type} variant="warning">
+                {type.label}
+              </Badge>
+            ))}
+          </dd>
+        </Fragment>
+      ))}
+    </dl>
   );
 }
 
 /**
- * The rule types this SITE cannot serve — a sibling card, and **never an
- * upsell**.
+ * The absent types, grouped by the plugin each is waiting on.
  *
- * ============================================================================
- * THE HOLE THIS CLOSES WAS LIVE AND THE TWO SCREENS DISAGREED ACROSS IT.
- * ============================================================================
- * `RulesEditor` had two branches, `ready` and `locked`, so a cart Condition on
- * a store-less site appeared in neither the offered list nor the Pro card and
- * was simply gone. Meanwhile `Suspension::reason()` told that same merchant,
- * on the Optin list, exactly which plugin their Optin needed.
- *
- * It is a card of its own rather than a second row in the Pro list, because
- * merging them is the failure ADR 0026 is about: `locked` is buyable from us
- * and `unavailable` is not, and one list would offer a merchant a WooCommerce
- * licence we do not have. **It names the plugin** for the same reason the
- * Optin list does — "not available on this site" leaves them guessing which of
- * their plugins did it — and the words are `RuleCatalogue`'s, which resolves
- * the cause or nothing.
- *
- * Worded to match `destinations/Destinations.tsx`, which reached the same
- * cascade first.
+ * In first-seen order, which is manifest order — so the list does not reshuffle
+ * when a merchant activates one of two missing plugins.
  */
-function UnavailableTypes({ types }: { types: readonly RuleType[] }) {
-  if (types.length === 0) {
-    return null;
+function byDependency(types: readonly RuleType[]): Map<string, RuleType[]> {
+  const groups = new Map<string, RuleType[]>();
+
+  for (const type of types) {
+    // `RuleCatalogue` answers with the cause or nothing, so a type here
+    // without one cannot occur — but a response from an older build could
+    // carry null, and a group headed "Needs null" is worse than a vague one.
+    const needs = type.requires_label ?? __('another plugin', 'wconvert');
+    const group = groups.get(needs);
+
+    if (group === undefined) {
+      groups.set(needs, [type]);
+    } else {
+      group.push(type);
+    }
   }
 
-  return (
-    <div className="wconvert-locked wconvert-locked--site">
-      <p className="wconvert-locked__heading text-micro uppercase">{__('Not available on this site:', 'wconvert')}</p>
-      <ul className="wconvert-locked__list">
-        {types.map((type) => (
-          <li key={type.type} className="wconvert-locked__card">
-            <span className="wconvert-locked__label">{type.label}</span>{' '}
-            <span className="wconvert-locked__reason text-note">
-              {sprintf(
-                /* translators: %s: the plugin the site needs, e.g. “WooCommerce”. */
-                __('Needs %s on this site.', 'wconvert'),
-                type.requires_label ?? __('something this site does not have', 'wconvert')
-              )}
-            </span>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
+  return groups;
 }

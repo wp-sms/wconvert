@@ -254,7 +254,8 @@ describe('the rules panel against the editor’s blanket rules', () => {
     '.wconvert-rules__label',
     '.wconvert-rules__group + .wconvert-rules__group',
     '.wconvert-starters__list',
-    '.wconvert-starters__card',
+    '.wconvert-starter',
+    '.wconvert-absent',
     '.wconvert-rule__note',
     // The card gap, which was zero: `.wconvert-rule` at (0,1,0) lost to
     // `#wconvert-admin :not(.wconvert-editor) > ul > li` at (1,1,2), and two
@@ -265,7 +266,6 @@ describe('the rules panel against the editor’s blanket rules', () => {
     // asked for `margin: 0` and rendered 12px; `.wconvert-locked__list` asked
     // for no marker indent and rendered 21px of one.
     '.wconvert-rules',
-    '.wconvert-locked__list',
     '.wconvert-picker__empty',
     '.wconvert-allowance',
   ];
@@ -290,8 +290,8 @@ describe('the rules panel against the editor’s blanket rules', () => {
       '.wconvert-section__eyebrow',
       '.wconvert-section__sentence',
       '.wconvert-rules__label',
-      '.wconvert-starters__name',
-      '.wconvert-starters__what',
+      '.wconvert-starter__name',
+      '.wconvert-starter__what',
     ]) {
       const block = new RegExp(`\\${selector}\\s*\\{[^}]*\\}`, 'g');
 

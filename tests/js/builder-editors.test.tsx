@@ -511,11 +511,19 @@ describe('a rule type this install cannot run', () => {
 
     await open('Who');
 
-    const explained = screen.getByText(/Not available on this site:/).parentElement as HTMLElement;
+    // ==========================================================================
+    // ONE GROUP LABEL CARRYING THE REASON, AND A CHIP PER CAPABILITY.
+    // ==========================================================================
+    // The reason used to be on every card, under a heading that said it again.
+    // Grouping BY what is missing is ADR 0026's own argument applied to the
+    // shape: an install missing two plugins gets two honest lines rather than
+    // one lumped "not available on this site".
+    const woo = screen.getByText('Needs WooCommerce:').nextElementSibling as HTMLElement;
 
-    expect(within(explained).getByText('cart_has_items')).toBeInTheDocument();
-    expect(within(explained).getAllByText(/Needs WooCommerce on this site/).length).toBeGreaterThan(0);
-    expect(within(explained).queryByText(/Pro/)).toBeNull();
+    expect(within(woo).getByText('cart_has_items')).toBeInTheDocument();
+    expect(within(woo).getByText('cart_value_min')).toBeInTheDocument();
+    // Never an upsell: a rule the SITE cannot serve is not ours to sell.
+    expect(within(woo).queryByText(/Pro/)).toBeNull();
   });
 
   /** And a rule already ON the Optin says the same thing on its own row. */

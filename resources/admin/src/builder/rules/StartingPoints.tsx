@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
-import { Button } from '../../components/ui/button';
+import { Lock } from 'lucide-react';
+import { Badge } from '../../components/ui/badge';
 import { renderingFor } from '../../goals/availability';
 import { ConfirmDialog } from '../../shell/ConfirmDialog';
 import { Description } from '../../shell/Description';
@@ -68,35 +69,81 @@ export function StartingPoints({ bundles, onApply }: StartingPointsProps) {
         {bundles.map((bundle) => {
           const rendering = renderingFor(bundle.availability, 'settings_list');
 
-          return (
-            <li key={bundle.id} className="wconvert-starters__card">
-              <p className="wconvert-starters__name text-body font-semibold">{bundle.label}</p>
-              <p className="wconvert-starters__what text-note text-muted-foreground">{bundle.description}</p>
-              <p className="wconvert-starters__sections text-micro uppercase text-muted-foreground">{sectionsIn(bundle)}</p>
+          /*
+            ==================================================================
+            THE CARD IS THE CONTROL, SO THERE IS NO BUTTON ON IT.
+            ==================================================================
+            Every card carried a `Use this` — seven copies of one word under
+            seven descriptions, in a grid where the card is obviously the thing
+            you press. Removing it takes a row out of every card and takes
+            nothing away: the card was already the affordance.
 
-              {/*
-                The cascade is `renderingFor`'s rather than one written out
-                again: `locked` and `unavailable` must never collapse into a
-                single "not available", because that is how a merchant with no
-                store gets sold Pro for a feature Pro would not give them
-                either (ADR 0026). `hide` cannot be reached from a settings
-                list.
-              */}
-              {rendering === 'offer' ? (
-                <Button variant="outline" size="sm" onClick={() => setPending(bundle)}>
-                  {__('Use this', 'wconvert')}
-                </Button>
-              ) : rendering === 'upsell' ? (
-                <span className="wconvert-starters__reason text-note text-muted-foreground">{__('Included with Pro.', 'wconvert')}</span>
-              ) : (
-                <span className="wconvert-starters__reason text-note text-muted-foreground">
-                  {sprintf(
-                    /* translators: %s: the plugin the site needs, e.g. “WooCommerce”. */
-                    __('Needs %s on this site.', 'wconvert'),
-                    bundle.requires_label ?? __('something this site does not have', 'wconvert')
+            **A `<button>` may hold only phrasing content**, so the lines are
+            `<span>`s. A `<p>` in here is invalid markup that browsers silently
+            reflow — the same trap `Section`'s summary has.
+          */
+          if (rendering === 'offer') {
+            return (
+              <li key={bundle.id}>
+                <button type="button" className="wconvert-starter" onClick={() => setPending(bundle)}>
+                  <span className="wconvert-starter__head">
+                    <span className="wconvert-starter__name text-body font-semibold">{bundle.label}</span>
+                  {/*
+                    Which sections applying it replaces — a CLASSIFICATION, and
+                    a badge is what a classification looks like. It had a line
+                    of its own in the small-caps label register, which gave a
+                    piece of metadata the same weight as the pitch above it.
+                  */}
+                    <Badge variant="secondary" className="wconvert-starter__tag">
+                      {sectionsIn(bundle)}
+                    </Badge>
+                  </span>
+                  <span className="wconvert-starter__what text-note text-muted-foreground">
+                    {bundle.description}
+                  </span>
+                </button>
+              </li>
+            );
+          }
+
+          /*
+            Not a disabled button — there is nothing here to press, and wp.org
+            Guideline 9 is about showing a real control a merchant cannot use.
+            The badge slot carries the REASON instead of the sections, because
+            "you cannot use this" outranks "this is a When rule" for somebody
+            who cannot use it.
+
+            The cascade is `renderingFor`'s rather than one written out again:
+            `locked` and `unavailable` must never collapse into a single "not
+            available", because that is how a merchant with no store gets sold
+            Pro for a feature Pro would not give them either (ADR 0026).
+          */
+          return (
+            <li key={bundle.id}>
+              <div className="wconvert-starter wconvert-starter--absent">
+                <span className="wconvert-starter__head">
+                  <span className="wconvert-starter__name text-body font-semibold">{bundle.label}</span>
+                  {rendering === 'upsell' ? (
+                    <Badge variant="secondary" className="wconvert-starter__tag">
+                      <Lock aria-hidden="true" />
+                      {__('Pro', 'wconvert')}
+                    </Badge>
+                  ) : (
+                    // Amber is the reserved meaning it already carries on the
+                    // Optin list: the SITE is holding this back (ADR 0037).
+                    <Badge variant="warning" className="wconvert-starter__tag">
+                      {sprintf(
+                        /* translators: %s: the plugin the site needs, e.g. “WooCommerce”. */
+                        __('Needs %s', 'wconvert'),
+                        bundle.requires_label ?? __('another plugin', 'wconvert')
+                      )}
+                    </Badge>
                   )}
                 </span>
-              )}
+                <span className="wconvert-starter__what text-note text-muted-foreground">
+                  {bundle.description}
+                </span>
+              </div>
             </li>
           );
         })}
