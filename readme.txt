@@ -19,8 +19,9 @@ the placement, the trigger, the copy and the fields, already filled in.
 
 **What it does**
 
-* **Popups and inline forms**, rendered in the browser's top layer so a theme's
-  stacking context cannot bury them.
+* **Popups**, rendered in the browser's top layer so a theme's stacking context
+  cannot bury them, and **inline forms** placed exactly where you want them
+  with a block or a shortcode.
 * **A goal-first builder.** Playbooks are starting points, not templates you
   fight — every part stays editable.
 * **A lead log** with CSV export, and per-Optin analytics: impressions,
@@ -40,9 +41,10 @@ identifier. Everything it counts is a daily counter on your own site.
 
 Every piece of JavaScript this plugin ships is built from un-minified source
 included in the download, under `resources/`. `public/loader/loader.js` is
-built from `resources/loader/src`, and `public/admin/main.js` from
-`resources/admin/src`. Nothing is fetched from elsewhere at build time or at
-run time.
+built from `resources/loader/src`, `public/admin/main-*.js` from
+`resources/admin/src`, and `public/blocks/inline-optin.js` from
+`resources/blocks/inline-optin/src`. Nothing is fetched from elsewhere at build
+time or at run time.
 
 **WConvert Pro**
 
@@ -77,6 +79,22 @@ to keep them.
 
 Yes. Capture, the lead log, CSV export, analytics and lead-magnet delivery by
 email all work on a WordPress with nothing else installed.
+
+= How do I put an inline form on a page? =
+
+Two ways, and they do the same thing. In the block editor, add the **Inline
+Optin** block and pick one of your published inline Optins by name — no id to
+copy, and nothing to type.
+
+Anywhere the block editor is not — the classic editor, a page builder, a
+widget, or a theme template via `do_shortcode()` — use the shortcode instead.
+The block shows you the exact shortcode for whichever Optin you picked, ready
+to paste:
+
+`[wconvert_optin id="YOUR_OPTIN_ID"]`
+
+Popups, floating bars and slide-ins need none of this — they place themselves
+on every page they are targeted at.
 
 = Does it store IP addresses or track visitors across pages? =
 

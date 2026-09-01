@@ -11,6 +11,8 @@ use WConvert\Container\PrivacyServiceProvider;
 use WConvert\Container\ServiceContainer;
 use WConvert\Container\ServiceProvider;
 use WConvert\Database\Connection;
+use WConvert\Frontend\InlineOptinBlock;
+use WConvert\Frontend\InlineOptinShortcode;
 use WConvert\Pro\Container\ProServiceProvider;
 use WConvert\Queue\Queue;
 use WConvert\Rest\BeaconController;
@@ -156,6 +158,58 @@ final class NothingTranslatesAtBootTest extends TestCase
             'rest_api_init',
             $GLOBALS['wconvertTestActions'],
             'boot registered nothing on rest_api_init, so no WConvert route can ever exist'
+        );
+    }
+
+    /**
+     * ========================================================================
+     * THE BLOCK AND THE SHORTCODE, ON `init`, ON BOTH SIDES.
+     * ========================================================================
+     * `register_block_type()` reads `block.json` and translates its `title`
+     * and `description` through the i18n schema, so it is a #52 in waiting:
+     * registered from `boot()` it would ask WordPress for a word on
+     * `plugins_loaded`, on every request of every install. That half is
+     * asserted by the negative above — a translation there throws from the
+     * stub — and this is the positive it needs beside it, because a
+     * registration deferred to a hook that is never added translates nothing
+     * either.
+     *
+     * **Both sides of `is_admin()`, and that is the regression worth naming.**
+     * Every other front-end thing in this provider sits behind `if
+     * (!is_admin())`, so the shape of this file invites a fourth. It cannot be
+     * one: the block's editor script is enqueued in wp-admin while its
+     * `render_callback` runs on the visitor's page, and the shortcode is
+     * parsed on the front end while the classic editor needs the tag to exist
+     * in wp-admin. Behind `is_admin()` in either direction, half of each
+     * surface silently stops working.
+     */
+    #[DataProvider('requests')]
+    public function testTheInlineOptinSurfacesRegisterOnInitOnEitherSide(bool $isAdmin): void
+    {
+        $GLOBALS['wconvertTestIsAdmin'] = $isAdmin;
+        $GLOBALS['wconvertTestBlocks'] = [];
+        $GLOBALS['wconvertTestShortcodes'] = [];
+
+        $this->boot();
+
+        $this->assertSame(
+            [],
+            $GLOBALS['wconvertTestBlocks'],
+            'a block was registered on plugins_loaded, which is where block.json asks to be translated'
+        );
+
+        do_action('init');
+
+        $this->assertArrayHasKey(
+            InlineOptinBlock::NAME,
+            $GLOBALS['wconvertTestBlocks'],
+            'no block registered on init, so an inline Optin cannot be placed from the block editor'
+        );
+
+        $this->assertArrayHasKey(
+            InlineOptinShortcode::TAG,
+            $GLOBALS['wconvertTestShortcodes'],
+            'no shortcode registered on init, so an inline Optin cannot be placed anywhere the block is not'
         );
     }
 

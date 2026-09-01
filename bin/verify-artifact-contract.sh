@@ -194,6 +194,22 @@ if [ "$tier" = "free" ]; then
     # if either is missing.
     require_matching_file "$TREE" public/admin 'main-*.js' "the admin bundle is built, never committed — run the build" || true
     require_matching_file "$TREE" public/admin 'builder-*.js' "the builder chunk is built, never committed — run the build" || true
+    # THE BLOCK EDITOR'S BUNDLE, AND FREE ONLY — Pro has no block of its own.
+    #
+    # `inline` is the one Display Type that is not an overlay, so it is the one
+    # that needs somewhere on the page to go, and the block is one of the two
+    # things that puts it there. It is registered unconditionally
+    # (WConvert\Frontend\InlineOptinBlock says why: an unregistered dynamic
+    # block renders NOTHING, so refusing to register on a missing bundle takes
+    # the Optin off every page that already carries the block). That is the
+    # right call at runtime and it is exactly why the artifact has to be
+    # checked here: a ZIP without this file registers a block the inserter
+    # offers and the editor cannot draw, with a 404 in a console nobody has
+    # open.
+    #
+    # Not hashed, unlike the two admin files: nothing imports it, so its name
+    # has no module identity to keep stable and BuiltAsset's `?ver` is enough.
+    require_file public/blocks/inline-optin.js "the block editor bundle is built, never committed — run the build" || true
     require_file "$readme" "the wp.org listing, and the source claim (d) makes true, live in it" || true
 fi
 
@@ -320,6 +336,7 @@ if [ "$tier" = "free" ]; then
     require_populated_dir "$TREE" resources/loader/src '*.ts' "public/loader/loader.js is built from it" || true
     require_populated_dir "$TREE" resources/admin/src '*.tsx' "public/admin/main-*.js is built from it" || true
     require_populated_dir "$TREE" resources/renderer/src '*.ts' "both bundles import it" || true
+    require_populated_dir "$TREE" resources/blocks/inline-optin/src '*.tsx' "public/blocks/inline-optin.js is built from it" || true
 
     # Runtime data. Free reads each of these by a path constant, and a ZIP
     # missing one is a plugin that cannot draw a template or evaluate a rule.
@@ -327,6 +344,12 @@ if [ "$tier" = "free" ]; then
     require_file resources/templates/manifest.json "WConvert\\Template\\TemplateManifest::PATH reads it" || true
     require_populated_dir "$TREE" resources/templates/library '*.json' "WConvert\\Template\\BundledTemplates::PATH reads it" || true
     require_file resources/templates/locked.json "WConvert\\Template\\LockedTemplates::PATH reads it" || true
+    # The block's metadata, which is runtime data in the strictest sense:
+    # WConvert\Frontend\InlineOptinBlock points register_block_type() at the
+    # DIRECTORY, so WordPress reads this file on every request. It is also the
+    # file the editor bundle imports its name from, which is what keeps the two
+    # halves of the block from disagreeing about what it is called.
+    require_file resources/blocks/inline-optin/block.json "WConvert\\Frontend\\InlineOptinBlock registers the block from it" || true
     require_populated_dir "$TREE" resources/playbooks '*.php' "WConvert\\Playbook\\PlaybookLibrary::PATH reads it" || true
 
     if section_clean; then

@@ -36,6 +36,8 @@ use WConvert\Destination\PushDispatcher;
 use WConvert\Destination\PushWorker;
 use WConvert\Destination\Wsms\WpWsmsContacts;
 use WConvert\Destination\Wsms\WsmsDestinationType;
+use WConvert\Frontend\InlineOptinBlock;
+use WConvert\Frontend\InlineOptinShortcode;
 use WConvert\Frontend\InspectorEnqueue;
 use WConvert\Frontend\LoaderEnqueue;
 use WConvert\Goal\GoalRegistry;
@@ -234,6 +236,24 @@ final class CoreServiceProvider implements ServiceProvider
                 $c->resolve(Degradation::class),
                 $c->resolve(RuleCatalogue::class)
             )
+        );
+
+        // The two authoring surfaces for an `inline` Optin. The block reads
+        // the published set and the Optins' names to build its picker; the
+        // shortcode takes an id and needs nothing at all, and is registered
+        // here anyway so that both are wired in one place and neither can be
+        // added without the other being noticed.
+        $container->register(
+            InlineOptinBlock::class,
+            static fn (ServiceContainer $c): InlineOptinBlock => new InlineOptinBlock(
+                $c->resolve(PublishedSet::class),
+                $c->resolve(OptinRepository::class)
+            )
+        );
+
+        $container->register(
+            InlineOptinShortcode::class,
+            static fn (): InlineOptinShortcode => new InlineOptinShortcode()
         );
 
         // The Goal registry is an enum plus the two facts that resolve its
@@ -576,6 +596,40 @@ final class CoreServiceProvider implements ServiceProvider
             foreach (self::REST_CONTROLLERS as $controller) {
                 $container->resolve($controller)->registerRoutes();
             }
+        });
+
+        /*
+         * ====================================================================
+         * THE TWO WAYS AN `inline` OPTIN IS PLACED ON A PAGE.
+         * ====================================================================
+         * `inline` is the one [[Display Type]] that is not an overlay: it
+         * renders where it was embedded and never competes for the screen, so
+         * unlike the other three it needs somewhere on the page to go. These
+         * two are the only things in the plugin that write one
+         * ({@see \WConvert\Frontend\InlineAnchor}).
+         *
+         * ON `init`, AND NOT BEHIND `is_admin()`. Both halves are load-bearing
+         * and for different reasons:
+         *
+         * - `init`, because `register_block_type()` translates `block.json`'s
+         *   title through the i18n schema, and this method runs on
+         *   `plugins_loaded`. Registering there is #52 again — fifty-seven
+         *   translations before there is a domain to translate against, and
+         *   `_load_textdomain_just_in_time` printed before `<!DOCTYPE html>`.
+         *
+         * - Both sides, because each surface needs a side the other does not.
+         *   The block's editor script is enqueued in wp-admin and its
+         *   `render_callback` runs on the visitor's page; the shortcode is
+         *   parsed on the front end and, in the classic editor, has to exist
+         *   in wp-admin for anything to know the tag is taken.
+         *
+         * Resolved inside the callback rather than here, for the reason the
+         * REST controllers are: `plugins_loaded` is not the moment to build a
+         * graph nothing has asked for yet.
+         */
+        add_action('init', static function () use ($container): void {
+            $container->resolve(InlineOptinBlock::class)->register();
+            $container->resolve(InlineOptinShortcode::class)->register();
         });
 
         // On EVERY request, admin included, and not behind `is_admin()`. The
