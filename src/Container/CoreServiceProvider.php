@@ -185,11 +185,6 @@ final class CoreServiceProvider implements ServiceProvider
         $container->register(TransientStore::class, static fn (): TransientStore => new WpTransientStore());
 
         $container->register(
-            Installer::class,
-            static fn (ServiceContainer $c): Installer => new Installer($c->resolve(OptionStore::class))
-        );
-
-        $container->register(
             PublishedSet::class,
             static fn (ServiceContainer $c): PublishedSet => new PublishedSet($c->resolve(OptionStore::class))
         );
@@ -200,6 +195,21 @@ final class CoreServiceProvider implements ServiceProvider
                 $c->resolve(Connection::class),
                 $c->resolve(PublishedSet::class),
                 $c->resolve(RuleVocabulary::class)
+            )
+        );
+
+        // **Below the repository, and it takes one.** Installing is no longer
+        // only DDL: an upgrade rebuilds the published set, because that option
+        // is the one piece of derived state nothing rewrites on its own and a
+        // projection shape change would otherwise reach no existing site
+        // (ADR 0003). Registration order does not matter to the container —
+        // these are lazy factories — but reading order does, and the
+        // dependency is the point of the change.
+        $container->register(
+            Installer::class,
+            static fn (ServiceContainer $c): Installer => new Installer(
+                $c->resolve(OptionStore::class),
+                $c->resolve(OptinRepository::class)
             )
         );
 

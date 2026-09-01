@@ -29,8 +29,18 @@ final class OptinRepository
     /** Every column of an Optin, for the one read that legitimately wants them all. */
     private const FULL_COLUMNS = 'id, name, goal, config, published_config, published_at, deleted_at';
 
-    /** The list view's projection — no LONGTEXT. */
-    private const SUMMARY_COLUMNS = 'id, name, goal, published_at, deleted_at';
+    /**
+     * The list view's projection — no LONGTEXT.
+     *
+     * **`parent_id` is here, and it is the reason it is a column at all.**
+     * ADR 0045 says the Optins list shows parentless Optins only and nests
+     * each test's arms beneath their parent; both halves of that are questions
+     * about a row this query can see. Held in `config` the way that ADR first
+     * proposed, neither could be asked without putting a LONGTEXT blob back
+     * into this list — which is the read ADR 0001 measured exhausting PHP's
+     * memory at a few hundred rows, and the whole reason this constant exists.
+     */
+    private const SUMMARY_COLUMNS = 'id, name, goal, parent_id, published_at, deleted_at';
 
     /**
      * What the published set is built from.
@@ -76,6 +86,12 @@ final class OptinRepository
             'id' => $id,
             'name' => $name,
             'goal' => $goal,
+            // Every Optin created through this method is a campaign in its own
+            // right. A [[Variant]] is created by the ticket that builds A/B,
+            // which is the only thing that will ever write a parent here
+            // (ADR 0045) — spelled as an explicit null for the reason the two
+            // publish columns below are, so the insert names the whole row.
+            'parent_id' => null,
             'config' => (string) wp_json_encode($config),
             'published_config' => null,
             'published_at' => null,
@@ -128,11 +144,31 @@ final class OptinRepository
      * The list view. Newest first — the id is a ULID, so ordering by it is
      * ordering by the moment it was created, with no column to keep in step.
      *
+     * ========================================================================
+     * PARENTLESS ONLY. THIS IS THE UI HALF OF ADR 0045, AND IT IS A `WHERE`.
+     * ========================================================================
+     * A [[Variant]] is a whole Optin with its own row and its own counters, so
+     * a merchant running three A/B tests would meet six campaigns in a list of
+     * campaigns. They do not: a test is **one** row here, and the ticket that
+     * builds A/B draws each parent's arms beneath it from its own read. That
+     * is a query condition rather than a schema decision — storage does not
+     * constrain the screen — but it needs a column to be a query condition at
+     * all, which is why `parent_id` is one.
+     *
+     * It filters today over a table where every `parent_id` is `NULL`, and
+     * that is the point rather than a defect: it is written before anything
+     * writes a parent, so no existing row has to be found and repaired later.
+     *
+     * The `LIMIT` is unchanged and still 500. A list view past that is a
+     * scrolling problem rather than a correctness one — unlike
+     * {@see self::names()} and {@see self::interpretations()}, where a cap
+     * would silently produce a wrong number.
+     *
      * @return list<array<string, string|null>>
      */
     public function summaries(bool $includeDeleted = false): array
     {
-        $where = $includeDeleted ? '1=1' : 'deleted_at IS NULL';
+        $where = $includeDeleted ? 'parent_id IS NULL' : 'parent_id IS NULL AND deleted_at IS NULL';
 
         return $this->db->results(
             Connection::TABLE_OPTINS,
@@ -346,10 +382,50 @@ final class OptinRepository
     }
 
     /**
+     * ========================================================================
+     * REBUILD THE SET BECAUSE THE PLUGIN WAS INSTALLED OR UPGRADED — AND FOR
+     * NO OTHER REASON.
+     * ========================================================================
+     * **The one public rebuild, and it is named after its single caller** so
+     * that the name is the argument. Below, `rebuildPublishedSet()` is private
+     * on the stated grounds that "a public rebuild is an invitation to call it
+     * on read", and that stays true: this is not a second door onto the same
+     * room, it is one more named operation with a docblock saying which single
+     * event it exists to express — the shape {@see \WConvert\Database\Connection}
+     * used both times it was widened.
+     *
+     * `wconvert_published_set` is the only one of WConvert's options that is
+     * not normalised through a value object on the way out of storage: it
+     * holds the whole projection as a plain array, written whole and read
+     * whole (ADR 0003). Everywhere else, WConvert avoids migrations by
+     * normalising on every write against a closed vocabulary and reading
+     * tolerantly with defaults — and that fails here for one reason, which is
+     * that **nobody writes.** ADR 0003 rebuilds the set on write and never on
+     * read, so a plugin update that changes the projection's shape leaves
+     * every stored entry at the old shape until a merchant happens to
+     * republish. An Optin published once and never touched again would keep
+     * the shape it was published at forever.
+     *
+     * {@see \WConvert\Database\Installer::install()} runs on exactly the event
+     * that means "the code that builds this changed", from activation and from
+     * `admin_init`, and it is the general case of a data step the upgrade path
+     * otherwise has nowhere to put. One call, not a framework: re-running the
+     * current DDL is what makes skipping versions free, and a stepwise
+     * migration runner would give that up to solve a problem this does not
+     * have.
+     */
+    public function rebuildForInstall(): void
+    {
+        $this->rebuildPublishedSet();
+    }
+
+    /**
      * Rebuild the published set from the table.
      *
      * Private: every caller that should reach it is in this class, and a
      * public rebuild is an invitation to call it on read.
+     * {@see self::rebuildForInstall()} is the one exception, and it is named
+     * so that calling it on read reads wrong.
      */
     private function rebuildPublishedSet(): void
     {

@@ -43,8 +43,21 @@ final class SchemaTest extends TestCase
      * `KEY` lines only — a `PRIMARY KEY` is not a secondary index and is
      * counted nowhere here. Every number is a decision with a ticket behind it:
      *
-     * - **`wconvert_optins`, one.** `idx_goal`, because the Optin list and the
-     *   per-Goal metrics both filter on it (#2).
+     * - **`wconvert_optins`, none.** This was one — `idx_goal`, signed off on
+     *   the grounds that "the Optin list and the per-Goal metrics both filter
+     *   on it" (#2). Neither does. `INTERPRETATION_COLUMNS` and
+     *   `PROJECTION_COLUMNS` read `goal` as a PROJECTED COLUMN and never as a
+     *   predicate, and the list orders by the primary key — so it was a write
+     *   paid on every save to serve nothing, and the pre-release audit spent
+     *   the budget back rather than spending it twice. `dbDelta` cannot drop
+     *   an index, so removing the line means a fresh install never creates it
+     *   and an existing one keeps an orphan; that is free now and needs a raw
+     *   `ALTER` after 1.0.
+     * - **And `parent_id` costs none of it.** The A/B link is read as a
+     *   predicate — the list filters to parentless Optins (ADR 0045) — but
+     *   over the same ≤500-row scan the list already does under a `LIMIT`, on
+     *   a table whose rows are campaigns rather than events. The asymmetry
+     *   that decided the other two numbers decides this one the same way.
      * - **`wconvert_leads`, two.** `idx_email` and `idx_phone` are the identity
      *   keys, and #25 wrote the per-Optin listing and the retention prune
      *   without adding a third: the prune is a range over the primary key, the
@@ -63,7 +76,7 @@ final class SchemaTest extends TestCase
      *   one admin takes on demand (ADR 0019, ADR 0034).
      */
     private const INDEX_BUDGET = [
-        'wconvert_optins' => 1,
+        'wconvert_optins' => 0,
         'wconvert_leads' => 2,
         'wconvert_stats' => 0,
     ];
@@ -132,6 +145,34 @@ final class SchemaTest extends TestCase
             static fn (string $line): string => strtok($line, ' ') ?: '',
             self::columnsOf($table)
         );
+    }
+
+    /**
+     * **The Optin's shape, and the one column on it that is a query
+     * condition.**
+     *
+     * `parent_id` is here rather than in `config` because the list projection
+     * cannot see a blob: `SUMMARY_COLUMNS` excludes both LONGTEXT columns on
+     * ADR 0001's measured grounds, and ADR 0045's parentless filter is a
+     * predicate. Everything else about a [[Variant]] stays exactly where that
+     * ADR put it — the counters need no change at all, because a variant that
+     * IS an Optin already has its own `(optin_id, stat_date, kind)` rows.
+     *
+     * There is still no `created_at` and no `updated_at`. The id is a ULID, so
+     * `ORDER BY id` already is `ORDER BY created_at` with no second column to
+     * keep in step, and an Optin's "when was this edited" has never had a
+     * reader.
+     */
+    public function testTheOptinCarriesTheApprovedShapeAndNothingElse(): void
+    {
+        $columns = self::columnNamesOf(self::PREFIX . 'wconvert_optins');
+
+        $this->assertSame(
+            ['id', 'name', 'goal', 'parent_id', 'config', 'published_config', 'published_at', 'deleted_at'],
+            $columns
+        );
+        $this->assertNotContains('created_at', $columns, 'the ULID already carries the minting time');
+        $this->assertNotContains('variant', $columns, 'ADR 0045: a Variant is a whole Optin, not a column on one');
     }
 
     public function testTheLeadLogCarriesTheApprovedShapeAndNothingElse(): void

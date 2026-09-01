@@ -5,6 +5,7 @@ namespace WConvert\Rest;
 use WConvert\Destination\OptinBinding;
 use WConvert\Goal\Goal;
 use WConvert\Goal\GoalRegistry;
+use WConvert\Optin\DisplayType;
 use WConvert\Optin\Frequency;
 use WConvert\Optin\Optin;
 use WConvert\Optin\OptinRepository;
@@ -343,6 +344,29 @@ final class OptinController implements RestController
 
         if (isset($config['rules'])) {
             $config['rules'] = $this->vocabulary->normalize($config['rules']);
+        }
+
+        // **The placement, which reached the browser unvalidated until now.**
+        // `display_type` is one of the four keys the published projection
+        // ships, and it was the only one of them whose contents nothing
+        // checked: an arbitrary string travelled from this request body into
+        // every matching page, where `decide.ts` compares it against `inline`
+        // and `mount.ts` against `popup` and neither can match it.
+        //
+        // Dropped rather than refused, because absent already MEANS `popup` on
+        // both sides — so an unrecognised placement degrades to the one every
+        // install has instead of producing an entry the renderer cannot place.
+        // That is the same posture `rules` takes one branch up: an
+        // unrecognised member of a closed set is a mistake, and dropping it at
+        // the write is what keeps it out of a payload nothing can evaluate.
+        if (isset($config['display_type'])) {
+            $type = DisplayType::of($config['display_type']);
+
+            if ($type === null) {
+                unset($config['display_type']);
+            } else {
+                $config['display_type'] = $type->value;
+            }
         }
 
         // **The allowance, which reached the browser unvalidated until now.**

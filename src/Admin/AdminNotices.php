@@ -20,6 +20,11 @@ defined('ABSPATH') || exit;
  * on the screen and never the thing the merchant came for. WSMS empties the
  * same three hooks on its own screens, as does WooCommerce on its React pages.
  *
+ * The survival half now carries a second message, and it is the one that does
+ * not fit the pattern: {@see self::warnAboutNetworkActivation()} speaks on a
+ * screen WConvert has no menu entry on at all, because that is the screen
+ * where somebody network-activates a plugin that does not support multisite.
+ *
  * **Scoped by hook suffix, and that scope is the safety property.** A plugin
  * that silenced notices site-wide would hide the update nags and the security
  * warnings that are the whole point of them — so this matches the suffix
@@ -75,6 +80,11 @@ final class AdminNotices
         // the surviving path a consequence of the suppression rather than a
         // second thing to keep in step with it.
         add_action('admin_notices', [$this, 'render']);
+
+        // Its own hook, and not `add()` into the list above, because it is the
+        // one message that belongs on a screen WConvert has no menu entry on:
+        // `admin_notices` does not fire in the network admin at all.
+        add_action('network_admin_notices', [$this, 'warnAboutNetworkActivation']);
     }
 
     /**
@@ -133,6 +143,57 @@ final class AdminNotices
     }
 
     /**
+     * ========================================================================
+     * MULTISITE IS OUT OF SCOPE FOR v1, AND THIS IS WHERE THAT IS SAID OUT
+     * LOUD.
+     * ========================================================================
+     * **The problem is not that network activation fails. It is that it works
+     * on the sites you looked at.**
+     *
+     * {@see \WConvert\Bootstrap::activate()} installs tables for whichever
+     * site's `$wpdb->prefix` was current and ignores `$network_wide`. The rest
+     * of the network is not left broken forever — options are per-site and
+     * `admin_init` fires per site, so a site with no `wconvert_db_version`
+     * installs on its first dashboard visit. What that does not cover is a
+     * site **nobody has opened the admin of**, whose front end is live and
+     * whose capture path has no missing-table guard anywhere in it.
+     *
+     * Half-working and silent is worse than either honest alternative, and a
+     * sentence is what removes the silence. It costs the price of one
+     * `is_plugin_active_for_network()` on network-admin page loads, which are
+     * rare and are not a merchant's or a visitor's request.
+     *
+     * **It is not dismissible**, deliberately: the condition it reports is
+     * still true tomorrow, and a dismissal would store per-user state to hide
+     * a fact about the install.
+     *
+     * The full job — looping `get_sites()` on activation and hooking
+     * `wp_initialize_site` for sites created later — stays available for 1.2,
+     * once there is evidence anyone wants it. Nothing here makes it harder.
+     */
+    public function warnAboutNetworkActivation(): void
+    {
+        // Asked rather than stored. Whether the plugin is network-activated is
+        // a fact WordPress already holds, and recording our own copy of it at
+        // activation would be a second source of truth that goes stale the
+        // moment somebody activates from the Plugins screen instead.
+        if (!is_multisite() || !function_exists('is_plugin_active_for_network')) {
+            return;
+        }
+
+        if (!is_plugin_active_for_network(plugin_basename(WCONVERT_MAIN_FILE))) {
+            return;
+        }
+
+        echo '<div class="notice notice-warning wconvert-notice"><p>';
+        echo esc_html__(
+            'WConvert does not support multisite in this version. Network activation only sets up the site whose dashboard was open at the time, and any site nobody has visited the admin of will have no database tables while its front end is live. Deactivate it for the network and activate it on each site individually instead.',
+            'wconvert'
+        );
+        echo '</p></div>';
+    }
+
+    /**
      * Empty the notice hooks on WConvert's screens.
      *
      * All three, because `all_admin_notices` and `network_admin_notices` are
@@ -143,6 +204,12 @@ final class AdminNotices
      * else, and that is intended: on our screen the surviving path is
      * {@see AdminMenu::renderScreen()}, and leaving both registered would
      * print the same sentence twice.
+     *
+     * It does **not** silence {@see self::warnAboutNetworkActivation()}, and
+     * not because of an exception here. WConvert's screens are the ones
+     * `add_menu_page()` returned a suffix for, which are per-site; the network
+     * admin has none of them, so `isOurScreen()` is false there and this
+     * returns before it removes anything.
      */
     public function suppress(): void
     {

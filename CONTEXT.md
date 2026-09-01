@@ -180,6 +180,21 @@ the visitor themselves made — that they dismissed this [[Optin]] — is
 `functional` and never withheld, because withholding it means the popup reappears
 after they closed it.
 
+**All of free's per-visitor state lives in one key**, and it is worth knowing
+its name because three documents once described storage WConvert does not have.
+`localStorage['wcv1']` holds a map of [[Optin]] id to that Optin's record —
+impressions, the day of the last one, dismissed, converted — written through a
+`localStorage → cookie → in-memory` ladder that fails open
+(`resources/loader/src/state.ts`). There is no key per Optin and no second key:
+a new kind of per-visitor fact is a reserved slot or a new field inside `wcv1`.
+
+**The `1` is a version, and it is an escape hatch the server side does not
+have.** A shape change that cannot be made backward-compatible is a bump to
+`wcv2`: old records are abandoned rather than migrated, every visitor looks new
+once, and for a frequency cap that is an acceptable price. Nothing equivalent
+exists for the three tables, the seven options or the published set, which is
+why browser storage is the least urgent of WConvert's four storage layers.
+
 The cart cookie is the second `functional` case, and it is **booked as a
 judgement call rather than an obvious reading**. It records what the visitor put
 in their own cart on this site, in this session, to operate a feature of it; it
@@ -238,17 +253,19 @@ has its own id, its own row, and therefore its own counters, because
 upsert atomic. Two designs behind one id could not be told apart, which is the
 entire point of the test.
 
-A Variant names its parent in its own `config`, the way `template_id` and
-`playbook_id` are held — all three are *provenance*. The Optins list shows
-parentless Optins only and nests each test's arms beneath their parent, so a
-merchant sees one campaign with two arms rather than two campaigns. That is a
-query condition; storage does not constrain the screen.
+A Variant names its parent in `wconvert_optins.parent_id`. It is *provenance*,
+the way `template_id` and `playbook_id` are — and unlike those two it is a
+column, because the Optins list has to FILTER on it and that list reads neither
+LONGTEXT column by design (ADR 0001). The list shows parentless Optins only and
+nests each test's arms beneath their parent, so a merchant sees one campaign
+with two arms rather than two campaigns. That is a query condition; storage does
+not constrain the screen, it just has to be able to express it.
 
 Ending a test **never deletes the loser**: the arm that lost is a month of the
 merchant's own history, and an Optin is never hard-deleted anyway.
 
 Which arm a browser draws is held as `v` on the parent's own client record —
-`wc_o_<parentId>.v` — beside the impressions and dismissals already there. So
+`wcv1[parentId].v` — beside the impressions and dismissals already there. So
 the split unit is **the browser record, not the person**: one visitor on two
 devices can meet both arms and be counted twice. That is the same limit
 [[Impression]] and [[Conversion]] already carry, for the same reason, and it is
@@ -296,6 +313,15 @@ an override and a filter, never the first question asked.
 Three of the four are **overlays** — `popup`, `floating_bar`, `slide_in` — which
 compete for the visitor's screen, so at most one is shown per page view.
 `inline` is not an overlay: it renders where it was embedded and never competes.
+
+**The four are a closed set in PHP** (`src/Optin/DisplayType.php`), enforced on
+the way in like every other closed vocabulary, and `popup` is what absence means
+on both sides — the renderer mounts an entry with no Display Type as a popup and
+the loader reads anything that is not `inline` as an overlay. So a value nothing
+recognises is dropped at the write rather than shipped to a page that cannot
+place it. Two of the four are [[Pro]]'s in practice, but the enum says nothing
+about tier: a free install simply has no floating-bar or slide-in design to
+name.
 
 ### Targeting
 

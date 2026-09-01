@@ -59,6 +59,18 @@ it.
 2. Activate it.
 3. Open **WConvert** in the admin menu and pick a goal.
 
+**Multisite is not supported in this version.** Activate WConvert on each site
+individually rather than across the network. Network activation only sets up
+the site whose dashboard was open at the time, so any site nobody has visited
+the admin of will have no database tables while its front end is live.
+
+**Deleting the plugin deletes its data.** Deactivating WConvert changes
+nothing — your leads, settings and destinations are all still there when you
+turn it back on. Using Delete in WordPress removes the plugin's three database
+tables and all of its options, including every captured lead, and that cannot
+be undone. Export your leads to CSV from **WConvert → Leads** first if you want
+to keep them.
+
 == Frequently Asked Questions ==
 
 = Does it work without any other plugin? =
@@ -80,6 +92,21 @@ the lead-magnet email, or WP SMS if you have it installed. Nowhere else.
 
 WConvert registers with WordPress's own personal-data export and erasure tools.
 An erasure request deletes the lead rows rather than anonymising them.
+
+= What happens to my data if I remove the plugin? =
+
+Deactivating changes nothing: everything is still there when you activate it
+again. Deleting the plugin removes all of it — the three database tables and
+every option, including your captured leads and your configured destinations.
+There is no setting to keep the data behind, and it cannot be recovered
+afterwards, so export your leads to CSV from **WConvert → Leads** before you
+delete if you might want them.
+
+= Does it work on multisite? =
+
+Not in this version. Activate it per site rather than across the network. A
+network activation only creates tables for the one site that was open at the
+time, and the plugin will say so in the network admin.
 
 == Changelog ==
 

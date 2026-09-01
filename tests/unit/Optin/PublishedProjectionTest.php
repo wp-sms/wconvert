@@ -123,24 +123,19 @@ final class PublishedProjectionTest extends TestCase
      * re-derive it per page view.
      */
     /**
-     * **The keys a payload may carry, pinned.**
+     * A `published_config` carrying **everything an authored Optin can hold**,
+     * so that a test about what travels is asked against a config that has
+     * something to withhold.
      *
-     * The projection ships `published_config` WHOLE, minus a denylist — which
-     * fails open: a key added to `config` for the builder's benefit reaches
-     * every visitor of every matching page unless somebody remembers to add it
-     * to `PublishedProjection::NOT_SHIPPED`. `template_id` rode the payload
-     * that way from the day it was written, and `destination_hint` did the
-     * same the day it was.
+     * The pinning test below used to build its own, and it left out the one
+     * key that was actually leaking. That is the failure mode of a fixture
+     * written beside the rule it is checking: it agrees with the rule.
      *
-     * So the direction is reversed here: adding a key to the payload fails
-     * this test until somebody writes it down, the same way
-     * `SchemaTest::INDEX_BUDGET` makes a new index a decision in a diff. The
-     * budget it protects is real — ≤2KB gzipped per page, measured
-     * (ADR 0010).
+     * @return array<string, mixed>
      */
-    public function testThePayloadCarriesOnlyTheKeysSomebodyWroteDown(): void
+    private static function everythingAnOptinCanHold(): array
     {
-        $config = [
+        return [
             'targeting' => ['include' => [['type' => 'url', 'value' => '/*']]],
             'rules' => [['type' => 'page_load']],
             'template' => ['tree' => ['steps' => []], 'tokens' => []],
@@ -157,7 +152,34 @@ final class PublishedProjectionTest extends TestCase
             'template_id' => 'centred-card',
             'playbook_id' => 'welcome-discount',
             'destination_hint' => ['types' => ['wsms'], 'fields' => ['email']],
+            // **The key this fixture was missing**, and the reason the pinning
+            // test passed while the projection shipped it. See
+            // `testTheDestinationsAnOptinBindsNeverReachTheBrowser()`.
+            'destinations' => ['01JQ0000000000000000000009'],
         ];
+    }
+
+    /**
+     * **The keys a payload may carry, pinned.**
+     *
+     * The projection used to ship `published_config` WHOLE minus a denylist,
+     * which fails open: a key added to `config` for the builder's benefit
+     * reached every visitor of every matching page unless somebody remembered
+     * to add it to the strip list. `template_id` rode the payload that way
+     * from the day it was written, `destination_hint` did the same the day it
+     * was, and `destinations` was still doing it when the pre-release audit
+     * found it.
+     *
+     * It is an ALLOWLIST now, so the failure direction is reversed twice over:
+     * forgetting withholds rather than publishes, and adding a key to the
+     * payload fails this test until somebody writes it down — the same way
+     * `SchemaTest::INDEX_BUDGET` makes a new index a decision in a diff. The
+     * budget it protects is real — ≤2KB gzipped per page, measured
+     * (ADR 0010).
+     */
+    public function testThePayloadCarriesOnlyTheKeysSomebodyWroteDown(): void
+    {
+        $config = self::everythingAnOptinCanHold();
 
         $payload = self::build([self::row(['published_config' => (string) json_encode($config)])])[0]['payload'];
 
@@ -166,6 +188,63 @@ final class PublishedProjectionTest extends TestCase
             array_keys($payload),
             'a key reaching the browser is a decision; add it here and say why it renders'
         );
+    }
+
+    /**
+     * ========================================================================
+     * THE [[DESTINATION]] IDS AN OPTIN BINDS NEVER REACH A VISITOR.
+     * ========================================================================
+     * They did. `destinations` was not on the old denylist and is stripped
+     * nowhere else between `published_config` and the `<script>` tag —
+     * verified by reading the whole path — so every published Optin with a
+     * Destination bound shipped those ULIDs to every visitor of every matching
+     * page. The loader has no field for them, so they were bytes with no
+     * reader rather than a working leak; nothing made that true on purpose.
+     *
+     * Asserted against the **serialised** entry rather than against its keys,
+     * because the question is whether the id reaches the page at all — a
+     * nested copy under some future key would pass a key check and still be on
+     * the page.
+     *
+     * The capture path re-reads the binding from the server's own published
+     * copy and trusts the client for nothing but the values a person typed
+     * (ADR 0004), so there is nothing this costs the browser.
+     */
+    public function testTheDestinationsAnOptinBindsNeverReachTheBrowser(): void
+    {
+        $config = self::everythingAnOptinCanHold();
+
+        $this->assertContains(
+            '01JQ0000000000000000000009',
+            $config['destinations'],
+            'the fixture has to carry a binding for this test to be about anything'
+        );
+
+        $entry = self::build([self::row(['published_config' => (string) json_encode($config)])])[0];
+
+        $this->assertStringNotContainsString('01JQ0000000000000000000009', json_encode($entry) ?: '');
+        $this->assertArrayNotHasKey('destinations', $entry['payload']);
+    }
+
+    /**
+     * **A key nobody wrote down does not travel, whatever it is called.**
+     *
+     * The pinning test above names the keys that DO travel, which catches a
+     * key added to `SHIPPED` without a reason. This catches the other
+     * direction — the one the denylist could not catch at all — by inventing a
+     * key no version of this projection has ever heard of and asserting it
+     * stays on the server. That is the whole difference between the two
+     * spellings, stated as a test rather than as a comment.
+     */
+    public function testAKeyTheProjectionHasNeverHeardOfStaysOnTheServer(): void
+    {
+        $set = self::build([self::row(['published_config' => (string) json_encode([
+            'display_type' => 'popup',
+            'a_key_from_a_ticket_that_has_not_been_written_yet' => 'merchant secret',
+        ])])]);
+
+        $this->assertArrayNotHasKey('a_key_from_a_ticket_that_has_not_been_written_yet', $set[0]['payload']);
+        $this->assertStringNotContainsString('merchant secret', json_encode($set) ?: '');
     }
 
     public function testTheFlatRuleListIsPartitionedIntoTheTwoClientAxes(): void

@@ -33,9 +33,11 @@ use WConvert\Lead\LeadLog;
 use WConvert\Lead\LeadRepository;
 use WConvert\Lead\Submission;
 use WConvert\Optin\OptinRepository;
+use WConvert\Optin\PublishedSet;
 use WConvert\Privacy\LeadEraser;
 use WConvert\Retention\LeadPruner;
 use WConvert\Retention\RetentionPeriod;
+use WConvert\Rules\RuleVocabulary;
 use WConvert\Storage\WpOptionStore;
 use WConvert\Support\Ulid;
 use WConvert\Template\TemplateVocabulary;
@@ -86,7 +88,13 @@ global $wpdb;
 $options = new WpOptionStore();
 $db = new WpdbConnection($wpdb);
 
-(new Installer($options))->install();
+// The Optin repository, hoisted above the install because the installer now
+// takes one: `install()` rebuilds the published set, which is the one piece of
+// WConvert's derived state nothing rewrites on its own (ADR 0003). It is the
+// same object the CSV export check uses further down.
+$optins = new OptinRepository($db, new PublishedSet($options), RuleVocabulary::fromManifest());
+
+(new Installer($options, $optins))->install();
 
 $leadTable = $wpdb->prefix . Connection::TABLE_LEADS;
 
@@ -156,7 +164,6 @@ $verify->check("a group's latest id is its newest lead", $sarahSecond->id, $grou
 
 echo "The CSV export\n";
 
-$optins = new OptinRepository($db, new WConvert\Optin\PublishedSet($options), WConvert\Rules\RuleVocabulary::fromManifest());
 $optins->create('Newsletter footer', 'grow_email_list', []);
 $named = array_key_first($optins->names());
 $csv = new LeadCsv(TemplateVocabulary::fromManifest());

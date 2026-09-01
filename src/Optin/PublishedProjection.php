@@ -24,25 +24,65 @@ defined('ABSPATH') || exit;
 final class PublishedProjection
 {
     /**
-     * Keys the browser is never sent, because nothing that renders an Optin
-     * reads them — and the payload is inlined into every matching page against
-     * a 2KB budget.
+     * ========================================================================
+     * THE KEYS THE BROWSER IS SENT. AN ALLOWLIST, AND THAT DIRECTION IS THE
+     * WHOLE POINT.
+     * ========================================================================
+     * This was a **denylist** — three keys stripped and the rest of
+     * `published_config` shipped — and its own comment named the hazard it
+     * carried: *"a key added to `config` ships unless somebody remembers this
+     * line."*
      *
-     * **`template_id` and `playbook_id` are provenance.** Both are ids into a
-     * registry the front end never consults: an Optin takes a COPY of its
-     * [[Template]] and a COPY of its [[Playbook]]'s words, so improving either
-     * entry restyles nothing and deleting either leaves the Optin working.
-     * There is nothing left for an id to do on the page.
+     * **Somebody did not.** `destinations` — the [[Destination]] ULIDs an
+     * Optin binds, under {@see \WConvert\Destination\OptinBinding::KEY} — was
+     * never on the strip list and is stripped nowhere else between
+     * `published_config` and the `<script>` tag. Every published Optin with a
+     * Destination bound shipped those ids to every visitor of every matching
+     * page. The loader has no field for them, so they were bytes with no
+     * reader rather than a working leak — but nothing in the code made that
+     * true on purpose, and the pinning test passed because its fixture had no
+     * `destinations` key at all.
      *
-     * **`destination_hint` is an authoring note.** It names [[Destination]]
-     * *types* and the [[Lead]] fields a Playbook wanted, for the builder to
-     * act on — and prefill never binds a Destination invisibly, so it is not
-     * even a decision yet. The capture path re-reads everything about the form
-     * from the server's own published copy and trusts the client for nothing
-     * but the values a person typed (ADR 0004), so a hint on the page is bytes
-     * with no reader.
+     * Spelled this way round, a key added to `config` for the builder's
+     * benefit reaches nobody until somebody writes it down here and says why
+     * it renders. The failure direction is the difference: forgetting used to
+     * publish, and now it withholds.
+     *
+     * **This is the closed-vocabulary discipline the rest of the config
+     * already gets**, applied to the one place it was written backwards.
+     * `rules`, `targeting` and `template` are each normalised on the way in
+     * against a set that is closed in PHP; the projection is what decides what
+     * leaves, and it should be closed the same way.
+     *
+     * The order is the payload's order, so the `<script>` tag is byte-stable
+     * across saves rather than following whatever order a config blob's keys
+     * happen to be in. It matches `PayloadEntry` in
+     * `resources/loader/src/types.ts`, minus the three the projection produces
+     * itself: `id` from the row, and `triggers` and `conditions` from the
+     * partition below.
+     *
+     * What is NOT here, and why, since the reasons are the ones a future key
+     * will be weighed against:
+     *
+     * - **`template_id` and `playbook_id` are provenance.** Both are ids into
+     *   a registry the front end never consults: an Optin takes a COPY of its
+     *   [[Template]] and a COPY of its [[Playbook]]'s words, so improving
+     *   either entry restyles nothing and deleting either leaves the Optin
+     *   working. There is nothing left for an id to do on the page.
+     * - **`destination_hint` is an authoring note.** It names [[Destination]]
+     *   *types* and the [[Lead]] fields a Playbook wanted, for the builder to
+     *   act on — and prefill never binds a Destination invisibly, so it is not
+     *   even a decision yet.
+     * - **`destinations` is server state about where a [[Lead]] goes.** The
+     *   capture path re-reads it from the server's own published copy and
+     *   trusts the client for nothing but the values a person typed
+     *   (ADR 0004), so the browser has no use for it and never had.
+     * - **`starts_at` and `ends_at` are absent because nothing puts them
+     *   here** — scheduling is not built. When it is, it ships: the projection
+     *   includes scheduled Optins by design so a cached page can receive one,
+     *   and the comparison is the loader's.
      */
-    private const NOT_SHIPPED = ['template_id', 'playbook_id', 'destination_hint'];
+    private const SHIPPED = ['template', 'display_type', 'frequency', 'priority'];
 
     /**
      * @param iterable<array<string, mixed>> $rows
@@ -105,39 +145,41 @@ final class PublishedProjection
             return null;
         }
 
+        // **Beside the payload, never inside it** — the one key that is read
+        // out of the blob and projected as a SIBLING rather than shipped. It
+        // was answered on the server, and sending it would pay for it twice
+        // and hand the browser a rule it has no reason to re-evaluate
+        // (ADR 0005).
         $targeting = $published['targeting'] ?? [];
-        unset($published['targeting']);
-
-        // ADMIN-ONLY KEYS ARE STRIPPED. Provenance records where an Optin CAME
-        // FROM and the destination hint records what its [[Playbook]] wanted;
-        // neither is consulted at render time and neither ever will be, because
-        // the Optin holds its own copy of the design and the words (ADR 0010,
-        // CONTEXT.md Playbook). ADR 0010 says `template_id` "never appears in
-        // the payload" — until #27 that was a claim rather than a fact, and it
-        // is paid for on every page view of every matching page against a 2KB
-        // budget.
-        //
-        // This is a DENYLIST over a config blob, which fails open: a key added
-        // to `config` ships unless somebody remembers this line.
-        // `tests/unit/Frontend/PayloadTest.php` pins the keys a payload may
-        // carry so that forgetting fails a build instead of a byte budget.
-        foreach (self::NOT_SHIPPED as $key) {
-            unset($published[$key]);
-        }
 
         // The flat list is CONSUMED, not shipped beside its own partition:
         // two spellings of one rule set in one payload is a second source of
         // truth the loader would have to choose between, and bytes on every
-        // page view.
+        // page view. It is not in `SHIPPED`, so the consumption is now
+        // structural rather than an `unset()` somebody has to keep.
         $rules = $published['rules'] ?? [];
-        unset($published['rules']);
 
-        // And the partition OVERWRITES rather than merges. `$published` is a
-        // config blob, so it can carry a `triggers` key of its own — hand-
-        // written, or left by an older shape — and PHP's `+` lets the LEFT
-        // operand win, which would ship that instead and discard the real
-        // answer. The manifest decides what the two axes hold; nothing in the
-        // blob gets a vote.
+        // ONLY THE KEYS SOMEBODY WROTE DOWN. Everything a merchant, a
+        // [[Playbook]] or a future ticket has put in `config` stays on the
+        // server unless it appears in `SHIPPED` — so the payload is a
+        // decision rather than a residue, and the 2KB budget it is inlined
+        // against is spent on things that render.
+        // `tests/unit/Optin/PublishedProjectionTest.php` pins the list, so
+        // adding a key fails a build until somebody says why it renders.
+        $payload = [];
+
+        foreach (self::SHIPPED as $key) {
+            if (array_key_exists($key, $published)) {
+                $payload[$key] = $published[$key];
+            }
+        }
+
+        // The partition can no longer be beaten by the blob, and it is the
+        // allowlist that does it rather than the merge order. `triggers` and
+        // `conditions` are not shippable keys, so a config carrying its own —
+        // hand-written, or left by an older shape — cannot reach `$payload` to
+        // compete in the first place. The manifest decides what the two axes
+        // hold; nothing in the blob gets a vote.
         return [
             'id' => (string) ($row['id'] ?? ''),
             // **Beside the payload, never inside it.** The [[Goal]] is what
@@ -153,7 +195,7 @@ final class PublishedProjection
             // triggers" as "never fires", which is ADR 0012's zero-trigger
             // loss stated rather than guessed at, and it can only read that
             // from a key that is present.
-            'payload' => array_merge($published, $vocabulary->partition($rules)),
+            'payload' => array_merge($payload, $vocabulary->partition($rules)),
         ];
     }
 }

@@ -25,10 +25,17 @@ defined('ABSPATH') || exit;
  * means is not a screen.
  *
  * An enum rather than a `VARCHAR` validated by hand: `wconvert_optins.goal` is
- * `VARCHAR(64)` with `idx_goal`, and {@see Goal::tryFrom()} is the one place
- * the set is enforced — the same arrangement `StatKind` has over its own
- * column, and for the same reason (adding a case should be a code change a
- * reviewer reads, not a migration).
+ * a plain `VARCHAR(64)`, and {@see Goal::tryFrom()} is the one place the set is
+ * enforced — the same arrangement `StatKind` has over its own column, and for
+ * the same reason (adding a case should be a code change a reviewer reads, not
+ * a migration).
+ *
+ * **And the column is unindexed.** This said "with `idx_goal`", which was true
+ * of the DDL and false of every query: nothing filters on `goal`. The Optin
+ * list orders by the primary key and projects the column, and the per-Goal
+ * metrics read it out of `INTERPRETATION_COLUMNS` and group in PHP (ADR 0034).
+ * The index was removed in the pre-release audit rather than left to be
+ * rediscovered by whoever next wrote a query expecting it to be there.
  *
  * **Each Goal declares the metric that counts it** — which [[Conversion]] is
  * the one that matters, and whether that Conversion is a [[Lead]]. That
