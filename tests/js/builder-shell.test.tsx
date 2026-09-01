@@ -628,9 +628,9 @@ describe('the way out of the builder', () => {
  * never speak again; the Goal is corrected from creation. What was wrong was
  * that they were invisible, not that they were fixed.
  */
-describe('the readiness panel', () => {
+describe('the summary', () => {
   /**
-   * The one fact under a given name, as the panel's definition list holds it.
+   * The one fact under a given name, as the dialog's definition list holds it.
    *
    * By the `<dt>`'s text rather than by role and accessible name: a `dt` has
    * role `term` and no accessible name computed from its contents, so a role
@@ -640,47 +640,32 @@ describe('the readiness panel', () => {
     screen.getByText(name, { selector: 'dt' }).nextElementSibling;
 
   /**
-   * Open the panel.
+   * Press the trigger in the page-header band.
    *
-   * **It is collapsed on arrival**, because open it is ~174px above the tab
-   * strip on every visit and most of what it holds answers a question a
-   * merchant asks once. What survives the collapse is asserted first, below.
+   * **It costs the screen a button and nothing else.** This shipped twice as a
+   * permanent panel above the tab strip — a card, then a disclosure whose
+   * collapsed row was 46px — and both times the room was the objection: it
+   * answers a question a merchant asks on arrival rather than on every
+   * keystroke, and the editor's own floor is 782px (ADR 0038).
    */
-  const expand = async () =>
-    userEvent.click(await screen.findByRole('button', { name: /Grow my email list|Draft|Suspended/ }));
+  const summary = async () =>
+    userEvent.click(await screen.findByRole('button', { name: /Summary|thing to fix/ }));
 
-  /**
-   * ==========================================================================
-   * WHAT SURVIVES THE COLLAPSE IS THE WHOLE DESIGN DECISION.
-   * ==========================================================================
-   * Hiding the panel behind an icon would restore the fault it was built for: a
-   * merchant who cannot see what the campaign is for or whether the site is
-   * serving it. The collapsed row keeps exactly those, in one line, and costs a
-   * quarter of the height.
-   */
-  it('says what the Optin is for and whether it is live without being opened', async () => {
+  it('costs the screen one button until it is asked for', async () => {
     open();
 
-    expect(await screen.findByText(/Grow my email list · counts Submissions/)).toBeInTheDocument();
-    expect(screen.getByText('Draft')).toBeInTheDocument();
-
-    // And the detail is genuinely away rather than merely hidden.
+    expect(await screen.findByRole('button', { name: 'Summary' })).toBeInTheDocument();
     expect(screen.queryByText('On every page')).toBeNull();
+    expect(screen.queryByText('Grow my email list')).toBeNull();
   });
 
-  /**
-   * **And it is not said twice.** The summary row carries the Goal and its
-   * metric whether the panel is open or shut, so a row for them inside would be
-   * the same fact repeated the moment a merchant opened it — which is what the
-   * state badge was doing until it moved up there for the same reason.
-   */
-  it('does not repeat the goal inside once the panel is opened', async () => {
+  it('says what the Optin is for, and what it will be judged on', async () => {
     open();
-    await expand();
+    await summary();
 
-    expect(await screen.findByText('On every page')).toBeInTheDocument();
-    expect(screen.queryByText('Grow my email list', { selector: 'dd' })).toBeNull();
-    expect(screen.getAllByText(/Grow my email list/)).toHaveLength(1);
+    expect(await screen.findByRole('dialog')).toBeInTheDocument();
+    expect(fact('Goal')?.textContent).toBe('Grow my email list');
+    expect(fact('Counts')?.textContent).toBe('Submissions');
   });
 
   it('names the playbook it was started from', async () => {
@@ -695,14 +680,41 @@ describe('the readiness panel', () => {
     );
 
     open();
-    await expand();
+    await summary();
 
-    expect(await screen.findByText('Welcome discount', { selector: 'dd' })).toBeInTheDocument();
+    expect(await screen.findByRole('dialog')).toBeInTheDocument();
+    expect(fact('Started from')?.textContent).toBe('Welcome discount');
+  });
+
+  /**
+   * **A [[Playbook]] this build cannot name still reaches the merchant.** The
+   * row follows the stored id and only the NAME waits for the lookup — an entry
+   * this install no longer ships, or one filed under a [[Goal]] since
+   * corrected, still started this Optin, and *"read-only is fine, invisible is
+   * not"* has to survive a lookup that answers nothing.
+   */
+  it('shows the stored id where the playbook registry cannot name it', async () => {
+    goals.listPlaybooks.mockResolvedValue([]);
+    builder.getOptin.mockResolvedValue(
+      optin({
+        config: {
+          template_id: 'centred-card',
+          playbook_id: 'welcome-discount',
+          template: { tree: ENTRY.tree, tokens: ENTRY.tokens },
+        },
+      }),
+    );
+
+    open();
+    await summary();
+
+    expect(await screen.findByRole('dialog')).toBeInTheDocument();
+    expect(fact('Started from')?.textContent).toBe('welcome-discount');
   });
 
   /**
    * **`published_at` cannot answer "is the site serving this".** A
-   * [[Suspended]] Optin *is* published and is on no page at all, so a panel
+   * [[Suspended]] Optin *is* published and is on no page at all, so a summary
    * reading the column alone would print *"Published"* over an Optin the site
    * is holding back — and it is always shown with its cause, because it is not
    * a state the merchant chose (ADR 0027).
@@ -716,42 +728,39 @@ describe('the readiness panel', () => {
     );
 
     open();
+    await summary();
 
-    // The badge is on the collapsed row, so the state survives the collapse.
     expect(await screen.findByText('Suspended')).toBeInTheDocument();
-
-    /*
-     * And the CAUSE is inside, because it is the half that only exists
-     * sometimes — a second badge in there was the same fact twice the moment
-     * the panel was opened.
-     */
-    await expand();
-
     expect(screen.getByText('Suspended — WConvert Pro is not active.')).toBeInTheDocument();
   });
 
   it('says Draft on an Optin that has never been published', async () => {
     open();
+    await summary();
 
     expect(await screen.findByText('Draft')).toBeInTheDocument();
   });
 
   /**
-   * **A registry outage costs the panel two rows and nothing else.** The same
-   * deliberate degradation {@see OptinList} takes for the same read: numbers
-   * and labels are a nicety on an editing screen, and neither may cost the
-   * merchant their Save button.
+   * **A registry outage costs the summary two rows and nothing else.** The same
+   * deliberate degradation {@see OptinList} takes for the same read: labels are
+   * a nicety on an editing screen, and they must not cost the merchant their
+   * Save button.
    */
-  it('keeps the rest of the panel when the goal registry does not answer', async () => {
+  it('keeps the rest of the summary when the goal registry does not answer', async () => {
     goals.listGoals.mockRejectedValue(new Error('nope'));
 
     open();
-    await expand();
+
+    // Asserted before the dialog opens: it is modal, so everything outside it
+    // is `aria-hidden` and a role query would find no Save button by design.
+    expect(await screen.findByRole('button', { name: 'Save changes' })).toBeInTheDocument();
+
+    await summary();
 
     expect(await screen.findByText('Draft')).toBeInTheDocument();
     expect(screen.getByText('On every page')).toBeInTheDocument();
-    expect(screen.queryByText(/^Counts /)).toBeNull();
-    expect(screen.getByRole('button', { name: 'Save changes' })).toBeInTheDocument();
+    expect(screen.queryByText('Counts', { selector: 'dt' })).toBeNull();
   });
 
   /**
@@ -772,11 +781,13 @@ describe('the readiness panel', () => {
     );
 
     open();
-    await expand();
+    await summary();
 
-    expect(await screen.findByText('On every page')).toBeInTheDocument();
+    expect(await screen.findByRole('dialog')).toBeInTheDocument();
+    expect(fact('Where')?.textContent).toBe('On every page');
     expect(fact('When')?.textContent).toContain('8');
     expect(fact('Who')?.textContent).toBe('Anyone who reaches it');
+    expect(fact('How often')?.textContent).toContain('until they close it');
   });
 
   /**
@@ -872,11 +883,13 @@ describe('the readiness panel', () => {
 
     open();
 
-    await expand();
+    await summary();
 
     expect(await screen.findByText('WP SMS contacts', { selector: 'dd' })).toBeInTheDocument();
 
-    await userEvent.click(screen.getByRole('tab', { name: 'Destinations' }));
+    // Out of the modal before touching the screen behind it.
+    await userEvent.keyboard('{Escape}');
+    await userEvent.click(await screen.findByRole('tab', { name: 'Destinations' }));
 
     expect(await screen.findByRole('checkbox', { name: /WP SMS contacts/ })).toBeChecked();
     expect(screen.queryByText(/The playbook this started from/)).toBeNull();

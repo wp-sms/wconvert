@@ -399,9 +399,27 @@ of the answer, and the same `Collapsible` the four rule sections already use._
 
 _Which forces the rule the other way, twice: **the summary row owns a fact and
 the body must not repeat it.** The state badge and the Goal were in both, and
-each was the same fact twice the moment a merchant opened the panel. What is
-left inside is what one line cannot hold — the provenance, where the Leads go,
-the four rule sentences, and a [[Suspended]] Optin's cause._
+each was the same fact twice the moment a merchant opened the panel._
+
+_**And then it stopped costing room at all.** Both shapes were rejected on the
+same ground and the ground is sound: it answers a question a merchant asks on
+ARRIVAL, not on every keystroke, and a screen that spends permanent room on an
+occasional question has spent it badly. So it is a control in the page-header
+band — same scope as `Save changes` and the history pair, which is this ADR's
+own test — and a dialog behind it. The tab strip is back at 209px from 407._
+
+_**One thing does not wait for the click**, and that is ADR 0042 rule 3 rather
+than a hedge: a design that cannot convert is not a question the merchant
+thought to ask, so the trigger reads *"2 things to fix"* in amber when there are
+any and *"Summary"* when there are none — the noun when there is no news, and
+the news when there is._
+
+_The dialog re-found the trap the section above this one already records:
+**Radix portals to `document.body`**, so every rule anchored on
+`#wconvert-admin` stopped at the boundary while reading exactly as though it
+worked. The ⚠ sat on its own line above *TO FIX*, the divider was missing, and
+the list had lost its reset. The root list exists for this; anchoring on the id
+was the mistake, and only a screenshot found it._
 
 The consequence for anything that follows: **the selection must never be
 empty** where a screen does this. A list with a panel under it that says

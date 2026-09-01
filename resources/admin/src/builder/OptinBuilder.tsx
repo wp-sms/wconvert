@@ -21,7 +21,7 @@ import { LOADING, messageOf, ready, type Loadable } from '../shell/loadable';
 import { TemplatePickerDialog } from './TemplatePickerDialog';
 import { useTemplateTrees } from './TemplatePicker';
 import { DestinationsEditor } from './DestinationsEditor';
-import { ReadinessPanel } from './ReadinessPanel';
+import { ReadinessDialog } from './ReadinessDialog';
 import { hintIn, hintSaid } from './destinations';
 import { Preview } from './Preview';
 import { DisplayRules } from './rules/DisplayRules';
@@ -1046,6 +1046,34 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
               quiet, immediately before the commit, which is the order every
               editor uses.
             */}
+            {/*
+              **What this Optin is FOR, one press away.** [[Goal]] and
+              [[Playbook]] are chosen in a creation wizard that cannot be
+              re-entered and Publish lives on the Optin list, so the screen a
+              merchant spends real time in could say none of it. It reports on
+              the whole Optin and acts on nothing, which is the same scope
+              `Save changes` and the history controls have — ADR 0039's test —
+              so it sits with them rather than inside any one tab.
+
+              It shipped twice as a permanent panel above the tab strip, and
+              both times the room was the objection rather than the content.
+            */}
+            <ReadinessDialog
+              optin={{ published_at: publishedAt, deleted_at: deletedAt, suspended }}
+              goal={goalEntry}
+              goalId={goal ?? ''}
+              playbook={playbook}
+              playbookId={typeof config.playbook_id === 'string' ? config.playbook_id : ''}
+              rules={displayRules}
+              vocabulary={vocabulary}
+              overlay={overlay}
+              bound={bound}
+              template={template}
+              act={act}
+              destinations={destinations?.destinations ?? null}
+              onGoTo={goTo}
+            />
+
             <HistoryControls history={history} />
 
             <Button disabled={busy} onClick={() => void save()}>
@@ -1067,46 +1095,6 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
       </PageAction>
 
       <div className="wconvert-builder">
-        {/*
-          ====================================================================
-          WHAT THIS OPTIN IS FOR, AND WHETHER IT IS LIVE — OVER EVERYTHING.
-          ====================================================================
-          [[Goal]] and [[Playbook]] are chosen in a creation wizard that cannot
-          be re-entered, and publishing lives on the Optin list — so the screen
-          a merchant spends real time in could not say what the campaign was
-          for, what number it would be judged on, or whether the site was
-          serving it. Those are the frame for every decision the tabs below ask
-          them to make, which is ADR 0039's placement rule exactly: a fact
-          identical for every tab belongs above the tabs.
-
-          **Across BOTH columns rather than above the tab strip alone**, and
-          that is a measurement rather than a preference. In the tab column it
-          is 712px wide at a 1440px viewport, which is two 216px value columns
-          — nearly every rule sentence wrapped to two lines and the panel stood
-          313px tall, permanently, on a screen whose own floor is 782px
-          (ADR 0038). Spanning the builder it is ~1230px, the sentences fit on
-          one line each, and the whole summary costs a third of that.
-
-          Not in the page-header band, which ADR 0039 caps at the title and what
-          acts on the whole Optin, and which already carries this Optin's
-          numbers.
-        */}
-        <ReadinessPanel
-          optin={{ published_at: publishedAt, deleted_at: deletedAt, suspended }}
-          goal={goalEntry}
-          goalId={goal ?? ''}
-          playbook={playbook}
-          playbookId={typeof config.playbook_id === 'string' ? config.playbook_id : ''}
-          rules={displayRules}
-          vocabulary={vocabulary}
-          overlay={overlay}
-          bound={bound}
-          template={template}
-          act={act}
-          destinations={destinations?.destinations ?? null}
-          onGoTo={goTo}
-        />
-
         <div className="wconvert-builder__tabs">
           {/*
             **The space under the tab strip is spelled ONCE, here, and `mb-4` on
