@@ -85,12 +85,44 @@ does not exist.
 That is a real design question and it belongs to the ticket that builds the
 feature. It is named here so nobody reads this document as having answered it.
 
+*Sticky assignment is now decided, and the answer is the one this paragraph
+predicted: **it is the record itself.** Assignment is a field on the existing
+per-Optin client record — `wc_o_<parentId>.v`, holding the variant it drew —
+written through the same `localStorage → cookie → in-memory` ladder as `i`, `l`,
+`d` and `c`, and it fails open like them. It is a new FIELD on a key that
+already exists, not a new key and not a new store.*
+
+*It is not the identifier this ADR's own constraint forbids, and the three
+properties [ADR 0047](0047-site-wide-frequency-is-the-same-shape-at-a-second-scope.md)
+checks one at a time for `wc_site` hold here too. It is not an identifier — it
+names an arm of one experiment, not a device. It carries no more precision than
+the question needs — one variant per parent Optin, and nothing about when it was
+drawn. And it joins to nothing: it is scoped to a single parent, it is
+meaningless outside that test, and it expires when the record does.*
+
+*The consequence is stated rather than hidden. **The split unit is the browser
+record, not the person.** One visitor on a phone and a laptop can draw different
+arms and count twice; a visitor who clears storage re-draws. That is not a
+defect to be repaired later by minting an id — it is the price of
+[ADR 0017](0017-no-visitor-identifier.md), and it is the same price
+`CONTEXT.md` already names when it says there is no honest count of people
+anywhere in WConvert. A test that needs person-level assignment to be valid is a
+test WConvert cannot run, and the honest move is to say so on the screen that
+reports the result rather than to buy validity with a cookie.*
+
+*What stays open is the split itself — the ratio, when a winner is declared, and
+whether declaring one is automatic. Those need no storage decision and are still
+the building ticket's.*
+
 ## Consequences
 
 - **No schema change, now or when it ships.** `tests/unit/Database/SchemaTest.php`
   passing untouched is the check that this stayed true.
 - **`config.parent` is the link**, holding a ULID, and it is the only new stored
-  fact. It lives in `config` rather than in a column because it is a property of
+  fact *on the server*. *Amended: there is now one on the client too —
+  `wc_o_<parentId>.v`, the drawn arm, argued in "What this does not decide"
+  above. It is a field on an existing record rather than a key, and it changes
+  no schema.* It lives in `config` rather than in a column because it is a property of
   how an Optin was authored — the same place `template_id` and `playbook_id`
   live, and provenance is what all three are.
 - **The Optins list gains a parentless filter**, which is where the entire UI

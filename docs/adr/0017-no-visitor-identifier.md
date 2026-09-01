@@ -5,6 +5,15 @@ visitor id cookie, no device id, no hashed fingerprint, and no id on an analytic
 beacon. Per-visitor state exists, but it is the *record itself* — which Optins
 this device has seen and dismissed — never a key pointing at a record.
 
+*The "record itself" distinction has a third caller, and the first one that is
+Pro's: [ADR 0045](0045-an-ab-variant-is-a-whole-optin.md) resolved A/B
+assignment to `wc_o_<parentId>.v`, a field on the per-Optin record naming the
+arm this browser drew. It is read against this sentence and passes — an arm of
+one experiment is not a key pointing at a visitor — and the consequence, that
+the split unit is the browser record and not the person, is accepted there
+rather than repaired with an id. The consequence below about **free's** storage
+is unchanged: this field is written by Pro's loader.*
+
 ## What this overturns
 
 The [#9](https://github.com/navidkashani/wconvert/issues/9) loader prototype
