@@ -13,9 +13,9 @@ Capture leads with popups and inline forms you create goal-first, then see what 
 == Description ==
 
 WConvert asks what you are trying to achieve before it asks what you want to
-build. Pick a goal — grow an email list, deliver a lead magnet, announce a
-sale, send visitors to an offer — and it proposes the Playbook that serves it:
-the placement, the trigger, the copy and the fields, already filled in.
+build. Pick a goal — grow an email list, grow an SMS list, deliver a lead
+magnet, or promote a sale or offer — and it proposes the Playbook that serves
+it: the placement, the trigger, the copy and the fields, already filled in.
 
 **What it does**
 
@@ -29,6 +29,9 @@ the placement, the trigger, the copy and the fields, already filled in.
 * **Lead-magnet delivery by email**, with no third-party service required.
 * **Consent captured as part of the form**, recorded with the wording that was
   on screen at the time.
+* **See why a popup did or did not show**, on the page itself rather than in a
+  simulator: add `?wconvert-inspect=1` to any URL on your site while signed in
+  as an administrator.
 * **MailPoet integration.** Where MailPoet is installed, a captured lead is
   added to the lists you choose by name. Nobody who unsubscribed is ever put
   back, and whether a new subscriber has to confirm stays MailPoet's own
@@ -51,19 +54,25 @@ have set it up.
 **The source is in the plugin**
 
 Every piece of JavaScript this plugin ships is built from un-minified source
-included in the download, under `resources/`. `public/loader/loader.js` is
-built from `resources/loader/src`, `public/admin/main-*.js` from
-`resources/admin/src`, and `public/blocks/inline-optin.js` from
-`resources/blocks/inline-optin/src`. Nothing is fetched from elsewhere at build
-time or at run time.
+included in the download, under `resources/`:
+
+* everything in `public/loader/` and `public/inspector/`, from
+  `resources/loader/src`
+* everything in `public/admin/`, from `resources/admin/src`
+* everything in `public/blocks/`, from `resources/blocks/inline-optin/src`
+
+Directories rather than filenames, because the admin bundle is split into
+chunks whose names carry a content hash. Nothing is fetched from elsewhere at
+build time or at run time.
 
 **WConvert Pro**
 
-Premium capabilities — exit-intent and scroll-up triggers, floating bars and
-slide-ins, A/B testing, and the email-service-provider integrations — are
-supplied by a separate WConvert Pro plugin installed alongside this one. None
-of that code is inside this download, and this plugin is fully usable without
-it.
+Premium capabilities — the exit-intent, scroll-up and clicked-element triggers,
+targeting by query parameter and by cart contents, floating bars and slide-ins,
+A/B testing, the cart-recovery goal, and the email-service-provider and webhook
+integrations — are supplied by a separate WConvert Pro plugin installed
+alongside this one. None of that code is inside this download, and this plugin
+is fully usable without it.
 
 == Installation ==
 
