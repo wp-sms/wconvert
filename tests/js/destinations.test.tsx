@@ -428,6 +428,40 @@ describe('the destinations screen', () => {
   });
 
   /**
+   * **A configured list the server did not offer survives a save.**
+   *
+   * A merchant binned a MailPoet list, or deleted one outright: its id is
+   * still in `settings` and there is no checkbox for it. Rebuilding the value
+   * from the options alone would delete it the first time anybody ticked any
+   * box — silently, on a screen whose subject is health.
+   *
+   * It is the same posture `fromDraft` already takes for a stored KEY the type
+   * no longer declares, one level up, and for the same reason: a settings bag
+   * is opaque, and the screen that cannot draw something must not be the
+   * screen that destroys it.
+   */
+  it('keeps a stored list id that is not among the offered options', async () => {
+    api.readDestinations.mockResolvedValue({
+      types: [MAILPOET_READY],
+      // `9` was a list once. Nothing on screen can represent it.
+      destinations: [{ ...MAILPOET_BOUND, settings: { lists: ['9', '3'] } }],
+      connections: [],
+      failures: [],
+    });
+
+    render(<Destinations />);
+
+    await userEvent.click(await screen.findByLabelText('Offers'));
+    await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+    await waitFor(() => {
+      expect(api.saveDestination).toHaveBeenCalledWith(
+        expect.objectContaining({ settings: { lists: ['9', '3', '4'] } })
+      );
+    });
+  });
+
+  /**
    * The same field on a site whose provider could not be reached: no options,
    * so it lands back on the text input the `ids` kind has always had.
    *

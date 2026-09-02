@@ -39,10 +39,14 @@ the placement, the trigger, the copy and the fields, already filled in.
 **No account, no phone-home**
 
 WConvert has no licence key, sends no analytics anywhere, and stores no visitor
-identifier. Everything it counts is a daily counter on your own site. Capturing
-a lead makes no request off your server at all — the destinations this plugin
-can send to are all on it, which is why the email-service-provider integrations
-are in WConvert Pro rather than here.
+identifier. Everything it counts is a daily counter on your own site.
+
+WConvert itself contacts nothing on the internet. Every destination this free
+plugin can send a lead to is already on your site — the lead-magnet email,
+MailPoet, WP SMS — which is why the email-service-provider integrations are in
+WConvert Pro rather than here. What your own mail or newsletter plugin does
+afterwards with a message you asked it to send is between you and however you
+have set it up.
 
 **The source is in the plugin**
 
@@ -112,8 +116,9 @@ analytics are daily counters per Optin.
 = Where does the data go when someone converts? =
 
 Into a table on your own site, and optionally to a destination you configure —
-the lead-magnet email, MailPoet, or WP SMS if you have them installed. Nowhere
-else, and nothing leaves your server: all three run inside your own WordPress.
+the lead-magnet email, MailPoet, or WP SMS if you have them installed. All
+three of those are on your own site — WConvert sends your leads to no service
+of ours and to no third party.
 
 = How do I remove someone's data? =
 

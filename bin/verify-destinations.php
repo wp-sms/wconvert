@@ -27,6 +27,7 @@ use WConvert\Destination\DestinationStore;
 use WConvert\Destination\HealthStore;
 use WConvert\Destination\LeadMagnet\LeadMagnetDestinationType;
 use WConvert\Destination\MailPoet\MailPoetDestinationType;
+use WConvert\Destination\MailPoet\WpMailPoetSubscribers;
 use WConvert\Destination\OptinBinding;
 use WConvert\Destination\PushJob;
 use WConvert\Destination\Wsms\WsmsDestinationType;
@@ -446,6 +447,27 @@ if ($mailPoetAvailability !== 'ready') {
         return $api->{$method}(...$arguments);
     };
 
+    // ------------------------------------------------------------------
+    // THE THREE NUMBERS THE ADAPTER COPIED OUT OF MAILPOET.
+    // ------------------------------------------------------------------
+    // `WpMailPoetSubscribers` reads `APIException`'s codes to tell "already
+    // there" and "landed, but its email did not" from a real failure. Nothing
+    // in the unit suite can check them — it has no MailPoet — and a renumber
+    // upstream would turn every capture into a health failure that heals
+    // itself on retry, which is exactly the shape nobody investigates.
+    $codes = 'MailPoet\API\MP\v1\APIException';
+
+    $verify->check(
+        'MailPoet still numbers SUBSCRIBER_EXISTS as the adapter expects',
+        constant($codes . '::SUBSCRIBER_EXISTS'),
+        WpMailPoetSubscribers::CODE_SUBSCRIBER_EXISTS
+    );
+    $verify->check(
+        'and its two "landed, but the email did not" codes',
+        [constant($codes . '::CONFIRMATION_FAILED_TO_SEND'), constant($codes . '::WELCOME_FAILED_TO_SEND')],
+        WpMailPoetSubscribers::CODES_LANDED_ANYWAY
+    );
+
     $listA = $mailpoet('addList', ['name' => 'WConvert verification A']);
     $listB = $mailpoet('addList', ['name' => 'WConvert verification B']);
 
@@ -461,6 +483,21 @@ if ($mailPoetAvailability !== 'ready') {
         MailPoetDestinationType::LISTS => [(string) $listA['id'], (string) $listB['id']],
     ]);
 
+    // One push, and what it reported.
+    //
+    // `PushWorker::run()` returns nothing — health is where an outcome lands,
+    // and it is what a merchant would be looking at. `landed()` clears
+    // `last_error` and `failed()` stamps it, so a null here is the push having
+    // SUCCEEDED rather than having gone back on the queue. Asserting only
+    // MailPoet's rows would pass just as well if every push had failed
+    // retryably and healed itself on the next attempt, which is the shape
+    // nobody investigates because the data looks right.
+    $pushed = static function (string $leadId) use ($worker, $health, &$mailPoetDestination): ?string {
+        $worker->run((new PushJob($leadId, $mailPoetDestination->id, 1))->toArgs());
+
+        return $health->of($mailPoetDestination->id)->lastError;
+    };
+
     $mailPoetOptin = $optins->create('MailPoet optin', 'grow_list', [
         'template' => ['tree' => ['steps' => []]],
         OptinBinding::KEY => [$mailPoetDestination->id],
@@ -475,7 +512,7 @@ if ($mailPoetAvailability !== 'ready') {
         new Submission('mailpoet-new@example.com', null, ['name' => 'New Person'])
     );
 
-    $worker->run((new PushJob($newLead->id, $mailPoetDestination->id, 1))->toArgs());
+    $verify->check('a capture lands rather than going back on the queue', null, $pushed($newLead->id));
 
     $created = $mailpoet('getSubscriber', 'mailpoet-new@example.com');
 
@@ -496,7 +533,14 @@ if ($mailPoetAvailability !== 'ready') {
     // **Idempotency, against a real unique index.** A retry re-runs the whole
     // of push(); MailPoet's `mailpoet_subscribers.email` is unique, so a second
     // create collides and the push finishes by list instead (ADR 0008).
-    $worker->run((new PushJob($newLead->id, $mailPoetDestination->id, 1))->toArgs());
+    // **An ordinary retry never reaches `SubscriberExists` at all**, and that
+    // is worth knowing rather than assuming: `push()` matches first, so the
+    // second attempt finds the subscriber the first one made and finishes by
+    // list. The exists path is the RACE — another writer landing the row
+    // between our read and our write — which is why the code behind it is
+    // pinned against MailPoet's own class above rather than left to a
+    // scenario this script cannot stage.
+    $verify->check('and a retry lands too', null, $pushed($newLead->id));
 
     $retried = $mailpoet('getSubscriber', 'mailpoet-new@example.com');
 
@@ -538,7 +582,7 @@ if ($mailPoetAvailability !== 'ready') {
         new Submission('mailpoet-left@example.com', null, ['name' => 'Typo Name'])
     );
 
-    $worker->run((new PushJob($leftLead->id, $mailPoetDestination->id, 1))->toArgs());
+    $verify->check('a capture for someone MailPoet already holds lands', null, $pushed($leftLead->id));
 
     $after = $mailpoet('getSubscriber', 'mailpoet-left@example.com');
     $memberships = [];

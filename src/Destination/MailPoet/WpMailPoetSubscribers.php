@@ -44,8 +44,12 @@ defined('ABSPATH') || exit;
  * means reaching past the `MP('v1')` facade, and that is a trade taken
  * deliberately: the facade offers no way to add a list without also writing a
  * lifecycle state, and a [[Destination]] that cannot honour ADR 0022 has no
- * business shipping. The coupling is three container services and one facade,
- * in this file, which is the thing to read on the day MailPoet moves one.
+ * business shipping. The coupling is one facade, three container services and
+ * one walk over the subscriber entity's own memberships, all in this file —
+ * which is the thing to read on the day MailPoet moves any of them. The
+ * exception codes it reads are `public` rather than `private`, so
+ * `bin/verify-destinations.php` can hold them against MailPoet's own
+ * `APIException` on a site that has one.
  *
  * **The public API is still used wherever it can be.** {@see self::lists()}
  * and {@see self::add()} are `MP('v1')`, because `addSubscriber()` writes the
@@ -91,8 +95,16 @@ final class WpMailPoetSubscribers implements MailPoetSubscribers
      */
     private const LIST_SEGMENT = 'default';
 
-    /** MailPoet's own `APIException::SUBSCRIBER_EXISTS`. */
-    private const CODE_SUBSCRIBER_EXISTS = 12;
+    /**
+     * MailPoet's own `APIException::SUBSCRIBER_EXISTS`.
+     *
+     * **Public because a number copied out of another plugin goes stale
+     * silently.** `bin/verify-destinations.php` reads MailPoet's own class on
+     * a site that has one and holds this to it, which is the only place the
+     * two can be compared: the unit suite has no MailPoet, and a fake that
+     * threw the right exception for the wrong reason would prove nothing.
+     */
+    public const CODE_SUBSCRIBER_EXISTS = 12;
 
     /**
      * `CONFIRMATION_FAILED_TO_SEND` and `WELCOME_FAILED_TO_SEND`.
@@ -102,8 +114,12 @@ final class WpMailPoetSubscribers implements MailPoetSubscribers
      * on its own screens. Treating that as our failure would mark the
      * Destination unhealthy for something that is not about the push, so it
      * resolves the way an existing subscriber does — by id, from a read.
+     *
+     * Public for the reason above, and checked against
+     * `APIException::CONFIRMATION_FAILED_TO_SEND` and
+     * `::WELCOME_FAILED_TO_SEND` in the same place.
      */
-    private const CODES_LANDED_ANYWAY = [10, 17];
+    public const CODES_LANDED_ANYWAY = [10, 17];
 
     /**
      * Whether this site can be pushed to at all.

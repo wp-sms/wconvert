@@ -761,6 +761,22 @@ function ChoiceList({
       .filter((entry) => entry !== ''),
   );
 
+  const offered = options.map((option) => option.value);
+
+  /**
+   * **What was stored and is not on offer survives.**
+   *
+   * A configured id the server did not enumerate — a MailPoet list the
+   * merchant binned, one deleted outright — is not a value this control can
+   * draw, and rebuilding from `options` alone would delete it the first time
+   * anybody ticked any box. That is the same posture {@see fromDraft} takes
+   * one level up, where a stored key the type no longer declares is left
+   * alone rather than dropped, and for the same reason: a settings bag is
+   * opaque, and the screen that cannot draw something must not be the screen
+   * that destroys it.
+   */
+  const kept = [...chosen].filter((entry) => !offered.includes(entry));
+
   const toggle = (option: string, on: boolean) => {
     const next = new Set(chosen);
 
@@ -770,10 +786,10 @@ function ChoiceList({
       next.delete(option);
     }
 
-    // Written back in the ORDER THE SERVER OFFERED, not in click order, so
-    // saving the same set twice produces the same string and a merchant
-    // unticking and reticking a box does not look like an edit.
-    onChange(options.map((o) => o.value).filter((o) => next.has(o)).join(', '));
+    // The offered ids in the ORDER THE SERVER GAVE THEM, not in click order,
+    // so saving the same set twice produces the same string and unticking and
+    // reticking a box does not look like an edit.
+    onChange([...kept, ...offered.filter((entry) => next.has(entry))].join(', '));
   };
 
   return (
