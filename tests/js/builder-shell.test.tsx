@@ -845,7 +845,7 @@ describe('the summary', () => {
     // of no registered type on any install, and an unresolved key is our own
     // vocabulary rather than a merchant's word.
     expect(
-      await screen.findByText(/expects a destination like WP SMS/),
+      await screen.findByText(/works well with a destination like WP SMS/),
     ).toBeInTheDocument();
     expect(screen.queryByText(/email_service_provider/)).toBeNull();
   });
@@ -864,6 +864,7 @@ describe('the summary', () => {
           label: 'WP SMS contacts',
           connection: null,
           settings: {},
+          target: null,
           availability: 'ready',
           health: {
             last_success_at: null,

@@ -1364,7 +1364,15 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
                     hint={
                       bound.length > 0
                         ? null
-                        : hintSaid(hintIn(config), destinations?.types ?? [], gallery.labels.fields)
+                        : hintSaid(
+                            hintIn(config),
+                            destinations?.types ?? [],
+                            gallery.labels.fields,
+                            // What is already CONFIGURED, which decides whether
+                            // the hint's type half is still guidance or is
+                            // history — and whether it ends with where to go.
+                            destinations?.destinations ?? [],
+                          )
                     }
                     onChange={(next) => edit({ destinations: next })}
                   />

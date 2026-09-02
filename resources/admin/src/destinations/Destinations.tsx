@@ -6,6 +6,7 @@ import {
   Info,
   Plug,
   RotateCcw,
+  Target,
   Trash2,
   TriangleAlert,
   Zap,
@@ -15,9 +16,9 @@ import { iconFor } from '../icons';
 import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
-import { Checkbox } from '../components/ui/checkbox';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
+import { AddDestinationDialog } from './AddDestinationDialog';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import {
   DataTable,
@@ -46,13 +47,21 @@ import {
   saveDestination,
   testConnection,
   testSend,
+  type Connection,
   type Destination,
   type DestinationType,
   type DestinationsPayload,
   type RePushReport,
-  type SettingsField,
   type TestReport,
 } from './api';
+import {
+  ConnectionPicker,
+  SettingsControl,
+  fromDraft,
+  isGroup,
+  targetSaid,
+  toDraft,
+} from './settings';
 import { renderingFor } from '../goals/availability';
 
 /**
@@ -130,6 +139,17 @@ export function Destinations() {
    */
   const [tests, setTests] = useState<Record<string, TestReport>>({});
   const [confirming, setConfirming] = useState<Destination | null>(null);
+  /**
+   * The type being added, which is also whether the Add dialog is open.
+   *
+   * **Adding is a step now rather than a click.** A [[Destination]] is a named
+   * route, and the three things that make one — the name, the account and what
+   * inside it the route points at — are asked before it exists (#89). Held
+   * here rather than inside {@see Types} because the dialog needs the payload's
+   * `connections`, and because the failure it may produce is already keyed here
+   * by the type's id.
+   */
+  const [adding, setAdding] = useState<DestinationType | null>(null);
   const returnFocus = useRef<HTMLElement | null>(null);
 
   const refresh = useCallback(async () => {
@@ -176,20 +196,43 @@ export function Destinations() {
     }
   };
 
-  const add = (type: DestinationType) =>
-    void run(type.id, () => saveDestination({ type: type.id, label: type.label, settings: {} }));
+  /**
+   * Create the route the dialog was filled in for.
+   *
+   * **The dialog is closed inside the action rather than beside it**, so it
+   * closes only on a save that worked: `run()` refreshes after the action
+   * resolves and keys the error by the type when it throws, and a failure that
+   * dropped the dialog would take the merchant's typed name with it.
+   */
+  const add = (
+    type: DestinationType,
+    draft: { label: string; connection: string | null; settings: Record<string, unknown> },
+  ) =>
+    void run(type.id, async () => {
+      await saveDestination({
+        type: type.id,
+        label: draft.label,
+        connection: draft.connection,
+        settings: draft.settings,
+      });
+
+      setAdding(null);
+    });
 
   const remove = (destination: Destination) =>
     void run(destination.id, () => deleteDestination(destination.id));
 
-  const save = (destination: Destination, settings: Record<string, unknown>) =>
+  const save = (
+    destination: Destination,
+    edit: { label: string; connection: string | null; settings: Record<string, unknown> },
+  ) =>
     void run(destination.id, () =>
       saveDestination({
         id: destination.id,
         type: destination.type,
-        label: destination.label,
-        connection: destination.connection,
-        settings,
+        label: edit.label,
+        connection: edit.connection,
+        settings: edit.settings,
       }),
     );
 
@@ -286,6 +329,9 @@ export function Destinations() {
                 needsConnection={
                   data.types.find((type) => type.id === destination.type)?.needs_connection ?? false
                 }
+                connections={data.connections.filter(
+                  (connection) => connection.type === destination.type,
+                )}
                 report={reports[destination.id] ?? null}
                 test={tests[destination.id] ?? null}
                 error={errors[destination.id] ?? null}
@@ -304,15 +350,40 @@ export function Destinations() {
 
           <Types
             types={data.types}
-            configured={data.destinations}
             errors={errors}
             busyId={busyId}
-            onAdd={add}
+            onAdd={(type, trigger) => {
+              returnFocus.current = trigger;
+              setAdding(type);
+            }}
           />
 
           <Failures failures={data.failures} />
         </>
       )}
+
+      {/*
+        **One dialog for the screen, not one per type row.** The state that
+        says which type is being added lives above both, so the list of types
+        stays a list of rows with an action each.
+      */}
+      <AddDestinationDialog
+        type={adding}
+        connections={data?.connections ?? []}
+        busy={adding !== null && busyId === adding.id}
+        error={adding === null ? null : (errors[adding.id] ?? null)}
+        returnFocusTo={returnFocus}
+        onOpenChange={(open) => {
+          if (!open) {
+            setAdding(null);
+          }
+        }}
+        onConfirm={(draft) => {
+          if (adding !== null) {
+            add(adding, draft);
+          }
+        }}
+      />
 
       <ConfirmDialog
         open={confirming !== null}
@@ -364,6 +435,7 @@ function Configured({
   destination,
   schema,
   needsConnection,
+  connections,
   report,
   test,
   error,
@@ -379,13 +451,18 @@ function Configured({
   schema: DestinationType['settings_schema'];
   /** Whether its TYPE has credentials at all. Every free type does not. */
   needsConnection: boolean;
+  /** The Connections of this Destination's type, masked, for the account picker. */
+  connections: readonly Connection[];
   report: RePushReport | null;
   /** What the last *Test* against THIS Destination answered. */
   test: TestReport | null;
   /** What the last save, remove or re-push against THIS Destination failed with. */
   error: string | null;
   busy: boolean;
-  onSave: (destination: Destination, settings: Record<string, unknown>) => void;
+  onSave: (
+    destination: Destination,
+    edit: { label: string; connection: string | null; settings: Record<string, unknown> },
+  ) => void;
   onRemove: (trigger: HTMLElement | null) => void;
   onRePush: (destination: Destination) => void;
   onTestConnection: (destination: Destination) => void;
@@ -395,6 +472,20 @@ function Configured({
   // string, because a type declares as many fields as it likes — the WSMS push
   // has one and the lead magnet email has three.
   const [draft, setDraft] = useState<Record<string, string>>(() => toDraft(schema, destination.settings));
+  /**
+   * **The name is the merchant's, and it is editable here.**
+   *
+   * Two Destinations of one type over one Connection differ only in what they
+   * point at, so the name is the only thing that tells them apart on the tab
+   * where an Optin is bound. Until #89 nothing on this screen could send one:
+   * *Add* posted the TYPE's label and Save posted whatever was already stored.
+   *
+   * Renaming needs no storage work and breaks no binding — an Optin holds
+   * ULIDs ({@see OptinBinding}) and `Destination::$label` has always
+   * round-tripped through `toArray()`.
+   */
+  const [label, setLabel] = useState(destination.label);
+  const [connection, setConnection] = useState(destination.connection);
   const removeTrigger = useRef<HTMLButtonElement>(null);
   const failing = destination.health.consecutive_failures > 0;
   /*
@@ -405,6 +496,21 @@ function Configured({
    */
   const runnable = destination.availability === 'ready';
   const fields = Object.entries(schema);
+  const lands = targetSaid(destination.target);
+  const pushed = destination.health.last_success_at;
+  /*
+   * Whether the health body has anything in it at all. With the badge now
+   * carrying "Not used yet" alone, a Destination nobody has pushed to — of a
+   * type that selects nothing, so there is no target line either — would
+   * otherwise draw an empty padded block under its own header.
+   */
+  const reporting =
+    lands !== null ||
+    failing ||
+    pushed !== null ||
+    destination.health.skipped_captures > 0 ||
+    report !== null ||
+    test !== null;
 
   return (
     <Region>
@@ -441,105 +547,132 @@ function Configured({
         }
       />
 
-      <RegionBody className="flex flex-col gap-3">
-        {failing ? (
-          <Alert variant="destructive" className="border-destructive/30 bg-destructive/5">
-            <CircleAlert />
-            <AlertTitle>
-              {sprintf(
-                /* translators: 1: number of failures in a row, 2: the last error. */
-                _n(
-                  '%1$d failure in a row. Last error: %2$s',
-                  '%1$d failures in a row. Last error: %2$s',
+      {reporting && (
+        <RegionBody className="flex flex-col gap-3">
+          {/*
+            **Where this route lands, first, because it is what makes one route
+            different from another.**
+
+            Three states and not two — {@see targetSaid} owns the wording and
+            `ConfiguredTarget` owns the rule. `null` draws nothing: a lead-magnet
+            email selects nothing and is perfectly configured, and a provider we
+            could not reach is a question we could not ask. Saying *"not pointed
+            at anything yet"* for either reports a fault against something that
+            works (ADR 0042).
+          */}
+          {lands !== null && (
+            <p className="m-0 flex items-center gap-2 text-muted-foreground">
+              <Target aria-hidden="true" className="size-4 shrink-0" />
+              {lands}
+            </p>
+          )}
+
+          {failing ? (
+            <Alert variant="destructive" className="border-destructive/30 bg-destructive/5">
+              <CircleAlert />
+              <AlertTitle>
+                {sprintf(
+                  /* translators: 1: number of failures in a row, 2: the last error. */
+                  _n(
+                    '%1$d failure in a row. Last error: %2$s',
+                    '%1$d failures in a row. Last error: %2$s',
+                    destination.health.consecutive_failures,
+                    'wconvert',
+                  ),
                   destination.health.consecutive_failures,
-                  'wconvert',
-                ),
-                destination.health.consecutive_failures,
-                destination.health.last_error ?? '',
-              )}
-            </AlertTitle>
-          </Alert>
-        ) : (
-          <p className="m-0 flex items-center gap-2 text-muted-foreground">
-            <CircleCheck aria-hidden="true" className="size-4 shrink-0" />
-            {destination.health.last_success_at === null
-              ? __('Nothing has been pushed here yet.', 'wconvert')
-              : sprintf(
+                  destination.health.last_error ?? '',
+                )}
+              </AlertTitle>
+            </Alert>
+          ) : (
+            /*
+              **Only where there IS a last success.** The badge above already
+              says *"Not used yet"*, and a sentence under it saying "Nothing has
+              been pushed here yet" is the same fact twice — the density rule
+              ADR 0039 draws, and the second half of it: a screen that repeats
+              itself teaches the merchant to stop reading it.
+            */
+            pushed !== null && (
+              <p className="m-0 flex items-center gap-2 text-muted-foreground">
+                <CircleCheck aria-hidden="true" className="size-4 shrink-0" />
+                {sprintf(
                   /* translators: %s: a date and time. */
                   __('Last successful push: %s', 'wconvert'),
-                  destination.health.last_success_at,
+                  pushed,
                 )}
-          </p>
-        )}
+              </p>
+            )
+          )}
 
-        {destination.health.skipped_captures > 0 && (
-          <Alert className="border-warning/30 bg-warning/5 text-warning">
-            <TriangleAlert />
-            <AlertTitle className="line-clamp-none">
-              {sprintf(
-                /* translators: 1: number of captures, 2: a date and time. */
-                _n(
-                  '%1$d capture was not sent, most recently at %2$s. Fix what this destination needs, then re-push.',
-                  '%1$d captures were not sent, most recently at %2$s. Fix what this destination needs, then re-push.',
+          {destination.health.skipped_captures > 0 && (
+            <Alert className="border-warning/30 bg-warning/5 text-warning">
+              <TriangleAlert />
+              <AlertTitle className="line-clamp-none">
+                {sprintf(
+                  /* translators: 1: number of captures, 2: a date and time. */
+                  _n(
+                    '%1$d capture was not sent, most recently at %2$s. Fix what this destination needs, then re-push.',
+                    '%1$d captures were not sent, most recently at %2$s. Fix what this destination needs, then re-push.',
+                    destination.health.skipped_captures,
+                    'wconvert',
+                  ),
                   destination.health.skipped_captures,
-                  'wconvert',
-                ),
-                destination.health.skipped_captures,
-                destination.health.last_skipped_at ?? '',
+                  destination.health.last_skipped_at ?? '',
+                )}
+              </AlertTitle>
+            </Alert>
+          )}
+
+          {/*
+            **The report is this Destination's and it is rendered here**, under
+            the button that produced it, rather than once at the bottom of a
+            screen holding four of them.
+          */}
+          {report !== null && (
+            <Alert
+              className={
+                report.capped
+                  ? 'border-warning/30 bg-warning/5 text-warning'
+                  : 'border-success/30 bg-success/5 text-success'
+              }
+            >
+              <RotateCcw />
+              <AlertTitle className="line-clamp-none">
+                {sprintf(
+                  /* translators: %d: number of pushes queued. */
+                  _n('%d lead queued for re-pushing.', '%d Leads queued for re-pushing.', report.jobs, 'wconvert'),
+                  report.jobs,
+                )}
+              </AlertTitle>
+              {report.capped && (
+                <AlertDescription>
+                  {__('That is the per-run limit — run it again once these have gone through.', 'wconvert')}
+                </AlertDescription>
               )}
-            </AlertTitle>
-          </Alert>
-        )}
+            </Alert>
+          )}
+          {/*
+            **What the last test answered, under the buttons that asked.**
 
-        {/*
-          **The report is this Destination's and it is rendered here**, under
-          the button that produced it, rather than once at the bottom of a
-          screen holding four of them.
-        */}
-        {report !== null && (
-          <Alert
-            className={
-              report.capped
-                ? 'border-warning/30 bg-warning/5 text-warning'
-                : 'border-success/30 bg-success/5 text-success'
-            }
-          >
-            <RotateCcw />
-            <AlertTitle className="line-clamp-none">
-              {sprintf(
-                /* translators: %d: number of pushes queued. */
-                _n('%d lead queued for re-pushing.', '%d Leads queued for re-pushing.', report.jobs, 'wconvert'),
-                report.jobs,
-              )}
-            </AlertTitle>
-            {report.capped && (
-              <AlertDescription>
-                {__('That is the per-run limit — run it again once these have gone through.', 'wconvert')}
-              </AlertDescription>
-            )}
-          </Alert>
-        )}
-        {/*
-          **What the last test answered, under the buttons that asked.**
+            Three renderings for three outcomes, because a Destination whose type
+            this install cannot run has NOT failed — drawing that in red tells a
+            merchant with no WP SMS that their WP SMS Destination is broken when
+            the plugin is simply not installed (ADR 0026). The message is the
+            provider's own words wherever it supplied any; React escapes on the
+            way to the DOM, which is why nothing escapes it before here.
+          */}
+          {test !== null && (
+            <Alert className={TEST_RENDERING[test.outcome].className}>
+              {(() => {
+                const Icon = TEST_RENDERING[test.outcome].icon;
 
-          Three renderings for three outcomes, because a Destination whose type
-          this install cannot run has NOT failed — drawing that in red tells a
-          merchant with no WP SMS that their WP SMS Destination is broken when
-          the plugin is simply not installed (ADR 0026). The message is the
-          provider's own words wherever it supplied any; React escapes on the
-          way to the DOM, which is why nothing escapes it before here.
-        */}
-        {test !== null && (
-          <Alert className={TEST_RENDERING[test.outcome].className}>
-            {(() => {
-              const Icon = TEST_RENDERING[test.outcome].icon;
-
-              return <Icon />;
-            })()}
-            <AlertTitle className="line-clamp-none">{test.message}</AlertTitle>
-          </Alert>
-        )}
-      </RegionBody>
+                return <Icon />;
+              })()}
+              <AlertTitle className="line-clamp-none">{test.message}</AlertTitle>
+            </Alert>
+          )}
+        </RegionBody>
+      )}
 
       {/*
         **The fields are the schema, drawn in the order PHP returned them.**
@@ -550,49 +683,88 @@ function Configured({
         one field WSMS declares and read `type` nowhere, which meant the second
         type to declare a field would have rendered none of them.
 
-        A type whose schema is empty — or one this install cannot see, so there
-        is no schema to read — gets no form and no Save button, because there
-        is nothing to save.
+        **The body itself is always drawn**, and the schema gate now sits on
+        the fields alone. It used to gate the whole thing — a type with no
+        schema got no form and no Save, because there was nothing to save. That
+        stopped being true when the NAME became something a merchant chooses: a
+        webhook declaring no settings is still a route that has to be
+        renameable, and so is a Destination whose type this install cannot see
+        and whose schema therefore arrives empty.
       */}
-      {fields.length > 0 && (
-        <RegionBody className="flex flex-col gap-4 border-t border-border">
-          {fields.map(([key, field]) => (
-            <div key={key} className="flex max-w-xl flex-col gap-1.5">
-              {/*
-                A field drawn as a GROUP of controls is labelled by association
-                rather than by `for`: `<label for>` naming a `div[role=group]`
-                is inert, so the group points back at this element's id instead
-                and the same words do the same job either way.
-              */}
-              <Label
-                id={`wconvert-${destination.id}-${key}-label`}
-                htmlFor={isGroup(field) ? undefined : `wconvert-${destination.id}-${key}`}
-              >
-                {field.label}
-              </Label>
-              <SettingsControl
-                id={`wconvert-${destination.id}-${key}`}
-                field={field}
-                value={draft[key] ?? ''}
-                onChange={(value) => setDraft({ ...draft, [key]: value })}
-              />
-              {field.description !== undefined && (
-                <Description>{field.description}</Description>
-              )}
-            </div>
-          ))}
+      <RegionBody className="flex flex-col gap-4 border-t border-border">
+        <div className="flex max-w-xl flex-col gap-1.5">
+          <Label htmlFor={`wconvert-${destination.id}-label`}>{__('Name', 'wconvert')}</Label>
+          <Input
+            id={`wconvert-${destination.id}-label`}
+            type="text"
+            value={label}
+            onChange={(event) => setLabel(event.target.value)}
+          />
+          <Description>
+            {__('Yours to choose. It is what you will pick from on an optin.', 'wconvert')}
+          </Description>
+        </div>
 
-          <div>
-            <Button
-              variant="outline"
-              disabled={busy}
-              onClick={() => onSave(destination, { ...destination.settings, ...fromDraft(schema, draft) })}
-            >
-              {__('Save', 'wconvert')}
-            </Button>
+        {/*
+          **The account, where the type has one.** Nothing on this screen has
+          ever set it: `connection` was read off the stored Destination and
+          posted straight back, so a merchant with two accounts of one provider
+          could not say which one a route ran over. Latent while every free
+          type authenticates against nothing, and live with the first ESP (#35).
+        */}
+        {needsConnection && (
+          <div className="max-w-xl">
+            <ConnectionPicker
+              id={`wconvert-${destination.id}-connection`}
+              connections={connections}
+              value={connection}
+              onChange={setConnection}
+            />
           </div>
-        </RegionBody>
-      )}
+        )}
+
+        {fields.map(([key, field]) => (
+          <div key={key} className="flex max-w-xl flex-col gap-1.5">
+            {/*
+              A field drawn as a GROUP of controls is labelled by association
+              rather than by `for`: `<label for>` naming a `div[role=group]`
+              is inert, so the group points back at this element's id instead
+              and the same words do the same job either way.
+            */}
+            <Label
+              id={`wconvert-${destination.id}-${key}-label`}
+              htmlFor={isGroup(field) ? undefined : `wconvert-${destination.id}-${key}`}
+            >
+              {field.label}
+            </Label>
+            <SettingsControl
+              id={`wconvert-${destination.id}-${key}`}
+              field={field}
+              value={draft[key] ?? ''}
+              onChange={(value) => setDraft({ ...draft, [key]: value })}
+            />
+            {field.description !== undefined && (
+              <Description>{field.description}</Description>
+            )}
+          </div>
+        ))}
+
+        <div>
+          <Button
+            variant="outline"
+            disabled={busy}
+            onClick={() =>
+              onSave(destination, {
+                label,
+                connection,
+                settings: { ...destination.settings, ...fromDraft(schema, draft) },
+              })
+            }
+          >
+            {__('Save', 'wconvert')}
+          </Button>
+        </div>
+      </RegionBody>
 
       {/*
         **Re-push repairs and Remove destroys, and they are not the same
@@ -676,13 +848,11 @@ function Configured({
  */
 function Types({
   types,
-  configured,
   errors,
   busyId,
   onAdd,
 }: {
   types: DestinationType[];
-  configured: Destination[];
   /**
    * Every keyed failure on the screen. This region reads only the entries
    * keyed by a TYPE it draws — a Destination's id is a ULID and a type's is a
@@ -691,7 +861,8 @@ function Types({
   errors: Record<string, string>;
   /** The one Destination or type with a request in flight, if any. */
   busyId: string | null;
-  onAdd: (type: DestinationType) => void;
+  /** The trigger travels so the dialog can put the caret back on it. */
+  onAdd: (type: DestinationType, trigger: HTMLElement | null) => void;
 }) {
   return (
     <Region>
@@ -736,14 +907,27 @@ function Types({
                   gets offered a WP SMS licence we do not sell (ADR 0026).
                 */}
                 {rendering === 'offer' ? (
+                  /*
+                    **A second one of the same type is the point, not a
+                    mistake.** This was disabled once one Destination of the
+                    type existed, which forbade the exact move the model
+                    requires: a Destination is a named ROUTE — type,
+                    credentials and target together — so *"newsletter signups
+                    go to the Newsletter list, product announcements go to
+                    Product updates"* is two MailPoet Destinations bound to
+                    different Optins (CONTEXT.md, Destination). The PHP always
+                    assumed it: `DestinationController::targetOf()` says in its
+                    own words that two Mailchimp audiences are two Destinations
+                    over one Connection.
+
+                    What is left is `busyId`, which is about this row having a
+                    request in flight and nothing to do with how many exist.
+                  */
                   <Button
                     variant="outline"
                     size="sm"
-                    disabled={
-                      busyId === type.id ||
-                      configured.some((destination) => destination.type === type.id)
-                    }
-                    onClick={() => onAdd(type)}
+                    disabled={busyId === type.id}
+                    onClick={(event) => onAdd(type, event.currentTarget)}
                   >
                     {__('Add', 'wconvert')}
                   </Button>
@@ -768,84 +952,6 @@ function Types({
 }
 
 /**
- * One control per field kind — **the whole of what a Destination's settings UI
- * can draw.**
- *
- * The precedent is `../builder/controls.tsx`, which does the same job for the
- * rules manifest: a schema kind picks a control, and the `default` case is a
- * text input rather than nothing. That default is what makes a new field kind
- * a DEGRADED control instead of an invisible one — a merchant can still type
- * into it, and the value round-trips as a string.
- *
- * **Every value here is a string except `ids`.** The whole draft is held as
- * text while it is being edited, and {@see fromDraft} is the one place that
- * turns it back into what the server stores. `ids` is the exception because
- * WSMS's `tags` is a list — the shape that shipped, and it round-trips
- * unchanged.
- *
- * There is no `select`: nothing in the Destination schemas offers a closed set
- * of options yet, and inventing the control before a field needs it would be
- * guessing at whether the options travel in the schema or come off the wire.
- */
-function SettingsControl({
-  id,
-  field,
-  value,
-  onChange,
-}: {
-  id: string;
-  field: SettingsField;
-  value: string;
-  onChange: (value: string) => void;
-}) {
-  switch (field.type) {
-    /**
-     * A list. **Checkboxes where the server could enumerate the choices, and a
-     * comma-separated text input where it could not** — the same stored
-     * `string[]` either way, so {@see toDraft} and {@see fromDraft} stay one
-     * code path and the draft stays the comma-separated string they round-trip.
-     *
-     * WSMS's `tags` has always been the second of those: the ids are the
-     * merchant's own and the admin has no list to offer. MailPoet's are
-     * integers nobody could be asked to find, so its schema carries the names
-     * and this draws them (#87). A provider that could not be reached sends no
-     * options and lands back on the text input, which is a degraded control
-     * rather than an invisible one.
-     */
-    case 'ids':
-      return isGroup(field) ? (
-        <ChoiceList id={id} options={field.options} value={value} onChange={onChange} />
-      ) : (
-        <Input id={id} type="text" value={value} onChange={(e) => onChange(e.target.value)} />
-      );
-
-    /**
-     * `type="url"` for the keyboard and the browser's own hint, and nothing
-     * more: the value is not validated here or on the way in. The push checks
-     * what it needs at the moment it needs it, which is the same posture the
-     * rest of the settings bag takes.
-     */
-    case 'url':
-      return <Input id={id} type="url" value={value} onChange={(e) => onChange(e.target.value)} />;
-
-    case 'multiline':
-      return (
-        <textarea
-          id={id}
-          rows={5}
-          className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-        />
-      );
-
-    case 'text':
-    default:
-      return <Input id={id} type="text" value={value} onChange={(e) => onChange(e.target.value)} />;
-  }
-}
-
-/**
  * How each of the three test outcomes is drawn.
  *
  * **One map rather than two cascades**, because the palette and the icon were
@@ -861,171 +967,6 @@ const TEST_RENDERING: Record<TestReport['outcome'], { className: string; icon: L
   skipped: { className: 'border-border bg-muted/40 text-muted-foreground', icon: Info },
   failed: { className: 'border-destructive/30 bg-destructive/5 text-destructive', icon: CircleAlert },
 };
-
-/**
- * Whether a field draws as a group of controls rather than as one control.
- *
- * One predicate, read by both halves — the label association above and the
- * control switch below — so the two cannot disagree about what is being drawn.
- * It narrows `options`, so the group can be handed them without a second check
- * that could drift from this one.
- */
-function isGroup(
-  field: SettingsField,
-): field is SettingsField & { options: NonNullable<SettingsField['options']> } {
-  return LIST_KINDS.has(field.type) && field.options !== undefined && field.options.length > 0;
-}
-
-/**
- * A set of checkboxes over a list field's enumerated options.
- *
- * **The draft it edits is still the comma-separated string**, which is the
- * point: `ids` has one stored shape and one round trip, and whether the server
- * could name the choices decides only what the merchant is shown. So this is a
- * control swap and not a second field kind.
- *
- * It is a labelled `role="group"` rather than a labelled control, because the
- * words above a set of checkboxes name the SET and a `for` pointing at one of
- * them would be a lie. The caller's `Label` keeps the words and this points
- * back at it, which is why {@see isGroup} exists there.
- */
-function ChoiceList({
-  id,
-  options,
-  value,
-  onChange,
-}: {
-  id: string;
-  options: NonNullable<SettingsField['options']>;
-  value: string;
-  onChange: (value: string) => void;
-}) {
-  const chosen = new Set(
-    value
-      .split(',')
-      .map((entry) => entry.trim())
-      .filter((entry) => entry !== ''),
-  );
-
-  const offered = options.map((option) => option.value);
-
-  /**
-   * **What was stored and is not on offer survives.**
-   *
-   * A configured id the server did not enumerate — a MailPoet list the
-   * merchant binned, one deleted outright — is not a value this control can
-   * draw, and rebuilding from `options` alone would delete it the first time
-   * anybody ticked any box. That is the same posture {@see fromDraft} takes
-   * one level up, where a stored key the type no longer declares is left
-   * alone rather than dropped, and for the same reason: a settings bag is
-   * opaque, and the screen that cannot draw something must not be the screen
-   * that destroys it.
-   */
-  const kept = [...chosen].filter((entry) => !offered.includes(entry));
-
-  const toggle = (option: string, on: boolean) => {
-    const next = new Set(chosen);
-
-    if (on) {
-      next.add(option);
-    } else {
-      next.delete(option);
-    }
-
-    // The offered ids in the ORDER THE SERVER GAVE THEM, not in click order,
-    // so saving the same set twice produces the same string and unticking and
-    // reticking a box does not look like an edit.
-    onChange([...kept, ...offered.filter((entry) => next.has(entry))].join(', '));
-  };
-
-  return (
-    <div id={id} className="flex flex-col gap-2" role="group" aria-labelledby={`${id}-label`}>
-      {options.map((option) => (
-        <div key={option.value} className="flex items-center gap-2">
-          <Checkbox
-            id={`${id}-${option.value}`}
-            checked={chosen.has(option.value)}
-            onCheckedChange={(on) => toggle(option.value, on === true)}
-          />
-          <Label htmlFor={`${id}-${option.value}`} className="font-normal">
-            {option.label}
-          </Label>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-/**
- * The field kinds whose stored value is a **list** rather than a string.
- *
- * One place rather than two `=== 'ids'` checks that have to stay in step:
- * {@see toDraft} and {@see fromDraft} are the two halves of one round trip, and
- * a kind added to one but not the other would read back as a different shape
- * than it was saved as. WSMS's `tags` is the only member today.
- *
- * The control switch in {@see SettingsControl} is deliberately NOT driven off
- * this: which control to draw and which shape to store are different questions,
- * and `ids` happens to answer both the same way only because a comma-separated
- * text input is what a list has always been edited with here.
- */
-const LIST_KINDS = new Set(['ids']);
-
-/**
- * What is stored, as text a control can edit.
- *
- * Keyed off the SCHEMA rather than off the stored settings, so a field the
- * type declares but nothing has ever saved still gets an empty control — and a
- * stored key the type no longer declares is left alone rather than drawn.
- */
-function toDraft(
-  schema: DestinationType['settings_schema'],
-  settings: Destination['settings']
-): Record<string, string> {
-  const draft: Record<string, string> = {};
-
-  for (const [key, field] of Object.entries(schema)) {
-    const stored = settings[key];
-
-    draft[key] = LIST_KINDS.has(field.type)
-      ? (Array.isArray(stored) ? (stored as unknown[]) : []).filter((id) => typeof id === 'string').join(', ')
-      : typeof stored === 'string'
-        ? stored
-        : '';
-  }
-
-  return draft;
-}
-
-/**
- * The text, back in the shape the server stores.
- *
- * **The caller spreads this over the existing settings rather than replacing
- * them**, so a key this type no longer declares — or one a future version
- * wrote — survives a save from this screen. A settings bag is opaque to the
- * REST layer (`DestinationController::store()` validates nothing in it), and a
- * screen that silently dropped what it could not draw would be the one place
- * that opacity bites.
- */
-function fromDraft(
-  schema: DestinationType['settings_schema'],
-  draft: Record<string, string>
-): Record<string, unknown> {
-  const settings: Record<string, unknown> = {};
-
-  for (const [key, field] of Object.entries(schema)) {
-    const value = draft[key] ?? '';
-
-    settings[key] = LIST_KINDS.has(field.type)
-      ? value
-          .split(',')
-          .map((id) => id.trim())
-          .filter((id) => id !== '')
-      : value;
-  }
-
-  return settings;
-}
 
 /**
  * The terminal-failure ring.

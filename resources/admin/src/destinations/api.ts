@@ -87,9 +87,37 @@ export interface DestinationHealth {
 export interface Destination {
   id: string;
   type: string;
+  /**
+   * **The merchant's own name for this route**, and the only thing that tells
+   * two Destinations of one type apart.
+   *
+   * A Destination is configured once, site-wide, and *includes whatever
+   * selects the target inside the remote system* (CONTEXT.md, Destination) —
+   * so *"Newsletter signups"* and *"Product updates"* are two MailPoet
+   * Destinations over one MailPoet, and this is what an [[Optin]] is bound
+   * against on screen. It is renameable, and renaming breaks nothing: the
+   * binding is by ULID.
+   */
   label: string;
   connection: string | null;
   settings: Record<string, unknown>;
+  /**
+   * Where this route lands, in the merchant's words — **and three states, not
+   * two.**
+   *
+   * `null` is *say nothing*: the type selects nothing at all (the lead-magnet
+   * email, a webhook), or its schema could not be read because the provider
+   * was having a bad time. `''` is *it selects something and nothing is
+   * chosen*, which is the only one of the three that is a fault. A string is
+   * where it lands.
+   *
+   * **Derived on the server and never posted back.** `ConfiguredTarget` is the
+   * one spelling of the rule, and it resolves ids against THIS Destination's
+   * own Connection — which the browser cannot do, because `settings_schema`
+   * travels per TYPE and is built from the first Connection of that type.
+   * {@see targetSaid} in `./settings` turns it into the sentence.
+   */
+  target: string | null;
   availability: Availability;
   health: DestinationHealth;
 }

@@ -41,6 +41,13 @@ final class DestinationController implements RestController
 {
     private const ID_PATTERN = '(?P<id>' . Ulid::PATTERN . ')';
 
+    /**
+     * Settings schemas already read this request, keyed by Connection.
+     *
+     * @var array<string, array<string, mixed>|\Throwable>
+     */
+    private array $schemas = [];
+
     public function __construct(
         private readonly DestinationRegistry $registry,
         private readonly DestinationStore $destinations,
@@ -163,9 +170,7 @@ final class DestinationController implements RestController
                     // `Supports*` capability split: list discovery, custom
                     // fields and the configuration UI all fall out of one
                     // method (#4).
-                    'settings_schema' => $type->settingsSchema(
-                        $this->credentialsForType($type->id())
-                    ),
+                    'settings_schema' => $this->schemaFor($type, $this->connectionForType($type->id())),
                 ],
                 $this->registry->all()
             )),
@@ -187,8 +192,9 @@ final class DestinationController implements RestController
     public function store(WP_REST_Request $request)
     {
         $type = (string) $request->get_param('type');
+        $registered = $this->registry->find($type);
 
-        if ($this->registry->find($type) === null) {
+        if ($registered === null) {
             return new WP_Error(
                 'wconvert_unknown_destination_type',
                 __('That Destination type is not available on this site.', 'wconvert'),
@@ -202,7 +208,14 @@ final class DestinationController implements RestController
         $this->destinations->save(
             self::optionalString($request->get_param('id')),
             $type,
-            (string) ($request->get_param('label') ?? ''),
+            // **A route is named by the merchant, and a nameless one still
+            // has to be findable.** Two MailPoet Destinations differ only in
+            // what they point at, so the name is the thing a merchant reads
+            // on the Optin tab — and an empty string there would render a
+            // checkbox with no words beside it. The type's own label is what
+            // the screen used to send for every Destination, so it is the
+            // fallback rather than an invention.
+            self::named($request->get_param('label')) ?? $registered->label(),
             self::optionalString($connection),
             is_array($settings) ? $settings : []
         );
@@ -349,42 +362,58 @@ final class DestinationController implements RestController
         return $this->reported(TestReport::of(
             $result,
             $destination->label,
-            $result->outcome === PushOutcome::Success ? $this->targetOf($destination) : ''
+            // `?? ''` and not a second sentence: a Destination that selects
+            // nothing, and one whose provider could not be reached, both come
+            // back null here — and {@see TestReport::of()} already says the
+            // shorter *"the test reached X"* for an unnamed target.
+            $result->outcome === PushOutcome::Success ? ($this->targetOf($destination) ?? '') : ''
         ));
 
     }
 
     /**
-     * What this Destination is pointed at, for the success sentence.
+     * What this Destination is pointed at — for the success sentence, and for
+     * the line under every Destination on both screens that render one.
      *
-     * **Guarded, because reading a schema can reach the wire.** An ESP's
-     * options come off the provider ({@see DestinationType::settingsSchema()}),
-     * so a provider having a bad time here would turn a push that LANDED into
-     * a 500 — an error naming no door, on the screen whose whole job is to say
-     * whether things are working (ADR 0042). A test that worked says so with
-     * the shorter sentence.
+     * **Null is a real answer here, three times over.** Two of them are
+     * {@see ConfiguredTarget}'s: a type that selects nothing, and a provider
+     * whose options could not be enumerated. The third is this method's own,
+     * and it is the reason the `catch` does not fall back to `''`: **a schema
+     * read can reach the wire**, so an ESP having a bad time means we could
+     * not LOOK — which is a different thing from looking and finding nothing
+     * chosen. Saying *"not pointed at anything yet"* there would report a
+     * fault against a Destination that is pushing perfectly well, on the
+     * screen whose whole job is to say whether things are working (ADR 0042).
+     *
+     * It also keeps a push that LANDED from being turned into a 500 by a
+     * second question asked on the way to reporting the first answer.
      */
-    private function targetOf(\WConvert\Destination\Destination $destination): string
+    private function targetOf(\WConvert\Destination\Destination $destination): ?string
     {
         $type = $this->registry->find($destination->type);
 
         if ($type === null) {
-            return '';
+            return null;
         }
 
         try {
             // **This Destination's own Connection**, never the type's first.
-            // `credentialsForType()` answers a question about the TYPE — which
+            // `connectionForType()` answers a question about the TYPE — which
             // is right for the schema on the Destinations read, where there is
             // no Destination yet — and wrong here: two Mailchimp audiences are
             // two Destinations over one Connection, but two ACCOUNTS are two
             // Connections, and the first one's id→label map names the wrong
             // audience.
-            $schema = $type->settingsSchema($this->connections->credentialsFor($destination));
+            $schema = $this->schemaFor(
+                $type,
+                $destination->connectionId === null
+                    ? null
+                    : $this->connections->find($destination->connectionId)
+            );
         } catch (\Throwable $unreachable) {
             unset($unreachable);
 
-            return '';
+            return null;
         }
 
         return ConfiguredTarget::of($schema, $destination->settings);
@@ -405,24 +434,70 @@ final class DestinationController implements RestController
     }
 
     /**
-     * The credentials a type's settings schema may need to read its options
-     * off the wire.
+     * The Connection a type's settings schema may need to read its options off
+     * the wire.
      *
-     * The FIRST Connection for the type, because a schema describes the type
-     * rather than one configured Destination — and a type with no Connection
-     * at all gets `[]`, which is every free type.
-     *
-     * @return array<string, mixed>
+     * The FIRST one for the type, because a schema describes the type rather
+     * than one configured Destination — and a type with no Connection at all
+     * gets null, which is every free type.
      */
-    private function credentialsForType(string $typeId): array
+    private function connectionForType(string $typeId): ?\WConvert\Destination\Connection
     {
         foreach ($this->connections->all() as $connection) {
             if ($connection->type === $typeId) {
-                return $connection->credentials;
+                return $connection;
             }
         }
 
-        return [];
+        return null;
+    }
+
+    /**
+     * One type's settings schema, **read once per request per account.**
+     *
+     * ========================================================================
+     * THE MEMO IS THE POINT, NOT AN OPTIMISATION.
+     * ========================================================================
+     * `settingsSchema()` may reach the provider — that is how a Mailchimp
+     * audience gets a NAME rather than an id — and this payload now asks for
+     * it once per type and again once per configured Destination. A merchant
+     * with five Mailchimp routes over one key would pay six round trips to
+     * that provider on every load of the Destinations screen and every load of
+     * the builder, for six identical answers.
+     *
+     * **Keyed by the Connection**, because the Connection is what changes the
+     * answer: two Destinations over one key read one schema, and two ACCOUNTS
+     * are two keys and two schemas whose id→label maps disagree. A type with
+     * no Connection is keyed by the type instead, under a prefix no ULID can
+     * collide with.
+     *
+     * A read that THREW is remembered as the throw and re-thrown, so a
+     * provider that is down is asked once rather than once per Destination.
+     * Re-thrown rather than swallowed because the two callers want opposite
+     * things from a failure: {@see self::targetOf()} says nothing, and the
+     * types list has always let it surface.
+     *
+     * @return array<string, mixed>
+     */
+    private function schemaFor(DestinationType $type, ?\WConvert\Destination\Connection $connection): array
+    {
+        $key = $connection === null ? 'type:' . $type->id() : $connection->id;
+
+        if (!array_key_exists($key, $this->schemas)) {
+            try {
+                $this->schemas[$key] = $type->settingsSchema($connection === null ? [] : $connection->credentials);
+            } catch (\Throwable $unreachable) {
+                $this->schemas[$key] = $unreachable;
+            }
+        }
+
+        $schema = $this->schemas[$key];
+
+        if ($schema instanceof \Throwable) {
+            throw $schema;
+        }
+
+        return $schema;
     }
 
     /**
@@ -441,6 +516,13 @@ final class DestinationController implements RestController
                 'id' => $destination->id,
                 'availability' => $this->registry->availabilityOf($destination->type)->value,
                 'health' => ($health[$destination->id] ?? new \WConvert\Destination\DestinationHealth())->toArray(),
+                // **Derived, never stored and never posted back.** It is
+                // computed HERE rather than in the browser because
+                // {@see ConfiguredTarget} is the one spelling of the rule, and
+                // because the client only has the per-TYPE schema — built
+                // from the first Connection of that type, which names the
+                // wrong audience for the second account (#35).
+                'target' => $this->targetOf($destination),
             ];
         }
 
@@ -453,5 +535,19 @@ final class DestinationController implements RestController
     private static function optionalString($value): ?string
     {
         return is_string($value) && $value !== '' ? $value : null;
+    }
+
+    /**
+     * A merchant's name for a route, or null where they gave none.
+     *
+     * Whitespace is none: a name made of spaces renders as a checkbox with
+     * nothing beside it, which is the same failure as an empty one and arrives
+     * by the same accident.
+     *
+     * @param mixed $value
+     */
+    private static function named($value): ?string
+    {
+        return is_string($value) && trim($value) !== '' ? trim($value) : null;
     }
 }

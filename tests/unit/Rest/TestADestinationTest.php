@@ -459,7 +459,7 @@ final class TestADestinationTest extends TestCase
         ];
 
         // A Connection of the SAME TYPE that this Destination is not bound to.
-        // `credentialsForType()` — right for the types list, where there is no
+        // `connectionForType()` — right for the types list, where there is no
         // Destination yet — would hand these over, and the label map would be
         // the wrong account's.
         (new ConnectionStore($this->options))->save(null, 'fake', 'Another account', [
