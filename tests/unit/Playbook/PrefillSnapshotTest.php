@@ -105,7 +105,8 @@ final class PrefillSnapshotTest extends TestCase
                 'published_at' => '2026-08-25 09:00:00',
                 'deleted_at' => null,
             ]],
-            RuleVocabulary::fromManifest(self::PLUGIN_DIR)
+            RuleVocabulary::fromManifest(self::PLUGIN_DIR),
+            new \DateTimeZone('UTC')
         );
 
         return PublishedOptin::fromSet($set)[0]->toPayloadEntry();

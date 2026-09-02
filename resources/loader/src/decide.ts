@@ -1,5 +1,6 @@
 import type { PayloadEntry, Rule, RuleEvaluator, VisitorState } from './types';
 import { isAllowed } from './frequency';
+import { isWithinWindow } from './schedule';
 
 /**
  * The whole decision, in one pure call.
@@ -57,6 +58,17 @@ export interface Decision {
   readonly state: VisitorState;
   /** Whole days since the epoch. */
   readonly day: number;
+  /**
+   * The wall clock, in milliseconds — the schedule's comparand, and only that.
+   *
+   * Beside {@link day} rather than replacing it, and the two precisions are
+   * the point. `day` is what a [[Frequency]] cooldown asks about and what is
+   * WRITTEN to the visitor's device, deliberately coarse because a per-device
+   * value at millisecond precision is most of the way back to the artefact
+   * ADR 0017 removed. This is compared against a number the SERVER authored
+   * and is never stored anywhere. One clock reading produces both.
+   */
+  readonly now: number;
   /** Ids already shown on this page view. */
   readonly shown: ReadonlySet<string>;
   /** Has an overlay already had this page view? Set on SHOW, so a dismissal cannot un-set it. */
@@ -127,7 +139,21 @@ function standingOf(entry: PayloadEntry, decision: Decision): Standing {
     return 'shown';
   }
 
-  if (!isAllowed(entry.frequency, decision.state[entry.id], decision.day)) {
+  // ==========================================================================
+  // THE SCHEDULE AND THE ALLOWANCE, IN THAT ORDER, AND BOTH ARE `capped`.
+  // ==========================================================================
+  // `capped` already means *the allowance is spent, and this cannot change on
+  // this page view*, which is what being outside a scheduled window is. A
+  // seventh member of `Standing` distinguishing the two is the thing to
+  // resist: it widens a vocabulary the whole design keeps closed, to carry a
+  // distinction `inspect/explain.ts` renders as a sentence beside the one word
+  // (ADR 0047).
+  //
+  // The schedule is asked FIRST because it is the more surprising answer and
+  // the one the merchant can act on: "your sale has not started" sends them to
+  // a date they set, where "this browser has had its allowance" is a fact
+  // about one device. The inspector reports whichever gate this order picked.
+  if (!isWithinWindow(entry, decision.now) || !isAllowed(entry.frequency, decision.state[entry.id], decision.day)) {
     return 'capped';
   }
 

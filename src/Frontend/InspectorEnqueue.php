@@ -167,20 +167,26 @@ final class InspectorEnqueue
         $summaries = $this->optins->summaries();
         $suspensions = Suspension::reasonsIn($set, $this->degradation, $this->rules);
 
+        // **The clock is read here, on a request that reached PHP.** This one
+        // is uncached by construction — `DONOTCACHEPAGE` above, and the
+        // capability check before it — so "3 days" is 3 days as of now rather
+        // than as of whenever a cache last filled.
+        $schedules = InspectorSchedules::forSet($set, time());
+
         // The same context the payload was decided against: term resolution is
         // conditional on the published set for the reason it always was, so
         // asking again here costs a page with no term rule nothing.
         $context = RequestContextFactory::forPublishedSet(PublishedOptin::fromSet($set));
         $labels = InspectorLabels::all();
 
-        add_action('wp_head', static function () use ($summaries, $suspensions, $set, $context, $labels): void {
+        add_action('wp_head', static function () use ($summaries, $suspensions, $schedules, $set, $context, $labels): void {
             // Not escaped, and correctly so — the same argument PayloadTag
             // carries one file over: JSON_HEX_TAG is the escaping this context
             // needs, and esc_html() over it would produce invalid JSON that
             // fails silently in the browser. There is no URL on this tag, so
             // there is nothing here for esc_url() either.
             // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- InspectorTag::render() escapes for this context with JSON_HEX_TAG; the tag carries no URL.
-            echo InspectorTag::render($summaries, $suspensions, $set, $context, $labels);
+            echo InspectorTag::render($summaries, $suspensions, $schedules, $set, $context, $labels);
         }, self::HEAD_PRIORITY);
     }
 

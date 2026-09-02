@@ -14,8 +14,16 @@ import type { EntryReport } from './explain';
  *
  * ```
  * Published → Not suspended → Targeting admits this page → reached the browser
- *   → Frequency allows → Consent given → Trigger exists → Conditions hold
- *   → Trigger fired → won the overlay
+ *   → Inside its schedule → Frequency allows → Consent given → Trigger exists
+ *   → Conditions hold → Trigger fired → won the overlay
+ * ```
+ *
+ * **The schedule gate sits after the payload gate, and the order is the whole
+ * scheduling decision written down.** A not-yet-started Optin IS published, IS
+ * in the projection and DOES reach the browser — it has to, because the set is
+ * rebuilt on write and a full-page cache can serve the same HTML for days
+ * (ADR 0003) — so the browser is what decides, and this screen reports the
+ * four gates that opened before naming the one that did not.
  * ```
  *
  * **The last gate has no word in the product today.** `arbitrate()` silently
@@ -31,6 +39,25 @@ export interface ServerOptin {
   readonly published: boolean;
   /** The sentence the Optin list already shows, or null. */
   readonly suspended: string | null;
+  /**
+   * How far each end of the scheduled window is from now, **in words minted
+   * by PHP** — or null where this Optin is not scheduled.
+   *
+   * ==========================================================================
+   * THE MAGNITUDE IS THE SERVER'S WORD; THE DIRECTION IS THE BROWSER'S.
+   * ==========================================================================
+   * This bundle carries no `@wordpress/i18n` — it is composed from the
+   * loader's own module set, which has no dependencies at all (ADR 0004) — so
+   * *"3 days"* cannot be spelled here: it needs plural rules the panel has no
+   * formatter for. `human_time_diff()` already says it, translated, in core.
+   *
+   * Both are minted whenever the boundary EXISTS, without regard to which side
+   * of it we are on, because the diff is an absolute magnitude. Which one to
+   * show is {@link EntryReport.schedule}'s answer, taken on the same clock
+   * reading as the verdict — so the two halves cannot disagree about the
+   * direction, which is the only thing they could have disagreed about.
+   */
+  readonly schedule: { readonly starts: string | null; readonly ends: string | null } | null;
   readonly targeting: TargetingReport | null;
 }
 
@@ -81,6 +108,7 @@ export const GATES = [
   'suspended',
   'targeting',
   'payload',
+  'schedule',
   'frequency',
   'consent',
   'trigger',
@@ -109,11 +137,15 @@ export interface Row {
   /**
    * Substituted into the sentence, where it takes one.
    *
-   * Only the arbitration sentence does, and what it takes is the NAME of the
+   * Two sentences take one. The arbitration sentence takes the NAME of the
    * Optin that won — never "priority". Two overlays at equal priority are
    * broken by the ULID, which is creation order, and telling a merchant their
    * popup lost on priority when both were zero would send them to change a
    * number that decides nothing.
+   *
+   * The two schedule sentences take **how long**, as PHP minted it: *"it
+   * starts in %s"*, *"it ended %s ago"*. One `%s` each and never two, because
+   * the panel substitutes with a single `String.replace` (ADR 0048).
    */
   readonly subject: string | null;
   /** Null where it never reached the browser, so there is nothing more to say. */
@@ -154,16 +186,42 @@ export function funnel(
         optin,
         gate: closed.gate,
         stopped: closed.reason,
-        subject:
-          entry !== null && entry.lostArbitration && winner !== undefined
-            ? (names.get(winner.id) ?? winner.id)
-            : null,
+        subject: subjectFor(closed.reason, optin, entry, winner, names),
         // An Optin stopped on the server has no browser half, and the panel
         // says so rather than drawing an empty table under it.
         browser: entry,
       };
     }),
   };
+}
+
+/**
+ * What the sentence's one `%s` is filled with, where it takes one.
+ *
+ * Keyed off the REASON rather than off the row's shape, so a sentence with no
+ * placeholder can never be handed a subject and a sentence with one can never
+ * be left holding a literal `%s`.
+ */
+function subjectFor(
+  reason: string | null,
+  optin: ServerOptin,
+  entry: EntryReport | null,
+  winner: EntryReport | undefined,
+  names: ReadonlyMap<string, string>,
+): string | null {
+  if (reason === 'before_window') {
+    return optin.schedule?.starts ?? null;
+  }
+
+  if (reason === 'after_window') {
+    return optin.schedule?.ends ?? null;
+  }
+
+  if (reason === 'lost' && entry !== null && winner !== undefined) {
+    return names.get(winner.id) ?? winner.id;
+  }
+
+  return null;
 }
 
 /**
@@ -206,6 +264,22 @@ function stoppedAt(
   // guess about which cache did it.
   if (!reached.has(optin.id) || entry === null) {
     return { gate: 'payload', reason: 'not_in_payload' };
+  }
+
+  // ==========================================================================
+  // OUTSIDE ITS WINDOW, BEFORE THE ALLOWANCE — THE SAME ORDER `decide` ASKS.
+  // ==========================================================================
+  // The engine answers `capped` for both, deliberately (ADR 0047), and this is
+  // where the two part company: a merchant told *"this browser has already had
+  // its allowance"* about a sale that starts on Friday goes looking for a
+  // cookie. It sits AFTER `payload` because a scheduled Optin IS in the
+  // published set and DOES reach the browser before its window opens — which
+  // is the decision the whole feature turns on, readable off the sequence.
+  if (entry.standing === 'capped' && entry.schedule !== null) {
+    return {
+      gate: 'schedule',
+      reason: entry.schedule === 'before' ? 'before_window' : 'after_window',
+    };
   }
 
   if (entry.lostArbitration) {

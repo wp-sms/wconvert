@@ -67,7 +67,7 @@ export interface DisplayRulesProps {
 }
 
 export function DisplayRules({ vocabulary, value, overlay, onChange }: DisplayRulesProps) {
-  const { rules, targeting, frequency, priority } = value;
+  const { rules, targeting, frequency, schedule, priority } = value;
   const client = [...vocabulary.triggers, ...vocabulary.conditions];
   const all = [...vocabulary.targeting, ...client];
 
@@ -118,9 +118,11 @@ export function DisplayRules({ vocabulary, value, overlay, onChange }: DisplayRu
       <Section id={often.id} eyebrow={often.eyebrow} summary={often.text}>
         <HowOften
           frequency={frequency}
+          schedule={schedule}
           priority={priority}
           overlay={overlay}
           onFrequency={(next) => onChange({ frequency: next })}
+          onSchedule={(next) => onChange({ schedule: next })}
           onPriority={(next) => onChange({ priority: next })}
         />
       </Section>

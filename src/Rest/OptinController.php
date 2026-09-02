@@ -7,9 +7,11 @@ use WConvert\Goal\Goal;
 use WConvert\Goal\GoalRegistry;
 use WConvert\Optin\DisplayType;
 use WConvert\Optin\Frequency;
+use WConvert\Optin\InvalidSchedule;
 use WConvert\Optin\Optin;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
+use WConvert\Optin\Schedule;
 use WConvert\Optin\Suspension;
 use WConvert\Rules\Degradation;
 use WConvert\Rules\RuleCatalogue;
@@ -203,7 +205,11 @@ final class OptinController implements RestController
         // back — the Template's design with a [[Playbook]]'s words written
         // into it — and re-snapshotting would take the words straight back
         // out, which is a blank popup and a merchant who watched it happen.
-        $normalized = $this->normalizeConfig($config, self::optionalString($config['template_id'] ?? null));
+        try {
+            $normalized = $this->normalizeConfig($config, self::optionalString($config['template_id'] ?? null));
+        } catch (InvalidSchedule) {
+            return self::refuseABackwardsSchedule();
+        }
 
         if (!$this->vocabulary->hasTrigger($normalized['rules'] ?? [])) {
             return self::needsATrigger();
@@ -256,7 +262,11 @@ final class OptinController implements RestController
         // there is no stored row yet ({@see self::store()}).
         $pickedBefore = self::optionalString($stored?->config['template_id'] ?? null);
 
-        $normalized = is_array($config) ? $this->normalizeConfig($config, $pickedBefore) : null;
+        try {
+            $normalized = is_array($config) ? $this->normalizeConfig($config, $pickedBefore) : null;
+        } catch (InvalidSchedule) {
+            return self::refuseABackwardsSchedule();
+        }
 
         // Checked against the config that ARRIVED, because `saveDraft()`
         // replaces the blob whole — a PATCH carrying `config` is the new
@@ -389,6 +399,38 @@ final class OptinController implements RestController
             }
         }
 
+        // ====================================================================
+        // THE SCHEDULE, AND THE REFUSAL IS THE NORMALISER'S RATHER THAN THIS
+        // ROUTE'S.
+        // ====================================================================
+        // {@see Schedule::fromArray()} canonicalises what an
+        // `<input type="datetime-local">` posts, drops anything that is not a
+        // moment, and THROWS on an end at or before its start — so the rule
+        // about what a valid window is lives in one pure place and this route
+        // only turns the refusal into a 400.
+        //
+        // That split is ADR 0047's lesson applied before it costs anything:
+        // `frequency` and `priority` were validated in a REST controller
+        // nowhere, then in one, and the site-wide surface that reuses them is
+        // not a REST controller. A schedule has the same second author coming
+        // — the wall time is authored, and nothing about authoring one is
+        // HTTP.
+        //
+        // Stored as the merchant's own LOCAL WALL TIME, never as an instant.
+        // The projection resolves it against `wp_timezone()` on every rebuild
+        // (ADR 0003), so a merchant who corrects their site timezone corrects
+        // every schedule with it; freezing the instant here would leave them
+        // all an hour out with nothing on any screen to say why.
+        //
+        // Both keys are UNSET where nothing was authored, for the reason the
+        // allowance's is: the payload is inlined into every matching page
+        // against a 2KB budget (ADR 0014).
+        $schedule = Schedule::fromArray($config)->toArray();
+
+        unset($config['starts_at'], $config['ends_at']);
+
+        $config += $schedule;
+
         // **Priority, and absent IS zero.** `arbitrate()` reads `priority ?? 0`
         // when it sorts overlays, so a stored 0 and no key at all are the same
         // rule — and the one that costs nothing on every page view is the one
@@ -433,6 +475,23 @@ final class OptinController implements RestController
         }
 
         return $config;
+    }
+
+    /**
+     * The one thing a schedule can be that is not a schedule.
+     *
+     * The WORDING is here and the RULE is not: {@see Schedule::fromArray()}
+     * decides what a possible window is, and this turns that decision into a
+     * status code. A second author reaches the same refusal without reaching
+     * this file.
+     */
+    private static function refuseABackwardsSchedule(): WP_Error
+    {
+        return new WP_Error(
+            'wconvert_optin_backwards_schedule',
+            __('An Optin’s schedule has to end after it starts.', 'wconvert'),
+            ['status' => 400]
+        );
     }
 
     /**

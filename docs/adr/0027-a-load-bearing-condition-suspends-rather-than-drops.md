@@ -151,6 +151,17 @@ The alternatives each put the fact in the wrong place:
   row. The CAPTURE route deliberately does not ask it: a [[Lead]] somebody actually
   typed is the one genuinely unrecoverable loss available here, and the Lead log is not
   where a [[Conversion]] is counted.*
+
+  *Contrasted by [ADR 0050](0050-a-scheduled-optin-stays-in-the-published-set.md),
+  which reaches this bullet's outcome — no rows, never zero-valued ones — for a
+  scheduled Optin **without excluding anything and without a second question at
+  the beacon**. The difference is what a cached page can hold: suspension is
+  computed against a live rule registry, so a stale page cannot answer for
+  itself and has to be caught again where the count lands; a schedule is two
+  numbers that travel in the payload, so every page holding them answers
+  correctly on its own, shows nothing, reports nothing, and no counter ever
+  receives a row. The two cases look alike and this is the one thing they
+  differ on.*
 - **Self-healing** — it resumes on its own when the dependency returns. Nothing is
   destroyed, so reactivating Pro or WooCommerce needs no repair step.
 

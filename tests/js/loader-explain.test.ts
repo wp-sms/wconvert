@@ -39,6 +39,7 @@ function input(overrides: Partial<Parameters<typeof explain>[0]> = {}) {
     withheld: new Set<string>(),
     state: {} as VisitorState,
     day: 20_000,
+    now: Date.UTC(2026, 10, 27, 12, 0, 0),
     shown: new Set<string>(),
     overlayDone: false,
     ...overrides,
@@ -211,3 +212,47 @@ describe('a rule that throws', () => {
     expect(only(report).conditions[0].answer).toBe(false);
   });
 });
+
+/**
+ * ============================================================================
+ * "SCHEDULED, STARTS IN THREE DAYS" — WHICH SIDE OF THE WINDOW, NOT A SEVENTH
+ * `Standing`.
+ * ============================================================================
+ * `decide` answers `capped` for an Optin outside its window, exactly as it
+ * does for one whose allowance is spent, and the vocabulary stays closed
+ * (ADR 0047). The distinction the merchant needs is a fact about the ENTRY,
+ * derived here the way `lostArbitration` is — from the same inputs the
+ * decision was taken on, after it was taken, where it cannot change one.
+ */
+describe('which side of its window', () => {
+  const NOW = Date.UTC(2026, 10, 27, 12, 0, 0);
+  const day = 24 * 60 * 60 * 1000;
+
+  const scheduleOf = (over: Partial<PayloadEntry>) =>
+    explain(input({ entries: [entry(over)], now: NOW })).entries[0].schedule;
+
+  it('says nothing about an Optin with no schedule', () => {
+    expect(scheduleOf({})).toBeNull();
+  });
+
+  it('says nothing about an Optin inside its window', () => {
+    expect(scheduleOf({ starts_at: NOW - day, ends_at: NOW + day })).toBeNull();
+  });
+
+  it('reports an Optin that has not started yet', () => {
+    expect(scheduleOf({ starts_at: NOW + 3 * day })).toBe('before');
+  });
+
+  it('reports an Optin whose window has closed', () => {
+    expect(scheduleOf({ ends_at: NOW - day })).toBe('after');
+  });
+
+  /**
+   * Both boundaries in the past is AFTER, not before. The two are asked in
+   * order and the closed end is the one the merchant needs told about.
+   */
+  it('reports a finished campaign as finished rather than as not started', () => {
+    expect(scheduleOf({ starts_at: NOW - 3 * day, ends_at: NOW - day })).toBe('after');
+  });
+});
+

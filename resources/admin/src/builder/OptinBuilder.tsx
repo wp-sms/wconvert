@@ -24,7 +24,7 @@ import { DestinationsEditor } from './DestinationsEditor';
 import { ReadinessDialog } from './ReadinessDialog';
 import { hintIn, hintSaid } from './destinations';
 import { Preview } from './Preview';
-import { DisplayRules } from './rules/DisplayRules';
+import { DisplayRules, type DisplayRulesValue } from './rules/DisplayRules';
 import { DevExport } from './DevExport';
 import { StructureView } from './StructureView';
 import { Tokens } from './Tokens';
@@ -377,6 +377,15 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
     rules: Array.isArray(config?.rules) ? (config.rules as Rule[]) : [],
     targeting: (config?.targeting ?? {}) as Targeting,
     frequency: (config?.frequency ?? {}) as Frequency,
+    // **Two flat keys, read into one value.** They are stored beside
+    // `frequency` and `priority` rather than nested, which is what
+    // `PublishedProjection` ships and what `src/Optin/Schedule.php`
+    // normalises; the object is this screen's shape for them, because one
+    // control writing both is one patch and one undo step.
+    schedule: {
+      ...(typeof config?.starts_at === 'string' ? { starts_at: config.starts_at } : {}),
+      ...(typeof config?.ends_at === 'string' ? { ends_at: config.ends_at } : {}),
+    },
     priority: typeof config?.priority === 'number' ? config.priority : 0,
   };
 
@@ -1332,7 +1341,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
                     // Only an overlay competes for the screen, so only an
                     // overlay has a priority worth drawing.
                     overlay={overlay}
-                    onChange={(patch) => edit(patch as Config)}
+                    onChange={(patch) => edit(asConfigPatch(patch) as Config)}
                   />
                 </RegionBody>
               </Region>
@@ -1670,6 +1679,35 @@ const EVERY_INSTALL_HAS = 'popup';
  * of them follows it without this line changing. The constant is reached only
  * by an install shipping no designs at all, which has no gallery to filter.
  */
+/**
+ * The rules patch, with the schedule taken back apart into the two flat keys
+ * `config` stores it as.
+ *
+ * ============================================================================
+ * ONE CONTROL, ONE PATCH, TWO KEYS — AND THE FLAT SHAPE IS THE STORED ONE.
+ * ============================================================================
+ * `starts_at` and `ends_at` sit at the top of `config` beside `frequency` and
+ * `priority`, which is what `PublishedProjection` reads and what
+ * `src/Optin/Schedule.php` normalises. The rules panel holds them as one
+ * object because one control writes both and a merchant clearing a window
+ * should be one undo step rather than two.
+ *
+ * **`undefined` rather than a delete**, because {@link edit} is a shallow
+ * merge over the current config: a key can only be REMOVED by being
+ * overwritten. `JSON.stringify` drops an undefined value, so what reaches the
+ * save route is a config with no such key rather than one carrying a null the
+ * normaliser would then have to have an opinion about.
+ */
+function asConfigPatch(patch: Partial<DisplayRulesValue>): Record<string, unknown> {
+  if (patch.schedule === undefined) {
+    return patch as Record<string, unknown>;
+  }
+
+  const { schedule, ...rest } = patch;
+
+  return { ...rest, starts_at: schedule.starts_at, ends_at: schedule.ends_at };
+}
+
 function displayTypeOf(config: Config, templates: readonly TemplateIndexEntry[] | undefined): string {
   const declared = config.display_type;
 

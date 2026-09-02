@@ -167,6 +167,16 @@ side of it.
 - **[ADR 0039](0039-a-screen-is-regions-and-scope-decides-placement.md)** —
   extended: scope decides where a FACT goes as well as where a control goes. A
   fact identical for every item in a group belongs to the group.
+- **[ADR 0050](0050-a-scheduled-optin-stays-in-the-published-set.md)** is the
+  other direction and arrived later: it added the funnel's eleventh gate,
+  `schedule`, and took this ADR's one-`%s` rule at its word. The panel cannot
+  spell *"3 days"* — it carries no `@wordpress/i18n`, which is this ADR's own
+  consequence — so the **magnitude is minted in PHP** with `human_time_diff()`
+  and carried per Optin like the suspension sentence beside it, while the
+  DIRECTION is derived in `explain.ts` on the same clock reading `decide` was
+  given. That split is what makes it impossible for the two halves to disagree
+  about which side of a boundary the visitor is on.
+
 - **[ADR 0026](0026-a-goal-the-site-cannot-serve-is-hidden.md)**
   is APPLIED rather than amended. The `unavailable` rules panel branch is the
   rendering it already required and nothing had built.

@@ -33,6 +33,7 @@ const value = (over: Partial<DisplayRulesValue> = {}): DisplayRulesValue => ({
   rules: [],
   targeting: {},
   frequency: {},
+  schedule: {},
   priority: 0,
   ...over,
 });
@@ -741,3 +742,78 @@ describe('the vocabulary the panel is given', () => {
     expect(allRuleTypes().length).toBeGreaterThan(6);
   });
 });
+
+/**
+ * ============================================================================
+ * A SALE HAS AN END DATE, AND FORGETTING TO SWITCH IT OFF IS THE COMPLAINT.
+ * ============================================================================
+ * Free ships the *Promote a sale or offer* Goal. Without a schedule,
+ * announcing one means remembering to unpublish the Optin by hand, and
+ * forgetting is precisely the *"it keeps popping up"* support topic this whole
+ * area exists to answer.
+ *
+ * **The control writes a wall time and never an instant.** What the merchant
+ * types is a local date and time, because that is the only thing they can
+ * reason about; resolving it against the site's timezone is the server's, once
+ * (`src/Optin/Schedule.php`). A browser that resolved it here would resolve it
+ * against the ADMIN's zone, which is not the site's.
+ */
+describe('when it runs', () => {
+  it('writes what the merchant typed, as a wall time with no zone on it', async () => {
+    const onChange = panel();
+
+    await open('How often');
+    await userEvent.type(screen.getByLabelText('Start showing it on'), '2026-11-27T09:00');
+
+    expect(onChange).toHaveBeenLastCalledWith({ schedule: { starts_at: '2026-11-27 09:00' } });
+  });
+
+  /** An emptied box is "no boundary", not a boundary at the epoch. */
+  it('drops the key when the merchant clears the box', async () => {
+    const onChange = panel({ schedule: { starts_at: '2026-11-27 09:00' } });
+
+    await open('How often');
+    await userEvent.clear(screen.getByLabelText('Start showing it on'));
+
+    expect(onChange).toHaveBeenLastCalledWith({ schedule: {} });
+  });
+
+  /**
+   * "From Friday, forever" and "from now until Friday" are both things
+   * merchants mean, so neither box requires the other.
+   */
+  it('takes an end with no start', async () => {
+    const onChange = panel();
+
+    await open('How often');
+    await userEvent.type(screen.getByLabelText('Stop showing it on'), '2026-11-30T23:59');
+
+    expect(onChange).toHaveBeenLastCalledWith({ schedule: { ends_at: '2026-11-30 23:59' } });
+  });
+
+  /**
+   * The collapsed row says it, so the merchant reads it without opening.
+   *
+   * Asserted on the PIECES rather than on one formatted string: the date is
+   * rendered through `Intl.DateTimeFormat` in the reader's own locale, so
+   * pinning "27 November 2026, 09:00" would pin a test runner's locale rather
+   * than a decision. What has to be true is that both ends are named and that
+   * the wall time survives the round trip unshifted.
+   */
+  it('says the window on the section the merchant has not opened', () => {
+    panel({ schedule: { starts_at: '2026-11-27 09:00', ends_at: '2026-11-30 23:59' } });
+
+    const row = screen.getByRole('button', { name: /^How often/ });
+
+    expect(row).toHaveTextContent(/Runs .*27.*2026.*to .*30.*2026/);
+    expect(row).toHaveTextContent(/9:00/);
+    expect(row).toHaveTextContent(/11:59|23:59/);
+  });
+
+  it('says a one-sided window as the open-ended thing it is', () => {
+    panel({ schedule: { starts_at: '2026-11-27 09:00' } });
+
+    expect(screen.getByRole('button', { name: /^How often/ })).toHaveTextContent(/Runs from .*27.*2026/);
+  });
+});
+

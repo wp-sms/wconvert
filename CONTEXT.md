@@ -293,7 +293,10 @@ to delete. A visitor stopped by either scope is `capped` — the standing
 and cannot change on this page view — and never a seventh word.
 
 Frequency is not a [[Trigger]] or a [[Condition]]: it is not a question about
-this page view, it is what this device has already been shown. See
+this page view, it is what this device has already been shown. Nor is it a
+[[Schedule]]: that is when the campaign is on at all, is a fact about the Optin
+rather than about this device, and is checked immediately beside this one for
+the same reason — both are asked before any rule. See
 [ADR 0047](docs/adr/0047-site-wide-frequency-is-the-same-shape-at-a-second-scope.md).
 
 **Only what differs from the engine's defaults is ever stored.** Both switches
@@ -301,6 +304,41 @@ default *on* per Optin and the loader tests `!== false`, so a stored `true` is
 bytes on every matching page view that cannot change an answer — the payload is
 inlined into every page an Optin matches. `src/Optin/Frequency.php` is the one
 place that arithmetic lives, and it is the shape the site-wide scope reuses.
+
+### Schedule
+
+*When* an [[Optin]] runs at all — a start, an end, both, or neither. Beside
+[[Frequency]] and checked in the same place, because the allowance is how often
+**one visitor** may meet a campaign and this is when the campaign is on.
+
+**The word means two different things on either side of one boundary, and that
+is why it is in the glossary.** The merchant authors a **local wall time**
+(`2026-11-27 09:00`, with no zone on it), because that is the only thing they
+can reason about, and that is what `config` stores. What the browser receives is
+**one absolute instant in milliseconds**, resolved once by the server against
+`wp_timezone()`. The loader compares it to `Date.now()` and does no timezone
+arithmetic — the visitor's clock is not the site's clock, and a schedule that
+means different things in different browsers is not a schedule.
+`src/Optin/Schedule.php` is the one converter between the two, and because the
+wall time is what is stored, **correcting the site's timezone corrects every
+schedule with it** on the next rebuild of the published set.
+
+A scheduled Optin is **in the published set on both sides of its window**. That
+is the counter-intuitive half: the set is rebuilt on write and never on a timer,
+so an Optin held back from it would never reach a cached page at the moment its
+window opened, and a page cached while a window was open needs the fact in hand
+to work out for itself that the window has shut. It leaves the set when the
+merchant unpublishes it.
+
+Outside its window an Optin shows nothing and records **no [[Impression]]** —
+no row, never a zero-valued one, for the reading [[Suspended]] already gets. Its
+standing is `capped`, the word an Optin whose allowance is spent already has,
+and the eligibility inspector says *"Scheduled. It starts in 3 days."* beside
+it rather than minting a seventh one.
+
+A start with no end and an end with no start are both valid. An end at or before
+its start is not, and is refused by the normaliser rather than by any one
+screen. See [ADR 0050](docs/adr/0050-a-scheduled-optin-stays-in-the-published-set.md).
 
 ### Display Type
 

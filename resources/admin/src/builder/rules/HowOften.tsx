@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { Description } from '../../shell/Description';
-import type { Frequency } from '../api';
+import type { Frequency, Schedule } from '../api';
 
 /**
  * *How often* it may show — the allowance, and the overlay priority.
@@ -28,6 +28,23 @@ import type { Frequency } from '../api';
  * on the way in, so a client that wrote one anyway changes nothing.
  *
  * ============================================================================
+ * A SALE HAS AN END DATE, AND THE MERCHANT TYPES A WALL TIME.
+ * ============================================================================
+ * Free ships the *Promote a sale or offer* Goal, and without a schedule
+ * announcing one means remembering to unpublish the Optin by hand. Forgetting
+ * is precisely the *"it keeps popping up"* complaint the WordPress support
+ * corpus records in merchants' own words, which is why this is free.
+ *
+ * **The control writes what was typed and nothing more.** An
+ * `<input type="datetime-local">` has no timezone in it, deliberately: the
+ * merchant is authoring *nine in the morning on the site*, and the browser
+ * doing that arithmetic would do it against the ADMIN's zone, which on a site
+ * with two editors in two countries is two different moments for one campaign.
+ * Resolving it to an instant is `src/Optin/Schedule.php`'s, once, against
+ * `wp_timezone()`, on every rebuild of the published set — so correcting the
+ * site's timezone later corrects every schedule with it.
+ *
+ * ============================================================================
  * PRIORITY IS DRAWN ONLY WHERE IT DECIDES SOMETHING.
  * ============================================================================
  * `arbitrate()` sorts OVERLAYS and leaves `inline` Optins alone — an inline
@@ -38,14 +55,24 @@ import type { Frequency } from '../api';
  */
 export interface HowOftenProps {
   readonly frequency: Frequency;
+  readonly schedule: Schedule;
   readonly priority: number;
   /** Whether this Optin competes for the screen at all. */
   readonly overlay: boolean;
   readonly onFrequency: (frequency: Frequency) => void;
+  readonly onSchedule: (schedule: Schedule) => void;
   readonly onPriority: (priority: number) => void;
 }
 
-export function HowOften({ frequency, priority, overlay, onFrequency, onPriority }: HowOftenProps) {
+export function HowOften({
+  frequency,
+  schedule,
+  priority,
+  overlay,
+  onFrequency,
+  onSchedule,
+  onPriority,
+}: HowOftenProps) {
   /**
    * Set a switch, writing only the value that travels.
    *
@@ -76,6 +103,29 @@ export function HowOften({ frequency, priority, overlay, onFrequency, onPriority
     }
 
     onFrequency(next);
+  };
+
+  /**
+   * Set one boundary, or unset it.
+   *
+   * An emptied box is *no boundary*, not a boundary at the epoch — the same
+   * reading {@link setCount} takes of an emptied number, and the same one
+   * `src/Optin/Schedule.php` takes of a value that is not a moment.
+   *
+   * The control's value carries a `T` and may carry seconds; what is stored is
+   * `Y-m-d H:i`, because the value object canonicalises to that on the way in
+   * and two spellings of one wall time is two parses.
+   */
+  const setBoundary = (field: 'starts_at' | 'ends_at', value: string) => {
+    const next = { ...schedule };
+
+    if (value === '') {
+      delete next[field];
+    } else {
+      next[field] = value.replace('T', ' ').slice(0, 16);
+    }
+
+    onSchedule(next);
   };
 
   return (
@@ -132,6 +182,41 @@ export function HowOften({ frequency, priority, overlay, onFrequency, onPriority
           onChange={(event) => setCount('cooldownDays', event.target.value)}
         />
         <Description as="span">{__('Empty means no wait.', 'wconvert')}</Description>
+
+        {/*
+          ====================================================================
+          WHEN IT RUNS — TWO BOXES, NEITHER REQUIRING THE OTHER.
+          ====================================================================
+          *"From Friday, forever"* and *"from now until Friday"* are both
+          things merchants mean, so a start without an end and an end without a
+          start are both valid. What is refused — at
+          `src/Optin/Schedule.php`, not here — is an end at or before its
+          start, because that is a window no instant is inside.
+
+          The times are the SITE's, and the hint says so: an
+          `<input type="datetime-local">` shows the visitor's own locale
+          formatting, and an editor in another country would otherwise
+          reasonably read it as theirs.
+        */}
+        <label htmlFor="wconvert-starts-at">{__('Start showing it on', 'wconvert')}</label>
+        <input
+          id="wconvert-starts-at"
+          type="datetime-local"
+          value={(schedule.starts_at ?? '').replace(' ', 'T')}
+          onChange={(event) => setBoundary('starts_at', event.target.value)}
+        />
+        <Description as="span">{__('Empty means it starts as soon as it is published.', 'wconvert')}</Description>
+
+        <label htmlFor="wconvert-ends-at">{__('Stop showing it on', 'wconvert')}</label>
+        <input
+          id="wconvert-ends-at"
+          type="datetime-local"
+          value={(schedule.ends_at ?? '').replace(' ', 'T')}
+          onChange={(event) => setBoundary('ends_at', event.target.value)}
+        />
+        <Description as="span">
+          {__('Empty means it runs until you unpublish it. Both are your site’s local time.', 'wconvert')}
+        </Description>
 
       {/*
         **Only for an Optin that competes.** `arbitrate()` sorts overlays and

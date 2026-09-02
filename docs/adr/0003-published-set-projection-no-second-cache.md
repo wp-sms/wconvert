@@ -7,6 +7,18 @@ transient because a transient can be evicted, and eviction lands a cold DB query
 on an uncached page load; `autoload=false` because it is payload-sized and has
 no business in `alloptions` on every admin request.
 
+*Bounded by [ADR 0050](0050-a-scheduled-optin-stays-in-the-published-set.md), which
+is the exclusion this ADR must NOT gain. A **scheduled** Optin is in the set
+before its window opens and stays in it after the window closes — precisely
+because the set is rebuilt on write and never on a timer, so nothing runs at
+the moment a window opens and an Optin left out here is left out of every
+cached page until somebody republishes. Its window travels in the payload and
+the browser compares it. The far end is the same argument reversed: a page
+cached while the window was open can only work out that it has shut from a fact
+it was given. Read that against the suspension note directly below, because the
+two look alike and differ on exactly one thing — whether the payload can carry
+the answer.*
+
 *Completed by [ADR 0027](0027-a-load-bearing-condition-suspends-rather-than-drops.md):
 a **suspended** Optin — one holding a Condition marked `on_absence: suspend`
 that this install cannot evaluate — is excluded too, so it emits no impressions
