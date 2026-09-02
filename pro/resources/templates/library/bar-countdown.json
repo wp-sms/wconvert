@@ -1,0 +1,39 @@
+{
+  "id": "bar-countdown",
+  "name": "Deadline bar",
+  "display_type": "floating_bar",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#7f1d1d",
+    "fg": "#fef2f2",
+    "muted": "#fca5a5",
+    "accent": "#fef2f2",
+    "accent-fg": "#7f1d1d",
+    "border": "#991b1b",
+    "heading-size": "1rem",
+    "heading-weight": "600",
+    "tracking": "0.04em",
+    "text-size": "0.9375rem",
+    "leading": "1.3",
+    "radius": "0.375rem",
+    "pad": "0.75rem 1.25rem",
+    "gap": "0.75rem",
+    "width": "100%",
+    "align": "center",
+    "shadow": "0 -6px 24px rgba(69, 10, 10, 0.35)",
+    "motion": "200ms"
+  },
+  "tree": {
+    "steps": [
+      {
+        "type": "row",
+        "children": [
+          { "type": "icon", "id": "n1", "name": "clock" },
+          { "type": "heading", "id": "n2", "level": 2, "role": "headline", "text": "The sale ends in" },
+          { "type": "countdown", "id": "n3" },
+          { "type": "button", "id": "n4", "role": "cta_label", "label": "Shop the sale", "action": "link", "href": "/sale/" }
+        ]
+      }
+    ]
+  }
+}

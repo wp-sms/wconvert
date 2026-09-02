@@ -229,11 +229,6 @@ final class TemplateVocabulary
         $tree = $template['tree'] ?? [];
         $steps = is_array($tree) ? ($tree['steps'] ?? []) : [];
 
-        // Roles are unique across the whole tree, not per step: a Playbook
-        // binds one word to one Role, and the terminal step's success headline
-        // is a different Role from the first step's headline for exactly that
-        // reason.
-        $seenRoles = [];
         $normalized = [];
 
         // Pre-scanned over the whole tree before a single node is rewritten, so
@@ -242,7 +237,7 @@ final class TemplateVocabulary
         $ids = NodeIdentities::in($steps, $this->identity);
 
         foreach (is_array($steps) ? $steps : [] as $step) {
-            $node = $this->node($step, $seenRoles, $ids);
+            $node = $this->node($step, $ids);
 
             if ($node !== null) {
                 $normalized[] = $node;
@@ -250,7 +245,10 @@ final class TemplateVocabulary
         }
 
         return [
-            'tree' => ['steps' => $normalized],
+            // Stamped with the vocabulary version that produced it, so a
+            // narrowing change one day has a fact to migrate FROM rather than
+            // a guess about what each stored design meant ({@see TemplateTree::VERSION}).
+            'tree' => TemplateTree::stamped(['steps' => $normalized]),
             'tokens' => $this->tokens($template['tokens'] ?? []),
         ];
     }
@@ -274,7 +272,7 @@ final class TemplateVocabulary
      * is declared per node in the manifest rather than guessed at here.
      *
      * @param mixed $tree
-     * @return array{steps: list<array<string, mixed>>}
+     * @return array{v: int, steps: list<array<string, mixed>>}
      */
     public function withoutCopy($tree): array
     {
@@ -290,7 +288,7 @@ final class TemplateVocabulary
             }
         }
 
-        return ['steps' => $stripped];
+        return TemplateTree::stamped(['steps' => $stripped]);
     }
 
     /**
@@ -326,10 +324,9 @@ final class TemplateVocabulary
      * declares.
      *
      * @param mixed $node
-     * @param list<string> $seenRoles
      * @return array<string, mixed>|null
      */
-    private function node($node, array &$seenRoles, NodeIdentities $ids): ?array
+    private function node($node, NodeIdentities $ids): ?array
     {
         if (!is_array($node) || !is_string($node['type'] ?? null)) {
             return null;
@@ -390,20 +387,37 @@ final class TemplateVocabulary
 
         $role = $node['role'] ?? null;
 
+        /*
+         * ====================================================================
+         * A ROLE REPEATS. IT IS NO LONGER UNIQUE ACROSS THE TREE (ADR 0051).
+         * ====================================================================
+         * This clause used to carry `!in_array($role, $seenRoles)`, and the
+         * drop was silent: a second node claiming a Role kept the NODE and
+         * lost the Role. What that cost is not "those words cannot be filled"
+         * — {@see self::withoutCopy()} strips `text` from every text node at
+         * snapshot and {@see SlotRoles::bind()} writes back only where a Role
+         * binds, so a role-less paragraph reached a real Optin as an EMPTY
+         * `<p>`. A three-benefit row showed one benefit and two blank lines,
+         * while the gallery card looked right because the library entry keeps
+         * its placeholder text.
+         *
+         * The names stay closed and the binding stays BY NAME, which is the
+         * guarantee Roles exist for — words survive switching Template. What
+         * changed is only that a name may be claimed more than once, and a
+         * Playbook supplying a list fills them in tree order.
+         */
         if (
             $leaf !== null
             && $leaf['roles'] !== []
             && is_string($role)
             && in_array($role, $this->roles, true)
-            && !in_array($role, $seenRoles, true)
         ) {
-            $seenRoles[] = $role;
             $kept['role'] = $role;
         }
 
         if ($layout !== null) {
             foreach ($this->childKeysOf($layout['children']) as $key) {
-                $kept[$key] = $this->children($node[$key] ?? [], $seenRoles, $ids);
+                $kept[$key] = $this->children($node[$key] ?? [], $ids);
             }
         }
 
@@ -412,15 +426,14 @@ final class TemplateVocabulary
 
     /**
      * @param mixed $children
-     * @param list<string> $seenRoles
      * @return list<array<string, mixed>>
      */
-    private function children($children, array &$seenRoles, NodeIdentities $ids): array
+    private function children($children, NodeIdentities $ids): array
     {
         $kept = [];
 
         foreach (is_array($children) ? $children : [] as $child) {
-            $node = $this->node($child, $seenRoles, $ids);
+            $node = $this->node($child, $ids);
 
             if ($node !== null) {
                 $kept[] = $node;

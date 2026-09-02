@@ -161,6 +161,150 @@ describe('the document-level style', () => {
  * container hands back is the only way in, and it is the same handle capture
  * will bind to.
  */
+/**
+ * =============================================================================
+ * THE COUNTDOWN, WHICH IS THE ONE THING IN THIS RENDERER THAT IS NOT PURE.
+ * =============================================================================
+ * `render()` draws a countdown's SHAPE and no time at all — it asks nothing of
+ * the world it will be attached to, including what time it is — so the tick
+ * lives here, in the shell every container shares. That is what keeps the
+ * renderer a function of (tree, tokens) while the display is live.
+ *
+ * The deadline is the Optin's `ends_at` and nothing else (ADR 0052), so it
+ * arrives as a mount option rather than as a node param: a timer that can
+ * disagree with the schedule it counts to is the zombie countdown, and it is
+ * not expressible.
+ */
+describe('a countdown', () => {
+  const NOW = Date.UTC(2026, 10, 27, 9, 0, 0);
+  const WITH_A_CLOCK: Template = {
+    tree: {
+      steps: [
+        { type: 'stack', children: [{ type: 'countdown' }, { type: 'button', label: 'Go', action: 'link' }] },
+      ],
+    },
+    tokens: {},
+  };
+
+  const shown = (endsAt?: number) => {
+    const anchor = document.createElement('div');
+
+    anchor.setAttribute('data-wconvert-optin', 'x');
+    document.body.appendChild(anchor);
+
+    // `inline` mounts into an anchor whose shadow root is closed exactly as the
+    // popup's is; the querySelector above therefore reaches nothing, so the
+    // handle is the way in — the same argument every other test here makes.
+    const mounted = mount({ displayType: 'inline', template: WITH_A_CLOCK, anchor, endsAt });
+
+    mounted.show();
+
+    return mounted;
+  };
+
+  const said = (mounted: { root: HTMLElement | null }) =>
+    mounted.root?.querySelector('.wc-count')?.textContent;
+
+  it('shows the time left the frame it appears, without waiting a second', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(NOW);
+
+    try {
+      // Two hours, fourteen minutes and five seconds out.
+      expect(said(shown(NOW + (2 * 3600 + 14 * 60 + 5) * 1000))).toBe('02:14:05');
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('says the days only where there are days to say', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(NOW);
+
+    try {
+      expect(said(shown(NOW + (3 * 86400 + 60) * 1000))).toBe('3d 00:01:00');
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('ticks', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(NOW);
+
+    try {
+      const mounted = shown(NOW + 90 * 1000);
+
+      expect(said(mounted)).toBe('00:01:30');
+      vi.advanceTimersByTime(31_000);
+      expect(said(mounted)).toBe('00:00:59');
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  /**
+   * A window that has shut takes the Optin off the page entirely (ADR 0050), so
+   * a negative number is only reachable on a page cached WHILE the window was
+   * open — where the honest reading is that the offer is over.
+   */
+  it('floors at zero rather than counting up from the other side', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(NOW);
+
+    try {
+      expect(said(shown(NOW - 60_000))).toBe('00:00:00');
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  /**
+   * **An Optin with no end draws the shape and no time.** Inventing a deadline
+   * would be the manufactured urgency the whole decision refuses, and
+   * `builder/structure/problems.ts` is where the merchant is told, on the tab
+   * that fixes it.
+   */
+  it('draws nothing and starts no timer for an Optin with no end', () => {
+    const interval = vi.spyOn(globalThis, 'setInterval');
+
+    try {
+      expect(said(shown())).toBe('');
+      expect(interval).not.toHaveBeenCalled();
+    } finally {
+      interval.mockRestore();
+    }
+  });
+
+  /**
+   * ==========================================================================
+   * THE LEAK THIS WAS ALWAYS GOING TO BE, IF THE TICK HAD NO END.
+   * ==========================================================================
+   * The builder rebuilds its preview on EVERY KEYSTROKE and the gallery mounts
+   * one of these per card. A naive interval would leak one per letter and forty
+   * per gallery — which is why the tick lives in the shell, where every
+   * container's `close()` already reaches it.
+   */
+  it('stops when the mount does', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(NOW);
+
+    try {
+      const mounted = shown(NOW + 90 * 1000);
+
+      mounted.close();
+      vi.advanceTimersByTime(10_000);
+
+      // The element is gone with the mount, so what is being asserted is that
+      // advancing the clock threw nothing at a detached tree — a timer still
+      // running would be painting into it.
+      expect(vi.getTimerCount()).toBe(0);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+});
+
 describe('the visitor acting on a mounted Optin', () => {
   it('cannot navigate the page away by submitting the form', () => {
     const submitting = {

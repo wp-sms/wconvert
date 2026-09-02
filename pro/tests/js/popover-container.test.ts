@@ -44,6 +44,61 @@ afterEach(() => {
 
 const popover = () => document.querySelector<HTMLElement>('[popover]');
 
+/**
+ * =============================================================================
+ * THE SAME DESIGN, THROUGH THE ADMIN'S CONTAINER AND THROUGH PRO'S.
+ * =============================================================================
+ * The builder mounts EVERYTHING as `inline` — deliberately, so the preview is
+ * one shape rather than three (ADR 0040) — while a `floating_bar` on a real page
+ * is drawn by a container that lives in another plugin. A merchant chooses a bar
+ * by looking at the preview, so the two had better be drawing the same thing.
+ *
+ * They are, and this is what pins it: **the design is `render()`'s and the box
+ * is the container's.** Both containers go through free's `shell()`, so a
+ * divergence could only come from a container reaching into the rendered tree —
+ * which is exactly what a later container would be tempted to do, and exactly
+ * what nothing would notice.
+ *
+ * The chrome is the one honest difference and it is subtracted: a popover
+ * carries a close button and an inline Optin does not, because an inline design
+ * has no way out to supply.
+ */
+describe('the design inside the box', () => {
+  const withoutTheWayOut = (root: HTMLElement | null): string => {
+    const copy = root?.cloneNode(true) as HTMLElement | undefined;
+
+    copy?.querySelector('button.wc-close')?.remove();
+
+    return copy?.innerHTML ?? '';
+  };
+
+  it.each(['floating_bar', 'slide_in'])(
+    'is what the builder previewed, element for element: %s',
+    async (displayType) => {
+      const { mount } = await import('@renderer/mount');
+      const anchor = document.createElement('div');
+
+      document.body.appendChild(anchor);
+
+      const previewed = mount({ displayType: 'inline', template: TEMPLATE, anchor });
+      const shown = mountPopover({ displayType, template: TEMPLATE });
+
+      previewed.show();
+      shown.show();
+
+      expect(withoutTheWayOut(shown.root)).toBe(withoutTheWayOut(previewed.root));
+
+      // And it survives the step swap, which replaces the element rather than
+      // mutating it — the one moment a container could quietly draw something
+      // the preview never showed.
+      previewed.showStep(1);
+      shown.showStep(1);
+
+      expect(withoutTheWayOut(shown.root)).toBe(withoutTheWayOut(previewed.root));
+    },
+  );
+});
+
 describe('a floating bar', () => {
   /**
    * **`manual`, and promoted with `showPopover()`.**
@@ -132,6 +187,18 @@ describe.each(['floating_bar', 'slide_in'])('the way out of a %s', (displayType)
   const closeButtonOf = (mounted: { root: HTMLElement | null }) =>
     mounted.root?.querySelector<HTMLButtonElement>('button.wc-close') ?? null;
 
+  /**
+   * The end of the exit transition, dispatched by hand.
+   *
+   * jsdom computes no styles and runs no transitions, so nothing here would
+   * ever fire one — which is the honest reason this is a dispatch rather than a
+   * wait. What is being asserted is the container's own contract: it removes
+   * itself when the transition ends, and it removes itself anyway if that never
+   * happens. Whether the transition LOOKS right is a browser's question, and
+   * #34's Playground harness is where it is asked.
+   */
+  const leave = () => popover()?.dispatchEvent(new Event('transitionend'));
+
   it('is a real button, so a keyboard activates it without a keydown handler', () => {
     const mounted = shownBar();
     const button = closeButtonOf(mounted);
@@ -147,11 +214,72 @@ describe.each(['floating_bar', 'slide_in'])('the way out of a %s', (displayType)
     expect(button?.hasAttribute('tabindex')).toBe(false);
   });
 
-  it('records exactly one Dismissal when the visitor presses it', () => {
+  /**
+   * ==========================================================================
+   * THE DISMISSAL IS RECORDED AT THE PRESS. THE ELEMENT LEAVES AFTERWARDS.
+   * ==========================================================================
+   * Exit motion means the overlay outlives the press by the length of a
+   * transition, and reporting the Dismissal at the END of that would put a
+   * beacon behind an animation on the one act most likely to be followed by a
+   * navigation. What is lost is not the animation — it is the frequency cap,
+   * and an unrecorded Dismissal is an Optin that comes back.
+   */
+  it('records exactly one Dismissal at the moment the visitor presses it', () => {
     const onDismiss = vi.fn();
     const mounted = shownBar(onDismiss);
 
     closeButtonOf(mounted)?.click();
+
+    expect(onDismiss).toHaveBeenCalledOnce();
+    // Still on the page, and inert while it fades: the box already takes no
+    // pointers, and this is the design being given none back.
+    expect(popover()).not.toBeNull();
+    expect(popover()?.hasAttribute('data-leaving')).toBe(true);
+    expect(mounted.root?.style.getPropertyValue('pointer-events')).toBe('none');
+
+    leave();
+
+    expect(popover()).toBeNull();
+    expect(onDismiss).toHaveBeenCalledOnce();
+  });
+
+  /**
+   * **`transitionend` does not always arrive**, and an overlay that never
+   * finishes closing is worse than one that closes instantly. The timer is what
+   * makes the failure mode "closes late" — on an engine with no `translate`
+   * transition, a theme that reset it, or a `motion` token CSS rejected.
+   */
+  it('removes itself on a timer where the transition never ends', () => {
+    vi.useFakeTimers();
+
+    try {
+      const mounted = shownBar();
+
+      closeButtonOf(mounted)?.click();
+      expect(popover()).not.toBeNull();
+
+      vi.advanceTimersByTime(1000);
+
+      expect(popover()).toBeNull();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  /**
+   * And it is idempotent from both ends: a second press while it is leaving
+   * must not report a second Dismissal, and the timer must not trip over an
+   * element `transitionend` already removed.
+   */
+  it('reports nothing more when it is pressed again on the way out', () => {
+    const onDismiss = vi.fn();
+    const mounted = shownBar(onDismiss);
+    const button = closeButtonOf(mounted);
+
+    button?.click();
+    button?.click();
+    leave();
+    leave();
 
     expect(onDismiss).toHaveBeenCalledOnce();
     expect(popover()).toBeNull();
@@ -204,6 +332,7 @@ describe.each(['floating_bar', 'slide_in'])('the way out of a %s', (displayType)
     const mounted = shownBar(onDismiss);
 
     mounted.close();
+    leave();
 
     expect(onDismiss).not.toHaveBeenCalled();
     expect(popover()).toBeNull();
@@ -365,7 +494,6 @@ describe('the box', () => {
   it('pins the bar to the block-end edge, free to take the whole inline axis', () => {
     const box = boxOf('floating_bar');
 
-    expect(box.style.getPropertyValue('inset-block-end')).toBe('0');
     expect(box.style.getPropertyValue('inset-inline-start')).toBe('0');
     expect(box.style.getPropertyValue('inset-inline-end')).toBe('0');
   });
@@ -375,6 +503,35 @@ describe('the box', () => {
 
     expect(box.style.getPropertyValue('inset-inline-start')).toBe('auto');
     expect(box.style.getPropertyValue('inset-inline-end')).toBe('1rem');
+  });
+
+  /**
+   * ==========================================================================
+   * THE BLOCK-END EDGE IS WHERE THE PHONE KEEPS ITS OWN CHROME.
+   * ==========================================================================
+   * `inset-block-end: 0` is the bottom of the viewport, and on an iPhone that
+   * is underneath the home indicator — and underneath Safari's bottom toolbar
+   * when it is expanded. So the CTA and the close button can be untappable on
+   * the most common mobile browser there is, and the close button is the
+   * control the whole Dismissal model rests on.
+   *
+   * **`max()` is what makes it right on every site rather than on some.**
+   * `env(safe-area-inset-bottom)` resolves to `0` where the theme has not set
+   * `viewport-fit=cover`, so the bar sits exactly where it did on an ordinary
+   * site, and the slide-in keeps the `1rem` of air it was authored with
+   * instead of collapsing onto the edge.
+   *
+   * Asserted as the declaration rather than as a computed pixel value,
+   * deliberately: jsdom has no viewport insets to resolve and never will, so a
+   * computed assertion here would be asserting jsdom. What can be proven at
+   * this level is that both halves are in the declaration — and a real device
+   * is where #34's harness looks at the result.
+   */
+  it.each([
+    ['floating_bar', 'max(0px, env(safe-area-inset-bottom))'],
+    ['slide_in', 'max(1rem, env(safe-area-inset-bottom))'],
+  ])('keeps the %s clear of the phone’s own bottom chrome', (displayType, expected) => {
+    expect(boxOf(displayType).style.getPropertyValue('inset-block-end')).toBe(expected);
   });
 
   /**

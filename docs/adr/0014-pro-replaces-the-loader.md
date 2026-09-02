@@ -81,6 +81,29 @@ ever sees that queue's output.*
   bundle, so the gap is work rather than drift — but the headroom is smaller
   than this line implies, and the next premium rule should be weighed against
   1,874 B rather than against 4KB.*
+  ***Amended: the ceiling is 12,288 B, and the budget is still per build.***
+  *After [#34](https://github.com/navidkashani/wconvert/issues/34) added the
+  popover container, Pro was 7,027 B — 1,165 B of headroom, which is less than
+  the design vocabulary needed to stop being eight slots in different colours.
+  The whole widening — style tokens (~150–300 B), a wrapping `grid` (~50–100 B),
+  four small leaves (~150–300 B), a background image and overlay (~100 B), an
+  icon set of six glyphs (~500–900 B), entry motion (~200–400 B) and a
+  deadline countdown (~400–800 B) — comes to roughly 1.6–2.9 KB, which does not
+  fit and was never going to.*
+
+  *The number moved rather than the gate softening, and the evidence is what
+  the field actually ships: Icegram Lite 13,672 B is the **smallest** shipped
+  runtime measured, then OptinMonster 16,074 B, Popup Maker 21,970 B and Privy
+  910,585 B. At 12,288 B the ceiling still sits under the smallest of them, so
+  "smaller than anything in the market" stays literally sayable — the claim
+  weakens from 2.3× to about 1.4×, which is the honest cost of the gallery.*
+
+  *And **the bundle does not split.** Raising the ceiling is precisely what
+  makes a second lazy-loaded chunk unnecessary, which is the outcome to want: a
+  second script is the failure
+  [ADR 0004](0004-the-loader-survives-optimizers-not-just-caches.md) catalogued,
+  where an optimiser reordered scripts and killed every popup silently with
+  nothing in any log.*
 - **No public `registerRule` seam**, therefore no partial-registration failure mode
   and no documented extension point that immediately becomes a compatibility
   surface.

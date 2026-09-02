@@ -25,8 +25,20 @@ const ENTRY = JSON.parse(
 
 const BUTTON = [0, 'children', 2, 'children', 1];
 
-const said = (template: Template, act: 'submit' | 'click' = 'submit') =>
-  problemsIn(template, act).map((problem) => problem.said);
+/**
+ * The Optin's own end date, defaulted because every case but one is about the
+ * DESIGN and a design carrying no countdown does not care.
+ *
+ * `null` and not `undefined` is how a caller says "no end date": a default
+ * parameter fires on an explicit `undefined` too, so the obvious spelling would
+ * have quietly handed the check a date on the one test that is about not having
+ * one.
+ */
+const said = (
+  template: Template,
+  act: 'submit' | 'click' = 'submit',
+  endsAt: string | null = '2026-11-30 23:59',
+) => problemsIn(template, act, endsAt ?? undefined).map((problem) => problem.said);
 
 const withTokens = (tokens: Record<string, string>): Template => ({
   tree: ENTRY.tree,
@@ -140,6 +152,48 @@ describe('colours a visitor cannot read', () => {
    */
   it('says nothing about the backdrop', () => {
     expect(said(withTokens({ backdrop: 'rgba(255, 255, 255, 0.05)' }))).toEqual([]);
+  });
+});
+
+/**
+ * ============================================================================
+ * A CLOCK WITH NOTHING TO COUNT TO IS THE ONLY WAY A COUNTDOWN CAN BE WRONG.
+ * ============================================================================
+ * The deadline is the Optin's `ends_at` and nothing else (ADR 0052), so the
+ * timer that keeps running after the offer ended — the thing every competitor
+ * lets a merchant configure by accident — is not expressible. What is left is a
+ * design carrying a clock on an Optin with no end: it renders, saves and
+ * publishes, and the clock is simply empty.
+ */
+describe('a countdown with no end date', () => {
+  // The real entry with a clock added at the top of its first step, so
+  // everything else about it stays a design with nothing wrong.
+  const withClock: Template = {
+    tree: {
+      ...ENTRY.tree,
+      steps: ENTRY.tree.steps.map((step, at) =>
+        at === 0
+          ? { ...step, children: [{ type: 'countdown' }, ...((step as { children?: unknown[] }).children ?? [])] }
+          : step,
+      ) as Template['tree']['steps'],
+    },
+    tokens: ENTRY.tokens,
+  };
+
+  it('names the tab that fixes it, because it is not on this one', () => {
+    const problems = said(withClock, 'submit', null);
+
+    expect(problems).toHaveLength(1);
+    expect(problems[0]).toMatch(/Rules tab/);
+  });
+
+  it('says nothing once the merchant has set one', () => {
+    expect(said(withClock)).toEqual([]);
+  });
+
+  /** A design with no clock in it is not asked the question at all. */
+  it('says nothing about a design that does not count down', () => {
+    expect(said({ tree: ENTRY.tree, tokens: ENTRY.tokens }, 'submit', null)).toEqual([]);
   });
 });
 

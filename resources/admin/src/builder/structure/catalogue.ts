@@ -262,23 +262,29 @@ function blankLayout(type: string): TemplateNode {
 }
 
 /**
- * A [[Slot Role]] this kind may carry that nothing in the tree has claimed, or
- * null where they are all spoken for.
+ * The [[Slot Role]] a newly added block of this kind should carry.
  *
- * **Null is a real answer and the caller has to say it out loud.** A block with
- * no Role still edits — `slotsOf` walks every leaf and the Content tab heads a
- * role-less one by its node type — but it has no `SlotKey`, so clicking it in
- * the preview reaches nothing and focusing its block outlines nothing. That is
- * a quiet degradation of exactly the two-way selection ADR 0040 built, and a
- * merchant who is not told will read it as a bug.
+ * ============================================================================
+ * AN UNCLAIMED ROLE FIRST, AND A REPEAT RATHER THAN NOTHING.
+ * ============================================================================
+ * Roles repeat now (ADR 0051), so "they are all spoken for" is no longer a
+ * refusal — a third `body` is a third benefit line, and it binds. What the
+ * preference preserves is the reason the closed list has thirteen names rather
+ * than five: `success_headline` is a different slot from `headline`, and a
+ * heading added to a design that has no success headline yet should take that
+ * one before it doubles up on a Role something already holds.
+ *
+ * **Null now means the kind declares no Roles at all** — `image`, because it
+ * holds no words, and `field`, because its Roles are derived from what it
+ * captures. Both are carried across a Template switch by other means, which is
+ * why {@link losesWordsOnSwitch} asks the manifest rather than asking whether
+ * `role` is set.
  */
 export function freeRoleFor(tree: TemplateTree, type: string): string | null {
-  const declared = LEAVES[type]?.roles ?? [];
+  const declared = (LEAVES[type]?.roles ?? []).filter((role) => ROLES.includes(role));
   const taken = rolesTaken(tree);
 
-  return (
-    declared.find((role) => ROLES.includes(role) && !taken.includes(role)) ?? null
-  );
+  return declared.find((role) => !taken.includes(role)) ?? declared[0] ?? null;
 }
 
 /**
@@ -288,17 +294,22 @@ export function freeRoleFor(tree: TemplateTree, type: string): string | null {
  * ============================================================================
  * THIS IS THE SHARP VERSION OF A LIMIT THAT IS OTHERWISE INVISIBLE.
  * ============================================================================
- * [[Slot Role]]s are a closed list of thirteen, unique across the whole tree —
- * so there is exactly one fillable body slot, one headline, one fine print. A
- * block whose kind declares Roles and got none has no seam for words to travel
- * on: {@see \WConvert\Template\SlotRoles} carries copy across a Template
- * switch **by Role**, and there is no Role to carry this one by.
+ * A block whose kind declares [[Slot Role]]s and carries none has no seam for
+ * words to travel on: {@see \WConvert\Template\SlotRoles} carries copy across
+ * a Template switch **by Role**, and there is no Role to carry this one by.
  *
  * So it is not that the block *"is not linked to the preview"*, which is true
  * and trivial. It is that a merchant can type a second paragraph, switch
  * design, and find those words gone. `MerchantsOwn` rescues an `image`'s `src`
  * and a `button`'s `href` precisely because no Role does; a role-less block's
  * TEXT has no such rescue, and adding one would mean matching prose by ordinal.
+ *
+ * **The editor no longer PRODUCES one, and this still has to be asked.** Roles
+ * repeat (ADR 0051), so {@link freeRoleFor} always has a name to hand a new
+ * block of a kind that declares any — the state this reports is now reachable
+ * only from a hand-authored design or an older tree, which is exactly the state
+ * a design library brings in. `bin/verify-templates.php` reports the same fact
+ * at the keyboard; this reports it to the merchant looking at it.
  *
  * **A kind declaring no Roles is not at risk**, which is why this asks the
  * manifest rather than asking whether `role` is set. An `image` declares none

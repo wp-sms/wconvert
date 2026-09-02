@@ -1,9 +1,13 @@
 import type {
+  BadgeNode,
   ButtonNode,
   ConsentNode,
+  EyebrowNode,
   FieldNode,
   HeadingNode,
+  IconNode,
   ImageNode,
+  RatingNode,
   SlotLink,
   SplitNode,
   TemplateNode,
@@ -119,6 +123,7 @@ function elementFor(node: TemplateNode): HTMLElement | null {
   switch (node.type) {
     case 'stack':
     case 'row':
+    case 'grid':
       return layout(node);
     case 'split':
       return split(node as SplitNode);
@@ -126,6 +131,18 @@ function elementFor(node: TemplateNode): HTMLElement | null {
       return heading(node as HeadingNode);
     case 'text':
       return sentence('p', 'wc-text', node as TextNode);
+    case 'eyebrow':
+      return words('p', 'wc-eyebrow', (node as EyebrowNode).text);
+    case 'badge':
+      return words('span', 'wc-badge', (node as BadgeNode).text);
+    case 'divider':
+      return divider();
+    case 'countdown':
+      return countdown();
+    case 'rating':
+      return rating(node as RatingNode);
+    case 'icon':
+      return icon(node as IconNode);
     case 'image':
       return image(node as ImageNode);
     case 'field':
@@ -179,6 +196,183 @@ function split(node: SplitNode): HTMLElement {
 
     element.appendChild(pane);
   }
+
+  return element;
+}
+
+/**
+ * A leaf that is one string and nothing else.
+ *
+ * `eyebrow` and `badge` are the two, and neither takes a link: a sentence with
+ * a link inside it is what `text` is for, and an eyebrow reading *"LIMITED
+ * TIME %s"* is a design that wanted a paragraph.
+ */
+function words(tag: string, className: string, text: string | undefined): HTMLElement {
+  const element = document.createElement(tag);
+
+  element.className = className;
+  element.textContent = text ?? '';
+
+  return element;
+}
+
+/**
+ * The six glyphs, as path data this module owns.
+ *
+ * ============================================================================
+ * THE ONE PLACE THE VOCABULARY DRAWS A SHAPE RATHER THAN A BOX OF TEXT.
+ * ============================================================================
+ * They are paths and not characters because the alternatives are worse in ways
+ * that only show up on somebody else's machine: an emoji is a different picture
+ * per platform and carries its own colour, a dingbat glyph is missing from
+ * plenty of system stacks, and an icon FONT is a `@font-face` — which this
+ * renderer cannot ship at all, because a face declared inside a shadow root is
+ * silently ignored (see `css.ts`).
+ *
+ * Stroked rather than filled, at a nominal 24×24, so every one of them reads at
+ * body-text size and inherits `currentColor`. `star` is the exception at use
+ * rather than at declaration: {@link rating} fills it through a class, which is
+ * one CSS declaration instead of a second copy of the path.
+ */
+const GLYPHS: Readonly<Record<string, string>> = {
+  check: 'M20 6 9 17l-5-5',
+  star: 'm12 3 2.9 5.8 6.1.9-4.5 4.3 1.1 6-5.6-2.9L6.4 20l1.1-6L3 9.7l6.1-.9z',
+  bolt: 'M13 2 4 14h7l-1 8 9-12h-7z',
+  clock: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18m0 4v5l3.5 2',
+  gift: 'M20 12v9H4v-9M3 8h18v4H3zm9 13V8m0 0H8a2.5 2.5 0 0 1 0-5c3 0 4 5 4 5m0 0h4a2.5 2.5 0 0 0 0-5c-3 0-4 5-4 5',
+  truck: 'M14 17V5H2v12h2m10 0h-4m4 0h1m-11 0a2 2 0 1 0 4 0 2 2 0 1 0-4 0m9 0h1m-1 0a2 2 0 1 0 4 0 2 2 0 1 0-4 0m4 0h2v-6l-3-4h-4',
+};
+
+/** One `<svg>` around one path, with no attribute the caller can influence. */
+function glyph(name: string, className: string): SVGElement {
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('fill', 'none');
+  svg.setAttribute('stroke', 'currentColor');
+  svg.setAttribute('stroke-width', '2');
+  svg.setAttribute('stroke-linecap', 'round');
+  svg.setAttribute('stroke-linejoin', 'round');
+  // An icon is never the only thing that says something, so it is hidden from
+  // assistive technology rather than given a name the merchant did not write.
+  // A tick beside "Free shipping" read out as "check, Free shipping" is noise.
+  svg.setAttribute('aria-hidden', 'true');
+  svg.setAttribute('class', className);
+  path.setAttribute('d', GLYPHS[name] ?? '');
+  svg.appendChild(path);
+
+  return svg;
+}
+
+/**
+ * One glyph, or nothing where the name is not one of the six.
+ *
+ * Skipped rather than substituted, the same posture an unknown node type gets:
+ * a design asking for a glyph this build does not have is better read as a
+ * design with no glyph than as a design with the wrong one.
+ */
+function icon(node: IconNode): HTMLElement | null {
+  const name = node.name ?? 'check';
+
+  return name in GLYPHS ? wrap('span', 'wc-icon', glyph(name, 'wc-glyph')) : null;
+}
+
+/**
+ * Five stars, some of them filled, and optionally a line beside them.
+ *
+ * The count is drawn out of five rather than out of `value`, because four stars
+ * on their own read as a four-star scale rather than as four out of five —
+ * which is the whole claim the design is making.
+ */
+function rating(node: RatingNode): HTMLElement {
+  const filled = node.value === 3 || node.value === 4 ? node.value : 5;
+  const stars = document.createElement('span');
+  const element = document.createElement('div');
+
+  stars.className = 'wc-stars';
+
+  for (let at = 0; at < 5; at += 1) {
+    stars.appendChild(glyph('star', at < filled ? 'wc-glyph wc-star' : 'wc-glyph'));
+  }
+
+  element.className = 'wc-rating';
+  element.append(stars);
+
+  if (typeof node.text === 'string' && node.text !== '') {
+    element.appendChild(words('span', 'wc-rating-text', node.text));
+  }
+
+  return element;
+}
+
+/**
+ * A rule, as an `<hr>` rather than a bordered `<div>`.
+ *
+ * The element already MEANS a thematic break, so a screen reader announces one
+ * without this vocabulary having to invent a role for it — and it is the one
+ * leaf here with no words at all, so semantics is the only thing it has.
+ */
+function divider(): HTMLElement {
+  const element = document.createElement('hr');
+
+  element.className = 'wc-divider';
+
+  return element;
+}
+
+/**
+ * The class the tick writes into. Exported because `mount()`'s `shell()` is
+ * what finds these — the renderer draws the shape and no time at all, so that
+ * one string is the whole seam between a pure render and a live clock.
+ */
+export const COUNTDOWN_SLOT = 'wc-count';
+
+/**
+ * The countdown, drawn empty.
+ *
+ * ============================================================================
+ * `role="timer"` CARRIES AN IMPLICIT `aria-live="off"`, AND THAT IS WHY IT IS
+ * THE RIGHT ROLE.
+ * ============================================================================
+ * A ticking display announced every second is unusable, and the two obvious
+ * spellings both do it: `aria-live="polite"` on a value that changes once a
+ * second queues an announcement a second, and `role="status"` is
+ * `aria-live="polite"` under another name. `timer` is the role for exactly this
+ * — a numerical counter — and it is silent until something asks.
+ *
+ * `aria-atomic` so what is read is the whole time rather than the digit that
+ * changed. Nothing here escalates to `assertive`: an offer expiring is not an
+ * emergency, and there is no milestone in the vocabulary to escalate at.
+ *
+ * The label is English, exactly as the close button's is, and for the same
+ * reason: the loader is a raw IIFE with no `wp.i18n` dependency, and adding one
+ * would put a second script on the page for one string.
+ *
+ * **It renders the shape and no time**, because `render()` asks nothing of the
+ * world it will be attached to — including what time it is. `shell()` fills it
+ * and keeps filling it.
+ */
+function countdown(): HTMLElement {
+  const element = document.createElement('div');
+  const value = document.createElement('span');
+
+  value.className = COUNTDOWN_SLOT;
+  element.className = 'wc-countdown';
+  element.setAttribute('role', 'timer');
+  element.setAttribute('aria-atomic', 'true');
+  element.setAttribute('aria-label', 'Time remaining');
+  element.appendChild(value);
+
+  return element;
+}
+
+/** One element around one child, so the SVG has a box the layout can size. */
+function wrap(tag: string, className: string, child: Node): HTMLElement {
+  const element = document.createElement(tag);
+
+  element.className = className;
+  element.appendChild(child);
 
   return element;
 }
@@ -314,8 +508,11 @@ const FIELD_KINDS: Readonly<Record<string, { type: string; autocomplete: AutoFil
  * The id is derived from the field's name rather than generated, because a
  * generated one would make two renders of the same tree differ — and the whole
  * point of this module is that they do not. Two fields of one kind cannot
- * collide, because a Slot Role is unique across a Template's whole tree
- * (CONTEXT.md, Slot Role) and a field's Roles are named for what it captures.
+ * collide, because the capture kind is what the id is derived FROM and a
+ * second field of a kind already on the form is refused by the editor and by
+ * the capture path (`builder/structure/catalogue.ts`, CONTEXT.md Slot Role).
+ * That argument used to be made through Slot Role uniqueness, which no longer
+ * holds and never was the load-bearing half of it (ADR 0051).
  */
 function field(node: FieldNode): HTMLElement | null {
   const name = node.name ?? '';

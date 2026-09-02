@@ -321,14 +321,21 @@ describe('what the catalogue offers', () => {
   it('offers every leaf and every layout the vocabulary declares', () => {
     expect(additionsIn(TREE, at, 'submit').map((addition) => addition.type)).toEqual([
       'heading',
+      'eyebrow',
       'text',
+      'badge',
+      'rating',
       'image',
+      'icon',
+      'divider',
+      'countdown',
       'field',
       'button',
       'consent',
       'stack',
       'row',
       'split',
+      'grid',
     ]);
   });
 
@@ -438,18 +445,26 @@ describe('a block the catalogue builds', () => {
   });
 
   /**
-   * A block with no Role has no `SlotKey`, so clicking it in the preview
-   * reaches nothing. It is given a free one where one exists, and the caller
-   * is told where none does.
+   * ==========================================================================
+   * AN UNCLAIMED ROLE FIRST, AND A REPEAT RATHER THAN NOTHING (ADR 0051).
+   * ==========================================================================
+   * Roles repeat, so a new block always has a name to carry and the empty-
+   * handed case is gone. The PREFERENCE is what still matters: thirteen names
+   * exist because `success_headline` is a different slot from `headline`, so a
+   * heading goes to a free one before it doubles up — and only then repeats,
+   * because a second `body` is a second paragraph and binds.
    */
-  it('gives a new block a Slot Role that is actually free', () => {
+  it('gives a new block a free Slot Role first, and repeats one rather than none', () => {
     const empty: TemplateTree = { steps: [{ type: 'stack', children: [] }] };
 
     expect(nodeFor(empty, 'heading', at, 'submit')).toMatchObject({ role: 'headline' });
-    // `headline` is taken in TREE, so the next heading gets the other one a
-    // heading may carry rather than an invented name.
-    expect(freeRoleFor(TREE, 'heading')).toBeNull();
-    expect(nodeFor(TREE, 'heading', at, 'submit')).not.toHaveProperty('role');
+    // Both of a heading's Roles are claimed in TREE, so the next one repeats
+    // the first it declares rather than arriving anonymous.
+    expect(freeRoleFor(TREE, 'heading')).toBe('headline');
+    expect(nodeFor(TREE, 'heading', at, 'submit')).toMatchObject({ role: 'headline' });
+    // A kind that declares no Roles still gets none: an `image` holds no words,
+    // and a `field`'s Roles are derived from what it captures.
+    expect(freeRoleFor(TREE, 'image')).toBeNull();
   });
 
   /** A field capturing nothing the build knows renders NOTHING (`render.ts`). */

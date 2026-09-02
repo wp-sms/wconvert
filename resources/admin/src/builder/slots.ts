@@ -24,8 +24,25 @@ import type { TemplateTree } from '@renderer/types';
  */
 export type SlotKey = string;
 
-export const roleKey = (role: string): SlotKey => `role:${role}`;
-export const capturesKey = (captures: string): SlotKey => `captures:${captures}`;
+/**
+ * The ordinal, appended only where there is one to append.
+ *
+ * ============================================================================
+ * A NAME STOPPED IDENTIFYING A SLOT WHEN ROLES BECAME REPEATABLE.
+ * ============================================================================
+ * A design may claim `body` three times (ADR 0051). Without an ordinal, a click
+ * on the third benefit line reaches the first, and selecting any of them
+ * outlines all three — silently, because nothing throws when two sides agree on
+ * the wrong slot.
+ *
+ * **The first occurrence keeps the bare key**, which is not cosmetic: every key
+ * in the product today is a first occurrence, and a suffix on all of them would
+ * be a second spelling of a name that has one.
+ */
+const nth = (key: SlotKey, at: number): SlotKey => (at === 0 ? key : `${key}#${at}`);
+
+export const roleKey = (role: string, at = 0): SlotKey => nth(`role:${role}`, at);
+export const capturesKey = (captures: string, at = 0): SlotKey => nth(`captures:${captures}`, at);
 
 /**
  * What the panel calls a slot, or null for one neither side can name.
@@ -33,24 +50,71 @@ export const capturesKey = (captures: string): SlotKey => `captures:${captures}`
  * A layout node with no Role and no capture kind is unaddressable and that is
  * correct rather than a gap: it says nothing the merchant edits, so there is no
  * block in the panel for a click to travel to.
+ *
+ * **A HIDDEN slot is unaddressable too, and for the same reason.** The renderer
+ * skips it, so there is no element in the preview to click or to outline — and
+ * a key for it would collide with the next drawn slot of the same name, which
+ * is the one way this could go wrong quietly. The block is still selectable in
+ * the tree, by path; it simply has nothing in the preview to travel to.
  */
-export function keyOfSlot(slot: Pick<Slot, 'role' | 'captures'>): SlotKey | null {
-  if (slot.role !== null) {
-    return roleKey(slot.role);
+export function keyOfSlot(slot: Pick<Slot, 'role' | 'captures' | 'hidden' | 'at'>): SlotKey | null {
+  if (slot.hidden) {
+    return null;
   }
 
-  return slot.captures !== null ? capturesKey(slot.captures) : null;
+  if (slot.role !== null) {
+    return roleKey(slot.role, slot.at);
+  }
+
+  return slot.captures !== null ? capturesKey(slot.captures, slot.at) : null;
 }
 
-/** What the PREVIEW calls the same slot, read off what the renderer stamped. */
+/**
+ * What the PREVIEW calls the same slot, read off what the renderer stamped.
+ *
+ * The ordinal is counted in DOCUMENT ORDER within the rendered step, which is
+ * the same order {@link slotsOf} walks the tree in — that is what makes the two
+ * sides agree without sharing a line of code. Hidden slots are absent from both
+ * counts by construction here: they are not in the DOM at all.
+ *
+ * The scope is `getRootNode()` rather than a class name, so it is the shadow
+ * root in the real preview and the detached step root in a test that renders
+ * one directly. Neither case needs this file to know what the renderer calls
+ * its own elements.
+ */
 export function keyOfElement(element: HTMLElement): SlotKey | null {
+  const named = nameOf(element);
+
+  if (named === null) {
+    return null;
+  }
+
+  const root = element.getRootNode();
+  const scope = 'querySelectorAll' in root ? (root as ParentNode) : null;
+
+  if (scope === null) {
+    return named;
+  }
+
+  const sharing = Array.from(scope.querySelectorAll<HTMLElement>(SLOT_SELECTOR)).filter(
+    (other) => nameOf(other) === named,
+  );
+
+  // `indexOf` is -1 for an element the scope does not contain, which is a
+  // detached node rather than a first occurrence — `Math.max` reads it as the
+  // only one, which is what it is.
+  return nth(named, Math.max(sharing.indexOf(element), 0));
+}
+
+/** The un-numbered half of a rendered slot's key. */
+function nameOf(element: HTMLElement): SlotKey | null {
   const { role, captures } = element.dataset;
 
   if (typeof role === 'string' && role !== '') {
-    return roleKey(role);
+    return `role:${role}`;
   }
 
-  return typeof captures === 'string' && captures !== '' ? capturesKey(captures) : null;
+  return typeof captures === 'string' && captures !== '' ? `captures:${captures}` : null;
 }
 
 /** Everything in a rendered step that the panel has a block for. */

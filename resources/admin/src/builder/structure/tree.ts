@@ -1,4 +1,4 @@
-import { IDENTITY, LEAVES, childKeysOf, type Path } from '../panel';
+import { IDENTITY, LEAVES, childKeysOf, numbered, type Path } from '../panel';
 import type { TemplateNode, TemplateTree } from '@renderer/types';
 
 /**
@@ -115,6 +115,15 @@ export interface Block {
   /** What a `field` captures, or null. The other half. */
   readonly captures: string | null;
   /**
+   * Which of the same-named blocks in this step it is — the third half, since
+   * [[Slot Role]]s repeat (ADR 0051) and a name identifies nothing on its own.
+   *
+   * Filled in by `panel.ts`'s {@link numbered}, which is the same function
+   * {@link slotsOf} runs its walk through. Two implementations of one ordinal
+   * is a preview whose clicks reach the wrong block, with nothing thrown.
+   */
+  readonly at: number;
+  /**
    * What a `button` DOES — `submit` or `link` — or null for anything else.
    *
    * A param rather than content, and the one param a row has to show: it is
@@ -164,7 +173,10 @@ export function nodesOf(tree: TemplateTree): Block[] {
     collect(step, [index], 1, index + 1, tree.steps.length, null, blocks),
   );
 
-  return blocks;
+  // Numbered through the SAME helper `slotsOf` uses, because a row and the
+  // preview slot it points at must land on one `SlotKey` — and roles repeat, so
+  // the name alone no longer identifies either (ADR 0051, {@link numbered}).
+  return numbered(blocks);
 }
 
 function collect(
@@ -197,6 +209,8 @@ function collect(
     // thing to the row and another to whatever counts.
     action: node.type === 'button' ? (typeof action === 'string' ? action : 'submit') : null,
     hidden: (node as { hidden?: boolean }).hidden === true,
+    // Filled in by {@link numbered} once the whole tree is collected.
+    at: 0,
     says: saysOf(node),
     holds: countIn(node),
     holder: keys.length > 0,

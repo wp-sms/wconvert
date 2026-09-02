@@ -13,10 +13,23 @@
 // Two assertions, and neither is optional:
 //
 //   1. THE BYTE BUDGET, HARD. Free's and Pro's shipped loader, gzip -9, fail
-//      at 8192 bytes, per build. The prototype measured 3.6KB honest and 3.9KB
-//      with the whole v1 rule vocabulary, so a threshold at 2x headroom can
-//      only fire on a real regression — which is why it blocks rather than
-//      warns, and why there is no second warn band nobody would read.
+//      at 12288 bytes, per build. It blocks rather than warns, and there is no
+//      second warn band nobody would read.
+//
+//      IT WAS 8192, AND THE NUMBER MOVED ONCE, ON PURPOSE. The original was
+//      set at 2x the prototype's 3.9KB, against a vocabulary of six leaves and
+//      three layouts that produced twelve designs reading as one design twelve
+//      times. Widening it — style tokens, a wrapping grid, four small leaves,
+//      an icon set, motion, a countdown — costs about 2KB and does not fit
+//      under 8192 beside Pro's two extra containers. See ADR 0014 and ADR 0029
+//      for the amendment and the competitor figures behind it; in short, the
+//      smallest shipped runtime in the field is Icegram Lite at 13,672 B, so a
+//      ceiling below that keeps "smaller than anything in the market"
+//      literally sayable while leaving the gallery room to be a gallery.
+//
+//      WHAT DID NOT CHANGE IS THAT IT IS HARD AND FLAGLESS (ADR 0029). A
+//      number moved with an argument attached is not an opt-out; the moment
+//      this check has one, the opt-out is what runs on the day it matters.
 //
 //   2. THE PREMIUM-IDENTIFIER SCAN, SCOPED TO THE LOADER BUNDLE ONLY. Its
 //      identifier list is read from the rule manifest, so it cannot drift from
@@ -64,13 +77,14 @@ const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const ROOT = process.argv[2] ? resolve(process.argv[2]) : REPO_ROOT;
 
 /**
- * Free's and Pro's shipped loader, gzip -9, per build (ADR 0014, ADR 0029).
+ * Free's and Pro's shipped loader, gzip -9, per build (ADR 0014 amended,
+ * ADR 0029 amended).
  *
  * The eligibility inspector carries no budget and is not listed below. The
- * 8KB limit is about what every visitor of every matching page downloads, and
- * that bundle is enqueued only for an administrator who asked for it.
+ * limit is about what every visitor of every matching page downloads, and that
+ * bundle is enqueued only for an administrator who asked for it.
  */
-const BYTE_BUDGET = 8192;
+const BYTE_BUDGET = 12288;
 
 const BUNDLES = [
   { label: 'free loader', path: 'public/loader/loader.js', scanForPremium: true },

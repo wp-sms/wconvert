@@ -114,7 +114,70 @@ describe('the key a slot is known by', () => {
    * click to travel to.
    */
   it('names nothing for a node with neither a Role nor a capture kind', () => {
-    expect(keyOfSlot({ role: null, captures: null })).toBeNull();
+    expect(keyOfSlot({ role: null, captures: null, hidden: false, at: 0 })).toBeNull();
     expect(keyOfElement(document.createElement('div'))).toBeNull();
+  });
+
+  /**
+   * ==========================================================================
+   * A REPEATED ROLE IS THE CASE A NAME ALONE CANNOT NAME.
+   * ==========================================================================
+   * Roles repeat (ADR 0051), so a three-benefit row has three `body` slots. If
+   * the key were the Role alone, clicking the third would select the first and
+   * selecting any would outline all three — and nothing would throw, which is
+   * why this is asserted rather than assumed.
+   *
+   * The two sides derive the ordinal from different things — the panel from the
+   * tree walk, the preview from document order — so the assertion is that they
+   * come out the same, against the REAL renderer.
+   */
+  describe('where a Role is claimed more than once', () => {
+    const REPEATED = {
+      steps: [
+        {
+          type: 'stack',
+          children: [
+            { type: 'text', role: 'body', text: 'Free shipping' },
+            { type: 'text', role: 'body', text: 'Early drops' },
+            { type: 'text', role: 'body', text: '48h returns' },
+            { type: 'button', role: 'cta_label', label: 'Join', action: 'link', href: '/x' },
+          ],
+        },
+      ],
+    } as unknown as TemplateEntry['tree'];
+
+    it('numbers them, leaving the first bare', () => {
+      expect(keysInPanel(REPEATED)).toEqual([
+        roleKey('body'),
+        roleKey('body', 1),
+        roleKey('body', 2),
+        roleKey('cta_label'),
+      ]);
+    });
+
+    it('agrees with the preview, element for element', () => {
+      const root = render(REPEATED, {});
+
+      expect(Array.from(root.querySelectorAll<HTMLElement>(SLOT_SELECTOR)).map(keyOfElement)).toEqual(
+        keysInPanel(REPEATED),
+      );
+    });
+
+    /**
+     * **A hidden slot takes no ordinal**, because the renderer skips it — and a
+     * count that included it would put the two sides one apart for every slot
+     * after it, which is the silent version of this whole failure.
+     */
+    it('skips a hidden slot on both sides, so the numbering still lines up', () => {
+      const hidden = withHidden(REPEATED, [0, 'children', 1], true);
+      const root = render(hidden, {});
+
+      expect(Array.from(root.querySelectorAll<HTMLElement>(SLOT_SELECTOR)).map(keyOfElement)).toEqual([
+        roleKey('body'),
+        roleKey('body', 1),
+        roleKey('cta_label'),
+      ]);
+      expect(keysInPanel(hidden)).toEqual([roleKey('body'), roleKey('body', 1), roleKey('cta_label')]);
+    });
   });
 });

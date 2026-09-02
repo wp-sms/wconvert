@@ -92,6 +92,29 @@ const OUTLINE = '2px solid var(--ring, #0f6e79)';
  */
 const FOCUSABLE = 'a[href],button,input,select,textarea';
 
+/**
+ * What a countdown counts to on THIS side of the boundary.
+ *
+ * ============================================================================
+ * THE PREVIEW IS AN INPUT, AND A DEAD CLOCK IS A PREVIEW OF NOTHING.
+ * ============================================================================
+ * On a real page a `countdown` counts to the Optin's `ends_at` and to nothing
+ * else (ADR 0052). The builder has no such instant — the schedule lives on the
+ * Rules tab and may well be empty while the merchant is choosing a design — and
+ * a preview showing `00:00:00` would tell them their design is broken when it
+ * is the schedule that is missing. `structure/problems.ts` is where that is
+ * said, in a sentence with a way to the tab that fixes it.
+ *
+ * So the preview counts to a plausible two hours out. It is a PICTURE of the
+ * design, exactly as the placeholder headline beside it is a picture of a
+ * headline — nobody reads a gallery card's copy as their own words either.
+ *
+ * **Module scope, so it does not move.** Computed per render it would change
+ * identity on every keystroke and remount the preview each time; computed once
+ * per page load it ticks down honestly for as long as the screen is open.
+ */
+const A_PREVIEW_DEADLINE = Date.now() + 2 * 60 * 60 * 1000;
+
 export interface PreviewProps {
   readonly template: Template;
   readonly step?: number;
@@ -137,7 +160,12 @@ export function Preview({ template, step = 0, selected = null, onSelect }: Previ
   );
 
   useEffect(() => {
-    const mounted = mount({ displayType: 'inline', template: drawn, anchor: anchor.current });
+    const mounted = mount({
+      displayType: 'inline',
+      template: drawn,
+      anchor: anchor.current,
+      endsAt: A_PREVIEW_DEADLINE,
+    });
 
     mounted.show();
 

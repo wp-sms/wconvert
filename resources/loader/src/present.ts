@@ -48,6 +48,10 @@ export const templatePresenter: Presenter = {
       displayType: entry.display_type,
       template,
       anchor,
+      // The countdown's deadline, and the Optin's window, are one number
+      // (ADR 0052). Absent where the merchant set no end, which draws a clock
+      // with nothing in it rather than inventing one.
+      endsAt: entry.ends_at,
       // Called rather than handed over: `controls` is the shell's object and
       // a bare reference to a method on it is a `this` waiting to be lost.
       onDismiss: () => controls.dismiss(),

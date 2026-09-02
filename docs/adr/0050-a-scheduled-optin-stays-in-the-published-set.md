@@ -198,3 +198,11 @@ adjacent windows both live for a millisecond.
 - **CONTEXT.md gains [[Schedule]] as a term**, because a word that means a wall
   time on one side of a boundary and an instant on the other is one nobody will
   spell the same way twice.
+- ***Extended by
+  [ADR 0052](0052-a-countdown-counts-to-the-optins-own-schedule-end.md): the
+  instant this projects is also what a countdown counts to.*** *A `countdown`
+  node carries no deadline of its own, so there is nowhere for a timer and a
+  schedule to disagree — and the wall-time/instant split above is what makes the
+  display cache-proof, because there is no seconds-remaining value to bake into
+  a cached page. It also gives `ends_at` a visible consequence: the same instant
+  that stops the Optin is the one the visitor watches run out.*

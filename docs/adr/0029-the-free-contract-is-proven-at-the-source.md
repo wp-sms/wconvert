@@ -154,6 +154,16 @@ check has an opt-out, the opt-out is what runs on the day it matters.
   v1 rule vocabulary, so a hard threshold at 2× headroom can only fire on a real
   regression — which is why it blocks rather than warns, and why there is no second
   warn band nobody would read.
+  ***Amended: the number is 12,288 B*** *— see
+  [ADR 0014](0014-pro-replaces-the-loader.md) for the arithmetic and the
+  competitor measurements. What this ADR asserts is untouched by that: the gate
+  is still **hard and flagless**, still fails closed on a bundle it cannot read,
+  and still has no warn band. A threshold moved once, deliberately, with the
+  reasoning written down is not an opt-out — the failure this ADR names is a
+  check that can be **turned off**, and no flag was added. The one thing the
+  original justification lost is the "2× the prototype" framing: 12,288 B is
+  set against what the design vocabulary costs and what the field ships, not
+  against a 2019 measurement of a loader that had no renderer in it.*
 - **The payload budget is not a build gate.** It is generated per URL at runtime, so
   it has no artifact to weigh. It becomes a PHPUnit test that renders a worst-case
   published set and asserts the 2KB bound — *and* asserts the scaling property the

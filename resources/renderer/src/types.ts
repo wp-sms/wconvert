@@ -16,14 +16,23 @@
  */
 
 /**
- * The semantic name of a slot, unique across a Template's whole tree
- * (CONTEXT.md, Slot Role). It is the seam a Playbook binds copy to, so the
- * words survive switching Template.
+ * The semantic name of a slot (CONTEXT.md, Slot Role). It is the seam a
+ * Playbook binds copy to, so the words survive switching Template.
+ *
+ * **Closed, and no longer unique** (ADR 0051). A design may claim `body` three
+ * times and a Playbook fills them in tree order; what stays closed is the list
+ * of names, because binding is BY NAME and that is the whole guarantee. The
+ * uniqueness that used to be here was enforced by a silent key-drop on the way
+ * in, and what it cost was an empty `<p>` in front of a visitor for every slot
+ * past the first.
  */
 export type SlotRole =
   | 'headline'
   | 'body'
   | 'fine_print'
+  | 'eyebrow'
+  | 'badge'
+  | 'rating_text'
   | 'cta_label'
   | 'consent_text'
   | 'success_headline'
@@ -133,6 +142,111 @@ export interface TextNode extends HideableNode {
   readonly link?: SlotLink;
 }
 
+/**
+ * The small line above a heading — *LIMITED TIME*, *NEW IN*.
+ *
+ * A node of its own rather than a `text` with a token on it, because what makes
+ * it an eyebrow is the TYPOGRAPHY: small, spaced, upper case, quiet. A merchant
+ * cannot express that by typing, and a design that wanted one had to spend its
+ * one `body` slot on a word.
+ */
+export interface EyebrowNode extends HideableNode {
+  readonly type: 'eyebrow';
+  readonly text?: string;
+}
+
+/**
+ * A short word on a coloured chip — *50% OFF*, *BESTSELLER*.
+ *
+ * The eyebrow's louder sibling, and the distinction is worth keeping: an
+ * eyebrow is a label ABOVE something, a badge is a thing stuck ON something.
+ * Both are one short string, and neither can be drawn out of the six leaves
+ * this vocabulary had.
+ */
+export interface BadgeNode extends HideableNode {
+  readonly type: 'badge';
+  readonly text?: string;
+}
+
+/**
+ * A rule between two parts of a design.
+ *
+ * The one leaf with nothing to say, which is why it carries no copy key and no
+ * [[Slot Role]]. It exists because `gap` is the only separation the vocabulary
+ * had, and a design that wants a line has no way to ask for one.
+ */
+export interface DividerNode extends HideableNode {
+  readonly type: 'divider';
+}
+
+/**
+ * Stars, and optionally what they are for — *"from 2,000 reviews"*.
+ *
+ * **Whole stars only, and never a number the merchant types.** Half stars need
+ * a clip path and buy a design nothing; and a rating a template could set to
+ * any value is a claim about a business this plugin cannot check. Three, four
+ * or five is a design choice about a shape, and the words beside it are the
+ * merchant's to make true.
+ */
+export interface RatingNode extends HideableNode {
+  readonly type: 'rating';
+  /** How many of the five are filled. Absent is five. */
+  readonly value?: 3 | 4 | 5;
+  readonly text?: string;
+}
+
+/**
+ * The time left, counting down to the Optin's own schedule end.
+ *
+ * ============================================================================
+ * IT CARRIES NO DEADLINE, AND THAT IS THE ENTIRE DESIGN.
+ * ============================================================================
+ * A countdown node has no `until`, no `minutes` and no `evergreen` flag,
+ * because the deadline it counts to is the [[Optin]]'s `ends_at` and nothing
+ * else (ADR 0052). The merchant authors one wall time on the Rules tab, the
+ * server resolves it once against `wp_timezone()`, and the payload carries one
+ * absolute instant in milliseconds — which is exactly a cache-proof target, and
+ * the reason the classic bug in this genre (a seconds-remaining value baked
+ * into a cached page and wrong for every visitor after the first) is not
+ * expressible here.
+ *
+ * Binding it also gives the deadline a CONSEQUENCE for free: at `ends_at` the
+ * Optin leaves its window, shows nothing and records no Impression. *"A
+ * deadline with no consequence is just a clock"*, and a timer that a merchant
+ * can set independently of the schedule is how an offer keeps working after
+ * zero.
+ *
+ * **A tree is still pure.** The renderer draws the shape and no time at all;
+ * the tick lives in `mount()`'s `shell()`, which every container shares and
+ * which dies with the mount — so a preview rebuilt on every keystroke leaks
+ * nothing and `render()` stays a function of (tree, tokens).
+ */
+export interface CountdownNode extends HideableNode {
+  readonly type: 'countdown';
+}
+
+/**
+ * One glyph from a closed set of six.
+ *
+ * ============================================================================
+ * CLOSED, BECAUSE AN OPEN ICON SLOT IS A MARKUP SLOT WEARING A HAT.
+ * ============================================================================
+ * The obvious alternative is an `src` like `image` has, and it is the wrong
+ * shape twice: an SVG from off-site is exactly the remote asset ADR 0013 keeps
+ * out of the payload, and an inline one is markup in a vocabulary whose whole
+ * claim is that it cannot express any (ADR 0010). A closed set is drawn by the
+ * renderer from paths it owns, so there is nothing to sanitise and nothing to
+ * fetch.
+ *
+ * Six is what a lead-capture design actually reaches for: a tick for a benefit
+ * list, a star for proof, a bolt for speed, a gift for an offer, a clock for a
+ * deadline, a van for delivery.
+ */
+export interface IconNode extends HideableNode {
+  readonly type: 'icon';
+  readonly name?: 'check' | 'star' | 'bolt' | 'gift' | 'clock' | 'truck';
+}
+
 export interface ImageNode extends HideableNode {
   readonly type: 'image';
   readonly src?: string;
@@ -172,7 +286,19 @@ export interface ConsentNode extends HideableNode {
   readonly link?: SlotLink;
 }
 
-export type LeafNode = HeadingNode | TextNode | ImageNode | FieldNode | ButtonNode | ConsentNode;
+export type LeafNode =
+  | HeadingNode
+  | TextNode
+  | EyebrowNode
+  | BadgeNode
+  | DividerNode
+  | CountdownNode
+  | RatingNode
+  | IconNode
+  | ImageNode
+  | FieldNode
+  | ButtonNode
+  | ConsentNode;
 
 export interface StackNode {
   readonly type: 'stack';
@@ -198,25 +324,36 @@ export interface SplitNode {
   readonly ratio?: number;
 }
 
-/*
- * ============================================================================
- * `grid` IS GONE, AND IT IS WORTH SAYING WHY RATHER THAN JUST DELETING IT.
- * ============================================================================
- * It declared `repeat(columns, 1fr)` — equal tracks, always N across — and that
- * is the wrong shape for the surface this vocabulary draws on. A popup is
- * `min(28rem, 100%)` wide, so a two-column grid stays two columns at 320px and
- * hands a phone two 140px columns of prose. `split` solves the same problem and
- * WRAPS, which is why it is the one that survives.
+/**
+ * As many equal columns as fit, wrapping by construction.
  *
- * It also overlapped `row` from the other side: a Row lays several things
- * across and wraps, which is the useful half of a grid at this width.
+ * ============================================================================
+ * IT CAME BACK WITH THE SHAPE THAT GOT IT DELETED TAKEN OUT OF IT.
+ * ============================================================================
+ * The `grid` this replaces declared `repeat(columns, 1fr)` — equal tracks,
+ * always N across — which is the wrong shape for the surface this vocabulary
+ * draws on: a popup is `min(28rem, 100%)` wide, so a two-column grid stayed two
+ * columns at 320px and handed a phone two 140px columns of prose. It also had a
+ * `columns` param no control in the admin ever reached, so no merchant could
+ * have made it a three-column anything, and no shipped design used it. A layout
+ * that cannot be configured and is demonstrated by nothing is a word in a menu.
  *
- * Nothing shipped used it, and its one option — `columns` — was reachable from
- * nowhere in the admin, so no merchant could ever have made it a three-column
- * anything. A layout that cannot be configured and is demonstrated by no design
- * is a fourth word in a menu and not a capability.
+ * `repeat(auto-fit, minmax(8rem, 1fr))` is the same idea with the failure
+ * removed. Three across on a desktop, one per line on a phone, **no media query
+ * and no param to misconfigure** — the browser counts the columns from the
+ * space it actually has. So the param that was the problem is gone rather than
+ * fixed, which is why this is a different layout wearing the old name.
+ *
+ * It earns its place beside `split`, which is hard-coded to exactly two panes:
+ * a three-up of benefits is not expressible any other way, and three benefits
+ * is what a benefit list has.
  */
-export type LayoutNode = StackNode | RowNode | SplitNode;
+export interface GridNode {
+  readonly type: 'grid';
+  readonly children?: readonly TemplateNode[];
+}
+
+export type LayoutNode = StackNode | RowNode | SplitNode | GridNode;
 
 /**
  * Any node. `{ type: string }` is deliberately part of the union: a snapshot
@@ -239,6 +376,26 @@ export type TemplateNode = LayoutNode | LeafNode | { readonly type: string };
  */
 export interface TemplateTree {
   readonly steps: readonly TemplateNode[];
+  /**
+   * Which vocabulary wrote this tree.
+   *
+   * ==========================================================================
+   * NOTHING IN THE RENDERER READS THIS EITHER, AND FOR A DIFFERENT REASON.
+   * ==========================================================================
+   * `id` rides along because stripping it would cost a second walk; this rides
+   * along because it is the whole point. A snapshot outlives the vocabulary it
+   * was drawn from, and until now had no way to say WHICH one — which is fine
+   * while the vocabulary only ever widens, and is unrecoverable the first time
+   * something is renamed or a choice list is tightened.
+   *
+   * Optional in the type because a tree written before the key existed is
+   * still a tree, and the renderer's whole posture toward an unrecognised
+   * anything is to carry on. It is minted in PHP by
+   * `WConvert\Template\TemplateTree::stamped()`, on every path that builds a
+   * tree, and **the renderer and the admin must never mint one** — the same
+   * rule `id` has, for the same reason.
+   */
+  readonly v?: number;
 }
 
 /**

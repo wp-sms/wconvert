@@ -36,6 +36,7 @@
     "test": "phpunit --testdox --colors=always",
     "phpstan": "phpstan analyse --memory-limit=1G",
     "verify:source": "bash bin/verify-source-contract.sh",
+    "verify:templates": "php bin/verify-templates.php",
     "verify:artifact": "bash bin/verify-artifact-contract.sh"
   },
   "config": {

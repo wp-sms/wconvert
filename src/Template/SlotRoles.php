@@ -76,14 +76,30 @@ final class SlotRoles
      * is the shape `bind()` writes back — a sentence's link is part of the
      * sentence it sits in, so the two travel together (ADR 0013).
      *
+     * ========================================================================
+     * A ROLE CLAIMED TWICE COMES BACK AS A LIST, AND ONCE AS ITSELF.
+     * ========================================================================
+     * Roles repeat (ADR 0051), so a design with three `body` nodes is carrying
+     * three bodies. The shape is decided by how many nodes claimed the Role
+     * rather than being a list always: one is by far the common case, a bare
+     * value is what a [[Playbook]] writes, and a round trip through this pair
+     * must not change the shape of copy that was already correct.
+     *
+     * The ambiguity that creates is real and is resolved by
+     * {@see self::wordsFor()}: a Role filling several keys comes back as a MAP
+     * (`{text, link}`), and a Role claimed several times comes back as a LIST.
+     * `array_is_list()` tells them apart, which is why nothing here has to
+     * know which node type is which.
+     *
      * @param mixed $tree
      * @return array<string, mixed>
      */
     public static function copyFrom($tree, TemplateVocabulary $vocabulary): array
     {
-        $copy = [];
+        /** @var array<string, list<mixed>> $found */
+        $found = [];
 
-        self::walk($tree, $vocabulary, static function (array $node, array $bindings) use (&$copy): array {
+        self::walk($tree, $vocabulary, static function (array $node, array $bindings) use (&$found): array {
             foreach ($bindings as $role => $keys) {
                 $words = [];
 
@@ -98,14 +114,17 @@ final class SlotRoles
                     // Playbook writes for every slot but the one that needs a
                     // link inside a sentence. Two spellings of the same words
                     // would make a round trip through this pair change shape.
-                    $copy[$role] = count($keys) === 1 ? reset($words) : $words;
+                    $found[$role][] = count($keys) === 1 ? reset($words) : $words;
                 }
             }
 
             return $node;
         });
 
-        return $copy;
+        return array_map(
+            static fn (array $words) => count($words) === 1 ? $words[0] : $words,
+            $found
+        );
     }
 
     /**
@@ -118,25 +137,83 @@ final class SlotRoles
      * merchant may switch Template afterwards and the words are meant to
      * survive that.
      *
+     * ========================================================================
+     * REPEATED ROLES BIND IN TREE ORDER, AND SHORT LISTS SIMPLY RUN OUT.
+     * ========================================================================
+     * A design with three `body` nodes takes `['Free shipping', 'Early drops',
+     * '48h returns']` in the order the nodes appear; one with a single `body`
+     * takes the first and ignores the rest (ADR 0051). Words the design has no
+     * slot for write NOTHING rather than being appended somewhere — the same
+     * posture a Role the tree does not offer already gets, and for the same
+     * reason: this binder must be total across a Template switch, and a design
+     * with fewer benefit lines than the last one is exactly that switch.
+     *
+     * A node the list does not reach keeps whatever the design gave it, which
+     * for a snapshot is nothing at all — {@see TemplateVocabulary::withoutCopy()}
+     * has already taken the words out. So a fourth `body` renders empty, which
+     * is the honest picture of a Playbook that supplied three.
+     *
      * @param mixed $tree
      * @param array<string, mixed> $copy Role => the words, as a Playbook carries them.
-     * @return array{steps: list<array<string, mixed>>}
+     * @return array{v: int, steps: list<array<string, mixed>>}
      */
     public static function bind($tree, array $copy, TemplateVocabulary $vocabulary): array
     {
+        /** @var array<string, int> $bound How many nodes have already taken each Role. */
+        $bound = [];
+
         return self::walk(
             $tree,
             $vocabulary,
-            static function (array $node, array $bindings) use ($copy): array {
+            static function (array $node, array $bindings) use ($copy, &$bound): array {
                 foreach ($bindings as $role => $keys) {
-                    if (array_key_exists($role, $copy)) {
-                        $node = self::write($node, $keys, $copy[$role]);
+                    if (!array_key_exists($role, $copy)) {
+                        continue;
+                    }
+
+                    $at = $bound[$role] ?? 0;
+                    $bound[$role] = $at + 1;
+                    $words = self::wordsFor($copy[$role], $at);
+
+                    if ($words !== null) {
+                        $node = self::write($node, $keys, $words);
                     }
                 }
 
                 return $node;
             }
         );
+    }
+
+    /**
+     * The nth node's share of what a Playbook wrote for one Role, or null.
+     *
+     * ========================================================================
+     * A LIST IS SEVERAL SLOTS. A MAP IS ONE SLOT WITH SEVERAL KEYS.
+     * ========================================================================
+     * Both arrive as PHP arrays and they mean opposite things, which is the one
+     * genuinely ambiguous thing about repeatable Roles. `array_is_list()` is
+     * what tells them apart, and it is exact rather than a heuristic: a Role
+     * filling several keys comes back from {@see self::copyFrom()} keyed by
+     * those key NAMES (`{text: …, link: …}`), which is never a list; a Role
+     * claimed by several nodes comes back keyed `0, 1, 2`, which always is.
+     *
+     * Anything that is not a list is ONE slot's words, so the first node takes
+     * it and every node after it takes nothing — rather than every node taking
+     * a copy. Three benefit lines all reading "Free shipping" is not what a
+     * Playbook supplying one line meant, and it is the failure a merchant would
+     * never think to report as a bug.
+     *
+     * @param mixed $words
+     * @return mixed|null Null where this node's turn has nothing in it.
+     */
+    private static function wordsFor($words, int $at)
+    {
+        if (is_array($words) && array_is_list($words)) {
+            return $words[$at] ?? null;
+        }
+
+        return $at === 0 ? $words : null;
     }
 
     /**
@@ -240,7 +317,7 @@ final class SlotRoles
      *
      * @param mixed $tree
      * @param callable(array<string, mixed>, array<string, list<string>>): array<string, mixed> $visit
-     * @return array{steps: list<array<string, mixed>>}
+     * @return array{v: int, steps: list<array<string, mixed>>}
      */
     private static function walk($tree, TemplateVocabulary $vocabulary, callable $visit): array
     {
@@ -254,7 +331,7 @@ final class SlotRoles
             }
         }
 
-        return ['steps' => $visited];
+        return TemplateTree::stamped(['steps' => $visited]);
     }
 
     /**

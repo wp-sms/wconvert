@@ -1,4 +1,4 @@
-import { useId, useState, type CSSProperties } from 'react';
+import { useId, useState, type CSSProperties, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { HexColorInput, HexColorPicker, RgbaStringColorPicker } from 'react-colorful';
 import { Button } from '../components/ui/button';
@@ -6,14 +6,18 @@ import { RotateCcw } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
 import { CHOICES, TOKENS, groupsOf, withToken, type TokenGroupId } from './panel';
 import { getThemeTokens } from './api';
+import { MediaControl } from './SlotFields';
 import {
+  asBackgroundLayer,
   isApplied,
   isColour,
+  isCssImage,
   isFontStack,
   isTranslucent,
   measureOf,
   rangeFor,
   themePresets,
+  urlIn,
 } from './themes';
 import { AA_NORMAL, contrastOf } from './contrast';
 import { nameOf, type TemplateLabels } from '../templates/api';
@@ -435,6 +439,24 @@ function TokenField({
     );
   }
 
+  /*
+    **A picture is an address, not a CSS function a merchant types.** This token
+    holds a background layer — `none`, a `url()`, or a gradient — and without a
+    control of its own the panel's answer was a text box expecting
+    `url(https://…)`, which is exactly the *"type `center` into this box"*
+    defect the whole panel exists to remove.
+
+    It comes BEFORE the choice branch and after the colour one, which is the
+    dispatch order the shapes deserve: a colour is the most specific test, an
+    image is the next, and `choices` is what a token declares when its value
+    says nothing about itself.
+  */
+  if (isCssImage(shown)) {
+    return (
+      <ImageField id={field} label={label} value={value} reset={reset} onChange={onChange} />
+    );
+  }
+
   if (offered !== undefined) {
     return (
       <ChoiceField
@@ -508,6 +530,64 @@ function TokenField({
             onChange={(event) => onChange(event.target.value)}
           />
         )}
+        {reset}
+      </span>
+    </div>
+  );
+}
+
+/**
+ * A background picture, as the address a merchant actually has.
+ *
+ * ============================================================================
+ * ONE BOX, AND IT IS STILL THE ESCAPE HATCH.
+ * ============================================================================
+ * What is SHOWN is the address inside the `url()`; what is STORED is the whole
+ * layer. A merchant pastes `https://…/photo.jpg` and the token becomes
+ * `url("https://…/photo.jpg")`, which is the only thing CSS will accept in a
+ * background layer and the last thing anybody should be asked to type.
+ *
+ * **A value this cannot read as an address is shown and stored verbatim.** A
+ * `linear-gradient()` therefore survives being looked at and can still be
+ * typed, which is the same bargain every other control here makes: the panel
+ * offers the common case a control and never takes the uncommon one away
+ * ({@see asBackgroundLayer}).
+ *
+ * `type="text"` and not `type="url"`, for that last reason exactly — a `url`
+ * input would refuse a gradient, and refuse a site-relative path while it was
+ * at it.
+ */
+function ImageField({
+  id,
+  label,
+  value,
+  reset,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  reset: ReactNode;
+  onChange: (value: string) => void;
+}) {
+  const address = urlIn(value);
+
+  return (
+    <div className="wconvert-token">
+      <label htmlFor={id}>{label}</label>
+      <span className="wconvert-token__row">
+        <MediaControl
+          id={id}
+          label={label}
+          type="text"
+          // What the box SHOWS is the address; what it stores is the whole
+          // layer. A value this cannot read as an address — a gradient — is
+          // shown and stored verbatim, which is the escape hatch.
+          value={address ?? (value === '' ? '' : value)}
+          onChange={(next) =>
+            onChange(address === null && value !== '' ? next : asBackgroundLayer(next))
+          }
+        />
         {reset}
       </span>
     </div>

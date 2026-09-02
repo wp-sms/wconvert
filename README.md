@@ -108,7 +108,7 @@ reaches for first.
 
 `npm run check:loader` is the **one build a pull request pays for**, and it
 earns it: both of its assertions are about build output. Free's and Pro's
-loader, gzip -9, hard-fail at 8192 bytes; and free's loader is scanned for
+loader, gzip -9, hard-fail at 12288 bytes; and free's loader is scanned for
 every rule identifier the manifest calls premium — free's *admin* bundle is
 deliberately never scanned, because it carries premium identifiers on purpose
 for its `locked` cards.
@@ -146,7 +146,7 @@ and its implementation arrive in the same commit.
 ## The template vocabulary
 
 [`resources/templates/manifest.json`](resources/templates/manifest.json) is the
-closed list of everything a Template may name: six leaf nodes, four layouts,
+closed list of everything a Template may name: eleven leaf nodes, four layouts,
 the token set, the Slot Roles and the field kinds. A Template is a JSON node
 tree plus tokens with **no HTML and no CSS in it**
 ([ADR 0010](docs/adr/0010-templates-are-configuration-not-documents.md)), so
@@ -180,7 +180,18 @@ facets and a link to a live preview on wconvert.com, with no tree and no image
 at all. Shipping the design and refusing the save is trialware
 ([#7](https://github.com/navidkashani/wconvert/issues/7)), so
 `bin/verify-artifact-contract.sh` check **(e)** refuses a `tier: pro` entry, or
-a `tree` in `locked.json`, inside the free artifact.
+a `tree` in `locked.json`, inside the free artifact — and refuses a **Pro**
+artifact that carries no premium design at all, which is the same rule read from
+the other end.
+
+**Pro's designs live under `pro/resources/templates/library/`** and are
+registered through the same `TemplateSource` seam, from
+`ProServiceProvider::register()`. That registration is also what makes the
+upsell disappear: `TemplateLibrary::locked()` drops a stub whose id a real entry
+already holds, so *"a paying customer is never shown an advertisement for what
+they bought"* ([ADR 0026](docs/adr/0026-a-goal-the-site-cannot-serve-is-hidden.md))
+falls out of the id rather than out of a tier check. `LockedTemplates` is
+composed **last**, which is what makes that true.
 
 ```bash
 tests/js/renderer-manifest-parity.test.ts      # the renderer against the manifest
@@ -189,6 +200,8 @@ tests/unit/Template/TemplateSnapshotTest.php   # an Optin's copy outlives its en
 tests/unit/Template/TemplateFacetsTest.php     # every shipped design's facets, from its tree
 tests/unit/Rest/TemplateRoutesTest.php         # the index carries no tree, and locked cards link
 tests/unit/Frontend/PayloadBudgetTest.php      # ten snapshotted trees, ≤2KB gzipped
+tests/unit/Template/LibraryLintTest.php        # bin/verify-templates.php, over the shipped library
+tests/unit/Pro/Template/ProLibraryTest.php     # a Pro install is shown no upsell for a design it has
 ```
 
 Like the rule manifest, **the loader must never `import` it**: an unrecognised
@@ -196,6 +209,33 @@ node is skipped by the renderer's own switch, so the lookup buys nothing and
 the import would put the whole vocabulary in the byte budget. The parity test
 asserts the renderer implements exactly what the manifest declares, in both
 directions.
+
+A stored tree carries a **`v`** — the vocabulary version that wrote it
+([`TemplateTree::VERSION`](src/Template/TemplateTree.php)). Nothing reads it
+yet, and that is the point: an Optin's snapshot is as old as the Optin and the
+code reading it is as new as the release, which is safe while the vocabulary
+only widens and unrecoverable the first time something is renamed.
+
+### Writing a design by hand
+
+```bash
+composer verify:templates     # or: php bin/verify-templates.php [tree ...]
+```
+
+`bin/verify-templates.php` decodes each library file **raw**, runs it through
+the vocabulary, and diffs — reporting every dropped node, param, token and Slot
+Role, plus files that failed to decode at all. It runs without WordPress,
+because an authoring check nobody can run from the directory they are authoring
+in is an authoring check nobody runs;
+`tests/unit/Template/LibraryLintTest.php` is what makes it a gate.
+
+It exists because authoring has six silent failures and three of them cost a day
+each: a **JSON syntax error skips the file entirely** with no rejection recorded
+and nothing logged; a **misspelled `tree` key becomes a Pro upsell card** for the
+design the file contains, because no tree is the whole discriminator for "a
+design this install did not get"; and a **dropped Slot Role** reaches a real
+Optin as an empty `<p>`, while the gallery card looks right because an entry
+keeps its own placeholder text.
 
 ## Goals and Playbooks
 
