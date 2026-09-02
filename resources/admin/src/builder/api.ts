@@ -203,6 +203,46 @@ export interface Frequency {
 }
 
 /**
+ * *When* it runs — the merchant's own local date and time, never an instant.
+ *
+ * ============================================================================
+ * ONE NAME, TWO REPRESENTATIONS, AND ONE CONVERTER BETWEEN THEM.
+ * ============================================================================
+ * `starts_at` and `ends_at` are the same two keys the payload carries, and
+ * they hold something different there: **this is the wall time the merchant
+ * typed** (`2026-11-27 09:00`, no zone on it) and the payload's are absolute
+ * instants in milliseconds, resolved once by `PublishedProjection` against
+ * `wp_timezone()`.
+ *
+ * The asymmetry is the feature rather than an oversight. A wall time is the
+ * only thing a merchant can reason about, and storing the resolved instant
+ * would freeze it against whatever timezone the site was on the day they
+ * pressed Publish — so correcting the site timezone afterwards would leave
+ * every schedule an hour out with nothing on any screen to say why. Storing
+ * the wall time means the answer is recomputed on every rebuild.
+ *
+ * The other direction is just as load-bearing: sending the browser a wall time
+ * would make one schedule mean a different moment in every visitor's browser,
+ * because the visitor's clock is not the site's clock.
+ *
+ * `src/Optin/Schedule.php` is the one converter, and it is also what refuses
+ * an end at or before its start — `tests/js/builder-schedule.test.ts` holds
+ * the three spellings together.
+ */
+export interface Schedule {
+  starts_at?: string;
+  ends_at?: string;
+}
+
+/**
+ * The two field names, as a value rather than only as a type — the same
+ * arrangement {@link FREQUENCY_FIELDS} has, and for its reason: an interface
+ * is erased at build, so nothing could assert it against the loader's
+ * declaration or PHP's.
+ */
+export const SCHEDULE_FIELDS = ['starts_at', 'ends_at'] as const;
+
+/**
  * The four field names, as a value rather than only as a type.
  *
  * A TypeScript interface is erased at build, so nothing could assert it

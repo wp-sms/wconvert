@@ -108,6 +108,21 @@ export interface PayloadEntry {
   readonly triggers?: readonly Rule[];
   readonly conditions?: readonly Rule[];
   readonly frequency?: Frequency;
+  /**
+   * The window the merchant scheduled, as **absolute instants in
+   * milliseconds** — never the local date and time they typed.
+   *
+   * Resolved once, on the server, against the site's timezone
+   * ({@link ../../../src/Optin/Schedule.php}), because the visitor's clock is
+   * not the site's clock: a payload carrying a wall time would mean a
+   * different moment in every browser that read it. `schedule.ts` compares
+   * these to `Date.now()` and the loader names no timezone anywhere.
+   *
+   * Absent means unbounded on that side. A start with no end and an end with
+   * no start are both things merchants mean.
+   */
+  readonly starts_at?: number;
+  readonly ends_at?: number;
 }
 
 /**

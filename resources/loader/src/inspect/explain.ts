@@ -71,6 +71,26 @@ export interface EntryReport {
    * Optin and this is a fact about the page.
    */
   readonly lostArbitration: boolean;
+  /**
+   * Which side of its scheduled window this Optin is on, or null where it is
+   * inside one or has none.
+   *
+   * ==========================================================================
+   * A FACT ABOUT THE ENTRY, NOT A SEVENTH `Standing`.
+   * ==========================================================================
+   * `decide` answers `capped` for an Optin outside its window, exactly as it
+   * does for one whose allowance is spent, and that is deliberate: ADR 0047
+   * argues at length against widening a closed vocabulary to carry a
+   * distinction this screen can render as a sentence beside the word it
+   * already uses. So the distinction is derived here, from the same inputs the
+   * decision was taken on, AFTER it was taken — the same arrangement
+   * {@link lostArbitration} has, and for the same reason.
+   *
+   * `after` beats `before`: a campaign with both boundaries behind it is
+   * finished, and telling its author it has not started yet sends them looking
+   * for a date that already passed.
+   */
+  readonly schedule: 'before' | 'after' | null;
 }
 
 export interface Explanation {
@@ -148,9 +168,25 @@ export function explain(decision: Decision): Explanation {
         triggers: (entry.triggers ?? []).map((rule) => report(rule, answers, decision)),
         conditions: (entry.conditions ?? []).map((rule) => report(rule, answers, decision)),
         lostArbitration: standing === 'ready' && !showing.has(entry.id),
+        schedule: sideOfWindow(entry, decision.now),
       };
     }),
   };
+}
+
+/**
+ * Which side of its window, on the same clock reading `decide` was given.
+ *
+ * Not re-read from `Date.now()`: a second reading could land the panel on the
+ * other side of a boundary from the verdict it is explaining, which is the one
+ * way this screen could contradict the page it runs on.
+ */
+function sideOfWindow(entry: PayloadEntry, now: number): 'before' | 'after' | null {
+  if (entry.ends_at !== undefined && now >= entry.ends_at) {
+    return 'after';
+  }
+
+  return entry.starts_at !== undefined && now < entry.starts_at ? 'before' : null;
 }
 
 /** Does any rule on this entry need consent this visitor has withheld? */

@@ -42,12 +42,14 @@ final class InspectorTag
     /**
      * @param list<array<string, string|null>> $summaries As `OptinRepository::summaries()` returns them.
      * @param array<string, string> $suspensions Optin id => the sentence, as `Suspension::reasonsIn()` returns them.
+     * @param array<string, array{starts: string|null, ends: string|null}> $schedules As `InspectorSchedules::forSet()` returns them.
      * @param iterable<array<string, mixed>> $publishedSet The stored set, for the Targeting of what is published.
      * @param array<string, mixed> $labels
      */
     public static function render(
         array $summaries,
         array $suspensions,
+        array $schedules,
         iterable $publishedSet,
         RequestContext $context,
         array $labels
@@ -55,7 +57,7 @@ final class InspectorTag
         $json = json_encode(
             [
                 'request' => self::request($context),
-                'optins' => self::optins($summaries, $suspensions, $publishedSet, $context),
+                'optins' => self::optins($summaries, $suspensions, $schedules, $publishedSet, $context),
                 'labels' => $labels,
             ],
             JSON_HEX_TAG | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
@@ -113,12 +115,14 @@ final class InspectorTag
      *
      * @param list<array<string, string|null>> $summaries
      * @param array<string, string> $suspensions
+     * @param array<string, array{starts: string|null, ends: string|null}> $schedules
      * @param iterable<array<string, mixed>> $publishedSet
      * @return list<array<string, mixed>>
      */
     private static function optins(
         array $summaries,
         array $suspensions,
+        array $schedules,
         iterable $publishedSet,
         RequestContext $context
     ): array {
@@ -144,6 +148,12 @@ final class InspectorTag
                 // The sentence the Optin list already shows, so the two
                 // screens cannot disagree about why an Optin is suspended.
                 'suspended' => $suspensions[$id] ?? null,
+                // How far each end of the window is from now, in words minted
+                // in PHP — null where this Optin is not scheduled at all. The
+                // panel decides which of the two to show from its own reading
+                // of the clock, which is the same reading the verdict it is
+                // explaining was taken on ({@see InspectorSchedules}).
+                'schedule' => $schedules[$id] ?? null,
                 // Null for a draft: there is no published Targeting to
                 // evaluate, and an unpublished Optin has not reached the gate
                 // this would answer.

@@ -77,10 +77,18 @@ final class PublishedProjection
      *   capture path re-reads it from the server's own published copy and
      *   trusts the client for nothing but the values a person typed
      *   (ADR 0004), so the browser has no use for it and never had.
-     * - **`starts_at` and `ends_at` are absent because nothing puts them
-     *   here** — scheduling is not built. When it is, it ships: the projection
-     *   includes scheduled Optins by design so a cached page can receive one,
-     *   and the comparison is the loader's.
+     * - **`starts_at` and `ends_at` DO ship, and are not in this list because
+     *   they are not COPIED.** This originally read *"absent because nothing
+     *   puts them here — scheduling is not built"*, and
+     *   [#89](https://github.com/navidkashani/wconvert/issues/89) built it.
+     *   `SHIPPED` is a copy list, and a schedule is the one payload key that
+     *   is not a copy of anything: `config` holds the LOCAL WALL TIME the
+     *   merchant authored and the payload holds an absolute INSTANT, resolved
+     *   here against the site's zone ({@see Schedule}). Two names for one
+     *   fact would be worse — the pair is projected below, where the
+     *   transformation is visible, and pinned by
+     *   `tests/unit/Optin/PublishedProjectionTest.php` the same way the copy
+     *   list is.
      */
     private const SHIPPED = ['template', 'display_type', 'frequency', 'priority'];
 
@@ -88,12 +96,12 @@ final class PublishedProjection
      * @param iterable<array<string, mixed>> $rows
      * @return list<array<string, mixed>>
      */
-    public static function build(iterable $rows, RuleVocabulary $vocabulary): array
+    public static function build(iterable $rows, RuleVocabulary $vocabulary, \DateTimeZone $siteZone): array
     {
         $set = [];
 
         foreach ($rows as $row) {
-            $entry = self::project($row, $vocabulary);
+            $entry = self::project($row, $vocabulary, $siteZone);
 
             if ($entry !== null) {
                 $set[] = $entry;
@@ -111,6 +119,35 @@ final class PublishedProjection
      * cannot evaluate joins it (ADR 0027) — though from the enqueue filter
      * rather than from here, since suspension is computed against the live
      * registry and this projection is built at publish time.
+     *
+     * ========================================================================
+     * A SCHEDULE IS NOT ON THIS LIST, AND IT IS THE ONE MOST PEOPLE WOULD ADD.
+     * ========================================================================
+     * An Optin whose window has not opened is IN the set, and so is one whose
+     * window has closed. Excluding either looks obviously right and is the bug
+     * this ticket exists to avoid: the set is rebuilt on WRITE and never on a
+     * timer (ADR 0003), so nothing re-runs at the moment a window opens — a
+     * not-yet-started Optin left out here is left out of every page a
+     * full-page cache serves until somebody republishes, which may be days
+     * after the sale began.
+     *
+     * So the Optin ships, carrying its two instants, and the browser decides
+     * ({@see ../../resources/loader/src/schedule.ts}). The far end is the same
+     * argument in reverse: a page cached while the window was open still holds
+     * the payload, and it can only work out that the window has shut from a
+     * fact it was given. An Optin leaves the set when the merchant unpublishes
+     * it, which is the act that means *stop*.
+     *
+     * A schedule differs from suspension here, and the difference is why one
+     * is an exclusion and the other is not: suspension is computed against a
+     * live registry the payload cannot carry, so a stale cached page has to be
+     * caught again at the beacon
+     * ({@see PublishedOptin::servableIdsIn()}). A window is one number, it
+     * travels, and the page holding it can answer for itself — including a
+     * page cached before the window closed. Nothing about scheduling needs a
+     * second question asked at the beacon, and an Optin outside its window
+     * shows nothing, so it reports nothing and no counter ever receives a row
+     * (ADR 0027's reading, arrived at by the payload rather than by a filter).
      *
      * @param array<string, mixed> $row
      */
@@ -133,7 +170,7 @@ final class PublishedProjection
      * @param array<string, mixed> $row
      * @return array<string, mixed>|null
      */
-    private static function project(array $row, RuleVocabulary $vocabulary): ?array
+    private static function project(array $row, RuleVocabulary $vocabulary, \DateTimeZone $siteZone): ?array
     {
         if (self::isExcluded($row)) {
             return null;
@@ -195,7 +232,11 @@ final class PublishedProjection
             // triggers" as "never fires", which is ADR 0012's zero-trigger
             // loss stated rather than guessed at, and it can only read that
             // from a key that is present.
-            'payload' => array_merge($payload, $vocabulary->partition($rules)),
+            'payload' => array_merge(
+                $payload,
+                Schedule::windowIn($published, $siteZone),
+                $vocabulary->partition($rules)
+            ),
         ];
     }
 }

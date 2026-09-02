@@ -1,7 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { entriesOn } from './axis';
 import { howOftenSummary, whenSummary, whereSummary, whoSummary, type Summary } from './sentence';
-import type { Frequency, Rule, RuleVocabulary, Targeting } from '../api';
+import type { Frequency, Rule, RuleVocabulary, Schedule, Targeting } from '../api';
 
 /**
  * The four questions, answered — **once, for the two screens that ask them.**
@@ -31,6 +31,16 @@ export interface DisplayRulesValue {
   readonly rules: readonly Rule[];
   readonly targeting: Targeting;
   readonly frequency: Frequency;
+  /**
+   * *When it runs*, on the same axis as the allowance.
+   *
+   * It sits inside "How often" rather than becoming a fifth section because it
+   * answers the same question at a coarser grain — the allowance is how often
+   * ONE VISITOR may meet it, and this is when the campaign is on at all — and
+   * because a merchant reading one row wants both facts in the same sentence:
+   * *"Runs 27 Nov to 30 Nov · every time, until they close it"*.
+   */
+  readonly schedule: Schedule;
   readonly priority: number;
 }
 
@@ -56,7 +66,7 @@ export function summarise(
   vocabulary: RuleVocabulary,
   overlay: boolean,
 ): AxisSummaries {
-  const { rules, targeting, frequency, priority } = value;
+  const { rules, targeting, frequency, schedule, priority } = value;
   /*
    * Every type on every axis, because a summary reads a rule by its DECLARED
    * params and a Targeting rule can carry a preset like any other. The two
@@ -80,7 +90,7 @@ export function summarise(
     {
       id: 'how-often',
       eyebrow: __('How often', 'wconvert'),
-      ...howOftenSummary(frequency, priority, overlay),
+      ...howOftenSummary(frequency, schedule, priority, overlay),
     },
   ];
 }

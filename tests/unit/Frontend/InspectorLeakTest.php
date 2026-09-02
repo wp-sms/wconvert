@@ -256,6 +256,7 @@ final class InspectorLeakTest extends TestCase
             [['id' => '01JQ0000000000000000000001', 'name' => '</script><img src=x>', 'published_at' => null]],
             [],
             [],
+            [],
             new \WConvert\Targeting\RequestContext(),
             []
         );

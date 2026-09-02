@@ -87,6 +87,10 @@ export function runInspector(loader: Loader): void {
   }
 
   function render(): void {
+    // One reading, two precisions — the same arrangement `shell.ts` makes, so
+    // the panel and the page cannot disagree about what time it is.
+    const instant = Date.now();
+
     const report = explain({
       entries,
       evaluators,
@@ -94,7 +98,8 @@ export function runInspector(loader: Loader): void {
       // The snapshot, not a fresh read. See the docblock: re-reading it is
       // what made the panel report a showing Optin as capped.
       state: AT_THE_START,
-      day: dayOf(Date.now()),
+      day: dayOf(instant),
+      now: instant,
       shown: new Set(),
       overlayDone: false,
     });

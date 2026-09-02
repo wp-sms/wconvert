@@ -28,7 +28,11 @@ export interface ShellOptions {
   readonly loader: Loader;
   readonly entries: readonly PayloadEntry[];
   readonly presenter: Presenter;
-  /** Wall-clock, used only to derive the day a record is stamped with. */
+  /**
+   * Wall-clock. Read ONCE per decision, and used for two things at two
+   * precisions: the day a record is stamped with, and the instant a schedule
+   * is compared against ({@see Decision}).
+   */
   readonly now?: () => number;
   readonly store?: Store;
   /**
@@ -109,12 +113,18 @@ export function start(options: ShellOptions): () => void {
     deciding = true;
 
     try {
+      // One reading, two precisions. Asking the clock twice would let a
+      // decision straddle midnight — the day from before it and the instant
+      // from after — which is one of those bugs that happens once a night.
+      const instant = now();
+
       const verdict = decide({
         entries,
         evaluators,
         withheld,
         state,
-        day: dayOf(now()),
+        day: dayOf(instant),
+        now: instant,
         shown,
         overlayDone,
       });

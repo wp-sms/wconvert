@@ -26,6 +26,9 @@ it: the placement, the trigger, the copy and the fields, already filled in.
   fight — every part stays editable.
 * **A lead log** with CSV export, and per-Optin analytics: impressions,
   conversions, dismissals and a daily series.
+* **A start and end date**, so a sale switches itself off. Set them in your
+  site's own time; nothing shows before the start or after the end, and neither
+  is required — an Optin can run from a date, until a date, or between two.
 * **Lead-magnet delivery by email**, with no third-party service required.
 * **Consent captured as part of the form**, recorded with the wording that was
   on screen at the time.

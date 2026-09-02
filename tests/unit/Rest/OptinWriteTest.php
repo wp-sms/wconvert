@@ -499,4 +499,114 @@ final class OptinWriteTest extends TestCase
     {
         $this->assertArrayNotHasKey('priority', $this->savedConfig(['priority' => 'urgent']));
     }
+
+    // ========================================================================
+    // THE SCHEDULE, NORMALISED BESIDE THE ALLOWANCE AND REFUSED BY THE SAME
+    // VALUE OBJECT.
+    // ========================================================================
+
+    /**
+     * **The control's own value is canonicalised on the way in.** An
+     * `<input type="datetime-local">` posts `2026-11-27T09:00`; what is stored
+     * is the wall time, in one spelling, because
+     * {@see \WConvert\Optin\PublishedProjection} resolves it against the
+     * site's zone on every rebuild and a second spelling is a second parse.
+     */
+    public function testTheScheduleIsCanonicalisedOnTheWayIn(): void
+    {
+        $saved = $this->savedConfig([
+            'starts_at' => '2026-11-27T09:00',
+            'ends_at' => '2026-11-30T23:59:59',
+        ]);
+
+        $this->assertSame('2026-11-27 09:00', $saved['starts_at'] ?? null);
+        $this->assertSame('2026-11-30 23:59', $saved['ends_at'] ?? null);
+    }
+
+    /** One boundary on its own is a schedule merchants mean, and it is kept. */
+    public function testOneBoundaryOnItsOwnIsSaved(): void
+    {
+        $this->assertSame('2026-11-27 09:00', $this->savedConfig(['starts_at' => '2026-11-27 09:00'])['starts_at'] ?? null);
+        $this->assertSame('2026-11-30 23:59', $this->savedConfig(['ends_at' => '2026-11-30 23:59'])['ends_at'] ?? null);
+    }
+
+    /**
+     * **A value that was supplied and is not a moment is REFUSED**, not
+     * dropped — and an emptied box is not the same thing.
+     *
+     * Dropping a supplied `ends_at` publishes a sale that never finishes,
+     * which is the complaint this feature exists to answer;
+     * {@see \WConvert\Optin\Frequency}'s "drop the nonsense to null" does not
+     * transfer, because there a dropped value and the stored one mean the same
+     * thing to the engine and here they do not.
+     */
+    public function testAScheduleThatIsNotAMomentIsRefused(): void
+    {
+        $refused = $this->create(Goal::PromoteOffer, ['starts_at' => 'next Friday']);
+
+        $this->assertInstanceOf(WP_Error::class, $refused);
+        $this->assertSame(400, $refused->get_error_data()['status'] ?? null);
+    }
+
+    /** An emptied box is the merchant saying "no boundary", and is saved as one. */
+    public function testAnEmptiedBoxIsNoBoundaryRatherThanARefusal(): void
+    {
+        $saved = $this->savedConfig(['starts_at' => '', 'ends_at' => '']);
+
+        $this->assertArrayNotHasKey('starts_at', $saved);
+        $this->assertArrayNotHasKey('ends_at', $saved);
+    }
+
+    /**
+     * ========================================================================
+     * AN END BEFORE ITS START IS REFUSED, AND THE NORMALISER IS WHAT REFUSES.
+     * ========================================================================
+     * {@see \WConvert\Optin\Schedule::fromArray()} throws; this route turns
+     * that into a 400. The rule is not spelled here, deliberately: ADR 0047
+     * records what putting it here cost last time, and a schedule has a
+     * second, non-REST author coming.
+     *
+     * Refused rather than repaired, for {@see \WConvert\Optin\Frequency}'s
+     * stated reason applied one step further. Dropping the end would publish a
+     * sale that never finishes — the *"it keeps popping up"* complaint this
+     * whole feature exists to answer — and dropping the start would publish
+     * one that can never show. Neither is a decision the merchant made.
+     */
+    public function testAnEndBeforeItsStartIsRefusedWithA400(): void
+    {
+        $refused = $this->create(Goal::PromoteOffer, [
+            'starts_at' => '2026-11-30 09:00',
+            'ends_at' => '2026-11-27 09:00',
+        ]);
+
+        $this->assertInstanceOf(WP_Error::class, $refused);
+        $this->assertSame(400, $refused->get_error_data()['status'] ?? null);
+    }
+
+    /** A window with no width is refused for the same reason: nothing is inside it. */
+    public function testAWindowThatEndsWhereItStartsIsRefused(): void
+    {
+        $this->assertInstanceOf(WP_Error::class, $this->create(Goal::PromoteOffer, [
+            'starts_at' => '2026-11-27 09:00',
+            'ends_at' => '2026-11-27 09:00',
+        ]));
+    }
+
+    /** And an edit is refused the same way a create is. */
+    public function testAnUpdateCarryingABackwardsScheduleIsRefused(): void
+    {
+        $created = $this->create(Goal::PromoteOffer, []);
+        $this->assertIsArray($created);
+
+        $request = new WP_REST_Request();
+        $request->set_param('id', $created['id']);
+        $request->set_param('config', [
+            'rules' => [['type' => 'page_load']],
+            'starts_at' => '2026-11-30 09:00',
+            'ends_at' => '2026-11-27 09:00',
+        ]);
+
+        $this->assertInstanceOf(WP_Error::class, $this->controller->update($request));
+    }
 }
+

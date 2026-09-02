@@ -55,6 +55,12 @@ final class InspectorLabels
                 'suspended' => __('Not suspended', 'wconvert'),
                 'targeting' => __('Allowed on this page', 'wconvert'),
                 'payload' => __('Reached the browser', 'wconvert'),
+                // AFTER "reached the browser", and the order is the whole
+                // scheduling decision written down: a not-yet-started Optin is
+                // published, is in the projection, and does reach the page —
+                // it has to, because the set is rebuilt on write and a
+                // full-page cache can serve the same HTML for days (ADR 0003).
+                'schedule' => __('Inside its schedule', 'wconvert'),
                 'frequency' => __('Allowance not spent', 'wconvert'),
                 'consent' => __('Consent given', 'wconvert'),
                 'trigger' => __('Has a trigger this site can fire', 'wconvert'),
@@ -94,6 +100,25 @@ final class InspectorLabels
                 ),
                 'not_in_payload' => __('It did not reach this page.', 'wconvert'),
                 'capped' => __('This browser has already had its allowance.', 'wconvert'),
+                // ============================================================
+                // THE SENTENCE BESIDE THE WORD, WHICH IS WHY THERE IS NO
+                // SEVENTH `Standing`.
+                // ============================================================
+                // The engine says `capped` for an Optin outside its window and
+                // for one whose allowance is spent, because both mean *the
+                // allowance is spent and this cannot change on this page view*
+                // (ADR 0047). A merchant told "this browser has already had
+                // its allowance" about a sale that starts on Friday goes
+                // looking for a cookie, so these two are what they read
+                // instead.
+                //
+                // One `%s` each, filled with a duration `human_time_diff()`
+                // minted — the panel substitutes with a single
+                // `String.replace` and has no formatter for a second.
+                /* translators: %s: how long until it starts, e.g. “3 days”. */
+                'before_window' => __('Scheduled. It starts in %s.', 'wconvert'),
+                /* translators: %s: how long ago it finished, e.g. “4 hours”. */
+                'after_window' => __('Its schedule ended %s ago.', 'wconvert'),
                 'blocked' => __(
                     'One of its rules needs storage consent this visit has not given. Not evaluated, not failed.',
                     'wconvert'

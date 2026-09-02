@@ -1,7 +1,7 @@
 import { __, _n, _x, sprintf } from '@wordpress/i18n';
 import { fromRule } from '../presets';
 import type { Entry } from './axis';
-import type { Frequency, Rule, RuleParam, RuleType, Targeting } from '../api';
+import type { Frequency, Rule, RuleParam, RuleType, Schedule, Targeting } from '../api';
 
 /**
  * The four section summaries — pure, and the only place the rules are read as
@@ -425,6 +425,65 @@ export function whoSummary(entries: readonly Entry[], types: readonly RuleType[]
 // ============================================================================
 
 /**
+ * *When it runs*, as a clause — or null where nothing was scheduled.
+ *
+ * ============================================================================
+ * FORMATTED IN THE READER'S LOCALE, FROM A WALL TIME WITH NO ZONE ON IT.
+ * ============================================================================
+ * The stored value is `2026-11-27 09:00` and carries no offset, which is the
+ * whole point of it (`src/Optin/Schedule.php`). `new Date('…T09:00')` reads a
+ * zoneless string as LOCAL time and `Intl` renders it back in the same zone,
+ * so the round trip shifts nothing — the merchant reads back the wall time
+ * they typed, spelled the way their own browser spells dates.
+ *
+ * That is also why no timezone is named here. The instant this resolves to is
+ * the SITE's business and is computed once, on the server; this screen is
+ * showing the merchant their own words back.
+ */
+function windowClause(schedule: Schedule): string | null {
+  const from = readable(schedule.starts_at);
+  const to = readable(schedule.ends_at);
+
+  if (from !== null && to !== null) {
+    return sprintf(
+      /* translators: 1: a date and time it starts. 2: a date and time it ends. */
+      __('Runs %1$s to %2$s', 'wconvert'),
+      from,
+      to,
+    );
+  }
+
+  if (from !== null) {
+    return sprintf(
+      /* translators: %s: a date and time it starts. */
+      __('Runs from %s', 'wconvert'),
+      from,
+    );
+  }
+
+  return to === null
+    ? null
+    : sprintf(
+        /* translators: %s: a date and time it ends. */
+        __('Runs until %s', 'wconvert'),
+        to,
+      );
+}
+
+/** One stored wall time, spelled the way the reader's browser spells dates. */
+function readable(wallTime: string | undefined): string | null {
+  if (wallTime === undefined) {
+    return null;
+  }
+
+  const moment = new Date(wallTime.replace(' ', 'T'));
+
+  return Number.isNaN(moment.getTime())
+    ? null
+    : new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(moment);
+}
+
+/**
  * The allowance, read out.
  *
  * **The default is not "every time".** `stopAfterDismiss` and
@@ -438,7 +497,12 @@ export function whoSummary(entries: readonly Entry[], types: readonly RuleType[]
  * is real, stored, and inert — and a summary that mentioned it would be
  * telling the merchant about a control that changes nothing.
  */
-export function howOftenSummary(frequency: Frequency, priority: number, overlay: boolean): Summary {
+export function howOftenSummary(
+  frequency: Frequency,
+  schedule: Schedule,
+  priority: number,
+  overlay: boolean,
+): Summary {
   const caps: string[] = [];
 
   if (frequency.maxImpressions !== undefined) {
@@ -502,15 +566,29 @@ export function howOftenSummary(frequency: Frequency, priority: number, overlay:
             join(stoppers, or),
           );
 
+  // The window goes FIRST, because it is the coarser fact: an Optin that is
+  // not running at all has nothing to say about how often it shows, and a
+  // merchant scanning the collapsed row wants to know which of their campaigns
+  // are live before they read anybody's allowance.
+  const runs = windowClause(schedule);
+  const allowance = runs === null
+    ? text
+    : sprintf(
+        /* translators: 1: when the Optin runs, e.g. “Runs from 27 Nov 2026, 09:00”. 2: the allowance, e.g. “every time, until they close it”. */
+        __('%1$s · %2$s', 'wconvert'),
+        runs,
+        text,
+      );
+
   if (!overlay || priority === 0) {
-    return { text, attention: false };
+    return { text: allowance, attention: false };
   }
 
   return {
     text: sprintf(
       /* translators: 1: the allowance, e.g. “Every time, until they close it”. 2: a priority number. */
       __('%1$s · priority %2$d', 'wconvert'),
-      text,
+      allowance,
       priority,
     ),
     attention: false,

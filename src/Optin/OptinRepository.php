@@ -420,6 +420,30 @@ final class OptinRepository
     }
 
     /**
+     * The site's timezone changed, so every [[Schedule]] means a different
+     * instant now.
+     *
+     * ========================================================================
+     * ITS OWN NAME, BESIDE {@see self::rebuildForInstall()}, FOR THAT
+     * METHOD'S STATED REASON.
+     * ========================================================================
+     * A public rebuild is an invitation to call it on read, so each of the two
+     * legitimate callers gets a name that makes calling it on read read wrong.
+     * One generic `rebuild()` would give that property up to save a method.
+     *
+     * This is the second and last event other than an Optin write that changes
+     * what the projection would produce: a window is STORED as the local wall
+     * time the merchant typed and RESOLVED against `wp_timezone()` here
+     * (ADR 0050), so a merchant correcting a wrong site timezone corrects
+     * every schedule with it — and without this the correction would wait for
+     * the next unrelated publish, which may never come.
+     */
+    public function rebuildForTimezoneChange(): void
+    {
+        $this->rebuildPublishedSet();
+    }
+
+    /**
      * Rebuild the published set from the table.
      *
      * Private: every caller that should reach it is in this class, and a
@@ -440,6 +464,17 @@ final class OptinRepository
         // dragging every soft-deleted row through PHP, and the projection is
         // where the rule is stated and tested. A row that slips past the query
         // is still excluded.
-        $this->publishedSet->replaceWith(PublishedProjection::build($rows, $this->vocabulary));
+        // **The site's zone, read at every rebuild.** An Optin's schedule is
+        // stored as the local wall time the merchant authored and resolved to
+        // an absolute instant here, so changing the site timezone re-resolves
+        // every schedule on the next rebuild rather than leaving instants
+        // frozen at whatever the zone was when somebody pressed Publish.
+        // `wp_timezone()` for the reason {@see \WConvert\Stats\StatDay} gives:
+        // it returns the zone as an object and honours both halves of
+        // WordPress's setting — a named zone with its own DST history, or a
+        // bare UTC offset for a site that never picked one.
+        $this->publishedSet->replaceWith(
+            PublishedProjection::build($rows, $this->vocabulary, wp_timezone())
+        );
     }
 }

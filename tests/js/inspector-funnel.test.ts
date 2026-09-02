@@ -24,6 +24,7 @@ const optin = (over: Partial<ServerOptin> = {}): ServerOptin => ({
   name: 'Welcome discount',
   published: true,
   suspended: null,
+  schedule: null,
   targeting: { admits: true, reason: null, logged_in: null, include: [], exclude: [] },
   ...over,
 });
@@ -37,6 +38,7 @@ const entry = (over: Partial<EntryReport> = {}): EntryReport => ({
   triggers: [],
   conditions: [],
   lostArbitration: false,
+  schedule: null,
   ...over,
 });
 
@@ -219,3 +221,73 @@ describe('an Optin stopped on the server', () => {
     expect(first([optin()]).browser).not.toBeNull();
   });
 });
+
+/**
+ * ============================================================================
+ * "SCHEDULED, STARTS IN THREE DAYS" — A GATE, AND NOT A SEVENTH `Standing`.
+ * ============================================================================
+ * The engine says `capped` for an Optin outside its window and for one whose
+ * allowance is spent, because both mean *the allowance is spent and this
+ * cannot change on this page view* (ADR 0047). The funnel is where the two
+ * part company: a merchant told *"this browser has already had its
+ * allowance"* about a sale that starts on Friday goes looking for a cookie.
+ *
+ * **The magnitude is the server's word and the direction is the browser's.**
+ * The panel carries no `@wordpress/i18n` (ADR 0048), so "3 days" is minted in
+ * PHP with `human_time_diff()`; which side of the boundary the visitor is on
+ * is the same reading the verdict was taken against.
+ */
+describe('a scheduled Optin', () => {
+  const scheduled = (over: Partial<ServerOptin> = {}) =>
+    optin({ schedule: { starts: '3 days', ends: '10 days' }, ...over });
+
+  it('says it has not started yet, and how long', () => {
+    const row = first([scheduled()], [entry({ standing: 'capped', schedule: 'before' })]);
+
+    expect(row.gate).toBe('schedule');
+    expect(row.stopped).toBe('before_window');
+    expect(row.subject).toBe('3 days');
+  });
+
+  it('says its window has closed, and how long ago', () => {
+    const row = first([scheduled()], [entry({ standing: 'capped', schedule: 'after' })]);
+
+    expect(row.gate).toBe('schedule');
+    expect(row.stopped).toBe('after_window');
+    expect(row.subject).toBe('10 days');
+  });
+
+  /**
+   * The allowance is still the allowance. A scheduled Optin INSIDE its window
+   * whose device has had its fill stops at `frequency`, with the sentence that
+   * gate already has.
+   */
+  it('still says the allowance is spent for an Optin inside its window', () => {
+    const row = first([scheduled()], [entry({ standing: 'capped', schedule: null })]);
+
+    expect(row.gate).toBe('frequency');
+    expect(row.stopped).toBe('capped');
+    expect(row.subject).toBeNull();
+  });
+
+  /**
+   * The schedule gate sits AFTER the payload gate, and that is the ordering
+   * the whole feature turns on: a scheduled Optin is IN the published set and
+   * DOES reach the browser before its window opens, so a merchant reading this
+   * screen is told the nine things that are fine before the one that is not.
+   */
+  it('sits between reaching the browser and the allowance', () => {
+    expect(GATES.indexOf('schedule')).toBe(GATES.indexOf('payload') + 1);
+    expect(GATES.indexOf('schedule')).toBe(GATES.indexOf('frequency') - 1);
+  });
+
+  /**
+   * A draft with a schedule is a DRAFT. The precedence this file exists to
+   * pin, applied to the new gate.
+   */
+  it('says a draft is a draft, schedule or no schedule', () => {
+    expect(first([scheduled({ published: false })], [entry({ standing: 'capped', schedule: 'before' })]).stopped)
+      .toBe('draft');
+  });
+});
+

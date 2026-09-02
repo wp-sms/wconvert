@@ -481,6 +481,52 @@ transient as a rate limit and stored nowhere, and prefetch, prerender and bot
 requests are dropped. What abuse costs is a wrong number on one merchant's
 dashboard, not data loss and not a breach.
 
+## Scheduling
+
+An [[Optin]] can carry `starts_at`, `ends_at`, both or neither. Both live in the
+`config` blob beside `frequency` and `priority` — **no column**, because no
+screen filters or sorts on a schedule and `parent_id` is a column only because
+the Optins list has to filter on it
+([ADR 0001](docs/adr/0001-custom-tables-not-custom-post-types.md)).
+
+The one thing to know before touching any of it: **a scheduled Optin is IN the
+published set on both sides of its window**. That is
+[ADR 0050](docs/adr/0050-a-scheduled-optin-stays-in-the-published-set.md), and
+excluding one is the implementation that looks obviously right and silently
+never shows the campaign — the set is rebuilt on write and never on a timer, so
+nothing runs at the moment a window opens. The Optin ships and the browser
+decides.
+
+The merchant authors a **local wall time** and the payload carries **one
+absolute instant in milliseconds**. `src/Optin/Schedule.php` is the one
+converter, it is pure and takes the zone as an argument for the reason
+`StatDay` does, and `PublishedProjection` resolves through `wp_timezone()` on
+every rebuild — so correcting the site's timezone corrects every schedule with
+it, which `update_option_timezone_string` and `update_option_gmt_offset` are
+hooked to make actually happen. `resources/loader/src/schedule.ts` compares the
+result to `Date.now()` and names no timezone anywhere;
+`tests/js/builder-schedule.test.ts` asserts that structurally, on the source.
+
+Its two doors are the thing to read before changing either. `fromArray()` is
+the author's and **refuses** — an unreadable boundary and an impossible pair,
+which are the same harm reached two ways. `windowIn()` is the reader's, is
+**total**, and **fails shut**: an impossible stored pair ships verbatim, so the
+half-open comparison finds no instant inside it and the Optin never shows,
+where dropping it would read as *never scheduled* and show a finished sale
+forever.
+
+```bash
+wp eval-file bin/verify-schedule.php   # against a real WordPress; runs on Playground's SQLite
+```
+
+It sets a real `timezone_string` to a half-hour offset zone and then to another,
+asserting the published option's instants move; asserts a not-yet-started Optin
+and a finished one are both in it; proves a bare `gmt_offset` site resolves as
+well as a named zone; dispatches a backwards schedule through
+`rest_do_request()` for its 400; and rebuilds over a hand-edited backwards blob
+to prove the reader's door is total. **It refuses to run on a site that already
+has Optins**, because it rebuilds the published set.
+
 ## Placing an inline Optin
 
 `inline` is the one [[Display Type]] that is not an overlay. The other three

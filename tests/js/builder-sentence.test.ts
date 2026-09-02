@@ -392,29 +392,29 @@ describe('how often', () => {
    * would be a lie on the commonest Optin there is.
    */
   it('reads an untouched allowance as stopping, not as unlimited', () => {
-    expect(howOftenSummary({}, 0, true).text).toBe('Every time, until they close it or sign up');
+    expect(howOftenSummary({}, {}, 0, true).text).toBe('Every time, until they close it or sign up');
   });
 
   it('reads both switches off as genuinely every time', () => {
     expect(
-      howOftenSummary({ stopAfterDismiss: false, stopAfterConversion: false }, 0, true).text,
+      howOftenSummary({ stopAfterDismiss: false, stopAfterConversion: false }, {}, 0, true).text,
     ).toBe('Every time, with no limit');
   });
 
   it('reads the counts, singular and plural', () => {
-    expect(howOftenSummary({ maxImpressions: 1 }, 0, true).text).toMatch(/^Shows at most 1 time,/);
-    expect(howOftenSummary({ maxImpressions: 3 }, 0, true).text).toMatch(/^Shows at most 3 times,/);
-    expect(howOftenSummary({ cooldownDays: 7 }, 0, true).text).toMatch(/^Shows at most once every 7 days,/);
+    expect(howOftenSummary({ maxImpressions: 1 }, {}, 0, true).text).toMatch(/^Shows at most 1 time,/);
+    expect(howOftenSummary({ maxImpressions: 3 }, {}, 0, true).text).toMatch(/^Shows at most 3 times,/);
+    expect(howOftenSummary({ cooldownDays: 7 }, {}, 0, true).text).toMatch(/^Shows at most once every 7 days,/);
   });
 
   it('reads both counts and both switches together', () => {
-    expect(howOftenSummary({ maxImpressions: 3, cooldownDays: 7 }, 0, true).text).toBe(
+    expect(howOftenSummary({ maxImpressions: 3, cooldownDays: 7 }, {}, 0, true).text).toBe(
       'Shows at most 3 times and at most once every 7 days, and stops once they close it or sign up',
     );
   });
 
   it('reads a count with the switches off', () => {
-    expect(howOftenSummary({ maxImpressions: 3, stopAfterDismiss: false, stopAfterConversion: false }, 0, true).text)
+    expect(howOftenSummary({ maxImpressions: 3, stopAfterDismiss: false, stopAfterConversion: false }, {}, 0, true).text)
       .toBe('Shows at most 3 times');
   });
 
@@ -430,6 +430,7 @@ describe('how often', () => {
           for (const convert of [undefined, false]) {
             const text = howOftenSummary(
               { maxImpressions: max, cooldownDays: days, stopAfterDismiss: dismiss, stopAfterConversion: convert },
+              {},
               0,
               true,
             ).text;
@@ -448,9 +449,9 @@ describe('how often', () => {
    * number is real, stored and inert.
    */
   it('names the priority on an overlay and never on an inline Optin', () => {
-    expect(howOftenSummary({}, 10, true).text).toMatch(/priority 10$/);
-    expect(howOftenSummary({}, 10, false).text).not.toMatch(/priority/);
-    expect(howOftenSummary({}, 0, true).text).not.toMatch(/priority/);
+    expect(howOftenSummary({}, {}, 10, true).text).toMatch(/priority 10$/);
+    expect(howOftenSummary({}, {}, 10, false).text).not.toMatch(/priority/);
+    expect(howOftenSummary({}, {}, 0, true).text).not.toMatch(/priority/);
   });
 });
 

@@ -1017,6 +1017,65 @@ if (!function_exists('wp_hash')) {
  * containing that line while asserting something else entirely — the beacon's
  * filtering, its rate limit, its published-set check.
  */
+/*
+ * `human_time_diff()`, ported bracket for bracket from core.
+ *
+ * ============================================================================
+ * A FORMATTER, NOT A CLOCK — WHICH IS WHY THIS ONE MAY BE STUBBED.
+ * ============================================================================
+ * `WConvert\Stats\StatDay`'s docblock states the bootstrap's rule about time:
+ * a seam built on a stubbed clock proves nothing about timezones, because the
+ * test agrees with the bootstrap rather than with WordPress. That rule is
+ * about the ANSWER; this function does not compute one. It renders a duration
+ * somebody else computed, and what
+ * `WConvert\Frontend\InspectorSchedules` is proven on is which boundary
+ * lands in which key — the arithmetic, not the words.
+ *
+ * The brackets are core's own (minute / hour / day / week / month / year, each
+ * rounded and floored at one) so the strings a test asserts are the strings a
+ * real site prints. Core's `apply_filters('human_time_diff', ...)` is included
+ * for the same reason. The real function is exercised on a real WordPress by
+ * `bin/verify-schedule.php`, which is the arrangement `bin/verify-stats.php`
+ * has with `wp_timezone()`.
+ */
+if (!function_exists('human_time_diff')) {
+    function human_time_diff(int $from, int $to = 0): string
+    {
+        $to = $to === 0 ? time() : $to;
+        $diff = abs($to - $from);
+
+        /** @var list<array{int, string, string}> $brackets */
+        $brackets = [
+            [3600, '%s min', '%s mins'],
+            [86400, '%s hour', '%s hours'],
+            [604800, '%s day', '%s days'],
+            [2592000, '%s week', '%s weeks'],
+            [31536000, '%s month', '%s months'],
+        ];
+
+        $unit = 60;
+        $single = '%s year';
+        $plural = '%s years';
+        $size = 31536000;
+
+        foreach ($brackets as [$ceiling, $one, $many]) {
+            if ($diff < $ceiling) {
+                $single = $one;
+                $plural = $many;
+                $size = $unit;
+
+                break;
+            }
+
+            $unit = $ceiling;
+        }
+
+        $count = max(1, (int) round($diff / $size));
+
+        return apply_filters('human_time_diff', sprintf(_n($single, $plural, $count), (string) $count), $diff, $from, $to);
+    }
+}
+
 if (!function_exists('wp_timezone')) {
     function wp_timezone(): DateTimeZone
     {

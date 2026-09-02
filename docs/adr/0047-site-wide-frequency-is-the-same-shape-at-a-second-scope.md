@@ -79,6 +79,16 @@ file rather than six lines in the REST controller: the site-wide surface is not
 a REST controller, so a normaliser inlined in one would have been rewritten the
 day this ADR shipped.*
 
+*Followed by [ADR 0050](0050-a-scheduled-optin-stays-in-the-published-set.md),
+which put `src/Optin/Schedule.php` beside `Frequency.php` on this paragraph's
+authority and before it cost anything — a schedule is the same shape of value
+with the same non-REST author coming. It also shares the section: an Optin's
+window is authored in `HowOften.tsx`, because the allowance is how often ONE
+visitor may meet a campaign and the window is when the campaign is on at all.
+Where the two part company is the refusal: `Frequency` drops a nonsensical
+count to null, and `Schedule` THROWS on an end before its start, because
+dropping either boundary publishes a decision the merchant did not make.*
+
 *One decision inside it is worth carrying forward. **`true` is never stored.**
 Both switches default on because `frequency.ts` tests `!== false`, so an absent
 key and a stored `true` are the same answer to the engine and only one of them
@@ -155,6 +165,14 @@ already uses.
 distinguishing "capped by this Optin" from "capped by the site" is the thing to
 resist: it widens a vocabulary the whole design keeps closed, to carry a
 distinction the inspector can render as a sentence beside the one word.
+
+*Applied a second time by [ADR 0050](0050-a-scheduled-optin-stays-in-the-published-set.md),
+to a distinction that is not about frequency at all. An [[Optin]] outside its
+scheduled window is `capped` — same word, same reasoning, same consequence that
+the page is not held live — and what tells the merchant "it starts on Friday"
+is a **gate in the inspector's funnel**, which is that screen's vocabulary
+rather than the engine's. That this argument transferred whole to an unrelated
+feature is the evidence for it that this ADR could not supply on its own.*
 
 ## Consequences
 

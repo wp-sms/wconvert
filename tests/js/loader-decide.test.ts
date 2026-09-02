@@ -42,11 +42,15 @@ function input(overrides: Partial<Parameters<typeof decide>[0]> = {}) {
     withheld: new Set<string>(),
     state: {} as VisitorState,
     day: 20_000,
+    now: NOW,
     shown: new Set<string>(),
     overlayDone: false,
     ...overrides,
   };
 }
+
+/** Midday on 27 November 2026, UTC. Every schedule below is relative to it. */
+const NOW = Date.UTC(2026, 10, 27, 12, 0, 0);
 
 const standings = (verdict: ReturnType<typeof decide>) =>
   Object.fromEntries(verdict.candidates.map((c) => [c.id, c.standing]));
@@ -349,5 +353,79 @@ describe('a rule that cannot answer', () => {
 
     expect(verdict.show.map((e) => e.id)).toEqual(['b']);
     expect(standings(verdict)).toEqual({ a: 'ineligible', b: 'ready' });
+  });
+
+  /**
+   * ==========================================================================
+   * THE SCHEDULE IS A GATE, NOT AN EIGHTH `Standing`.
+   * ==========================================================================
+   * An Optin outside its window shows NOTHING and — because the presenter is
+   * never reached — records no [[Impression]]. Not a zero-valued one: no row,
+   * for the reason ADR 0027 gives about a [[Suspended]] Optin, that a campaign
+   * contributing zeroes against a live denominator makes two periods
+   * incomparable.
+   *
+   * `capped` is the word, alongside the allowance, because it means exactly
+   * what this means — *the allowance is spent, and this cannot change on this
+   * page view* — and ADR 0047 argues at length against widening a deliberately
+   * closed vocabulary to carry a distinction the inspector can render as a
+   * sentence beside the word it already uses.
+   */
+});
+
+describe('a schedule', () => {
+  const day = 24 * 60 * 60 * 1000;
+
+  it('holds an Optin back before its window opens', () => {
+    const verdict = decide(input({ entries: [entry({ starts_at: NOW + 3 * day })] }));
+
+    expect(standings(verdict)).toEqual({ '01JQ0000000000000000000001': 'capped' });
+    expect(verdict.show).toEqual([]);
+  });
+
+  it('stops showing an Optin once its window has closed', () => {
+    const verdict = decide(input({ entries: [entry({ ends_at: NOW - day })] }));
+
+    expect(standings(verdict)).toEqual({ '01JQ0000000000000000000001': 'capped' });
+    expect(verdict.show).toEqual([]);
+  });
+
+  it('shows an Optin inside its window', () => {
+    const verdict = decide(input({ entries: [entry({ starts_at: NOW - day, ends_at: NOW + day })] }));
+
+    expect(standings(verdict)).toEqual({ '01JQ0000000000000000000001': 'ready' });
+  });
+
+  /** "From Friday, forever" and "from now until Friday" are both real. */
+  it('honours one boundary on its own', () => {
+    expect(standings(decide(input({ entries: [entry({ starts_at: NOW - day })] })))).toEqual({
+      '01JQ0000000000000000000001': 'ready',
+    });
+    expect(standings(decide(input({ entries: [entry({ ends_at: NOW + day })] })))).toEqual({
+      '01JQ0000000000000000000001': 'ready',
+    });
+  });
+
+  /**
+   * The window is half-open. A merchant authoring 09:00–17:00 means the
+   * campaign is live AT nine and over AT five, and an end that included its
+   * own instant would leave two adjacent windows both live for a millisecond.
+   */
+  it('opens at its start and closes at its end', () => {
+    expect(standings(decide(input({ entries: [entry({ starts_at: NOW })] })))).toEqual({
+      '01JQ0000000000000000000001': 'ready',
+    });
+    expect(standings(decide(input({ entries: [entry({ ends_at: NOW })] })))).toEqual({
+      '01JQ0000000000000000000001': 'capped',
+    });
+  });
+
+  /**
+   * **The listeners come off.** `capped` is not a live standing, so a page
+   * holding only a not-yet-started Optin releases its scroll handler and its
+   * timer instead of re-asking for the rest of the visit.
+   */
+  it('leaves nothing live on the page', () => {
+    expect(decide(input({ entries: [entry({ starts_at: NOW + 3 * day })] })).live).toBe(false);
   });
 });

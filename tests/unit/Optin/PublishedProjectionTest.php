@@ -27,9 +27,9 @@ final class PublishedProjectionTest extends TestCase
      * @param iterable<array<string, mixed>> $rows
      * @return list<array<string, mixed>>
      */
-    private static function build(iterable $rows): array
+    private static function build(iterable $rows, ?\DateTimeZone $siteZone = null): array
     {
-        return PublishedProjection::build($rows, self::vocabulary());
+        return PublishedProjection::build($rows, self::vocabulary(), $siteZone ?? new \DateTimeZone('UTC'));
     }
 
     /**
@@ -311,5 +311,88 @@ final class PublishedProjectionTest extends TestCase
             'triggers' => [['type' => 'time_on_page', 'seconds' => 10]],
             'conditions' => [],
         ], $set[0]['payload']);
+    }
+
+    /**
+     * ========================================================================
+     * A SCHEDULED OPTIN IS IN THE PUBLISHED SET BEFORE ITS WINDOW OPENS.
+     * ========================================================================
+     * This is the assertion that catches the naive implementation, and it is
+     * the reason it is written down: excluding a not-yet-started Optin passes
+     * every other test in this file and every unit test in the loader, and
+     * then never shows the Optin at all. The set is rebuilt on WRITE and never
+     * on a timer (ADR 0003), and a full-page cache can serve the same HTML for
+     * days — so an Optin absent from the projection when its window opens is
+     * absent from every cached page for as long as that cache lives.
+     *
+     * The Optin ships, and the browser decides.
+     */
+    public function testANotYetStartedOptinIsInThePublishedSet(): void
+    {
+        $set = self::build([self::row([
+            'published_config' => '{"starts_at":"2099-01-01 09:00"}',
+        ])]);
+
+        $this->assertCount(1, $set);
+        $this->assertSame('01JQ0000000000000000000001', $set[0]['id']);
+    }
+
+    /**
+     * And the far end, for the same reason: a page cached while the window was
+     * open still holds the payload, so the entry has to stay in it and carry
+     * the fact that lets that stale page work out for itself that the window
+     * is shut. It leaves when the merchant unpublishes.
+     */
+    public function testAnOptinWhoseWindowHasClosedIsStillInThePublishedSet(): void
+    {
+        $set = self::build([self::row([
+            'published_config' => '{"starts_at":"2020-01-01 09:00","ends_at":"2020-01-08 09:00"}',
+        ])]);
+
+        $this->assertCount(1, $set);
+    }
+
+    /**
+     * **The instant is resolved once, on the server.** What travels is a
+     * number the loader compares against `Date.now()`; the wall time the
+     * merchant authored stays on this side, because the visitor's clock is not
+     * the site's clock and a schedule that means different things in different
+     * browsers is not a schedule.
+     */
+    public function testTheAuthoredWallTimeIsResolvedToAnInstantAgainstTheSiteZone(): void
+    {
+        $set = self::build(
+            [self::row(['published_config' => '{"starts_at":"2026-11-27 09:00","ends_at":"2026-11-30 23:59"}'])],
+            new \DateTimeZone('Asia/Kolkata')
+        );
+
+        $this->assertSame(strtotime('2026-11-27T03:30:00+00:00') * 1000, $set[0]['payload']['starts_at']);
+        $this->assertSame(strtotime('2026-11-30T18:29:00+00:00') * 1000, $set[0]['payload']['ends_at']);
+        $this->assertStringNotContainsString('2026-11-27 09:00', json_encode($set) ?: '');
+    }
+
+    /**
+     * **Changing the site timezone re-resolves the instant.** The wall time is
+     * what is stored, so the answer is recomputed from it on every rebuild
+     * rather than frozen at the moment somebody pressed Publish.
+     */
+    public function testChangingTheSiteZoneReResolvesTheInstantOnTheNextRebuild(): void
+    {
+        $row = self::row(['published_config' => '{"starts_at":"2026-11-27 09:00"}']);
+
+        $before = self::build([$row], new \DateTimeZone('UTC'));
+        $after = self::build([$row], new \DateTimeZone('America/New_York'));
+
+        $this->assertSame(strtotime('2026-11-27T09:00:00+00:00') * 1000, $before[0]['payload']['starts_at']);
+        $this->assertSame(strtotime('2026-11-27T14:00:00+00:00') * 1000, $after[0]['payload']['starts_at']);
+    }
+
+    /** An Optin with no schedule pays no bytes for one. */
+    public function testAnUnscheduledOptinCarriesNeitherKey(): void
+    {
+        $set = self::build([self::row()]);
+
+        $this->assertArrayNotHasKey('starts_at', $set[0]['payload']);
+        $this->assertArrayNotHasKey('ends_at', $set[0]['payload']);
     }
 }

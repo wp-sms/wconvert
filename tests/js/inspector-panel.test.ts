@@ -33,7 +33,12 @@ const LABELS: Labels = {
   collapse: 'Collapse',
   expand: 'Expand',
   nothing: 'No Optins yet.',
-  stopped: { blocked: 'Needs consent this visit has not given.', showing: 'Showing now.' },
+  stopped: {
+    blocked: 'Needs consent this visit has not given.',
+    showing: 'Showing now.',
+    before_window: 'Scheduled. It starts in %s.',
+    after_window: 'Its schedule ended %s ago.',
+  },
   answer: { yes: 'Holds', no: 'Does not hold', unknown: 'Not evaluated', unsupported: 'No module here' },
   sections: { targeting: 'Where', triggers: 'When', conditions: 'Who', include: 'On', exclude: 'Never on', server_only: 'Never reached the browser.' },
   gates: {
@@ -41,6 +46,7 @@ const LABELS: Labels = {
     suspended: 'Not suspended',
     targeting: 'Allowed on this page',
     payload: 'Reached the browser',
+    schedule: 'Inside its schedule',
     frequency: 'Allowance not spent',
     consent: 'Consent given',
     trigger: 'Has a trigger this site can fire',
@@ -57,6 +63,7 @@ const optin = (over: Partial<ServerOptin> = {}): ServerOptin => ({
   name: 'Welcome discount',
   published: true,
   suspended: null,
+  schedule: null,
   targeting: { admits: true, reason: null, logged_in: null, include: [], exclude: [] },
   ...over,
 });
@@ -71,6 +78,7 @@ const entry = (over: Partial<EntryReport> = {}): EntryReport => ({
     { rule: { type: 'cart_has_items' }, answer: null, unsupported: false },
   ],
   lostArbitration: false,
+  schedule: null,
   ...over,
 });
 
@@ -189,7 +197,7 @@ describe('the panel', () => {
    * ==========================================================================
    * THE FUNNEL RENDERS, AND IT NAMES WHAT IS ALREADY FINE.
    * ==========================================================================
-   * The ten gate labels were minted in PHP and read by nothing: the report
+   * The gate labels were minted in PHP and read by nothing: the report
    * returned one string that named a STAGE for some stops and a CAUSE for
    * others, so the panel had no gate to draw. "This browser has already had
    * its allowance" answers what stopped it; the gates answer what is already
@@ -202,27 +210,56 @@ describe('the panel', () => {
       g.textContent,
     ]);
 
-    expect(gates).toHaveLength(10);
+    expect(gates).toHaveLength(11);
     // Everything up to consent opened...
     expect(gates[0]).toEqual(['gate--open', '✓Published']);
     expect(gates[3]).toEqual(['gate--open', '✓Reached the browser']);
+    expect(gates[4]).toEqual(['gate--open', '✓Inside its schedule']);
     // ...consent is where it stopped...
-    expect(gates[5]).toEqual(['gate--shut', '✕Consent given']);
+    expect(gates[6]).toEqual(['gate--shut', '✕Consent given']);
     // ...and nothing past it was ever asked.
-    expect(gates[6]).toEqual(['gate', '·Has a trigger this site can fire']);
+    expect(gates[7]).toEqual(['gate', '·Has a trigger this site can fire']);
   });
 
-  /** An Optin that is showing passed all ten, and none is marked closed. */
+  /** An Optin that is showing passed all eleven, and none is marked closed. */
   it('marks nothing closed for one that is showing', () => {
     const { root } = draw([optin()], [entry({ standing: 'ready' })]);
 
-    expect(root.querySelectorAll('.gate--open')).toHaveLength(10);
+    expect(root.querySelectorAll('.gate--open')).toHaveLength(11);
     expect(root.querySelector('.gate--shut')).toBeNull();
   });
 
   /**
+   * ==========================================================================
+   * "WHY DIDN'T IT SHOW?" — "IT STARTS ON FRIDAY."
+   * ==========================================================================
+   * The engine's word for an Optin outside its window is `capped`, the same as
+   * for one whose allowance is spent (ADR 0047). This is the sentence beside
+   * the word, and it is the whole reason no seventh `Standing` was minted.
+   */
+  it('says how long until a scheduled Optin starts', () => {
+    const { root } = draw(
+      [optin({ schedule: { starts: '3 days', ends: null } })],
+      [entry({ standing: 'capped', schedule: 'before' })],
+    );
+
+    expect(root.textContent).toContain('Scheduled. It starts in 3 days.');
+    expect(root.textContent).not.toContain('%s');
+  });
+
+  it('says how long ago a finished campaign ended', () => {
+    const { root } = draw(
+      [optin({ schedule: { starts: '2 weeks', ends: '4 hours' } })],
+      [entry({ standing: 'capped', schedule: 'after' })],
+    );
+
+    expect(root.textContent).toContain('Its schedule ended 4 hours ago.');
+  });
+
+  /**
    * It is INSIDE the disclosure. The collapsed row is what a merchant scans to
-   * find the Optin they care about, and ten rows per Optin there would bury it.
+   * find the Optin they care about, and eleven rows per Optin there would bury
+   * it.
    */
   it('keeps the funnel out of the collapsed summary', () => {
     const { root } = draw();

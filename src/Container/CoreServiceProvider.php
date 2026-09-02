@@ -574,6 +574,45 @@ final class CoreServiceProvider implements ServiceProvider
 
         /*
          * ====================================================================
+         * THE SITE'S TIMEZONE CHANGED, SO EVERY SCHEDULE MEANS A DIFFERENT
+         * INSTANT NOW.
+         * ====================================================================
+         * An [[Optin]]'s window is STORED as the local wall time the merchant
+         * typed and RESOLVED against `wp_timezone()` when the published set is
+         * built (ADR 0050) — which is what makes correcting a wrong site
+         * timezone correct every schedule with it, rather than leaving them
+         * all an hour out forever.
+         *
+         * That only works if something rebuilds. The set is rebuilt on WRITE
+         * and never on a timer (ADR 0003), and a timezone change is not a
+         * write to any Optin, so without this the correction lands on the next
+         * unrelated publish — which may be never. This is the one event other
+         * than an Optin write that changes what the projection would produce.
+         *
+         * Both options, because WordPress writes both when a merchant picks a
+         * zone: a named zone sets `timezone_string` and blanks `gmt_offset`,
+         * and a bare UTC offset does the reverse.
+         *
+         * **Both rebuild, and a settings save therefore rebuilds twice.** That
+         * is deliberate rather than overlooked. The obvious saving — a flag
+         * that lets the first one through and skips the second — is a
+         * REQUEST-scoped flag on a callback registered once per request, so it
+         * skips every timezone change after the first for the life of the
+         * process. `bin/verify-schedule.php` caught exactly that, on a real
+         * WordPress, changing the zone twice: the second change silently did
+         * nothing and the set stayed on the first zone. WordPress fires these
+         * only when the value actually changed, so the price is one extra
+         * rebuild on the rare occasion a merchant edits Options → General.
+         */
+        $reresolve = static function () use ($container): void {
+            $container->resolve(OptinRepository::class)->rebuildForTimezoneChange();
+        };
+
+        add_action('update_option_timezone_string', $reresolve);
+        add_action('update_option_gmt_offset', $reresolve);
+
+        /*
+         * ====================================================================
          * A REST CONTROLLER IS BUILT WHEN A ROUTE IS SERVED, NEVER HERE.
          * ====================================================================
          * This runs on `plugins_loaded`, which is before `init` — and a
