@@ -59,7 +59,14 @@ top layer does not enter the auction.
 
 - **Nothing load-bearing goes on the root element.** A normal declaration in the
   outer tree beats a normal `:host` rule, so anything the design needs there is a
-  rule the theme is allowed to win. OceanWP's Meyer-style reset names `div`
+  rule the theme is allowed to win.
+
+  *And the reset cuts both ways, which [ADR 0011](0011-non-modal-overlays-use-the-popover-top-layer.md)
+  found the hard way: `:host{all:initial!important}` resets `pointer-events` to its
+  initial `auto`, and a shadow tree's `!important` beats an inline one on the host,
+  so a CONTAINER cannot relax it from outside either. That is why Pro's popover box
+  is sized to the design rather than made click-through — see 0011's third
+  consequence.* OceanWP's Meyer-style reset names `div`
   explicitly, matched the shadow host, and pushed its body font across the boundary
   by inheritance. Positioning, stacking and base typography belong to the first
   element *inside* the container; the host reset is `!important`, which the outer

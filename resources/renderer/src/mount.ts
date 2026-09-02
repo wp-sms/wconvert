@@ -33,8 +33,19 @@ export { render, SHADOW_CSS };
  * function: the free tree carries no premium code, ever (ADR 0028). Pro
  * composes its own presenter and hands it to the same `boot(loader,
  * presenter)` free's entry uses, building a `[popover=manual]` container from
- * the pieces this module already exports — {@link render}, {@link SHADOW_CSS}
- * and {@link documentStyle}. Nothing in free's tree changes to let it.
+ * the pieces this module exports — {@link render}, {@link SHADOW_CSS},
+ * {@link documentStyle}, {@link shell}, {@link closeButton} and
+ * {@link NOTHING}.
+ *
+ * **The last two are exported FOR that, and the export is the whole change
+ * free's tree needed.** They are shared container machinery rather than
+ * premium code: {@link shell} owns the closed shadow root, the step swap and
+ * the submit guard that stops a bare form navigating the page out from under a
+ * half-filled Optin, and {@link closeButton} owns the way out a template must
+ * not be able to omit. Copying either into Pro's tree would be two of each,
+ * and the pair that drifts first is the guard — silently, into a page reload
+ * nobody reproduces. Exporting them keeps the dependency running the one way
+ * this split allows: Pro reaches into free, free never reaches into Pro.
  */
 
 export const DOCUMENT_STYLE_ID = 'wconvert-style';
@@ -105,7 +116,16 @@ export interface Mounted {
   close(): void;
 }
 
-const NOTHING: Mounted = {
+/**
+ * Nowhere to mount, and nothing pretending otherwise.
+ *
+ * Exported for the same reason {@link shell} and {@link closeButton} are: a
+ * container that decides it has nothing to draw has to say so in the shape
+ * every caller already handles, and a second copy of these six lines under
+ * Pro's tree would be a second answer to "what does a container return when it
+ * declines" for the presenter to get wrong.
+ */
+export const NOTHING: Mounted = {
   mounted: false,
   root: null,
   steps: 0,
@@ -141,13 +161,14 @@ export function mount(options: MountOptions): Mounted {
 }
 
 /**
- * The shadow root and everything in it, which both containers share.
+ * The shadow root and everything in it, which every container shares —
+ * free's two, and Pro's popover.
  *
  * Returns a `step` function rather than the root, because swapping steps has
  * to replace the rendered tree INSIDE the boundary and the caller must not
  * have to reach in to do it.
  */
-function shell(template: Template, chrome: HTMLElement | null, options: MountOptions): {
+export function shell(template: Template, chrome: HTMLElement | null, options: MountOptions): {
   host: HTMLElement;
   root: HTMLElement;
   step: (step: number) => HTMLElement;
@@ -310,7 +331,7 @@ function inline(options: MountOptions, anchor: Element): Mounted {
  * script on the page for one string. Esc and the backdrop are unlabelled
  * routes to the same act, so a visitor is never trapped by it.
  */
-function closeButton(onClick: () => void): HTMLElement {
+export function closeButton(onClick: () => void): HTMLElement {
   const button = document.createElement('button');
 
   button.type = 'button';

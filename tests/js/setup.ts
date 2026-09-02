@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom/vitest';
+import { installPopoverShim } from './support/popover';
 
 /**
  * jsdom 26 ships `<dialog>` with an `open` property and nothing else — no
@@ -47,3 +48,14 @@ Object.defineProperties(HTMLDialogElement.prototype, {
   },
   close: { configurable: true, writable: true, value: close },
 });
+
+/**
+ * And the same for `popover`, which jsdom 26 has none of.
+ *
+ * The two premium Display Types use `[popover=manual]` rather than a modal
+ * `<dialog>`, because a bar meant to sit at the edge of a page the visitor keeps
+ * reading must not inert the rest of it (ADR 0011). Its shim lives in
+ * `support/popover.ts` because "is it showing" needs somewhere to be observed
+ * that is not the DOM — see that file.
+ */
+installPopoverShim();
