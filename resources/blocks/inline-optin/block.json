@@ -1,0 +1,27 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "wconvert/inline-optin",
+  "title": "Inline Optin",
+  "category": "widgets",
+  "icon": "feedback",
+  "description": "Place one of your published inline Optins in the flow of this page.",
+  "keywords": ["optin", "form", "lead", "signup", "wconvert"],
+  "textdomain": "wconvert",
+  "attributes": {
+    "optinId": {
+      "type": "string",
+      "default": ""
+    }
+  },
+  "supports": {
+    "html": false,
+    "align": false,
+    "color": false,
+    "spacing": false,
+    "typography": false,
+    "customClassName": false,
+    "anchor": false
+  },
+  "editorScript": "wconvert-inline-optin"
+}

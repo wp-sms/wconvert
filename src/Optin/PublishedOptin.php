@@ -177,6 +177,38 @@ final class PublishedOptin
     }
 
     /**
+     * This Optin's [[Display Type]], or null where the stored value is not one
+     * this build has a word for.
+     *
+     * ========================================================================
+     * BESIDE {@see self::toPayloadEntry()} BECAUSE IT IS A DIFFERENT QUESTION.
+     * ========================================================================
+     * `toPayloadEntry()` answers *what does the browser receive*, and a caller
+     * that wants one local fact was building the whole wire format to read a
+     * key out of it — which reads as though the answer is about the payload
+     * when it is about the Optin.
+     *
+     * More to the point, this class exists so that nothing downstream reaches
+     * into `$projection['payload']['display_type']` and spells a domain word
+     * as a string literal (ADR 0005). An accessor is that rule applied to the
+     * one key a PHP caller has a reason to ask about; the enum rather than its
+     * backing string, for {@see self::$goal}'s stated reason.
+     *
+     * **Absence is `popup`, and this returns null for it rather than
+     * inventing one.** `mount.ts` treats a missing Display Type as a popup and
+     * `decide.ts` reads anything that is not `inline` as an overlay
+     * ({@see DisplayType}), so a caller asking *is this inline* gets its
+     * answer from the comparison and a caller wanting the default can say so.
+     * Answering `DisplayType::Popup` here would put a third spelling of that
+     * default in a class whose job is to stop domain words being spelled
+     * twice.
+     */
+    public function displayType(): ?DisplayType
+    {
+        return DisplayType::of($this->payload['display_type'] ?? null);
+    }
+
+    /**
      * The entry as it travels to the browser.
      *
      * @return array<string, mixed>

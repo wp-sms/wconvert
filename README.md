@@ -481,6 +481,85 @@ transient as a rate limit and stored nowhere, and prefetch, prerender and bot
 requests are dropped. What abuse costs is a wrong number on one merchant's
 dashboard, not data loss and not a breach.
 
+## Placing an inline Optin
+
+`inline` is the one [[Display Type]] that is not an overlay. The other three
+mount themselves into the top layer; this one renders where it was embedded, so
+it needs somewhere on the page to go — and **both authoring surfaces emit the
+same element and nothing else.**
+
+```
+src/Frontend/InlineAnchor.php          the element, and the one place it is written
+src/Frontend/InlineOptinBlock.php      wconvert/inline-optin   → InlineAnchor::html()
+src/Frontend/InlineOptinShortcode.php  [wconvert_optin id=…]   → InlineAnchor::html()
+resources/blocks/inline-optin/         block.json + the editor bundle's source
+public/blocks/inline-optin.js          built by `npm run build:block`
+```
+
+```html
+<div data-wconvert-optin="01J…"></div>
+```
+
+That attribute is `INLINE_ANCHOR_ATTRIBUTE` in
+`resources/loader/src/present.ts`, which resolves it with one
+`document.querySelector` per payload entry.
+`tests/unit/Frontend/InlineAnchorTest.php` reads the constant out of the
+TypeScript and holds the PHP to it, because the two spellings drift silently:
+the anchor stays on the page, the loader queries a name that is not on it, and
+every inline Optin on the site renders nothing.
+
+**A third surface is a one-liner.** A page builder module or a theme helper
+calls `InlineAnchor::html($id)` and is done. Nothing else about rendering
+belongs on either surface — the block does not preview the template
+server-side, and the shortcode enqueues nothing the loader does not already
+enqueue.
+
+### Three behaviours that must not change
+
+- **An anchor whose Optin is not in the payload renders nothing and records
+  nothing.** The loader walks the payload looking for anchors, never the
+  reverse, so a block left behind by an unpublished, deleted, [[Suspended]] or
+  retyped Optin is never looked at. That is the ordinary end of an Optin's
+  life, not an error, and the page it sits on is one WConvert was asked to
+  leave alone (ADR 0004).
+- **Two anchors for one Optin on one page report one [[Impression]].** One
+  Optin appearing to one visitor, once.
+- **Neither surface validates against the published set.** They stay exactly
+  as clever as each other, which is what makes them substitutable. Where an
+  unresolvable id is *reported* is the editor, which is the surface that can
+  ask.
+
+`tests/js/loader-inline-anchor.test.ts` holds the first two through the real
+presenter; `tests/js/block-shortcode-parity.test.ts` holds the names the editor
+bundle and PHP share.
+
+### The block is a real block, and its canvas is a placeholder
+
+It offers the site's published inline Optins **by name** — a merchant picks
+something they recognise rather than pasting a ULID — and it renders a labelled
+placeholder in the editor canvas, never the Optin.
+[ADR 0040](docs/adr/0040-the-builders-preview-is-an-input.md) made the
+*builder's* preview an input, a surface the merchant works on; the post editor
+is not the builder, nothing on that screen can change what the Optin says, and
+a render there would be the static thumbnail
+[ADR 0010](docs/adr/0010-templates-are-configuration-not-documents.md) says
+does not exist anywhere in this flow.
+
+The picker's list is handed over on `enqueue_block_editor_assets` rather than
+fetched. A route would need a capability, and the honest one is not
+`manage_options` — whoever can open the post editor can place this block — so
+answering it properly means a third exception to `WConvert\Rest\Routes`' one
+capability, plus a loading state, an error state and a controller, for a list
+the editor page could simply have arrived with. What it costs instead is
+staleness measured in one page load. `WConvert\Frontend\InspectorEnqueue`
+declines a route for a related reason.
+
+**The block is also the only screen in WConvert that shows an Optin's id.** The
+Optins list reads no LONGTEXT and so carries no display type (ADR 0001), the
+builder is opened by React state rather than by a URL, and the eligibility
+inspector prints rules rather than ids — so the picker printing the shortcode
+for whichever Optin was chosen is what makes the shortcode usable at all.
+
 ## The personal-data surface
 
 WConvert registers a WordPress exporter, an eraser and suggested
@@ -506,7 +585,7 @@ exists from day one with nothing to do.
 ```bash
 composer install && npm install
 
-npm run build          # admin bundle + both loader bundles
+npm run build          # admin bundle, block bundle, both loaders, both inspectors
 npm run check:loader   # the loader byte budget + the premium-identifier scan
 composer verify:artifact dist/stage/wconvert   # the artifact contract, on a staged tree
 composer test          # PHPUnit

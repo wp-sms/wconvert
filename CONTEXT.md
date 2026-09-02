@@ -323,6 +323,38 @@ place it. Two of the four are [[Pro]]'s in practice, but the enum says nothing
 about tier: a free install simply has no floating-bar or slide-in design to
 name.
 
+### Anchor
+
+Where an `inline` [[Optin]] was put — one empty element carrying one attribute
+and the Optin's id, and **the whole contract between authoring and rendering**.
+
+`inline` is the one [[Display Type]] that is not an overlay: it renders where
+it was embedded and never competes for the screen, which is why it alone needs
+somewhere on the page to go while the other three mount themselves. So the two
+ways a merchant places one — a Gutenberg block and a shortcode — do not differ
+in what they emit. They differ only in where a merchant is standing when they
+write it.
+
+Keeping the surface at one attribute is what makes a third authoring surface —
+a page builder module, a `do_shortcode()` in a theme template — a one-liner
+rather than a fourth implementation. It carries no class and no wrapper:
+everything visible is the renderer's, inside a closed shadow root the loader
+mounts into this element.
+
+**An Anchor is not a promise that anything renders.** An Optin may be
+unpublished, soft-deleted, [[Suspended]], switched to another Display Type, or
+simply not targeted at this page, and every one of those leaves the Anchor
+sitting in post content nobody has edited. The loader walks the payload looking
+for Anchors and never the reverse, so one with no entry is never looked at: it
+renders nothing and records no [[Impression]], which is the safe direction —
+an Optin nobody saw has not been seen. Two Anchors for one Optin on one page
+are one Impression for the same reason.
+
+Where an unresolvable id is *reported* is the block editor, which is the
+surface that can ask. Neither authoring surface validates against the published
+set, because staying exactly as clever as each other is what makes them
+substitutable.
+
 ### Targeting
 
 *Where* an [[Optin]] is allowed to appear: the set of pages it may show on, as

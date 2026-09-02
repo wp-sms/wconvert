@@ -127,9 +127,16 @@ final class ArtifactContractTest extends TestCase
             'public/inspector/inspector.js' => "console.log('inspector');\n",
             'public/admin/main-abc12345.js' => "console.log('admin');\n",
             'public/admin/builder-def67890.js' => "console.log('builder');\n",
+            // The block editor's bundle, free only — Pro has no block. An
+            // unregistered dynamic block renders nothing, so the block is
+            // registered whether or not this file exists; the ZIP is where
+            // that has to be caught instead.
+            'public/blocks/inline-optin.js' => "console.log('block');\n",
             'resources/loader/src/main.ts' => "export const boot = () => {};\n",
             'resources/admin/src/main.tsx' => "export const App = () => null;\n",
             'resources/renderer/src/render.ts' => "export const render = () => {};\n",
+            'resources/blocks/inline-optin/src/index.tsx' => "export const block = null;\n",
+            'resources/blocks/inline-optin/block.json' => "{\"name\":\"wconvert/inline-optin\"}\n",
             'resources/rules/manifest.json' => "{\"targeting\":{}}\n",
             'resources/templates/manifest.json' => "{\"slots\":{}}\n",
             'resources/templates/library/centred-card.json' => "{\"tier\":\"free\"}\n",
@@ -506,6 +513,56 @@ final class ArtifactContractTest extends TestCase
 
         $this->assertSame(1, $result['status'], $result['output']);
         $this->assertStringContainsString('main-*.js', $result['output']);
+    }
+
+    /**
+     * **A block that is registered and cannot be drawn.**
+     *
+     * The runtime deliberately registers the block whether or not this file is
+     * there, because an unregistered dynamic block renders nothing and would
+     * take the Optin off every page already carrying one. That is the right
+     * trade at runtime and it is precisely why the ZIP has to be checked: the
+     * failure it leaves is an inserter entry that produces an "unsupported
+     * block", with the only evidence in a console nobody has open.
+     */
+    public function testFailsWhenFreeShipsNoBlockEditorBundle(): void
+    {
+        $result = $this->verify($this->stagedFree([
+            'public/blocks/inline-optin.js' => null,
+        ]));
+
+        $this->assertSame(1, $result['status'], $result['output']);
+        $this->assertStringContainsString('inline-optin.js', $result['output']);
+    }
+
+    /**
+     * `block.json` is runtime data, not documentation: `register_block_type()`
+     * is pointed at the directory and WordPress reads the file on every
+     * request. A ZIP without it registers nothing at all.
+     */
+    public function testFailsWhenFreeShipsNoBlockMetadata(): void
+    {
+        $result = $this->verify($this->stagedFree([
+            'resources/blocks/inline-optin/block.json' => null,
+        ]));
+
+        $this->assertSame(1, $result['status'], $result['output']);
+        $this->assertStringContainsString('block.json', $result['output']);
+    }
+
+    /**
+     * (d) again, for the third bundle. The readme claims every piece of
+     * JavaScript ships with its un-minified source, and the block is a piece
+     * of JavaScript.
+     */
+    public function testFailsWhenFreeShipsTheBlockBundleWithoutItsSource(): void
+    {
+        $result = $this->verify($this->stagedFree([
+            'resources/blocks/inline-optin/src/index.tsx' => null,
+        ]));
+
+        $this->assertSame(1, $result['status'], $result['output']);
+        $this->assertStringContainsString('resources/blocks/inline-optin/src', $result['output']);
     }
 
     public function testFailsWhenFreeShipsNoComposerAutoloader(): void

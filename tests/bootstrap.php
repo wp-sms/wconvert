@@ -464,6 +464,82 @@ if (!function_exists('wp_script_is')) {
     }
 }
 
+/*
+ * The registrations the two `inline` authoring surfaces make, recorded rather
+ * than performed.
+ *
+ * A shortcode tag and a block name are both site-wide globals, and both go
+ * wrong the same silent way: registered under a word that is not the one the
+ * other half reads. So what a test needs to see is the NAME each was filed
+ * under, which is what these keep.
+ *
+ * @var array<string, callable> $wconvertTestShortcodes
+ * @var array<string, array<string, mixed>> $wconvertTestBlocks
+ * @var array<string, list<array{data: string, position: string}>> $wconvertTestInlineScripts
+ * @var array<string, string> $wconvertTestScriptTranslations
+ */
+$GLOBALS['wconvertTestShortcodes'] = [];
+$GLOBALS['wconvertTestBlocks'] = [];
+$GLOBALS['wconvertTestInlineScripts'] = [];
+$GLOBALS['wconvertTestScriptTranslations'] = [];
+
+if (!function_exists('add_shortcode')) {
+    function add_shortcode(string $tag, callable $callback): void
+    {
+        $GLOBALS['wconvertTestShortcodes'][$tag] = $callback;
+    }
+}
+
+if (!function_exists('register_block_type')) {
+    /**
+     * WordPress resolves a DIRECTORY to the `block.json` inside it and merges
+     * `$args` OVER the metadata, which is the shape WConvert relies on: the
+     * name and the one attribute are declared in the file the editor bundle
+     * imports, and PHP supplies only the `render_callback` that metadata
+     * cannot carry. Reading the file here rather than taking the path on trust
+     * is what lets a test see the name the EDITOR will use.
+     *
+     * @param array<string, mixed> $args
+     * @return array<string, mixed>
+     */
+    function register_block_type(string $nameOrPath, array $args = []): array
+    {
+        $metadata = [];
+        $file = rtrim($nameOrPath, '/') . '/block.json';
+
+        if (is_file($file)) {
+            $decoded = json_decode((string) file_get_contents($file), true);
+            $metadata = is_array($decoded) ? $decoded : [];
+        } else {
+            $metadata = ['name' => $nameOrPath];
+        }
+
+        $block = array_merge($metadata, $args);
+
+        $GLOBALS['wconvertTestBlocks'][(string) ($block['name'] ?? '')] = $block;
+
+        return $block;
+    }
+}
+
+if (!function_exists('wp_add_inline_script')) {
+    function wp_add_inline_script(string $handle, string $data, string $position = 'after'): bool
+    {
+        $GLOBALS['wconvertTestInlineScripts'][$handle][] = ['data' => $data, 'position' => $position];
+
+        return true;
+    }
+}
+
+if (!function_exists('wp_set_script_translations')) {
+    function wp_set_script_translations(string $handle, string $domain = 'default', string $path = ''): bool
+    {
+        $GLOBALS['wconvertTestScriptTranslations'][$handle] = $domain;
+
+        return true;
+    }
+}
+
 if (!function_exists('esc_url')) {
     function esc_url(string $url): string
     {
@@ -776,6 +852,13 @@ if (!function_exists('wp_add_privacy_policy_content')) {
 
 if (!function_exists('esc_html')) {
     function esc_html(string $text): string
+    {
+        return htmlspecialchars($text, ENT_QUOTES);
+    }
+}
+
+if (!function_exists('esc_attr')) {
+    function esc_attr(string $text): string
     {
         return htmlspecialchars($text, ENT_QUOTES);
     }

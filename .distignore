@@ -36,6 +36,7 @@
 /dist
 /node_modules
 /vite.config.admin.mjs
+/vite.config.block.mjs
 /vite.config.loader.mjs
 /vite.config.loader-pro.mjs
 /vite.config.inspector.mjs
