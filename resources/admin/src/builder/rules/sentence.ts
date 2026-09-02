@@ -425,20 +425,6 @@ export function whoSummary(entries: readonly Entry[], types: readonly RuleType[]
 // ============================================================================
 
 /**
- * The allowance, read out.
- *
- * **The default is not "every time".** `stopAfterDismiss` and
- * `stopAfterConversion` are both ON when absent — `frequency.ts` tests
- * `!== false` — so an untouched Optin already stops when the visitor closes it
- * or signs up, and a summary reading "Every time" would be a lie on the
- * commonest Optin there is.
- *
- * `priority` is appended only where it decides something. `arbitrate()` sorts
- * overlays and leaves `inline` Optins alone, so on an inline design the number
- * is real, stored, and inert — and a summary that mentioned it would be
- * telling the merchant about a control that changes nothing.
- */
-/**
  * *When it runs*, as a clause — or null where nothing was scheduled.
  *
  * ============================================================================
@@ -497,6 +483,20 @@ function readable(wallTime: string | undefined): string | null {
     : new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(moment);
 }
 
+/**
+ * The allowance, read out.
+ *
+ * **The default is not "every time".** `stopAfterDismiss` and
+ * `stopAfterConversion` are both ON when absent — `frequency.ts` tests
+ * `!== false` — so an untouched Optin already stops when the visitor closes it
+ * or signs up, and a summary reading "Every time" would be a lie on the
+ * commonest Optin there is.
+ *
+ * `priority` is appended only where it decides something. `arbitrate()` sorts
+ * overlays and leaves `inline` Optins alone, so on an inline design the number
+ * is real, stored, and inert — and a summary that mentioned it would be
+ * telling the merchant about a control that changes nothing.
+ */
 export function howOftenSummary(
   frequency: Frequency,
   schedule: Schedule,

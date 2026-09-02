@@ -207,8 +207,8 @@ final class OptinController implements RestController
         // out, which is a blank popup and a merchant who watched it happen.
         try {
             $normalized = $this->normalizeConfig($config, self::optionalString($config['template_id'] ?? null));
-        } catch (InvalidSchedule) {
-            return self::refuseABackwardsSchedule();
+        } catch (InvalidSchedule $refused) {
+            return self::refuseTheSchedule($refused);
         }
 
         if (!$this->vocabulary->hasTrigger($normalized['rules'] ?? [])) {
@@ -264,8 +264,8 @@ final class OptinController implements RestController
 
         try {
             $normalized = is_array($config) ? $this->normalizeConfig($config, $pickedBefore) : null;
-        } catch (InvalidSchedule) {
-            return self::refuseABackwardsSchedule();
+        } catch (InvalidSchedule $refused) {
+            return self::refuseTheSchedule($refused);
         }
 
         // Checked against the config that ARRIVED, because `saveDraft()`
@@ -478,18 +478,27 @@ final class OptinController implements RestController
     }
 
     /**
-     * The one thing a schedule can be that is not a schedule.
+     * The two things a schedule can be that are not a schedule.
      *
      * The WORDING is here and the RULE is not: {@see Schedule::fromArray()}
-     * decides what a possible window is, and this turns that decision into a
-     * status code. A second author reaches the same refusal without reaching
+     * decides what a possible window is and says WHICH way it failed, and this
+     * turns that decision into a status code and a sentence. A second author
+     * reaches the same refusal, with the same distinction, without reaching
      * this file.
+     *
+     * Two sentences because they send a merchant to different places. Only the
+     * backwards one is reachable from the builder — the two controls are
+     * `<input type="datetime-local">` and cannot produce an unreadable value —
+     * so the other is met through a scripted call, where the fact is what
+     * matters and an instruction would be noise.
      */
-    private static function refuseABackwardsSchedule(): WP_Error
+    private static function refuseTheSchedule(InvalidSchedule $refused): WP_Error
     {
         return new WP_Error(
-            'wconvert_optin_backwards_schedule',
-            __('An Optin’s schedule has to end after it starts.', 'wconvert'),
+            'wconvert_optin_invalid_schedule',
+            $refused->reason === InvalidSchedule::UNREADABLE
+                ? __('An Optin’s start and end have to be a date and a time.', 'wconvert')
+                : __('An Optin’s schedule has to end after it starts.', 'wconvert'),
             ['status' => 400]
         );
     }

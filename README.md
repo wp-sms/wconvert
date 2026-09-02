@@ -502,9 +502,18 @@ absolute instant in milliseconds**. `src/Optin/Schedule.php` is the one
 converter, it is pure and takes the zone as an argument for the reason
 `StatDay` does, and `PublishedProjection` resolves through `wp_timezone()` on
 every rebuild — so correcting the site's timezone corrects every schedule with
-it. `resources/loader/src/schedule.ts` compares the result to `Date.now()` and
-names no timezone anywhere; `tests/js/builder-schedule.test.ts` asserts that
-structurally, on the source.
+it, which `update_option_timezone_string` and `update_option_gmt_offset` are
+hooked to make actually happen. `resources/loader/src/schedule.ts` compares the
+result to `Date.now()` and names no timezone anywhere;
+`tests/js/builder-schedule.test.ts` asserts that structurally, on the source.
+
+Its two doors are the thing to read before changing either. `fromArray()` is
+the author's and **refuses** — an unreadable boundary and an impossible pair,
+which are the same harm reached two ways. `windowIn()` is the reader's, is
+**total**, and **fails shut**: an impossible stored pair ships verbatim, so the
+half-open comparison finds no instant inside it and the Optin never shows,
+where dropping it would read as *never scheduled* and show a finished sale
+forever.
 
 ```bash
 wp eval-file bin/verify-schedule.php   # against a real WordPress; runs on Playground's SQLite

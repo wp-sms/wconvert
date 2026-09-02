@@ -203,13 +203,6 @@ export interface Frequency {
 }
 
 /**
- * The four field names, as a value rather than only as a type.
- *
- * A TypeScript interface is erased at build, so nothing could assert it
- * against the loader's declaration or PHP's. This is what the parity test
- * reads.
- */
-/**
  * *When* it runs — the merchant's own local date and time, never an instant.
  *
  * ============================================================================
@@ -241,9 +234,21 @@ export interface Schedule {
   ends_at?: string;
 }
 
-/** The two field names, as a value rather than only as a type. */
+/**
+ * The two field names, as a value rather than only as a type — the same
+ * arrangement {@link FREQUENCY_FIELDS} has, and for its reason: an interface
+ * is erased at build, so nothing could assert it against the loader's
+ * declaration or PHP's.
+ */
 export const SCHEDULE_FIELDS = ['starts_at', 'ends_at'] as const;
 
+/**
+ * The four field names, as a value rather than only as a type.
+ *
+ * A TypeScript interface is erased at build, so nothing could assert it
+ * against the loader's declaration or PHP's. This is what the parity test
+ * reads.
+ */
 export const FREQUENCY_FIELDS = [
   'maxImpressions',
   'cooldownDays',

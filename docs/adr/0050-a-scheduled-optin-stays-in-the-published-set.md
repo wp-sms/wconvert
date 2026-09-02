@@ -124,16 +124,35 @@ authored, and nothing about authoring one is HTTP.
 
 It has **two doors, and the difference is the point**:
 
-- `fromArray()` is the AUTHOR's, and it **throws** `InvalidSchedule` on an end
-  at or before its start. Refused rather than repaired, which is where this
-  departs from `Frequency`'s "drop the nonsense to null": dropping the end
-  would publish a sale that never finishes — the complaint this feature exists
-  to answer — and dropping the start would publish one that can never show.
-  Neither is a decision the merchant made. The route turns the refusal into a
-  400 and owns only the wording.
+- `fromArray()` is the AUTHOR's, and it **throws** `InvalidSchedule`. Refused
+  rather than repaired, which is where this departs from `Frequency`'s "drop
+  the nonsense to null": dropping an end would publish a sale that never
+  finishes — the complaint this feature exists to answer — and dropping a start
+  would publish one that can never show. Neither is a decision the merchant
+  made, and `Frequency`'s reasoning does not transfer because there a dropped
+  value and a stored one mean the same thing to the engine, and here they do
+  not.
+
+  **There are therefore two refusals, and they are the same harm reached two
+  ways**: a boundary that was *supplied and cannot be read*, and a pair that
+  cannot both be true. The exception carries which, because they send a
+  merchant to different places; the route owns the two sentences and the rule
+  stays in the normaliser. An **absent** boundary is neither — an emptied box
+  is how a merchant says "no boundary", which is a thing they mean.
+
 - `windowIn()` is the READER's, and it is **total**. A rebuild walks every
   published row, and one hand-edited blob must not fatal the option every page
   view reads.
+
+  **It fails shut.** An impossible stored pair is shipped verbatim rather than
+  dropped: the window is half-open, so a window ending before it starts
+  contains no instant and the Optin never shows. Dropping it would read as
+  *never scheduled* and show a finished sale forever, which is the failure this
+  ADR exists to prevent — the same fail-shut rule `decide.ts` gives a rule that
+  cannot answer. The one case that still widens is a stored boundary that
+  cannot be READ, and only because there is nothing honest to ship in its
+  place; the write refuses one, so it cannot arise through any supported
+  route.
 
 *A start with no end and an end with no start are both valid* — "from Friday,
 forever" and "from now until Friday" are things merchants mean. A window is
@@ -147,6 +166,14 @@ adjacent windows both live for a millisecond.
   makes "changing the site timezone re-resolves on the next rebuild" structural
   rather than a claim. It is the same arrangement it already has with the rule
   vocabulary: the impure reading is the caller's, the arithmetic is pure.
+- **A timezone change rebuilds the set**, on `update_option_timezone_string`
+  and `update_option_gmt_offset`. Without it the sentence above is true and
+  useless: the set is rebuilt on write and a timezone change is not a write to
+  any Optin, so a merchant correcting a wrong zone would wait for the next
+  unrelated publish — which may never come. It is the second and last event
+  other than an Optin write that changes what the projection would produce, and
+  it gets its own name on the repository (`rebuildForTimezoneChange()`) so that
+  calling either rebuild on READ still reads wrong.
 - **`starts_at` and `ends_at` are the one payload pair that is not a copy.**
   `PublishedProjection::SHIPPED` is a copy list and they are not on it; they
   are projected beside it, where the resolution is visible. That inline note
@@ -159,6 +186,12 @@ adjacent windows both live for a millisecond.
   both, so a decision can never straddle midnight.
 - **The loader costs 48 bytes gzipped** — 5951 to 5999 against free's 8192 B
   budget ([ADR 0014](0014-pro-replaces-the-loader.md), `npm run check:loader`).
+- **"No Impression" is pinned rather than argued.** It falls out of the
+  presenter never being reached, which is a chain of reasoning and not a
+  branch — so `tests/js/loader-shell.test.ts` drives the real shell over a
+  payload holding all three cases and asserts one beacon for the one inside its
+  window and none for the other two. A negative with no positive beside it
+  passes just as happily on a page that reports nothing at all.
 - **The funnel gains an eleventh gate**, which is a label and not a `Standing`.
   `tests/js/inspector-panel.test.ts` counts them, so adding one is a decision
   somebody has to write down.

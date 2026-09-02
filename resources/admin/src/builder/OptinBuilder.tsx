@@ -1667,19 +1667,6 @@ function HistoryControls({
 const EVERY_INSTALL_HAS = 'popup';
 
 /**
- * Which [[Display Type]]'s designs the gallery shows.
- *
- * **Not the first question asked.** Users arrive via a [[Goal]] and the type
- * is prefilled by the chosen [[Playbook]]; it is an override and a filter, and
- * never the primary axis of the product (CONTEXT.md, Display Type). So it is
- * read off the Optin first.
- *
- * Where the Optin does not declare one, the shipped library decides: the day
- * Pro's floating bars and slide-ins land, an install whose first entry is one
- * of them follows it without this line changing. The constant is reached only
- * by an install shipping no designs at all, which has no gallery to filter.
- */
-/**
  * The rules patch, with the schedule taken back apart into the two flat keys
  * `config` stores it as.
  *
@@ -1708,6 +1695,19 @@ function asConfigPatch(patch: Partial<DisplayRulesValue>): Record<string, unknow
   return { ...rest, starts_at: schedule.starts_at, ends_at: schedule.ends_at };
 }
 
+/**
+ * Which [[Display Type]]'s designs the gallery shows.
+ *
+ * **Not the first question asked.** Users arrive via a [[Goal]] and the type
+ * is prefilled by the chosen [[Playbook]]; it is an override and a filter, and
+ * never the primary axis of the product (CONTEXT.md, Display Type). So it is
+ * read off the Optin first.
+ *
+ * Where the Optin does not declare one, the shipped library decides: the day
+ * Pro's floating bars and slide-ins land, an install whose first entry is one
+ * of them follows it without this line changing. The constant is reached only
+ * by an install shipping no designs at all, which has no gallery to filter.
+ */
 function displayTypeOf(config: Config, templates: readonly TemplateIndexEntry[] | undefined): string {
   const declared = config.display_type;
 

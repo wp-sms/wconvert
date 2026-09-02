@@ -47,6 +47,7 @@ use WConvert\Database\Connection;
 use WConvert\Database\Installer;
 use WConvert\Database\WpdbConnection;
 use WConvert\Frontend\InspectorSchedules;
+use WConvert\Optin\InvalidSchedule;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
 use WConvert\Optin\Schedule;
@@ -125,16 +126,20 @@ $entryFor = static function (string $id) use ($set): ?array {
     return null;
 };
 
-/** Set the site's timezone the way the Settings screen does, and rebuild. */
-$retimezone = static function (string $zone) use ($optins): void {
+/**
+ * Set the site's timezone exactly the way the Settings screen does — and
+ * REBUILD NOTHING BY HAND.
+ *
+ * That is the half the acceptance criterion turns on. The published set is
+ * derived state rebuilt on WRITE (ADR 0003) and a timezone change is not a
+ * write to any Optin, so `CoreServiceProvider` hooks
+ * `update_option_timezone_string` and `update_option_gmt_offset` to rebuild
+ * it. A script that called the rebuild itself would pass with that hook
+ * deleted, which is the one thing this check exists to catch.
+ */
+$retimezone = static function (string $zone): void {
     update_option('timezone_string', $zone);
     update_option('gmt_offset', '');
-
-    // The published set is derived state rebuilt on WRITE (ADR 0003), and a
-    // timezone change is not a write to any Optin — so this is the moment the
-    // instants are re-resolved, and it is exactly what `Installer::install()`
-    // calls on an upgrade.
-    $optins->rebuildForInstall();
 };
 
 echo "\nThe site's own timezone, read at every rebuild\n";
@@ -254,10 +259,9 @@ echo "\nA site that never picked a named zone\n";
 // not care, and only a real install produces one.
 update_option('timezone_string', '');
 update_option('gmt_offset', '5.75');
-$optins->rebuildForInstall();
 
 $verify->check(
-    'a bare UTC offset resolves as well as a named zone',
+    'a bare UTC offset resolves as well as a named zone, with nothing rebuilt by hand',
     strtotime('2099-11-27T03:15:00+00:00') * 1000,
     $entryFor($sale->id)['payload']['starts_at'] ?? null
 );
@@ -290,7 +294,7 @@ $verify->check('the route refuses it with a 400', 400, $response->get_status());
 
 $verify->check(
     'and names the refusal rather than a generic failure',
-    'wconvert_optin_backwards_schedule',
+    'wconvert_optin_invalid_schedule',
     is_array($response->get_data()) ? ($response->get_data()['code'] ?? null) : null
 );
 
@@ -325,24 +329,44 @@ $verify->check(
     $hand_edited !== null
 );
 
+// FAIL SHUT, not open. The window is half-open, so a pair shipped this way
+// round contains no instant and the Optin never shows — where shipping no
+// window at all would read as "never scheduled" and show it forever.
 $verify->check(
-    'and ships no window at all',
-    false,
-    isset($hand_edited['payload']['starts_at']) || isset($hand_edited['payload']['ends_at'])
+    'and ships the pair, so no instant is inside it',
+    true,
+    ($hand_edited['payload']['ends_at'] ?? 0) < ($hand_edited['payload']['starts_at'] ?? 0)
 );
+
+/** Which reason the authoring door gives, or null where it allowed the pair. */
+$refusalFor = static function (array $config): ?string {
+    try {
+        Schedule::fromArray($config);
+
+        return null;
+    } catch (InvalidSchedule $refused) {
+        return $refused->reason;
+    }
+};
 
 $verify->check(
     'while the authoring door still refuses the same pair',
-    true,
-    (static function (): bool {
-        try {
-            Schedule::fromArray(['starts_at' => '2099-11-30 09:00', 'ends_at' => '2099-11-27 09:00']);
+    InvalidSchedule::BACKWARDS,
+    $refusalFor(['starts_at' => '2099-11-30 09:00', 'ends_at' => '2099-11-27 09:00'])
+);
 
-            return false;
-        } catch (\WConvert\Optin\InvalidSchedule) {
-            return true;
-        }
-    })()
+// The second refusal, and the one a dropped value would turn into a sale that
+// never finishes.
+$verify->check(
+    'and refuses a boundary that was supplied and cannot be read',
+    InvalidSchedule::UNREADABLE,
+    $refusalFor(['ends_at' => 'next friday'])
+);
+
+$verify->check(
+    'while an emptied box is no boundary rather than a refusal',
+    null,
+    $refusalFor(['starts_at' => '', 'ends_at' => ''])
 );
 
 echo "\nCleaning up\n";

@@ -24,7 +24,6 @@ import type { EntryReport } from './explain';
  * rebuilt on write and a full-page cache can serve the same HTML for days
  * (ADR 0003) — so the browser is what decides, and this screen reports the
  * four gates that opened before naming the one that did not.
- * ```
  *
  * **The last gate has no word in the product today.** `arbitrate()` silently
  * drops a `ready` overlay when a higher-priority one won, and "ready but not

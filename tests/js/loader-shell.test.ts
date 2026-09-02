@@ -386,3 +386,68 @@ describe('what the site is told', () => {
     expect(beacon.reported).toContain('a:conversion');
   });
 });
+
+/**
+ * ============================================================================
+ * OUTSIDE ITS WINDOW: NOTHING ON SCREEN, AND **NO ROW**.
+ * ============================================================================
+ * Not a zero-valued one — no row at all. That is the reading ADR 0027 takes of
+ * a [[Suspended]] Optin and ADR 0050 takes of a scheduled one, for the same
+ * reason: a campaign contributing zeroes against a live denominator makes two
+ * periods incomparable, and ADR 0019's counters cannot be recomputed
+ * afterwards.
+ *
+ * It falls out of the presenter never being reached rather than from a filter,
+ * which is exactly why it is pinned here: the reasoning lives in prose and the
+ * only thing that can hold it is a test that drives the real shell over a real
+ * payload.
+ */
+describe('an Optin outside its scheduled window', () => {
+  function recordingBeacon(): Beacon & { reported: string[] } {
+    const reported: string[] = [];
+
+    return {
+      reported,
+      report: (id, kind) => void reported.push(`${id}:${kind}`),
+      flush: () => undefined,
+      stop: () => undefined,
+    };
+  }
+
+  /** The three cases on one page, so the negatives have a positive beside them. */
+  const entries = [
+    optin({ id: 'not-started', starts_at: march1 + 3 * DAY, display_type: 'inline' }),
+    optin({ id: 'finished', ends_at: march1 - DAY, display_type: 'inline' }),
+    optin({ id: 'running', starts_at: march1 - DAY, ends_at: march1 + DAY, display_type: 'inline' }),
+  ];
+
+  it('is never shown, while the one inside its window is', () => {
+    const presenter = recordingPresenter();
+
+    start({ loader, entries, presenter, store: fakeStore(), now: () => march1 });
+
+    expect(presenter.shown).toEqual(['running']);
+  });
+
+  it('tells the site nothing at all, and the one that showed tells it once', () => {
+    const beacon = recordingBeacon();
+
+    start({ loader, entries, presenter: recordingPresenter(), store: fakeStore(), now: () => march1, beacon });
+
+    expect(beacon.reported).toEqual(['running:impression']);
+  });
+
+  /**
+   * And it spends no allowance either, so the day its window opens it is a
+   * visitor who has never seen it — which is what makes a schedule and a
+   * [[Frequency]] cap composable rather than one quietly eating the other.
+   */
+  it('spends none of its own allowance while it waits', () => {
+    const store = fakeStore();
+
+    start({ loader, entries, presenter: recordingPresenter(), store, now: () => march1 });
+
+    expect(store.read() ?? '').not.toContain('not-started');
+  });
+});
+

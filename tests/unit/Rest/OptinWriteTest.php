@@ -530,10 +530,28 @@ final class OptinWriteTest extends TestCase
         $this->assertSame('2026-11-30 23:59', $this->savedConfig(['ends_at' => '2026-11-30 23:59'])['ends_at'] ?? null);
     }
 
-    /** A value that is not a moment is not a schedule, and loses its key. */
-    public function testAScheduleThatIsNotAMomentIsDropped(): void
+    /**
+     * **A value that was supplied and is not a moment is REFUSED**, not
+     * dropped — and an emptied box is not the same thing.
+     *
+     * Dropping a supplied `ends_at` publishes a sale that never finishes,
+     * which is the complaint this feature exists to answer;
+     * {@see \WConvert\Optin\Frequency}'s "drop the nonsense to null" does not
+     * transfer, because there a dropped value and the stored one mean the same
+     * thing to the engine and here they do not.
+     */
+    public function testAScheduleThatIsNotAMomentIsRefused(): void
     {
-        $saved = $this->savedConfig(['starts_at' => 'next Friday', 'ends_at' => '']);
+        $refused = $this->create(Goal::PromoteOffer, ['starts_at' => 'next Friday']);
+
+        $this->assertInstanceOf(WP_Error::class, $refused);
+        $this->assertSame(400, $refused->get_error_data()['status'] ?? null);
+    }
+
+    /** An emptied box is the merchant saying "no boundary", and is saved as one. */
+    public function testAnEmptiedBoxIsNoBoundaryRatherThanARefusal(): void
+    {
+        $saved = $this->savedConfig(['starts_at' => '', 'ends_at' => '']);
 
         $this->assertArrayNotHasKey('starts_at', $saved);
         $this->assertArrayNotHasKey('ends_at', $saved);
