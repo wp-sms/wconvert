@@ -34,7 +34,8 @@ export { render, SHADOW_CSS };
  * composes its own presenter and hands it to the same `boot(loader,
  * presenter)` free's entry uses, building a `[popover=manual]` container from
  * the pieces this module exports — {@link render}, {@link SHADOW_CSS},
- * {@link documentStyle}, {@link shell} and {@link closeButton}.
+ * {@link documentStyle}, {@link shell}, {@link closeButton} and
+ * {@link NOTHING}.
  *
  * **The last two are exported FOR that, and the export is the whole change
  * free's tree needed.** They are shared container machinery rather than
@@ -115,7 +116,16 @@ export interface Mounted {
   close(): void;
 }
 
-const NOTHING: Mounted = {
+/**
+ * Nowhere to mount, and nothing pretending otherwise.
+ *
+ * Exported for the same reason {@link shell} and {@link closeButton} are: a
+ * container that decides it has nothing to draw has to say so in the shape
+ * every caller already handles, and a second copy of these six lines under
+ * Pro's tree would be a second answer to "what does a container return when it
+ * declines" for the presenter to get wrong.
+ */
+export const NOTHING: Mounted = {
   mounted: false,
   root: null,
   steps: 0,

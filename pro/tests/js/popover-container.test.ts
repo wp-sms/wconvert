@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { DOCUMENT_STYLE_ID } from '@renderer/mount';
+import { A_DESIGNS_OWN_WIDTH, SHADOW_CSS } from '@renderer/css';
 import type { Template } from '@renderer/types';
 import { mountPopover } from '../../resources/renderer/src/popover';
 import { isShowing, withoutPopoverSupport } from '../../../tests/js/support/popover';
@@ -113,9 +114,9 @@ describe('a browser with no popover at all', () => {
  * code rather than prose, and the part that a green suite on `popup` says
  * nothing about.
  */
-describe('the way out', () => {
+describe.each(['floating_bar', 'slide_in'])('the way out of a %s', (displayType) => {
   const shownBar = (onDismiss?: () => void) => {
-    const mounted = mountPopover({ displayType: 'floating_bar', template: TEMPLATE, onDismiss });
+    const mounted = mountPopover({ displayType, template: TEMPLATE, onDismiss });
 
     mounted.show();
 
@@ -361,22 +362,6 @@ describe('the box', () => {
     expect(mounted.root?.querySelector('[data-role=success_headline]')).not.toBeNull();
   });
 
-  /**
-   * **A percentage needs something to be a percentage OF.** `.wc-root` sizes
-   * itself `min(var(--wc-width), 100%)`, so a box left to shrink-wrap its
-   * contents sizes itself from the design and the design then sizes itself
-   * from the box — measured at 233px against the 352px the token asked for.
-   * Both boxes carry a definite inline size for that reason: the bar takes the
-   * axis, the slide-in a bounded fraction of it.
-   */
-  it('pins the bar across the inline axis, so its design has a width to be a fraction of', () => {
-    const box = boxOf('floating_bar');
-
-    expect(box.style.getPropertyValue('inset-inline-start')).toBe('0');
-    expect(box.style.getPropertyValue('inset-inline-end')).toBe('0');
-    expect(box.style.getPropertyValue('inset-block-end')).toBe('0');
-  });
-
   it('pins the bar to the block-end edge, free to take the whole inline axis', () => {
     const box = boxOf('floating_bar');
 
@@ -390,7 +375,6 @@ describe('the box', () => {
 
     expect(box.style.getPropertyValue('inset-inline-start')).toBe('auto');
     expect(box.style.getPropertyValue('inset-inline-end')).toBe('1rem');
-    expect(box.style.getPropertyValue('inline-size')).toBe('min(100% - 2rem, 26rem, 28rem)');
   });
 
   /**
@@ -402,50 +386,73 @@ describe('the box', () => {
    * `:host{all:initial!important}` resets the host to `pointer-events: auto`,
    * and a shadow tree's `!important` beats an inline one on the host by design
    * (ADR 0009's armour, working as specified, against us).
+   *
+   * Shrink-wrapping the box is the other failure and the worse one: it would
+   * size itself from the design's max-content while the design sized itself
+   * from the box, so the token would decide nothing (233px against 352px).
    */
   it.each([
-    ['floating_bar', '22rem', 'min(100%, 22rem)'],
-    ['slide_in', '22rem', 'min(100% - 2rem, 26rem, 22rem)'],
-    ['floating_bar', '100%', 'min(100%, 100%)'],
-  ])('sizes a %s box to the %s its design asked for', (displayType, width, expected) => {
-    mountPopover({
-      displayType,
-      template: { ...TEMPLATE, tokens: { ...TEMPLATE.tokens, width } },
-    }).show();
-
-    expect(popover()?.style.getPropertyValue('inline-size')).toBe(expected);
+    ['floating_bar', 'min(100%, var(--wcv-box-width, 28rem))'],
+    ['slide_in', 'min(100% - 2rem, 26rem, var(--wcv-box-width, 28rem))'],
+  ])('sizes the %s box by the same question its design asks', (displayType, expected) => {
+    expect(boxOf(displayType).style.getPropertyValue('inline-size')).toBe(expected);
   });
 
   /**
-   * **A token is merchant-authored, and the check is this file's rather than
-   * the CSS parser's.** Leaving it to `setProperty` to refuse looks safe and
-   * passes in a browser, whose CSSOM drops what it cannot parse — and jsdom
-   * stores it verbatim, which is how `; position: static` was found sitting
-   * inside the `min()` the container builds. A check that is a different check
-   * in every engine is not one.
+   * **Any width CSS accepts, the box accepts** — because it asks through
+   * `var()` rather than through a list of units it was willing to allow.
+   *
+   * The first version of this interpolated the token behind a unit allowlist,
+   * and that was wrong in the dangerous direction: `render()` writes every
+   * token into a custom property UNVALIDATED, since a custom property takes
+   * any token stream. So a design saying `20vh` was 20vh wide, the allowlist
+   * rejected it, the box fell back to 28rem, and the transparent
+   * click-swallowing remainder came straight back. Every allowlist of CSS
+   * units is a list of the widths a design is quietly not allowed to have.
    */
-  it.each([
-    '',
-    '   ; position: static',
-    'not-a-length',
-    'calc(100% - 1px)',
-    '20rem; position: static',
-    "20rem url('https://example.com/x')",
-    'var(--anything)',
-  ])(
-    'keeps the corner card’s default width when the token reads %o',
+  it.each(['22rem', '20vh', '100%', 'calc(100% - 1px)', 'clamp(18rem, 50vw, 40rem)', '480px'])(
+    'carries the design’s own %s to the box, whatever shape it is',
     (width) => {
       mountPopover({
         displayType: 'slide_in',
         template: { ...TEMPLATE, tokens: { ...TEMPLATE.tokens, width } },
       }).show();
 
-      // 28rem is what `.wc-root` itself falls back to, which is the whole
-      // point: box and design stay equal even when the token is nonsense.
-      expect(popover()?.style.getPropertyValue('inline-size')).toBe('min(100% - 2rem, 26rem, 28rem)');
-      expect(popover()?.style.getPropertyValue('position')).toBe('fixed');
+      expect(popover()?.style.getPropertyValue('--wcv-box-width')).toBe(width);
     },
   );
+
+  /**
+   * **A custom property is what makes interpolation unnecessary**, which is
+   * the other half of dropping the allowlist: its value cannot introduce a
+   * second declaration, so a token trying to is left as a value CSS will
+   * refuse — and refuse for the DESIGN too, so the two fall over together
+   * rather than to different numbers. It is the difference between them that
+   * traps clicks, not either value on its own.
+   */
+  it('never lets a token become a declaration of its own', () => {
+    mountPopover({
+      displayType: 'slide_in',
+      template: { ...TEMPLATE, tokens: { ...TEMPLATE.tokens, width: '20rem; position: static' } },
+    }).show();
+
+    expect(popover()?.style.getPropertyValue('position')).toBe('fixed');
+    expect(popover()?.style.getPropertyPriority('position')).toBe('important');
+  });
+
+  /**
+   * A design that names no width leaves the fallback standing — and the
+   * fallback is `SHADOW_CSS`'s own, imported rather than respelled. Two
+   * spellings of it are a box and a design that disagree by 448px the day one
+   * of them changes.
+   */
+  it('falls back to the width the design itself would have used', () => {
+    const box = boxOf('slide_in');
+
+    expect(box.style.getPropertyValue('--wcv-box-width')).toBe('');
+    expect(box.style.getPropertyValue('inline-size')).toContain(`var(--wcv-box-width, ${A_DESIGNS_OWN_WIDTH})`);
+    expect(SHADOW_CSS).toContain(`min(var(--wc-width,${A_DESIGNS_OWN_WIDTH}),100%)`);
+  });
 
   /**
    * **Logical properties throughout, and never a physical side.** Writing

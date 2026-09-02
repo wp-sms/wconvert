@@ -84,6 +84,18 @@ rule engine (#3), not to the DOM.
   the number the design is about to ask for, and the remainder stops existing rather
   than being made harmless. **A bar spans the edge by asking to** — its tree carries
   `width: 100%`, which is what makes it an edge.
+
+  **And it asks the same question rather than re-deciding it.** The first attempt
+  read the `width` token and interpolated it behind an allowlist of CSS units, which
+  is wrong in the dangerous direction: the renderer writes every token into a custom
+  property *unvalidated*, because a custom property takes any token stream. So a
+  design saying `20vh` was 20vh wide, the allowlist rejected it, the box fell back to
+  28rem, and the click-swallowing remainder came straight back. Every allowlist of
+  CSS units is a list of the widths a design is quietly not allowed to have. The box
+  carries the token in a custom property of its own and references it through `var()`
+  — the same shape `.wc-root` uses, so a value CSS refuses makes both invalid at
+  computed-value time and the two fall over together rather than to different
+  numbers. It is the difference between them that traps clicks.
 - **The free tier is unaffected.** Free ships `popup` and `inline`; `floating_bar`
   and `slide_in` are premium, so the newer baseline is carried entirely by paying
   installs.

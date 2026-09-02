@@ -1,5 +1,6 @@
 import type { MountOptions, Mounted } from '@renderer/mount';
-import { closeButton, documentStyle, shell } from '@renderer/mount';
+import { NOTHING, closeButton, documentStyle, shell } from '@renderer/mount';
+import { A_DESIGNS_OWN_WIDTH } from '@renderer/css';
 
 /**
  * The third container: the top layer, without modality.
@@ -82,15 +83,12 @@ import { closeButton, documentStyle, shell } from '@renderer/mount';
  * popover's own showing state, and forcing it here would paint a closed
  * overlay onto the page.
  *
- * **`pointer-events: none` is the one line here that is about the page rather
- * than about the overlay**, and it was measured rather than reasoned. This box
- * is the SHAPE — an edge, a corner — and the design inside fills as much of it
- * as its own `width` token asks for, so wherever it asks for less, the
- * remainder is a transparent strip sitting over the page in the top layer. A
- * strip that swallows clicks is `showModal()`'s inerting arriving through the
- * back door on the one container chosen because it must not inert anything
- * (ADR 0011). So the box takes no pointer at all and the design takes them
- * back, one element in.
+ * **`pointer-events: none` is belt and braces and not the mechanism.** What
+ * keeps this box from covering the page with a transparent click-trap is
+ * {@link boxWidth} making the box equal the design; this line is what protects
+ * the block axis and anything a later placement leaves over. It does NOT
+ * survive the shadow boundary on its own — see {@link boxWidth}'s third point
+ * for why, which is the whole reason the sizing carries the argument.
  */
 const POPOVER_ARMOUR: Readonly<Record<string, string>> = {
   position: 'fixed',
@@ -107,23 +105,11 @@ const POPOVER_ARMOUR: Readonly<Record<string, string>> = {
 };
 
 /**
- * The design's own width, as `SHADOW_CSS` falls back to it.
- *
- * `.wc-root` sizes itself `min(var(--wc-width, 28rem), 100%)`, so a design
- * that names no width is 28rem wide. The box has to know the same number —
- * see {@link boxWidth} for why the two must agree.
- */
-const A_DESIGNS_OWN_WIDTH = '28rem';
-
-/**
  * Where each of the two sits, and how much of the axis it may take.
  *
  * A bar pins to the block-end edge and may take the whole inline axis; a
  * slide-in takes the block-end/inline-end corner and may take a corner's worth
- * of it. `cap` is written as `min()`'s ARGUMENT LIST rather than a finished
- * `min()`, so {@link boxWidth} appends the design's own width to it and the
- * declaration reads `min(100% - 2rem, 26rem, 22rem)` rather than nesting one
- * `min()` inside another. The block-end edge for both, because it is the one that does not
+ * of it. The block-end edge for both, because it is the one that does not
  * cover a site's own header, and because a bar arriving over the navigation is
  * the single most common way this Display Type is experienced as breakage.
  *
@@ -132,6 +118,11 @@ const A_DESIGNS_OWN_WIDTH = '28rem';
  * design asking for more than a corner is asking not to be a slide-in. The
  * `- 2rem` is the air it keeps at 320px, where it comes out 288px and still a
  * card rather than one hanging off the edge.
+ *
+ * `cap` is written as `min()`'s ARGUMENT LIST rather than a finished `min()`,
+ * so {@link boxWidth} appends the design's own width to it and the declaration
+ * reads `min(100% - 2rem, 26rem, var(…))` rather than nesting one `min()`
+ * inside another.
  *
  * **Logical properties throughout**, so RTL is correct without a second
  * spelling: a slide-in on a `fa_IR` site enters from the corner that side of
@@ -159,6 +150,17 @@ const PLACEMENT: Readonly<Record<string, { readonly inset: Readonly<Record<strin
 };
 
 /**
+ * The custom property the box holds the design's width in.
+ *
+ * Its own name rather than `--wc-width`, so that setting it on the box cannot
+ * change what the design inside computes: `render()` writes the tokens onto
+ * `.wc-root` itself, which wins over anything inherited, and a container that
+ * could silently move a design's own token would be a container editing the
+ * design.
+ */
+const WIDTH = '--wcv-box-width';
+
+/**
  * The box's width, and it is the design's width, and that is not a
  * simplification.
  *
@@ -175,65 +177,68 @@ const PLACEMENT: Readonly<Record<string, { readonly inset: Readonly<Record<strin
  *    A 20rem bar on a 1280px screen took every click in the 960px beside it —
  *    `showModal()`'s inerting arriving through the back door, on the one
  *    container chosen because it must not inert anything (ADR 0011).
- * 3. **The obvious fix does not work.** `pointer-events: none` on the box is
- *    inherited, but `:host{all:initial!important}` resets the host to the
- *    property's initial value of `auto` and hands the whole area back — and an
- *    inline `!important` on the host does not win, because a shadow tree's
- *    `!important` beats the outer tree's by design. That is precisely the
- *    armour ADR 0009 wanted, working exactly as specified, against us.
+ * 3. **Making the remainder harmless does not work.** `pointer-events: none`
+ *    on the box is inherited, but `:host{all:initial!important}` resets the
+ *    host to the property's initial value of `auto` and hands the whole area
+ *    back — and an inline `!important` on the host does not win, because a
+ *    shadow tree's `!important` beats the outer tree's by design. That is
+ *    precisely the armour ADR 0009 wanted, working exactly as specified,
+ *    against us.
  *
  * Shrink-wrapping the box is the remaining idea and it is the worst one: the
  * box would size itself from the design's max-content and the design would
  * then size itself from the box, so the token would decide nothing at all
  * (measured at 233px against the 352px asked for).
  *
- * So the box is told the number the design is about to ask for, and the
- * remainder stops existing rather than being made harmless. **A bar spans the
- * edge by asking to** — a tree authored for a bar carries `width: 100%` or a
- * large value, which is what makes it an edge; one that names no width is 28rem
- * of bar, pinned to the inline start, which is at least the design it asked for
- * rather than a design floating in 960px of trap.
- *
  * ============================================================================
- * THE TOKEN IS CHECKED HERE, AND NOT LEFT TO `setProperty` TO REFUSE.
+ * SO IT ASKS THE SAME QUESTION THE DESIGN ASKS, RATHER THAN GUESSING AT IT.
  * ============================================================================
- * A browser's CSSOM drops a value it cannot parse, so the obvious version of
- * this — interpolate and let the platform sort it out — looks safe and passes
- * in a browser. **jsdom stores it verbatim**, which is how a token reading
- * `; position: static` was found sitting inside the `min()` this builds. A
- * check that is really the CSS parser's is a check that is a different check
- * in every engine, and this value is merchant-authored: it arrives in
- * `config`, travels in the payload, and is interpolated into a declaration.
+ * The first version of this read the `width` token and interpolated it behind
+ * an allowlist of units. That was wrong twice over, and the second one is the
+ * dangerous one: `render()` writes every token into a custom property
+ * **unvalidated**, because a custom property takes any token stream — so a
+ * design saying `20vh` is 20vh wide, the allowlist rejected it, the box fell
+ * back to {@link A_DESIGNS_OWN_WIDTH}, and the transparent click-swallowing
+ * remainder this whole comment is about came straight back. Every allowlist of
+ * CSS units is a list of the widths a design is quietly not allowed to have.
  *
- * So the shape is stated rather than assumed. One number and one unit, which
- * is every token the shipped library uses and everything either shape has a
- * reason to ask for; anything else — a function, a second value, a semicolon,
- * a `url()` — falls back to the width `.wc-root` itself would have used, which
- * is what keeps the box and the design equal even when the token is nonsense.
+ * So the token is put in a custom property of the box's own and referenced
+ * through `var()`, which is the same shape `.wc-root` uses and therefore
+ * cannot disagree with it: any width CSS accepts, the box accepts. A value
+ * CSS does NOT accept makes both declarations invalid at computed-value time,
+ * so the box and the design fall over together rather than to different
+ * numbers — which is the property that matters, because it is the DIFFERENCE
+ * between them that traps clicks.
+ *
+ * It is also why interpolating the token into the declaration is not needed
+ * for safety: a custom property's value cannot introduce a second declaration,
+ * which is the same door `mount()` already uses for `tokens.backdrop`.
  */
-const A_WIDTH = /^(?:\d+\.?\d*|\.\d+)(?:rem|em|px|vw|vmin|ch|%)$/;
+function boxWidth(element: HTMLElement, cap: string, width: unknown): void {
+  if (typeof width === 'string' && width !== '') {
+    element.style.setProperty(WIDTH, width);
+  }
 
-function boxWidth(cap: string, width: unknown): string {
-  const asked = typeof width === 'string' ? width.trim() : '';
-
-  return `min(${cap}, ${A_WIDTH.test(asked) ? asked : A_DESIGNS_OWN_WIDTH})`;
+  element.style.setProperty(
+    'inline-size',
+    `min(${cap}, var(${WIDTH}, ${A_DESIGNS_OWN_WIDTH}))`,
+    'important'
+  );
 }
 
 /** The two Display Types this container draws. Anything else is not its business. */
 export const POPOVER_TYPES: ReadonlySet<string> = new Set(Object.keys(PLACEMENT));
 
-/** The rendered step is the one thing inside the box that a pointer may reach. */
+/**
+ * The rendered step is the one thing inside the box that a pointer may reach.
+ *
+ * **Called again on every step swap**, because `shell()` REPLACES the rendered
+ * element rather than mutating it — so the terminal step a capture advances to
+ * would otherwise arrive inert, and a success state nobody can press the close
+ * button on is an overlay the visitor cannot get rid of.
+ */
 const takesPointers = (root: HTMLElement | null): void =>
   void root?.style.setProperty('pointer-events', 'auto', 'important');
-
-const NOTHING: Mounted = {
-  mounted: false,
-  root: null,
-  steps: 0,
-  show: () => undefined,
-  showStep: () => undefined,
-  close: () => undefined,
-};
 
 export function mountPopover(options: MountOptions): Mounted {
   const placement = PLACEMENT[options.displayType ?? ''];
@@ -257,28 +262,13 @@ export function mountPopover(options: MountOptions): Mounted {
   const chrome = closeButton(() => close(true));
   const parts = shell(options.template, chrome, options);
 
-  /**
-   * The design takes back the pointers the box gave up.
-   *
-   * Belt and braces rather than the mechanism: {@link boxWidth} is what makes
-   * the box equal the design, so there is no exposed remainder for the box's
-   * own `pointer-events: none` to protect. This is what protects the block
-   * axis and anything a future placement leaves over — and it is re-applied on
-   * every step swap, because `shell()` REPLACES the rendered element rather
-   * than mutating it, so the terminal step a capture advances to would
-   * otherwise arrive inert.
-   */
   element.appendChild(parts.host);
 
-  const armour = {
-    ...POPOVER_ARMOUR,
-    ...placement.inset,
-    'inline-size': boxWidth(placement.cap, options.template.tokens.width),
-  };
-
-  for (const [property, value] of Object.entries(armour)) {
+  for (const [property, value] of Object.entries({ ...POPOVER_ARMOUR, ...placement.inset })) {
     element.style.setProperty(property, value, 'important');
   }
+
+  boxWidth(element, placement.cap, options.template.tokens.width);
 
   /**
    * Closing, and the one bit that is not symmetric.

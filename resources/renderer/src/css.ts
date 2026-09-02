@@ -46,13 +46,24 @@ export const DOCUMENT_CSS = `dialog.wconvert-dialog::backdrop{background:var(--w
  * `!important` so the outer tree cannot outrank it, and every property the
  * design depends on lives on `.wc-root`, one element in (ADR 0009).
  */
+/**
+ * How wide a design is when it does not say.
+ *
+ * Named rather than written into the rule below, because it is not only this
+ * stylesheet's business: a CONTAINER that has to size a box to the design it
+ * will hold has to know the same number, and two spellings of it are a box and
+ * a design that disagree by 448px the day one of them changes
+ * (`pro/resources/renderer/src/popover.ts`, ADR 0011).
+ */
+export const A_DESIGNS_OWN_WIDTH = '28rem';
+
 export const SHADOW_CSS = [
   `:host{all:initial!important;display:block!important}`,
   `*,::before,::after{box-sizing:border-box}`,
 
   // One element in: this is where positioning, stacking and base typography
   // are allowed to live.
-  `.wc-root{font-family:var(--wc-font,system-ui,sans-serif);font-size:var(--wc-text-size,1rem);line-height:1.5;color:var(--wc-fg,#111827);background:var(--wc-bg,#fff);border-radius:var(--wc-radius,.5rem);padding:var(--wc-pad,1.5rem);text-align:var(--wc-align,start);inline-size:min(var(--wc-width,28rem),100%);max-block-size:85vh;overflow:auto;position:relative;box-shadow:0 10px 40px rgba(0,0,0,.18)}`,
+  `.wc-root{font-family:var(--wc-font,system-ui,sans-serif);font-size:var(--wc-text-size,1rem);line-height:1.5;color:var(--wc-fg,#111827);background:var(--wc-bg,#fff);border-radius:var(--wc-radius,.5rem);padding:var(--wc-pad,1.5rem);text-align:var(--wc-align,start);inline-size:min(var(--wc-width,${A_DESIGNS_OWN_WIDTH}),100%);max-block-size:85vh;overflow:auto;position:relative;box-shadow:0 10px 40px rgba(0,0,0,.18)}`,
 
   `.wc-stack{display:flex;flex-direction:column;gap:var(--wc-gap,.75rem)}`,
   `.wc-row{display:flex;flex-wrap:wrap;align-items:center;gap:var(--wc-gap,.75rem)}`,
