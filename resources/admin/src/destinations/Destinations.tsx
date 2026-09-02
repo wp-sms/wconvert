@@ -5,6 +5,7 @@ import { iconFor } from '../icons';
 import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
+import { Checkbox } from '../components/ui/checkbox';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
@@ -469,7 +470,18 @@ function Configured({
         <RegionBody className="flex flex-col gap-4 border-t border-border">
           {fields.map(([key, field]) => (
             <div key={key} className="flex max-w-xl flex-col gap-1.5">
-              <Label htmlFor={`wconvert-${destination.id}-${key}`}>{field.label}</Label>
+              {/*
+                A field drawn as a GROUP of controls is labelled by association
+                rather than by `for`: `<label for>` naming a `div[role=group]`
+                is inert, so the group points back at this element's id instead
+                and the same words do the same job either way.
+              */}
+              <Label
+                id={`wconvert-${destination.id}-${key}-label`}
+                htmlFor={isGroup(field) ? undefined : `wconvert-${destination.id}-${key}`}
+              >
+                {field.label}
+              </Label>
               <SettingsControl
                 id={`wconvert-${destination.id}-${key}`}
                 field={field}
@@ -659,12 +671,24 @@ function SettingsControl({
 }) {
   switch (field.type) {
     /**
-     * A comma-separated list, which is what `tags` has always been. The
-     * splitting is in {@see fromDraft} rather than here, so a merchant can
-     * type a comma without the field reformatting itself under them.
+     * A list. **Checkboxes where the server could enumerate the choices, and a
+     * comma-separated text input where it could not** — the same stored
+     * `string[]` either way, so {@see toDraft} and {@see fromDraft} stay one
+     * code path and the draft stays the comma-separated string they round-trip.
+     *
+     * WSMS's `tags` has always been the second of those: the ids are the
+     * merchant's own and the admin has no list to offer. MailPoet's are
+     * integers nobody could be asked to find, so its schema carries the names
+     * and this draws them (#87). A provider that could not be reached sends no
+     * options and lands back on the text input, which is a degraded control
+     * rather than an invisible one.
      */
     case 'ids':
-      return <Input id={id} type="text" value={value} onChange={(e) => onChange(e.target.value)} />;
+      return isGroup(field) ? (
+        <ChoiceList id={id} options={field.options} value={value} onChange={onChange} />
+      ) : (
+        <Input id={id} type="text" value={value} onChange={(e) => onChange(e.target.value)} />
+      );
 
     /**
      * `type="url"` for the keyboard and the browser's own hint, and nothing
@@ -690,6 +714,84 @@ function SettingsControl({
     default:
       return <Input id={id} type="text" value={value} onChange={(e) => onChange(e.target.value)} />;
   }
+}
+
+/**
+ * Whether a field draws as a group of controls rather than as one control.
+ *
+ * One predicate, read by both halves — the label association above and the
+ * control switch below — so the two cannot disagree about what is being drawn.
+ * It narrows `options`, so the group can be handed them without a second check
+ * that could drift from this one.
+ */
+function isGroup(
+  field: SettingsField,
+): field is SettingsField & { options: NonNullable<SettingsField['options']> } {
+  return LIST_KINDS.has(field.type) && field.options !== undefined && field.options.length > 0;
+}
+
+/**
+ * A set of checkboxes over a list field's enumerated options.
+ *
+ * **The draft it edits is still the comma-separated string**, which is the
+ * point: `ids` has one stored shape and one round trip, and whether the server
+ * could name the choices decides only what the merchant is shown. So this is a
+ * control swap and not a second field kind.
+ *
+ * It is a labelled `role="group"` rather than a labelled control, because the
+ * words above a set of checkboxes name the SET and a `for` pointing at one of
+ * them would be a lie. The caller's `Label` keeps the words and this points
+ * back at it, which is why {@see isGroup} exists there.
+ */
+function ChoiceList({
+  id,
+  options,
+  value,
+  onChange,
+}: {
+  id: string;
+  options: NonNullable<SettingsField['options']>;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  const chosen = new Set(
+    value
+      .split(',')
+      .map((entry) => entry.trim())
+      .filter((entry) => entry !== ''),
+  );
+
+  const toggle = (option: string, on: boolean) => {
+    const next = new Set(chosen);
+
+    if (on) {
+      next.add(option);
+    } else {
+      next.delete(option);
+    }
+
+    // Written back in the ORDER THE SERVER OFFERED, not in click order, so
+    // saving the same set twice produces the same string and a merchant
+    // unticking and reticking a box does not look like an edit.
+    onChange(options.map((o) => o.value).filter((o) => next.has(o)).join(', '));
+  };
+
+  return (
+    <div id={id} className="flex flex-col gap-2" role="group" aria-labelledby={`${id}-label`}>
+      {options.map((option) => (
+        <div key={option.value} className="flex items-center gap-2">
+          <Checkbox
+            id={`${id}-${option.value}`}
+            checked={chosen.has(option.value)}
+            onCheckedChange={(on) => toggle(option.value, on === true)}
+          />
+          <Label htmlFor={`${id}-${option.value}`} className="font-normal">
+            {option.label}
+          </Label>
+        </div>
+      ))}
+    </div>
+  );
 }
 
 /**

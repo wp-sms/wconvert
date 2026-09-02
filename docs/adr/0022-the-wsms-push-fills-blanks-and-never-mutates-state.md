@@ -75,6 +75,24 @@ It also keeps [ADR 0007](0007-destinations-are-outbound-and-fallible.md)'s "neve
 reads Contact state on the capture path" *literally* true. Branching on `status` to
 decide anything **is** reading it.
 
+> **Generalised by [ADR 0049](0049-the-mailpoet-push-adds-membership-without-touching-status.md),
+> which is where this stopped being a rule about WSMS.** The MailPoet push
+> holds every line of the argument above and adds a scope WSMS does not have: a
+> `mailpoet_subscriber_segment` row carries its own **status**, where a WSMS tag
+> is an `INSERT IGNORE` with no state in it (ADR 0023). So *"list membership is
+> only ever added"* had to be made literal — a row that already exists is left
+> exactly as it is, whatever it says, and only a missing one is created.
+>
+> Two clauses above read differently once a second implementation exists.
+> **"Fills blanks" is not universal**: the MailPoet push fills none, because
+> MailPoet's only public update path restamps `source` and `subscribed_ip` on
+> every call and WConvert has no honest IP to supply (ADR 0017). And **"never
+> writes `status`" is enforced by the SHAPE of the seam** there rather than by
+> the adapter remembering — `MailPoetSubscribers` can neither read a status nor
+> write one, because MailPoet's obvious public method writes one on the way
+> past and a rule that can be broken by reaching for the obvious call is a rule
+> that will be.
+
 ## The asymmetry is the model, not an inconsistency
 
 Creating `subscribed` is a claim about someone the owning system has never heard

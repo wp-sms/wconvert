@@ -35,6 +35,18 @@ the external-system criterion it would have had no home, and the *Deliver a lead
 magnet* Goal's declared metric ("Leads where the delivery fired") would have had
 nothing to read.
 
+> **That choice is what admits MailPoet to free, and it is worth reading twice
+> because it looks like an exception and is not.** The tier line here is *in
+> this process or over the wire*, never *ours or somebody else's* — so free
+> registers three types and each is free for one reason repeated: WP SMS is a
+> sibling plugin in this process, `wp_mail()` is WordPress's own, and MailPoet
+> stores its subscribers in this database and hands other plugins a PHP API.
+> See [ADR 0049](0049-the-mailpoet-push-adds-membership-without-touching-status.md),
+> which also makes free's *"no outbound HTTP at all"* an assertion rather than
+> a claim: `tests/unit/Contract/TheFreeCapturePathStaysInProcessTest.php` reads
+> the capture path's source, and `bin/verify-destinations.php` watches
+> `pre_http_request` across a real capture on a real WordPress.
+
 ## Consequences
 
 - **Standalone is not "no Destination configured at all."** That wording would

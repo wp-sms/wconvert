@@ -738,7 +738,37 @@ npx @wp-playground/cli server --workers=1 \
 
 `--workers=1` is not optional: Playground's default six worker threads all
 write one SQLite file and corrupt it, which surfaces as intermittent 500s that
-read like flaky tests rather than a broken database.
+read like flaky tests rather than a broken database. It is a `server` flag only
+— the `php` subcommand below rejects it.
+
+### Booting with MailPoet, and without it
+
+The MailPoet [[Destination]] has two cases and **both are worth running**: it is
+`ready` where MailPoet is installed and `unavailable` where it is not, and the
+second is the majority of real sites. `bin/verify-destinations.php` asserts
+whichever one it is booted into, so the two runs are one script and two
+blueprints.
+
+MailPoet is not installed in any Local site. Pull it in rather than hunting for
+a copy:
+
+```json
+{
+  "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+  "preferredVersions": { "php": "8.1", "wp": "latest" },
+  "steps": [
+    {
+      "step": "installPlugin",
+      "pluginData": { "resource": "wordpress.org/plugins", "slug": "mailpoet" },
+      "options": { "activate": true }
+    }
+  ]
+}
+```
+
+Pass it with `--blueprint`, and leave the step out — or the flag off — for the
+absent case. MailPoet runs on Playground's SQLite despite being a Doctrine ORM
+application, so this needs no MySQL either.
 
 ### Running a `bin/verify-*.php` script under Playground
 
@@ -766,6 +796,7 @@ rather than against the thing under test.
 #   require '/wordpress/wp-content/plugins/wconvert/bin/verify-destinations.php';
 
 npx @wp-playground/cli php --php=8.1 \
+  --blueprint "$PWD/../scratch/with-mailpoet.json" \
   --mount "$PWD:/wordpress/wp-content/plugins/wconvert" \
   --mount "$PWD/../mu:/wordpress/wp-content/mu-plugins" \
   --mount "$PWD/../scratch:/scratch" \

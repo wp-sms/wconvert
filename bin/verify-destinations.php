@@ -26,6 +26,7 @@ use WConvert\Bootstrap;
 use WConvert\Destination\DestinationStore;
 use WConvert\Destination\HealthStore;
 use WConvert\Destination\LeadMagnet\LeadMagnetDestinationType;
+use WConvert\Destination\MailPoet\MailPoetDestinationType;
 use WConvert\Destination\OptinBinding;
 use WConvert\Destination\PushJob;
 use WConvert\Destination\Wsms\WsmsDestinationType;
@@ -76,6 +77,29 @@ if ((int) $wpdb->get_var("SELECT COUNT(*) FROM `{$leadTable}`") > 0) {
 
     exit(2);
 }
+
+// ============================================================================
+// THE PROMISE readme.txt PRINTS IN BOLD: no account, no phone-home.
+// ============================================================================
+// ADR 0007 makes a [[Destination]] that calls out over HTTP a [[Pro]] feature,
+// which is why free registers exactly three types and every one of them is
+// in-process. `tests/unit/Contract/TheFreeCapturePathStaysInProcessTest.php`
+// proves that at the SOURCE, which is the assertion that catches a line
+// somebody adds — and this is the other half: the whole of a real capture, a
+// real dispatch and a real MailPoet push, watched for a request that actually
+// leaves the machine.
+//
+// `pre_http_request` is the first filter in `WP_Http::request()`, so short-
+// circuiting here means nothing is sent and every caller is recorded.
+$requests = [];
+
+add_filter('pre_http_request', static function ($short, array $args, string $url) use (&$requests) {
+    unset($short, $args);
+
+    $requests[] = $url;
+
+    return new WP_Error('wconvert_verification', 'Blocked: free makes no outbound request.');
+}, 0, 3);
 
 echo "Action Scheduler\n";
 
@@ -374,6 +398,208 @@ $verify->check(
     ))
 );
 $verify->check('and moves no delivery counter', $countedBefore, $deliveries($magnetOptin->id));
+
+echo "\nThe MailPoet push\n";
+
+// **This whole section is conditional, and that is the point of it.** A site
+// with no MailPoet is the majority case and it must be a clean answer rather
+// than a fatal — the type is `unavailable` there, its schema still renders,
+// and nothing is enqueued (#30). Boot Playground with the `installPlugin` step
+// for MailPoet to exercise the other half; README's Verifying section has the
+// blueprint.
+$verify->check(
+    'the MailPoet type is registered by free',
+    true,
+    $registry->find(MailPoetDestinationType::ID) !== null
+);
+$verify->check(
+    'it needs no Connection, so no credential is ever created for it',
+    true,
+    $registry->find(MailPoetDestinationType::ID)?->connectionSchema() === null
+);
+
+$mailPoetAvailability = $registry->availabilityOf(MailPoetDestinationType::ID)->value;
+
+echo '  note the MailPoet Destination is "' . $mailPoetAvailability . "\" here\n";
+
+if ($mailPoetAvailability !== 'ready') {
+    // The absent case, asserted rather than skipped past. `settingsSchema()`
+    // is called for every registered type on every read of the Destinations
+    // screen, whatever its Availability, so it is the path that reaches the
+    // adapter first on a site that has no MailPoet to reach.
+    $schema = $registry->find(MailPoetDestinationType::ID)?->settingsSchema([]) ?? [];
+
+    $verify->check('its schema still answers with MailPoet absent', true, isset($schema['lists']));
+    $verify->check('and offers no lists to choose from', false, isset($schema['lists']['options']));
+    $verify->check('and it is skipped rather than dispatchable', false, $registry->isDispatchable(MailPoetDestinationType::ID));
+} else {
+    // One call into MailPoet, by NAME rather than as a literal method — the
+    // same reason `WpMailPoetSubscribers::call()` gives: the class this would
+    // be checked against is not on the machine running the analyser.
+    $mailpoet = static function (string $method, ...$arguments) {
+        $api = \MailPoet\API\API::MP('v1');
+
+        if (!is_object($api)) {
+            throw new RuntimeException('MailPoet did not supply its plugin API.');
+        }
+
+        return $api->{$method}(...$arguments);
+    };
+
+    $listA = $mailpoet('addList', ['name' => 'WConvert verification A']);
+    $listB = $mailpoet('addList', ['name' => 'WConvert verification B']);
+
+    $schema = $registry->find(MailPoetDestinationType::ID)?->settingsSchema([]) ?? [];
+    $offered = array_column($schema['lists']['options'] ?? [], 'label', 'value');
+
+    // The merchant chooses a list BY NAME. This is the admin-time read of the
+    // provider's shape ADR 0007 permits, and the reason nobody has to paste a
+    // segment id read off a URL.
+    $verify->check('the settings surface lists the site’s lists by name', 'WConvert verification A', $offered[$listA['id']] ?? null);
+
+    $mailPoetDestination = $destinations->save(null, MailPoetDestinationType::ID, 'MailPoet', null, [
+        MailPoetDestinationType::LISTS => [(string) $listA['id'], (string) $listB['id']],
+    ]);
+
+    $mailPoetOptin = $optins->create('MailPoet optin', 'grow_list', [
+        'template' => ['tree' => ['steps' => []]],
+        OptinBinding::KEY => [$mailPoetDestination->id],
+    ]);
+    $optins->publish($mailPoetOptin->id);
+
+    // ------------------------------------------------------------------
+    // 1. Somebody MailPoet has never heard of.
+    // ------------------------------------------------------------------
+    $newLead = $capture->record(
+        $mailPoetOptin->id,
+        new Submission('mailpoet-new@example.com', null, ['name' => 'New Person'])
+    );
+
+    $worker->run((new PushJob($newLead->id, $mailPoetDestination->id, 1))->toArgs());
+
+    $created = $mailpoet('getSubscriber', 'mailpoet-new@example.com');
+
+    $verify->check('a capture creates one MailPoet subscriber', 'mailpoet-new@example.com', $created['email'] ?? null);
+    $verify->check('with the captured name, whole and unsplit', 'New Person', $created['first_name'] ?? null);
+    $verify->check(
+        'on both configured lists',
+        ['subscribed', 'subscribed'],
+        array_values(array_map(
+            static fn (array $s): string => (string) $s['status'],
+            array_filter(
+                $created['subscriptions'] ?? [],
+                static fn (array $s): bool => in_array((string) $s['segment_id'], [(string) $listA['id'], (string) $listB['id']], true)
+            )
+        ))
+    );
+
+    // **Idempotency, against a real unique index.** A retry re-runs the whole
+    // of push(); MailPoet's `mailpoet_subscribers.email` is unique, so a second
+    // create collides and the push finishes by list instead (ADR 0008).
+    $worker->run((new PushJob($newLead->id, $mailPoetDestination->id, 1))->toArgs());
+
+    $retried = $mailpoet('getSubscriber', 'mailpoet-new@example.com');
+
+    $verify->check('a retry adds no second subscriber', $created['id'], $retried['id'] ?? null);
+    $verify->check(
+        'and no second membership',
+        count($created['subscriptions'] ?? []),
+        count($retried['subscriptions'] ?? [])
+    );
+
+    // ------------------------------------------------------------------
+    // 2. Somebody who left. THE ASSERTION THIS WHOLE SECTION EXISTS FOR.
+    // ------------------------------------------------------------------
+    // No fake can prove this, because what it is about is which method of
+    // another plugin's API was called: MailPoet's own `subscribeToLists()`
+    // moves a non-subscribed subscriber's global status on the way past, and
+    // the adapter therefore does not call it (ADR 0022). This is the only
+    // place that difference is observable.
+    //
+    // The three options below are the FIXTURE's, not the push's. WConvert
+    // passes none of them: whether a new subscriber has to confirm is
+    // MailPoet's own signup-confirmation setting and the site's decision
+    // (ADR 0016). They are here only so setting up a known state does not send
+    // anybody anything.
+    $mailpoet(
+        'addSubscriber',
+        ['email' => 'mailpoet-left@example.com', 'first_name' => 'Stored Name'],
+        [(int) $listA['id']],
+        ['send_confirmation_email' => false, 'schedule_welcome_email' => false, 'skip_subscriber_notification' => true]
+    );
+    $mailpoet('unsubscribe', 'mailpoet-left@example.com');
+
+    $before = $mailpoet('getSubscriber', 'mailpoet-left@example.com');
+
+    $verify->check('a subscriber who unsubscribed starts unsubscribed', 'unsubscribed', $before['status'] ?? null);
+
+    $leftLead = $capture->record(
+        $mailPoetOptin->id,
+        new Submission('mailpoet-left@example.com', null, ['name' => 'Typo Name'])
+    );
+
+    $worker->run((new PushJob($leftLead->id, $mailPoetDestination->id, 1))->toArgs());
+
+    $after = $mailpoet('getSubscriber', 'mailpoet-left@example.com');
+    $memberships = [];
+
+    foreach ($after['subscriptions'] ?? [] as $subscription) {
+        $memberships[(string) $subscription['segment_id']] = (string) $subscription['status'];
+    }
+
+    $verify->check('a capture never flips them back to subscribed', 'unsubscribed', $after['status'] ?? null);
+    $verify->check(
+        'the list they left is still left',
+        'unsubscribed',
+        $memberships[(string) $listA['id']] ?? null
+    );
+    $verify->check(
+        'and the list they had no row for is added',
+        'subscribed',
+        $memberships[(string) $listB['id']] ?? null
+    );
+
+    // Nothing else about the person was touched. The push fills no blanks on a
+    // match: MailPoet's only public update path restamps `source` and
+    // `subscribed_ip` too, and WConvert has no honest IP to supply (ADR 0017).
+    $verify->check('and their stored name is untouched', 'Stored Name', $after['first_name'] ?? null);
+    $verify->check('and so is their provenance', $before['source'] ?? null, $after['source'] ?? null);
+
+    echo "\n  cleaning up MailPoet\n";
+
+    $mailpoet('unsubscribe', 'mailpoet-new@example.com');
+
+    $wpdb->query($wpdb->prepare(
+        "DELETE FROM `{$wpdb->prefix}mailpoet_subscriber_segment` WHERE segment_id IN (%d, %d)",
+        (int) $listA['id'],
+        (int) $listB['id']
+    ));
+    $wpdb->query($wpdb->prepare(
+        "DELETE FROM `{$wpdb->prefix}mailpoet_subscribers` WHERE email IN (%s, %s)",
+        'mailpoet-new@example.com',
+        'mailpoet-left@example.com'
+    ));
+    $wpdb->query($wpdb->prepare(
+        "DELETE FROM `{$wpdb->prefix}mailpoet_segments` WHERE id IN (%d, %d)",
+        (int) $listA['id'],
+        (int) $listB['id']
+    ));
+
+    $destinations->delete($mailPoetDestination->id);
+    $health->forget($mailPoetDestination->id);
+    $wpdb->query($wpdb->prepare(
+        "DELETE FROM `{$wpdb->prefix}wconvert_optins` WHERE id = %s",
+        $mailPoetOptin->id
+    ));
+}
+
+echo "\nNo account, no phone-home\n";
+
+// Everything above ran: a real capture, a real dispatch, a real worker, the
+// lead-magnet delivery, a test send and — where MailPoet is installed — a real
+// subscriber write. If free's capture path reaches the network at all, it
+// reached it inside that.
+$verify->check('free made no outbound HTTP request at all', [], $requests);
 
 echo "\nCleaning up\n";
 

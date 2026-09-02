@@ -45,6 +45,21 @@ enum SiteDependency: string
     case Wsms = 'wsms';
 
     /**
+     * MailPoet, which the MailPoet [[Destination]] pushes into.
+     *
+     * **`unavailable` and never `locked`**, on the same reading as the case
+     * above: the MailPoet push ships in the free plugin, so a site without it
+     * is not missing a tier we sell — it is missing a plugin, and we do not
+     * sell those either (ADR 0026).
+     *
+     * This case is why the enum is closed. Adding a member is a code change a
+     * reviewer reads, rather than a string a Destination type invents for
+     * itself, and {@see SitePresence} then has exactly one thing to answer
+     * about each of them (#87).
+     */
+    case MailPoet = 'mailpoet';
+
+    /**
      * What to call it on screen.
      *
      * Here rather than in the admin bundle because the slug is not copy: a
@@ -57,6 +72,7 @@ enum SiteDependency: string
         return match ($this) {
             self::WooCommerce => __('WooCommerce', 'wconvert'),
             self::Wsms => __('WP SMS', 'wconvert'),
+            self::MailPoet => __('MailPoet', 'wconvert'),
         };
     }
 }

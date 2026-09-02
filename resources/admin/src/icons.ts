@@ -1,4 +1,4 @@
-import { Mail, Plug, Send, Users, type LucideIcon } from 'lucide-react';
+import { Mail, MailPlus, Plug, Send, Users, type LucideIcon } from 'lucide-react';
 
 /**
  * The lucide icon a name from PHP resolves to.
@@ -21,6 +21,7 @@ import { Mail, Plug, Send, Users, type LucideIcon } from 'lucide-react';
  */
 const ICONS: Record<string, LucideIcon> = {
   mail: Mail,
+  'mail-plus': MailPlus,
   plug: Plug,
   send: Send,
   users: Users,

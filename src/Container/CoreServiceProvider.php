@@ -36,6 +36,8 @@ use WConvert\Destination\PushDispatcher;
 use WConvert\Destination\PushWorker;
 use WConvert\Destination\Wsms\WpWsmsContacts;
 use WConvert\Destination\Wsms\WsmsDestinationType;
+use WConvert\Destination\MailPoet\MailPoetDestinationType;
+use WConvert\Destination\MailPoet\WpMailPoetSubscribers;
 use WConvert\Frontend\InlineOptinBlock;
 use WConvert\Frontend\InlineOptinShortcode;
 use WConvert\Frontend\InspectorEnqueue;
@@ -398,8 +400,10 @@ final class CoreServiceProvider implements ServiceProvider
 
         // **Pro registers its own types into this same registry** from its
         // service provider's boot(), by pulling it out of the shared container
-        // (ADR 0015). Free registers the WSMS push and nothing else — every
-        // Destination that makes an outbound HTTP call is Pro's (#4).
+        // (ADR 0015). Free registers three types and **every one of them is
+        // in-process** — every Destination that makes an outbound HTTP call is
+        // Pro's (#4, ADR 0007). WSMS and MailPoet are sibling plugins in this
+        // process reading this database; `wp_mail()` is WordPress's own.
         $container->register(
             DestinationRegistry::class,
             static fn (ServiceContainer $c): DestinationRegistry => (new DestinationRegistry(
@@ -407,6 +411,10 @@ final class CoreServiceProvider implements ServiceProvider
                 $c->resolve(SitePresence::class)
             ))
                 ->register(new WsmsDestinationType(new WpWsmsContacts()))
+                // The third in-process type, and the one that gives
+                // `Goal::GrowEmailList` somewhere to put an address on a site
+                // with no WP SMS — which is what that Goal claims to do (#87).
+                ->register(new MailPoetDestinationType(new WpMailPoetSubscribers()))
                 // The one type that works on a Standalone install: `wp_mail()`
                 // is WordPress's, so it needs nothing and is never
                 // `unavailable` (ADR 0007, ADR 0026).

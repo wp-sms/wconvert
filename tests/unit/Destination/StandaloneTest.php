@@ -8,6 +8,8 @@ use WConvert\Destination\DestinationRegistry;
 use WConvert\Destination\DestinationStore;
 use WConvert\Destination\HealthStore;
 use WConvert\Destination\PushDispatcher;
+use WConvert\Destination\MailPoet\MailPoetDestinationType;
+use WConvert\Destination\MailPoet\WpMailPoetSubscribers;
 use WConvert\Destination\Wsms\WsmsDestinationType;
 use WConvert\Lead\LeadCapture;
 use WConvert\Lead\LeadCsv;
@@ -91,6 +93,47 @@ final class StandaloneTest extends TestCase
         ))->register(new WsmsDestinationType(new FakeWsmsContacts()));
 
         self::assertSame(Availability::Ready, $withWsms->availabilityOf(WsmsDestinationType::ID));
+    }
+
+    /**
+     * The same reading for MailPoet, and **it is asserted against the REAL
+     * adapter** rather than against a fake.
+     *
+     * The failure this guards is not subtle and no fake can see it: the unit
+     * suite has no MailPoet, so {@see WpMailPoetSubscribers} here is looking
+     * at exactly the site a merchant with no MailPoet has. A `use
+     * MailPoet\API\API` at the top of that file, or a container lookup on a
+     * path that runs before the [[Availability]] check, is a fatal on every
+     * such install — and `DestinationController::index()` calls
+     * `settingsSchema()` for every registered type whatever its Availability,
+     * so the schema read is the path that reaches it first.
+     */
+    public function testWithoutMailPoetTheTypeIsUnavailableAndItsSchemaStillAnswers(): void
+    {
+        $type = new MailPoetDestinationType(new WpMailPoetSubscribers());
+
+        $registry = (new DestinationRegistry(new FakeProPresence(false), new FakeSitePresence()))
+            ->register($type);
+
+        self::assertSame(Availability::Unavailable, $registry->availabilityOf(MailPoetDestinationType::ID));
+        self::assertFalse($registry->isDispatchable(MailPoetDestinationType::ID), 'Skipped, never enqueued.');
+
+        $withMailPoet = (new DestinationRegistry(
+            new FakeProPresence(false),
+            new FakeSitePresence([SiteDependency::MailPoet])
+        ))->register($type);
+
+        self::assertSame(Availability::Ready, $withMailPoet->availabilityOf(MailPoetDestinationType::ID));
+
+        // The schema answers rather than throwing, and it offers no lists to
+        // choose from because there are none to read.
+        $schema = $type->settingsSchema([]);
+
+        self::assertArrayHasKey(MailPoetDestinationType::LISTS, $schema);
+        self::assertArrayNotHasKey('options', $schema[MailPoetDestinationType::LISTS]);
+
+        // No [[Connection]] is ever created for it: there is no key to paste.
+        self::assertNull($type->connectionSchema());
     }
 
     /**

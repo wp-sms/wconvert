@@ -22,6 +22,12 @@
  * - WSMS's container accessor, which the WSMS [[Destination]] reaches and
  *   which `WpWsmsContacts` resolves by name for exactly the reason this file
  *   exists.
+ * - MailPoet's two static entry points, for the same reason one file over.
+ *   Both return `mixed`, deliberately: everything past them is reached
+ *   through `WpMailPoetSubscribers::call()` on a variable method name, which
+ *   is the honest position when the classes that would be checked are not on
+ *   the machine running the analyser. Stubbing MailPoet's signatures here
+ *   would be maintaining a fiction of them beside the real ones.
  * - WooCommerce's cart, which `WConvert\Pro\WooCommerce\CartCookie` reads two
  *   numbers off — a count and a total, never contents (ADR 0025).
  * - `wc_get_cart_url()` and `wc_setcookie()`, the two functions that half of
@@ -111,6 +117,36 @@ namespace WSms\Exception {
     if (!class_exists('WSms\\Exception\\ConflictException')) {
         class ConflictException extends \RuntimeException
         {
+        }
+    }
+}
+
+namespace MailPoet\DI {
+    if (!class_exists('MailPoet\\DI\\ContainerWrapper')) {
+        class ContainerWrapper
+        {
+            /**
+             * @return mixed
+             */
+            public static function getInstance()
+            {
+                return null;
+            }
+        }
+    }
+}
+
+namespace MailPoet\API {
+    if (!class_exists('MailPoet\\API\\API')) {
+        class API
+        {
+            /**
+             * @return mixed
+             */
+            public static function MP(string $version)
+            {
+                return null;
+            }
         }
     }
 }
