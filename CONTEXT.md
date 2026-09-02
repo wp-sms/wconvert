@@ -690,6 +690,15 @@ works. It writes no Lead — a Lead has exactly one origin and carries a
 than queued, and it moves no counter at all: a failed test is a question
 answered, not an outage.
 
+Its sibling is a **connection test**, and the two are kept apart because they
+answer different questions. A connection test asks whether the stored
+credentials are good, which is what a merchant wants the moment they paste a
+key; a test send asks whether a push lands, which is what they want when the
+credentials are fine and the [[Lead]] is not arriving. A Destination whose type
+has no [[Connection]] has nothing to check and says so — every free type is in
+that state — because reporting success there would teach the merchant that this
+button is the other one.
+
 ### Connection
 
 Stored credentials for one remote account — a Mailchimp API key, a Brevo key. One

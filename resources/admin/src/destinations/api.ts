@@ -150,3 +150,40 @@ export const deleteDestination = (id: string) =>
  */
 export const rePush = (id: string) =>
   apiFetch<RePushReport>({ path: path(`/${id}/repush`), method: 'POST' });
+
+/**
+ * What a *Test* answered — **a sentence, and three outcomes rather than a
+ * boolean.**
+ *
+ * `skipped` is the one that earns the third state: a Destination whose type
+ * this install cannot run has not FAILED, and rendering that in red tells a
+ * merchant with no WP SMS that their WP SMS Destination is broken when the
+ * plugin is simply not installed. It is the `locked`/`unavailable`
+ * distinction one layer up, and the same reason it is not one word (ADR 0026).
+ *
+ * The message is the provider's own words wherever the provider supplied any.
+ * React escapes on the way to the DOM, which is why nothing escapes it on the
+ * way here.
+ */
+export interface TestReport {
+  outcome: 'success' | 'skipped' | 'failed';
+  message: string;
+}
+
+/**
+ * **Are these credentials good?** — the useful question on a [[Connection]]
+ * the merchant has just pasted a key into.
+ */
+export const testConnection = (id: string) =>
+  apiFetch<TestReport>({ path: path(`/${id}/test-connection`), method: 'POST' });
+
+/**
+ * **Does a push land?** — the useful question when the connection is fine and
+ * the [[Lead]] is not arriving.
+ *
+ * It really sends: the lead-magnet email delivers, and a real subscriber
+ * appears. It writes no Lead, queues nothing and moves no counter (ADR 0008,
+ * ADR 0031).
+ */
+export const testSend = (id: string) =>
+  apiFetch<TestReport>({ path: path(`/${id}/test-send`), method: 'POST' });

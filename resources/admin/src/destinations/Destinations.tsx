@@ -1,6 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { CircleAlert, CircleCheck, Plug, RotateCcw, Trash2, TriangleAlert } from 'lucide-react';
+import {
+  CircleAlert,
+  CircleCheck,
+  Info,
+  Plug,
+  RotateCcw,
+  Trash2,
+  TriangleAlert,
+  Zap,
+  type LucideIcon,
+} from 'lucide-react';
 import { iconFor } from '../icons';
 import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
 import { Badge } from '../components/ui/badge';
@@ -34,11 +44,14 @@ import {
   readDestinations,
   rePush,
   saveDestination,
+  testConnection,
+  testSend,
   type Destination,
   type DestinationType,
   type DestinationsPayload,
   type RePushReport,
   type SettingsField,
+  type TestReport,
 } from './api';
 import { renderingFor } from '../goals/availability';
 
@@ -110,6 +123,12 @@ export function Destinations() {
    * under all of them, for the rest of the session (ADR 0039).
    */
   const [reports, setReports] = useState<Record<string, RePushReport>>({});
+  /*
+   * A test's answer, keyed the same way and for the same reason: it is a fact
+   * about ONE Destination, and a merchant testing two integrations must not
+   * read the second answer under the first.
+   */
+  const [tests, setTests] = useState<Record<string, TestReport>>({});
   const [confirming, setConfirming] = useState<Destination | null>(null);
   const returnFocus = useRef<HTMLElement | null>(null);
 
@@ -126,6 +145,7 @@ export function Destinations() {
        * rest of the session — including after later refreshes made it wrong.
        */
       setReports({});
+      setTests({});
     } catch (cause) {
       setPayload((current) => (current.status === 'ready' ? current : failed(cause)));
       setFetchError(messageOf(cause));
@@ -192,6 +212,31 @@ export function Destinations() {
     })();
   };
 
+  /*
+   * **A test does not refresh the screen, and that is the point.**
+   *
+   * It records nothing — not health, not a delivery-failure entry, not a
+   * counter (ADR 0008) — so there is nothing new to read, and re-reading would
+   * clear the one thing the merchant pressed the button for. It is the same
+   * shape as `replay()` above for the same reason.
+   */
+  const probe = (destination: Destination, ask: (id: string) => Promise<TestReport>) => {
+    setBusyId(destination.id);
+
+    void (async () => {
+      try {
+        const report = await ask(destination.id);
+
+        setTests((current) => ({ ...current, [destination.id]: report }));
+        setErrors((current) => cleared(current, destination.id));
+      } catch (cause) {
+        setErrors((current) => ({ ...current, [destination.id]: messageOf(cause) }));
+      } finally {
+        setBusyId(null);
+      }
+    })();
+  };
+
   if (payload.status === 'failed') {
     return (
       <Region label={__('Destinations', 'wconvert')}>
@@ -238,7 +283,11 @@ export function Destinations() {
                 schema={
                   data.types.find((type) => type.id === destination.type)?.settings_schema ?? {}
                 }
+                needsConnection={
+                  data.types.find((type) => type.id === destination.type)?.needs_connection ?? false
+                }
                 report={reports[destination.id] ?? null}
+                test={tests[destination.id] ?? null}
                 error={errors[destination.id] ?? null}
                 busy={busyId === destination.id}
                 onSave={save}
@@ -247,6 +296,8 @@ export function Destinations() {
                   setConfirming(destination);
                 }}
                 onRePush={replay}
+                onTestConnection={(target) => probe(target, testConnection)}
+                onTestSend={(target) => probe(target, testSend)}
               />
             ))
           )}
@@ -312,23 +363,33 @@ export function Destinations() {
 function Configured({
   destination,
   schema,
+  needsConnection,
   report,
+  test,
   error,
   busy,
   onSave,
   onRemove,
   onRePush,
+  onTestConnection,
+  onTestSend,
 }: {
   destination: Destination;
   /** Every field its TYPE declares, in the order PHP returned them — copy included. */
   schema: DestinationType['settings_schema'];
+  /** Whether its TYPE has credentials at all. Every free type does not. */
+  needsConnection: boolean;
   report: RePushReport | null;
+  /** What the last *Test* against THIS Destination answered. */
+  test: TestReport | null;
   /** What the last save, remove or re-push against THIS Destination failed with. */
   error: string | null;
   busy: boolean;
   onSave: (destination: Destination, settings: Record<string, unknown>) => void;
   onRemove: (trigger: HTMLElement | null) => void;
   onRePush: (destination: Destination) => void;
+  onTestConnection: (destination: Destination) => void;
+  onTestSend: (destination: Destination) => void;
 }) {
   // Seeded once from what is stored. Keyed by field rather than held as one
   // string, because a type declares as many fields as it likes — the WSMS push
@@ -336,6 +397,13 @@ function Configured({
   const [draft, setDraft] = useState<Record<string, string>>(() => toDraft(schema, destination.settings));
   const removeTrigger = useRef<HTMLButtonElement>(null);
   const failing = destination.health.consecutive_failures > 0;
+  /*
+   * Whether the two *Test* buttons can do anything. The region above already
+   * says WHY when they cannot — a "Paused" badge and a sentence — so offering
+   * a button that answers with that same sentence a round trip later is the
+   * shape ADR 0042 rule 3 refuses.
+   */
+  const runnable = destination.availability === 'ready';
   const fields = Object.entries(schema);
 
   return (
@@ -451,6 +519,26 @@ function Configured({
             )}
           </Alert>
         )}
+        {/*
+          **What the last test answered, under the buttons that asked.**
+
+          Three renderings for three outcomes, because a Destination whose type
+          this install cannot run has NOT failed — drawing that in red tells a
+          merchant with no WP SMS that their WP SMS Destination is broken when
+          the plugin is simply not installed (ADR 0026). The message is the
+          provider's own words wherever it supplied any; React escapes on the
+          way to the DOM, which is why nothing escapes it before here.
+        */}
+        {test !== null && (
+          <Alert className={TEST_RENDERING[test.outcome].className}>
+            {(() => {
+              const Icon = TEST_RENDERING[test.outcome].icon;
+
+              return <Icon />;
+            })()}
+            <AlertTitle className="line-clamp-none">{test.message}</AlertTitle>
+          </Alert>
+        )}
       </RegionBody>
 
       {/*
@@ -513,10 +601,51 @@ function Configured({
         the far edge, behind a confirm (ADR 0039).
       */}
       <RegionFooter className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-        <Button variant="outline" size="sm" disabled={busy} onClick={() => onRePush(destination)}>
-          <RotateCcw aria-hidden="true" />
-          {__('Re-push leads since the last success', 'wconvert')}
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          {/*
+            **Two verbs, and the order is the order a merchant needs them in.**
+
+            *Test connection* answers whether the credentials are good, which is
+            the question on a key just pasted. *Send a test* answers whether a
+            push lands, which is the question when the connection is fine and
+            the lead is not arriving. It really sends — the lead-magnet email
+            delivers and a real subscriber appears — and it writes no lead,
+            queues nothing and moves no counter (ADR 0008, ADR 0031).
+
+            **Neither is offered where it would be refused** (ADR 0042). A type
+            with no credentials has nothing to connect to, so there is no button
+            rather than one whose only answer is "nothing to check" — which is
+            every free type. And a Destination this install cannot run answers
+            both with the sentence the region above is ALREADY showing, so
+            pressing either is a round trip to read what is on screen. The
+            server still guards both: what a screen offers and what a route
+            allows are different jobs.
+          */}
+          {needsConnection && (
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={busy || !runnable}
+              onClick={() => onTestConnection(destination)}
+            >
+              <Plug aria-hidden="true" />
+              {__('Test connection', 'wconvert')}
+            </Button>
+          )}
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={busy || !runnable}
+            onClick={() => onTestSend(destination)}
+          >
+            <Zap aria-hidden="true" />
+            {__('Send a test', 'wconvert')}
+          </Button>
+          <Button variant="outline" size="sm" disabled={busy} onClick={() => onRePush(destination)}>
+            <RotateCcw aria-hidden="true" />
+            {__('Re-push leads since the last success', 'wconvert')}
+          </Button>
+        </div>
         <Button
           ref={removeTrigger}
           variant="ghost"
@@ -715,6 +844,23 @@ function SettingsControl({
       return <Input id={id} type="text" value={value} onChange={(e) => onChange(e.target.value)} />;
   }
 }
+
+/**
+ * How each of the three test outcomes is drawn.
+ *
+ * **One map rather than two cascades**, because the palette and the icon were
+ * the same three-way decision written twice and the pair that drifts is a
+ * green tick over a red box. The decision itself is the one worth reading:
+ * `skipped` is NEUTRAL, because a Destination whose type this install cannot
+ * run has not failed — rendering it in red tells a merchant with no WP SMS
+ * that their WP SMS Destination is broken when the plugin is simply not
+ * installed (ADR 0026).
+ */
+const TEST_RENDERING: Record<TestReport['outcome'], { className: string; icon: LucideIcon }> = {
+  success: { className: 'border-success/30 bg-success/5 text-success', icon: CircleCheck },
+  skipped: { className: 'border-border bg-muted/40 text-muted-foreground', icon: Info },
+  failed: { className: 'border-destructive/30 bg-destructive/5 text-destructive', icon: CircleAlert },
+};
 
 /**
  * Whether a field draws as a group of controls rather than as one control.

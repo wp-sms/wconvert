@@ -400,6 +400,82 @@ $verify->check(
 );
 $verify->check('and moves no delivery counter', $countedBefore, $deliveries($magnetOptin->id));
 
+echo "\n  from the screen\n";
+
+// **The routes, not the dispatcher.** The unit suite proves the two negatives
+// against fakes; what it cannot prove is that the routes register on a real
+// WordPress and that `wp_get_current_user()` really answers with an address —
+// the default a test send goes to, and a fatal if the controller reached for
+// something WordPress does not have on a REST request (#88).
+/** @var \WConvert\Rest\DestinationController $controller */
+$controller = $container->get(\WConvert\Rest\DestinationController::class);
+
+$asked = static function (string $method, string $destinationId, ?string $email = null) use ($controller) {
+    $request = new WP_REST_Request('POST');
+    $request->set_param('id', $destinationId);
+
+    if ($email !== null) {
+        $request->set_param('email', $email);
+    }
+
+    $answer = $controller->{$method}($request);
+
+    return $answer instanceof WP_REST_Response ? $answer->get_data() : ['outcome' => 'error'];
+};
+
+$optionsBefore = [
+    'health' => get_option(\WConvert\Destination\HealthStore::OPTION),
+    'failures' => get_option(\WConvert\Destination\DeliveryFailures::OPTION),
+];
+$leadsBeforeTest = (int) $wpdb->get_var("SELECT COUNT(*) FROM `{$leadTable}`");
+
+// **No logged-in user, which is exactly what a CLI request is.** The address
+// defaults to the merchant's own and there is nobody to ask, so the route says
+// so in its own words. That sentence is the whole reason this branch is
+// guarded: unguarded, the merchant reads the lead-magnet type's *"the Lead
+// carries no email address"*, which is true, internal, and no help to somebody
+// who pressed a button (ADR 0042). A REST request from wp-admin always has a
+// user, so this is the path only a script and a cron run take.
+$verify->check(
+    'with nobody logged in the route says it has nowhere to send',
+    'skipped',
+    $asked('testSend', $delivery->id)['outcome'] ?? null
+);
+$verify->check('and sent nothing', 3, count($mail));
+
+$sentFromScreen = $asked('testSend', $delivery->id, 'merchant@example.com');
+
+$verify->check('an explicit address really sends', 'success', $sentFromScreen['outcome'] ?? null);
+$verify->check('and it is a fourth email', 4, count($mail));
+$verify->check('to the address the merchant gave', 'merchant@example.com', $mail[3]['to'] ?? null);
+$verify->check(
+    'and the sentence names the Destination it proved',
+    true,
+    str_contains((string) ($sentFromScreen['message'] ?? ''), 'Lead magnet email')
+);
+
+$connected = $asked('testConnection', $delivery->id);
+
+// Every free type authenticates against nothing, so the honest answer is that
+// there is nothing to check — never a green tick, which would teach a merchant
+// that this button means "this works".
+$verify->check('the test-connection route says there is nothing to check', 'skipped', $connected['outcome'] ?? null);
+
+// ============================================================================
+// THE RULE MOST LIKELY TO BE BROKEN BY A CARELESS CONTROLLER.
+// ============================================================================
+// Delivery state is about Leads that were captured (ADR 0008), and a test
+// captured none. Read against the real options rather than a fake that models
+// them.
+$verify->check('a test from the screen writes no health', $optionsBefore['health'], get_option(\WConvert\Destination\HealthStore::OPTION));
+$verify->check('no delivery failure', $optionsBefore['failures'], get_option(\WConvert\Destination\DeliveryFailures::OPTION));
+$verify->check('no delivery counter', $countedBefore, $deliveries($magnetOptin->id));
+$verify->check(
+    'and no Lead row',
+    $leadsBeforeTest,
+    (int) $wpdb->get_var("SELECT COUNT(*) FROM `{$leadTable}`")
+);
+
 echo "\nThe MailPoet push\n";
 
 // **This whole section is conditional, and that is the point of it.** A site

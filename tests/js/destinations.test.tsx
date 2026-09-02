@@ -28,6 +28,8 @@ const api = vi.hoisted(() => ({
   saveDestination: vi.fn(),
   deleteDestination: vi.fn(),
   rePush: vi.fn(),
+  testConnection: vi.fn(),
+  testSend: vi.fn(),
 }));
 
 vi.mock('../../resources/admin/src/destinations/api', () => api);
@@ -643,5 +645,123 @@ describe('the destinations screen', () => {
     await waitFor(() => {
       expect(screen.queryByText(/queued for re-pushing/)).not.toBeInTheDocument();
     });
+  });
+});
+
+/**
+ * ============================================================================
+ * TESTING A DESTINATION FROM THE SCREEN.
+ * ============================================================================
+ * Two verbs, three outcomes, and one rendering rule that is a decision rather
+ * than styling: a Destination whose type this install cannot run has **not
+ * failed**. Drawing that in red tells a merchant with no WP SMS that their WP
+ * SMS Destination is broken when the plugin is simply not installed — the same
+ * collapse ADR 0026 refuses one layer up.
+ */
+describe('testing a destination', () => {
+  beforeEach(() => {
+    api.readDestinations.mockResolvedValue({
+      types: [WSMS_READY],
+      destinations: [HEALTHY],
+      connections: [],
+      failures: [],
+    });
+  });
+
+  /**
+   * **Neither button is offered where it would be refused** (ADR 0042).
+   *
+   * The payload already answers both refusals before the click, so a merchant
+   * who presses and waits a round trip to read what is on screen is the exact
+   * shape that ADR exists to stop.
+   */
+  it('offers only Send a test where the type has no credentials', async () => {
+    render(<Destinations />);
+
+    expect(await screen.findByRole('button', { name: 'Send a test' })).toBeInTheDocument();
+
+    // Every free type is in this state. A button whose only possible answer is
+    // "nothing to check" teaches the merchant that the screen is guessing.
+    expect(screen.queryByRole('button', { name: 'Test connection' })).toBeNull();
+  });
+
+  it('offers both verbs where there are credentials to check', async () => {
+    api.readDestinations.mockResolvedValue({
+      types: [{ ...WSMS_READY, needs_connection: true }],
+      destinations: [HEALTHY],
+      connections: [],
+      failures: [],
+    });
+
+    render(<Destinations />);
+
+    expect(await screen.findByRole('button', { name: 'Test connection' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Send a test' })).toBeInTheDocument();
+  });
+
+  it('disables the buttons on a Destination this install cannot run', async () => {
+    api.readDestinations.mockResolvedValue({
+      types: [{ ...WSMS_READY, availability: 'unavailable' as const, needs_connection: true }],
+      destinations: [{ ...HEALTHY, availability: 'unavailable' as const }],
+      connections: [],
+      failures: [],
+    });
+
+    render(<Destinations />);
+
+    expect(await screen.findByRole('button', { name: 'Send a test' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Test connection' })).toBeDisabled();
+  });
+
+  it('shows what the test answered, in the provider’s own words', async () => {
+    api.testSend.mockResolvedValue({
+      outcome: 'failed',
+      message: "Sarah's key & the <audience> it opens were refused",
+    });
+
+    render(<Destinations />);
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Send a test' }));
+
+    expect(
+      await screen.findByText("Sarah's key & the <audience> it opens were refused")
+    ).toBeInTheDocument();
+  });
+
+  /**
+   * **The screen is not re-read after a test**, and that is the point rather
+   * than an optimisation: a test records nothing, so there is nothing new to
+   * read — and the read would clear the one thing the merchant pressed the
+   * button for.
+   */
+  it('does not re-read the screen after a test', async () => {
+    api.testSend.mockResolvedValue({ outcome: 'success', message: 'The test reached WP SMS contacts.' });
+
+    render(<Destinations />);
+
+    await screen.findByRole('button', { name: 'Send a test' });
+
+    const readsBefore = api.readDestinations.mock.calls.length;
+
+    await userEvent.click(screen.getByRole('button', { name: 'Send a test' }));
+    await screen.findByText('The test reached WP SMS contacts.');
+
+    expect(api.readDestinations).toHaveBeenCalledTimes(readsBefore);
+  });
+
+  it('renders a type this install cannot run as a note, never as a failure', async () => {
+    api.testSend.mockResolvedValue({
+      outcome: 'skipped',
+      message: 'This Destination’s type is not available on this site.',
+    });
+
+    render(<Destinations />);
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Send a test' }));
+
+    const note = await screen.findByText('This Destination’s type is not available on this site.');
+
+    // The destructive palette is what the screen reserves for a real failure.
+    expect(note.closest('[class*="destructive"]')).toBeNull();
   });
 });

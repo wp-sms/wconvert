@@ -10,6 +10,7 @@ use WConvert\Destination\DeliveryFailures;
 use WConvert\Destination\DestinationRegistry;
 use WConvert\Destination\DestinationStore;
 use WConvert\Destination\HealthStore;
+use WConvert\Destination\PushDispatcher;
 use WConvert\Destination\Wsms\WsmsDestinationType;
 use WConvert\Lead\LeadRepository;
 use WConvert\Optin\OptinRepository;
@@ -71,7 +72,8 @@ final class DestinationRoutesTest extends TestCase
             $connections,
             $health,
             new DeliveryFailures($this->options),
-            new BulkRePush($registry, $destinations, $optins, new LeadRepository($db), $health, new FakeQueue())
+            new BulkRePush($registry, $destinations, $optins, new LeadRepository($db), $health, new FakeQueue()),
+            new PushDispatcher($registry, $destinations, $optins, $health, new FakeQueue(), $connections)
         );
 
         $this->controller->registerRoutes();
