@@ -51,6 +51,13 @@ final class WpSitePresence implements SitePresence
             // files are present but which fataled before booting has no container
             // to hand out.
             SiteDependency::Wsms => 'WSms\\Bootstrap',
+            // MailPoet's own container wrapper, for the same reason: it is the
+            // class that owns the container the push reaches through, and
+            // `mailpoet_initializer.php` calls `getInstance()` on it while the
+            // plugin file is still loading. A MailPoet whose files are present
+            // but whose requirements check bailed never touches it, which is
+            // the honest answer — its API is not there to call.
+            SiteDependency::MailPoet => 'MailPoet\\DI\\ContainerWrapper',
         };
 
         return class_exists($class, false);

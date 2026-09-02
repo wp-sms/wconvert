@@ -644,8 +644,8 @@ email cannot serve the SMS [[Goal]] however its words read.
 
 ### Destination
 
-A configured endpoint a captured [[Lead]] is pushed to — WSMS, an email service
-provider, a webhook, or the lead-magnet delivery email.
+A configured endpoint a captured [[Lead]] is pushed to — WSMS, MailPoet, an email
+service provider, a webhook, or the lead-magnet delivery email.
 
 A Destination is **outbound and fallible**: it is configured, it is optional, it
 can be one of several, and it can fail without the capture failing. Anything that
@@ -697,14 +697,22 @@ Connection backs one or more [[Destination]]s, so two Mailchimp audiences are tw
 Destinations over one Connection and the merchant pastes the key once.
 
 Not every Destination has one. A webhook's URL is its whole configuration, and
-the lead-magnet delivery email and the WSMS push authenticate against nothing.
+the lead-magnet delivery email, the WSMS push and the MailPoet push authenticate
+against nothing — the last two because they are the same site, where there is no
+key to paste.
 
 ### Standalone
 
 WConvert running with no [[Destination]] that depends on another system — no
-WSMS, no email service provider, no webhook. Capture works, [[Lead]]s are
-recorded, CSV export works, and the lead-magnet delivery email still sends,
-because none of that leaves the WordPress install.
+WSMS, no MailPoet, no email service provider, no webhook. Capture works,
+[[Lead]]s are recorded, CSV export works, and the lead-magnet delivery email
+still sends, because none of that leaves the WordPress install.
+
+**Free's three Destination types are the three that never leave it**, and that
+is one rule rather than three exceptions: a Destination that calls out over HTTP
+is [[Pro]]'s, so what free may register is whatever is already in this process —
+the WSMS push, the lead-magnet email, and the MailPoet push
+([ADR 0049](docs/adr/0049-the-mailpoet-push-adds-membership-without-touching-status.md)).
 
 This must be a fully working install. WSMS is never a runtime requirement of the
 capture path.
@@ -738,7 +746,7 @@ load-bearing:
 - **`ready`** — present and usable.
 - **`locked`** — absent because the install does not have [[Pro]]. Buyable from us.
 - **`unavailable`** — absent because something the *site* would need is missing: no
-  WooCommerce, no WSMS. Not buyable from us.
+  WooCommerce, no WSMS, no MailPoet. Not buyable from us.
 
 Where both reasons apply at once, **`unavailable` wins** — a merchant with no store is
 never sold Pro for a feature Pro would not give them either.

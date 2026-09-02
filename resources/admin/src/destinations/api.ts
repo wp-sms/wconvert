@@ -19,16 +19,28 @@ export type { Availability } from '../goals/availability';
  * a kind this bundle does not know is a degraded control rather than an
  * invisible one.
  *
- * The kinds in use: `ids` (a comma-separated list, held as `string[]`), `url`,
- * `text` and `multiline`. It is a `string` rather than a union because the
- * server is the authority — a Pro type shipping a kind free has never heard of
- * must render as something, and a union here would make it a type error
- * instead.
+ * The kinds in use: `ids` (a list, held as `string[]`), `url`, `text` and
+ * `multiline`. It is a `string` rather than a union because the server is the
+ * authority — a Pro type shipping a kind free has never heard of must render
+ * as something, and a union here would make it a type error instead.
+ *
+ * **`options` is the answer to a different question from `type`.** `type` says
+ * what SHAPE the value is; `options` says whether the server was able to
+ * enumerate the legal values. An `ids` field with options is a set of
+ * checkboxes and one without is a comma-separated text input — the same stored
+ * `string[]` either way, which is what lets the round trip in `toDraft` and
+ * `fromDraft` stay one code path.
+ *
+ * It is what makes the MailPoet [[Destination]] pick a list **by name** rather
+ * than by a segment id read off a URL (#87), and it arrives empty on a site
+ * whose provider cannot be reached — so the control degrades to the text input
+ * rather than to nothing.
  */
 export interface SettingsField {
   type: string;
   label: string;
   description?: string;
+  options?: { value: string; label: string }[];
 }
 
 /** A kind of [[Destination]] this install can reach — WSMS, and Pro's ESPs. */

@@ -29,6 +29,10 @@ the placement, the trigger, the copy and the fields, already filled in.
 * **Lead-magnet delivery by email**, with no third-party service required.
 * **Consent captured as part of the form**, recorded with the wording that was
   on screen at the time.
+* **MailPoet integration.** Where MailPoet is installed, a captured lead is
+  added to the lists you choose by name. Nobody who unsubscribed is ever put
+  back, and whether a new subscriber has to confirm stays MailPoet's own
+  setting.
 * **WP SMS integration.** Where WP SMS is installed, a captured lead can create
   or fill in a contact there.
 
@@ -36,6 +40,13 @@ the placement, the trigger, the copy and the fields, already filled in.
 
 WConvert has no licence key, sends no analytics anywhere, and stores no visitor
 identifier. Everything it counts is a daily counter on your own site.
+
+WConvert itself contacts nothing on the internet. Every destination this free
+plugin can send a lead to is already on your site — the lead-magnet email,
+MailPoet, WP SMS — which is why the email-service-provider integrations are in
+WConvert Pro rather than here. What your own mail or newsletter plugin does
+afterwards with a message you asked it to send is between you and however you
+have set it up.
 
 **The source is in the plugin**
 
@@ -78,7 +89,8 @@ to keep them.
 = Does it work without any other plugin? =
 
 Yes. Capture, the lead log, CSV export, analytics and lead-magnet delivery by
-email all work on a WordPress with nothing else installed.
+email all work on a WordPress with nothing else installed. MailPoet and WP SMS
+are used if they are there and are never required.
 
 = How do I put an inline form on a page? =
 
@@ -104,7 +116,9 @@ analytics are daily counters per Optin.
 = Where does the data go when someone converts? =
 
 Into a table on your own site, and optionally to a destination you configure —
-the lead-magnet email, or WP SMS if you have it installed. Nowhere else.
+the lead-magnet email, MailPoet, or WP SMS if you have them installed. All
+three of those are on your own site — WConvert sends your leads to no service
+of ours and to no third party.
 
 = How do I remove someone's data? =
 

@@ -58,6 +58,28 @@ const MAILCHIMP_LOCKED = {
   availability: 'locked' as const,
 };
 
+const MAILPOET_READY = {
+  id: 'mailpoet',
+  label: 'MailPoet',
+  icon: 'mail-plus',
+  tier: 'free' as const,
+  requires: 'mailpoet',
+  requires_label: 'MailPoet',
+  availability: 'ready' as const,
+  needs_connection: false,
+  settings_schema: {
+    lists: {
+      type: 'ids',
+      label: 'Lists to add to',
+      description: 'Added, never removed.',
+      options: [
+        { value: '3', label: 'Newsletter' },
+        { value: '4', label: 'Offers' },
+      ],
+    },
+  },
+};
+
 const LEAD_MAGNET = {
   id: 'lead_magnet_email',
   label: 'Lead magnet email',
@@ -89,6 +111,14 @@ const HEALTHY = {
     skipped_captures: 0,
     last_skipped_at: null,
   },
+};
+
+const MAILPOET_BOUND = {
+  ...HEALTHY,
+  id: '01J0000000DDDDDDDDDDDDDDDD',
+  type: 'mailpoet',
+  label: 'MailPoet',
+  settings: { lists: ['3'] },
 };
 
 const LEAD_MAGNET_BOUND = {
@@ -355,6 +385,105 @@ describe('the destinations screen', () => {
         expect.objectContaining({ settings: { tags: ['tag-7', 'tag-9'] } })
       );
     });
+  });
+
+  /**
+   * **The same `ids` kind, drawn as names, and stored as exactly the same
+   * list.**
+   *
+   * MailPoet's list ids are integers a merchant would have to read off a URL,
+   * so its `settingsSchema()` enumerates the options and this draws them as
+   * checkboxes (#87). The stored shape does not change — that is the whole
+   * design: `options` answers whether the server could name the choices, and
+   * `type` still answers what shape the value is, so `toDraft`/`fromDraft`
+   * stay one code path.
+   */
+  it('draws an ids field with options as named checkboxes and stores the same list', async () => {
+    api.readDestinations.mockResolvedValue({
+      types: [MAILPOET_READY],
+      destinations: [MAILPOET_BOUND],
+      connections: [],
+      failures: [],
+    });
+
+    render(<Destinations />);
+
+    // By NAME. A merchant never sees `3` or `4`.
+    const newsletter = await screen.findByLabelText('Newsletter');
+    const offers = screen.getByLabelText('Offers');
+
+    expect(newsletter).toBeChecked();
+    expect(offers).not.toBeChecked();
+
+    await userEvent.click(offers);
+    await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+    await waitFor(() => {
+      expect(api.saveDestination).toHaveBeenCalledWith(
+        // In the order the SERVER offered, not in click order — so saving the
+        // same set twice produces the same value.
+        expect.objectContaining({ settings: { lists: ['3', '4'] } })
+      );
+    });
+  });
+
+  /**
+   * **A configured list the server did not offer survives a save.**
+   *
+   * A merchant binned a MailPoet list, or deleted one outright: its id is
+   * still in `settings` and there is no checkbox for it. Rebuilding the value
+   * from the options alone would delete it the first time anybody ticked any
+   * box — silently, on a screen whose subject is health.
+   *
+   * It is the same posture `fromDraft` already takes for a stored KEY the type
+   * no longer declares, one level up, and for the same reason: a settings bag
+   * is opaque, and the screen that cannot draw something must not be the
+   * screen that destroys it.
+   */
+  it('keeps a stored list id that is not among the offered options', async () => {
+    api.readDestinations.mockResolvedValue({
+      types: [MAILPOET_READY],
+      // `9` was a list once. Nothing on screen can represent it.
+      destinations: [{ ...MAILPOET_BOUND, settings: { lists: ['9', '3'] } }],
+      connections: [],
+      failures: [],
+    });
+
+    render(<Destinations />);
+
+    await userEvent.click(await screen.findByLabelText('Offers'));
+    await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+    await waitFor(() => {
+      expect(api.saveDestination).toHaveBeenCalledWith(
+        expect.objectContaining({ settings: { lists: ['9', '3', '4'] } })
+      );
+    });
+  });
+
+  /**
+   * The same field on a site whose provider could not be reached: no options,
+   * so it lands back on the text input the `ids` kind has always had.
+   *
+   * A degraded control is editable; an absent one is a setting nobody can
+   * reach, and this is the path a merchant hits while MailPoet is deactivated.
+   */
+  it('falls back to the text input when a list field carries no options', async () => {
+    api.readDestinations.mockResolvedValue({
+      types: [
+        {
+          ...MAILPOET_READY,
+          settings_schema: { lists: { type: 'ids', label: 'Lists to add to' } },
+        },
+      ],
+      destinations: [MAILPOET_BOUND],
+      connections: [],
+      failures: [],
+    });
+
+    render(<Destinations />);
+
+    expect(await screen.findByLabelText(/Lists to add to/)).toHaveValue('3');
   });
 
   /**
