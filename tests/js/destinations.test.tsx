@@ -104,6 +104,9 @@ const HEALTHY = {
   label: 'WP SMS contacts',
   connection: null,
   settings: { tags: ['tag-7'] },
+  // Resolved on the server, per Destination. WSMS's tags are the merchant's
+  // own strings, so they come back as themselves.
+  target: 'tag-7',
   availability: 'ready' as const,
   health: {
     last_success_at: '2026-08-25 10:00:00',
@@ -121,6 +124,7 @@ const MAILPOET_BOUND = {
   type: 'mailpoet',
   label: 'MailPoet',
   settings: { lists: ['3'] },
+  target: 'Newsletter',
 };
 
 const LEAD_MAGNET_BOUND = {
@@ -128,6 +132,10 @@ const LEAD_MAGNET_BOUND = {
   id: '01J0000000CCCCCCCCCCCCCCCC',
   type: 'lead_magnet_email',
   label: 'Lead magnet email',
+  // **Null, and not empty.** Its URL, subject and body are configuration
+  // rather than a target: this type selects nothing, and is perfectly
+  // configured.
+  target: null,
   settings: {
     file_url: 'https://example.com/guide.pdf',
     subject: 'Your download',
@@ -645,6 +653,259 @@ describe('the destinations screen', () => {
     await waitFor(() => {
       expect(screen.queryByText(/queued for re-pushing/)).not.toBeInTheDocument();
     });
+  });
+});
+
+/**
+ * ============================================================================
+ * A DESTINATION IS A NAMED ROUTE, AND THE SCREEN USED TO HIDE THAT.
+ * ============================================================================
+ * `CONTEXT.md` has always said a Destination is configured once, site-wide,
+ * and *includes whatever selects the target inside the remote system* — so
+ * *"newsletter signups go to the Newsletter list, product announcements go to
+ * Product updates"* is **two MailPoet Destinations** bound to different
+ * [[Optin]]s. The PHP assumed it throughout; the admin forbade it three ways
+ * over, and this describes the three.
+ *
+ * 1. *Add* went dead once one Destination of the type existed.
+ * 2. Every route was named after its TYPE, and nothing could rename it — so
+ *    two MailPoet routes would both read "MailPoet".
+ * 3. Nothing anywhere said what a route was pointed at.
+ */
+describe('a destination is a named route', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+
+    api.readDestinations.mockResolvedValue({
+      types: [MAILPOET_READY],
+      destinations: [MAILPOET_BOUND],
+      connections: [],
+      failures: [],
+    });
+  });
+
+  /**
+   * **The defect that made the other two matter.** A merchant with one MailPoet
+   * route could not create the second, which is the exact move the model
+   * requires — and `DestinationController::targetOf()`'s own comment says two
+   * Mailchimp audiences are two Destinations over one Connection, so the PHP
+   * already assumed what the button prevented.
+   */
+  it('offers Add even where a destination of that type is already configured', async () => {
+    render(<Destinations />);
+
+    expect(await screen.findByRole('button', { name: 'Add' })).not.toBeDisabled();
+  });
+
+  /**
+   * **Named and pointed in one step, before it exists.** *Add* used to post
+   * `label: type.label` and an empty settings bag, so a merchant got a second
+   * Destination called "MailPoet" pointed at nothing and then had to find the
+   * form under it.
+   */
+  it('names and points a new route in one step', async () => {
+    render(<Destinations />);
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Add' }));
+
+    const dialog = await screen.findByRole('dialog');
+
+    // The name is pre-filled from the type and FOLLOWS the target while the
+    // merchant has not typed one of their own.
+    expect(within(dialog).getByLabelText('Name')).toHaveValue('MailPoet');
+
+    await userEvent.click(within(dialog).getByLabelText('Offers'));
+
+    expect(within(dialog).getByLabelText('Name')).toHaveValue('MailPoet — Offers');
+
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Add destination' }));
+
+    await waitFor(() => {
+      expect(api.saveDestination).toHaveBeenCalledWith({
+        type: 'mailpoet',
+        label: 'MailPoet — Offers',
+        connection: null,
+        settings: { lists: ['4'] },
+      });
+    });
+  });
+
+  /**
+   * **Pre-filled and editable, never derived.** Merchants name routes after
+   * their own intent — *"Black Friday signups"* — which no derivation could
+   * guess, and a name the merchant cannot change is defect 2 written a second
+   * time.
+   */
+  it('keeps a name the merchant typed when the target changes under it', async () => {
+    render(<Destinations />);
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Add' }));
+
+    const dialog = await screen.findByRole('dialog');
+
+    await userEvent.clear(within(dialog).getByLabelText('Name'));
+    await userEvent.type(within(dialog).getByLabelText('Name'), 'Black Friday signups');
+    await userEvent.click(within(dialog).getByLabelText('Newsletter'));
+
+    expect(within(dialog).getByLabelText('Name')).toHaveValue('Black Friday signups');
+
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Add destination' }));
+
+    await waitFor(() => {
+      expect(api.saveDestination).toHaveBeenCalledWith(
+        expect.objectContaining({ label: 'Black Friday signups' }),
+      );
+    });
+  });
+
+  /**
+   * **The dialog survives a failed save**, because the merchant's typed name
+   * is in it — dropping it on a 500 would make them retype to find out whether
+   * the second attempt fails too.
+   */
+  it('stays open and says why when the save fails', async () => {
+    api.saveDestination.mockRejectedValue(new Error('MailPoet is not answering.'));
+
+    render(<Destinations />);
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Add' }));
+
+    const dialog = await screen.findByRole('dialog');
+
+    await userEvent.clear(within(dialog).getByLabelText('Name'));
+    await userEvent.type(within(dialog).getByLabelText('Name'), 'Black Friday signups');
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Add destination' }));
+
+    expect(await within(dialog).findByText('MailPoet is not answering.')).toBeInTheDocument();
+    expect(within(dialog).getByLabelText('Name')).toHaveValue('Black Friday signups');
+  });
+
+  /**
+   * **Renaming round-trips, and it needed no storage work**: `label` was
+   * already accepted by the route and `Destination::$label` already went
+   * through `toArray()` and the option. What did not exist was a control that
+   * sent one.
+   *
+   * The binding survives because an Optin holds ULIDs and nothing else.
+   */
+  it('renames a configured route', async () => {
+    render(<Destinations />);
+
+    const name = await screen.findByLabelText('Name');
+
+    expect(name).toHaveValue('MailPoet');
+
+    await userEvent.clear(name);
+    await userEvent.type(name, 'Newsletter signups');
+    await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+    await waitFor(() => {
+      expect(api.saveDestination).toHaveBeenCalledWith(
+        expect.objectContaining({ id: MAILPOET_BOUND.id, label: 'Newsletter signups' }),
+      );
+    });
+  });
+
+  /**
+   * **A route with no schema is still renameable.** The settings body used to
+   * be gated on the schema having fields — right while there was nothing to
+   * save but the fields, and wrong the moment the NAME became one of them. A
+   * webhook declaring no settings is a route like any other.
+   */
+  it('offers a name and a Save on a type that declares no fields at all', async () => {
+    api.readDestinations.mockResolvedValue({
+      types: [{ ...MAILPOET_READY, settings_schema: {} }],
+      destinations: [{ ...MAILPOET_BOUND, target: null }],
+      connections: [],
+      failures: [],
+    });
+
+    render(<Destinations />);
+
+    expect(await screen.findByLabelText('Name')).toHaveValue('MailPoet');
+    expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
+  });
+
+  /** Where the leads land, first, on the card that configures the route. */
+  it('says where a configured route lands', async () => {
+    render(<Destinations />);
+
+    expect(await screen.findByText('Sending to Newsletter.')).toBeInTheDocument();
+  });
+
+  /**
+   * **The three states are not one.** A type that selects nothing — the
+   * lead-magnet email — is perfectly configured, and a line saying it is not
+   * pointed anywhere reports a fault against an integration that delivers.
+   */
+  it('says nothing about a destination whose type selects nothing', async () => {
+    api.readDestinations.mockResolvedValue({
+      types: [LEAD_MAGNET],
+      destinations: [LEAD_MAGNET_BOUND],
+      connections: [],
+      failures: [],
+    });
+
+    render(<Destinations />);
+
+    await screen.findByRole('heading', { name: 'Lead magnet email' });
+
+    expect(screen.queryByText(/Sending to/)).toBeNull();
+    expect(screen.queryByText(/Not pointed/)).toBeNull();
+  });
+
+  it('says so where a route selects something and nothing is chosen', async () => {
+    api.readDestinations.mockResolvedValue({
+      types: [MAILPOET_READY],
+      destinations: [{ ...MAILPOET_BOUND, settings: { lists: [] }, target: '' }],
+      connections: [],
+      failures: [],
+    });
+
+    render(<Destinations />);
+
+    expect(await screen.findByText('Not pointed at anything yet.')).toBeInTheDocument();
+  });
+});
+
+/**
+ * ============================================================================
+ * THE SCREEN DOES NOT SAY THE SAME THING TWICE.
+ * ============================================================================
+ * ADR 0039's density rule, and the second half of it: a screen that repeats
+ * itself teaches the merchant to stop reading it.
+ */
+describe('what a never-used destination says', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+
+    api.readDestinations.mockResolvedValue({
+      types: [WSMS_READY],
+      destinations: [HEALTHY],
+      connections: [],
+      failures: [],
+    });
+  });
+
+  it('shows the badge and not the sentence that repeats it', async () => {
+    api.readDestinations.mockResolvedValue({
+      types: [WSMS_READY],
+      destinations: [{ ...HEALTHY, health: { ...HEALTHY.health, last_success_at: null } }],
+      connections: [],
+      failures: [],
+    });
+
+    render(<Destinations />);
+
+    expect(await screen.findByText('Not used yet')).toBeInTheDocument();
+    expect(screen.queryByText('Nothing has been pushed here yet.')).toBeNull();
+  });
+
+  /** And the one that says something the badge does not still shows. */
+  it('still shows the last successful push where there has been one', async () => {
+    render(<Destinations />);
+
+    expect(await screen.findByText(/Last successful push: 2026-08-25 10:00:00/)).toBeInTheDocument();
   });
 });
 

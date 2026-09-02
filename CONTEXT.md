@@ -696,10 +696,15 @@ Destinations are the only way a Lead is pushed out of WConvert **automatically**
 CSV export is a manual admin action, not a Destination.
 
 A Destination is configured once, site-wide, and *includes whatever selects the
-target inside the remote system* — the Mailchimp audience, the WSMS tag. Whatever
-that selector is, it is only ever **added**: a Lead arriving cannot remove the
-audience or tag membership a [[Contact]] already has, because that membership is a
-decision the owning system made and WConvert has no standing to revise. An
+target inside the remote system* — the Mailchimp audience, the WSMS tag. So a
+Destination is a **named route**, and the name is the merchant's own: two
+Destinations of one type over one [[Connection]] differ only in what they point
+at, so *"Newsletter signups"* and *"Product updates"* are two MailPoet
+Destinations and the name is what tells them apart on the [[Optin]] that binds
+one. Renaming breaks nothing — the binding is by id. Whatever the selector is, it
+is only ever **added**: a Lead arriving cannot remove the audience or tag
+membership a [[Contact]] already has, because that membership is a decision the
+owning system made and WConvert has no standing to revise. An
 [[Optin]] holds Destination ids and nothing more, so two Optins feeding one
 audience reference one Destination. Where several Destinations share credentials,
 those live on a [[Connection]] underneath them.

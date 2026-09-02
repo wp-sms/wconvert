@@ -42,6 +42,7 @@ const destination = (over: Partial<Destination> & { id: string; label: string })
   type: 'wsms',
   connection: null,
   settings: {},
+  target: null,
   availability: 'ready',
   health: {
     last_success_at: null,
@@ -84,7 +85,7 @@ describe('the playbook’s destination hint', () => {
   });
 
   it('names both halves where the install has the type', () => {
-    const said = hintSaid({ types: ['wsms'], fields: ['email'] }, TYPES, FIELDS);
+    const said = hintSaid({ types: ['wsms'], fields: ['email'] }, TYPES, FIELDS, []);
 
     expect(said).toContain('Email address');
     expect(said).toContain('WP SMS');
@@ -101,6 +102,7 @@ describe('the playbook’s destination hint', () => {
       { types: ['wsms', 'email_service_provider'], fields: ['email'] },
       TYPES,
       FIELDS,
+      [],
     );
 
     expect(said).toContain('WP SMS');
@@ -112,7 +114,7 @@ describe('the playbook’s destination hint', () => {
    * are the closed capture vocabulary, named on every install.
    */
   it('still says what is captured when it can name no type at all', () => {
-    const said = hintSaid({ types: ['email_service_provider'], fields: ['email'] }, [], FIELDS);
+    const said = hintSaid({ types: ['email_service_provider'], fields: ['email'] }, [], FIELDS, []);
 
     expect(said).toBe('The playbook this started from captures Email address.');
   });
@@ -122,15 +124,75 @@ describe('the playbook’s destination hint', () => {
    * both. The clause exists so that entry gets a sentence rather than silence,
    * and this is what stops it being a translated string with no reader.
    */
-  it('says only what it expects where the playbook named no fields', () => {
-    const said = hintSaid({ types: ['wsms'], fields: [] }, TYPES, FIELDS);
+  it('says only what it suggests where the playbook named no fields', () => {
+    const said = hintSaid({ types: ['wsms'], fields: [] }, TYPES, FIELDS, []);
 
-    expect(said).toBe('The playbook this started from expects a destination like WP SMS.');
+    expect(said).toBe(
+      'The playbook this started from works well with a destination like WP SMS. Add one on the Destinations screen.',
+    );
   });
 
   it('says nothing at all where there is nothing to say', () => {
-    expect(hintSaid(null, TYPES, FIELDS)).toBeNull();
-    expect(hintSaid({ types: [], fields: [] }, TYPES, FIELDS)).toBeNull();
+    expect(hintSaid(null, TYPES, FIELDS, [])).toBeNull();
+    expect(hintSaid({ types: [], fields: [] }, TYPES, FIELDS, [])).toBeNull();
+  });
+
+  /**
+   * ==========================================================================
+   * THE HINT IS GUIDANCE, AND IT USED TO READ AS AN UNMET REQUIREMENT.
+   * ==========================================================================
+   * *"expects a destination like WP SMS"* is a sentence about something
+   * missing, printed at a merchant who has configured exactly the right thing
+   * and merely not bound it yet — and there is no requirement at all: a
+   * [[Standalone]] install with no [[Destination]]s is a fully working
+   * install, because the [[Lead]] log is written first and always.
+   */
+  it('drops the type half once a destination of that type is configured', () => {
+    const said = hintSaid({ types: ['wsms'], fields: ['email'] }, TYPES, FIELDS, [
+      destination({ id: 'a', label: 'Newsletter signups', type: 'wsms' }),
+    ]);
+
+    // The expectation is met, so only the guidance is left.
+    expect(said).toBe('The playbook this started from captures Email address.');
+  });
+
+  /**
+   * Met by TYPE and never by count. A merchant with a lead-magnet email
+   * configured has not met a hint that named WP SMS, and saying they have
+   * would drop the one sentence worth printing.
+   */
+  it('keeps the type half where what is configured is a different type', () => {
+    const said = hintSaid({ types: ['wsms'], fields: ['email'] }, TYPES, FIELDS, [
+      destination({ id: 'a', label: 'The guide', type: 'lead_magnet_email' }),
+    ]);
+
+    expect(said).toContain('WP SMS');
+    // Something IS configured, so the merchant is not sent to a screen they
+    // have already used — that clause is for an install with nothing at all.
+    expect(said).not.toContain('Destinations screen');
+  });
+
+  /**
+   * **Where to go, and only where there is nowhere for the leads to go yet.**
+   * ADR 0042: it changes what you do next.
+   */
+  it('says where to add one only when nothing at all is configured', () => {
+    expect(hintSaid({ types: ['wsms'], fields: ['email'] }, TYPES, FIELDS, [])).toContain(
+      'Add one on the Destinations screen.',
+    );
+  });
+
+  /**
+   * A type the hint names that this install does not have was already dropped;
+   * a type it names that IS configured is dropped for the opposite reason. With
+   * both gone and no fields either, there is nothing to say.
+   */
+  it('says nothing where the only thing it named is already configured and it named no fields', () => {
+    expect(
+      hintSaid({ types: ['wsms'], fields: [] }, TYPES, FIELDS, [
+        destination({ id: 'a', label: 'Newsletter signups', type: 'wsms' }),
+      ]),
+    ).toBeNull();
   });
 });
 

@@ -28,9 +28,29 @@ defined('ABSPATH') || exit;
  *
  * A field whose options the provider could not enumerate — WSMS's tags, which
  * are the merchant's own strings — falls back to the stored ids, which is what
- * the merchant typed and therefore still reads as their words. A field that
- * selects nothing (the lead-magnet email's URL and subject) is not a list, so
- * it contributes nothing.
+ * the merchant typed and therefore still reads as their words.
+ *
+ * ========================================================================
+ * THREE STATES, BECAUSE AN EMPTY ANSWER MEANS THREE DIFFERENT THINGS.
+ * ========================================================================
+ * This began as one string feeding one success sentence, where *"nothing to
+ * say"* and *"nothing chosen"* could safely collapse: the sentence simply got
+ * shorter. It now also feeds the Destinations payload, which renders a LINE
+ * per Destination, and there the collapse is a lie:
+ *
+ * - `null` — **this type selects nothing.** The lead-magnet email's URL,
+ *   subject and body are configuration rather than a target, and a webhook has
+ *   no selector at all. Such a Destination is perfectly configured, so a
+ *   screen that said *"not pointed at anything yet"* would be reporting a
+ *   fault against a working integration.
+ * - `''` — it selects something and **nothing is chosen.** A MailPoet
+ *   Destination with no list ticked really will push nowhere useful, and
+ *   saying so changes what the merchant does next (ADR 0042).
+ * - a string — where it lands, in the merchant's words.
+ *
+ * The caller that could not READ a schema — an ESP having a bad time — owns
+ * the fourth case and answers `null` for it, because silence is honest where a
+ * guess is not. See {@see \WConvert\Rest\DestinationController::targetOf()}.
  *
  * @since 0.1.0
  */
@@ -40,24 +60,31 @@ final class ConfiguredTarget
      * The field kind that selects things inside the remote system.
      *
      * One kind, and it is the same one `LIST_KINDS` names in
-     * `resources/admin/src/destinations/Destinations.tsx`: a Destination
-     * points at a SET of things, and every other kind on the schema is
-     * configuration rather than a target.
+     * `resources/admin/src/destinations/settings.tsx`: a Destination points at
+     * a SET of things, and every other kind on the schema is configuration
+     * rather than a target.
      */
     private const SELECTS = 'ids';
 
     /**
      * @param array<string, mixed> $schema
      * @param array<string, mixed> $settings
+     * @return string|null Null where the type selects nothing at all.
      */
-    public static function of(array $schema, array $settings): string
+    public static function of(array $schema, array $settings): ?string
     {
+        $selects = false;
         $named = [];
 
         foreach ($schema as $key => $field) {
             if (!is_array($field) || ($field['type'] ?? null) !== self::SELECTS) {
                 continue;
             }
+
+            // **Set by the SCHEMA and never by the settings**, which is the
+            // whole of the `null`/`''` distinction: a type that offers a
+            // selector has one whether or not the merchant has used it.
+            $selects = true;
 
             $chosen = $settings[$key] ?? [];
             $labels = self::labels($field);
@@ -69,7 +96,7 @@ final class ConfiguredTarget
             }
         }
 
-        return implode(', ', $named);
+        return $selects ? implode(', ', $named) : null;
     }
 
     /**

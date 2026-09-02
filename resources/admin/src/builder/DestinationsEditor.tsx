@@ -1,5 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { Description } from '../shell/Description';
+import { targetSaid } from '../destinations/settings';
 import type { Destination } from '../destinations/api';
 
 /**
@@ -47,6 +48,17 @@ export interface DestinationsEditorProps {
   readonly onChange: (bound: string[]) => void;
 }
 
+/**
+ * **What a row says about itself goes UNDER the name, not beside it.**
+ *
+ * Every row carries where that route lands now, and inline each sentence
+ * started at whatever x the name happened to end at — four rows, four left
+ * edges, and an eye reading down the list found no column to follow. Indented
+ * past the checkbox, so a note lines up under the name it is about rather than
+ * under the box.
+ */
+const NOTE = 'block ms-7 mt-0.5';
+
 export function DestinationsEditor({ bound, available, hint, onChange }: DestinationsEditorProps) {
   return (
     <section className="wconvert-destinations-editor">
@@ -63,40 +75,74 @@ export function DestinationsEditor({ bound, available, hint, onChange }: Destina
         </p>
       ) : (
         <ul className="wconvert-choices">
-          {available.map((destination) => (
-            <li key={destination.id}>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={bound.includes(destination.id)}
-                  onChange={(event) =>
-                    onChange(
-                      event.target.checked
-                        ? [...bound, destination.id]
-                        : bound.filter((id) => id !== destination.id)
-                    )
-                  }
-                />{' '}
-                {destination.label}
-              </label>{' '}
-              {/*
-                **Nothing waits.** A Destination whose type is not `ready` is
-                skipped at dispatch and never enqueued — a job whose handler
-                cannot succeed would retry against nothing forever — so the
-                captures are kept and the pushes are LOST until a bulk re-push
-                replays them. Copy that said "pushes wait" would describe a
-                queue that does not exist (#4, ADR 0008).
-              */}
-              {destination.availability !== 'ready' && (
-                <span className="description">
-                  {__(
-                    'Not running here, so captures are kept, not sent. Re-push from Destinations once it works.',
-                    'wconvert'
-                  )}
-                </span>
-              )}
-            </li>
-          ))}
+          {available.map((destination) => {
+            const said = targetSaid(destination.target);
+            const control = `wconvert-bind-${destination.id}`;
+
+            return (
+              <li key={destination.id}>
+                <label>
+                  <input
+                    id={control}
+                    type="checkbox"
+                    /*
+                      **The merchant's name is the accessible name, and the
+                      target only DESCRIBES it.** They are two different jobs:
+                      the name is what they chose to call this route, and
+                      "Sending to Newsletter" is what it does. Folding the
+                      second into the `<label>` would make a screen reader
+                      announce the whole sentence as the checkbox's name — and
+                      rename the control every time somebody re-pointed the
+                      route.
+                    */
+                    aria-describedby={said === null ? undefined : `${control}-target`}
+                    checked={bound.includes(destination.id)}
+                    onChange={(event) =>
+                      onChange(
+                        event.target.checked
+                          ? [...bound, destination.id]
+                          : bound.filter((id) => id !== destination.id)
+                      )
+                    }
+                  />{' '}
+                  {destination.label}
+                </label>{' '}
+                {/*
+                  **Where these leads actually land, at the moment the choice
+                  is made.** This tab drew `☐ MailPoet` and nothing more, which
+                  says nothing about which of two MailPoet routes is being
+                  bound — and telling them apart is the whole reason a
+                  Destination carries a name.
+
+                  `null` draws nothing at all: the lead-magnet email selects
+                  nothing and is perfectly configured, and a provider that could
+                  not be reached is a question nobody could ask. The wording and
+                  the three states are `targetSaid`'s.
+                */}
+                {said !== null && (
+                  <Description as="span" id={`${control}-target`} className={NOTE}>
+                    {said}
+                  </Description>
+                )}
+                {/*
+                  **Nothing waits.** A Destination whose type is not `ready` is
+                  skipped at dispatch and never enqueued — a job whose handler
+                  cannot succeed would retry against nothing forever — so the
+                  captures are kept and the pushes are LOST until a bulk re-push
+                  replays them. Copy that said "pushes wait" would describe a
+                  queue that does not exist (#4, ADR 0008).
+                */}
+                {destination.availability !== 'ready' && (
+                  <Description as="span" className={NOTE}>
+                    {__(
+                      'Not running here, so captures are kept, not sent. Re-push from Destinations once it works.',
+                      'wconvert'
+                    )}
+                  </Description>
+                )}
+              </li>
+            );
+          })}
         </ul>
       )}
 
