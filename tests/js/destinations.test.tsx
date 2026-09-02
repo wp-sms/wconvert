@@ -668,11 +668,49 @@ describe('testing a destination', () => {
     });
   });
 
-  it('offers both verbs, because they answer different questions', async () => {
+  /**
+   * **Neither button is offered where it would be refused** (ADR 0042).
+   *
+   * The payload already answers both refusals before the click, so a merchant
+   * who presses and waits a round trip to read what is on screen is the exact
+   * shape that ADR exists to stop.
+   */
+  it('offers only Send a test where the type has no credentials', async () => {
+    render(<Destinations />);
+
+    expect(await screen.findByRole('button', { name: 'Send a test' })).toBeInTheDocument();
+
+    // Every free type is in this state. A button whose only possible answer is
+    // "nothing to check" teaches the merchant that the screen is guessing.
+    expect(screen.queryByRole('button', { name: 'Test connection' })).toBeNull();
+  });
+
+  it('offers both verbs where there are credentials to check', async () => {
+    api.readDestinations.mockResolvedValue({
+      types: [{ ...WSMS_READY, needs_connection: true }],
+      destinations: [HEALTHY],
+      connections: [],
+      failures: [],
+    });
+
     render(<Destinations />);
 
     expect(await screen.findByRole('button', { name: 'Test connection' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Send a test' })).toBeInTheDocument();
+  });
+
+  it('disables the buttons on a Destination this install cannot run', async () => {
+    api.readDestinations.mockResolvedValue({
+      types: [{ ...WSMS_READY, availability: 'unavailable' as const, needs_connection: true }],
+      destinations: [{ ...HEALTHY, availability: 'unavailable' as const }],
+      connections: [],
+      failures: [],
+    });
+
+    render(<Destinations />);
+
+    expect(await screen.findByRole('button', { name: 'Send a test' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Test connection' })).toBeDisabled();
   });
 
   it('shows what the test answered, in the provider’s own words', async () => {
@@ -712,14 +750,14 @@ describe('testing a destination', () => {
   });
 
   it('renders a type this install cannot run as a note, never as a failure', async () => {
-    api.testConnection.mockResolvedValue({
+    api.testSend.mockResolvedValue({
       outcome: 'skipped',
       message: 'This Destination’s type is not available on this site.',
     });
 
     render(<Destinations />);
 
-    await userEvent.click(await screen.findByRole('button', { name: 'Test connection' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Send a test' }));
 
     const note = await screen.findByText('This Destination’s type is not available on this site.');
 

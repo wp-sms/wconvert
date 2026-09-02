@@ -62,6 +62,8 @@ final class TestADestinationTest extends TestCase
 
     private DestinationController $controller;
 
+    private FakeConnection $db;
+
     private Destination $destination;
 
     protected function setUp(): void
@@ -73,7 +75,8 @@ final class TestADestinationTest extends TestCase
         $this->queue = new FakeQueue();
         $this->type = new FakeDestinationType('fake', requires: SiteDependency::Wsms);
 
-        $db = new FakeConnection();
+        $this->db = new FakeConnection();
+        $db = $this->db;
         $destinations = new DestinationStore($this->options);
         $connections = new ConnectionStore($this->options);
 
@@ -167,16 +170,24 @@ final class TestADestinationTest extends TestCase
 
         self::assertSame('failed', $sent['outcome']);
 
-        // The WHOLE option store, not a probe at health: a delivery count, a
-        // failure ring entry and a health stamp all live in options, and an
-        // assertion that named the two it expected to be unchanged could not
-        // see the third.
+        // The WHOLE option store, not a probe at health: health and the
+        // failure ring both live in options, and an assertion that named the
+        // two it expected to be unchanged could not see a third somebody adds
+        // later.
         self::assertSame($before, $this->options->all(), 'A test send wrote something.');
 
         self::assertSame(0, $this->health->of($this->destination->id)->consecutiveFailures);
         self::assertNull($this->health->of($this->destination->id)->lastError);
         self::assertSame([], $this->failures->all());
         self::assertSame([], $this->queue->jobs, 'A test is answered now, never queued.');
+
+        // **The delivery counters are the third thing, and they are NOT
+        // options** — they are rows in `wconvert_stats`, written through
+        // `DeliveryCount` from {@see \WConvert\Destination\PushWorker}. So
+        // the claim is held here against the database the counters live in,
+        // and again against a real table in `bin/verify-destinations.php`.
+        self::assertSame([], $this->db->writes, 'A test send wrote a row.');
+        self::assertSame([], $this->db->upserts, 'A test send moved a counter.');
     }
 
     /**
@@ -384,4 +395,113 @@ final class TestADestinationTest extends TestCase
         self::assertStringContainsString('WordPress profile', $sent['message']);
         self::assertSame([], $this->type->pushed, 'Nothing was attempted, so nothing can have been sent.');
     }
+
+    /**
+     * **The unavailable answer comes before the address**, because a type this
+     * install cannot run has nothing to send wherever the address came from —
+     * and telling a merchant with no WP SMS to check their WordPress profile
+     * sends them to fix the wrong thing.
+     */
+    public function testAnUnavailableTypeAnswersThatFirstEvenWithNoAddress(): void
+    {
+        $GLOBALS['wconvertTestUserEmail'] = '';
+
+        $registry = (new DestinationRegistry(new FakeProPresence(false), new FakeSitePresence()))
+            ->register($this->type);
+
+        $destinations = new DestinationStore($this->options);
+        $connections = new ConnectionStore($this->options);
+        $db = new FakeConnection();
+
+        $optins = new OptinRepository(
+            $db,
+            new PublishedSet($this->options),
+            RuleVocabulary::fromManifest(dirname(__DIR__, 3))
+        );
+
+        $controller = new DestinationController(
+            $registry,
+            $destinations,
+            $connections,
+            $this->health,
+            $this->failures,
+            new BulkRePush($registry, $destinations, $optins, new LeadRepository($db), $this->health, $this->queue),
+            new PushDispatcher($registry, $destinations, $optins, $this->health, $this->queue, $connections)
+        );
+
+        /** @var \WP_REST_Response $response */
+        $response = $controller->testSend($this->request($this->destination->id));
+        /** @var array{outcome: string, message: string} $body */
+        $body = $response->get_data();
+
+        self::assertSame('skipped', $body['outcome']);
+        self::assertStringNotContainsString('WordPress profile', $body['message']);
+    }
+
+    /**
+     * **The target is resolved from THIS Destination's own Connection**, never
+     * the type's first.
+     *
+     * Two Mailchimp audiences are two Destinations over one Connection; two
+     * ACCOUNTS are two Connections, and the first one's id-to-label map names
+     * the wrong audience. The push one line earlier already uses the right
+     * one, so the sentence disagreeing with what was actually pushed is the
+     * failure this pins.
+     */
+    public function testTheTargetIsNamedFromTheDestinationsOwnCredentials(): void
+    {
+        $this->type->settingsSchema = [
+            'tags' => [
+                'type' => 'ids',
+                'label' => 'Lists',
+                'options' => [['value' => '3', 'label' => 'Newsletter']],
+            ],
+        ];
+
+        // A Connection of the SAME TYPE that this Destination is not bound to.
+        // `credentialsForType()` — right for the types list, where there is no
+        // Destination yet — would hand these over, and the label map would be
+        // the wrong account's.
+        (new ConnectionStore($this->options))->save(null, 'fake', 'Another account', [
+            'api_key' => 'the-other-accounts-key',
+        ]);
+
+        $sent = $this->send($this->destination->id);
+
+        self::assertStringContainsString('Newsletter', $sent['message']);
+        self::assertSame(
+            [],
+            $this->type->schemaCredentials[0] ?? null,
+            'The schema was read with another account’s key.'
+        );
+    }
+
+    /**
+     * A schema read may reach the provider, so a test that LANDED must not be
+     * turned into a 500 by a second question on the way to reporting the first
+     * answer (ADR 0042).
+     */
+    public function testAThrowingSchemaLeavesASuccessfulTestSuccessful(): void
+    {
+        $this->type->schemaFailure = new \RuntimeException('The provider is down.');
+
+        $sent = $this->send($this->destination->id);
+
+        self::assertSame('success', $sent['outcome']);
+        self::assertStringContainsString('Newsletter push', $sent['message']);
+    }
+
+    /**
+     * A failed test asks the provider nothing further. Naming a target is what
+     * a SUCCESS sentence is for.
+     */
+    public function testAFailedTestNeverAsksForTheSchema(): void
+    {
+        $this->type->answers = [\WConvert\Destination\PushResult::retryable('Down.')];
+
+        $this->send($this->destination->id);
+
+        self::assertSame(0, $this->type->schemaReads);
+    }
+
 }

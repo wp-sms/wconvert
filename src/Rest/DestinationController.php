@@ -9,8 +9,9 @@ use WConvert\Destination\DestinationRegistry;
 use WConvert\Destination\DestinationStore;
 use WConvert\Destination\DestinationType;
 use WConvert\Destination\HealthStore;
+use WConvert\Destination\ConfiguredTarget;
 use WConvert\Destination\PushDispatcher;
-use WConvert\Destination\PushResult;
+use WConvert\Destination\PushOutcome;
 use WConvert\Destination\TestReport;
 use WConvert\Support\Ulid;
 use WP_Error;
@@ -117,8 +118,25 @@ final class DestinationController implements RestController
                 'callback' => [$this, 'testSend'],
                 'permission_callback' => [Routes::class, 'canManage'],
                 'args' => [
-                    'email' => ['type' => 'string'],
-                    'phone' => ['type' => 'string'],
+                    // **One argument, and it is an override rather than the
+                    // way in.** The address defaults to the pressing
+                    // merchant's own, which is what the button sends with; this
+                    // is how a colleague's inbox or a seed address is reached,
+                    // and it is what lets `bin/verify-destinations.php` prove a
+                    // real send on a request that has no user at all.
+                    //
+                    // There is no `phone`. A test proves the integration and
+                    // an email does that for every type WConvert has; a second
+                    // identifier nothing on the screen can supply would be a
+                    // parameter with no caller and no test.
+                    //
+                    // Sanitised on the way in, as every string arg in this REST
+                    // layer is. `format => email` is deliberately NOT declared:
+                    // it would make WordPress reject the request outright, and
+                    // what a merchant needs from a typo is the screen's own
+                    // sentence rather than a 400 with a schema error in it
+                    // (ADR 0042).
+                    'email' => ['type' => 'string', 'sanitize_callback' => 'sanitize_email'],
                 ],
             ],
         ]);
@@ -250,13 +268,10 @@ final class DestinationController implements RestController
         $type = $this->registry->find($destination->type);
 
         if ($type === null || !$this->registry->isDispatchable($destination->type)) {
-            // The same sentence a test send gets for the same situation, from
-            // the class that owns it, so a merchant with no WP SMS reads one
-            // answer from both buttons rather than two.
-            return $this->reported(TestReport::of(
-                PushResult::skipped(PushDispatcher::unavailableHere()),
-                $destination->label
-            ));
+            // The same sentence a test send gets for the same situation, and
+            // the same object producing it, so a merchant with no WP SMS reads
+            // one answer from both buttons rather than two.
+            return $this->reported(TestReport::unavailable());
         }
 
         if ($type->connectionSchema() === null) {
@@ -307,29 +322,72 @@ final class DestinationController implements RestController
             return $this->gone();
         }
 
+        // **Asked before the address**, because a type this install cannot run
+        // has nothing to send wherever the address came from — and telling a
+        // merchant with no WP SMS to check their WordPress profile would send
+        // them to fix the wrong thing.
+        if (!$this->registry->isDispatchable($destination->type)) {
+            return $this->reported(TestReport::unavailable());
+        }
+
         $email = self::optionalString($request->get_param('email'))
             ?? self::optionalString(wp_get_current_user()->user_email);
-        $phone = self::optionalString($request->get_param('phone'));
 
-        if ($email === null && $phone === null) {
+        if ($email === null) {
             // Asked and answered HERE rather than left to the type, which
             // would say *"the Lead carries no email address"* — true, internal,
             // and no help to somebody who pressed a button (ADR 0042).
             return $this->reported(TestReport::noAddress());
         }
 
-        $result = $this->dispatcher->test($destination->id, ['email' => $email, 'phone' => $phone]);
+        $result = $this->dispatcher->test($destination->id, ['email' => $email]);
 
-        $type = $this->registry->find($destination->type);
-
+        // **Only where it landed.** Naming a target is what a SUCCESS sentence
+        // is for, and resolving one costs a schema read that may reach the
+        // provider — so a Destination that is down is not asked a second
+        // question on its way to reporting the first answer.
         return $this->reported(TestReport::of(
             $result,
             $destination->label,
-            $type === null ? '' : TestReport::targetOf(
-                $type->settingsSchema($this->credentialsForType($destination->type)),
-                $destination->settings
-            )
+            $result->outcome === PushOutcome::Success ? $this->targetOf($destination) : ''
         ));
+
+    }
+
+    /**
+     * What this Destination is pointed at, for the success sentence.
+     *
+     * **Guarded, because reading a schema can reach the wire.** An ESP's
+     * options come off the provider ({@see DestinationType::settingsSchema()}),
+     * so a provider having a bad time here would turn a push that LANDED into
+     * a 500 — an error naming no door, on the screen whose whole job is to say
+     * whether things are working (ADR 0042). A test that worked says so with
+     * the shorter sentence.
+     */
+    private function targetOf(\WConvert\Destination\Destination $destination): string
+    {
+        $type = $this->registry->find($destination->type);
+
+        if ($type === null) {
+            return '';
+        }
+
+        try {
+            // **This Destination's own Connection**, never the type's first.
+            // `credentialsForType()` answers a question about the TYPE — which
+            // is right for the schema on the Destinations read, where there is
+            // no Destination yet — and wrong here: two Mailchimp audiences are
+            // two Destinations over one Connection, but two ACCOUNTS are two
+            // Connections, and the first one's id→label map names the wrong
+            // audience.
+            $schema = $type->settingsSchema($this->connections->credentialsFor($destination));
+        } catch (\Throwable $unreachable) {
+            unset($unreachable);
+
+            return '';
+        }
+
+        return ConfiguredTarget::of($schema, $destination->settings);
     }
 
     private function reported(TestReport $report): WP_REST_Response

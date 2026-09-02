@@ -9,6 +9,7 @@ import {
   Trash2,
   TriangleAlert,
   Zap,
+  type LucideIcon,
 } from 'lucide-react';
 import { iconFor } from '../icons';
 import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
@@ -282,6 +283,9 @@ export function Destinations() {
                 schema={
                   data.types.find((type) => type.id === destination.type)?.settings_schema ?? {}
                 }
+                needsConnection={
+                  data.types.find((type) => type.id === destination.type)?.needs_connection ?? false
+                }
                 report={reports[destination.id] ?? null}
                 test={tests[destination.id] ?? null}
                 error={errors[destination.id] ?? null}
@@ -359,6 +363,7 @@ export function Destinations() {
 function Configured({
   destination,
   schema,
+  needsConnection,
   report,
   test,
   error,
@@ -372,6 +377,8 @@ function Configured({
   destination: Destination;
   /** Every field its TYPE declares, in the order PHP returned them — copy included. */
   schema: DestinationType['settings_schema'];
+  /** Whether its TYPE has credentials at all. Every free type does not. */
+  needsConnection: boolean;
   report: RePushReport | null;
   /** What the last *Test* against THIS Destination answered. */
   test: TestReport | null;
@@ -390,6 +397,13 @@ function Configured({
   const [draft, setDraft] = useState<Record<string, string>>(() => toDraft(schema, destination.settings));
   const removeTrigger = useRef<HTMLButtonElement>(null);
   const failing = destination.health.consecutive_failures > 0;
+  /*
+   * Whether the two *Test* buttons can do anything. The region above already
+   * says WHY when they cannot — a "Paused" badge and a sentence — so offering
+   * a button that answers with that same sentence a round trip later is the
+   * shape ADR 0042 rule 3 refuses.
+   */
+  const runnable = destination.availability === 'ready';
   const fields = Object.entries(schema);
 
   return (
@@ -516,22 +530,12 @@ function Configured({
           way to the DOM, which is why nothing escapes it before here.
         */}
         {test !== null && (
-          <Alert
-            className={
-              test.outcome === 'success'
-                ? 'border-success/30 bg-success/5 text-success'
-                : test.outcome === 'skipped'
-                  ? 'border-border bg-muted/40 text-muted-foreground'
-                  : 'border-destructive/30 bg-destructive/5 text-destructive'
-            }
-          >
-            {test.outcome === 'success' ? (
-              <CircleCheck />
-            ) : test.outcome === 'skipped' ? (
-              <Info />
-            ) : (
-              <CircleAlert />
-            )}
+          <Alert className={TEST_RENDERING[test.outcome].className}>
+            {(() => {
+              const Icon = TEST_RENDERING[test.outcome].icon;
+
+              return <Icon />;
+            })()}
             <AlertTitle className="line-clamp-none">{test.message}</AlertTitle>
           </Alert>
         )}
@@ -607,17 +611,33 @@ function Configured({
             the lead is not arriving. It really sends — the lead-magnet email
             delivers and a real subscriber appears — and it writes no lead,
             queues nothing and moves no counter (ADR 0008, ADR 0031).
+
+            **Neither is offered where it would be refused** (ADR 0042). A type
+            with no credentials has nothing to connect to, so there is no button
+            rather than one whose only answer is "nothing to check" — which is
+            every free type. And a Destination this install cannot run answers
+            both with the sentence the region above is ALREADY showing, so
+            pressing either is a round trip to read what is on screen. The
+            server still guards both: what a screen offers and what a route
+            allows are different jobs.
           */}
+          {needsConnection && (
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={busy || !runnable}
+              onClick={() => onTestConnection(destination)}
+            >
+              <Plug aria-hidden="true" />
+              {__('Test connection', 'wconvert')}
+            </Button>
+          )}
           <Button
             variant="outline"
             size="sm"
-            disabled={busy}
-            onClick={() => onTestConnection(destination)}
+            disabled={busy || !runnable}
+            onClick={() => onTestSend(destination)}
           >
-            <Plug aria-hidden="true" />
-            {__('Test connection', 'wconvert')}
-          </Button>
-          <Button variant="outline" size="sm" disabled={busy} onClick={() => onTestSend(destination)}>
             <Zap aria-hidden="true" />
             {__('Send a test', 'wconvert')}
           </Button>
@@ -824,6 +844,23 @@ function SettingsControl({
       return <Input id={id} type="text" value={value} onChange={(e) => onChange(e.target.value)} />;
   }
 }
+
+/**
+ * How each of the three test outcomes is drawn.
+ *
+ * **One map rather than two cascades**, because the palette and the icon were
+ * the same three-way decision written twice and the pair that drifts is a
+ * green tick over a red box. The decision itself is the one worth reading:
+ * `skipped` is NEUTRAL, because a Destination whose type this install cannot
+ * run has not failed — rendering it in red tells a merchant with no WP SMS
+ * that their WP SMS Destination is broken when the plugin is simply not
+ * installed (ADR 0026).
+ */
+const TEST_RENDERING: Record<TestReport['outcome'], { className: string; icon: LucideIcon }> = {
+  success: { className: 'border-success/30 bg-success/5 text-success', icon: CircleCheck },
+  skipped: { className: 'border-border bg-muted/40 text-muted-foreground', icon: Info },
+  failed: { className: 'border-destructive/30 bg-destructive/5 text-destructive', icon: CircleAlert },
+};
 
 /**
  * Whether a field draws as a group of controls rather than as one control.

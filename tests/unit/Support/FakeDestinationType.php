@@ -51,6 +51,15 @@ final class FakeDestinationType implements DestinationType
     /** @var list<array<string, mixed>> Every testConnection(), in order. */
     public array $connectionTests = [];
 
+    /** Raised by {@see self::settingsSchema()} — an ESP's options may come off the wire. */
+    public ?\Throwable $schemaFailure = null;
+
+    /** How many times the schema was asked for. */
+    public int $schemaReads = 0;
+
+    /** @var list<array<string, mixed>> The credentials each schema read arrived with, in order. */
+    public array $schemaCredentials = [];
+
     public function __construct(
         private readonly string $id = 'fake',
         private readonly Tier $tier = Tier::Free,
@@ -90,7 +99,12 @@ final class FakeDestinationType implements DestinationType
 
     public function settingsSchema(array $credentials): array
     {
-        unset($credentials);
+        $this->schemaReads++;
+        $this->schemaCredentials[] = $credentials;
+
+        if ($this->schemaFailure !== null) {
+            throw $this->schemaFailure;
+        }
 
         return $this->settingsSchema;
     }
