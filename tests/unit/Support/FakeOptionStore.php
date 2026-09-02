@@ -40,4 +40,20 @@ final class FakeOptionStore implements OptionStore
         $this->writes++;
         $this->values[$key] = $value;
     }
+
+    /**
+     * **Everything, so a test can assert that nothing changed.**
+     *
+     * The one assertion this exists for is the *records-nothing* rule: health,
+     * the delivery-failure ring and the delivery counters all live in options,
+     * and a test that named the two it expected to be unchanged could not see
+     * the third (#88). Comparing the whole store before and after is the only
+     * shape of that claim which cannot be satisfied by forgetting a key.
+     *
+     * @return array<string, mixed>
+     */
+    public function all(): array
+    {
+        return $this->values;
+    }
 }

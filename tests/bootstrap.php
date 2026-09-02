@@ -140,6 +140,40 @@ if (!function_exists('current_user_can')) {
 }
 
 /*
+ * The current user's own address, and only that field.
+ *
+ * `DestinationController::testSend()` defaults the address a test goes to it,
+ * because the merchant pressing the button is who should receive whatever it
+ * sends — the lead-magnet email really does deliver — and asking them to type
+ * their own address is a step with one correct answer. Empty by default, so a
+ * test that cares has to say who it is.
+ *
+ * @var string $wconvertTestUserEmail
+ */
+$GLOBALS['wconvertTestUserEmail'] = '';
+
+// Declared rather than faked with a `stdClass`, because PHPStan knows
+// WordPress's own `wp_get_current_user(): WP_User` and a stub returning
+// `object` would make reading the one property WConvert touches an error in a
+// file that is right.
+if (!class_exists('WP_User')) {
+    class WP_User
+    {
+        public string $user_email = '';
+    }
+}
+
+if (!function_exists('wp_get_current_user')) {
+    function wp_get_current_user(): WP_User
+    {
+        $user = new WP_User();
+        $user->user_email = (string) $GLOBALS['wconvertTestUserEmail'];
+
+        return $user;
+    }
+}
+
+/*
  * The three request kinds a script tag must never be printed into.
  *
  * A feed, a robots.txt or an oEmbed response is not a page a visitor is

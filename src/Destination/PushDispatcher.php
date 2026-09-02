@@ -91,6 +91,20 @@ final class PushDispatcher
     }
 
     /**
+     * What a merchant is told about a type this install cannot run.
+     *
+     * **One sentence, one home.** The *Test connection* route answers the same
+     * situation without ever reaching {@see self::test()}, and two literals
+     * would drift the moment either was reworded — which is how a screen ends
+     * up giving two different explanations of one missing plugin and teaching
+     * the merchant that it is guessing. `wp i18n make-pot` sees it once, too.
+     */
+    public static function unavailableHere(): string
+    {
+        return __('This Destination’s type is not available on this site.', 'wconvert');
+    }
+
+    /**
      * Send one test — **the merchant's own address, with no [[Lead]] behind
      * it.**
      *
@@ -137,7 +151,7 @@ final class PushDispatcher
             // The same answer `dispatch()` gives, minus the recording: a type
             // that cannot run is a skip and not a failure. Here it is simply
             // handed back, because the merchant is the one who can act on it.
-            return PushResult::skipped('This Destination’s type is not available on this site.');
+            return PushResult::skipped(self::unavailableHere());
         }
 
         return $type->push(PushSubject::test($values), new PushContext(

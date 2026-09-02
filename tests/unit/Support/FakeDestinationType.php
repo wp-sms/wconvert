@@ -27,6 +27,30 @@ final class FakeDestinationType implements DestinationType
     /** @var list<PushContext> The context each push arrived with, in the same order. */
     public array $contexts = [];
 
+    /**
+     * What {@see self::connectionSchema()} answers.
+     *
+     * Null is *"this type has no [[Connection]]"*, which is every free type
+     * and the state a *Test connection* button has to say something honest
+     * about (#88).
+     *
+     * @var array<string, mixed>|null
+     */
+    public ?array $connectionSchema = null;
+
+    /**
+     * What {@see self::settingsSchema()} answers.
+     *
+     * @var array<string, mixed>
+     */
+    public array $settingsSchema = [];
+
+    /** Raised by {@see self::testConnection()}, so a refused key can be staged. */
+    public ?\Throwable $connectionFailure = null;
+
+    /** @var list<array<string, mixed>> Every testConnection(), in order. */
+    public array $connectionTests = [];
+
     public function __construct(
         private readonly string $id = 'fake',
         private readonly Tier $tier = Tier::Free,
@@ -61,19 +85,23 @@ final class FakeDestinationType implements DestinationType
 
     public function connectionSchema(): ?array
     {
-        return null;
+        return $this->connectionSchema;
     }
 
     public function settingsSchema(array $credentials): array
     {
         unset($credentials);
 
-        return [];
+        return $this->settingsSchema;
     }
 
     public function testConnection(array $credentials): void
     {
-        unset($credentials);
+        $this->connectionTests[] = $credentials;
+
+        if ($this->connectionFailure !== null) {
+            throw $this->connectionFailure;
+        }
     }
 
     public function push(PushSubject $subject, PushContext $context): PushResult

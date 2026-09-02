@@ -476,7 +476,11 @@ final class CoreServiceProvider implements ServiceProvider
                 $c->resolve(ConnectionStore::class),
                 $c->resolve(HealthStore::class),
                 $c->resolve(DeliveryFailures::class),
-                $c->resolve(BulkRePush::class)
+                $c->resolve(BulkRePush::class),
+                // The *Test* buttons run through the same dispatcher a capture
+                // does, so a test exercises the real `push()` rather than a
+                // second path that would prove itself and nothing else (#88).
+                $c->resolve(PushDispatcher::class)
             )
         );
 
