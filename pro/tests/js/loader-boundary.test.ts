@@ -3,8 +3,10 @@ import { FREE_MODULES } from '@loader/modules';
 import { start } from '@loader/shell';
 import type { Store } from '@loader/storage';
 import type { PayloadEntry } from '@loader/types';
+import { templatePresenter } from '@loader/present';
 import { PRO_MODULES } from '../../resources/loader/src/modules';
-import proLoader from '../../resources/loader/src/main';
+import proLoader, { presenter } from '../../resources/loader/src/main';
+import { proPresenter } from '../../resources/loader/src/present';
 import { recordingPresenter } from '../../../tests/js/support/presenter';
 
 /**
@@ -37,6 +39,26 @@ describe("Pro's loader entry", () => {
     const composed = proLoader.modules.map((m) => m.id);
 
     expect(composed).toEqual([...FREE_MODULES.map((m) => m.id), ...PRO_MODULES.map((m) => m.id)]);
+  });
+
+  /**
+   * **And it boots with PRO's presenter, which is the other half of the same
+   * replacement.**
+   *
+   * Pro dequeues free's loader, so free's entry never runs on a Pro install
+   * and free's presenter is never reached unless this one hands it work
+   * (ADR 0014). An entry still booting `templatePresenter` composes every
+   * premium MODULE correctly and then draws nothing for either premium Display
+   * Type — free's `mount()` returns NOTHING for a type it has no container
+   * for, so a bar would be decided, counted as shown, and invisible.
+   *
+   * That is a one-line mistake with no other symptom in this suite: every
+   * container test and every arbitration test names its presenter explicitly,
+   * so all of them pass while the shipped bundle shows nobody a bar.
+   */
+  it("boots with Pro's presenter and not free's", () => {
+    expect(presenter).toBe(proPresenter);
+    expect(presenter).not.toBe(templatePresenter);
   });
 
   it("carries every module free's loader carries", () => {
