@@ -157,10 +157,17 @@ jobs:
     uses: ./.github/workflows/frontend-tests.yml
 
   # ---------------------------------------------------------------------------
-  # [2] BUILD — the Pro ZIP, through the same script and the same contract.
+  # [2] BUILD — the Pro ZIPs, through the same script and the same contract.
+  #
+  # ONE PER TIER, AND ALL OF THEM EVERY TIME (ADR 0056). `bin/build.sh pro`
+  # loops the ladder in tiers.json, cuts each stage down to that rung's modules
+  # and runs the artifact contract on each before writing a ZIP. Only the top
+  # rung is sold today; the other two are built anyway, because machinery that
+  # is not exercised rots and the release that first needs a per-tier build is
+  # the release nobody can wait for.
   # ---------------------------------------------------------------------------
   build:
-    name: '[2] Build the Pro ZIP'
+    name: '[2] Build the Pro ZIPs'
     needs: [guard, php-tests, frontend-tests]
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -180,18 +187,21 @@ jobs:
 
       - run: npm ci
 
-      # Both loader bundles, because `npm run build:loader:pro` builds Pro's
-      # entry from free's modules plus Pro's (ADR 0028) — one command, and no
-      # arrangement where Pro's is built from a stale copy of free's.
+      # EVERY bundle, free's included, because Pro's entries build from free's
+      # modules plus their own (ADR 0028) — one command, and no arrangement
+      # where Pro's is built from a stale copy of free's. That now means one
+      # loader and one inspector per rung, plus Pro's admin bundle.
       - run: npm run build
 
       - name: Build, gated by the artifact contract
         run: bash bin/build.sh pro
 
-      - name: Upload the Pro ZIP
+      # Every rung's ZIP, in one artifact. `if-no-files-found: error` is what
+      # makes a build that silently produced nothing a failed run.
+      - name: Upload the Pro ZIPs
         uses: actions/upload-artifact@v4
         with:
-          name: pro-zip
+          name: pro-zips
           path: dist/*.zip
           retention-days: 14
           if-no-files-found: error
@@ -217,7 +227,13 @@ jobs:
             echo "## WConvert Pro ${VERSION}"
             echo ""
             if [ "$BUILD" = "success" ]; then
-              echo "Built and contract-checked. The ZIP is attached to this run for 14 days."
+              echo "Built and contract-checked, one ZIP per tier. They are attached to this run for 14 days."
+              echo ""
+              echo "| Tier | ZIP |"
+              echo "|---|---|"
+              echo "| Basic | \`wconvert-pro-basic-v${VERSION}.zip\` |"
+              echo "| Pro | \`wconvert-pro-pro-v${VERSION}.zip\` |"
+              echo "| Elite | \`wconvert-pro-elite-v${VERSION}.zip\` |"
             else
               echo "Build or checks did not pass — no artifact was produced."
             fi

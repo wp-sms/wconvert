@@ -19,7 +19,7 @@ import {
 } from '../shell/Region';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
 import { createOptin } from '../optins/api';
-import { renderingFor } from './availability';
+import { renderingFor, tierName, tierProductName } from './availability';
 import { listGoals, listPlaybooks, prefill, type Draft, type GoalEntry, type PlaybookEntry } from './api';
 
 /**
@@ -235,14 +235,21 @@ function GoalPicker({
                   notes={goal.description}
                   badge={
                     rendering === 'upsell' ? (
-                      <Badge variant="warning">{__('Pro', 'wconvert')}</Badge>
+                      <Badge variant="warning">{tierName(goal.tier)}</Badge>
                     ) : undefined
                   }
                   action={(describedBy) =>
                     rendering === 'upsell' ? (
-                      // Bundled copy, never fetched (ADR 0015).
+                      // Bundled copy, never fetched (ADR 0015). The tier's
+                      // own name rather than the literal "Pro", so a second
+                      // rung is a `tiers.json` edit (ADR 0056) — at launch
+                      // every rung answers "Pro" and this reads unchanged.
                       <span className="text-muted-foreground">
-                        {__('Available with WConvert Pro.', 'wconvert')}
+                        {sprintf(
+                          /* translators: %s: the product that supplies it, e.g. “WConvert Pro”. */
+                          __('Available with %s.', 'wconvert'),
+                          tierProductName(goal.tier),
+                        )}
                       </span>
                     ) : (
                       <Button aria-describedby={describedBy} onClick={() => onChoose(goal)}>

@@ -4,6 +4,7 @@ namespace WConvert\Admin;
 
 use WConvert\Assets\ViteHelper;
 use WConvert\Frontend\InspectorEnqueue;
+use WConvert\Support\TierManifest;
 
 defined('ABSPATH') || exit;
 
@@ -233,6 +234,12 @@ final class AdminMenu
             // Targeting tickets are about.
             'homeUrl' => (string) home_url('/'),
             'inspectParam' => InspectorEnqueue::PARAM,
+            // **What to call each paid tier**, read from `tiers.json` rather
+            // than written into five components as the literal "Pro"
+            // (ADR 0056). At launch every rung answers "Pro", so nothing on
+            // screen changes — and splitting the range later is an edit to that
+            // file rather than five strings and a release.
+            'tiers' => TierManifest::load()->forTheAdmin(),
         ];
     }
 }

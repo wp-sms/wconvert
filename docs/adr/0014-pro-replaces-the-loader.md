@@ -4,6 +4,24 @@ The [[Pro]] add-on ships a **complete replacement front-end loader** and dequeue
 the free one. There is no registration seam, no second script, and never two
 loaders on one page.
 
+***Extended by [ADR 0056](0056-the-tier-ladder-is-a-manifest.md) to the ADMIN
+BUNDLE, which this ADR only ever spoke about by implication.** The argument
+below is about two scripts on one page, and the admin has the same two scripts:
+free's bundle and Pro's. It had no answer, so it gets this one — Pro's entry
+imports free's `App` through the `@` alias, adds its own screens, and
+[`ProAdminEnqueue`](../../pro/src/Admin/ProAdminEnqueue.php) dequeues **and
+deregisters** free's handle at a priority derived from `AdminMenu::PRIORITY`. The
+rejected alternative there is runtime React injection into free's running app,
+and it fails exactly the way this ADR's rejected alternative fails: it needs the
+second script to run after the first has mounted, which is a load-order contract
+across two tags on a page an optimiser may reorder. Neither reference product
+faces the question — WP Statistics and WSMS both ship premium as one bigger
+plugin rather than a companion — so there was no precedent to borrow, only the
+failure mode. Two costs are booked there rather than solved: a second copy of the
+admin app in Pro's ZIP, and the fact that free's inline `window.wconvertAdmin`
+travels with free's handle, so Pro re-attaches the same values from
+`AdminMenu::settings()`.*
+
 This overturns the recommendation carried into #14 by the premium-SDK research,
 which favoured a free loader plus a small entitled add-on script registering
 premium rule types through a `registerTrigger` hook.
@@ -67,6 +85,13 @@ ever sees that queue's output.*
   — two configs sharing one output path with `emptyOutDir: true`, last build silently
   wins — is avoided by construction rather than by discipline, because the two
   artifacts are two plugins.
+  *Amended by [ADR 0056](0056-the-tier-ladder-is-a-manifest.md): there are
+  **eight**, not two. The admin is a second pair on the rule above, and Pro's
+  loader and inspector are built once per TIER — one entry per rung, in source,
+  with no build flag anywhere. The separate-directory property is unchanged and
+  is what the per-tier outputs rest on: `public/tiers/<rung>/` exists only in the
+  repository, and a staged tree that still carries one fails the artifact
+  contract.*
   *Amended by [ADR 0028](0028-the-free-loader-source-carries-no-premium-code.md): this
   originally read "one loader source, tree-shaken on a mode flag". It is **separate
   module trees** instead — premium rule modules live under Pro's, and Pro's entry

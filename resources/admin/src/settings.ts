@@ -60,6 +60,30 @@ export interface AdminSettings {
    * renders no panel, silently.
    */
   readonly inspectParam?: string;
+  /**
+   * What to call each paid tier, keyed by slug — `basic`, `pro`, `elite`.
+   *
+   * ==========================================================================
+   * THE WORD ON AN UPSELL IS DATA, NOT A LITERAL IN FIVE COMPONENTS.
+   * ==========================================================================
+   * Free's admin renders the `locked` state for every member this install does
+   * not have, and the word on that badge used to be `__('Pro')` written out in
+   * the goal screen, the gallery, two rule surfaces and the starting points.
+   *
+   * At launch every rung answers `"Pro"`, so nothing on screen changes. What
+   * changes is what it costs to sell a second tier: an edit to `tiers.json`
+   * rather than five strings and a release, and no migration of the `tier`
+   * values already saved on live Optins (ADR 0056).
+   *
+   * `name` is the badge — short, sits in a chip. `product_name` is the thing on
+   * the invoice, and it is what a sentence names: *"Available with %s."*
+   *
+   * **Not translatable, and that is the trade.** `make-pot` cannot see a JSON
+   * string, which is why every other piece of merchant-facing copy lives in PHP
+   * (ADR 0013). A tier's name is a product name, so it is the one string that
+   * should not be translated; the sentence around it still is.
+   */
+  readonly tiers?: Readonly<Record<string, { readonly name: string; readonly product_name: string }>>;
 }
 
 declare global {

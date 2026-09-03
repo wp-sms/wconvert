@@ -3,6 +3,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { ParamField } from '../controls';
 import { fromRule, toRule } from '../presets';
 import type { Rule, RuleType } from '../api';
+import { tierProductName } from '../../goals/availability';
 
 /**
  * One client rule — a [[Trigger]] or a [[Condition]] — as a row of controls.
@@ -158,14 +159,21 @@ export function RuleRow({ rule, at, types, onChange }: RuleRowProps) {
       {substitutedFor !== null && (
         <p className="wconvert-rule__note text-note">
           {sprintf(
-            /* translators: %s: the premium rule this one was substituted for, e.g. “Exit intent”. */
-            __('Standing in for “%s”, which is available with WConvert Pro.', 'wconvert'),
-            substitutedFor
+            /* translators: 1: the premium rule this one was substituted for, e.g. “Exit intent”. 2: the product that supplies it, e.g. “WConvert Pro”. */
+            __('Standing in for “%1$s”, which is available with %2$s.', 'wconvert'),
+            substitutedFor,
+            tierProductName(type.tier)
           )}
         </p>
       )}
       {type.availability === 'locked' && (
-        <p className="wconvert-rule__note text-note">{__('Needs WConvert Pro to run.', 'wconvert')}</p>
+        <p className="wconvert-rule__note text-note">
+          {sprintf(
+            /* translators: %s: the product that supplies the rule, e.g. “WConvert Pro”. */
+            __('Needs %s to run.', 'wconvert'),
+            tierProductName(type.tier)
+          )}
+        </p>
       )}
       {/*
         ====================================================================

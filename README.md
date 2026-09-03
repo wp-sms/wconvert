@@ -693,7 +693,7 @@ on its own does nothing.
 ```bash
 npm run build          # public/ and pro/public/ are gitignored — nothing is stale
 bin/build.sh free      # → dist/wconvert-v0.1.0.zip
-bin/build.sh pro       # → dist/wconvert-pro-v0.1.0.zip
+bin/build.sh pro       # → one ZIP per tier (below)
 bin/build.sh all
 ```
 
@@ -702,6 +702,33 @@ applies the tree's own `.distignore`, and then runs
 [`bin/verify-artifact-contract.sh`](bin/verify-artifact-contract.sh) **before**
 writing the ZIP — a ZIP that exists is a ZIP somebody can upload, so the
 contract has to be what decides whether one is written.
+
+### Pro is one plugin at three tiers
+
+`bin/build.sh pro` loops the ladder in [`tiers.json`](tiers.json) and writes one
+ZIP per rung — [ADR 0056](docs/adr/0056-the-tier-ladder-is-a-manifest.md):
+
+```
+dist/wconvert-pro-basic-v0.1.0.zip     display-types
+dist/wconvert-pro-pro-v0.1.0.zip       + premium-triggers
+dist/wconvert-pro-elite-v0.1.0.zip     + cart-recovery
+```
+
+**All three are built on every release run and one is sold.** Machinery that is
+not exercised rots, and the release that first needs a per-tier build is the
+release nobody can wait for. Three ZIPs cost seconds.
+
+A **module is a directory** under `pro/modules/`, holding its own `module.json`.
+A rung's ZIP is the full Pro tree with the directories that rung does not ship
+deleted — a `rm -rf` rather than cut-out markers and a build-time denylist. That
+is also what makes the installed tier a fact rather than a stored label: a
+running install reads the module directories back and infers its own rung
+(`WConvert\Support\WpProPresence`), and so does the artifact contract, which is
+why no `--basic` flag exists to be passed to the wrong tree.
+
+The **top-level directory inside every Pro ZIP is `wconvert-pro`**, at every
+rung. They are one plugin at three tiers, so moving up replaces an install
+rather than adding a second beside it; only the ZIP's own name carries the tier.
 
 ### The artifact contract
 
@@ -712,7 +739,17 @@ The third of ADR 0029's three programs, and the one whose subject is a build:
   contract structurally cannot see because `vendor/` does not exist until build
   time;
 * the free artifact contains **its un-minified source tree**, which is what makes
-  `readme.txt`'s source claim true by construction.
+  `readme.txt`'s source claim true by construction;
+* no premium design ships in the free ZIP — the trialware gate, issue #7;
+* **no artifact carries a higher tier's module**, in PHP *and* in the built
+  JavaScript. WP Statistics proves this and WSMS does not: all three of its
+  premium tiers ship a byte-identical `main.js`, so a Basic customer holds the
+  Elite React UI behind a client-readable flag. Under possession-gating that is
+  not a weaker gate, it is no gate;
+* the free artifact carries **no licensing SDK**. A licence gates updates and
+  support and never a feature ([ADR 0015](docs/adr/0015-enforcement-is-by-non-registration.md)),
+  so the code that reads one is Pro's alone — and like the autoload map, this is
+  checked at the artifact because `vendor/` is generated.
 
 It takes a staged tree and **no flags**, and it is not told which plugin it is
 looking at: the tree holds exactly one plugin main file and that is the answer

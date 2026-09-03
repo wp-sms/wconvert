@@ -39,7 +39,7 @@ final class TierManifest
     public const PATH = 'tiers.json';
 
     /**
-     * @param array<string, array{name: string, modules: list<string>}> $tiers Slug => what the file says about it.
+     * @param array<string, array{name: string, plugin_name: string, modules: list<string>}> $tiers Slug => what the file says about it.
      */
     private function __construct(private readonly array $tiers)
     {
@@ -71,6 +71,7 @@ final class TierManifest
 
             $tiers[$entry['slug']] = [
                 'name' => is_string($entry['name'] ?? null) ? $entry['name'] : $entry['slug'],
+                'plugin_name' => is_string($entry['plugin_name'] ?? null) ? $entry['plugin_name'] : '',
                 'modules' => array_values(array_filter(is_array($modules) ? $modules : [], 'is_string')),
             ];
         }
@@ -121,6 +122,59 @@ final class TierManifest
     public function shipsModule(Tier $tier, string $module): bool
     {
         return in_array($module, $this->tiers[$tier->value]['modules'] ?? [], true);
+    }
+
+    /**
+     * What the PRODUCT is called at this tier — *"WConvert Pro"*.
+     *
+     * Beside {@see self::displayName()} rather than derived from it, because
+     * the two are read in different sentences: the badge on a locked card is
+     * the short name, and the line under it is *"Available with %s."* A badge
+     * reading "WConvert Pro" is a badge that no longer fits, and a sentence
+     * reading "Available with Pro." is one that names nothing.
+     *
+     * Falls back to the short name where the file gives none.
+     */
+    public function productName(Tier $tier): string
+    {
+        $name = $this->tiers[$tier->value]['plugin_name'] ?? '';
+
+        return $name !== '' ? $name : $this->displayName($tier);
+    }
+
+    /**
+     * Every paid rung's words, as the admin bundle receives them.
+     *
+     * ========================================================================
+     * THE ONE PLACE THE ADMIN LEARNS WHAT TO CALL A TIER.
+     * ========================================================================
+     * Free's admin renders the upsell for a member it does not have, and the
+     * word on that card used to be the literal "Pro" in five components. At
+     * launch every rung answers "Pro" here, so nothing on screen changes — and
+     * splitting the range later is an edit to `tiers.json` rather than five
+     * strings and a release (ADR 0056).
+     *
+     * **The words are not translatable, and that is the trade.** `make-pot`
+     * cannot see a JSON string, which is why every other piece of merchant-
+     * facing copy in this plugin lives in PHP (ADR 0013). A tier's name is a
+     * product name — the thing on the invoice — so it is the one string that
+     * should not be translated. The sentence AROUND it stays translatable, with
+     * this as its `%s`.
+     *
+     * @return array<string, array{name: string, product_name: string}>
+     */
+    public function forTheAdmin(): array
+    {
+        $tiers = [];
+
+        foreach (Tier::paid() as $tier) {
+            $tiers[$tier->value] = [
+                'name' => $this->displayName($tier),
+                'product_name' => $this->productName($tier),
+            ];
+        }
+
+        return $tiers;
     }
 
     /**

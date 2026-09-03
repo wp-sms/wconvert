@@ -4,6 +4,22 @@ There is **no runtime licence check anywhere in WConvert.** The only question ev
 asked is "is [[Pro]] loaded", and it is answered by the registries themselves: a
 premium capability is *absent* from a free install rather than present and guarded.
 
+***Amended by [ADR 0056](0056-the-tier-ladder-is-a-manifest.md) on the second
+sentence only. The question is no longer "is Pro loaded" but "WHICH TIER is
+installed"** — `Tier` is a four-rung ladder (`free`, `basic`, `pro`, `elite`) and
+[`ProPresence::installedTier()`](../../src/Support/ProPresence.php) returns one
+rather than a `bool`. **The first sentence is unchanged, and deliberately so:**
+the rungs differ by which features are PRESENT, never by a limit inside the
+plugin, so there is still no licence read on any path and still not one premium
+feature with an `if` around it. What replaced the boolean is arithmetic —
+`Tier::includes()` — not a gate.*
+
+***And the tier is INFERRED rather than stored**, which is what keeps it inside
+this ADR rather than beside it: a module is a directory under `pro/modules/`, and
+an install reads its own rung back off the directories its build left behind.
+Possession is still the whole gate — a module you do not have supplies nothing,
+whatever the install claims to be — and nothing new is written to the database.*
+
 Possession gates features; the licence gates updates and support. Once premium code
 is genuinely absent there is nothing left to guard, so not one premium feature needs
 an `if`.
@@ -32,6 +48,18 @@ free's built loader contains neither identifier, scanned on every pull request
 ([ADR 0029](0029-the-free-contract-is-proven-at-the-source.md), check b, live
 since #32). Recorded here rather than only on the ticket, because the row is
 what a reader reaches for.*
+
+*Extended by [ADR 0056](0056-the-tier-ladder-is-a-manifest.md): **the same scan
+now runs between the paid rungs**, in the built bytes. `basic/loader.js` carries
+no identifier filed at `pro` or `elite`, asserted by `bin/check-loader.mjs` on
+every pull request and by `bin/verify-artifact-contract.sh` on every ZIP. The
+measurement that made it worth doing is the comparison this ADR keeps making:
+WSMS ships a byte-identical `main.js` at all three of its premium tiers, so a
+Basic customer holds the Elite React UI behind a client-readable flag — under
+possession-gating that is not a weaker gate, it is no gate. The scan also had a
+hole of its own until then: it read `entry.tier === 'pro'`, so the moment the two
+cart Conditions moved to `elite` it stopped looking for them at all, while going
+on printing a tick.*
 
 *Built in [#32](https://github.com/navidkashani/wconvert/issues/32), first row
 only: `exit_intent` and `scroll_up` are two modules under
@@ -102,6 +130,13 @@ and would put a branch on the request path 0004 exists to protect.
   that refused its min-core guard never reaches its provider.*
 - **One accessor for "is Pro loaded", from day one.** It exists as headroom for a
   future tier ladder, not as a gate.
+  *The headroom is spent, in [ADR 0056](0056-the-tier-ladder-is-a-manifest.md).
+  This line was written while the accessor returned a `bool`, which is to say the
+  headroom was rhetorical: `Availability::of()` took a three-valued question and
+  could only be handed a two-valued answer, and every `tier:` declaration in the
+  product could only mean "not free". It answers a `Tier` now. **It is still one
+  accessor and still not a gate** — one interface asks, one file looks the answer
+  up, and what it reports is which rung's modules are on disk.*
   *Amended by [#27](https://github.com/navidkashani/wconvert/issues/27): it is now
   an **interface** with one production implementation
   ([`WpProPresence`](../../src/Support/WpProPresence.php)) rather than a concrete
@@ -128,3 +163,11 @@ and would put a branch on the request path 0004 exists to protect.
   whoever adds it has to come to that test and narrow it to the two paths named
   here. That is the point: a licence read becomes a decision somebody takes on
   purpose rather than one that arrives inside a feature branch.*
+  ***Still neither, after [ADR 0056](0056-the-tier-ladder-is-a-manifest.md), and
+  that is not an oversight — the tier ladder deliberately needs no licence to
+  work.** What the ladder added is the ARTIFACT half of this line, which can be
+  asserted before the updater exists: `bin/verify-artifact-contract.sh` refuses a
+  free ZIP carrying the licensing SDK, checked at the artifact rather than at the
+  source because `vendor/` is generated and no source file in this repository
+  ever names the package. The narrowing this bullet asks for is still owed, by
+  whoever lands the updater.*
