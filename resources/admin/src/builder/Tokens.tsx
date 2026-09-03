@@ -2,10 +2,10 @@ import { useId, useState, type CSSProperties, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { HexColorInput, HexColorPicker, RgbaStringColorPicker } from 'react-colorful';
 import { Button } from '../components/ui/button';
-import { RotateCcw } from 'lucide-react';
+import { ChevronDown, RotateCcw } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
 import { CHOICES, TOKENS, groupsOf, withToken, type TokenGroupId } from './panel';
-import { getThemeTokens } from './api';
+import { getThemeTokens, type SiteFont } from './api';
 import { MediaControl } from './SlotFields';
 import {
   asBackgroundLayer,
@@ -482,6 +482,42 @@ function TokenField({
     );
   }
 
+  /*
+    ==========================================================================
+    A ONE-OF-N CONTROL IS CHIPS WHILE N IS SMALL, AND A LIST ONCE IT IS NOT.
+    ==========================================================================
+    Every other enumerated token has an N the manifest controls — three
+    alignments, four weights, four speeds. `font` is the first that does not:
+    what it should offer is the families THIS SITE declares, and a block theme
+    may declare twenty or thirty. Thirty chips in a wrapping segmented strip is
+    not a font picker (ADR 0054 rule 5).
+
+    So it wears the shape `ColourField` already has, which is what keeps ADR
+    0042 rule 5 — one job, one control — rather than inventing a fifth
+    treatment. **Dispatched on what the LIST is** and never on the token's
+    name: a choice list made of font stacks is a font picker, and a second one
+    added to the manifest tomorrow gets the same control with nothing here
+    edited.
+  */
+  if (offered !== undefined && offered.length > 0 && offered.every(isFontStack)) {
+    return (
+      <FontField
+        id={field}
+        token={token}
+        label={label}
+        labels={labels}
+        offered={offered}
+        fallback={fallback}
+        shown={shown}
+        value={value}
+        reset={reset}
+        open={open}
+        onOpenChange={onOpenChange}
+        onChange={onChange}
+      />
+    );
+  }
+
   if (offered !== undefined) {
     return (
       <ChoiceField
@@ -774,12 +810,12 @@ function MeasureField({
  * names ONE control. Wrapping the set made the token's name part of the
  * accessible name of whichever radio happened to be inside it.
  *
- * **Chips rather than a `<select>`**, because for `font` the whole value of the
- * control is reading *Serif* set in Georgia — and `font-family` on an
- * `<option>` is unreliable across browsers. Every offered stack is
- * system-available (see `TemplateLabels::tokenValues()`): the renderer gets the
- * whole stylesheet and there is no web font to load, so a stack naming a face
- * nobody has would render as a fallback the merchant did not pick.
+ * **Chips rather than a `<select>`**, an argument `font` made and then took
+ * with it: reading *Serif* set in Georgia is the whole value of that control,
+ * and `font-family` on an `<option>` is unreliable across browsers. `font` is a
+ * popover list now, because its N is the site's rather than the manifest's
+ * (ADR 0055); what is left here is every one-of-N the manifest does control,
+ * where a strip of three or four is the right shape.
  *
  * **And the text box stays.** `choices` is what the panel offers, never what is
  * allowed — token values are unvalidated on both sides of the boundary — so a
@@ -907,6 +943,245 @@ function ChoiceField({
       )}
     </div>
   );
+}
+
+/**
+ * A typeface, picked from the ones this SITE already serves.
+ *
+ * ============================================================================
+ * THE LIST IS THE SITE'S, AND WCONVERT LOADS NO FACE TO MAKE IT TRUE.
+ * ============================================================================
+ * Every stack offered here is one the site already serves — the four system
+ * ones the manifest declares, and the families the theme declares in its
+ * `theme.json`. On the front end the shadow root resolves the stored stack
+ * against the document-level `@font-face` rules the theme already printed, so
+ * nothing is fetched and nothing is bundled.
+ *
+ * That is not a saving, it is the only arrangement that works: a face declared
+ * INSIDE a shadow root is silently ignored, with an identical computed
+ * `font-family` and a `document.fonts.check()` that lies about it
+ * (`resources/renderer/src/css.ts`). This avoids the problem rather than
+ * working around it. See
+ * `docs/adr/0055-the-font-list-is-the-sites.md`, which also records why Google
+ * Fonts is refused.
+ *
+ * ============================================================================
+ * A POPOVER, AND NATIVE RADIOS INSIDE IT.
+ * ============================================================================
+ * The popover is `ColourField`'s shape, applied to a second token rather than
+ * invented (ADR 0042 rule 5). The radios are `ChoiceField`'s, for its reason
+ * exactly: one of these excludes the others, and that is what a radio group IS
+ * — arrow keys between them, one tab stop for the set, and the set announced
+ * as a set, all from the browser. A hand-authored `role="listbox"` would be
+ * that behaviour rewritten, worse.
+ *
+ * **Rows rather than a `<select>`**, because the whole value of this control is
+ * reading *Georgia* set in Georgia, and `font-family` on an `<option>` is
+ * unreliable across browsers (`index.css`). That was the argument for chips and
+ * it is the argument for this: what changed is the count, not the reason.
+ *
+ * **The site's list is read on the first OPEN**, not on mount. It is a fact
+ * about the site that a merchant asks for rarely, which is the same reason
+ * `ThemeController` is a route of its own — and a Design tab that fetched it on
+ * every visit would pay for a control most visits never touch.
+ */
+function FontField({
+  id,
+  token,
+  label,
+  labels,
+  offered,
+  fallback,
+  shown,
+  value,
+  reset,
+  open,
+  onOpenChange,
+  onChange,
+}: {
+  id: string;
+  token: string;
+  label: string;
+  labels: TemplateLabels;
+  offered: readonly string[];
+  fallback: string;
+  shown: string;
+  value: string;
+  reset: ReactNode;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onChange: (value: string) => void;
+}) {
+  const named = `${id}-name`;
+  const [site, setSite] = useState<readonly SiteFont[] | null>(null);
+
+  const read = () => {
+    if (site !== null) {
+      return;
+    }
+
+    getThemeTokens()
+      .then(({ fonts }) => setSite(fonts ?? []))
+      // **Swallowed.** The four system stacks are still there and still work,
+      // so a failed read costs the merchant a longer list rather than a
+      // control — and an error banner over a working picker would be the
+      // louder wrong answer.
+      .catch(() => setSite([]));
+  };
+
+  /*
+    The theme's families first and the system stacks under them, because a
+    merchant who has a brand face is looking for it. A family whose stack the
+    manifest already offers is dropped rather than drawn twice — the same
+    dedupe `ThemeTokens` makes one boundary over, for the same reason.
+  */
+  const theirs = (site ?? []).filter((font) => !offered.includes(font.stack));
+
+  const nameOfStack = (stack: string): string => {
+    const declared = labels.tokenValues[`${token}.${stack}`];
+
+    if (declared !== undefined) {
+      return declared;
+    }
+
+    // The theme's own name for it. It is a proper noun and is deliberately not
+    // translated — "Playfair Display" is what it is called everywhere.
+    return (site ?? []).find((font) => font.stack === stack)?.label ?? familyIn(stack);
+  };
+
+  return (
+    <div className="wconvert-token">
+      <span id={named}>{label}</span>
+      <span className="wconvert-token__row">
+        <Popover
+          open={open}
+          onOpenChange={(next) => {
+            if (next) {
+              read();
+            }
+
+            onOpenChange(next);
+          }}
+        >
+          <PopoverTrigger asChild>
+            <button type="button" className="wconvert-font" aria-labelledby={named}>
+              {/*
+                Set in the face it names, which is the whole point of this
+                control — and the one thing a `<select>` could not do.
+              */}
+              <span className="wconvert-font__name" style={{ fontFamily: shown }}>
+                {nameOfStack(shown)}
+              </span>
+              <ChevronDown aria-hidden="true" className="wconvert-font__chevron" />
+            </button>
+          </PopoverTrigger>
+
+          <PopoverContent align="start" className="w-auto">
+            <div className="wconvert-fonts" role="group" aria-labelledby={named}>
+              {theirs.length > 0 && (
+                <>
+                  <p className="wconvert-fonts__group text-micro uppercase text-muted-foreground">
+                    {__('From your theme', 'wconvert')}
+                  </p>
+                  {theirs.map((font) => (
+                    <FontRow
+                      key={font.stack}
+                      name={id}
+                      stack={font.stack}
+                      label={font.label}
+                      checked={shown === font.stack}
+                      onChange={onChange}
+                    />
+                  ))}
+                </>
+              )}
+
+              <p className="wconvert-fonts__group text-micro uppercase text-muted-foreground">
+                {__('On every device', 'wconvert')}
+              </p>
+              {offered.map((stack) => (
+                <FontRow
+                  key={stack}
+                  name={id}
+                  stack={stack}
+                  label={nameOfStack(stack)}
+                  checked={shown === stack}
+                  onChange={onChange}
+                />
+              ))}
+
+            </div>
+
+            {/*
+              **The escape hatch, inside the thing you opened — and OUTSIDE the
+              scroller.** `choices` is what the panel offers and never what is
+              allowed (ADR 0010), so a merchant may type a stack nobody listed;
+              it is not permanent furniture on the panel, which is ADR 0054 rule
+              2 satisfied. Under the list rather than in it, because a theme
+              declaring thirty families would otherwise put it thirty rows down.
+            */}
+            <label className="wconvert-slot__key wconvert-fonts__typed">
+              {sprintf(
+                /* translators: %s: what the setting is for, e.g. “Font”. */
+                __('%s value', 'wconvert'),
+                label,
+              )}
+              <input
+                type="text"
+                className="regular-text"
+                placeholder={fallback}
+                value={value}
+                onChange={(event) => onChange(event.target.value)}
+              />
+            </label>
+          </PopoverContent>
+        </Popover>
+        {reset}
+      </span>
+    </div>
+  );
+}
+
+/** One family, set in itself. */
+function FontRow({
+  name,
+  stack,
+  label,
+  checked,
+  onChange,
+}: {
+  name: string;
+  stack: string;
+  label: string;
+  checked: boolean;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <label className="wconvert-font-row">
+      <input
+        type="radio"
+        className="sr-only"
+        name={name}
+        value={stack}
+        checked={checked}
+        onChange={() => onChange(stack)}
+      />
+      <span className="wconvert-font-row__name" style={{ fontFamily: stack }}>
+        {label}
+      </span>
+    </label>
+  );
+}
+
+/**
+ * The first family a stack names, unquoted — a last resort for a name.
+ *
+ * Used only where nothing else has a word for the stack: not the manifest's
+ * labels, and not the theme's own `name`. A merchant who typed their own stack
+ * reads back the face they asked for rather than the whole declaration.
+ */
+function familyIn(stack: string): string {
+  return (stack.split(',')[0] ?? stack).trim().replace(/^['"]|['"]$/g, '');
 }
 
 /**

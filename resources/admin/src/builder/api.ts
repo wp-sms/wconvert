@@ -289,7 +289,18 @@ export const saveOptin = (id: string, name: string, config: Record<string, unkno
  * running Optin the day the merchant switches theme, which is the surprise
  * ADR 0010 keeps a Template's snapshot away from.
  */
-export const getThemeTokens = () => apiFetch<{ tokens: Record<string, string> }>({ path: '/wconvert/v1/theme' });
+/** One family the SITE declares, as the font picker offers it. */
+export interface SiteFont {
+  /** The theme's own name for it — a proper noun, and deliberately untranslated. */
+  readonly label: string;
+  /** What is STORED: a stack the site already serves. */
+  readonly stack: string;
+}
+
+export const getThemeTokens = () =>
+  apiFetch<{ tokens: Record<string, string>; fonts?: readonly SiteFont[] }>({
+    path: '/wconvert/v1/theme',
+  });
 
 /** The Optin's own copy of its design, as the builder holds it. */
 export type { Template };

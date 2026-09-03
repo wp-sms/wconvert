@@ -108,9 +108,48 @@ final class ThemeTokens
      */
     public static function fromSite(): array
     {
-        $settings = function_exists('wp_get_global_settings') ? wp_get_global_settings() : [];
+        return self::from(self::palette(self::settings()), self::font(self::settings()));
+    }
 
-        return self::from(self::palette($settings), self::font($settings));
+    /**
+     * Every font family this site declares, for the panel's font picker.
+     *
+     * ========================================================================
+     * WHAT IS OFFERED IS A STACK THE SITE ALREADY SERVES, AND NOTHING MORE.
+     * ========================================================================
+     * The stored token is the **stack string**, so on the front end the shadow
+     * root resolves it against the document-level `@font-face` rules the theme
+     * already printed. Nothing is fetched, nothing is bundled, and no face is
+     * declared — which matters more here than anywhere else, because a face
+     * declared INSIDE a shadow root is silently ignored
+     * (`resources/renderer/src/css.ts`). This avoids that problem rather than
+     * working around it.
+     *
+     * A merchant who then switches theme keeps a stack that degrades to
+     * whatever else it names, which is what a stack is for. Storing a family
+     * id and resolving it at render would put a registry lookup on the render
+     * path that ADR 0010 keeps off it — see
+     * `docs/adr/0055-the-font-list-is-the-sites.md`.
+     *
+     * @return list<array{label: string, stack: string}>
+     */
+    public static function fontsFromSite(): array
+    {
+        return self::fontsIn(self::settings());
+    }
+
+    /**
+     * The site's global settings, or nothing where core cannot answer.
+     *
+     * `wp_get_global_settings()` rather than `wp_get_global_styles()`, for the
+     * reason {@see self::fromSite()} gives about custom properties — and it is
+     * cached by core per request, so the two readers above cost one read.
+     *
+     * @return array<string, mixed>
+     */
+    private static function settings(): array
+    {
+        return function_exists('wp_get_global_settings') ? wp_get_global_settings() : [];
     }
 
     /**
@@ -138,27 +177,79 @@ final class ThemeTokens
     }
 
     /**
+     * Every font family this site declares, in the order it declares them.
+     *
+     * ========================================================================
+     * THE SAME WALK `palette()` MAKES, AND THE SAME REASON FOR ITS ORDER.
+     * ========================================================================
+     * Read in increasing order of deliberateness so the later write wins:
+     * WordPress's own defaults, then the theme's, then `custom` — which is
+     * where WordPress 6.5's **Font Library** puts anything the merchant
+     * installed themselves. That picks those up with no extra code and no
+     * version gate: on 6.2–6.4 the origin is simply absent and the list is the
+     * theme's.
+     *
+     * **Deduped on the STACK, not on the name.** Two origins declaring the same
+     * `fontFamily` are one family and the later one's name wins. Two families
+     * sharing a `name` but not a stack are two families and both show — the
+     * name is the theme's and is not ours to disambiguate.
+     *
+     * **A family with no `fontFace` is kept**, which is not an oversight: a
+     * theme naming the system stack as a family has nothing to load and works
+     * exactly as it is. Nothing here reads `fontFace` at all — what is offered
+     * is a stack the site already serves, and the faces behind it are the
+     * theme's business ({@see \WConvert\Admin\AdminMenu}).
+     *
+     * **Pure, and public for the same reason {@see self::from()} is**: the
+     * settings are passed in rather than read here, so this is testable
+     * without a WordPress install ({@see \WConvert\Template\PolicyLink}).
+     *
      * @param array<string, mixed> $settings
+     * @return list<array{label: string, stack: string}>
      */
-    private static function font(array $settings): ?string
+    public static function fontsIn(array $settings): array
     {
         $families = is_array($settings['typography']['fontFamilies'] ?? null)
             ? $settings['typography']['fontFamilies']
             : [];
 
+        /** @var array<string, string> $named Stack => the name to show it under. */
+        $named = [];
+
         foreach (['default', 'theme', 'custom'] as $origin) {
             foreach (is_array($families[$origin] ?? null) ? $families[$origin] : [] as $entry) {
-                // The FIRST family a theme declares is its body face by
-                // convention, and there is no field saying which one is.
-                // Wrong here costs a font the merchant can change in one
-                // control; guessing from the slug would be wrong more often.
-                if (is_array($entry) && is_string($entry['fontFamily'] ?? null) && $entry['fontFamily'] !== '') {
-                    return $entry['fontFamily'];
+                if (!is_array($entry) || !is_string($entry['fontFamily'] ?? null) || $entry['fontFamily'] === '') {
+                    continue;
                 }
+
+                $name = $entry['name'] ?? null;
+
+                // The stack itself where the theme gave no name, because a row
+                // reading `"Inter", sans-serif` is still a row a merchant can
+                // pick — an empty one is not.
+                $named[$entry['fontFamily']] = is_string($name) && $name !== '' ? $name : $entry['fontFamily'];
             }
         }
 
-        return null;
+        $fonts = [];
+
+        foreach ($named as $stack => $label) {
+            $fonts[] = ['label' => $label, 'stack' => (string) $stack];
+        }
+
+        return $fonts;
+    }
+
+    /**
+     * @param array<string, mixed> $settings
+     */
+    private static function font(array $settings): ?string
+    {
+        // The FIRST family a theme declares is its body face by convention, and
+        // there is no field saying which one is. Wrong here costs a font the
+        // merchant can change in one control; guessing from the slug would be
+        // wrong more often.
+        return self::fontsIn($settings)[0]['stack'] ?? null;
     }
 
     /**
