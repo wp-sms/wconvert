@@ -18,6 +18,15 @@
 #       wp.org Guideline 4 compatible with Guideline 9. WSMS's .distignore
 #       strips its /resources while its readme still says sources ship there;
 #       that is the trap this deletes rather than inherits (ADR 0028).
+#   (e) No premium design in the free ZIP — the trialware gate (issue #7).
+#   (f) NO ARTIFACT CARRIES A HIGHER TIER'S MODULE, in PHP and in the built
+#       JavaScript (ADR 0056). WP Statistics proves this and WSMS does not:
+#       all three of its premium tiers ship a byte-identical `main.js`, so a
+#       Basic customer holds the Elite React UI behind a client-readable flag.
+#       Under possession-gating that is not a weaker gate, it is no gate.
+#   (g) The free artifact carries NO LICENSING SDK. A licence gates updates
+#       and support and never a feature (ADR 0015), so the code that reads one
+#       is Pro's alone — and free's ZIP is the one a review team reads.
 #
 # Exit 0 = clean. Exit 1 = a violation, OR the check could not look.
 #
@@ -341,6 +350,13 @@ if [ "$tier" = "free" ]; then
     # Runtime data. Free reads each of these by a path constant, and a ZIP
     # missing one is a plugin that cannot draw a template or evaluate a rule.
     require_file resources/rules/manifest.json "WConvert\\Rules\\RuleManifest::PATH reads it" || true
+    # THE TIER LADDER, AND IT IS FREE'S FILE (ADR 0056). Free's admin renders
+    # every upsell card's tier NAME from it and WConvert\Support\WpProPresence
+    # infers the installed tier through it. ADR 0015 records WSMS's cautionary
+    # case as its shipped elite ZIP missing exactly this file, benign only
+    # because every lookup fails open — this is the line that stops the same
+    # sentence being written about WConvert.
+    require_file tiers.json "WConvert\\Support\\TierManifest::PATH reads it" || true
     require_file resources/templates/manifest.json "WConvert\\Template\\TemplateManifest::PATH reads it" || true
     require_populated_dir "$TREE" resources/templates/library '*.json' "WConvert\\Template\\BundledTemplates::PATH reads it" || true
     require_file resources/templates/locked.json "WConvert\\Template\\LockedTemplates::PATH reads it" || true
@@ -388,24 +404,62 @@ verdict
 # reason, and neither can `"tree"` in locked.json.
 section
 
+# The ladder is free's file and is not in Pro's ZIP, so it is read from the
+# repository this program lives in unless the tree carries its own. The rule
+# manifest is the same: both are facts about the PRODUCT rather than about the
+# tree being inspected.
+LADDER="$(dirname "$SCRIPT_DIR")/tiers.json"
+RULES="$(dirname "$SCRIPT_DIR")/resources/rules/manifest.json"
+
+if [ -r "$TREE/tiers.json" ]; then
+    LADDER="$TREE/tiers.json"
+fi
+
+if [ ! -r "$LADDER" ] || [ ! -r "$RULES" ]; then
+    fail "the tier ladder or the rule manifest could not be read — the tier checks inspected nothing"
+    verdict
+fi
+
+# Every word a `tier` may be, as an alternation. Read from the ladder rather
+# than written out, so a rung added to tiers.json is not a rung this program
+# rejects as unclassifiable (ADR 0056).
+PAID_TIERS=""
+ALL_TIERS="free"
+
+while IFS= read -r rung; do
+    [ -n "$rung" ] || continue
+
+    PAID_TIERS="${PAID_TIERS:+$PAID_TIERS|}$rung"
+    ALL_TIERS="$ALL_TIERS|$rung"
+done < <(php "$SCRIPT_DIR/tier-manifest.php" tiers "$LADDER")
+
+if [ -z "$PAID_TIERS" ]; then
+    fail "the tier ladder declares no paid tier — the design checks inspected nothing"
+    verdict
+fi
+
 if [ "$tier" = "free" ]; then
     if [ -d "$TREE/resources/templates/library" ]; then
-        premium="$(grep -REl '"tier"[[:space:]]*:[[:space:]]*"pro"' "$TREE/resources/templates/library" 2>/dev/null || true)"
+        # ANY paid rung, not the word "pro". The eight premium designs are the
+        # `display-types` module's and are declared `basic` (ADR 0056), so a
+        # check that still looked for `"tier": "pro"` would have gone on
+        # printing a tick over a free ZIP full of premium designs.
+        premium="$(grep -REl "\"tier\"[[:space:]]*:[[:space:]]*\"($PAID_TIERS)\"" "$TREE/resources/templates/library" 2>/dev/null || true)"
 
         if [ -n "$premium" ]; then
             fail "the free artifact bundles a premium design: $(echo "$premium" | tr '\n' ' ')"
         fi
 
         # An entry with no `tier` at all defaults to free and is fine; one
-        # declaring a word that is neither is an entry nobody can classify, and
-        # `Tier::tryFrom()` would silently read it as free.
+        # declaring a word the ladder does not carry is an entry nobody can
+        # classify, and `Tier::tryFrom()` would silently read it as free.
         unknown="$(grep -REl '"tier"[[:space:]]*:[[:space:]]*"' "$TREE/resources/templates/library" 2>/dev/null \
             | while read -r entry; do
-                grep -Eq '"tier"[[:space:]]*:[[:space:]]*"(free|pro)"' "$entry" || echo "$entry"
+                grep -Eq "\"tier\"[[:space:]]*:[[:space:]]*\"($ALL_TIERS)\"" "$entry" || echo "$entry"
             done)"
 
         if [ -n "$unknown" ]; then
-            fail "a bundled design declares a tier that is neither free nor pro: $(echo "$unknown" | tr '\n' ' ')"
+            fail "a bundled design declares a tier the ladder does not carry: $(echo "$unknown" | tr '\n' ' ')"
         fi
     else
         fail "resources/templates/library/ is missing — the design library was not inspected"
@@ -437,19 +491,182 @@ else
     # that installs, activates, replaces the loader and shows the customer the
     # same locked upsell cards free shows — with nothing anywhere saying why.
     # That is precisely the state this ticket found the product in.
-    if [ -d "$TREE/resources/templates/library" ]; then
-        designs="$(grep -REl '"tier"[[:space:]]*:[[:space:]]*"pro"' "$TREE/resources/templates/library" 2>/dev/null || true)"
+    # A MODULE'S directory, not one fixed library path (ADR 0056). Pro's
+    # designs belong to `display-types`, which every paid rung carries — so
+    # this is asked of whatever modules the staged tier actually has, and a
+    # rung that cut the wrong directory fails here rather than at a customer.
+    #
+    # Read one directory at a time, through a NUL-delimited read. A staged tree
+    # lives wherever the checkout does, and an unquoted `$design_dirs` splits on
+    # the space in a path like `.../Local Sites/...` — which greps two
+    # directories that do not exist, finds nothing, and reports a complete Pro
+    # build as one bundling no designs at all. Found the honest way: by this
+    # program failing a correct ZIP.
+    designs=""
+    design_dirs=0
 
-        if [ -z "$designs" ]; then
-            fail "the Pro artifact bundles no premium design — Pro IS where they ship, so an empty library is a broken build"
-        fi
-    else
-        fail "resources/templates/library/ is missing from Pro — the premium designs were not inspected"
+    while IFS= read -r -d '' design_dir; do
+        design_dirs=$((design_dirs + 1))
+        designs="$designs$(grep -REl "\"tier\"[[:space:]]*:[[:space:]]*\"($PAID_TIERS)\"" "$design_dir" 2>/dev/null || true)"
+    done < <(find "$TREE/modules" -type d -name templates -print0 2>/dev/null)
+
+    if [ "$design_dirs" -eq 0 ]; then
+        fail "no modules/*/templates/ directory in Pro — the premium designs were not inspected"
+    elif [ -z "$designs" ]; then
+        fail "the Pro artifact bundles no premium design — Pro IS where they ship, so an empty library is a broken build"
     fi
 
     if section_clean; then
         pass "the premium designs ship in the Pro artifact"
     fi
+fi
+
+verdict
+
+# --- [6] (f) NO ARTIFACT CARRIES A HIGHER TIER'S MODULE ----------------------
+#
+# THE TREE SAYS WHICH RUNG IT IS, exactly as it says which plugin it is. There
+# is no --basic flag, for ADR 0029's reason one level down: pass --basic to an
+# elite tree and the check runs against the wrong rung and passes. The rung is
+# INFERRED from the module directories the build left behind — the same
+# inference a running install makes (WConvert\Support\WpProPresence), so the
+# ZIP and the install cannot disagree about what a build is.
+#
+# Free has no rung and asserts a different half: it must carry no module
+# directory at all, which check (c) already covers by refusing any `pro/` tree.
+# What is added here for free is that `public/tiers/` — repository scaffolding
+# for the per-tier builds — never reaches an artifact of either kind.
+section
+
+# `$LADDER` and `$RULES` were resolved and proven readable in [5].
+
+if find_matches "$TREE" -type d -name tiers -path '*/public/*'; then
+    fail "the artifact contains public/tiers/ — that is per-tier build scaffolding and ships in nothing"
+elif [ "$?" -eq 2 ]; then
+    fail "could not search the artifact for public/tiers/ — cannot verify"
+fi
+
+if [ "$tier" = "pro" ] && section_clean; then
+    RUNG=""
+
+    if ! RUNG="$(php "$SCRIPT_DIR/tier-manifest.php" infer "$LADDER" "$TREE" 2>&1)"; then
+        fail "cannot tell which tier this Pro artifact is — cannot verify"
+        printf '%s\n' "$RUNG" | sed 's/^/        /' >&2
+    else
+        echo "  ✓ this Pro artifact is the $RUNG tier"
+
+        # ---------------------------------------------------------------
+        # THE PHP HALF: every module it ships is one this rung declares.
+        #
+        # A module is a directory, so a rung that shipped one it does not
+        # declare would be a `rm -rf` that did not run — and the inference
+        # above would have read that build as the HIGHER rung, which is the
+        # failure this catches: the ZIP is then named `basic` and contains
+        # `pro`. Checked against the declaration rather than against the
+        # inference, so the two cannot agree by both being wrong.
+        # ---------------------------------------------------------------
+        DECLARED=""
+
+        if ! DECLARED="$(php "$SCRIPT_DIR/tier-manifest.php" modules "$LADDER" "$RUNG" 2>&1)"; then
+            fail "cannot read the $RUNG tier's module set — cannot verify"
+        else
+            for module_dir in "$TREE"/modules/*/; do
+                [ -d "$module_dir" ] || continue
+
+                module_slug="$(basename "$module_dir")"
+                declared_here=""
+
+                while IFS= read -r declared_module; do
+                    [ "$declared_module" = "$module_slug" ] && declared_here="yes"
+                done <<< "$DECLARED"
+
+                if [ -z "$declared_here" ]; then
+                    fail "the $RUNG artifact carries the $module_slug module, which $RUNG does not ship"
+                fi
+            done
+
+            # AND EVERY MODULE IT DECLARES IS THERE. The mirror failure, and
+            # the one a customer meets: a Basic ZIP missing `display-types`
+            # installs, activates, replaces the loader, and shows the same
+            # locked upsell cards free shows.
+            while IFS= read -r declared_module; do
+                [ -n "$declared_module" ] || continue
+
+                if [ ! -f "$TREE/modules/$declared_module/module.json" ]; then
+                    fail "the $RUNG artifact is missing the $declared_module module, which $RUNG ships"
+                fi
+            done <<< "$DECLARED"
+        fi
+
+        # ---------------------------------------------------------------
+        # THE JAVASCRIPT HALF, AND IT IS THE ONE WSMS DOES NOT DO.
+        #
+        # Cutting a module directory removes its SOURCE. Whether it removed
+        # the module from the shipped BUNDLE is a different question, and the
+        # only honest way to ask it is of the bytes. `bin/check-loader.mjs`
+        # asks the same question of the repository's builds on every pull
+        # request; this asks it of the ZIP.
+        # ---------------------------------------------------------------
+        FORBIDDEN=""
+
+        if ! FORBIDDEN="$(php "$SCRIPT_DIR/tier-manifest.php" identifiers "$LADDER" "$RUNG" "$RULES" 2>&1)"; then
+            fail "cannot read which rule types sit above the $RUNG tier — cannot verify"
+        elif [ -z "$FORBIDDEN" ]; then
+            echo "  ! nothing is filed above $RUNG, so the bundle scan asserted nothing"
+        else
+            for built in public/loader/loader.js public/inspector/inspector.js; do
+                if [ ! -r "$TREE/$built" ]; then
+                    # [1] already failed on this; do not report it twice.
+                    continue
+                fi
+
+                while IFS= read -r identifier; do
+                    [ -n "$identifier" ] || continue
+
+                    if grep -q -- "$identifier" "$TREE/$built"; then
+                        fail "$built in the $RUNG artifact contains \"$identifier\", which is filed above $RUNG"
+                    fi
+                done <<< "$FORBIDDEN"
+            done
+        fi
+    fi
+fi
+
+if section_clean; then
+    pass "no artifact carries a higher tier's module, in PHP or in the bundle"
+fi
+
+verdict
+
+# --- [7] (g) NO LICENSING SDK IN THE FREE ZIP --------------------------------
+#
+# FREE ONLY, and it is the artifact-level half of ADR 0015's line: "the licence
+# option is read by Pro's updater and admin screens only, and never on a
+# front-end request". The SDK is vendored into PRO builds through a Composer
+# scoper profile, so free carrying it means the profile did not apply — and the
+# free ZIP is the one a wp.org review team reads.
+#
+# It is checked at the ARTIFACT rather than at the source because `vendor/` is
+# GENERATED: no source file in this repository ever names the package, so
+# bin/verify-source-contract.sh cannot see it however hard it looks. That is the
+# same argument check (c) makes about the Composer autoload map, in the same
+# place, for the same reason.
+section
+
+if [ "$tier" = "free" ]; then
+    for sdk_name in wp-premium-sdk WpPremiumSdk; do
+        if find_matches "$TREE" -name "*${sdk_name}*"; then
+            fail "the free artifact contains $sdk_name — the licensing SDK is Pro's alone"
+        elif [ "$?" -eq 2 ]; then
+            fail "could not search the free artifact for $sdk_name — cannot verify"
+        fi
+    done
+
+    if section_clean; then
+        pass "no licensing SDK in the free artifact"
+    fi
+else
+    echo "  ! (g) asserted nothing: the licensing SDK is Pro's, so a Pro artifact is where it belongs."
 fi
 
 verdict

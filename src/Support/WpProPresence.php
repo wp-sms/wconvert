@@ -79,17 +79,13 @@ final class WpProPresence implements ProPresence
         }
 
         $manifest = $this->manifest ??= TierManifest::load();
-        $highest = Tier::Basic;
 
-        foreach ($this->installedModules((string) constant('WCONVERT_PRO_DIR')) as $module) {
-            $supplies = $manifest->lowestTierSupplying($module);
-
-            if ($supplies !== null && $supplies->includes($highest)) {
-                $highest = $supplies;
-            }
-        }
-
-        return $highest;
+        // Two halves, and only the first needs WordPress: this reads the
+        // constants and the file system, and {@see TierManifest::tierFor()}
+        // does the arithmetic. That split is what lets the ladder be tested at
+        // every rung — a suite cannot define WCONVERT_PRO_LOADED without
+        // deciding the answer for every test that runs after it.
+        return $manifest->tierFor($this->installedModules((string) constant('WCONVERT_PRO_DIR')));
     }
 
     /**

@@ -38,11 +38,8 @@ final class TierManifest
 {
     public const PATH = 'tiers.json';
 
-    /** The `modules` value meaning every module there is. */
-    private const EVERY_MODULE = '*';
-
     /**
-     * @param array<string, array{name: string, modules: list<string>|string}> $tiers Slug => what the file says about it.
+     * @param array<string, array{name: string, modules: list<string>}> $tiers Slug => what the file says about it.
      */
     private function __construct(private readonly array $tiers)
     {
@@ -74,9 +71,7 @@ final class TierManifest
 
             $tiers[$entry['slug']] = [
                 'name' => is_string($entry['name'] ?? null) ? $entry['name'] : $entry['slug'],
-                'modules' => $modules === self::EVERY_MODULE
-                    ? self::EVERY_MODULE
-                    : array_values(array_filter(is_array($modules) ? $modules : [], 'is_string')),
+                'modules' => array_values(array_filter(is_array($modules) ? $modules : [], 'is_string')),
             ];
         }
 
@@ -115,15 +110,27 @@ final class TierManifest
     /**
      * Whether a tier's build ships a module.
      *
-     * The `"*"` wildcard is the top rung's, and it is what keeps a new module
-     * from silently being excluded from the tier that is supposed to have
-     * everything.
+     * **Every rung names its modules, including the top one — there is no
+     * `"*"`.** A wildcard reads as "everything", which is true of what the top
+     * build should contain and useless to a check: the artifact contract
+     * asserts both that a rung carries no module it does not declare AND that
+     * it carries every module it does, and against a wildcard the second half
+     * asserts nothing — leaving the rung every customer buys today as the one
+     * rung with no completeness check (ADR 0056).
      */
     public function shipsModule(Tier $tier, string $module): bool
     {
-        $modules = $this->tiers[$tier->value]['modules'] ?? [];
+        return in_array($module, $this->tiers[$tier->value]['modules'] ?? [], true);
+    }
 
-        return $modules === self::EVERY_MODULE || in_array($module, $modules, true);
+    /**
+     * The modules a tier's build ships, in declaration order.
+     *
+     * @return list<string>
+     */
+    public function modulesAt(Tier $tier): array
+    {
+        return $this->tiers[$tier->value]['modules'] ?? [];
     }
 
     /**
@@ -149,5 +156,48 @@ final class TierManifest
         }
 
         return null;
+    }
+
+    /**
+     * The tier a build carrying these modules is at.
+     *
+     * ========================================================================
+     * THE WHOLE INFERENCE, AND IT DOES NOT FAIL OPEN.
+     * ========================================================================
+     * The highest of each module's lowest supplying tier. A module on disk is
+     * evidence of at least the rung that first ships it; the top such rung is
+     * what this build is.
+     *
+     * **The floor is {@see Tier::Basic}, never {@see Tier::Free}, and never the
+     * top.** Every unreadable state resolves DOWNWARD: no manifest, no modules,
+     * or modules nothing claims, and a loaded Pro reads as the lowest paid rung
+     * — which is what "Pro is here and said nothing about itself" honestly
+     * means. Reading it as free would show a paying customer upsell cards for
+     * what they bought, which ADR 0026 forbids outright; reading it as elite
+     * would offer them a feature their ZIP does not contain. The bottom rung is
+     * the only answer wrong in the recoverable direction.
+     *
+     * That is the opposite posture to WSMS's `TierGate`, whose every lookup
+     * fails open — ADR 0015 records why: a ladder that fails open is not a
+     * ladder.
+     *
+     * **The caller decides whether Pro is here at all**; this answers only
+     * which rung, so it is pure and a test can reach every rung of it.
+     *
+     * @param list<string> $modules Slugs read off the module directories on disk.
+     */
+    public function tierFor(array $modules): Tier
+    {
+        $highest = Tier::Basic;
+
+        foreach ($modules as $module) {
+            $supplies = $this->lowestTierSupplying($module);
+
+            if ($supplies !== null && $supplies->includes($highest)) {
+                $highest = $supplies;
+            }
+        }
+
+        return $highest;
     }
 }

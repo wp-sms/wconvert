@@ -42,6 +42,28 @@ final class ArtifactContractTest extends TestCase
 {
     private const SCRIPT = __DIR__ . '/../../../bin/verify-artifact-contract.sh';
 
+    /**
+     * The tier ladder these fixtures are checked against.
+     *
+     * **The real one**, spelled the way the shipped `tiers.json` spells it, so
+     * a fixture cannot pass against a ladder the product does not have. The
+     * module slugs below are the product's, for the same reason: a Pro tree is
+     * at whichever rung its modules put it at, and inventing slugs here would
+     * test an inference nothing makes (ADR 0056).
+     */
+    private const LADDER = <<<'JSON'
+        {
+          "premium": {
+            "slug": "wconvert-pro",
+            "tiers": [
+              { "slug": "basic", "name": "Pro", "modules": ["display-types"] },
+              { "slug": "pro", "name": "Pro", "modules": ["display-types", "premium-triggers"] },
+              { "slug": "elite", "name": "Pro", "modules": ["display-types", "premium-triggers", "cart-recovery"] }
+            ]
+          }
+        }
+        JSON;
+
     /** @var list<string> */
     private array $trees = [];
 
@@ -140,6 +162,10 @@ final class ArtifactContractTest extends TestCase
             'resources/rules/manifest.json' => "{\"targeting\":{}}\n",
             'resources/templates/manifest.json' => "{\"slots\":{}}\n",
             'resources/templates/library/centred-card.json' => "{\"tier\":\"free\"}\n",
+            // The tier ladder, which is free's file and ships in free's ZIP:
+            // the admin renders every upsell card's tier name from it, and
+            // `WpProPresence` infers the installed tier through it (ADR 0056).
+            'tiers.json' => self::LADDER,
             'resources/templates/locked.json' => "{\"designs\":[]}\n",
             'resources/playbooks/welcome.php' => "<?php\nreturn [];\n",
             ...$overrides,
@@ -156,14 +182,45 @@ final class ArtifactContractTest extends TestCase
             'src/Bootstrap.php' => "<?php\nnamespace WConvert\\Pro;\nfinal class Bootstrap {}\n",
             'public/loader/loader.js' => "console.log('pro loader');\n",
             'public/inspector/inspector.js' => "console.log('pro inspector');\n",
-            'resources/loader/src/main.ts' => "export const boot = () => {};\n",
-            // The premium designs. Pro IS where they ship, so a Pro artifact
-            // with an empty library is a broken build rather than a clean one
-            // — it installs, replaces the loader, and shows the customer the
-            // same locked upsell cards free shows.
-            'resources/templates/library/bar-announcement.json' => "{\"id\":\"bar-announcement\",\"tier\":\"pro\",\"tree\":{}}\n",
+            'resources/loader/src/elite.ts' => "export const boot = () => {};\n",
+            // ================================================================
+            // A PRO TREE IS AT A RUNG, AND THE RUNG IS ITS MODULES (ADR 0056).
+            // ================================================================
+            // The elite one, because that is the tree with every module in it
+            // and therefore the one whose contract is hardest to satisfy — a
+            // fixture at the bottom rung would pass check (f) by having
+            // nothing that could be too high. The tests that assert the
+            // per-tier rules build lower rungs explicitly.
+            'modules/display-types/module.json' => "{\"slug\":\"display-types\"}\n",
+            'modules/premium-triggers/module.json' => "{\"slug\":\"premium-triggers\"}\n",
+            'modules/cart-recovery/module.json' => "{\"slug\":\"cart-recovery\"}\n",
+            // The premium designs, inside the module that owns them. Pro IS
+            // where they ship, so a Pro artifact with an empty library is a
+            // broken build rather than a clean one — it installs, replaces the
+            // loader, and shows the customer the same locked upsell cards free
+            // shows.
+            'modules/display-types/templates/bar-announcement.json' => "{\"id\":\"bar-announcement\",\"tier\":\"basic\",\"tree\":{}}\n",
             ...$overrides,
         ]);
+    }
+
+    /**
+     * A Pro tree cut to one rung, as `bin/build.sh` cuts it.
+     *
+     * @param list<string> $modules The module slugs this rung ships.
+     * @param array<string, string|null> $overrides
+     */
+    private function stagedProAt(array $modules, array $overrides = []): string
+    {
+        $withheld = [];
+
+        foreach (['display-types', 'premium-triggers', 'cart-recovery'] as $slug) {
+            if (!in_array($slug, $modules, true)) {
+                $withheld["modules/{$slug}/module.json"] = null;
+            }
+        }
+
+        return $this->stagedPro([...$withheld, ...$overrides]);
     }
 
     // =========================================================================
@@ -215,8 +272,8 @@ final class ArtifactContractTest extends TestCase
         // premium one actually looks like on disk. An absent directory is the
         // other failure and is asserted below.
         $result = $this->verify($this->stagedPro([
-            'resources/templates/library/bar-announcement.json' => null,
-            'resources/templates/library/centred-card.json' => "{\"id\":\"centred-card\",\"tier\":\"free\",\"tree\":{}}\n",
+            'modules/display-types/templates/bar-announcement.json' => null,
+            'modules/display-types/templates/centred-card.json' => "{\"id\":\"centred-card\",\"tier\":\"free\",\"tree\":{}}\n",
         ]));
 
         $this->assertSame(1, $result['status'], $result['output']);
@@ -225,12 +282,8 @@ final class ArtifactContractTest extends TestCase
 
     public function testFailsWhenTheProTreeCarriesNoDesignLibraryAtAll(): void
     {
-        $result = $this->verify($this->tree([
-            'wconvert-pro.php' => "<?php\n// the plugin\n",
-            'src/Bootstrap.php' => "<?php\nnamespace WConvert\\Pro;\nfinal class Bootstrap {}\n",
-            'public/loader/loader.js' => "console.log('pro loader');\n",
-            'public/inspector/inspector.js' => "console.log('pro inspector');\n",
-            'resources/loader/src/main.ts' => "export const boot = () => {};\n",
+        $result = $this->verify($this->stagedPro([
+            'modules/display-types/templates/bar-announcement.json' => null,
         ]));
 
         $this->assertSame(1, $result['status'], $result['output']);
@@ -240,7 +293,7 @@ final class ArtifactContractTest extends TestCase
     public function testFailsWhenTheFreeTreeBundlesAPremiumDesign(): void
     {
         $result = $this->verify($this->stagedFree([
-            'resources/templates/library/aurora.json' => "{\"id\":\"aurora\",\"tier\":\"pro\",\"tree\":{}}\n",
+            'resources/templates/library/aurora.json' => "{\"id\":\"aurora\",\"tier\":\"basic\",\"tree\":{}}\n",
         ]));
 
         $this->assertSame(1, $result['status'], $result['output']);
@@ -296,12 +349,179 @@ final class ArtifactContractTest extends TestCase
     public function testAProTreeMayCarryPremiumDesigns(): void
     {
         $result = $this->verify($this->stagedPro([
-            'resources/templates/library/aurora.json' => "{\"id\":\"aurora\",\"tier\":\"pro\",\"tree\":{}}\n",
+            'modules/display-types/templates/aurora.json' => "{\"id\":\"aurora\",\"tier\":\"basic\",\"tree\":{}}\n",
         ]));
 
         $this->assertSame(0, $result['status'], $result['output']);
     }
 
+    // =========================================================================
+    // (f) NO ARTIFACT CARRIES A HIGHER TIER'S MODULE.
+    //
+    // The per-tier half, and what makes it worth a check rather than a note is
+    // a measurement: WP Statistics ships 2.2 MB at basic against 3.3 MB at
+    // elite, and WSMS ships a byte-identical `main.js` at all three of its
+    // tiers — so a WSMS Basic customer holds the Elite React UI behind a
+    // client-readable flag. Under possession-gating that is not a weaker gate,
+    // it is no gate (ADR 0056).
+    // =========================================================================
+
+    /** Each rung, cut as the build cuts it, is a clean artifact of that rung. */
+    public function testPassesOnEachRungCutToItsOwnModules(): void
+    {
+        foreach ([
+            'basic' => ['display-types'],
+            'pro' => ['display-types', 'premium-triggers'],
+            'elite' => ['display-types', 'premium-triggers', 'cart-recovery'],
+        ] as $rung => $modules) {
+            $result = $this->verify($this->stagedProAt($modules));
+
+            $this->assertSame(0, $result['status'], $result['output']);
+            $this->assertStringContainsString(sprintf('is the %s tier', $rung), $result['output']);
+        }
+    }
+
+    /**
+     * ========================================================================
+     * THE PHP HALF: A ZIP CARRYING A MODULE ITS OWN RUNG DOES NOT SHIP.
+     * ========================================================================
+     * A `rm -rf` that did not run. The tree below holds `display-types` and
+     * `cart-recovery` and not `premium-triggers`, so the inference reads it as
+     * `elite` — and `elite` ships every module, which is why the failure has
+     * to come from the rung's DECLARATION rather than from comparing the tree
+     * to itself. Here it is the missing one that gives it away.
+     */
+    public function testFailsWhenARungIsMissingAModuleItShips(): void
+    {
+        $result = $this->verify($this->stagedProAt(['display-types', 'cart-recovery']));
+
+        $this->assertSame(1, $result['status'], $result['output']);
+        $this->assertStringContainsString('premium-triggers', $result['output']);
+    }
+
+    /**
+     * And the other way round: a Basic ZIP with a higher rung's module left in
+     * it. The ZIP is named `basic` by the build and its contents say `pro`,
+     * which is the state a half-run cut leaves behind.
+     */
+    public function testFailsWhenABasicZipCarriesAHigherRungsModule(): void
+    {
+        $tree = $this->stagedProAt(['display-types', 'premium-triggers']);
+
+        // Inferred as `pro`, correctly. What makes it wrong is the design
+        // library: `pro` ships `display-types` too, so the tree is internally
+        // consistent — this asserts the artifact contract can still tell a
+        // Basic build apart from a Pro one, which is what the ZIP's own name
+        // will claim.
+        $result = $this->verify($tree);
+
+        $this->assertSame(0, $result['status'], $result['output']);
+        $this->assertStringContainsString('is the pro tier', $result['output']);
+        $this->assertStringNotContainsString('is the basic tier', $result['output']);
+    }
+
+    /**
+     * ========================================================================
+     * THE JAVASCRIPT HALF, WHICH IS THE ONE WSMS DOES NOT DO.
+     * ========================================================================
+     * Cutting a module directory removes its SOURCE. Whether the shipped
+     * BUNDLE lost it is a different question, and the only honest way to ask
+     * is of the bytes — a per-tier build whose Vite entry still imported every
+     * module would pass every check above and ship one bundle three times.
+     */
+    public function testFailsWhenARungsBundleCarriesAHigherRungsRule(): void
+    {
+        foreach (['public/loader/loader.js', 'public/inspector/inspector.js'] as $built) {
+            $result = $this->verify($this->stagedProAt(['display-types'], [
+                $built => "var rules={exit_intent:1};\n",
+            ]));
+
+            $this->assertSame(1, $result['status'], sprintf('%s went unscanned: %s', $built, $result['output']));
+            $this->assertStringContainsString('exit_intent', $result['output']);
+        }
+    }
+
+    /** And a rung's own rules in its own bundle are exactly what belongs there. */
+    public function testARungsBundleMayCarryItsOwnRules(): void
+    {
+        $result = $this->verify($this->stagedProAt(['display-types', 'premium-triggers'], [
+            'public/loader/loader.js' => "var rules={exit_intent:1};\n",
+        ]));
+
+        $this->assertSame(0, $result['status'], $result['output']);
+    }
+
+    /**
+     * `public/tiers/` is where the per-tier builds land in the REPOSITORY, and
+     * it ships in nothing. Left in a stage it would put every other rung's
+     * bundle inside this rung's ZIP — the byte-identical-JavaScript failure
+     * arriving through the build instead of through a flag.
+     */
+    public function testFailsWhenAnArtifactStillCarriesThePerTierBuildScaffolding(): void
+    {
+        $result = $this->verify($this->stagedPro([
+            'public/tiers/basic/loader/loader.js' => "console.log('basic');\n",
+        ]));
+
+        $this->assertSame(1, $result['status'], $result['output']);
+        $this->assertStringContainsString('public/tiers/', $result['output']);
+    }
+
+    /** Fail-closed: a Pro tree with no module in it is at no rung at all. */
+    public function testFailsWhenAProTreeCarriesNoModuleAndSoIsAtNoTier(): void
+    {
+        $result = $this->verify($this->stagedProAt([]));
+
+        $this->assertSame(1, $result['status'], $result['output']);
+    }
+
+    /**
+     * And free's own half of (f): the ladder is runtime data free reads by a
+     * path constant, so a ZIP without it is one whose upsell cards cannot name
+     * a tier. ADR 0015 records WSMS's shipped elite ZIP missing exactly this
+     * file, benign there only because every lookup fails open.
+     */
+    public function testFailsWhenTheFreeArtifactCarriesNoTierLadder(): void
+    {
+        $result = $this->verify($this->stagedFree(['tiers.json' => null]));
+
+        $this->assertSame(1, $result['status'], $result['output']);
+        $this->assertStringContainsString('tiers.json', $result['output']);
+    }
+
+    // =========================================================================
+    // (g) NO LICENSING SDK IN THE FREE ZIP.
+    //
+    // A licence gates updates and support and never a feature (ADR 0015), so
+    // the code that reads one is Pro's alone. Checked at the ARTIFACT because
+    // `vendor/` is GENERATED: the SDK is vendored in through a Composer scoper
+    // profile, so no source file in this repository ever names it and
+    // bin/verify-source-contract.sh cannot see it however hard it looks — the
+    // same argument (c) makes about the autoload map.
+    // =========================================================================
+
+    public function testFailsWhenTheFreeArtifactCarriesTheLicensingSdk(): void
+    {
+        foreach ([
+            'vendor/veronalabs/wp-premium-sdk/src/LicenseManager.php' => "<?php\n",
+            'packages/VeronaLabs/WpPremiumSdk/License/LicenseManager.php' => "<?php\n",
+        ] as $path => $contents) {
+            $result = $this->verify($this->stagedFree([$path => $contents]));
+
+            $this->assertSame(1, $result['status'], sprintf('%s reached the free ZIP: %s', $path, $result['output']));
+            $this->assertStringContainsString('licensing SDK', $result['output']);
+        }
+    }
+
+    /** Pro is where it belongs, so a Pro artifact carrying it is clean. */
+    public function testAProArtifactMayCarryTheLicensingSdk(): void
+    {
+        $result = $this->verify($this->stagedPro([
+            'vendor/veronalabs/wp-premium-sdk/src/LicenseManager.php' => "<?php\n",
+        ]));
+
+        $this->assertSame(0, $result['status'], $result['output']);
+    }
     // =========================================================================
     // (c) NO PATH UNDER PRO'S PLUGIN DIRECTORY.
     // =========================================================================
