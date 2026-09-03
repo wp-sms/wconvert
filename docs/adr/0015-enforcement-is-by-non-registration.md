@@ -171,3 +171,25 @@ and would put a branch on the request path 0004 exists to protect.
   source because `vendor/` is generated and no source file in this repository
   ever names the package. The narrowing this bullet asks for is still owed, by
   whoever lands the updater.*
+
+  ***What that work is, written down while it is fresh.** `veronalabs/wp-premium-sdk`
+  is a private VCS repository, and the delivery decision is VeronaLabs' Nexus,
+  the same as the other two products. Four things go together and none of them
+  is a feature gate:*
+
+  - *`pro/composer.json` — Pro has none today. It gains the SDK under a
+    `wp-scoper` **`premium` profile**, mirroring `"profiles": {"premium": {…}}`
+    in both reference `composer.json` files, so the package is vendored into
+    Pro builds only. **Do not add the `require` before the repository is
+    reachable**: `bin/build.sh` runs `composer install` inside any stage that
+    has a `composer.json`, so an unresolvable dependency turns every Pro build
+    red rather than one machine's.*
+  - *The update gate — `pre_set_site_transient_update_plugins`, plus a
+    renewal/expiry notice. Copy `PremiumServiceProvider::gatePluginUpdateByLicense()`
+    and `flushUpdateCaches()` from either reference product rather than writing
+    them: both exist to work around SDK bugs, and a fresh implementation
+    rediscovers them.*
+  - *Narrowing the test above to the two paths this ADR names, which is the
+    whole point of it being total today.*
+  - *Nothing else. **The build stays the gate**: Nexus serves the ZIP matching
+    the licence's tier, and no runtime check unlocks anything (ADR 0056).*
