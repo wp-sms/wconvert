@@ -5,8 +5,8 @@ import { PRO_MODULES } from './modules';
  * WConvert Pro's shipped loader at the **pro** tier.
  *
  * The middle rung: everything Basic ships, plus the premium Triggers and the
- * advanced targeting Condition — `exit_intent`, `scroll_up`, `click_element`
- * and `query_param`.
+ * two advanced targeting Conditions — `exit_intent`, `scroll_up`,
+ * `click_element`, `query_param` and `referrer`.
  *
  * The whole content of this file is one choice — which module set — and
  * `pro/tests/js/tier-modules.test.ts` is what stops it being made wrongly:

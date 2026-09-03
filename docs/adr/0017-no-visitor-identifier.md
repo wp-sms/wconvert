@@ -14,6 +14,20 @@ the split unit is the browser record and not the person, is accepted there
 rather than repaired with an id. The consequence below about **free's** storage
 is unchanged: this field is written by Pro's loader.*
 
+*The fourth caller read against this sentence and **declined to store anything
+at all**: [#91](https://github.com/navidkashani/wconvert/issues/91)'s `referrer`
+Condition. The obvious version of that feature is a FIRST-TOUCH source — "they
+originally arrived from Google" — which needs the first referrer held across
+page views, and a per-visitor fact with a lifetime is the shape this ADR
+refuses whether or not it carries an id. So the Condition reads
+`document.referrer` at the instant a Trigger fires and drops it: **one hop, no
+storage, no consent category**. The authoring surface says so in the merchant's
+own words, because the mis-reading is the feature request
+(`resources/admin/src/builder/controls.tsx`), and
+`pro/tests/js/pro-modules.test.ts` asserts it on the WRITE rather than on the
+declaration — the assertion that fails on the pull request that starts caching
+a source, rather than on the one that forgets to update a comment.*
+
 ## What this overturns
 
 The [#9](https://github.com/navidkashani/wconvert/issues/9) loader prototype

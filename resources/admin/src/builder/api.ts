@@ -54,6 +54,7 @@ export type Control =
   | 'percent'
   | 'selector'
   | 'device_set'
+  | 'referrer_set'
   | 'boolean'
   | 'post_id'
   | 'term_id'

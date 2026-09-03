@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import manifest from '../../resources/rules/manifest.json';
-import { ParamControl } from '../../resources/admin/src/builder/controls';
+import { ParamControl, ParamField } from '../../resources/admin/src/builder/controls';
 import type { RuleParam } from '../../resources/admin/src/builder/api';
 
 /**
@@ -39,6 +39,7 @@ const paramFor = (control: string, options: string[] = []): RuleParam => ({
 /** The option sets the manifest declares, so a select has something to hold. */
 const OPTIONS: Readonly<Record<string, string[]>> = {
   device_set: ['mobile', 'tablet', 'desktop'],
+  referrer_set: ['direct', 'search', 'social'],
   post_type: ['post', 'page'],
 };
 
@@ -101,5 +102,145 @@ describe('a multi-value rule', () => {
     // which is the shape a boolean group arrives in.
     expect(container.querySelectorAll('fieldset fieldset')).toHaveLength(0);
     expect(container.textContent).not.toMatch(/any of|all of/i);
+  });
+});
+
+/**
+ * ============================================================================
+ * ONE SET HOLDING TWO KINDS OF MEMBER, WHICH IS STILL ONE SET-VALUED SCALAR.
+ * ============================================================================
+ * `referrer` is the case ADR 0005 names by example — *"from Google or Bing"* —
+ * with one twist: the merchant picks from the closed traffic sources AND names
+ * sites of their own, and both land in one `in` array on one rule. Two params
+ * would read as *"needs Came from and Any of these sites"* on every rule that
+ * used only one of them, since a section summary reports a param it was given
+ * no value for.
+ *
+ * So this control is a checkbox group and a value list sharing one value, and
+ * these tests are what stop it silently reverting to the plain text box the
+ * `default` branch would otherwise hand a merchant.
+ */
+describe('the referrer control', () => {
+  const referrer = paramFor('referrer_set', OPTIONS.referrer_set);
+
+  it('offers the closed traffic sources as a set', async () => {
+    const changed = vi.fn();
+
+    render(<ParamControl id="wconvert-referrer" param={referrer} value={['search']} onChange={changed} />);
+
+    await userEvent.click(screen.getByRole('checkbox', { name: 'social' }));
+
+    expect(changed).toHaveBeenCalledWith(['search', 'social']);
+  });
+
+  /**
+   * A named site is the half `query_param` cannot answer: it reads a tag the
+   * merchant put there themselves, so it only ever describes traffic they
+   * already tagged.
+   */
+  it('lets the merchant name a site of their own, into the same set', async () => {
+    const changed = vi.fn();
+
+    render(<ParamControl id="wconvert-referrer" param={referrer} value={['search']} onChange={changed} />);
+
+    await userEvent.type(screen.getByRole('textbox'), 'x');
+
+    expect(changed).toHaveBeenLastCalledWith(['search', 'x']);
+  });
+
+  /**
+   * **The two halves are one value and the merchant can see it.** A domain
+   * typed into the list must not disappear from the row when a checkbox is
+   * ticked, and a ticked source must not disappear when a domain is typed.
+   */
+  it('keeps both halves of the set on screen at once', () => {
+    render(
+      <ParamControl id="wconvert-referrer" param={referrer} value={['search', 'example.com']} onChange={vi.fn()} />,
+    );
+
+    expect(screen.getByRole('checkbox', { name: 'search' })).toBeChecked();
+    expect(screen.getByDisplayValue('example.com')).toBeInTheDocument();
+  });
+
+  /**
+   * The order is the OPTION order then the merchant's, so two rules choosing
+   * the same sources in a different order are the same rule — otherwise the
+   * panel draws one preset for one of them and "Set it myself" for the other.
+   */
+  it('rebuilds the closed half in option order, so one rule has one spelling', async () => {
+    const changed = vi.fn();
+
+    render(
+      <ParamControl id="wconvert-referrer" param={referrer} value={['social', 'example.com']} onChange={changed} />,
+    );
+
+    await userEvent.click(screen.getByRole('checkbox', { name: 'direct' }));
+
+    expect(changed).toHaveBeenCalledWith(['direct', 'social', 'example.com']);
+  });
+});
+
+/**
+ * ============================================================================
+ * ONE HOP, SAID ON THE SCREEN WHERE THE RULE IS WRITTEN.
+ * ============================================================================
+ * `document.referrer` is the page immediately before this one and nothing
+ * more: absent on a direct visit, absent where a referrer policy strips it,
+ * and never a session history. A merchant who reads the rule as *"originally
+ * arrived from Google"* will target the wrong people and blame the plugin, and
+ * the honest place to say so is beside the control rather than in a doc.
+ *
+ * Reconstructing a first touch is not the alternative — a source held across
+ * page views is a per-visitor fact with a lifetime, which is the shape
+ * ADR 0017 refuses.
+ *
+ * Attached to the CONTROL rather than to the rule type, which is how every
+ * other cross-cutting fact in this bundle is keyed: the builder spells no rule
+ * type of its own (`api.ts`).
+ */
+describe('the referrer hint', () => {
+  it('says this is the page immediately before, not where they first arrived', () => {
+    render(
+      <ParamField
+        id="wconvert-referrer"
+        param={paramFor('referrer_set', OPTIONS.referrer_set)}
+        value={[]}
+        onChange={vi.fn()}
+      />,
+    );
+
+    const hint = document.getElementById('wconvert-referrer-hint');
+
+    expect(hint).toBeInTheDocument();
+    expect(hint?.textContent ?? '').toMatch(/immediately before/i);
+    expect(hint?.textContent ?? '').toMatch(/not where they first/i);
+  });
+
+  /** The group points at it, or a screen reader never reaches the caveat. */
+  it('is announced with the control rather than left beside it', () => {
+    render(
+      <ParamField
+        id="wconvert-referrer"
+        param={paramFor('referrer_set', OPTIONS.referrer_set)}
+        value={[]}
+        onChange={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByRole('group')).toHaveAttribute('aria-describedby', 'wconvert-referrer-hint');
+  });
+
+  /** And no other set control grows one, since none of them has this trap. */
+  it('is not attached to a control that has no such caveat', () => {
+    render(
+      <ParamField
+        id="wconvert-device"
+        param={paramFor('device_set', OPTIONS.device_set)}
+        value={[]}
+        onChange={vi.fn()}
+      />,
+    );
+
+    expect(document.getElementById('wconvert-device-hint')).not.toBeInTheDocument();
   });
 });

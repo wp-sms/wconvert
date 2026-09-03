@@ -4370,6 +4370,42 @@
   gap: 0.25rem;
 }
 
+/*
+ * ---------------------------------------------------------------------------
+ * THE TRAFFIC SOURCES: ONE SET WITH A CLOSED HALF AND A TYPED HALF.
+ *
+ * `wconvert-option-set` alone is a single row, which is right for three device
+ * checkboxes and wrong the moment a column of text inputs joins them: the
+ * inputs stretched the row's height and pulled the checkboxes to its middle.
+ * Wrapping and a top alignment let the typed half fall below the closed one on
+ * a narrow screen and sit beside it on a wide one.
+ * ------------------------------------------------------------------------- */
+.wconvert-source-set {
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.wconvert-source-set__sites {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.375rem;
+}
+
+/*
+ * What a control has to say for itself beyond its name — today only the
+ * referrer's one-hop caveat (`controls.tsx`).
+ *
+ * A BLOCK on its own line, and measured: it is a sentence rather than a label,
+ * so left inline it would run off the end of a rule row that already carries a
+ * name, three checkboxes and a column of inputs.
+ */
+.wconvert-param__hint {
+  display: block;
+  max-inline-size: 46ch;
+  margin-block-start: 0.25rem;
+  color: var(--muted-foreground);
+}
+
 .wconvert-export {
   margin-block-start: 1.5rem;
 }

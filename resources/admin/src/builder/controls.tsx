@@ -118,6 +118,9 @@ export function ParamControl({ id, param, value, onChange }: ParamControlProps) 
     case 'text_set':
       return <ValueList value={value} onChange={onChange} />;
 
+    case 'referrer_set':
+      return <SourceSet id={id} param={param} value={value} onChange={onChange} />;
+
     default:
       return (
         <input
@@ -163,6 +166,76 @@ function OptionSet({ id, param, value, onChange }: ParamControlProps) {
   );
 }
 
+/**
+ * The traffic sources, closed and open halves of ONE set.
+ *
+ * ============================================================================
+ * TWO KINDS OF MEMBER, ONE SET-VALUED SCALAR. NOT TWO PARAMS.
+ * ============================================================================
+ * A merchant targets *"search or social"* or *"anyone arriving from
+ * partner.example"*, and both are the same question — where the visit came
+ * from — so both land in one `in` array. Split across two params, every rule
+ * using only one of them would read as *"needs Came from and Any of these
+ * sites"* in its section summary, because a summary reports any declared param
+ * it was given no value for ({@link ../rules/sentence.ts}). One param has no
+ * such half-filled state.
+ *
+ * The closed half is rebuilt in OPTION order and the typed half keeps the
+ * merchant's, so one rule has one spelling and the preset the panel draws does
+ * not depend on the order the boxes were ticked in — the same rule
+ * {@link OptionSet} follows, for the same reason.
+ */
+function SourceSet({ id, param, value, onChange }: ParamControlProps) {
+  const chosen = (Array.isArray(value) ? (value as unknown[]) : []).map((each) => String(each));
+  const options = param.options.map((option) => option.value);
+  // A member that is not one of the closed sources is a site the merchant
+  // named. The three source names are therefore reserved words, which costs
+  // nothing: none of them is a hostname.
+  const sources = chosen.filter((each) => options.includes(each));
+  const sites = chosen.filter((each) => !options.includes(each));
+
+  const write = (nextSources: string[], nextSites: string[]): void =>
+    onChange([...options.filter((each) => nextSources.includes(each)), ...nextSites]);
+
+  return (
+    <span
+      className="wconvert-option-set wconvert-source-set"
+      role="group"
+      aria-labelledby={id}
+      aria-describedby={`${id}-hint`}
+    >
+      {param.options.map((option) => (
+        <label key={option.value}>
+          <input
+            type="checkbox"
+            checked={sources.includes(option.value)}
+            onChange={(event) =>
+              write(
+                event.target.checked
+                  ? [...sources, option.value]
+                  : sources.filter((each) => each !== option.value),
+                sites,
+              )
+            }
+          />{' '}
+          {option.label}
+        </label>
+      ))}
+      {/*
+        A lead-in rather than a bare column of inputs, because a text box with
+        three checkboxes beside it and nothing said about it is a control a
+        merchant has to guess at. It stays inside the ONE group: the group's
+        name is the param's ("Came from") and it covers both halves, which is
+        what makes them read as one answer rather than two settings.
+      */}
+      <span className="wconvert-source-set__sites">
+        <span className="wconvert-param__name">{__('or from these sites', 'wconvert')}</span>{' '}
+        <ValueList value={sites} onChange={(next) => write(sources, (next as string[]) ?? [])} />
+      </span>
+    </span>
+  );
+}
+
 /** A set the merchant types — one value per row, and no way to nest one. */
 function ValueList({ value, onChange }: Omit<ParamControlProps, 'param' | 'id'>) {
   const values = (Array.isArray(value) ? (value as unknown[]) : []).map((each) => String(each));
@@ -195,6 +268,38 @@ function ValueList({ value, onChange }: Omit<ParamControlProps, 'param' | 'id'>)
 }
 
 /**
+ * What a control has to say for itself beyond its own name.
+ *
+ * ============================================================================
+ * KEYED ON THE CONTROL, BECAUSE THIS BUNDLE SPELLS NO RULE TYPE.
+ * ============================================================================
+ * The vocabulary is `resources/rules/manifest.json` and its words are PHP's,
+ * where `wp i18n make-pot` can see them — so a caveat about one rule type has
+ * nowhere in that split to live: it is not the type's NAME, not a param's, and
+ * not a phrase a summary reads. What it is about is the control, which is the
+ * one thing this file already declares (`api.ts`).
+ *
+ * **`referrer_set` is the only one, and it earns it.** `document.referrer` is
+ * the page immediately before this one and nothing more — absent on a direct
+ * visit, absent where a referrer policy strips it, never a session history. A
+ * merchant who reads the rule as *"originally arrived from Google"* targets the
+ * wrong people and blames the plugin, and reconstructing a first touch is not
+ * the alternative: a source held across page views is a per-visitor fact with a
+ * lifetime, which is the shape ADR 0017 refuses.
+ *
+ * Lazy, so the strings are translated when the panel renders rather than when
+ * this module is first evaluated — the same reason nothing else here is a
+ * module-level constant.
+ */
+const HINTS: Partial<Record<RuleParam['control'], () => string>> = {
+  referrer_set: () =>
+    __(
+      'The page they were on immediately before this one — not where they first found your site. A visit with no previous page counts as Direct.',
+      'wconvert',
+    ),
+};
+
+/**
  * One param, with its name attached to its control the way an assistive
  * technology reads it.
  *
@@ -213,14 +318,20 @@ function ValueList({ value, onChange }: Omit<ParamControlProps, 'param' | 'id'>)
  */
 export function ParamField({ id, param, value, onChange }: ParamControlProps) {
   const control = <ParamControl id={id} param={param} value={value} onChange={onChange} />;
+  const hint = HINTS[param.control];
 
-  if (param.control === 'device_set' || param.control === 'text_set') {
+  if (param.control === 'device_set' || param.control === 'text_set' || param.control === 'referrer_set') {
     return (
       <span className="wconvert-param">
         <span id={id} className="wconvert-param__name">
           {param.label}
         </span>{' '}
         {control}
+        {hint !== undefined && (
+          <span id={`${id}-hint`} className="wconvert-param__hint text-note">
+            {hint()}
+          </span>
+        )}
       </span>
     );
   }

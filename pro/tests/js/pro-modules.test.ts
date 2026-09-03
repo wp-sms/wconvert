@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import manifest from '../../../resources/rules/manifest.json';
 import { ELITE_MODULES } from '../../resources/loader/src/modules';
 import type { LoaderModule } from '@loader/types';
 
@@ -555,5 +556,141 @@ describe('the cart conditions', () => {
   it('both declare the storage they read', () => {
     expect(moduleFor('cart_has_items').consentCategory).toBe('functional');
     expect(moduleFor('cart_value_min').consentCategory).toBe('functional');
+  });
+});
+
+describe('referrer', () => {
+  const cameFrom = (referrer: string): void => void vi.spyOn(document, 'referrer', 'get').mockReturnValue(referrer);
+
+  const holds = (referrer: string, wanted: unknown): boolean => {
+    cameFrom(referrer);
+
+    return moduleFor('referrer').create(vi.fn()).holds({ type: 'referrer', in: wanted });
+  };
+
+  it('counts a visit with no referring page as direct', () => {
+    expect(holds('', ['direct'])).toBe(true);
+  });
+
+  it('does not count a visit that came from somewhere as direct', () => {
+    expect(holds('https://example.com/blog', ['direct'])).toBe(false);
+  });
+
+  it('matches a domain the merchant named', () => {
+    expect(holds('https://example.com/blog', ['example.com'])).toBe(true);
+    expect(holds('https://elsewhere.test/blog', ['example.com'])).toBe(false);
+  });
+
+  it('counts a referrer from the site itself as direct, not as a referring domain', () => {
+    const own = `https://${window.location.hostname}/pricing`;
+
+    expect(holds(own, ['direct'])).toBe(true);
+    expect(holds(own, [window.location.hostname])).toBe(false);
+  });
+
+  it('counts a known search engine as search, whatever its country domain or subdomain', () => {
+    expect(holds('https://www.google.com/', ['search'])).toBe(true);
+    expect(holds('https://www.google.co.uk/', ['search'])).toBe(true);
+    expect(holds('https://news.google.com/', ['search'])).toBe(true);
+    expect(holds('https://duckduckgo.com/', ['search'])).toBe(true);
+  });
+
+  it('still matches a known host the merchant named outright', () => {
+    expect(holds('https://www.google.com/', ['google.com'])).toBe(true);
+  });
+
+  it('counts a known social network as social', () => {
+    expect(holds('https://l.facebook.com/', ['social'])).toBe(true);
+    expect(holds('https://t.co/abc', ['social'])).toBe(true);
+    expect(holds('https://www.linkedin.com/feed/', ['social'])).toBe(true);
+    expect(holds('https://www.google.com/', ['social'])).toBe(false);
+  });
+
+  it('leaves an unknown host unclassified, so only a named domain reaches it', () => {
+    expect(holds('https://forum.example.test/thread/9', ['direct', 'search', 'social'])).toBe(false);
+    expect(holds('https://forum.example.test/thread/9', ['example.test'])).toBe(true);
+  });
+
+  it('reads a referrer it cannot parse as direct rather than throwing', () => {
+    for (const nonsense of ['not a url', 'https://', '://example.com', ' ']) {
+      expect(holds(nonsense, ['direct']), nonsense).toBe(true);
+      expect(holds(nonsense, ['search', 'social', 'example.com']), nonsense).toBe(false);
+    }
+  });
+
+  it('holds for nobody while the merchant has chosen nothing', () => {
+    for (const blank of [undefined, null, [], '', ['']]) {
+      expect(holds('https://www.google.com/', blank), String(blank)).toBe(false);
+      expect(holds('', blank), String(blank)).toBe(false);
+    }
+  });
+
+  it('reads the referrer at the moment it is asked', () => {
+    const evaluator = moduleFor('referrer').create(vi.fn());
+
+    cameFrom('https://www.google.com/');
+    expect(evaluator.holds({ type: 'referrer', in: ['search'] })).toBe(true);
+
+    cameFrom('');
+    expect(evaluator.holds({ type: 'referrer', in: ['search'] })).toBe(false);
+  });
+
+  it('attaches nothing, so it has nothing to stop', () => {
+    expect(moduleFor('referrer').create(vi.fn()).stop).toBeUndefined();
+  });
+
+  /**
+   * ==========================================================================
+   * NOTHING ABOUT THE REFERRER IS STORED, AND THIS IS WHAT SAYS SO LATER.
+   * ==========================================================================
+   * The obvious next feature request is a FIRST-TOUCH source — "they
+   * originally arrived from Google" — and the only way to answer it is to hold
+   * the first referrer across page views. That is a per-visitor fact with a
+   * lifetime, which is the shape ADR 0017 refuses, and it would need a Storage
+   * Consent category this rule declares none of.
+   *
+   * So the assertion is on the WRITE, not on the declaration: a later change
+   * that starts caching a source fails here rather than shipping a rule whose
+   * `consentCategory: null` has quietly become a lie.
+   */
+  /**
+   * ==========================================================================
+   * EVERY CHANNEL THE MANIFEST DECLARES HAS A BRANCH, AND A FOURTH WOULD FAIL.
+   * ==========================================================================
+   * The closed half of `in` is spelled in two places — `options` on the
+   * manifest entry, which is what draws the checkboxes, and the branches here,
+   * which are what answer them. A channel declared with no branch falls
+   * through to hostname matching and holds only for a visitor arriving from a
+   * site literally called "social", which is a control that draws correctly
+   * and answers for nobody.
+   *
+   * Asserted behaviourally rather than as a list against a list: a channel
+   * name is not a hostname, so a referrer from a host of exactly that name
+   * must NOT match it. That is false under a branch and true without one.
+   */
+  it.each(manifest.conditions.referrer.params.in.options)(
+    'answers the manifest channel %s as a channel rather than as a hostname',
+    (channel) => {
+      expect(holds(`https://${channel}/`, [channel])).toBe(false);
+    },
+  );
+
+  it('stores nothing about where the visitor came from', () => {
+    const local = vi.spyOn(Storage.prototype, 'setItem');
+    const cookie = vi.spyOn(document, 'cookie', 'set');
+
+    const evaluator = moduleFor('referrer').create(vi.fn());
+
+    for (const from of ['https://www.google.com/', 'https://l.facebook.com/', 'https://example.com/', '']) {
+      cameFrom(from);
+      evaluator.holds({ type: 'referrer', in: ['search', 'social', 'direct', 'example.com'] });
+    }
+
+    evaluator.stop?.();
+
+    expect(local).not.toHaveBeenCalled();
+    expect(cookie).not.toHaveBeenCalled();
+    expect(window.localStorage.length).toBe(0);
+    expect(window.sessionStorage.length).toBe(0);
   });
 });
