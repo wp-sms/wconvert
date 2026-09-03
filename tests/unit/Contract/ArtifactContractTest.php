@@ -240,7 +240,7 @@ final class ArtifactContractTest extends TestCase
     public function testFailsWhenTheFreeTreeBundlesAPremiumDesign(): void
     {
         $result = $this->verify($this->stagedFree([
-            'resources/templates/library/spin-to-win.json' => "{\"id\":\"spin\",\"tier\":\"pro\",\"tree\":{}}\n",
+            'resources/templates/library/aurora.json' => "{\"id\":\"aurora\",\"tier\":\"pro\",\"tree\":{}}\n",
         ]));
 
         $this->assertSame(1, $result['status'], $result['output']);
@@ -296,7 +296,7 @@ final class ArtifactContractTest extends TestCase
     public function testAProTreeMayCarryPremiumDesigns(): void
     {
         $result = $this->verify($this->stagedPro([
-            'resources/templates/library/spin-to-win.json' => "{\"id\":\"spin\",\"tier\":\"pro\",\"tree\":{}}\n",
+            'resources/templates/library/aurora.json' => "{\"id\":\"aurora\",\"tier\":\"pro\",\"tree\":{}}\n",
         ]));
 
         $this->assertSame(0, $result['status'], $result['output']);

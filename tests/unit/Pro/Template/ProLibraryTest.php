@@ -52,17 +52,26 @@ final class ProLibraryTest extends TestCase
     }
 
     /**
-     * The whole point of the ticket, asserted rather than claimed: on Pro, no
-     * `floating_bar` and no `slide_in` design is still an advertisement.
+     * ==========================================================================
+     * THE RULE WITH NO REMAINDER: A PRO INSTALL HAS NO LOCKED CARD AT ALL.
+     * ==========================================================================
+     * This used to filter for `floating_bar` and `slide_in`, because those were
+     * the six of nine designs #95 shipped and three cards were still standing
+     * on a Pro install — two designs nobody had authored yet, and one
+     * ({@see \WConvert\Template\LockedTemplates} `popup-spin-to-win`) that could
+     * never be authored at all. A test scoped to the Display Types that happened
+     * to be finished is a test that reads green while a paying customer is
+     * looking at an advertisement for what they bought.
+     *
+     * With the two designs authored and the third card **withdrawn**
+     * (ADR 0053), `locked()` on Pro is empty, and that is the assertion ADR 0026
+     * actually makes. It fails the day a ninth card is added to `locked.json`
+     * without a design behind it in Pro's ZIP — which is the direction this
+     * breaks, every time.
      */
-    public function testAProInstallIsShownNoUpsellForABarOrASlideIn(): void
+    public function testAProInstallIsShownNoUpsellAtAll(): void
     {
-        $upsells = array_filter(
-            $this->library()->locked(),
-            static fn (array $stub): bool => in_array($stub['display_type'], ['floating_bar', 'slide_in'], true)
-        );
-
-        $this->assertSame([], array_keys($upsells));
+        $this->assertSame([], array_keys($this->library()->locked()));
     }
 
     /**
@@ -70,8 +79,13 @@ final class ProLibraryTest extends TestCase
      * two files written months apart — the stub in free's `locked.json`, the
      * tree in Pro's library — so the id is the only thing joining them, and a
      * typo in either would leave the upsell standing beside the design.
+     *
+     * The list is spelled out rather than read off `locked()`, which is what
+     * makes it catch the *other* direction too: a card quietly deleted from
+     * `locked.json` leaves free's gallery advertising one fewer design than Pro
+     * ships, and nothing derived from that file can notice its own absence.
      */
-    public function testEveryBarAndSlideInStubHasARealDesignBehindIt(): void
+    public function testEveryAdvertisedDesignHasARealDesignBehindIt(): void
     {
         $library = $this->library();
 
@@ -82,12 +96,57 @@ final class ProLibraryTest extends TestCase
             'slide-in-card',
             'slide-in-photo',
             'slide-in-review',
+            'popup-two-column',
+            'inline-cart-nudge',
         ];
 
         foreach ($advertised as $id) {
             $this->assertNotNull($library->find($id), $id . ' is advertised in locked.json and shipped by nobody');
             $this->assertArrayNotHasKey($id, $library->locked());
         }
+    }
+
+    /**
+     * ==========================================================================
+     * THE WITHDRAWN CARD, AND WHY IT IS AN ASSERTION RATHER THAN A COMMENT.
+     * ==========================================================================
+     * `popup-spin-to-win` advertised a MECHANISM and not a design: a wheel that
+     * allocates a prize. The payload is baked into HTML the full-page cache
+     * serves byte-identically to every visitor, so either every segment's prize
+     * ships in the page source or none does (ADR 0025); "one spin per visitor"
+     * is a claim about a person, and WConvert mints no visitor identifier
+     * (ADR 0017); and a stored outcome serves two purposes in two consent
+     * categories at once, which is the question ADR 0052 parked and
+     * **ADR 0053** answers.
+     *
+     * So the failure this guards is a pair, and both halves are one line
+     * somebody adds:
+     *
+     * - the card coming back with nothing behind it — an upsell on a Pro
+     *   install, for a design no tier can supply;
+     * - a **tree** appearing under that id — which, since none of the three
+     *   walls moved, could only be the wheel showing every visitor the same
+     *   prize. That is the manufactured-urgency failure ADR 0052 refused,
+     *   wearing a different hat.
+     *
+     * Reopening the decision therefore has to delete a test that names the ADR,
+     * which is the point: it puts the argument in front of whoever reopens it
+     * rather than behind a file they were not going to read.
+     */
+    public function testTheSpinToWinCardIsNeitherAdvertisedNorShipped(): void
+    {
+        $library = $this->library();
+
+        $this->assertArrayNotHasKey('popup-spin-to-win', $library->locked(), 'withdrawn by ADR 0053');
+        $this->assertNull($library->find('popup-spin-to-win'), 'withdrawn by ADR 0053');
+
+        $free = TemplateLibrary::from(
+            TemplateVocabulary::fromManifest(self::FREE_DIR),
+            new BundledTemplates(self::FREE_DIR),
+            new LockedTemplates(self::FREE_DIR),
+        );
+
+        $this->assertArrayNotHasKey('popup-spin-to-win', $free->locked(), 'withdrawn by ADR 0053');
     }
 
     /**

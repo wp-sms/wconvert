@@ -1,5 +1,8 @@
 {
   "_note": "Designs Pro ships and free does not. Metadata only — no tree, ever. See src/Template/LockedTemplates.php.",
+  "_withdrawn": {
+    "popup-spin-to-win": "Withdrawn, not deferred. A wheel needs a per-visitor outcome, and the payload is baked into HTML the full-page cache serves byte-identically to every visitor — so either every segment's prize ships in the page source or none does (ADR 0025, \"no coupon minting, and not as a preference\"). One spin per visitor is a claim about a PERSON, and WConvert mints no visitor identifier (ADR 0017); wcv1 is a browser record, so a second browser is a second spin. And a stored outcome serves two purposes in two consent categories at once, which is the question ADR 0052 left open and ADR 0053 answers. This file is bundled advertising: a card for a design nobody can ever be given is a worse defect than one fewer card. See docs/adr/0053-the-spin-to-win-card-is-withdrawn.md, and do not re-add it without reopening ADR 0003 first."
+  },
   "designs": [
     {
       "id": "bar-announcement",
@@ -82,18 +85,6 @@
       "facets": {
         "shape": "split",
         "captures": ["name", "email"],
-        "has_image": true
-      }
-    },
-    {
-      "id": "popup-spin-to-win",
-      "name": "Spin to win",
-      "display_type": "popup",
-      "tier": "pro",
-      "preview_url": "https://wconvert.com/designs/spin-to-win/",
-      "facets": {
-        "shape": "split",
-        "captures": ["email"],
         "has_image": true
       }
     },

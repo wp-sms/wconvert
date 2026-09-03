@@ -57,6 +57,29 @@ describe('render', () => {
     expect(under.tagName).toBe('H3');
     expect(SHADOW_CSS).toContain('h3.wc-heading{font-size:calc(');
   });
+
+  /**
+   * ==========================================================================
+   * A FIELD GROWS ALONG A ROW AND HAS NO HEIGHT OF ITS OWN.
+   * ==========================================================================
+   * `.wc-field` carried `flex:1 1 12rem` unscoped. In a `row` that is the
+   * intent — a field beside a button takes the slack. In a `stack` the main
+   * axis is the BLOCK axis, so `flex-basis` is a **height**, and every field in
+   * a column stood 192px tall with its label at the top and 130px of nothing
+   * under the input. Eight of the thirteen shipped designs put a field in a
+   * stack.
+   *
+   * jsdom computes no layout, so what is asserted is the rule and not the
+   * pixels: the growth is on the descendant selector and the base rule declares
+   * no `flex` at all. Written this way round because a regression here is
+   * somebody moving one declaration back up, and the shorthand's absence from
+   * the base rule is the half that is easy to undo by accident.
+   */
+  it('grows a field along a row, and gives it no height in a stack', () => {
+    expect(SHADOW_CSS).toContain('.wc-row>.wc-field{flex:1 1 12rem}');
+    expect(SHADOW_CSS).toContain('.wc-field{display:flex;flex-direction:column;');
+    expect(SHADOW_CSS).not.toContain('.wc-field{display:flex;flex:');
+  });
 });
 
 /**
