@@ -1,5 +1,5 @@
 import { __, sprintf } from '@wordpress/i18n';
-import { renderingFor, type Rendering } from '../../goals/availability';
+import { renderingFor, tierProductName, type Rendering } from '../../goals/availability';
 import { toRule } from '../presets';
 import type { Rule, RuleType } from '../api';
 
@@ -137,16 +137,33 @@ export function AddRule({ axis, label, onAdd }: AddRuleProps) {
             reads — the test asserts that a premium type is NAMED, and it still
             is. There is no link: the upgrade destination does not exist yet,
             and "upgrade here" beside nothing to click is worse than silence.
+
+            **Grouped by the tier's PRODUCT NAME rather than by its slug**
+            (ADR 0056). Three rungs can lock a type and all three are called
+            "WConvert Pro" today, so grouping by slug would draw three
+            identical headings over one menu. Grouping by the words collapses
+            them into the one group this has always drawn, and separates only
+            when the names actually differ — which is the day the range is
+            split, and the day a merchant needs to be told which of two things
+            to buy.
           */}
-          {locked.length > 0 && (
-            <optgroup disabled label={__('With WConvert Pro', 'wconvert')}>
-              {locked.map((type) => (
+          {[...byTier(locked)].map(([product, types]) => (
+            <optgroup
+              key={product}
+              disabled
+              label={sprintf(
+                /* translators: %s: the product that supplies them, e.g. “WConvert Pro”. */
+                __('With %s', 'wconvert'),
+                product,
+              )}
+            >
+              {types.map((type) => (
                 <option key={type.type} value="" disabled>
                   {type.label}
                 </option>
               ))}
             </optgroup>
-          )}
+          ))}
 
           {[...byDependency(unavailable)].map(([needs, types]) => (
             <optgroup
@@ -176,6 +193,21 @@ export function AddRule({ axis, label, onAdd }: AddRuleProps) {
  *
  * In first-seen order, which is manifest order — so the list does not reshuffle
  * when a merchant activates one of two missing plugins.
+ */
+function byTier(types: readonly RuleType[]): Map<string, RuleType[]> {
+  const groups = new Map<string, RuleType[]>();
+
+  for (const type of types) {
+    const product = tierProductName(type.tier);
+
+    groups.set(product, [...(groups.get(product) ?? []), type]);
+  }
+
+  return groups;
+}
+
+/**
+ * The `unavailable` types, grouped by what the SITE is missing.
  */
 function byDependency(types: readonly RuleType[]): Map<string, RuleType[]> {
   const groups = new Map<string, RuleType[]>();

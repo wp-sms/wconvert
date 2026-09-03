@@ -1,0 +1,43 @@
+{
+  "_note": "The tier ladder. Read by WConvert\\Support\\TierManifest in free's tree, by bin/build.sh when it loops the tiers, and by bin/verify-artifact-contract.sh when it proves one artifact carries no higher tier's module. Free ships this file; Pro does not, because free is always present beside it (Pro's min-core guard refuses to boot without it) and two copies is two things to drift. See docs/adr/0056-the-tier-ladder-is-a-manifest.md.",
+
+  "free": {
+    "slug": "wconvert",
+    "plugin_name": "WConvert",
+    "description": "Lead capture and conversion display for WordPress — popups, floating bars, slide-ins and inline forms."
+  },
+
+  "premium": {
+    "slug": "wconvert-pro",
+
+    "_modules_note": "A module is a DIRECTORY under pro/modules/, holding its own module.json. Everything under that directory is the module and nothing outside it is, which is what lets a per-tier build be a deletion rather than a list of paths — and what lets the installed tier be INFERRED from what is on disk rather than stored anywhere.",
+
+    "_no_wildcard_note": "Every rung NAMES its modules, including the top one — there is no \"*\". A wildcard reads as \"everything\", which is true of what a build should contain and useless to a check: bin/verify-artifact-contract.sh can assert that a rung carries no module it does not declare and none it does, and against \"*\" the second half asserts nothing, so the top rung — the one every customer buys today — would be the one rung with no completeness check. The cost is that a new module must be added to every rung that ships it, and that cost is paid loudly: an elite ZIP carrying a module elite does not name fails the contract before the ZIP is written.",
+
+    "_tiers_note": "In ascending order, and the order is load-bearing: WConvert\\Support\\Tier reads it as the rank, so a higher tier includes everything a lower one supplies. ALL THREE DISPLAY AS \"Pro\" AT LAUNCH, deliberately — one product is sold, and the ladder exists so that splitting the range later is an edit to the `name` fields here rather than a code change and a data migration. Every `tier:` value in resources/rules/manifest.json, resources/templates/locked.json and Goal::tier() is already a real slug from this list.",
+
+    "tiers": [
+      {
+        "slug": "basic",
+        "name": "Pro",
+        "plugin_name": "WConvert Pro",
+        "description": "Floating bars and slide-ins, and the designs that come with them.",
+        "modules": ["display-types"]
+      },
+      {
+        "slug": "pro",
+        "name": "Pro",
+        "plugin_name": "WConvert Pro",
+        "description": "Adds the premium Triggers and the advanced targeting Conditions.",
+        "modules": ["display-types", "premium-triggers"]
+      },
+      {
+        "slug": "elite",
+        "name": "Pro",
+        "plugin_name": "WConvert Pro",
+        "description": "Everything, including cart recovery and the outbound Destinations.",
+        "modules": ["display-types", "premium-triggers", "cart-recovery"]
+      }
+    ]
+  }
+}

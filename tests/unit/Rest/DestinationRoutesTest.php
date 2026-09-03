@@ -57,7 +57,7 @@ final class DestinationRoutesTest extends TestCase
         $health = new HealthStore($this->options);
 
         $registry = (new DestinationRegistry(
-            new FakeProPresence(false),
+            new FakeProPresence(),
             new FakeSitePresence([SiteDependency::Wsms])
         ))->register(new WsmsDestinationType(new FakeWsmsContacts()));
 
@@ -379,7 +379,7 @@ final class DestinationRoutesTest extends TestCase
         $health = new HealthStore($options);
 
         $registry = (new DestinationRegistry(
-            new FakeProPresence(false),
+            new FakeProPresence(),
             new FakeSitePresence([SiteDependency::Wsms])
         ))->register($type);
 

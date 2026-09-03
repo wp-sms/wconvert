@@ -155,11 +155,22 @@ enum Goal: string
     }
 
     /**
-     * Which install supplies this Goal. Only the cart Goal is Pro (ADR 0026).
+     * Which install supplies this Goal. Only the cart Goal is paid (ADR 0026).
+     *
+     * **`Elite`, and it is a real rung rather than a synonym for "premium"**
+     * (ADR 0056). It rides with the two cart [[Condition]]s, which are declared
+     * at the same tier in the rule manifest — and that is not a coincidence to
+     * be kept by hand: the Goal's copy ASSERTS what those Conditions guarantee,
+     * so an install that supplied the Goal without them would ship a popup
+     * saying *"you left 3 items in your cart"* to every visitor on the site.
+     * The tier is what makes the two arrive together.
+     *
+     * At launch every paid tier displays as "Pro", so this reads to a merchant
+     * exactly as it did before the ladder existed.
      */
     public function tier(): Tier
     {
-        return $this === self::RecoverCart ? Tier::Pro : Tier::Free;
+        return $this === self::RecoverCart ? Tier::Elite : Tier::Free;
     }
 
     /**

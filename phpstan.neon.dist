@@ -4,6 +4,11 @@ parameters:
     paths:
         - src
         - pro/src
+        # A module is a DIRECTORY, and its PHP lives inside it (ADR 0056), so
+        # `pro/src` alone no longer reaches all of Pro. Without this the cart
+        # module's class is simply not found, and every call to it in the suite
+        # reports as an unknown class rather than as anything real.
+        - pro/modules
         - bin
         - tests
     excludePaths:

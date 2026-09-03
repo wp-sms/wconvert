@@ -1,0 +1,93 @@
+{
+  "id": "popup-two-column",
+  "name": "Two-column offer",
+  "display_type": "popup",
+  "tier": "basic",
+  "tokens": {
+    "bg": "#ffffff",
+    "fg": "#052e16",
+    "muted": "#6b7280",
+    "accent": "#15803d",
+    "accent-fg": "#ffffff",
+    "border": "#dcfce7",
+    "heading-size": "1.625rem",
+    "heading-weight": "700",
+    "tracking": "-0.02em",
+    "text-size": "0.9375rem",
+    "leading": "1.5",
+    "radius": "0.75rem",
+    "pad": "1.25rem",
+    "gap": "1rem",
+    "width": "46rem",
+    "align": "start",
+    "shadow": "0 20px 60px rgba(5, 46, 22, 0.25)",
+    "motion": "200ms",
+    "backdrop": "rgba(5, 46, 22, 0.6)"
+  },
+  "tree": {
+    "steps": [
+      {
+        "type": "split",
+        "ratio": 0.5,
+        "start": [
+          {
+            "type": "stack",
+            "children": [
+              {
+                "type": "image",
+                "id": "n1",
+                "src": "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%203%204'%3E%3Crect%20width='3'%20height='4'%20fill='%23dcfce7'/%3E%3Ccircle%20cx='2.05'%20cy='1.05'%20r='.45'%20fill='%23f0fdf4'/%3E%3Cpath%20d='M0%204l1.15-1.55.85.8L2.55%201.9%203%202.45V4z'%20fill='%23bbf7d0'/%3E%3C/svg%3E",
+                "alt": "The first order, photographed",
+                "fit": "cover"
+              },
+              { "type": "rating", "id": "n2", "value": 5, "role": "rating_text", "text": "4.8 from 1,400 shoppers" }
+            ]
+          }
+        ],
+        "end": [
+          {
+            "type": "stack",
+            "children": [
+              { "type": "eyebrow", "id": "n3", "role": "eyebrow", "text": "New here" },
+              { "type": "heading", "id": "n4", "role": "headline", "text": "Ten percent off your first order" },
+              { "type": "text", "id": "n5", "role": "body", "text": "Tell us where to send the code, and what to call you on everything after that." },
+              {
+                "type": "field",
+                "id": "n6",
+                "name": "name",
+                "label": "First name",
+                "placeholder": "Your name",
+                "required": false
+              },
+              {
+                "type": "field",
+                "id": "n7",
+                "name": "email",
+                "label": "Email address",
+                "placeholder": "you@example.com",
+                "required": true
+              },
+              { "type": "button", "id": "n8", "role": "cta_label", "label": "Send my code", "action": "submit" },
+              {
+                "type": "consent",
+                "id": "n9",
+                "role": "consent_text",
+                "hidden": true,
+                "text": "Email me offers and news. See our %s.",
+                "link": { "label": "Privacy Policy" }
+              },
+              { "type": "text", "id": "n10", "role": "fine_print", "text": "No spam, and you can unsubscribe at any time." }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "stack",
+        "children": [
+          { "type": "heading", "id": "n11", "role": "success_headline", "text": "Your code is on its way" },
+          { "type": "text", "id": "n12", "role": "success_body", "text": "Check your inbox — it works on everything, once." }
+        ]
+      }
+    ]
+  }
+}

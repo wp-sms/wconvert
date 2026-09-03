@@ -80,7 +80,7 @@ final class JobPayloadTest extends TestCase
 
     private function dispatch(): void
     {
-        $registry = (new DestinationRegistry(new FakeProPresence(false), new FakeSitePresence()))
+        $registry = (new DestinationRegistry(new FakeProPresence(), new FakeSitePresence()))
             ->register(new FakeDestinationType());
 
         (new PushDispatcher(

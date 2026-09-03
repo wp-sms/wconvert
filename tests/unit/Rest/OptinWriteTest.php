@@ -16,6 +16,7 @@ use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
 use WConvert\Tests\Unit\Support\FakeConnection;
 use WConvert\Tests\Unit\Support\FakeOptionStore;
+use WConvert\Support\Tier;
 use WConvert\Tests\Unit\Support\FakeProPresence;
 use WConvert\Tests\Unit\Support\FakeSitePresence;
 use WConvert\Tests\Unit\Support\InstalledRules;
@@ -57,7 +58,7 @@ final class OptinWriteTest extends TestCase
 
         // A Pro install with a store, so the cart [[Goal]] is settable and the
         // refusals below are about the DESIGN rather than about availability.
-        $pro = new FakeProPresence(true);
+        $pro = new FakeProPresence(Tier::Elite);
         $site = new FakeSitePresence([SiteDependency::WooCommerce]);
 
         $this->optins = new OptinRepository(new FakeConnection(), $published, $vocabulary);

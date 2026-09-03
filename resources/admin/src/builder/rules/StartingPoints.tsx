@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { Lock } from 'lucide-react';
 import { Badge } from '../../components/ui/badge';
-import { renderingFor } from '../../goals/availability';
+import { renderingFor, tierName } from '../../goals/availability';
 import { ConfirmDialog } from '../../shell/ConfirmDialog';
 import { Description } from '../../shell/Description';
 import { listWithAnd } from './sentence';
@@ -126,7 +126,15 @@ export function StartingPoints({ bundles, onApply }: StartingPointsProps) {
                   {rendering === 'upsell' ? (
                     <Badge variant="secondary" className="wconvert-starter__tag">
                       <Lock aria-hidden="true" />
-                      {__('Pro', 'wconvert')}
+                      {/*
+                        A Starting point is a GROUP of rules and carries no
+                        `tier` of its own — it is locked when any rule in it is
+                        (`RuleCatalogue`). So this names no rung, and takes the
+                        word the product has always used (ADR 0056). If a
+                        bundle ever declares a tier, this is the one call site
+                        that should be handed it.
+                      */}
+                      {tierName(undefined)}
                     </Badge>
                   ) : (
                     // Amber is the reserved meaning it already carries on the

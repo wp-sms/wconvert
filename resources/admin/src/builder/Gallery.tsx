@@ -3,7 +3,7 @@ import { ExternalLink } from 'lucide-react';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { Skeleton } from '../components/ui/skeleton';
-import { renderingFor } from '../goals/availability';
+import { renderingFor, tierName } from '../goals/availability';
 import { TemplateCard } from './TemplateCard';
 import { nameOf, type TemplateIndexEntry, type TemplateLabelsWithFacets } from '../templates/api';
 import type { ConvertingAct } from './structure/catalogue';
@@ -167,7 +167,7 @@ export function Gallery({
             current={inUse}
             reason={refused}
             onNear={locked ? undefined : onNear}
-            marks={locked ? <Badge variant="warning">{__('Pro', 'wconvert')}</Badge> : undefined}
+            marks={locked ? <Badge variant="warning">{tierName(entry.tier)}</Badge> : undefined}
             absent={
               locked ? (
                 <ul className="wconvert-facets">

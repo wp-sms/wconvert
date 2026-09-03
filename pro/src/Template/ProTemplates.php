@@ -44,14 +44,27 @@ defined('ABSPATH') || exit;
 final class ProTemplates implements TemplateSource
 {
     /**
-     * Pro's library, at the same relative path free's is.
+     * Pro's designs, wherever an installed MODULE keeps them.
      *
-     * Spelled here rather than read off `BundledTemplates::PATH`, because they
-     * are the same path by coincidence of layout rather than by contract:
-     * `bin/verify-artifact-contract.sh` checks each ZIP against its own tree,
-     * and the day Pro's designs move, this is the one line that says so.
+     * ========================================================================
+     * A GLOB ACROSS MODULES, AND THAT IS THE PER-TIER GATE (ADR 0056).
+     * ========================================================================
+     * This read `resources/templates/library`, one directory, back when Pro was
+     * one build. It is a glob across `modules/` now, and the wildcard is doing the
+     * work: a per-tier build ships a module by leaving its directory in the ZIP
+     * and withholds one by deleting it, so what a tier offers is what its own
+     * file system answers here — never a tier compared against a declaration.
+     *
+     * The eight bar and slide-in designs are `display-types`', which every paid
+     * rung carries. A rung that did not would find no designs and show the same
+     * locked cards free shows, which is the failure
+     * `bin/verify-artifact-contract.sh` refuses to write a ZIP for.
+     *
+     * Spelled here rather than read off `BundledTemplates::PATH`: free keeps
+     * one library at a fixed path and Pro keeps one per module, so the two are
+     * no longer even the same shape.
      */
-    public const PATH = 'resources/templates/library';
+    public const PATH = 'modules/*/templates';
 
     public function __construct(
         private readonly string $pluginDir = WCONVERT_PRO_DIR,
@@ -63,6 +76,11 @@ final class ProTemplates implements TemplateSource
      */
     public function entries(): array
     {
+        // GLOB_BRACE is not portable and is not needed: the wildcard is a
+        // single path segment, which plain glob() expands. It returns false on
+        // failure and an empty array on no match, and both mean the same thing
+        // to a caller — this install has no premium design — so the branch
+        // below reads them the same way.
         $files = glob(rtrim($this->pluginDir, '/') . '/' . self::PATH . '/*.json');
         $entries = [];
 

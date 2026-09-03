@@ -67,6 +67,12 @@ about.*
 - **Two release workflows, one gate.** Both runs invoke the same
   `bin/verify-artifact-contract.sh`; only the free run stages for wp.org, and only the
   Pro run evaluates the fifth guard condition.
+  *Still two workflows and still one gate after
+  [ADR 0056](0056-the-tier-ladder-is-a-manifest.md), which is the point of
+  putting each condition in a program under `bin/`: the Pro run now builds three
+  ZIPs and the contract runs once per staged tree, so a rung that leaked a higher
+  rung's module fails before its own ZIP is written. No YAML changed shape to
+  make that true.*
   *Built in [#37](https://github.com/navidkashani/wconvert/issues/37) as
   `release-free.yml` and `release-pro.yml`. What the two share is **not YAML**: it is
   the programs under `bin/`, one per condition, each existing once and called from
@@ -81,6 +87,14 @@ about.*
 - **The version headers are independent facts**, so neither plugin's number implies
   anything about the other's. `WCONVERT_MIN_CORE` is the only statement one makes
   about the other, which is what keeps the skew a single, checkable number.
+  *Unchanged by [ADR 0056](0056-the-tier-ladder-is-a-manifest.md), and worth
+  saying so because that ADR turns one Pro release into **three ZIPs**.
+  `WCONVERT_MIN_CORE` stays **one constant across all three tiers**: they are one
+  plugin at three tiers, built from one tree at one version, so a per-tier
+  constant would be three statements about free where the ADR above is careful to
+  have exactly one. Condition 5 is therefore unaffected — it is evaluated once
+  per release run, not once per ZIP — and so is the tag, which stays `pro-vX.Y.Z`
+  with the tier appearing only in each artifact's file name.*
   *Amended by [#37](https://github.com/navidkashani/wconvert/issues/37): "the version
   header" is not one fact per plugin. **A free release states its version three
   times** — the `Version:` header, `WCONVERT_VERSION`, and `readme.txt`'s `Stable

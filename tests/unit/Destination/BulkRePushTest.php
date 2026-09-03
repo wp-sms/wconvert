@@ -86,7 +86,7 @@ final class BulkRePushTest extends TestCase
             ], $leadIds),
         ];
 
-        $registry = (new DestinationRegistry(new FakeProPresence(false), new FakeSitePresence()))
+        $registry = (new DestinationRegistry(new FakeProPresence(), new FakeSitePresence()))
             ->register(new FakeDestinationType());
 
         return (new BulkRePush(

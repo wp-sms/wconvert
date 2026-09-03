@@ -1,0 +1,53 @@
+{
+  "id": "slide-in-review",
+  "name": "Corner testimonial",
+  "display_type": "slide_in",
+  "tier": "basic",
+  "tokens": {
+    "bg": "#0f172a",
+    "fg": "#e2e8f0",
+    "muted": "#94a3b8",
+    "accent": "#facc15",
+    "accent-fg": "#0f172a",
+    "border": "#1e293b",
+    "heading-size": "1rem",
+    "heading-weight": "600",
+    "text-size": "0.9375rem",
+    "leading": "1.5",
+    "radius": "0.75rem",
+    "pad": "1rem",
+    "gap": "0.75rem",
+    "width": "24rem",
+    "align": "start",
+    "shadow": "0 12px 32px rgba(2, 6, 23, 0.5)",
+    "motion": "300ms"
+  },
+  "tree": {
+    "steps": [
+      {
+        "type": "split",
+        "ratio": 0.35,
+        "start": [
+          {
+            "type": "image",
+            "id": "n1",
+            "src": "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%201%201'%3E%3Crect%20width='1'%20height='1'%20fill='%231e293b'/%3E%3Ccircle%20cx='.5'%20cy='.38'%20r='.18'%20fill='%23475569'/%3E%3Cpath%20d='M.15%201a.35.35%200%200%201%20.7%200z'%20fill='%23475569'/%3E%3C/svg%3E",
+            "alt": "Priya, who left this review",
+            "fit": "cover"
+          }
+        ],
+        "end": [
+          {
+            "type": "stack",
+            "children": [
+              { "type": "rating", "id": "n2", "value": 5, "role": "rating_text", "text": "1,400 reviews" },
+              { "type": "text", "id": "n3", "role": "body", "text": "“It arrived in two days and it is the only one I use now.”" },
+              { "type": "text", "id": "n4", "role": "fine_print", "text": "Priya, Manchester" },
+              { "type": "button", "id": "n5", "role": "cta_label", "label": "Read the reviews", "action": "link", "href": "/reviews/" }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

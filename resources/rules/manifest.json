@@ -163,7 +163,7 @@
     },
     "cart_has_items": {
       "kind": "condition",
-      "tier": "pro",
+      "tier": "elite",
       "requires": "woocommerce",
       "params": {},
       "presets": {},
@@ -173,7 +173,7 @@
     },
     "cart_value_min": {
       "kind": "condition",
-      "tier": "pro",
+      "tier": "elite",
       "requires": "woocommerce",
       "params": { "amount": { "control": "amount", "authored": true } },
       "presets": {},

@@ -8,7 +8,7 @@
       "id": "bar-announcement",
       "name": "Announcement bar",
       "display_type": "floating_bar",
-      "tier": "pro",
+      "tier": "basic",
       "preview_url": "https://wconvert.com/designs/announcement-bar/",
       "facets": {
         "shape": "row",
@@ -20,7 +20,7 @@
       "id": "bar-email-capture",
       "name": "Bar with a field",
       "display_type": "floating_bar",
-      "tier": "pro",
+      "tier": "basic",
       "preview_url": "https://wconvert.com/designs/bar-with-a-field/",
       "facets": {
         "shape": "row",
@@ -32,7 +32,7 @@
       "id": "bar-countdown",
       "name": "Deadline bar",
       "display_type": "floating_bar",
-      "tier": "pro",
+      "tier": "basic",
       "preview_url": "https://wconvert.com/designs/deadline-bar/",
       "facets": {
         "shape": "row",
@@ -44,7 +44,7 @@
       "id": "slide-in-card",
       "name": "Corner card",
       "display_type": "slide_in",
-      "tier": "pro",
+      "tier": "basic",
       "preview_url": "https://wconvert.com/designs/corner-card/",
       "facets": {
         "shape": "stack",
@@ -56,7 +56,7 @@
       "id": "slide-in-photo",
       "name": "Corner card with a picture",
       "display_type": "slide_in",
-      "tier": "pro",
+      "tier": "basic",
       "preview_url": "https://wconvert.com/designs/corner-card-with-a-picture/",
       "facets": {
         "shape": "split",
@@ -68,7 +68,7 @@
       "id": "slide-in-review",
       "name": "Corner testimonial",
       "display_type": "slide_in",
-      "tier": "pro",
+      "tier": "basic",
       "preview_url": "https://wconvert.com/designs/corner-testimonial/",
       "facets": {
         "shape": "split",
@@ -80,7 +80,7 @@
       "id": "popup-two-column",
       "name": "Two-column offer",
       "display_type": "popup",
-      "tier": "pro",
+      "tier": "basic",
       "preview_url": "https://wconvert.com/designs/two-column-offer/",
       "facets": {
         "shape": "split",
@@ -92,7 +92,7 @@
       "id": "inline-cart-nudge",
       "name": "Cart nudge",
       "display_type": "inline",
-      "tier": "pro",
+      "tier": "basic",
       "preview_url": "https://wconvert.com/designs/cart-nudge/",
       "facets": {
         "shape": "row",

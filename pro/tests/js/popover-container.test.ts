@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { DOCUMENT_STYLE_ID } from '@renderer/mount';
 import { A_DESIGNS_OWN_WIDTH, SHADOW_CSS } from '@renderer/css';
 import type { Template } from '@renderer/types';
-import { mountPopover } from '../../resources/renderer/src/popover';
+import { mountPopover } from '../../modules/display-types/loader/popover';
 import { isShowing, withoutPopoverSupport } from '../../../tests/js/support/popover';
 
 /**

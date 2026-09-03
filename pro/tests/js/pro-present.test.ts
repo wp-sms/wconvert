@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { DOCUMENT_STYLE_ID } from '@renderer/mount';
 import { INLINE_ANCHOR_ATTRIBUTE } from '@loader/present';
 import type { OptinControls, PayloadEntry } from '@loader/types';
-import { proPresenter } from '../../resources/loader/src/present';
+import { proPresenter } from '../../modules/display-types/loader/present';
 import { isShowing } from '../../../tests/js/support/popover';
 
 /**

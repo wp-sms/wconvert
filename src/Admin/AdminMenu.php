@@ -4,6 +4,7 @@ namespace WConvert\Admin;
 
 use WConvert\Assets\ViteHelper;
 use WConvert\Frontend\InspectorEnqueue;
+use WConvert\Support\TierManifest;
 
 defined('ABSPATH') || exit;
 
@@ -20,7 +21,32 @@ final class AdminMenu
 {
     public const SLUG = 'wconvert';
 
-    private const SCRIPT_HANDLE = 'wconvert-admin';
+    /**
+     * The handle the admin bundle is registered under.
+     *
+     * **Public because [[Pro]] replaces this bundle by dequeuing it**
+     * (ADR 0014, extended to the admin): Pro ships free's screens plus its own,
+     * composed in Pro's entry where the bundler can see them, and swaps the
+     * script in PHP before a byte of HTML exists. A handle spelled twice is two
+     * strings that agree by habit, and the day this one is renamed the swap
+     * would silently stop happening and the page would carry two React apps.
+     */
+    public const SCRIPT_HANDLE = 'wconvert-admin';
+
+    /**
+     * When this runs on `admin_enqueue_scripts`.
+     *
+     * A named constant for the reason {@see \WConvert\Frontend\LoaderEnqueue::PRIORITY}
+     * is one: Pro replaces this bundle on the same hook, later, and "later" has
+     * to be a fact the two plugins share rather than two numbers. It must not
+     * depend on load order — WordPress loads active plugins in the order its own
+     * option lists them, so a swap that worked because `wconvert-pro` happened
+     * to be read after `wconvert` would work by accident.
+     *
+     * 10 is `add_action`'s own default, which is what this hook ran at before
+     * it was written down. Naming it changes nothing about when it fires.
+     */
+    public const PRIORITY = 10;
 
     private string $screenId = '';
 
@@ -32,7 +58,7 @@ final class AdminMenu
     public function hooks(): void
     {
         add_action('admin_menu', [$this, 'registerMenu']);
-        add_action('admin_enqueue_scripts', [$this, 'enqueueAssets']);
+        add_action('admin_enqueue_scripts', [$this, 'enqueueAssets'], self::PRIORITY);
     }
 
     public function registerMenu(): void
@@ -125,7 +151,48 @@ final class AdminMenu
             add_action('admin_print_styles', 'wp_print_font_faces');
         }
 
-        $settings = [
+        // `wp_add_inline_script()` rather than `wp_localize_script()`, and the
+        // difference is not stylistic: `localize` casts every value to a
+        // STRING, so `true` arrives in the browser as `"1"` and `false` as
+        // `""`. A boolean that reads as `"1"` is worse than one that reads as
+        // `true` and worse than one that is absent — the screen tests it and
+        // is quietly wrong, which is how the dev export shipped invisible on
+        // an install that had `WP_DEBUG` on. `wp_json_encode()` keeps the type
+        // the setting actually has.
+        wp_add_inline_script(
+            self::SCRIPT_HANDLE,
+            'window.wconvertAdmin = ' . wp_json_encode(self::settings()) . ';',
+            'before'
+        );
+    }
+
+    /**
+     * What the screen is handed before its bundle runs.
+     *
+     * ========================================================================
+     * PUBLIC BECAUSE PRO REPLACES THE SCRIPT AND WOULD OTHERWISE LOSE THESE.
+     * ========================================================================
+     * `wp_add_inline_script()` attaches to a HANDLE, and Pro deregisters this
+     * one (ADR 0014) — so the inline script above goes with it, and a Pro
+     * install would boot the admin with no `window.wconvertAdmin` at all: no
+     * export URL, no policy link, no inspector door. Every one of those fails
+     * as a missing feature rather than as an error, which is the shape that
+     * ships.
+     *
+     * So the settings are a value both sides can ask for rather than a
+     * statement made once at the moment of enqueue. Pro attaches the SAME
+     * values to its own handle ({@see \WConvert\Pro\Admin\ProAdminEnqueue}),
+     * which is the one direction the split allows — Pro reaches into free.
+     *
+     * Static, because none of it is a fact about this menu instance: every
+     * value is read from WordPress or from a free constant at the moment the
+     * screen is enqueued.
+     *
+     * @return array<string, mixed>
+     */
+    public static function settings(): array
+    {
+        return [
             // The CSV download is a navigation to `admin-post.php`, so the
             // screen needs the nonced URL rather than a REST path —
             // `apiFetch` would read the file into memory and then have to turn
@@ -167,20 +234,12 @@ final class AdminMenu
             // Targeting tickets are about.
             'homeUrl' => (string) home_url('/'),
             'inspectParam' => InspectorEnqueue::PARAM,
+            // **What to call each paid tier**, read from `tiers.json` rather
+            // than written into five components as the literal "Pro"
+            // (ADR 0056). At launch every rung answers "Pro", so nothing on
+            // screen changes — and splitting the range later is an edit to that
+            // file rather than five strings and a release.
+            'tiers' => TierManifest::load()->forTheAdmin(),
         ];
-
-        // `wp_add_inline_script()` rather than `wp_localize_script()`, and the
-        // difference is not stylistic: `localize` casts every value to a
-        // STRING, so `true` arrives in the browser as `"1"` and `false` as
-        // `""`. A boolean that reads as `"1"` is worse than one that reads as
-        // `true` and worse than one that is absent — the screen tests it and
-        // is quietly wrong, which is how the dev export shipped invisible on
-        // an install that had `WP_DEBUG` on. `wp_json_encode()` keeps the type
-        // the setting actually has.
-        wp_add_inline_script(
-            self::SCRIPT_HANDLE,
-            'window.wconvertAdmin = ' . wp_json_encode($settings) . ';',
-            'before'
-        );
     }
 }

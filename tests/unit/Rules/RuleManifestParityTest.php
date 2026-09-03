@@ -4,9 +4,11 @@ namespace WConvert\Tests\Unit\Rules;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use WConvert\Goal\Goal;
 use WConvert\Rules\RuleKind;
 use WConvert\Rules\RuleManifest;
 use WConvert\Support\SiteDependency;
+use WConvert\Support\Tier;
 use WConvert\Targeting\TargetingType;
 
 /**
@@ -123,7 +125,13 @@ final class RuleManifestParityTest extends TestCase
                 sprintf('%s needs something SitePresence has no question to ask about', $where)
             );
 
-            $this->assertContains($entry['tier'], ['free', 'pro'], sprintf('%s has no valid tier', $where));
+            // Read off the enum rather than written out, so a rung added to
+            // the ladder is not a rung this test silently rejects (ADR 0056).
+            $this->assertContains(
+                $entry['tier'],
+                array_map(static fn (Tier $tier): string => $tier->value, Tier::ladder()),
+                sprintf('%s has no valid tier', $where)
+            );
 
             $this->assertContains(
                 RuleKind::tryFrom((string) $entry['kind']),
@@ -356,7 +364,15 @@ final class RuleManifestParityTest extends TestCase
             $this->assertArrayHasKey($type, $conditions, sprintf('the manifest declares no %s', $type));
             $this->assertSame('suspend', $conditions[$type]['on_absence'], sprintf('%s drops rather than suspends', $type));
             $this->assertSame('woocommerce', $conditions[$type]['requires'], sprintf('%s needs no store', $type));
-            $this->assertSame('pro', $conditions[$type]['tier'], sprintf('%s is not premium', $type));
+            // **The same rung as the cart [[Goal]] `Goal::tier()` declares**,
+            // and pinned to that rather than to a literal: the Goal's copy
+            // asserts what these two guarantee, so a build shipping one without
+            // the other is the popup that lies (ADR 0026, ADR 0056).
+            $this->assertSame(
+                Goal::RecoverCart->tier()->value,
+                $conditions[$type]['tier'],
+                sprintf('%s is not declared at the cart Goal\'s own tier', $type)
+            );
         }
     }
 
