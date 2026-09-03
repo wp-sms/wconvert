@@ -228,9 +228,9 @@ final class SlotRolesTest extends TestCase
      * A LIST IS SEVERAL SLOTS; A MAP IS ONE SLOT WITH SEVERAL KEYS.
      * ==========================================================================
      * Both are PHP arrays and they mean opposite things, which is the one
-     * genuinely ambiguous thing repeatable Roles introduce. `array_is_list()`
-     * settles it exactly rather than by heuristic — a Role filling several keys
-     * comes back keyed by those key names, which is never a list.
+     * genuinely ambiguous thing repeatable Roles introduce. Being a list settles
+     * it exactly rather than by heuristic — a Role filling several keys comes
+     * back keyed by those key names, which is never a list.
      */
     public function testASentenceWithALinkIsStillOneSlotAndNotAListOfTwo(): void
     {
@@ -302,4 +302,52 @@ final class SlotRolesTest extends TestCase
 
         $this->assertSame(['First', 'Second'], array_column($bound['steps'][0]['children'], 'text'));
     }
+
+    /**
+     * ========================================================================
+     * THE TWO EDGES WHERE A WRONG "IS THIS A LIST" WOULD DIVERGE.
+     * ========================================================================
+     * `wordsFor()` spells the test as `$words === array_values($words)` rather
+     * than `array_is_list()`, because Plugin Check reads that function against
+     * `Requires at least` instead of `Requires PHP` and reports an error on a
+     * combination this plugin refuses to run on (#96). The expression is the
+     * function exactly, and these are the two cases that would prove otherwise:
+     * an empty array is a list, and numeric keys that are not `0, 1, 2 …` in
+     * order are not.
+     *
+     * Without this, a later simplification to something like
+     * `isset($words[0])` would pass every other test in this file.
+     */
+    public function testEmptyWordsAreAListAndFillNothing(): void
+    {
+        $tree = self::tree([['type' => 'text', 'role' => 'body']]);
+
+        $bound = SlotRoles::bind($tree, ['body' => []], $this->vocabulary());
+
+        $this->assertArrayNotHasKey('text', $bound['steps'][0]['children'][0]);
+    }
+
+    /**
+     * A map whose keys happen to be numbers is still a map — one slot's words,
+     * taken by the first node — because JSON `{"1": …}` decodes to exactly
+     * that and a Playbook is JSON.
+     */
+    public function testNumericKeysOutOfOrderAreAMapAndNotAList(): void
+    {
+        $tree = self::tree([
+            ['type' => 'text', 'role' => 'body'],
+            ['type' => 'text', 'role' => 'body'],
+        ]);
+
+        $bound = SlotRoles::bind($tree, ['body' => [1 => 'Second only']], $this->vocabulary());
+
+        // **Node 1 is the assertion.** Read as a LIST this would put "Second
+        // only" there, because that is what index 1 means; read as a map it
+        // goes to the first node as one slot's keys — where `1` names no
+        // content key, so nothing is written at all. Both nodes empty is the
+        // map reading, and it is the only one either node can produce.
+        $this->assertArrayNotHasKey('text', $bound['steps'][0]['children'][0]);
+        $this->assertArrayNotHasKey('text', $bound['steps'][0]['children'][1]);
+    }
 }
+

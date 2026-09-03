@@ -106,6 +106,28 @@ final class Schedule
      */
     public static function fromArray(array $config): self
     {
+        /*
+         * ====================================================================
+         * `esc_html()` HERE WOULD BE THE FIRST WORDPRESS IN THIS FILE.
+         * ====================================================================
+         * `WordPress.Security.EscapeOutput.ExceptionNotEscaped` fires on both
+         * throws below — on the interpolated `$key`, and on the reason
+         * constant, which the sniff cannot resolve and reads as output.
+         *
+         * Escaping them would cost the property this class is built on and
+         * {@see InvalidSchedule} states out loud: **Schedule is pure and has no
+         * WordPress in it**, which is why it cannot mint the merchant's
+         * sentence either. `bin/verify-schedule.php` exists because the seam is
+         * testable without an install, and an `esc_html()` in here would end
+         * that for a string nobody reads.
+         *
+         * Nobody reads it because nothing renders it. `InvalidSchedule` is
+         * caught by `OptinController::refuseTheSchedule()`, which throws away
+         * the message and mints a translated sentence off the REASON — these
+         * two strings are developer text, and the one interpolated value is
+         * `$key`, which is one of the two literals in the `foreach` below.
+         */
+        // phpcs:disable WordPress.Security.EscapeOutput.ExceptionNotEscaped -- developer text on a class with no WordPress in it, always caught; see above.
         foreach (['starts_at', 'ends_at'] as $key) {
             $value = $config[$key] ?? null;
 
@@ -128,6 +150,7 @@ final class Schedule
                 "An Optin's schedule has to end after it starts."
             );
         }
+        // phpcs:enable WordPress.Security.EscapeOutput.ExceptionNotEscaped
 
         return $schedule;
     }

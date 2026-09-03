@@ -313,6 +313,11 @@ final class WpMailPoetSubscribers implements MailPoetSubscribers
         $service = $this->call($container, 'get', [$id]);
 
         if (!is_object($service)) {
+            // The two sibling throws above carry no interpolation and the
+            // sniff leaves them alone; `$id` here is one of this class's own
+            // constants, and every path through `service()` is reached from
+            // `push()`, which catches `\Throwable`.
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- caught by push() and stored as operator text; $id is a constant of this class.
             throw new \RuntimeException('MailPoet did not supply ' . $id . '.');
         }
 
