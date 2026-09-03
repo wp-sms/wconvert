@@ -117,4 +117,123 @@ final class ThemeTokensTest extends TestCase
 
         $this->assertSame('#fff', $tokens['accent-fg']);
     }
+
+    /**
+     * ========================================================================
+     * THE FONT LIST IS THE SITE'S, AND IT IS EVERY FAMILY THE SITE DECLARES.
+     * ========================================================================
+     * The panel offered four system stacks and a text box, so a merchant whose
+     * theme ships Inter could not pick Inter without typing the stack by hand
+     * — while the family was sitting in `theme.json` all along
+     * (`docs/adr/0055-the-font-list-is-the-sites.md`).
+     */
+    public function testItReadsEveryFamilyTheSiteDeclares(): void
+    {
+        $fonts = ThemeTokens::fontsIn([
+            'typography' => [
+                'fontFamilies' => [
+                    'theme' => [
+                        ['name' => 'Inter', 'fontFamily' => '"Inter", sans-serif'],
+                        ['name' => 'Playfair', 'fontFamily' => '"Playfair Display", serif'],
+                    ],
+                ],
+            ],
+        ]);
+
+        $this->assertSame(
+            [
+                ['label' => 'Inter', 'stack' => '"Inter", sans-serif'],
+                ['label' => 'Playfair', 'stack' => '"Playfair Display", serif'],
+            ],
+            $fonts
+        );
+    }
+
+    /**
+     * The same increasing-deliberateness walk the palette makes, and `custom`
+     * is where WordPress 6.5's Font Library puts what the merchant installed.
+     */
+    public function testALaterOriginWinsOnTheSameStack(): void
+    {
+        $fonts = ThemeTokens::fontsIn([
+            'typography' => [
+                'fontFamilies' => [
+                    'default' => [['name' => 'System Font', 'fontFamily' => 'system-ui, sans-serif']],
+                    'theme' => [['name' => 'Body', 'fontFamily' => 'system-ui, sans-serif']],
+                    'custom' => [['name' => 'Mine', 'fontFamily' => '"Fraunces", serif']],
+                ],
+            ],
+        ]);
+
+        $this->assertSame(
+            [
+                ['label' => 'Body', 'stack' => 'system-ui, sans-serif'],
+                ['label' => 'Mine', 'stack' => '"Fraunces", serif'],
+            ],
+            $fonts
+        );
+    }
+
+    /**
+     * **Deduped on the STACK and never on the name.** Two families sharing a
+     * name but not a stack are two families, and the name is the theme's rather
+     * than ours to disambiguate.
+     */
+    public function testTwoFamiliesUnderOneNameBothShow(): void
+    {
+        $fonts = ThemeTokens::fontsIn([
+            'typography' => [
+                'fontFamilies' => [
+                    'theme' => [
+                        ['name' => 'Body', 'fontFamily' => '"Inter", sans-serif'],
+                        ['name' => 'Body', 'fontFamily' => '"Work Sans", sans-serif'],
+                    ],
+                ],
+            ],
+        ]);
+
+        $this->assertCount(2, $fonts);
+    }
+
+    /**
+     * A family declaring the system stack has no face to load and works exactly
+     * as it is, so nothing here reads `fontFace` — what is offered is a stack
+     * the site already serves.
+     */
+    public function testAFamilyWithNoFaceIsStillOffered(): void
+    {
+        $fonts = ThemeTokens::fontsIn([
+            'typography' => [
+                'fontFamilies' => [
+                    'theme' => [['name' => 'System', 'fontFamily' => 'system-ui, sans-serif']],
+                ],
+            ],
+        ]);
+
+        $this->assertSame([['label' => 'System', 'stack' => 'system-ui, sans-serif']], $fonts);
+    }
+
+    /** A row with no name is still a row a merchant can pick; an empty one is not. */
+    public function testAFamilyWithNoNameIsLabelledByItsOwnStack(): void
+    {
+        $fonts = ThemeTokens::fontsIn([
+            'typography' => ['fontFamilies' => ['theme' => [['fontFamily' => '"Inter", sans-serif']]]],
+        ]);
+
+        $this->assertSame([['label' => '"Inter", sans-serif', 'stack' => '"Inter", sans-serif']], $fonts);
+    }
+
+    /**
+     * **A classic theme with no `theme.json` declares none**, and core declares
+     * no font families by default — so the list is empty and the picker shows
+     * the four system stacks it always did. The feature degrades to nothing
+     * rather than to something broken.
+     */
+    public function testASiteThatDeclaresNoFamiliesReadsAsAnEmptyList(): void
+    {
+        $this->assertSame([], ThemeTokens::fontsIn([]));
+        $this->assertSame([], ThemeTokens::fontsIn(['typography' => ['fontFamilies' => []]]));
+        $this->assertSame([], ThemeTokens::fontsIn(['typography' => ['fontFamilies' => ['theme' => 'nonsense']]]));
+    }
 }
+

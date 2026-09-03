@@ -3033,6 +3033,124 @@
 }
 
 /* ---------------------------------------------------------------------------
+ * THE FONT PICKER: A TRIGGER SET IN ITS OWN FACE, AND A LIST OF THE SAME.
+ *
+ * `font` was four chips because four fits in a strip. It offers the families
+ * the SITE declares now, and a block theme may declare thirty — so it takes
+ * the popover shape `ColourField` already has (ADR 0054 rule 5). Nothing here
+ * loads a face: every stack offered is one the site already serves.
+ *
+ * Rows rather than a `<select>`, for the reason the chips were chips: the whole
+ * value of this control is reading *Georgia* set in Georgia, and `font-family`
+ * on an `<option>` is unreliable.
+ * ------------------------------------------------------------------------- */
+#wconvert-admin .wconvert-font {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-block-size: var(--control-height);
+  padding-inline: 0.625rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--foreground);
+  cursor: pointer;
+  text-align: start;
+}
+
+#wconvert-admin .wconvert-font:hover {
+  border-color: var(--ring);
+}
+
+.wconvert-font__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wconvert-font__chevron {
+  flex: none;
+  inline-size: 1rem;
+  block-size: 1rem;
+  color: var(--muted-foreground);
+}
+
+.wconvert-fonts {
+  display: grid;
+  gap: 0.125rem;
+  /* Thirty families is a list to scroll, which is the whole reason this is not
+     a strip. The height is the popover's, not the list's. */
+  max-block-size: 20rem;
+  overflow-y: auto;
+  min-inline-size: 14rem;
+}
+
+/*
+ * **No `#wconvert-admin` on these, and that is the opposite of the usual trap.**
+ * A Radix popover portals to `document.body`, so this content sits OUTSIDE the
+ * mount node — an id-scoped rule would simply never land, and wp-admin's own
+ * `p { margin: 1em 0 }` would decide the spacing. The class alone at (0,1,0)
+ * beats it, and the popover is the one place in this stylesheet where the id is
+ * wrong rather than merely optional.
+ */
+.wconvert-fonts__group {
+  margin: 0.375rem 0 0.125rem;
+}
+
+.wconvert-fonts__group:first-child {
+  margin-block-start: 0;
+}
+
+/*
+ * Under the scroller rather than inside it: a theme declaring thirty families
+ * would otherwise put the escape hatch thirty rows down.
+ */
+.wconvert-fonts__typed {
+  margin-block-start: 0.5rem;
+}
+
+.wconvert-fonts__typed > input {
+  inline-size: 100%;
+  margin: 0;
+}
+
+.wconvert-font-row {
+  display: block;
+  cursor: pointer;
+}
+
+.wconvert-font-row__name {
+  display: block;
+  padding: 0.3125rem 0.5rem;
+  border: 1px solid transparent;
+  border-radius: max(calc(var(--radius) - 2px), 0px);
+  color: var(--foreground);
+  /* The face is what a merchant is choosing, so it is drawn at a size they can
+     judge it at rather than at the register a label would take. */
+  font-size: var(--text-body);
+  line-height: 1.4;
+}
+
+.wconvert-font-row:hover .wconvert-font-row__name {
+  background: var(--muted);
+}
+
+/* The same *selected* every one-of-N strip on this screen draws, hung off the
+   checked input for the reason the chips are (ADR 0042 rule 5). */
+.wconvert-font-row > input:checked + .wconvert-font-row__name {
+  background: var(--muted);
+  border-color: var(--border);
+  font-weight: 500;
+}
+
+.wconvert-font-row > input:focus-visible + .wconvert-font-row__name {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 1px var(--ring);
+}
+
+/* ---------------------------------------------------------------------------
  * A SEGMENTED CONTROL, OVER NATIVE RADIOS.
  *
  * The input is `sr-only` rather than absent, so the browser keeps everything
@@ -3041,9 +3159,14 @@
  * label beside it, and the focus ring is drawn from the input's own state so a
  * keyboard user sees where they are.
  *
- * The `font` chips are set in the face they name — which is the whole value of
- * a font picker, and why this is chips and not a `<select>`, where `font-family`
- * on an `<option>` is unreliable.
+ * It was `font` that made this chips rather than a `<select>` — a chip set in
+ * the face it names is the whole value of a font picker, and `font-family` on
+ * an `<option>` is unreliable. `font` has since moved to a popover list, for
+ * the same reason at a bigger count (ADR 0055), and the reason came with it:
+ * the rows are drawn in their own faces there too.
+ *
+ * What is left here is every other one-of-N whose N the manifest controls, and
+ * the treatment is unchanged.
  * ------------------------------------------------------------------------- */
 .wconvert-choice-set {
   display: inline-flex;

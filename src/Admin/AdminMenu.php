@@ -106,6 +106,25 @@ final class AdminMenu
         // is load-bearing for setting an image.
         wp_enqueue_media();
 
+        /*
+         * ====================================================================
+         * THE THEME'S OWN FACES, SO THE FONT PICKER DRAWS ITS ROWS IN THEM.
+         * ====================================================================
+         * The picker offers the families this SITE declares and sets each row
+         * in the face it names — which is the whole value of the control, and
+         * which needs the `@font-face` rules to be on this page. Core prints
+         * them on the front end; wp-admin gets them only where something asks.
+         *
+         * Core's own, since 6.4, and guarded because this plugin's floor is
+         * 6.2 — where it is absent the row falls back to the next family in the
+         * stack and the control still works. **Nothing is fetched and no face
+         * is declared here**: this prints the site's, or nothing
+         * (`docs/adr/0055-the-font-list-is-the-sites.md`).
+         */
+        if (function_exists('wp_print_font_faces')) {
+            add_action('admin_print_styles', 'wp_print_font_faces');
+        }
+
         $settings = [
             // The CSV download is a navigation to `admin-post.php`, so the
             // screen needs the nonced URL rather than a REST path —

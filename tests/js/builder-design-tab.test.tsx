@@ -134,7 +134,7 @@ function Panel(props: Omit<Parameters<typeof Tokens>[0], 'openToken' | 'onOpenTo
 
 beforeEach(() => {
   vi.clearAllMocks();
-  api.getThemeTokens.mockResolvedValue({ tokens: { bg: '#101820', accent: '#f2aa4c' } });
+  api.getThemeTokens.mockResolvedValue({ tokens: { bg: '#101820', accent: '#f2aa4c' }, fonts: [] });
 });
 
 describe('the look', () => {
@@ -195,8 +195,10 @@ describe('the look', () => {
    * **exactly once**, because a token with two controls is a token a merchant
    * can watch disagree with itself.
    *
-   * `font` also stops being a text box here. It is a `role="group"` of chips
-   * now, because the manifest offers choices for it — see the group below.
+   * `font` also stops being a text box here — and stops being chips too. Its N
+   * is the site's rather than the manifest's now, so it wears the popover
+   * `ColourField` has (ADR 0054 rule 5); what this still asserts is that it is
+   * a CONTROL and that there is exactly one of it.
    */
   it('keeps every token the manifest declares, once', () => {
     look();
@@ -206,7 +208,7 @@ describe('the look', () => {
     expect(screen.getByRole('button', { name: /Choose a colour for Background/ })).toBeInTheDocument();
     // The stub names only two tokens, so the rest fall back to their raw key —
     // which is what `nameOf` does on a real install missing a label too.
-    expect(screen.getByRole('group', { name: 'font' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'font' })).toBeInTheDocument();
     // Once, and not once per group.
     expect(screen.getAllByRole('button', { name: /Choose a colour for Background/ })).toHaveLength(1);
   });
@@ -869,5 +871,135 @@ describe('inner spacing', () => {
 
     expect(screen.queryAllByRole('slider', { name: /Inner spacing/ })).toHaveLength(0);
     expect(screen.getByLabelText('Inner spacing')).toHaveValue('1rem 2rem 3rem 4rem');
+  });
+});
+
+/**
+ * ============================================================================
+ * A ONE-OF-N CONTROL IS CHIPS WHILE N IS SMALL, AND A LIST ONCE IT IS NOT.
+ * ============================================================================
+ * ADR 0054 rule 5. Every other enumerated token has an N the manifest controls;
+ * `font` offers the families the SITE declares, and a block theme may declare
+ * thirty. So it wears the popover `ColourField` already has, rather than a
+ * fifth treatment (ADR 0042 rule 5).
+ *
+ * **The list is read on the first open**, never on mount: it is a fact about
+ * the site that a merchant asks for rarely, which is the same reason the theme
+ * route exists at all.
+ */
+describe('the font picker', () => {
+  const trigger = () => screen.getByRole('button', { name: 'font' });
+
+  /**
+   * The rows inside the popover, and only those — the Design tab is full of
+   * radios and a global query counts every chip on it.
+   */
+  const rows = async () =>
+    within(await screen.findByRole('group', { name: 'font' })).getAllByRole('radio');
+
+  it('reads nothing from the site until the picker is opened', () => {
+    look();
+
+    expect(trigger()).toBeInTheDocument();
+    expect(api.getThemeTokens).not.toHaveBeenCalled();
+  });
+
+  it('offers the theme’s own families above the ones every device has', async () => {
+    api.getThemeTokens.mockResolvedValue({
+      tokens: {},
+      fonts: [
+        { label: 'Inter', stack: '"Inter", sans-serif' },
+        { label: 'Playfair Display', stack: '"Playfair Display", serif' },
+      ],
+    });
+
+    look();
+
+    await userEvent.click(trigger());
+
+    expect(await screen.findByRole('radio', { name: 'Inter' })).toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: 'Playfair Display' })).toBeInTheDocument();
+    // And the four the manifest declares are still there under them.
+    expect(await rows()).toHaveLength(6);
+  });
+
+  /**
+   * **A classic theme with no `theme.json` declares none.** The list is empty,
+   * the picker shows the stacks it always did, and the feature degrades to
+   * nothing rather than to something broken.
+   */
+  it('falls back to the system stacks where the site declares no families', async () => {
+    look();
+
+    await userEvent.click(trigger());
+
+    expect(await rows()).toHaveLength(4);
+  });
+
+  /** A failed read costs a longer list, never the control. */
+  it('keeps working when the site cannot be read at all', async () => {
+    api.getThemeTokens.mockRejectedValue(new Error('nope'));
+
+    look();
+
+    await userEvent.click(trigger());
+
+    expect(await rows()).toHaveLength(4);
+    expect(screen.queryByText('nope')).toBeNull();
+  });
+
+  it('writes the stack, which is what the renderer resolves', async () => {
+    api.getThemeTokens.mockResolvedValue({
+      tokens: {},
+      fonts: [{ label: 'Inter', stack: '"Inter", sans-serif' }],
+    });
+
+    const changed = look();
+
+    await userEvent.click(trigger());
+    await userEvent.click(await screen.findByRole('radio', { name: 'Inter' }));
+
+    expect(changed).toHaveBeenCalledWith(
+      expect.objectContaining({
+        tokens: expect.objectContaining({ font: '"Inter", sans-serif' }),
+      }),
+    );
+  });
+
+  /**
+   * `choices` is what the panel offers and never what is allowed (ADR 0010), so
+   * a fifth stack stays typeable — inside the popover, which is rule 2 of
+   * ADR 0054 satisfied: an escape you opt into rather than the control you land
+   * on.
+   */
+  it('keeps a stack nobody listed typeable, inside the thing you opened', async () => {
+    const changed = look();
+
+    await userEvent.click(trigger());
+    await userEvent.type(await screen.findByLabelText('font value'), 'x');
+
+    expect(changed).toHaveBeenCalled();
+  });
+
+  /** A family the site declared is named by the THEME's word for it. */
+  it('names the current face with the theme’s own noun', async () => {
+    api.getThemeTokens.mockResolvedValue({
+      tokens: {},
+      fonts: [{ label: 'Playfair Display', stack: '"Playfair Display", serif' }],
+    });
+
+    render(
+      <Panel
+        template={{ ...ENTRY, tokens: { ...ENTRY.tokens, font: '"Playfair Display", serif' } }}
+        labels={LABELS}
+        design={ENTRY.tokens}
+        onChange={vi.fn()}
+        onError={vi.fn()}
+      />,
+    );
+
+    // Before the read there is nothing but the stack, so the first family in it
+    // is the honest name — and after it, the theme's own.
+    expect(screen.getByRole('button', { name: 'font' })).toHaveTextContent('Playfair Display');
   });
 });

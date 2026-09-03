@@ -209,9 +209,18 @@ are the only answer.
 `font-family` on an `<option>` is unreliable across browsers — and that is
 exactly why the replacement is a popover **list** and not a select: the value of
 this control is reading *Georgia* set in Georgia, and a list can do that where a
-select cannot. `role="listbox"` keeps the arrow keys the radio group was giving
-away for free, and a text input in the popover keeps the Custom escape rule 2
+select cannot. A text input in the popover keeps the Custom escape rule 2
 requires.
+
+> **Amended by [ADR 0055](0055-the-font-list-is-the-sites.md): the rows are
+> native radios, not a `role="listbox"`.** This originally said `role="listbox"`
+> *"keeps the arrow-key behaviour the radio group was giving away for free"*,
+> and it does not: the role is a promise the author then has to implement, with
+> roving `tabindex` and a key handler. Native radios keep that behaviour for
+> real — arrow keys, one tab stop, the set announced as a set, all from the
+> browser — which is `ChoiceField`'s own argument for refusing Radix's
+> `ToggleGroup`. The popover is where they live now; that is not a reason to
+> stop being radios. Everything else in this rule stands as written.
 
 ## Consequences
 
