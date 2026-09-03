@@ -57,15 +57,22 @@ describe('where it shows', () => {
   });
 
   /**
-   * `logged_in` is a clause rather than a count, because it is a FIELD beside
-   * the two lists rather than a page rule: the lists are a union of page sets,
-   * and a visitor predicate in one would widen the Optin to the whole site for
-   * anyone matching it (ADR 0005).
+   * ==========================================================================
+   * `logged_in` IS ON THIS AXIS AND IS NOT IN THIS SENTENCE.
+   * ==========================================================================
+   * It is stored here because the browser cannot read WordPress's HttpOnly auth
+   * cookie, and it is a FIELD beside the two lists rather than a page rule —
+   * they are a union of page SETS, and a visitor predicate in one would widen
+   * the Optin to the whole site for anyone matching it (ADR 0005).
+   *
+   * It used to trail this sentence as *", signed-in visitors only"*, which
+   * split the answer to *who sees this* across two summaries. It reads out
+   * under WHO now, where its control is.
    */
-  it('adds the visitor predicate as a clause, and only when it is set', () => {
-    expect(whereSummary({ logged_in: true }).text).toBe('On every page, signed-in visitors only');
-    expect(whereSummary({ logged_in: false }).text).toBe('On every page, signed-out visitors only');
-    expect(whereSummary({}).text).not.toMatch(/visitors/);
+  it('says nothing about the visitor, whichever way it is set', () => {
+    expect(whereSummary({ logged_in: true }).text).toBe('On every page');
+    expect(whereSummary({ logged_in: false }).text).toBe('On every page');
+    expect(whereSummary({}).text).not.toMatch(/signed/);
   });
 });
 
@@ -270,6 +277,25 @@ describe('who sees it', () => {
     expect(
       whoSummary(entries({ type: 'device', in: ['mobile', 'tablet'] }, { type: 'cart_has_items' }), types).text,
     ).toBe('Only when device mobile or tablet and cart_has_items');
+  });
+
+  /**
+   * **The visitor predicate reads out here**, folded into the same join rather
+   * than trailing a second sentence — a merchant asking *who sees this* gets
+   * one answer. It is still STORED on the targeting axis, which is the one
+   * place storage and control answer to different questions ({@see Who}).
+   */
+  it('folds the visitor predicate into the same clause', () => {
+    expect(whoSummary([], types, true).text).toBe('Only when signed in');
+    expect(whoSummary([], types, false).text).toBe('Only when signed out');
+    expect(whoSummary(entries({ type: 'cart_has_items' }), types, true).text).toBe(
+      'Only when cart_has_items and signed in',
+    );
+  });
+
+  /** Undefined is "do not ask", which is not the same as false. */
+  it('says anyone where it is not asked', () => {
+    expect(whoSummary([], types, undefined).text).toBe('Anyone who reaches it');
   });
 });
 

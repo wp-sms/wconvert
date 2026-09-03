@@ -85,7 +85,9 @@ export function summarise(
     {
       id: 'who',
       eyebrow: __('Who', 'wconvert'),
-      ...whoSummary(entriesOn(rules, vocabulary.conditions), all),
+      // `logged_in` is stored on the targeting axis and answered here, which
+      // is the one place those two differ ({@see Who}).
+      ...whoSummary(entriesOn(rules, vocabulary.conditions), all, targeting.logged_in),
     },
     {
       id: 'how-often',

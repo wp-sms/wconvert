@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { entriesOffEveryAxis, entriesOn } from './axis';
 import { HowOften } from './HowOften';
 import { Section } from './Section';
@@ -7,7 +8,7 @@ import { When } from './When';
 import { Where } from './Where';
 import { Who } from './Who';
 import { summarise, type DisplayRulesValue } from './summaries';
-import type { Rule, RuleVocabulary } from '../api';
+import type { Rule, RuleVocabulary, Targeting } from '../api';
 
 /**
  * Display rules: four questions, four disclosures, one flat list underneath.
@@ -71,6 +72,21 @@ export function DisplayRules({ vocabulary, value, overlay, onChange }: DisplayRu
   const client = [...vocabulary.triggers, ...vocabulary.conditions];
   const all = [...vocabulary.targeting, ...client];
 
+  /*
+   * **`logged_in` is stored on the TARGETING axis and edited under WHO, and
+   * that is not an inconsistency to tidy.** It lives there because the browser
+   * cannot read WordPress's HttpOnly auth cookie, so the server has to answer
+   * it; it is drawn there because *"only signed-in visitors"* is a question
+   * about WHO sees the Optin and a merchant looks for it under that word.
+   *
+   * Moving the STORAGE into the rules array to match would break the axis: a
+   * visitor rule dropped into an include list WIDENS the Optin to the whole
+   * site for anyone matching it, because the list is a union of page sets
+   * (ADR 0005, as completed by #21). Read whole, the axis is
+   * `page-set AND logged_in`.
+   */
+  const visitor = vocabulary.targeting.find((type) => type.kind === 'visitor');
+
   const replace = (at: number, rule: Rule) =>
     onChange({ rules: rules.map((each, index) => (index === at ? rule : each)) });
   const remove = (at: number) => onChange({ rules: rules.filter((_each, index) => index !== at) });
@@ -85,15 +101,67 @@ export function DisplayRules({ vocabulary, value, overlay, onChange }: DisplayRu
    * and would have been spelled a second time up there — same axes, same
    * order, and two chances to call one of them something different.
    */
-  const [where, when, who, often] = summarise(value, vocabulary, overlay);
+  const summaries = summarise(value, vocabulary, overlay);
+  const [where, when, who, often] = summaries;
+
+  /*
+   * ==========================================================================
+   * OPEN WHAT NEEDS ATTENTION — NOT WHAT IS SET.
+   * ==========================================================================
+   * The obvious rule is "open the sections that have rules in them", and it is
+   * wrong: a [[Playbook]] prefills rules across three axes, so a brand-new
+   * Optin would arrive with three of four sections open and this tab would be
+   * LONGER than the four closed rows it replaced.
+   *
+   * `attention` is already computed, already drives `data-attention`, and is
+   * exactly ADR 0042 rule 2 read literally — *open what changes what you do
+   * next*. An Optin whose rules are all fine opens nothing and is read off the
+   * four summary lines, which is what they are for.
+   *
+   * **Decided once, on arrival.** These sentences are derived from the value
+   * and recompute on every keystroke, so a section keyed off the live
+   * `attention` would shut itself under the merchant's hands the moment they
+   * fixed the thing it opened for. The initialiser runs once; after that the
+   * disclosures are theirs.
+   */
+  const [open, setOpen] = useState<ReadonlySet<string>>(
+    () => new Set(summaries.filter((axis) => axis.attention).map((axis) => axis.id)),
+  );
+
+  const opener = (id: string) => (next: boolean) =>
+    setOpen((current) => {
+      const shown = new Set(current);
+
+      if (next) {
+        shown.add(id);
+      } else {
+        shown.delete(id);
+      }
+
+      return shown;
+    });
 
   return (
     <div className="wconvert-sections">
-      <Section id={where.id} eyebrow={where.eyebrow} summary={where.text} attention={where.attention}>
+      <Section
+        id={where.id}
+        eyebrow={where.eyebrow}
+        summary={where.text}
+        attention={where.attention}
+        open={open.has(where.id)}
+        onOpenChange={opener(where.id)}
+      >
         <Where types={vocabulary.targeting} targeting={targeting} onChange={(next) => onChange({ targeting: next })} />
       </Section>
 
-      <Section id={when.id} eyebrow={when.eyebrow} summary={when.text} attention={when.attention}>
+      <Section
+        id={when.id}
+        eyebrow={when.eyebrow}
+        summary={when.text}
+        attention={when.attention}
+        open={open.has(when.id)}
+        onOpenChange={opener(when.id)}
+      >
         <When
           types={vocabulary.triggers}
           entries={triggers}
@@ -104,7 +172,14 @@ export function DisplayRules({ vocabulary, value, overlay, onChange }: DisplayRu
         />
       </Section>
 
-      <Section id={who.id} eyebrow={who.eyebrow} summary={who.text} attention={who.attention}>
+      <Section
+        id={who.id}
+        eyebrow={who.eyebrow}
+        summary={who.text}
+        attention={who.attention}
+        open={open.has(who.id)}
+        onOpenChange={opener(who.id)}
+      >
         <Who
           types={vocabulary.conditions}
           entries={conditions}
@@ -112,10 +187,20 @@ export function DisplayRules({ vocabulary, value, overlay, onChange }: DisplayRu
           remove={remove}
           add={add}
           all={all}
+          visitor={visitor}
+          loggedIn={targeting.logged_in}
+          onLoggedIn={(next) => onChange({ targeting: withLoggedIn(targeting, next) })}
         />
       </Section>
 
-      <Section id={often.id} eyebrow={often.eyebrow} summary={often.text}>
+      <Section
+        id={often.id}
+        eyebrow={often.eyebrow}
+        summary={often.text}
+        attention={often.attention}
+        open={open.has(often.id)}
+        onOpenChange={opener(often.id)}
+      >
         <HowOften
           frequency={frequency}
           schedule={schedule}
@@ -172,4 +257,20 @@ function applied(patch: BundlePatch, value: DisplayRulesValue, vocabulary: RuleV
   }
 
   return next;
+}
+
+/**
+ * The targeting axis with the visitor predicate set, or with it gone.
+ *
+ * **Cleared rather than stored false.** Unset means *do not ask*, and an Optin
+ * that does not care whether the visitor is signed in is a different thing from
+ * one that shows only to signed-out visitors — collapsing them into a boolean
+ * would make *"anyone"* unspellable.
+ */
+function withLoggedIn(targeting: Targeting, next: boolean | undefined): Targeting {
+  const without = { ...targeting };
+
+  delete without.logged_in;
+
+  return next === undefined ? without : { ...without, logged_in: next };
 }

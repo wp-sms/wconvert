@@ -1,14 +1,11 @@
-import { Fragment } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
-import { Lock } from 'lucide-react';
-import { Badge } from '../../components/ui/badge';
 import { renderingFor, type Rendering } from '../../goals/availability';
 import { toRule } from '../presets';
 import type { Rule, RuleType } from '../api';
 
 /**
  * The add control: every type this install can run, and every legible shortcut
- * over it — plus an honest account of the ones it cannot.
+ * over it — plus an honest account of the ones it cannot, **in the menu.**
  *
  * One `<select>` with a group per type rather than a type picker followed by a
  * preset picker, because "after a few seconds" is one decision and asking for
@@ -29,6 +26,36 @@ import type { Rule, RuleType } from '../api';
  * arms and this file handles three; `hide` is structurally unreachable from a
  * settings list, which is what makes the exhaustive branch honest rather than
  * defensive.
+ *
+ * ============================================================================
+ * AND THE EXPLANATION IS IN THE DROPDOWN, WHICH IS WHERE THEY GO LOOKING.
+ * ============================================================================
+ * It used to be a permanent block of chips under the Add control — two
+ * headings and up to six chips, drawn on every visit of every section, telling
+ * a merchant who had not yet tried to add anything about the things they could
+ * not add.
+ *
+ * ADR 0026 says a settings list EXPLAINS an absent capability rather than
+ * hiding it, and that is unchanged. What was wrong is *which thing the list
+ * is*: the merchant hunts through this **menu**, not through the tab. So the
+ * absent types are `<optgroup disabled>` groups at the bottom of it — the same
+ * explanation, at the moment it changes what they do next (ADR 0042 rule 2,
+ * ADR 0054's amendment to ADR 0026).
+ *
+ * **A disabled `<option>` is metadata, not a control.** wp.org Guideline 9
+ * fires on offering a real control the user cannot use; the premium code is
+ * genuinely not in this bundle and there is nothing here to enable
+ * (ADR 0015). The option carries the type's label from PHP and cannot be
+ * chosen — and `bin/plugin-check.sh` on the built free ZIP is what confirms
+ * that rather than this paragraph.
+ *
+ * **Two groups and never one.** `locked` is buyable from us and `unavailable`
+ * is not. Collapsing them offers a merchant with no store a WooCommerce
+ * licence we do not sell, and shows a paying Pro customer an advertisement for
+ * Pro. The unavailable ones are grouped BY what they need, so an install
+ * missing WooCommerce and WP SMS gets two honest lines rather than one lumped
+ * *"not available on this site"* — ADR 0026's own argument applied to the
+ * shape.
  */
 export interface AddRuleProps {
   readonly axis: readonly RuleType[];
@@ -41,6 +68,8 @@ export function AddRule({ axis, label, onAdd }: AddRuleProps) {
     axis.filter((type) => renderingFor(type.availability, 'settings_list') === rendering);
 
   const offered = on('offer');
+  const locked = on('upsell');
+  const unavailable = on('explain');
 
   // ==========================================================================
   // THE CHOICES, BY KEY — NOT A TYPE AND A PRESET ID PACKED INTO ONE STRING.
@@ -58,131 +87,87 @@ export function AddRule({ axis, label, onAdd }: AddRuleProps) {
   ]);
 
   return (
-    <>
-      <p>
-        <label>
-          {label}{' '}
-          <select
-            value=""
-            onChange={(event) => {
-              const chosen = choices[Number(event.target.value)];
+    <p>
+      <label>
+        {label}{' '}
+        <select
+          value=""
+          onChange={(event) => {
+            const chosen = choices[Number(event.target.value)];
 
-              if (chosen !== undefined) {
-                onAdd(toRule(chosen.type, chosen.preset, {}));
-              }
-            }}
-          >
-            <option value="">{__('Choose…', 'wconvert')}</option>
-            {offered.map((type) => (
+            if (chosen !== undefined) {
+              onAdd(toRule(chosen.type, chosen.preset, {}));
+            }
+          }}
+        >
+          <option value="">{__('Choose…', 'wconvert')}</option>
+
+          {/*
+            **A type with no shortcuts is a bare option, not a group of one.**
+            An `<optgroup>` labelled *Page load* holding one option labelled
+            *Page load* is the same word twice at two indent levels, and the
+            targeting axis is five of those — which is what a merchant would
+            have got when its two hand-rolled selects became this one.
+          */}
+          {choices.map((choice, at) =>
+            choice.type.presets.length > 0 ? null : (
+              <option key={choice.type.type} value={at}>
+                {choice.type.label}
+              </option>
+            ),
+          )}
+
+          {offered.map((type) =>
+            type.presets.length === 0 ? null : (
               <optgroup key={type.type} label={type.label}>
                 {choices.map((choice, at) =>
                   choice.type !== type ? null : (
                     <option key={choice.preset?.id ?? ''} value={at}>
-                      {choice.preset !== null
-                        ? choice.preset.label
-                        : type.presets.length === 0
-                          ? type.label
-                          : __('Set it myself', 'wconvert')}
+                      {choice.preset !== null ? choice.preset.label : __('Set it myself', 'wconvert')}
                     </option>
                   ),
                 )}
               </optgroup>
-            ))}
-          </select>
-        </label>
-      </p>
+            ),
+          )}
 
-      <Absent locked={on('upsell')} unavailable={on('explain')} />
-    </>
-  );
-}
+          {/*
+            **The heading keeps the words.** *With WConvert Pro* is what named
+            this on screen before, and it is what `builder-editors.test.tsx`
+            reads — the test asserts that a premium type is NAMED, and it still
+            is. There is no link: the upgrade destination does not exist yet,
+            and "upgrade here" beside nothing to click is worse than silence.
+          */}
+          {locked.length > 0 && (
+            <optgroup disabled label={__('With WConvert Pro', 'wconvert')}>
+              {locked.map((type) => (
+                <option key={type.type} value="" disabled>
+                  {type.label}
+                </option>
+              ))}
+            </optgroup>
+          )}
 
-/**
- * What this install cannot run, as one compact list.
- *
- * ============================================================================
- * THE REASON IS THE SAME FOR EVERY ITEM IN A GROUP, SO IT IS SAID ONCE.
- * ============================================================================
- * This was two blocks of grid cards, each card repeating the sentence its
- * neighbour had just made: *"Cart is worth at least — Needs WooCommerce on
- * this site."* beside *"Has something in their cart — Needs WooCommerce on
- * this site."* Two hundred pixels to say one thing twice, under a heading that
- * said it a third time.
- *
- * A definition list is what the content actually is: the reason is the TERM
- * and the capabilities it covers are the description. So the reason is stated
- * once, as the label of the group, and each capability is a chip.
- *
- * **And the unavailable ones are grouped BY what they need.** An install
- * missing WooCommerce and WP SMS gets two honest lines rather than one lumped
- * "not available on this site", which is ADR 0026's own argument — a merchant
- * who deactivated something should not have to guess which of their plugins
- * did it — applied to the shape rather than only to the words.
- *
- * ============================================================================
- * TWO GROUPS AND NEVER ONE.
- * ============================================================================
- * `locked` is buyable from us and `unavailable` is not. Collapsing them offers
- * a merchant with no store a WooCommerce licence we do not sell, and shows a
- * paying Pro customer an advertisement for Pro. The cascade is
- * `renderingFor`'s, shared with the goal screen and the Destinations list.
- *
- * **The heading keeps the words.** *With WConvert Pro:* is what named this on
- * screen before and it is what `builder-editors.test.tsx` reads — the test
- * asserts that a premium type is NAMED, and it still is.
- *
- * **Metadata, never a disabled control.** wp.org Guideline 9 fires on showing
- * a real control the user cannot use, and the premium code genuinely is not in
- * this bundle — there is nothing here to disable. A chip carries the type's
- * label from PHP and nothing a click could reach (ADR 0015). There is no link,
- * because the upgrade destination does not exist yet and "upgrade here" beside
- * nothing to click is worse than saying nothing.
- */
-function Absent({ locked, unavailable }: { locked: readonly RuleType[]; unavailable: readonly RuleType[] }) {
-  if (locked.length === 0 && unavailable.length === 0) {
-    return null;
-  }
-
-  return (
-    <dl className="wconvert-absent">
-      {locked.length > 0 && (
-        <>
-          <dt className="text-micro uppercase text-muted-foreground">
-            {__('With WConvert Pro:', 'wconvert')}
-          </dt>
-          <dd>
-            {locked.map((type) => (
-              <Badge key={type.type} variant="secondary">
-                <Lock aria-hidden="true" />
-                {type.label}
-              </Badge>
-            ))}
-          </dd>
-        </>
-      )}
-
-      {[...byDependency(unavailable)].map(([needs, types]) => (
-        <Fragment key={needs}>
-          <dt className="text-micro uppercase text-muted-foreground">
-            {sprintf(
-              /* translators: %s: the plugin the site needs, e.g. “WooCommerce”. */
-              __('Needs %s:', 'wconvert'),
-              needs
-            )}
-          </dt>
-          <dd>
-            {types.map((type) => (
-              // Amber is the meaning it already carries on the Optin list: the
-              // SITE is holding this back, and it is not ours to sell
-              // (ADR 0026, ADR 0037). No lock — a lock says "buy it".
-              <Badge key={type.type} variant="warning">
-                {type.label}
-              </Badge>
-            ))}
-          </dd>
-        </Fragment>
-      ))}
-    </dl>
+          {[...byDependency(unavailable)].map(([needs, types]) => (
+            <optgroup
+              key={needs}
+              disabled
+              label={sprintf(
+                /* translators: %s: the plugin the site needs, e.g. “WooCommerce”. */
+                __('Needs %s', 'wconvert'),
+                needs,
+              )}
+            >
+              {types.map((type) => (
+                <option key={type.type} value="" disabled>
+                  {type.label}
+                </option>
+              ))}
+            </optgroup>
+          ))}
+        </select>
+      </label>
+    </p>
   );
 }
 

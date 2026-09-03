@@ -77,8 +77,21 @@ function livePanel(over: Partial<DisplayRulesValue> = {}, types: RuleVocabulary 
   render(<Harness />);
 }
 
-/** Open one disclosure by the question it answers. */
-const open = (eyebrow: string) => userEvent.click(screen.getByRole('button', { name: new RegExp(`^${eyebrow}`) }));
+/**
+ * Open one disclosure by the question it answers, if it is not open already.
+ *
+ * **Idempotent, because the panel now opens what needs attention on arrival.**
+ * A bare click would CLOSE the section a test had come to look inside — an
+ * Optin with no Trigger opens *When* by itself, and that is most of this file's
+ * fixtures.
+ */
+const open = async (eyebrow: string) => {
+  const trigger = screen.getByRole('button', { name: new RegExp(`^${eyebrow}`) });
+
+  if (trigger.getAttribute('aria-expanded') !== 'true') {
+    await userEvent.click(trigger);
+  }
+};
 
 /**
  * Which rule types an add control is offering.
@@ -89,8 +102,24 @@ const open = (eyebrow: string) => userEvent.click(screen.getByRole('button', { n
  * not — which would make the assertions below pass on a control offering
  * nothing at all.
  */
-const offered = (label: string): string[] =>
-  [...screen.getByLabelText(label).querySelectorAll('optgroup')].map((group) => group.label);
+const offered = (label: string): string[] => {
+  const control = screen.getByLabelText(label);
+
+  return [
+    // A type with shortcuts is a group; one without is a bare option, because
+    // a group of one is the same word at two indent levels.
+    ...[...control.querySelectorAll('optgroup:not([disabled])')].map((group) => (group as HTMLOptGroupElement).label),
+    ...[...control.querySelectorAll(':scope > option')]
+      .filter((option) => (option as HTMLOptionElement).value !== '')
+      .map((option) => option.textContent ?? ''),
+  ];
+};
+
+/** What the menu says this install CANNOT run, as its disabled group labels. */
+const absent = (label: string): string[] =>
+  [...screen.getByLabelText(label).querySelectorAll('optgroup[disabled]')].map(
+    (group) => (group as HTMLOptGroupElement).label,
+  );
 
 describe('the four sections', () => {
   it('asks Where, When, Who and How often, in that order', () => {
@@ -100,9 +129,7 @@ describe('the four sections', () => {
     // off the DOM rather than off four separate lookups so a reshuffle fails
     // here rather than passing four times.
     expect(
-      screen
-        .getAllByRole('button', { expanded: false })
-        .map((button) => button.querySelector('.wconvert-section__eyebrow')?.textContent),
+      [...document.querySelectorAll('.wconvert-section__eyebrow')].map((span) => span.textContent),
     ).toEqual(['Where', 'When', 'Who', 'How often']);
   });
 
@@ -114,6 +141,34 @@ describe('the four sections', () => {
     await open('When');
 
     expect(screen.getByLabelText('Add a trigger')).toBeInTheDocument();
+  });
+
+  /**
+   * ==========================================================================
+   * OPEN WHAT NEEDS ATTENTION — NOT WHAT IS SET.
+   * ==========================================================================
+   * "Open the sections that have rules in them" is the obvious rule and it is
+   * wrong: a [[Playbook]] prefills across three axes, so a brand-new Optin
+   * would open three of four and this tab would be LONGER than the four closed
+   * rows it replaced. `attention` is ADR 0042 rule 2 read literally — open what
+   * changes what you do next.
+   */
+  it('opens the section that needs attention, and only that one', () => {
+    // No Trigger at all: `whenSummary` says "Never — it has no trigger yet".
+    panel();
+
+    expect(
+      screen
+        .getAllByRole('button', { expanded: true })
+        .map((button) => button.querySelector('.wconvert-section__eyebrow')?.textContent),
+    ).toEqual(['When']);
+  });
+
+  /** And an Optin whose rules are all fine opens nothing at all. */
+  it('opens nothing where there is nothing to act on', () => {
+    panel({ rules: [{ type: 'page_load' }] });
+
+    expect(screen.queryAllByRole('button', { expanded: true })).toHaveLength(0);
   });
 });
 
@@ -610,10 +665,22 @@ describe('a rule type this install cannot run', () => {
 
     await open('When');
 
-    const add = screen.getByLabelText('Add a trigger');
+    expect(offered('Add a trigger')).not.toContain('click_element');
+    // ==========================================================================
+    // NAMED IN THE MENU, WHICH IS WHERE THE MERCHANT WENT LOOKING FOR IT.
+    // ==========================================================================
+    // It was a permanent block of chips under the Add control, drawn on every
+    // visit of every section. ADR 0026's `explain` is unchanged; what moved is
+    // which thing the list is (ADR 0054).
+    expect(absent('Add a trigger')).toContain('With WConvert Pro');
 
-    expect(within(add).queryByRole('option', { name: 'click_element' })).toBeNull();
-    expect(screen.getAllByText(/With WConvert Pro:/).length).toBeGreaterThan(0);
+    const menu = screen.getByLabelText('Add a trigger');
+    const pro = menu.querySelector('optgroup[disabled][label="With WConvert Pro"]') as HTMLElement;
+
+    expect(within(pro).getByText('click_element')).toBeInTheDocument();
+    // Metadata, never a control: Guideline 9 fires on a real control the user
+    // cannot use, and there is nothing here a click could reach (ADR 0015).
+    expect(within(pro).getByText('click_element')).toBeDisabled();
   });
 
   /**
@@ -645,12 +712,25 @@ describe('a rule type this install cannot run', () => {
     // Grouping BY what is missing is ADR 0026's own argument applied to the
     // shape: an install missing two plugins gets two honest lines rather than
     // one lumped "not available on this site".
-    const woo = screen.getByText('Needs WooCommerce:').nextElementSibling as HTMLElement;
+    const menu = screen.getByLabelText('Add a condition');
+    const woo = menu.querySelector('optgroup[disabled][label="Needs WooCommerce"]') as HTMLElement;
 
     expect(within(woo).getByText('cart_has_items')).toBeInTheDocument();
     expect(within(woo).getByText('cart_value_min')).toBeInTheDocument();
     // Never an upsell: a rule the SITE cannot serve is not ours to sell.
-    expect(within(woo).queryByText(/Pro/)).toBeNull();
+    expect(absent('Add a condition')).not.toContain('With WConvert Pro');
+  });
+
+  /**
+   * And an install that has everything gets a flat menu — the screen is
+   * simpler for the customer who bought it all, which is the right direction.
+   */
+  it('draws no disabled group at all where the install can run everything', async () => {
+    panel({ rules: [{ type: 'page_load' }] }, { types: ruleTypes({ free: 'ready', pro: 'ready' }) });
+
+    await open('Who');
+
+    expect(absent('Add a condition')).toEqual([]);
   });
 
   /** And a rule already ON the Optin says the same thing on its own row. */
@@ -690,12 +770,48 @@ describe('where it shows', () => {
   });
 
   /**
-   * The visitor predicate is held APART from the two lists, as a field beside
-   * them: the lists are a union of page sets, so a visitor rule dropped into
-   * the include list would widen the Optin to the whole site for anyone
-   * matching it (ADR 0005).
+   * ==========================================================================
+   * THE SAME ADD CONTROL AS THE OTHER THREE, WHICH CLOSES A LATENT HOLE.
+   * ==========================================================================
+   * The two lists had a hand-rolled `<select>` over every type that called
+   * `renderingFor` nowhere — so the day a targeting type declares a `tier` or a
+   * `requires`, it would have been offered on a site that cannot run it, with
+   * no gate and no explanation. That is the exact failure `AddRule` closes, and
+   * it was closed on three axes out of four.
    */
-  it('keeps the visitor predicate out of the page lists', async () => {
+  it('gates the page lists the way every other axis is gated', async () => {
+    panel(
+      {},
+      {
+        types: {
+          ...vocabulary,
+          targeting: vocabulary.targeting.map((type) =>
+            type.type === 'url' ? { ...type, tier: 'pro', availability: 'locked' as const } : type,
+          ),
+        },
+      },
+    );
+
+    await open('Where');
+
+    for (const list of screen.getAllByLabelText('Add')) {
+      // Named, and unreachable — the same rendering the other three axes give
+      // a locked type, from the same `renderingFor` cascade.
+      expect(within(list).getByText('url')).toBeDisabled();
+      expect(
+        [...list.querySelectorAll('optgroup[disabled]')].map((group) => (group as HTMLOptGroupElement).label),
+      ).toContain('With WConvert Pro');
+    }
+  });
+
+  /**
+   * The visitor predicate is held APART from the two lists: they are a union of
+   * page SETS, so a visitor rule dropped into the include list would widen the
+   * Optin to the whole site for anyone matching it (ADR 0005). It is still
+   * STORED on this axis — only the client cannot read the auth cookie — and it
+   * is DRAWN under WHO, which is the section a merchant looks in.
+   */
+  it('keeps the visitor predicate out of the page lists, and out of this section', async () => {
     panel();
 
     await open('Where');
@@ -704,21 +820,40 @@ describe('where it shows', () => {
       expect(within(list).queryByRole('option', { name: 'logged_in' })).toBeNull();
     }
 
+    expect(screen.queryByLabelText('logged_in')).toBeNull();
+
+    await open('Who');
+
     expect(screen.getByLabelText('logged_in')).toBeInTheDocument();
   });
 
   /**
-   * **Exclude beats include, and the screen says so** — along with the other
-   * half a merchant cannot guess: an empty include list is "everywhere", not
-   * "nowhere".
+   * **The prose folded into the empty state.** *"Empty means everywhere.
+   * Exclusions always win."* stood above both lists on every visit, and half of
+   * it described the empty list right below it. ADR 0042 rule 2: the first half
+   * IS the empty state, and the second appears only when both lists hold
+   * something — the only arrangement in which precedence decides anything.
    */
-  it('states how the two lists combine, and what an empty one means', async () => {
+  it('says what an empty list means by being the empty state', async () => {
     panel();
 
     await open('Where');
 
-    expect(screen.getByText(/Empty means everywhere/)).toBeInTheDocument();
-    expect(screen.getByText(/Exclusions always win/)).toBeInTheDocument();
+    expect(screen.getByText('Shown everywhere on the site.')).toBeInTheDocument();
+    expect(screen.queryByText(/exclusions always win/i)).toBeNull();
+  });
+
+  it('says which list wins only once both of them hold something', async () => {
+    panel({
+      targeting: {
+        include: [{ type: 'url', value: '/a' }],
+        exclude: [{ type: 'url', value: '/b' }],
+      },
+    });
+
+    await open('Where');
+
+    expect(screen.getByText(/exclusions always win/i)).toBeInTheDocument();
   });
 
   /**
@@ -729,7 +864,7 @@ describe('where it shows', () => {
   it('offers three answers for the visitor predicate, and clears rather than storing false', async () => {
     const changed = panel({ targeting: { logged_in: true } });
 
-    await open('Where');
+    await open('Who');
     await userEvent.selectOptions(screen.getByLabelText('logged_in'), '');
 
     expect(changed).toHaveBeenCalledWith({ targeting: {} });

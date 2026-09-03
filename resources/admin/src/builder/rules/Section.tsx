@@ -32,6 +32,20 @@ import { Collapsible } from 'radix-ui';
  * Trigger at all — the summary already SAYS so, in words the merchant can act
  * on. Repeating it as a badge would be the same fact twice; what the attribute
  * buys is the emphasis, which is CSS's to give.
+ *
+ * ============================================================================
+ * AND OPEN IS THE PANEL'S TO DECIDE, WHICH IS WHY IT IS CONTROLLED.
+ * ============================================================================
+ * It was `defaultOpen`, always false, so every visit began with four closed
+ * rows — including the one saying *"Never — it has no trigger yet"*, which is
+ * the sentence a merchant most needs to act on and the one furthest from a
+ * control. `attention` already names exactly that set (ADR 0054 rule 4 read
+ * one level up: a screen that states a fact owes the way to change it), so
+ * {@see DisplayRules} opens those and leaves the rest shut.
+ *
+ * Controlled rather than a second `defaultOpen` prop, because the section
+ * cannot decide this: which of the four to open is a fact about the other
+ * three.
  */
 export interface SectionProps {
   /** A stable key, so a control id inside is never a translated string. */
@@ -42,13 +56,27 @@ export interface SectionProps {
   readonly summary: string;
   /** Something in here will not do what it looks like it does. */
   readonly attention?: boolean;
-  readonly defaultOpen?: boolean;
+  readonly open: boolean;
+  readonly onOpenChange: (open: boolean) => void;
   readonly children: ReactNode;
 }
 
-export function Section({ id, eyebrow, summary, attention = false, defaultOpen = false, children }: SectionProps) {
+export function Section({
+  id,
+  eyebrow,
+  summary,
+  attention = false,
+  open,
+  onOpenChange,
+  children,
+}: SectionProps) {
   return (
-    <Collapsible.Root className="wconvert-section" defaultOpen={defaultOpen} data-attention={attention || undefined}>
+    <Collapsible.Root
+      className="wconvert-section"
+      open={open}
+      onOpenChange={onOpenChange}
+      data-attention={attention || undefined}
+    >
       <Collapsible.Trigger className="wconvert-section__summary">
         <span className="wconvert-section__eyebrow text-micro uppercase text-muted-foreground">{eyebrow}</span>
         <span className="wconvert-section__sentence text-body">{summary}</span>

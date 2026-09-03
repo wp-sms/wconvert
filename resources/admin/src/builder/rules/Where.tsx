@@ -2,28 +2,33 @@ import { __ } from '@wordpress/i18n';
 import { Description } from '../../shell/Description';
 import { ParamField } from '../controls';
 import { RuleRows, type Row } from '../RuleRows';
-import type { RuleType, Targeting } from '../api';
+import { AddRule } from './AddRule';
+import type { Rule, RuleType, Targeting } from '../api';
 
 /**
  * *Where* it may appear — the Targeting axis, as the Where section's body.
  *
  * ============================================================================
- * EXCLUDE BEATS INCLUDE, AND THE SCREEN SAYS SO.
+ * EXCLUDE BEATS INCLUDE, AND THE SCREEN SAYS SO — WHEN IT MATTERS.
  * ============================================================================
  * The axis is an include list unioned, an exclude list unioned, and exclude
  * winning (CONTEXT.md, Targeting). A merchant who has put the checkout in both
  * lists has asked a question the rule already answers, and a builder that let
  * them find out from a live site is a builder that made them guess.
  *
- * **An empty include list is "everywhere", not "nowhere"** — the only reading
- * under which an exclude-only Optin, everywhere except the checkout, means
- * anything. That is stated on screen for the same reason: the empty state is
- * where the surprise would live.
+ * **That sentence used to be standing text.** *"Empty means everywhere.
+ * Exclusions always win."* sat above both lists on every visit, and half of it
+ * was about a state the merchant could see for themselves — the empty list
+ * right below it. ADR 0042 rule 2: say only what changes what they do next. So
+ * the "empty means everywhere" half **is** the empty state now, and the
+ * precedence half appears only once both lists hold something, which is the
+ * only arrangement in which it decides anything.
  *
- * **`logged_in` is held apart from the two lists**, as a field beside them.
- * The lists are a union of page SETS, so a visitor rule dropped into the
- * include list would widen the Optin to the whole site for anyone matching it.
- * Read whole, the axis is `page-set AND logged_in` (ADR 0005).
+ * **`logged_in` moved to the WHO section.** It is still stored on this axis —
+ * the browser cannot read WordPress's HttpOnly auth cookie, so only the server
+ * can answer it, and read whole the axis is `page-set AND logged_in`
+ * (ADR 0005). What moved is the CONTROL, to the section a merchant looks in
+ * for a question about who sees the Optin. {@see Who} carries the note.
  *
  * This was `TargetingEditor`, whole; what it lost is its own `<h3>`, because
  * the section above it is the heading now.
@@ -34,47 +39,25 @@ export interface WhereProps {
   readonly onChange: (targeting: Targeting) => void;
 }
 
-/**
- * The one visitor predicate, and the three answers it has.
- *
- * Unset means **do not ask**, which is not the same as false: an Optin that
- * does not care whether the visitor is signed in is a different thing from one
- * that shows only to signed-out visitors, and collapsing them into a checkbox
- * would make "any visitor" unspellable.
- */
-const SIGNED_IN = [
-  { value: '', label: __('Anyone', 'wconvert') },
-  { value: 'yes', label: __('Only signed-in visitors', 'wconvert') },
-  { value: 'no', label: __('Only signed-out visitors', 'wconvert') },
-];
-
 export function Where({ types, targeting, onChange }: WhereProps) {
   // The five page rules. `logged_in` is on this axis only because the client
   // cannot read WordPress's HttpOnly auth cookie, and it is not a page set.
   const pages = types.filter((type) => type.kind === 'page');
-  const visitor = types.find((type) => type.kind === 'visitor');
+
+  const include = targeting.include ?? [];
+  const exclude = targeting.exclude ?? [];
 
   const setList = (list: 'include' | 'exclude', rules: { type: string; value: unknown }[]) =>
     onChange({ ...targeting, [list]: rules });
 
   return (
     <>
-      {/*
-        `mb-3` rather than a margin in the stylesheet: `Description` carries
-        `m-0` as a Tailwind utility, which is `!important` (ADR 0035), so no
-        hand-written rule can reach it. Without this the sentence sat directly
-        on top of "SHOW IT ON" with no gap at all.
-      */}
-      <Description className="mb-3">
-        {__('Empty means everywhere. Exclusions always win.', 'wconvert')}
-      </Description>
-
       <RuleList
         list="include"
         heading={__('Show it on', 'wconvert')}
-        empty={__('Everywhere on the site.', 'wconvert')}
+        empty={__('Shown everywhere on the site.', 'wconvert')}
         types={pages}
-        rules={targeting.include ?? []}
+        rules={include}
         onChange={(rules) => setList('include', rules)}
       />
 
@@ -83,43 +66,19 @@ export function Where({ types, targeting, onChange }: WhereProps) {
         heading={__('But never on', 'wconvert')}
         empty={__('Nowhere is excluded.', 'wconvert')}
         types={pages}
-        rules={targeting.exclude ?? []}
+        rules={exclude}
         onChange={(rules) => setList('exclude', rules)}
       />
 
       {/*
-        A third group, not a stray field. `logged_in` is held APART from the two
-        lists — they are a union of page SETS and a visitor rule dropped into
-        one would widen the Optin to the whole site for anyone matching it
-        (ADR 0005) — so it needs the same separation between it and them that
-        they have between each other.
+        `mt-3` rather than a margin in the stylesheet: `Description` carries
+        `m-0` as a Tailwind utility, which is `!important` (ADR 0035), so no
+        hand-written rule can reach it.
       */}
-      {visitor !== undefined && (
-        <p className="wconvert-rules__group">
-          <label>
-            {visitor.label}{' '}
-            <select
-              value={targeting.logged_in === undefined ? '' : targeting.logged_in ? 'yes' : 'no'}
-              onChange={(event) => {
-                // Cleared rather than set to false: unset means "do not ask",
-                // and an Optin that does not care whether the visitor is
-                // signed in is a different thing from one that shows only to
-                // signed-out visitors.
-                const next = { ...targeting };
-
-                delete next.logged_in;
-
-                onChange(event.target.value === '' ? next : { ...next, logged_in: event.target.value === 'yes' });
-              }}
-            >
-              {SIGNED_IN.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
-        </p>
+      {include.length > 0 && exclude.length > 0 && (
+        <Description className="mt-3">
+          {__('A page in both lists is kept off — exclusions always win.', 'wconvert')}
+        </Description>
       )}
     </>
   );
@@ -188,26 +147,31 @@ function RuleList({ list, heading, empty, types, rules, onChange }: RuleListProp
     <div className="wconvert-rules__group">
       <p className="wconvert-rules__label text-micro uppercase text-muted-foreground">{heading}</p>
       <RuleRows rows={rows} empty={empty} />
-      <p>
-        <label>
-          {__('Add', 'wconvert')}{' '}
-          <select
-            value=""
-            onChange={(event) => {
-              if (event.target.value !== '') {
-                onChange([...rules, { type: event.target.value, value: '' }]);
-              }
-            }}
-          >
-            <option value="">{__('Choose…', 'wconvert')}</option>
-            {types.map((type) => (
-              <option key={type.type} value={type.type}>
-                {type.label}
-              </option>
-            ))}
-          </select>
-        </label>
-      </p>
+      {/*
+        ==================================================================
+        THE SAME ADD CONTROL AS THE OTHER THREE SECTIONS, AND THAT CLOSES A
+        HOLE RATHER THAN TIDYING ONE.
+        ==================================================================
+        This was a hand-rolled `<select>` over `types` that called
+        `renderingFor` nowhere — so the day a targeting type declares a `tier`
+        or a `requires`, it would have been offered on a site that cannot run
+        it, with no gate and no explanation. That is the exact failure
+        {@see AddRule} was written to close, and it was closed on three axes
+        out of four.
+
+        **The shape conversion is here**, at the boundary that owns the shape:
+        a Targeting rule is `{type, value}` and `toRule` emits the type's own
+        params, so a type declaring `value` with nothing filled in comes back
+        without the key. The empty string is what this list has always
+        appended, and it is what `ParamField` opens on.
+      */}
+      <AddRule
+        axis={types}
+        label={__('Add', 'wconvert')}
+        onAdd={(rule: Rule) =>
+          onChange([...rules, { type: rule.type, value: rule.value ?? '' }])
+        }
+      />
     </div>
   );
 }
