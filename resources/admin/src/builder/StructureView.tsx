@@ -153,6 +153,10 @@ export interface StructureViewProps {
    * around, which is what keeps ↑↓ working after a click.
    */
   readonly focus: { readonly path: Path } | null;
+  /** When this Optin stops running, for the one block that counts to it. */
+  readonly endsAt?: string;
+  /** Take the merchant to the field that sets it. */
+  readonly onSetEndDate?: () => void;
 }
 
 export function StructureView({
@@ -163,6 +167,8 @@ export function StructureView({
   onSelect,
   onChange,
   focus,
+  endsAt,
+  onSetEndDate,
 }: StructureViewProps) {
   /*
    * **One line that is both the visible answer and the announced one.**
@@ -510,6 +516,8 @@ export function StructureView({
           onChange(next);
           setSaid(sentence);
         }}
+        endsAt={endsAt}
+        onSetEndDate={onSetEndDate}
       />
     </RegionBody>
   );

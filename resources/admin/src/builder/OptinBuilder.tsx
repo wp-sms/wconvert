@@ -363,6 +363,8 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
    * same row has to be two requests.
    */
   const [focusRow, setFocusRow] = useState<{ path: Path } | null>(null);
+  /** Its mirror one tab over: which rules section the screen has asked to open. */
+  const [revealSection, setRevealSection] = useState<{ id: string; focus?: string } | null>(null);
   const [leaving, setLeaving] = useState(false);
   const back = useRef<HTMLButtonElement>(null);
   /** See the history effect below: which control the pending change came from. */
@@ -888,6 +890,26 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
     setFocusRow({ path });
   };
 
+  /*
+   * ==========================================================================
+   * THE OTHER DESTINATION, AND IT IS NOT A BLOCK.
+   * ==========================================================================
+   * A `countdown` counts to the Optin's `ends_at` and carries no deadline of
+   * its own (ADR 0052), so the fix for *"the clock will be empty"* is a field
+   * on the Rules tab. Three steps rather than one, because a route that lands
+   * on the right tab with the section shut has stopped one click short
+   * (ADR 0054 rule 4) — and the section-open half is the mechanism the rules
+   * panel grew for its own reasons.
+   *
+   * A fresh object every time, because identity is the signal: asking twice for
+   * the same section has to be two requests, exactly as {@link setFocusRow}
+   * does one tab over.
+   */
+  const goToSchedule = () => {
+    setTab('rules');
+    setRevealSection({ id: 'how-often', focus: 'wconvert-ends-at' });
+  };
+
   /** Undo and redo as the toolbar takes them, on either tab that draws it. */
   const history = {
     canUndo: past !== null && canUndo(past),
@@ -1104,6 +1126,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
               act={act}
               destinations={destinations?.destinations ?? null}
               onGoTo={goTo}
+              onGoToSchedule={goToSchedule}
             />
 
             <HistoryControls history={history} />
@@ -1406,6 +1429,8 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
                         onSelect={chooseFromTree}
                         onChange={(next, coalesce) => edit({ template: next }, coalesce)}
                         focus={focusRow}
+                        endsAt={displayRules.schedule.ends_at}
+                        onSetEndDate={goToSchedule}
                       />
                     </>
                   )}
@@ -1429,6 +1454,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
                     // overlay has a priority worth drawing.
                     overlay={overlay}
                     onChange={(patch) => edit(asConfigPatch(patch) as Config)}
+                    reveal={revealSection}
                   />
                 </RegionBody>
               </Region>

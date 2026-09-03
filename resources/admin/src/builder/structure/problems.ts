@@ -42,6 +42,24 @@ export interface Problem {
   readonly said: string;
   /** The block it is about, where it is about one. */
   readonly path: Path | null;
+  /**
+   * Where the fix is, when it is not a block on the Content tab.
+   *
+   * ==========================================================================
+   * A SECOND DESTINATION SHAPE, BECAUSE ONE OF THESE IS NOT ABOUT A BLOCK.
+   * ==========================================================================
+   * `whatCountsDownToNothing` names a `countdown` and its fix is an `ends_at`
+   * on the **Rules** tab. It carried the block's `path`, so pressing the
+   * sentence took the merchant to the Content tab and selected the clock —
+   * *away* from the thing to change — with the route carried entirely by the
+   * words *"under 'How often' on the Rules tab"*. A door that opens onto the
+   * wrong room is worse than no door (ADR 0042 rule 4).
+   *
+   * A discriminator rather than a second field of paths, because the two
+   * destinations are not the same kind of thing: one is an address in a tree
+   * and the other is a named place on a screen.
+   */
+  readonly go?: 'schedule';
 }
 
 /**
@@ -193,11 +211,19 @@ function whatCountsDownToNothing(template: Template, endsAt: string | undefined)
 
   return [
     {
+      /*
+        **The words no longer carry the route, because the button does.** They
+        said *"under 'How often' on the Rules tab"* and then took the merchant
+        to the Content tab, which is the failure ADR 0042 rule 4 names read
+        backwards: an instruction pointing somewhere the control is not. What
+        is left is the fact and what to do about it.
+      */
       said: __(
-        'This design shows a countdown, and nothing says when this Optin stops running. Set an end date under “How often” on the Rules tab, or the clock stays empty.',
+        'This design shows a countdown, and nothing says when this Optin stops running. Set an end date, or the clock stays empty.',
         'wconvert',
       ),
-      path: clocks[0].path,
+      path: null,
+      go: 'schedule',
     },
   ];
 }

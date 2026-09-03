@@ -1,5 +1,6 @@
 import { __, _n, _x, sprintf } from '@wordpress/i18n';
 import { fromRule } from '../presets';
+import { momentOf, readable } from '../wallTime';
 import type { Entry } from './axis';
 import type { Frequency, Rule, RuleParam, RuleType, Schedule, Targeting } from '../api';
 
@@ -437,21 +438,42 @@ export function whoSummary(
  * *When it runs*, as a clause — or null where nothing was scheduled.
  *
  * ============================================================================
- * FORMATTED IN THE READER'S LOCALE, FROM A WALL TIME WITH NO ZONE ON IT.
+ * FORMATTED IN THE SITE'S LOCALE, FROM A WALL TIME WITH NO ZONE ON IT.
  * ============================================================================
  * The stored value is `2026-11-27 09:00` and carries no offset, which is the
- * whole point of it (`src/Optin/Schedule.php`). `new Date('…T09:00')` reads a
- * zoneless string as LOCAL time and `Intl` renders it back in the same zone,
- * so the round trip shifts nothing — the merchant reads back the wall time
- * they typed, spelled the way their own browser spells dates.
+ * whole point of it (`src/Optin/Schedule.php`). {@see momentOf} reads it back
+ * as the same wall time and {@see readable} spells it, so the round trip shifts
+ * nothing — the merchant reads back what they typed.
  *
  * That is also why no timezone is named here. The instant this resolves to is
  * the SITE's business and is computed once, on the server; this screen is
  * showing the merchant their own words back.
+ *
+ * ============================================================================
+ * AND A WINDOW THAT HAS CLOSED SAYS SO, BECAUSE NOTHING ELSE DOES.
+ * ============================================================================
+ * An Optin past its `ends_at` stays **Published**, shows nothing and records no
+ * Impression (ADR 0050) — correctly, and silently. The Optin list gives it no
+ * badge and the builder gave it no sentence, so a merchant whose sale finished
+ * last week reads *"Runs 27 Nov to 30 Nov"* and learns nothing about today.
+ *
+ * It reads as the past tense and carries `attention`, which under the rules
+ * panel's own rule opens the section on arrival. That is not a defect being
+ * flagged — a campaign ending is what a campaign does — it is ADR 0042 rule 2:
+ * extending it or unpublishing it is the next thing they do, and they cannot
+ * decide either without knowing.
  */
 function windowClause(schedule: Schedule): string | null {
   const from = readable(schedule.starts_at);
   const to = readable(schedule.ends_at);
+
+  if (to !== null && hasFinished(schedule)) {
+    return sprintf(
+      /* translators: %s: a date and time it stopped running. */
+      __('Stopped running on %s', 'wconvert'),
+      to,
+    );
+  }
 
   if (from !== null && to !== null) {
     return sprintf(
@@ -479,18 +501,7 @@ function windowClause(schedule: Schedule): string | null {
       );
 }
 
-/** One stored wall time, spelled the way the reader's browser spells dates. */
-function readable(wallTime: string | undefined): string | null {
-  if (wallTime === undefined) {
-    return null;
-  }
 
-  const moment = new Date(wallTime.replace(' ', 'T'));
-
-  return Number.isNaN(moment.getTime())
-    ? null
-    : new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(moment);
-}
 
 /**
  * The allowance, read out.
@@ -589,8 +600,12 @@ export function howOftenSummary(
         text,
       );
 
+  // A window that has closed is the one thing in this sentence a merchant has
+  // to act on — see {@link windowClause}.
+  const attention = hasFinished(schedule);
+
   if (!overlay || priority === 0) {
-    return { text: allowance, attention: false };
+    return { text: allowance, attention };
   }
 
   return {
@@ -600,8 +615,23 @@ export function howOftenSummary(
       allowance,
       priority,
     ),
-    attention: false,
+    attention,
   };
+}
+
+/**
+ * Is this Optin's window already behind it?
+ *
+ * Read at RENDER rather than held, because the answer changes with the clock
+ * and nothing writes to the config when it does. The comparison is between two
+ * local instants — the stored wall time read back as one, and now — which is
+ * the merchant's own reading of their own schedule. The SITE's timezone decides
+ * the real instant and is the server's business (ADR 0050).
+ */
+function hasFinished(schedule: Schedule): boolean {
+  const ends = momentOf(schedule.ends_at);
+
+  return ends !== null && ends.getTime() < Date.now();
 }
 
 // ============================================================================

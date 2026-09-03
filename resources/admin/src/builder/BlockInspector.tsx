@@ -104,9 +104,28 @@ export interface BlockInspectorProps {
    * moved. One live region says both, in the words the tree already uses.
    */
   readonly onSwap: (template: Template, said: string) => void;
+  /**
+   * When this Optin stops running, as the merchant typed it — or undefined.
+   *
+   * Passed through rather than read here: a `countdown` counts to the Optin's
+   * `ends_at` (ADR 0052), so the block with no setting of its own is the one
+   * that needs a value from another tab ({@see SlotFields}).
+   */
+  readonly endsAt?: string;
+  /** Take the merchant to the field that sets it. */
+  readonly onSetEndDate?: () => void;
 }
 
-export function BlockInspector({ template, labels, path, act, onChange, onSwap }: BlockInspectorProps) {
+export function BlockInspector({
+  template,
+  labels,
+  path,
+  act,
+  onChange,
+  onSwap,
+  endsAt,
+  onSetEndDate,
+}: BlockInspectorProps) {
   const heading = useId();
   const block = path === null ? null : nodesOf(template.tree).find((each) => samePath(each.path, path)) ?? null;
   const slot = path === null ? null : slotsOf(template.tree).find((each) => samePath(each.path, path)) ?? null;
@@ -213,6 +232,8 @@ export function BlockInspector({ template, labels, path, act, onChange, onSwap }
             folding one into the burst of typing beside it would make a single
             ⌘Z take back both the sentence and the choice.
           */
+          endsAt={endsAt}
+          onSetEndDate={onSetEndDate}
           onParam={(param, value) =>
             onChange({ ...template, tree: withValue(template.tree, slot.path, param, value) })
           }

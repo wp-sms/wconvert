@@ -137,6 +137,8 @@ export interface ReadinessDialogProps {
   readonly destinations: readonly Destination[] | null;
   /** Open the block a problem is about, on the tab that edits it. */
   readonly onGoTo: (path: Path) => void;
+  /** Open the schedule, on the tab that edits THAT — the countdown's fix. */
+  readonly onGoToSchedule: () => void;
 }
 
 export function ReadinessDialog({
@@ -153,6 +155,7 @@ export function ReadinessDialog({
   act,
   destinations,
   onGoTo,
+  onGoToSchedule,
 }: ReadinessDialogProps) {
   const [open, setOpen] = useState(false);
   const status = statusOf(optin);
@@ -322,6 +325,10 @@ export function ReadinessDialog({
                   setOpen(false);
                   onGoTo(path);
                 }}
+                onGoToSchedule={() => {
+                  setOpen(false);
+                  onGoToSchedule();
+                }}
               />
             </div>
           )}
@@ -440,9 +447,12 @@ function Fact({
 function Problems({
   problems,
   onGoTo,
+  onGoToSchedule,
 }: {
   readonly problems: readonly Problem[];
   readonly onGoTo: (path: Path) => void;
+  /** The other destination a problem can name: the schedule, on the Rules tab. */
+  readonly onGoToSchedule: () => void;
 }) {
   return (
     <>
@@ -460,7 +470,16 @@ function Problems({
         */}
         {problems.map((problem, at) => (
           <li key={at}>
-            {problem.path === null ? (
+            {/*
+              Two destinations and a third case that is neither: a block on the
+              Content tab, the schedule on the Rules tab, and a problem with no
+              door — `whatCannotConvert`'s, whose answer is the gallery.
+            */}
+            {problem.go === 'schedule' ? (
+              <button type="button" className="wconvert-readiness__go" onClick={onGoToSchedule}>
+                {problem.said}
+              </button>
+            ) : problem.path === null ? (
               problem.said
             ) : (
               <button

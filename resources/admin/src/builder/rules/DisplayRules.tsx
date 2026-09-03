@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { entriesOffEveryAxis, entriesOn } from './axis';
 import { HowOften } from './HowOften';
 import { Section } from './Section';
@@ -65,9 +65,24 @@ export interface DisplayRulesProps {
    */
   readonly overlay: boolean;
   readonly onChange: (patch: Partial<DisplayRulesValue>) => void;
+  /**
+   * A section the SCREEN has asked this panel to open, as a fresh object each
+   * time it asks.
+   *
+   * **It exists because a control on another tab points here.** A `countdown`
+   * counts to the Optin's `ends_at` and carries no deadline of its own
+   * (ADR 0052), so its inspector says what it counts to and offers the route to
+   * the field — and a route that lands on a collapsed section is a route that
+   * stops one click short (ADR 0054 rule 4).
+   *
+   * Identity is the signal: a new object means a new request, and null means
+   * none has been made. Same shape and same reason as {@see StructureView}'s
+   * `focus`, which crosses the same boundary in the other direction.
+   */
+  readonly reveal?: { readonly id: string; readonly focus?: string } | null;
 }
 
-export function DisplayRules({ vocabulary, value, overlay, onChange }: DisplayRulesProps) {
+export function DisplayRules({ vocabulary, value, overlay, onChange, reveal }: DisplayRulesProps) {
   const { rules, targeting, frequency, schedule, priority } = value;
   const client = [...vocabulary.triggers, ...vocabulary.conditions];
   const all = [...vocabulary.targeting, ...client];
@@ -127,6 +142,33 @@ export function DisplayRules({ vocabulary, value, overlay, onChange }: DisplayRu
   const [open, setOpen] = useState<ReadonlySet<string>>(
     () => new Set(summaries.filter((axis) => axis.attention).map((axis) => axis.id)),
   );
+
+  /*
+   * **Open, then focus — in that order and in two paints.** Radix unmounts a
+   * collapsed section's body, so the field does not exist to focus until the
+   * open has rendered. `requestAnimationFrame` is what puts the second step
+   * after that paint; doing both in one effect focuses nothing at all.
+   */
+  useEffect(() => {
+    if (reveal === undefined || reveal === null) {
+      return;
+    }
+
+    setOpen((current) => new Set(current).add(reveal.id));
+
+    if (reveal.focus === undefined) {
+      return;
+    }
+
+    const frame = requestAnimationFrame(() => {
+      const field = document.getElementById(reveal.focus as string);
+
+      field?.focus();
+      field?.scrollIntoView({ block: 'center' });
+    });
+
+    return () => cancelAnimationFrame(frame);
+  }, [reveal]);
 
   const opener = (id: string) => (next: boolean) =>
     setOpen((current) => {

@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { isChoiceHeld, valueOfChoice } from './panel';
 
 /**
@@ -33,6 +34,16 @@ import { isChoiceHeld, valueOfChoice } from './panel';
  * drew two chips with neither ticked while the renderer drew an unambiguous
  * `h2`. `fallback` is the manifest's declared default — what the renderer does
  * with nothing — and it is what a merchant is actually looking at.
+ *
+ * ============================================================================
+ * AND A CLOSED SET OF PICTURES IS PICKED AS PICTURES ({@link renderChoice}).
+ * ============================================================================
+ * `icon.name` offers six glyphs and this control offered six NOUNS, so a
+ * merchant chose *Delivery van* and found out what it drew by looking at the
+ * preview (ADR 0054 rule 3). One optional callback rather than a branch on the
+ * param, because this file names no param and no value and is not about to
+ * start — the caller knows which of its settings has pictures, and every other
+ * one is untouched.
  */
 export function ParamChoice({
   id,
@@ -41,6 +52,7 @@ export function ParamChoice({
   held,
   fallback,
   nameOfValue,
+  renderChoice,
   onChange,
 }: {
   /** A stable key for the radio group — never a translated string. */
@@ -55,6 +67,16 @@ export function ParamChoice({
    */
   readonly fallback?: string;
   readonly nameOfValue: (choice: string) => string;
+  /**
+   * A picture for a value, where the values ARE pictures.
+   *
+   * Whatever it returns sits above the word rather than instead of it: the word
+   * is the accessible name, it is already translated, and `TemplateLabels`'s
+   * `icon.name.*` entries carry translator notes saying what each one is FOR.
+   * The picture is `aria-hidden` for the same reason it is in the renderer —
+   * *"check, Free shipping"* is noise.
+   */
+  readonly renderChoice?: (choice: string) => ReactNode;
   readonly onChange: (value: unknown) => void;
 }) {
   if (offered.length === 0) {
@@ -81,7 +103,16 @@ export function ParamChoice({
               checked={isChoiceHeld(held, choice, fallback)}
               onChange={() => onChange(valueOfChoice(choice))}
             />
-            <span className="wconvert-choice__label">{nameOfValue(choice)}</span>
+            <span
+              className={
+                renderChoice === undefined
+                  ? 'wconvert-choice__label'
+                  : 'wconvert-choice__label wconvert-choice__label--pictured'
+              }
+            >
+              {renderChoice?.(choice)}
+              {nameOfValue(choice)}
+            </span>
           </label>
         ))}
       </span>
