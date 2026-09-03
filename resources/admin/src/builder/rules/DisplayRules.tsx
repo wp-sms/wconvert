@@ -160,12 +160,14 @@ export function DisplayRules({ vocabulary, value, overlay, onChange, reveal }: D
       return;
     }
 
-    const frame = requestAnimationFrame(() => {
-      const field = document.getElementById(reveal.focus as string);
-
-      field?.focus();
-      field?.scrollIntoView({ block: 'center' });
-    });
+    /*
+      **`focus()` and nothing else.** It was followed by a `scrollIntoView`,
+      which is both redundant — focusing an element scrolls it into view unless
+      you pass `preventScroll` — and a crash: jsdom models no layout and does
+      not implement the method, so every run threw inside this frame *after* the
+      tests had passed, and the suite went green while the job went red.
+    */
+    const frame = requestAnimationFrame(() => document.getElementById(reveal.focus as string)?.focus());
 
     return () => cancelAnimationFrame(frame);
   }, [reveal]);
