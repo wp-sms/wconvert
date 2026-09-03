@@ -261,7 +261,19 @@ final class ViteHelper
      * is registered with `$in_footer` true, so nothing here changes about when
      * it runs relative to the page — and `wp_add_inline_script(…, 'before')`,
      * which is how {@see AdminMenu} hands over the screen's settings, still runs
-     * first because a classic inline script executes where it is written.
+     * first.
+     *
+     * *The REASON that is true was recorded wrongly and is corrected here. It
+     * read "because a classic inline script executes where it is written", and
+     * the before-inline is not classic: `WP_Scripts::do_item()` builds the
+     * before-tag, the src-tag and the after-tag into ONE string and applies
+     * `script_loader_tag` to all of it, so the `str_replace()` below marks the
+     * inline tag `type="module"` as well. Verified on a real WordPress —
+     * `<script type="module" id="wconvert-admin-js-before">` is what the page
+     * actually carries. The settings still run first, because module scripts
+     * execute in document order and the inline one is written first; and
+     * `window.wconvertAdmin = …` is a property assignment rather than a
+     * top-level declaration, so a module's own scope does not swallow it.*
      */
     private static function serveAsModule(string $handle): void
     {

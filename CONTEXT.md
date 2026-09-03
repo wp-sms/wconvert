@@ -848,6 +848,41 @@ licence stops the updater; it does not change what a running site does.
 > both must be a fully working install. A free install is not a crippled Pro install —
 > it is the whole product minus features it never carried.
 
+Pro is **one plugin at three [[Tier]]s**, and a customer moving up replaces their
+install rather than adding a second beside it.
+
+### Tier
+
+Which install supplies a registry member: `free`, or one of Pro's three rungs —
+`basic`, `pro`, `elite`. A **ladder**, not a flag: a higher rung supplies
+everything a lower one does, and `free` is supplied by all of them.
+
+**One tier is sold and all three display as "Pro".** The words are data
+(`tiers.json`), so splitting the range later is an edit to that file rather than
+a code change and a migration of every `tier` already saved on a live [[Optin]].
+
+A tier is **inferred, never stored**: an install reads its own rung back off the
+[[Module]] directories its build left behind. Possession is the whole gate — a
+module you do not have supplies nothing, whatever an install claims to be — so
+this is the same sentence [[Pro]] already makes, counted rather than answered
+yes or no.
+
+> Every registry declares `tier` locally, on members it already enumerates.
+> There is no cross-cutting list of premium capabilities anywhere, and adding a
+> rung adds no list either.
+
+### Module
+
+A named unit of premium capability, and **a directory** under `pro/modules/`
+holding its own `module.json`. Everything inside it is the module — its PHP, its
+loader source, its designs — and nothing outside it is.
+
+That is what makes a per-[[Tier]] build a deletion rather than a list of paths
+somebody maintains, and what lets an install infer its own rung by looking at
+what is on disk. A module is not a runtime concept: nothing loads one, registers
+one, or asks whether one is enabled. It is a boundary the *build* cuts on and the
+file system answers about.
+
 ### Availability
 
 Whether a member of a registry — a [[Trigger]] or [[Condition]] type, a
@@ -856,7 +891,8 @@ this install right now. Three states, and the distinction between the last two i
 load-bearing:
 
 - **`ready`** — present and usable.
-- **`locked`** — absent because the install does not have [[Pro]]. Buyable from us.
+- **`locked`** — absent because the install does not have the [[Tier]] the member
+  is declared at. Buyable from us.
 - **`unavailable`** — absent because something the *site* would need is missing: no
   WooCommerce, no WSMS, no MailPoet. Not buyable from us.
 

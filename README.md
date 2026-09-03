@@ -864,6 +864,43 @@ write one SQLite file and corrupt it, which surfaces as intermittent 500s that
 read like flaky tests rather than a broken database. It is a `server` flag only
 — the `php` subcommand below rejects it.
 
+### Proving the two replacements on a real WordPress
+
+Two `bin/verify-*.php` scripts assert what a recording stub structurally cannot:
+that after the swap **nothing can put free's script back**. `WP_Dependencies` is
+a graph, and a dequeued-but-still-registered handle is resolved and printed as
+the dependency of anything queued — so a stub that re-implemented `all_deps()`
+would make itself the authority on what WordPress does.
+
+```bash
+# runner.php, mounted at /scratch:
+#   require_once '/wordpress/wp-load.php';
+#   WConvert\Bootstrap::container()->resolve(WConvert\Database\Installer::class)->install();
+#   require '/wordpress/wp-content/plugins/wconvert/bin/verify-admin-replacement.php';
+
+npx @wp-playground/cli php --php=8.1 \
+  --mount "$PWD:/wordpress/wp-content/plugins/wconvert" \
+  --mount "$PWD/pro:/wordpress/wp-content/plugins/wconvert-pro" \
+  --mount "$PWD/../mu:/wordpress/wp-content/mu-plugins" \
+  --mount "$PWD/../scratch:/scratch" \
+  -- /scratch/runner.php
+```
+
+The mu-plugin `require`s both plugin files, because `activate_plugin()` takes
+effect on the *next* request — a script that activates and carries on runs
+against a WordPress that loaded neither.
+
+`bin/verify-loader-replacement.php` is the same shape for the front-end loader.
+Both **decline** rather than fail when Pro is absent or its bundle is missing:
+the replacement is the thing under test, so a site without it is one the script
+has nothing to report on.
+
+**And the degrade rule is worth running by hand**, because it is the one that
+protects a merchant from a bad unpack: move `pro/public/admin/` aside and load
+the WConvert screen. Free's bundle must still be there — dequeuing free's while
+pointing at a bundle that is not there renders a blank `<div>` with a 404 in a
+console nobody has open.
+
 ### Booting with MailPoet, and without it
 
 The MailPoet [[Destination]] has two cases and **both are worth running**: it is
