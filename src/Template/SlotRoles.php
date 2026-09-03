@@ -88,8 +88,8 @@ final class SlotRoles
      * The ambiguity that creates is real and is resolved by
      * {@see self::wordsFor()}: a Role filling several keys comes back as a MAP
      * (`{text, link}`), and a Role claimed several times comes back as a LIST.
-     * `array_is_list()` tells them apart, which is why nothing here has to
-     * know which node type is which.
+     * Which of the two it is tells them apart, so nothing here has to know
+     * which node type is which.
      *
      * @param mixed $tree
      * @return array<string, mixed>
@@ -192,11 +192,29 @@ final class SlotRoles
      * A LIST IS SEVERAL SLOTS. A MAP IS ONE SLOT WITH SEVERAL KEYS.
      * ========================================================================
      * Both arrive as PHP arrays and they mean opposite things, which is the one
-     * genuinely ambiguous thing about repeatable Roles. `array_is_list()` is
-     * what tells them apart, and it is exact rather than a heuristic: a Role
-     * filling several keys comes back from {@see self::copyFrom()} keyed by
-     * those key NAMES (`{text: …, link: …}`), which is never a list; a Role
-     * claimed by several nodes comes back keyed `0, 1, 2`, which always is.
+     * genuinely ambiguous thing about repeatable Roles. Being a LIST is what
+     * tells them apart, and it is exact rather than a heuristic: a Role filling
+     * several keys comes back from {@see self::copyFrom()} keyed by those key
+     * NAMES (`{text: …, link: …}`), which is never a list; a Role claimed by
+     * several nodes comes back keyed `0, 1, 2`, which always is.
+     *
+     * ========================================================================
+     * AND IT IS SPELLED WITHOUT `array_is_list()`, WHICH IS A CHECKER'S DOING.
+     * ========================================================================
+     * `$words === array_values($words)` is that function, exactly: `===` on
+     * arrays holds only where the keys, their order and the values all match,
+     * so it is true for `[]` and for `0, 1, 2` and false for every map.
+     *
+     * The builtin says it better and cost a release gate. `array_is_list()` is
+     * **PHP 8.1**, this plugin declares `Requires PHP: 8.1`, and WordPress
+     * polyfills it anyway — but Plugin Check reads it against
+     * `Requires at least: 6.2` and reports an ERROR, because core's polyfill
+     * landed in 6.5 and the check does not look at the PHP header beside it. It
+     * is wrong about this plugin and it is what wp.org runs on submission, so
+     * the argument is unwinnable in the place it matters (#96).
+     *
+     * Revisit when Plugin Check reads `Requires PHP` — `bin/plugin-check.sh`
+     * against `latest` is the drift job that would find out.
      *
      * Anything that is not a list is ONE slot's words, so the first node takes
      * it and every node after it takes nothing — rather than every node taking
@@ -209,7 +227,7 @@ final class SlotRoles
      */
     private static function wordsFor($words, int $at)
     {
-        if (is_array($words) && array_is_list($words)) {
+        if (is_array($words) && $words === array_values($words)) {
             return $words[$at] ?? null;
         }
 
