@@ -180,11 +180,25 @@ describe('a countdown with no end date', () => {
     tokens: ENTRY.tokens,
   };
 
-  it('names the tab that fixes it, because it is not on this one', () => {
-    const problems = said(withClock, 'submit', null);
+  /**
+   * ==========================================================================
+   * IT NAMES A DESTINATION, AND THE DESTINATION IS NOT A BLOCK.
+   * ==========================================================================
+   * It used to carry the clock's own `path`, so pressing the sentence took the
+   * merchant to the **Content** tab and selected the countdown — away from the
+   * thing to change — with the route carried entirely by the words *"under 'How
+   * often' on the Rules tab"*. A door that opens onto the wrong room is worse
+   * than no door (ADR 0042 rule 4), so the words dropped the route and the
+   * button took it.
+   */
+  it('sends the merchant to the schedule rather than to the clock', () => {
+    const problems = problemsIn(withClock, 'submit', undefined);
 
     expect(problems).toHaveLength(1);
-    expect(problems[0]).toMatch(/Rules tab/);
+    expect(problems[0].said).toMatch(/Set an end date/);
+    expect(problems[0].go).toBe('schedule');
+    // No block path: following this must not select the countdown.
+    expect(problems[0].path).toBeNull();
   });
 
   it('says nothing once the merchant has set one', () => {

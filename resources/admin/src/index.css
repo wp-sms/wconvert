@@ -3097,6 +3097,35 @@
   box-shadow: 0 0 0 1px var(--ring);
 }
 
+/* ---------------------------------------------------------------------------
+ * A CHIP THAT IS A PICTURE AND A WORD, STACKED.
+ *
+ * `icon.name` offers six glyphs and the control offered six nouns, so a
+ * merchant picked *Delivery van* and found out what it drew by looking at the
+ * preview (ADR 0054 rule 3). The word stays under the picture: it is the
+ * accessible name, it is already translated, and its translator note says what
+ * the icon is FOR.
+ *
+ * The strip's own height is a `min-block-size` on the label, so a taller chip
+ * grows the row rather than overflowing it — nothing here has to be told the
+ * new height.
+ * ------------------------------------------------------------------------- */
+.wconvert-choice__label--pictured {
+  flex-direction: column;
+  gap: 0.125rem;
+  padding-block: 0.3125rem;
+  font-size: var(--text-micro);
+  line-height: 1.2;
+}
+
+.wconvert-choice__glyph {
+  inline-size: 1.125rem;
+  block-size: 1.125rem;
+  /* `currentColor` on the stroke, so a chip's own selected/hover colour carries
+     into the glyph and the two cannot disagree. */
+  color: inherit;
+}
+
 /*
  * **The typed box stays, under the chips.** `choices` is what the panel offers
  * and never what is allowed — token values are unvalidated on both sides of the
@@ -3396,6 +3425,32 @@
 .wconvert-slot__shown {
   display: flex;
   align-items: center;
+}
+
+/* ---------------------------------------------------------------------------
+ * WHAT THIS BLOCK DEPENDS ON, AND THE DOOR TO IT.
+ *
+ * A `countdown` counts to the Optin's `ends_at` and carries no deadline of its
+ * own (ADR 0052), so its inspector is one switch and a sentence. The sentence
+ * and the button are one group rather than two stray children of the panel —
+ * the button is what the sentence is FOR (ADR 0054 rule 4).
+ *
+ * The margin carries the id, because `.wconvert-editor :is(p, …)` reaches the
+ * paragraph inside it and would otherwise decide this box's rhythm.
+ * ------------------------------------------------------------------------- */
+#wconvert-admin .wconvert-slot__note {
+  display: grid;
+  justify-items: start;
+  gap: 0.5rem;
+  margin-block-start: 0.25rem;
+  padding: 0.625rem 0.75rem;
+  background: var(--muted);
+  border-radius: var(--radius);
+}
+
+#wconvert-admin .wconvert-slot__note > p {
+  margin: 0;
+  color: var(--muted-foreground);
 }
 
 /*

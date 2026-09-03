@@ -427,6 +427,40 @@ describe('how often', () => {
     ).toBe('Every time, with no limit');
   });
 
+  /**
+   * ==========================================================================
+   * A WINDOW THAT HAS CLOSED SAYS SO, BECAUSE NOTHING ELSE DOES.
+   * ==========================================================================
+   * An Optin past its `ends_at` stays **Published**, shows nothing and records
+   * no Impression (ADR 0050) — correctly, and silently. The Optin list gives it
+   * no badge and this sentence read *"Runs 27 Nov to 30 Nov"* about a sale that
+   * finished last week.
+   *
+   * `attention` is not a defect being flagged: a campaign ending is what a
+   * campaign does. It is ADR 0042 rule 2 — extending it or unpublishing it is
+   * the next thing the merchant does, and they cannot decide either without
+   * knowing. Under the rules panel's own rule it also opens the section.
+   */
+  it('reads a finished window in the past tense, and asks to be looked at', () => {
+    const done = howOftenSummary({}, { starts_at: '2020-07-01 09:00', ends_at: '2020-08-03 12:00' }, 0, true);
+
+    expect(done.text).toMatch(/^Stopped running on .*2020/);
+    expect(done.attention).toBe(true);
+  });
+
+  /** And a window still ahead of the clock reads as the plan it is. */
+  it('says nothing of the sort about a window that has not closed', () => {
+    const running = howOftenSummary({}, { starts_at: '2099-11-27 09:00', ends_at: '2099-11-30 23:59' }, 0, true);
+
+    expect(running.text).toMatch(/^Runs .*2099.* to .*2099/);
+    expect(running.attention).toBe(false);
+  });
+
+  /** A schedule with only a start has no window to have closed. */
+  it('is silent where there is no end date at all', () => {
+    expect(howOftenSummary({}, { starts_at: '2020-07-01 09:00' }, 0, true).attention).toBe(false);
+  });
+
   it('reads the counts, singular and plural', () => {
     expect(howOftenSummary({ maxImpressions: 1 }, {}, 0, true).text).toMatch(/^Shows at most 1 time,/);
     expect(howOftenSummary({ maxImpressions: 3 }, {}, 0, true).text).toMatch(/^Shows at most 3 times,/);

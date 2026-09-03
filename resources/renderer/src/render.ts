@@ -233,8 +233,15 @@ function words(tag: string, className: string, text: string | undefined): HTMLEl
  * body-text size and inherits `currentColor`. `star` is the exception at use
  * rather than at declaration: {@link rating} fills it through a class, which is
  * one CSS declaration instead of a second copy of the path.
+ *
+ * **Exported for the admin's own picker**, which offered six NOUNS for six
+ * pictures — a merchant chose *Delivery van* and found out what it drew by
+ * looking at the preview (ADR 0054 rule 3). The renderer owns the paths and the
+ * admin already imports this module to draw those previews, so exporting one
+ * identifier is the whole cost: one source, nothing copied, and nothing new in
+ * the loader (`npm run check:loader` is what says so rather than this line).
  */
-const GLYPHS: Readonly<Record<string, string>> = {
+export const GLYPHS: Readonly<Record<string, string>> = {
   check: 'M20 6 9 17l-5-5',
   star: 'm12 3 2.9 5.8 6.1.9-4.5 4.3 1.1 6-5.6-2.9L6.4 20l1.1-6L3 9.7l6.1-.9z',
   bolt: 'M13 2 4 14h7l-1 8 9-12h-7z',

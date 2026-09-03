@@ -1617,3 +1617,176 @@ describe('a leaf’s own settings', () => {
     expect(heading.text).toBe('Get 10% off your first order!');
   });
 });
+
+/**
+ * ============================================================================
+ * A CONTROL THAT DEPENDS ON A VALUE EDITED ELSEWHERE NAMES IT AND POINTS AT IT.
+ * ============================================================================
+ * ADR 0054 rule 4. A `countdown` counts to the Optin's `ends_at` and carries no
+ * deadline of its own (ADR 0052) — so its inspector is one *Show this* switch,
+ * which is correct and is not what to change. What was missing is the sentence:
+ * a merchant looking at a clock counting to nothing, on a tab with no field
+ * that could change it, and nothing saying where the deadline lives.
+ */
+describe('a countdown’s inspector', () => {
+  /**
+   * The same design with a clock at the top of its form step.
+   *
+   * `ends_at` is a FLAT key on `config`, beside `frequency` and `priority` —
+   * `PublishedProjection` ships it that way and `Schedule.php` normalises it.
+   * The `schedule` object is the builder's own shape for the pair, made on read.
+   */
+  const withClock = (config: Record<string, unknown> = {}) =>
+    optin({
+      config: {
+        template_id: 'centred-card',
+        template: {
+          tree: {
+            ...ENTRY.tree,
+            steps: ENTRY.tree.steps.map((step, at) =>
+              at === 0
+                ? {
+                    ...step,
+                    children: [
+                      { type: 'countdown' },
+                      ...((step as { children?: unknown[] }).children ?? []),
+                    ],
+                  }
+                : step,
+            ),
+          },
+          tokens: ENTRY.tokens,
+        },
+        ...config,
+      },
+    });
+
+  const openTheClock = async () => {
+    await structure();
+    await userEvent.click(within(row('Countdown')).getAllByRole('button')[0]);
+  };
+
+  it('names the date it counts to, and what happens then', async () => {
+    builder.getOptin.mockResolvedValue(withClock({ ends_at: '2099-11-27 09:00' }));
+
+    await openTheClock();
+
+    // Not the exact spelling: `Intl` renders a medium date in the reader's own
+    // locale, and pinning "27 Nov 2099" would pin a test runner's locale.
+    expect(screen.getByText(/Counts down to .*2099.* — when this Optin stops running\./)).toBeInTheDocument();
+  });
+
+  it('says the clock will be empty where there is no end date', async () => {
+    builder.getOptin.mockResolvedValue(withClock());
+
+    await openTheClock();
+
+    expect(
+      screen.getByText('This Optin has no end date, so the clock will be empty on the page.'),
+    ).toBeInTheDocument();
+  });
+
+  /**
+   * **The state nothing else in the builder reports.** An Optin past its
+   * `ends_at` stays Published, shows nothing and records no Impression
+   * (ADR 0050) — correctly, and silently.
+   */
+  it('says the Optin has already stopped where the date is behind it', async () => {
+    builder.getOptin.mockResolvedValue(withClock({ ends_at: '2020-08-03 12:00' }));
+
+    await openTheClock();
+
+    expect(screen.getByText(/Counted down to .*2020.*already stopped running\./)).toBeInTheDocument();
+  });
+
+  /**
+   * **The route, not just the name.** ADR 0042 rule 4 asks an instruction to
+   * name a door that is on this screen; the generalisation is that naming the
+   * control is not enough either, so the line comes with the way there.
+   */
+  it('takes the merchant to the field that sets it, on the tab that holds it', async () => {
+    builder.getOptin.mockResolvedValue(withClock());
+
+    await openTheClock();
+    await userEvent.click(screen.getByRole('button', { name: 'Set an end date' }));
+
+    expect(screen.getByRole('tab', { name: 'Display rules' })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
+    // Opened, not merely arrived at: the field is inside a collapsed section
+    // until something asks for it.
+    expect(screen.getByLabelText('Stop showing it on')).toBeInTheDocument();
+  });
+
+  /** And the label is honest about which of the two things it does. */
+  it('offers to change the date rather than set one, where there is one', async () => {
+    builder.getOptin.mockResolvedValue(withClock({ ends_at: '2099-11-27 09:00' }));
+
+    await openTheClock();
+
+    expect(screen.getByRole('button', { name: 'Change the end date' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Set an end date' })).toBeNull();
+  });
+});
+
+/**
+ * ============================================================================
+ * A CLOSED SET OF PICTURES IS PICKED AS PICTURES (ADR 0054 rule 3).
+ * ============================================================================
+ * `icon.name` offers six glyphs and the control offered six NOUNS, so a
+ * merchant chose *Delivery van* and found out what it drew by looking at the
+ * preview. The word stays under the picture — it is the accessible name, it is
+ * already translated, and its translator note says what the icon is for.
+ */
+describe('the icon picker', () => {
+  const withIcon = () =>
+    optin({
+      config: {
+        template_id: 'centred-card',
+        template: {
+          tree: {
+            ...ENTRY.tree,
+            steps: ENTRY.tree.steps.map((step, at) =>
+              at === 0
+                ? {
+                    ...step,
+                    children: [
+                      { type: 'icon', name: 'gift' },
+                      ...((step as { children?: unknown[] }).children ?? []),
+                    ],
+                  }
+                : step,
+            ),
+          },
+          tokens: ENTRY.tokens,
+        },
+      },
+    });
+
+  it('draws the renderer’s own glyph on every chip', async () => {
+    builder.getOptin.mockResolvedValue(withIcon());
+
+    await structure();
+    await userEvent.click(within(row('Icon')).getAllByRole('button')[0]);
+
+    const picker = screen.getByRole('group', { name: 'Which picture' });
+
+    expect(within(picker).getAllByRole('radio')).toHaveLength(6);
+    expect(picker.querySelectorAll('.wconvert-choice__glyph')).toHaveLength(6);
+    // The word is the accessible name in both places, and the picture is
+    // hidden from assistive technology exactly as it is in the renderer.
+    expect(within(picker).getByRole('radio', { name: 'Gift' })).toBeChecked();
+    expect(picker.querySelector('.wconvert-choice__glyph')).toHaveAttribute('aria-hidden', 'true');
+  });
+
+  /** Every other setting is untouched: this file names one param and no value. */
+  it('draws no picture on a setting whose values are not pictures', async () => {
+    await structure();
+    await userEvent.click(within(row('Headline')).getAllByRole('button')[0]);
+
+    const group = screen.getByRole('group', { name: 'Heading rank' });
+
+    expect(group.querySelectorAll('.wconvert-choice__glyph')).toHaveLength(0);
+  });
+});

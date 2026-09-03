@@ -1,7 +1,9 @@
 import { __, sprintf } from '@wordpress/i18n';
-import { ImagePlus } from 'lucide-react';
+import { CalendarClock, ImagePlus } from 'lucide-react';
+import { GLYPHS } from '@renderer/render';
 import { Button } from '../components/ui/button';
 import { ParamChoice } from './ParamChoice';
+import { readable, momentOf } from './wallTime';
 import { nameOf, type TemplateLabels } from '../templates/api';
 import type { Slot } from './panel';
 
@@ -48,9 +50,29 @@ export interface SlotFieldsProps {
   readonly onParam: (param: string, value: unknown) => void;
   /** Switch the slot off, or back on. Never called for a slot that cannot hide. */
   readonly onHidden: (hidden: boolean) => void;
+  /**
+   * When this Optin stops running, as the merchant typed it — or undefined.
+   *
+   * **Read by exactly one block type and passed to all of them**, because a
+   * `countdown` counts to the Optin's `ends_at` and to nothing else (ADR 0052)
+   * and therefore has no setting of its own to draw. What it needs is the
+   * sentence saying what it counts to, and the deadline is not this block's to
+   * hold ({@see Countdown}).
+   */
+  readonly endsAt?: string;
+  /** Take the merchant to the field that sets it. */
+  readonly onSetEndDate?: () => void;
 }
 
-export function SlotFields({ slot, labels, onValue, onParam, onHidden }: SlotFieldsProps) {
+export function SlotFields({
+  slot,
+  labels,
+  onValue,
+  onParam,
+  onHidden,
+  endsAt,
+  onSetEndDate,
+}: SlotFieldsProps) {
   return (
     <>
       {slot.keys.map((key) => {
@@ -109,9 +131,37 @@ export function SlotFields({ slot, labels, onValue, onParam, onHidden }: SlotFie
           nameOfValue={(choice) =>
             nameOf(labels.nodeParamValues, `${slot.type}.${setting.param}.${choice}`)
           }
+          /*
+            **The one setting in the vocabulary whose values are pictures**, and
+            the picker offered six nouns for them (ADR 0054 rule 3). Which
+            setting has pictures is decided here rather than in `ParamChoice`,
+            so every other one is untouched and that file still names no param.
+
+            Read off `GLYPHS` rather than off the param name: a value the
+            manifest offers that the renderer has no path for draws no picture
+            here and none in the preview, which is the two agreeing.
+          */
+          renderChoice={
+            setting.param === 'name' && slot.type === 'icon'
+              ? (choice) => <Glyph name={choice} />
+              : undefined
+          }
           onChange={(value) => onParam(setting.param, value)}
         />
       ))}
+
+      {/*
+        ======================================================================
+        A CONTROL THAT DEPENDS ON A VALUE EDITED ELSEWHERE NAMES IT AND POINTS
+        AT IT (ADR 0054 rule 4).
+        ======================================================================
+        A `countdown`'s inspector is one *Show this* switch, because the node
+        declares no settings — correct under ADR 0052 and not what to change.
+        What was missing is the sentence: a merchant looking at a clock counting
+        to nothing, on a tab with no field that could change it, and nothing
+        saying where the deadline lives.
+      */}
+      {slot.type === 'countdown' && <Countdown endsAt={endsAt} onSetEndDate={onSetEndDate} />}
 
       {/*
         **Under the fields, not over them.** The thing a merchant opened this
@@ -404,3 +454,101 @@ type MediaFrameOpener = (options: {
   open: () => void;
   state: () => { get: (what: 'selection') => { first: () => { toJSON: () => { url?: unknown } } | undefined } };
 };
+
+/**
+ * One of the renderer's six glyphs, for a chip that offers it.
+ *
+ * The path data is `render.ts`'s and is imported rather than copied — the admin
+ * already loads that module to draw previews, so there is one source and
+ * nothing to keep in step. A name it has no path for draws nothing, which is
+ * exactly what the preview does with the same value.
+ */
+function Glyph({ name }: { name: string }) {
+  const path = GLYPHS[name];
+
+  if (path === undefined) {
+    return null;
+  }
+
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      // Decorative in both places: the word under it is the accessible name,
+      // and "check, Tick" is the same thing read out twice.
+      aria-hidden="true"
+      className="wconvert-choice__glyph"
+    >
+      <path d={path} />
+    </svg>
+  );
+}
+
+/**
+ * What this clock counts to, and the way to the field that decides.
+ *
+ * ============================================================================
+ * THREE STATES, AND THE THIRD IS ONE NOTHING ELSE IN THE BUILDER REPORTS.
+ * ============================================================================
+ * An `ends_at` in the past means the Optin is outside its window: it shows
+ * nothing and records no Impression (ADR 0050), correctly and silently. That is
+ * also said on the *How often* summary now, which is where a merchant reading
+ * their rules meets it; this is where a merchant looking at the clock does.
+ *
+ * **The preview keeps its fake deadline.** `Preview.tsx`'s `A_PREVIEW_DEADLINE`
+ * argues its own case and it holds: a dead clock is a preview of nothing, and
+ * the preview is a picture of the DESIGN the same way the placeholder headline
+ * beside it is. The truth about this Optin belongs in the inspector.
+ *
+ * **The date is a wall time and is never `new Date(stored)`** — see
+ * {@see momentOf} for what that shape does on the wrong engine.
+ */
+function Countdown({
+  endsAt,
+  onSetEndDate,
+}: {
+  readonly endsAt?: string;
+  readonly onSetEndDate?: () => void;
+}) {
+  const moment = momentOf(endsAt);
+  const spelled = readable(endsAt);
+  const finished = moment !== null && moment.getTime() < Date.now();
+
+  return (
+    <div className="wconvert-slot__note">
+      <p className="text-note">
+        {spelled === null
+          ? __('This Optin has no end date, so the clock will be empty on the page.', 'wconvert')
+          : finished
+            ? sprintf(
+                /* translators: %s: a date and time the Optin stopped running. */
+                __('Counted down to %s. This Optin has already stopped running.', 'wconvert'),
+                spelled,
+              )
+            : sprintf(
+                /* translators: %s: a date and time the Optin stops running. */
+                __('Counts down to %s — when this Optin stops running.', 'wconvert'),
+                spelled,
+              )}
+      </p>
+
+      {onSetEndDate !== undefined && (
+        <Button type="button" variant="secondary" size="sm" onClick={onSetEndDate}>
+          <CalendarClock aria-hidden="true" />
+          {/*
+            Two labels, because one of them would be wrong half the time: *Set
+            an end date* over a date that is already set reads as an offer to
+            add a second one.
+          */}
+          {spelled === null
+            ? __('Set an end date', 'wconvert')
+            : __('Change the end date', 'wconvert')}
+        </Button>
+      )}
+    </div>
+  );
+}
