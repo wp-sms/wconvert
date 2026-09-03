@@ -184,25 +184,29 @@ require_file public/loader/loader.js "the shipped loader is built, never committ
 # leave whichever ran last as the only survivor.
 require_file public/inspector/inspector.js "the eligibility inspector is built, never committed — run the build" || true
 
+# THE ADMIN BUNDLE, BOTH TIERS AND BOTH HALVES. Pro replaces free's admin
+# bundle on the same rule it replaces the loader (ADR 0014 extended to the
+# admin), so a Pro ZIP missing this shows the merchant free's admin screen
+# instead of Pro's — which degrades correctly and silently, and is therefore
+# exactly the failure nobody notices until a premium screen is missing.
+#
+# Both names carry a content hash (`vite.admin-config.mjs`), which is why these
+# are patterns rather than paths; `WConvert\Assets\ViteHelper` globs for the
+# same two at enqueue time, for either plugin, and degrades rather than
+# rendering a blank screen if either is missing.
+#
+# Both halves, because #73 split the bundle: a ZIP carrying the entry and not
+# the chunk boots, renders four working screens, and fails only on the fifth —
+# in the browser, with a 404 in a console nobody has open.
+require_matching_file "$TREE" public/admin 'main-*.js' "the admin bundle is built, never committed — run the build" || true
+require_matching_file "$TREE" public/admin 'builder-*.js' "the builder chunk is built, never committed — run the build" || true
+
 if [ "$tier" = "free" ]; then
     # Free's wconvert.php requires vendor/autoload.php and renders an admin
     # notice instead of booting when it is absent. It is also what check (c)
     # inspects below, so a tree without it is a tree that check cannot speak
     # for.
     require_file vendor/autoload.php "free's plugin file cannot boot without Composer's autoloader" || true
-    # THE ADMIN, BOTH HALVES. #73 split the bundle: the entry is what the
-    # screen loads, and the builder, the gallery, the settings panel and the
-    # renderer are a chunk it `import()`s the moment a merchant opens the
-    # builder. A ZIP carrying the entry and not the chunk boots, renders four
-    # working screens, and fails only on the fifth — in the browser, with a 404
-    # in a console nobody has open.
-    #
-    # Both names carry a content hash (`vite.config.admin.mjs`), which is why
-    # these are patterns rather than paths; `WConvert\Assets\ViteHelper` globs
-    # for the same two at enqueue time and renders a notice instead of a screen
-    # if either is missing.
-    require_matching_file "$TREE" public/admin 'main-*.js' "the admin bundle is built, never committed — run the build" || true
-    require_matching_file "$TREE" public/admin 'builder-*.js' "the builder chunk is built, never committed — run the build" || true
     # THE BLOCK EDITOR'S BUNDLE, AND FREE ONLY — Pro has no block of its own.
     #
     # `inline` is the one Display Type that is not an overlay, so it is the one

@@ -1,0 +1,174 @@
+<?php
+
+/**
+ * verify-admin-replacement.php — one admin bundle on the screen, against real
+ * `WP_Dependencies`.
+ *
+ *     wp eval-file bin/verify-admin-replacement.php
+ *
+ * Exit 0 = every check passed, 1 = a check failed, 2 = it declined to run.
+ *
+ * WHY THIS EXISTS AND A UNIT TEST DOES NOT DO IT.
+ * `tests/unit/Pro/Admin/AdminReplacementTest.php` proves the swap against a
+ * script queue that RECORDS what it was handed. That is the right shape for
+ * asserting which handles are queued — but WordPress's script queue is not a
+ * list, it is a dependency graph, and the hazard ADR 0014 names lives in the
+ * graph: **`wp_dequeue_script()` alone leaves the handle registered, and
+ * WordPress prints the registered dependencies of anything queued.** A stub
+ * that re-implemented `all_deps()` would make itself the authority on what
+ * WordPress does, and the test would then agree with the stub. So the one
+ * claim it cannot make is this one: that after the swap, nothing can put
+ * free's admin app back on a screen that already has Pro's.
+ *
+ * Two React roots on one mount node is the failure that makes this worth a
+ * second program. It is not a slightly wrong screen — the second root's first
+ * `useState` throws *"Invalid hook call"* against a copy of React that never
+ * rendered it, and the screen goes blank. This repository has paid for that
+ * once already, through a `?ver` query giving the browser two module records
+ * for one file (`WConvert\Assets\ViteHelper`).
+ *
+ * IT NEEDS BOTH PLUGINS ACTIVE and declines otherwise — the replacement is the
+ * thing under test, so a site without Pro has nothing to check. Boot a
+ * throwaway WordPress with both mounted; README.md has the one-liner.
+ *
+ * IT TOUCHES NO MERCHANT DATA. It never reads or writes an Optin: it enqueues
+ * free's handle by hand, exactly as `AdminMenu::enqueueAssets()` does, and then
+ * asks Pro's registered service to replace it.
+ */
+
+// No `declare(strict_types=1)` — `wp eval-file` evaluates this file's body,
+// and a declare that is not the very first statement of a script is a fatal.
+use WConvert\Admin\AdminMenu;
+use WConvert\Bootstrap;
+use WConvert\Pro\Admin\ProAdminEnqueue;
+
+if (!defined('ABSPATH')) {
+    fwrite(STDERR, "Run this through WordPress: wp eval-file bin/verify-admin-replacement.php\n");
+
+    exit(2);
+}
+
+/** @var list<string> $failures */
+$failures = [];
+$checks = 0;
+
+$check = static function (string $what, bool $passed) use (&$failures, &$checks): void {
+    $checks++;
+
+    if (!$passed) {
+        $failures[] = $what;
+    }
+
+    echo ($passed ? '  ✓ ' : '  ✗ ') . $what . "\n";
+};
+
+$decline = static function (string $why): never {
+    fwrite(STDERR, $why . "\n");
+
+    exit(2);
+};
+
+echo "==> verify-admin-replacement\n";
+
+// --- Is there anything to inspect? ------------------------------------------
+//
+// Every branch here declines rather than failing. "Could not look" is not
+// "clean", and it is not "broken" either — it is a site this script has no
+// business reporting on.
+
+if (!defined('WCONVERT_VERSION')) {
+    $decline('WConvert is not active — there is no admin bundle to replace.');
+}
+
+if (!defined('WCONVERT_PRO_LOADED')) {
+    $decline('WConvert Pro is not loaded — the replacement is the thing under test, so there is nothing here to look at. README.md has the two-plugin Playground one-liner.');
+}
+
+$proEntry = glob(WCONVERT_PRO_DIR . 'public/admin/main-*.js');
+
+if ($proEntry === false || $proEntry === []) {
+    $decline("Pro's admin bundle is missing — run `npm run build:admin:pro`. Without it the replacement declines BY DESIGN, and reporting that as a failure would be this script misreading its own subject.");
+}
+
+// --- 1. The swap, against the real queue ------------------------------------
+//
+// Free's half, spelled the way `AdminMenu::enqueueAssets()` spells it — the
+// handle, the stylesheet beside it, and the inline settings that are the thing
+// most easily lost when a handle is deregistered.
+
+$freeEntry = glob(WCONVERT_DIR . 'public/admin/main-*.js');
+
+if ($freeEntry === false || $freeEntry === []) {
+    $decline("Free's admin bundle is missing — run `npm run build:admin`. There is nothing for Pro to replace.");
+}
+
+$freeUrl = WCONVERT_URL . 'public/admin/' . basename($freeEntry[0]);
+$proUrl = WCONVERT_PRO_URL . 'public/admin/' . basename($proEntry[0]);
+
+wp_enqueue_style(AdminMenu::SCRIPT_HANDLE, WCONVERT_URL . 'public/admin/main.css', [], '1');
+wp_enqueue_script(AdminMenu::SCRIPT_HANDLE, $freeUrl, ['wp-i18n', 'wp-api-fetch'], null, true);
+wp_add_inline_script(AdminMenu::SCRIPT_HANDLE, 'window.wconvertAdmin = {};', 'before');
+
+Bootstrap::container()->resolve(ProAdminEnqueue::class)->replace();
+
+$check('exactly one admin bundle is queued, and it is Pro\'s', array_values(array_filter(
+    wp_scripts()->queue,
+    static fn (string $handle): bool => str_contains($handle, 'wconvert') && str_contains($handle, 'admin')
+)) === [ProAdminEnqueue::HANDLE]);
+
+// The half the recording stub cannot tell apart from a dequeue.
+$check('free\'s handle is deregistered, not merely dequeued', !wp_script_is(AdminMenu::SCRIPT_HANDLE, 'registered'));
+$check('free\'s stylesheet is deregistered too', !wp_style_is(AdminMenu::SCRIPT_HANDLE, 'registered'));
+
+// --- 2. The hazard: a third-party script depending on free's handle ----------
+//
+// This is the whole reason the deregistration is there. With the handle
+// dequeued but still registered, WordPress resolves it as a dependency and
+// prints it — putting free's app back on a screen that already carries Pro's,
+// and two React roots on one mount node is a blank screen rather than a
+// slightly wrong one.
+
+wp_enqueue_script('some-other-plugin-script', 'https://example.test/other.js', [AdminMenu::SCRIPT_HANDLE], '1', true);
+
+ob_start();
+wp_scripts()->do_items();
+$printed = (string) ob_get_clean();
+
+$check('free\'s admin bundle is absent from the printed markup', !str_contains($printed, $freeUrl));
+$check('Pro\'s admin bundle is printed exactly once', substr_count($printed, $proUrl) === 1);
+
+/*
+ * AND THE COST, ASSERTED RATHER THAN ASSUMED. A dependent whose dependency is
+ * deregistered is not printed either — `WP_Dependencies::all_deps()` returns
+ * false for it. That is a real consequence and it is the accepted one: free's
+ * admin handle is not a documented extension point (ADR 0014 refuses to create
+ * one), nothing in either plugin depends on it, and the alternative is two
+ * React roots on one node. It is asserted here so that it is a decision on
+ * record rather than a surprise someone meets in a support ticket.
+ */
+$check('a third-party dependent is dropped with it — the accepted cost, on record', !str_contains($printed, 'other.js'));
+
+// --- 3. The settings survived the swap ---------------------------------------
+//
+// `wp_add_inline_script()` attaches to a HANDLE, so free's
+// `window.wconvertAdmin` went with free's registration. Pro re-attaches the
+// same values to its own handle; without that the screen boots with no export
+// URL, no policy link and no inspector door — each failing as a missing
+// feature rather than as an error, which is the shape that ships.
+
+$check('window.wconvertAdmin is printed before the replacement runs', str_contains($printed, 'window.wconvertAdmin'));
+$check('and it carries the settings the screen reads', str_contains($printed, 'inspectParam'));
+
+// --- Verdict -----------------------------------------------------------------
+
+echo "\n";
+
+if ($failures !== []) {
+    echo sprintf("%d of %d check(s) failed.\n", count($failures), $checks);
+
+    exit(1);
+}
+
+echo sprintf("All %d checks passed — one admin bundle on the screen, and nothing can put a second one back.\n", $checks);
+
+exit(0);

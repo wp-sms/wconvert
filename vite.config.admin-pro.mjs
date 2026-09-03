@@ -1,6 +1,6 @@
 import { adminConfig } from './vite.admin-config.mjs';
 
 export default adminConfig({
-  entry: 'resources/admin/src/main.tsx',
-  outDir: 'public/admin',
+  entry: 'pro/resources/admin/src/main.tsx',
+  outDir: 'pro/public/admin',
 });

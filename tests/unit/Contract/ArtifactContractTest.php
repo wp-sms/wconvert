@@ -182,6 +182,12 @@ final class ArtifactContractTest extends TestCase
             'src/Bootstrap.php' => "<?php\nnamespace WConvert\\Pro;\nfinal class Bootstrap {}\n",
             'public/loader/loader.js' => "console.log('pro loader');\n",
             'public/inspector/inspector.js' => "console.log('pro inspector');\n",
+            // Pro's admin bundle, both halves. Pro replaces free's on the same
+            // rule it replaces the loader (ADR 0014 extended to the admin), so
+            // a Pro ZIP without it degrades to free's screen — correctly and
+            // silently, which is why the ZIP is where it has to be caught.
+            'public/admin/main-abc12345.js' => "console.log('pro admin');\n",
+            'public/admin/builder-def67890.js' => "console.log('pro builder');\n",
             'resources/loader/src/elite.ts' => "export const boot = () => {};\n",
             // ================================================================
             // A PRO TREE IS AT A RUNG, AND THE RUNG IS ITS MODULES (ADR 0056).

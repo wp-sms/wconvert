@@ -394,6 +394,42 @@ if (!function_exists('add_query_arg')) {
     }
 }
 
+/*
+ * The three wp-admin URL helpers `AdminMenu::settings()` reaches for.
+ *
+ * They arrive here with `WConvert\Pro\Admin\ProAdminEnqueue`, which is the
+ * first thing outside a REST route to ask free for those settings: Pro
+ * deregisters free's script and therefore free's inline `window.wconvertAdmin`,
+ * so it re-attaches the SAME values to its own handle — and a test of that swap
+ * has to be able to build them.
+ *
+ * `wp_create_nonce()` returns a fixed string rather than a random one: nothing
+ * here verifies a nonce, and a stub that produced a different value per call
+ * would make the settings unequal between two enqueues that are supposed to be
+ * identical.
+ */
+if (!function_exists('admin_url')) {
+    function admin_url(string $path = '', string $scheme = 'admin'): string
+    {
+        return 'https://example.test/wp-admin/' . ltrim($path, '/');
+    }
+}
+
+if (!function_exists('wp_create_nonce')) {
+    /** @param string|int $action */
+    function wp_create_nonce($action = -1): string
+    {
+        return 'nonce-' . md5((string) $action);
+    }
+}
+
+if (!function_exists('get_privacy_policy_url')) {
+    function get_privacy_policy_url(): string
+    {
+        return $GLOBALS['wconvertTestPrivacyPolicyUrl'] ?? '';
+    }
+}
+
 if (!function_exists('remove_all_actions')) {
     function remove_all_actions(string $hook, ?int $priority = null): bool
     {
@@ -495,6 +531,95 @@ if (!function_exists('wp_script_is')) {
         $set = $list === 'registered' ? 'registered' : 'enqueued';
 
         return isset($GLOBALS['wconvertTestScripts'][$set][$handle]);
+    }
+}
+
+/*
+ * THE STYLE QUEUE, WHICH IS THE SAME PAIR OF SETS ONE REGISTRY OVER.
+ *
+ * `WConvert\Assets\ViteHelper` registers one stylesheet per admin handle, and
+ * [[Pro]] replaces free's admin bundle — so it has to take free's SHEET as well
+ * as free's script (`WConvert\Pro\Admin\ProAdminEnqueue`). Leaving free's
+ * would load two Tailwind sheets that differ only in which tree they were
+ * scanned from, the later one winning by cascade rather than by decision.
+ *
+ * Modelled as two sets for the reason the script queue is: dequeue and
+ * deregister are different operations, and a stub holding one array makes them
+ * the same `unset()` — which is how the script version of this assertion sat
+ * inert until somebody noticed.
+ *
+ * @var array{registered: array<string, array{src: string, ver: mixed}>, enqueued: array<string, true>} $wconvertTestStyles
+ */
+$GLOBALS['wconvertTestStyles'] = ['registered' => [], 'enqueued' => []];
+
+if (!function_exists('wp_enqueue_style')) {
+    /**
+     * @param list<string> $deps
+     * @param string|false|null $ver
+     */
+    function wp_enqueue_style(string $handle, string $src = '', array $deps = [], $ver = false, string $media = 'all'): void
+    {
+        if ($src !== '') {
+            $GLOBALS['wconvertTestStyles']['registered'][$handle] = ['src' => $src, 'ver' => $ver];
+        }
+
+        $GLOBALS['wconvertTestStyles']['enqueued'][$handle] = true;
+    }
+}
+
+if (!function_exists('wp_dequeue_style')) {
+    /** Out of the queue. STILL REGISTERED — that is the point of the pair. */
+    function wp_dequeue_style(string $handle): void
+    {
+        unset($GLOBALS['wconvertTestStyles']['enqueued'][$handle]);
+    }
+}
+
+if (!function_exists('wp_deregister_style')) {
+    function wp_deregister_style(string $handle): void
+    {
+        unset($GLOBALS['wconvertTestStyles']['registered'][$handle]);
+    }
+}
+
+if (!function_exists('wp_style_is')) {
+    function wp_style_is(string $handle, string $list = 'enqueued'): bool
+    {
+        $set = $list === 'registered' ? 'registered' : 'enqueued';
+
+        return isset($GLOBALS['wconvertTestStyles'][$set][$handle]);
+    }
+}
+
+if (!function_exists('wp_enqueue_media')) {
+    function wp_enqueue_media(): void
+    {
+    }
+}
+
+/*
+ * The JSON catalogue WordPress would serve for a handle and a domain.
+ *
+ * Returns nothing by default, which is the untranslated locale — the normal
+ * case, and the one `ViteHelper::inlineTranslations()` has to stay silent on.
+ * A test that wants a catalogue puts it here.
+ *
+ * @var array<string, string> $wconvertTestScriptCatalogues Keyed "handle|domain".
+ */
+$GLOBALS['wconvertTestScriptCatalogues'] = [];
+
+if (!function_exists('load_script_textdomain')) {
+    /** @return string|false */
+    function load_script_textdomain(string $handle, string $domain = 'default', string $path = '')
+    {
+        return $GLOBALS['wconvertTestScriptCatalogues'][$handle . '|' . $domain] ?? false;
+    }
+}
+
+if (!function_exists('esc_js')) {
+    function esc_js(string $text): string
+    {
+        return str_replace(["\\", "'", '"'], ["\\\\", "\\'", '\\"'], $text);
     }
 }
 

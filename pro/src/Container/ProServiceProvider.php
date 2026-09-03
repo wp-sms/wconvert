@@ -2,8 +2,10 @@
 
 namespace WConvert\Pro\Container;
 
+use WConvert\Admin\AdminNotices;
 use WConvert\Container\ServiceContainer;
 use WConvert\Container\ServiceProvider;
+use WConvert\Pro\Admin\ProAdminEnqueue;
 use WConvert\Pro\Frontend\ProInspectorEnqueue;
 use WConvert\Pro\Frontend\ProLoaderEnqueue;
 use WConvert\Pro\Module\CartRecovery\CartCookie;
@@ -56,6 +58,25 @@ final class ProServiceProvider implements ServiceProvider
         $container->register(
             ProInspectorEnqueue::class,
             static fn (): ProInspectorEnqueue => new ProInspectorEnqueue(WCONVERT_PRO_DIR, WCONVERT_PRO_URL)
+        );
+
+        // AND THE ADMIN BUNDLE, on ADR 0014's rule rather than beside it. Two
+        // separately-installed plugins mean two script tags, and the only
+        // alternative to replacement is a second script injecting React into
+        // free's running app — a load-order contract across two tags on a page
+        // an optimiser may reorder (ADR 0004). {@see ProAdminEnqueue} argues it
+        // at length.
+        //
+        // It takes free's notices object because that is the one path a message
+        // about the admin screen survives on: `admin_notices` is emptied on
+        // WConvert's own screens (ADR 0035).
+        $container->register(
+            ProAdminEnqueue::class,
+            static fn (ServiceContainer $c): ProAdminEnqueue => new ProAdminEnqueue(
+                WCONVERT_PRO_DIR,
+                WCONVERT_PRO_URL,
+                $c->resolve(AdminNotices::class)
+            )
         );
 
         // The whole of WConvert's coupling to WooCommerce: one cookie, so the
@@ -220,6 +241,12 @@ final class ProServiceProvider implements ServiceProvider
         // which is what "not one premium feature needs an `if`" means in
         // practice.
         if (is_admin()) {
+            // The admin's own replacement is the mirror image, and it hooks on
+            // THIS side of the guard: `admin_enqueue_scripts` never fires on a
+            // front-end request, so registering it there would be a listener
+            // for an event that cannot happen.
+            $container->resolve(ProAdminEnqueue::class)->hooks();
+
             return;
         }
 

@@ -35,12 +35,22 @@
 /bin
 /dist
 /node_modules
+# Every Vite config and every factory they share. Named one by one rather than
+# globbed, because .distignore's two forms are an anchored path and a bare
+# name, and a bare `vite.*` would take anything under resources/ with it.
+/vite.admin-config.mjs
 /vite.config.admin.mjs
+/vite.config.admin-pro.mjs
 /vite.config.block.mjs
 /vite.config.loader.mjs
-/vite.config.loader-pro.mjs
+/vite.config.loader-pro-basic.mjs
+/vite.config.loader-pro-pro.mjs
+/vite.config.loader-pro-elite.mjs
 /vite.config.inspector.mjs
-/vite.config.inspector-pro.mjs
+/vite.config.inspector-pro-basic.mjs
+/vite.config.inspector-pro-pro.mjs
+/vite.config.inspector-pro-elite.mjs
+/vite.config.pro-tier.mjs
 /vite.loader-config.mjs
 /package.json
 /package-lock.json
