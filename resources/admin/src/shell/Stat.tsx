@@ -1,4 +1,6 @@
 import type { ReactNode } from 'react';
+import { __ } from '@wordpress/i18n';
+import { Skeleton } from '../components/ui/skeleton';
 import { cn } from '../lib/utils';
 
 /**
@@ -82,5 +84,67 @@ export function Stat({
         {value}
       </dd>
     </div>
+  );
+}
+
+/**
+ * The same row, before its numbers arrive.
+ *
+ * ============================================================================
+ * IT RESERVES THE HEIGHT BY BEING THE SAME SHAPE, NOT BY NAMING ONE.
+ * ============================================================================
+ * ADR 0039: a region that fetches owes a loading state. The builder's strip had
+ * none — it was `stats !== null &&`, so the numbers popped in after the
+ * dashboard read and pushed the tab strip down, and `emphasis` makes that jump
+ * taller.
+ *
+ * A `min-block-size` here would be a number that has to be kept equal to a
+ * number in {@link Stat}, and nothing would notice when the type scale moved.
+ * These placeholders are the same `<dt>`/`<dd>` at the same sizes with a block
+ * of `1em` where the figure goes, so the reserved height is the real height by
+ * construction — the same bargain {@see TableSkeleton} makes with its columns.
+ *
+ * One `sr-only` "Loading…" for the row rather than one per placeholder, so a
+ * screen reader hears it once ({@see TableSkeleton}).
+ */
+export function StatRowSkeleton({
+  stats,
+  className,
+}: {
+  /** How many stats the row will hold. The first takes the headline's size. */
+  stats: number;
+  className?: string;
+}) {
+  return (
+    <StatRow className={className}>
+      {/* `<div>` and not `<span>`: a `<dl>`'s content model takes one. */}
+      <div className="sr-only">{__('Loading…', 'wconvert')}</div>
+      {Array.from({ length: stats }, (_, index) => (
+        <div key={index} className="flex flex-col-reverse gap-0.5">
+          {/*
+            **The label is a placeholder too, and that is a concession worth
+            naming.** The headline's word is the GOAL's — *Submissions*,
+            *Click-throughs to the offer* — and it arrives on the same read as
+            the numbers, so nothing here can draw it early. One line is
+            reserved; a Goal whose words wrap to two in this column still grows
+            the row by a line when they land. Reserving two would shrink it by
+            one for every Goal whose words fit, which is the same jump upwards.
+          */}
+          <dt className="text-micro uppercase text-muted-foreground">
+            <Skeleton aria-hidden="true" className="h-[1lh] w-24 max-w-full" />
+          </dt>
+          <dd className={cn('m-0', index === 0 ? 'text-figure' : 'text-heading')}>
+            {/*
+              **`1lh`, not `1em`.** A figure's box is its LINE box, and the type
+              scale pairs a line-height with every size — so `1em` reserved the
+              font size and came up 4px short on the two supporting numbers.
+              This is the same height by construction whatever the scale does
+              next, which is the whole reason there is no `min-block-size` here.
+            */}
+            <Skeleton aria-hidden="true" className="h-[1lh] w-16 max-w-full" />
+          </dd>
+        </div>
+      ))}
+    </StatRow>
   );
 }

@@ -8,7 +8,7 @@ import {
   type CSSProperties,
 } from 'react';
 import { flushSync } from 'react-dom';
-import { __ } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 import { Check, Monitor, Redo2, Smartphone, Undo2 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
@@ -16,7 +16,8 @@ import { BackLink, BuilderSkeleton } from '../shell/BuilderSkeleton';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { PageAction } from '../shell/PageActions';
 import { Region, RegionBody, RegionError, RegionErrorState } from '../shell/Region';
-import { Stat, StatRow } from '../shell/Stat';
+import { Skeleton } from '../components/ui/skeleton';
+import { Stat, StatRow, StatRowSkeleton } from '../shell/Stat';
 import { LOADING, messageOf, ready, type Loadable } from '../shell/loadable';
 import { TemplatePickerDialog } from './TemplatePickerDialog';
 import { useTemplateTrees } from './TemplatePicker';
@@ -284,7 +285,25 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
   const [step, setStep] = useState(0);
   const [device, setDevice] = useState<Device>('desktop');
   const [selection, setSelection] = useState<Selection | null>(null);
-  const [stats, setStats] = useState<OptinNumbers | null>(null);
+  /**
+   * This Optin's numbers, in the three states a region that fetches has.
+   *
+   * ==========================================================================
+   * `null` WAS BOTH "STILL LOADING" AND "NOT IN THE PAYLOAD", AND THAT IS THE
+   * DISTINCTION A RESERVED ROW NEEDS.
+   * ==========================================================================
+   * It was `OptinNumbers | null` and rendered nothing until the read landed, so
+   * the strip popped in and pushed the tab strip down — which `emphasis` makes
+   * a taller jump. Reserving the row needs a state that means *loading*, and a
+   * published Optin the dashboard has no row for has to stop reserving it.
+   *
+   * {@see Loadable} rather than a second boolean, which is the same reason
+   * `goalEntry` above uses one: three exclusive states are not two booleans.
+   * **It opens `LOADING`**, so the reservation is there on the first paint
+   * rather than one effect later — an effect runs after the browser has already
+   * drawn a row-less builder, which is the shift this exists to remove.
+   */
+  const [stats, setStats] = useState<Loadable<OptinNumbers | null>>(LOADING);
   /*
    * ========================================================================
    * UNDO MOVES THE WORKING DRAFT. SAVE IS WHAT SENDS IT.
@@ -358,6 +377,8 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
    * with something this build does not recognise as an act.
    */
   const entryOfGoal = goalEntry.status === 'ready' ? goalEntry.data : null;
+  /** The numbers themselves, once there are some — null while loading and where there are none. */
+  const numbers = stats.status === 'ready' ? stats.data : null;
   const act: ConvertingAct | null =
     entryOfGoal?.converting_act === 'click' || entryOfGoal?.converting_act === 'submit'
       ? entryOfGoal.converting_act
@@ -667,8 +688,10 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
     }
 
     readDashboard(null)
-      .then((payload) => setStats(numbersByOptin(payload)[id] ?? null))
-      .catch(() => undefined);
+      .then((payload) => setStats(ready(numbersByOptin(payload)[id] ?? null)))
+      // Swallowed, but not left LOADING: a failed read that kept the row
+      // reserved would be a skeleton pulsing over a working builder forever.
+      .catch(() => setStats(ready(null)));
   }, [id, goal, publishedAt]);
 
   /*
@@ -1091,16 +1114,80 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
           </div>
         </div>
 
-        {stats !== null && (
-          <StatRow className="mt-4 max-w-xl">
-            <Stat label={stats.label} value={formatCount(stats.report.headline)} />
-            <Stat label={__('Impressions', 'wconvert')} value={formatCount(stats.report.impressions)} />
-            <Stat
-              label={__('Conversion rate', 'wconvert')}
-              value={formatRate(stats.report.conversion_rate)}
-            />
-          </StatRow>
+        {/*
+          ==================================================================
+          THE HEADLINE IS THE GOAL'S OWN NUMBER, AND THE OTHER TWO SUPPORT IT.
+          ==================================================================
+          Three numbers at one weight is *"a card where three numbers all shout
+          has no headline at all"* — {@see Stat}'s own docblock, naming the
+          failure this strip had. `emphasis` is what Analytics already spends on
+          the same number, so this is the existing treatment applied rather than
+          a second one invented (ADR 0042 rule 5). There is no new chrome and no
+          band around it: the boldness is spent in exactly one place.
+
+          **The window is said out loud.** Analytics dates every card and this
+          showed three undated numbers from `StatRange::DEFAULT_DAYS` — and *42
+          submissions* means nothing without knowing over what. The words are
+          the ones the Analytics selector uses, so the two screens cannot
+          describe the same window differently.
+        */}
+        {(numbers !== null || (publishedAt !== null && stats.status === 'loading')) && (
+          /*
+            **One wrapper for both states, and that is what makes the height
+            reservation true.** The two branches were siblings with their own
+            margins and the loading one was 72px short — it had no caption line
+            — so the strip still pushed the tab strip down when the numbers
+            landed, which is the whole thing this exists to stop. Sharing the
+            box means the only difference between them is what is inside it.
+          */
+          <div className="mt-4 max-w-xl">
+            {numbers !== null ? (
+              <>
+                <StatRow>
+                  <Stat
+                    emphasis
+                    label={numbers.label}
+                    value={formatCount(numbers.report.headline)}
+                  />
+                  <Stat
+                    label={__('Impressions', 'wconvert')}
+                    value={formatCount(numbers.report.impressions)}
+                  />
+                  <Stat
+                    label={__('Conversion rate', 'wconvert')}
+                    value={formatRate(numbers.report.conversion_rate)}
+                  />
+                </StatRow>
+                {/*
+                  `mb-0` because wp-admin's own `p { margin: 1em 0 }` reaches
+                  this element and preflight does not — 16px the reserved row
+                  below has no way to know about, which is the whole class of
+                  bug a shared wrapper exists to remove.
+                */}
+                <p className="mt-2 mb-0 text-sm text-muted-foreground">
+                  {sprintf(
+                    /* translators: %s: a number of days. */
+                    _n('The last %s day', 'The last %s days', numbers.days, 'wconvert'),
+                    String(numbers.days),
+                  )}
+                </p>
+              </>
+            ) : (
+              <>
+                {/* Three: the Goal's own number, and the two that support it. */}
+                <StatRowSkeleton stats={3} />
+                {/*
+                  The window is the SERVER's default and is not known until the
+                  payload lands, so the caption is a bar of exactly one line of
+                  its own type — `1lh` against `text-sm` rather than a number
+                  that would have to be kept equal to the type scale.
+                */}
+                <Skeleton aria-hidden="true" className="mt-2 h-[1lh] w-28 text-sm" />
+              </>
+            )}
+          </div>
         )}
+
       </PageAction>
 
       <div className="wconvert-builder">
