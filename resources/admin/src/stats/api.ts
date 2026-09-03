@@ -139,6 +139,17 @@ export const readDashboard = (days: number | null) =>
 export interface OptinNumbers {
   /** What the headline number is CALLED, off the card this Optin sits in. */
   readonly label: string;
+  /**
+   * How many days these numbers cover, off the payload.
+   *
+   * **Carried down for the same reason `label` is**: a figure shown without
+   * the window it was counted over is as ambiguous as one shown without the
+   * word for it, and the Analytics screen dates every card while the builder's
+   * strip showed three undated numbers. It comes from the payload rather than
+   * from a constant here, because `StatRange::DEFAULT_DAYS` is the only place
+   * that number lives and there is no parity test across this boundary.
+   */
+  readonly days: number;
   readonly report: OptinReport;
 }
 
@@ -166,6 +177,9 @@ export interface OptinNumbers {
 export const numbersByOptin = (payload: DashboardPayload): Record<string, OptinNumbers> =>
   Object.fromEntries(
     payload.goals.flatMap((card) =>
-      card.optins.map((optin) => [optin.id, { label: card.headline_label, report: optin }]),
+      card.optins.map((optin) => [
+        optin.id,
+        { label: card.headline_label, days: payload.days, report: optin },
+      ]),
     ),
   );

@@ -526,6 +526,101 @@ describe('the builder shell', () => {
   });
 
   /**
+   * **A card where three numbers all shout has no headline at all** — `Stat`'s
+   * own docblock, naming the failure this strip had. There is at most one
+   * emphasised number per row, and it is the one the Goal is judged on.
+   */
+  it('spends the emphasis on the Goal’s own number and nowhere else', async () => {
+    builder.getOptin.mockResolvedValue(optin({ published_at: '2026-08-01 09:00:00' }));
+    stats.readDashboard.mockResolvedValue({
+      from: '',
+      to: '',
+      days: 30,
+      goals: [
+        {
+          goal: 'grow_email_list',
+          label: 'Grow my email list',
+          headline_label: 'Submissions',
+          optins: [{ id: ID, name: 'Welcome discount', headline: 42, impressions: 1000, conversion_rate: 0.042 }],
+        },
+      ],
+    });
+
+    open();
+
+    const headline = await screen.findByText('42');
+
+    expect(headline).toHaveClass('text-figure');
+    expect(screen.getByText('1,000')).not.toHaveClass('text-figure');
+    expect(screen.getByText('4.2%')).not.toHaveClass('text-figure');
+  });
+
+  /**
+   * **42 submissions over what?** The Analytics screen dates every card; this
+   * showed three undated numbers from the server's own default window. The
+   * count comes back in the payload rather than being spelled here, because
+   * `StatRange::DEFAULT_DAYS` is the only place it lives.
+   */
+  it('says which window the numbers cover, in the words Analytics uses', async () => {
+    builder.getOptin.mockResolvedValue(optin({ published_at: '2026-08-01 09:00:00' }));
+    stats.readDashboard.mockResolvedValue({
+      from: '',
+      to: '',
+      days: 7,
+      goals: [
+        {
+          goal: 'grow_email_list',
+          label: 'Grow my email list',
+          headline_label: 'Submissions',
+          optins: [{ id: ID, name: 'Welcome discount', headline: 42, impressions: 1000, conversion_rate: 0.042 }],
+        },
+      ],
+    });
+
+    open();
+
+    expect(await screen.findByText('The last 7 days')).toBeInTheDocument();
+  });
+
+  /**
+   * **ADR 0039: a region that fetches owes a loading state.** Without one the
+   * numbers pop in after the dashboard read and push the tab strip down — and
+   * the emphasised figure makes that jump taller than it was.
+   */
+  it('reserves the row while the numbers are still out', async () => {
+    builder.getOptin.mockResolvedValue(optin({ published_at: '2026-08-01 09:00:00' }));
+    stats.readDashboard.mockReturnValue(new Promise(() => undefined));
+
+    open();
+
+    // Past the whole-builder skeleton first, whose own "Loading…" is a
+    // different state and would otherwise be what this matched.
+    await screen.findByRole('tab', { name: 'Design' });
+
+    expect(screen.getByText('Loading…')).toBeInTheDocument();
+    // Three stats' worth of placeholders — a label and a figure each — plus the
+    // caption line under them, which is where the 72px shift used to come from.
+    expect(document.querySelectorAll('[data-slot="skeleton"]')).toHaveLength(7);
+  });
+
+  /**
+   * And it stops reserving once the read comes back with nothing for this
+   * Optin — a skeleton keyed off the numbers alone would pulse forever.
+   */
+  it('reserves nothing once the read answers with no row for this Optin', async () => {
+    builder.getOptin.mockResolvedValue(optin({ published_at: '2026-08-01 09:00:00' }));
+    stats.readDashboard.mockResolvedValue({ from: '', to: '', days: 30, goals: [] });
+
+    open();
+
+    await screen.findByRole('tab', { name: 'Design' });
+
+    expect(screen.queryByText('Loading…')).toBeNull();
+    expect(screen.queryByText('Impressions')).toBeNull();
+    expect(document.querySelectorAll('[data-slot="skeleton"]')).toHaveLength(0);
+  });
+
+  /**
    * **Swallowed, exactly as the Goal registry's is on the Optin list.** Numbers
    * are a nicety on an editing screen; an analytics outage must not put an
    * error banner over a builder that is working, and must not cost the Save.
