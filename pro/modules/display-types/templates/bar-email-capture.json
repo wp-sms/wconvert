@@ -2,7 +2,7 @@
   "id": "bar-email-capture",
   "name": "Bar with a field",
   "display_type": "floating_bar",
-  "tier": "pro",
+  "tier": "basic",
   "tokens": {
     "bg": "#ffffff",
     "fg": "#111827",

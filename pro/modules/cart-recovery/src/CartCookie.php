@@ -1,6 +1,6 @@
 <?php
 
-namespace WConvert\Pro\WooCommerce;
+namespace WConvert\Pro\Module\CartRecovery;
 
 defined('ABSPATH') || exit;
 

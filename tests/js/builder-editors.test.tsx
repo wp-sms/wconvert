@@ -700,7 +700,10 @@ describe('a rule type this install cannot run', () => {
   it('explains a type the site cannot serve, and names the plugin', async () => {
     panel(
       { rules: [{ type: 'page_load' }] },
-      { types: ruleTypes({ free: 'ready', pro: 'unavailable' }) },
+      // `elite`, because the two cart Conditions are the `cart-recovery`
+      // module's rung (ADR 0056). Naming the rung rather than "premium" is
+      // what makes this test about the Conditions it actually asserts on.
+      { types: ruleTypes({ elite: 'unavailable' }) },
     );
 
     await open('Who');
@@ -726,7 +729,7 @@ describe('a rule type this install cannot run', () => {
    * simpler for the customer who bought it all, which is the right direction.
    */
   it('draws no disabled group at all where the install can run everything', async () => {
-    panel({ rules: [{ type: 'page_load' }] }, { types: ruleTypes({ free: 'ready', pro: 'ready' }) });
+    panel({ rules: [{ type: 'page_load' }] }, { types: ruleTypes() });
 
     await open('Who');
 
@@ -737,7 +740,7 @@ describe('a rule type this install cannot run', () => {
   it('says the same thing on the row of a rule the Optin already carries', async () => {
     panel(
       { rules: [{ type: 'page_load' }, { type: 'cart_has_items' }] },
-      { types: ruleTypes({ free: 'ready', pro: 'unavailable' }) },
+      { types: ruleTypes({ elite: 'unavailable' }) },
     );
 
     await open('Who');

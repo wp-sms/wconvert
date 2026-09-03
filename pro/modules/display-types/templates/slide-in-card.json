@@ -2,7 +2,7 @@
   "id": "slide-in-card",
   "name": "Corner card",
   "display_type": "slide_in",
-  "tier": "pro",
+  "tier": "basic",
   "tokens": {
     "bg": "#ffffff",
     "fg": "#111827",

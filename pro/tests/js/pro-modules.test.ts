@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { PRO_MODULES } from '../../resources/loader/src/modules';
+import { ELITE_MODULES } from '../../resources/loader/src/modules';
 import type { LoaderModule } from '@loader/types';
 
 /**
@@ -17,10 +17,10 @@ import type { LoaderModule } from '@loader/types';
  */
 
 const moduleFor = (id: string): LoaderModule => {
-  const found = PRO_MODULES.find((module) => module.id === id);
+  const found = ELITE_MODULES.find((module) => module.id === id);
 
   if (found === undefined) {
-    throw new Error(`Pro ships no ${id} module`);
+    throw new Error(`Pro's top rung ships no ${id} module`);
   }
 
   return found;
@@ -406,7 +406,7 @@ describe('exit_intent and scroll_up on one Optin', () => {
   });
 
   it('are two entries in the module set, with two ids', () => {
-    const ids = PRO_MODULES.map((module) => module.id);
+    const ids = ELITE_MODULES.map((module) => module.id);
 
     expect(ids).toContain('exit_intent');
     expect(ids).toContain('scroll_up');

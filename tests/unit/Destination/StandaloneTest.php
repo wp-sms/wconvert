@@ -82,13 +82,13 @@ final class StandaloneTest extends TestCase
      */
     public function testWithoutWsmsTheTypeIsUnavailableRatherThanLocked(): void
     {
-        $registry = (new DestinationRegistry(new FakeProPresence(false), new FakeSitePresence()))
+        $registry = (new DestinationRegistry(new FakeProPresence(), new FakeSitePresence()))
             ->register(new WsmsDestinationType(new FakeWsmsContacts()));
 
         self::assertSame(Availability::Unavailable, $registry->availabilityOf(WsmsDestinationType::ID));
 
         $withWsms = (new DestinationRegistry(
-            new FakeProPresence(false),
+            new FakeProPresence(),
             new FakeSitePresence([SiteDependency::Wsms])
         ))->register(new WsmsDestinationType(new FakeWsmsContacts()));
 
@@ -112,14 +112,14 @@ final class StandaloneTest extends TestCase
     {
         $type = new MailPoetDestinationType(new WpMailPoetSubscribers());
 
-        $registry = (new DestinationRegistry(new FakeProPresence(false), new FakeSitePresence()))
+        $registry = (new DestinationRegistry(new FakeProPresence(), new FakeSitePresence()))
             ->register($type);
 
         self::assertSame(Availability::Unavailable, $registry->availabilityOf(MailPoetDestinationType::ID));
         self::assertFalse($registry->isDispatchable(MailPoetDestinationType::ID), 'Skipped, never enqueued.');
 
         $withMailPoet = (new DestinationRegistry(
-            new FakeProPresence(false),
+            new FakeProPresence(),
             new FakeSitePresence([SiteDependency::MailPoet])
         ))->register($type);
 
@@ -147,7 +147,7 @@ final class StandaloneTest extends TestCase
      */
     public function testCaptureStillLandsALeadAndQueuesNothing(): void
     {
-        $registry = (new DestinationRegistry(new FakeProPresence(false), new FakeSitePresence()))
+        $registry = (new DestinationRegistry(new FakeProPresence(), new FakeSitePresence()))
             ->register(new WsmsDestinationType(new FakeWsmsContacts()));
 
         $optins = new OptinRepository(

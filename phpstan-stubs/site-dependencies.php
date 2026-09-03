@@ -28,7 +28,7 @@
  *   is the honest position when the classes that would be checked are not on
  *   the machine running the analyser. Stubbing MailPoet's signatures here
  *   would be maintaining a fiction of them beside the real ones.
- * - WooCommerce's cart, which `WConvert\Pro\WooCommerce\CartCookie` reads two
+ * - WooCommerce's cart, which `WConvert\Pro\Module\CartRecovery\CartCookie` reads two
  *   numbers off — a count and a total, never contents (ADR 0025).
  * - `wc_get_cart_url()` and `wc_setcookie()`, the two functions that half of
  *   the cart [[Goal]] runs on: one resolves the CTA's destination at render

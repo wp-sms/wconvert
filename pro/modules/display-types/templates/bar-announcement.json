@@ -2,7 +2,7 @@
   "id": "bar-announcement",
   "name": "Announcement bar",
   "display_type": "floating_bar",
-  "tier": "pro",
+  "tier": "basic",
   "tokens": {
     "bg": "#111827",
     "fg": "#f9fafb",

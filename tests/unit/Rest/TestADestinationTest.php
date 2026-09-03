@@ -84,7 +84,7 @@ final class TestADestinationTest extends TestCase
         $this->failures = new DeliveryFailures($this->options);
 
         $registry = (new DestinationRegistry(
-            new FakeProPresence(false),
+            new FakeProPresence(),
             new FakeSitePresence([SiteDependency::Wsms])
         ))->register($this->type);
 
@@ -237,7 +237,7 @@ final class TestADestinationTest extends TestCase
      */
     public function testAnUnavailableTypeReportsThatItCannotRunRatherThanFailing(): void
     {
-        $registry = (new DestinationRegistry(new FakeProPresence(false), new FakeSitePresence()))
+        $registry = (new DestinationRegistry(new FakeProPresence(), new FakeSitePresence()))
             ->register($this->type);
 
         $destinations = new DestinationStore($this->options);
@@ -406,7 +406,7 @@ final class TestADestinationTest extends TestCase
     {
         $GLOBALS['wconvertTestUserEmail'] = '';
 
-        $registry = (new DestinationRegistry(new FakeProPresence(false), new FakeSitePresence()))
+        $registry = (new DestinationRegistry(new FakeProPresence(), new FakeSitePresence()))
             ->register($this->type);
 
         $destinations = new DestinationStore($this->options);

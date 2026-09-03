@@ -63,7 +63,7 @@ final class InspectorLeakTest extends TestCase
     {
         $vocabulary = RuleVocabulary::fromManifest(self::PLUGIN_DIR);
         $published = new PublishedSet(new FakeOptionStore());
-        $pro = new FakeProPresence(false);
+        $pro = new FakeProPresence();
         $site = new FakeSitePresence([]);
 
         return new InspectorEnqueue(

@@ -2,7 +2,7 @@
   "id": "popup-two-column",
   "name": "Two-column offer",
   "display_type": "popup",
-  "tier": "pro",
+  "tier": "basic",
   "tokens": {
     "bg": "#ffffff",
     "fg": "#052e16",

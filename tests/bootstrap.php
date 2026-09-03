@@ -1377,7 +1377,7 @@ if (!class_exists('WP_REST_Request')) {
 | WooCommerce, as thinly as WConvert touches it
 |--------------------------------------------------------------------------
 | Two functions and one class, which is the entire surface
-| `WConvert\Pro\WooCommerce\CartCookie` reaches for. It is stubbed HERE rather
+| `WConvert\Pro\Module\CartRecovery\CartCookie` reaches for. It is stubbed HERE rather
 | than required from the test that needs it, so the suite keeps one mechanism
 | for "a function the units under test call" — the same place `wpdb` and
 | `WP_REST_Request` live.

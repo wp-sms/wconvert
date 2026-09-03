@@ -8,6 +8,7 @@ use WConvert\Rest\Routes;
 use WConvert\Rest\TemplateController;
 use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
+use WConvert\Support\Tier;
 use WConvert\Tests\Unit\Support\FakeProPresence;
 use WP_REST_Request;
 
@@ -42,7 +43,7 @@ final class TemplateRoutesTest extends TestCase
         return new TemplateController(
             TemplateLibrary::fromDirectory($vocabulary, self::PLUGIN_DIR),
             $vocabulary,
-            new FakeProPresence($pro)
+            new FakeProPresence($pro ? Tier::Elite : Tier::Free)
         );
     }
 
@@ -134,7 +135,11 @@ final class TemplateRoutesTest extends TestCase
         $this->assertNotSame([], $locked, 'a free install is shown no premium designs at all');
 
         foreach ($locked as $card) {
-            $this->assertSame('pro', $card['tier']);
+            // The eight cards are the `display-types` module's, which is the
+            // BOTTOM paid rung — so the upsell names the cheapest tier that
+            // actually carries the design rather than the most expensive one
+            // (ADR 0056). At launch every rung displays as "Pro" regardless.
+            $this->assertSame('basic', $card['tier']);
             $this->assertArrayNotHasKey('tree', $card);
             $this->assertNotEmpty($card['preview_url'] ?? null, $card['id'] . ' is locked with nowhere to send the merchant');
         }
@@ -177,13 +182,22 @@ final class TemplateRoutesTest extends TestCase
      */
     public function testALoadedProDoesNotResolveAStubItDidNotShip(): void
     {
+        $stubs = 0;
+
         foreach (self::cards(true) as $card) {
-            if ($card['tier'] !== 'pro') {
+            if ($card['tier'] === 'free') {
                 continue;
             }
 
+            $stubs++;
+
             $this->assertSame('locked', $card['availability'], $card['id'] . ' resolved ready with no design behind it');
         }
+
+        // The loop above asserted nothing at all when the cards moved rung and
+        // the filter still named the old one — a vacuous pass on the exact
+        // claim this test exists to make. It cannot go quiet again.
+        $this->assertGreaterThan(0, $stubs, 'no premium card reached the assertion');
     }
 
     /** Interleaved, so a premium design is not an advertisement at the bottom. */

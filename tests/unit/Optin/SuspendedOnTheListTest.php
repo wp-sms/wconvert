@@ -16,6 +16,7 @@ use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
 use WConvert\Tests\Unit\Support\FakeConnection;
 use WConvert\Tests\Unit\Support\FakeOptionStore;
+use WConvert\Support\Tier;
 use WConvert\Tests\Unit\Support\FakeProPresence;
 use WConvert\Tests\Unit\Support\FakeSitePresence;
 use WConvert\Tests\Unit\Support\InstalledRules;
@@ -104,7 +105,7 @@ final class SuspendedOnTheListTest extends TestCase
     private function controllerOn(bool $proLoaded, bool $hasStore): OptinController
     {
         $templates = TemplateVocabulary::fromManifest(self::PLUGIN_DIR);
-        $pro = new FakeProPresence($proLoaded);
+        $pro = new FakeProPresence($proLoaded ? Tier::Elite : Tier::Free);
         $site = new FakeSitePresence($hasStore ? [SiteDependency::WooCommerce] : []);
         $vocabulary = RuleVocabulary::fromManifest(self::PLUGIN_DIR);
 

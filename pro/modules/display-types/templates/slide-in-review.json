@@ -2,7 +2,7 @@
   "id": "slide-in-review",
   "name": "Corner testimonial",
   "display_type": "slide_in",
-  "tier": "pro",
+  "tier": "basic",
   "tokens": {
     "bg": "#0f172a",
     "fg": "#e2e8f0",

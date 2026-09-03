@@ -46,10 +46,18 @@ final class InstalledRules
         return self::supplying($vocabulary ?? self::vocabulary(), self::store(), Tier::Free);
     }
 
-    /** And [[Pro]]'s provider added its own on top. */
+    /**
+     * And [[Pro]]'s provider added its own on top, at every rung.
+     *
+     * `Tier::paid()` rather than `Tier::Pro`, because "an install with Pro"
+     * means the whole product: with three rungs (ADR 0056) naming one would
+     * quietly build a MIDDLE-tier install, and the two cart Conditions are the
+     * top rung's — so every test saying "Pro is here" would have been asking
+     * about a build that cannot evaluate them.
+     */
     public static function withPro(?RuleVocabulary $vocabulary = null): Degradation
     {
-        return self::supplying($vocabulary ?? self::vocabulary(), self::store(), Tier::Free, Tier::Pro);
+        return self::atTier(Tier::Elite, self::store(), $vocabulary);
     }
 
     /**
@@ -65,7 +73,22 @@ final class InstalledRules
      */
     public static function withProButNoStore(?RuleVocabulary $vocabulary = null): Degradation
     {
-        return self::supplying($vocabulary ?? self::vocabulary(), new FakeSitePresence(), Tier::Free, Tier::Pro);
+        return self::atTier(Tier::Elite, new FakeSitePresence(), $vocabulary);
+    }
+
+    /**
+     * One rung of the ladder, exactly as `ProServiceProvider::boot()` builds it.
+     *
+     * The provider walks {@see Tier::paid()} and stops where the INSTALLED tier
+     * stops, so a Basic build supplies free's types and its own module's and no
+     * more. Spelled the same way here rather than by listing tiers, so a rung
+     * added to the ladder reaches both at once.
+     */
+    public static function atTier(Tier $installed, ?SitePresence $site = null, ?RuleVocabulary $vocabulary = null): Degradation
+    {
+        $tiers = array_filter(Tier::paid(), static fn (Tier $tier): bool => $installed->includes($tier));
+
+        return self::supplying($vocabulary ?? self::vocabulary(), $site ?? self::store(), Tier::Free, ...$tiers);
     }
 
     private static function supplying(RuleVocabulary $vocabulary, SitePresence $site, Tier ...$tiers): Degradation

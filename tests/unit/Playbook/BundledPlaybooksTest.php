@@ -236,11 +236,19 @@ final class BundledPlaybooksTest extends TestCase
                 $type = (string) ($rule['type'] ?? '');
                 $entry = $entries[$type] ?? [];
 
-                if (($entry['tier'] ?? 'free') !== 'free') {
-                    $this->assertSame(
-                        Tier::Pro,
-                        $playbook->goal->tier(),
-                        "{$id} prefills the premium rule {$type} under a Goal a free install can reach"
+                $ruleTier = Tier::tryFrom(is_string($entry['tier'] ?? null) ? $entry['tier'] : '') ?? Tier::Free;
+
+                if ($ruleTier !== Tier::Free) {
+                    // **The Goal's rung must reach the rule's**, which is the
+                    // ladder's version of the sentence this test always made:
+                    // an install that can choose the Goal must be able to
+                    // evaluate the rule the Playbook prefills under it. Written
+                    // as `includes()` rather than as equality, so a premium
+                    // rule under a HIGHER Goal is fine and a free Goal
+                    // prefilling one is not (ADR 0056).
+                    $this->assertTrue(
+                        $playbook->goal->tier()->includes($ruleTier),
+                        "{$id} prefills the {$ruleTier->value} rule {$type} under a Goal a lower tier can reach"
                     );
                 }
 

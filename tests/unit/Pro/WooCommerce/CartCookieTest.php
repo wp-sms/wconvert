@@ -5,7 +5,7 @@ namespace WConvert\Tests\Unit\Pro\WooCommerce;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use WC_Cart;
-use WConvert\Pro\WooCommerce\CartCookie;
+use WConvert\Pro\Module\CartRecovery\CartCookie;
 
 /**
  * =============================================================================

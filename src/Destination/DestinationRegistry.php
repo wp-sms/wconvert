@@ -5,6 +5,7 @@ namespace WConvert\Destination;
 use WConvert\Support\Availability;
 use WConvert\Support\ProPresence;
 use WConvert\Support\SitePresence;
+use WConvert\Support\Tier;
 
 defined('ABSPATH') || exit;
 
@@ -66,15 +67,20 @@ final class DestinationRegistry
      * A type that is **not registered at all** is `locked` or `unavailable`
      * depending on why, and this cannot tell which — the code that did not run
      * cannot say why it did not. So an unregistered type reads as `locked`
-     * only when Pro is absent, and `unavailable` otherwise: a broken Pro
+     * only on a free install, and `unavailable` on any paid one: a broken Pro
      * plugin on a valid licence is not something to sell a licence for.
+     *
+     * **Asked as "is this install free" rather than "is Pro loaded"**, now that
+     * the answer is a ladder rather than a boolean. The two read identically
+     * today and will not always: a Basic install that failed to register an
+     * Elite type is in the same position as a broken Pro, not in a free one's.
      */
     public function availabilityOf(string $typeId): Availability
     {
         $type = $this->find($typeId);
 
         if ($type === null) {
-            return $this->pro->isLoaded() ? Availability::Unavailable : Availability::Locked;
+            return $this->pro->installedTier() === Tier::Free ? Availability::Locked : Availability::Unavailable;
         }
 
         $requires = $type->requires();

@@ -71,7 +71,7 @@ final class TestSendTest extends TestCase
     private function dispatcher(?DestinationRegistry $registry = null): PushDispatcher
     {
         return new PushDispatcher(
-            $registry ?? (new DestinationRegistry(new FakeProPresence(false), new FakeSitePresence()))
+            $registry ?? (new DestinationRegistry(new FakeProPresence(), new FakeSitePresence()))
                 ->register($this->type),
             $this->destinations,
             new OptinRepository(
@@ -218,7 +218,7 @@ final class TestSendTest extends TestCase
      */
     public function testATypeThisSiteCannotRunIsSkipped(): void
     {
-        $registry = (new DestinationRegistry(new FakeProPresence(false), new FakeSitePresence()))
+        $registry = (new DestinationRegistry(new FakeProPresence(), new FakeSitePresence()))
             ->register(new FakeDestinationType('fake', Tier::Pro));
 
         $result = $this->dispatcher($registry)->test($this->destinationId, ['email' => 'merchant@example.com']);

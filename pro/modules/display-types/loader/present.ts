@@ -1,6 +1,6 @@
 import type { OptinControls, PayloadEntry, Presenter } from '@loader/types';
 import { captureInto, templatePresenter } from '@loader/present';
-import { POPOVER_TYPES, mountPopover } from '../../renderer/src/popover';
+import { POPOVER_TYPES, mountPopover } from './popover';
 
 /**
  * Pro's presenter: the two Display Types free has no container for, and

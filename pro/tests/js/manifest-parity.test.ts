@@ -2,7 +2,11 @@ import { describe, expect, it } from 'vitest';
 import manifest from '../../../resources/rules/manifest.json';
 import { parityProblems } from '../../../tests/js/support/manifest-parity';
 import type { Manifest } from '../../../tests/js/support/manifest-parity';
-import { PRO_MODULES } from '../../resources/loader/src/modules';
+import {
+  CART_MODULES,
+  DISPLAY_TYPE_MODULES,
+  PREMIUM_TRIGGER_MODULES,
+} from '../../resources/loader/src/modules';
 
 /**
  * The manifest and the modules say the same thing — Pro's half.
@@ -20,7 +24,29 @@ import { PRO_MODULES } from '../../resources/loader/src/modules';
  * implement them.
  */
 describe("Pro's modules against the manifest", () => {
-  it('implements every premium trigger and condition, and nothing else', () => {
-    expect(parityProblems(manifest as Manifest, 'pro', PRO_MODULES)).toEqual([]);
+  /**
+   * ==========================================================================
+   * ONE RUNG AT A TIME, BECAUSE THE LADDER IS CUMULATIVE AND THE MANIFEST IS
+   * NOT.
+   * ==========================================================================
+   * A tier SHIPS everything below it, so `ELITE_MODULES` carries the premium
+   * Triggers as well as the cart Conditions — but each manifest entry declares
+   * exactly one `tier`, which is the LOWEST rung that supplies it. Asking
+   * parity of the cumulative set would report every inherited module as
+   * "implemented on the wrong side".
+   *
+   * So each module's own set is checked against its own rung, and the three
+   * cases together are the whole of Pro's half. That is also the finer
+   * assertion: it says which MODULE a premium entry belongs to, so an
+   * `exit_intent` moved to the cart module without moving its manifest entry
+   * fails here rather than shipping a Pro build that cannot fire it
+   * (ADR 0056).
+   */
+  it.each([
+    ['basic', 'display-types', DISPLAY_TYPE_MODULES],
+    ['pro', 'premium-triggers', PREMIUM_TRIGGER_MODULES],
+    ['elite', 'cart-recovery', CART_MODULES],
+  ] as const)('implements exactly what the manifest files under %s', (tier, _module, modules) => {
+    expect(parityProblems(manifest as Manifest, tier, modules)).toEqual([]);
   });
 });

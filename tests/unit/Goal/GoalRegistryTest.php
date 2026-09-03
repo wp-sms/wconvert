@@ -10,6 +10,7 @@ use WConvert\Stats\StatKind;
 use WConvert\Support\Availability;
 use WConvert\Support\SiteDependency;
 use WConvert\Template\ConvertingAct;
+use WConvert\Support\Tier;
 use WConvert\Tests\Unit\Support\FakeProPresence;
 use WConvert\Tests\Unit\Support\FakeSitePresence;
 
@@ -36,7 +37,7 @@ final class GoalRegistryTest extends TestCase
     private function registry(bool $pro = false, bool $store = false): GoalRegistry
     {
         return new GoalRegistry(
-            new FakeProPresence($pro),
+            new FakeProPresence($pro ? Tier::Elite : Tier::Free),
             new FakeSitePresence($store ? [SiteDependency::WooCommerce] : [])
         );
     }

@@ -1,38 +1,42 @@
 import type { LoaderModule } from '@loader/types';
-import { cartHasItems, cartValueMin } from './cart';
-import { clickElement } from './click-element';
-import { exitIntent } from './exit-intent';
-import { queryParam } from './query-param';
-import { scrollUp } from './scroll-up';
+import { DISPLAY_TYPE_MODULES } from '../../../../modules/display-types/loader';
+import { PREMIUM_TRIGGER_MODULES } from '../../../../modules/premium-triggers/loader';
+import { CART_MODULES } from '../../../../modules/cart-recovery/loader';
 
 /**
- * Pro's loader modules.
+ * What each tier's build ships, named once so the three entries and the parity
+ * test read the same list.
  *
- * Premium rule types live here, and only here. Free's tree never imports this
- * file, and nothing under free's tree may — that is the invariant
- * `bin/verify-source-contract.sh` proves without a build, on every pull
- * request (ADR 0029).
+ * =============================================================================
+ * A TIER IS THE UNION OF ITS MODULES, AND THE LADDER IS SPELLED AS ONE.
+ * =============================================================================
+ * `tiers.json` is where a tier's module set is declared for PHP and for the
+ * build; this is the same declaration for the bundler, and
+ * `pro/tests/js/tier-modules.test.ts` is what asserts the two agree. They
+ * cannot be one file: the bundler needs a static import graph to cut on, and a
+ * set read out of JSON at runtime is a bundle carrying every tier's code — the
+ * byte-identical `main.js` ADR 0056 measures WSMS by.
  *
- * `click_element` and `query_param` are the two the builder needs a general
- * form for: a Trigger whose param is author-only, and the Condition the
- * campaign presets are shortcuts over (ADR 0005).
+ * Each rung is written as the one below it PLUS its own, rather than as a fresh
+ * list, so "higher supplies everything lower does" is a property of this file
+ * rather than three lists somebody keeps in step. `WConvert\Support\Tier`'s
+ * `includes()` is the same statement in PHP.
  *
- * `exit_intent` and `scroll_up` are the first two premium rules that are
- * premium for their own sake (#32). They are two entries here rather than one,
- * and `scroll-up.ts` is where that is argued.
- *
- * `cart_has_items` and `cart_value_min` are the first two rules premium for a
- * reason that is not packaging at all (#36): the cart [[Goal]]'s copy ASSERTS
- * what they guarantee, so a free tier able to drop them would ship a popup
- * that lies (ADR 0026). They are also the first to depend on something the
- * SITE supplies rather than on a tier, which is why they are registered only
- * where there is a store — see `ProServiceProvider::boot()`.
+ * `DISPLAY_TYPE_MODULES` is empty and is spread anyway: that module's
+ * contribution is a PRESENTER rather than a rule, and dropping it here because
+ * it is empty today is how a rule added to it later ships nowhere.
  */
-export const PRO_MODULES: readonly LoaderModule[] = [
-  clickElement,
-  exitIntent,
-  scrollUp,
-  queryParam,
-  cartHasItems,
-  cartValueMin,
-];
+export { DISPLAY_TYPE_MODULES, PREMIUM_TRIGGER_MODULES, CART_MODULES };
+
+export const BASIC_MODULES: readonly LoaderModule[] = [...DISPLAY_TYPE_MODULES];
+
+export const PRO_MODULES: readonly LoaderModule[] = [...BASIC_MODULES, ...PREMIUM_TRIGGER_MODULES];
+
+export const ELITE_MODULES: readonly LoaderModule[] = [...PRO_MODULES, ...CART_MODULES];
+
+/** Every paid tier, by slug, ascending — read by the parity tests. */
+export const MODULES_AT = {
+  basic: BASIC_MODULES,
+  pro: PRO_MODULES,
+  elite: ELITE_MODULES,
+} as const;

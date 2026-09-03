@@ -8,6 +8,7 @@ use WConvert\Rules\RuleCatalogue;
 use WConvert\Rules\RuleVocabulary;
 use WConvert\Support\Availability;
 use WConvert\Support\SiteDependency;
+use WConvert\Support\Tier;
 use WConvert\Tests\Unit\Support\FakeProPresence;
 use WConvert\Tests\Unit\Support\FakeSitePresence;
 
@@ -44,7 +45,7 @@ final class RuleCatalogueTest extends TestCase
     {
         return new RuleCatalogue(
             RuleVocabulary::fromManifest(self::PLUGIN_DIR),
-            new FakeProPresence($hasPro),
+            new FakeProPresence($hasPro ? Tier::Elite : Tier::Free),
             new FakeSitePresence($hasStore ? [SiteDependency::WooCommerce] : [])
         );
     }

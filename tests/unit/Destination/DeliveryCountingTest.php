@@ -119,7 +119,7 @@ final class DeliveryCountingTest extends TestCase
         $type = new FakeDestinationType($typeId);
         $type->answers = $answers === [] ? [PushResult::success('ref')] : array_values($answers);
 
-        $registry = (new DestinationRegistry(new FakeProPresence(false), new FakeSitePresence()))->register($type);
+        $registry = (new DestinationRegistry(new FakeProPresence(), new FakeSitePresence()))->register($type);
 
         $optins = new OptinRepository(
             $this->db,

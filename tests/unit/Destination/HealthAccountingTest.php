@@ -82,7 +82,7 @@ final class HealthAccountingTest extends TestCase
 
     private function worker(): PushWorker
     {
-        $registry = (new DestinationRegistry(new FakeProPresence(false), new FakeSitePresence()))
+        $registry = (new DestinationRegistry(new FakeProPresence(), new FakeSitePresence()))
             ->register($this->type);
 
         $optins = new OptinRepository(
