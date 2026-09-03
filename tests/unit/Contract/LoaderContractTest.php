@@ -152,13 +152,13 @@ final class LoaderContractTest extends TestCase
         // Random bytes, because gzip -9 would flatten a repeated string to
         // nothing and the budget is measured after compression.
         $result = $this->check($this->tree([
-            'public/loader/loader.js' => base64_encode(random_bytes(16384)),
+            'public/loader/loader.js' => base64_encode(random_bytes(24576)),
             'pro/public/loader/loader.js' => 'console.log("pro");',
             'resources/rules/manifest.json' => self::manifest(self::freeOnlyManifest()),
         ]));
 
         $this->assertSame(1, $result['status'], $result['output']);
-        $this->assertStringContainsString('8192', $result['output']);
+        $this->assertStringContainsString('12288', $result['output']);
     }
 
     /**

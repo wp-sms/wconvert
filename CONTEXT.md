@@ -340,6 +340,16 @@ A start with no end and an end with no start are both valid. An end at or before
 its start is not, and is refused by the normaliser rather than by any one
 screen. See [ADR 0050](docs/adr/0050-a-scheduled-optin-stays-in-the-published-set.md).
 
+**A `countdown` in a [[Template]] counts to `ends_at` and to nothing else**, so
+there is only ever one deadline and no way for a timer to disagree with the
+schedule it is counting to. The instant the loader compares against is the one
+the projection already resolved, which makes the display cache-proof for free —
+and at `ends_at` the Optin leaves its window, so the deadline has a real
+consequence rather than being a clock that runs out beside an offer that does
+not. An evergreen per-visitor countdown is **refused** rather than deferred: it
+is a manufactured time limit under WCAG SC 2.2.1, which is Level A. See
+[ADR 0052](docs/adr/0052-a-countdown-counts-to-the-optins-own-schedule-end.md).
+
 ### Display Type
 
 *How* an Optin appears: `popup`, `floating_bar`, `slide_in`, or `inline`.
@@ -535,6 +545,17 @@ One Template serves exactly one Display Type. An Optin **takes a copy** of its
 Template rather than a link to it, so improving a Template never restyles an Optin
 already running on it.
 
+> **A stored tree carries a version, and it is there for the day the vocabulary
+> narrows.** The copy an Optin holds is as old as the Optin and the code reading
+> it is as new as the release, which is safe in exactly one direction: adding a
+> node type or a token is invisible to an old design, while renaming one or
+> tightening a choice list would silently rewrite designs already running. So
+> every tree this plugin builds is stamped `v` — the same escape hatch the
+> browser record's `wcv1` has and the server side did not, which
+> [[Storage Consent]] already says out loud. Nothing reads it yet; the first
+> reader is whichever release first has to narrow something. See
+> `WConvert\Template\TemplateTree::VERSION`.
+
 A Template declares its slots as [[Slot Role]]s, which is what lets a [[Playbook]]
 carry copy without being bound to one design.
 
@@ -665,13 +686,35 @@ buy a licence from us; you cannot buy WooCommerce from us.
 
 The semantic name of a slot in a [[Template]] — `headline`, `cta_label`,
 `fine_print`, `consent_text`, `success_headline` — drawn from a closed vocabulary
-and unique across the Template's whole tree.
+and ~~unique across the Template's whole tree~~ **claimable by more than one node**.
+
+> **Amended: the names are closed, the uniqueness is gone.** A design may claim
+> `body` three times, and a [[Playbook]] supplying an array fills them **in tree
+> order**; a single value fills the first slot only, and words with no slot to go
+> in write nothing.
+>
+> Uniqueness was enforced by a silent key-drop — a second node claiming a Role
+> kept the *node* and lost the *Role* — and what that cost was not "those words
+> cannot be filled". A snapshot strips the words from every text node and binds
+> them back only where a Role binds, so a role-less paragraph reached a real
+> Optin as an **empty `<p>`**: a three-benefit row showed one benefit and two
+> blank lines, while the gallery card looked right because a library entry keeps
+> its own placeholder text.
+>
+> **Binding is still by name**, which is the whole guarantee — the words survive
+> switching Template. See
+> [ADR 0051](docs/adr/0051-a-slot-role-repeats-and-binds-in-order.md).
 
 Slot Roles are the seam between the two halves of a designed Optin: a Template
 declares which Roles it offers, a [[Playbook]] supplies copy against them, and
 neither needs to know the other's internals. A Role a Template does not declare is
 dropped when a Playbook prefills it — a case prevented at authoring time, since a
 Playbook's default Template is validated to declare every Role it fills.
+
+Because a Role repeats, a name no longer identifies a *slot*. Anything that has
+to point at one — the builder's preview, which agrees with the block tree on a
+key derived independently on both sides — numbers it by position among the
+same-named slots the renderer actually draws, per step.
 
 A field's Roles are **derived rather than declared**: they are named for what it
 captures, so a `field` capturing an email offers `email_label` and

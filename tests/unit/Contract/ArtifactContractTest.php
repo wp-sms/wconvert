@@ -157,6 +157,11 @@ final class ArtifactContractTest extends TestCase
             'public/loader/loader.js' => "console.log('pro loader');\n",
             'public/inspector/inspector.js' => "console.log('pro inspector');\n",
             'resources/loader/src/main.ts' => "export const boot = () => {};\n",
+            // The premium designs. Pro IS where they ship, so a Pro artifact
+            // with an empty library is a broken build rather than a clean one
+            // — it installs, replaces the loader, and shows the customer the
+            // same locked upsell cards free shows.
+            'resources/templates/library/bar-announcement.json' => "{\"id\":\"bar-announcement\",\"tier\":\"pro\",\"tree\":{}}\n",
             ...$overrides,
         ]);
     }
@@ -187,6 +192,50 @@ final class ArtifactContractTest extends TestCase
     // ships exit-intent code and refuses to run it, that is trialware". A
     // design is a JSON file, and a JSON file looks harmless in a diff.
     // =========================================================================
+
+    /**
+     * ==========================================================================
+     * PRO'S HALF OF (e), WHICH FAILS FOR THE OPPOSITE REASON.
+     * ==========================================================================
+     * Free's half catches a premium design that leaked IN. Pro's catches one
+     * that never made it — and that is not a symmetry for its own sake. Pro's
+     * designs are the whole of what a customer bought a `floating_bar` for, and
+     * a build that staged `resources/` without them produces a ZIP that
+     * installs, activates, replaces the loader, and shows a paying customer the
+     * same locked upsell cards free shows, with nothing anywhere saying why.
+     *
+     * That is not hypothetical: it is exactly the state the product was in
+     * until Pro registered a {@see \WConvert\Template\TemplateSource} of its
+     * own, and it was invisible from every green suite.
+     */
+    public function testFailsWhenTheProTreeBundlesNoPremiumDesign(): void
+    {
+        // The library DIRECTORY is there, holding only free's own designs —
+        // which is what a Pro build that copied the shared tree and forgot the
+        // premium one actually looks like on disk. An absent directory is the
+        // other failure and is asserted below.
+        $result = $this->verify($this->stagedPro([
+            'resources/templates/library/bar-announcement.json' => null,
+            'resources/templates/library/centred-card.json' => "{\"id\":\"centred-card\",\"tier\":\"free\",\"tree\":{}}\n",
+        ]));
+
+        $this->assertSame(1, $result['status'], $result['output']);
+        $this->assertStringContainsString('bundles no premium design', $result['output']);
+    }
+
+    public function testFailsWhenTheProTreeCarriesNoDesignLibraryAtAll(): void
+    {
+        $result = $this->verify($this->tree([
+            'wconvert-pro.php' => "<?php\n// the plugin\n",
+            'src/Bootstrap.php' => "<?php\nnamespace WConvert\\Pro;\nfinal class Bootstrap {}\n",
+            'public/loader/loader.js' => "console.log('pro loader');\n",
+            'public/inspector/inspector.js' => "console.log('pro inspector');\n",
+            'resources/loader/src/main.ts' => "export const boot = () => {};\n",
+        ]));
+
+        $this->assertSame(1, $result['status'], $result['output']);
+        $this->assertStringContainsString('not inspected', $result['output']);
+    }
 
     public function testFailsWhenTheFreeTreeBundlesAPremiumDesign(): void
     {

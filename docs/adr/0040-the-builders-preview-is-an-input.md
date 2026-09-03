@@ -154,6 +154,17 @@ gained a path is the panel — the thing that was always the only writer, and
 which has addressed nodes by `Path` since `panel.ts` was written. The key
 travels beside the path for the preview's benefit and for nothing else.*
 
+*Amended again by [ADR 0051](0051-a-slot-role-repeats-and-binds-in-order.md):
+**a key carries an ordinal**, because a [[Slot Role]] repeats and a name
+therefore identifies a Role rather than a slot. With three `body` elements on a
+step, a click on the third reached the first and selecting any outlined all
+three — silently, because nothing throws when the two sides agree on the wrong
+slot. The ordinal is counted **per step** and **only over what the renderer
+draws**, which are the two things the DOM side can reproduce; the first
+occurrence keeps the bare key, and a hidden slot gets none at all. One function
+numbers both walks, since two would be exactly the drift this whole seam is
+guarding against.*
+
 *Two consequences a key handled for free and a path does not, both now handled
 explicitly: a move changes the address, so the selection is re-pointed at the
 block rather than at the position it held; and a save replaces the tree, so the

@@ -423,7 +423,33 @@ if [ "$tier" = "free" ]; then
         pass "no premium design in the free artifact"
     fi
 else
-    echo "  ! (e) asserted nothing: Pro IS where the premium designs ship."
+    # ------------------------------------------------------------------------
+    # PRO'S HALF, WHICH IS THE SAME RULE READ FROM THE OTHER END.
+    # ------------------------------------------------------------------------
+    # This printed "asserted nothing" and it was right to, while Pro shipped no
+    # designs at all. It ships five now, and "Pro IS where the premium designs
+    # ship" is a claim with an artifact behind it — so it is asserted rather
+    # than said.
+    #
+    # The failure it catches is not a leak, it is an EMPTY LIBRARY: Pro's
+    # designs are the whole of what a customer bought a `floating_bar` for, and
+    # a build that staged `resources/` without `pro/resources/` produces a ZIP
+    # that installs, activates, replaces the loader and shows the customer the
+    # same locked upsell cards free shows — with nothing anywhere saying why.
+    # That is precisely the state this ticket found the product in.
+    if [ -d "$TREE/resources/templates/library" ]; then
+        designs="$(grep -REl '"tier"[[:space:]]*:[[:space:]]*"pro"' "$TREE/resources/templates/library" 2>/dev/null || true)"
+
+        if [ -z "$designs" ]; then
+            fail "the Pro artifact bundles no premium design — Pro IS where they ship, so an empty library is a broken build"
+        fi
+    else
+        fail "resources/templates/library/ is missing from Pro — the premium designs were not inspected"
+    fi
+
+    if section_clean; then
+        pass "the premium designs ship in the Pro artifact"
+    fi
 fi
 
 verdict

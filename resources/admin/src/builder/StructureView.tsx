@@ -27,7 +27,7 @@ import { BlockInspector } from './BlockInspector';
 import { BlockTree } from './BlockTree';
 import { useBlockDrag } from './useBlockDrag';
 import { nameOfBlock, sentenceFor, type Control } from './BlockRow';
-import { additionsIn, freeRoleFor, nodeFor, type ConvertingAct } from './structure/catalogue';
+import { additionsIn, nodeFor, type ConvertingAct } from './structure/catalogue';
 import { whyDuplicationIsRefused, whyRemovalIsRefused } from './structure/guards';
 import {
   countAt,
@@ -361,28 +361,31 @@ export function StructureView({
           } as typeof bare)
         : bare;
 
-    const nameless = LEAVES[type] !== undefined && LEAVES[type].roles.length > 0 && freeRoleFor(template.tree, type) === null;
     const kind = LEAVES[type] === undefined ? nameOf(labels.layouts, type) : nameOf(labels.nodes, type);
 
+    /*
+      **There is no longer a second sentence here, and its absence is the fix.**
+      This announcement used to have a role-exhaustion arm — *"Every name a
+      Heading can have is already used in this design, so this one is not
+      linked to the preview"* — because [[Slot Role]]s were unique across a
+      tree and a second Heading therefore arrived anonymous, with its words
+      doomed at the next design switch.
+
+      Roles repeat (ADR 0051), so a new block always has a name to carry and
+      that state is unreachable from this menu. What is left says what
+      happened, once, which is what ADR 0042 rule 2 asks of it: a merchant who
+      has just added a second Body does not need telling that it is a second
+      Body.
+    */
     write(
       withInserted(template.tree, at, node),
       [...at.parent, at.key, at.index],
       0,
-      nameless
-        ? sprintf(
-            /* translators: 1: the kind of block added, e.g. “Heading”. 2: the same word again. */
-            __(
-              '%1$s added. Every name a %2$s can have is already used in this design, so this one is not linked to the preview.',
-              'wconvert',
-            ),
-            kind,
-            kind,
-          )
-        : sprintf(
-            /* translators: %s: the kind of block added, e.g. “Heading”. */
-            __('%s added.', 'wconvert'),
-            kind,
-          ),
+      sprintf(
+        /* translators: %s: the kind of block added, e.g. “Heading”. */
+        __('%s added.', 'wconvert'),
+        kind,
+      ),
     );
   };
 

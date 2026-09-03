@@ -25,6 +25,15 @@ import type { TemplateTree } from '@renderer/types';
 const MINIMAL: Readonly<Record<string, object>> = {
   heading: { text: 'x' },
   text: { text: 'x' },
+  eyebrow: { text: 'x' },
+  badge: { text: 'x' },
+  // The four with nothing to fill in. A `divider` says nothing by definition; a
+  // `rating` and an `icon` draw their declared default; and all three are here
+  // as empty objects rather than absent so the list reads as deliberate.
+  divider: {},
+  countdown: {},
+  rating: {},
+  icon: {},
   image: { src: '/x.png', alt: '' },
   field: { name: 'email' },
   button: { label: 'x' },

@@ -159,6 +159,94 @@ export function isFontStack(value: string): boolean {
 }
 
 /**
+ * Is it a bare number — a ratio or a weight rather than a length?
+ *
+ * ============================================================================
+ * THE THIRD TYPOGRAPHIC SHAPE, AND IT IS WHY `type` HELD ONLY ONE TOKEN.
+ * ============================================================================
+ * `groupOf` reads shapes and never names a token, which is what lets a token
+ * added to `resources/templates/manifest.json` land in the right section with
+ * nothing here edited. It knew two typographic shapes — a colour is not one, a
+ * font stack is — and everything else with a number in it fell to *Size and
+ * space*. So `heading-weight` (`700`) and `leading` (`1.5`) would have arrived
+ * under a heading about spacing, which is where a merchant does not look for
+ * how bold their headline is.
+ *
+ * A bare number is the shape both of them have and no length has:
+ * {@link measureOf} requires a unit, so `1.5rem` is a measure and `1.5` is
+ * this. It is not a heuristic about what the token MEANS — CSS has exactly two
+ * unitless typographic properties in this vocabulary, and both are type.
+ */
+export function isBareNumber(value: string): boolean {
+  const trimmed = value.trim();
+
+  return trimmed !== '' && Number.isFinite(Number(trimmed));
+}
+
+/**
+ * Is it a CSS `<image>` — the shape a background layer has?
+ *
+ * ============================================================================
+ * READ OFF THE VALUE, SO THIS FILE STILL NAMES NO TOKEN.
+ * ============================================================================
+ * `none` is the keyword a background layer takes when there is no picture, and
+ * `url()` and the gradient functions are the only other things this vocabulary
+ * can put in one. Together they are a shape as recognisable as a hex colour,
+ * which is what earns the token a control of its own rather than a text box a
+ * merchant is expected to type `url(https://…)` into.
+ *
+ * The gradient arm is deliberately included and deliberately NOT given a
+ * control: {@link urlIn} answers null for one, so the panel falls back to the
+ * plain box and a merchant who typed a gradient keeps it. That is the same
+ * refusal `measureOf` makes for a `clamp()`.
+ */
+export function isCssImage(value: string): boolean {
+  const trimmed = value.trim();
+
+  return trimmed === 'none' || /^(?:url|(?:repeating-)?(?:linear|radial|conic)-gradient)\(/i.test(trimmed);
+}
+
+/**
+ * The address inside a `url()`, or null for anything else.
+ *
+ * Null is what sends a gradient — or a value this cannot parse — to the plain
+ * text box, which is the escape hatch every control in this panel keeps.
+ */
+export function urlIn(value: string): string | null {
+  const found = /^url\(\s*(['"]?)([^'")]*)\1\s*\)$/.exec(value.trim());
+
+  return found === null ? null : found[2];
+}
+
+/**
+ * The same address as a background layer, or `''` to clear the token.
+ *
+ * ============================================================================
+ * QUOTES AND PARENTHESES ARE STRIPPED, AND NOT AS A SECURITY BOUNDARY.
+ * ============================================================================
+ * A token value lands as a CUSTOM PROPERTY, and a custom property cannot
+ * introduce a second declaration however it is written — the same door
+ * `mountPopover` already goes through for the width token. What a stray quote
+ * DOES do is make the declaration invalid at computed-value time, so the
+ * merchant's picture silently does not appear and nothing says why. Stripping
+ * them is about that.
+ *
+ * **Anything that does not look like an address is stored verbatim**, which is
+ * what keeps a `linear-gradient()` typeable in the one box the panel offers for
+ * this token. A merchant pasting a URL gets it wrapped; a merchant writing CSS
+ * gets their CSS.
+ */
+export function asBackgroundLayer(typed: string): string {
+  const trimmed = typed.trim();
+
+  if (trimmed === '') {
+    return '';
+  }
+
+  return /[()'"]/.test(trimmed) ? trimmed : `url("${trimmed}")`;
+}
+
+/**
  * A token's value as **one plain number and unit**, or null.
  *
  * ============================================================================

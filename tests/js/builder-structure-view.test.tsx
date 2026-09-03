@@ -64,6 +64,9 @@ const LABELS = {
     headline: 'Headline',
     body: 'Body text',
     fine_print: 'Fine print',
+    eyebrow: 'Line above the heading',
+    badge: 'Badge wording',
+    rating_text: 'Words beside the stars',
     cta_label: 'Button label',
     consent_text: 'Consent wording',
     success_headline: 'Headline after they submit',
@@ -71,19 +74,26 @@ const LABELS = {
   },
   nodes: {
     heading: 'Heading',
+    eyebrow: 'Overline',
     text: 'Text',
+    badge: 'Badge',
+    rating: 'Star rating',
     image: 'Image',
+    icon: 'Icon',
+    divider: 'Divider',
+    countdown: 'Countdown',
     field: 'Field',
     button: 'Button',
     consent: 'Consent checkbox',
   },
-  layouts: { stack: 'Column', row: 'Row', split: 'Side by side', grid: 'Grid' },
+  layouts: { stack: 'Column', row: 'Row', split: 'Side by side', grid: 'Equal columns' },
   // The menu shows what a layout DOES, because *Row* and *Side by side* are two
   // words a merchant cannot tell apart from their names alone.
   layoutNotes: {
     stack: 'Blocks stacked top to bottom.',
     row: 'Blocks along one line.',
     split: 'Two panes, each holding its own blocks.',
+    grid: 'Three across, one per line on a phone.',
   },
   layoutParams: { 'split.ratio': 'How the space is divided' },
   layoutParamValues: {
@@ -95,6 +105,8 @@ const LABELS = {
     'heading.level': 'Heading rank',
     'image.fit': 'How the picture fills its space',
     'field.required': 'Must they fill this in?',
+    'rating.value': 'How many stars',
+    'icon.name': 'Which picture',
   },
   nodeParamValues: {
     'heading.level.1': 'Main heading',
@@ -103,6 +115,15 @@ const LABELS = {
     'image.fit.contain': 'Fit the whole picture in',
     'field.required.true': 'Required',
     'field.required.false': 'Optional',
+    'rating.value.3': 'Three of five',
+    'rating.value.4': 'Four of five',
+    'rating.value.5': 'Five of five',
+    'icon.name.check': 'Tick',
+    'icon.name.star': 'Star',
+    'icon.name.bolt': 'Lightning',
+    'icon.name.gift': 'Gift',
+    'icon.name.clock': 'Clock',
+    'icon.name.truck': 'Delivery van',
   },
   fields: { email: 'Email address', name: 'Name', phone: 'Phone number' },
   keys: {
@@ -617,19 +638,29 @@ describe('adding a block', () => {
       "Row" appears inside *"In one line — a field, then its button"* only by
       accident today, but a loose regex over a menu that explains itself is a
       test that passes for the wrong reason.
-
-      `Grid` is not here: it declared equal tracks always N across, which at a
-      popup's width hands a phone two columns of prose, while `split` solves the
-      same problem and wraps. Nothing shipped used it and its one option was
-      reachable from nowhere.
     */
-    for (const kind of ['Heading', 'Text', 'Image', 'Field', 'Button', 'Consent checkbox', 'Column', 'Row', 'Side by side']) {
+    for (const kind of [
+      'Heading',
+      'Overline',
+      'Text',
+      'Badge',
+      'Star rating',
+      'Image',
+      'Icon',
+      'Divider',
+      'Countdown',
+      'Field',
+      'Button',
+      'Consent checkbox',
+      'Column',
+      'Row',
+      'Side by side',
+      'Equal columns',
+    ]) {
       expect(
         await screen.findByRole('menuitem', { name: new RegExp(`^${kind}\\b`) }),
       ).toBeInTheDocument();
     }
-
-    expect(screen.queryByRole('menuitem', { name: /^Grid/ })).toBeNull();
   });
 
   /** One Optin has exactly one converting act (CONTEXT.md, Conversion). */
@@ -658,12 +689,17 @@ describe('adding a block', () => {
   });
 
   /**
-   * **Role exhaustion is said out loud.** A block with no free Slot Role still
-   * edits — the Content tab heads it by its kind — but it has no `SlotKey`, so
-   * clicking it in the preview reaches nothing. A merchant not told reads that
-   * as a bug.
+   * ==========================================================================
+   * A SECOND HEADING IS JUST A HEADING NOW, AND THE WARNING IS GONE WITH IT.
+   * ==========================================================================
+   * This asserted the opposite until ADR 0051: [[Slot Role]]s were unique
+   * across a tree, so a second Heading arrived with no Role, no `SlotKey` and
+   * no seam for its words to survive a design switch — and the announcement
+   * had to say so. Roles repeat, so it binds like the first one and the second
+   * sentence would be telling a merchant that the block they just added is the
+   * block they just added (ADR 0042 rule 2).
    */
-  it('says when a new block could not be given a name of its own', async () => {
+  it('announces a repeated block plainly, with nothing to warn about', async () => {
     await structure();
 
     await userEvent.click(
@@ -672,7 +708,8 @@ describe('adding a block', () => {
     await userEvent.click(screen.getByRole('menuitem', { name: 'Add a block after this' }));
     await userEvent.click(await screen.findByRole('menuitem', { name: 'Heading' }));
 
-    expect(screen.getByRole('status')).toHaveTextContent('not linked to the preview');
+    expect(screen.getByRole('status')).toHaveTextContent('Heading added.');
+    expect(screen.getByRole('status')).not.toHaveTextContent('not linked to the preview');
   });
 
   /**

@@ -52,10 +52,24 @@ export interface Problem {
  * visitor may not be able to read. That is also the order a merchant can act
  * in — there is no point choosing colours for a design the save refuses.
  */
-export function problemsIn(template: Template, act: ConvertingAct): Problem[] {
+export function problemsIn(
+  template: Template,
+  act: ConvertingAct,
+  /**
+   * When the Optin stops running, as the merchant typed it — or undefined.
+   *
+   * Passed in rather than read off the template, because it is not the
+   * template's: a `countdown` node carries no deadline and counts to the
+   * Optin's own `ends_at` (ADR 0052). Required rather than optional so a caller
+   * that has a schedule cannot forget to hand it over and quietly lose the
+   * check.
+   */
+  endsAt: string | undefined,
+): Problem[] {
   return [
     ...whatCannotConvert(template, act),
     ...whatCapturesNothing(template),
+    ...whatCountsDownToNothing(template, endsAt),
     ...whatLosesWords(template),
     ...whatCannotBeRead(template),
   ];
@@ -147,6 +161,45 @@ function whatCapturesNothing(template: Template): Problem[] {
           ),
     path: block.path,
   }));
+}
+
+/**
+ * A clock with nothing to count to.
+ *
+ * ============================================================================
+ * IT IS A BUILDER PROBLEM RATHER THAN A CRASH, AND THAT IS THE WHOLE POINT OF
+ * BINDING THE DEADLINE TO THE SCHEDULE.
+ * ============================================================================
+ * A `countdown` counts to the Optin's `ends_at` and to nothing else
+ * (ADR 0052), which is what makes a timer that disagrees with its own schedule
+ * inexpressible — the zombie countdown that keeps running after the offer ends
+ * is not a setting somebody can misconfigure here.
+ *
+ * What that leaves is one state: a design carrying a clock on an Optin with no
+ * end. It renders, saves and publishes; the clock is simply empty. Nothing else
+ * in the product will ever mention it, and the fix is on a different tab from
+ * the design — so the sentence has to name the tab.
+ */
+function whatCountsDownToNothing(template: Template, endsAt: string | undefined): Problem[] {
+  if (typeof endsAt === 'string' && endsAt !== '') {
+    return [];
+  }
+
+  const clocks = nodesOf(template.tree).filter((block) => block.type === 'countdown' && !block.hidden);
+
+  if (clocks.length === 0) {
+    return [];
+  }
+
+  return [
+    {
+      said: __(
+        'This design shows a countdown, and nothing says when this Optin stops running. Set an end date under “How often” on the Rules tab, or the clock stays empty.',
+        'wconvert',
+      ),
+      path: clocks[0].path,
+    },
+  ];
 }
 
 /**

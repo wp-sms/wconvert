@@ -106,7 +106,32 @@ third-party ones. Under configuration they are properties of the one renderer.
   than a capability. `split.ratio` is now a real control, which is the same
   finding acted on rather than deleted. **A snapshot holding a `grid` still
   renders** — the renderer skips a node type it does not know, which is the
-  clause that makes narrowing the vocabulary safe at all.* *Refined by
+  clause that makes narrowing the vocabulary safe at all.*
+
+  ***Widened again, and `grid` came back with the param that killed it left
+  out.*** *The audit that preceded #95's designs found the vocabulary
+  structurally sound and* not wide enough*: twelve shipped designs are the same
+  eight-slot skeleton in different colours, and the next thirty would be too. So
+  the manifest gained five leaves — `eyebrow`, `badge`, `divider`, `rating` and
+  a closed six-glyph `icon` — five style tokens (`heading-weight`, `tracking`,
+  `leading`, `shadow`, `motion`), and `grid` again as
+  `repeat(auto-fit, minmax(8rem, 1fr))`.*
+
+  ***That last one is a different layout wearing the old name.** The deletion
+  above is still right about what it deleted: `repeat(columns, 1fr)` is always N
+  across, and a `columns` param no control reached is not a capability.
+  `auto-fit` has no column count to store and no param to misconfigure — the
+  browser counts them from the space it has — so it wraps by construction and is
+  the only route to a three-up, since `split` is hard-coded to exactly two
+  panes. A snapshot carrying the old `columns: 3` still renders: the key is
+  dropped on the way in and ignored if it arrives anyway.*
+
+  *An `icon` is the one member that draws a SHAPE rather than a box of text, and
+  its set is closed for this ADR's own reason — an `src` would be the remote
+  asset [ADR 0013](0013-playbook-copy-carries-no-markup.md) keeps out, and an
+  inline SVG would be markup in a vocabulary whose whole claim is that it cannot
+  express any. The renderer owns the six paths, so there is nothing to sanitise
+  and nothing to fetch.* *Refined by
   [ADR 0042](0042-the-admin-speaks-only-when-it-changes-what-you-do-next.md):
   the typed box that keeps a value unvalidated is a **Custom** option rather
   than a field on screen at all times. The property is untouched — a merchant
@@ -163,6 +188,20 @@ third-party ones. Under configuration they are properties of the one renderer.
   arrived the same way, and neither is read by anything that renders.*
 - **The renderer skips unknown nodes rather than throwing**, so a snapshot outlives a
   vocabulary change. Same failure posture #4 set for an unavailable Destination.
+  ***Completed: a stored tree now says which vocabulary wrote it.*** *Skipping
+  covers the widening direction and only that one. A snapshot meeting a NEWER
+  vocabulary renders as it always did, because `normalize()` drops what it does
+  not know and the renderer skips what it cannot draw — but the reverse move,
+  renaming a node or tightening a param's meaning, would silently rewrite
+  designs already running, with no way to tell a tree that meant the old thing
+  from one that means the new thing. So every tree this plugin builds is stamped
+  `v` ([`TemplateTree::VERSION`](../../src/Template/TemplateTree.php)), added
+  while there is only one version for it to be. **Nothing reads it yet, and that
+  is the point:** it is the fact a migration would need and cannot reconstruct,
+  and retrofitting it after thirty designs are in the wild costs a guess about
+  what each one meant. CONTEXT.md flagged the same gap under* Storage Consent *—
+  "the `1` is a version, and it is an escape hatch the server side does not
+  have".*
 - **Registration is where a *Template* is refused**, on the two questions a
   renderer cannot answer without showing a blank popup. *Amended by the
   structure editor: it is no longer the only place, and it never covered an
@@ -259,7 +298,15 @@ third-party ones. Under configuration they are properties of the one renderer.
   ([`TemplateVocabulary`](../../src/Template/TemplateVocabulary.php)). `id` runs
   the other way: a leaf that arrives without one leaves with a minted one
   ([`NodeIdentities`](../../src/Template/NodeIdentities.php)), unique across the
-  whole tree exactly as a Slot Role is.*
+  whole tree ~~exactly as a Slot Role is~~.*
+
+  ***Amended by [ADR 0051](0051-a-slot-role-repeats-and-binds-in-order.md): an
+  `id` is unique and a Slot Role no longer is.*** *The comparison was true when
+  it was written and is now the wrong way round — a Role may be claimed by
+  several nodes and a Playbook's words bind to them in tree order, while an `id`
+  stays one node's own name because it is what a TRANSLATION is attached to.
+  Everything else in this entry stands: `id` is still the one key validation
+  adds rather than drops.*
 
   *The reason is translation, and it is a consequence of "configuration, not
   documents" rather than a departure from it. Merchant copy lives inside

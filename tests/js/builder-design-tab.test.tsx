@@ -208,6 +208,68 @@ describe('the look', () => {
 
 /**
  * ============================================================================
+ * A PICTURE IS AN ADDRESS, NOT A CSS FUNCTION A MERCHANT TYPES.
+ * ============================================================================
+ * `bg-image` holds a background LAYER — `none`, a `url()`, or a gradient — and
+ * without a control of its own the panel's answer is a text box expecting
+ * `url(https://…)`, which is the *"type `center` into this box"* defect the
+ * whole panel exists to remove. What the box shows is the address; what it
+ * stores is the layer.
+ *
+ * And the escape hatch survives, which is the same bargain the slider makes:
+ * a value the control cannot read as an address is shown and stored verbatim.
+ */
+describe('a background picture', () => {
+  const box = () => screen.getByLabelText('bg-image');
+
+  it('shows the address and stores the whole background layer', async () => {
+    const changed = vi.fn();
+
+    render(<Panel template={ENTRY} labels={LABELS} onChange={changed} onError={vi.fn()} />);
+
+    // Pasted rather than typed, because the harness's `onChange` is a spy and
+    // the panel never receives the value back — typing would assert the last
+    // KEYSTROKE. A merchant pastes an address anyway.
+    await userEvent.click(box());
+    await userEvent.paste('https://example.com/x.jpg');
+
+    expect(changed).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        tokens: expect.objectContaining({ 'bg-image': 'url("https://example.com/x.jpg")' }),
+      }),
+    );
+  });
+
+  it('reads an address back out of the layer the design stored', () => {
+    render(
+      <Panel
+        template={{ ...ENTRY, tokens: { ...ENTRY.tokens, 'bg-image': 'url("https://example.com/y.jpg")' } }}
+        labels={LABELS}
+        onChange={vi.fn()}
+        onError={vi.fn()}
+      />,
+    );
+
+    expect(box()).toHaveValue('https://example.com/y.jpg');
+  });
+
+  /** The escape hatch: a gradient is not an address, so it is left alone. */
+  it('shows a gradient verbatim rather than pretending it is an address', () => {
+    render(
+      <Panel
+        template={{ ...ENTRY, tokens: { ...ENTRY.tokens, 'bg-image': 'linear-gradient(#fff, #000)' } }}
+        labels={LABELS}
+        onChange={vi.fn()}
+        onError={vi.fn()}
+      />,
+    );
+
+    expect(box()).toHaveValue('linear-gradient(#fff, #000)');
+  });
+});
+
+/**
+ * ============================================================================
  * A SLIDER MUST NEVER BE ABLE TO CLOBBER A VALUE IT CANNOT EXPRESS.
  * ============================================================================
  * Token *names* are checked and their *values are not* — they land straight on

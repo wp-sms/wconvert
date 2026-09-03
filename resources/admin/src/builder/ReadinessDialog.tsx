@@ -160,7 +160,10 @@ export function ReadinessDialog({
   const summaries = summarise(rules, vocabulary, overlay);
 
   const problems: Problem[] = [
-    ...(template === undefined || act === null ? [] : problemsIn(template, act)),
+    // The schedule comes from the same `config` the four sections read, so the
+    // countdown check asks the merchant's own end date rather than the payload's
+    // resolved instant — which does not exist until the Optin is published.
+    ...(template === undefined || act === null ? [] : problemsIn(template, act, rules.schedule.ends_at)),
     ...where.problems.map((said) => ({ said, path: null })),
   ];
 

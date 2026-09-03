@@ -1,6 +1,6 @@
 import type { Template } from './types';
 import { DOCUMENT_CSS, SHADOW_CSS } from './css';
-import { render } from './render';
+import { COUNTDOWN_SLOT, render } from './render';
 
 export { render, SHADOW_CSS };
 
@@ -78,6 +78,25 @@ export interface MountOptions {
   /** `popup` or `inline`. Anything else mounts nothing rather than guessing. */
   readonly displayType?: string;
   readonly template: Template;
+  /**
+   * When this Optin's window shuts, as an absolute instant in milliseconds —
+   * the Optin's own `ends_at` and nothing else (ADR 0052).
+   *
+   * ==========================================================================
+   * IT IS THE SCHEDULE'S, WHICH IS WHY IT ARRIVES HERE AND NOT IN THE TREE.
+   * ==========================================================================
+   * A `countdown` node carries no deadline of its own. The merchant authors one
+   * wall time on the Rules tab, `Schedule.php` resolves it once on the server
+   * against `wp_timezone()`, and the payload carries the instant — so the same
+   * value drives the display and the window, and a timer that disagrees with
+   * the schedule it is counting to is not expressible.
+   *
+   * Absent where an Optin has no end. The countdown then draws its shape and no
+   * time, which is what a design with a clock and nothing to count to honestly
+   * is — and `builder/structure/problems.ts` says so on the screen where it can
+   * be fixed.
+   */
+  readonly endsAt?: number;
   /** Where an `inline` Optin was embedded. Ignored by `popup`. */
   readonly anchor?: Element | null;
   /** A DELIBERATE close by the visitor — the button, Esc, or the backdrop. */
@@ -172,6 +191,7 @@ export function shell(template: Template, chrome: HTMLElement | null, options: M
   host: HTMLElement;
   root: HTMLElement;
   step: (step: number) => HTMLElement;
+  stop: () => void;
 } {
   const host = document.createElement('div');
   const shadow = host.attachShadow({ mode: 'closed' });
@@ -205,7 +225,49 @@ export function shell(template: Template, chrome: HTMLElement | null, options: M
     for (const cta of element.querySelectorAll('a.wc-button')) {
       cta.addEventListener('click', () => options.onConvert?.());
     }
+
+    // Painted on BIND rather than only on the interval, so a countdown is right
+    // the frame it appears — including the one a step swap has just drawn,
+    // which would otherwise show the renderer's empty shape for up to a second.
+    paint(element);
   }
+
+  /**
+   * Fill every countdown in the rendered step with the time left.
+   *
+   * The renderer draws the shape and no time, so this is the whole of the seam
+   * between a pure `render()` and a live clock — and it is here rather than in
+   * a container because all three containers share this function and none of
+   * them should have to know what a countdown is.
+   */
+  function paint(element: HTMLElement): void {
+    const left = options.endsAt === undefined ? null : options.endsAt - Date.now();
+
+    for (const slot of element.querySelectorAll(`.${COUNTDOWN_SLOT}`)) {
+      slot.textContent = left === null ? '' : remaining(left);
+    }
+  }
+
+  /**
+   * One interval for the whole mount, started only where there is something to
+   * count to.
+   *
+   * ==========================================================================
+   * IT DIES WITH THE MOUNT, WHICH IS WHY NO TEARDOWN HANDLE HAD TO BE INVENTED.
+   * ==========================================================================
+   * Every container already has a `close()` the loader and the admin both call,
+   * and {@link Mounted.close} is what `Preview`'s effect cleans up with. So the
+   * tick is stopped where the mount ends, and the failure this is guarding
+   * against — the builder rebuilding its preview on every keystroke, leaking
+   * one interval per letter, and the gallery running one per card — cannot
+   * happen.
+   *
+   * Absent `endsAt` starts nothing at all: an interval that repaints an empty
+   * string once a second is a timer running on every page view of every Optin
+   * nobody scheduled.
+   */
+  const ticking =
+    options.endsAt === undefined ? undefined : setInterval(() => paint(root), 1000);
 
   return {
     host,
@@ -221,7 +283,34 @@ export function shell(template: Template, chrome: HTMLElement | null, options: M
 
       return next;
     },
+    stop(): void {
+      clearInterval(ticking);
+    },
   };
+}
+
+/**
+ * How long is left, as digits.
+ *
+ * `d` only where there are days, because `00d 04:15:33` spends four characters
+ * saying nothing on the overwhelming majority of offers — and a bar has one
+ * line to work with (its whole design constraint is staying under about 15% of
+ * a phone's viewport).
+ *
+ * **It floors at zero rather than going negative.** A window that has shut
+ * takes the Optin off the page entirely (ADR 0050), so a negative number is
+ * only reachable on a page cached WHILE the window was open, where the honest
+ * reading is that the offer is over.
+ */
+function remaining(ms: number): string {
+  const total = Math.max(Math.floor(ms / 1000), 0);
+  const days = Math.floor(total / 86400);
+  const pad = (part: number): string => String(part).padStart(2, '0');
+
+  return (
+    (days > 0 ? `${days}d ` : '') +
+    [Math.floor(total / 3600) % 24, Math.floor(total / 60) % 60, total % 60].map(pad).join(':')
+  );
 }
 
 function popup(options: MountOptions): Mounted {
@@ -267,6 +356,11 @@ function popup(options: MountOptions): Mounted {
 
   dialog.addEventListener('close', () => {
     dialog.style.setProperty('display', 'none', 'important');
+    // Every route out of a dialog ends here — Esc, the backdrop, the close
+    // button and `close()` itself — which is why the tick is stopped on the
+    // EVENT rather than beside each of them. A dialog stays in the document
+    // after it closes, so nothing else would ever end the interval.
+    parts.stop();
 
     if (dismissible) {
       options.onDismiss?.();
@@ -291,6 +385,7 @@ function popup(options: MountOptions): Mounted {
       // is not one of them. A conversion closes the Optin and is emphatically
       // not a Dismissal (CONTEXT.md, Dismissal).
       dismissible = false;
+      parts.stop();
       dialog.close();
     },
   };
@@ -318,7 +413,10 @@ function inline(options: MountOptions, anchor: Element): Mounted {
       anchor.appendChild(parts.host);
     },
     showStep: (step) => void parts.step(step),
-    close: () => parts.host.remove(),
+    close() {
+      parts.stop();
+      parts.host.remove();
+    },
   };
 }
 

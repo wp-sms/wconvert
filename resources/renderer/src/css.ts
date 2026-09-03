@@ -61,12 +61,45 @@ export const SHADOW_CSS = [
   `:host{all:initial!important;display:block!important}`,
   `*,::before,::after{box-sizing:border-box}`,
 
-  // One element in: this is where positioning, stacking and base typography
-  // are allowed to live.
-  `.wc-root{font-family:var(--wc-font,system-ui,sans-serif);font-size:var(--wc-text-size,1rem);line-height:1.5;color:var(--wc-fg,#111827);background:var(--wc-bg,#fff);border-radius:var(--wc-radius,.5rem);padding:var(--wc-pad,1.5rem);text-align:var(--wc-align,start);inline-size:min(var(--wc-width,${A_DESIGNS_OWN_WIDTH}),100%);max-block-size:85vh;overflow:auto;position:relative;box-shadow:0 10px 40px rgba(0,0,0,.18)}`,
+  /*
+   * One element in: this is where positioning, stacking and base typography
+   * are allowed to live.
+   *
+   * ==========================================================================
+   * TWO BACKGROUND LAYERS, AND THE ORDER OF THEM IS THE WHOLE FEATURE.
+   * ==========================================================================
+   * `bg-image` is the picture and `overlay` is a flat wash over it, declared as
+   * a gradient from one colour to itself because CSS has no "solid colour" that
+   * is also an `<image>`. The overlay is listed FIRST because the first layer
+   * in `background-image` paints on top — which is what makes white text on a
+   * photograph legible, and it is the only reason a background image is usable
+   * in a lead-capture design at all.
+   *
+   * `--wc-bg` stays underneath both as the `background` shorthand's colour, so
+   * a design with no picture is exactly what it was and a picture that fails to
+   * load falls back to the design's own surface rather than to nothing.
+   *
+   * `none` is a legal layer in the list, so the default costs no branch.
+   */
+  `.wc-root{font-family:var(--wc-font,system-ui,sans-serif);font-size:var(--wc-text-size,1rem);line-height:var(--wc-leading,1.5);color:var(--wc-fg,#111827);background:var(--wc-bg,#fff);background-image:linear-gradient(var(--wc-overlay,#0000),var(--wc-overlay,#0000)),var(--wc-bg-image,none);background-size:cover;background-position:center;border-radius:var(--wc-radius,.5rem);padding:var(--wc-pad,1.5rem);text-align:var(--wc-align,start);inline-size:min(var(--wc-width,${A_DESIGNS_OWN_WIDTH}),100%);max-block-size:85vh;overflow:auto;position:relative;box-shadow:var(--wc-shadow,0 10px 40px rgba(0,0,0,.18))}`,
 
   `.wc-stack{display:flex;flex-direction:column;gap:var(--wc-gap,.75rem)}`,
   `.wc-row{display:flex;flex-wrap:wrap;align-items:center;gap:var(--wc-gap,.75rem)}`,
+
+  /*
+   * ==========================================================================
+   * `auto-fit` IS THE WHOLE DIFFERENCE FROM THE `grid` THAT WAS DELETED.
+   * ==========================================================================
+   * The old one declared `repeat(columns, 1fr)`: always N across, so a
+   * two-column grid stayed two columns at 320px and handed a phone two 140px
+   * columns of prose. This asks for as many `8rem` columns as fit and wraps by
+   * construction — three across on a desktop, one per line on a phone, with no
+   * media query and no `columns` param for a design to get wrong.
+   *
+   * It is the only route to a three-up: `split` is hard-coded to exactly two
+   * panes, and a benefit list has three benefits.
+   */
+  `.wc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(8rem,1fr));gap:var(--wc-gap,.75rem)}`,
 
   // `flex-basis` plus `wrap` is what stacks the two panes on a narrow screen,
   // with no media query and no container query to keep in step.
@@ -75,7 +108,7 @@ export const SHADOW_CSS = [
   `.wc-pane:first-child{flex-grow:var(--wc-ratio,.5)}`,
   `.wc-pane:last-child{flex-grow:calc(1 - var(--wc-ratio,.5))}`,
 
-  `.wc-heading{margin:0;font-size:var(--wc-heading-size,1.5rem);font-weight:700;line-height:1.2}`,
+  `.wc-heading{margin:0;font-size:var(--wc-heading-size,1.5rem);font-weight:var(--wc-heading-weight,700);letter-spacing:var(--wc-tracking,normal);line-height:1.2}`,
   /*
    * **A sub-heading is smaller, or `level` is a control that does nothing.**
    * `render.ts` draws an `h3` for `level: 2` and an `h2` otherwise, and both
@@ -93,6 +126,39 @@ export const SHADOW_CSS = [
   `h3.wc-heading{font-size:calc(var(--wc-heading-size,1.5rem)*.72)}`,
   `.wc-text{margin:0}`,
   `[data-role=fine_print]{font-size:.8125em;color:var(--wc-muted,#6b7280)}`,
+
+  /*
+   * The eyebrow and the badge are the same short string wearing two jobs, and
+   * the typography is the whole of what distinguishes them: an eyebrow is a
+   * quiet LABEL above something, a badge is a loud thing stuck ON it. Neither
+   * is expressible by typing into a `text` slot, which is why they are nodes
+   * and not a convention.
+   *
+   * Their letter-spacing is their own rather than `--wc-tracking`: the token is
+   * the merchant's lever over HEADINGS, and an eyebrow set at a heading's
+   * tracking stops being an eyebrow.
+   */
+  `.wc-eyebrow{margin:0;font-size:.75em;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--wc-muted,#6b7280)}`,
+  `.wc-badge{align-self:start;font-size:.75em;font-weight:600;line-height:1.4;padding-block:.125rem;padding-inline:.5rem;border-radius:calc(var(--wc-radius,.5rem)/2);background:var(--wc-accent,#2563eb);color:var(--wc-accent-fg,#fff)}`,
+  // `1px` and not a token: a rule the merchant can make 8px thick is a rule
+  // that stops being a rule. Its COLOUR is the design's border colour, which is
+  // the lever that matters.
+  `.wc-divider{margin:0;border:0;border-block-start:1px solid var(--wc-border,#e5e7eb)}`,
+
+  // Tabular figures so the digits do not jitter as they tick — the one thing a
+  // countdown does that nothing else in this vocabulary does.
+  `.wc-countdown{font-variant-numeric:tabular-nums;font-weight:var(--wc-heading-weight,700);letter-spacing:var(--wc-tracking,normal)}`,
+
+  `.wc-rating{display:flex;flex-wrap:wrap;align-items:center;gap:.375rem}`,
+  `.wc-stars{display:inline-flex;color:var(--wc-border,#e5e7eb)}`,
+  // An unfilled star inherits `--wc-border` from the row above it, so the two
+  // states are one declaration apart and neither needs a colour of its own.
+  `.wc-star{color:var(--wc-accent,#2563eb);fill:currentColor}`,
+  `.wc-rating-text{font-size:.8125em;color:var(--wc-muted,#6b7280)}`,
+  // `em` throughout, so an icon beside body text is the size of body text and
+  // one in a `grid` cell scales with whatever the design set.
+  `.wc-icon{display:inline-flex;color:var(--wc-accent,#2563eb)}`,
+  `.wc-glyph{inline-size:1.25em;block-size:1.25em}`,
   `.wc-link{color:inherit}`,
   `.wc-image{display:block;inline-size:100%;block-size:auto;object-fit:cover;border-radius:var(--wc-radius,.5rem)}`,
 
@@ -100,7 +166,25 @@ export const SHADOW_CSS = [
   `.wc-label{font-size:.875em;color:var(--wc-muted,#6b7280)}`,
   `.wc-input{inline-size:100%;font:inherit;color:inherit;background:var(--wc-bg,#fff);border:1px solid var(--wc-border,#e5e7eb);border-radius:var(--wc-radius,.5rem);padding-block:.625rem;padding-inline:.75rem}`,
 
-  `.wc-button{display:inline-block;font:inherit;font-weight:600;text-align:center;text-decoration:none;cursor:pointer;border:0;border-radius:var(--wc-radius,.5rem);background:var(--wc-accent,#2563eb);color:var(--wc-accent-fg,#fff);padding-block:.625rem;padding-inline:1.25rem}`,
+  `.wc-button{display:inline-block;font:inherit;font-weight:600;text-align:center;text-decoration:none;cursor:pointer;border:0;border-radius:var(--wc-radius,.5rem);background:var(--wc-accent,#2563eb);color:var(--wc-accent-fg,#fff);padding-block:.625rem;padding-inline:1.25rem;transition:opacity var(--wc-motion,200ms) ease}`,
+  /*
+   * ==========================================================================
+   * THE ONLY MOTION INSIDE THE BOUNDARY, AND IT IS ON THE CONTROL THAT MATTERS.
+   * ==========================================================================
+   * A grep for `transition|animation|@keyframes` across this renderer returned
+   * nothing until now — popups simply existed, abruptly, and so did every
+   * button in them. This is the cheapest motion a design gets and the one a
+   * visitor's cursor actually asks for.
+   *
+   * **`motion` is one token with two consumers**, which is why it lives here
+   * rather than being a number Pro spells for itself. The popover container
+   * reads the same token to time its ENTRY (`pro/resources/renderer/src/
+   * popover.ts`), and a design whose button eased at 200ms while its slide-in
+   * arrived at 400ms would be two decisions where the merchant made one.
+   * `opacity` and not `background`, so a design whose accent is a gradient or a
+   * `var()` still animates.
+   */
+  `.wc-button:hover{opacity:.88}`,
 
   `.wc-consent{display:flex;align-items:start;gap:.5rem;text-align:start}`,
   `.wc-consent-text{font-size:.8125em;color:var(--wc-muted,#6b7280)}`,
@@ -115,8 +199,43 @@ export const SHADOW_CSS = [
 
   // Container chrome, not vocabulary: a template cannot omit the way out.
   `.wc-close{position:absolute;inset-block-start:.5rem;inset-inline-end:.5rem;inline-size:2rem;block-size:2rem;font:inherit;font-size:1.25rem;line-height:1;cursor:pointer;color:var(--wc-muted,#6b7280);background:transparent;border:0;border-radius:var(--wc-radius,.5rem)}`,
+  /*
+   * ==========================================================================
+   * 24×24 IS THE FLOOR. IT IS NOT THE TARGET SIZE FOR A THUMB.
+   * ==========================================================================
+   * WCAG 2.2 SC 2.5.8 puts the minimum at 24×24, so the 2rem above passes AA
+   * on paper. Apple's own guidance is 44×44 and Google's is 48×48, and this is
+   * the control the whole Dismissal model rests on — "making dismissal
+   * difficult frustrates users and damages brand perception" is the failure,
+   * and a close button a thumb misses IS dismissal made difficult.
+   *
+   * Raised on COARSE POINTERS only, which is the query that asks the actual
+   * question: a mouse hits 32px without thinking about it, and 44px of
+   * transparent button in the corner of a 26rem card is 44px the design does
+   * not get. The glyph does not grow with the target — a bigger × is not a
+   * more findable ×, it is a louder one.
+   */
+  `@media (pointer:coarse){.wc-close{inline-size:2.75rem;block-size:2.75rem}}`,
 
   // One visible focus ring for everything focusable, so the keyboard path
   // `showModal()` supplies for free is actually followable.
   `:focus-visible{outline:2px solid var(--wc-accent,#2563eb);outline-offset:2px}`,
+
+  /*
+   * ==========================================================================
+   * REDUCED MOTION IS NOT A PREFERENCE THIS PLUGIN GETS TO WEIGH.
+   * ==========================================================================
+   * A visitor who has asked their operating system for less motion has asked
+   * every site, and an overlay is the one piece of UI they cannot look away
+   * from. So it is a blanket rule at the end of the sheet rather than a
+   * per-rule opt-out somebody has to remember on the next animated thing —
+   * `!important` wins whatever order the rules land in, and the last line is
+   * where the next author looks for "and what about…".
+   *
+   * `.01ms` rather than `0`, and that is load-bearing: a zero-length
+   * transition fires no `transitionend`, and Pro's popover holds its own
+   * REMOVAL behind exactly that event. At `0` a reduced-motion visitor would
+   * press Close on an overlay that never finishes closing.
+   */
+  `@media (prefers-reduced-motion:reduce){*{transition-duration:.01ms!important;animation-duration:.01ms!important}}`,
 ].join('');

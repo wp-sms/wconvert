@@ -157,4 +157,149 @@ final class SlotRolesTest extends TestCase
         $this->assertSame('Hi', $bound['steps'][0]['children'][0]['text']);
         $this->assertCount(1, $bound['steps'][0]['children']);
     }
+
+    /**
+     * ==========================================================================
+     * REPEATED ROLES: THE THREE-BENEFIT ROW THAT USED TO SHOW ONE BENEFIT.
+     * ==========================================================================
+     * A Role is claimable by more than one node (ADR 0051), so a Playbook
+     * supplying a list fills them in tree order. Before this, the second and
+     * third `body` nodes lost their Role at validation, `withoutCopy()` took
+     * their words at snapshot, and the visitor saw two empty paragraphs.
+     */
+    public function testAListOfWordsFillsRepeatedRolesInTreeOrder(): void
+    {
+        $tree = self::tree([
+            ['type' => 'text', 'role' => 'body'],
+            ['type' => 'text', 'role' => 'body'],
+            ['type' => 'text', 'role' => 'body'],
+        ]);
+
+        $bound = SlotRoles::bind(
+            $tree,
+            ['body' => ['Free shipping', 'Early drops', '48h returns']],
+            $this->vocabulary()
+        );
+
+        $this->assertSame(
+            ['Free shipping', 'Early drops', '48h returns'],
+            array_column($bound['steps'][0]['children'], 'text')
+        );
+    }
+
+    /**
+     * **One word does not fill three slots.** A design with more nodes than the
+     * Playbook has words leaves the extras empty rather than repeating the
+     * first — three benefit lines all reading "Free shipping" is not what a
+     * Playbook supplying one line meant, and it is the failure a merchant would
+     * never think to report.
+     */
+    public function testASingleWordFillsOnlyTheFirstOfSeveralNodes(): void
+    {
+        $tree = self::tree([
+            ['type' => 'text', 'role' => 'body'],
+            ['type' => 'text', 'role' => 'body'],
+        ]);
+
+        $bound = SlotRoles::bind($tree, ['body' => 'Only this one'], $this->vocabulary());
+
+        $this->assertSame('Only this one', $bound['steps'][0]['children'][0]['text']);
+        $this->assertArrayNotHasKey('text', $bound['steps'][0]['children'][1]);
+    }
+
+    /**
+     * And a list longer than the design simply runs out. This is the Template
+     * switch the whole seam exists for: a merchant moving from a three-benefit
+     * design to a one-benefit one keeps the first and loses the rest, which is
+     * what the new design has room to say.
+     */
+    public function testWordsWithNoSlotToGoInWriteNothing(): void
+    {
+        $tree = self::tree([['type' => 'text', 'role' => 'body']]);
+
+        $bound = SlotRoles::bind($tree, ['body' => ['First', 'Second']], $this->vocabulary());
+
+        $this->assertSame('First', $bound['steps'][0]['children'][0]['text']);
+        $this->assertCount(1, $bound['steps'][0]['children']);
+    }
+
+    /**
+     * ==========================================================================
+     * A LIST IS SEVERAL SLOTS; A MAP IS ONE SLOT WITH SEVERAL KEYS.
+     * ==========================================================================
+     * Both are PHP arrays and they mean opposite things, which is the one
+     * genuinely ambiguous thing repeatable Roles introduce. `array_is_list()`
+     * settles it exactly rather than by heuristic — a Role filling several keys
+     * comes back keyed by those key names, which is never a list.
+     */
+    public function testASentenceWithALinkIsStillOneSlotAndNotAListOfTwo(): void
+    {
+        $tree = self::tree([
+            ['type' => 'text', 'role' => 'fine_print'],
+            ['type' => 'text', 'role' => 'fine_print'],
+        ]);
+
+        $bound = SlotRoles::bind($tree, [
+            'fine_print' => ['text' => 'See our %s', 'link' => ['label' => 'Privacy Policy']],
+        ], $this->vocabulary());
+
+        $this->assertSame('See our %s', $bound['steps'][0]['children'][0]['text']);
+        $this->assertArrayNotHasKey('text', $bound['steps'][0]['children'][1]);
+    }
+
+    /**
+     * The round trip, which is what a Template switch actually runs: read the
+     * words off the old design and write them into the new one. A Role claimed
+     * ONCE comes back in exactly the shape it always did, so nothing that was
+     * already correct changes; claimed twice, it comes back as a list of those
+     * same shapes.
+     *
+     * `heading` has one copy key and comes back as a bare string; `text` has
+     * two — its sentence and the link inside it — and comes back as the map of
+     * them, which is the shape {@see SlotRoles::bind()} writes back (ADR 0013).
+     * That is what makes the list/map distinction exact rather than a guess.
+     */
+    public function testCopyComesBackAsAListOnlyWhereARoleWasClaimedTwice(): void
+    {
+        $copy = SlotRoles::copyFrom(
+            self::tree([
+                ['type' => 'heading', 'role' => 'headline', 'text' => 'One headline'],
+                ['type' => 'text', 'role' => 'body', 'text' => 'First'],
+                ['type' => 'text', 'role' => 'body', 'text' => 'Second'],
+                ['type' => 'text', 'role' => 'fine_print', 'text' => 'Only one of these'],
+            ]),
+            $this->vocabulary()
+        );
+
+        $this->assertSame('One headline', $copy['headline']);
+        $this->assertSame(['text' => 'Only one of these'], $copy['fine_print']);
+        $this->assertSame([['text' => 'First'], ['text' => 'Second']], $copy['body']);
+    }
+
+    /**
+     * And it survives the round trip, which is the property the pair exists
+     * for: words read off one design land on the same Roles in the next one,
+     * in the same order (CONTEXT.md, Playbook).
+     */
+    public function testWordsSurviveBeingReadOffOneDesignAndBoundIntoAnother(): void
+    {
+        $vocabulary = $this->vocabulary();
+        $written = self::tree([
+            ['type' => 'text', 'role' => 'body', 'text' => 'First'],
+            ['type' => 'text', 'role' => 'body', 'text' => 'Second'],
+        ]);
+
+        // A different design, offering the same two Roles in the same order and
+        // carrying no words of its own — which is what a snapshot looks like.
+        $bound = SlotRoles::bind(
+            ['steps' => [['type' => 'row', 'children' => [
+                ['type' => 'text', 'role' => 'body'],
+                ['type' => 'text', 'role' => 'body'],
+            ]]]],
+            SlotRoles::copyFrom($written, $vocabulary),
+            $vocabulary
+        );
+
+        $this->assertSame(['First', 'Second'], array_column($bound['steps'][0]['children'], 'text'));
+    }
 }

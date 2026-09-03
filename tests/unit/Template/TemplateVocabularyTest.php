@@ -4,6 +4,8 @@ namespace WConvert\Tests\Unit\Template;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use WConvert\Template\SlotRoles;
+use WConvert\Template\TemplateTree;
 use WConvert\Template\TemplateVocabulary;
 
 /**
@@ -80,12 +82,21 @@ final class TemplateVocabularyTest extends TestCase
     }
 
     /**
-     * A Slot Role is unique across a Template's WHOLE tree (CONTEXT.md, Slot
-     * Role) — it is the key a Playbook binds copy to, and two nodes answering
-     * to one Role means the copy lands on whichever the renderer reached
-     * first.
+     * ==========================================================================
+     * A SLOT ROLE REPEATS, AND THE SILENT DROP IT REPLACES WAS THE BUG.
+     * ==========================================================================
+     * This asserted the opposite until ADR 0051, and the uniqueness it enforced
+     * was not free: a second node claiming a Role kept the NODE and lost the
+     * Role, so `withoutCopy()` stripped its words at snapshot and `bind()` had
+     * no Role to write them back through. What a visitor saw was an empty
+     * paragraph — a three-benefit row showing one benefit and two blank lines,
+     * with the gallery card looking correct because the library entry keeps its
+     * placeholder text.
+     *
+     * The names are still closed and binding is still BY NAME, which is the
+     * guarantee Roles exist for. Only the uniqueness went.
      */
-    public function testASlotRoleIsUniqueAcrossTheWholeTree(): void
+    public function testASlotRoleMayBeClaimedByMoreThanOneNode(): void
     {
         $normalized = self::normalize([
             'tree' => ['steps' => [
@@ -95,7 +106,7 @@ final class TemplateVocabularyTest extends TestCase
         ]);
 
         $this->assertSame('headline', $normalized['tree']['steps'][0]['role'] ?? null);
-        $this->assertArrayNotHasKey('role', $normalized['tree']['steps'][1]);
+        $this->assertSame('headline', $normalized['tree']['steps'][1]['role'] ?? null);
     }
 
     /**
@@ -137,8 +148,36 @@ final class TemplateVocabularyTest extends TestCase
 
     public function testATemplateThatIsNotATemplateNormalisesToAnEmptyOne(): void
     {
-        $this->assertSame(['tree' => ['steps' => []], 'tokens' => []], self::normalize([]));
-        $this->assertSame(['tree' => ['steps' => []], 'tokens' => []], self::normalize(['tree' => 'nonsense']));
+        // Both keys always present, including empty, AND the version stamp: a
+        // tree with no `v` is one written before the key existed, which is a
+        // fact a migration would need and cannot reconstruct
+        // ({@see \WConvert\Template\TemplateTree::VERSION}).
+        $empty = ['tree' => ['v' => TemplateTree::VERSION, 'steps' => []], 'tokens' => []];
+
+        $this->assertSame($empty, self::normalize([]));
+        $this->assertSame($empty, self::normalize(['tree' => 'nonsense']));
+    }
+
+    /**
+     * The version rides the tree wherever a tree is BUILT, which is three
+     * places and not one — normalising on the way in, stripping the copy at
+     * snapshot, and binding a [[Playbook]]'s words back into it. A path that
+     * dropped it would store a design claiming to be older than it is, which
+     * is worse than storing no version at all.
+     */
+    public function testEveryTreeThisVocabularyBuildsCarriesItsVersion(): void
+    {
+        $tree = ['steps' => [[
+            'type' => 'stack',
+            'children' => [['type' => 'heading', 'role' => 'headline', 'text' => 'Join']],
+        ]]];
+
+        $this->assertSame(TemplateTree::VERSION, self::normalize(['tree' => $tree])['tree']['v']);
+        $this->assertSame(TemplateTree::VERSION, self::vocabulary()->withoutCopy($tree)['v']);
+        $this->assertSame(
+            TemplateTree::VERSION,
+            SlotRoles::bind($tree, ['headline' => 'Hello'], self::vocabulary())['v']
+        );
     }
 
     /**

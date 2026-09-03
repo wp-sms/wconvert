@@ -300,14 +300,36 @@ function KeyControl({
  * That is also why the address stays visible beside it: a merchant pasting a
  * CDN URL is a real case, and `MerchantsOwn` carries an `src` across a design
  * switch precisely because it is theirs.
+ *
+ * **Exported for the Design tab's background picture**, which is the same
+ * control over a different key: a token whose value is a CSS background layer.
+ * The wrapping and unwrapping of `url(…)` is that caller's, so this stays what
+ * it has always been — an address, typeable, with a picker beside it — and
+ * there is one media frame in the admin rather than two that drift.
  */
-function MediaControl({
+export function MediaControl({
+  id,
   label,
   value,
+  type = 'url',
   onChange,
 }: {
+  /**
+   * Where a `<label htmlFor>` outside this component points.
+   *
+   * Optional because the slot editor WRAPS its control in the label and needs
+   * none; the Design tab cannot, because the reset button sits in the same row
+   * and a wrapping label would take its words into the control's own name.
+   */
+  id?: string;
   label: string;
   value: string;
+  /**
+   * `url` everywhere but the background token, which may also hold a
+   * `linear-gradient()` — and a `url` input marks one invalid while happily
+   * storing it, which is a red outline over a value that works.
+   */
+  type?: 'url' | 'text';
   onChange: (value: string) => void;
 }) {
   const media = mediaLibrary();
@@ -315,7 +337,8 @@ function MediaControl({
   return (
     <span className="wconvert-slot__media">
       <input
-        type="url"
+        id={id}
+        type={type}
         className="widefat"
         value={value}
         onChange={(event) => onChange(event.target.value)}

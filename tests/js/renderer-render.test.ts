@@ -235,24 +235,52 @@ describe('the layout vocabulary', () => {
 
   /**
    * ==========================================================================
-   * `grid` IS GONE, AND A SNAPSHOT THAT STILL HOLDS ONE MUST NOT THROW.
+   * `grid` CAME BACK WITH THE PARAM THAT KILLED IT LEFT OUT.
    * ==========================================================================
-   * This asserted `grid` carried its column count as a custom property. The
-   * layout was dropped: it declared equal tracks always N across, which at a
-   * popup's `min(28rem, 100%)` hands a phone two 140px columns of prose, while
-   * `split` solves the same problem and WRAPS. Nothing shipped used it and its
-   * one option was reachable from nowhere in the admin.
+   * The original declared `repeat(columns, 1fr)` — always N across — which at a
+   * popup's `min(28rem, 100%)` handed a phone two 140px columns of prose, and
+   * carried a `columns` param no control in the admin ever reached. It is back
+   * as `repeat(auto-fit, minmax(8rem, 1fr))`: the browser counts the columns
+   * from the space it has, so it wraps by construction and there is nothing to
+   * misconfigure.
    *
-   * What replaces the assertion is the property that made dropping it safe:
-   * **an unknown node type is SKIPPED, not thrown on** (ADR 0010), which is
-   * what lets a snapshot outlive the vocabulary it was drawn from. An Optin
-   * saved with a `grid` in it still renders everything around it.
+   * The old param is the interesting half of the assertion. A snapshot taken
+   * before the deletion still carries `columns: 3`, and the vocabulary has no
+   * such key now — so it is DROPPED on the way in and, if one reaches the
+   * renderer anyway, ignored. The design renders as a wrapping grid rather than
+   * refusing to render, which is the same clause that let the layout be deleted
+   * at all (ADR 0010).
    */
-  it('skips a layout this build no longer has, and renders the rest', () => {
+  it('draws a grid, ignoring a param this build no longer has', () => {
     const tree = oneStep({
       type: 'stack',
       children: [
-        { type: 'grid', columns: 3, children: [{ type: 'heading', text: 'Lost' }] },
+        { type: 'grid', columns: 3, children: [{ type: 'heading', text: 'One' }] },
+        { type: 'heading', text: 'Two' },
+      ],
+    } as TemplateTree['steps'][number]);
+
+    const stack = render(tree, TOKENS).firstElementChild as HTMLElement;
+    const grid = stack.querySelector('.wc-grid') as HTMLElement;
+
+    expect(stack.textContent).toBe('OneTwo');
+    expect(grid.children).toHaveLength(1);
+    // No `--wc-columns`, because there is no such thing any more. The whole
+    // point of `auto-fit` is that the column count is not a stored number.
+    expect(grid.getAttribute('style')).toBeNull();
+  });
+
+  /**
+   * The property that made deleting a layout safe in the first place, asserted
+   * on a type nothing has ever declared: **an unknown node is SKIPPED, not
+   * thrown on** (ADR 0010), which is what lets a snapshot outlive the
+   * vocabulary it was drawn from.
+   */
+  it('skips a layout this build does not have, and renders the rest', () => {
+    const tree = oneStep({
+      type: 'stack',
+      children: [
+        { type: 'masonry', children: [{ type: 'heading', text: 'Lost' }] },
         { type: 'heading', text: 'Kept' },
       ],
     } as TemplateTree['steps'][number]);
@@ -260,7 +288,7 @@ describe('the layout vocabulary', () => {
     const stack = render(tree, TOKENS).firstElementChild as HTMLElement;
 
     expect(stack.textContent).toBe('Kept');
-    expect(stack.querySelector('.wc-grid')).toBeNull();
+    expect(stack.querySelector('.wc-masonry')).toBeNull();
   });
 });
 

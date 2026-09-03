@@ -1,5 +1,5 @@
 import vocabulary from '../../../templates/manifest.json';
-import { isColour, isFontStack, measureOf } from './themes';
+import { isBareNumber, isColour, isFontStack, measureOf } from './themes';
 import type { TemplateNode, TemplateTree, Tokens } from '@renderer/types';
 
 /**
@@ -287,7 +287,11 @@ export function groupOf(token: TokenDeclaration): TokenGroupId {
     return 'colour';
   }
 
-  if (isFontStack(token.fallback)) {
+  // A font stack, or a bare number — the two typographic shapes. A weight and
+  // a line-height are unitless where every length in this vocabulary is not,
+  // so this arm is a shape like the others and still names no token
+  // ({@see isBareNumber}).
+  if (isFontStack(token.fallback) || isBareNumber(token.fallback)) {
     return 'type';
   }
 
@@ -359,6 +363,27 @@ export interface Slot {
   readonly hideable: boolean;
   readonly hidden: boolean;
   /**
+   * Which of the slots sharing this one's name it is, within its step.
+   *
+   * ==========================================================================
+   * ROLES REPEAT NOW, SO A NAME NO LONGER IDENTIFIES A SLOT ON ITS OWN.
+   * ==========================================================================
+   * A design may claim `body` three times (ADR 0051), and the preview and the
+   * editor agree on a slot by NAME ({@see slots.SlotKey}) — so without an
+   * ordinal, clicking the third benefit line in the preview would select the
+   * first, and selecting any of them would outline all three.
+   *
+   * **Counted over the slots the renderer actually DRAWS, and per step.** The
+   * preview renders one step at a time and skips hidden nodes, so a count that
+   * spanned the tree or included hidden slots would be an ordinal the DOM side
+   * cannot reproduce — and a mismatch there is silent: clicking a slot simply
+   * does nothing, forever, which is the failure `tests/js/builder-slots.test.ts`
+   * exists for. A hidden slot therefore takes no ordinal and gets no key at
+   * all; it is not in the preview, so there is nothing for the preview to
+   * outline.
+   */
+  readonly at: number;
+  /**
    * The leaf's own settings the merchant may choose from a closed list, in the
    * order the manifest offers them.
    *
@@ -401,7 +426,59 @@ export function slotsOf(tree: TemplateTree): Slot[] {
 
   tree.steps.forEach((step, index) => collect(step, [index], slots));
 
-  return slots;
+  return numbered(slots);
+}
+
+/**
+ * What {@link numbered} needs of a walked node: where it is, what it is called,
+ * and whether the renderer will draw it.
+ *
+ * A shape rather than a type, because two walks produce it — {@link slotsOf}
+ * here and `structure/tree.ts`'s `nodesOf`, which also lists layouts — and the
+ * numbering must come out identical from both. A second implementation of it is
+ * a preview whose clicks reach the wrong block, silently.
+ */
+export interface Numberable {
+  readonly path: Path;
+  readonly role: string | null;
+  readonly captures: string | null;
+  readonly hidden: boolean;
+  readonly at: number;
+}
+
+/**
+ * The same nodes, each carrying which of its same-named siblings it is.
+ *
+ * ============================================================================
+ * COUNTED PER STEP, AND ONLY OVER WHAT THE RENDERER DRAWS.
+ * ============================================================================
+ * The preview renders ONE step at a time and skips hidden nodes, so those are
+ * the two things the DOM side can reproduce and the only two this may use. A
+ * count that spanned the tree, or that included a hidden node, would put the
+ * two sides one apart for every slot after it — and a mismatch there does not
+ * throw: clicking a slot simply does nothing, forever
+ * (`tests/js/builder-slots.test.ts`).
+ *
+ * The step is `path[0]`, which both walks agree on because both address a node
+ * by the same path.
+ */
+export function numbered<T extends Numberable>(nodes: readonly T[]): T[] {
+  const drawn = new Map<string, number>();
+
+  return nodes.map((node) => {
+    const name = node.role ?? node.captures;
+
+    if (name === null || node.hidden) {
+      return node;
+    }
+
+    const key = `${String(node.path[0])}/${name}`;
+    const at = drawn.get(key) ?? 0;
+
+    drawn.set(key, at + 1);
+
+    return { ...node, at };
+  });
 }
 
 function collect(node: TemplateNode, path: Path, slots: Slot[]): void {
@@ -426,6 +503,9 @@ function collect(node: TemplateNode, path: Path, slots: Slot[]): void {
       values,
       hideable: leaf.params.includes('hidden'),
       hidden: (node as { hidden?: boolean }).hidden === true,
+      // Filled in by {@link numbered} once the whole tree is collected, because
+      // the count restarts per step and this walk is recursive.
+      at: 0,
       /*
        * Read off `choices` and intersected with `params`, so a choice for a
        * setting the node does not declare draws no control — the vocabulary

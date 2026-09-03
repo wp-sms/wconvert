@@ -36,6 +36,12 @@ final class TemplateLabels
             'headline' => __('Headline', 'wconvert'),
             'body' => __('Body text', 'wconvert'),
             'fine_print' => __('Fine print', 'wconvert'),
+            /* translators: the small line above a heading, e.g. “LIMITED TIME”. */
+            'eyebrow' => __('Line above the heading', 'wconvert'),
+            /* translators: the short word on a coloured chip, e.g. “50% OFF”. */
+            'badge' => __('Badge wording', 'wconvert'),
+            /* translators: the words beside a star rating, e.g. “from 2,000 reviews”. */
+            'rating_text' => __('Words beside the stars', 'wconvert'),
             'cta_label' => __('Button label', 'wconvert'),
             'consent_text' => __('Consent wording', 'wconvert'),
             'success_headline' => __('Headline after they submit', 'wconvert'),
@@ -60,8 +66,18 @@ final class TemplateLabels
     {
         return [
             'heading' => __('Heading', 'wconvert'),
+            /* translators: a block — the small line above a heading, e.g. “LIMITED TIME”. Named for where it sits, because “eyebrow” is a typographer's word. */
+            'eyebrow' => __('Overline', 'wconvert'),
             'text' => __('Text', 'wconvert'),
+            'badge' => __('Badge', 'wconvert'),
+            /* translators: a block — five stars, some of them filled. */
+            'rating' => __('Star rating', 'wconvert'),
             'image' => __('Image', 'wconvert'),
+            'icon' => __('Icon', 'wconvert'),
+            /* translators: a block — a horizontal line separating two parts of a design. */
+            'divider' => __('Divider', 'wconvert'),
+            /* translators: a block — the time left, ticking down to the date the Optin stops running. */
+            'countdown' => __('Countdown', 'wconvert'),
             'field' => __('Field', 'wconvert'),
             'button' => __('Button', 'wconvert'),
             'consent' => __('Consent checkbox', 'wconvert'),
@@ -91,6 +107,8 @@ final class TemplateLabels
             'stack' => __('Column', 'wconvert'),
             'row' => __('Row', 'wconvert'),
             'split' => __('Side by side', 'wconvert'),
+            /* translators: a layout — as many equal columns as fit, wrapping onto the next line. */
+            'grid' => __('Equal columns', 'wconvert'),
         ];
     }
 
@@ -139,6 +157,14 @@ final class TemplateLabels
             'row' => __('On one line — a field, then its button.', 'wconvert'),
             /* translators: what the Side by side layout does. */
             'split' => __('Two panes — a picture, then the form.', 'wconvert'),
+            /*
+             * **Named and explained for the WRAPPING**, which is the whole
+             * difference from the `grid` that was deleted for not doing it. A
+             * merchant reading "Equal columns" has to know it will not hand a
+             * phone three 90px columns of prose.
+             */
+            /* translators: what the Equal columns layout does. */
+            'grid' => __('Three across, one per line on a phone.', 'wconvert'),
         ];
     }
 
@@ -230,6 +256,10 @@ final class TemplateLabels
             'image.fit' => __('How the picture fills its space', 'wconvert'),
             /* translators: whether a visitor must fill a form field in before they can submit. */
             'field.required' => __('Must they fill this in?', 'wconvert'),
+            /* translators: how many of the five stars are filled in. */
+            'rating.value' => __('How many stars', 'wconvert'),
+            /* translators: which of the six pictures an Icon block draws. */
+            'icon.name' => __('Which picture', 'wconvert'),
         ];
     }
 
@@ -265,6 +295,40 @@ final class TemplateLabels
             'field.required.true' => __('Required', 'wconvert'),
             /* translators: a form field a visitor may leave empty. */
             'field.required.false' => __('Optional', 'wconvert'),
+
+            /*
+             * **Out of five, always, which is why the words say so.** Four
+             * stars on their own read as a four-star scale rather than as four
+             * out of five, and the second is the claim the design is making.
+             * Half stars are not offered: they need a clip path and buy a
+             * design nothing.
+             */
+            /* translators: a star rating. %s is not used; three of five stars are filled. */
+            'rating.value.3' => __('Three of five', 'wconvert'),
+            /* translators: a star rating — four of five stars are filled. */
+            'rating.value.4' => __('Four of five', 'wconvert'),
+            /* translators: a star rating — all five stars are filled. */
+            'rating.value.5' => __('Five of five', 'wconvert'),
+
+            /*
+             * **Named for what a merchant would USE each one for**, not for the
+             * shape. "Tick" is a description of a picture; "Tick — a benefit"
+             * is the sentence that gets the right icon picked for a benefit
+             * list. Six is the closed set, because an open icon slot is a
+             * markup slot wearing a hat (`renderer/src/types.ts`).
+             */
+            /* translators: an icon — a tick, for an item in a list of benefits. */
+            'icon.name.check' => __('Tick', 'wconvert'),
+            /* translators: an icon — a star, for a review or a rating. */
+            'icon.name.star' => __('Star', 'wconvert'),
+            /* translators: an icon — a lightning bolt, for speed or an instant delivery. */
+            'icon.name.bolt' => __('Lightning', 'wconvert'),
+            /* translators: an icon — a wrapped gift, for an offer or a free item. */
+            'icon.name.gift' => __('Gift', 'wconvert'),
+            /* translators: an icon — a clock, for a deadline. */
+            'icon.name.clock' => __('Clock', 'wconvert'),
+            /* translators: an icon — a delivery van, for shipping. */
+            'icon.name.truck' => __('Delivery van', 'wconvert'),
         ];
     }
 
@@ -385,12 +449,25 @@ final class TemplateLabels
             'border' => __('Borders', 'wconvert'),
             'font' => __('Font', 'wconvert'),
             'heading-size' => __('Heading size', 'wconvert'),
+            'heading-weight' => __('Heading weight', 'wconvert'),
+            /* translators: the space between letters in a heading. Typographers call it tracking; "letter spacing" is the phrase a merchant knows. */
+            'tracking' => __('Heading letter spacing', 'wconvert'),
             'text-size' => __('Text size', 'wconvert'),
+            /* translators: the space between lines of text. Typographers call it leading. */
+            'leading' => __('Line spacing', 'wconvert'),
             'radius' => __('Corner rounding', 'wconvert'),
             'pad' => __('Inner spacing', 'wconvert'),
             'gap' => __('Space between slots', 'wconvert'),
             'width' => __('Width', 'wconvert'),
             'align' => __('Alignment', 'wconvert'),
+            /* translators: a picture behind the whole design. The merchant gives its web address. */
+            'bg-image' => __('Background picture', 'wconvert'),
+            /* translators: a translucent colour laid over the background picture, so text on top of it stays readable. */
+            'overlay' => __('Wash over the picture', 'wconvert'),
+            /* translators: the soft shadow under the whole design, which lifts it off the page behind it. */
+            'shadow' => __('Shadow', 'wconvert'),
+            /* translators: how long the design takes to animate — its entry, and its button on hover. */
+            'motion' => __('Animation speed', 'wconvert'),
             'backdrop' => __('Backdrop', 'wconvert'),
         ];
     }
@@ -463,6 +540,54 @@ final class TemplateLabels
             'font.Georgia, \'Times New Roman\', Times, serif' => __('Serif', 'wconvert'),
             /* translators: a font choice — a typeface whose letters are all one width. */
             'font.ui-monospace, SFMono-Regular, Menlo, Consolas, monospace' => __('Monospace', 'wconvert'),
+
+            /*
+             * **Named for the weight a reader sees, not for the number.** `600`
+             * is not a thing to put in front of anybody, and the CSS numbers
+             * are only four of the nine because a system stack has nothing
+             * between them to draw — offering `500` on a face that has no
+             * medium is offering a chip that changes nothing.
+             */
+            /* translators: a heading weight — the same thickness as body text. */
+            'heading-weight.400' => __('Regular', 'wconvert'),
+            /* translators: a heading weight, between regular and bold. */
+            'heading-weight.600' => __('Semibold', 'wconvert'),
+            /* translators: a heading weight — the usual one for a heading. */
+            'heading-weight.700' => __('Bold', 'wconvert'),
+            /* translators: the heaviest heading weight offered. */
+            'heading-weight.800' => __('Extra bold', 'wconvert'),
+
+            /* translators: heading letters set closer together than normal. */
+            'tracking.-0.02em' => __('Tight', 'wconvert'),
+            /* translators: heading letters at the typeface's own spacing. */
+            'tracking.normal' => __('Normal', 'wconvert'),
+            /* translators: heading letters set further apart than normal. */
+            'tracking.0.04em' => __('Loose', 'wconvert'),
+            /* translators: heading letters set much further apart — the spaced-out look of a label or an eyebrow. */
+            'tracking.0.1em' => __('Wide', 'wconvert'),
+
+            /* translators: lines of text set close together. */
+            'leading.1.3' => __('Tight', 'wconvert'),
+            /* translators: the usual space between lines of text. */
+            'leading.1.5' => __('Normal', 'wconvert'),
+            /* translators: lines of text set further apart, which reads as airier. */
+            'leading.1.7' => __('Airy', 'wconvert'),
+
+            /*
+             * **`0ms` is offered, and it is the honest way to turn animation
+             * off.** A visitor who asked their system for reduced motion gets
+             * none regardless — that is not the merchant's to decide — but a
+             * merchant who wants a bar that simply appears should not have to
+             * type a unit into a box to get one.
+             */
+            /* translators: an animation speed — the design appears with no animation at all. */
+            'motion.0ms' => __('None', 'wconvert'),
+            /* translators: an animation speed. */
+            'motion.120ms' => __('Fast', 'wconvert'),
+            /* translators: an animation speed — the default. */
+            'motion.200ms' => __('Normal', 'wconvert'),
+            /* translators: an animation speed. */
+            'motion.400ms' => __('Slow', 'wconvert'),
         ];
     }
 

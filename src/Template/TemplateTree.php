@@ -40,6 +40,71 @@ final class TemplateTree
     public const CHILD_KEYS = ['children', 'start', 'end'];
 
     /**
+     * The key a stored tree carries its vocabulary version under.
+     *
+     * One letter, because it rides the payload on every page view of every
+     * matching Optin and `schemaVersion` is fifteen bytes saying the same
+     * thing. It is the same trade the browser record makes, where the `1` in
+     * `wcv1` is a version for exactly this reason.
+     */
+    public const VERSION_KEY = 'v';
+
+    /**
+     * Which vocabulary wrote this tree.
+     *
+     * ========================================================================
+     * A SNAPSHOT OUTLIVES THE VOCABULARY IT WAS DRAWN FROM, AND HAD NO WAY TO
+     * SAY WHICH ONE THAT WAS.
+     * ========================================================================
+     * Every Optin stores a COPY of its Template's tree in `config` (ADR 0010),
+     * and that copy is never re-derived: improving a library entry does not
+     * restyle an Optin already running on it, which is the whole point. So the
+     * tree in the database is as old as the Optin, and the code reading it is
+     * as new as the release.
+     *
+     * That asymmetry is safe in exactly one direction. **Widening the
+     * vocabulary is free** — `TemplateVocabulary::normalize()` drops what it
+     * does not recognise and the renderer skips it, so an old tree meeting a
+     * new build renders exactly as it did. **Narrowing is not**: renaming a
+     * node, changing what a param means, or tightening a choice list would
+     * silently rewrite designs already running, and there would be no way to
+     * tell a tree that meant the old thing from one that means the new thing.
+     *
+     * CONTEXT.md names this gap itself, under *Storage Consent*, about the
+     * browser record — *"the `1` is a version, and it is an escape hatch the
+     * server side does not have"*. Adding node types is exactly when it starts
+     * being worth having, so it is added now, while there is only one version
+     * for it to be. It costs a key and a default; retrofitting it after thirty
+     * designs are in the wild costs a guess about what each one meant.
+     *
+     * **Nothing reads it yet, and that is correct.** A version with no
+     * migration behind it is not dead weight — it is the fact a migration
+     * would need and cannot reconstruct. The first reader is whichever release
+     * first has to narrow something.
+     */
+    public const VERSION = 1;
+
+    /**
+     * The same tree, stamped with the vocabulary version that produced it.
+     *
+     * Every function that BUILDS a tree ends in this, rather than each of them
+     * spelling the key — {@see TemplateVocabulary::normalize()},
+     * {@see TemplateVocabulary::withoutCopy()} and {@see SlotRoles::bind()}
+     * are the three, and a fourth that forgot would store a tree claiming to
+     * be a version older than it is, which is worse than storing none at all.
+     *
+     * The version goes FIRST so a stored `config` reads with it at the top,
+     * where a human opening the row looks.
+     *
+     * @param array{steps: list<array<string, mixed>>} $tree
+     * @return array{v: int, steps: list<array<string, mixed>>}
+     */
+    public static function stamped(array $tree): array
+    {
+        return [self::VERSION_KEY => self::VERSION] + $tree;
+    }
+
+    /**
      * One payload's tree, with every node passed through `$rewrite`.
      *
      * The dig into `template.tree.steps` is here rather than at each caller

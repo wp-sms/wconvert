@@ -119,6 +119,26 @@ const POPOVER_ARMOUR: Readonly<Record<string, string>> = {
  * `- 2rem` is the air it keeps at 320px, where it comes out 288px and still a
  * card rather than one hanging off the edge.
  *
+ * ============================================================================
+ * THE BLOCK-END EDGE IS WHERE THE PHONE PUTS ITS OWN CHROME.
+ * ============================================================================
+ * `inset-block-end: 0` is the bottom of the VIEWPORT, and on an iPhone that is
+ * underneath the home indicator — and underneath Safari's bottom toolbar when
+ * it is expanded. So the bar's CTA and its close button can be untappable on
+ * the single most common mobile browser, which is the one control the whole
+ * Dismissal model rests on.
+ *
+ * `env(safe-area-inset-bottom)` is the browser's own number for that strip.
+ * The `max()` is what makes it correct on every site either way: `env()`
+ * resolves to `0` where the theme has not set `viewport-fit=cover`, so a bar
+ * on an ordinary site sits exactly where it did, and a slide-in keeps the
+ * `1rem` of air it was authored with rather than collapsing to nothing.
+ *
+ * **It is the container's and not the design's.** A template cannot know which
+ * device it is on, and a token for it would be a number a merchant has to
+ * guess — the same argument that puts the close button here rather than in the
+ * vocabulary.
+ *
  * `cap` is written as `min()`'s ARGUMENT LIST rather than a finished `min()`,
  * so {@link boxWidth} appends the design's own width to it and the declaration
  * reads `min(100% - 2rem, 26rem, var(…))` rather than nesting one `min()`
@@ -128,26 +148,114 @@ const POPOVER_ARMOUR: Readonly<Record<string, string>> = {
  * spelling: a slide-in on a `fa_IR` site enters from the corner that side of
  * the page actually has (ADR 0009).
  */
-const PLACEMENT: Readonly<Record<string, { readonly inset: Readonly<Record<string, string>>; readonly cap: string }>> = {
+const PLACEMENT: Readonly<
+  Record<
+    string,
+    {
+      readonly inset: Readonly<Record<string, string>>;
+      readonly cap: string;
+      /** Where it comes FROM, as a `translate` pair. {@link MOTION_CSS}. */
+      readonly from: string;
+    }
+  >
+> = {
   floating_bar: {
     inset: {
       'inset-block-start': 'auto',
-      'inset-block-end': '0',
+      'inset-block-end': 'max(0px, env(safe-area-inset-bottom))',
       'inset-inline-start': '0',
       'inset-inline-end': '0',
     },
     cap: '100%',
+    // A bar RISES from the edge it is pinned to, so it is off screen by its own
+    // height and arrives at rest — the movement a visitor reads as "this came
+    // from down there" rather than "this appeared over the page".
+    from: '0 100%',
   },
   slide_in: {
     inset: {
       'inset-block-start': 'auto',
-      'inset-block-end': '1rem',
+      'inset-block-end': 'max(1rem, env(safe-area-inset-bottom))',
       'inset-inline-start': 'auto',
       'inset-inline-end': '1rem',
     },
     cap: '100% - 2rem, 26rem',
+    /*
+     * A corner card moves a little and fades, rather than sliding in from the
+     * side. `translate` is PHYSICAL — it has no logical spelling — so an
+     * inline-axis entry would have to be mirrored by hand for RTL, and a
+     * `fa_IR` slide-in would enter from the wrong side of the page the day
+     * somebody forgot. The block axis is the same in both directions, which is
+     * the same reasoning that put both of these on the block-end edge.
+     */
+    from: '0 1rem',
   },
 };
+
+/**
+ * The motion, and the one place in this product where anything moves.
+ *
+ * ============================================================================
+ * A SLIDE-IN THAT DOES NOT SLIDE IS JUST A SMALL POPUP.
+ * ============================================================================
+ * A grep for `transition|animation|@keyframes` across the visitor-facing
+ * renderer returned nothing before this: popups simply existed, abruptly. The
+ * POPUP is where that is hardest to fix — its container sets `display` inline
+ * with `!important` twice to track open state, and an inline `!important`
+ * cannot be beaten by `@starting-style`. This container sets `display`
+ * nowhere, deliberately, so the property tracks the popover's own showing
+ * state — which is exactly what makes entry motion possible here and nowhere
+ * else today.
+ *
+ * ============================================================================
+ * THE BASE STATE IS THE VISIBLE ONE, AND THAT IS THE FALLBACK WORKING.
+ * ============================================================================
+ * The obvious spelling is `[popover] { opacity: 0 }` with `:popover-open`
+ * turning it on. That would make the bar **permanently invisible** on an engine
+ * with no popover support, where nothing is ever `:popover-open` — turning a
+ * booked, mild degradation ({@link POPOVER_ARMOUR}: the element stays an
+ * ordinary fixed box) into a total one.
+ *
+ * So the rule reads the other way round: visible by default, with
+ * `@starting-style` supplying the OFF-SCREEN first frame for the one style
+ * change that matters. An engine that has neither draws the design, at once,
+ * in the right place. `translate` rather than `transform`, so nothing here can
+ * disturb a containing block or collide with a theme's own transform.
+ *
+ * ============================================================================
+ * REDUCED MOTION IS NOT A PREFERENCE THIS PLUGIN GETS TO WEIGH.
+ * ============================================================================
+ * Free's stylesheet carries the same blanket rule and cannot reach here: it
+ * lives inside the shadow root and this element is outside it. So it is
+ * repeated rather than shared, which is the honest shape — two stylesheets on
+ * two sides of a boundary, each covering what it can reach.
+ *
+ * `.01ms` rather than `0`, and it is load-bearing: {@link close} holds the
+ * element's REMOVAL behind `transitionend`, and a zero-length transition fires
+ * no such event. At `0` a visitor who asked for less motion would press Close
+ * on an overlay that never finishes closing.
+ */
+const MOTION_STYLE_ID = 'wconvert-pro-motion';
+
+const MOTION_CSS = [
+  `.wconvert-popover{opacity:1;translate:0 0;transition:opacity var(${'--wcv-motion'},200ms) ease,translate var(${'--wcv-motion'},200ms) ease}`,
+  `@starting-style{.wconvert-popover:popover-open{opacity:0;translate:var(${'--wcv-from'},0 1rem)}}`,
+  `.wconvert-popover[data-leaving]{opacity:0;translate:var(${'--wcv-from'},0 1rem)}`,
+  `@media (prefers-reduced-motion:reduce){.wconvert-popover{transition-duration:.01ms}}`,
+].join('');
+
+/** Exactly one document-level `<style>`, however many popovers mount. */
+function motionStyle(): void {
+  if (document.getElementById(MOTION_STYLE_ID) !== null) {
+    return;
+  }
+
+  const style = document.createElement('style');
+
+  style.id = MOTION_STYLE_ID;
+  style.textContent = MOTION_CSS;
+  document.head.appendChild(style);
+}
 
 /**
  * The custom property the box holds the design's width in.
@@ -159,6 +267,18 @@ const PLACEMENT: Readonly<Record<string, { readonly inset: Readonly<Record<strin
  * design.
  */
 const WIDTH = '--wcv-box-width';
+
+/**
+ * The two the motion reads, set on the box for the same reason {@link WIDTH}
+ * is: the tokens live on `.wc-root`, one element in and inside a closed shadow
+ * root, and this element cannot see them.
+ *
+ * `motion` is the DESIGN's, so a merchant who slowed their button down slowed
+ * the entry with it — one decision, not two. `from` is the CONTAINER's, because
+ * where an overlay comes from is what the Display Type means.
+ */
+const MOTION = '--wcv-motion';
+const FROM = '--wcv-from';
 
 /**
  * The box's width, and it is the design's width, and that is not a
@@ -226,6 +346,16 @@ function boxWidth(element: HTMLElement, cap: string, width: unknown): void {
   );
 }
 
+/**
+ * How long a close may take before the element is removed regardless.
+ *
+ * A backstop rather than a duration: the transition is what normally ends it,
+ * and this is what stops an overlay hanging around on an engine where
+ * `transitionend` never arrives. Comfortably longer than the slowest `motion`
+ * the panel offers (400ms), and short enough that nobody watches it.
+ */
+const LATEST_A_CLOSE_MAY_TAKE = 1000;
+
 /** The two Display Types this container draws. Anything else is not its business. */
 export const POPOVER_TYPES: ReadonlySet<string> = new Set(Object.keys(PLACEMENT));
 
@@ -269,14 +399,50 @@ export function mountPopover(options: MountOptions): Mounted {
   }
 
   boxWidth(element, placement.cap, options.template.tokens.width);
+  element.style.setProperty(FROM, placement.from);
+
+  // Through a custom property rather than interpolated into a declaration, the
+  // same door `boxWidth` argues for: a token's value is unvalidated, and a
+  // custom property cannot introduce a second declaration however it is
+  // written. A value CSS rejects makes the transition invalid and the overlay
+  // simply arrives without motion, which is the safe direction.
+  const motion = options.template.tokens.motion;
+
+  if (typeof motion === 'string' && motion !== '') {
+    element.style.setProperty(MOTION, motion);
+  }
 
   /**
-   * Closing, and the one bit that is not symmetric.
+   * Closing, and the two bits that are not symmetric.
    *
    * The four ways a VISITOR dismisses are one thing; closing it ourselves is
    * not one of them — a conversion closes the Optin and is emphatically not a
    * Dismissal (CONTEXT.md, Dismissal). So the caller passes which it is rather
    * than the container guessing from what happened.
+   *
+   * ==========================================================================
+   * THE DISMISSAL IS RECORDED FIRST, AND THE REMOVAL WAITS. IT USED TO BE THE
+   * OTHER WAY ROUND.
+   * ==========================================================================
+   * Exit motion means the element outlives the press by the length of a
+   * transition, and reporting the Dismissal at the END of that would put a
+   * beacon behind an animation on the one act most likely to be followed by a
+   * navigation — a visitor who closes a bar and immediately clicks a link.
+   * What the merchant loses is not an animation, it is the frequency cap: an
+   * unrecorded Dismissal is an Optin that comes back.
+   *
+   * So the fact is recorded at the moment the visitor acts, and the DOM catches
+   * up. Nothing downstream reads the DOM, so the two cannot disagree.
+   *
+   * ==========================================================================
+   * `transitionend`, WITH A TIMER BEHIND IT, AND `finish()` IS IDEMPOTENT.
+   * ==========================================================================
+   * `transitionend` does not fire if the property never transitions — an engine
+   * with no support for `translate` transitions, a theme that reset it, a
+   * `motion` token CSS rejected — and an overlay that never finishes closing is
+   * worse than one that closes instantly. The timer is what makes the failure
+   * mode "closes late" instead. A generous one, because it is a backstop rather
+   * than the mechanism, and the box takes no pointers while it waits.
    *
    * `hidePopover()` before removal so the element leaves the top layer the way
    * it entered it, and the removal is what makes the two engines agree: with
@@ -284,16 +450,34 @@ export function mountPopover(options: MountOptions): Mounted {
    * document is an overlay still on the page.
    */
   function close(byTheVisitor: boolean): void {
-    if (!element.isConnected) {
+    if (!element.isConnected || element.hasAttribute('data-leaving')) {
       return;
     }
-
-    element.hidePopover?.();
-    element.remove();
 
     if (byTheVisitor) {
       options.onDismiss?.();
     }
+
+    // At once, and not when the element finally leaves: the overlay is over,
+    // and a clock still ticking through the fade is a timer running for nobody.
+    parts.stop();
+
+    // Nothing inside it is clickable while it fades. The box already carries
+    // `pointer-events: none`; this is the design, which was given them back.
+    parts.root.style.setProperty('pointer-events', 'none', 'important');
+    element.setAttribute('data-leaving', '');
+
+    const finish = (): void => {
+      if (!element.isConnected) {
+        return;
+      }
+
+      element.hidePopover?.();
+      element.remove();
+    };
+
+    element.addEventListener('transitionend', finish, { once: true });
+    window.setTimeout(finish, LATEST_A_CLOSE_MAY_TAKE);
   }
 
   takesPointers(parts.root);
@@ -306,6 +490,7 @@ export function mountPopover(options: MountOptions): Mounted {
     steps: options.template.tree.steps.length,
     show() {
       documentStyle();
+      motionStyle();
       // Appended BEFORE promotion, because `showPopover()` on a disconnected
       // element throws — and a throw here runs inside a scroll handler or a
       // timer, where it is uncatchable from anywhere useful and takes every
