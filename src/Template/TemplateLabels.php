@@ -588,6 +588,35 @@ final class TemplateLabels
             'motion.200ms' => __('Normal', 'wconvert'),
             /* translators: an animation speed. */
             'motion.400ms' => __('Slow', 'wconvert'),
+
+            /*
+             * ====================================================================
+             * FOUR STRINGS, AND WHAT THEY BUY IS THAT NOBODY TYPES `box-shadow`.
+             * ====================================================================
+             * `shadow` had no entry here and its value — four components and a
+             * colour — is nothing {@see \WConvert\Template\ThemeTokens} or the
+             * admin's shape tests can read, so the panel's last branch handed
+             * every design a raw text box, permanently
+             * ({@see docs/adr/0054-every-control-has-the-shape-of-its-value.md}).
+             *
+             * Named in the register `motion` and `leading` already use: a word
+             * for the AMOUNT of the thing, never for the CSS. The third value is
+             * the manifest's own fallback, so a design that declares no shadow
+             * opens with *Normal* checked and the common case lands right.
+             *
+             * **Seven of the nine designs that declare a shadow declare one that
+             * is not on this list** — three of them cast upward, because a bar
+             * sits at the bottom of the viewport. They open on *Custom* with
+             * their own value intact, which is what `choices` means.
+             */
+            /* translators: a shadow depth — the design casts no shadow at all. */
+            'shadow.none' => __('None', 'wconvert'),
+            /* translators: a shadow depth — barely there, the design sits almost flat on the page. */
+            'shadow.0 1px 2px rgba(0, 0, 0, 0.08)' => __('Soft', 'wconvert'),
+            /* translators: a shadow depth — the default. */
+            'shadow.0 10px 40px rgba(0, 0, 0, 0.18)' => __('Normal', 'wconvert'),
+            /* translators: a shadow depth — the design lifts well off the page behind it. */
+            'shadow.0 24px 64px rgba(0, 0, 0, 0.3)' => __('Deep', 'wconvert'),
         ];
     }
 

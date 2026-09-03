@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { useState } from 'react';
-import { render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { TemplateEntry, TemplateLabels } from '../../resources/admin/src/templates/api';
@@ -69,6 +69,10 @@ const LABELS: TemplateLabels = {
     'align.start': 'Left',
     'align.center': 'Centre',
     'align.end': 'Right',
+    'shadow.none': 'None',
+    'shadow.0 1px 2px rgba(0, 0, 0, 0.08)': 'Soft',
+    'shadow.0 10px 40px rgba(0, 0, 0, 0.18)': 'Normal',
+    'shadow.0 24px 64px rgba(0, 0, 0, 0.3)': 'Deep',
   },
   tokens: {
     bg: 'Background',
@@ -77,6 +81,8 @@ const LABELS: TemplateLabels = {
     accent: 'Button',
     'accent-fg': 'Button text',
     width: 'Width',
+    pad: 'Inner spacing',
+    shadow: 'Shadow',
   },
 };
 
@@ -674,5 +680,194 @@ describe('a colour the panel cannot parse', () => {
 
     expect(screen.queryByRole('button', { name: /Choose a colour for Button$/ })).toBeNull();
     expect(screen.getByLabelText('Button')).toHaveValue('var(--brand)');
+  });
+});
+
+/**
+ * ============================================================================
+ * THE TWO TOKENS THAT NEVER REACHED A CONTROL, AND WHY EACH ONE DIDN'T.
+ * ============================================================================
+ * ADR 0054 rule 2: a free-text box is an escape you opt into, never the control
+ * you land on. Both of these landed on one, for two unrelated reasons —
+ * `shadow` had no `choices` and a value no shape test can read, and `pad`'s
+ * parser wanted a unit and read one component.
+ */
+describe('a shadow', () => {
+  it('is chips rather than a box wanting a CSS box-shadow typed into it', () => {
+    look({ design: {} });
+
+    // Checked on the manifest's own fallback, which is the common case.
+    expect(screen.getByRole('radio', { name: 'Normal' })).toBeChecked();
+    expect(screen.getByRole('radio', { name: 'None' })).toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: 'Deep' })).toBeInTheDocument();
+  });
+
+  /**
+   * **`none` is a keyword `shadow` and `bg-image` share**, and `isCssImage`
+   * runs before the choice branch — so the moment `shadow` got a `choices`
+   * entry, `inline-cart-nudge` was handed a media picker asking for the address
+   * of a picture. The token's own list is what breaks the tie.
+   */
+  it('is still chips for the one value a background layer also spells', () => {
+    render(
+      <Panel
+        template={{ ...ENTRY, tokens: { ...ENTRY.tokens, shadow: 'none' } }}
+        labels={LABELS}
+        design={{ ...ENTRY.tokens, shadow: 'none' }}
+        onChange={vi.fn()}
+        onError={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByRole('radio', { name: 'None' })).toBeChecked();
+    // Not the media picker `isCssImage` would otherwise have handed it.
+    expect(screen.queryByRole('textbox', { name: 'Shadow' })).toBeNull();
+  });
+
+  /**
+   * **Seven of the nine designs that declare a shadow declare one off this
+   * list**, and three of those cast upward because a bar sits at the bottom of
+   * the viewport. `choices` is an offer and never a limit (ADR 0010), so they
+   * open on Custom wearing their own value — the library is not renormalised to
+   * match the chips.
+   */
+  it('opens on Custom, value intact, for a design casting its own', () => {
+    const upward = '0 -6px 24px rgba(69, 10, 10, 0.35)';
+
+    render(
+      <Panel
+        template={{ ...ENTRY, tokens: { ...ENTRY.tokens, shadow: upward } }}
+        labels={LABELS}
+        design={{ ...ENTRY.tokens, shadow: upward }}
+        onChange={vi.fn()}
+        onError={vi.fn()}
+      />,
+    );
+
+    // Scoped to this token: every choice control on the tab has a Custom chip.
+    const shadow = screen.getByText('Shadow').closest('.wconvert-token') as HTMLElement;
+
+    expect(within(shadow).getByRole('radio', { name: 'Custom' })).toBeChecked();
+    expect(screen.getByLabelText('Shadow value')).toHaveValue(upward);
+  });
+});
+
+describe('inner spacing', () => {
+  const sliders = () => screen.getAllByRole('slider', { name: /Inner spacing/ });
+
+  /**
+   * `split-hero` ships `"pad": "0"` and zero is the one length CSS writes
+   * without a unit — so the old parser returned null and every Optin started
+   * from that design inherited a permanent text box.
+   */
+  it('is dragged from a bare zero, in the unit the manifest declares', () => {
+    const changed = vi.fn();
+
+    render(
+      <Panel
+        template={{ ...ENTRY, tokens: { ...ENTRY.tokens, pad: '0' } }}
+        labels={LABELS}
+        design={{ ...ENTRY.tokens, pad: '0' }}
+        onChange={changed}
+        onError={vi.fn()}
+      />,
+    );
+
+    const slider = screen.getByRole('slider', { name: 'Inner spacing' });
+
+    expect(slider).toHaveValue('0');
+    // 1.5rem is the manifest's own, so the range is 0–2 and the unit is rem.
+    expect(slider).toHaveAttribute('max', '2');
+
+    fireEvent.change(slider, { target: { value: '0.125' } });
+
+    expect(changed).toHaveBeenCalledWith(
+      expect.objectContaining({ tokens: expect.objectContaining({ pad: '0.125rem' }) }),
+    );
+  });
+
+  /**
+   * Four designs ship a two-value `pad` — the three bars and
+   * `inline-cart-nudge` — and no single slider expresses two axes. `padding:
+   * a b` is block then inline, so the names are logical and never *Left and
+   * right*.
+   */
+  it('draws one slider per axis of a two-value shorthand', () => {
+    render(
+      <Panel
+        template={{ ...ENTRY, tokens: { ...ENTRY.tokens, pad: '1rem 1.25rem' } }}
+        labels={LABELS}
+        design={{ ...ENTRY.tokens, pad: '1rem 1.25rem' }}
+        onChange={vi.fn()}
+        onError={vi.fn()}
+      />,
+    );
+
+    expect(sliders()).toHaveLength(2);
+    expect(screen.getByRole('slider', { name: 'Inner spacing, top and bottom' })).toHaveValue('1');
+    expect(screen.getByRole('slider', { name: 'Inner spacing, sides' })).toHaveValue('1.25');
+  });
+
+  it('writes the whole shorthand back when one axis moves', () => {
+    const changed = vi.fn();
+
+    render(
+      <Panel
+        template={{ ...ENTRY, tokens: { ...ENTRY.tokens, pad: '1rem 1.25rem' } }}
+        labels={LABELS}
+        design={{ ...ENTRY.tokens, pad: '1rem 1.25rem' }}
+        onChange={changed}
+        onError={vi.fn()}
+      />,
+    );
+
+    fireEvent.change(screen.getByRole('slider', { name: 'Inner spacing, sides' }), {
+      target: { value: '1.375' },
+    });
+
+    expect(changed).toHaveBeenCalledWith(
+      expect.objectContaining({ tokens: expect.objectContaining({ pad: '1rem 1.375rem' }) }),
+    );
+  });
+
+  /**
+   * Each axis keeps its own unit and its own scale. Normalising them would be
+   * the panel deciding a design's value was written wrong.
+   */
+  it('keeps two units apart rather than reconciling them', () => {
+    render(
+      <Panel
+        template={{ ...ENTRY, tokens: { ...ENTRY.tokens, pad: '1rem 20px' } }}
+        labels={LABELS}
+        design={{ ...ENTRY.tokens, pad: '1rem 20px' }}
+        onChange={vi.fn()}
+        onError={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByRole('slider', { name: 'Inner spacing, sides' })).toHaveAttribute(
+      'max',
+      '40',
+    );
+    expect(screen.getByRole('slider', { name: 'Inner spacing, top and bottom' })).toHaveAttribute(
+      'max',
+      '3',
+    );
+  });
+
+  /** CSS allows three and four values; the parser stops at two and says so. */
+  it('keeps the text box for a padding with more axes than it reads', () => {
+    render(
+      <Panel
+        template={{ ...ENTRY, tokens: { ...ENTRY.tokens, pad: '1rem 2rem 3rem 4rem' } }}
+        labels={LABELS}
+        design={{ ...ENTRY.tokens, pad: '1rem 2rem 3rem 4rem' }}
+        onChange={vi.fn()}
+        onError={vi.fn()}
+      />,
+    );
+
+    expect(screen.queryAllByRole('slider', { name: /Inner spacing/ })).toHaveLength(0);
+    expect(screen.getByLabelText('Inner spacing')).toHaveValue('1rem 2rem 3rem 4rem');
   });
 });

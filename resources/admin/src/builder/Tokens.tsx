@@ -9,15 +9,15 @@ import { getThemeTokens } from './api';
 import { MediaControl } from './SlotFields';
 import {
   asBackgroundLayer,
+  axesOf,
   isApplied,
   isColour,
   isCssImage,
   isFontStack,
   isTranslucent,
-  measureOf,
-  rangeFor,
   themePresets,
   urlIn,
+  type Axis,
 } from './themes';
 import { AA_NORMAL, contrastOf } from './contrast';
 import { nameOf, type TemplateLabels } from '../templates/api';
@@ -254,6 +254,7 @@ export function Tokens({
                 label={nameOf(labels.tokens, token.name)}
                 labels={labels}
                 fallback={design[token.name] ?? token.fallback}
+                standard={token.fallback}
                 design={design[token.name] ?? ''}
                 value={template.tokens[token.name] ?? ''}
                 open={openToken === token.name}
@@ -341,6 +342,7 @@ function Palette({
       label={nameOf(labels.tokens, token.name)}
       labels={labels}
       fallback={design[token.name] ?? token.fallback}
+      standard={token.fallback}
       design={design[token.name] ?? ''}
       value={template.tokens[token.name] ?? ''}
       open={openToken === token.name}
@@ -396,6 +398,7 @@ function TokenField({
   label,
   labels,
   fallback,
+  standard,
   design,
   value,
   open,
@@ -408,6 +411,15 @@ function TokenField({
   labels: TemplateLabels;
   /** What this token resolves to with nothing stored — the design's, else the manifest's. */
   fallback: string;
+  /**
+   * What the MANIFEST declares for this token, whatever the design did.
+   *
+   * It answers exactly one question and it is worth saying which, because
+   * `fallback` answers every other one: **what unit does a design that shipped a
+   * bare `0` grow into?** `split-hero`'s `"pad": "0"` has none, a drag has to
+   * write something, and `1.5rem` is the vocabulary's own answer ({@see axesOf}).
+   */
+  standard: string;
   /** What the design itself declared, or empty where it declared nothing. */
   design: string;
   value: string;
@@ -451,7 +463,20 @@ function TokenField({
     image is the next, and `choices` is what a token declares when its value
     says nothing about itself.
   */
-  if (isCssImage(shown)) {
+  /*
+    **`none` is a keyword two shapes share, and the token's own list breaks the
+    tie.** `shadow` declares `none` among its choices and `isCssImage` answers
+    yes to it, so the moment `shadow` got a `choices` entry (ADR 0054 rule 2)
+    every design shipping `shadow: none` — `inline-cart-nudge` does — was handed
+    a media picker asking for the address of a picture.
+
+    A shape test is a GUESS about a value; `choices` is the token's own
+    declaration about itself, so where the manifest offers exactly this value
+    for exactly this token, the manifest wins. That is rule 1 read literally
+    rather than a special case for `shadow`, and it leaves `bg-image` — which
+    declares no choices — exactly where it was.
+  */
+  if (isCssImage(shown) && !(offered ?? []).includes(shown)) {
     return (
       <ImageField id={field} label={label} value={value} reset={reset} onChange={onChange} />
     );
@@ -477,25 +502,21 @@ function TokenField({
   /*
     **The range comes from the DESIGN's own value, not the merchant's.** A scale
     derived from what is currently stored moves under the thumb on every drag —
-    drag right, the maximum grows, the thumb slides back. `scale` is what the
-    design shipped and it does not move while the panel is open.
+    drag right, the maximum grows, the thumb slides back. What the design
+    shipped does not move while the panel is open.
 
-    The slider therefore appears only where it can honestly say the stored
-    value: same unit as the design's, and inside the range that value produces.
+    So the sliders appear only where they can honestly say the stored value:
+    same unit as the design's, and inside the range that value produces.
     Everything else — a `clamp()`, a px value against a rem design, a width the
     merchant pushed past twice the design's — keeps the text box alone, which is
     the same refusal the panel has always made rather than a new one.
+
+    **One slider per axis, and `axesOf` decides how many** — a two-value
+    shorthand like `0.75rem 1.25rem` is two, and it is four designs' inner
+    spacing. Everything that decision needs is in `themes.ts`, so this branch
+    stayed one call and this file still names no token (ADR 0054).
   */
-  const scale = measureOf(fallback);
-  const current = measureOf(shown);
-  const range = scale === null ? null : rangeFor(scale);
-  const draggable =
-    current !== null &&
-    scale !== null &&
-    range !== null &&
-    current.unit === scale.unit &&
-    current.amount >= range.min &&
-    current.amount <= range.max;
+  const axes = axesOf(fallback, standard, shown);
 
   return (
     /*
@@ -506,16 +527,19 @@ function TokenField({
     */
     <div className="wconvert-token">
       <label htmlFor={field}>{label}</label>
-      <span className="wconvert-token__row">
-        {draggable && range !== null && current !== null ? (
+      {/*
+        The modifier is what gives the exact box room for a two-value shorthand:
+        7rem holds `1.375rem` and truncates `1rem 1.375rem`, which is a control
+        showing a value that is not the one it holds.
+      */}
+      <span className={`wconvert-token__row${axes !== null && axes.length > 1 ? ' wconvert-token__row--split' : ''}`}>
+        {axes !== null ? (
           <MeasureField
             id={field}
             label={label}
             fallback={fallback}
             value={value}
-            amount={current.amount}
-            unit={current.unit}
-            range={range}
+            axes={axes}
             onChange={onChange}
           />
         ) : (
@@ -595,6 +619,32 @@ function ImageField({
 }
 
 /**
+ * What each half of a two-value shorthand is called.
+ *
+ * ============================================================================
+ * BLOCK THEN INLINE, WHICH IS A FACT ABOUT CSS AND NOT ABOUT `pad`.
+ * ============================================================================
+ * `padding: a b` is the block axis then the inline one, in every two-value
+ * shorthand CSS has. So this names a SHAPE, the way every other test in this
+ * panel does, and a second two-value token added to the manifest tomorrow gets
+ * the same two words with nothing here edited.
+ *
+ * **Never *Left and right*.** The renderer is written in logical properties
+ * precisely because writing direction crosses every boundary, and the admin has
+ * `useDirection` — so the inline axis is *Sides*, which is true in both. *Top
+ * and bottom* is the block axis and stays physical: it is physical in every
+ * writing mode wp-admin is ever laid out in, and *Block* is not a word to put
+ * in front of a merchant.
+ */
+function axisName(index: number): string {
+  return index === 0
+    ? /* translators: one half of a spacing setting — the top and bottom edges. */
+      __('Top and bottom', 'wconvert')
+    : /* translators: one half of a spacing setting — the two edges the text runs between, whichever way it reads. */
+      __('Sides', 'wconvert');
+}
+
+/**
  * A length, dragged — with the exact value still typeable beside it.
  *
  * **Both controls, and they cannot disagree**, because both write the one
@@ -607,38 +657,86 @@ function ImageField({
  * a size in this panel was to type `1.625rem` into a text field, which is
  * exactly the defect the slider was added to remove. See
  * `.wconvert-token__slider` in `index.css` for the cascade that did it.
+ *
+ * ============================================================================
+ * TWO AXES GET TWO SLIDERS AND **ONE** BOX, WHICH IS NOT AN INCONSISTENCY.
+ * ============================================================================
+ * The sliders edit a component each; the box holds the whole token value, the
+ * way it always has. A second box would be a second place for the escape hatch
+ * to live, and typing `clamp()` into half a shorthand is not a thing anybody
+ * wants to do.
+ *
+ * Every drag rewrites both components from the axes, so the untouched one is
+ * re-emitted rather than preserved verbatim. That is deliberate and it is the
+ * only place this control normalises anything: a design's bare `0` comes back
+ * as `0rem` once its sibling moves, because a shorthand written half in one
+ * shape and half in another is worse to read than either.
  */
 function MeasureField({
   id,
   label,
   fallback,
   value,
-  amount,
-  unit,
-  range,
+  axes,
   onChange,
 }: {
   id: string;
   label: string;
   fallback: string;
   value: string;
-  amount: number;
-  unit: string;
-  range: { readonly min: number; readonly max: number; readonly step: number };
+  axes: readonly Axis[];
   onChange: (value: string) => void;
 }) {
+  const write = (index: number, amount: string) =>
+    onChange(
+      axes.map((axis, at) => `${at === index ? amount : axis.amount}${axis.unit}`).join(' '),
+    );
+
+  const slider = (axis: Axis, index: number, name?: string) => (
+    <input
+      // The token's own `<label for>` points at the first slider, so clicking
+      // *Inner spacing* lands somewhere. Where there are two, each carries a
+      // name of its own and that name wins.
+      id={index === 0 ? id : undefined}
+      type="range"
+      className="wconvert-token__slider"
+      aria-label={name}
+      min={axis.range.min}
+      max={axis.range.max}
+      step={axis.range.step}
+      value={axis.amount}
+      onChange={(event) => write(index, event.target.value)}
+    />
+  );
+
   return (
     <>
-      <input
-        id={id}
-        type="range"
-        className="wconvert-token__slider"
-        min={range.min}
-        max={range.max}
-        step={range.step}
-        value={amount}
-        onChange={(event) => onChange(`${event.target.value}${unit}`)}
-      />
+      {axes.length === 1 ? (
+        slider(axes[0], 0)
+      ) : (
+        <span className="wconvert-token__axes">
+          {axes.map((axis, index) => (
+            <label key={index} className="wconvert-token__axis">
+              <span className="wconvert-token__axis-name">{axisName(index)}</span>
+              {/*
+                The visible caption is short enough to sit over a slider; the
+                accessible name is the whole question, because "Sides" read out
+                on its own does not say sides of what.
+              */}
+              {slider(
+                axis,
+                index,
+                sprintf(
+                  /* translators: 1: what the setting is for, e.g. “Inner spacing”. 2: which half of it, e.g. “Sides”. */
+                  __('%1$s, %2$s', 'wconvert'),
+                  label,
+                  axisName(index).toLocaleLowerCase(),
+                ),
+              )}
+            </label>
+          ))}
+        </span>
+      )}
       {/*
         Named for the TOKEN, because two controls sharing one label is a screen
         reader announcing "Width" twice with no way to tell which is which.
