@@ -73,16 +73,18 @@ export interface Summary {
  * and they stay correct on the day that lookup 500s or the post is
  * unpublished.
  *
- * `logged_in` is a clause rather than a member of the counts, because it is a
- * FIELD beside the two lists rather than a page rule: the lists are a union of
- * page sets, and a visitor predicate in one would widen the Optin to the whole
- * site for anyone matching it (ADR 0005).
+ * **`logged_in` is not in this sentence, and it is still on this axis.** It is
+ * a FIELD beside the two lists rather than a page rule — the lists are a union
+ * of page sets, and a visitor predicate in one would widen the Optin to the
+ * whole site for anyone matching it (ADR 0005). It reads out under WHO, where
+ * its control now is, because a merchant asking *who sees this* should get one
+ * answer rather than half of it here ({@see whoSummary}).
  */
 export function whereSummary(targeting: Targeting): Summary {
   const included = targeting.include?.length ?? 0;
   const excluded = targeting.exclude?.length ?? 0;
 
-  const pages =
+  const text =
     included === 0 && excluded === 0
       ? __('On every page', 'wconvert')
       : included === 0
@@ -104,21 +106,7 @@ export function whereSummary(targeting: Targeting): Summary {
               countOfPages(excluded),
             );
 
-  if (targeting.logged_in === undefined) {
-    return { text: pages, attention: false };
-  }
-
-  return {
-    text: sprintf(
-      /* translators: 1: where it shows, e.g. “On every page”. 2: which visitors, e.g. “signed-in visitors only”. */
-      __('%1$s, %2$s', 'wconvert'),
-      pages,
-      targeting.logged_in
-        ? __('signed-in visitors only', 'wconvert')
-        : __('signed-out visitors only', 'wconvert'),
-    ),
-    attention: false,
-  };
+  return { text, attention: false };
 }
 
 const countOfPages = (count: number): string =>
@@ -400,18 +388,39 @@ export const IMMEDIATELY = 'page_load';
  * *Who* sees it: every Condition holds at the instant a Trigger fires, so the
  * joiner is **and**.
  */
-export function whoSummary(entries: readonly Entry[], types: readonly RuleType[]): Summary {
-  if (entries.length === 0) {
+export function whoSummary(
+  entries: readonly Entry[],
+  types: readonly RuleType[],
+  /**
+   * The visitor predicate, off the TARGETING axis — where it is stored, because
+   * the browser cannot read WordPress's HttpOnly auth cookie.
+   *
+   * It reads out here because that is the question it answers and where its
+   * control now is; `whereSummary` used to carry it as a trailing clause, which
+   * split the answer to *who sees this* across two sentences. Undefined means
+   * *do not ask*, which is not the same as false.
+   */
+  loggedIn?: boolean,
+): Summary {
+  const signedIn =
+    loggedIn === undefined
+      ? null
+      : loggedIn
+        ? __('signed in', 'wconvert')
+        : __('signed out', 'wconvert');
+
+  if (entries.length === 0 && signedIn === null) {
     return { text: __('Anyone who reaches it', 'wconvert'), attention: false };
   }
 
   const read = entries.map(([rule]) => phraseOf(rule, types));
+  const clauses = [...read.map((each) => each.text), ...(signedIn === null ? [] : [signedIn])];
 
   return {
     text: sprintf(
       /* translators: %s: one or more condition phrases joined by “and”. */
       __('Only when %s', 'wconvert'),
-      join(read.map((each) => each.text), _x('and', 'joins conditions, all of which must hold', 'wconvert')),
+      join(clauses, _x('and', 'joins conditions, all of which must hold', 'wconvert')),
     ),
     // A second Condition of a kind that may only be set once NARROWS the first
     // — *"on mobile or tablet AND on desktop"* holds for nobody — so the

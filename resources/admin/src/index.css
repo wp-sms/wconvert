@@ -3563,9 +3563,9 @@
  * once, as the label of the group, and each capability as a chip.
  *
  * ADR 0015's requirement is unchanged and still met — free's admin renders the
- * `locked` card from the shared manifest, as metadata rather than a disabled
- * control, with nothing a click could reach. A chip is that card at the size
- * the fact deserves.
+ * `locked` type from the shared manifest, as metadata rather than a control,
+ * with nothing a click could reach. It is a disabled `<option>` in the Add menu
+ * now, which is that card at the size the fact deserves.
  * ------------------------------------------------------------------------- */
 
 /* ---------------------------------------------------------------------------
@@ -4110,20 +4110,18 @@
 }
 
 /* ---------------------------------------------------------------------------
- * WHAT THIS INSTALL CANNOT RUN: THE REASON ONCE, THEN THE CHIPS.
+ * `.wconvert-absent` WAS HERE, AND IT IS GONE WITH THE BLOCK IT DRESSED.
  *
- * Two blocks of grid cards, each card repeating the sentence its neighbour had
- * just made, under a heading that said it a third time — two hundred pixels to
- * say one thing twice. A definition list is what the content is: the reason is
- * the term, the capabilities are its description.
+ * A definition list under every Add control — the reason as the term, the
+ * capabilities as chips — drawn on every visit of every section, telling a
+ * merchant who had not yet tried to add anything about the things they cannot
+ * add. It replaced ninety lines of cards and was itself the same mistake one
+ * size smaller: permanent furniture explaining an absence.
+ *
+ * The explanation is `<optgroup disabled>` inside the Add menu now, which needs
+ * no CSS at all — the merchant hunts through the DROPDOWN, and that is where
+ * ADR 0026's `explain` belongs on this surface (ADR 0054).
  * ------------------------------------------------------------------------- */
-#wconvert-admin .wconvert-absent {
-  display: grid;
-  grid-template-columns: max-content 1fr;
-  align-items: baseline;
-  gap: 0.375rem 0.75rem;
-  margin: 0.75rem 0 0;
-}
 
 /*
  * wp-admin's `common.css` says `dd, li { margin-bottom: 6px }` UNLAYERED, and
