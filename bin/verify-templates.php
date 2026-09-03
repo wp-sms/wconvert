@@ -417,7 +417,22 @@ $arguments = is_array($_SERVER['argv'] ?? null) ? array_values($_SERVER['argv'])
 $roots = array_slice($arguments, 1);
 
 if ($roots === []) {
-    $roots = [dirname(__DIR__), dirname(__DIR__) . '/pro'];
+    /*
+     * FREE'S ONE LIBRARY, AND EVERY PRO MODULE THAT KEEPS DESIGNS.
+     *
+     * Pro's designs moved out of one fixed directory and into the module that
+     * owns them (ADR 0056) — a module is a directory, so a per-tier build
+     * withholds one by deleting it. Left pointing at the old path this printed
+     * *"no library here, so nothing was inspected"* and exited 0, which is the
+     * fail-open this program exists not to be: eight premium designs went
+     * uninspected and the run still read as clean.
+     *
+     * Globbed rather than listed, so a module added later is inspected without
+     * this line being edited.
+     */
+    $proLibraries = glob(dirname(__DIR__) . '/pro/modules/*/templates');
+
+    $roots = [dirname(__DIR__), ...($proLibraries === false ? [] : array_map('dirname', $proLibraries))];
 }
 
 /** @var array<string, mixed> $manifest */
@@ -440,7 +455,12 @@ $lint = new TemplateLint(array_map(
 $ids = [];
 
 foreach ($roots as $root) {
-    $directory = rtrim((string) $root, '/') . '/' . BundledTemplates::PATH;
+    $root = rtrim((string) $root, '/');
+
+    // Free's library sits at `resources/templates/library`; a Pro module keeps
+    // its own beside its `module.json`. The root decides which, so a caller may
+    // still pass either shape on the command line.
+    $directory = is_dir($root . '/templates') ? $root . '/templates' : $root . '/' . BundledTemplates::PATH;
     $files = glob($directory . '/*.json');
 
     echo sprintf("==> verify-templates: %s\n", $directory);
