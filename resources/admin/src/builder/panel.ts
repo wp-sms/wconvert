@@ -1,5 +1,5 @@
 import vocabulary from '../../../templates/manifest.json';
-import { isBareNumber, isColour, isFontStack, measureOf } from './themes';
+import { isBareNumber, isColour, isFontStack, measuresOf } from './themes';
 import type { TemplateNode, TemplateTree, Tokens } from '@renderer/types';
 
 /**
@@ -296,8 +296,10 @@ export function groupOf(token: TokenDeclaration): TokenGroupId {
   }
 
   // A length, or a keyword the manifest offers a list for — `align` is the
-  // second, and it is the reason this arm is not `measureOf` alone.
-  if (measureOf(token.fallback) !== null || CHOICES[token.name] !== undefined) {
+  // second, and it is the reason this arm is not `measuresOf` alone. `shadow`
+  // is the third and it arrived the same way — a `choices` entry and nothing
+  // else, so it moved out of *Other settings* with no arm added here.
+  if (measuresOf(token.fallback) !== null || CHOICES[token.name] !== undefined) {
     return 'space';
   }
 

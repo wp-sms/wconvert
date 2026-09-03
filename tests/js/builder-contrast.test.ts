@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { AA_NORMAL, contrastOf, luminanceOf, meetsAA } from '../../resources/admin/src/builder/contrast';
-import { measureOf, rangeFor } from '../../resources/admin/src/builder/themes';
+import { axesOf, measuresOf, rangeFor } from '../../resources/admin/src/builder/themes';
 
 /**
  * ============================================================================
@@ -83,10 +83,41 @@ describe('contrast', () => {
 
 describe('which control a token takes', () => {
   it('reads one plain number and unit', () => {
-    expect(measureOf('28rem')).toEqual({ amount: 28, unit: 'rem' });
-    expect(measureOf('0.75rem')).toEqual({ amount: 0.75, unit: 'rem' });
-    expect(measureOf(' 16px ')).toEqual({ amount: 16, unit: 'px' });
-    expect(measureOf('0rem')).toEqual({ amount: 0, unit: 'rem' });
+    expect(measuresOf('28rem')).toEqual([{ amount: 28, unit: 'rem' }]);
+    expect(measuresOf('0.75rem')).toEqual([{ amount: 0.75, unit: 'rem' }]);
+    expect(measuresOf(' 16px ')).toEqual([{ amount: 16, unit: 'px' }]);
+    expect(measuresOf('0rem')).toEqual([{ amount: 0, unit: 'rem' }]);
+  });
+
+  /**
+   * Four designs ship one — the three bars and `inline-cart-nudge` — and until
+   * this read two components every one of them had a text box for its inner
+   * spacing, because no single slider expresses two axes.
+   */
+  it('reads a two-value shorthand as its two axes, units and all', () => {
+    expect(measuresOf('0.75rem 1.25rem')).toEqual([
+      { amount: 0.75, unit: 'rem' },
+      { amount: 1.25, unit: 'rem' },
+    ]);
+    expect(measuresOf('1rem 20px')).toEqual([
+      { amount: 1, unit: 'rem' },
+      { amount: 20, unit: 'px' },
+    ]);
+  });
+
+  /**
+   * `split-hero` ships `"pad": "0"`, and zero is the one length CSS lets you
+   * write without a unit — so refusing it was refusing a design the library
+   * actually contains.
+   */
+  it('reads a bare zero as a length, and nothing else unitless', () => {
+    expect(measuresOf('0')).toEqual([{ amount: 0, unit: '' }]);
+    expect(measuresOf('0 1rem')).toEqual([
+      { amount: 0, unit: '' },
+      { amount: 1, unit: 'rem' },
+    ]);
+    // A line-height, not a length. `isBareNumber` keeps this in the type group.
+    expect(measuresOf('1.5')).toBeNull();
   });
 
   /**
@@ -97,7 +128,9 @@ describe('which control a token takes', () => {
    */
   it.each([
     'clamp(20rem, 50vw, 30rem)',
+    // Three and four values are CSS this parser deliberately stops short of.
     '0.5rem 0.5rem 0 0',
+    '1rem 2rem 3rem',
     'min(28rem, 100%)',
     'calc(1rem + 2px)',
     'start',
@@ -105,7 +138,7 @@ describe('which control a token takes', () => {
     '#ffffff',
     '',
   ])('refuses %s, so the text box stays', (value) => {
-    expect(measureOf(value)).toBeNull();
+    expect(measuresOf(value)).toBeNull();
   });
 
   /** A range wide enough to be useful, from the design's own value. */
@@ -120,5 +153,76 @@ describe('which control a token takes', () => {
    */
   it('still has a range for a token the design set to zero', () => {
     expect(rangeFor({ amount: 0, unit: 'rem' }).max).toBe(2);
+  });
+});
+
+/**
+ * The three values that decide whether a token gets sliders, and how many.
+ *
+ * `axesOf(fallback, standard, shown)` — what the design shipped, what the
+ * manifest declares, and what is stored now.
+ */
+describe('the sliders a token earns', () => {
+  it('offers one for a plain length', () => {
+    expect(axesOf('28rem', '28rem', '30rem')).toEqual([
+      { amount: 30, unit: 'rem', range: { min: 0, max: 56, step: 0.125 } },
+    ]);
+  });
+
+  it('offers one per axis for a two-value shorthand', () => {
+    const axes = axesOf('0.75rem 1.25rem', '1.5rem', '0.75rem 1.25rem');
+
+    expect(axes).toHaveLength(2);
+    expect(axes?.[0].amount).toBe(0.75);
+    expect(axes?.[1].amount).toBe(1.25);
+  });
+
+  /**
+   * Each axis keeps its own unit and its own scale. Normalising them would be
+   * the panel deciding a design's value was written wrong.
+   */
+  it('does not reconcile two axes onto one unit', () => {
+    const axes = axesOf('1rem 20px', '1.5rem', '1rem 20px');
+
+    expect(axes?.[0]).toEqual({ amount: 1, unit: 'rem', range: { min: 0, max: 3, step: 0.125 } });
+    expect(axes?.[1]).toEqual({ amount: 20, unit: 'px', range: { min: 0, max: 40, step: 1 } });
+  });
+
+  /**
+   * `split-hero`'s `"pad": "0"` has no unit to drag along, so the unit comes
+   * from the manifest's own declared value — never from the browser.
+   */
+  it('takes a unit from the manifest where the design shipped a bare zero', () => {
+    expect(axesOf('0', '1.5rem', '0')).toEqual([
+      { amount: 0, unit: 'rem', range: { min: 0, max: 2, step: 0.125 } },
+    ]);
+  });
+
+  /** And once dragged, the value it wrote is still on the slider it came from. */
+  it('keeps the slider after a drag off a bare zero', () => {
+    expect(axesOf('0', '1.5rem', '1.25rem')?.[0].amount).toBe(1.25);
+  });
+
+  it.each([
+    // A px value against a rem design.
+    ['28rem', '28rem', '400px'],
+    // Pushed past twice the design's own.
+    ['28rem', '28rem', '90rem'],
+    // Something no slider can say.
+    ['28rem', '28rem', 'clamp(20rem, 50vw, 30rem)'],
+    // A second component the design does not have: which axis did they mean?
+    ['1.5rem', '1.5rem', '1rem 2rem'],
+    // Three values — past where the parser stops.
+    ['1rem 2rem 3rem', '1.5rem', '1rem 2rem 3rem'],
+  ])('refuses %s / %s / %s and keeps the text box', (fallback, standard, shown) => {
+    expect(axesOf(fallback, standard, shown)).toBeNull();
+  });
+
+  /**
+   * A design and a manifest that are both unitless leave nothing to grow into,
+   * so the panel says so rather than inventing a unit.
+   */
+  it('offers nothing where no unit can be found at all', () => {
+    expect(axesOf('0', '0', '0')).toBeNull();
   });
 });

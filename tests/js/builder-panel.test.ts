@@ -145,12 +145,20 @@ describe('every shipped design, through the panel', () => {
 describe('grouping the Design panel', () => {
   const declared = (name: string, fallback: string) => ({ name, fallback });
 
+  /*
+    **The specimen is a token that does not exist**, and it used to be `shadow`
+    — which now has a `choices` entry and therefore a control, so it lands under
+    *Size and space* beside the other two keywords the manifest enumerates
+    (ADR 0054). Naming a real token here made this test a fact about the
+    manifest's current contents rather than about the trailing group, and the
+    day the manifest gave that token a control the guard read as broken.
+  */
   it('puts a token it recognises nothing about in the trailing group', () => {
-    const grouped = groupsOf([declared('shadow', '0 10px 40px rgba(0, 0, 0, 0.18)')]);
+    const grouped = groupsOf([declared('outline', '2px dashed currentColor')]);
 
     expect(grouped).toHaveLength(1);
     expect(grouped[0].id).toBe('other');
-    expect(grouped[0].tokens.map((token) => token.name)).toEqual(['shadow']);
+    expect(grouped[0].tokens.map((token) => token.name)).toEqual(['outline']);
   });
 
   /**

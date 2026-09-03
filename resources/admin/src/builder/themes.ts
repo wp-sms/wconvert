@@ -142,7 +142,7 @@ export function isTranslucent(value: string): boolean {
 /**
  * Does this value name a **font stack**?
  *
- * Read off the value, like {@link isColour} and {@link measureOf}, and for the
+ * Read off the value, like {@link isColour} and {@link measuresOf}, and for the
  * same reason: a token added to `resources/templates/manifest.json` gets the
  * right control and lands in the right group with nothing here edited.
  *
@@ -173,9 +173,15 @@ export function isFontStack(value: string): boolean {
  * how bold their headline is.
  *
  * A bare number is the shape both of them have and no length has:
- * {@link measureOf} requires a unit, so `1.5rem` is a measure and `1.5` is
- * this. It is not a heuristic about what the token MEANS — CSS has exactly two
- * unitless typographic properties in this vocabulary, and both are type.
+ * {@link measuresOf} takes a unit on everything but zero, so `1.5rem` is a
+ * measure and `1.5` is this. It is not a heuristic about what the token MEANS —
+ * CSS has exactly two unitless typographic properties in this vocabulary, and
+ * both are type.
+ *
+ * **`0` answers yes to both, and the order in `groupOf` settles it.** Zero is
+ * the one length CSS writes without a unit, so it is genuinely ambiguous read on
+ * its own; this arm runs first, and it never sees one anyway because `groupOf`
+ * reads the MANIFEST's declared value and no token in it is `0`.
  */
 export function isBareNumber(value: string): boolean {
   const trimmed = value.trim();
@@ -198,7 +204,7 @@ export function isBareNumber(value: string): boolean {
  * The gradient arm is deliberately included and deliberately NOT given a
  * control: {@link urlIn} answers null for one, so the panel falls back to the
  * plain box and a merchant who typed a gradient keeps it. That is the same
- * refusal `measureOf` makes for a `clamp()`.
+ * refusal `measuresOf` makes for a `clamp()`.
  */
 export function isCssImage(value: string): boolean {
   const trimmed = value.trim();
@@ -246,8 +252,15 @@ export function asBackgroundLayer(typed: string): string {
   return /[()'"]/.test(trimmed) ? trimmed : `url("${trimmed}")`;
 }
 
+/** One plain number and the unit it is measured in — `28rem`, `16px`, `0`. */
+export interface Measure {
+  readonly amount: number;
+  /** Empty only for a bare `0`, the one length CSS lets you write without one. */
+  readonly unit: string;
+}
+
 /**
- * A token's value as **one plain number and unit**, or null.
+ * A token's value as **one or two** plain numbers and units, or null.
  *
  * ============================================================================
  * A SLIDER MUST NEVER BE ABLE TO CLOBBER A VALUE IT CANNOT EXPRESS.
@@ -268,15 +281,59 @@ export function asBackgroundLayer(typed: string): string {
  * what makes that true in both directions: a merchant on `28rem` can still type
  * a `clamp()` and watch the slider step aside. They cannot disagree, because
  * both write the one value.
+ *
+ * ============================================================================
+ * IT READS TWO COMPONENTS BECAUSE FOUR DESIGNS SHIP TWO, AND IT STOPS THERE.
+ * ============================================================================
+ * `measureOf` read exactly one, which is the whole reason `pad` never got a
+ * control: the three bars and `inline-cart-nudge` ship `0.75rem 1.25rem`, and
+ * no single slider expresses two axes. A two-value CSS shorthand is the block
+ * axis then the inline one — which is a fact about the SHAPE and not about
+ * `pad`, so this file still names no token.
+ *
+ * **CSS allows three and four values and this stops at two.** That is a stated
+ * limit rather than an oversight: `padding: a b c d` falls to the text box,
+ * which is the same refusal a `clamp()` gets and the reason the box is still
+ * there (ADR 0054 rule 2).
+ *
+ * ============================================================================
+ * AND A BARE `0` IS A LENGTH, WHICH IS WHY THE UNIT IS OPTIONAL FOR IT ALONE.
+ * ============================================================================
+ * `split-hero` ships `"pad": "0"`. The old pattern required a unit, so that
+ * returned null and every Optin started from that design inherited a permanent
+ * text box for its inner spacing.
+ *
+ * Zero is the one length CSS lets you write unitless, and the exception is
+ * spelled that narrowly on purpose: `1.5` stays a bare number rather than
+ * becoming a unitless length, so {@link isBareNumber} keeps `leading` and
+ * `heading-weight` in the type group and this widening moves nothing.
+ *
+ * A zero carries no unit to drag along, so the caller supplies one — see
+ * `TokenField`, which takes it from the manifest's own declared value.
  */
-export function measureOf(value: string): { readonly amount: number; readonly unit: string } | null {
-  const found = /^(-?\d*\.?\d+)(px|rem|em|%|ch|vw|vh)$/.exec(value.trim());
+export function measuresOf(value: string): readonly Measure[] | null {
+  const parts = value.trim().split(/\s+/);
 
-  if (found === null) {
+  if (parts.length < 1 || parts.length > 2) {
     return null;
   }
 
-  return { amount: Number(found[1]), unit: found[2] };
+  const measures: Measure[] = [];
+
+  for (const part of parts) {
+    const found = /^(-?\d*\.?\d+)(px|rem|em|%|ch|vw|vh)?$/.exec(part);
+    const amount = found === null ? NaN : Number(found[1]);
+
+    // A unit, or an amount of zero. Anything else — `1.5`, `auto`, `clamp(…)`
+    // — is not a length and must not be handed a slider.
+    if (found === null || (found[2] === undefined && amount !== 0)) {
+      return null;
+    }
+
+    measures.push({ amount, unit: found[2] ?? '' });
+  }
+
+  return measures;
 }
 
 /**
@@ -291,8 +348,13 @@ export function measureOf(value: string): { readonly amount: number; readonly un
  * The floor is zero because every one of these measures is a length that may be
  * absent — a square corner, no gap — and a slider that could not reach zero
  * would be a control with a value the text box has and it does not.
+ *
+ * **One range per axis, and the axes are not reconciled.** A design shipping
+ * `1rem 20px` gets a rem slider and a px slider, each with its own scale and
+ * each writing back its own unit. Normalising them to one unit would be this
+ * panel deciding a design's value was written wrong.
  */
-export function rangeFor(measure: { amount: number; unit: string }): {
+export function rangeFor(measure: Measure): {
   readonly min: number;
   readonly max: number;
   readonly step: number;
@@ -306,4 +368,79 @@ export function rangeFor(measure: { amount: number; unit: string }): {
     max: Math.max(measure.amount * 2, measure.amount + 2),
     step,
   };
+}
+
+/**
+ * The sliders a token's value earns, one per axis, or null for none at all.
+ *
+ * ============================================================================
+ * THREE VALUES DECIDE THIS AND EACH ONE IS A DIFFERENT QUESTION.
+ * ============================================================================
+ * - `fallback` is what the token resolves to with nothing stored — the design's
+ *   own value, else the manifest's. It sets the **scale**, and it is read here
+ *   rather than the stored value for the reason `TokenField` has always given:
+ *   a range derived from what is currently stored moves under the thumb on
+ *   every drag.
+ * - `standard` is the manifest's own declared value, and it is here for exactly
+ *   one job: **a unit for a design that shipped a bare `0` to grow into.**
+ *   `split-hero` ships `"pad": "0"`, a drag has to write something, and `1.5rem`
+ *   → `rem` is the vocabulary's own answer. Reading a computed value off the
+ *   admin document would be answering a question about the merchant's design
+ *   with a fact about the browser.
+ * - `shown` is what the thumb sits on now.
+ *
+ * **All or nothing, per token.** One axis the panel cannot honestly express
+ * means the whole token keeps the text box, because half a control over a
+ * two-value shorthand would write the other half away.
+ *
+ * Null therefore still means what it always meant: a `clamp()`, a px value
+ * against a rem design, a three-value padding, a width pushed past twice the
+ * design's — the panel refuses rather than clobbers, and the text box beside it
+ * is the escape hatch that keeps ADR 0010's unvalidated values reachable.
+ */
+export interface Axis {
+  /** Where the thumb sits now. */
+  readonly amount: number;
+  /** What a drag writes. Never empty — a token with nothing to grow into is null. */
+  readonly unit: string;
+  readonly range: { readonly min: number; readonly max: number; readonly step: number };
+}
+
+export function axesOf(fallback: string, standard: string, shown: string): readonly Axis[] | null {
+  const scale = measuresOf(fallback);
+  const held = measuresOf(shown);
+
+  // A merchant who typed a second component onto a one-value design has said
+  // something this control cannot draw over the design's scale, so it steps
+  // aside rather than guessing which axis the design meant.
+  if (scale === null || held === null || scale.length !== held.length) {
+    return null;
+  }
+
+  const declared = measuresOf(standard);
+  const axes: Axis[] = [];
+
+  for (const [index, axis] of scale.entries()) {
+    // The design's own unit, else the manifest's for this axis, else the
+    // manifest's first — `pad: "1.5rem"` answers for both axes of a design that
+    // wrote `0`.
+    const unit = axis.unit !== '' ? axis.unit : (declared?.[index] ?? declared?.[0])?.unit ?? '';
+
+    if (unit === '') {
+      return null;
+    }
+
+    const range = rangeFor({ amount: axis.amount, unit });
+    const now = held[index];
+
+    // A unitless amount is a zero ({@see measuresOf}), which is every unit at
+    // once and always inside the range.
+    if (now.unit !== '' && (now.unit !== unit || now.amount < range.min || now.amount > range.max)) {
+      return null;
+    }
+
+    axes.push({ amount: now.amount, unit, range });
+  }
+
+  return axes;
 }

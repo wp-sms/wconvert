@@ -2982,6 +2982,56 @@
   flex: none;
 }
 
+/*
+ * TWO AXES, WHICH IS WHAT A TWO-VALUE SHORTHAND LOOKS LIKE.
+ *
+ * `pad: 0.75rem 1.25rem` is two sliders and one text box, so the pair takes the
+ * space one slider took and each half carries a caption — two identical sliders
+ * side by side with nothing above them is a control a merchant has to drag to
+ * identify.
+ *
+ * `min-inline-size: 0` on both, because a flex item's default `min-width: auto`
+ * is what let the exact box starve the slider once already; a floor of zero here
+ * means the caption text cannot do the same thing from the other side.
+ */
+.wconvert-token__axes {
+  display: flex;
+  flex: 1;
+  gap: 0.5rem;
+  min-inline-size: 0;
+}
+
+.wconvert-token__axis {
+  display: grid;
+  gap: 0.125rem;
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.wconvert-token__axis-name {
+  font-size: 0.6875rem;
+  line-height: 1.2;
+  color: var(--muted-foreground);
+}
+
+/*
+ * The 100% exclusion below names direct children of the row, and these sliders
+ * are a grid cell inside one — so they take their width here instead of
+ * inheriting the `flex: 1` that does nothing in a grid.
+ */
+.wconvert-token__axis > .wconvert-token__slider {
+  inline-size: 100%;
+  margin-inline-end: 0;
+}
+
+/*
+ * The exact box holds the WHOLE token value, so a two-value shorthand needs
+ * more of the row than the 7rem one component asks for.
+ */
+.wconvert-token__row--split > .wconvert-token__exact {
+  inline-size: 11rem;
+}
+
 /* ---------------------------------------------------------------------------
  * A SEGMENTED CONTROL, OVER NATIVE RADIOS.
  *
