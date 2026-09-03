@@ -138,6 +138,15 @@ Minting would also be a **write into WooCommerce's data** (a `shop_coupon` post)
 which is [ADR 0024](0024-wconvert-writes-no-wsms-engagements.md)'s error in a
 different table.
 
+*This section is about the cart [[Goal]] and it turned out to be about the
+[[Template]] library too.
+[ADR 0053](0053-the-spin-to-win-card-is-withdrawn.md) withdrew the
+`popup-spin-to-win` card on exactly this paragraph, N times over: a prize wheel
+needs a per-visitor code, so either every segment's prize ships in the page
+source or none does. The rule is not "cart recovery mints no coupon" — it is
+that **this delivery model can hand nothing to one visitor and not to the
+next**, and a design advertising otherwise is refused wherever it appears.*
+
 *Asserted rather than argued as of [#36](https://github.com/navidkashani/wconvert/issues/36):
 `tests/unit/Pro/WooCommerce/NoWriteIntoWooCommerceTest.php` reads both plugin trees
 and fails on a coupon, an order, a cart mutation or a write into WooCommerce's

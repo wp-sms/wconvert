@@ -162,7 +162,28 @@ export const SHADOW_CSS = [
   `.wc-link{color:inherit}`,
   `.wc-image{display:block;inline-size:100%;block-size:auto;object-fit:cover;border-radius:var(--wc-radius,.5rem)}`,
 
-  `.wc-field{display:flex;flex:1 1 12rem;flex-direction:column;gap:.25rem;text-align:start}`,
+  /*
+   * ==========================================================================
+   * `flex-basis` IS A MAIN-AXIS LENGTH, AND HALF THE LIBRARY'S MAIN AXIS IS
+   * VERTICAL.
+   * ==========================================================================
+   * This rule used to carry `flex:1 1 12rem` itself, which is right in a `row`
+   * — a field beside a button should take the slack — and is a **192px-tall
+   * field** in a `stack`, because `flex-direction:column` makes the main axis
+   * the block axis and `flex-basis` a HEIGHT. Eight of the thirteen shipped
+   * designs put a field in a stack, so eight of them drew a label, an input,
+   * and 130px of nothing under it, in a popup, on a live site.
+   *
+   * It looked like air rather than like a bug, which is why it survived every
+   * screenshot: the gap reads as generous spacing until there are TWO fields,
+   * and then the button is a screen away from the form.
+   *
+   * So the growth is scoped to the axis it was written for. A field in a
+   * `grid` cell or a `split` pane needs neither: neither parent is a flex
+   * container, so the shorthand was already inert there.
+   */
+  `.wc-field{display:flex;flex-direction:column;gap:.25rem;text-align:start}`,
+  `.wc-row>.wc-field{flex:1 1 12rem}`,
   `.wc-label{font-size:.875em;color:var(--wc-muted,#6b7280)}`,
   `.wc-input{inline-size:100%;font:inherit;color:inherit;background:var(--wc-bg,#fff);border:1px solid var(--wc-border,#e5e7eb);border-radius:var(--wc-radius,.5rem);padding-block:.625rem;padding-inline:.75rem}`,
 

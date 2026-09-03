@@ -188,7 +188,11 @@ work to 360px.
 - **The library never reaches a visitor's page, and now it is asserted.**
   `template_id` is provenance and the registry is not consulted at render time
   (ADR 0010), which is why three designs became twelve — with nine more
-  advertised — without a byte reaching the front end.
+  advertised — without a byte reaching the front end. *Eight advertised as of
+  [ADR 0053](0053-the-spin-to-win-card-is-withdrawn.md), which withdrew
+  `popup-spin-to-win`: the other eight are all real designs in Pro's ZIP now, so
+  the stub set and the Pro library are the same eight ids and a Pro install's
+  `locked()` is empty.*
   `PayloadBudgetTest::testNothingAboutTheLIBRARYReachesTheBrowser()` names the
   index fields individually, because the way this breaks is a convenience —
   a design's name on a beacon, its `tier` in a report — and each is one line.

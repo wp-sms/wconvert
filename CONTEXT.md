@@ -541,6 +541,17 @@ is never copied into an Optin.
 > all. See
 > [ADR 0043](docs/adr/0043-the-library-is-indexed-and-its-facets-are-derived.md).
 
+A design a free install did not get is still advertised — a card with a name,
+its facets and a link to a live preview, and no tree
+([[Availability]], `locked`). **So a card is an advertisement, and an
+advertisement for a design nobody can be given is a worse defect than one fewer
+design.** It is the same rule as *a paying customer is never shown an upsell*,
+one step earlier: that one is about who sees the card, this one is about whether
+the thing behind it can exist at all. A card is withdrawn rather than left
+standing while somebody works out how to build it — which is what happened to
+the prize wheel, whose per-visitor outcome no cached page can carry
+([ADR 0053](docs/adr/0053-the-spin-to-win-card-is-withdrawn.md)).
+
 One Template serves exactly one Display Type. An Optin **takes a copy** of its
 Template rather than a link to it, so improving a Template never restyles an Optin
 already running on it.

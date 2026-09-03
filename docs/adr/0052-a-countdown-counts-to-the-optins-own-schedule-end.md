@@ -116,6 +116,15 @@ remembering a deadline `functional`, like remembering a dismissal, or does it
 need consent?** That question does not need answering, because the answer to the
 feature is no.
 
+> **Answered by [ADR 0053](0053-the-spin-to-win-card-is-withdrawn.md).** The
+> spin-to-win card asked the same question in a form that could not be parked,
+> and the answer is that a per-visitor outcome serves **two purposes in two
+> categories** — *show me again what I was given* is `functional` on this
+> paragraph's own reading, and *stop them doing it again* is the merchant's
+> interest in the visitor's device and is `marketing`. One field, and the
+> stricter category wins. This paragraph's *"does not need answering"* stands
+> for the countdown; the question itself is now closed rather than open.
+
 *"Store the deadline itself, never a key pointing at one"*
 ([ADR 0017](0017-no-visitor-identifier.md)) is the shape it would have to take
 if this is ever reopened. It is written down here so that reopening it starts
