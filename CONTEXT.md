@@ -591,6 +591,12 @@ is off by default and one click from on ([ADR 0032](docs/adr/0032-consent-captur
 > `manifest.json` declares, and [ADR 0010](docs/adr/0010-templates-are-configuration-not-documents.md)
 > is untouched on that. Every other sentence above stands as written.
 
+**And the manifest is the ceiling on how well a value can be *edited*, not only
+on what may exist** — a token declaring no `choices` whose value no shape test
+reads arrives in the panel wearing a raw text box, so where a shape cannot be
+inferred the manifest enumerates it
+([ADR 0054](docs/adr/0054-every-control-has-the-shape-of-its-value.md)).
+
 ### Starting point
 
 A named set of display rules a merchant can begin from — *"Once they have read a

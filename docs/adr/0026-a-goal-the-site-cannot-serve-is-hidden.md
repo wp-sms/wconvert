@@ -22,6 +22,22 @@ property of the surface. The load-bearing half survives intact and is strengthen
 surface ever renders `unavailable` as an upsell, and the precedence rule extends that
 guarantee to the case where both reasons apply.
 
+> **Amended by [ADR 0054](0054-every-control-has-the-shape-of-its-value.md): on
+> the display-rules panel, the explanation moved *into the Add menu*.** The rule
+> above is unchanged and this is not an exception to it — a list somebody hunts
+> through still explains its gaps rather than hiding them. What the rules panel
+> got wrong is **which thing the list is.** It rendered the absent rule types as
+> a permanent block on the tab, beside the rules the merchant actually has, so
+> every visit paid for an explanation of what could not be added by anyone who
+> had not yet tried to add anything. The list a merchant hunts through is the
+> **Add dropdown**; the tab is not. The absent types are `<optgroup disabled>`
+> groups inside it — *With WConvert Pro*, *Needs WooCommerce* — which is the
+> same `explain` rendering, moved to the moment it changes what they do next
+> ([ADR 0042](0042-the-admin-speaks-only-when-it-changes-what-you-do-next.md)
+> rule 2). The precedence this ADR settles is what puts a cart rule under
+> *Needs WooCommerce* and never under *With WConvert Pro*, so the grouping reads
+> `availability` and not `tier`.
+
 `CONTEXT.md` had already picked this side one layer down — a cart-abandonment
 [[Playbook]] on a store-less site is *hidden*, with the reason given as **"You can buy a
 licence from us; you cannot buy WooCommerce from us."** The prefill ticket said that
