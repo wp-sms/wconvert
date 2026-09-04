@@ -36,6 +36,15 @@ is the cache. A transient keyed by URL would cache something already cached and
 add an invalidation surface that will eventually be wrong. Every WordPress
 developer's instinct is to add one; don't.
 
+*Named as the shape NOT to ride on by
+[ADR 0057](0057-a-milestone-is-a-date-recorded-once-about-the-site.md). A
+milestone is a site-wide fact and `wconvert_published_set` is a site-wide
+option, which makes it look like a home; it is not, precisely because of the
+sentence above. The set is rebuilt WHOLE on every publish, so anything else
+stored inside it is destroyed by the next write — and the bug would first
+appear on the second publish, which is the worst possible day to find it. #94
+took a ninth option of its own instead.*
+
 ## Consequences
 
 - **Entitlement is not baked into the published set.** The set is built

@@ -5,7 +5,7 @@
  * ============================================================================
  * THIS DESTROYS DATA, ON PURPOSE, WITH NO OPT-OUT SETTING.
  * ============================================================================
- * Three tables and eight options, all of them, every time. Uninstalling is not
+ * Three tables and nine options, all of them, every time. Uninstalling is not
  * deactivating: `Bootstrap::deactivate()` deliberately touches no data at all,
  * because a merchant switching the plugin off has not asked for their [[Lead]]s
  * to be destroyed (ADR 0018). Deleting the plugin is a separate act, behind
@@ -46,7 +46,7 @@ global $wpdb;
 /*
  * Every option WConvert writes.
  *
- * All eight are `autoload=false` (WpOptionStore hard-codes it), so none of
+ * All nine are `autoload=false` (WpOptionStore hard-codes it), so none of
  * them is in `alloptions` and each is one row of its own.
  */
 $wconvertOptions = [
@@ -61,6 +61,11 @@ $wconvertOptions = [
     'wconvert_retention_days',
     // Optin\SiteFrequency::OPTION — the allowance the whole site shares.
     'wconvert_site_frequency',
+    // Milestone\MilestoneStore::OPTION — the two milestones nothing else can
+    // answer: the day this site first published, and the first [[Playbook]]
+    // suggestion a merchant overrode. Site-owned facts that never left the
+    // site, and they leave with it.
+    'wconvert_milestones',
     // Destination\DestinationStore::OPTION
     'wconvert_destinations',
     // Destination\ConnectionStore::OPTION — carries credentials, which is the

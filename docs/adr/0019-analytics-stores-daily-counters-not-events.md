@@ -104,6 +104,16 @@ be paid on every beacon for a read one admin takes on demand.*
   [#11](https://github.com/navidkashani/wconvert/issues/11) put [[Lead]]s — but
   arrived at by a different route: at ~29k rows a year there is nothing to prune.
   Analytics needs no retention setting of its own.
+  *Extended by [ADR 0057](0057-a-milestone-is-a-date-recorded-once-about-the-site.md),
+  which turned this sentence into a load-bearing one. Two of #94's five
+  milestones are `MIN(stat_date)` over this table and are stored NOWHERE,
+  which is honest only because nothing prunes it and there is no delete path
+  at all — so "keep-forever" stopped being a note about size and became the
+  property a derived first date rests on, beside ADR 0018's erasure never
+  touching a counter and ADR 0020's soft delete.
+  [`firstDays()`](../../src/Stats/StatsRepository.php) is a SECOND read rather
+  than a mode on `inRange()`: a milestone is all-time, and a first conversion
+  that moved when a merchant changed the analytics window would not be one.*
 - **`kind` is a closed set of four** — `impression`, `conversion`, `dismiss`,
   `lead_magnet_delivered` — validated in PHP, with no filter and no registry. An
   open registry means unbounded `kind` cardinality on a table whose entire

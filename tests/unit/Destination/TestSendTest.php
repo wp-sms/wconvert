@@ -11,6 +11,7 @@ use WConvert\Destination\HealthStore;
 use WConvert\Destination\PushDispatcher;
 use WConvert\Destination\PushOutcome;
 use WConvert\Destination\PushResult;
+use WConvert\Milestone\MilestoneStore;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
 use WConvert\Rules\RuleVocabulary;
@@ -77,7 +78,8 @@ final class TestSendTest extends TestCase
             new OptinRepository(
                 $this->db,
                 new PublishedSet($this->options),
-                RuleVocabulary::fromManifest(dirname(__DIR__, 3))
+                RuleVocabulary::fromManifest(dirname(__DIR__, 3)),
+                new MilestoneStore($this->options)
             ),
             $this->health,
             $this->queue,

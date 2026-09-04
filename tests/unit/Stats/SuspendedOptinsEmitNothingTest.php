@@ -4,6 +4,7 @@ namespace WConvert\Tests\Unit\Stats;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use WConvert\Milestone\MilestoneStore;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
 use WConvert\Rest\BeaconController;
@@ -68,8 +69,9 @@ final class SuspendedOptinsEmitNothingTest extends TestCase
         $this->optins = new OptinRepository(
             new FakeConnection(),
             $this->publishedSet,
-            RuleVocabulary::fromManifest(self::PLUGIN_DIR)
-        );
+            RuleVocabulary::fromManifest(self::PLUGIN_DIR),
+            new MilestoneStore(new FakeOptionStore()
+        ));
     }
 
     /**

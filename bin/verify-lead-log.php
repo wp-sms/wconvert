@@ -32,6 +32,7 @@ use WConvert\Lead\LeadCsv;
 use WConvert\Lead\LeadLog;
 use WConvert\Lead\LeadRepository;
 use WConvert\Lead\Submission;
+use WConvert\Milestone\MilestoneStore;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
 use WConvert\Privacy\LeadEraser;
@@ -92,7 +93,7 @@ $db = new WpdbConnection($wpdb);
 // takes one: `install()` rebuilds the published set, which is the one piece of
 // WConvert's derived state nothing rewrites on its own (ADR 0003). It is the
 // same object the CSV export check uses further down.
-$optins = new OptinRepository($db, new PublishedSet($options), RuleVocabulary::fromManifest());
+$optins = new OptinRepository($db, new PublishedSet($options), RuleVocabulary::fromManifest(), new MilestoneStore($options));
 
 (new Installer($options, $optins))->install();
 

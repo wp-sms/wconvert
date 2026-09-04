@@ -7,6 +7,7 @@ use PHPUnit\Framework\TestCase;
 use WConvert\Admin\LeadExport;
 use WConvert\Lead\LeadCsv;
 use WConvert\Lead\LeadRepository;
+use WConvert\Milestone\MilestoneStore;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
 use WConvert\Rules\RuleVocabulary;
@@ -39,8 +40,9 @@ final class LeadExportTest extends TestCase
             new OptinRepository(
                 $this->db,
                 new PublishedSet(new FakeOptionStore()),
-                RuleVocabulary::fromManifest($root)
-            ),
+                RuleVocabulary::fromManifest($root),
+                new MilestoneStore(new FakeOptionStore()
+            )),
             new LeadCsv(TemplateVocabulary::fromManifest($root))
         );
     }

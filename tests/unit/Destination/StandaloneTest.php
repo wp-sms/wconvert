@@ -16,6 +16,7 @@ use WConvert\Lead\LeadCsv;
 use WConvert\Lead\LeadLog;
 use WConvert\Lead\LeadRepository;
 use WConvert\Lead\Submission;
+use WConvert\Milestone\MilestoneStore;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
 use WConvert\Rules\RuleVocabulary;
@@ -153,7 +154,8 @@ final class StandaloneTest extends TestCase
         $optins = new OptinRepository(
             $this->db,
             new PublishedSet($this->options),
-            RuleVocabulary::fromManifest(dirname(__DIR__, 3))
+            RuleVocabulary::fromManifest(dirname(__DIR__, 3)),
+            new MilestoneStore($this->options)
         );
 
         $health = new HealthStore($this->options);

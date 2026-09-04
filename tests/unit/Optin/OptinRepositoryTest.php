@@ -4,6 +4,7 @@ namespace WConvert\Tests\Unit\Optin;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use WConvert\Milestone\MilestoneStore;
 use WConvert\Optin\Optin;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
@@ -35,7 +36,8 @@ final class OptinRepositoryTest extends TestCase
         $this->repository = new OptinRepository(
             $this->db,
             $this->publishedSet,
-            RuleVocabulary::fromManifest(__DIR__ . '/../../..')
+            RuleVocabulary::fromManifest(__DIR__ . '/../../..'),
+            new MilestoneStore($this->options)
         );
     }
 

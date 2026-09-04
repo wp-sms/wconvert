@@ -34,7 +34,7 @@ second read, no second write and no second entry on the
 WConvert's four storage layers. A change to this shape that cannot be made
 compatible is a bump to `wcv2`: old records are abandoned rather than migrated,
 every visitor looks new once, and a frequency cap is precisely the kind of state
-that can afford that. The server's three tables, its eight options and the
+that can afford that. The server's three tables, its nine options and the
 published set have no such escape hatch, which is where the pre-release audit
 spent its attention instead.*
 

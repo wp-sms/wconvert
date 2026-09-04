@@ -98,6 +98,17 @@ narrower than it first looks — but it closes entirely at retention.
 > attempt.** The dashboard's clamp keeps the *displayed* number sane; it is not
 > a substitute for the marker, and it is not claimed as one.
 
+*Read by a second screen as of
+[ADR 0057](0057-a-milestone-is-a-date-recorded-once-about-the-site.md), and
+that ADR restates nothing from it. #94's fifth milestone is "the captured data
+reached somewhere, or did not", and the answer was already here — so
+[`Milestones`](../../src/Milestone/Milestones.php) carries three booleans
+(configured, landed, failing) and neither the failure count nor the last error.
+The numbers stay on the Destinations screen, where the repair actions are: a
+count copied onto a screen that cannot act on it is a second, staler spelling
+of an outage, and the beginning of the second store this document exists to
+refuse.*
+
 ## Consequences
 
 - **A Lead that fails for a Lead-specific terminal reason is invisible to

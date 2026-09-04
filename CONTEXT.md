@@ -199,7 +199,7 @@ and four characters, so no ULID can take it (ADR 0047).
 have.** A shape change that cannot be made backward-compatible is a bump to
 `wcv2`: old records are abandoned rather than migrated, every visitor looks new
 once, and for a frequency cap that is an acceptable price. Nothing equivalent
-exists for the three tables, the eight options or the published set, which is
+exists for the three tables, the nine options or the published set, which is
 why browser storage is the least urgent of WConvert's four storage layers.
 
 The cart cookie is the second `functional` case, and it is **booked as a
@@ -990,6 +990,42 @@ A suspended Optin **emits nothing** — no [[Impression]], no [[Conversion]] —
 history stays comparable rather than filling with zeroes against a live denominator.
 It resumes on its own when the dependency returns; nothing about it is destroyed, so
 there is never a repair step.
+
+### Milestone
+
+A **date a site reached something once** — the five facts that say whether WConvert
+is working end to end on this install: an [[Optin]] published, something shown,
+somebody converted, the capture reaching a [[Destination]], and the first time a
+merchant changed something a [[Playbook]] suggested.
+
+Every Milestone is a fact about the **site**, never about a person. None of them
+needs to know who did anything, and *"record once"* is not a reason to start —
+there is no visitor identifier ([[Storage Consent]], ADR 0017), no Optin id and no
+user id in what is stored.
+
+**Milestones, not an event stream.** Four of the five are a date recorded once, on
+the site's own clock, exactly as a daily counter is stamped. Two of those four are
+not stored at all: the first [[Impression]] and the first [[Conversion]] are the
+earliest day the counters hold, and a minimum cannot move forwards. The fifth is
+not a date — [[Destination]] success and failure are read out of the health that is
+already recorded per Destination, and restated nowhere.
+
+**Nothing leaves the site.** They are local, site-owned facts on the site's own
+screens, and reading them is what a merchant does; sending them anywhere would be a
+separate decision with a separate consent conversation.
+
+> **The first edit is the one that reads the catalogue.** The five [[Goal]]s and
+> their Playbooks were derived by classifying market listings and reviews, and
+> nothing has challenged that guess. *Which* part of a Playbook's suggestion a
+> merchant overrode first — its Goal, its design, its words, its rules or its
+> targeting — is the sharpest available evidence that a Goal's defaults are wrong.
+> A part is one of the things prefill actually writes, because an override is only
+> evidence where there was an opinion to override: binding a Destination or
+> capping [[Frequency]] is not one, since a Playbook supplies neither.
+
+A Milestone that has been reached changes nothing a merchant does next, so the
+screen draws only the first one *not* reached, with the door that fixes it — and
+nothing at all once a site is converting.
 
 ## Boundary with WSMS
 

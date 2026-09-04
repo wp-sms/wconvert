@@ -20,11 +20,13 @@ defined('ABSPATH') || exit;
  * nothing in `tests/unit/` can see a lost update; what the unit suite proves is
  * the statement issued, which is the half that can drift silently.
  *
- * **There is now one read, and no delete ever.** {@see self::inRange()} is the
- * first this table has ever taken and the only one the dashboard issues —
- * retention is keep-forever with no pruning, because at ~29k rows a year there
- * is nothing to prune and analytics needs no retention setting of its own
- * (ADR 0019).
+ * **There are two reads, and no delete ever.** {@see self::inRange()} is the
+ * one the dashboard issues; {@see self::firstDays()} is the one the milestone
+ * screen issues, and it is deliberately not the same query. Retention is
+ * keep-forever with no pruning, because at ~29k rows a year there is nothing
+ * to prune and analytics needs no retention setting of its own (ADR 0019) —
+ * which is also what makes the second read's answer a fact rather than an
+ * artefact of when somebody last tidied up.
  *
  * @since 0.1.0
  */
@@ -44,6 +46,16 @@ final class StatsRepository
      */
     private const INCREMENT = 'INSERT INTO %i (optin_id, stat_date, kind, `count`) VALUES (%s, %s, %s, 1)'
         . ' ON DUPLICATE KEY UPDATE `count` = `count` + 1';
+
+    /**
+     * The milestone read.
+     *
+     * `MIN` over a `DATE` column, grouped by a `VARCHAR(32)` of at most four
+     * distinct values — so the result set is four rows however long the site
+     * has been counting. No `WHERE`, because a milestone is all-time, and
+     * therefore no bindings at all.
+     */
+    private const FIRST_DAYS = 'SELECT kind, MIN(stat_date) AS first_day FROM %i GROUP BY kind';
 
     public function __construct(
         private readonly Connection $db,
@@ -89,6 +101,63 @@ final class StatsRepository
             $range->from,
             $range->to
         );
+    }
+
+    /**
+     * The earliest day each kind was ever counted on, keyed by kind.
+     *
+     * ========================================================================
+     * TWO MILESTONES, DERIVED, WITH NOTHING WRITTEN TO SUPPORT THEM.
+     * ========================================================================
+     * "The first [[Impression]]" and "the first [[Conversion]]" are milestones
+     * #94 asks to be recorded once, and this table already holds the answer:
+     * one row per Optin per day per kind, never pruned and never deleted. So
+     * they are read rather than stored, which is the better shape twice over —
+     * a derived date cannot disagree with the counters it comes from, and a
+     * `MIN` **cannot move forwards**, so "recorded once" is a property of the
+     * arithmetic rather than a guard somebody has to remember.
+     *
+     * That rests on properties of THIS table and does not generalise. An
+     * erasure request deletes [[Lead]] rows and never a counter (ADR 0018), an
+     * Optin is soft-deleted so its counters outlive it (ADR 0020), and there
+     * is no delete path here at all — {@see \WConvert\Database\Connection}
+     * offers none this class could call.
+     *
+     * ========================================================================
+     * NO WINDOW, WHICH IS WHY IT IS NOT ON THE DASHBOARD'S PAYLOAD.
+     * ========================================================================
+     * A milestone is all-time by definition. {@see self::inRange()} answers
+     * for a window a merchant chose, and a first conversion that moved when
+     * somebody changed the analytics window would not be a milestone at all —
+     * so the two reads stay separate rather than one gaining a mode.
+     *
+     * **A scan, and a cheaper one than the dashboard's.** There is no
+     * secondary index and `optin_id` is leftmost, so this cannot use the
+     * primary key — but it reads three columns' worth of nothing and returns
+     * at most four rows, on a table booked at ~29k rows a year, for a screen
+     * an admin opens on demand. That is the same asymmetry `inRange()` books,
+     * without even a `WHERE` to be unable to use.
+     *
+     * A kind this build has no case for is dropped rather than passed on:
+     * {@see StatKind} is a closed set and it is enforced on the way out of
+     * storage as well as on the way in.
+     *
+     * @return array<string, string> Kind => the `Y-m-d` it was first counted on.
+     */
+    public function firstDays(): array
+    {
+        $first = [];
+
+        foreach ($this->db->results(Connection::TABLE_STATS, self::FIRST_DAYS) as $row) {
+            $kind = StatKind::tryFrom((string) ($row['kind'] ?? ''));
+            $day = (string) ($row['first_day'] ?? '');
+
+            if ($kind !== null && $day !== '') {
+                $first[$kind->value] = $day;
+            }
+        }
+
+        return $first;
     }
 
     /**

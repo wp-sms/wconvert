@@ -60,6 +60,19 @@ had accumulated:
 The test is not *"is this true?"* — all four were. It is **"does knowing this
 change what they do?"**
 
+*Applied to a whole screen rather than to a line, by
+[ADR 0057](0057-a-milestone-is-a-date-recorded-once-about-the-site.md). #94's
+acceptance criterion asks for five milestones readable on an admin screen, and
+the obvious build is five dates in a list — every one of them true, permanent
+and attached to no action. So the region draws **at most one step, the first
+one not reached**, and renders nothing at all on a site that is converting. The
+dates go behind a `<details>` whose real content is its last sentence: the
+`readme.txt` promise that none of this leaves the site, with what was recorded
+as the evidence for it. That is the rule's test passed rather than dodged — the
+dates change nothing a merchant does, and a merchant deciding whether to
+believe the privacy claim behaves differently depending on whether they can
+check it.*
+
 ## 3. Never offer what will be refused. Mark it before the click, with the reason
 
 The gallery offered every design for the [[Display Type]]. A design converting on

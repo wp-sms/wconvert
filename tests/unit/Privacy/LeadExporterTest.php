@@ -5,6 +5,7 @@ namespace WConvert\Tests\Unit\Privacy;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use WConvert\Lead\LeadRepository;
+use WConvert\Milestone\MilestoneStore;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
 use WConvert\Privacy\LeadExporter;
@@ -41,8 +42,9 @@ final class LeadExporterTest extends TestCase
             new OptinRepository(
                 $this->db,
                 new PublishedSet(new FakeOptionStore()),
-                RuleVocabulary::fromManifest(__DIR__ . '/../../..')
-            )
+                RuleVocabulary::fromManifest(__DIR__ . '/../../..'),
+                new MilestoneStore(new FakeOptionStore()
+            ))
         );
     }
 

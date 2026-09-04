@@ -5,6 +5,7 @@ namespace WConvert\Tests\Unit\Frontend;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use WConvert\Frontend\Payload;
+use WConvert\Milestone\MilestoneStore;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedOptin;
 use WConvert\Optin\PublishedSet;
@@ -47,8 +48,9 @@ final class DegradedPayloadTest extends TestCase
         $this->repository = new OptinRepository(
             new FakeConnection(),
             $this->publishedSet,
-            RuleVocabulary::fromManifest(self::PLUGIN_DIR)
-        );
+            RuleVocabulary::fromManifest(self::PLUGIN_DIR),
+            new MilestoneStore(new FakeOptionStore()
+        ));
     }
 
     /**

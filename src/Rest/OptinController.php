@@ -5,6 +5,8 @@ namespace WConvert\Rest;
 use WConvert\Destination\OptinBinding;
 use WConvert\Goal\Goal;
 use WConvert\Goal\GoalRegistry;
+use WConvert\Milestone\FirstEdit;
+use WConvert\Milestone\MilestoneStore;
 use WConvert\Optin\DisplayType;
 use WConvert\Optin\Frequency;
 use WConvert\Optin\InvalidSchedule;
@@ -17,6 +19,7 @@ use WConvert\Optin\Suspension;
 use WConvert\Rules\Degradation;
 use WConvert\Rules\RuleCatalogue;
 use WConvert\Rules\RuleVocabulary;
+use WConvert\Stats\StatDay;
 use WConvert\Support\Ulid;
 use WConvert\Targeting\Targeting;
 use WConvert\Template\ConvertingAct;
@@ -53,6 +56,7 @@ final class OptinController implements RestController
         private readonly Degradation $degradation,
         private readonly RuleCatalogue $rules,
         private readonly SiteFrequency $siteFrequency,
+        private readonly MilestoneStore $milestones,
     ) {
     }
 
@@ -331,7 +335,65 @@ final class OptinController implements RestController
             $normalized
         );
 
-        return $optin === null ? self::notFound() : new WP_REST_Response($optin->toArray());
+        if ($optin === null) {
+            return self::notFound();
+        }
+
+        $this->recordTheFirstOverride($stored, $optin);
+
+        return new WP_REST_Response($optin->toArray());
+    }
+
+    /**
+     * ========================================================================
+     * THE MILESTONE THAT READS THE GOAL CATALOGUE DIRECTLY (#94).
+     * ========================================================================
+     * The [[Goal]] and [[Playbook]] catalogue was derived by classifying 462
+     * listings and 670 reviews down to five Goals. Nothing has challenged that
+     * guess yet, and **what a merchant changes first — and in which Playbook —
+     * is the sharpest available evidence that a Goal's defaults are wrong**.
+     *
+     * ========================================================================
+     * THIS ROUTE, AND NOT `OptinRepository::saveDraft()`.
+     * ========================================================================
+     * The activation milestone deliberately sits inside
+     * {@see \WConvert\Optin\OptinRepository::publish()} rather than in this
+     * file, because that method IS the event and a stamp written here would be
+     * one a WP-CLI command or a bulk action silently missed. **The mirror rule
+     * would put this in `saveDraft()`, and it does not, for a reason that is
+     * about the repository rather than about convenience:** working out which
+     * suggestion was overridden means reading a [[Template]]'s words by
+     * [[Slot Role]], so it needs {@see TemplateVocabulary} — a whole design
+     * grammar handed to a class whose job is projections and columns, to serve
+     * one date. `OptinRepositoryStaysStorageTest` holds that line from the
+     * other side, and pins this route as the only writer of a draft, so a
+     * second one cannot arrive quietly.
+     *
+     * **AFTER the save, and only on a save that happened.** An edit refused
+     * for its schedule or its design is not an edit a merchant made, and
+     * recording one would put a rejected act in a record that can only be
+     * written once. That decision is genuinely this route's — the refusals
+     * live here — which is the half of the job that stayed.
+     *
+     * The record itself is one day, one Playbook id and one of five words:
+     * there is no Optin id and no user id, because neither is a fact about the
+     * SITE (ADR 0017). {@see FirstEdit::between()} decides what changed and
+     * {@see \WConvert\Milestone\MilestoneStore} holds the record-once rule.
+     */
+    private function recordTheFirstOverride(?Optin $before, Optin $after): void
+    {
+        if ($before === null) {
+            return;
+        }
+
+        // The site's day, from the one place that reads the site's timezone —
+        // so a milestone stamped by an edit and one derived from a beacon
+        // agree about which day it was.
+        $edit = FirstEdit::between($before, $after, $this->templates, StatDay::today());
+
+        if ($edit !== null) {
+            $this->milestones->recordFirstEdit($edit);
+        }
     }
 
     /**

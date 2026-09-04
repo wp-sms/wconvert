@@ -6,6 +6,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use WConvert\Goal\Goal;
 use WConvert\Goal\GoalRegistry;
+use WConvert\Milestone\MilestoneStore;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
 use WConvert\Optin\SiteFrequency;
@@ -52,6 +53,9 @@ final class OptinWriteTest extends TestCase
 
     private SiteFrequency $siteFrequency;
 
+    /** Shared by the repository and the controller, so both milestones land in one place. */
+    private FakeOptionStore $milestones;
+
     protected function setUp(): void
     {
         $GLOBALS['wconvertTestRoutes'] = [];
@@ -65,7 +69,14 @@ final class OptinWriteTest extends TestCase
         $pro = new FakeProPresence(Tier::Elite);
         $site = new FakeSitePresence([SiteDependency::WooCommerce]);
 
-        $this->optins = new OptinRepository(new FakeConnection(), $published, $vocabulary);
+        $this->milestones = new FakeOptionStore();
+
+        $this->optins = new OptinRepository(
+            new FakeConnection(),
+            $published,
+            $vocabulary,
+            new MilestoneStore($this->milestones)
+        );
 
         $this->controller = new OptinController(
             $this->optins,
@@ -76,7 +87,8 @@ final class OptinWriteTest extends TestCase
             $published,
             InstalledRules::withPro($vocabulary),
             new RuleCatalogue($vocabulary, $pro, $site, new RoleRegistry()),
-            $this->siteFrequency = new SiteFrequency(new FakeOptionStore())
+            $this->siteFrequency = new SiteFrequency(new FakeOptionStore()),
+            new MilestoneStore($this->milestones)
         );
     }
 

@@ -57,6 +57,14 @@ it: the placement, the trigger, the copy and the fields, already filled in.
 WConvert has no licence key, sends no analytics anywhere, and stores no visitor
 identifier. Everything it counts is a daily counter on your own site.
 
+It also records five dates about the site itself — when you first published an
+Optin, when one was first shown, when someone first converted, whether what you
+capture is reaching a destination, and the first time you changed something a
+starting point suggested. They are how the Analytics screen can tell you which
+step is stuck instead of showing you a wall of zeroes, they say nothing about
+any individual visitor, and you can read the lot of them on that screen under
+*What WConvert has recorded about this site*. None of it leaves your site.
+
 WConvert itself contacts nothing on the internet. Every destination this free
 plugin can send a lead to is already on your site — the lead-magnet email,
 MailPoet, WP SMS — which is why the email-service-provider integrations are in
@@ -133,7 +141,9 @@ on every page they are targeted at.
 = Does it store IP addresses or track visitors across pages? =
 
 No. There is no visitor identifier of any kind, and no IP geolocation. The
-analytics are daily counters per Optin.
+analytics are daily counters per Optin, and the five setup dates WConvert keeps
+are facts about the site rather than about anybody — you can read exactly what
+they are on the Analytics screen. Deleting the plugin deletes all of it.
 
 = Where does the data go when someone converts? =
 

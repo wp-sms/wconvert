@@ -28,6 +28,17 @@ own words, because the mis-reading is the feature request
 declaration — the assertion that fails on the pull request that starts caching
 a source, rather than on the one that forgets to update a comment.*
 
+*The fifth caller is the one that had the most obvious excuse to mint one and
+had no use for it either.
+[ADR 0057](0057-a-milestone-is-a-date-recorded-once-about-the-site.md)
+instruments activation through first conversion, and **every one of its five
+milestones is a fact about the SITE** — two days, a [[Playbook]] id and one of
+five words. "Record once" is the shape of a funnel and reads like a reason to
+key something by a person; it is not. There is no visitor id, no Optin id and
+no user id in `wconvert_milestones`, and the check is written the way
+`bin/verify-stats.php` writes the address one — plant everything a request
+carries, drive the real path, and read the stored value back looking for it.*
+
 ## What this overturns
 
 The [#9](https://github.com/navidkashani/wconvert/issues/9) loader prototype

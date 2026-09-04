@@ -16,6 +16,7 @@ import { Region, RegionBody, RegionErrorState, RegionHeader } from '../shell/Reg
 import { Stat, StatRow } from '../shell/Stat';
 import { TableSkeleton } from '../shell/TableSkeleton';
 import { LOADING, failed, ready, type Loadable } from '../shell/loadable';
+import { Milestones } from '../milestones/Milestones';
 import { readDashboard, type DashboardPayload, type GoalReport, type OptinReport } from './api';
 // Spelled once, because the Optin list and the builder's header read the same
 // two numbers and "—" must not become "0%" on one screen and not another.
@@ -134,6 +135,15 @@ export function Dashboard() {
           </select>
         </label>
       </PageAction>
+
+      {/*
+        **Above the numbers, because it explains them.** A wall of zeros on
+        four Goal cards is the same screen whether an Optin was never published
+        or a caching plugin removed the loader, and the merchant cannot tell
+        the two apart from anything below this. It renders nothing once the
+        site is converting (ADR 0042).
+      */}
+      <Milestones />
 
       {report.status === 'failed' && (
         <Region label={__('Analytics', 'wconvert')}>
