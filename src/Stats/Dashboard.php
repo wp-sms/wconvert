@@ -115,6 +115,24 @@ final class Dashboard
     /**
      * One Goal's card, with its own Optins inside it.
      *
+     * ========================================================================
+     * `headline_label` IS THE COUNTED KIND'S WORD, AND A CARD CAN NOW MIX ACTS.
+     * ========================================================================
+     * It varied per Goal because a Goal declared the converting act, so a card
+     * could promise *"Submissions"* or *"Click-throughs to the offer"* and be
+     * right about every Optin under it. The act is the design's now
+     * (ADR 0059), so one card can hold an Optin that submits beside one that
+     * links away — and their rates are two different behaviours summed into
+     * one figure.
+     *
+     * **That is accepted rather than fixed, and the honesty is in the label.**
+     * {@see Goal::headlineLabel()} now answers {@see StatKind::label()} —
+     * *"Conversions"*, which is true of both acts and is exactly what the row
+     * stores — and the per-Optin rows below the card are each homogeneous, so
+     * a merchant comparing behaviours has the numbers that mean one thing
+     * apiece. Splitting the card by act instead would be inventing a grouping
+     * nothing stores, on a screen whose whole job is to group by Goal.
+     *
      * @param list<array<string, mixed>> $rows
      * @param array<string, InterpretedOptin> $held
      * @param array<string, list<array<string, mixed>>> $byOptin

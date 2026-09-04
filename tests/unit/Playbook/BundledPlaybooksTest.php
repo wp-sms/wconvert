@@ -128,8 +128,14 @@ final class BundledPlaybooksTest extends TestCase
      * **A cart Playbook captures nothing either**, which is the whole of
      * ADR 0025 read from the gallery: no form node in the design it names, no
      * [[Destination]] hint, no `consent_text` to snapshot a [[Consent Record]]
-     * from. The Template half is enforced at registration by the
-     * converting-act check; this is the Playbook half.
+     * from.
+     *
+     * **It is a fact about the entries we ship, not a rule about the Goal**
+     * (ADR 0059). The Template half used to be enforced at registration by the
+     * converting-act check, and that check is gone: a third party may file a
+     * capture design under this Goal, and a merchant may pick one. What is
+     * asserted here is that OUR cart Playbooks do not — they are the
+     * *"message on the page and a link back to the cart"* ADR 0025 describes.
      */
     public function testEveryCartPlaybookCapturesNothing(): void
     {

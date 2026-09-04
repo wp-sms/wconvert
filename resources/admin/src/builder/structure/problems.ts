@@ -1,9 +1,9 @@
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { AA_NORMAL, contrastOf } from '../contrast';
 import { TOKENS, type Path } from '../panel';
-import { formStep, losesWordsOnSwitch, type ConvertingAct } from './catalogue';
+import { formStep, losesWordsOnSwitch } from './catalogue';
 import { convertingActOf } from './guards';
-import { nodesOf } from './tree';
+import { capturesTaken, nodesOf } from './tree';
 import type { Template } from '@renderer/types';
 
 /**
@@ -15,23 +15,33 @@ import type { Template } from '@renderer/types';
  * ============================================================================
  * `guards.ts` answers *"may I delete this?"* at the moment a merchant reaches
  * for Delete, which is the right question there and the wrong one for a design
- * that arrived broken. Three of the four problems below cannot be reached
- * through the editor at all — a design picked for the wrong [[Goal]], a form
- * on a step that does not submit, a colour pair a preset never produced — and
- * a merchant meets every one of them as a red bar on Save, or as a customer
- * who could not read the popup.
+ * that arrived broken. Most of the problems below cannot be reached through the
+ * editor at all — a design with nothing to deliver to, a form on a step that
+ * does not submit, a colour pair a preset never produced — and a merchant meets
+ * every one of them as a red bar on Save, or as a customer who could not read
+ * the popup.
  *
  * ============================================================================
  * IT IS NOT A VALIDATOR. THE SERVER IS.
  * ============================================================================
- * `OptinController` refuses a design that cannot convert and one whose act its
- * Goal cannot report, and it does so because *"a screen is not an enforcement
- * mechanism"* (ADR 0026) — `PUT /wconvert/v1/optins/{id}` takes a whole config
- * and is scriptable by anyone holding `manage_options`. This is the near side
- * of that net, and it exists to make the far side something a merchant never
- * meets rather than to replace it.
+ * `OptinController` refuses a design that cannot convert and one that captures
+ * nothing where this Optin needs a capture, and it does so because *"a screen
+ * is not an enforcement mechanism"* (ADR 0026) — `PUT
+ * /wconvert/v1/optins/{id}` takes a whole config and is scriptable by anyone
+ * holding `manage_options`. This is the near side of that net, and it exists to
+ * make the far side something a merchant never meets rather than to replace it.
  *
- * Two of the four are not refusals at all: a block that will lose its words and
+ * ============================================================================
+ * TWO OF THEM WERE ABOUT THE [[GOAL]]'S ACT, AND BOTH HAVE GONE.
+ * ============================================================================
+ * They said *"Your goal counts form submissions and this design converts on a
+ * click, so saving it will be refused"*, and they were true while a Goal
+ * declared an act. It does not (ADR 0059): the act is read off this very
+ * template, so a design that disagrees with itself is not a state anything can
+ * reach. What replaces them is one Goal-shaped note about what a design
+ * CAPTURES, which is the only thing a Goal can still fail a design for.
+ *
+ * Two of the rest are not refusals at all: a block that will lose its words and
  * a colour pair below AA both save happily and cost the merchant later. They
  * belong here precisely because nothing else will ever mention them.
  */
@@ -72,7 +82,16 @@ export interface Problem {
  */
 export function problemsIn(
   template: Template,
-  act: ConvertingAct,
+  /**
+   * Whether this Optin's [[Goal]] reads its headline from deliveries, so a
+   * design capturing nothing has no address to deliver to.
+   *
+   * **It replaces the converting act this used to take**, which is the shape
+   * of the whole change: the act is derivable from the `template` argument
+   * beside it and was therefore a second copy of it, while what a Goal
+   * declares is not derivable from a design at all (ADR 0059).
+   */
+  needsACapture: boolean,
   /**
    * When the Optin stops running, as the merchant typed it — or undefined.
    *
@@ -85,7 +104,8 @@ export function problemsIn(
   endsAt: string | undefined,
 ): Problem[] {
   return [
-    ...whatCannotConvert(template, act),
+    ...whatCannotConvert(template),
+    ...whatHasNothingToDeliver(template, needsACapture),
     ...whatCapturesNothing(template),
     ...whatCountsDownToNothing(template, endsAt),
     ...whatLosesWords(template),
@@ -94,55 +114,74 @@ export function problemsIn(
 }
 
 /**
- * The converting act, from both ends.
+ * A design with nothing on it that counts.
  *
+ * ============================================================================
+ * IT ASKED THE ACT FROM BOTH ENDS, AND ONE END HAS GONE.
+ * ============================================================================
  * **None** is ADR 0020's exact failure — an Optin that renders, publishes and
- * reports zero forever, looking broken while being right. **The wrong one**
- * fails the whole save through `refuseAMetricItCannotReport`, and it is the one
- * state the ⇄ control cannot fix from here: a submit button on a click-metered
- * Goal is a design picked for a different job, and the answer is the gallery or
- * the Goal rather than a param.
+ * reports zero forever, looking broken while being right — and that arm is
+ * unchanged, because it is a fact about the document alone.
+ *
+ * The other arm said *"your goal counts form submissions and this design
+ * converts on a click, so saving it will be refused"*, and it is deleted. A
+ * Goal declares no act (ADR 0059), so the act this design offers IS this
+ * Optin's act and there is nothing left for it to disagree with. Its sentences
+ * also ended *"…or change the goal"* against a builder that had no such
+ * control, which is the door ADR 0042 rule 4 forbids naming — there is one
+ * now, and nothing here needs to point at it.
  */
-function whatCannotConvert(template: Template, act: ConvertingAct): Problem[] {
-  const offered = convertingActOf(template.tree);
-
-  if (offered.length === 0) {
-    return [
-      {
-        said: __(
-          'Nothing on this design counts as a conversion, so it would report zero forever. Add a button.',
-          'wconvert',
-        ),
-        path: null,
-      },
-    ];
-  }
-
-  if (offered.length === 1 && offered[0] === act) {
+function whatCannotConvert(template: Template): Problem[] {
+  if (convertingActOf(template.tree).length > 0) {
     return [];
   }
 
   return [
     {
-      /*
-        **It names a door that is on this screen.** Both sentences ended "…or
-        change the goal", and there is no control in the builder that changes a
-        Goal — it is chosen at creation. An instruction pointing at something
-        the merchant cannot find is worse than no instruction, because they go
-        looking. The gallery is the door, and it now marks which designs fit
-        before the click rather than refusing after it ({@see Gallery}).
-      */
-      said:
-        act === 'submit'
-          ? __(
-              'Your goal counts form submissions and this design converts on a click, so saving it will be refused. Pick one of the designs on the Design tab that submits.',
-              'wconvert',
-            )
-          : __(
-              'Your goal counts click-throughs and this design converts on a submission, so saving it will be refused. Pick one of the designs on the Design tab that links away.',
-              'wconvert',
-            ),
-      path: convertingBlockIn(template),
+      said: __(
+        'Nothing on this design counts as a conversion, so it would report zero forever. Add a button.',
+        'wconvert',
+      ),
+      path: null,
+    },
+  ];
+}
+
+/**
+ * A [[Goal]] read from deliveries, on a design that asks for nothing.
+ *
+ * ============================================================================
+ * THE ONE GOAL-SHAPED PROBLEM LEFT, AND IT IS ABOUT CAPTURE RATHER THAN ACT.
+ * ============================================================================
+ * The delivery kind is written when a push to the lead-magnet [[Destination]]
+ * succeeds, and there is nothing to push unless the visitor gave an address.
+ * So this design reports **zero forever** under this Goal — the same failure
+ * as an Optin with no button, arrived at from the other side — and the save
+ * refuses it (ADR 0059).
+ *
+ * **A note here and never a filter in the gallery.** Pre-pressing a captures
+ * chip for a Goal would be a Goal facet in a captures chip's clothes, which
+ * ADR 0043 forbids outright. *Which* detail to ask for stays silent for the
+ * same reason and a stronger one: an email against a phone number is the
+ * merchant's own judgement and nothing enforces it.
+ *
+ * **`path: null`, because the fix is not a block.** It is a design with a
+ * field on it, from the Design tab — and adding one to a design that converts
+ * on a click is refused by the editor for its own reasons (`catalogue.ts`), so
+ * pointing at a block would point at work the merchant cannot do.
+ */
+function whatHasNothingToDeliver(template: Template, needsACapture: boolean): Problem[] {
+  if (!needsACapture || capturesTaken(template.tree).length > 0) {
+    return [];
+  }
+
+  return [
+    {
+      said: __(
+        'Your goal counts deliveries and this design asks the visitor for nothing, so there is no address to deliver to. Pick a design with a field on it.',
+        'wconvert',
+      ),
+      path: null,
     },
   ];
 }
@@ -297,8 +336,3 @@ const PAIRS: readonly (readonly [string, string, () => string])[] = [
     () => __('The button’s label is too close to the button to be readable.', 'wconvert'),
   ],
 ];
-
-/** Where the block that converts is, so the chip can point at it. */
-function convertingBlockIn(template: Template): Path | null {
-  return nodesOf(template.tree).find((block) => block.type === 'button')?.path ?? null;
-}

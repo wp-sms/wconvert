@@ -30,6 +30,7 @@ import type {
  * refusal is said before the click rather than after it.
  */
 const { Gallery } = await import('../../resources/admin/src/builder/Gallery');
+type Fit = import('../../resources/admin/src/builder/Gallery').Fit;
 const { TemplatePicker } = await import('../../resources/admin/src/builder/TemplatePicker');
 
 const ROOT = resolve(import.meta.dirname, '../..');
@@ -96,6 +97,15 @@ const card = ({
 /** The card a design is on, found by the name it prints. */
 const cardFor = (name: string) => screen.getByText(name).closest('li') as HTMLElement;
 
+/**
+ * What an ordinary standalone Optin needs of a design: nothing.
+ *
+ * **Four of the five [[Goal]]s reach this exact value**, which is the whole of
+ * ADR 0059 in one fixture — a Goal declares no converting act, so a design is
+ * refused only for something about this particular Optin.
+ */
+const ANY: Fit = { needsACapture: false, bound: false, sibling: null, act: 'submit' };
+
 // =============================================================================
 // THE GRID.
 // =============================================================================
@@ -107,14 +117,14 @@ const TREES = new Map<string, Template>([
   ['stacked-signup', design('stacked-signup')],
 ]);
 
-const grid = (entries: TemplateIndexEntry[], chosen: string | undefined, act: 'submit' | 'click' = 'submit') =>
+const grid = (entries: TemplateIndexEntry[], chosen: string | undefined, fit: Fit = ANY) =>
   render(
     <Gallery
       entries={entries}
       trees={TREES}
       labels={LABELS}
       chosen={chosen}
-      act={act}
+      fit={fit}
       busy={false}
       onChoose={vi.fn()}
       onNear={vi.fn()}
@@ -178,7 +188,7 @@ describe('a gallery card', () => {
         trees={new Map()}
         labels={LABELS}
         chosen={undefined}
-        act="submit"
+        fit={ANY}
         busy={false}
         onChoose={vi.fn()}
         onNear={onNear}
@@ -192,45 +202,66 @@ describe('a gallery card', () => {
 });
 
 // =============================================================================
-// A DESIGN THE SAVE WOULD REFUSE.
+// A DESIGN THE SAVE WOULD REFUSE — AND THE ONE IT NO LONGER DOES.
 //
-// `OptinController::refuseAMetricItCannotReport()` rejects a click-converting
-// design under a submit-counting Goal outright (ADR 0025). The gallery offered
-// it anyway — so a merchant pressed *Use this design*, waited for a round trip,
-// and got a red bar telling them to "pick a design that matches the Goal, **or
-// change the Goal**", with no control on the screen that changes a Goal.
+// `refuseAMetricItCannotReport()` rejected a click-converting design under a
+// submit-counting Goal outright, and this gallery greyed out five of seven
+// popup cards to say so before the click — each reading *"Your goal counts
+// click-throughs"* while naming no goal and offering no way to change one.
 //
-// What changed with the index/tree split is where the reading comes from: the
-// act is a facet the server derived at registration, from the same
-// `ConvertingAct::offeredIn()` the save consults, so a card can say this
-// WITHOUT its tree.
+// **That refusal is deleted** (ADR 0059): a [[Goal]] declares no converting
+// act, so on an ordinary standalone Optin nothing here is greyed at all. What
+// still marks a card is about this particular Optin, and the four cases below
+// are the whole of it.
 // =============================================================================
 
 const CLICKS = card({ id: 'offer-panel', name: 'Offer panel', act: 'click', captures: [] });
 const SILENT = card({ id: 'silent', name: 'Silent', act: null, captures: [] });
 
-describe('a design this Optin’s Goal cannot use', () => {
-  it('cannot be chosen, and says why on the card', () => {
+describe('a design that converts the other way', () => {
+  /** The assertion this whole ticket exists for. */
+  it('is offered like any other, under a goal that counts submissions', () => {
     grid([ENTRIES[0], CLICKS], undefined);
 
-    const offer = within(cardFor('Offer panel'));
+    expect(within(cardFor('Offer panel')).getByRole('button', { name: /Use this design/ })).toBeEnabled();
+    expect(within(cardFor('Centred card')).getByRole('button', { name: /Use this design/ })).toBeEnabled();
+    expect(screen.queryByText(/Your goal counts/)).toBeNull();
+  });
 
-    expect(offer.getByRole('button', { name: /Use this design/ })).toBeDisabled();
-    expect(offer.getByText('Converts on a click. Your goal counts form submissions.')).toBeInTheDocument();
+  /** And the mirror, which is the pairing that greyed out most of the library. */
+  it('is offered the other way round too', () => {
+    grid([ENTRIES[0], CLICKS], undefined, { ...ANY, act: 'click' });
+
+    expect(within(cardFor('Centred card')).getByRole('button', { name: /Use this design/ })).toBeEnabled();
+    expect(within(cardFor('Offer panel')).getByRole('button', { name: /Use this design/ })).toBeEnabled();
+  });
+});
+
+describe('a design that counts nothing at all', () => {
+  /**
+   * **The worse failure, and it kept its words.** It renders, publishes and
+   * reports zero forever (ADR 0020) — an Optin that looks like it is working.
+   */
+  it('cannot be chosen, and says why on the card', () => {
+    grid([SILENT], undefined);
+
+    expect(screen.getByText('Nothing on this design counts as a conversion.')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Use this design/ })).toBeDisabled();
   });
 
   it('tells a screen reader why, not just that', () => {
-    grid([ENTRIES[0], CLICKS], undefined);
+    grid([ENTRIES[0], SILENT], undefined);
 
-    const offer = within(cardFor('Offer panel'));
-    const described = offer.getByRole('button', { name: /Use this design/ }).getAttribute('aria-describedby') ?? '';
+    const described = within(cardFor('Silent'))
+      .getByRole('button', { name: /Use this design/ })
+      .getAttribute('aria-describedby') ?? '';
 
-    expect(described).toContain('wconvert-refused-offer-panel');
+    expect(described).toContain('wconvert-refused-silent');
   });
 
-  /** The one that matches is untouched — this marks, it does not disable a gallery. */
-  it('leaves the designs that do match offered', () => {
-    grid([ENTRIES[0], CLICKS], undefined);
+  /** The one that is fine is untouched — this marks, it does not disable a gallery. */
+  it('leaves the designs that are fine offered', () => {
+    grid([ENTRIES[0], SILENT], undefined);
 
     expect(within(cardFor('Centred card')).getByRole('button', { name: /Use this design/ })).toBeEnabled();
   });
@@ -238,35 +269,82 @@ describe('a design this Optin’s Goal cannot use', () => {
   /**
    * **Marked, never hidden.** A merchant comparing three designs and finding
    * two has no way to know the third exists or why it is gone — and the reason
-   * is about their Goal rather than about the install, so it is worth reading.
+   * is about their own Optin rather than about the install, so it is worth
+   * reading.
    */
   it('is still on screen, so the merchant can see what they are not being offered', () => {
-    grid([ENTRIES[0], CLICKS], undefined);
+    grid([ENTRIES[0], SILENT], undefined);
 
-    expect(screen.getByText('Offer panel')).toBeInTheDocument();
+    expect(screen.getByText('Silent')).toBeInTheDocument();
+  });
+});
+
+describe('a design that captures nothing', () => {
+  /**
+   * **The one refusal a [[Goal]] can still make about a design.** The delivery
+   * kind is written when a push to the lead-magnet [[Destination]] succeeds,
+   * and a design asking the visitor for nothing gives it nothing to push.
+   */
+  it('is refused where the goal counts deliveries', () => {
+    grid([ENTRIES[0], CLICKS], undefined, { ...ANY, needsACapture: true });
+
+    const offer = within(cardFor('Offer panel'));
+
+    expect(offer.getByRole('button', { name: /Use this design/ })).toBeDisabled();
+    expect(offer.getByText('This design captures nothing, and your goal counts deliveries.')).toBeInTheDocument();
+    expect(within(cardFor('Centred card')).getByRole('button', { name: /Use this design/ })).toBeEnabled();
   });
 
-  /** The mirror: a submitting design under a Goal that counts click-throughs. */
-  it('reads the constraint the other way round for a click-counting Goal', () => {
-    grid([ENTRIES[0], CLICKS], undefined, 'click');
+  /**
+   * **And where this Optin binds a [[Destination]]**, which is ADR 0025's rule
+   * re-keyed off the act and onto the capture: there would be no [[Lead]] to
+   * send. It holds under every Goal, which is why it is not asked of one.
+   */
+  it('is refused where this Optin sends leads somewhere', () => {
+    grid([ENTRIES[0], CLICKS], undefined, { ...ANY, bound: true });
 
-    expect(within(cardFor('Centred card')).getByRole('button', { name: /Use this design/ })).toBeDisabled();
+    expect(within(cardFor('Offer panel')).getByText(/no leads to send/)).toBeInTheDocument();
+    expect(within(cardFor('Centred card')).getByRole('button', { name: /Use this design/ })).toBeEnabled();
+  });
+
+  /** And on an Optin that is neither, it is an ordinary card. */
+  it('is offered where this Optin needs neither', () => {
+    grid([CLICKS], undefined);
+
+    expect(screen.getByRole('button', { name: /Use this design/ })).toBeEnabled();
+  });
+});
+
+describe('a design that would break an A/B comparison', () => {
+  /**
+   * **The guarantee the shared Goal used to smuggle in** (ADR 0059).
+   * `createVariant()` copies its parent's Goal so the arms share an act — which
+   * only worked while a Goal declared one. An arm holding a form beside an arm
+   * holding a click CTA puts a ~3% submission rate against a ~25% click rate.
+   */
+  it('cannot be chosen, and names the other arm', () => {
+    grid([ENTRIES[0], CLICKS], undefined, { ...ANY, sibling: 'submit' });
+
+    const offer = within(cardFor('Offer panel'));
+
+    expect(offer.getByRole('button', { name: /Use this design/ })).toBeDisabled();
+    expect(offer.getByText(/the other arm of this test converts on a form submission/)).toBeInTheDocument();
+  });
+
+  it('reads the constraint the other way round', () => {
+    grid([ENTRIES[0], CLICKS], undefined, { ...ANY, sibling: 'click', act: 'click' });
+
     expect(
-      within(cardFor('Centred card')).getByText('Converts on a form submission. Your goal counts click-throughs.'),
+      within(cardFor('Centred card')).getByText(/the other arm of this test converts on a click/),
     ).toBeInTheDocument();
     expect(within(cardFor('Offer panel')).getByRole('button', { name: /Use this design/ })).toBeEnabled();
   });
 
-  /**
-   * **A design offering nothing is the worse failure and gets its own words.**
-   * It renders, publishes and reports zero forever (ADR 0020) — an Optin that
-   * looks like it is working.
-   */
-  it('names a design that counts nothing at all as its own problem', () => {
-    grid([SILENT], undefined);
+  /** An Optin that is not part of a test is never asked the question. */
+  it('says nothing where this Optin has no siblings', () => {
+    grid([ENTRIES[0], CLICKS], undefined);
 
-    expect(screen.getByText('Nothing on this design counts as a conversion.')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Use this design/ })).toBeDisabled();
+    expect(screen.queryByText(/the other arm/)).toBeNull();
   });
 });
 
@@ -337,11 +415,16 @@ describe('a design this install does not have', () => {
     expect(cardFor('Two-column offer').querySelector('img')).toBeNull();
   });
 
-  /** It is never refused for its act: a card that is not offered is not refused. */
-  it('carries no sentence about a Goal it cannot serve', () => {
-    grid([LOCKED], undefined, 'click');
+  /**
+   * **It is never refused and never marked**: a card that is not offered is not
+   * refused, and a sentence about a design the merchant cannot have would be a
+   * sentence about nothing.
+   */
+  it('carries no sentence about something it cannot be used for', () => {
+    grid([LOCKED], undefined, { needsACapture: true, bound: true, sibling: 'click', act: 'click' });
 
-    expect(screen.queryByText(/Your goal counts/)).toBeNull();
+    expect(screen.queryByText(/captures nothing/)).toBeNull();
+    expect(screen.queryByText(/the other arm/)).toBeNull();
   });
 
   /** And it does not ask for a tree there is none of. */
@@ -354,7 +437,7 @@ describe('a design this install does not have', () => {
         trees={new Map()}
         labels={LABELS}
         chosen={undefined}
-        act="submit"
+        fit={ANY}
         busy={false}
         onChoose={vi.fn()}
         onNear={onNear}
@@ -390,7 +473,7 @@ const picker = (entries: TemplateIndexEntry[], displayType = 'popup') =>
       trees={new Map()}
       displayType={displayType}
       chosen={undefined}
-      act="submit"
+      fit={ANY}
       busy={false}
       onChoose={vi.fn()}
       onNear={vi.fn()}
@@ -564,24 +647,30 @@ describe('a Display Type with no designs', () => {
   });
 });
 
-describe('a Goal every design refuses', () => {
-  /**
-   * ==========================================================================
-   * THE DOOR NAMED HAS TO BE ON THIS SCREEN (ADR 0042 rule 4).
-   * ==========================================================================
-   * The save's error said "pick a design that matches the Goal, **or change the
-   * Goal**", and there is no control here that changes a Goal. When every card
-   * is refused the honest door is the filter that shows the ones which match —
-   * so the note offers to clear, and never to change the Goal.
-   */
-  it('says so once, and offers a door that is on this screen', async () => {
+/**
+ * ============================================================================
+ * ~~A GOAL EVERY DESIGN REFUSES~~ — THE STATE AND ITS NOTE ARE BOTH GONE.
+ * ============================================================================
+ * A note stood under the grid saying *"None of these counts a click-through,
+ * which is what this Optin's goal measures"*, with *Clear filters* as its door,
+ * because a Goal that counted clicks refused every submit-metered design in the
+ * library — which is most of it.
+ *
+ * **No Goal refuses a design for its act now** (ADR 0059), so the state is
+ * unreachable. And the door was dead code even while it was reachable: it
+ * appeared only when the set was narrowed, and the toolbar that narrows it
+ * renders at nine designs per [[Display Type]] while free ships eight popup
+ * entries and six inline ones. There were no chips to clear.
+ */
+describe('the note about a Goal every design refuses', () => {
+  it('is gone, and no card is greyed for its act', async () => {
     render(
       <TemplatePicker
         index={{ templates: LIBRARY, labels: LABELS, facets: FACETS } as TemplateIndex}
         trees={new Map()}
         displayType="popup"
         chosen={undefined}
-        act="click"
+        fit={{ ...ANY, act: 'click' }}
         busy={false}
         onChoose={vi.fn()}
         onNear={vi.fn()}
@@ -591,8 +680,8 @@ describe('a Goal every design refuses', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Column' }));
     await userEvent.click(screen.getByRole('button', { name: 'Phone number' }));
 
-    expect(screen.getByText(/None of these counts a click-through/)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Clear filters' })).toBeInTheDocument();
+    expect(screen.queryByText(/None of these counts/)).toBeNull();
     expect(screen.queryByText(/change the Goal/i)).toBeNull();
+    expect(screen.getAllByRole('button', { name: /Use this design/ }).every((each) => !each.hasAttribute('disabled'))).toBe(true);
   });
 });

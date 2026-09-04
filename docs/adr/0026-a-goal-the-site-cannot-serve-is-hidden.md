@@ -168,6 +168,19 @@ widened audience trades a missing feature for a factually false one.
   [ADR 0025](0025-cart-recovery-captures-nothing.md) says is forbidden rather than
   merely unnecessary. Asked against the Goal the Optin will HAVE, so correcting a
   Goal is still allowed and is still checked.*
+
+  ***That check is deleted and this bullet gains a sharper case***, *by
+  [ADR 0059](0059-the-converting-act-belongs-to-the-design.md). A Goal declares
+  no act, so `{goal: 'recover_cart', template_id: 'stacked-signup'}` is now
+  accepted and honestly counted. What the route still refuses is a design that
+  captures nothing under a Goal read from deliveries, or on an Optin holding a
+  [[Destination]] — and it found the hole this bullet's own argument predicts:
+  both refusals were guarded on an incoming `config`, so* `PATCH {"goal": …}`
+  *with none wrote any settable Goal onto any design, unchecked. Unreachable
+  from the admin, and this route is scriptable by anyone holding
+  `manage_options` — which is this bullet, exactly, applied to the goal-only
+  PATCH. It matters more now that the builder HAS a control that changes a
+  Goal.*
 - Merchants who deactivate WooCommerce temporarily see their goal screen change shape
   with no explanation on that screen. Accepted: it is rare, and ADR 0027 tells them
   what happened on the screen where they would actually notice — the Optin list.

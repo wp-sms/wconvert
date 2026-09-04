@@ -5,10 +5,9 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { EmptyState } from '../shell/EmptyState';
 import { Toolbar, ToolbarCount } from '../shell/Toolbar';
-import { Gallery } from './Gallery';
-import { isNarrowed, narrow, toggled, type Chosen } from './facets';
-import { nameOf, type TemplateIndex, type TemplateIndexEntry } from '../templates/api';
-import type { ConvertingAct } from './structure/catalogue';
+import { Gallery, type Fit } from './Gallery';
+import { narrow, toggled, type Chosen } from './facets';
+import { nameOf, type TemplateIndex } from '../templates/api';
 import type { Template } from '@renderer/types';
 
 /**
@@ -64,7 +63,8 @@ export interface TemplatePickerProps {
   readonly trees: ReadonlyMap<string, Template>;
   readonly displayType: string;
   readonly chosen: string | undefined;
-  readonly act: ConvertingAct;
+  /** What this particular Optin needs of a design ({@see Fit}). */
+  readonly fit: Fit;
   readonly busy: boolean;
   readonly onChoose: (id: string) => void;
   readonly onNear: (id: string) => void;
@@ -75,7 +75,7 @@ export function TemplatePicker({
   trees,
   displayType,
   chosen,
-  act,
+  fit,
   busy,
   onChoose,
   onNear,
@@ -93,7 +93,6 @@ export function TemplatePicker({
     [index.templates, displayType, chosenFacets, query],
   );
 
-  const narrowed = isNarrowed(chosenFacets, query);
   const clear = useCallback(() => {
     setChosenFacets({});
     setQuery('');
@@ -204,7 +203,7 @@ export function TemplatePicker({
             trees={trees}
             labels={index.labels}
             chosen={chosen}
-            act={act}
+            fit={fit}
             busy={busy}
             onChoose={onChoose}
             onNear={onNear}
@@ -213,47 +212,29 @@ export function TemplatePicker({
       </div>
 
       {/*
-        **The reason a merchant can be refused every card, with the door on THIS
-        screen** (ADR 0042 rules 3 and 4). A [[Goal]] that counts click-throughs
-        against a library of submit-metered designs refuses all of them, and the
-        error the save used to give named a door that is not here — "change the
-        Goal". The door that IS here is the filter that shows the designs which
-        match, so this offers it.
+        ==================================================================
+        THE ALL-REFUSED NOTE HAS GONE, AND SO HAS THE STATE IT DESCRIBED.
+        ==================================================================
+        A note stood here saying *"None of these counts a click-through, which
+        is what this Optin's goal measures"*, with *Clear filters* as the door
+        — written because a [[Goal]] that counted click-throughs refused every
+        submit-metered design in the library, which is most of it.
+
+        **No Goal refuses a design for its act now** (ADR 0059), so that state
+        is unreachable: what is still refused is a design that counts nothing,
+        one that captures nothing where this Optin needs a capture, and one
+        that converts the other way from an A/B sibling — and none of those can
+        be true of the whole library at once on any install that ships more
+        than one design.
+
+        The note's escape was dead code anyway. It only offered *Clear filters*
+        while the set was narrowed, and the toolbar that narrows it renders
+        only at nine designs per [[Display Type]] — free ships eight popup
+        entries and six inline ones, so there were no chips to clear and the
+        door pointed at nothing.
       */}
-      {refusesEverything(shown, act) && (
-        <p className="wconvert-picker__note m-0 px-4 pb-4 text-muted-foreground">
-          {act === 'submit'
-            ? __('None of these counts a form submission, which is what this Optin’s goal measures.', 'wconvert')
-            : __('None of these counts a click-through, which is what this Optin’s goal measures.', 'wconvert')}
-          {narrowed && (
-            <>
-              {' '}
-              <Button variant="link" size="sm" className="h-auto p-0 align-baseline" onClick={clear}>
-                {__('Clear filters', 'wconvert')}
-              </Button>
-            </>
-          )}
-        </p>
-      )}
     </>
   );
-}
-
-/**
- * Is every design the merchant can actually take refused by their [[Goal]]?
- *
- * **Only the ones on offer are counted.** A locked design is not refused — it is
- * not offered — so a set of eight refused cards and one premium card is still a
- * screen with no way forward, and a rule that counted the premium one would say
- * nothing about it.
- *
- * False on an empty set, which is the empty state's job rather than this note's:
- * two sentences about the same nothing is the thing ADR 0042 rule 2 forbids.
- */
-function refusesEverything(shown: readonly TemplateIndexEntry[], act: ConvertingAct): boolean {
-  const offered = shown.filter((entry) => entry.availability === 'ready');
-
-  return offered.length > 0 && offered.every((entry) => entry.facets.act !== act);
 }
 
 /**

@@ -304,21 +304,25 @@ final class PlaybookRegistrationTest extends TestCase
     }
 
     /**
-     * **Rejection three: the Goal and the Template disagree about what counts.**
+     * **~~Rejection three~~ — there is no pairing left to disagree about.**
      *
-     * A [[Goal]] declares the metric that counts it, and a Template offers
-     * exactly one converting act. Paired the wrong way round, the Optin
-     * reports nothing at all — the Goal counts a submission and the design
-     * offers a click. It is the same reasoning that rejects a Template
-     * offering both (ADR 0020), applied one layer up where the pairing is
-     * made.
+     * This asserted that a [[Playbook]] filing a submit-metered design under a
+     * click-metered [[Goal]] was rejected at registration. A Goal declares no
+     * converting act any more (ADR 0059): a registered [[Template]] offers
+     * exactly one, {@see \WConvert\Template\TemplateLibrary::refuse()} is
+     * what makes that true, and there is no second declaration to compare it
+     * against.
+     *
+     * So the entry that used to be refused registers, which is the assertion
+     * that replaces it — a third party filing a capture design under the sale
+     * Goal is offering a start a merchant can legitimately want, and dropping
+     * the card at registration would do it with nothing in any log.
      */
-    public function testAPlaybookPairingAClickGoalWithASubmitTemplateIsRejected(): void
+    public function testAPlaybookMayFileACaptureDesignUnderAGoalThatCountsClicks(): void
     {
-        $this->assertRejected(
-            self::entry(['goal' => 'promote_offer', 'copy' => ['headline' => 'Hi']]),
-            RejectionReason::MetricMismatch
-        );
+        $entry = self::entry(['goal' => 'promote_offer', 'copy' => ['headline' => 'Hi']]);
+
+        $this->assertSame([], $this->library($entry)->rejections());
     }
 
     public function testAPlaybookNamingAGoalThisInstallDoesNotHaveIsRejected(): void

@@ -68,13 +68,6 @@ enum RejectionReason: string
     case SiteLocalReference = 'site_local_reference';
 
     /**
-     * A Playbook whose default Template is metered by the other act from the
-     * [[Goal]] it serves. Its Optins would report nothing at all — the Goal
-     * counts one act and the design offers the other.
-     */
-    case MetricMismatch = 'metric_mismatch';
-
-    /**
      * A [[Playbook]] whose rules name no [[Trigger]], so the Optin it
      * prefills could never fire.
      *

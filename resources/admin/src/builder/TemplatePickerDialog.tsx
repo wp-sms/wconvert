@@ -52,6 +52,21 @@ export interface TemplatePickerDialogProps extends TemplatePickerProps {
 }
 
 export function TemplatePickerDialog({ open, onOpenChange, ...picker }: TemplatePickerDialogProps) {
+  /*
+    **Whether a switch is even available from here**, which is what decides
+    whether the sentence below is worth its line (ADR 0042 rule 2). Asked of the
+    whole set for this [[Display Type]] rather than of the narrowed one, so
+    filtering the other act off screen does not quietly retract a warning that
+    is still true of the library the merchant is browsing.
+  */
+  const canChangeTheAct = picker.index.templates.some(
+    (entry) =>
+      entry.display_type === picker.displayType &&
+      entry.availability === 'ready' &&
+      entry.facets.act !== null &&
+      entry.facets.act !== picker.fit.act,
+  );
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       {/*
@@ -80,6 +95,37 @@ export function TemplatePickerDialog({ open, onOpenChange, ...picker }: Template
             {__(
               'Your words come with you. Blocks you added, moved or deleted do not — Undo brings them back.',
               'wconvert',
+            )}
+            {/*
+              ==========================================================
+              AND THE SECOND SHARP EDGE, WHICH DID NOT EXIST BEFORE.
+              ==========================================================
+              A design that converts the other way used to be REFUSED
+              (ADR 0025), so switching one for the other was not a thing
+              a merchant could do. It is now (ADR 0059), and it
+              reinterprets the Optin's whole history: `wconvert_stats`
+              carries no act, so a [[Conversion]] is read against the
+              design the Optin holds now, and a hundred form submissions
+              become a hundred click-throughs the moment the design does
+              (ADR 0020).
+
+              The COUNT stays right — a Conversion happened either way —
+              which is why this is a sentence and not a refusal. ADR 0042
+              rule 3: marked before the click, with the reason.
+
+              **Only where such a design is actually on offer here.** On a
+              library where everything for this Display Type converts the
+              same way, this would be a line that taxes every visit and
+              informs none.
+            */}
+            {canChangeTheAct && (
+              <>
+                {' '}
+                {__(
+                  'A design that converts the other way changes what this Optin counts — including everything it has already counted.',
+                  'wconvert',
+                )}
+              </>
             )}
           </DialogDescription>
         </DialogHeader>

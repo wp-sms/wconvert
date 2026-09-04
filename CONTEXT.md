@@ -65,11 +65,21 @@ through to an offer is another.
 Every [[Lead]] is a Conversion; the reverse does not hold. Assuming it does
 makes any Goal measured by clicks report zero forever.
 
-**One Optin has exactly one converting act**, and its [[Goal]] decides which:
-where the Goal is measured by submissions the form's submit is the Conversion,
-and where it is measured by click-throughs the CTA is. A [[Template]] offering
-both is rejected when it is registered, not disambiguated at runtime — an Optin
-with two candidate Conversions has no honest number to report.
+**One Optin has exactly one converting act**, and its ~~[[Goal]]~~ **design**
+decides which: a design whose button submits converts on the submit, and one
+whose button links away converts on the click. A [[Template]] offering both is
+rejected when it is registered, not disambiguated at runtime — an Optin with two
+candidate Conversions has no honest number to report.
+
+> **Amended: it said *"its Goal decides which"*, and the Goal was the second
+> answer.** The registration refusal above is what always made the act
+> singular, so a registered design already declared it; a Goal declared it as
+> well, and every act-shaped refusal in the product existed because two sources
+> can disagree. `Goal::convertingAct()` is deleted. A Goal declares the counted
+> **kind** — which is why the Analytics card says *Conversions*, true of either
+> act, while the builder's own strip says *Submissions* or *Click-throughs* off
+> the one design that Optin holds. See
+> [ADR 0059](docs/adr/0059-the-converting-act-belongs-to-the-design.md).
 
 ### Impression
 
@@ -259,6 +269,16 @@ has its own id, its own row, and therefore its own counters, because
 `wconvert_stats` is keyed by `optin_id` and that key is what makes the counter
 upsert atomic. Two designs behind one id could not be told apart, which is the
 entire point of the test.
+
+**Two arms of one test convert the same way**, and that is a rule rather than a
+coincidence: an arm holding a form beside an arm holding a click CTA compares a
+~3% submission rate against a ~25% click rate, and the winner is between two
+different questions. It used to be true by accident — a variant copies its
+parent's [[Goal]], and a Goal declared an act — and it is now refused at the
+write, on the arm's own design
+([ADR 0059](docs/adr/0059-the-converting-act-belongs-to-the-design.md)).
+Swapping an arm for a different design of the *same* act is what the test is
+for.
 
 A Variant names its parent in `wconvert_optins.parent_id`. It is *provenance*,
 the way `template_id` and `playbook_id` are — and unlike those two it is a
@@ -564,6 +584,16 @@ Each Goal **declares the metric that counts it** — which [[Conversion]] is the
 one that matters, and whether that Conversion is a [[Lead]] or not. That
 declaration is what makes a Goal more than a filter at creation time.
 
+> **It declares the counted KIND and never the converting act.** A Goal used to
+> declare both, and the second was a duplicate: a registered [[Template]] offers
+> exactly one act and the runtime has always read it from the design. What that
+> cost was a wall — five of seven popup designs greyed out under *Promote a sale
+> or offer*, each saying *"your goal counts click-throughs"* without naming
+> which goal, on a screen with no control that changed one. What survives is one
+> refusal: a Goal read from **deliveries** needs a design that captures
+> something, because there is no address to deliver to otherwise. See
+> [ADR 0059](docs/adr/0059-the-converting-act-belongs-to-the-design.md).
+
 The declaration is applied when the analytics screen is *read*, never stamped on
 each Conversion as it happens. So correcting a Goal restates the Optin's whole
 history rather than splitting it at the moment of the edit — which is what makes
@@ -571,6 +601,13 @@ history rather than splitting it at the moment of the edit — which is what mak
 
 "Kept for its whole life" means persistent, not frozen: a Goal never evaporates
 off the Optin, but it can be corrected.
+
+> **And there is a control that corrects it**, in the builder's page-header band
+> beside the line that states it. It was chosen in a wizard that could not be
+> re-entered, so "corrected" meant a scripted call — which is why the server's
+> own refusal had the words *"or change the Goal"* deleted from it. Correcting
+> one is purely editorial: it moves which card reports the Optin and what its
+> headline number is called, and touches the design not at all.
 
 > **The test a Goal must pass:** it names an outcome WConvert can *count*.
 > "Grow my email list" is countable. "Increase brand awareness" is not, and a
@@ -591,6 +628,13 @@ is never copied into an Optin.
 > serve a particular [[Goal]], so with the copy held elsewhere a Template is
 > **goal-agnostic** — the library is a set of designs per [[Display Type]], not a
 > design for every pairing of Display Type and Goal.
+>
+> **And "goal-agnostic" is now true of the picker as well as of the library.**
+> A design was still refused where its converting act was not the one its Goal
+> counted, which greyed out most of the gallery under two of the five Goals — a
+> Display Type × Goal matrix arriving as disabled buttons rather than as files.
+> The act belongs to the design (ADR 0059), so a design is refused only for
+> something about the particular Optin in front of it.
 
 > **Amended: the library is no longer small, and the boundary is what stops the
 > matrix coming back.** It is twelve designs and growing, and what keeps that
@@ -678,6 +722,11 @@ can never fire and the save route refuses one, so a button that wiped them would
 break the Optin it was offered to improve. Which sections it names is readable
 off what it carries, and applying one **confirms first**, because the builder's
 history watches the design and rules are not undoable.
+
+> *That reason has a second case: changing an Optin's [[Goal]] confirms too, and
+> for exactly this — a Goal is a column rather than part of `config`, so there
+> is no history entry to walk back to
+> ([ADR 0059](docs/adr/0059-the-converting-act-belongs-to-the-design.md)).*
 
 Like a [[Playbook]] it is bundled PHP returning an array — `wp i18n make-pot`
 cannot see a string in JSON — and like a Playbook it may not name anything only
@@ -798,8 +847,16 @@ A field's Roles are **derived rather than declared**: they are named for what it
 captures, so a `field` capturing an email offers `email_label` and
 `email_placeholder` and cannot offer the phone's. That is why a field node carries
 no Role of its own while six of the vocabulary's Roles are named for fields, and
-it is what makes the field kind part of the *design* — a Template capturing an
-email cannot serve the SMS [[Goal]] however its words read.
+it is what makes the field kind part of the *design*.
+
+> **Corrected: this ended *"— a Template capturing an email cannot serve the SMS
+> [[Goal]] however its words read"*, and nothing ever enforced that.** It was
+> never checked at registration, at the write or on any screen, and it is not a
+> rule: which detail to ask a visitor for is the merchant's own judgement, and
+> an SMS list grown from an email capture is still a list they grew. What IS
+> derived is everything before the dash — the Roles a field offers follow the
+> kind it captures. See
+> [ADR 0059](docs/adr/0059-the-converting-act-belongs-to-the-design.md).
 
 ### Destination
 

@@ -97,24 +97,29 @@ describe('what a block may become', () => {
 
 /**
  * ============================================================================
- * THE BUTTON'S REFUSALS ARE THE SAVE'S, MET EARLY.
+ * THE BUTTON'S REFUSALS ARE THE SAVE'S, MET EARLY — AND THE REASON CHANGED.
  * ============================================================================
- * A `link` button on a submit-metered Optin fails the WHOLE save through
- * `refuseAMetricItCannotReport` — a red bar over an editor that had happily
- * allowed it, which is the error this editor exists to prevent a merchant
- * meeting.
+ * The flip is still refused and it said the wrong thing: *"This Optin's goal
+ * counts form submissions, so its button has to submit the form. **Change the
+ * goal to change this.**"* — a Goal counts no act now (ADR 0059), and the door
+ * it named was one the builder did not have.
+ *
+ * What actually refuses it is the STEP COUNT. A design that submits has a
+ * terminal success step and one that links away has none (ADR 0025), so
+ * flipping the action alone leaves a config the save rejects whichever way it
+ * went. Turning the flip ON is the Success Action feature and a separate
+ * ticket: it has to add or drop that step, which is a document edit and not a
+ * param edit.
  */
 describe('what a button may do', () => {
-  it('refuses an action the Goal does not count, in both directions', () => {
-    expect(offered(ENTRY.tree, BUTTON, 'submit').link).toMatch(/counts form submissions/);
+  it('refuses the flip in both directions, and says the step count is why', () => {
+    expect(offered(ENTRY.tree, BUTTON, 'submit').link).toMatch(/second step/);
+    expect(offered(ENTRY.tree, BUTTON, 'submit').link).not.toMatch(/goal/i);
     expect(offered(ENTRY.tree, BUTTON, 'submit').submit).toBeNull();
 
     /*
      * The other way round needs a button that is already a link, because a
-     * refusal is never reported against what the block ALREADY is. A submit
-     * button on a click-metered Optin is a state the save refuses outright, and
-     * the ⇄ menu is not where a merchant should meet that — `problems.ts` and
-     * the toolbar chip are.
+     * refusal is never reported against what the block ALREADY is.
      */
     const clicky: TemplateTree = {
       steps: [
@@ -125,7 +130,7 @@ describe('what a button may do', () => {
       ],
     };
 
-    expect(offered(clicky, [0, 'children', 0], 'click').submit).toMatch(/counts click-throughs/);
+    expect(offered(clicky, [0, 'children', 0], 'click').submit).toMatch(/second step/);
     expect(offered(clicky, [0, 'children', 0], 'click').link).toBeNull();
   });
 

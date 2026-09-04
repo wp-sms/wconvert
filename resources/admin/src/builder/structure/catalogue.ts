@@ -54,21 +54,30 @@ export interface Addition {
 }
 
 /**
- * Which converting act this Optin's [[Goal]] is measured by.
+ * Which converting act an [[Optin]] is measured by.
  *
  * **Spelled the way {@see \WConvert\Template\ConvertingAct} spells it** —
  * `submit` and `click` — rather than the way a `button` node spells its own
  * `action` param, which is `submit` and **`link`**. Those are two vocabularies
  * for one distinction and PHP already keeps them apart: `ConvertingAct::collect`
- * reads `action === 'link'` and answers `Click`. Using the metric's words here
- * is what lets `converting_act` off `GET /wconvert/v1/goals` be handed straight
- * in without a translation nobody would remember to keep.
+ * reads `action === 'link'` and answers `Click`. Keeping the metric's words
+ * here is what lets a value read off a tree and a value read off a node be
+ * told apart at a glance.
  *
- * The editor is TOLD which it is rather than guessing, because guessing is
- * exactly the failure this prevents: a `link` button added to a submit-metered
- * Optin makes `refuseAMetricItCannotReport` fail **the whole save**, and the
- * merchant would meet that as a red bar over an editor that had happily let
- * them do it.
+ * ============================================================================
+ * THE EDITOR USED TO BE TOLD. IT READS THE DOCUMENT NOW.
+ * ============================================================================
+ * This came from `converting_act` on the [[Goal]] registry entry, and the
+ * argument for being told rather than guessing was that guessing would fail
+ * the whole save. It fails nothing now: a Goal declares no act (ADR 0059), so
+ * the act is `convertingActOf(template.tree)` — the same walk
+ * `ConvertingAct::offeredIn()` makes on the server, over the same tree the
+ * builder is already holding.
+ *
+ * That also deleted a real defect. The registry answered one round trip after
+ * the design did, so the builder spent its first renders with no act and
+ * passed `act ?? 'submit'` — the structure editor briefly offering a
+ * click-metered Optin the wrong menu. There is nothing left to wait for.
  */
 export type ConvertingAct = 'submit' | 'click';
 
@@ -120,8 +129,10 @@ export function additionsIn(tree: TemplateTree, at: Spot, act: ConvertingAct): A
  *   step holding the submit button the `<form>`, and that follows from the tree
  *   rather than from a flag. A field on any other step is an input inside a
  *   `<div>`: it draws, it takes typing, and nothing on earth reads it. On a
- *   click-metered Optin there is no such step at all, which is ADR 0025's
- *   "captures nothing" arriving as an absence rather than as a rule.
+ *   design that converts on a click there is no such step at all, which is
+ *   ADR 0025's "captures nothing" arriving as an absence rather than as a
+ *   rule — and it is a fact about the design rather than about the [[Goal]]
+ *   over it (ADR 0059).
  */
 function whyRefused(
   tree: TemplateTree,
@@ -233,10 +244,16 @@ export function nodeFor(
   }
 
   if (type === 'button') {
-    // The Goal decides, and it decides at the moment of creation because
-    // `action` is a param rather than content: the Content tab never offers it,
-    // so a button that arrives wrong stays wrong until a save refuses the whole
-    // config. This is the one place the metric's word becomes the node's.
+    // The DESIGN decides, and it decides at the moment of creation because
+    // `action` is a param rather than content: the Content tab never offers
+    // it, so a button that arrives wrong stays wrong until a save refuses the
+    // whole config. This is the one place the metric's word becomes the
+    // node's.
+    //
+    // It is unreachable in practice — an Optin has exactly one converting act
+    // and `whyRefused` refuses a second button — and it is here because
+    // deleting the only button and adding one back is the route that reaches
+    // it, and the act to restore is the one the design had (ADR 0059).
     node.action = actionFor(act);
   }
 

@@ -1670,7 +1670,16 @@
   padding: 1rem;
 }
 
-.wconvert-gallery__card.is-chosen {
+/*
+ * **The card in use, on both grids that have one.** `.wconvert-gallery__card`
+ * is the design picker's and the bare `.is-chosen` is `ChoiceCard`'s, which
+ * gained the state when a second screen started picking a [[Goal]]
+ * (ADR 0059). One declaration for both, because "chosen" is one thing and two
+ * rules for it is how the four `--secondary`-on-`--muted` selected states
+ * happened (ADR 0042 rule 5).
+ */
+.wconvert-gallery__card.is-chosen,
+li.is-chosen {
   border-color: var(--primary);
   box-shadow: 0 0 0 1px var(--primary);
 }

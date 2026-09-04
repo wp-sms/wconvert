@@ -318,8 +318,14 @@ export const typingKey = (path: Path, key: string): string => `text:${path.join(
  *
  * **Refusals are shown rather than filtered out**, which is the Add menu's own
  * rule and matters more here: the refusals are the only place a merchant ever
- * learns why their button is the kind of button it is, and *"your goal counts
- * submissions"* is an answer where a missing row is not.
+ * learns why their button is the kind of button it is, and *"a design that
+ * submits has a second step for what the visitor sees afterwards"* is an answer
+ * where a missing row is not.
+ *
+ * That sentence used to name the [[Goal]] — *"your goal counts submissions …
+ * change the goal to change this"* — and both halves were wrong: a Goal counts
+ * no act (ADR 0059), and the door it named did not exist. The step count is
+ * what actually refuses the flip (ADR 0025).
  */
 function SwapMenu({
   template,

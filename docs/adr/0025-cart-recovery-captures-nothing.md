@@ -5,6 +5,21 @@ The v1 Goal **"Bring shoppers back to their cart"** is metered by a **click**. I
 pushes to no [[Destination]]. Its whole product is a message on the page and a link
 back to the cart.
 
+> ***Amended by
+> [ADR 0059](0059-the-converting-act-belongs-to-the-design.md): the subject of
+> every sentence above is the DESIGN, not the Goal.*** *This read as a
+> declaration a Goal made, and it was enforced as one — a cart Optin was refused
+> any design with a form on it. A Goal declares no converting act any more, so
+> what is true is that the three bundled cart [[Playbook]]s all name a one-step,
+> click-metered design with no form, no Lead, no Consent Record and no
+> Destination, and that is the shape this document argues for.*
+>
+> *What is no longer refused is the merchant who wants* "enter your email and
+> we'll save your cart" *under this Goal — the case the "it routes" section
+> below sends to a different Goal. It now just works where they asked for it,
+> and the routing stays available and stays good advice. Everything about the
+> WSMS boundary, the cookie, the coupon and the CTA is untouched.*
+
 That is a strange thing to find in a lead-capture plugin, and it was not chosen so
 much as discovered — it follows from decisions already made.
 
@@ -19,7 +34,7 @@ SMS list*, *Deliver a lead magnet* — and one is unambiguously click-metered,
 Overturning it is therefore not a local change: it re-opens the storage ticket and
 leaves "two of five" naming a Goal that does not exist.
 
-## The form is not merely unnecessary — it is forbidden
+## The form is not merely unnecessary — it is forbidden *(on this design)*
 
 *Enforced at the WRITE as of [#36](https://github.com/navidkashani/wconvert/issues/36),
 and not only in the library. [`PlaybookLibrary`](../../src/Playbook/PlaybookLibrary.php)
@@ -36,6 +51,27 @@ the same reason, since it captures nothing to send. That is
 [ADR 0026](0026-a-goal-the-site-cannot-serve-is-hidden.md)'s "a screen is not an
 enforcement mechanism" applied to the other half of the pairing.*
 
+> ***The conclusion below survives and its SUBJECT changes*** *(amended by
+> [ADR 0059](0059-the-converting-act-belongs-to-the-design.md)). "A
+> click-metered Optin that also carried a form would emit Leads that are not
+> Conversions" is still true — of the DESIGN. A design whose only button links
+> away has no `<form>` for a field to sit in at all, which is that rule
+> arriving as an absence rather than as a refusal; the structure editor states
+> it that way already, and `TemplateLibrary` still refuses a tree offering two
+> acts.*
+>
+> ***What is deleted is the pairing check.*** *`{goal: 'recover_cart',
+> template_id: 'stacked-signup'}` is now accepted, and the Optin honestly
+> reports the submissions that design produces under the card this Goal groups
+> it on. The `PlaybookLibrary` refusal in this paragraph is deleted too.*
+>
+> ***The Destination rule is re-keyed and is the half that survives as a
+> refusal.*** *It said "a click-metered Optin holds no Destination ids", and
+> the metric was never the reason: a bound Destination on an Optin with no form
+> is configuration that can never fire, whatever counts it. Keyed on the
+> design's capture it holds under every Goal — including one this install can
+> no longer resolve, which is the lapse the Goal-keyed version would have had.*
+
 `CONTEXT.md` holds that **every [[Lead]] is a [[Conversion]]; the reverse does not
 hold.** A click-metered Optin that also carried a form would emit Leads that are not
 Conversions, which inverts that rule rather than bending it. `CONTEXT.md`'s
@@ -49,6 +85,14 @@ So the shape is forced in both directions. No form, one step
 email and we'll save your cart"* is served by **Grow my email list** with a
 `cart_has_items` [[Condition]] — the Goal that honestly counts a submission. The
 taxonomy already had the right home for it.
+
+> *Still true and no longer the only home
+> ([ADR 0059](0059-the-converting-act-belongs-to-the-design.md)): the same
+> merchant may pick a capture design under THIS Goal and be counted honestly
+> there too, because a Goal counts Conversions rather than an act. The routing
+> above remains the better answer when what they want is a list — the Optin
+> lands on the card whose numbers are about growing one — and it is now advice
+> rather than the only path.*
 
 *Reachable as of [#36](https://github.com/navidkashani/wconvert/issues/36), which
 registers `cart_has_items` as an ordinary premium Condition available to any Goal.
@@ -156,7 +200,13 @@ somebody ADDS, which no assertion about output can see.*
 
 ## Consequences
 
-- **Cart-recovery templates have one step, not two.** *Enforced by
+- **Cart-recovery templates have one step, not two.** *— a fact about the
+  DESIGN, which is what the whole rule turned out to be
+  ([ADR 0059](0059-the-converting-act-belongs-to-the-design.md)). The
+  registration check named below is untouched and is now the ONLY thing holding
+  the act↔steps relationship, which is also why the builder's ⇄ control still
+  refuses to flip a button's action: the flip has to add or drop the terminal
+  success step, which is a document edit rather than a param edit.* *Enforced by
   [#27](https://github.com/navidkashani/wconvert/issues/27) at registration
   rather than left to the author:
   [`TemplateLibrary`](../../src/Template/TemplateLibrary.php) rejects an entry

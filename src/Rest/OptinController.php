@@ -23,6 +23,7 @@ use WConvert\Stats\StatDay;
 use WConvert\Support\Ulid;
 use WConvert\Targeting\Targeting;
 use WConvert\Template\ConvertingAct;
+use WConvert\Template\TemplateFacets;
 use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
 use WP_Error;
@@ -242,7 +243,55 @@ final class OptinController implements RestController
 
         $suspended = Suspension::reasonsIn($this->publishedSet->all(), $this->degradation, $this->rules);
 
-        return new WP_REST_Response($optin->toArray() + ['suspended' => $suspended[$optin->id] ?? null]);
+        return new WP_REST_Response($optin->toArray() + [
+            'suspended' => $suspended[$optin->id] ?? null,
+            'sibling_act' => $this->actOfTheOtherArms($optin),
+        ]);
+    }
+
+    /**
+     * What the other arms of this Optin's test convert on, or null.
+     *
+     * ========================================================================
+     * THE ONE FACT THE BUILDER CANNOT READ OFF THE OPTIN IT IS EDITING.
+     * ========================================================================
+     * An arm's design has to convert the same way as its siblings', or the
+     * test compares a submission rate against a click rate — and the write
+     * refuses that ({@see self::refuseAnArmMeteredDifferently()}). The picker
+     * marks it BEFORE the click (ADR 0042 rule 3), and to do that it needs the
+     * siblings' act, which lives in their `config` and nowhere the builder can
+     * see.
+     *
+     * Resolved here rather than in a route of its own, beside `suspended`,
+     * which is the same shape and the same reason: a fact about this Optin's
+     * place in the install that its own row cannot answer.
+     *
+     * **Null on an Optin that is not part of a test**, which is almost all of
+     * them and costs them the one query
+     * {@see OptinRepository::otherArmsOf()} makes and nothing more. Null too
+     * where the siblings disagree with each other — a state the write refuses,
+     * so reaching it means a hand-edited row, and marking cards against one of
+     * two answers would be marking them against a guess.
+     */
+    private function actOfTheOtherArms(Optin $optin): ?string
+    {
+        $found = null;
+
+        foreach ($this->optins->otherArmsOf($optin->id) as $arm) {
+            $theirs = ConvertingAct::offeredIn($arm->config['template']['tree'] ?? null);
+
+            if (count($theirs) !== 1) {
+                continue;
+            }
+
+            if ($found !== null && $found !== $theirs[0]) {
+                return null;
+            }
+
+            $found = $theirs[0];
+        }
+
+        return $found?->value;
     }
 
     /**
@@ -274,7 +323,11 @@ final class OptinController implements RestController
             return self::needsATrigger();
         }
 
-        $refusal = self::refuseAMetricItCannotReport($normalized, $goal)
+        // No arm check on a create: `POST /optins` writes no `parent_id`, and
+        // {@see OptinRepository::createVariant()} makes an arm by COPYING its
+        // parent's config — so an arm is born comparable and only an edit can
+        // break it.
+        $refusal = $this->refuseADesignThatCapturesNothing($normalized, $goal)
             ?? self::refuseADesignThatCannotConvert($normalized);
 
         if ($refusal !== null) {
@@ -341,13 +394,48 @@ final class OptinController implements RestController
         // stored Goal is what makes editing a design on an Optin nobody is
         // re-goaling still answerable.
         $held = $checked ?? ($stored === null ? null : Goal::tryFrom($stored->goal));
-        $refusal = $normalized === null
-            ? null
-            : (($held === null ? null : self::refuseAMetricItCannotReport($normalized, $held))
-                ?? self::refuseADesignThatCannotConvert($normalized));
 
-        if ($refusal !== null) {
-            return $refusal;
+        // ====================================================================
+        // THE DESIGN THIS OPTIN WILL HOLD, WHICH IS NOT ALWAYS THE ONE THAT
+        // ARRIVED — AND THAT IS A HOLE THAT WAS OPEN.
+        // ====================================================================
+        // Both refusals were guarded on `$normalized !== null`, so
+        // `PATCH {"goal": …}` carrying NO `config` wrote any settable Goal
+        // onto any design and any binding with nothing asked at all. It was
+        // unreachable from the admin, which is exactly ADR 0026's point about
+        // the goal screen — *"a screen is not an enforcement mechanism"* — and
+        // this route is scriptable by anyone holding `manage_options`.
+        //
+        // It matters more now than it did, because there IS a control that
+        // changes a Goal (ADR 0059). So the pairing is asked against the
+        // config this Optin will end up with: the one that arrived, or the one
+        // it already has.
+        $design = $normalized ?? ($stored === null ? [] : $stored->config);
+
+        // Asked whenever either half of the pair is being written. A PATCH
+        // carrying only a NAME is editing neither and is not asked — refusing
+        // a rename because of a design somebody saved earlier would be
+        // refusing an edit that cannot make anything worse.
+        if ($held !== null && ($normalized !== null || $checked !== null)) {
+            $refusal = $this->refuseADesignThatCapturesNothing($design, $held);
+
+            if ($refusal !== null) {
+                return $refusal;
+            }
+        }
+
+        // The other two are about the DESIGN and are asked only where one
+        // arrived. Both are already true of whatever is stored — nothing could
+        // have written it otherwise — so asking them of the stored config
+        // would only ever refuse an edit for a state the merchant is not
+        // creating.
+        if ($normalized !== null) {
+            $refusal = $this->refuseAnArmMeteredDifferently($normalized, $id)
+                ?? self::refuseADesignThatCannotConvert($normalized);
+
+            if ($refusal !== null) {
+                return $refusal;
+            }
         }
 
         $optin = $this->optins->saveDraft(
@@ -669,73 +757,80 @@ final class OptinController implements RestController
     }
 
     /**
-     * **An Optin cannot be saved with no [[Trigger]] it can act on.**
-     *
-     * Every Optin has at least one, and "shows immediately" is the explicit
-     * `page_load` Trigger rather than an empty list (CONTEXT.md, Trigger). An
-     * Optin with none can never fire — a silent, total loss of function with
-     * nothing in any log, which ADR 0012 names as this category's defining
-     * support ticket.
-     *
-     * Refused rather than repaired. Supplying `page_load` for the merchant
-     * would put a popup on the page the moment it loads, which is display
-     * behaviour nobody asked for — the same reason ADR 0012 refuses to invent
-     * a substitute for a dropped [[Condition]], and the reason the [[Playbook]]
-     * registry refuses the same shape at the other end (
-     * {@see \WConvert\Support\RejectionReason::NoTrigger}).
-     *
-     * Refused at SAVE rather than at publish, because the draft is what the
-     * merchant is looking at: told at publish, they would have to find their
-     * way back to a rules panel they had already left.
-     */
-    /**
      * ========================================================================
-     * A DESIGN THAT REPORTS NOTHING FOR THE GOAL IT IS FILED UNDER IS REFUSED
-     * AT THE WRITE, NOT ONLY ON THE SCREEN.
+     * WHAT A DESIGN CAPTURES IS WHAT THIS ASKS. IT ASKS NO ACT AT ALL.
      * ========================================================================
-     * **One Optin has exactly one converting act, and its [[Goal]] decides
-     * which** (CONTEXT.md, Conversion). Paired the wrong way round the Optin
-     * reports nothing at all: the Goal counts a submission and the design
-     * offers a click, so the analytics screen reads zero forever and looks
-     * broken while being right.
+     * This was `refuseAMetricItCannotReport()`, and it enforced the pairing
+     * *"one Optin has exactly one converting act, and its [[Goal]] decides
+     * which"* — refusing `{goal: 'promote_offer', template_id: 'centred-card'}`
+     * outright. **The Goal no longer decides** (ADR 0059): a registered design
+     * offers exactly one act, {@see TemplateLibrary::refuse()} is what makes
+     * that true, and the loader has always derived the act from the design it
+     * was handed. A Goal that declared one as well was a second source, and
+     * every act-shaped refusal in the product existed only because the two
+     * could disagree.
      *
-     * {@see \WConvert\Playbook\PlaybookLibrary} asks this of a [[Playbook]]
-     * at registration and {@see \WConvert\Template\TemplateLibrary} asks it
-     * of a [[Template]], but **neither is an enforcement mechanism for an
-     * Optin**: `POST /wconvert/v1/optins` takes a whole design in `config`
-     * and is scriptable by anyone holding `manage_options`. That is the same
-     * argument ADR 0026 already made about the goal screen — "a screen is not
-     * an enforcement mechanism" — applied to the other half of the pairing.
+     * So the pairing is gone and the pairing's one REAL consequence stays,
+     * re-keyed onto the thing it was always about — what the design captures:
      *
-     * Without it, `{goal: 'recover_cart', template_id: 'stacked-signup'}` is
-     * accepted: a cart Optin with a form on it, which ADR 0025 says is not
-     * merely unnecessary but **forbidden**, since a click-metered Optin
-     * carrying a form emits [[Lead]]s that are not [[Conversion]]s.
+     * 1. **A Goal counting deliveries needs a capturing design.**
+     *    `lead_magnet_delivered` is written when a push to the lead-magnet
+     *    [[Destination]] succeeds, and there is nothing to push unless the
+     *    visitor gave an address. Under a design with no `field` on it the
+     *    headline reads **zero forever** — ADR 0020's failure that looks
+     *    broken while being right.
+     * 2. **A design that captures nothing holds no [[Destination]] ids.**
+     *    ADR 0025 argued this from the click metric and it was never about the
+     *    metric: a bound Destination on an Optin with no form is configuration
+     *    that can never fire, whatever counts it. Refused rather than
+     *    stripped, because stripping writes a decision the merchant did not
+     *    make and leaves them looking for a binding that is silently gone.
      *
-     * **A design offering nothing is not refused.** A draft mid-creation has
-     * no template yet, and refusing one would block the save that is about to
-     * add it. What is refused is a design that offers the WRONG act, or both.
+     * **The Goal is nullable, and rule 2 is why.** *"It captures nothing so it
+     * has nothing to send"* is true under every Goal, including one this
+     * install can no longer resolve — so making the whole method depend on a
+     * Goal would let rule 2 lapse on precisely the rows ADR 0026 keeps
+     * working. That is the same argument
+     * {@see self::refuseADesignThatCannotConvert()} makes one method down.
+     *
+     * **The capture is read with `TemplateFacets`' own walk**, which is what
+     * the gallery's `captures` chips are derived from at registration — so the
+     * card that marks a design refused and the save that refuses it cannot
+     * disagree about what a design asks for.
+     *
+     * **A design offering nothing is not refused here.** A draft mid-creation
+     * has no template yet, and refusing one would block the save that is about
+     * to add it.
      *
      * @param array<string, mixed> $config Already normalised.
      */
-    private static function refuseAMetricItCannotReport(array $config, Goal $goal): ?WP_Error
+    private function refuseADesignThatCapturesNothing(array $config, ?Goal $goal): ?WP_Error
     {
-        $offered = ConvertingAct::offeredIn($config['template']['tree'] ?? null);
+        $tree = $config['template']['tree'] ?? null;
 
-        if ($offered !== [] && $offered !== [$goal->convertingAct()]) {
+        if (!is_array($tree) || !is_array($tree['steps'] ?? null) || $tree['steps'] === []) {
+            return null;
+        }
+
+        if (TemplateFacets::of($tree, $this->templates->fields())['captures'] !== []) {
+            return null;
+        }
+
+        if ($goal !== null && $goal->needsACapture()) {
             return new WP_Error(
-                'wconvert_optin_metric_mismatch',
+                'wconvert_optin_captures_nothing',
                 sprintf(
                     /* translators: %s: the name of the Goal the Optin is filed under. */
                     __(
-                        // **It names no door the merchant cannot reach.** This
-                        // said "…or change the Goal", and nothing in the
-                        // builder changes a Goal — it is chosen at creation. The
-                        // gallery marks which designs match before the click
-                        // now, so a merchant meets this only through a scripted
-                        // call, where the fact is what matters and the
-                        // instruction is noise.
-                        'This design does not produce the outcome “%s” counts, so the Optin would report nothing. Pick a design that matches the Goal.',
+                        // **It names a door that is on the screen**, which is
+                        // what ADR 0042 rule 4 asks and what the sentence this
+                        // replaces could not do: the Design tab is one click
+                        // away and the gallery marks the capturing designs
+                        // before the click. The old wording said "or change
+                        // the Goal" against no such control; there is one now,
+                        // and this still points at the design, because the
+                        // Goal is what the merchant meant.
+                        '“%s” counts deliveries, and this design captures nothing to deliver to. Pick a design with a field on it from the Design tab.',
                         'wconvert'
                     ),
                     $goal->label()
@@ -744,23 +839,78 @@ final class OptinController implements RestController
             );
         }
 
-        // **A click-metered Optin holds no [[Destination]] ids** (ADR 0025).
-        // It captures nothing, so there is no Lead to push and a bound
-        // Destination is configuration that can never fire — refused rather
-        // than stripped, because stripping writes a decision the merchant did
-        // not make and leaves them looking for a binding that is silently
-        // gone.
-        if ($goal->convertingAct() === ConvertingAct::Click && ($config[OptinBinding::KEY] ?? []) !== []) {
+        if (($config[OptinBinding::KEY] ?? []) !== []) {
             return new WP_Error(
                 'wconvert_optin_captures_nothing',
-                sprintf(
-                    /* translators: %s: the name of the Goal the Optin is filed under. */
-                    __(
-                        '“%s” is measured by a click and captures nothing, so it has no leads to send anywhere. Remove its destinations first.',
+                __(
+                    'This design captures nothing, so it has no leads to send anywhere. Remove its destinations first.',
+                    'wconvert'
+                ),
+                ['status' => 400]
+            );
+        }
+
+        return null;
+    }
+
+    /**
+     * ========================================================================
+     * TWO ARMS OF ONE TEST CONVERT THE SAME WAY, OR THE TEST COMPARES NOTHING.
+     * ========================================================================
+     * **This is the guarantee the shared [[Goal]] used to smuggle in.**
+     * {@see OptinRepository::createVariant()} copies its parent's Goal and says
+     * why: *"two arms serving different Goals would be metered by different
+     * acts, and the rate under one would not be the rate under the other"*.
+     * That held because a Goal declared an act. It no longer does (ADR 0059),
+     * and an arm is a whole Optin with its own `config` (ADR 0045) — so a
+     * merchant could give arm A a form and arm B a click CTA, and the test
+     * would put a ~3% submission rate beside a ~25% click rate and call one of
+     * them the winner.
+     *
+     * The A/B literature names this as *the* invalid-comparison failure:
+     * define the conversion event clearly, so you are comparing like with
+     * like. It is the one thing about an arm that is genuinely not a fact
+     * about that arm alone, which is why it is stated here rather than left to
+     * the copy that made it.
+     *
+     * **Asked of the siblings' own configs**, never of a flag: the act a
+     * sibling converts on is a fact about the design it holds, and a second
+     * copy of it anywhere would be the duplicate declaration this whole ticket
+     * deleted.
+     *
+     * **A design offering nothing is not refused here either.** It is refused
+     * one method down, under its own sentence — telling a merchant their
+     * button-less design is *"not comparable with the other arm"* would name
+     * the smaller of two problems.
+     *
+     * @param array<string, mixed> $config Already normalised.
+     */
+    private function refuseAnArmMeteredDifferently(array $config, string $id): ?WP_Error
+    {
+        $offered = ConvertingAct::offeredIn($config['template']['tree'] ?? null);
+
+        if (count($offered) !== 1) {
+            return null;
+        }
+
+        foreach ($this->optins->otherArmsOf($id) as $arm) {
+            $theirs = ConvertingAct::offeredIn($arm->config['template']['tree'] ?? null);
+
+            if (count($theirs) !== 1 || $theirs === $offered) {
+                continue;
+            }
+
+            return new WP_Error(
+                'wconvert_optin_arms_are_not_comparable',
+                $offered[0] === ConvertingAct::Click
+                    ? __(
+                        'This design converts on a click and the other arm of this test converts on a form submission, so the two rates would not be comparable.',
+                        'wconvert'
+                    )
+                    : __(
+                        'This design converts on a form submission and the other arm of this test converts on a click, so the two rates would not be comparable.',
                         'wconvert'
                     ),
-                    $goal->label()
-                ),
                 ['status' => 400]
             );
         }
@@ -794,7 +944,7 @@ final class OptinController implements RestController
      * anyone holding `manage_options`, which is the same argument ADR 0026
      * made about the goal screen — *"a screen is not an enforcement
      * mechanism"* — and the reason
-     * {@see self::refuseAMetricItCannotReport()} exists one method up.
+     * {@see self::refuseADesignThatCapturesNothing()} exists two methods up.
      *
      * **A config with no design is still not refused**, exactly as above: a
      * draft mid-creation has no template yet, and refusing one would block the
@@ -830,6 +980,26 @@ final class OptinController implements RestController
         );
     }
 
+    /**
+     * **An Optin cannot be saved with no [[Trigger]] it can act on.**
+     *
+     * Every Optin has at least one, and "shows immediately" is the explicit
+     * `page_load` Trigger rather than an empty list (CONTEXT.md, Trigger). An
+     * Optin with none can never fire — a silent, total loss of function with
+     * nothing in any log, which ADR 0012 names as this category's defining
+     * support ticket.
+     *
+     * Refused rather than repaired. Supplying `page_load` for the merchant
+     * would put a popup on the page the moment it loads, which is display
+     * behaviour nobody asked for — the same reason ADR 0012 refuses to invent
+     * a substitute for a dropped [[Condition]], and the reason the [[Playbook]]
+     * registry refuses the same shape at the other end (
+     * {@see \WConvert\Support\RejectionReason::NoTrigger}).
+     *
+     * Refused at SAVE rather than at publish, because the draft is what the
+     * merchant is looking at: told at publish, they would have to find their
+     * way back to a rules panel they had already left.
+     */
     private static function needsATrigger(): WP_Error
     {
         return new WP_Error(

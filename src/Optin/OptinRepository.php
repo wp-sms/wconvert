@@ -269,6 +269,75 @@ final class OptinRepository
     }
 
     /**
+     * Every OTHER Optin in this one's test — its parent and the other arms.
+     *
+     * ========================================================================
+     * THE READ THE COMPARABILITY REFUSAL NEEDS, AND THE ONLY ONE HERE THAT
+     * PULLS `config` FOR MORE THAN ONE ROW.
+     * ========================================================================
+     * An arm's design has to convert the same way as its siblings', or the
+     * test compares a submission rate against a click rate (ADR 0059). That
+     * question can only be asked of the siblings' own designs, and a design
+     * lives in `config` — so this is a LONGTEXT read, deliberately, on a path
+     * that runs once per save of an Optin that is part of a test.
+     *
+     * **It is bounded by what a test is.** A family is a parent and its arms —
+     * two rows in every test anybody runs, a handful at the outside — never
+     * the 500 the list is capped at. There is no `LIMIT` for
+     * {@see self::armsByParent()}'s reason: a cap here would silently drop an
+     * arm out of the comparison and let exactly the mismatch this exists to
+     * catch through.
+     *
+     * **The parent is arm A**, so it is in the family rather than above it:
+     * an arm compared only against its siblings and not against the campaign
+     * it hangs beneath would be comparable to half the test.
+     *
+     * Soft-deleted rows are excluded. An arm the merchant ended is a month of
+     * history rather than a running comparison (CONTEXT.md, Variant), and
+     * refusing an edit because of one would be refusing on the strength of a
+     * row nothing reads any more.
+     *
+     * @return list<Optin>
+     */
+    public function otherArmsOf(string $id): array
+    {
+        $optin = $this->find($id);
+
+        if ($optin === null) {
+            return [];
+        }
+
+        $root = $optin->parentId ?? $optin->id;
+
+        $rows = $this->db->results(
+            Connection::TABLE_OPTINS,
+            'SELECT ' . self::FULL_COLUMNS . ' FROM %i'
+            . ' WHERE (id = %s OR parent_id = %s) ORDER BY id ASC',
+            $root,
+            $root
+        );
+
+        $family = [];
+
+        foreach ($rows as $row) {
+            $arm = Optin::fromRow($row);
+
+            // **Read back in PHP as well as asked in SQL**, which is
+            // {@see self::armsByParent()}'s own split arriving at the same
+            // place: the predicate is what keeps 500 campaigns out of the
+            // query, and re-asking it here is what makes "the other arms"
+            // mean one thing rather than one thing per storage backend.
+            if ($arm->id === $id || $arm->isDeleted() || ($arm->id !== $root && $arm->parentId !== $root)) {
+                continue;
+            }
+
+            $family[] = $arm;
+        }
+
+        return $family;
+    }
+
+    /**
      * Start a test: a second [[Optin]] that is a copy of this one and names it
      * as its parent.
      *
@@ -319,9 +388,22 @@ final class OptinRepository
             'id' => $id,
             'name' => self::nextArmName($parent->name, $this->countArms($parentId)),
             // The parent's Goal, and not a choice. One test compares two
-            // designs of one campaign; two arms serving different Goals would
-            // be metered by different acts, and the rate under one would not
-            // be the rate under the other (ADR 0020).
+            // designs of one campaign, and two arms filed under different
+            // Goals would be read off two different cards — which is not one
+            // test at all (ADR 0020, ADR 0045).
+            //
+            // **It used to carry the comparability guarantee too, and it no
+            // longer can.** A shared Goal used to mean a shared converting
+            // act, because the Goal declared one; the act is the design's now
+            // (ADR 0059), so an arm is free to hold a design that converts
+            // differently and a ~3% submission rate would be compared against
+            // a ~25% click rate. That guarantee moved to an explicit refusal
+            // at the write ({@see \WConvert\Rest\OptinController}), stated
+            // where it is actually true rather than smuggled in here.
+            //
+            // A variant starts as a COPY of its parent's config, so it is born
+            // comparable and only an edit can break it — which is the edit
+            // that refusal catches.
             'goal' => $parent->goal,
             'parent_id' => $parentId,
             'config' => (string) wp_json_encode($parent->config),

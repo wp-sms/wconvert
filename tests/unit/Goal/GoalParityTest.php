@@ -81,8 +81,16 @@ final class GoalParityTest extends TestCase
      * second spelling it exists to prevent.
      *
      * A surface that genuinely needs to distinguish Goals has a field to do it
-     * with — `converting_act` says whether the Optin captures a form or a
-     * click, which is the distinction every screen so far has actually wanted.
+     * with. That field used to be `converting_act`, and it turned out to be a
+     * distinction the DESIGN already carried — the admin reads the act off the
+     * tree it is holding now, with `convertingActOf` (ADR 0059). What travels
+     * in its place is `needs_a_capture`, which is the one thing a Goal can
+     * still fail a design for and is not derivable from a design at all.
+     *
+     * **The scan covers comments**, which is a real constraint on the bundle
+     * rather than an accident of reading files as text: a sentence explaining
+     * why the cart Goal is special is one more place the enum's ids are
+     * written down. Say what a Goal DOES.
      */
     public function testNoGoalIsSpelledInTheAdminBundle(): void
     {

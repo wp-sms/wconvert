@@ -28,24 +28,41 @@ import type { Template } from '@renderer/types';
  * would be asserting a pairing that does not exist (ADR 0043).
  *
  * ============================================================================
- * A DESIGN THE SAVE WILL REFUSE IS MARKED, WITH THE REASON. IT IS NOT HIDDEN.
+ * THE ACT REFUSES NOTHING NOW, AND THAT IS MOST OF THIS FILE'S HISTORY GONE.
  * ============================================================================
- * A design converting on a click cannot serve a Goal that counts submissions —
- * `OptinController` refuses that pairing outright (ADR 0025) — so a merchant
- * pressed *Use this design*, waited, and got a red bar telling them to "pick a
- * design that matches the Goal, **or change the Goal**", with no control on
- * this screen that changes a Goal.
+ * This greyed out **five of seven popup designs** on an Optin whose Goal
+ * counted click-throughs, each saying *"Converts on a form submission. Your
+ * goal counts click-throughs."* — naming no goal and offering no way to change
+ * one. It was marking a refusal the server really made, and the server made it
+ * because a Goal declared a converting act as well as the design did.
  *
- * The admin already had the doctrine: {@see renderingFor} marks an option that
- * cannot be taken *before* the click, with the reason. This is that, one surface
- * over. What changed with the index/tree split is where the reading comes from:
- * the act is a facet the server derived at registration, from the same
- * `ConvertingAct::offeredIn()` the save consults, so the two cannot disagree
- * about which designs match — and the card does not need its tree to say so.
+ * **It does not any more** (ADR 0059). The act belongs to the design, so under
+ * four of the five Goals nothing on a standalone Optin is greyed at all, and
+ * the picker is what it always claimed to be: designs for one [[Display
+ * Type]], compared on what they look like.
+ *
+ * ============================================================================
+ * WHAT IS STILL MARKED, AND EVERY ONE OF IT IS ABOUT SOMETHING REAL.
+ * ============================================================================
+ * Four, and the save refuses all four — this is the near side of that net,
+ * never a replacement for it (ADR 0026):
+ *
+ * - **A design that counts nothing.** It renders, publishes and reports zero
+ *   forever (ADR 0020), which looks like a working Optin.
+ * - **A design that captures nothing, under a Goal read from deliveries.**
+ *   There is no address to deliver to.
+ * - **A design that captures nothing, on an Optin that binds a
+ *   [[Destination]].** There would be no [[Lead]] to send.
+ * - **A design converting the other way from an A/B sibling's.** The two rates
+ *   would not be comparable (ADR 0045).
+ *
+ * The reading still comes from the index: `act` and `captures` are facets the
+ * server derived at registration, from the same walks the save consults, so
+ * the two cannot disagree — and the card does not need its tree to say so.
  *
  * **Marked and not hidden.** A merchant comparing designs and finding one gone
- * has no way to know it existed or why — and the reason is about their Goal
- * rather than about the install, so it is worth reading.
+ * has no way to know it existed or why — and the reason is about their own
+ * Optin rather than about the install, so it is worth reading.
  *
  * ============================================================================
  * A LOCKED CARD IS A LINK. IT IS NEVER A DISABLED BUTTON.
@@ -70,32 +87,77 @@ export interface GalleryProps {
   readonly trees: ReadonlyMap<string, Template>;
   readonly labels: TemplateLabelsWithFacets;
   readonly chosen: string | undefined;
-  /**
-   * What this Optin's [[Goal]] counts, which is what a design has to produce.
-   *
-   * The Goal is chosen at creation and this screen cannot change it, so it is a
-   * constraint on the gallery rather than a filter the merchant set.
-   */
-  readonly act: ConvertingAct;
+  /** What this particular Optin needs of a design — see {@link Fit}. */
+  readonly fit: Fit;
   readonly busy: boolean;
   readonly onChoose: (id: string) => void;
   readonly onNear: (id: string) => void;
 }
 
 /**
- * Can this design serve the Goal, and if not, why not — in the merchant's
- * words.
+ * What THIS Optin needs of a design — the whole of what can refuse one, and
+ * the whole of what can warn about one.
+ *
+ * ============================================================================
+ * ONE OBJECT RATHER THAN FOUR PROPS THREADED THROUGH THREE COMPONENTS.
+ * ============================================================================
+ * It replaces the single `act` the picker used to take. That prop was the
+ * Optin's [[Goal]] wearing a design's vocabulary — the Goal declared an act,
+ * and the gallery refused every design offering the other one — and with the
+ * act off the Goal there is no such constraint left. What is left is smaller,
+ * plural, and about the OPTIN rather than about its Goal alone, which is
+ * exactly the shape one value could not carry.
+ *
+ * Nothing in here is a filter. Every field marks a card and leaves it on
+ * screen, because a merchant comparing designs and finding one gone has no way
+ * to know it existed (ADR 0043).
+ */
+export interface Fit {
+  /**
+   * This Optin's Goal reads its headline from deliveries, so a design with no
+   * field on it has no address to deliver to.
+   *
+   * Resolved on the server and travelling as `needs_a_capture`, never derived
+   * from a Goal id here: this bundle names none, and `GoalParityTest` fails
+   * the day one appears — comments included.
+   */
+  readonly needsACapture: boolean;
+  /** Whether this Optin binds [[Destination]]s, which need a [[Lead]] to send. */
+  readonly bound: boolean;
+  /**
+   * What the other arms of this A/B test convert on, or null where this Optin
+   * is not part of one.
+   *
+   * **The guarantee the shared Goal used to smuggle in** (ADR 0059): two arms
+   * shared an act because they shared a Goal and the Goal declared one. An arm
+   * holding a form beside an arm holding a click CTA would put a ~3%
+   * submission rate against a ~25% click rate and call one of them the winner.
+   */
+  readonly sibling: ConvertingAct | null;
+  /**
+   * What this Optin converts on today, read off the design it holds.
+   *
+   * It refuses nothing. It is what lets the picker say, before the click, that
+   * a switch changes what this Optin counts — including what it has already
+   * counted.
+   */
+  readonly act: ConvertingAct;
+}
+
+/**
+ * Why this design cannot be used on this Optin, in the merchant's words.
  *
  * `null` where it can, and null on a locked card: one that is not offered is
- * never refused, and a second sentence about a Goal it cannot serve would be a
- * sentence about a design the merchant cannot have.
+ * never refused, and a sentence about a design the merchant cannot have would
+ * be a sentence about nothing.
  *
- * The two failures are different and worth telling apart. A design offering the
- * WRONG act is built for a different job; one offering NOTHING renders,
- * publishes and reports zero forever (ADR 0020) — which looks like a working
- * Optin, which is why it is the worse of the two.
+ * **Worst first**, because a card shows one reason. A design that counts
+ * nothing renders, publishes and reports zero forever (ADR 0020) — which looks
+ * like a working Optin, and is the worst of the four. The two capture failures
+ * come next; the arm one last, because it is the only one that is not about
+ * this Optin on its own.
  */
-export function refusalFor(entry: TemplateIndexEntry, act: ConvertingAct): string | null {
+export function refusalFor(entry: TemplateIndexEntry, fit: Fit): string | null {
   if (entry.availability !== 'ready') {
     return null;
   }
@@ -106,14 +168,49 @@ export function refusalFor(entry: TemplateIndexEntry, act: ConvertingAct): strin
     return __('Nothing on this design counts as a conversion.', 'wconvert');
   }
 
-  if (offered === act) {
-    return null;
+  if (entry.facets.captures.length === 0) {
+    if (fit.needsACapture) {
+      return __('This design captures nothing, and your goal counts deliveries.', 'wconvert');
+    }
+
+    if (fit.bound) {
+      return __(
+        'This design captures nothing, so there would be no leads to send to this Optin’s destinations.',
+        'wconvert',
+      );
+    }
   }
 
-  return act === 'submit'
-    ? __('Converts on a click. Your goal counts form submissions.', 'wconvert')
-    : __('Converts on a form submission. Your goal counts click-throughs.', 'wconvert');
+  if (fit.sibling !== null && offered !== fit.sibling) {
+    return fit.sibling === 'submit'
+      ? __(
+          'Converts on a click, and the other arm of this test converts on a form submission.',
+          'wconvert',
+        )
+      : __(
+          'Converts on a form submission, and the other arm of this test converts on a click.',
+          'wconvert',
+        );
+  }
+
+  return null;
 }
+
+/**
+ * Would taking this design change what the Optin counts?
+ *
+ * **Not a refusal, and it disables nothing.** Switching is allowed and is the
+ * whole point of the change; what it does is reinterpret the Optin's history,
+ * because `wconvert_stats` carries no act and a [[Conversion]] is read against
+ * the design the Optin holds NOW (ADR 0020). A hundred form submissions on an
+ * Optin switched to a click design read as a hundred click-throughs.
+ *
+ * That was impossible before, because the swap was refused outright. It is now
+ * something a merchant does casually, so it is said before the click
+ * (ADR 0042 rule 3).
+ */
+export const changesTheAct = (entry: TemplateIndexEntry, fit: Fit): boolean =>
+  entry.availability === 'ready' && entry.facets.act !== null && entry.facets.act !== fit.act;
 
 /**
  * What a locked design IS, since there is no render of it to look at.
@@ -146,7 +243,7 @@ export function Gallery({
   trees,
   labels,
   chosen,
-  act,
+  fit,
   busy,
   onChoose,
   onNear,
@@ -156,7 +253,7 @@ export function Gallery({
       {entries.map((entry) => {
         const locked = renderingFor(entry.availability, 'settings_list') === 'upsell';
         const inUse = entry.id === chosen;
-        const refused = refusalFor(entry, act);
+        const refused = refusalFor(entry, fit);
 
         return (
           <TemplateCard

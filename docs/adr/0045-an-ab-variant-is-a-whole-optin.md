@@ -54,6 +54,28 @@ ones running no test.
 It is also how OptinMonster does it: a split test **duplicates the campaign**.
 Their variant is a campaign with a parent, and their reporting is per-campaign.
 
+> ***The arms' comparability is now an explicit refusal, and it used to be a
+> side effect*** *(amended by
+> [ADR 0059](0059-the-converting-act-belongs-to-the-design.md) — the amendment
+> most likely to be missed).*
+>
+> *A variant being a whole Optin means it holds its own `config` and therefore
+> its own design.* `OptinRepository::createVariant()` *copies the parent's
+> [[Goal]] and says why: two arms metered by different acts put a ~3%
+> submission rate beside a ~25% click rate, and the rate under one is not the
+> rate under the other. **That guarantee came entirely from the Goal declaring
+> an act**, and the Goal no longer does — so a merchant could give arm A a form
+> and arm B a click CTA, and the test would declare a winner between two
+> different questions.*
+>
+> *So it is stated where it is true:*
+> `OptinController::refuseAnArmMeteredDifferently()` *refuses an arm whose
+> design converts the other way from its siblings', reading each sibling's act
+> from that sibling's own design. The parent is arm A and is in the family
+> rather than above it. A variant is still born comparable — it starts as a
+> copy — so only an edit can break it, and the design picker marks it before
+> the click.*
+
 ## Storage does not constrain the UI, and this is the case that proves it
 
 The obvious objection is that a merchant with three tests would see six rows in

@@ -156,14 +156,20 @@ const CARD = {
  * `headline_label` travels with it, which is the addition: the readiness panel
  * says what a DRAFT will be judged on, and a draft has no dashboard card to
  * read that word off.
+ *
+ * **`converting_act` does not, and that is ADR 0059 in one field.** A Goal
+ * declared the act as well as the design did, and the builder read it to grey
+ * out five of seven design cards. `needs_a_capture` is the smaller thing left:
+ * whether the Goal's own number is unreachable on a design that asks the
+ * visitor for nothing.
  */
 const GOAL = {
   id: 'grow_email_list',
   label: 'Grow my email list',
   description: 'Capture email addresses and count every submission.',
-  converting_act: 'submit',
+  needs_a_capture: false,
   headline_kind: 'conversion',
-  headline_label: 'Submissions',
+  headline_label: 'Conversions',
   tier: 'free',
   availability: 'ready' as const,
 };
@@ -191,6 +197,7 @@ function optin(over: Record<string, unknown> = {}) {
     deleted_at: null,
     suspended: null,
     config: { template_id: 'centred-card', template: { tree: ENTRY.tree, tokens: ENTRY.tokens } },
+    sibling_act: null,
     ...over,
   };
 }
@@ -199,8 +206,9 @@ beforeEach(() => {
   vi.clearAllMocks();
   builder.getOptin.mockResolvedValue(optin());
   builder.getRules.mockResolvedValue(vocabulary);
-  builder.saveOptin.mockImplementation((_id: string, _name: string, config: Record<string, unknown>) =>
-    Promise.resolve({ ...optin(), config }),
+  builder.saveOptin.mockImplementation(
+    (_id: string, _name: string, config: Record<string, unknown>, goal?: string) =>
+      Promise.resolve({ ...optin(), config, ...(goal === undefined ? {} : { goal }) }),
   );
   templates.listTemplates.mockResolvedValue({
     templates: [CARD],
@@ -502,7 +510,13 @@ describe('the builder shell', () => {
     expect(stats.readDashboard).not.toHaveBeenCalled();
   });
 
-  it('shows this Optin’s own numbers once it is live, named by its Goal', async () => {
+  /**
+   * **Named by its DESIGN, which is where the precise word survives**
+   * (ADR 0059). The dashboard card says *"Conversions"*, because one Goal's
+   * card can hold an Optin that submits beside one that links away; here there
+   * is one design, so the exact word is available and is always right.
+   */
+  it('shows this Optin’s own numbers once it is live, named by its design', async () => {
     builder.getOptin.mockResolvedValue(optin({ published_at: '2026-08-01 09:00:00' }));
     stats.readDashboard.mockResolvedValue({
       from: '',
@@ -719,9 +733,11 @@ describe('the way out of the builder', () => {
  * exists to produce, what number it will be judged on, or whether the site was
  * serving it.
  *
- * They are read-only here on purpose. A `playbook_id` is provenance and the two
- * never speak again; the Goal is corrected from creation. What was wrong was
- * that they were invisible, not that they were fixed.
+ * The [[Playbook]] is read-only on purpose: it is provenance, and the two never
+ * speak again. **The Goal is not, any more** — it sits in the band with a
+ * *Change goal* control beside it (ADR 0059), and
+ * `tests/js/builder-change-goal.test.tsx` holds that half. What was wrong here
+ * was that both were invisible.
  */
 describe('the summary', () => {
   /**
@@ -746,12 +762,19 @@ describe('the summary', () => {
   const summary = async () =>
     userEvent.click(await screen.findByRole('button', { name: /Summary|thing to fix/ }));
 
+  /**
+   * **The eight facts still cost one button; the [[Goal]] no longer does.**
+   * It moved out in front into the page-header band (ADR 0059), because it was
+   * the one fact in here a merchant needed on arrival every time — and the
+   * thing five of seven greyed-out design cards kept referring to without
+   * naming.
+   */
   it('costs the screen one button until it is asked for', async () => {
     open();
 
     expect(await screen.findByRole('button', { name: 'Summary' })).toBeInTheDocument();
     expect(screen.queryByText('On every page')).toBeNull();
-    expect(screen.queryByText('Grow my email list')).toBeNull();
+    expect(screen.queryByText('Started from')).toBeNull();
   });
 
   /**
@@ -766,7 +789,7 @@ describe('the summary', () => {
 
     const dialog = await screen.findByRole('dialog');
 
-    expect(within(dialog).getByText('Grow my email list · counts Submissions')).toBeInTheDocument();
+    expect(within(dialog).getByText('Grow my email list · counts Conversions')).toBeInTheDocument();
     expect(within(dialog).queryByText('Goal', { selector: 'dt' })).toBeNull();
   });
 

@@ -296,12 +296,56 @@ export interface OptinDraft extends OptinState {
   name: string;
   goal: string;
   config: Record<string, unknown>;
+  /**
+   * What the other arms of this Optin's A/B test convert on, or null where it
+   * is not part of one.
+   *
+   * ==========================================================================
+   * A FACT ABOUT THE FAMILY, WHICH IS WHY IT CANNOT BE DERIVED HERE.
+   * ==========================================================================
+   * Two arms of one test have to convert the same way, or the test compares a
+   * ~3% submission rate against a ~25% click rate (ADR 0059). The builder
+   * holds one Optin and one design, so the siblings' act is the one thing on
+   * this screen it cannot read for itself — and without it the picker could
+   * only mark that refusal after the click.
+   *
+   * Resolved on the server, from the siblings' own configs, by the same walk
+   * the refusal uses. `null` on the overwhelmingly common Optin that is not an
+   * arm of anything, which costs that Optin no query at all.
+   */
+  sibling_act: 'submit' | 'click' | null;
 }
 
 export const getOptin = (id: string) => apiFetch<OptinDraft>({ path: `/wconvert/v1/optins/${id}` });
 
-export const saveOptin = (id: string, name: string, config: Record<string, unknown>) =>
-  apiFetch<OptinDraft>({ path: `/wconvert/v1/optins/${id}`, method: 'PATCH', data: { name, config } });
+/**
+ * Save the draft — and, only where the merchant just changed one, the [[Goal]].
+ *
+ * ============================================================================
+ * `goal` IS OPTIONAL AND NEVER TRAVELS WITHOUT `config`. BOTH HALVES MATTER.
+ * ============================================================================
+ * **Optional**, because an ordinary Save must not re-write the Goal column on
+ * every keystroke's worth of work: `saveDraft()` writes what it is handed, and
+ * a `goal` on every PATCH would make *"correcting a Goal"* indistinguishable
+ * from *"saving"* in anything that later watches the column.
+ *
+ * **Never without the config**, because the pair is what the server checks. A
+ * Goal read from deliveries needs a design that captures something, and the
+ * route asks that of the design this Optin will HOLD — so sending the Goal
+ * beside the config the merchant is looking at is what makes the answer be
+ * about the thing on screen rather than about whatever was last stored.
+ */
+export const saveOptin = (
+  id: string,
+  name: string,
+  config: Record<string, unknown>,
+  goal?: string,
+) =>
+  apiFetch<OptinDraft>({
+    path: `/wconvert/v1/optins/${id}`,
+    method: 'PATCH',
+    data: goal === undefined ? { name, config } : { name, config, goal },
+  });
 
 /**
  * The site's own colours and type, as VALUES.

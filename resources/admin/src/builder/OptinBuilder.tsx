@@ -18,7 +18,7 @@ import { PageAction } from '../shell/PageActions';
 import { Region, RegionBody, RegionError, RegionErrorState } from '../shell/Region';
 import { Skeleton } from '../components/ui/skeleton';
 import { Stat, StatRow, StatRowSkeleton } from '../shell/Stat';
-import { LOADING, messageOf, ready, type Loadable } from '../shell/loadable';
+import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
 import { TemplatePickerDialog } from './TemplatePickerDialog';
 import { useTemplateTrees } from './TemplatePicker';
 import { DestinationsEditor } from './DestinationsEditor';
@@ -30,9 +30,13 @@ import { DevExport } from './DevExport';
 import { StructureView } from './StructureView';
 import { Tokens } from './Tokens';
 import { canRedo, canUndo, historyOf, redo, remember, undo, type History } from './structure/history';
-import { firstBlockOf, nearestTo, samePath } from './structure/tree';
+import { capturesTaken, firstBlockOf, nearestTo, samePath } from './structure/tree';
+import { convertingActOf } from './structure/guards';
 import type { ConvertingAct } from './structure/catalogue';
 import { listGoals, listPlaybooks, type GoalEntry } from '../goals/api';
+import { offerableGoals } from '../goals/GoalCard';
+import { goalSaid } from '../goals/said';
+import { ChangeGoalDialog } from './ChangeGoalDialog';
 import { stepName } from './BlockRow';
 import { TOKENS, slotsOf, type Path } from './panel';
 import {
@@ -323,16 +327,39 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
    */
   const [past, setPast] = useState<History<Template> | null>(null);
   /*
-   * **This Optin's [[Goal]], whole**, read off the same route the creation flow
-   * reads. **No Goal id and no act mapping is spelled in this bundle** —
-   * `goals/api.ts` says why, and `GoalParityTest` fails the day one appears.
+   * **Every [[Goal]] this install has**, read off the same route the creation
+   * flow reads. **No Goal id is spelled in this bundle** — `goals/api.ts` says
+   * why, and `GoalParityTest` fails the day one appears, comments included.
    *
-   * It was the converting act alone, which is all the structure editor needed.
-   * The readiness panel needs the LABEL and the word for the headline metric
-   * beside it, and picking three fields out of one entry into three pieces of
-   * state would be three chances for them to describe different Goals.
+   * ==========================================================================
+   * THE WHOLE LIST NOW, BECAUSE THIS SCREEN CAN CHANGE THE GOAL (ADR 0059).
+   * ==========================================================================
+   * It held the ONE entry this Optin's `goal` pointed at, found by filtering
+   * the response and throwing the rest away — which was right while a Goal was
+   * chosen in a wizard that could not be re-entered. {@see ChangeGoalDialog}
+   * needs the set, and a second request for a list this component already
+   * downloaded would be a second answer to *"what Goals does this install
+   * have"*.
+   *
+   * **Fetched once, like the rule vocabulary and the gallery**, and no longer
+   * keyed on `goal`: the list is the INSTALL's and does not change when this
+   * Optin's Goal does. Keyed on it, changing the Goal refetched the list to
+   * learn a fact the list already held.
    */
-  const [goalEntry, setGoalEntry] = useState<Loadable<GoalEntry | null>>(LOADING);
+  const [goals, setGoals] = useState<Loadable<GoalEntry[]>>(LOADING);
+  /** Whether the merchant has the Goal picker open. */
+  const [changingGoal, setChangingGoal] = useState(false);
+  const changeGoal = useRef<HTMLButtonElement>(null);
+  /**
+   * What the other arms of this Optin's A/B test convert on, or null.
+   *
+   * The one thing on this screen the builder cannot read off the document in
+   * front of it: it lives in the siblings' own `config`s, so the server
+   * resolves it beside `suspended` ({@see OptinDraft.sibling_act}). It is what
+   * lets the picker mark a design that would make the two arms incomparable
+   * BEFORE the click rather than after it (ADR 0042 rule 3, ADR 0059).
+   */
+  const [siblingAct, setSiblingAct] = useState<ConvertingAct | null>(null);
   /*
    * **What the [[Playbook]] this Optin started from is called.** Provenance,
    * exactly as `template_id` is: prefill snapshots a Playbook's values and the
@@ -372,20 +399,31 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
 
   const report = useCallback((cause: unknown) => setError(messageOf(cause)), []);
 
-  /*
-   * Which act the Goal is measured by, derived rather than held: two pieces of
-   * state read off one registry entry are two chances to describe different
-   * Goals. `null` where the registry has not answered, and where it answered
-   * with something this build does not recognise as an act.
+  /**
+   * This Optin's [[Goal]] as the registry resolved it, in the three states a
+   * lookup has.
+   *
+   * `ready(null)` is *"this build cannot name that Goal"* and `loading` is
+   * *"nobody has answered yet"* — a distinction the panels below depend on,
+   * because a raw id flashing into a label teaches a merchant that the
+   * `<code>` means *wait* rather than what it says.
+   *
+   * **A failed list reads as `ready(null)`**, which is the same fix
+   * {@see OptinList} made for the same read: a registry that answered nothing
+   * is one this build genuinely cannot name a Goal from, and its outage must
+   * cost a row rather than cost the merchant their Save button.
    */
+  const goalEntry: Loadable<GoalEntry | null> = useMemo(() => {
+    if (goals.status === 'loading' || goal === null) {
+      return LOADING;
+    }
+
+    return ready(goals.status === 'ready' ? (goals.data.find((each) => each.id === goal) ?? null) : null);
+  }, [goals, goal]);
+
   const entryOfGoal = goalEntry.status === 'ready' ? goalEntry.data : null;
   /** The numbers themselves, once there are some — null while loading and where there are none. */
   const numbers = stats.status === 'ready' ? stats.data : null;
-  const act: ConvertingAct | null =
-    entryOfGoal?.converting_act === 'click' || entryOfGoal?.converting_act === 'submit'
-      ? entryOfGoal.converting_act
-      : null;
-
   /** The [[Destination]] ids this Optin pushes to, as `config` holds them. */
   const bound = Array.isArray(config?.destinations) ? (config.destinations as string[]) : [];
 
@@ -415,6 +453,34 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
   const template = config?.template as Template | undefined;
   const templateId = typeof config?.template_id === 'string' ? config.template_id : undefined;
   const templates = gallery?.templates;
+
+  /**
+   * ==========================================================================
+   * WHICH ACT THIS OPTIN CONVERTS ON — READ OFF THE DESIGN, NOT OFF THE GOAL.
+   * ==========================================================================
+   * It came from `converting_act` on the registry entry, and that was the
+   * duplicate ADR 0059 deleted: `TemplateLibrary::refuse()` already rejects a
+   * design offering two acts or none, so a design in hand offers exactly one
+   * and the Goal had nothing to add. `convertingActOf` is the same walk
+   * `ConvertingAct::offeredIn()` makes on the server, over the same tree the
+   * renderer draws.
+   *
+   * **It is no longer nullable, and that deletes a real defect.** The registry
+   * answered a round trip after the design did, so every consumer took
+   * `act ?? 'submit'` and the structure editor spent its first renders
+   * offering a click-metered Optin a submit button's menu. There is nothing
+   * left to wait for.
+   *
+   * **`submit` where a design offers nothing**, which is a design with no
+   * button on it: the editor's answer there is *"add the button that submits
+   * the form first"*, which is the actionable half of an unanswerable
+   * question. The Optin is separately marked as reporting zero forever
+   * ({@see problemsIn}), which is the sentence that matters.
+   */
+  const act: ConvertingAct =
+    template === undefined ? 'submit' : (convertingActOf(template.tree)[0] ?? 'submit');
+  /** What this Optin's design asks a visitor for — the other half of {@see Fit}. */
+  const captures = template === undefined ? [] : capturesTaken(template.tree);
 
   /** Whether this Optin competes for the screen — only an overlay does. */
   const overlay = config === null || displayTypeOf(config, templates) !== 'inline';
@@ -459,12 +525,27 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
         setPublishedAt(optin.published_at);
         setSuspended(optin.suspended);
         setDeletedAt(optin.deleted_at);
+        setSiblingAct(optin.sibling_act);
       })
       .catch((cause: unknown) => setFatal(messageOf(cause)));
   }, [id]);
 
-  // The rule vocabulary and the gallery are the install's, not the Optin's, so
-  // they are fetched once and survive every edit below.
+  /*
+   * The rule vocabulary, the gallery and the [[Goal]] registry are the
+   * INSTALL's rather than this Optin's, so they are fetched once and survive
+   * every edit below.
+   *
+   * **The Goals moved into this effect**, from one keyed on `goal` that
+   * filtered the response down to a single entry and threw the rest away. Two
+   * things changed and both are ADR 0059's: this screen can change the Goal
+   * now, so it needs the set — and keying the read on `goal` meant changing
+   * one refetched the list to learn a fact the list already held.
+   *
+   * The Goals' failure is swallowed, like the numbers below: without them the
+   * band cannot name the Goal and the picker cannot offer another, and nothing
+   * else on this screen is affected. An editor that refused to open because a
+   * lookup failed would be a worse answer than a band one line short.
+   */
   useEffect(() => {
     getRules()
       .then(setVocabulary)
@@ -472,30 +553,8 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
     listTemplates()
       .then(setGallery)
       .catch((cause: unknown) => setFatal(messageOf(cause)));
-  }, []);
-
-  /*
-   * **This Optin's Goal**, which decides the act the structure editor offers a
-   * button for (ADR 0025) and the two facts the readiness panel leads with.
-   *
-   * Read from the registry rather than mapped here. Three of the five Goals are
-   * submissions and two are clicks, and a copy of that table in this bundle
-   * would be a cross-language list with nothing asserting the two agree — the
-   * fifth one this project has refused (ADR 0019), and the reason
-   * `goals/api.ts` names no Goal id either.
-   *
-   * Its failure is swallowed, like the numbers below it: without it the Add
-   * menu cannot offer a button and the panel is two rows shorter, and nothing
-   * else on this screen is affected. An editor that refused to open because a
-   * lookup failed would be a worse answer than an Add menu one item short.
-   */
-  useEffect(() => {
-    if (goal === null) {
-      return;
-    }
-
     listGoals()
-      .then((goals) => setGoalEntry(ready(goals.find((each) => each.id === goal) ?? null)))
+      .then((entries) => setGoals(ready(entries)))
       /*
        * **Failure RESOLVES rather than staying in flight**, which is the same
        * fix {@see OptinList} made for the same read: a row held forever is a
@@ -503,8 +562,8 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
        * this build genuinely cannot name a Goal from — which is exactly what
        * the `<code>` fallback says.
        */
-      .catch(() => setGoalEntry(ready(null)));
-  }, [goal]);
+      .catch((cause: unknown) => setGoals(failed(cause)));
+  }, []);
 
   /*
    * **The name of the [[Playbook]] this Optin was prefilled from.**
@@ -733,16 +792,32 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
     setDirty(true);
   }, []);
 
-  const save = (next: Config = config ?? {}) => {
+  /**
+   * Send the draft, and — only where the merchant just changed one — the
+   * [[Goal]] beside it.
+   *
+   * **`nextGoal` is undefined on every ordinary Save**, and that is a rule
+   * rather than an optimisation: `saveDraft()` writes what it is handed, so a
+   * `goal` on every PATCH would make *"correcting a Goal"* indistinguishable
+   * from *"saving"*. It also never travels without the config, because the
+   * pair is what the server checks — a Goal read from deliveries needs a
+   * design that captures something, and the answer has to be about the design
+   * on screen (ADR 0059).
+   */
+  const save = (next: Config = config ?? {}, nextGoal?: string) => {
     setBusy(true);
     setError(null);
 
-    return saveOptin(id, name, next)
+    return saveOptin(id, name, next, nextGoal)
       .then((optin) => {
         // The server's copy wins: it normalises against both vocabularies on
         // the way in, and a screen that kept its own would show a rule or a
         // node that was dropped at the boundary.
         setConfig(optin.config);
+        // And its copy of the Goal wins for the same reason. It is the column
+        // the save actually wrote, so a refused correction leaves the band
+        // saying what the Optin still holds rather than what was asked for.
+        setGoal(optin.goal);
         setSaved(true);
         setDirty(false);
       })
@@ -1123,7 +1198,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
               overlay={overlay}
               bound={bound}
               template={template}
-              act={act}
+              needsACapture={entryOfGoal?.needs_a_capture === true}
               destinations={destinations?.destinations ?? null}
               onGoTo={goTo}
               onGoToSchedule={goToSchedule}
@@ -1135,6 +1210,58 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
               {__('Save changes', 'wconvert')}
             </Button>
           </div>
+        </div>
+
+        {/*
+          ==================================================================
+          THE GOAL, ON SCREEN — AND A WAY TO CORRECT IT (ADR 0059).
+          ==================================================================
+          **It was invisible exactly where it hurt.** A [[Goal]] is chosen in a
+          three-step wizard that cannot be re-entered, and the builder's only
+          mention of it was one click deep behind a button labelled *Summary*.
+          So a merchant met *"your goal counts click-throughs"* on five of
+          seven greyed-out design cards without ever being told which goal that
+          was, and the server's own refusal had the words *"or change the
+          Goal"* taken out of it because no such control existed.
+
+          **A line rather than the panel this was twice before.** It shipped as
+          a permanent card above the tab strip (~190px) and as a disclosure
+          (46px), and both were rejected for the room they cost on an editor
+          whose floor is 782px (ADR 0038). One muted line under the name is
+          what a subject costs — and unlike the Summary behind it, it answers a
+          question the merchant has on arrival every time (ADR 0042 rule 2).
+
+          **The height is reserved**, exactly as the stats strip below it is,
+          and for the identical reason: the registry answers a round trip after
+          the Optin does, so a line that appeared would push the strip and the
+          tab strip down after the browser had already painted. `1lh` against
+          this element's own type, rather than a pixel figure that would have
+          to be kept equal to the type scale.
+        */}
+        <div className="mt-1 flex min-h-[1lh] flex-wrap items-center gap-x-2 text-note text-muted-foreground">
+          <span>{goalSaid(goalEntry, goal ?? '')}</span>
+
+          {/*
+            **Only where there is somewhere to go.** An install with one Goal
+            it can serve has nothing to offer here, and a control that opens a
+            picker holding only the card you already have is a control that
+            wastes a click (ADR 0042 rule 2). It waits for the registry rather
+            than appearing with it, which is what the reserved line above
+            absorbs.
+          */}
+          {goals.status === 'ready' &&
+            offerableGoals(goals.data, 'creation_flow', goal ?? '').length > 1 && (
+              <Button
+                ref={changeGoal}
+                type="button"
+                variant="link"
+                size="sm"
+                className="h-auto p-0 align-baseline"
+                onClick={() => setChangingGoal(true)}
+              >
+                {__('Change goal', 'wconvert')}
+              </Button>
+            )}
         </div>
 
         {/*
@@ -1167,9 +1294,29 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
             {numbers !== null ? (
               <>
                 <StatRow>
+                  {/*
+                    **The precise word, and this is where it survives.** The
+                    dashboard card says *"Conversions"* because one [[Goal]]'s
+                    card can hold an Optin that submits beside one that links
+                    away (ADR 0059) — true of both, and never wrong. Here there
+                    is exactly one design, so the exact word is available and
+                    is always right: it is read off the same tree the renderer
+                    draws, rather than off a Goal that used to promise it.
+
+                    `numbers.label` is still what a delivery Goal reads, because
+                    *Deliveries* is a fact about the counted KIND rather than
+                    about the act — the delivery happens after the Conversion,
+                    from a different process (ADR 0008).
+                  */}
                   <Stat
                     emphasis
-                    label={numbers.label}
+                    label={
+                      entryOfGoal?.needs_a_capture === true
+                        ? numbers.label
+                        : act === 'click'
+                          ? __('Click-throughs', 'wconvert')
+                          : __('Submissions', 'wconvert')
+                    }
                     value={formatCount(numbers.report.headline)}
                   />
                   <Stat
@@ -1424,7 +1571,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
                       <StructureView
                         template={entry}
                         labels={gallery.labels}
-                        act={act ?? 'submit'}
+                        act={act}
                         selected={selection?.path ?? null}
                         onSelect={chooseFromTree}
                         onChange={(next, coalesce) => edit({ template: next }, coalesce)}
@@ -1570,13 +1717,60 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
         trees={trees}
         displayType={displayTypeOf(config, templates)}
         chosen={templateId}
-        act={act ?? 'submit'}
+        /*
+          **Everything that can refuse a design on THIS Optin, as one value.**
+          It was the Goal's converting act, and the gallery greyed out every
+          design offering the other one — five of seven popup cards, saying
+          *"your goal counts click-throughs"* and naming no way to change a
+          goal. The act is the design's now (ADR 0059), so what is left is
+          about the Optin: what its Goal needs of a capture, whether it binds
+          [[Destination]]s, what its A/B siblings convert on, and what it
+          converts on today.
+        */
+        fit={{
+          needsACapture: entryOfGoal?.needs_a_capture === true,
+          bound: bound.length > 0,
+          sibling: siblingAct,
+          act,
+        }}
         busy={busy}
         onNear={want}
         onChoose={(picked) => {
           setBrowsing(false);
           void save({ ...config, template_id: picked });
         }}
+      />
+
+      {/*
+        **The other dialog rendered outside the tabs**, for the picker's own
+        reason: a Radix dialog portals to `document.body`, and one owned by a
+        tab inside an `<Activity mode="hidden">` is one whose close never
+        re-renders. This one is opened from the page-header band rather than
+        from a tab, so it never had that problem — it sits here because both
+        dialogs belonging to this screen belong in one place.
+
+        **The config travels with the Goal, always.** The pair is what the
+        server checks, and sending the Goal alone would have it answered against
+        whatever was last stored rather than against the design on screen
+        (ADR 0059). It is the current `config` and not an edit, so the save is
+        the merchant's own draft going up unchanged beside the correction.
+      */}
+      <ChangeGoalDialog
+        open={changingGoal}
+        onOpenChange={(next) => {
+          setChangingGoal(next);
+
+          // Radix restores focus to its own trigger and this dialog has none,
+          // exactly as the picker above: naming the control is what puts the
+          // caret back rather than on `<body>`.
+          if (!next) {
+            changeGoal.current?.focus();
+          }
+        }}
+        goals={goals}
+        current={goal ?? ''}
+        captures={captures.length > 0}
+        onChange={(picked) => void save(config ?? {}, picked)}
       />
     </div>
   );

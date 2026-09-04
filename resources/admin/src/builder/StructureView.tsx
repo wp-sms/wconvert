@@ -120,13 +120,18 @@ export interface StructureViewProps {
   readonly template: Template;
   readonly labels: TemplateLabels;
   /**
-   * Which act this Optin's [[Goal]] is measured by, as
-   * `GET /wconvert/v1/goals` reports it.
+   * Which act this Optin converts on, read off the design it holds.
    *
-   * **Told rather than derived.** A `link` button on a submit-metered Optin
-   * fails the WHOLE save through `refuseAMetricItCannotReport`, and a merchant
-   * should never meet that: it would be a red bar over an editor that had
-   * happily let them do it.
+   * **Told rather than derived HERE, and derived one level up.** It came from
+   * `GET /wconvert/v1/goals`, because a [[Goal]] declared the act — which meant
+   * this editor spent its first renders defaulting to `submit` while the
+   * registry answered, and briefly offered a click-metered Optin the wrong
+   * menu. The act is the design's now (ADR 0059), so the builder reads it from
+   * the same tree it hands over here and there is nothing to wait for.
+   *
+   * It stays a prop rather than being recomputed from `template`: this
+   * component hands it to the Add menu and the ⇄ menu, and two walks over one
+   * tree are two chances for the three to disagree about one design.
    */
   readonly act: ConvertingAct;
   /** Which block is live, as its path. Null only while the design holds none. */

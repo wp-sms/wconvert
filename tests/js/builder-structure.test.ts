@@ -432,12 +432,15 @@ describe('a block the catalogue builds', () => {
   const at = { parent: [0], key: 'children', index: 0 } as const;
 
   /**
-   * **The Goal decides, at the moment of creation.** `action` is a param rather
-   * than content, so the Content tab never offers it — a button that arrives
-   * with the wrong one stays wrong until the save refuses the WHOLE config
-   * through `refuseAMetricItCannotReport`.
+   * **The DESIGN decides, at the moment of creation** (ADR 0059). `action` is a
+   * param rather than content, so the Content tab never offers it — a button
+   * that arrives with the wrong one stays wrong until a save refuses the WHOLE
+   * config for its step count.
+   *
+   * Reachable only by deleting the one button and adding one back, and the act
+   * to restore is the one the design had.
    */
-  it('gives a button the act its Goal is measured by', () => {
+  it('gives a button the act the design converts on', () => {
     const empty: TemplateTree = { steps: [{ type: 'stack', children: [] }] };
 
     expect(nodeFor(empty, 'button', at, 'click')).toMatchObject({ action: 'link' });

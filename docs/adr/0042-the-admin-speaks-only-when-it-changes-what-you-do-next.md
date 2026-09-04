@@ -92,12 +92,41 @@ the three cannot disagree about which designs match.
 three designs and finding two has no way to know the third exists or why, and the
 reason here is about *their Goal* rather than about the install.
 
+> ***The DOCTRINE survives; the worked example above is history***
+> *(amended by
+> [ADR 0059](0059-the-converting-act-belongs-to-the-design.md)). A Goal declares
+> no converting act any more, so the pairing this rule was demonstrated on is
+> not refused and nothing marks it — under four of the five Goals, on a
+> standalone Optin, **nothing in the gallery is greyed at all**. That is this
+> rule succeeding rather than being overturned: the honest number of refusals
+> was smaller than the wall it was drawing.*
+>
+> *What the rule now marks before the click, in the same place and in the same
+> way: a design that counts nothing, a design that captures nothing under a
+> Goal read from deliveries or on an Optin binding a [[Destination]], a design
+> that would make two A/B arms incomparable, and — as a note rather than a
+> refusal — that switching to a design converting the other way reinterprets
+> everything this Optin has already counted.*
+
 ## 4. An error names a door that is on this screen
 
 The refusal said: *"Pick a design that matches the Goal, **or change the
 Goal**."* Nothing in the builder changes a Goal — it is chosen at creation. An
 instruction pointing at a control that is not there is worse than no instruction,
 because the merchant goes looking for it.
+
+> ***The reasoning survives; the FACT it rested on is dead*** *(amended by
+> [ADR 0059](0059-the-converting-act-belongs-to-the-design.md)).* **There is a
+> control that changes a Goal now** *— one muted line in the builder's
+> page-header band with a* Change goal *button beside it. This rule is most of
+> why it was built: deleting the words was the honest move while no door
+> existed, and a rule that keeps forcing sentences to be shortened is a rule
+> pointing at a missing control.*
+>
+> *The refusal this was written about is deleted outright. The two that
+> survive both name doors that ARE on the screen — the Design tab, and the
+> Destinations tab — which is the rule working forwards instead of by
+> subtraction.*
 
 This is [ADR 0039](0039-a-screen-is-regions-and-scope-decides-placement.md)'s
 empty-state rule generalised: *"No Optins yet."* is a dead end because it names

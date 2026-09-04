@@ -36,9 +36,9 @@ const BUTTON = [0, 'children', 2, 'children', 1];
  */
 const said = (
   template: Template,
-  act: 'submit' | 'click' = 'submit',
+  needsACapture = false,
   endsAt: string | null = '2026-11-30 23:59',
-) => problemsIn(template, act, endsAt ?? undefined).map((problem) => problem.said);
+) => problemsIn(template, needsACapture, endsAt ?? undefined).map((problem) => problem.said);
 
 const withTokens = (tokens: Record<string, string>): Template => ({
   tree: ENTRY.tree,
@@ -63,16 +63,57 @@ describe('the converting act', () => {
   });
 
   /**
-   * The state ⇄ cannot fix: a design picked for a different job. It fails the
-   * whole save through `refuseAMetricItCannotReport`, and the answer is the
-   * gallery or the Goal rather than a param.
+   * **And it says nothing at all about which act the design offers.**
+   *
+   * Two problems here were *"your goal counts form submissions and this design
+   * converts on a click, so saving it will be refused"* and its mirror. A
+   * [[Goal]] counts no act now (ADR 0059), so the act this design offers is
+   * this Optin's act by definition — there is nothing left for it to disagree
+   * with, and the sentences ended *"…or change the goal"* against a builder
+   * that had no such control.
    */
-  it('says when the design converts the way the Goal does not count', () => {
-    expect(said({ tree: ENTRY.tree, tokens: ENTRY.tokens }, 'click')[0]).toMatch(
-      /counts click-throughs/,
-    );
+  it('never says a design converts the way something else does not count', () => {
+    expect(said({ tree: ENTRY.tree, tokens: ENTRY.tokens })).toEqual([]);
+    expect(said({ tree: CLICKS, tokens: ENTRY.tokens })).toEqual([]);
   });
 });
+
+/**
+ * The one [[Goal]]-shaped problem left, and it is about what a design CAPTURES.
+ *
+ * The delivery kind is written when a push to the lead-magnet [[Destination]]
+ * succeeds, and a design asking the visitor for nothing gives it nothing to
+ * push — so the headline reads zero forever, which the save refuses.
+ */
+describe('a goal with nothing to deliver to', () => {
+  it('says so on a design that captures nothing', () => {
+    expect(said({ tree: CLICKS, tokens: ENTRY.tokens }, true)[0]).toMatch(
+      /no address to deliver to/,
+    );
+  });
+
+  it('says nothing on a design that captures something', () => {
+    expect(said({ tree: ENTRY.tree, tokens: ENTRY.tokens }, true)).toEqual([]);
+  });
+
+  /** And nothing at all under a Goal that reads its number from conversions. */
+  it('says nothing where the goal does not count deliveries', () => {
+    expect(said({ tree: CLICKS, tokens: ENTRY.tokens }, false)).toEqual([]);
+  });
+});
+
+/** A one-step design that converts on a click and asks for nothing. */
+const CLICKS: TemplateTree = {
+  steps: [
+    {
+      type: 'stack',
+      children: [
+        { type: 'heading', role: 'headline', text: 'Half price this week' },
+        { type: 'button', action: 'link', role: 'cta_label', label: 'Shop the sale' },
+      ],
+    } as unknown as TemplateNode,
+  ],
+};
 
 /**
  * `render.ts` makes the step holding a non-`link` button the `<form>`, and that
@@ -192,7 +233,7 @@ describe('a countdown with no end date', () => {
    * button took it.
    */
   it('sends the merchant to the schedule rather than to the clock', () => {
-    const problems = problemsIn(withClock, 'submit', undefined);
+    const problems = problemsIn(withClock, false, undefined);
 
     expect(problems).toHaveLength(1);
     expect(problems[0].said).toMatch(/Set an end date/);
@@ -207,7 +248,7 @@ describe('a countdown with no end date', () => {
 
   /** A design with no clock in it is not asked the question at all. */
   it('says nothing about a design that does not count down', () => {
-    expect(said({ tree: ENTRY.tree, tokens: ENTRY.tokens }, 'submit', null)).toEqual([]);
+    expect(said({ tree: ENTRY.tree, tokens: ENTRY.tokens }, false, null)).toEqual([]);
   });
 });
 
