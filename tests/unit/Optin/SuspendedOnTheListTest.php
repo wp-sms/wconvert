@@ -7,6 +7,7 @@ use PHPUnit\Framework\TestCase;
 use WConvert\Goal\GoalRegistry;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
+use WConvert\Optin\SiteFrequency;
 use WConvert\Optin\Suspension;
 use WConvert\Rest\OptinController;
 use WConvert\Rules\RuleCatalogue;
@@ -125,7 +126,8 @@ final class SuspendedOnTheListTest extends TestCase
             new GoalRegistry($pro, $site),
             $this->publishedSet,
             $degradation,
-            new RuleCatalogue($vocabulary, $pro, $site)
+            new RuleCatalogue($vocabulary, $pro, $site),
+            new SiteFrequency(new FakeOptionStore())
         );
     }
 

@@ -1,4 +1,4 @@
-import { decide, isOverlay, rulesOf, type Decision, type Standing, type Verdict } from '../decide';
+import { decide, isOverlay, isSiteCapped, rulesOf, type Decision, type Standing, type Verdict } from '../decide';
 import type { PayloadEntry, Rule } from '../types';
 
 /**
@@ -91,6 +91,23 @@ export interface EntryReport {
    * for a date that already passed.
    */
   readonly schedule: 'before' | 'after' | null;
+  /**
+   * The SITE's allowance is spent, not this Optin's.
+   *
+   * ==========================================================================
+   * A FACT ABOUT THE PAGE, CARRIED PER ROW BECAUSE THAT IS WHERE IT IS READ.
+   * ==========================================================================
+   * Same arrangement as {@link lostArbitration}, and for its reason: the
+   * funnel decides what to say about ONE Optin out of that Optin's row, so a
+   * fact it has to consult belongs on the row even where the fact itself is
+   * true of every row at once.
+   *
+   * And same arrangement as {@link schedule} on the other axis: `decide`
+   * answers `capped` for a site-vetoed Optin exactly as it does for one whose
+   * own allowance is spent (ADR 0047), so the distinction is derived here,
+   * from the same inputs the decision was taken on, AFTER it was taken.
+   */
+  readonly siteCapped: boolean;
 }
 
 export interface Explanation {
@@ -137,6 +154,9 @@ export function explain(decision: Decision): Explanation {
 
   const verdict = decide({ ...decision, evaluators: watched });
   const showing = new Set(verdict.show.map((entry) => entry.id));
+  // One fact about the page, asked once, from the same predicate the decision
+  // was taken with rather than from a second spelling of it.
+  const siteCapped = isSiteCapped(decision);
   const standings = new Map(verdict.candidates.map((candidate) => [candidate.id, candidate.standing]));
 
   // Everything `decide` skipped is filled in HERE, after the verdict is taken,
@@ -169,6 +189,7 @@ export function explain(decision: Decision): Explanation {
         conditions: (entry.conditions ?? []).map((rule) => report(rule, answers, decision)),
         lostArbitration: standing === 'ready' && !showing.has(entry.id),
         schedule: sideOfWindow(entry, decision.now),
+        siteCapped,
       };
     }),
   };

@@ -94,3 +94,28 @@ export const unpublishOptin = (id: string) =>
 // A soft delete. The Optin keeps its row, because analytics interprets its
 // conversion counts by joining it at read.
 export const deleteOptin = (id: string) => apiFetch<unknown>({ path: path(`/${id}`), method: 'DELETE' });
+
+/**
+ * The allowance the whole site shares — how often this device may be shown
+ * **anything at all** (ADR 0047).
+ *
+ * ============================================================================
+ * ALL FOUR FIELDS, SPELLED OUT, WHICH IS NOT THE PAYLOAD'S SHAPE.
+ * ============================================================================
+ * The engine reads an absent switch as ON, so the copy the browser gets omits
+ * a `true`. This scope's defaults are the opposite — all four off until a
+ * merchant asks — and a checkbox cannot be drawn from a key that is not there.
+ * So the route answers with every field, and this screen never has to work out
+ * which scope's silence it is reading.
+ */
+export interface SiteAllowance {
+  maxImpressions: number | null;
+  cooldownDays: number | null;
+  stopAfterDismiss: boolean;
+  stopAfterConversion: boolean;
+}
+
+export const readSiteAllowance = () => apiFetch<SiteAllowance>({ path: path('/frequency') });
+
+export const saveSiteAllowance = (allowance: SiteAllowance) =>
+  apiFetch<SiteAllowance>({ path: path('/frequency'), method: 'POST', data: allowance });

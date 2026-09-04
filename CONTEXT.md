@@ -188,11 +188,18 @@ impressions, the day of the last one, dismissed, converted — written through a
 (`resources/loader/src/state.ts`). There is no key per Optin and no second key:
 a new kind of per-visitor fact is a reserved slot or a new field inside `wcv1`.
 
+The first such slot is `site`, which holds the site-wide [[Frequency]] — the
+same four fields, once for the whole site. It is `functional` for the reason
+every other field in this key is, and it is **written only where the merchant
+has configured a site-wide allowance**, so an install that has asked for nothing
+stores exactly what it stored before the feature existed. `site` is lower case
+and four characters, so no ULID can take it (ADR 0047).
+
 **The `1` is a version, and it is an escape hatch the server side does not
 have.** A shape change that cannot be made backward-compatible is a bump to
 `wcv2`: old records are abandoned rather than migrated, every visitor looks new
 once, and for a frequency cap that is an acceptable price. Nothing equivalent
-exists for the three tables, the seven options or the published set, which is
+exists for the three tables, the eight options or the published set, which is
 why browser storage is the least urgent of WConvert's four storage layers.
 
 The cart cookie is the second `functional` case, and it is **booked as a
@@ -304,6 +311,14 @@ default *on* per Optin and the loader tests `!== false`, so a stored `true` is
 bytes on every matching page view that cannot change an answer — the payload is
 inlined into every page an Optin matches. `src/Optin/Frequency.php` is the one
 place that arithmetic lives, and it is the shape the site-wide scope reuses.
+
+> **That sentence is about the PAYLOAD, and the site scope is where the two come
+> apart.** To the engine an absent switch is *on*; to the site scope an absent
+> switch is *off*. So the site's WordPress option
+> (`src/Optin/SiteFrequency.php`) spells both switches out in full — an option
+> written the payload's way would lose a switch the merchant had just turned on
+> — while what reaches the browser still never carries a `true`. One reading of
+> absence per side of the wire, and one place that decides it.
 
 ### Schedule
 

@@ -83,6 +83,31 @@ final class Frequency
     }
 
     /**
+     * Does this allowance stop anything at all?
+     *
+     * ========================================================================
+     * NOT THE INVERSE OF {@see self::isEmpty()}, AND THE DIFFERENCE IS A SCOPE.
+     * ========================================================================
+     * `isEmpty()` asks whether anything DIFFERS FROM THE ENGINE'S DEFAULTS,
+     * which is a question about the bytes: nothing differs, so the caller drops
+     * the key. This asks whether the allowance can ever refuse a page view,
+     * which is a question about the answer.
+     *
+     * Per Optin the two agree — an untouched allowance still stops after a
+     * dismissal, so it is empty and it stops something. At site scope they come
+     * apart, because there the two switches default OFF: an untouched site
+     * allowance stops nothing, so there is nothing for the page to carry and
+     * nothing for the visitor's device to record (ADR 0047, {@see SiteFrequency}).
+     */
+    public function stopsNothing(): bool
+    {
+        return $this->maxImpressions === null
+            && $this->cooldownDays === null
+            && !$this->stopAfterDismiss
+            && !$this->stopAfterConversion;
+    }
+
+    /**
      * Back to storage, with **only what differs from the engine's defaults**.
      *
      * `true` is never written. The payload is inlined into every matching page

@@ -79,6 +79,7 @@ const entry = (over: Partial<EntryReport> = {}): EntryReport => ({
   ],
   lostArbitration: false,
   schedule: null,
+  siteCapped: false,
   ...over,
 });
 

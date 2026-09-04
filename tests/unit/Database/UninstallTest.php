@@ -109,14 +109,14 @@ final class UninstallTest extends TestCase
      *
      * The count is asserted too, so that a `const OPTION` deleted from the
      * source without its line being removed from `uninstall.php` is visible as
-     * well — the seven are the seven, not "at least the ones we thought of".
+     * well — the eight are the eight, not "at least the ones we thought of".
      */
     public function testEveryOptionWConvertStoresIsDeleted(): void
     {
         $options = self::everyOptionInTheSource();
         $contents = self::contents();
 
-        $this->assertCount(7, $options, 'seven options; an eighth is a line uninstall.php needs');
+        $this->assertCount(8, $options, 'eight options; a ninth is a line uninstall.php needs');
 
         foreach ($options as $option) {
             $this->assertStringContainsString(

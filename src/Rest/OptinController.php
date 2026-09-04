@@ -12,6 +12,7 @@ use WConvert\Optin\Optin;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
 use WConvert\Optin\Schedule;
+use WConvert\Optin\SiteFrequency;
 use WConvert\Optin\Suspension;
 use WConvert\Rules\Degradation;
 use WConvert\Rules\RuleCatalogue;
@@ -51,6 +52,7 @@ final class OptinController implements RestController
         private readonly PublishedSet $publishedSet,
         private readonly Degradation $degradation,
         private readonly RuleCatalogue $rules,
+        private readonly SiteFrequency $siteFrequency,
     ) {
     }
 
@@ -74,6 +76,37 @@ final class OptinController implements RestController
                     'goal' => ['required' => true, 'type' => 'string', 'sanitize_callback' => 'sanitize_key'],
                     'config' => ['type' => 'object', 'default' => []],
                 ],
+            ],
+        ]);
+
+        // ====================================================================
+        // THE ALLOWANCE THE WHOLE SITE SHARES — ONE SETTING, NOT AN OPTIN'S.
+        // ====================================================================
+        // Declared BEFORE `/optins/<ulid>` for readability rather than for
+        // routing: `frequency` is not 26 characters of Crockford base32, so
+        // the id pattern below cannot match it and the two can never be
+        // confused. It sits under `/optins` because that is what it is about —
+        // how often this device may be shown ANY of them.
+        //
+        // A route rather than a field on each Optin, because an Optin cannot
+        // opt out of it: a per-Optin *ignore the site setting* is the
+        // configuration two scopes exist to delete (ADR 0047).
+        register_rest_route(Routes::NAMESPACE, '/optins/frequency', [
+            [
+                'methods' => 'GET',
+                'callback' => [$this, 'showSiteFrequency'],
+                'permission_callback' => [Routes::class, 'canManage'],
+            ],
+            [
+                'methods' => 'POST',
+                'callback' => [$this, 'updateSiteFrequency'],
+                'permission_callback' => [Routes::class, 'canManage'],
+                // No `args` schema and no defaults, deliberately. All four
+                // fields default OFF at this scope, so a REST default of
+                // `true` on either switch would turn a site-wide cap on for
+                // anybody whose client omitted a key. What the body says is
+                // normalised by {@see SiteFrequency}, which is the one place
+                // this scope's reading of an absent key lives.
             ],
         ]);
 
@@ -330,6 +363,55 @@ final class OptinController implements RestController
         // an Optin is a `deleted_at` stamp, because analytics interprets its
         // conversion counts by joining this table at read (ADR 0020).
         return self::respond($this->optins->find((string) $request->get_param('id')));
+    }
+
+    public function showSiteFrequency(): WP_REST_Response
+    {
+        return new WP_REST_Response($this->siteFrequencyState());
+    }
+
+    /**
+     * Write the site's allowance, and answer with what was stored.
+     *
+     * The body is handed to {@see SiteFrequency} whole rather than picked
+     * apart here. That is deliberate and is ADR 0047's amendment applied a
+     * second time: `frequency` and `priority` once travelled through this
+     * controller as unvalidated passthrough, every merchant Optin shipped
+     * uncapped, and nobody noticed until the rules panel landed. The
+     * arithmetic that decides what a valid allowance is — and, at this scope,
+     * what an absent key means — lives in one place that is not HTTP.
+     */
+    public function updateSiteFrequency(WP_REST_Request $request): WP_REST_Response
+    {
+        $body = $request->get_json_params();
+
+        $this->siteFrequency->set(is_array($body) ? $body : []);
+
+        return new WP_REST_Response($this->siteFrequencyState());
+    }
+
+    /**
+     * The allowance as the authoring surface reads it — **all four fields,
+     * spelled out**.
+     *
+     * The payload's shape is the engine's, where an absent switch is on. This
+     * is not the payload: a control cannot draw a checkbox from a key that is
+     * not there, and the two switches are OFF here by default. So the screen
+     * is told the answer rather than left to work out which scope's silence it
+     * is reading.
+     *
+     * @return array{maxImpressions: int|null, cooldownDays: int|null, stopAfterDismiss: bool, stopAfterConversion: bool}
+     */
+    private function siteFrequencyState(): array
+    {
+        $allowance = $this->siteFrequency->allowance();
+
+        return [
+            'maxImpressions' => $allowance->maxImpressions,
+            'cooldownDays' => $allowance->cooldownDays,
+            'stopAfterDismiss' => $allowance->stopAfterDismiss,
+            'stopAfterConversion' => $allowance->stopAfterConversion,
+        ];
     }
 
     /**

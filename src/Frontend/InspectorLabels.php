@@ -101,6 +101,19 @@ final class InspectorLabels
                 'not_in_payload' => __('It did not reach this page.', 'wconvert'),
                 'capped' => __('This browser has already had its allowance.', 'wconvert'),
                 // ============================================================
+                // THE SAME WORD AT A SECOND SCOPE, AND THE SAME REASONING.
+                // ============================================================
+                // The engine says `capped` for an Optin the SITE-wide
+                // allowance vetoed too, because that is the same fact read
+                // more broadly (ADR 0047). The sentence is what tells the
+                // two apart, and it has to, because they send a merchant to
+                // different screens: one is a setting on the Optin in front
+                // of them, this one is stopping every Optin on the page.
+                'site_capped' => __(
+                    'This browser has already had the allowance you set for the whole site, so nothing shows here.',
+                    'wconvert'
+                ),
+                // ============================================================
                 // THE SENTENCE BESIDE THE WORD, WHICH IS WHY THERE IS NO
                 // SEVENTH `Standing`.
                 // ============================================================

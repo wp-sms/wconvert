@@ -49,6 +49,7 @@ use WConvert\Lead\LeadLog;
 use WConvert\Lead\LeadRepository;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
+use WConvert\Optin\SiteFrequency;
 use WConvert\Playbook\PlaybookLibrary;
 use WConvert\Playbook\Prefill;
 use WConvert\Queue\ActionSchedulerQueue;
@@ -217,11 +218,21 @@ final class CoreServiceProvider implements ServiceProvider
             )
         );
 
+        // The allowance the whole site shares: one non-autoloaded option, the
+        // way the retention period is, because a site-wide decision has no
+        // Optin to hang on (ADR 0047). Registered before the enqueue path that
+        // reads it, and read by the REST route that writes it.
+        $container->register(
+            SiteFrequency::class,
+            static fn (ServiceContainer $c): SiteFrequency => new SiteFrequency($c->resolve(OptionStore::class))
+        );
+
         $container->register(
             LoaderEnqueue::class,
             static fn (ServiceContainer $c): LoaderEnqueue => new LoaderEnqueue(
                 $c->resolve(PublishedSet::class),
-                $c->resolve(Degradation::class)
+                $c->resolve(Degradation::class),
+                $c->resolve(SiteFrequency::class)
             )
         );
 
@@ -302,7 +313,8 @@ final class CoreServiceProvider implements ServiceProvider
                 $c->resolve(GoalRegistry::class),
                 $c->resolve(PublishedSet::class),
                 $c->resolve(Degradation::class),
-                $c->resolve(RuleCatalogue::class)
+                $c->resolve(RuleCatalogue::class),
+                $c->resolve(SiteFrequency::class)
             )
         );
 

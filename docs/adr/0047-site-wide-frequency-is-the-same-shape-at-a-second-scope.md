@@ -34,7 +34,7 @@ second read, no second write and no second entry on the
 WConvert's four storage layers. A change to this shape that cannot be made
 compatible is a bump to `wcv2`: old records are abandoned rather than migrated,
 every visitor looks new once, and a frequency cap is precisely the kind of state
-that can afford that. The server's three tables, its seven options and the
+that can afford that. The server's three tables, its eight options and the
 published set have no such escape hatch, which is where the pre-release audit
 spent its attention instead.*
 
@@ -193,3 +193,53 @@ feature is the evidence for it that this ADR could not supply on its own.*
   override, no seventh word.
 - `CONTEXT.md` gains [[Frequency]] as a term, because it now has two scopes and
   a term with two scopes is one nobody will spell the same way twice.
+
+## Built by [#92](https://github.com/navidkashani/wconvert/issues/92), and one thing above had to be split
+
+Everything above holds. What it did not distinguish — and could not, because
+the per-Optin scope never needed to — is **which side of the wire "`true` is
+never stored" is about.**
+
+It is about the **payload**, and only the payload. The engine reads `!== false`,
+so an absent switch there is ON, and a `true` in it is bytes on every matching
+page view that cannot change an answer. But this scope's whole decision is that
+an absent switch is **OFF** — so an *option* written the payload's way loses a
+switch the merchant has just turned on, silently, on the round trip. The bug is
+one line and it looks exactly like the rule being followed.
+
+So the two spellings are kept apart on purpose:
+
+| | Absent means | Written by |
+|---|---|---|
+| `wconvert_site_frequency`, the option | **off** — both switches spelled out in full | `SiteFrequency::set()` |
+| `data-allowance`, the payload attribute | **on** — `true` never travels | `SiteFrequency::forPayload()` |
+
+[`SiteFrequency::atThisScope()`](../../src/Optin/SiteFrequency.php) is the one
+place the scope's reading of an absent key lives, and both doors go through it —
+which is why `set()` takes the authored array rather than a `Frequency`: a caller
+building one first would have had `Frequency::fromArray()` turn both switches on
+before this ever saw it.
+
+Four other things this fixed in place rather than in prose:
+
+- **Nothing is shipped and nothing is recorded until there is something to
+  spend.** `forPayload()` returns null while the allowance stops nothing, so a
+  site that has asked for nothing carries no attribute, and `shell.ts` fills the
+  reserved slot only where an allowance arrived. *"An upgrade changes nothing
+  about what a live site does"* is therefore a property of the bytes, asserted
+  on the WRITE in `tests/js/loader-shell.test.ts`.
+- **It rides on the payload TAG, not in the payload.** One fact about the site
+  against a list of facts about Optins — the argument `PayloadTag::CAPTURE_ATTRIBUTE`
+  already makes, applied a third time. `JSON_FORCE_OBJECT` is load-bearing: every
+  field is optional, so the minimal configured allowance encodes as `[]`, and a
+  JSON array is what `payload.ts` refuses.
+- **The veto is asked once per decision, not once per entry**, and it sits
+  between the schedule and the Optin's own allowance. The schedule still wins,
+  because a sale that starts on Friday is a date the merchant set; the site
+  beats the Optin, because the Optin cannot opt out and naming its allowance
+  would send them to a setting that decided nothing.
+- **The inspector's sentence is derived, and `Standing` gained nothing.**
+  `explain.ts` calls the exported `isSiteCapped` rather than a second spelling
+  of the question, `EntryReport.siteCapped` carries it the way `lostArbitration`
+  and `schedule` are already carried, and the funnel is the same eleven gates —
+  `tests/js/inspector-funnel.test.ts` counts them.

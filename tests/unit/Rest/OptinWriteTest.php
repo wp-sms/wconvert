@@ -8,6 +8,7 @@ use WConvert\Goal\Goal;
 use WConvert\Goal\GoalRegistry;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
+use WConvert\Optin\SiteFrequency;
 use WConvert\Rest\OptinController;
 use WConvert\Rules\RuleCatalogue;
 use WConvert\Rules\RuleVocabulary;
@@ -71,7 +72,8 @@ final class OptinWriteTest extends TestCase
             new GoalRegistry($pro, $site),
             $published,
             InstalledRules::withPro($vocabulary),
-            new RuleCatalogue($vocabulary, $pro, $site)
+            new RuleCatalogue($vocabulary, $pro, $site),
+            new SiteFrequency(new FakeOptionStore())
         );
     }
 

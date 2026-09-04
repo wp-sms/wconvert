@@ -39,6 +39,7 @@ const entry = (over: Partial<EntryReport> = {}): EntryReport => ({
   conditions: [],
   lostArbitration: false,
   schedule: null,
+  siteCapped: false,
   ...over,
 });
 
@@ -291,3 +292,56 @@ describe('a scheduled Optin', () => {
   });
 });
 
+
+/**
+ * ============================================================================
+ * SITE-CAPPED AND OPTIN-CAPPED ARE ONE WORD AND TWO SENTENCES.
+ * ============================================================================
+ * The engine says `capped` for an Optin whose own allowance is spent and for
+ * one the SITE's allowance vetoed, because both mean *the allowance is spent
+ * and this cannot change on this page view*. A seventh `Standing` to tell them
+ * apart is the thing ADR 0047 argues at length against; the distinction is a
+ * sentence beside the word this screen already uses.
+ *
+ * It matters because the two send a merchant to different screens: one is a
+ * setting on the Optin they are looking at, the other is a setting for the
+ * whole site that is stopping every Optin on the page at once.
+ */
+describe('an Optin the site-wide allowance vetoed', () => {
+  it('names the frequency gate, with the site’s own sentence', () => {
+    const row = first([optin()], [entry({ standing: 'capped', siteCapped: true })]);
+
+    expect(row.gate).toBe('frequency');
+    expect(row.stopped).toBe('site_capped');
+  });
+
+  /** The site is a veto, so it is what the merchant is told about. */
+  it('says the site stopped it even where the Optin’s own allowance is spent too', () => {
+    expect(first([optin()], [entry({ standing: 'capped', siteCapped: true })]).stopped).toBe('site_capped');
+  });
+
+  /** Without one, nothing changes: this is still the sentence it has today. */
+  it('leaves an Optin capped by its own allowance saying exactly that', () => {
+    expect(first([optin()], [entry({ standing: 'capped', siteCapped: false })]).stopped).toBe('capped');
+  });
+
+  /**
+   * The schedule still wins. A sale that starts on Friday is a date the
+   * merchant set, and telling them about a site-wide cap sends them to a
+   * setting that is not why this one is quiet.
+   */
+  it('yields to a schedule, which is the more actionable answer', () => {
+    const row = first(
+      [optin({ schedule: { starts: '3 days', ends: null } })],
+      [entry({ standing: 'capped', schedule: 'before', siteCapped: true })],
+    );
+
+    expect(row.gate).toBe('schedule');
+    expect(row.stopped).toBe('before_window');
+  });
+
+  /** No new gate. The funnel is the same eleven steps it was. */
+  it('adds no gate to the sequence', () => {
+    expect(GATES).toHaveLength(11);
+  });
+});

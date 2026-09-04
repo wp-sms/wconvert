@@ -281,6 +281,23 @@ function stoppedAt(
     };
   }
 
+  // ==========================================================================
+  // THE SAME WORD, THE OTHER SENTENCE — AND NO TWELFTH GATE.
+  // ==========================================================================
+  // The site's allowance and this Optin's own both produce `capped`, and both
+  // sit behind the `frequency` gate, because they are the same question at two
+  // scopes (ADR 0047). What differs is where the merchant goes next: one is a
+  // setting on the Optin in front of them, the other is a site-wide setting
+  // that is quietly stopping every Optin on this page at once.
+  //
+  // The SITE is what they are told about, because it is the veto: an Optin
+  // cannot opt out of it, so naming the Optin's own allowance would send them
+  // to a setting that decided nothing. It sits after the schedule for the
+  // mirror reason — a sale that starts on Friday is a date they set.
+  if (entry.standing === 'capped' && entry.siteCapped) {
+    return { gate: 'frequency', reason: 'site_capped' };
+  }
+
   if (entry.lostArbitration) {
     return { gate: 'won', reason: 'lost' };
   }
