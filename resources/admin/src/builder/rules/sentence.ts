@@ -1,6 +1,6 @@
 import { __, _n, _x, sprintf } from '@wordpress/i18n';
 import { fromRule } from '../presets';
-import { momentOf, readable } from '../wallTime';
+import { momentOf, readable, readableHours } from '../wallTime';
 import type { Entry } from './axis';
 import type { Frequency, Rule, RuleParam, RuleType, Schedule, Targeting } from '../api';
 
@@ -740,6 +740,15 @@ const supplied = (value: unknown): boolean =>
  * manifest rather than their site.
  */
 function format(param: RuleParam, value: unknown): string {
+  // A daily window is one value the merchant reads in their own clock: the
+  // control that writes it renders in the reader's locale, so a 12-hour
+  // merchant types into a box saying "10:00 PM" and would read "22:00-02:00"
+  // here. Same value, one spelling — the job {@see readable} does for the
+  // schedule beside it.
+  if (param.control === 'hours') {
+    return readableHours(value) ?? String(value);
+  }
+
   const one = (each: unknown): string =>
     param.options.find((option) => option.value === String(each))?.label ?? String(each);
 

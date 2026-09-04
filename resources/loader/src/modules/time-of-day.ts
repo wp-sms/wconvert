@@ -63,8 +63,8 @@ function minutesIn(clock: string): number | null {
 }
 
 /**
- * What time it is where the SITE is, in minutes since its own midnight — or
- * null where its zone cannot be read.
+ * A reader of the SITE's clock, in minutes since its own midnight — or one
+ * that answers null, where the zone cannot be read at all.
  *
  * =============================================================================
  * TWO SHAPES, BECAUSE WORDPRESS STORES TWO.
@@ -81,35 +81,54 @@ function minutesIn(clock: string): number | null {
  * lose this rule entirely on a browser that is a couple of years old, and lose
  * it the way a fail-shut rule loses things: silently, showing nothing.
  *
- * `hourCycle: 'h23'` rather than `hour12: false`, which some engines answer
- * with `24:00` at midnight — an hour this then reads as no time at all.
  */
-function siteMinutes(zone: string, now: Date): number | null {
+function siteClock(zone: string | null): (now: Date) => number | null {
+  // ==========================================================================
+  // NO ZONE IS NOT "THE VISITOR'S ZONE", AND `Intl` WOULD MAKE IT ONE.
+  // ==========================================================================
+  // `timeZone: undefined` means the BROWSER's own zone, so falling through to
+  // the formatter here would answer a merchant's opening hours against each
+  // visitor's clock — the one wrong answer that looks right, and the whole
+  // thing this rule exists not to do. A page carrying no zone cannot be
+  // answered at all, so it answers no.
+  if (zone === null) {
+    return () => null;
+  }
+
   const fixed = /^([+-])(\d\d):(\d\d)$/.exec(zone);
 
   if (fixed !== null) {
     const offset = (Number(fixed[2]) * 60 + Number(fixed[3])) * (fixed[1] === '-' ? -1 : 1);
-    const utc = now.getUTCHours() * 60 + now.getUTCMinutes();
 
-    // Twice, because `%` keeps the sign of its left operand and an offset can
-    // put the site's clock on the day before.
-    return ((utc + offset) % MINUTES_IN_A_DAY + MINUTES_IN_A_DAY) % MINUTES_IN_A_DAY;
+    return (now) =>
+      // Twice, because `%` keeps the sign of its left operand and an offset
+      // can put the site's clock on the day before.
+      ((now.getUTCHours() * 60 + now.getUTCMinutes() + offset) % MINUTES_IN_A_DAY + MINUTES_IN_A_DAY) %
+      MINUTES_IN_A_DAY;
   }
 
   try {
-    return minutesIn(
-      new Intl.DateTimeFormat('en-GB', {
-        timeZone: zone,
-        hourCycle: 'h23',
-        hour: '2-digit',
-        minute: '2-digit',
-      }).format(now),
-    );
+    // Built ONCE, here, and not on every evaluation. `holds` runs inside a
+    // scroll handler and a 250ms poll, and constructing an `Intl` formatter is
+    // far more expensive than the DOM lookup this module already hoisted out
+    // of it — a hoist that would be pointless with an allocation left under
+    // it. The formatter depends only on the zone, which cannot change while a
+    // page is open.
+    const clock = new Intl.DateTimeFormat('en-GB', {
+      // `hourCycle: 'h23'` rather than `hour12: false`, which some engines
+      // answer with `24:00` at midnight — an hour `minutesIn` reads as no time
+      // at all.
+      timeZone: zone,
+      hourCycle: 'h23',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
+    return (now) => minutesIn(clock.format(now));
   } catch {
-    // A zone this browser does not recognise. Null, so the rule fails shut
-    // rather than answering against the visitor's own clock — which is the one
-    // wrong answer that would look right.
-    return null;
+    // A zone this browser does not recognise. Same answer as no zone at all,
+    // for the reason above.
+    return () => null;
   }
 }
 
@@ -143,30 +162,55 @@ function inside(between: string, at: number): boolean {
   return from < to ? at >= from && at < to : at >= from || at < to;
 }
 
+/**
+ * How often the page is asked to decide again.
+ *
+ * A window's boundaries are minutes, so half a minute is close enough — and it
+ * is what makes *"a page held open across five o'clock notices"* true rather
+ * than hopeful. Without it the shell holds its listeners open for a signal
+ * nothing announces: `ineligible` is a live standing, so a visitor sitting on
+ * a page at 08:59 would wait forever for the nine o'clock that never arrives.
+ *
+ * Only instantiated where a rule of this type is actually on the page (the
+ * shell's lazy subscription), and torn down with everything else the moment no
+ * candidate can still change.
+ */
+const TICK_MS = 30_000;
+
 export const timeOfDay: LoaderModule = {
   id: 'time_of_day',
   kind: 'condition',
   consentCategory: null,
-  create: () => {
-    // Read ONCE per page view. A zone cannot change while a page is open, and
-    // the element it is on is the one the payload was already read from — so
-    // asking again on every evaluation would be a DOM lookup inside a scroll
-    // handler for an answer that cannot have moved.
-    const zone = siteTimezone();
+  create: (changed) => {
+    // Both read ONCE per page view. A zone cannot change while a page is open,
+    // and the element it is on is the one the payload was already read from —
+    // so asking again on every evaluation would be a DOM lookup and an `Intl`
+    // allocation inside a scroll handler, for an answer that cannot have
+    // moved.
+    const clock = siteClock(siteTimezone());
+    const tick = setInterval(changed, TICK_MS);
 
     return {
+      // ======================================================================
+      // THE CLOCK IS READ LIVE, AND IT IS NOT THE DECISION'S OWN READING.
+      // ======================================================================
+      // Every Condition answers for RIGHT NOW — the instant a Trigger fires,
+      // which may be a timer's worth of page view after the decision began.
+      // `RuleEvaluator.holds(rule)` is handed no instant to share, so this is a
+      // second reading of the clock, microseconds after `decide` took its own.
+      //
+      // That is a real limit rather than a feature: `shell.ts` reads the clock
+      // once precisely so a decision cannot straddle midnight, and this sits
+      // outside that guarantee. The window it could disagree in is
+      // sub-millisecond and the two answer different questions — when the
+      // campaign runs, against what time it is — so it is booked rather than
+      // paid for by threading an instant through every module's interface.
       holds: (rule) => {
-        if (zone === null) {
-          return false;
-        }
-
-        // The CLOCK is read live, which is the posture every Condition takes:
-        // the answer that matters is the one at the instant a Trigger fires,
-        // and a page held open across five o'clock has to notice.
-        const at = siteMinutes(zone, new Date());
+        const at = clock(new Date());
 
         return at !== null && inside(String(rule.between ?? ''), at);
       },
+      stop: () => clearInterval(tick),
     };
   },
 };

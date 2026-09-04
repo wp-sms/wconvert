@@ -256,9 +256,14 @@ function SourceSet({ id, param, value, onChange }: ParamControlProps) {
  * The two ends the merchant is part way through therefore have nowhere in
  * `config` to live, which is what {@link typing} is for. It leads the stored
  * value only while the window is incomplete — the moment it is whole, the two
- * agree — so a value replaced from OUTSIDE this control, by a preset or by a
- * fresh row, is recognised by not being what this draft would have written,
- * and wins.
+ * agree — so a WINDOW written from outside this control, by a preset, is
+ * recognised by not being what this draft would have written, and wins.
+ *
+ * The one case it does not recognise is an outside write of *nothing*, which
+ * is indistinguishable from the draft's own: a half-typed window survives a
+ * preset being cleared. That costs a merchant one visible end they have not
+ * saved and were about to finish, and closing it would mean this control
+ * holding a second flag about who wrote last.
  *
  * The times are the SITE's, and {@link HINTS} says so under the group: an
  * `<input type="time">` shows the visitor's own locale formatting, and a
@@ -293,8 +298,22 @@ function HourRange({ id, value, onChange }: Omit<ParamControlProps, 'param'>) {
   );
 }
 
-/** What a draft would be STORED as: the whole window, or nothing. */
-const written = (draft: string): string => (/^\d\d:\d\d-\d\d:\d\d$/.test(draft) ? draft : '');
+/**
+ * What a draft would be STORED as: a whole window, or nothing.
+ *
+ * **Two ends the same is not a window**, and it is refused here rather than
+ * left to fail shut in the loader. `09:00-09:00` passes the shape test and
+ * contains no minute — the state
+ * {@see \WConvert\Optin\Schedule::isImpossible()} refuses one scope up, for
+ * the reason `CONTEXT.md` gives about a schedule: an Optin that is published
+ * and can never show is a state the merchant has no word for. Unwritten, the
+ * section summary says the row still needs its hours.
+ */
+const written = (draft: string): string => {
+  const found = /^(\d\d:\d\d)-(\d\d:\d\d)$/.exec(draft);
+
+  return found !== null && found[1] !== found[2] ? draft : '';
+};
 
 /** A set the merchant types — one value per row, and no way to nest one. */
 function ValueList({ value, onChange }: Omit<ParamControlProps, 'param' | 'id'>) {

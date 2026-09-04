@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { FREE_MODULES } from '@loader/modules';
+import manifest from '../../resources/rules/manifest.json';
 import type { LoaderModule, Rule } from '@loader/types';
 
 /**
@@ -285,5 +286,61 @@ describe('time_of_day', () => {
   /** And a zone string nothing recognises is the same answer. */
   it('holds for nobody where the zone cannot be read', () => {
     expect(holdsAt('00:00-23:59', Date.UTC(2026, 5, 15, 12, 0), 'Middle/Earth')).toBe(false);
+  });
+
+  /**
+   * ==========================================================================
+   * NO ZONE IS NOT "THE VISITOR'S ZONE", WHICH IS THE ONE WRONG ANSWER THAT
+   * LOOKS RIGHT.
+   * ==========================================================================
+   * `Intl.DateTimeFormat` with `timeZone: undefined` answers in the BROWSER's
+   * own zone, so a fall-through would silently turn a merchant's opening hours
+   * into each visitor's local morning — showing nothing to nobody would be
+   * noticed, and showing the right popup at the wrong hour to half the world
+   * would not.
+   *
+   * The window here holds all day, so the only way it can be false is by not
+   * being answered at all.
+   */
+  it('never falls back to the visitor’s own clock', () => {
+    document.body.innerHTML = '';
+    vi.setSystemTime(Date.UTC(2026, 5, 15, 12, 0));
+
+    expect(ask('time_of_day', { type: 'time_of_day', between: '00:00-23:59' })).toBe(false);
+  });
+
+  /**
+   * ==========================================================================
+   * THE GRAMMAR IS SPELLED IN TWO LANGUAGES, AND THE PRESETS ARE WHERE THEY
+   * MEET.
+   * ==========================================================================
+   * `HH:MM-HH:MM` is parsed by this module and written by `controls.tsx`, and
+   * the manifest's presets are values that cross between them — a preset the
+   * loader cannot read is a legible shortcut to a rule that holds for nobody,
+   * with nothing to say so.
+   *
+   * So every window the manifest ships is asked of the real evaluator at a
+   * minute inside it. `18:00-00:00` is the one that earns this: a window
+   * ending at midnight WRAPS, and the reading that stops it at 23:00 quietly
+   * loses the last hour of the evening it is named for.
+   */
+  it.each(
+    Object.entries(
+      (manifest.conditions.time_of_day.presets ?? {}) as Record<string, { between: string }>,
+    ),
+  )('ships a %s window this module can read', (_id, fixed) => {
+    const [from] = fixed.between.split('-');
+    const [hour, minute] = from.split(':').map(Number);
+
+    // Midday UTC on a date with no transition near it, moved to the window's
+    // own opening minute — the site is on UTC here, so the two agree.
+    expect(holdsAt(fixed.between, Date.UTC(2026, 5, 15, hour, minute))).toBe(true);
+  });
+
+  /** And the evening runs to midnight rather than stopping an hour short. */
+  it('keeps the evening open until midnight', () => {
+    expect(holdsAt('18:00-00:00', Date.UTC(2026, 5, 15, 23, 30))).toBe(true);
+    expect(holdsAt('18:00-00:00', Date.UTC(2026, 5, 15, 17, 59))).toBe(false);
+    expect(holdsAt('18:00-00:00', Date.UTC(2026, 5, 15, 0, 30))).toBe(false);
   });
 });

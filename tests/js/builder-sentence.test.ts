@@ -422,12 +422,25 @@ describe('one rule, read', () => {
    * starting point, not a claim about this merchant's hours, and a sentence
    * repeating the label would hide the window behind it
    * (`RuleLabelParityTest`).
+   *
+   * **Spelled in the reader's own clock**, because the control that writes it
+   * already is: an `<input type="time">` renders in the reader's locale, so a
+   * 12-hour merchant types into a box saying "4:00 PM" and must not then read
+   * `16:00` in the sentence above it. Asserted as both ends rather than as an
+   * exact string, so this does not fail on an ICU update that moves a space.
    */
-  it('reads a whole window as one value', () => {
+  it('reads a whole window as one value, in the reader’s own clock', () => {
     const whole = phraseOf({ type: 'time_of_day', between: '10:00-16:00' }, types);
 
     expect(whole.attention).toBe(false);
-    expect(whole.text).toBe('time_of_day 10:00-16:00');
+    expect(whole.text).toMatch(/^time_of_day 10:00/);
+    expect(whole.text).toContain('4:00');
+    expect(whole.text).not.toContain('16:00');
+  });
+
+  /** A window it cannot read prints what is stored rather than nothing. */
+  it('falls back to the stored value where the window is not a whole one', () => {
+    expect(phraseOf({ type: 'time_of_day', between: '09:00-' }, types).text).toBe('time_of_day 09:00-');
   });
 
   /** A type this build has never heard of reads as its raw key, like its row. */

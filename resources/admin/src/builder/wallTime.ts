@@ -71,6 +71,46 @@ export function readable(wallTime: string | undefined): string | null {
       );
 }
 
+/**
+ * A stored daily window — `HH:MM-HH:MM` — spelled the way this SITE spells
+ * times.
+ *
+ * ============================================================================
+ * IT IS HERE BECAUSE THE CONTROL IS ALREADY DOING IT.
+ * ============================================================================
+ * An `<input type="time">` renders in the reader's own locale, so a merchant
+ * on a 12-hour clock types into a box that says *10:00 PM* — and would then
+ * read *22:00-02:00* in the sentence directly above it. Two spellings of one
+ * value on one screen is what {@see readable} exists to prevent for the
+ * schedule beside it, and this is the same job for the same reason.
+ *
+ * **The stored value is unchanged and stays 24-hour.** This is presentation
+ * only: `time_of_day`'s `between` is one canonical spelling, because the
+ * loader re-parses it on every evaluation and two spellings would be two
+ * parses of one fact.
+ *
+ * Null where the window is not a whole one, which is what a half-filled
+ * control writes — the summary says the rule needs its hours rather than
+ * printing half of one.
+ */
+export function readableHours(window: unknown): string | null {
+  const found = typeof window === 'string' ? /^(\d\d):(\d\d)-(\d\d):(\d\d)$/.exec(window) : null;
+
+  if (found === null) {
+    return null;
+  }
+
+  const [, fromHour, fromMinute, toHour, toMinute] = found.map(Number);
+  const clock = new Intl.DateTimeFormat(documentLocale(), { timeStyle: 'short' });
+
+  // An arbitrary date, because only the time is read off it. The components
+  // are passed separately for {@see momentOf}'s reason: a string would be
+  // parsed differently on different engines.
+  const at = (hour: number, minute: number) => clock.format(new Date(2026, 0, 1, hour, minute));
+
+  return `${at(fromHour, fromMinute)}\u2009\u2013\u2009${at(toHour, toMinute)}`;
+}
+
 /** What `<html lang>` says, or nothing — in which case `Intl` uses the browser's. */
 function documentLocale(): string | undefined {
   const lang = typeof document === 'undefined' ? '' : document.documentElement.lang;

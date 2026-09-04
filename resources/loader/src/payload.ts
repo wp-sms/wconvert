@@ -77,7 +77,7 @@ export const TIMEZONE_ATTRIBUTE = 'data-tz';
  * rewrote the tag, or a page that has no payload at all.
  */
 export function captureEndpoint(): string | null {
-  return endpointAt(CAPTURE_ATTRIBUTE);
+  return attributeAt(CAPTURE_ATTRIBUTE);
 }
 
 /**
@@ -89,7 +89,7 @@ export function captureEndpoint(): string | null {
  * (ADR 0004).
  */
 export function beaconEndpoint(): string | null {
-  return endpointAt(BEACON_ATTRIBUTE);
+  return attributeAt(BEACON_ATTRIBUTE);
 }
 
 /**
@@ -133,11 +133,17 @@ export function siteAllowance(): Frequency | undefined {
  * wrong hour is not.
  */
 export function siteTimezone(): string | null {
-  return endpointAt(TIMEZONE_ATTRIBUTE);
+  return attributeAt(TIMEZONE_ATTRIBUTE);
 }
 
-/** One attribute off the payload element, or null where it is empty or absent. */
-function endpointAt(attribute: string): string | null {
+/**
+ * One attribute off the payload element, or null where it is empty or absent.
+ *
+ * It was `endpointAt` while both of its callers wanted a URL. A timezone is
+ * not an endpoint, and a name that describes two of three callers is a name
+ * the next reader has to correct for.
+ */
+function attributeAt(attribute: string): string | null {
   const endpoint = document.getElementById(PAYLOAD_ELEMENT_ID)?.getAttribute(attribute) ?? '';
 
   return endpoint === '' ? null : endpoint;

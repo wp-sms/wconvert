@@ -308,6 +308,23 @@ describe('the hours control', () => {
     expect(boxes()[0]).toHaveValue('09:00');
   });
 
+  /**
+   * **Two ends the same is not a window**, and it is refused here rather than
+   * left to fail shut in the loader. `09:00-09:00` passes the shape test and
+   * contains no minute — the state `Schedule::isImpossible()` refuses one
+   * scope up, because an Optin that is published and can never show is a state
+   * the merchant has no word for.
+   */
+  it('writes nothing for a window of no length', () => {
+    const changed = vi.fn();
+
+    render(<ParamControl id="wconvert-hours" param={hours} value="09:00-17:00" onChange={changed} />);
+
+    fireEvent.change(boxes()[1], { target: { value: '09:00' } });
+
+    expect(changed).toHaveBeenLastCalledWith(undefined);
+  });
+
   /** And emptying one end takes the window away rather than half of it. */
   it('unsets the window when an end is cleared', () => {
     const changed = vi.fn();
