@@ -46,8 +46,12 @@ declare(strict_types=1);
 use WConvert\Database\Connection;
 use WConvert\Database\Installer;
 use WConvert\Database\WpdbConnection;
+use WConvert\Destination\DestinationStore;
+use WConvert\Destination\HealthStore;
 use WConvert\Lead\LeadRepository;
 use WConvert\Lead\Submission;
+use WConvert\Milestone\Milestones;
+use WConvert\Milestone\MilestoneStore;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
 use WConvert\Rest\RateLimit;
@@ -163,7 +167,7 @@ $db = new WpdbConnection($wpdb);
 // WConvert's derived state nothing rewrites on its own (ADR 0003). It is the
 // same object the read checks use further down — one of it, so the rows this
 // script writes and the rows it reads back cannot come from two graphs.
-$optins = new OptinRepository($db, new PublishedSet($options), RuleVocabulary::fromManifest());
+$optins = new OptinRepository($db, new PublishedSet($options), RuleVocabulary::fromManifest(), new MilestoneStore($options));
 
 (new Installer($options, $optins))->install();
 
@@ -181,6 +185,14 @@ $leadTable = $wpdb->prefix . Connection::TABLE_LEADS;
 if ((int) $wpdb->get_var("SELECT COUNT(*) FROM `{$leadTable}`") !== 0) {
     fwrite(STDERR, "{$leadTable} is not empty. One dashboard check writes a Lead and erases it again to prove "
         . "that neither act moves a reported number — boot a throwaway WordPress instead (see README.md).\n");
+
+    exit(2);
+}
+
+if ($options->get(MilestoneStore::OPTION) !== null) {
+    fwrite(STDERR, "This site already holds milestones. Four of the five are recorded ONCE and cannot be "
+        . "recomputed either, so this refuses to overwrite them — boot a throwaway WordPress instead "
+        . "(see README.md).\n");
 
     exit(2);
 }
@@ -742,11 +754,134 @@ $verify->check('no address was stored anywhere, in a key or in a value', 0, (int
     '%198.51.100.7%'
 )));
 
+echo "The milestones\n";
+
+// ==========================================================================
+// FOUR OF THE FIVE ARE A DATE RECORDED ONCE (#94).
+// ==========================================================================
+// Two of them are `MIN(stat_date)` over the counters, which is an AGGREGATE —
+// a result set that exists nowhere in the table, so a fake modelling the table
+// cannot answer it and `tests/unit/Milestone/FirstDaysAreAMinimumTest.php`
+// deliberately does not try. It proves the statement issued; this proves the
+// statement.
+//
+// The rows above already span several days across several kinds, so the
+// minimum is a real minimum rather than the only row there is.
+$statDays = $wpdb->get_results("SELECT kind, MIN(stat_date) AS first_day FROM `{$statsTable}` GROUP BY kind", ARRAY_A);
+$expectedFirsts = [];
+
+foreach (is_array($statDays) ? $statDays : [] as $row) {
+    $expectedFirsts[(string) $row['kind']] = (string) $row['first_day'];
+}
+
+$verify->check('the first day of each kind is the minimum MySQL reports', $expectedFirsts, $stats->firstDays());
+
+// **It is the EARLIEST and not the latest, asserted from the other side.** A
+// `MIN` mistyped as a `MAX` would agree with the check above, because that one
+// reads the same statement back.
+$earliestImpression = (string) $wpdb->get_var(
+    "SELECT MIN(stat_date) FROM `{$statsTable}` WHERE kind = 'impression'"
+);
+$latestImpression = (string) $wpdb->get_var(
+    "SELECT MAX(stat_date) FROM `{$statsTable}` WHERE kind = 'impression'"
+);
+
+$verify->check('and the two ends of the impression history are different days', true, $earliestImpression !== $latestImpression);
+$verify->check('so first-shown is the earliest of them', $earliestImpression, $stats->firstDays()['impression'] ?? null);
+
+// ==========================================================================
+// THE ACTIVATION MILESTONE, AND THE DERIVATION IT IS NOT.
+// ==========================================================================
+// `MIN(published_at)` is the obvious answer and it is wrong: `unpublish()`
+// sets that column back to NULL, so the minimum over it moves FORWARDS the day
+// a merchant takes their oldest Optin down. That is a claim about an UPDATE
+// against real SQL, which is why it is checked here and not only in the suite.
+$milestones = new MilestoneStore($options);
+
+$verify->check('a site that has published nothing has no activation milestone', null, $milestones->firstPublish());
+
+$activated = $optins->create('Activation', 'grow_email_list', ['rules' => [['type' => 'page_load']]]);
+
+$optins->publish($activated->id);
+
+$stamped = $milestones->firstPublish();
+
+$verify->check('publishing stamps the day it happened', substr((string) current_time('mysql'), 0, 10), $stamped);
+
+$optins->unpublish($activated->id);
+
+$verify->check(
+    'and unpublishing empties the column a derived milestone would have read',
+    null,
+    $wpdb->get_var($wpdb->prepare(
+        "SELECT published_at FROM `{$wpdb->prefix}wconvert_optins` WHERE id = %s",
+        $activated->id
+    ))
+);
+$verify->check('while the milestone stands', $stamped, $milestones->firstPublish());
+
+// **Deactivating and reactivating does not reset it**, which is one of #94's
+// acceptance criteria and a claim about `Bootstrap`'s hooks rather than about
+// any class. Deactivation touches no data at all (ADR 0018) and activation
+// re-runs the installer, so running the installer again is the whole of what a
+// reactivation does to storage.
+(new Installer($options, $optins))->install();
+
+$verify->check('reactivating does not reset a milestone that already happened', $stamped, $milestones->firstPublish());
+
+// ==========================================================================
+// AND NOTHING ABOUT A VISITOR IS ANYWHERE IN WHAT WAS STORED.
+// ==========================================================================
+// The same shape as the address check below: read the option back out of the
+// real options table and look at what is IN it, rather than asserting that
+// some sender was not called. Two days, a [[Playbook]] id and one of five
+// words is the whole of it (ADR 0017).
+$storedMilestones = (string) $wpdb->get_var($wpdb->prepare(
+    "SELECT option_value FROM `{$wpdb->options}` WHERE option_name = %s",
+    MilestoneStore::OPTION
+));
+
+$verify->check('the milestone option is one row and it is not autoloaded', 'off', (string) $wpdb->get_var($wpdb->prepare(
+    "SELECT autoload FROM `{$wpdb->options}` WHERE option_name = %s",
+    MilestoneStore::OPTION
+)));
+
+foreach (['optin_id', 'user', 'ip', 'REMOTE_ADDR', $activated->id] as $absent) {
+    $verify->check(
+        "no {$absent} is anywhere in the stored milestones",
+        false,
+        str_contains($storedMilestones, (string) $absent)
+    );
+}
+
+// The read model, over the real stores. `configured` is false because this
+// script binds no Destination — which is the state a site with no Destination
+// should report rather than being held one step short forever.
+$reached = (new Milestones(
+    $milestones,
+    $stats,
+    new HealthStore($options),
+    new DestinationStore($options)
+))->read();
+
+$verify->check('the screen reads the day that was stamped', $stamped, $reached['first_publish'] ?? null);
+$verify->check('and the earliest impression MySQL holds', $earliestImpression, $reached['first_impression'] ?? null);
+$verify->check(
+    'and says a site with no Destination has none rather than being stuck',
+    ['configured' => false, 'landed' => false, 'failing' => false],
+    $reached['destinations'] ?? null
+);
+
 echo "Cleaning up\n";
 
 $wpdb->query("DELETE FROM `{$statsTable}`");
 
-foreach ([$published->id, $unpublished->id, $limited->id, $reported->id, $tidied->id, $zoned->id] as $id) {
+delete_option(MilestoneStore::OPTION);
+
+foreach (
+    [$published->id, $unpublished->id, $limited->id, $reported->id, $tidied->id, $zoned->id, $activated->id]
+    as $id
+) {
     $wpdb->query($wpdb->prepare("DELETE FROM `{$wpdb->prefix}wconvert_optins` WHERE id = %s", $id));
 }
 

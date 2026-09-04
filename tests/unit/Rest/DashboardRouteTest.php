@@ -4,6 +4,7 @@ namespace WConvert\Tests\Unit\Rest;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use WConvert\Milestone\MilestoneStore;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
 use WConvert\Rest\DashboardController;
@@ -44,8 +45,9 @@ final class DashboardRouteTest extends TestCase
             new OptinRepository(
                 $db,
                 new PublishedSet(new FakeOptionStore()),
-                RuleVocabulary::fromManifest(__DIR__ . '/../../..')
-            )
+                RuleVocabulary::fromManifest(__DIR__ . '/../../..'),
+                new MilestoneStore(new FakeOptionStore()
+            ))
         )))->registerRoutes();
     }
 

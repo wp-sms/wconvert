@@ -13,6 +13,7 @@ use WConvert\Destination\HealthStore;
 use WConvert\Destination\PushDispatcher;
 use WConvert\Destination\PushResult;
 use WConvert\Lead\LeadRepository;
+use WConvert\Milestone\MilestoneStore;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
 use WConvert\Rest\DestinationController;
@@ -91,7 +92,8 @@ final class TestADestinationTest extends TestCase
         $optins = new OptinRepository(
             $db,
             new PublishedSet($this->options),
-            RuleVocabulary::fromManifest(dirname(__DIR__, 3))
+            RuleVocabulary::fromManifest(dirname(__DIR__, 3)),
+            new MilestoneStore($this->options)
         );
 
         $this->destination = $destinations->save(null, 'fake', 'Newsletter push', null, ['tags' => ['3']]);
@@ -247,7 +249,8 @@ final class TestADestinationTest extends TestCase
         $optins = new OptinRepository(
             $db,
             new PublishedSet($this->options),
-            RuleVocabulary::fromManifest(dirname(__DIR__, 3))
+            RuleVocabulary::fromManifest(dirname(__DIR__, 3)),
+            new MilestoneStore($this->options)
         );
 
         $controller = new DestinationController(
@@ -416,7 +419,8 @@ final class TestADestinationTest extends TestCase
         $optins = new OptinRepository(
             $db,
             new PublishedSet($this->options),
-            RuleVocabulary::fromManifest(dirname(__DIR__, 3))
+            RuleVocabulary::fromManifest(dirname(__DIR__, 3)),
+            new MilestoneStore($this->options)
         );
 
         $controller = new DestinationController(

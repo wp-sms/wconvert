@@ -7,6 +7,7 @@ use PHPUnit\Framework\TestCase;
 use WConvert\Database\Connection;
 use WConvert\Frontend\InlineOptinBlock;
 use WConvert\Frontend\InlineOptinShortcode;
+use WConvert\Milestone\MilestoneStore;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
 use WConvert\Rules\RuleVocabulary;
@@ -45,8 +46,9 @@ final class InlineOptinBlockTest extends TestCase
         $this->optins = new OptinRepository(
             $this->db,
             $this->publishedSet,
-            RuleVocabulary::fromManifest(__DIR__ . '/../../..')
-        );
+            RuleVocabulary::fromManifest(__DIR__ . '/../../..'),
+            new MilestoneStore(new FakeOptionStore()
+        ));
     }
 
     private function block(): InlineOptinBlock

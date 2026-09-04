@@ -6,6 +6,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use WConvert\Database\WpdbConnection;
 use WConvert\Lead\LeadRepository;
+use WConvert\Milestone\MilestoneStore;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
 use WConvert\Rules\RuleVocabulary;
@@ -99,8 +100,9 @@ final class WpdbConnectionTest extends TestCase
         $optins = new OptinRepository(
             $db,
             new PublishedSet(new FakeOptionStore()),
-            RuleVocabulary::fromManifest(__DIR__ . '/../../..')
-        );
+            RuleVocabulary::fromManifest(__DIR__ . '/../../..'),
+            new MilestoneStore(new FakeOptionStore()
+        ));
 
         $stats->increment('01JQ0000000000000000000001', StatKind::Impression, '2026-03-04');
         $stats->inRange(StatRange::lastDays(30, '2026-08-25'));

@@ -47,6 +47,8 @@ use WConvert\Lead\LeadCapture;
 use WConvert\Lead\LeadCsv;
 use WConvert\Lead\LeadLog;
 use WConvert\Lead\LeadRepository;
+use WConvert\Milestone\Milestones;
+use WConvert\Milestone\MilestoneStore;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
 use WConvert\Optin\SiteFrequency;
@@ -57,6 +59,7 @@ use WConvert\Queue\Queue;
 use WConvert\Rest\BeaconController;
 use WConvert\Rest\CaptureController;
 use WConvert\Rest\DashboardController;
+use WConvert\Rest\MilestoneController;
 use WConvert\Rest\DestinationController;
 use WConvert\Rest\GoalController;
 use WConvert\Rest\LeadController;
@@ -118,6 +121,7 @@ final class CoreServiceProvider implements ServiceProvider
         BeaconController::class,
         LeadController::class,
         DashboardController::class,
+        MilestoneController::class,
         DestinationController::class,
     ];
 
@@ -210,12 +214,37 @@ final class CoreServiceProvider implements ServiceProvider
             static fn (ServiceContainer $c): PublishedSet => new PublishedSet($c->resolve(OptionStore::class))
         );
 
+        // Above the repository, which publishes and therefore stamps the
+        // activation milestone in the same call (#94).
+        $container->register(
+            MilestoneStore::class,
+            static fn (ServiceContainer $c): MilestoneStore => new MilestoneStore($c->resolve(OptionStore::class))
+        );
+
+        $container->register(
+            Milestones::class,
+            static fn (ServiceContainer $c): Milestones => new Milestones(
+                $c->resolve(MilestoneStore::class),
+                $c->resolve(StatsRepository::class),
+                $c->resolve(HealthStore::class),
+                $c->resolve(DestinationStore::class)
+            )
+        );
+
+        $container->register(
+            MilestoneController::class,
+            static fn (ServiceContainer $c): MilestoneController => new MilestoneController(
+                $c->resolve(Milestones::class)
+            )
+        );
+
         $container->register(
             OptinRepository::class,
             static fn (ServiceContainer $c): OptinRepository => new OptinRepository(
                 $c->resolve(Connection::class),
                 $c->resolve(PublishedSet::class),
-                $c->resolve(RuleVocabulary::class)
+                $c->resolve(RuleVocabulary::class),
+                $c->resolve(MilestoneStore::class)
             )
         );
 
@@ -332,7 +361,8 @@ final class CoreServiceProvider implements ServiceProvider
                 $c->resolve(PublishedSet::class),
                 $c->resolve(Degradation::class),
                 $c->resolve(RuleCatalogue::class),
-                $c->resolve(SiteFrequency::class)
+                $c->resolve(SiteFrequency::class),
+                $c->resolve(MilestoneStore::class)
             )
         );
 

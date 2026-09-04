@@ -48,6 +48,7 @@ use WConvert\Database\Installer;
 use WConvert\Database\WpdbConnection;
 use WConvert\Frontend\InspectorSchedules;
 use WConvert\Optin\InvalidSchedule;
+use WConvert\Milestone\MilestoneStore;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
 use WConvert\Optin\Schedule;
@@ -98,7 +99,7 @@ global $wpdb;
 
 $options = new WpOptionStore();
 $db = new WpdbConnection($wpdb);
-$optins = new OptinRepository($db, new PublishedSet($options), RuleVocabulary::fromManifest());
+$optins = new OptinRepository($db, new PublishedSet($options), RuleVocabulary::fromManifest(), new MilestoneStore($options));
 
 (new Installer($options, $optins))->install();
 

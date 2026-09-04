@@ -58,8 +58,8 @@ final class UninstallTest extends TestCase
      * anybody adding a line to it.
      *
      * `public const OPTION` is the house spelling for "the option this class
-     * owns", used by all six stores; the schema version is the one that is not
-     * a store and is named directly.
+     * owns", used by all eight stores; the schema version is the one that is
+     * not a store and is named directly.
      *
      * @return list<string>
      */
@@ -109,14 +109,14 @@ final class UninstallTest extends TestCase
      *
      * The count is asserted too, so that a `const OPTION` deleted from the
      * source without its line being removed from `uninstall.php` is visible as
-     * well — the eight are the eight, not "at least the ones we thought of".
+     * well — the nine are the nine, not "at least the ones we thought of".
      */
     public function testEveryOptionWConvertStoresIsDeleted(): void
     {
         $options = self::everyOptionInTheSource();
         $contents = self::contents();
 
-        $this->assertCount(8, $options, 'eight options; a ninth is a line uninstall.php needs');
+        $this->assertCount(9, $options, 'nine options; a tenth is a line uninstall.php needs');
 
         foreach ($options as $option) {
             $this->assertStringContainsString(

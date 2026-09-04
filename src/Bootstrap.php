@@ -8,6 +8,7 @@ use WConvert\Container\PrivacyServiceProvider;
 use WConvert\Container\ServiceContainer;
 use WConvert\Database\Installer;
 use WConvert\Database\WpdbConnection;
+use WConvert\Milestone\MilestoneStore;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
 use WConvert\Retention\LeadPruner;
@@ -139,7 +140,8 @@ final class Bootstrap
         (new Installer($options, new OptinRepository(
             new WpdbConnection(),
             new PublishedSet($options),
-            RuleVocabulary::fromManifest()
+            RuleVocabulary::fromManifest(),
+    new MilestoneStore($options)
         )))->install();
     }
 

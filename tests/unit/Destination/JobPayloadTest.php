@@ -10,6 +10,7 @@ use WConvert\Destination\HealthStore;
 use WConvert\Destination\PushDispatcher;
 use WConvert\Destination\PushJob;
 use WConvert\Lead\Lead;
+use WConvert\Milestone\MilestoneStore;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
 use WConvert\Rules\RuleVocabulary;
@@ -86,7 +87,7 @@ final class JobPayloadTest extends TestCase
         (new PushDispatcher(
             $registry,
             new DestinationStore($this->options),
-            new OptinRepository($this->db, new PublishedSet($this->options), RuleVocabulary::fromManifest(dirname(__DIR__, 3))),
+            new OptinRepository($this->db, new PublishedSet($this->options), RuleVocabulary::fromManifest(dirname(__DIR__, 3)), new MilestoneStore($this->options)),
             new HealthStore($this->options),
             $this->queue,
             new ConnectionStore($this->options)

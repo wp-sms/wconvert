@@ -4,6 +4,7 @@ namespace WConvert\Optin;
 
 use WConvert\Database\Connection;
 use WConvert\Goal\Goal;
+use WConvert\Milestone\MilestoneStore;
 use WConvert\Rules\RuleVocabulary;
 use WConvert\Support\Ulid;
 
@@ -17,6 +18,13 @@ defined('ABSPATH') || exit;
  * "rebuilt on write, never on read" (ADR 0003) a property of the code rather
  * than of everyone's memory. There is no promote-without-rebuild path to
  * forget to pair with one.
+ *
+ * **{@see self::publish()} stamps the activation milestone in that same call,
+ * and it is here for exactly that reason.** "The plugin is active and an
+ * Optin has been published" is the first of #94's five, and this method is the
+ * definition of the event — so a milestone written from the REST controller
+ * instead would be one that a WP-CLI command or a bulk action silently misses.
+ * The guard against writing it twice lives in {@see MilestoneStore}, not here.
  *
  * Every read is a PROJECTION. `SELECT *` drags two LONGTEXT columns per row,
  * which WSMS measured exhausting PHP's memory limit at a few hundred rows
@@ -69,6 +77,7 @@ final class OptinRepository
         private readonly Connection $db,
         private readonly PublishedSet $publishedSet,
         private readonly RuleVocabulary $vocabulary,
+        private readonly MilestoneStore $milestones,
     ) {
     }
 
@@ -318,7 +327,8 @@ final class OptinRepository
     }
 
     /**
-     * Promote the working draft onto the live one, and rebuild the set.
+     * Promote the working draft onto the live one, rebuild the set, and — the
+     * first time only — record that this site activated.
      */
     public function publish(string $id): ?Optin
     {
@@ -330,10 +340,29 @@ final class OptinRepository
             return null;
         }
 
+        $now = current_time('mysql');
+
         $this->db->update(Connection::TABLE_OPTINS, [
             'published_config' => (string) wp_json_encode($optin->config),
-            'published_at' => current_time('mysql'),
+            'published_at' => $now,
         ], ['id' => $id]);
+
+        // ====================================================================
+        // THE ACTIVATION MILESTONE, AND WHY IT IS NOT `MIN(published_at)`.
+        // ====================================================================
+        // The obvious derivation is the minimum of the column just written,
+        // and it is wrong: {@see self::unpublish()} sets that column back to
+        // `NULL`, so the minimum over it moves FORWARDS the day a merchant
+        // takes their oldest Optin down. A milestone that resets is not one
+        // (#94, {@see MilestoneStore}).
+        //
+        // The day is cut off the timestamp this statement just wrote rather
+        // than read again, so the milestone and `published_at` cannot disagree
+        // about which day it was — including across a midnight this method
+        // happens to straddle. `current_time('mysql')` is already the SITE's
+        // clock, which is the clock every other milestone is stamped on
+        // ({@see \WConvert\Stats\StatDay}).
+        $this->milestones->recordFirstPublish(substr($now, 0, 10));
 
         $this->rebuildPublishedSet();
 

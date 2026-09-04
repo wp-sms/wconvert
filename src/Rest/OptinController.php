@@ -5,6 +5,9 @@ namespace WConvert\Rest;
 use WConvert\Destination\OptinBinding;
 use WConvert\Goal\Goal;
 use WConvert\Goal\GoalRegistry;
+use WConvert\Milestone\EditedPart;
+use WConvert\Milestone\FirstEdit;
+use WConvert\Milestone\MilestoneStore;
 use WConvert\Optin\DisplayType;
 use WConvert\Optin\Frequency;
 use WConvert\Optin\InvalidSchedule;
@@ -17,6 +20,7 @@ use WConvert\Optin\Suspension;
 use WConvert\Rules\Degradation;
 use WConvert\Rules\RuleCatalogue;
 use WConvert\Rules\RuleVocabulary;
+use WConvert\Stats\StatDay;
 use WConvert\Support\Ulid;
 use WConvert\Targeting\Targeting;
 use WConvert\Template\ConvertingAct;
@@ -53,6 +57,7 @@ final class OptinController implements RestController
         private readonly Degradation $degradation,
         private readonly RuleCatalogue $rules,
         private readonly SiteFrequency $siteFrequency,
+        private readonly MilestoneStore $milestones,
     ) {
     }
 
@@ -331,7 +336,69 @@ final class OptinController implements RestController
             $normalized
         );
 
-        return $optin === null ? self::notFound() : new WP_REST_Response($optin->toArray());
+        if ($optin === null) {
+            return self::notFound();
+        }
+
+        $this->recordTheFirstOverride($stored, $optin);
+
+        return new WP_REST_Response($optin->toArray());
+    }
+
+    /**
+     * ========================================================================
+     * THE MILESTONE THAT READS THE GOAL CATALOGUE DIRECTLY (#94).
+     * ========================================================================
+     * The [[Goal]] and [[Playbook]] catalogue was derived by classifying 462
+     * listings and 670 reviews down to five Goals. Nothing has challenged that
+     * guess yet, and **what a merchant changes first — and in which Playbook —
+     * is the sharpest available evidence that a Goal's defaults are wrong**.
+     *
+     * **AFTER the save, and only on a save that happened.** An edit that was
+     * refused for its schedule or its design is not an edit a merchant made,
+     * and recording one would put a rejected act in a record that can only be
+     * written once.
+     *
+     * **Only where the Optin came from a Playbook.** `playbook_id` is
+     * provenance and prefill is the only thing that writes it (ADR 0010,
+     * CONTEXT.md, Playbook), so an Optin started from scratch has no
+     * suggestion to have overridden — and a first edit recorded against no
+     * Playbook could not say which Goal's defaults it was evidence about,
+     * which is the whole of what this milestone is for.
+     *
+     * It is read from the STORED Optin rather than from the incoming config:
+     * that is what the merchant was handed, and a `PUT` carrying a different
+     * `playbook_id` is not the merchant having changed one.
+     *
+     * The whole record is one day, one Playbook id and one of five words.
+     * There is no Optin id and no user id, because neither is a fact about the
+     * SITE and this instrumentation is only ever about the site (ADR 0017).
+     * {@see MilestoneStore} holds the record-once rule.
+     */
+    private function recordTheFirstOverride(?Optin $before, Optin $after): void
+    {
+        if ($before === null || !is_string($before->config['playbook_id'] ?? null)) {
+            return;
+        }
+
+        $part = EditedPart::firstChangedBetween(
+            $before->config,
+            $after->config,
+            $before->goal,
+            $after->goal,
+            $this->templates
+        );
+
+        if ($part === null) {
+            return;
+        }
+
+        // The site's day, from the one place that reads the site's timezone —
+        // so a milestone stamped by an edit and one stamped by a beacon agree
+        // about which day it was.
+        $this->milestones->recordFirstEdit(
+            new FirstEdit(StatDay::today(), (string) $before->config['playbook_id'], $part)
+        );
     }
 
     /**

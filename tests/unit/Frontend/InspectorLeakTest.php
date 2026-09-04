@@ -6,6 +6,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use WConvert\Frontend\InspectorEnqueue;
 use WConvert\Frontend\InspectorTag;
+use WConvert\Milestone\MilestoneStore;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
 use WConvert\Rest\Routes;
@@ -68,7 +69,7 @@ final class InspectorLeakTest extends TestCase
         $site = new FakeSitePresence([]);
 
         return new InspectorEnqueue(
-            new OptinRepository(new FakeConnection(), $published, $vocabulary),
+            new OptinRepository(new FakeConnection(), $published, $vocabulary, new MilestoneStore(new FakeOptionStore())),
             $published,
             InstalledRules::free($vocabulary),
             new RuleCatalogue($vocabulary, $pro, $site, new RoleRegistry()),

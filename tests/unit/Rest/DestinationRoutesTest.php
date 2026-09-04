@@ -13,6 +13,7 @@ use WConvert\Destination\HealthStore;
 use WConvert\Destination\PushDispatcher;
 use WConvert\Destination\Wsms\WsmsDestinationType;
 use WConvert\Lead\LeadRepository;
+use WConvert\Milestone\MilestoneStore;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
 use WConvert\Rest\DestinationController;
@@ -64,7 +65,8 @@ final class DestinationRoutesTest extends TestCase
         $optins = new OptinRepository(
             $db,
             new PublishedSet($this->options),
-            RuleVocabulary::fromManifest(dirname(__DIR__, 3))
+            RuleVocabulary::fromManifest(dirname(__DIR__, 3)),
+            new MilestoneStore($this->options)
         );
 
         $this->controller = new DestinationController(
@@ -386,7 +388,8 @@ final class DestinationRoutesTest extends TestCase
         $optins = new OptinRepository(
             $db,
             new PublishedSet($options),
-            RuleVocabulary::fromManifest(dirname(__DIR__, 3))
+            RuleVocabulary::fromManifest(dirname(__DIR__, 3)),
+            new MilestoneStore($options)
         );
 
         return new DestinationController(

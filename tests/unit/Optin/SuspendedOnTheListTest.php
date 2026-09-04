@@ -5,6 +5,7 @@ namespace WConvert\Tests\Unit\Optin;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use WConvert\Goal\GoalRegistry;
+use WConvert\Milestone\MilestoneStore;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
 use WConvert\Optin\SiteFrequency;
@@ -56,8 +57,9 @@ final class SuspendedOnTheListTest extends TestCase
         $this->optins = new OptinRepository(
             new FakeConnection(),
             $this->publishedSet,
-            RuleVocabulary::fromManifest(self::PLUGIN_DIR)
-        );
+            RuleVocabulary::fromManifest(self::PLUGIN_DIR),
+            new MilestoneStore(new FakeOptionStore()
+        ));
     }
 
     /**
@@ -128,7 +130,8 @@ final class SuspendedOnTheListTest extends TestCase
             $this->publishedSet,
             $degradation,
             new RuleCatalogue($vocabulary, $pro, $site, new RoleRegistry()),
-            new SiteFrequency(new FakeOptionStore())
+            new SiteFrequency(new FakeOptionStore()),
+            new MilestoneStore(new FakeOptionStore())
         );
     }
 
