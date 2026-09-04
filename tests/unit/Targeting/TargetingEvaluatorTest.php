@@ -249,4 +249,123 @@ final class TargetingEvaluatorTest extends TestCase
             new RequestContext(path: '/about/', isLoggedIn: false)
         ));
     }
+
+    // ========================================================================
+    // THE SECOND VISITOR PREDICATE, AND THE SAME RULES.
+    // ========================================================================
+
+    /**
+     * @param list<string> $held
+     */
+    private static function holding(array $held): RequestContext
+    {
+        return new RequestContext(path: '/pricing/', isLoggedIn: $held !== [], roles: $held);
+    }
+
+    public function testRolesAreNotAskedWhenNoneWereChosen(): void
+    {
+        $targeting = Targeting::fromArray([]);
+
+        $this->assertTrue(TargetingEvaluator::matches($targeting, self::holding(['subscriber'])));
+        $this->assertTrue(TargetingEvaluator::matches($targeting, self::holding([])));
+    }
+
+    /**
+     * **ANY of them, never all.** The real OR cases are one rule carrying
+     * several values (ADR 0005), and nobody holds two membership levels and a
+     * WordPress role at once by design — a set read as AND would be a rule
+     * that holds for nobody on every install.
+     */
+    public function testAVisitorNeedsAnyOneOfTheChosenRoles(): void
+    {
+        $targeting = Targeting::fromArray(['roles' => ['subscriber', 'plan_gold']]);
+
+        $this->assertTrue(TargetingEvaluator::matches($targeting, self::holding(['subscriber'])));
+        $this->assertTrue(TargetingEvaluator::matches($targeting, self::holding(['plan_gold'])));
+        $this->assertTrue(TargetingEvaluator::matches($targeting, self::holding(['customer', 'plan_gold'])));
+        $this->assertFalse(TargetingEvaluator::matches($targeting, self::holding(['customer'])));
+        $this->assertFalse(TargetingEvaluator::matches($targeting, self::holding([])));
+    }
+
+    /**
+     * **An emptied control is *any role*, never *no role*.**
+     *
+     * Read as a set, an empty one holds for nobody — which would make an Optin
+     * that is published and can never show, a state the merchant has no word
+     * for. So `Targeting::fromArray()` collapses it to null on the way in and
+     * the evaluator never sees one.
+     */
+    public function testAnEmptiedRoleSetIsDoNotAskRatherThanNobody(): void
+    {
+        $targeting = Targeting::fromArray(['roles' => []]);
+
+        $this->assertNull($targeting->roles);
+        $this->assertTrue(TargetingEvaluator::matches($targeting, self::holding([])));
+    }
+
+    /**
+     * ========================================================================
+     * THE FAILURE THIS PREDICATE IS HELD APART TO PREVENT.
+     * ========================================================================
+     * A role rule dropped into an include list would not narrow the Optin — it
+     * would WIDEN it to the whole site for anyone holding that role, because
+     * the list is a UNION of page sets. There is no error and no screen that
+     * says so; the merchant's "subscribers only, on the pricing page" popup
+     * simply shows to every subscriber on every page.
+     *
+     * Held as a field it is ANDed over the page set, which is what this
+     * asserts: a subscriber on the wrong page still sees nothing.
+     */
+    public function testRolesNarrowThePageSetRatherThanWideningIt(): void
+    {
+        $targeting = Targeting::fromArray([
+            'include' => [['type' => 'url', 'value' => '/pricing']],
+            'roles' => ['subscriber'],
+        ]);
+
+        $this->assertTrue(TargetingEvaluator::matches($targeting, self::holding(['subscriber'])));
+
+        // The right visitor, the wrong page.
+        $this->assertFalse(TargetingEvaluator::matches(
+            $targeting,
+            new RequestContext(path: '/about/', isLoggedIn: true, roles: ['subscriber'])
+        ));
+
+        // The right page, the wrong visitor.
+        $this->assertFalse(TargetingEvaluator::matches($targeting, self::holding(['customer'])));
+    }
+
+    /**
+     * **The save half of the round trip**, which is the half a value object
+     * can lose quietly: a field read correctly and written back as nothing is
+     * a merchant's rule that disappears on their next edit.
+     *
+     * An emptied set is dropped rather than stored, for the reason above — and
+     * that is what makes *"an emptied control is any role"* survive a save
+     * rather than only a load.
+     */
+    public function testWhatIsStoredIsWhatWasChosen(): void
+    {
+        $chosen = Targeting::fromArray(['roles' => ['subscriber', 'plan_gold']]);
+
+        $this->assertSame(['roles' => ['subscriber', 'plan_gold']], $chosen->toArray());
+
+        // Round-tripped through storage, which is what the save route does.
+        $this->assertSame($chosen->toArray(), Targeting::fromArray($chosen->toArray())->toArray());
+
+        $this->assertSame([], Targeting::fromArray(['roles' => []])->toArray());
+        $this->assertSame([], Targeting::fromArray(['roles' => 'subscriber'])->toArray());
+    }
+
+    /** Both predicates hold at once, which is the implicit AND of the axis. */
+    public function testTheTwoVisitorPredicatesBothHaveToHold(): void
+    {
+        $targeting = Targeting::fromArray(['logged_in' => true, 'roles' => ['subscriber']]);
+
+        $this->assertTrue(TargetingEvaluator::matches($targeting, self::holding(['subscriber'])));
+        $this->assertFalse(TargetingEvaluator::matches(
+            $targeting,
+            new RequestContext(path: '/pricing/', isLoggedIn: false, roles: ['subscriber'])
+        ));
+    }
 }

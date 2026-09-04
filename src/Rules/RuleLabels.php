@@ -53,6 +53,13 @@ final class RuleLabels
             'click_element' => __('Clicks an element', 'wconvert'),
             'exit_intent' => __('About to leave', 'wconvert'),
             'scroll_up' => __('Scrolls back up', 'wconvert'),
+            // "Role" rather than "Role or membership", which is what this
+            // becomes on an install with a membership adapter registered
+            // ({@see \WConvert\Targeting\RoleSource}). The list a merchant
+            // reads is the site's own — every role, plus whatever an adapter
+            // offers — so the heading naming only what free ships would go
+            // stale, and naming what free does not would over-claim today.
+            'role' => __('Role', 'wconvert'),
             'device' => __('Device', 'wconvert'),
             'time_of_day' => __('Time of day', 'wconvert'),
             'query_param' => __('A URL parameter', 'wconvert'),
@@ -92,6 +99,10 @@ final class RuleLabels
             // and are a different question — a campaign's lifetime, not a
             // window that comes round again every day.
             'time_of_day.between' => __('Hours', 'wconvert'),
+            // Plural and permissive, because the set is ORed: holding ANY of
+            // them is enough, and nobody holds two membership levels and a
+            // WordPress role at once by design.
+            'role.value' => __('Any of these roles', 'wconvert'),
             'query_param.value' => __('Any of these values', 'wconvert'),
             // "Came from" rather than "Referrer": the merchant's word for it,
             // and the one the hint under the control then narrows to the page

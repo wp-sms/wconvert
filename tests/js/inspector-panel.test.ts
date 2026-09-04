@@ -64,7 +64,7 @@ const optin = (over: Partial<ServerOptin> = {}): ServerOptin => ({
   published: true,
   suspended: null,
   schedule: null,
-  targeting: { admits: true, reason: null, logged_in: null, include: [], exclude: [] },
+  targeting: { admits: true, reason: null, logged_in: null, roles: null, include: [], exclude: [] },
   ...over,
 });
 

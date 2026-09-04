@@ -85,9 +85,17 @@ export function summarise(
     {
       id: 'who',
       eyebrow: __('Who', 'wconvert'),
-      // `logged_in` is stored on the targeting axis and answered here, which
-      // is the one place those two differ ({@see Who}).
-      ...whoSummary(entriesOn(rules, vocabulary.conditions), all, targeting.logged_in),
+      // Both visitor predicates are stored on the TARGETING axis and answered
+      // here, which is the one place those two differ ({@see Who}): they are
+      // fields rather than list members because an include list unions page
+      // sets, and they read out under WHO because that is the question a
+      // merchant looks for them under.
+      ...whoSummary(
+        entriesOn(rules, vocabulary.conditions),
+        all,
+        targeting.logged_in,
+        targeting.roles,
+      ),
     },
     {
       id: 'how-often',

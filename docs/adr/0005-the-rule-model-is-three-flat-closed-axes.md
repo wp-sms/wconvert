@@ -23,6 +23,19 @@ readable per-rule pass/fail table". That table is
 `WConvert\Targeting\TargetingExplainer` and the panel that draws it. The
 flatness is what made it a table.*
 
+*Extended by [#92](https://github.com/navidkashani/wconvert/issues/92) without
+changing shape, and the completion note below predicted it exactly: **`role` is
+the SECOND field beside `logged_in`**, not a member of either list.
+`RuleManifestParityTest` used to assert the visitor half was exactly
+`logged_in`, and its docblock said why — "a second visitor rule would need a
+second field, and this is what says so" — so adding role failed it, which is the
+mechanism working. It was not widened to "any visitor rule": the test now pins
+BOTH names, so a third fails it again, and a second test walks the manifest's
+own visitor half and asserts none of them is constructible inside a list at all.
+Role is also one predicate over several systems rather than one per system — a
+membership or LMS plugin registers a `RoleSource` and adds no rule type — which
+is the same "zero new lists" rule the tier split follows.*
+
 *Completed by [#21](https://github.com/navidkashani/wconvert/issues/21) for the
 Targeting axis: "implicit AND" is the rule for the two CLIENT axes, and this
 originally read as though it were the rule for all three. Targeting is a **page

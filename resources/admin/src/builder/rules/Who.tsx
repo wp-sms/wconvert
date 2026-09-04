@@ -1,4 +1,5 @@
 import { __ } from '@wordpress/i18n';
+import { ParamField } from '../controls';
 import { Description } from '../../shell/Description';
 import { RuleRows, type Row } from '../RuleRows';
 import { AddRule } from './AddRule';
@@ -29,10 +30,16 @@ export interface WhoProps {
   readonly add: (rule: Rule) => void;
   readonly all: readonly RuleType[];
   /**
-   * The one visitor predicate's declaration, for its label — or undefined on a
-   * vocabulary that does not declare one.
+   * The two visitor predicates' declarations, for their labels and their
+   * controls — or undefined on a vocabulary that does not declare one.
+   *
+   * They are looked up by their param's CONTROL rather than by their rule
+   * type, because this bundle spells no rule type of its own: a control is its
+   * own vocabulary ({@link ../api}), and a rule type is the manifest's
+   * ({@see DisplayRules}).
    */
   readonly visitor: RuleType | undefined;
+  readonly roleType: RuleType | undefined;
   /*
    * ==========================================================================
    * THESE TWO COME OUT OF `targeting`, NOT OUT OF `entries`. LEAVE THEM THERE.
@@ -52,6 +59,15 @@ export interface WhoProps {
    */
   readonly loggedIn: boolean | undefined;
   readonly onLoggedIn: (next: boolean | undefined) => void;
+  /**
+   * The roles this Optin wants, or undefined for *any role*.
+   *
+   * Off `targeting` like the one above it, and for a sharper version of its
+   * reason: a role is a fact another plugin may hold in the database, and the
+   * browser could not answer it even if the auth cookie were readable.
+   */
+  readonly roles: readonly string[] | undefined;
+  readonly onRoles: (next: readonly string[] | undefined) => void;
 }
 
 /**
@@ -76,8 +92,11 @@ export function Who({
   add,
   all,
   visitor,
+  roleType,
   loggedIn,
   onLoggedIn,
+  roles,
+  onRoles,
 }: WhoProps) {
   // Which of them is a second of a kind that may only be set once. See
   // {@link surplus}: on this axis the trap is worse than on the Trigger one —
@@ -148,6 +167,32 @@ export function Who({
               ))}
             </select>
           </label>
+        </p>
+      )}
+
+      {/*
+        **Beside the sign-in question, not inside the list above it**, and for
+        exactly its reason. It is a field on the targeting axis: no row to
+        remove, nothing to add, and it must not be a member of the include or
+        exclude lists — those union PAGE SETS, so a visitor rule in one would
+        show the Optin on every page of the site to anyone holding the role.
+
+        Drawn through {@link ParamField} rather than a control written here, so
+        the set, its group name and its hint are the manifest's declaration
+        exactly as an ordinary rule row would draw them. An emptied set is
+        *any role*, never *no role*: the server drops one rather than store a
+        set nothing can satisfy.
+      */}
+      {roleType?.params.value !== undefined && (
+        <p className="wconvert-rules__group">
+          <ParamField
+            id="wconvert-roles"
+            param={roleType.params.value}
+            value={roles}
+            onChange={(next) =>
+              onRoles(Array.isArray(next) && next.length > 0 ? (next as string[]) : undefined)
+            }
+          />
         </p>
       )}
     </>

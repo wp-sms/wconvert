@@ -10,6 +10,7 @@ use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
 use WConvert\Rest\Routes;
 use WConvert\Rules\RuleCatalogue;
+use WConvert\Targeting\RoleRegistry;
 use WConvert\Rules\RuleVocabulary;
 use WConvert\Tests\Unit\Support\FakeConnection;
 use WConvert\Tests\Unit\Support\FakeOptionStore;
@@ -70,7 +71,8 @@ final class InspectorLeakTest extends TestCase
             new OptinRepository(new FakeConnection(), $published, $vocabulary),
             $published,
             InstalledRules::free($vocabulary),
-            new RuleCatalogue($vocabulary, $pro, $site)
+            new RuleCatalogue($vocabulary, $pro, $site, new RoleRegistry()),
+            new RoleRegistry()
         );
     }
 

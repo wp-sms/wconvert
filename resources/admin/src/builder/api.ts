@@ -56,6 +56,7 @@ export type Control =
   | 'device_set'
   | 'referrer_set'
   | 'hours'
+  | 'role_set'
   | 'boolean'
   | 'post_id'
   | 'term_id'
@@ -167,16 +168,35 @@ export interface RuleVocabulary {
 /**
  * *Where* an Optin is allowed to appear, as it is stored.
  *
- * Two lists of page rules with exclude beating include, plus one visitor
- * predicate held APART from them: an include list is a union of page SETS, so
- * a visitor rule dropped into it would widen the Optin to the whole site for
- * anyone matching it. Read whole, the axis is `page-set AND logged_in`
- * (ADR 0005). Mirrors `WConvert\Targeting\Targeting`.
+ * Two lists of page rules with exclude beating include, plus the visitor
+ * predicates held APART from them: an include list is a union of page SETS, so
+ * a visitor rule dropped into one would widen the Optin to the whole site for
+ * anyone matching it. Read whole, the axis is
+ * `page-set AND logged_in AND roles` (ADR 0005). Mirrors
+ * `WConvert\Targeting\Targeting`.
  */
 export interface Targeting {
   include?: { type: string; value: unknown }[];
   exclude?: { type: string; value: unknown }[];
+  /**
+   * The two visitor predicates, **held apart from the lists on purpose**.
+   *
+   * An include list is a UNION of page sets, so a visitor rule dropped into
+   * one does not narrow the Optin — it WIDENS it to the whole site for anyone
+   * who matches. Read whole, the axis is `page-set AND logged_in AND roles`,
+   * which is the implicit AND ADR 0005 gives every axis.
+   *
+   * They are on the server axis at all only because the browser cannot read
+   * WordPress's HttpOnly auth cookie, and more so for `roles`: a membership
+   * level is a fact another plugin holds in the database.
+   *
+   * Absent means *do not ask*, which is not the same as `false` or `[]` — an
+   * Optin that does not care is a different thing from one that shows to
+   * nobody, and `src/Targeting/Targeting.php` drops an emptied set rather than
+   * store one nothing can satisfy.
+   */
   logged_in?: boolean;
+  roles?: string[];
 }
 
 /**

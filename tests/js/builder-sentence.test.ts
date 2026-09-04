@@ -297,6 +297,76 @@ describe('who sees it', () => {
   it('says anyone where it is not asked', () => {
     expect(whoSummary([], types, undefined).text).toBe('Anyone who reaches it');
   });
+
+  /**
+   * **The second visitor predicate reads out beside the first**, in the same
+   * join, for the same reason: a merchant asking *who sees this* gets one
+   * answer rather than three. Both are stored on the targeting axis and drawn
+   * under WHO, which is the one place storage and control answer to different
+   * questions ({@see Who}).
+   *
+   * The roles are joined with "or", because holding ANY one of them is enough
+   * — a set read as AND would be a rule that holds for nobody.
+   */
+  it('folds the roles into the same clause, joined with or', () => {
+    expect(whoSummary([], types, undefined, ['subscriber']).text).toBe('Only when holding subscriber');
+    expect(whoSummary([], types, undefined, ['subscriber', 'plan_gold']).text).toBe(
+      'Only when holding subscriber or plan_gold',
+    );
+  });
+
+  /** Three clauses is a list, which the joiner already knows how to say. */
+  it('reads both visitor predicates and the conditions as one sentence', () => {
+    expect(
+      whoSummary(entries({ type: 'cart_has_items' }), types, true, ['subscriber']).text,
+    ).toBe('Only when cart_has_items, signed in and holding subscriber');
+  });
+
+  /**
+   * **The role's own name, which is what the merchant just ticked.**
+   *
+   * A role's display name is a fact about the INSTALL — whatever registered
+   * it, or whatever a membership adapter offers — so it reaches the builder as
+   * a param option, exactly as a custom post type's does. Printing the slug
+   * would show `plan_gold` under a control that says "Gold plan".
+   *
+   * The vocabulary that ships declares no options for this control, because
+   * there are none to declare in a file: they are resolved per install by
+   * `src/Rules/RuleCatalogue.php`. So this stands one in.
+   */
+  it('reads a role by the name this install gave it', () => {
+    const offered = types.map((type) =>
+      type.params.value?.control === 'role_set'
+        ? {
+            ...type,
+            params: {
+              value: {
+                ...type.params.value,
+                options: [
+                  { value: 'subscriber', label: 'Subscriber' },
+                  { value: 'plan_gold', label: 'Gold plan' },
+                ],
+              },
+            },
+          }
+        : type,
+    );
+
+    expect(whoSummary([], offered, undefined, ['subscriber', 'plan_gold']).text).toBe(
+      'Only when holding Subscriber or Gold plan',
+    );
+  });
+
+  /** A slug the site no longer offers still reads as itself, rather than vanishing. */
+  it('falls back to the slug where this install offers no word for it', () => {
+    expect(whoSummary([], types, undefined, ['plan_gold']).text).toBe('Only when holding plan_gold');
+  });
+
+  /** An emptied set is *any role*, and reads as nothing at all. */
+  it('says anyone where no role was chosen', () => {
+    expect(whoSummary([], types, undefined, []).text).toBe('Anyone who reaches it');
+    expect(whoSummary([], types, undefined, undefined).text).toBe('Anyone who reaches it');
+  });
 });
 
 describe('who sees it, when a kind is set twice', () => {

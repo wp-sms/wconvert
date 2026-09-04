@@ -7,15 +7,25 @@ defined('ABSPATH') || exit;
 /**
  * An Optin's Targeting axis: which pages it may appear on, and to whom.
  *
- * Two lists of page rules with exclude beating include, plus one visitor
- * predicate. `logged_in` is a FIELD rather than a member of those lists on
- * purpose: an include list is a UNION of page sets, so a visitor rule dropped
- * into it would widen the Optin to the whole site for anyone who matched.
- * Held apart, the axis reads as `page-set AND logged_in`, which is the
- * implicit AND ADR 0005 gives every axis.
+ * Two lists of page rules with exclude beating include, plus the visitor
+ * predicates. `logged_in` and `roles` are FIELDS rather than members of those
+ * lists on purpose: an include list is a UNION of page sets, so a visitor rule
+ * dropped into one would not narrow the Optin — it would WIDEN it to the whole
+ * site for anyone who matched. Held apart, the axis reads as
+ * `page-set AND logged_in AND roles`, which is the implicit AND ADR 0005 gives
+ * every axis.
  *
- * It is on the server axis at all only because the client cannot read
- * WordPress's HttpOnly auth cookie.
+ * **That failure is silent and site-wide**, so it is closed structurally
+ * rather than by review: {@see TargetingType} enumerates the page rules and
+ * nothing else, so {@see TargetingRule::fromArray()} drops a visitor type on
+ * the way in and there is no way to build one inside a list at all.
+ * `RuleManifestParityTest::testAVisitorPredicateIsUnbuildableInsideEitherList()`
+ * walks the manifest's own visitor half, so a third predicate is covered the
+ * day it is declared.
+ *
+ * They are on the server axis at all only because the client cannot read
+ * WordPress's HttpOnly auth cookie. That stays true for `roles`, and more so:
+ * a membership level is a fact another plugin holds in the database.
  *
  * @since 0.1.0
  */
@@ -24,11 +34,17 @@ final class Targeting
     /**
      * @param list<TargetingRule> $include
      * @param list<TargetingRule> $exclude
+     * @param list<string>|null $roles Which roles or memberships a visitor must
+     *   hold ANY of — never all, because the real OR cases are one rule
+     *   carrying several values (ADR 0005). Null is *do not ask*, and it is not
+     *   the same as an empty list, which is why an emptied control stores
+     *   nothing rather than a list nobody can satisfy.
      */
     public function __construct(
         public readonly array $include = [],
         public readonly array $exclude = [],
         public readonly ?bool $loggedIn = null,
+        public readonly ?array $roles = null,
     ) {
     }
 
@@ -42,6 +58,7 @@ final class Targeting
             self::rules($config['exclude'] ?? []),
             // Unset means "do not ask", which is not the same as false.
             isset($config['logged_in']) ? (bool) $config['logged_in'] : null,
+            self::roles($config['roles'] ?? null),
         );
     }
 
@@ -90,7 +107,46 @@ final class Targeting
             $out['logged_in'] = $this->loggedIn;
         }
 
+        if ($this->roles !== null) {
+            $out['roles'] = $this->roles;
+        }
+
         return $out;
+    }
+
+    /**
+     * The roles a merchant chose, or **null where they chose none**.
+     *
+     * An empty list collapses to null rather than being stored, and the two
+     * would otherwise be a real ambiguity: read as a set, an empty one holds
+     * for nobody, and an Optin that is published and can never show is a state
+     * the merchant has no word for. An emptied control means *any role*, which
+     * is *do not ask*.
+     *
+     * Slugs are strings and nothing else — a role is a key another system
+     * minted, never a number — and anything that is not one is dropped rather
+     * than cast, because `(string) []` is a warning and a rule nobody meant.
+     *
+     * @param mixed $roles
+     * @return list<string>|null
+     */
+    private static function roles($roles): ?array
+    {
+        if (!is_array($roles)) {
+            return null;
+        }
+
+        $chosen = [];
+
+        foreach ($roles as $role) {
+            if (is_string($role) && $role !== '') {
+                $chosen[] = $role;
+            }
+        }
+
+        $chosen = array_values(array_unique($chosen));
+
+        return $chosen === [] ? null : $chosen;
     }
 
     /**

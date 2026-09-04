@@ -8,6 +8,7 @@ use WConvert\Rest\RuleController;
 use WConvert\Rest\Routes;
 use WConvert\Rest\ThemeController;
 use WConvert\Rules\RuleCatalogue;
+use WConvert\Targeting\RoleRegistry;
 use WConvert\Rules\RuleVocabulary;
 use WConvert\Tests\Unit\Support\FakeProPresence;
 use WConvert\Tests\Unit\Support\FakeSitePresence;
@@ -39,7 +40,8 @@ final class BuilderRoutesTest extends TestCase
         (new RuleController(new RuleCatalogue(
             RuleVocabulary::fromManifest(self::PLUGIN_DIR),
             new FakeProPresence(),
-            new FakeSitePresence()
+            new FakeSitePresence(),
+            new RoleRegistry()
         )))->registerRoutes();
 
         (new ThemeController())->registerRoutes();

@@ -6,6 +6,7 @@ use WConvert\Support\Availability;
 use WConvert\Support\ProPresence;
 use WConvert\Support\SiteDependency;
 use WConvert\Support\SitePresence;
+use WConvert\Targeting\RoleRegistry;
 
 defined('ABSPATH') || exit;
 
@@ -44,6 +45,12 @@ final class RuleCatalogue
         // buyable from us and a missing plugin is not, and collapsing the two
         // shows a Pro customer an advertisement for Pro (ADR 0026).
         private readonly SitePresence $site,
+        // What this install can tell visitors apart by — WordPress's own roles,
+        // and whatever a membership or LMS adapter registered beside them. It
+        // is here rather than read from `wp_roles()` at the call site because
+        // the whole point of the seam is that adding a source changes no file
+        // ({@see \WConvert\Targeting\RoleRegistry}).
+        private readonly RoleRegistry $roles,
     ) {
     }
 
@@ -325,7 +332,7 @@ final class RuleCatalogue
                 'control' => $control,
                 'label' => RuleLabels::param($type, (string) $name),
                 'authored' => ($param['authored'] ?? false) === true,
-                'options' => self::options($control, is_array($param['options'] ?? null) ? $param['options'] : []),
+                'options' => $this->options($control, is_array($param['options'] ?? null) ? $param['options'] : []),
             ];
         }
 
@@ -368,10 +375,26 @@ final class RuleCatalogue
      * @param array<mixed> $declared
      * @return list<array<string, string>>
      */
-    private static function options(string $control, array $declared): array
+    private function options(string $control, array $declared): array
     {
         if ($control === 'post_type') {
             return self::postTypes();
+        }
+
+        // The third source, and the one that is not only WordPress: every
+        // role the site registered, plus whatever a membership or LMS adapter
+        // offers beside them ({@see \WConvert\Targeting\RoleRegistry}). The
+        // words are the site's for the reason a post type's are — a level's
+        // name is whatever the merchant typed — and asking the registry rather
+        // than `wp_roles()` is what makes an adapter need no change here.
+        if ($control === 'role_set') {
+            $options = [];
+
+            foreach ($this->roles->offered() as $slug => $name) {
+                $options[] = ['value' => $slug, 'label' => $name];
+            }
+
+            return $options;
         }
 
         return array_values(array_map(

@@ -47,12 +47,23 @@ final class TargetingExplainer
     public const WRONG_VISITOR = 'wrong_visitor';
 
     /**
+     * `roles` is set and this visitor holds none of them.
+     *
+     * Its own key rather than a second {@see self::WRONG_VISITOR}, because the
+     * two send a merchant to different places: one is a setting they can read
+     * off their own account, and this one is a fact about the account they
+     * happen to be signed in as. The sentence names the roles wanted.
+     */
+    public const WRONG_ROLE = 'wrong_role';
+
+    /**
      * One Optin's Targeting, against this request.
      *
      * @return array{
      *     admits: bool,
      *     reason: string|null,
      *     logged_in: array{wanted: bool, holds: bool}|null,
+     *     roles: array{wanted: list<string>, held: list<string>, holds: bool}|null,
      *     include: list<array{type: string, value: string, matches: bool}>,
      *     exclude: list<array{type: string, value: string, matches: bool}>
      * }
@@ -66,6 +77,20 @@ final class TargetingExplainer
             ? null
             : ['wanted' => $targeting->loggedIn, 'holds' => $targeting->loggedIn === $context->isLoggedIn];
 
+        // **What the merchant is signed in AS is reported, not simulated.**
+        // The one question this screen cannot answer is what somebody else
+        // sees, and the roles they hold are the sharpest version of it: the
+        // panel opens because they are an administrator, so "what does a
+        // subscriber see" is unanswerable here. Both halves travel, and the
+        // sentence says which is which.
+        $roles = $targeting->roles === null
+            ? null
+            : [
+                'wanted' => $targeting->roles,
+                'held' => $context->roles,
+                'holds' => array_intersect($targeting->roles, $context->roles) !== [],
+            ];
+
         // THE verdict, not A verdict.
         $admits = TargetingEvaluator::matches($targeting, $context);
 
@@ -73,8 +98,9 @@ final class TargetingExplainer
             'admits' => $admits,
             // Null exactly when it was admitted, so a caller never has to hold
             // a reason beside a positive verdict — the pair that cannot occur.
-            'reason' => $admits ? null : self::reason($loggedIn, $include, $exclude),
+            'reason' => $admits ? null : self::reason($loggedIn, $roles, $include, $exclude),
             'logged_in' => $loggedIn,
+            'roles' => $roles,
             'include' => $include,
             'exclude' => $exclude,
         ];
@@ -91,13 +117,22 @@ final class TargetingExplainer
      * exclude list is worse off than one told nothing.
      *
      * @param array{wanted: bool, holds: bool}|null $loggedIn
+     * @param array{wanted: list<string>, held: list<string>, holds: bool}|null $roles
      * @param list<array{type: string, value: string, matches: bool}> $include
      * @param list<array{type: string, value: string, matches: bool}> $exclude
      */
-    private static function reason(?array $loggedIn, array $include, array $exclude): ?string
+    private static function reason(?array $loggedIn, ?array $roles, array $include, array $exclude): ?string
     {
         if ($loggedIn !== null && !$loggedIn['holds']) {
             return self::WRONG_VISITOR;
+        }
+
+        // Both visitor predicates before either list, in the evaluator's own
+        // order — and `logged_in` before `roles`, because a signed-out visitor
+        // holds no role and being told about the roles would send a merchant
+        // to a list when what they needed was the sign-in question above it.
+        if ($roles !== null && !$roles['holds']) {
+            return self::WRONG_ROLE;
         }
 
         foreach ($exclude as $row) {

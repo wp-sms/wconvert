@@ -36,11 +36,21 @@ const paramFor = (control: string, options: string[] = []): RuleParam => ({
   options: options.map((value) => ({ value, label: value })),
 });
 
-/** The option sets the manifest declares, so a select has something to hold. */
+/**
+ * The option sets a control is given, so a select has something to hold.
+ *
+ * Two kinds, and `role_set` is the second: `device_set` is closed by the
+ * MANIFEST and its members are written there, while a post type's and a role's
+ * are facts about the INSTALL, resolved by `src/Rules/RuleCatalogue.php` from
+ * WordPress and from whatever membership adapter registered beside it. The
+ * fixture stands in for both, because what is under test here is that the
+ * component draws a control at all.
+ */
 const OPTIONS: Readonly<Record<string, string[]>> = {
   device_set: ['mobile', 'tablet', 'desktop'],
   referrer_set: ['direct', 'search', 'social'],
   post_type: ['post', 'page'],
+  role_set: ['subscriber', 'customer', 'plan_gold'],
 };
 
 describe('every param kind the manifest declares', () => {
@@ -364,5 +374,58 @@ describe('the hint under a control that needs one', () => {
       'aria-labelledby',
       'wconvert-hours',
     );
+  });
+});
+
+/**
+ * ============================================================================
+ * ROLES ARE A SET ON ONE FIELD, DRAWN LIKE THE DEVICE BUCKETS.
+ * ============================================================================
+ * Two closed sets, closed for different reasons — the device buckets are the
+ * manifest's and the roles are the SITE's, every role it registered plus
+ * whatever a membership or LMS adapter offers beside them
+ * (`src/Targeting/RoleRegistry.php`). Both are several values on ONE rule,
+ * which is how ADR 0005 answers the real OR cases with no boolean structure.
+ *
+ * What is asserted here rather than assumed is that the roles never become a
+ * second control shape: a merchant holding "subscriber or customer" is one
+ * answer, and two rules ANDed would hold for nobody.
+ */
+describe('the role control', () => {
+  const role = paramFor('role_set', OPTIONS.role_set);
+
+  it('is one set holding several roles, chosen from what this site offers', async () => {
+    const changed = vi.fn();
+
+    render(<ParamControl id="wconvert-roles" param={role} value={['subscriber']} onChange={changed} />);
+
+    await userEvent.click(screen.getByRole('checkbox', { name: 'customer' }));
+
+    expect(changed).toHaveBeenCalledWith(['subscriber', 'customer']);
+  });
+
+  /**
+   * A membership adapter's levels sit in the same list as WordPress's roles,
+   * because they are the same question asked of two systems.
+   */
+  it('makes no distinction between a role and a membership level', () => {
+    render(<ParamControl id="wconvert-roles" param={role} value={[]} onChange={vi.fn()} />);
+
+    expect(screen.getByRole('checkbox', { name: 'subscriber' })).toBeInTheDocument();
+    expect(screen.getByRole('checkbox', { name: 'plan_gold' })).toBeInTheDocument();
+  });
+
+  /**
+   * **The set is a named group**, not a label pointing at whichever checkbox
+   * the browser picked — and it carries the caveat that choosing any role
+   * means signed-in visitors only, because a signed-out visitor holds none.
+   */
+  it('names the set as a group and says what choosing one implies', () => {
+    const { container } = render(
+      <ParamField id="wconvert-roles" param={role} value={[]} onChange={vi.fn()} />,
+    );
+
+    expect(container.querySelector('[role=group]')).toHaveAttribute('aria-labelledby', 'wconvert-roles');
+    expect(screen.getByText(/signed-in visitors only/i)).toBeInTheDocument();
   });
 });

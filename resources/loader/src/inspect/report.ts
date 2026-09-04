@@ -64,6 +64,17 @@ export interface TargetingReport {
   readonly admits: boolean;
   readonly reason: string | null;
   readonly logged_in: { wanted: boolean; holds: boolean } | null;
+  /**
+   * The roles the Optin wants and the ones this request holds — or null where
+   * it does not ask.
+   *
+   * **Both halves, because neither answers on its own.** The merchant opened
+   * this panel by being an administrator, so *"what does a subscriber see"* is
+   * unanswerable here and is never simulated. What can be said is which roles
+   * the Optin is aimed at and which this request has, and the sentence names
+   * the first.
+   */
+  readonly roles: { wanted: readonly string[]; held: readonly string[]; holds: boolean } | null;
   readonly include: readonly TargetingRow[];
   readonly exclude: readonly TargetingRow[];
 }
@@ -224,6 +235,18 @@ function subjectFor(
     return names.get(winner.id) ?? winner.id;
   }
 
+  // ==========================================================================
+  // THE SLUGS, NOT THE ROLES' OWN NAMES, AND THAT IS THE CHEAP ANSWER.
+  // ==========================================================================
+  // A role's display name is a fact about the INSTALL — whatever registered it
+  // — so naming them would mean shipping the whole offered map into this
+  // bundle's labels for a sentence one Optin in a hundred prints. The slug is
+  // what is stored, it is what an administrator recognises, and it is already
+  // here.
+  if (reason === 'wants_role') {
+    return optin.targeting?.roles?.wanted.join(', ') ?? null;
+  }
+
   return null;
 }
 
@@ -344,6 +367,14 @@ const GATE_OF: Readonly<Record<string, Gate>> = {
 function targetingKey(targeting: TargetingReport): string {
   if (targeting.reason === 'wrong_visitor') {
     return targeting.logged_in?.wanted === true ? 'wants_signed_in' : 'wants_signed_out';
+  }
+
+  // The second visitor predicate, and its own key rather than a third arm of
+  // the one above: the two send a merchant to different places. "You are
+  // signed in" is a setting they can read off their own account; this is a
+  // fact about the account they happen to be signed in as.
+  if (targeting.reason === 'wrong_role') {
+    return 'wants_role';
   }
 
   return targeting.reason ?? 'not_in_payload';

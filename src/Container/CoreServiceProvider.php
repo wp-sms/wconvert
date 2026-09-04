@@ -83,6 +83,8 @@ use WConvert\Support\SitePresence;
 use WConvert\Support\Tier;
 use WConvert\Support\WpProPresence;
 use WConvert\Support\WpSitePresence;
+use WConvert\Targeting\RoleRegistry;
+use WConvert\Targeting\WpRoleSource;
 use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
 
@@ -126,6 +128,20 @@ final class CoreServiceProvider implements ServiceProvider
         // from us and a missing plugin is not, and collapsing the two shows a
         // Pro customer an advertisement for Pro (ADR 0026).
         $container->register(SitePresence::class, static fn (): SitePresence => new WpSitePresence());
+
+        // ====================================================================
+        // WHAT THIS INSTALL CAN TELL VISITORS APART BY.
+        // ====================================================================
+        // Free fills it with WordPress's own roles; a membership or LMS plugin
+        // adds a source beside them and changes no file here — which is the
+        // whole of "no core change is needed to add one" (#92). It is the same
+        // shape {@see SuppliedRules} and the Destination registry have, and it
+        // adds no list: the one rule type is declared in the manifest like
+        // every other, and this is only where its ANSWERS come from.
+        $container->register(
+            RoleRegistry::class,
+            static fn (): RoleRegistry => (new RoleRegistry())->add(new WpRoleSource())
+        );
 
         $container->register(Connection::class, static fn (): Connection => new WpdbConnection());
 
@@ -232,7 +248,8 @@ final class CoreServiceProvider implements ServiceProvider
             static fn (ServiceContainer $c): LoaderEnqueue => new LoaderEnqueue(
                 $c->resolve(PublishedSet::class),
                 $c->resolve(Degradation::class),
-                $c->resolve(SiteFrequency::class)
+                $c->resolve(SiteFrequency::class),
+                $c->resolve(RoleRegistry::class)
             )
         );
 
@@ -247,7 +264,8 @@ final class CoreServiceProvider implements ServiceProvider
                 $c->resolve(OptinRepository::class),
                 $c->resolve(PublishedSet::class),
                 $c->resolve(Degradation::class),
-                $c->resolve(RuleCatalogue::class)
+                $c->resolve(RuleCatalogue::class),
+                $c->resolve(RoleRegistry::class)
             )
         );
 
@@ -552,7 +570,8 @@ final class CoreServiceProvider implements ServiceProvider
             static fn (ServiceContainer $c): RuleCatalogue => new RuleCatalogue(
                 $c->resolve(RuleVocabulary::class),
                 $c->resolve(ProPresence::class),
-                $c->resolve(SitePresence::class)
+                $c->resolve(SitePresence::class),
+                $c->resolve(RoleRegistry::class)
             )
         );
 

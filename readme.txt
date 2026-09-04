@@ -36,6 +36,9 @@ it: the placement, the trigger, the copy and the fields, already filled in.
 * **Hours of the day**, so a popup can keep to your opening hours instead of
   greeting people at three in the morning. It is your site's own clock, and a
   window may run past midnight.
+* **Show it only to particular roles** — customers, subscribers, or whatever
+  your site registered. Holding any one of the roles you pick is enough, and
+  membership or LMS plugins can add their own levels to the same list.
 * **Lead-magnet delivery by email**, with no third-party service required.
 * **Consent captured as part of the form**, recorded with the wording that was
   on screen at the time.

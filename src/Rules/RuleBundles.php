@@ -175,11 +175,24 @@ final class RuleBundles
             }
         }
 
-        // `logged_in` is a Targeting FIELD rather than a member of either
-        // list, so it would be missed by the loop above — and it is a rule
-        // type with a tier like any other.
-        if (isset($targeting['logged_in'])) {
-            $types[] = 'logged_in';
+        // ====================================================================
+        // THE VISITOR PREDICATES ARE FIELDS, SO THE LOOP ABOVE CANNOT SEE THEM.
+        // ====================================================================
+        // Each is held apart from the two lists on purpose — an include list
+        // unions PAGE SETS, so a visitor rule in one would widen the Optin to
+        // the whole site — and each is a rule type with a tier and a
+        // [[SiteDependency]] like any other. A Starting point naming one has
+        // to be judged on it.
+        //
+        // Keyed by the config key rather than derived, because that key is the
+        // FIELD's name and only this file knows the two are the same thing:
+        // `logged_in` is stored under its own type name and `roles` is the
+        // plural of `role`. A third predicate adds a line here, and
+        // `RuleManifestParityTest` is what makes anybody notice it should.
+        foreach (['logged_in' => 'logged_in', 'roles' => 'role'] as $field => $type) {
+            if (isset($targeting[$field])) {
+                $types[] = $type;
+            }
         }
 
         return array_values(array_unique($types));
