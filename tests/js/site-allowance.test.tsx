@@ -141,3 +141,37 @@ describe('the site-wide allowance', () => {
     expect(dismissSwitch()).toBeEnabled();
   });
 });
+
+/**
+ * Two settings committed in a row do not undo each other.
+ *
+ * Clicking a switch blurs the number beside it, so both writes happen — the
+ * number first, then the switch. What must not happen is the second response
+ * retyping the field: the save that carries the switch answers with the
+ * allowance as the SERVER now holds it, and re-seeding the draft from every
+ * response is how a merchant's own number gets replaced by a stale one.
+ */
+describe('a number and a switch, one after the other', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    api.readSiteAllowance.mockResolvedValue(OFF);
+  });
+
+  it('keeps both, and leaves the typed number on screen', async () => {
+    // A server that is a little behind, which is the case the fix is about:
+    // the switch's response knows nothing of the number just committed.
+    api.saveSiteAllowance.mockImplementation((next: { stopAfterDismiss: boolean }) =>
+      Promise.resolve(next.stopAfterDismiss ? { ...OFF, stopAfterDismiss: true } : next),
+    );
+
+    render(<SiteAllowance />);
+
+    await userEvent.type(await screen.findByLabelText(/at most this many/i), '10');
+    await userEvent.click(screen.getByRole('checkbox', { name: /close any Optin/i }));
+
+    await waitFor(() => expect(api.saveSiteAllowance).toHaveBeenCalledTimes(2));
+
+    expect(api.saveSiteAllowance).toHaveBeenNthCalledWith(1, { ...OFF, maxImpressions: 10 });
+    expect(maxField()).toHaveValue(10);
+  });
+});

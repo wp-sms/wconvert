@@ -1415,7 +1415,7 @@ if (!function_exists('wp_unslash')) {
  * invisible unless something asserts it, and a counter cannot be recomputed
  * afterwards (ADR 0019).
  *
- * The constructor and the four methods take WordPress's own signatures rather
+ * The constructor and the methods take WordPress's own signatures rather
  * than convenient ones, because `bin/verify-stats.php` builds a REAL request
  * with the same calls and PHPStan analyses both files: a stub that took a
  * shape of its own would report the verifier as broken.
@@ -1493,6 +1493,26 @@ if (!class_exists('WP_REST_Request')) {
         public function get_param(string $name)
         {
             return $this->params[$name] ?? null;
+        }
+
+        /**
+         * Everything the request carried, whichever way it arrived.
+         *
+         * WordPress merges defaults, the URL, the query string, the body and
+         * the JSON body into one map; this merges the two halves a unit test
+         * can produce, in WordPress's own precedence — a JSON body wins over a
+         * `set_param()`, because JSON is later in that order.
+         *
+         * It is here rather than only in the beacon's half because the
+         * site-wide allowance route reads it: `get_json_params()` is null for
+         * a form-encoded POST, and a null read as "an empty allowance" would
+         * answer 200 while quietly turning a merchant's site-wide cap off.
+         *
+         * @return array<string, mixed>
+         */
+        public function get_params(): array
+        {
+            return array_merge($this->params, $this->get_json_params() ?? []);
         }
     }
 }

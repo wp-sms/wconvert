@@ -161,6 +161,20 @@ already means *the allowance is spent, and this cannot change on this page
 view*. The eligibility inspector therefore explains it for free, in the words it
 already uses.
 
+*Corrected on the word **first**, by [#92](https://github.com/navidkashani/wconvert/issues/92),
+which built it. "First" is true of the two SCOPES and was written before there
+was a third thing in that clause: [ADR 0050](0050-a-scheduled-optin-stays-in-the-published-set.md)
+has since put a schedule check beside `isAllowed`, and the schedule is asked
+**before** the site's allowance. Both sentences this ADR actually makes still
+hold — the site is checked before any RULE, and it beats the Optin's own
+allowance — but the order in
+[`decide.ts`](../../resources/loader/src/decide.ts) is schedule, then site,
+then Optin, and it is not the order this paragraph reads as. The reason is
+0050's own: a sale that starts on Friday is a date the merchant set and can
+act on, where a spent allowance is a fact about one device. Reporting the
+site-wide cap there would send them to a setting that is not why this
+particular Optin is quiet.*
+
 **It is a `capped`, not a new state.** A seventh member of `Standing`
 distinguishing "capped by this Optin" from "capped by the site" is the thing to
 resist: it widens a vocabulary the whole design keeps closed, to carry a
@@ -220,6 +234,15 @@ which is why `set()` takes the authored array rather than a `Frequency`: a calle
 building one first would have had `Frequency::fromArray()` turn both switches on
 before this ever saw it.
 
+**And "absent" is not the only way a switch fails to be a yes.** Filling the gaps
+with `$config + ['stopAfterDismiss' => false]` reads as enough and is not: `+`
+leaves a key that is PRESENT alone, so a body of `{"stopAfterDismiss": null}` —
+or `0`, or `"no"` — arrives intact and the engine's `!== false` reads every one
+of them as **on**. Unreachable from the card that ships, reachable from any
+other REST client, and it would turn a site-wide cap on for a merchant who asked
+for nothing. Both switches are therefore resolved to real booleans at that one
+seam.
+
 Four other things this fixed in place rather than in prose:
 
 - **Nothing is shipped and nothing is recorded until there is something to
@@ -240,6 +263,9 @@ Four other things this fixed in place rather than in prose:
   would send them to a setting that decided nothing.
 - **The inspector's sentence is derived, and `Standing` gained nothing.**
   `explain.ts` calls the exported `isSiteCapped` rather than a second spelling
-  of the question, `EntryReport.siteCapped` carries it the way `lostArbitration`
-  and `schedule` are already carried, and the funnel is the same eleven gates —
-  `tests/js/inspector-funnel.test.ts` counts them.
+  of the question, and the funnel is the same eleven gates —
+  `tests/js/inspector-funnel.test.ts` counts them. It is **not** a field on a
+  row: `lostArbitration` and `schedule` are derived after the verdict too and
+  both belong to a row because both DIFFER between rows, where this one cannot.
+  It travels beside them on a `BrowserReport`, the way the set of ids that
+  reached the browser already does.

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { __ } from '@wordpress/i18n';
+import { Input } from '../components/ui/input';
 import { Description } from '../shell/Description';
 import {
   Region,
@@ -49,12 +50,10 @@ import { readSiteAllowance, saveSiteAllowance, type SiteAllowance as Allowance }
 export function SiteAllowance() {
   const [allowance, setAllowance] = useState<Loadable<Allowance>>(LOADING);
   const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
   /*
-   * The two numbers are committed on blur or Enter, never on every keystroke —
-   * the same rule the retention period follows and for a softer version of its
-   * reason. Typing `10` passes through `1`, and a saved 1 is a site-wide cap of
-   * one impression that takes effect on the next page view of every visitor.
+   * What is typed in the two number fields, as typed. See {@link onScreen}:
+   * these are the merchant's from the first read onwards, and every write
+   * carries them.
    */
   const [drafts, setDrafts] = useState<{ maxImpressions: string; cooldownDays: string }>({
     maxImpressions: '',
@@ -72,20 +71,48 @@ export function SiteAllowance() {
 
   const current = allowance.status === 'ready' ? allowance.data : null;
 
-  const commit = (next: Allowance) => {
-    setBusy(true);
+  /**
+   * **Everything the card is showing, as one allowance.**
+   *
+   * ==========================================================================
+   * EVERY WRITE SENDS THE WHOLE THING, WHICH IS WHY NOTHING HAS TO BE LOCKED.
+   * ==========================================================================
+   * The obvious shape is one control, one field, and a `disabled` on the card
+   * while a save is in flight. Both halves of that are wrong here, and they
+   * fail together: clicking a switch BLURS the number beside it, so the
+   * number's own save starts first and the `disabled` it sets swallows the
+   * click that caused it. The merchant ticks a box and nothing happens.
+   *
+   * Sending what is on screen removes the reason to lock anything. Two writes
+   * in flight both carry the merchant's whole answer, so the later one wins
+   * and the later one is what they did last — where two partial writes built
+   * from a stale `current` would have undone each other.
+   *
+   * The drafts are also seeded from the server ONCE, on the first read, and
+   * are the merchant's from then on: re-seeding them from every save response
+   * retypes a number with a value the response was assembled before.
+   */
+  const onScreen = (over: Partial<Allowance> = {}): Allowance | null =>
+    current === null
+      ? null
+      : {
+          ...current,
+          maxImpressions: countIn(drafts.maxImpressions, current.maxImpressions),
+          cooldownDays: countIn(drafts.cooldownDays, current.cooldownDays),
+          ...over,
+        };
+
+  const commit = (next: Allowance | null) => {
+    if (next === null) {
+      return;
+    }
 
     void (async () => {
       try {
-        const saved = await saveSiteAllowance(next);
-
-        setAllowance(ready(saved));
-        setDrafts(draftsOf(saved));
+        setAllowance(ready(await saveSiteAllowance(next)));
         setError(null);
       } catch (cause) {
         setError(messageOf(cause));
-      } finally {
-        setBusy(false);
       }
     })();
   };
@@ -93,26 +120,17 @@ export function SiteAllowance() {
   /**
    * Commit a typed number, or leave everything alone.
    *
-   * An emptied box is *no limit* rather than zero — the same reading
-   * `HowOften.tsx` takes and the same one `src/Optin/Frequency.php` takes of a
-   * count it cannot use. A draft that is not a usable number is neither saved
-   * nor silently corrected: the field keeps what was typed, and the stored
-   * allowance keeps what it had.
+   * The commit is on blur or Enter, never on every keystroke — the same rule
+   * the retention period follows and for a softer version of its reason.
+   * Typing `10` passes through `1`, and a saved 1 is a site-wide cap of one
+   * impression taking effect on the next page view of every visitor.
    */
   const commitDraft = (field: 'maxImpressions' | 'cooldownDays') => {
-    if (current === null) {
-      return;
+    const next = onScreen();
+
+    if (next !== null && next[field] !== current?.[field]) {
+      commit(next);
     }
-
-    const typed = drafts[field];
-    const count = Number(typed);
-    const next = typed === '' ? null : Number.isInteger(count) && count >= 1 ? count : undefined;
-
-    if (next === undefined || next === current[field]) {
-      return;
-    }
-
-    commit({ ...current, [field]: next });
   };
 
   return (
@@ -140,11 +158,8 @@ export function SiteAllowance() {
                 <input
                   type="checkbox"
                   checked={current?.stopAfterDismiss === true}
-                  disabled={busy || current === null}
-                  onChange={(event) =>
-                    current !== null &&
-                    commit({ ...current, stopAfterDismiss: event.target.checked })
-                  }
+                  disabled={current === null}
+                  onChange={(event) => commit(onScreen({ stopAfterDismiss: event.target.checked }))}
                 />{' '}
                 {__('Once they close any Optin, show them nothing else', 'wconvert')}
               </label>
@@ -153,11 +168,8 @@ export function SiteAllowance() {
                 <input
                   type="checkbox"
                   checked={current?.stopAfterConversion === true}
-                  disabled={busy || current === null}
-                  onChange={(event) =>
-                    current !== null &&
-                    commit({ ...current, stopAfterConversion: event.target.checked })
-                  }
+                  disabled={current === null}
+                  onChange={(event) => commit(onScreen({ stopAfterConversion: event.target.checked }))}
                 />{' '}
                 {__('Once they sign up to anything, show them nothing else', 'wconvert')}
               </label>
@@ -165,13 +177,13 @@ export function SiteAllowance() {
               <label htmlFor="wconvert-site-max">
                 {__('Show at most this many in total', 'wconvert')}
               </label>
-              <input
+              <Input
                 id="wconvert-site-max"
                 type="number"
-                className="small-text"
+                className="w-24"
                 min={1}
                 value={drafts.maxImpressions}
-                disabled={busy || current === null}
+                disabled={current === null}
                 onChange={(event) =>
                   setDrafts((held) => ({ ...held, maxImpressions: event.target.value }))
                 }
@@ -188,13 +200,13 @@ export function SiteAllowance() {
               <label htmlFor="wconvert-site-cooldown">
                 {__('Days to wait between any two', 'wconvert')}
               </label>
-              <input
+              <Input
                 id="wconvert-site-cooldown"
                 type="number"
-                className="small-text"
+                className="w-24"
                 min={1}
                 value={drafts.cooldownDays}
-                disabled={busy || current === null}
+                disabled={current === null}
                 onChange={(event) =>
                   setDrafts((held) => ({ ...held, cooldownDays: event.target.value }))
                 }
@@ -219,3 +231,23 @@ const draftsOf = (allowance: Allowance) => ({
   maxImpressions: allowance.maxImpressions === null ? '' : String(allowance.maxImpressions),
   cooldownDays: allowance.cooldownDays === null ? '' : String(allowance.cooldownDays),
 });
+
+/**
+ * A typed number, or what is stored where it is not one yet.
+ *
+ * An emptied box is *no limit* rather than zero — the same reading
+ * `HowOften.tsx` takes and the same one `src/Optin/Frequency.php` takes of a
+ * count it cannot use. A draft that is not a usable number is neither saved nor
+ * silently corrected: the field keeps what was typed, and the allowance keeps
+ * what it had, so a merchant half way through typing `10` who ticks a switch
+ * does not have a cap of `1` written for them.
+ */
+const countIn = (typed: string, stored: number | null): number | null => {
+  if (typed === '') {
+    return null;
+  }
+
+  const count = Number(typed);
+
+  return Number.isInteger(count) && count >= 1 ? count : stored;
+};

@@ -108,7 +108,7 @@ export function runInspector(loader: Loader): void {
       overlayDone: false,
     });
 
-    panel.render(funnel(server as ServerReport, report.entries, reached, arrival));
+    panel.render(funnel(server as ServerReport, report, reached, arrival));
   }
 
   onConsentChange(() => {

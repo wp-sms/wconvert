@@ -68,6 +68,54 @@ final class SiteFrequencyTest extends TestCase
         $this->assertFalse($allowance->stopAfterConversion);
     }
 
+    /**
+     * **Only an explicit yes is a yes**, and this is the case a `+` default
+     * would have missed.
+     *
+     * `$config + ['stopAfterDismiss' => false]` fills an ABSENT key and leaves
+     * a present one alone — so a body carrying `null`, `0` or `"no"` would
+     * reach `Frequency`'s `!== false` intact and read as **on**. Unreachable
+     * from the card that ships, reachable from any other REST client, and it
+     * would turn a site-wide cap on for a merchant who asked for nothing.
+     */
+    public function testASwitchThatIsPresentButNotAYesIsOff(): void
+    {
+        foreach ([null, 0, '', 'no', 'false'] as $notAYes) {
+            $this->site->set(['stopAfterDismiss' => $notAYes]);
+
+            $this->assertFalse(
+                $this->site->allowance()->stopAfterDismiss,
+                sprintf('%s is not a merchant asking for a site-wide cap', var_export($notAYes, true))
+            );
+        }
+    }
+
+    /** And a tick that arrived as a form-encoded `"1"` is a tick. */
+    public function testASwitchSpelledTheWayAFormSpellsItIsOn(): void
+    {
+        $this->site->set(['stopAfterDismiss' => '1']);
+
+        $this->assertTrue($this->site->allowance()->stopAfterDismiss);
+    }
+
+    /**
+     * What an authoring surface is handed: **all four, always**. A control
+     * cannot draw a checkbox from a key that is not there, and this scope's
+     * absent key means something the payload's absent key does not.
+     */
+    public function testTheAuthoringShapeSpellsEveryFieldOut(): void
+    {
+        $this->assertSame(
+            [
+                'maxImpressions' => null,
+                'cooldownDays' => null,
+                'stopAfterDismiss' => false,
+                'stopAfterConversion' => false,
+            ],
+            $this->site->authored()
+        );
+    }
+
     public function testItRoundTripsWhatAMerchantConfigured(): void
     {
         $this->site->set([
@@ -101,7 +149,12 @@ final class SiteFrequencyTest extends TestCase
         $this->site->set(['stopAfterDismiss' => true, 'stopAfterConversion' => true]);
 
         $this->assertSame(
-            ['stopAfterDismiss' => true, 'stopAfterConversion' => true],
+            [
+                'maxImpressions' => null,
+                'cooldownDays' => null,
+                'stopAfterDismiss' => true,
+                'stopAfterConversion' => true,
+            ],
             $this->options->get(SiteFrequency::OPTION)
         );
 

@@ -71,12 +71,18 @@ final class PayloadTag
      * @param string $beaconUrl `rest_url()` for the beacon route.
      * @param array<string, mixed>|null $siteAllowance The four fields the whole
      *   site shares, or null where the merchant has configured none.
+     *
+     *   **Required, and null is the answer most sites give.** A default would
+     *   let a caller forget it and print a page whose site-wide cap silently
+     *   does nothing — and it would let the byte tests measure a tag the front
+     *   end never renders (CLAUDE.md: no back-compat shims; this is the same
+     *   rule read at a signature).
      */
     public static function render(
         array $entries,
         string $captureUrl,
         string $beaconUrl,
-        ?array $siteAllowance = null
+        ?array $siteAllowance
     ): string {
         if ($entries === []) {
             return '';

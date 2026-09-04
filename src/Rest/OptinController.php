@@ -367,51 +367,34 @@ final class OptinController implements RestController
 
     public function showSiteFrequency(): WP_REST_Response
     {
-        return new WP_REST_Response($this->siteFrequencyState());
+        return new WP_REST_Response($this->siteFrequency->authored());
     }
 
     /**
      * Write the site's allowance, and answer with what was stored.
      *
      * The body is handed to {@see SiteFrequency} whole rather than picked
-     * apart here. That is deliberate and is ADR 0047's amendment applied a
-     * second time: `frequency` and `priority` once travelled through this
-     * controller as unvalidated passthrough, every merchant Optin shipped
+     * apart here, and the answer is that class's own shape rather than one
+     * assembled in this file. That is deliberate and is ADR 0047's amendment
+     * applied a second time: `frequency` and `priority` once travelled through
+     * this controller as unvalidated passthrough, every merchant Optin shipped
      * uncapped, and nobody noticed until the rules panel landed. The
      * arithmetic that decides what a valid allowance is — and, at this scope,
      * what an absent key means — lives in one place that is not HTTP.
+     *
+     * **`get_params()` rather than `get_json_params()`**, because only one
+     * body shape is JSON. `get_json_params()` is null for a form-encoded POST,
+     * and a null read as "an empty allowance" would answer 200 while quietly
+     * turning the merchant's site-wide cap off. Reading everything WordPress
+     * collected is safe here precisely because the value object picks the four
+     * keys it knows: whatever else the request carried — `_locale`, a nonce —
+     * is not an allowance and is not treated as one.
      */
     public function updateSiteFrequency(WP_REST_Request $request): WP_REST_Response
     {
-        $body = $request->get_json_params();
+        $this->siteFrequency->set($request->get_params());
 
-        $this->siteFrequency->set(is_array($body) ? $body : []);
-
-        return new WP_REST_Response($this->siteFrequencyState());
-    }
-
-    /**
-     * The allowance as the authoring surface reads it — **all four fields,
-     * spelled out**.
-     *
-     * The payload's shape is the engine's, where an absent switch is on. This
-     * is not the payload: a control cannot draw a checkbox from a key that is
-     * not there, and the two switches are OFF here by default. So the screen
-     * is told the answer rather than left to work out which scope's silence it
-     * is reading.
-     *
-     * @return array{maxImpressions: int|null, cooldownDays: int|null, stopAfterDismiss: bool, stopAfterConversion: bool}
-     */
-    private function siteFrequencyState(): array
-    {
-        $allowance = $this->siteFrequency->allowance();
-
-        return [
-            'maxImpressions' => $allowance->maxImpressions,
-            'cooldownDays' => $allowance->cooldownDays,
-            'stopAfterDismiss' => $allowance->stopAfterDismiss,
-            'stopAfterConversion' => $allowance->stopAfterConversion,
-        ];
+        return new WP_REST_Response($this->siteFrequency->authored());
     }
 
     /**

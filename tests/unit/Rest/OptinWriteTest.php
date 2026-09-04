@@ -49,6 +49,8 @@ final class OptinWriteTest extends TestCase
 
     private OptinController $controller;
 
+    private SiteFrequency $siteFrequency;
+
     protected function setUp(): void
     {
         $GLOBALS['wconvertTestRoutes'] = [];
@@ -73,7 +75,7 @@ final class OptinWriteTest extends TestCase
             $published,
             InstalledRules::withPro($vocabulary),
             new RuleCatalogue($vocabulary, $pro, $site),
-            new SiteFrequency(new FakeOptionStore())
+            $this->siteFrequency = new SiteFrequency(new FakeOptionStore())
         );
     }
 
@@ -610,6 +612,63 @@ final class OptinWriteTest extends TestCase
         ]);
 
         $this->assertInstanceOf(WP_Error::class, $this->controller->update($request));
+    }
+
+    // ========================================================================
+    // THE ALLOWANCE THE WHOLE SITE SHARES.
+    // ========================================================================
+
+    /**
+     * The route answers with **all four fields**, off, on an install that has
+     * asked for nothing — which is every install (ADR 0047).
+     */
+    public function testTheSiteAllowanceStartsOffAndSaysSoInFull(): void
+    {
+        $this->assertSame(
+            [
+                'maxImpressions' => null,
+                'cooldownDays' => null,
+                'stopAfterDismiss' => false,
+                'stopAfterConversion' => false,
+            ],
+            $this->controller->showSiteFrequency()->get_data()
+        );
+    }
+
+    /**
+     * **A body that is not JSON is still a body.**
+     *
+     * `get_json_params()` is null for a form-encoded POST, and a null read as
+     * "an empty allowance" would answer 200 while quietly turning the
+     * merchant's site-wide cap off — the one way this route could destroy a
+     * setting without saying anything.
+     */
+    public function testTheSiteAllowanceIsReadFromABodyThatIsNotJson(): void
+    {
+        $request = new WP_REST_Request();
+        $request->set_param('stopAfterDismiss', true);
+        $request->set_param('cooldownDays', 7);
+
+        $saved = $this->controller->updateSiteFrequency($request)->get_data();
+
+        $this->assertSame(true, $saved['stopAfterDismiss']);
+        $this->assertSame(7, $saved['cooldownDays']);
+        $this->assertTrue($this->siteFrequency->allowance()->stopAfterDismiss);
+    }
+
+    /**
+     * A switch that is PRESENT but is not a yes is off. The engine's own read
+     * is `!== false`, which would say on to a `null`, a `0` or a `"no"` — and
+     * this route takes whatever a client sends.
+     */
+    public function testASwitchThatIsNotAYesDoesNotTurnTheSiteWideCapOn(): void
+    {
+        $request = new WP_REST_Request();
+        $request->set_param('stopAfterDismiss', null);
+
+        $saved = $this->controller->updateSiteFrequency($request)->get_data();
+
+        $this->assertFalse($saved['stopAfterDismiss']);
     }
 }
 

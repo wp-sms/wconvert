@@ -91,29 +91,46 @@ export interface EntryReport {
    * for a date that already passed.
    */
   readonly schedule: 'before' | 'after' | null;
+}
+
+/**
+ * The browser's half of the report: every row, and the one fact that is about
+ * the PAGE rather than about any row on it.
+ *
+ * ============================================================================
+ * `siteCapped` IS NOT A FIELD ON A ROW, BECAUSE IT IS THE SAME ON EVERY ROW.
+ * ============================================================================
+ * {@link EntryReport.lostArbitration} and {@link EntryReport.schedule} are
+ * both derived after the verdict too, and both belong to a row because both
+ * DIFFER between rows. This one cannot: the site's allowance is spent or it is
+ * not, and repeating that answer once per Optin invites a reader to believe
+ * the rows could disagree.
+ *
+ * So it travels beside them, the way `funnel()` already takes the page-level
+ * set of ids that reached the browser.
+ */
+export interface BrowserReport {
+  readonly entries: readonly EntryReport[];
   /**
-   * The SITE's allowance is spent, not this Optin's.
+   * This device has spent the allowance the whole SITE shares (ADR 0047).
    *
-   * ==========================================================================
-   * A FACT ABOUT THE PAGE, CARRIED PER ROW BECAUSE THAT IS WHERE IT IS READ.
-   * ==========================================================================
-   * Same arrangement as {@link lostArbitration}, and for its reason: the
-   * funnel decides what to say about ONE Optin out of that Optin's row, so a
-   * fact it has to consult belongs on the row even where the fact itself is
-   * true of every row at once.
+   * `decide` answers `capped` for that exactly as it does for an Optin whose
+   * own allowance is spent, and deliberately: a seventh `Standing` to tell
+   * them apart widens a vocabulary the design keeps closed, to carry a
+   * distinction a sentence can. So the distinction is derived here, from the
+   * same inputs the decision was taken on and after it was taken — the same
+   * arrangement the two fields above have.
    *
-   * And same arrangement as {@link schedule} on the other axis: `decide`
-   * answers `capped` for a site-vetoed Optin exactly as it does for one whose
-   * own allowance is spent (ADR 0047), so the distinction is derived here,
-   * from the same inputs the decision was taken on, AFTER it was taken.
+   * It is true whenever the site's allowance is spent, INCLUDING where an
+   * Optin's own is spent as well. The site is a veto, so it is what the
+   * merchant is told about.
    */
   readonly siteCapped: boolean;
 }
 
-export interface Explanation {
+export interface Explanation extends BrowserReport {
   /** The verdict the page actually took. */
   readonly verdict: Verdict;
-  readonly entries: readonly EntryReport[];
 }
 
 export function explain(decision: Decision): Explanation {
@@ -178,6 +195,7 @@ export function explain(decision: Decision): Explanation {
 
   return {
     verdict,
+    siteCapped,
     entries: decision.entries.map((entry) => {
       const standing = standings.get(entry.id) ?? 'inert';
 
@@ -189,7 +207,6 @@ export function explain(decision: Decision): Explanation {
         conditions: (entry.conditions ?? []).map((rule) => report(rule, answers, decision)),
         lostArbitration: standing === 'ready' && !showing.has(entry.id),
         schedule: sideOfWindow(entry, decision.now),
-        siteCapped,
       };
     }),
   };

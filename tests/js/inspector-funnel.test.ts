@@ -39,15 +39,15 @@ const entry = (over: Partial<EntryReport> = {}): EntryReport => ({
   conditions: [],
   lostArbitration: false,
   schedule: null,
-  siteCapped: false,
   ...over,
 });
 
 const first = (
   optins: ServerOptin[],
-  browser: EntryReport[] = [entry()],
-  reached = new Set(browser.map((each) => each.id)),
-) => funnel(server(...optins), browser, reached, ARRIVAL).rows[0];
+  entries: EntryReport[] = [entry()],
+  reached = new Set(entries.map((each) => each.id)),
+  siteCapped = false,
+) => funnel(server(...optins), { entries, siteCapped }, reached, ARRIVAL).rows[0];
 
 describe('the first gate that closes', () => {
   /**
@@ -143,7 +143,7 @@ describe('the gate with no word in the product', () => {
   it('names the Optin that took the page view', () => {
     const rows = funnel(
       server(optin({ id: 'A', name: 'Runner up' }), optin({ id: 'B', name: 'Welcome' })),
-      [entry({ id: 'A', lostArbitration: true }), entry({ id: 'B' })],
+      { entries: [entry({ id: 'A', lostArbitration: true }), entry({ id: 'B' })], siteCapped: false },
       new Set(['A', 'B']),
       ARRIVAL,
     ).rows;
@@ -199,7 +199,7 @@ describe('how far it got', () => {
   it('only ever names a gate the sequence contains', () => {
     const rows = funnel(
       server(optin({ published: false }), optin({ suspended: 'x' }), optin()),
-      [entry({ id: 'A' })],
+      { entries: [entry({ id: 'A' })], siteCapped: false },
       new Set(['A']),
       ARRIVAL,
     ).rows;
@@ -309,7 +309,7 @@ describe('a scheduled Optin', () => {
  */
 describe('an Optin the site-wide allowance vetoed', () => {
   it('names the frequency gate, with the site’s own sentence', () => {
-    const row = first([optin()], [entry({ standing: 'capped', siteCapped: true })]);
+    const row = first([optin()], [entry({ standing: 'capped' })], new Set(['A']), true);
 
     expect(row.gate).toBe('frequency');
     expect(row.stopped).toBe('site_capped');
@@ -317,12 +317,16 @@ describe('an Optin the site-wide allowance vetoed', () => {
 
   /** The site is a veto, so it is what the merchant is told about. */
   it('says the site stopped it even where the Optin’s own allowance is spent too', () => {
-    expect(first([optin()], [entry({ standing: 'capped', siteCapped: true })]).stopped).toBe('site_capped');
+    expect(first([optin()], [entry({ standing: 'capped' })], new Set(['A']), true).stopped).toBe(
+      'site_capped',
+    );
   });
 
   /** Without one, nothing changes: this is still the sentence it has today. */
   it('leaves an Optin capped by its own allowance saying exactly that', () => {
-    expect(first([optin()], [entry({ standing: 'capped', siteCapped: false })]).stopped).toBe('capped');
+    expect(first([optin()], [entry({ standing: 'capped' })], new Set(['A']), false).stopped).toBe(
+      'capped',
+    );
   });
 
   /**
@@ -333,7 +337,9 @@ describe('an Optin the site-wide allowance vetoed', () => {
   it('yields to a schedule, which is the more actionable answer', () => {
     const row = first(
       [optin({ schedule: { starts: '3 days', ends: null } })],
-      [entry({ standing: 'capped', schedule: 'before', siteCapped: true })],
+      [entry({ standing: 'capped', schedule: 'before' })],
+      new Set(['A']),
+      true,
     );
 
     expect(row.gate).toBe('schedule');

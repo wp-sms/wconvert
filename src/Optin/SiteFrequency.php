@@ -87,39 +87,50 @@ final class SiteFrequency
     }
 
     /**
-     * Store it, with **both switches spelled out**.
+     * The allowance as an **authoring surface** reads it: all four fields,
+     * every one of them spelled out.
      *
      * ========================================================================
      * THE OPTION IS NOT THE PAYLOAD, AND THIS IS THE ONE PLACE THAT MATTERS.
      * ========================================================================
-     * `Frequency::toArray()` writes only what differs from the ENGINE's
-     * defaults, so it drops a `true`. That is exactly right for the browser —
-     * an absent key and a stored `true` are the same answer there, and only
-     * one of them costs bytes on every matching page view — and exactly wrong
-     * here, because at this scope an absent key means OFF. Storing `toArray()`
-     * verbatim would silently lose a switch the merchant had just turned on.
+     * {@see Frequency::toArray()} writes only what differs from the ENGINE's
+     * defaults, so it drops a `true` and omits an unset number. That is
+     * exactly right for the browser — an absent key and a stored `true` are
+     * the same answer there, and only one of them costs bytes on every
+     * matching page view — and exactly wrong on this side, twice over. At this
+     * scope an absent switch means OFF, so storing `toArray()` verbatim would
+     * silently lose a switch the merchant had just turned on; and a control
+     * cannot draw a checkbox from a key that is not there.
      *
-     * So the two switches are added back. It costs four words in one option
-     * row that no page view reads, and it makes the stored value say what it
-     * means without a scope in its head. `true` still never reaches the
+     * So the option holds this, the REST route answers with this, and neither
+     * has to know which scope's silence it is reading. It costs a few words in
+     * one option row that no page view reads.
+     *
+     * @return array{maxImpressions: int|null, cooldownDays: int|null, stopAfterDismiss: bool, stopAfterConversion: bool}
+     */
+    public function authored(): array
+    {
+        return self::spell($this->allowance());
+    }
+
+    /**
+     * Store it.
+     *
+     * It takes the authored array rather than a {@see Frequency}, because
+     * `Frequency::fromArray()` answers for the ENGINE: a caller building one
+     * first would have turned both switches on before this ever saw it. The
+     * scope's reading of absence is spelled once, in
+     * {@see self::atThisScope()}, and every door goes through it.
+     *
+     * What is written is {@see self::authored()}'s shape, so the value that
+     * goes in is the value that comes back. `true` still never reaches the
      * browser; {@see self::forPayload()} is where that is kept.
-     *
-     * It takes the authored array rather than a {@see Frequency} for the same
-     * reason: `Frequency::fromArray()` answers for the engine, so a caller
-     * building one first would have already turned both switches on before
-     * this saw it. The scope's reading of absence is spelled once, in
-     * {@see self::atThisScope()}, and both doors go through it.
      *
      * @param array<string, mixed> $config
      */
     public function set(array $config): void
     {
-        $allowance = self::atThisScope($config);
-
-        $this->options->set(self::OPTION, $allowance->toArray() + [
-            'stopAfterDismiss' => $allowance->stopAfterDismiss,
-            'stopAfterConversion' => $allowance->stopAfterConversion,
-        ]);
+        $this->options->set(self::OPTION, self::spell(self::atThisScope($config)));
     }
 
     /**
@@ -142,18 +153,51 @@ final class SiteFrequency
     /**
      * One array, read with **this scope's defaults rather than the engine's**.
      *
+     * ========================================================================
+     * ONLY AN EXPLICIT YES IS A YES, AND A DEFAULT ALONE WOULD NOT SAY THAT.
+     * ========================================================================
      * The single place the asymmetry lives. {@see Frequency::fromArray()}
-     * answers for the engine, where an absent switch is ON; here an absent
-     * switch is OFF, so both are filled in before it is asked. Everything else
-     * — what counts as a usable number, what a nonsensical one drops to — is
-     * `Frequency`'s and is not re-derived.
+     * answers for the engine, where an absent switch is ON and the test is
+     * `!== false`; here an absent switch is OFF.
+     *
+     * Filling the gaps with a `+ ['stopAfterDismiss' => false]` default reads
+     * as enough and is not: `+` leaves a key that is PRESENT alone, so a body
+     * of `{"stopAfterDismiss": null}` — or `0`, or `"no"` — arrives intact and
+     * the engine's `!== false` reads every one of them as **on**. Unreachable
+     * from the card that ships, reachable from any other REST client, and it
+     * would turn a site-wide cap on for a merchant who asked for nothing.
+     *
+     * So both switches are resolved to real booleans here. `filter_var` rather
+     * than `=== true`, because a form-encoded body spells a tick `"1"` and a
+     * merchant who ticked a box meant it.
+     *
+     * Everything else — what counts as a usable number, what a nonsensical one
+     * drops to — is `Frequency`'s and is not re-derived.
      *
      * @param array<string, mixed> $config
      */
     private static function atThisScope(array $config): Frequency
     {
-        return Frequency::fromArray(
-            $config + ['stopAfterDismiss' => false, 'stopAfterConversion' => false]
-        );
+        return Frequency::fromArray([
+            'maxImpressions' => $config['maxImpressions'] ?? null,
+            'cooldownDays' => $config['cooldownDays'] ?? null,
+            'stopAfterDismiss' => filter_var($config['stopAfterDismiss'] ?? false, FILTER_VALIDATE_BOOLEAN),
+            'stopAfterConversion' => filter_var($config['stopAfterConversion'] ?? false, FILTER_VALIDATE_BOOLEAN),
+        ]);
+    }
+
+    /**
+     * One allowance, as all four fields.
+     *
+     * @return array{maxImpressions: int|null, cooldownDays: int|null, stopAfterDismiss: bool, stopAfterConversion: bool}
+     */
+    private static function spell(Frequency $allowance): array
+    {
+        return [
+            'maxImpressions' => $allowance->maxImpressions,
+            'cooldownDays' => $allowance->cooldownDays,
+            'stopAfterDismiss' => $allowance->stopAfterDismiss,
+            'stopAfterConversion' => $allowance->stopAfterConversion,
+        ];
     }
 }
