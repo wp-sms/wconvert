@@ -66,9 +66,12 @@ final class PayloadScalingTest extends TestCase
 
     private const BEACON = 'https://example.test/wp-json/wconvert/v1/beacon';
 
+    /** The site's own clock, as `wp_timezone()->getName()` answers it. */
+    private const ZONE = 'Europe/London';
+
     private static function bytes(int $totalPublished): int
     {
-        return strlen(PayloadTag::render(Payload::forRequest(self::publishedSet($totalPublished), self::pricingPage(), InstalledRules::free()), self::CAPTURE, self::BEACON, null));
+        return strlen(PayloadTag::render(Payload::forRequest(self::publishedSet($totalPublished), self::pricingPage(), InstalledRules::free()), self::CAPTURE, self::BEACON, null, self::ZONE));
     }
 
     public function testOnlyTheMatchingOptinsReachThePage(): void
@@ -99,7 +102,7 @@ final class PayloadScalingTest extends TestCase
     public function testPayloadSizeGrowsWithTheOptinsThatDoMatch(): void
     {
         $set = self::publishedSet(100);
-        $one = strlen(PayloadTag::render(Payload::forRequest([$set[0]], self::pricingPage(), InstalledRules::free()), self::CAPTURE, self::BEACON, null));
+        $one = strlen(PayloadTag::render(Payload::forRequest([$set[0]], self::pricingPage(), InstalledRules::free()), self::CAPTURE, self::BEACON, null, self::ZONE));
 
         $this->assertGreaterThan($one, self::bytes(100));
     }

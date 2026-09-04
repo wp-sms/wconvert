@@ -144,6 +144,21 @@
       "on_absence": "drop",
       "substitute": null
     },
+    "time_of_day": {
+      "kind": "condition",
+      "tier": "free",
+      "requires": null,
+      "params": {
+        "between": { "control": "hours" }
+      },
+      "presets": {
+        "office_hours": { "between": "09:00-17:00" },
+        "evenings": { "between": "18:00-00:00" }
+      },
+      "consent_category": null,
+      "on_absence": "drop",
+      "substitute": null
+    },
     "query_param": {
       "kind": "condition",
       "tier": "pro",

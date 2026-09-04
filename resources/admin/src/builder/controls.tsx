@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { ObjectPicker } from './rules/ObjectPicker';
 import type { RuleParam } from './api';
@@ -121,6 +122,9 @@ export function ParamControl({ id, param, value, onChange }: ParamControlProps) 
     case 'referrer_set':
       return <SourceSet id={id} param={param} value={value} onChange={onChange} />;
 
+    case 'hours':
+      return <HourRange id={id} value={value} onChange={onChange} />;
+
     default:
       return (
         <input
@@ -236,6 +240,81 @@ function SourceSet({ id, param, value, onChange }: ParamControlProps) {
   );
 }
 
+/**
+ * A recurring daily window: two times, ONE stored value.
+ *
+ * ============================================================================
+ * A HALF-FILLED WINDOW IS WRITTEN AS NO WINDOW, AND THAT IS THE WHOLE DESIGN.
+ * ============================================================================
+ * `time_of_day` declares one param because a window has no honest half-filled
+ * spelling. Two params — a `from` and a `to` — would leave a merchant who had
+ * filled one reading *"Time of day — needs To"* on the collapsed row, and
+ * worse, would let a `from` with no `to` be SAVED as a rule that holds for
+ * nobody. So this writes `undefined` until both ends are chosen, and the
+ * section summary says the row needs its hours.
+ *
+ * The two ends the merchant is part way through therefore have nowhere in
+ * `config` to live, which is what {@link typing} is for. It leads the stored
+ * value only while the window is incomplete — the moment it is whole, the two
+ * agree — so a WINDOW written from outside this control, by a preset, is
+ * recognised by not being what this draft would have written, and wins.
+ *
+ * The one case it does not recognise is an outside write of *nothing*, which
+ * is indistinguishable from the draft's own: a half-typed window survives a
+ * preset being cleared. That costs a merchant one visible end they have not
+ * saved and were about to finish, and closing it would mean this control
+ * holding a second flag about who wrote last.
+ *
+ * The times are the SITE's, and {@link HINTS} says so under the group: an
+ * `<input type="time">` shows the visitor's own locale formatting, and a
+ * merchant reading their opening hours as each visitor's local morning targets
+ * the wrong people.
+ */
+function HourRange({ id, value, onChange }: Omit<ParamControlProps, 'param'>) {
+  const stored = typeof value === 'string' ? value : '';
+  const [typing, setTyping] = useState(stored);
+  const shown = written(typing) === stored ? typing : stored;
+  const [from, to] = shown.split('-');
+
+  const write = (next: string) => {
+    setTyping(next);
+    // Only a whole window travels. An emptied end is "no window", never a
+    // boundary at midnight — the same reading `HowOften.tsx` takes of an
+    // emptied number and `Schedule` takes of an emptied date.
+    onChange(written(next) === '' ? undefined : next);
+  };
+
+  return (
+    <span className="wconvert-hours" role="group" aria-labelledby={id} aria-describedby={`${id}-hint`}>
+      <label>
+        {__('From', 'wconvert')}{' '}
+        <input type="time" value={from ?? ''} onChange={(event) => write(`${event.target.value}-${to ?? ''}`)} />
+      </label>
+      <label>
+        {__('To', 'wconvert')}{' '}
+        <input type="time" value={to ?? ''} onChange={(event) => write(`${from ?? ''}-${event.target.value}`)} />
+      </label>
+    </span>
+  );
+}
+
+/**
+ * What a draft would be STORED as: a whole window, or nothing.
+ *
+ * **Two ends the same is not a window**, and it is refused here rather than
+ * left to fail shut in the loader. `09:00-09:00` passes the shape test and
+ * contains no minute — the state
+ * {@see \WConvert\Optin\Schedule::isImpossible()} refuses one scope up, for
+ * the reason `CONTEXT.md` gives about a schedule: an Optin that is published
+ * and can never show is a state the merchant has no word for. Unwritten, the
+ * section summary says the row still needs its hours.
+ */
+const written = (draft: string): string => {
+  const found = /^(\d\d:\d\d)-(\d\d:\d\d)$/.exec(draft);
+
+  return found !== null && found[1] !== found[2] ? draft : '';
+};
+
 /** A set the merchant types — one value per row, and no way to nest one. */
 function ValueList({ value, onChange }: Omit<ParamControlProps, 'param' | 'id'>) {
   const values = (Array.isArray(value) ? (value as unknown[]) : []).map((each) => String(each));
@@ -297,7 +376,28 @@ const HINTS: Partial<Record<RuleParam['control'], () => string>> = {
       'The page they were on immediately before this one — not where they first found your site. A visit with no previous page counts as Direct.',
       'wconvert',
     ),
+  hours: () =>
+    __(
+      'Your site’s own time, not each visitor’s. A window may run past midnight — 22:00 to 02:00 is overnight.',
+      'wconvert',
+    ),
 };
+
+/**
+ * The controls that are SEVERAL controls, and therefore a named group.
+ *
+ * `<label>` points at exactly one form control, so a set of checkboxes, a list
+ * of values or a pair of times wrapped in one leaves the param's name attached
+ * to whichever the browser picks. A list rather than a property on the param,
+ * because it is a fact about how this file DRAWS a control and the manifest
+ * describes the value rather than the markup.
+ */
+const GROUPS: ReadonlySet<RuleParam['control']> = new Set<RuleParam['control']>([
+  'device_set',
+  'text_set',
+  'referrer_set',
+  'hours',
+]);
 
 /**
  * One param, with its name attached to its control the way an assistive
@@ -320,7 +420,7 @@ export function ParamField({ id, param, value, onChange }: ParamControlProps) {
   const control = <ParamControl id={id} param={param} value={value} onChange={onChange} />;
   const hint = HINTS[param.control];
 
-  if (param.control === 'device_set' || param.control === 'text_set' || param.control === 'referrer_set') {
+  if (GROUPS.has(param.control)) {
     return (
       <span className="wconvert-param">
         <span id={id} className="wconvert-param__name">

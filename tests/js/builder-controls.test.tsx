@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import manifest from '../../resources/rules/manifest.json';
@@ -242,5 +242,127 @@ describe('the referrer hint', () => {
     );
 
     expect(document.getElementById('wconvert-device-hint')).not.toBeInTheDocument();
+  });
+});
+
+/**
+ * ============================================================================
+ * ONE PARAM, TWO BOXES — BECAUSE A DAILY WINDOW HAS NO HALF-FILLED STATE.
+ * ============================================================================
+ * `time_of_day` is a recurring window, and a window has two ends. Declared as
+ * two params, a merchant who had filled one would read *"Time of day — needs
+ * To"* on the collapsed row forever, because a section summary reports any
+ * declared param it was given no value for — and worse, a `from` with no `to`
+ * would be a saveable rule that holds for nobody.
+ *
+ * One param has no such state: what is stored is either a whole window or
+ * nothing, and the summary says *"needs Hours"* until the merchant has chosen
+ * both ends. That is the same answer #91 arrived at for `referrer`, from the
+ * other direction.
+ */
+describe('the hours control', () => {
+  const hours = paramFor('hours');
+
+  const boxes = () => screen.getAllByLabelText(/^(From|To)$/);
+
+  it('is two times rather than a box to type a range into', () => {
+    render(<ParamControl id="wconvert-hours" param={hours} value={undefined} onChange={vi.fn()} />);
+
+    expect(boxes()).toHaveLength(2);
+    expect(boxes()[0]).toHaveAttribute('type', 'time');
+  });
+
+  it('reads a stored window back into its two ends', () => {
+    render(<ParamControl id="wconvert-hours" param={hours} value="09:00-17:00" onChange={vi.fn()} />);
+
+    expect(boxes()[0]).toHaveValue('09:00');
+    expect(boxes()[1]).toHaveValue('17:00');
+  });
+
+  it('writes one value once both ends are chosen', () => {
+    const changed = vi.fn();
+
+    render(<ParamControl id="wconvert-hours" param={hours} value="09:00-17:00" onChange={changed} />);
+
+    // `fireEvent` rather than typing: a `<input type="time">` is edited
+    // segment by segment, and what is under test is what one settled value
+    // writes rather than how a browser assembles it.
+    fireEvent.change(boxes()[1], { target: { value: '18:00' } });
+
+    expect(changed).toHaveBeenLastCalledWith('09:00-18:00');
+  });
+
+  /**
+   * **A half-filled window is written as no window**, so the row says it needs
+   * one rather than claiming a rule that holds for nobody. The typed end stays
+   * on screen while the merchant finishes.
+   */
+  it('writes nothing at all while only one end is chosen', () => {
+    const changed = vi.fn();
+
+    render(<ParamControl id="wconvert-hours" param={hours} value={undefined} onChange={changed} />);
+
+    fireEvent.change(boxes()[0], { target: { value: '09:00' } });
+
+    expect(changed).toHaveBeenLastCalledWith(undefined);
+    expect(boxes()[0]).toHaveValue('09:00');
+  });
+
+  /**
+   * **Two ends the same is not a window**, and it is refused here rather than
+   * left to fail shut in the loader. `09:00-09:00` passes the shape test and
+   * contains no minute — the state `Schedule::isImpossible()` refuses one
+   * scope up, because an Optin that is published and can never show is a state
+   * the merchant has no word for.
+   */
+  it('writes nothing for a window of no length', () => {
+    const changed = vi.fn();
+
+    render(<ParamControl id="wconvert-hours" param={hours} value="09:00-17:00" onChange={changed} />);
+
+    fireEvent.change(boxes()[1], { target: { value: '09:00' } });
+
+    expect(changed).toHaveBeenLastCalledWith(undefined);
+  });
+
+  /** And emptying one end takes the window away rather than half of it. */
+  it('unsets the window when an end is cleared', () => {
+    const changed = vi.fn();
+
+    render(<ParamControl id="wconvert-hours" param={hours} value="09:00-17:00" onChange={changed} />);
+
+    fireEvent.change(boxes()[0], { target: { value: '' } });
+
+    expect(changed).toHaveBeenLastCalledWith(undefined);
+  });
+});
+
+/**
+ * **Whose clock it is, said where the merchant is choosing the hours.**
+ *
+ * A merchant who reads "9am to 5pm" as the visitor's own morning targets the
+ * wrong people and blames the plugin — the same mis-reading `referrer_set`
+ * carries a hint for, and the same mechanism: keyed on the CONTROL, because
+ * this bundle spells no rule type of its own (`api.ts`).
+ */
+describe('the hint under a control that needs one', () => {
+  it('tells the merchant the hours are the site’s, not the visitor’s', () => {
+    render(
+      <ParamField id="wconvert-hours" param={paramFor('hours')} value={undefined} onChange={vi.fn()} />,
+    );
+
+    expect(screen.getByText(/your site/i)).toBeInTheDocument();
+  });
+
+  /** The two ends are two controls, so the param's name is a GROUP's name. */
+  it('names the pair as a group rather than labelling one of them', () => {
+    const { container } = render(
+      <ParamField id="wconvert-hours" param={paramFor('hours')} value={undefined} onChange={vi.fn()} />,
+    );
+
+    expect(container.querySelector('[role=group]')).toHaveAttribute(
+      'aria-labelledby',
+      'wconvert-hours',
+    );
   });
 });

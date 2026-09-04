@@ -161,7 +161,8 @@ final class PayloadBudgetTest extends TestCase
             $entries,
             'https://example.test/wp-json/wconvert/v1/capture',
             'https://example.test/wp-json/wconvert/v1/beacon',
-            self::SITE_ALLOWANCE
+            self::SITE_ALLOWANCE,
+            'Europe/London'
         ), 9));
 
         $this->assertLessThanOrEqual(
@@ -182,7 +183,8 @@ final class PayloadBudgetTest extends TestCase
             $entries,
             'https://example.test/wp-json/wconvert/v1/capture',
             'https://example.test/wp-json/wconvert/v1/beacon',
-            self::SITE_ALLOWANCE
+            self::SITE_ALLOWANCE,
+            'Europe/London'
         );
 
         $this->assertStringContainsString('"steps"', $rendered);
@@ -216,7 +218,8 @@ final class PayloadBudgetTest extends TestCase
             $entries,
             'https://example.test/wp-json/wconvert/v1/capture',
             'https://example.test/wp-json/wconvert/v1/beacon',
-            self::SITE_ALLOWANCE
+            self::SITE_ALLOWANCE,
+            'Europe/London'
         );
 
         // Not `"name"`: a `field` node carries one, and it is what the capture
@@ -253,7 +256,8 @@ final class PayloadBudgetTest extends TestCase
             $entries,
             'https://example.test/wp-json/wconvert/v1/capture',
             'https://example.test/wp-json/wconvert/v1/beacon',
-            self::SITE_ALLOWANCE
+            self::SITE_ALLOWANCE,
+            'Europe/London'
         );
 
         foreach ($library->all() as $id => $entry) {

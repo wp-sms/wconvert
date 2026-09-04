@@ -4392,8 +4392,24 @@
 }
 
 /*
- * What a control has to say for itself beyond its name — today only the
- * referrer's one-hop caveat (`controls.tsx`).
+ * ---------------------------------------------------------------------------
+ * A DAILY WINDOW: TWO TIMES THAT READ AS ONE ANSWER.
+ *
+ * A row rather than a column, and each end carries its own visible word — the
+ * group's name is "Hours" and "From"/"To" are what tell the merchant which box
+ * is which. It wraps for the reason the traffic sources do: two time inputs
+ * plus two words is wider than a narrow rule row.
+ * ------------------------------------------------------------------------- */
+.wconvert-hours {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+
+/*
+ * What a control has to say for itself beyond its name — the referrer's
+ * one-hop caveat, and whose clock a daily window is on (`controls.tsx`).
  *
  * A BLOCK on its own line, and measured: it is a sentence rather than a label,
  * so left inline it would run off the end of a rule row that already carries a

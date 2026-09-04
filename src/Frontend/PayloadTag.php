@@ -52,10 +52,13 @@ final class PayloadTag
     /**
      * The allowance the whole site shares.
      *
-     * A third attribute for the first one's reason: it is **one fact about the
-     * site** and the JSON is a list of facts about Optins, so putting it inside
-     * would mean either repeating it per entry or turning a list into an object
-     * with a list in it.
+     * A fourth attribute for the first one's reason: it is **one fact about
+     * the site** and the JSON is a list of facts about Optins, so putting it
+     * inside would mean either repeating it per entry or turning a list into
+     * an object with a list in it.
+     *
+     * It is the one of the four that is CONDITIONAL, and that is why it prints
+     * its own leading space and goes last.
      *
      * **Absent is the shipped state and costs nothing.** All four fields
      * default off at site scope (ADR 0047), so until a merchant configures one
@@ -64,6 +67,28 @@ final class PayloadTag
      * that null is decided.
      */
     public const SITE_ALLOWANCE_ATTRIBUTE = 'data-allowance';
+
+    /**
+     * The site's own timezone — an IANA name, or a fixed offset.
+     *
+     * A third attribute for {@see self::CAPTURE_ATTRIBUTE}'s reason: one fact
+     * about the SITE, beside a JSON list of facts about Optins.
+     *
+     * ====================================================================
+     * IT IS PRINTED ALWAYS, AND THAT IS ADR 0005 RATHER THAN LAZINESS.
+     * ====================================================================
+     * Only `time_of_day` reads it, so printing it only where an entry carries
+     * that rule would save about twenty bytes on most pages. It would also
+     * mean PHP asking what CLIENT rule types this page's Optins name, which is
+     * the one thing the three-axis split exists to prevent: the client
+     * vocabulary is closed, PHP never reasons about a member of it, and a
+     * conditional here is where that would start.
+     *
+     * Twenty bytes against two full route URLs is a price worth paying for
+     * that, and the loader is where the decision belongs anyway — a page with
+     * no time rule on it simply never reads the attribute.
+     */
+    public const TIMEZONE_ATTRIBUTE = 'data-tz';
 
     /**
      * @param list<array<string, mixed>> $entries
@@ -77,12 +102,15 @@ final class PayloadTag
      *   does nothing — and it would let the byte tests measure a tag the front
      *   end never renders (CLAUDE.md: no back-compat shims; this is the same
      *   rule read at a signature).
+     * @param string $timezone `wp_timezone()->getName()` — an IANA name, or a
+     *   fixed offset for a site with no city chosen.
      */
     public static function render(
         array $entries,
         string $captureUrl,
         string $beaconUrl,
-        ?array $siteAllowance
+        ?array $siteAllowance,
+        string $timezone
     ): string {
         if ($entries === []) {
             return '';
@@ -100,12 +128,18 @@ final class PayloadTag
         }
 
         return sprintf(
-            '<script type="application/json" id="%s" %s="%s" %s="%s"%s>%s</script>',
+            '<script type="application/json" id="%s" %s="%s" %s="%s" %s="%s"%s>%s</script>',
             self::ELEMENT_ID,
             self::CAPTURE_ATTRIBUTE,
             esc_url($captureUrl),
             self::BEACON_ATTRIBUTE,
             esc_url($beaconUrl),
+            self::TIMEZONE_ATTRIBUTE,
+            // `esc_attr()` rather than `esc_url()`: this is a zone name, and
+            // the escaping an attribute needs is the attribute's.
+            esc_attr($timezone),
+            // Last of the three, because it is the one that prints its own
+            // leading space or nothing at all.
             self::siteAllowanceAttribute($siteAllowance),
             $json
         );
