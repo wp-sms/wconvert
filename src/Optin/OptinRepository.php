@@ -227,9 +227,14 @@ final class OptinRepository
      * is the thing you want; a test's arms are a sequence, and reversing a
      * sequence makes B the first thing read.
      *
-     * The same 500 cap, for the same stated reason — past it this is a
-     * scrolling problem rather than a wrong number, and the parents it
-     * belongs to are capped at 500 anyway.
+     * **And no `LIMIT`, unlike {@see self::summaries()}.** That cap is right
+     * there because a list view past 500 is a scrolling problem; a cap HERE
+     * would drop an arm out of a test that still has it, so the screen would
+     * show a two-arm test as a one-arm one and a merchant would compare a
+     * number against nothing. That is a wrong screen rather than a short page,
+     * which is the same reason {@see self::names()} and
+     * {@see self::interpretations()} have none — and these are the same short
+     * columns, on rows that exist only while somebody is running a test.
      *
      * @return array<string, list<array<string, string|null>>> Parent id => its arms.
      */
@@ -237,8 +242,7 @@ final class OptinRepository
     {
         $rows = $this->db->results(
             Connection::TABLE_OPTINS,
-            'SELECT ' . self::SUMMARY_COLUMNS
-                . ' FROM %i WHERE parent_id IS NOT NULL ORDER BY id ASC LIMIT 500'
+            'SELECT ' . self::SUMMARY_COLUMNS . ' FROM %i WHERE parent_id IS NOT NULL ORDER BY id ASC'
         );
 
         $arms = [];
@@ -404,9 +408,32 @@ final class OptinRepository
         $now = current_time('mysql');
 
         foreach ($arms as $arm) {
-            if ($arm !== $winnerId) {
-                $this->db->update(Connection::TABLE_OPTINS, ['deleted_at' => $now], ['id' => $arm]);
+            if ($arm === $winnerId) {
+                continue;
             }
+
+            // ================================================================
+            // THE LOSERS HANG BENEATH THE WINNER, WHICH IS NOT TIDINESS.
+            // ================================================================
+            // The whole test's history follows the campaign that won, so
+            // {@see self::countArms()} can still see every arm this test ever
+            // had — and **a retired letter is never handed out twice.**
+            //
+            // Leaving them under the old parent breaks that the moment a
+            // CHILD wins: the promoted row has no children of its own, so the
+            // next variant of it is named `(B)` again, beside a soft-deleted
+            // `(B)` that is a different design. Two rows under one name in the
+            // [[Lead]] log is two designs under one label, where the name is
+            // the only provenance a Lead has (ADR 0002, ADR 0020).
+            //
+            // It also keeps the shape honest to read: a finished test is one
+            // parentless campaign with every arm it ever ran beneath it,
+            // whichever arm won.
+            $this->db->update(
+                Connection::TABLE_OPTINS,
+                ['deleted_at' => $now, 'parent_id' => $winnerId],
+                ['id' => $arm]
+            );
         }
 
         $this->rebuildPublishedSet();

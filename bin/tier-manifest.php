@@ -8,6 +8,7 @@
  *     php bin/tier-manifest.php infer       <tiers.json> <pro-tree>
  *     php bin/tier-manifest.php identifiers <tiers.json> <tier> <rules manifest>
  *     php bin/tier-manifest.php markers     <tiers.json> <tier> <pro modules dir>
+ *     php bin/tier-manifest.php unmarked    <tiers.json> <tier> <pro modules dir>
  *
  * Prints one value per line on stdout, or exits non-zero with a message on
  * stderr. Exit 0 = answered, 1 = could not answer.
@@ -149,7 +150,7 @@ $path = $argv[2] ?? '';
 
 try {
     if ($path === '') {
-        throw new RuntimeException('usage: php bin/tier-manifest.php <tiers|modules|infer|identifiers|markers> <tiers.json> [tier|tree] [rules.json|modules dir]');
+        throw new RuntimeException('usage: php bin/tier-manifest.php <tiers|modules|infer|identifiers|markers|unmarked> <tiers.json> [tier|tree] [rules.json|modules dir]');
     }
 
     $tiers = wconvertTiers($path);
@@ -275,6 +276,7 @@ try {
             break;
 
         case 'markers':
+        case 'unmarked':
             /*
              * ============================================================
              * THE SAME SCAN FOR A MODULE THAT SHIPS NO RULE TYPE AT ALL.
@@ -327,7 +329,13 @@ try {
                     throw new RuntimeException("module manifest names no slug: {$file}");
                 }
 
-                if (!is_string($marker) || $marker === '') {
+                $declares = is_string($marker) && $marker !== '';
+
+                // `unmarked` is the same walk asking the opposite question, so
+                // it is one case rather than two: a module above this rung that
+                // declares NO marker is one nothing looked for, and the caller
+                // has to be able to say so beside its tick (ADR 0029).
+                if ($declares === ($command === 'unmarked')) {
                     continue;
                 }
 
@@ -348,14 +356,14 @@ try {
                 }
 
                 if ($atRank > $rank) {
-                    echo $marker, "\n";
+                    echo $declares ? $marker : $slug, "\n";
                 }
             }
 
             break;
 
         default:
-            throw new RuntimeException('usage: php bin/tier-manifest.php <tiers|modules|infer|identifiers|markers> <tiers.json> [tier|tree] [rules.json|modules dir]');
+            throw new RuntimeException('usage: php bin/tier-manifest.php <tiers|modules|infer|identifiers|markers|unmarked> <tiers.json> [tier|tree] [rules.json|modules dir]');
     }
 } catch (RuntimeException $failure) {
     fwrite(STDERR, $failure->getMessage() . "\n");

@@ -42,7 +42,7 @@ import {
   type LeadLog as LeadLogPayload,
   type Retention,
 } from './api';
-import { listOptins, type OptinSummary } from '../optins/api';
+import { flattened, listOptins, type OptinSummary } from '../optins/api';
 
 /** What a merchant gets when they turn retention on without typing a number. */
 const SUGGESTED_DAYS = 90;
@@ -135,7 +135,11 @@ export function LeadLog() {
     // filter's options and the names in the Optin column, and nothing at all
     // on the retention region below (ADR 0039).
     listOptins(true)
-      .then(setOptins)
+      // **Flattened**, because the route answers parentless Optins with their
+      // arms NESTED (ADR 0045) and an A/B arm captures Leads like any other
+      // Optin. Without this the Optin column shows a raw ULID for exactly
+      // those rows, and the filter cannot offer them at all.
+      .then((list) => setOptins(flattened(list)))
       .catch((cause: unknown) => setLogError(messageOf(cause)));
   }, []);
 

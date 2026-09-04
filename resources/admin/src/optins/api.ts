@@ -101,6 +101,29 @@ const path = (suffix = '') => `/wconvert/v1/optins${suffix}`;
 export const listOptins = (includeDeleted = false) =>
   apiFetch<OptinSummary[]>({ path: path(includeDeleted ? '?include_deleted=1' : '') });
 
+/**
+ * Every Optin in the list, campaigns and arms alike, flat.
+ *
+ * ============================================================================
+ * THE LIST IS PARENTLESS-ONLY, AND ONE SCREEN NEEDS THE OTHER ROWS TOO.
+ * ============================================================================
+ * The route answers parentless Optins with their arms nested beneath them,
+ * which is the shape the Optins screen is about: a merchant running three
+ * tests meets three campaigns rather than six (ADR 0045).
+ *
+ * The [[Lead]] log is asking a different question. It labels each Lead with the
+ * Optin that captured it, and an arm captures Leads — so the nested shape would
+ * leave a raw ULID in the Optin column and no filter entry, for exactly the
+ * Leads whose provenance is hardest to recover. **The name is the only
+ * provenance a Lead has** (ADR 0002, ADR 0020).
+ *
+ * A flatten rather than a second route: the arms are already on the wire, so
+ * this costs no read, and one route answering both questions is one place for
+ * `include_deleted` to mean what it says.
+ */
+export const flattened = (optins: readonly OptinSummary[]): OptinSummary[] =>
+  optins.flatMap((optin) => [optin, ...optin.arms]);
+
 // The created Optin comes back rather than being discarded: creation lands
 // the merchant in the builder, and the builder is addressed by id.
 export const createOptin = (name: string, goal: string, config: Record<string, unknown>) =>

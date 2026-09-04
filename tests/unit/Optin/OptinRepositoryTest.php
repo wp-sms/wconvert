@@ -426,6 +426,71 @@ final class OptinRepositoryTest extends TestCase
         $this->assertArrayNotHasKey('variant', $set[0]['payload']);
     }
 
+    /**
+     * ========================================================================
+     * AND THE SAME RULE WHEN A CHILD WINS, WHICH IS WHERE IT ACTUALLY BROKE.
+     * ========================================================================
+     * The parent-wins case above is the easy half: the campaign keeps its row,
+     * so it keeps its children and the count is right. When a CHILD wins it is
+     * promoted to parentless — and if the losers were left hanging under the
+     * old parent, the promoted row would have no children at all, so the next
+     * variant of it would be named `(B)` again beside a soft-deleted `(B)`
+     * that is a different design.
+     *
+     * That is two designs under one label in the [[Lead]] log, where the name
+     * is the only provenance a Lead has (ADR 0002, ADR 0020) — so the losers
+     * are re-parented onto the winner and the whole test's history follows the
+     * campaign that won.
+     */
+    public function testALetterIsNeverReusedAfterAVariantWinsAndTheTestRestarts(): void
+    {
+        $parent = $this->anOptin();
+        $b = $this->repository->createVariant($parent->id);
+        $c = $this->repository->createVariant($parent->id);
+
+        $this->repository->publish($parent->id);
+        $this->repository->publish((string) $b?->id);
+        $this->repository->publish((string) $c?->id);
+
+        $this->repository->declareWinner($parent->id, (string) $c?->id);
+
+        $next = $this->repository->createVariant((string) $c?->id);
+
+        $this->assertNotNull($next);
+        $this->assertSame('Spring sale (D)', $next->name);
+        $this->assertNotSame(
+            $b?->name,
+            $next->name,
+            'a retired letter beside a live one is two designs under one label in the lead log'
+        );
+    }
+
+    /**
+     * Which is the same fact read from the other end: a finished test is one
+     * parentless campaign with every arm it ever ran beneath it, whichever arm
+     * won. Nothing is orphaned under a row that is no longer a campaign.
+     */
+    public function testTheArmsOfAFinishedTestHangBeneathTheWinner(): void
+    {
+        $parent = $this->anOptin();
+        $winner = $this->repository->createVariant($parent->id);
+
+        $this->repository->publish($parent->id);
+        $this->repository->publish((string) $winner?->id);
+
+        $this->repository->declareWinner($parent->id, (string) $winner?->id);
+
+        $this->assertSame(
+            [$parent->id],
+            array_column($this->repository->armsByParent(true)[(string) $winner?->id] ?? [], 'id')
+        );
+        $this->assertSame(
+            [],
+            $this->repository->armsByParent()[(string) $winner?->id] ?? [],
+            'and none of them is still running'
+        );
+    }
+
     public function testDeclaringAWinnerThatIsNotAnArmOfThisTestIsRefused(): void
     {
         $parent = $this->anOptin();

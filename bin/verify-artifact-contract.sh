@@ -661,6 +661,15 @@ if [ "$tier" = "pro" ] && section_clean; then
         elif [ -z "$MARKERS" ]; then
             echo "  ! no module above $RUNG declares a marker, so the module scan asserted nothing"
         else
+            # Named beside the tick, never folded into it. A module above this
+            # rung that declares no marker is one nothing looked for, and a
+            # reader has to be able to tell that from a rung with nothing above
+            # it (ADR 0029).
+            if UNMARKED="$(php "$SCRIPT_DIR/tier-manifest.php" unmarked "$LADDER" "$RUNG" "$MODULES_DIR" 2>/dev/null)" \
+                && [ -n "$UNMARKED" ]; then
+                echo "  ! $(echo "$UNMARKED" | tr '\n' ' ')declare no marker and were not scanned for"
+            fi
+
             for built in public/loader/loader.js public/inspector/inspector.js; do
                 if [ ! -r "$TREE/$built" ]; then
                     # [1] already failed on this; do not report it twice.

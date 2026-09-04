@@ -89,9 +89,11 @@ section measures WSMS by, reached through a gap in the scan instead of through
 a flag. So a module may declare a `bundle_marker` in its own `module.json` — a
 token that appears in its built JavaScript and in no lower rung's — beside the
 slug that already names it, and both programs scan for it exactly as they scan
-for an identifier. **A module that declares none is reported as unscanned
-rather than ticked**, which is the same rule the identifier scan already
-follows when nothing is filed above a rung.*
+for an identifier. **A module that declares none is NAMED as unscanned beside
+the tick**, which is the same rule the identifier scan already follows when
+nothing is filed above a rung — and it is what makes `display-types`'s own gap
+readable rather than assumed away: it ships the popover container and declares
+no rule type, so neither scan covers it today.*
 
 This is measured rather than assumed, and the measurement is why it is here. WP
 Statistics ships 2.2 MB at basic against 3.3 MB at elite. **WSMS ships a

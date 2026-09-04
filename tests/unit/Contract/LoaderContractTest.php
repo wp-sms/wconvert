@@ -108,7 +108,17 @@ final class LoaderContractTest extends TestCase
                 'tiers' => [
                     ['slug' => 'basic', 'name' => 'Pro', 'modules' => ['display-types']],
                     ['slug' => 'pro', 'name' => 'Pro', 'modules' => ['display-types', 'premium-triggers']],
-                    ['slug' => 'elite', 'name' => 'Pro', 'modules' => '*'],
+                    // Named rather than `'*'`, because there IS no wildcard:
+                    // against one the artifact contract's completeness half
+                    // asserts nothing, and the top rung — the one every
+                    // customer buys — would be the only rung with no check
+                    // (ADR 0056). A fixture that spelled a ladder the product
+                    // forbids was a fixture asserting the wrong thing.
+                    [
+                        'slug' => 'elite',
+                        'name' => 'Pro',
+                        'modules' => ['display-types', 'premium-triggers', 'cart-recovery'],
+                    ],
                 ],
             ],
         ]);
@@ -211,6 +221,29 @@ final class LoaderContractTest extends TestCase
         ]));
 
         $this->assertSame(0, $result['status'], $result['output']);
+    }
+
+    /**
+     * ========================================================================
+     * A MODULE NOTHING LOOKED FOR IS NAMED, NOT PASSED OVER.
+     * ========================================================================
+     * The marker list is what a module DECLARES, so a module that declares
+     * none is one this scan cannot see — and a tick printed beside a scan that
+     * skipped three of them reports "clean" while asserting less than it says,
+     * which is the failure this ADR is about. It is also what would hide the
+     * next module to ship loader code and no rule type, exactly as
+     * `ab-testing` was hidden until it was looked for.
+     */
+    public function testItNamesTheModulesItDidNotScanFor(): void
+    {
+        $result = $this->check($this->loaderTree());
+
+        $this->assertSame(0, $result['status'], $result['output']);
+        $this->assertStringContainsString(
+            'declare no marker and were not scanned for',
+            $result['output']
+        );
+        $this->assertStringContainsString('display-types', $result['output']);
     }
 
     /**

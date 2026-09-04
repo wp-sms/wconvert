@@ -269,6 +269,21 @@ $verify->check(
 $winner = $optins->find($armBId);
 
 $verify->check('the winner has no parent', null, $winner?->parentId);
+
+// And the arm that lost hangs beneath it, so the whole test's history follows
+// the campaign that won and a retired letter is never handed out twice
+// (ADR 0058).
+$verify->check(
+    'and the arm that lost hangs beneath the winner',
+    $armBId,
+    $optins->find($parent->id)?->parentId
+);
+
+$verify->check(
+    'so the next variant of it takes the next letter',
+    'Spring sale (C)',
+    $optins->createVariant($armBId)?->name
+);
 $verify->check('and it is the campaign', 'Spring sale', $winner?->name);
 $verify->check('so the list is one campaign again', [$armBId], array_column($optins->summaries(), 'id'));
 
@@ -288,7 +303,7 @@ $verify->check(
 
 echo "\nCleaning up\n";
 
-foreach ([$parent->id, $armBId] as $id) {
+foreach ($wpdb->get_col("SELECT id FROM `{$optinTable}`") as $id) {
     $wpdb->query($wpdb->prepare("DELETE FROM `{$optinTable}` WHERE id = %s", $id));
     $wpdb->query($wpdb->prepare("DELETE FROM `{$statsTable}` WHERE optin_id = %s", $id));
 }

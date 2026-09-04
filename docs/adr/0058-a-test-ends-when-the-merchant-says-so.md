@@ -80,6 +80,15 @@ BEFORE                                  AFTER declaring B
   01HB "Welcome (B)"  parent 01HA         01HB "Welcome"      parent NULL
 ```
 
+**And the losing arms are re-parented onto the winner**, which is not
+tidiness. The whole test's history has to follow the campaign that won, or the
+promoted row has no children and the next variant of it is named `(B)` again
+beside a soft-deleted `(B)` that is a different design — two designs under one
+label in the [[Lead]] log, where the name is the only provenance a Lead has
+(ADR 0002). It also makes the shape honest to read from either end: a finished
+test is one parentless campaign with every arm it ever ran beneath it,
+whichever arm won.
+
 Every row's counters mean exactly one design for the whole of its life. The
 losing arm is **soft-deleted at most** — ADR 0020 forbids removing it, and
 `Connection` has no `delete()` to call — at which point it behaves like any
@@ -216,6 +225,17 @@ reports the numbers, once per screen and only where a test is running.
   it, and both programs scan for it exactly as they scan for a rule
   identifier. Recorded inline in ADR 0056 and
   [ADR 0029](0029-the-free-contract-is-proven-at-the-source.md).
+
+  **A module that declares none is NAMED beside the tick, never folded into
+  it.** Only `ab-testing` declares one today, so free's loader prints
+  *"display-types, premium-triggers, cart-recovery declare no marker and were
+  not scanned for"* — and that line is the point of it. `premium-triggers` and
+  `cart-recovery` are covered by the identifier scan, because their
+  contribution IS rules. **`display-types` is covered by neither**: it ships
+  the popover container and a presenter and declares no rule type, which is
+  precisely this module's shape. Naming it is what stops the next reader
+  believing the tick covered it, and it is the same thing this feature had to
+  be looked for to find.
 - **The Optins list is the result screen.** There is no new admin screen and
   `PRO_SCREENS` is still empty, so Pro's admin bundle is still one build for
   all three rungs and `pro/tests/js/admin-entry.test.ts`'s tripwire has not
@@ -233,6 +253,15 @@ reports the numbers, once per screen and only where a test is running.
   leaves records carrying the field, and an impression free records against the
   same Optin must not take it with them — otherwise reactivating Pro re-draws
   every browser on the site.
+- **The [[Lead]] log flattens what the Optins list nests.** The route answers
+  parentless Optins with their arms beneath them, which is the shape the Optins
+  screen is about — and it is the wrong shape for the one screen that labels
+  each Lead with the Optin that captured it. An arm captures Leads like any
+  other Optin, so leaving it nested would put a raw ULID in the Optin column
+  and no filter entry, for exactly the Leads whose provenance is hardest to
+  recover. The name is the only provenance a Lead has (ADR 0002, ADR 0020), and
+  the arms are already on the wire, so this is a flatten rather than a second
+  read.
 - **A variant of a variant is refused.** Arms are a flat set under one parent:
   the payload's triple names one experiment, and a grandchild would name a
   parent that is itself an arm of something else. There is no test that shape

@@ -328,7 +328,7 @@ final class PublishedProjection
         array $row,
         RuleVocabulary $vocabulary,
         \DateTimeZone $siteZone,
-        array $arms = []
+        array $arms
     ): ?array {
         if (self::isExcluded($row)) {
             return null;

@@ -248,10 +248,13 @@ function identifiersByTier(tiers) {
  * new lists (ADR 0015), and a module that declares none is reported as
  * unscanned rather than ticked.
  *
- * @returns {Map<string, string[]>} tier slug => the markers of modules it first ships.
+ * @returns {{byTier: Map<string, string[]>, unscanned: Map<string, string[]>}}
+ *   tier slug => the markers of modules it first ships, and the slugs of the
+ *   modules it first ships that declare none.
  */
 function markersByTier(tiers) {
   const byTier = new Map(tiers.map((tier) => [tier, []]));
+  const unscanned = new Map(tiers.map((tier) => [tier, []]));
   const ladder = JSON.parse(readFileSync(resolve(ROOT, TIER_MANIFEST), 'utf8'))?.premium?.tiers ?? [];
 
   for (const file of readdirSync(resolve(ROOT, MODULES), { withFileTypes: true })) {
@@ -263,22 +266,25 @@ function markersByTier(tiers) {
     const declared = JSON.parse(readFileSync(manifest, 'utf8'));
     const marker = declared?.bundle_marker;
 
-    if (typeof marker !== 'string' || marker === '') {
-      continue;
-    }
-
     // The LOWEST rung that ships it, which is the direction the whole ladder
     // is read in: a module on disk is evidence of at least that rung.
     const at = ladder.find((tier) => (tier?.modules ?? []).includes(declared.slug))?.slug;
 
     if (!byTier.has(at)) {
-      throw new Error(`${declared.slug} declares a bundle marker and is shipped by no tier ${TIER_MANIFEST} declares`);
+      throw new Error(`${declared.slug} is shipped by no tier ${TIER_MANIFEST} declares`);
     }
 
-    byTier.get(at).push(marker);
+    // **A module that declares none is NAMED rather than passed over.** A tick
+    // printed beside a scan that skipped three modules reports "clean" while
+    // asserting less than it says, which is the failure ADR 0029 is about —
+    // and it is the failure that would hide the next module to ship loader
+    // code and no rule type, exactly as `ab-testing` did.
+    (typeof marker === 'string' && marker !== '' ? byTier : unscanned).get(at).push(
+      typeof marker === 'string' && marker !== '' ? marker : declared.slug,
+    );
   }
 
-  return byTier;
+  return { byTier, unscanned };
 }
 
 // Each bundle is read ONCE. Reading again for the premium scan would report a
@@ -323,8 +329,13 @@ try {
   fail(`cannot read the tier ladder or the rule manifest (${error.message}) — the identifier scan inspected nothing`);
 }
 
+let unscanned = null;
+
 try {
-  markers = tiers === null ? null : markersByTier(tiers);
+  const read = tiers === null ? null : markersByTier(tiers);
+
+  markers = read === null ? null : read.byTier;
+  unscanned = read === null ? null : read.unscanned;
 } catch (error) {
   fail(`cannot read the module manifests (${error.message}) — the marker scan inspected nothing`);
 }
@@ -382,22 +393,30 @@ if (markers !== null) {
     }
 
     const from = bundle.above === null ? 0 : tiers.indexOf(bundle.above) + 1;
-    const forbidden = tiers.slice(from).flatMap((tier) => markers.get(tier));
+    const above = tiers.slice(from);
+    const forbidden = above.flatMap((tier) => markers.get(tier));
+    const silent = above.flatMap((tier) => unscanned.get(tier));
 
     if (forbidden.length === 0) {
       console.log(`  ! ${bundle.label}: no module above its rung declares a marker, so this scan asserted nothing`);
-      continue;
+    } else {
+      const text = source.toString('utf8');
+      const found = forbidden.filter((marker) => text.includes(marker));
+
+      console.log(
+        `  ${found.length === 0 ? '✓' : '✗'} ${bundle.label}: scanned for ${forbidden.length} module marker(s) from a higher rung`,
+      );
+
+      for (const marker of found) {
+        fail(`${bundle.label}: contains "${marker}", a module filed above the rung this bundle ships`);
+      }
     }
 
-    const text = source.toString('utf8');
-    const found = forbidden.filter((marker) => text.includes(marker));
-
-    console.log(
-      `  ${found.length === 0 ? '✓' : '✗'} ${bundle.label}: scanned for ${forbidden.length} module marker(s) from a higher rung`,
-    );
-
-    for (const marker of found) {
-      fail(`${bundle.label}: contains "${marker}", a module filed above the rung this bundle ships`);
+    // Said out loud beside the tick, never folded into it: a module above this
+    // rung that declares no marker is one this scan did not look for, and a
+    // reader has to be able to tell that from a rung with nothing above it.
+    if (silent.length > 0) {
+      console.log(`  ! ${bundle.label}: ${silent.join(', ')} declare no marker and were not scanned for`);
     }
   }
 }

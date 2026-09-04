@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '../components/ui/dropdown-menu';
 import { Badge } from '../components/ui/badge';
-import { renderingFor, tierProductName } from '../goals/availability';
+import { renderingFor, tierProductName, type Rendering } from '../goals/availability';
 import { adminSettings } from '../settings';
 import {
   DataTable,
@@ -29,7 +29,7 @@ import { InspectDialog } from './InspectDialog';
 import { StatusBadge } from './StatusBadge';
 import { Description } from '../shell/Description';
 import { EmptyState } from '../shell/EmptyState';
-import { Region, RegionError, RegionErrorState } from '../shell/Region';
+import { Region, RegionError, RegionErrorState, RegionFooter } from '../shell/Region';
 import { TableSkeleton } from '../shell/TableSkeleton';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
 import { numbersByOptin, readDashboard, type OptinNumbers } from '../stats/api';
@@ -146,6 +146,14 @@ export function OptinList({
    * the request.
    */
   const [inspecting, setInspecting] = useState(false);
+  /*
+   * **Whether this install can start a test — resolved once for the screen.**
+   * `settings.ts` calls it *"a fact about the SCREEN and not about a row"*, and
+   * every row answering it for itself was that fact recomputed per row (and
+   * three `adminSettings()` reads deep inside the render of each).
+   */
+  const testable = renderingFor(adminSettings()?.variants?.availability ?? 'locked', 'settings_list');
+  const testableTier = adminSettings()?.variants?.tier ?? undefined;
   /*
    * The control that opened the confirm, so closing it puts the caret back
    * ({@see ConfirmDialog}). Held here rather than in the row because the
@@ -285,6 +293,8 @@ export function OptinList({
                     optin={row}
                     arm={arm}
                     testing={testing}
+                    testable={testable}
+                    testableTier={testableTier}
                     goal={labelFor(row)}
                     numbers={numbers[row.id]}
                     busy={busyId === row.id}
@@ -333,12 +343,12 @@ export function OptinList({
         the space it sits in is drawn (ADR 0042).
       */}
       {rows.some((optin) => optin.arms.length > 0) && (
-        <Description className="mt-3">
+        <RegionFooter>
           {__(
             'A/B numbers count browsers, not people. One visitor on two devices can meet both arms, and clearing browser storage draws again.',
             'wconvert',
           )}
-        </Description>
+        </RegionFooter>
       )}
 
       {/*
@@ -454,6 +464,8 @@ function Row({
   optin,
   arm,
   testing,
+  testable,
+  testableTier,
   goal,
   numbers,
   busy,
@@ -493,14 +505,9 @@ function Row({
   onDelete: (trigger: HTMLElement | null) => void;
   /** Opens the page picker. Not per-row: the panel reports every Optin at once. */
   onInspect: () => void;
-  /** Start a test, or add another arm to the one running. Parent rows only. */
-  onTest: () => void;
-  /** End the test with this row as the winner. */
-  onDeclare: (trigger: HTMLElement | null) => void;
-}) {
-  const status = statusOf(optin);
-  const trigger = useRef<HTMLButtonElement>(null);
-  /*
+  /**
+   * How this install renders the offer to start a test.
+   *
    * **`locked` is marked before the click, with the reason** (ADR 0042). The
    * routes genuinely do not exist on a build without the `ab-testing` module
    * (ADR 0015), so an unmarked item would be a 404 the merchant met by
@@ -511,8 +518,20 @@ function Row({
    * reading is baffling (ADR 0026). It renders as a menu LABEL and never as a
    * disabled item: wp.org Guideline 9 fires on showing a real control the
    * merchant cannot use, and a label is not one.
+   *
+   * Resolved once by the screen and passed down, because it is the same answer
+   * for every row.
    */
-  const testable = renderingFor(adminSettings()?.variants?.availability ?? 'locked', 'settings_list');
+  testable: Rendering;
+  /** Which rung to name in the upsell, when there is one. */
+  testableTier: string | undefined;
+  /** Start a test, or add another arm to the one running. Parent rows only. */
+  onTest: () => void;
+  /** End the test with this row as the winner. */
+  onDeclare: (trigger: HTMLElement | null) => void;
+}) {
+  const status = statusOf(optin);
+  const trigger = useRef<HTMLButtonElement>(null);
 
   return (
     <DataTableRow>
@@ -673,7 +692,7 @@ function Row({
                   {sprintf(
                     /* translators: %s: the product that supplies A/B testing, e.g. “WConvert Pro”. */
                     __('A/B testing is available with %s.', 'wconvert'),
-                    tierProductName(adminSettings()?.variants?.tier ?? undefined),
+                    tierProductName(testableTier),
                   )}
                 </DropdownMenuLabel>
               ) : (
@@ -700,10 +719,27 @@ function Row({
               could only end the test by declaring the loser.
             */}
             {testing && (
-              <DropdownMenuItem onSelect={() => onDeclare(trigger.current)}>
-                <Trophy aria-hidden="true" />
-                {__('Use this one', 'wconvert')}
-              </DropdownMenuItem>
+              <>
+                {/*
+                  **A rule between the two, and it is the rule ADR 0039 asks
+                  for.** *Add another variant* and *Use this one* are one press
+                  apart and mean opposite things — one keeps the test running,
+                  the other ends it and takes every other arm off the site. A
+                  destructive action is never adjacent to the safe action it
+                  could be mistaken for, and the separator is that distance.
+
+                  It is NOT marked `destructive`, and that is deliberate rather
+                  than an omission: red would say *this deletes something*,
+                  which is the misreading the confirm exists to correct. The
+                  losing arm keeps its row and its counters (ADR 0020), and
+                  ending a test is the point of running one.
+                */}
+                {!arm && <DropdownMenuSeparator />}
+                <DropdownMenuItem onSelect={() => onDeclare(trigger.current)}>
+                  <Trophy aria-hidden="true" />
+                  {__('Use this one', 'wconvert')}
+                </DropdownMenuItem>
+              </>
             )}
 
             {(testing || (!arm && status !== 'deleted' && testable !== 'hide')) && (
