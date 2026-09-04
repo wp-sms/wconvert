@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { Button } from '../components/ui/button';
 import { Description } from '../shell/Description';
-import { Region, RegionBody, RegionHeader } from '../shell/Region';
+import { Region, RegionBody, RegionFooter, RegionHeader } from '../shell/Region';
 import { LOADING, failed, ready, type Loadable } from '../shell/loadable';
 import { readMilestones, stuckAt, type MilestonePayload, type StuckAt } from './api';
 
@@ -35,6 +35,13 @@ import { readMilestones, stuckAt, type MilestonePayload, type StuckAt } from './
  * because "the values are readable on an admin screen" is an acceptance
  * criterion. They are behind a disclosure, and the reason is not tidiness:
  * what that disclosure is FOR is the sentence at the bottom of it.
+ *
+ * **Both halves sit above the Goal cards, on one read.** The step has to,
+ * because it explains the wall of zeroes underneath it; the disclosure follows
+ * it rather than sitting at the foot of the screen so that the two share a
+ * single fetch. Splitting them would mean either a second request for the same
+ * tiny payload or a cache shared between two components — both of which are
+ * more machinery than a closed one-line `<summary>` is worth.
  */
 export function Milestones() {
   const [milestones, setMilestones] = useState<Loadable<MilestonePayload>>(LOADING);
@@ -77,11 +84,21 @@ function NextStep({ stuck, milestones }: { stuck: StuckAt; milestones: Milestone
   return (
     <Region>
       <RegionHeader title={step.title} description={step.reason} />
-      <RegionBody>
-        <Button asChild variant="outline">
+      {/*
+        **A footer at the small control height, which is the Destinations
+        card's repair row and not a step's Back and Continue.** This action
+        qualifies the card — it is where to go about the thing the card just
+        said — rather than being what the merchant came to this screen to
+        press, and ADR 0039 makes that the caller's decision precisely so the
+        two do not end up the same size. `RegionFooter` is also what carries
+        `.wconvert-footer`, so a long translated label wraps instead of pushing
+        the strip sideways at 360px.
+      */}
+      <RegionFooter>
+        <Button asChild variant="outline" size="sm">
           <a href={step.href}>{step.action}</a>
         </Button>
-      </RegionBody>
+      </RegionFooter>
     </Region>
   );
 }
