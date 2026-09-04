@@ -123,6 +123,20 @@ export interface PayloadEntry {
    */
   readonly starts_at?: number;
   readonly ends_at?: number;
+  /**
+   * Where an `inline` Optin renders, when that is **not its own id**.
+   *
+   * `inline` is the one Display Type that needs somewhere on the page to go,
+   * and `present.ts` finds it by querying the anchor attribute for the Optin's
+   * id. Absent — which is every ordinary Optin — that id is the answer.
+   *
+   * It is present on an arm of an A/B test, where the merchant placed one
+   * block naming the campaign and the arm has an id of its own that no block
+   * mentions. Free neither writes this nor knows what wrote it; what it needs
+   * is the sentence above, and this is that sentence
+   * ({@link ../../../src/Optin/PublishedProjection.php}).
+   */
+  readonly anchor?: string;
 }
 
 /**

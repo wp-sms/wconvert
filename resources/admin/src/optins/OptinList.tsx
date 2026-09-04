@@ -1,14 +1,19 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { __, sprintf } from '@wordpress/i18n';
-import { Megaphone, MoreHorizontal, Plus, Stethoscope, Trash2 } from 'lucide-react';
+import { __, _n, sprintf } from '@wordpress/i18n';
+import { CornerDownRight, Megaphone, MoreHorizontal, Plus, Split, Stethoscope, Trash2, Trophy } from 'lucide-react';
 import { listGoals } from '../goals/api';
 import { Button } from '../components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../components/ui/dropdown-menu';
+import { Badge } from '../components/ui/badge';
+import { renderingFor, tierProductName } from '../goals/availability';
+import { adminSettings } from '../settings';
 import {
   DataTable,
   DataTableActions,
@@ -30,6 +35,8 @@ import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loada
 import { numbersByOptin, readDashboard, type OptinNumbers } from '../stats/api';
 import { formatCount, formatRate } from '../stats/format';
 import {
+  createVariant,
+  declareWinner,
   deleteOptin,
   canUnpublish,
   listOptins,
@@ -111,6 +118,20 @@ export function OptinList({
    */
   const [busyId, setBusyId] = useState<string | null>(null);
   const [confirming, setConfirming] = useState<OptinSummary | null>(null);
+  /*
+   * **Declaring a winner confirms, because it is destructive** (ADR 0039). It
+   * takes every other arm off the site, and the merchant is choosing between
+   * two numbers rather than pressing a button labelled Delete — so the dialog
+   * is where they are told what the other arm loses, and that it keeps its
+   * counts.
+   *
+   * Held at the screen for the reason the delete confirm is: a `DropdownMenu`
+   * unmounts everything under it when an item is selected, so a dialog opened
+   * from inside one is torn down before it can appear.
+   */
+  const [declaring, setDeclaring] = useState<{ test: OptinSummary; winner: OptinSummary } | null>(
+    null,
+  );
   /*
    * **The door into the eligibility inspector**, which has to ask which page
    * before it can open one. Held at the screen rather than at a row for the
@@ -245,26 +266,79 @@ export function OptinList({
             <TableSkeleton columns={6} />
           ) : (
             <DataTableBody>
-              {rows.map((optin) => (
-                <Row
-                  key={optin.id}
-                  optin={optin}
-                  goal={labels.status === 'ready' ? labels.data[optin.goal] ?? null : undefined}
-                  numbers={numbers[optin.id]}
-                  busy={busyId === optin.id}
-                  onEdit={() => onEdit(optin.id)}
-                  onPublish={() => void run(optin.id, () => publishOptin(optin.id))}
-                  onUnpublish={() => void run(optin.id, () => unpublishOptin(optin.id))}
-                  onDelete={(trigger) => {
-                    returnFocus.current = trigger;
-                    setConfirming(optin);
-                  }}
-                  onInspect={() => setInspecting(true)}
-                />
-              ))}
+              {rows.flatMap((optin) => {
+                const labelFor = (row: OptinSummary) =>
+                  labels.status === 'ready' ? labels.data[row.goal] ?? null : undefined;
+
+                /*
+                 * **The parent is arm A**, so a test is the row itself plus
+                 * the arms nested under it (ADR 0045). `arms` is empty on
+                 * every Optin running no test, which is almost all of them —
+                 * so an install with no test renders exactly the table it
+                 * rendered before this shipped.
+                 */
+                const testing = optin.arms.length > 0;
+
+                const rowFor = (row: OptinSummary, arm: boolean) => (
+                  <Row
+                    key={row.id}
+                    optin={row}
+                    arm={arm}
+                    testing={testing}
+                    goal={labelFor(row)}
+                    numbers={numbers[row.id]}
+                    busy={busyId === row.id}
+                    onEdit={() => onEdit(row.id)}
+                    onPublish={() => void run(row.id, () => publishOptin(row.id))}
+                    onUnpublish={() => void run(row.id, () => unpublishOptin(row.id))}
+                    onDelete={(trigger) => {
+                      returnFocus.current = trigger;
+                      setConfirming(row);
+                    }}
+                    onInspect={() => setInspecting(true)}
+                    onTest={() => void run(optin.id, () => createVariant(optin.id))}
+                    onDeclare={(trigger) => {
+                      returnFocus.current = trigger;
+                      setDeclaring({ test: optin, winner: row });
+                    }}
+                  />
+                );
+
+                return [rowFor(optin, false), ...optin.arms.map((arm) => rowFor(arm, true))];
+              })}
             </DataTableBody>
           )}
         </DataTable>
+      )}
+
+      {/*
+        ======================================================================
+        WHAT THE TWO NUMBERS ARE COUNTING, SAID WHERE THEY ARE REPORTED.
+        ======================================================================
+        **The split unit is the browser record, not the person.** WConvert
+        mints no visitor identifier (ADR 0017), so which arm a browser draws is
+        held on that browser's own record — one visitor on a phone and a laptop
+        can meet both arms and be counted twice, and clearing storage re-draws.
+
+        That is not a defect waiting for a fix; it is the price of ADR 0017 and
+        the same limit [[Impression]] and [[Conversion]] already carry. A
+        merchant reading 4.2% against 5.1% deserves to know what the
+        denominator is, and the honest move is to say so on the screen that
+        reports the result rather than to buy validity with a cookie.
+
+        **Once for the screen, and only where a test is running.** It is
+        identical for every test on the page, so it belongs to the group rather
+        than to each row (ADR 0039, as ADR 0048 extended it) — and a merchant
+        running none has nothing to read it against, so neither the line nor
+        the space it sits in is drawn (ADR 0042).
+      */}
+      {rows.some((optin) => optin.arms.length > 0) && (
+        <Description className="mt-3">
+          {__(
+            'A/B numbers count browsers, not people. One visitor on two devices can meet both arms, and clearing browser storage draws again.',
+            'wconvert',
+          )}
+        </Description>
       )}
 
       {/*
@@ -313,6 +387,55 @@ export function OptinList({
           }
         }}
       />
+
+      {/*
+        ======================================================================
+        ENDING A TEST CONFIRMS, AND THE QUESTION SAYS WHAT THE OTHER ARM KEEPS.
+        ======================================================================
+        It is destructive — every other arm comes off the site — and a
+        destructive action always confirms (ADR 0039). What the sentence has to
+        carry is the half a merchant would otherwise assume wrongly: the arm
+        that lost is **not deleted**. Its row stays and its counts stay
+        readable, because a removed row makes every count naming it
+        uninterpretable (ADR 0020), and "tidy up the finished test" reads as
+        housekeeping right up to the moment it destroys the comparison the test
+        was run to produce.
+      */}
+      <ConfirmDialog
+        open={declaring !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDeclaring(null);
+          }
+        }}
+        title={__('Use this one?', 'wconvert')}
+        description={
+          declaring === null
+            ? ''
+            : sprintf(
+                /* translators: 1: the winning Optin's name. 2: how many other arms the test has. */
+                _n(
+                  '“%1$s” becomes the campaign. The other %2$d arm stops being served — its leads and conversions are kept.',
+                  '“%1$s” becomes the campaign. The other %2$d arms stop being served — their leads and conversions are kept.',
+                  declaring.test.arms.length,
+                  'wconvert',
+                ),
+                declaring.winner.name,
+                declaring.test.arms.length,
+              )
+        }
+        confirmLabel={__('Use this one', 'wconvert')}
+        returnFocusTo={returnFocus}
+        onConfirm={() => {
+          const ending = declaring;
+
+          setDeclaring(null);
+
+          if (ending !== null) {
+            void run(ending.winner.id, () => declareWinner(ending.test.id, ending.winner.id));
+          }
+        }}
+      />
     </Region>
   );
 }
@@ -329,6 +452,8 @@ export function OptinList({
  */
 function Row({
   optin,
+  arm,
+  testing,
   goal,
   numbers,
   busy,
@@ -337,8 +462,22 @@ function Row({
   onUnpublish,
   onDelete,
   onInspect,
+  onTest,
+  onDeclare,
 }: {
   optin: OptinSummary;
+  /**
+   * Is this row one of the arms nested under a test, rather than the campaign
+   * they hang beneath?
+   *
+   * The parent IS arm A, so this is what separates *"the row the test is
+   * about"* from *"the other arms of it"* — and the two draw differently in
+   * exactly two places: an arm is indented and marked, and it has no Inspect
+   * item of its own because that panel reports the whole page at once.
+   */
+  arm: boolean;
+  /** Is a test running on this campaign? True on the parent AND on its arms. */
+  testing: boolean;
   /**
    * The merchant's word for this row's [[Goal]] — `null` where the registry has
    * answered and has no such Goal, and `undefined` while it has not answered at
@@ -354,9 +493,26 @@ function Row({
   onDelete: (trigger: HTMLElement | null) => void;
   /** Opens the page picker. Not per-row: the panel reports every Optin at once. */
   onInspect: () => void;
+  /** Start a test, or add another arm to the one running. Parent rows only. */
+  onTest: () => void;
+  /** End the test with this row as the winner. */
+  onDeclare: (trigger: HTMLElement | null) => void;
 }) {
   const status = statusOf(optin);
   const trigger = useRef<HTMLButtonElement>(null);
+  /*
+   * **`locked` is marked before the click, with the reason** (ADR 0042). The
+   * routes genuinely do not exist on a build without the `ab-testing` module
+   * (ADR 0015), so an unmarked item would be a 404 the merchant met by
+   * pressing something we offered them.
+   *
+   * The Optins list is a settings list rather than a creation front door, so
+   * `locked` EXPLAINS rather than hiding — silence on a list somebody is
+   * reading is baffling (ADR 0026). It renders as a menu LABEL and never as a
+   * disabled item: wp.org Guideline 9 fires on showing a real control the
+   * merchant cannot use, and a label is not one.
+   */
+  const testable = renderingFor(adminSettings()?.variants?.availability ?? 'locked', 'settings_list');
 
   return (
     <DataTableRow>
@@ -367,14 +523,33 @@ function Row({
           an `<a>`: the builder has no URL of its own — it is a state this
           bundle holds — and an `href="#"` that a click handler cancels is a
           link that lies about being one.
+
+          **An arm is drawn as a child of the row above it** rather than as a
+          seventh campaign. That nesting is the entire UI half of ADR 0045: a
+          [[Variant]] is a whole Optin with its own row and its own counters,
+          and a merchant must never meet "Spring sale" and "Spring sale (B)" as
+          two campaigns. The indent is a class rather than a `padding`
+          utility, because the table becomes a stack of cards below 640px and
+          a fixed indent there would be a card pushed off its own edge.
         */}
-        <button
-          type="button"
-          onClick={onEdit}
-          className="rounded-sm text-start font-medium text-foreground hover:text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-        >
-          {optin.name}
-        </button>
+        <span className="wconvert-optin-row-name">
+          {arm && <CornerDownRight aria-hidden="true" className="wconvert-optin-arm" />}
+          <button
+            type="button"
+            onClick={onEdit}
+            className="rounded-sm text-start font-medium text-foreground hover:text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          >
+            {optin.name}
+          </button>
+          {/*
+            **On the campaign only**, because it is a fact about the test and
+            the arms beneath it are already inside it — a badge on every row
+            would say the same thing three times (ADR 0039, as ADR 0048
+            extended it: a classification is a badge, not a row, and a fact
+            true of the group belongs to the group).
+          */}
+          {testing && !arm && <Badge variant="secondary">{__('A/B test', 'wconvert')}</Badge>}
+        </span>
       </DataTableCell>
 
       {/*
@@ -477,10 +652,76 @@ function Row({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onSelect={onInspect}>
-              <Stethoscope aria-hidden="true" />
-              {__('Why did nothing show?', 'wconvert')}
-            </DropdownMenuItem>
+            {/*
+              ============================================================
+              STARTING A TEST IS THE CAMPAIGN'S ACTION, NOT AN ARM'S.
+              ============================================================
+              Arms are a flat set under one parent — the payload names one
+              experiment — so a variant of a variant is a shape no test
+              describes, and the server refuses one. It is not offered here
+              either, which is the same rule read before the click.
+            */}
+            {!arm &&
+              status !== 'deleted' &&
+              (testable === 'upsell' ? (
+                /*
+                  Bundled copy, never fetched (ADR 0015), and the tier's own
+                  name rather than the literal "Pro" — at launch every rung
+                  answers "Pro" and this reads unchanged (ADR 0056).
+                */
+                <DropdownMenuLabel className="font-normal text-muted-foreground">
+                  {sprintf(
+                    /* translators: %s: the product that supplies A/B testing, e.g. “WConvert Pro”. */
+                    __('A/B testing is available with %s.', 'wconvert'),
+                    tierProductName(adminSettings()?.variants?.tier ?? undefined),
+                  )}
+                </DropdownMenuLabel>
+              ) : (
+                <DropdownMenuItem onSelect={onTest}>
+                  <Split aria-hidden="true" />
+                  {/*
+                    Two labels for one action, because the sentence is
+                    different once a test exists: the first press starts one
+                    and the next adds an arm to it. A merchant is never asked
+                    to NAME the variant either way — it takes its parent's
+                    name with a letter, because nobody should be asked to name
+                    a thing they think of as *the other one* (ADR 0045).
+                  */}
+                  {testing
+                    ? __('Add another variant', 'wconvert')
+                    : __('Test against a variant', 'wconvert')}
+                </DropdownMenuItem>
+              ))}
+
+            {/*
+              **Ending the test, offered on every arm including the parent.**
+              The parent is arm A, so "keep the one I started with" has to be
+              expressible — otherwise a merchant whose original design won
+              could only end the test by declaring the loser.
+            */}
+            {testing && (
+              <DropdownMenuItem onSelect={() => onDeclare(trigger.current)}>
+                <Trophy aria-hidden="true" />
+                {__('Use this one', 'wconvert')}
+              </DropdownMenuItem>
+            )}
+
+            {(testing || (!arm && status !== 'deleted' && testable !== 'hide')) && (
+              <DropdownMenuSeparator />
+            )}
+
+            {/*
+              **Not on an arm**, and that is the shape of the answer rather
+              than a simplification: the panel reports EVERY Optin on the page
+              at once, so a copy of the door on each arm of each test would be
+              three doors into one room (ADR 0048).
+            */}
+            {!arm && (
+              <DropdownMenuItem onSelect={onInspect}>
+                <Stethoscope aria-hidden="true" />
+                {__('Why did nothing show?', 'wconvert')}
+              </DropdownMenuItem>
+            )}
             <DropdownMenuItem variant="destructive" onSelect={() => onDelete(trigger.current)}>
               <Trash2 aria-hidden="true" />
               {__('Delete', 'wconvert')}

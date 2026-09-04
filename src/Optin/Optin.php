@@ -29,6 +29,18 @@ final class Optin
         public readonly ?array $publishedConfig = null,
         public readonly ?string $publishedAt = null,
         public readonly ?string $deletedAt = null,
+        /**
+         * The [[Optin]] this one is a [[Variant]] of, or null where it is a
+         * campaign in its own right.
+         *
+         * A column rather than a key in `config`, because the Optins list
+         * FILTERS on it and that list reads neither LONGTEXT column by design
+         * (ADR 0001, ADR 0045). It is carried on the object for the same
+         * reason `goal` is: a caller that wants it should not have to reach
+         * into a row array to find out whether this Optin is an arm of a
+         * test.
+         */
+        public readonly ?string $parentId = null,
     ) {
     }
 
@@ -45,6 +57,10 @@ final class Optin
             self::decode($row['published_config'] ?? null),
             $row['published_at'] ?? null,
             $row['deleted_at'] ?? null,
+            // Empty reads as absent. `parent_id` is `CHAR(26) NULL` and a
+            // driver that hands back `''` for it must not produce an Optin
+            // claiming to be an arm of a test with no id.
+            ($row['parent_id'] ?? '') === '' ? null : (string) $row['parent_id'],
         );
     }
 
@@ -74,6 +90,7 @@ final class Optin
             'published_config' => $this->publishedConfig,
             'published_at' => $this->publishedAt,
             'deleted_at' => $this->deletedAt,
+            'parent_id' => $this->parentId,
             'status' => $this->isDeleted() ? 'deleted' : ($this->isPublished() ? 'published' : 'draft'),
         ];
     }

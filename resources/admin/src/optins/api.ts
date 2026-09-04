@@ -32,6 +32,30 @@ export interface OptinSummary extends OptinState {
   id: string;
   name: string;
   goal: string;
+  /**
+   * The [[Optin]] this one is an arm of, or null where it is a campaign in its
+   * own right.
+   *
+   * The list itself is parentless Optins ONLY (ADR 0045), so every row at the
+   * top level answers null and this is only ever set on a row inside
+   * {@link OptinSummary.arms}. It travels anyway, because a row that could not
+   * say what it is would have to be told by whatever rendered it.
+   */
+  parent_id: string | null;
+  /**
+   * The other arms of this row's A/B test — **empty on every Optin that is not
+   * running one**, which is almost all of them.
+   *
+   * A [[Variant]] is a whole Optin with its own id, its own row and therefore
+   * its own counters (ADR 0045), so these are ordinary summaries and the row
+   * component draws them the way it draws any other. What the nesting says is
+   * that they are one campaign: a merchant running three tests meets three
+   * campaigns rather than six.
+   *
+   * The parent is arm A and is the row these hang beneath, so a test with two
+   * arms has exactly one entry here.
+   */
+  arms: OptinSummary[];
 }
 
 /**
@@ -94,6 +118,43 @@ export const unpublishOptin = (id: string) =>
 // A soft delete. The Optin keeps its row, because analytics interprets its
 // conversion counts by joining it at read.
 export const deleteOptin = (id: string) => apiFetch<unknown>({ path: path(`/${id}`), method: 'DELETE' });
+
+/**
+ * Start an A/B test: a second Optin that is a copy of this one.
+ *
+ * ============================================================================
+ * NO NAME GOES OUT, AND THAT IS THE FEATURE RATHER THAN AN OMISSION.
+ * ============================================================================
+ * A [[Variant]] is never asked for a name — it takes its parent's with a letter
+ * after it, because nobody should be asked to name a thing they think of as
+ * *the other one* (ADR 0045). There is no dialog in front of this call for the
+ * same reason: there is nothing to ask.
+ *
+ * **The route only exists on an install that bought it.** It is registered by
+ * the `ab-testing` module's own PHP, so a build without the module answers 404
+ * rather than refusing — enforcement by non-registration (ADR 0015). This
+ * screen marks the action before the click so the merchant never meets that
+ * 404; it does not test for it.
+ *
+ * The variant comes back whole, because creating one lands the merchant in the
+ * builder looking at it.
+ */
+export const createVariant = (id: string) =>
+  apiFetch<{ id: string }>({ path: path(`/${id}/variants`), method: 'POST' });
+
+/**
+ * End it: this arm becomes the campaign and every other arm is tidied away.
+ *
+ * **Nothing is deleted.** The losing arm is a month of the merchant's own
+ * history and a removed row makes every count naming it uninterpretable
+ * (ADR 0020) — so it is soft-deleted, which drops it out of this list and
+ * keeps its counts in its [[Goal]]'s total, with no special case anywhere.
+ *
+ * @param id The test — the parentless Optin the arms hang beneath.
+ * @param winner The arm that won. The parent itself is a legitimate answer.
+ */
+export const declareWinner = (id: string, winner: string) =>
+  apiFetch<unknown>({ path: path(`/${id}/winner`), method: 'POST', data: { winner } });
 
 /**
  * The allowance the whole site shares — how often this device may be shown

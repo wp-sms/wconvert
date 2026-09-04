@@ -78,6 +78,21 @@ each rung that ships it, and that cost is paid loudly.
 `bin/verify-artifact-contract.sh` and `bin/check-loader.mjs` both assert that
 **no bundle carries a rule identifier filed above its rung**, in the built bytes.
 
+*Completed by [ADR 0058](0058-a-test-ends-when-the-merchant-says-so.md), which
+found the hole in that sentence by being the first thing to fall through it.
+The identifier list is read out of the RULE MANIFEST, so the scan can only see
+a module whose contribution is a **rule** — and `ab-testing` ships loader code
+and declares no rule type at all, its contribution being a payload narrowing.
+A Basic bundle carrying the entire arm-drawing routine would therefore have
+passed every check on this page, which is the byte-identical failure this
+section measures WSMS by, reached through a gap in the scan instead of through
+a flag. So a module may declare a `bundle_marker` in its own `module.json` — a
+token that appears in its built JavaScript and in no lower rung's — beside the
+slug that already names it, and both programs scan for it exactly as they scan
+for an identifier. **A module that declares none is reported as unscanned
+rather than ticked**, which is the same rule the identifier scan already
+follows when nothing is filed above a rung.*
+
 This is measured rather than assumed, and the measurement is why it is here. WP
 Statistics ships 2.2 MB at basic against 3.3 MB at elite. **WSMS ships a
 byte-identical `main.js` at all three of its tiers** (md5 `3b2f2137…`), so a
@@ -122,6 +137,14 @@ one statement about free, and it is the same statement at every rung.
   from anybody, which is the distinction from WSMS's identical `main.js`.
   `pro/tests/js/admin-entry.test.ts` fails on the pull request that adds the
   first premium screen and says to split the build per rung.
+  *Still true after A/B testing shipped, and it was worth checking:
+  `pro/resources/admin/src/screens.tsx` expected A/B to be "the first thing to
+  land here" and it did not. Starting a test and ending one are two ROW ACTIONS
+  on free's existing Optins list, drawn from the same `locked`-state data every
+  other premium capability is drawn from ([ADR 0015](0015-enforcement-is-by-non-registration.md)),
+  and the arms nest inside the list free already renders. `PRO_SCREENS` is
+  still empty, the tripwire has not fired, and no admin build was split
+  ([ADR 0058](0058-a-test-ends-when-the-merchant-says-so.md)).*
 - **`public/tiers/` is repository scaffolding and ships in nothing.** The top
   rung builds to the canonical `pro/public/{loader,inspector}` so a source
   checkout runs the whole product; the other two land under `public/tiers/`, and

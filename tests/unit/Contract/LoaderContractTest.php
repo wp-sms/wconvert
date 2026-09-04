@@ -137,6 +137,23 @@ final class LoaderContractTest extends TestCase
             'pro/public/tiers/basic/loader/loader.js' => 'console.log("basic");',
             'pro/public/tiers/pro/loader/loader.js' => 'console.log("pro");',
             'pro/public/loader/loader.js' => 'console.log("elite");',
+            // ================================================================
+            // AND THE MODULE MANIFESTS, BECAUSE A MODULE MAY DECLARE A MARKER.
+            // ================================================================
+            // The identifier scan reads its list out of the RULE manifest, so
+            // it can only see a module whose contribution is a rule. A module
+            // that ships loader code and declares no rule type — `ab-testing`
+            // is the first — declares a token instead, in its own
+            // `module.json`, and the same scan runs over that (ADR 0056).
+            //
+            // The tree carries them by default for the reason it carries four
+            // bundles: a fixture missing what the program inspects is a
+            // fixture the program fails CLOSED on, which would read as "the
+            // check works" for every test in this file at once.
+            'pro/modules/display-types/module.json' => '{"slug":"display-types"}',
+            'pro/modules/premium-triggers/module.json' =>
+                '{"slug":"premium-triggers","bundle_marker":".aTokenOnlyProShips"}',
+            'pro/modules/cart-recovery/module.json' => '{"slug":"cart-recovery"}',
             ...$overrides,
         ]);
     }
@@ -161,6 +178,56 @@ final class LoaderContractTest extends TestCase
         ]));
 
         $this->assertSame(0, $result['status'], $result['output']);
+    }
+
+    /**
+     * ========================================================================
+     * THE SAME LEAK FOR A MODULE THAT SHIPS NO RULE TYPE AT ALL.
+     * ========================================================================
+     * The identifier scan reads its list out of the rule manifest, so a module
+     * whose contribution is not a rule has nothing there to look for — and a
+     * Basic bundle carrying that module's whole implementation would pass
+     * every other check in this program. That is the byte-identical
+     * JavaScript ADR 0056 measures WSMS by, reached through a gap in the scan
+     * rather than through a flag, so the module declares a token of its own
+     * and this is what proves the token is read.
+     */
+    public function testFailsWhenALowerRungsBundleCarriesAHigherRungsModuleMarker(): void
+    {
+        $result = $this->check($this->loaderTree([
+            'pro/public/tiers/basic/loader/loader.js' => 'var x=e.aTokenOnlyProShips;',
+        ]));
+
+        $this->assertSame(1, $result['status'], $result['output']);
+        $this->assertStringContainsString('.aTokenOnlyProShips', $result['output']);
+    }
+
+    /** And a bundle at or above the rung that ships it may carry it. */
+    public function testARungMayCarryTheMarkerOfAModuleItShips(): void
+    {
+        $result = $this->check($this->loaderTree([
+            'pro/public/tiers/pro/loader/loader.js' => 'var x=e.aTokenOnlyProShips;',
+            'pro/public/loader/loader.js' => 'var x=e.aTokenOnlyProShips;',
+        ]));
+
+        $this->assertSame(0, $result['status'], $result['output']);
+    }
+
+    /**
+     * And it fails CLOSED on a tree whose module manifests it cannot read —
+     * "couldn't look" reading as "clean" is how a leak ships the one time a
+     * build is incomplete (ADR 0029).
+     */
+    public function testFailsWhenTheModuleManifestsCannotBeRead(): void
+    {
+        $result = $this->check($this->loaderTree([
+            'pro/modules/display-types/module.json' => null,
+            'pro/modules/premium-triggers/module.json' => null,
+            'pro/modules/cart-recovery/module.json' => null,
+        ]));
+
+        $this->assertSame(1, $result['status'], $result['output']);
+        $this->assertStringContainsString('marker scan inspected nothing', $result['output']);
     }
 
     /**

@@ -28,15 +28,15 @@
         "slug": "pro",
         "name": "Pro",
         "plugin_name": "WConvert Pro",
-        "description": "Adds the premium Triggers and the advanced targeting Conditions.",
-        "modules": ["display-types", "premium-triggers"]
+        "description": "Adds the premium Triggers, the advanced targeting Conditions, and A/B testing.",
+        "modules": ["display-types", "premium-triggers", "ab-testing"]
       },
       {
         "slug": "elite",
         "name": "Pro",
         "plugin_name": "WConvert Pro",
         "description": "Everything, including cart recovery and the outbound Destinations.",
-        "modules": ["display-types", "premium-triggers", "cart-recovery"]
+        "modules": ["display-types", "premium-triggers", "ab-testing", "cart-recovery"]
       }
     ]
   }

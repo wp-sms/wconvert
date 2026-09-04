@@ -93,15 +93,98 @@ final class PublishedProjection
     private const SHIPPED = ['template', 'display_type', 'frequency', 'priority'];
 
     /**
+     * The arm this entry is, of the test it belongs to:
+     * `[experiment id, this arm's index, how many arms]`.
+     *
+     * ========================================================================
+     * THE ONE THING A/B ADDS TO THE PAYLOAD, AND IT IS A TRIPLE OF SCALARS.
+     * ========================================================================
+     * A [[Variant]] is a whole Optin (ADR 0045), so two published arms would
+     * otherwise reach the browser as two independent entries and
+     * `decide.ts`'s `arbitrate()` would read them as two campaigns competing
+     * for the screen rather than as one choice. Nothing in the payload said
+     * they were arms of one thing, because `parent_id` was not in the
+     * projection at all.
+     *
+     * **All three fields are needed and none of them is derivable on the
+     * page.** The experiment id is what the drawn arm is remembered against
+     * — `wcv1[parentId].v`, the parent's own record. The index is which arm
+     * THIS entry is. And the COUNT is the one a reader assumes can be
+     * counted off the page and cannot: an arm is dropped from a page it does
+     * not target and from one where it is [[Suspended]], so a browser whose
+     * first page carries one arm of two would draw from a set of one and
+     * always meet arm A. The count travels so the draw is over the test
+     * rather than over the page.
+     *
+     * **Absent on everything that is not an arm**, which is every Optin on
+     * every install running no test — a group of one is not a test, so the
+     * key is not written and the payload is byte-for-byte the one it is
+     * today. It disappears again when a test ends, because ending one leaves
+     * the parent alone in its group (ADR 0003 rebuilds on write, so that
+     * happens in the same call).
+     *
+     * Read by Pro alone. Free's loader has no field for it, which is the same
+     * standing `goal` has one level up: present, unread, and costing free's
+     * bundle nothing (ADR 0029).
+     *
+     * ========================================================================
+     * THE WORD IS `variant`, AND THE LENGTH OF IT IS DELIBERATE.
+     * ========================================================================
+     * It was `ab`, which is shorter and is what the payload budget would
+     * choose. A minifier keeps a property access as `.ab`, and `.ab` is not
+     * something a scan can look for in 9 KB of minified JavaScript without
+     * matching half of it — so the one thing `bin/check-loader.mjs` proves
+     * about a per-tier build, that a Basic bundle carries no higher rung's
+     * code, would have had no observable token to prove it with.
+     *
+     * `.variant` is unmistakable in a bundle, it is the word CONTEXT.md
+     * already uses for the thing, and it costs four bytes on an arm and
+     * nothing at all on any other Optin.
+     */
+    public const ARM = 'variant';
+
+    /**
+     * Where an `inline` arm renders — the id of the anchor on the page.
+     *
+     * ========================================================================
+     * IT IS A GENERIC KEY AND IT EXISTS BECAUSE OF ONE CASE.
+     * ========================================================================
+     * `inline` is the one [[Display Type]] that needs somewhere on the page
+     * to go, and `resources/loader/src/present.ts` finds it with one
+     * `document.querySelector` on `[data-wconvert-optin="<id>"]`
+     * ({@see \WConvert\Frontend\InlineAnchor}). A [[Variant]] has its own id
+     * and the merchant placed exactly one block, naming the parent — so
+     * without this an inline arm B renders nowhere at all, silently, for half
+     * the traffic.
+     *
+     * The block names the CAMPAIGN, which is what a test is, so the arm
+     * renders at the campaign's anchor. Spelled as its own key rather than
+     * read out of {@see self::ARM} deliberately: free's presenter is what
+     * reads this, and it must not learn to spell an experiment field to do
+     * its own job. What it needs is *"this Optin renders at another id's
+     * anchor"*, and that is all this says.
+     *
+     * Written only where it is both true and load-bearing: an arm that is not
+     * the parent, whose Display Type is `inline`. Every overlay skips it,
+     * because an overlay mounts itself and never looks for an anchor.
+     */
+    public const ANCHOR = 'anchor';
+
+    /**
      * @param iterable<array<string, mixed>> $rows
      * @return list<array<string, mixed>>
      */
     public static function build(iterable $rows, RuleVocabulary $vocabulary, \DateTimeZone $siteZone): array
     {
+        // Materialised because the arms below are a fact about the SET rather
+        // than about a row, so this walk happens twice and a generator would
+        // be spent by the first one.
+        $rows = array_values(is_array($rows) ? $rows : iterator_to_array($rows, false));
+        $arms = self::armsIn($rows);
         $set = [];
 
         foreach ($rows as $row) {
-            $entry = self::project($row, $vocabulary, $siteZone);
+            $entry = self::project($row, $vocabulary, $siteZone, $arms);
 
             if ($entry !== null) {
                 $set[] = $entry;
@@ -109,6 +192,76 @@ final class PublishedProjection
         }
 
         return $set;
+    }
+
+    /**
+     * Every published arm, by Optin id, as `[experiment id, index, count]`.
+     *
+     * ========================================================================
+     * A TEST IS A GROUP OF MORE THAN ONE, AND NOTHING STORES THAT IT IS ONE.
+     * ========================================================================
+     * The group key is `parent_id` where there is one and the row's own id
+     * where there is not — so a parent and its children land in the same
+     * group and every ordinary Optin lands alone in its own. **A group of one
+     * is not a test**, gets no key, and costs the payload nothing. That is
+     * what makes "is a test running" a question answered by the rows rather
+     * than by a `finished` flag somebody has to set: declaring a winner
+     * leaves the parent alone in its group, and the arm key stops being
+     * written on the rebuild that same write triggers (ADR 0003).
+     *
+     * **Only rows that are in the SET are counted.** An arm the merchant
+     * unpublished is not being served, so a browser must not be able to draw
+     * it and sit looking at nothing — the count is over what a visitor could
+     * actually meet, and the loader re-draws an index the count no longer
+     * reaches.
+     *
+     * A child whose parent is unpublished is therefore alone in a group named
+     * after a row that is not here. It serves on its own, which is what
+     * unpublishing the other arm means.
+     *
+     * **Ordered by id**, which is ordering by the moment each arm was created
+     * (a ULID's leading 48 bits), so the parent is always index 0 and adding a
+     * third arm never renumbers the first two. Sorted here rather than
+     * trusted from the caller's `ORDER BY`, because this is a pure function
+     * over rows and a test hands it whatever order it likes.
+     *
+     * @param list<array<string, mixed>> $rows
+     * @return array<string, array{0: string, 1: int, 2: int}>
+     */
+    private static function armsIn(array $rows): array
+    {
+        $groups = [];
+
+        foreach ($rows as $row) {
+            if (self::isExcluded($row)) {
+                continue;
+            }
+
+            $id = (string) ($row['id'] ?? '');
+            $parent = (string) ($row['parent_id'] ?? '');
+
+            if ($id === '') {
+                continue;
+            }
+
+            $groups[$parent === '' ? $id : $parent][] = $id;
+        }
+
+        $arms = [];
+
+        foreach ($groups as $experiment => $ids) {
+            if (count($ids) < 2) {
+                continue;
+            }
+
+            sort($ids);
+
+            foreach ($ids as $index => $id) {
+                $arms[$id] = [(string) $experiment, $index, count($ids)];
+            }
+        }
+
+        return $arms;
     }
 
     /**
@@ -168,10 +321,15 @@ final class PublishedProjection
 
     /**
      * @param array<string, mixed> $row
+     * @param array<string, array{0: string, 1: int, 2: int}> $arms
      * @return array<string, mixed>|null
      */
-    private static function project(array $row, RuleVocabulary $vocabulary, \DateTimeZone $siteZone): ?array
-    {
+    private static function project(
+        array $row,
+        RuleVocabulary $vocabulary,
+        \DateTimeZone $siteZone,
+        array $arms = []
+    ): ?array {
         if (self::isExcluded($row)) {
             return null;
         }
@@ -208,6 +366,35 @@ final class PublishedProjection
         foreach (self::SHIPPED as $key) {
             if (array_key_exists($key, $published)) {
                 $payload[$key] = $published[$key];
+            }
+        }
+
+        // ====================================================================
+        // AND THE ARM, WHICH IS THE ONE PAYLOAD KEY THAT IS NOT A FACT ABOUT
+        // THIS ROW ALONE.
+        // ====================================================================
+        // Every key above is copied out of this Optin's own `published_config`.
+        // This one is computed across the whole set, once per rebuild, because
+        // *"how many arms does this test have"* is not something a row knows
+        // and is not something the page can count (see {@see self::ARM}).
+        //
+        // It is appended after `SHIPPED` rather than added to it, and the two
+        // are different lists on purpose: `SHIPPED` is a COPY list, pinned by
+        // `tests/unit/Optin/PublishedProjectionTest.php` so that a key added
+        // to `config` reaches nobody until somebody writes down why it
+        // renders. A derived key has no `config` entry to copy and would make
+        // that list mean two things.
+        $arm = $arms[(string) ($row['id'] ?? '')] ?? null;
+
+        if ($arm !== null) {
+            $payload[self::ARM] = $arm;
+
+            // Only a child, and only where it renders in place. The parent's
+            // anchor IS its own id, so writing this for it would be the same
+            // value under a second name; an overlay never looks for an anchor
+            // at all ({@see self::ANCHOR}).
+            if ($arm[0] !== (string) ($row['id'] ?? '') && DisplayType::of($published['display_type'] ?? null) === DisplayType::Inline) {
+                $payload[self::ANCHOR] = $arm[0];
             }
         }
 

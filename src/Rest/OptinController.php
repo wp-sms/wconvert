@@ -177,15 +177,37 @@ final class OptinController implements RestController
      */
     public function index(WP_REST_Request $request): WP_REST_Response
     {
-        $summaries = $this->optins->summaries((bool) $request->get_param('include_deleted'));
+        $includeDeleted = (bool) $request->get_param('include_deleted');
+
+        $summaries = $this->optins->summaries($includeDeleted);
         $suspended = Suspension::reasonsIn($this->publishedSet->all(), $this->degradation, $this->rules);
 
+        // ====================================================================
+        // AND THE ARMS, NESTED — THE OTHER HALF OF ADR 0045'S LIST.
+        // ====================================================================
+        // The `WHERE` above is the filter half and was built ahead of the
+        // feature; this is the read that draws each test's arms beneath their
+        // parent, so a merchant running three tests meets three campaigns
+        // rather than six.
+        //
+        // **One statement for every arm on the install**, grouped in PHP —
+        // 500 parents would otherwise be 500 round trips to draw one screen,
+        // and the grouping is the same join {@see \WConvert\Stats\Dashboard}
+        // performs for the same reason (ADR 0034).
+        $arms = $this->optins->armsByParent($includeDeleted);
+
+        $describe = static fn (array $row): array => $row
+            + ['suspended' => $suspended[$row['id'] ?? ''] ?? null];
+
         return new WP_REST_Response(array_map(
-            // Present on every row, including as null. A key that appears only
-            // on the bad rows is a key the client tests for existence, and
-            // "absent" and "not suspended" would then be one thing that the
+            // Present on every row, including as null and as an empty list. A
+            // key that appears only on the interesting rows is a key the client
+            // tests for existence, and "absent" and "not suspended" — or
+            // "absent" and "running no test" — would then be one thing that the
             // day a request half-fails become two.
-            static fn (array $row): array => $row + ['suspended' => $suspended[$row['id'] ?? ''] ?? null],
+            static fn (array $row): array => $describe($row) + [
+                'arms' => array_map($describe, $arms[(string) ($row['id'] ?? '')] ?? []),
+            ],
             $summaries
         ));
     }

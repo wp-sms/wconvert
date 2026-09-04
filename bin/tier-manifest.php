@@ -7,6 +7,7 @@
  *     php bin/tier-manifest.php modules     <tiers.json> <tier>
  *     php bin/tier-manifest.php infer       <tiers.json> <pro-tree>
  *     php bin/tier-manifest.php identifiers <tiers.json> <tier> <rules manifest>
+ *     php bin/tier-manifest.php markers     <tiers.json> <tier> <pro modules dir>
  *
  * Prints one value per line on stdout, or exits non-zero with a message on
  * stderr. Exit 0 = answered, 1 = could not answer.
@@ -148,7 +149,7 @@ $path = $argv[2] ?? '';
 
 try {
     if ($path === '') {
-        throw new RuntimeException('usage: php bin/tier-manifest.php <tiers|modules|infer|identifiers> <tiers.json> [tier|tree] [rules.json]');
+        throw new RuntimeException('usage: php bin/tier-manifest.php <tiers|modules|infer|identifiers|markers> <tiers.json> [tier|tree] [rules.json|modules dir]');
     }
 
     $tiers = wconvertTiers($path);
@@ -273,8 +274,88 @@ try {
 
             break;
 
+        case 'markers':
+            /*
+             * ============================================================
+             * THE SAME SCAN FOR A MODULE THAT SHIPS NO RULE TYPE AT ALL.
+             * ============================================================
+             * `identifiers` above reads its list out of the RULE MANIFEST, so
+             * it can only see a module whose contribution is a rule. The first
+             * module whose contribution is not — `ab-testing`, which ships a
+             * payload narrowing and two REST routes — would therefore have had
+             * a Basic bundle carrying its whole arm-drawing routine pass every
+             * check there is. That is the byte-identical failure ADR 0056
+             * measures WSMS by, reached through a gap in the scan rather than
+             * through a flag.
+             *
+             * So a module may DECLARE a token that appears in its own built
+             * JavaScript, in its own `module.json`, beside the slug that
+             * already names it — no new list, and nothing to keep in step
+             * (ADR 0015). A module that declares none is not scanned for, and
+             * both callers say so out loud rather than printing a tick.
+             *
+             * Read from the REPOSITORY's `pro/modules/`, never from the staged
+             * tree: the whole question is about a module the cut removed, so
+             * its manifest is exactly what is no longer there to read.
+             */
+            $wanted = $argv[3] ?? '';
+            $modulesDir = $argv[4] ?? '';
+
+            if ($modulesDir === '' || !is_dir($modulesDir)) {
+                throw new RuntimeException("module directory is missing or unreadable: {$modulesDir}");
+            }
+
+            $slugs = array_column($tiers, 'slug');
+            $rank = array_search($wanted, $slugs, true);
+
+            if ($rank === false) {
+                throw new RuntimeException("no tier called \"{$wanted}\" in {$path}");
+            }
+
+            $manifests = glob(rtrim($modulesDir, '/') . '/*/module.json');
+
+            if ($manifests === false || $manifests === []) {
+                throw new RuntimeException("no module manifest under {$modulesDir}");
+            }
+
+            foreach ($manifests as $file) {
+                $decoded = json_decode((string) @file_get_contents($file), true);
+                $slug = is_array($decoded) ? ($decoded['slug'] ?? null) : null;
+                $marker = is_array($decoded) ? ($decoded['bundle_marker'] ?? null) : null;
+
+                if (!is_string($slug) || $slug === '') {
+                    throw new RuntimeException("module manifest names no slug: {$file}");
+                }
+
+                if (!is_string($marker) || $marker === '') {
+                    continue;
+                }
+
+                // The LOWEST rung that ships it, exactly as `infer` reads the
+                // ladder — a module is evidence of at least that rung.
+                $atRank = false;
+
+                foreach ($tiers as $index => $tier) {
+                    if (wconvertTierShips($tier, $slug)) {
+                        $atRank = $index;
+
+                        break;
+                    }
+                }
+
+                if ($atRank === false) {
+                    throw new RuntimeException("{$file}: the {$slug} module is shipped by no tier {$path} declares");
+                }
+
+                if ($atRank > $rank) {
+                    echo $marker, "\n";
+                }
+            }
+
+            break;
+
         default:
-            throw new RuntimeException('usage: php bin/tier-manifest.php <tiers|modules|infer|identifiers> <tiers.json> [tier|tree] [rules.json]');
+            throw new RuntimeException('usage: php bin/tier-manifest.php <tiers|modules|infer|identifiers|markers> <tiers.json> [tier|tree] [rules.json|modules dir]');
     }
 } catch (RuntimeException $failure) {
     fwrite(STDERR, $failure->getMessage() . "\n");

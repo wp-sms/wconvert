@@ -69,7 +69,7 @@
 // builds and prove that it fails closed on each of them.
 
 import { gzipSync } from 'node:zlib';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -89,6 +89,9 @@ const BYTE_BUDGET = 12288;
 const MANIFEST = 'resources/rules/manifest.json';
 
 const TIER_MANIFEST = 'tiers.json';
+
+/** Where a module declares itself — its slug, and the token its bundle carries. */
+const MODULES = 'pro/modules';
 
 /**
  * The paid rungs, ascending, read from the file that declares them.
@@ -225,6 +228,59 @@ function identifiersByTier(tiers) {
   return byTier;
 }
 
+/**
+ * Every module MARKER filed at each paid rung.
+ *
+ * =============================================================================
+ * THE SCAN ABOVE CAN ONLY SEE A MODULE WHOSE CONTRIBUTION IS A RULE.
+ * =============================================================================
+ * `identifiersByTier` reads its list out of the rule manifest, which is right
+ * and is also the whole of its reach. `ab-testing` is the first module that
+ * ships loader code and declares no rule type at all — its contribution is a
+ * payload narrowing — so a Basic bundle carrying its entire arm-drawing routine
+ * would have passed every check there is, which is precisely the
+ * byte-identical-JavaScript failure ADR 0056 measures WSMS by, arriving through
+ * a gap in the scan instead of through a flag.
+ *
+ * So a module may declare a `bundle_marker` in its own `module.json` — a token
+ * that appears in its built JavaScript and in no lower rung's. It sits beside
+ * the slug that already names the module, so the premium split still adds zero
+ * new lists (ADR 0015), and a module that declares none is reported as
+ * unscanned rather than ticked.
+ *
+ * @returns {Map<string, string[]>} tier slug => the markers of modules it first ships.
+ */
+function markersByTier(tiers) {
+  const byTier = new Map(tiers.map((tier) => [tier, []]));
+  const ladder = JSON.parse(readFileSync(resolve(ROOT, TIER_MANIFEST), 'utf8'))?.premium?.tiers ?? [];
+
+  for (const file of readdirSync(resolve(ROOT, MODULES), { withFileTypes: true })) {
+    if (!file.isDirectory()) {
+      continue;
+    }
+
+    const manifest = resolve(ROOT, MODULES, file.name, 'module.json');
+    const declared = JSON.parse(readFileSync(manifest, 'utf8'));
+    const marker = declared?.bundle_marker;
+
+    if (typeof marker !== 'string' || marker === '') {
+      continue;
+    }
+
+    // The LOWEST rung that ships it, which is the direction the whole ladder
+    // is read in: a module on disk is evidence of at least that rung.
+    const at = ladder.find((tier) => (tier?.modules ?? []).includes(declared.slug))?.slug;
+
+    if (!byTier.has(at)) {
+      throw new Error(`${declared.slug} declares a bundle marker and is shipped by no tier ${TIER_MANIFEST} declares`);
+    }
+
+    byTier.get(at).push(marker);
+  }
+
+  return byTier;
+}
+
 // Each bundle is read ONCE. Reading again for the premium scan would report a
 // missing bundle twice and read as two problems where there is one.
 const sources = new Map(BUNDLES.map((bundle) => [bundle.path, readBundle(bundle)]));
@@ -257,6 +313,7 @@ for (const bundle of BUNDLES) {
 // a per-tier build being theatre (ADR 0056).
 
 let byTier = null;
+let markers = null;
 let tiers = null;
 
 try {
@@ -264,6 +321,12 @@ try {
   byTier = identifiersByTier(tiers);
 } catch (error) {
   fail(`cannot read the tier ladder or the rule manifest (${error.message}) — the identifier scan inspected nothing`);
+}
+
+try {
+  markers = tiers === null ? null : markersByTier(tiers);
+} catch (error) {
+  fail(`cannot read the module manifests (${error.message}) — the marker scan inspected nothing`);
 }
 
 if (byTier !== null) {
@@ -300,6 +363,41 @@ if (byTier !== null) {
 
     for (const identifier of found) {
       fail(`${bundle.label}: contains "${identifier}", which is filed above the rung this bundle ships`);
+    }
+  }
+}
+
+// --- 3. The marker scan: NO BUNDLE CARRIES A HIGHER RUNG'S MODULE -----------
+//
+// The same assertion for a module that ships no rule type, and therefore has
+// nothing in the rule manifest for the scan above to look for. See
+// `markersByTier` for why that gap is worth closing rather than noting.
+
+if (markers !== null) {
+  for (const bundle of BUNDLES) {
+    const source = sources.get(bundle.path);
+
+    if (source === null) {
+      continue;
+    }
+
+    const from = bundle.above === null ? 0 : tiers.indexOf(bundle.above) + 1;
+    const forbidden = tiers.slice(from).flatMap((tier) => markers.get(tier));
+
+    if (forbidden.length === 0) {
+      console.log(`  ! ${bundle.label}: no module above its rung declares a marker, so this scan asserted nothing`);
+      continue;
+    }
+
+    const text = source.toString('utf8');
+    const found = forbidden.filter((marker) => text.includes(marker));
+
+    console.log(
+      `  ${found.length === 0 ? '✓' : '✗'} ${bundle.label}: scanned for ${forbidden.length} module marker(s) from a higher rung`,
+    );
+
+    for (const marker of found) {
+      fail(`${bundle.label}: contains "${marker}", a module filed above the rung this bundle ships`);
     }
   }
 }

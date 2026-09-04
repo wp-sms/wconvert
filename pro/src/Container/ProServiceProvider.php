@@ -5,9 +5,11 @@ namespace WConvert\Pro\Container;
 use WConvert\Admin\AdminNotices;
 use WConvert\Container\ServiceContainer;
 use WConvert\Container\ServiceProvider;
+use WConvert\Optin\OptinRepository;
 use WConvert\Pro\Admin\ProAdminEnqueue;
 use WConvert\Pro\Frontend\ProInspectorEnqueue;
 use WConvert\Pro\Frontend\ProLoaderEnqueue;
+use WConvert\Pro\Module\AbTesting\AbTestController;
 use WConvert\Pro\Module\CartRecovery\CartCookie;
 use WConvert\Pro\Template\ProTemplates;
 use WConvert\Rules\RuleVocabulary;
@@ -92,6 +94,24 @@ final class ProServiceProvider implements ServiceProvider
             $container->register(CartCookie::class, static fn (): CartCookie => new CartCookie());
         }
 
+        // And A/B testing's two routes, on the same terms and for the same
+        // reason: `ab-testing` is the `pro` rung's module, so on a Basic build
+        // this class is not on disk and Pro's autoloader finds nothing for it.
+        // The routes are then ABSENT rather than present and refusing, which
+        // is the whole of the entitlement (ADR 0015).
+        //
+        // The write itself is free's: {@see OptinRepository} is the one place
+        // the published set is rebuilt (ADR 0003) and the one place that
+        // cannot reach for a `DELETE` (ADR 0020). This registers the ROUTE.
+        if (class_exists(AbTestController::class)) {
+            $container->register(
+                AbTestController::class,
+                static fn (ServiceContainer $c): AbTestController => new AbTestController(
+                    $c->resolve(OptinRepository::class)
+                )
+            );
+        }
+
         /*
          * ====================================================================
          * PRO REGISTERS ITS OWN DESIGNS, THROUGH THE SEAM FREE EXTRACTED.
@@ -154,6 +174,21 @@ final class ProServiceProvider implements ServiceProvider
          * only correct on the front end would tell a Pro customer their Optins
          * are suspended while the site shows them perfectly.
          */
+        // ====================================================================
+        // A/B TESTING'S ROUTES, ABOVE THE `is_admin()` GUARD BELOW.
+        // ====================================================================
+        // `rest_api_init` fires on a request WordPress does not consider
+        // wp-admin at all, so registering this inside the guard would register
+        // it nowhere. It is the same reasoning free's own controllers are
+        // deferred to `rest_api_init` with rather than hooked behind
+        // `is_admin()` ({@see \WConvert\Container\CoreServiceProvider}), and
+        // the same reasoning the rule registration below sits above the guard.
+        if (class_exists(AbTestController::class)) {
+            add_action('rest_api_init', static function () use ($container): void {
+                $container->resolve(AbTestController::class)->registerRoutes();
+            });
+        }
+
         $vocabulary = $container->resolve(RuleVocabulary::class);
         /*
          * AND THE SITE HALF, WHICH IS WHAT #36 CLOSED.

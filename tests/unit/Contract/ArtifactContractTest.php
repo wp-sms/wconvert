@@ -199,6 +199,7 @@ final class ArtifactContractTest extends TestCase
             // per-tier rules build lower rungs explicitly.
             'modules/display-types/module.json' => "{\"slug\":\"display-types\"}\n",
             'modules/premium-triggers/module.json' => "{\"slug\":\"premium-triggers\"}\n",
+            'modules/ab-testing/module.json' => "{\"slug\":\"ab-testing\"}\n",
             'modules/cart-recovery/module.json' => "{\"slug\":\"cart-recovery\"}\n",
             // The premium designs, inside the module that owns them. Pro IS
             // where they ship, so a Pro artifact with an empty library is a
@@ -220,7 +221,7 @@ final class ArtifactContractTest extends TestCase
     {
         $withheld = [];
 
-        foreach (['display-types', 'premium-triggers', 'cart-recovery'] as $slug) {
+        foreach (['display-types', 'premium-triggers', 'ab-testing', 'cart-recovery'] as $slug) {
             if (!in_array($slug, $modules, true)) {
                 $withheld["modules/{$slug}/module.json"] = null;
             }
@@ -377,8 +378,8 @@ final class ArtifactContractTest extends TestCase
     {
         foreach ([
             'basic' => ['display-types'],
-            'pro' => ['display-types', 'premium-triggers'],
-            'elite' => ['display-types', 'premium-triggers', 'cart-recovery'],
+            'pro' => ['display-types', 'premium-triggers', 'ab-testing'],
+            'elite' => ['display-types', 'premium-triggers', 'ab-testing', 'cart-recovery'],
         ] as $rung => $modules) {
             $result = $this->verify($this->stagedProAt($modules));
 
@@ -412,7 +413,7 @@ final class ArtifactContractTest extends TestCase
      */
     public function testFailsWhenABasicZipCarriesAHigherRungsModule(): void
     {
-        $tree = $this->stagedProAt(['display-types', 'premium-triggers']);
+        $tree = $this->stagedProAt(['display-types', 'premium-triggers', 'ab-testing']);
 
         // Inferred as `pro`, correctly. What makes it wrong is the design
         // library: `pro` ships `display-types` too, so the tree is internally
@@ -450,7 +451,7 @@ final class ArtifactContractTest extends TestCase
     /** And a rung's own rules in its own bundle are exactly what belongs there. */
     public function testARungsBundleMayCarryItsOwnRules(): void
     {
-        $result = $this->verify($this->stagedProAt(['display-types', 'premium-triggers'], [
+        $result = $this->verify($this->stagedProAt(['display-types', 'premium-triggers', 'ab-testing'], [
             'public/loader/loader.js' => "var rules={exit_intent:1};\n",
         ]));
 

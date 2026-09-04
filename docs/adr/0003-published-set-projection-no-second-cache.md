@@ -26,6 +26,16 @@ and no conversions. Suspension is computed from `config` against the live
 registry rather than stored, so like entitlement below it belongs to the
 enqueue-time filter and not to the projection.*
 
+*Extended by [ADR 0058](0058-a-test-ends-when-the-merchant-says-so.md) to the
+first payload key that is a fact about the SET rather than about one row. An
+A/B arm carries `["<experiment>", <this arm>, <how many arms>]`, and the count
+cannot be read off the row it sits on — so it is computed across the whole set
+in `PublishedProjection::build()`, once per rebuild, which is this ADR's rule
+rather than an exception to it. It is written only where a group has more than
+one published arm, so an install running no test ships byte-for-byte the
+payload it shipped before; and it stops being written the moment a test ends,
+on the rebuild that same write performs.*
+
 At enqueue time PHP walks the projections, evaluates **only** the page/URL
 targeting rule, and inlines the survivors — so a site with 40 Optins does not
 ship 40 rule sets on every page. Everything else (time delay, scroll depth, exit

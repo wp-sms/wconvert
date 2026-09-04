@@ -88,6 +88,18 @@ loser, mark the test finished — the losing row stays, soft-deleted at most, an
 its counters stay interpretable. A future implementation that reaches for
 `DELETE` is deleting a month of the merchant's own history to tidy a list.
 
+*Amended by [ADR 0058](0058-a-test-ends-when-the-merchant-says-so.md) on the
+parenthesis and not on the sentence. "Promote the winner's design onto the
+parent" is the one thing "declare a winner" must NOT do: it would leave one row
+whose counters are arm A's history followed by arm B's future, under a rate
+that is the average of two different designs. **The winning ROW is promoted
+instead** — its `parent_id` goes to `NULL` and it takes the campaign's name —
+so nothing is copied and every row keeps meaning exactly one design. "Mark the
+test finished" also turned out to need nothing: a test is running exactly while
+a parentless Optin has published arms beneath it, so there is no flag. The
+losing row staying, soft-deleted at most, is untouched and is what the rest of
+this section is about.*
+
 The same ADR's other rule falls out of this for free: soft-deleted Optins keep
 their counts in per-[[Goal]] totals and drop out of the per-Optin list. A
 finished test's loser behaves exactly like any other tidied-away Optin, with no
@@ -124,6 +136,15 @@ fifth field on the parent's entry in that map, beside `i`, `l`, `d` and `c` —
 which is what the sentence above already claimed, spelled in a notation that
 denied it.*
 
+*Built by [#93](https://github.com/navidkashani/wconvert/issues/93), and one
+thing is sharper than this paragraph knew. **What is stored is the arm's INDEX
+and not its id** — a small integer, and it is written on the DRAW rather than
+on the impression, because the draw is the moment the browser met the test: an
+arm that is capped, outside its window or never triggered still has to be the
+arm this browser meets on the next page, or the split is not a split. An index
+the roster no longer reaches is re-drawn, which is the one case a stored index
+has that a stored id would not.*
+
 *It is not the identifier this ADR's own constraint forbids, and the three
 properties [ADR 0047](0047-site-wide-frequency-is-the-same-shape-at-a-second-scope.md)
 checks one at a time for the site-wide slot hold here too. It is not an identifier — it
@@ -145,6 +166,39 @@ reports the result rather than to buy validity with a cookie.*
 *What stays open is the split itself — the ratio, when a winner is declared, and
 whether declaring one is automatic. Those need no storage decision and are still
 the building ticket's.*
+
+> **Decided by [ADR 0058](0058-a-test-ends-when-the-merchant-says-so.md), which
+> is the building ticket's, and it needed no storage.** The split is **even**
+> and there is no ratio to set — a ratio moved mid-test does not produce the
+> ratio, because every browser already holding an arm keeps it, and the only
+> honest way to report the drift is a second denominator per day the counters
+> cannot express (ADR 0019). A winner is declared by the **merchant pressing a
+> button and never automatically**: the finest grain in `wconvert_stats` is a
+> day's total per arm and the denominator is browsers rather than people, so a
+> significance test here would be a precise claim over a population the product
+> says it cannot see.
+>
+> **And that ADR refuses this document's own phrasing on one point.** "Promote
+> the winner's design onto the parent", below, is the shape it must not be:
+> copying arm B's design onto arm A's row leaves one row whose counters are
+> A's history followed by B's future, under a rate that is the average of two
+> designs — the frozen-at-write blend ADR 0020 exists to prevent, arriving
+> through a config copy instead of a column. **Nothing is copied.** The winning
+> row stops having a parent and takes the campaign's name, so every row's
+> counters mean exactly one design for the whole of its life. The losing row
+> still stays, soft-deleted at most, which is the part of the sentence below
+> that was load-bearing.
+>
+> **The thing this ADR did not know it had left open is the payload.**
+> `OptinRepository::PROJECTION_COLUMNS` did not read `parent_id` and
+> `PublishedProjection` emitted no parent at all, so the published set could
+> not express *"these two entries are arms of one test"* — two published arms
+> reached the browser as two independent Optins, which `arbitrate()` reads as
+> two campaigns competing for one screen. ADR 0058 carries the shape that
+> closes it: one key on an arm, `["<experiment>", <this arm>, <how many>]`,
+> computed once per rebuild and absent from every Optin running no test.
+
+
 
 ## Consequences
 
@@ -192,3 +246,11 @@ the building ticket's.*
 - `CONTEXT.md` gains [[Variant]], because "an Optin that is also a variant" is
   precisely the kind of term that acquires two meanings if it is not written
   down once.
+- **It is the `pro` rung's module, and therefore `elite`'s.** *Decided by
+  [ADR 0058](0058-a-test-ends-when-the-merchant-says-so.md), which is where the
+  reasoning is: Basic is the design rung and A/B is a decision about who sees
+  what, which is what the middle rung already is. It is
+  `pro/modules/ab-testing/`, so a Basic build does not have it — no route, no
+  narrowing, no admin action — and the enforcement is the absence
+  ([ADR 0015](0015-enforcement-is-by-non-registration.md)) rather than a
+  guard.*

@@ -145,6 +145,20 @@ see its own inline correction.*
   run to produce. Soft-deleted at most — at which point it behaves like any
   other tidied Optin, keeping its counts in the per-Goal total and dropping out
   of the per-Optin list, with no special case anywhere.*
+  *Built by [#93](https://github.com/navidkashani/wconvert/issues/93), and the
+  rule held twice over. `OptinRepository::declareWinner()` stamps `deleted_at`
+  on every arm but the winner and issues no `DELETE` — which
+  {@see \WConvert\Database\Connection} could not do for it anyway, having
+  none — and `tests/unit/Optin/OptinRepositoryTest.php` asserts both the
+  surviving row and the empty delete log. **The other half of this bullet is
+  what stopped the obvious implementation.**
+  [ADR 0058](0058-a-test-ends-when-the-merchant-says-so.md) refuses ADR 0045's
+  own sketch of "promote the winner's design onto the parent": copying arm B's
+  design onto arm A's row leaves one row whose counters are A's history
+  followed by B's future, under a rate that is the average of two designs —
+  which is this document's frozen-at-write shape arriving through a `config`
+  copy instead of through a column. The winning ROW is promoted instead, so
+  every row's counters mean exactly one design for the whole of its life.*
 - **Soft-deleted Optins keep their counts in per-Goal totals** and drop out of
   the per-Optin list. A merchant tidying up in March must not watch February's
   goal total fall.

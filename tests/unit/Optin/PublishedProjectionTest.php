@@ -395,4 +395,152 @@ final class PublishedProjectionTest extends TestCase
         $this->assertArrayNotHasKey('starts_at', $set[0]['payload']);
         $this->assertArrayNotHasKey('ends_at', $set[0]['payload']);
     }
+
+    // =========================================================================
+    // THE ARM TRIPLE — THE ONE PAYLOAD KEY COMPUTED ACROSS THE WHOLE SET.
+    //
+    // A [[Variant]] is a whole Optin (ADR 0045), so two published arms arrive
+    // as two entries and nothing in the payload said they were arms of one
+    // thing. These pin what closes that, and — just as loudly — that an
+    // install running no test pays nothing for it.
+    // =========================================================================
+
+    /**
+     * @return list<array<string, mixed>> A parent and one child, both published.
+     */
+    private static function twoArms(string $childDisplayType = 'popup'): array
+    {
+        return [
+            self::row(),
+            self::row([
+                'id' => '01JQ0000000000000000000002',
+                'parent_id' => '01JQ0000000000000000000001',
+                'published_config' => '{"display_type":"' . $childDisplayType . '"}',
+            ]),
+        ];
+    }
+
+    public function testAnOptinWithNoArmsCarriesNoArmKeyAtAll(): void
+    {
+        $payload = self::build([self::row()])[0]['payload'];
+
+        $this->assertArrayNotHasKey(
+            PublishedProjection::ARM,
+            $payload,
+            'a group of one is not a test, and every install running none pays zero bytes'
+        );
+    }
+
+    /**
+     * The parent is arm 0 and the child is arm 1, because a ULID's leading
+     * bits are the moment it was created — so the arms read A, B in the order
+     * the merchant made them and a third arm never renumbers the first two.
+     */
+    public function testEachArmCarriesTheExperimentItsIndexAndHowManyArmsThereAre(): void
+    {
+        $set = self::build(self::twoArms());
+
+        $this->assertSame(
+            ['01JQ0000000000000000000001', 0, 2],
+            $set[0]['payload'][PublishedProjection::ARM]
+        );
+        $this->assertSame(
+            ['01JQ0000000000000000000001', 1, 2],
+            $set[1]['payload'][PublishedProjection::ARM]
+        );
+    }
+
+    /**
+     * ========================================================================
+     * THE COUNT IS OVER WHAT A VISITOR COULD MEET, NOT OVER WHAT EXISTS.
+     * ========================================================================
+     * An unpublished arm is not being served, so a browser must not be able to
+     * draw it and sit looking at nothing. Two arms where one is a draft is not
+     * a test at all, and the key goes away entirely.
+     */
+    public function testAnUnpublishedArmIsNotCounted(): void
+    {
+        $set = self::build([
+            self::row(),
+            self::row([
+                'id' => '01JQ0000000000000000000002',
+                'parent_id' => '01JQ0000000000000000000001',
+                'published_at' => null,
+            ]),
+        ]);
+
+        $this->assertCount(1, $set);
+        $this->assertArrayNotHasKey(PublishedProjection::ARM, $set[0]['payload']);
+    }
+
+    /**
+     * And the same read from the other end, which is what makes *declaring a
+     * winner* need no `finished` flag anywhere: the loser is soft-deleted, the
+     * parent is alone in its group on the rebuild that same write performs,
+     * and the payload stops describing a test.
+     */
+    public function testSoftDeletingTheLosingArmEndsTheTestInThePayload(): void
+    {
+        $set = self::build([
+            self::row(),
+            self::row([
+                'id' => '01JQ0000000000000000000002',
+                'parent_id' => '01JQ0000000000000000000001',
+                'deleted_at' => '2026-08-30 09:00:00',
+            ]),
+        ]);
+
+        $this->assertCount(1, $set);
+        $this->assertArrayNotHasKey(PublishedProjection::ARM, $set[0]['payload']);
+    }
+
+    /**
+     * A child whose parent was unpublished is alone in a group named after a
+     * row that is not in the set. It serves on its own, which is what
+     * unpublishing the other arm means.
+     */
+    public function testAnArmWhoseParentIsGoneServesOnItsOwn(): void
+    {
+        $set = self::build([
+            self::row(['published_at' => null]),
+            self::row([
+                'id' => '01JQ0000000000000000000002',
+                'parent_id' => '01JQ0000000000000000000001',
+            ]),
+        ]);
+
+        $this->assertCount(1, $set);
+        $this->assertArrayNotHasKey(PublishedProjection::ARM, $set[0]['payload']);
+    }
+
+    /**
+     * ========================================================================
+     * WHERE AN `inline` ARM RENDERS, WHICH IS THE ONE CASE THAT IS NOT ITS OWN
+     * ID.
+     * ========================================================================
+     * The merchant placed one block and it names the campaign. Without this,
+     * half the traffic on an inline test meets nothing at all, silently.
+     */
+    public function testAnInlineArmRendersAtItsParentsAnchor(): void
+    {
+        $set = self::build(self::twoArms('inline'));
+
+        $this->assertSame(
+            '01JQ0000000000000000000001',
+            $set[1]['payload'][PublishedProjection::ANCHOR]
+        );
+    }
+
+    /**
+     * The parent's anchor IS its own id, and an overlay never looks for one.
+     * Both would be bytes on every matching page view saying nothing.
+     */
+    public function testNothingElseCarriesAnAnchor(): void
+    {
+        $set = self::build(self::twoArms('inline'));
+
+        $this->assertArrayNotHasKey(PublishedProjection::ANCHOR, $set[0]['payload']);
+        $this->assertArrayNotHasKey(PublishedProjection::ANCHOR, self::build(self::twoArms())[1]['payload']);
+    }
+
 }

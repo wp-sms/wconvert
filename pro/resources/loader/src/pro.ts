@@ -1,5 +1,6 @@
 import { bootProLoader, presenter as proPresenter } from './tier';
 import { PRO_MODULES } from './modules';
+import { narrowToArms } from '../../../modules/ab-testing/loader';
 
 /**
  * WConvert Pro's shipped loader at the **pro** tier.
@@ -18,12 +19,22 @@ import { PRO_MODULES } from './modules';
  * survives being run at the wrong moment (ADR 0004) — is `tier.ts`'s, shared
  * so it cannot be got right at two rungs and wrong at the third.
  */
-const loader = bootProLoader(PRO_MODULES);
+const loader = bootProLoader(PRO_MODULES, narrowToArms);
 
 /**
  * What this entry composed, stated rather than only used. Nothing at runtime
  * reads either export; the boundary tests do.
  */
 export const presenter = proPresenter;
+
+/**
+ * And the payload narrowing, for the same reason.
+ *
+ * This rung ships the `ab-testing` module, so it chooses one arm of each test
+ * before the engine is asked anything. `basic.ts` names none, which is what
+ * keeps this module's code out of the Basic bundle
+ * (`pro/tests/js/tier-modules.test.ts`).
+ */
+export const narrowing = narrowToArms;
 
 export default loader;

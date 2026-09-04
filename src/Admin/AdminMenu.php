@@ -4,7 +4,10 @@ namespace WConvert\Admin;
 
 use WConvert\Assets\ViteHelper;
 use WConvert\Frontend\InspectorEnqueue;
+use WConvert\Support\Availability;
+use WConvert\Support\ProPresence;
 use WConvert\Support\TierManifest;
+use WConvert\Support\WpProPresence;
 
 defined('ABSPATH') || exit;
 
@@ -19,6 +22,17 @@ defined('ABSPATH') || exit;
  */
 final class AdminMenu
 {
+    /**
+     * The [[Module]] directory A/B testing ships in.
+     *
+     * Free names it because free is what renders the `locked` card for it, on
+     * the same footing as every `tier:` value in the rule manifest and on every
+     * [[Goal]] — free's PHP can only mark a capability absent for a rung it can
+     * name (ADR 0005, ADR 0015). Which rung that is stays `tiers.json`'s to
+     * say.
+     */
+    private const VARIANT_MODULE = 'ab-testing';
+
     public const SLUG = 'wconvert';
 
     /**
@@ -192,6 +206,8 @@ final class AdminMenu
      */
     public static function settings(): array
     {
+        $manifest = TierManifest::load();
+
         return [
             // The CSV download is a navigation to `admin-post.php`, so the
             // screen needs the nonced URL rather than a REST path —
@@ -239,7 +255,54 @@ final class AdminMenu
             // (ADR 0056). At launch every rung answers "Pro", so nothing on
             // screen changes — and splitting the range later is an edit to that
             // file rather than five strings and a release.
-            'tiers' => TierManifest::load()->forTheAdmin(),
+            'tiers' => $manifest->forTheAdmin(),
+            // **Whether this install can run an A/B test**, resolved on the
+            // server so no surface recombines two facts in an order of its own
+            // (ADR 0026).
+            //
+            // ================================================================
+            // THE RUNG IS READ OUT OF `tiers.json`, NOT WRITTEN DOWN HERE.
+            // ================================================================
+            // A/B testing is a MODULE — `pro/modules/ab-testing/` — so the
+            // question *"which rung supplies it"* already has an answer in the
+            // one file both the build and `WpProPresence` read. Naming
+            // {@see Tier::Pro} here instead would be a second declaration of
+            // the ladder, and moving the feature a rung would then be an edit
+            // to `tiers.json` AND to this file — which is exactly the drift
+            // ADR 0056 spells the ladder twice to avoid, with a parity test
+            // between the two spellings.
+            //
+            // It never renders `unavailable`: nothing about the SITE makes a
+            // test impossible, so this is `ready` or `locked` and the `locked`
+            // card names {@see self::VARIANT_MODULE}'s rung.
+            'variants' => self::whetherTestsCanRun($manifest, new WpProPresence($manifest)),
+        ];
+    }
+
+    /**
+     * Whether a merchant on this install may start an A/B test, and what to
+     * call the tier if not.
+     *
+     * **The absence of the routes is the actual enforcement** (ADR 0015): they
+     * live in the `ab-testing` module's own PHP, so a build without the module
+     * registers none of them and there is nothing to guard. This is what stops
+     * the merchant meeting a control that will be refused, which is a separate
+     * obligation and the one ADR 0042 names — *"never offer what will be
+     * refused; mark it before the click, with the reason."*
+     *
+     * @return array{availability: string, tier: string|null}
+     */
+    private static function whetherTestsCanRun(TierManifest $manifest, ProPresence $pro): array
+    {
+        $tier = $manifest->lowestTierSupplying(self::VARIANT_MODULE);
+
+        return [
+            // `true` for the site half, always. A test needs no store, no WSMS
+            // and no other plugin — so `unavailable` is unreachable here, and
+            // `Availability::of()` is still what answers rather than a boolean
+            // this file recombines (ADR 0026).
+            'availability' => Availability::of(true, $tier !== null && $tier->isSuppliedBy($pro))->value,
+            'tier' => $tier?->value,
         ];
     }
 }

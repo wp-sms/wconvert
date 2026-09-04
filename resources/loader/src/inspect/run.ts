@@ -2,6 +2,7 @@ import { createPanel } from './panel';
 import { explain } from './explain';
 import { funnel } from './report';
 import { readArrival } from './arrival';
+import type { PayloadNarrowing } from '../boot';
 import { readPayload, siteAllowance } from '../payload';
 import { withheldTypes } from '../consent';
 import { onConsentChange } from '../consent';
@@ -53,14 +54,32 @@ const AT_THE_START: VisitorState = loadState(persistentStore(STATE_KEY));
 
 const INSPECTOR_ELEMENT_ID = 'wconvert-inspector';
 
-export function runInspector(loader: Loader): void {
+/**
+ * Composed with the same narrowing the loader was, or the panel reports an
+ * engine the page did not run.
+ *
+ * That is ADR 0048's own hazard one rung finer: free's inspector on a Pro
+ * install reports every `exit_intent` Optin as `inert` while it works
+ * perfectly, and an inspector that skipped Pro's arm assignment would report
+ * the arm this browser is NOT on as though the page had considered it.
+ *
+ * The arm that was not drawn stops at the **payload** gate — *it did not reach
+ * the browser* — and it is left there deliberately rather than given a gate of
+ * its own. The panel reports every Optin on the page at once, so it sits
+ * directly beneath the arm that did reach, under the same test; a twelfth gate
+ * would widen a vocabulary the whole design keeps closed to carry a
+ * distinction the row above already makes (ADR 0047's reasoning about a
+ * seventh `Standing`, one screen over).
+ */
+export function runInspector(loader: Loader, narrow?: PayloadNarrowing): void {
   const server = readServerReport();
 
   if (server === null) {
     return;
   }
 
-  const entries = readPayload() ?? [];
+  const read = readPayload() ?? [];
+  const entries = narrow === undefined ? read : narrow(read);
   const reached = new Set(entries.map((entry) => entry.id));
   // Read off the page the loader read it off, so the panel explains the
   // allowance the page is actually being decided against.

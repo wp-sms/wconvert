@@ -20,7 +20,9 @@
 #       that is the trap this deletes rather than inherits (ADR 0028).
 #   (e) No premium design in the free ZIP — the trialware gate (issue #7).
 #   (f) NO ARTIFACT CARRIES A HIGHER TIER'S MODULE, in PHP and in the built
-#       JavaScript (ADR 0056). WP Statistics proves this and WSMS does not:
+#       JavaScript — by its rule identifiers where it has them, and by the
+#       token it declares in its own module.json where it ships no rule type
+#       at all (ADR 0056). WP Statistics proves this and WSMS does not:
 #       all three of its premium tiers ship a byte-identical `main.js`, so a
 #       Basic customer holds the Elite React UI behind a client-readable flag.
 #       Under possession-gating that is not a weaker gate, it is no gate.
@@ -631,6 +633,47 @@ if [ "$tier" = "pro" ] && section_clean; then
                         fail "$built in the $RUNG artifact contains \"$identifier\", which is filed above $RUNG"
                     fi
                 done <<< "$FORBIDDEN"
+            done
+        fi
+
+        # ---------------------------------------------------------------
+        # AND THE SAME QUESTION FOR A MODULE THAT SHIPS NO RULE TYPE.
+        #
+        # The scan above reads its list out of the RULE MANIFEST, so it can
+        # only see a module whose contribution is a rule. `ab-testing`'s is a
+        # payload narrowing, so a Basic ZIP carrying its whole arm-drawing
+        # routine would pass every check above — the byte-identical failure
+        # ADR 0056 measures WSMS by, reached through a gap in the scan rather
+        # than through a flag.
+        #
+        # A module declares its own token in its own module.json, and the
+        # markers are read from the REPOSITORY rather than from the staged
+        # tree: the whole question is about a module the cut removed, so its
+        # manifest is exactly what is no longer there to read.
+        # ---------------------------------------------------------------
+        MARKERS=""
+        MODULES_DIR="$(dirname "$SCRIPT_DIR")/pro/modules"
+
+        if [ ! -d "$MODULES_DIR" ]; then
+            fail "cannot find the module manifests at $MODULES_DIR — cannot verify"
+        elif ! MARKERS="$(php "$SCRIPT_DIR/tier-manifest.php" markers "$LADDER" "$RUNG" "$MODULES_DIR" 2>&1)"; then
+            fail "cannot read which modules sit above the $RUNG tier — cannot verify"
+        elif [ -z "$MARKERS" ]; then
+            echo "  ! no module above $RUNG declares a marker, so the module scan asserted nothing"
+        else
+            for built in public/loader/loader.js public/inspector/inspector.js; do
+                if [ ! -r "$TREE/$built" ]; then
+                    # [1] already failed on this; do not report it twice.
+                    continue
+                fi
+
+                while IFS= read -r marker; do
+                    [ -n "$marker" ] || continue
+
+                    if grep -qF -- "$marker" "$TREE/$built"; then
+                        fail "$built in the $RUNG artifact contains \"$marker\", a module filed above $RUNG"
+                    fi
+                done <<< "$MARKERS"
             done
         fi
     fi

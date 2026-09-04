@@ -14,6 +14,18 @@ the split unit is the browser record and not the person, is accepted there
 rather than repaired with an id. The consequence below about **free's** storage
 is unchanged: this field is written by Pro's loader.*
 
+*Built by [#93](https://github.com/navidkashani/wconvert/issues/93), and it is
+one notch less than even that paragraph allowed for: **what is stored is the
+arm's INDEX, not its id.** A small integer, drawn once, joining to nothing and
+expiring with the record — the same reasoning that made `l` a whole day number
+rather than a timestamp, applied to a value that could have been 26 characters
+of ULID and had no need to be. And the consequence is stated where a merchant
+reads the result:
+[ADR 0058](0058-a-test-ends-when-the-merchant-says-so.md) puts one sentence on
+the Optins list saying the numbers count browsers rather than people, drawn
+only where a test is running, because a product that cannot honestly count
+people must say so on the screen that reports the number.*
+
 *The fourth caller read against this sentence and **declined to store anything
 at all**: [#91](https://github.com/navidkashani/wconvert/issues/91)'s `referrer`
 Condition. The obvious version of that feature is a FIRST-TOUCH source — "they

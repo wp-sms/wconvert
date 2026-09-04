@@ -84,6 +84,35 @@ export interface AdminSettings {
    * should not be translated; the sentence around it still is.
    */
   readonly tiers?: Readonly<Record<string, { readonly name: string; readonly product_name: string }>>;
+  /**
+   * Whether this install can run an A/B test, and which rung supplies it.
+   *
+   * ==========================================================================
+   * ONE FACT ABOUT THE INSTALL, RESOLVED ON THE SERVER.
+   * ==========================================================================
+   * It is `ready` or `locked` and **never `unavailable`** — a test needs no
+   * store, no WSMS and nothing else the site would have to supply, so the one
+   * state that is not buyable from us is unreachable here (ADR 0026).
+   *
+   * It sits beside the bundle rather than on the list route because it is a
+   * fact about the SCREEN and not about a row: every Optin on an install
+   * answers it the same way, and a fact identical for every item in a group
+   * belongs to the group (ADR 0039, as ADR 0048 extended it).
+   *
+   * **The real enforcement is that the routes do not exist**: they are
+   * registered by the `ab-testing` module's own PHP, so a build without the
+   * module answers 404 rather than refusing (ADR 0015). This is what stops the
+   * merchant meeting a control that will be refused, which is the separate
+   * obligation ADR 0042 names.
+   *
+   * `tier` is the slug to name in the upsell — read through `tierName()`, so
+   * that a second rung is a `tiers.json` edit rather than a string in a
+   * component.
+   */
+  readonly variants?: {
+    readonly availability: 'ready' | 'locked' | 'unavailable';
+    readonly tier: string | null;
+  };
 }
 
 declare global {
