@@ -48,6 +48,16 @@ restates nothing from it: what travels is three booleans — configured, landed,
 failing — and no error text and no counts. A number copied here would be a
 second, staler spelling of an outage on a screen with no way to act on it.
 
+**This one is a state and not a *first*, and the difference is load-bearing.**
+`HealthStore::forget()` drops a Destination's health when the Destination is
+deleted, so a site that delivered through one it has since removed reads
+`landed` false. That looks like the reset this document rejects
+`MIN(published_at)` for and is not the same thing: the four dates claim
+something happened *once, ever*, and this claims something about the
+Destinations the merchant has *now*. The copy is worded to that claim — *"your
+destinations have received nothing"*, never *"nothing has ever arrived"* — and
+`MilestonesTest` pins both halves of the swap.
+
 ## Two of them could not be derived, and the near-misses both look derivable
 
 - **The first publish is not `MIN(published_at)`.**
@@ -85,6 +95,22 @@ rebuild, so there is no record-anyway path to reach for by mistake. And the
 activation stamp is written inside `publish()` itself, because that method **is**
 the event: a milestone written from the REST controller would be one a WP-CLI
 command or a bulk action silently misses.
+
+**The first edit does not follow that rule, and the exemption is the point
+rather than an oversight.** The mirror of it would put the diff in
+`saveDraft()`, which holds both states and would catch a second caller for
+free. What stops it is what the diff needs: working out which suggestion was
+overridden means reading a [[Template]]'s words by [[Slot Role]], so it needs
+[`TemplateVocabulary`](../../src/Template/TemplateVocabulary.php) — a whole
+design grammar handed to a class whose job is projections and columns, to serve
+one date. `OptinRepository` deliberately knows what a *rule* is and not what a
+*design* is, and widening that to stamp a milestone is the wrong way round.
+
+So the risk `publish()` was placed to avoid is real here, and it is **guarded
+rather than promised**: `TheRouteIsTheOnlyEditorTest` walks the shipped source
+and fails on a second caller of `saveDraft()` — and fails, from the other side,
+the day `OptinRepository` learns to read a design, because that is the day this
+argument expires and the milestone should move down beside the activation one.
 
 ## The first edit reads the taxonomy directly, so its granularity is the argument
 
@@ -171,6 +197,18 @@ So the region draws **at most one step**, sits above the Goal cards on Analytics
 because it explains a wall of zeros the cards cannot, and renders nothing at all
 once every step is met.
 
+**A failing Destination is not one of the steps**, though it is on the payload.
+It is the one state on this funnel that already has a screen of its own, with
+the error text and the re-push beside it, so a step here would be the second and
+staler spelling of an outage that rule 2 refuses — and the merchant would meet
+it on a screen with nothing to press. It is read in the disclosure, which is
+where the *"or did not"* half of the fifth milestone belongs.
+
+**A failed READ is drawn**, which is the one asymmetry worth stating: a met
+milestone is silent because it changes nothing, but a read that failed silently
+makes the values unreadable with nothing on screen saying so — worse than the
+checklist, because the merchant cannot tell there was anything to see.
+
 **The dates are still readable, behind a disclosure whose real content is its
 last sentence.** *"The values are readable on an admin screen"* is an acceptance
 criterion, and the honest way to satisfy it is not a panel of facts nobody acts
@@ -195,10 +233,15 @@ whether they can see it. Closed by default, so it costs one line a visit.
   an open set means a screen that cannot say what the value it is drawing means,
   and this one is read by a human trying to decide whether five Goals were the
   right five.
-- **A milestone is stamped on the site's day, never UTC's**, from the same
-  `StatDay` every counter is stamped from — so a milestone written by an edit
-  and one derived from a beacon agree about which day it was. A merchant who
-  changes their site timezone does not retro-fix them, which is the seam
+- **A milestone is stamped on the site's day, never UTC's** — but by two
+  different readings of that clock, and the difference is deliberate. The first
+  edit uses [`StatDay::today()`](../../src/Stats/StatDay.php), the same call
+  every counter is stamped from, so an edit and a beacon agree about which day
+  it was. The first publish instead **cuts the day off the `current_time()`
+  timestamp `publish()` has just written**, so the milestone and that row's
+  `published_at` cannot disagree — including across a midnight the method
+  happens to straddle. Both are the site's clock; neither is UTC's. A merchant
+  who changes their site timezone does not retro-fix them, which is the seam
   ADR 0019 already booked.
 - **No bundled Playbook constrains where its Optin shows**, so
   `EditedPart::Targeting` is reachable only by a merchant *adding* targeting.

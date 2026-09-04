@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 /**
@@ -88,7 +88,30 @@ describe('the step that is stuck', () => {
     expect(screen.getByText(/caching or optimisation plugin/)).toBeInTheDocument();
   });
 
-  it('sends a converting site with a failing Destination to the Destinations screen', async () => {
+  it('sends a converting site whose destinations have received nothing to that screen', async () => {
+    api.readMilestones.mockResolvedValue({
+      ...WORKING,
+      destinations: { configured: true, landed: false, failing: false },
+    });
+
+    render(<Milestones />);
+
+    expect(
+      await screen.findByText('Converting, and your destinations have received nothing'),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Go to Destinations' })).toHaveAttribute(
+      'href',
+      '#destinations',
+    );
+  });
+
+  /**
+   * **A failing Destination draws no step.** It is the one state that already
+   * has a screen with the error text and the re-push beside it, so a step here
+   * would be the second, staler spelling of an outage (ADR 0042). It is still
+   * on the payload and still read in the disclosure.
+   */
+  it('draws no step for a failing Destination, and still says so in the record', async () => {
     api.readMilestones.mockResolvedValue({
       ...WORKING,
       destinations: { configured: true, landed: true, failing: true },
@@ -96,13 +119,10 @@ describe('the step that is stuck', () => {
 
     render(<Milestones />);
 
-    expect(
-      await screen.findByText('A Destination is refusing what you capture'),
-    ).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Go to Destinations' })).toHaveAttribute(
-      'href',
-      '#destinations',
-    );
+    await userEvent.click(await screen.findByText('What WConvert has recorded about this site'));
+
+    expect(screen.queryByRole('link', { name: 'Go to Destinations' })).not.toBeInTheDocument();
+    expect(screen.getByText('One is failing — see Destinations')).toBeInTheDocument();
   });
 
   /**
@@ -154,13 +174,20 @@ describe('the step that is stuck', () => {
     expect(container).toBeEmptyDOMElement();
   });
 
-  /** A read that fails takes the whole region with it rather than the screen. */
-  it('says nothing at all when the read fails', async () => {
-    api.readMilestones.mockRejectedValue(new Error('nope'));
+  /**
+   * **A failure IS drawn, even though a met milestone is not.** "The values
+   * are readable on an admin screen" is the acceptance criterion, and a read
+   * that failed silently makes them unreadable with nothing saying so — which
+   * is worse than the checklist ADR 0042 refuses, because the merchant cannot
+   * tell there was anything to see.
+   */
+  it('says the read failed rather than rendering nothing', async () => {
+    api.readMilestones.mockRejectedValue(new Error('The site did not answer'));
 
-    const { container } = render(<Milestones />);
+    render(<Milestones />);
 
-    await waitFor(() => expect(container).toBeEmptyDOMElement());
+    expect(await screen.findByText(/The site did not answer/)).toBeInTheDocument();
+    expect(screen.getByText('Reload the page to try again.')).toBeInTheDocument();
   });
 });
 
@@ -185,7 +212,9 @@ describe('what was recorded', () => {
     expect(screen.getByText('2026-03-04')).toBeInTheDocument();
     expect(screen.getByText('2026-03-05')).toBeInTheDocument();
     expect(screen.getByText('2026-03-09')).toBeInTheDocument();
-    expect(screen.getByText('When and to whom it shows, on 2026-03-06')).toBeInTheDocument();
+    expect(
+      screen.getByText('When and to whom it shows, from “welcome-discount”, on 2026-03-06'),
+    ).toBeInTheDocument();
     expect(screen.getByText(/none of it is sent anywhere/)).toBeInTheDocument();
   });
 
@@ -221,6 +250,8 @@ describe('what was recorded', () => {
 
     await userEvent.click(await screen.findByText('What WConvert has recorded about this site'));
 
-    expect(screen.getByText('A label from the server, on 2026-03-06')).toBeInTheDocument();
+    expect(
+      screen.getByText('A label from the server, from “welcome-discount”, on 2026-03-06'),
+    ).toBeInTheDocument();
   });
 });

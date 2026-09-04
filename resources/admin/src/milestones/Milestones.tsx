@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { Button } from '../components/ui/button';
 import { Description } from '../shell/Description';
-import { Region, RegionBody, RegionFooter, RegionHeader } from '../shell/Region';
+import { Region, RegionBody, RegionErrorState, RegionFooter, RegionHeader } from '../shell/Region';
 import { LOADING, failed, ready, type Loadable } from '../shell/loadable';
 import { readMilestones, stuckAt, type MilestonePayload, type StuckAt } from './api';
 
@@ -56,7 +56,7 @@ export function Milestones() {
     })();
   }, []);
 
-  if (milestones.status !== 'ready') {
+  if (milestones.status === 'loading') {
     /*
       **No skeleton, deliberately.** A region that reserves height for
       something it will usually not draw is a region that pushes the numbers
@@ -65,6 +65,24 @@ export function Milestones() {
       for nothing is nothing.
     */
     return null;
+  }
+
+  if (milestones.status === 'failed') {
+    /*
+      **A failure IS drawn, even though a met milestone is not.** "The values
+      are readable on an admin screen" is the acceptance criterion, and a read
+      that failed silently makes them unreadable with nothing on screen saying
+      so — which is worse than the checklist ADR 0042 refuses, because the
+      merchant cannot even tell there was something to see.
+    */
+    return (
+      <Region label={__('What WConvert has recorded about this site', 'wconvert')}>
+        <RegionErrorState
+          message={milestones.message}
+          hint={__('Reload the page to try again.', 'wconvert')}
+        />
+      </Region>
+    );
   }
 
   const stuck = stuckAt(milestones.data);
@@ -117,6 +135,7 @@ function describe(
   const optins = { action: __('Go to Optins', 'wconvert'), href: '#optins' };
   const destinations = { action: __('Go to Destinations', 'wconvert'), href: '#destinations' };
 
+
   switch (stuck) {
     case 'publish':
       return {
@@ -153,18 +172,17 @@ function describe(
         ),
         ...optins,
       };
-    case 'failing':
-      return {
-        title: __('A Destination is refusing what you capture', 'wconvert'),
-        reason: __(
-          'Every Lead is safe in the lead log either way. The error and the re-push are on the Destinations screen.',
-          'wconvert',
-        ),
-        ...destinations,
-      };
     case 'delivery':
+      /*
+        **"Your destinations", not "nothing has ever arrived".** Deleting a
+        Destination forgets its health with it (ADR 0008), so a merchant who
+        swapped one out reads `landed: false` having really delivered through
+        the old one. The state is still worth saying — the Destination they
+        have now has received nothing — and the wording is what keeps it from
+        being a claim about all time that the payload cannot support.
+      */
       return {
-        title: __('Converting, and nothing has reached a Destination yet', 'wconvert'),
+        title: __('Converting, and your destinations have received nothing', 'wconvert'),
         reason: sprintf(
           /* translators: %s: a date, in the site's timezone. */
           __(
@@ -204,19 +222,29 @@ function WhatWasRecorded({ milestones }: { milestones: MilestonePayload }) {
     { label: __('First shown', 'wconvert'), value: milestones.first_impression ?? notYet },
     { label: __('First conversion', 'wconvert'), value: milestones.first_conversion ?? notYet },
     {
+      /*
+        **The Playbook is named, because it is half the record.** What is
+        stored is a day, a Playbook id and one of five words, and this
+        disclosure is the claim that none of it leaves the site with the whole
+        of what was recorded as its evidence — so a row showing two of the
+        three fields would make the evidence partial. The id is the honest
+        thing to show: a Playbook can be uninstalled, and the record outlives
+        it.
+      */
       label: __('First change to a starting point', 'wconvert'),
       value:
         milestones.first_edit === null
           ? notYet
           : sprintf(
-              /* translators: 1: what was changed. 2: a date, in the site's timezone. */
-              __('%1$s, on %2$s', 'wconvert'),
+              /* translators: 1: what was changed. 2: a starting point's id. 3: a date, in the site's timezone. */
+              __('%1$s, from “%2$s”, on %3$s', 'wconvert'),
               milestones.first_edit.part_label,
+              milestones.first_edit.playbook,
               milestones.first_edit.on,
             ),
     },
     {
-      label: __('Reaching a Destination', 'wconvert'),
+      label: __('Your destinations are receiving', 'wconvert'),
       value: destinationState(milestones),
     },
   ];
@@ -260,7 +288,19 @@ function WhatWasRecorded({ milestones }: { milestones: MilestonePayload }) {
   );
 }
 
-/** Three booleans as one sentence, and never as a number the other screen owns. */
+/**
+ * Three booleans as one sentence, and never as a number the other screen owns.
+ *
+ * **This is the only place `failing` is read**, because it is the "or did not"
+ * half of the fifth milestone and it has no step of its own: an outage already
+ * has a screen with its error text and its re-push on it, and a second
+ * spelling here would be staler than that one and unable to act.
+ *
+ * Every answer is about the Destinations configured **now**. Health is dropped
+ * when a Destination is deleted (ADR 0008), so a merchant who swapped one out
+ * reads *Nothing yet* having really delivered through the old one — which is
+ * what these words claim, and no more.
+ */
 function destinationState(milestones: MilestonePayload): string {
   const { configured, landed, failing } = milestones.destinations;
 
@@ -269,8 +309,8 @@ function destinationState(milestones: MilestonePayload): string {
   }
 
   if (failing) {
-    return __('Something is failing', 'wconvert');
+    return __('One is failing — see Destinations', 'wconvert');
   }
 
-  return landed ? __('Yes', 'wconvert') : __('Nothing has landed yet', 'wconvert');
+  return landed ? __('Yes', 'wconvert') : __('Nothing yet', 'wconvert');
 }

@@ -2,6 +2,9 @@
 
 namespace WConvert\Milestone;
 
+use WConvert\Optin\Optin;
+use WConvert\Template\TemplateVocabulary;
+
 defined('ABSPATH') || exit;
 
 /**
@@ -27,6 +30,58 @@ final class FirstEdit
         public readonly string $playbook,
         public readonly EditedPart $part,
     ) {
+    }
+
+    /**
+     * The first override in one edit, or **null where the merchant changed
+     * nothing a [[Playbook]] suggested**.
+     *
+     * ========================================================================
+     * IT TAKES THE TWO OPTINS, BECAUSE EVERY FIELD IT READS IS THEIRS.
+     * ========================================================================
+     * This lived in {@see \WConvert\Rest\OptinController} and read four
+     * fields off two Optins and nothing of the controller's own, which is the
+     * shape that belongs on the data it envies. What is left at the route is
+     * the decision about WHEN to ask — after a save that actually happened —
+     * which is genuinely the route's.
+     *
+     * **Only where the Optin came from a Playbook.** `playbook_id` is
+     * provenance and prefill is the only thing that writes it (ADR 0010,
+     * CONTEXT.md, Playbook), so an Optin started from scratch has no
+     * suggestion to have overridden — and a first edit recorded against no
+     * Playbook could not say which [[Goal]]'s defaults it was evidence about,
+     * which is the whole of what this milestone is for.
+     *
+     * It is read from the Optin as it stood BEFORE: that is what the merchant
+     * was handed, and a request carrying a different `playbook_id` is not the
+     * merchant having changed one.
+     *
+     * `$on` is passed in rather than read here, for the reason
+     * {@see \WConvert\Stats\StatsRepository::increment()} takes its date the
+     * same way — "the site's day" is a WordPress question, answered once at
+     * the request boundary, so this class has no clock and nothing to stub.
+     */
+    public static function between(
+        Optin $before,
+        Optin $after,
+        TemplateVocabulary $vocabulary,
+        string $on
+    ): ?self {
+        $playbook = $before->config['playbook_id'] ?? null;
+
+        if (!is_string($playbook) || $playbook === '') {
+            return null;
+        }
+
+        $part = EditedPart::firstChangedBetween(
+            $before->config,
+            $after->config,
+            $before->goal,
+            $after->goal,
+            $vocabulary
+        );
+
+        return $part === null ? null : new self($on, $playbook, $part);
     }
 
     /**

@@ -18,11 +18,10 @@ defined('ABSPATH') || exit;
  * milestone has no window. There is nothing a caller could narrow, so there is
  * nothing to validate and nothing anybody can move.
  *
- * **A route of its own rather than fields on the dashboard's payload.** The
- * dashboard answers for a window a merchant chose; a first conversion that
- * changed when somebody switched from 30 days to 7 would not be a milestone.
- * Keeping them apart is what makes that mistake unexpressible rather than
- * merely avoided.
+ * **A route of its own rather than fields on the dashboard's payload**, for
+ * the reason {@see \WConvert\Stats\StatsRepository::firstDays()} keeps its
+ * read separate from `inRange()`. Two routes is what makes the mistake
+ * unexpressible rather than merely avoided.
  *
  * **Read-only, with no exception**, for the same reason
  * {@see DashboardController} is and one more. Two of these five cannot be

@@ -4,8 +4,8 @@ namespace WConvert\Tests\Unit\Optin;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use WConvert\Optin\Optin;
 use WConvert\Milestone\MilestoneStore;
+use WConvert\Optin\Optin;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
 use WConvert\Rules\RuleVocabulary;

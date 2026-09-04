@@ -5,7 +5,6 @@ namespace WConvert\Rest;
 use WConvert\Destination\OptinBinding;
 use WConvert\Goal\Goal;
 use WConvert\Goal\GoalRegistry;
-use WConvert\Milestone\EditedPart;
 use WConvert\Milestone\FirstEdit;
 use WConvert\Milestone\MilestoneStore;
 use WConvert\Optin\DisplayType;
@@ -354,51 +353,47 @@ final class OptinController implements RestController
      * guess yet, and **what a merchant changes first — and in which Playbook —
      * is the sharpest available evidence that a Goal's defaults are wrong**.
      *
-     * **AFTER the save, and only on a save that happened.** An edit that was
-     * refused for its schedule or its design is not an edit a merchant made,
-     * and recording one would put a rejected act in a record that can only be
-     * written once.
+     * ========================================================================
+     * THIS ROUTE, AND NOT `OptinRepository::saveDraft()`.
+     * ========================================================================
+     * The activation milestone deliberately sits inside
+     * {@see \WConvert\Optin\OptinRepository::publish()} rather than in this
+     * file, because that method IS the event and a stamp written here would be
+     * one a WP-CLI command or a bulk action silently missed. **The mirror rule
+     * would put this in `saveDraft()`, and it does not, for a reason that is
+     * about the repository rather than about convenience:** working out which
+     * suggestion was overridden means reading a [[Template]]'s words by
+     * [[Slot Role]], so it needs {@see TemplateVocabulary} — a whole design
+     * grammar handed to a class whose job is projections and columns, to serve
+     * one date. `OptinRepositoryStaysStorageTest` holds that line from the
+     * other side, and pins this route as the only writer of a draft, so a
+     * second one cannot arrive quietly.
      *
-     * **Only where the Optin came from a Playbook.** `playbook_id` is
-     * provenance and prefill is the only thing that writes it (ADR 0010,
-     * CONTEXT.md, Playbook), so an Optin started from scratch has no
-     * suggestion to have overridden — and a first edit recorded against no
-     * Playbook could not say which Goal's defaults it was evidence about,
-     * which is the whole of what this milestone is for.
+     * **AFTER the save, and only on a save that happened.** An edit refused
+     * for its schedule or its design is not an edit a merchant made, and
+     * recording one would put a rejected act in a record that can only be
+     * written once. That decision is genuinely this route's — the refusals
+     * live here — which is the half of the job that stayed.
      *
-     * It is read from the STORED Optin rather than from the incoming config:
-     * that is what the merchant was handed, and a `PUT` carrying a different
-     * `playbook_id` is not the merchant having changed one.
-     *
-     * The whole record is one day, one Playbook id and one of five words.
-     * There is no Optin id and no user id, because neither is a fact about the
-     * SITE and this instrumentation is only ever about the site (ADR 0017).
-     * {@see MilestoneStore} holds the record-once rule.
+     * The record itself is one day, one Playbook id and one of five words:
+     * there is no Optin id and no user id, because neither is a fact about the
+     * SITE (ADR 0017). {@see FirstEdit::between()} decides what changed and
+     * {@see \WConvert\Milestone\MilestoneStore} holds the record-once rule.
      */
     private function recordTheFirstOverride(?Optin $before, Optin $after): void
     {
-        if ($before === null || !is_string($before->config['playbook_id'] ?? null)) {
-            return;
-        }
-
-        $part = EditedPart::firstChangedBetween(
-            $before->config,
-            $after->config,
-            $before->goal,
-            $after->goal,
-            $this->templates
-        );
-
-        if ($part === null) {
+        if ($before === null) {
             return;
         }
 
         // The site's day, from the one place that reads the site's timezone —
-        // so a milestone stamped by an edit and one stamped by a beacon agree
-        // about which day it was.
-        $this->milestones->recordFirstEdit(
-            new FirstEdit(StatDay::today(), (string) $before->config['playbook_id'], $part)
-        );
+        // so a milestone stamped by an edit and one derived from a beacon
+        // agree about which day it was.
+        $edit = FirstEdit::between($before, $after, $this->templates, StatDay::today());
+
+        if ($edit !== null) {
+            $this->milestones->recordFirstEdit($edit);
+        }
     }
 
     /**

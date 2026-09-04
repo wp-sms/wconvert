@@ -141,7 +141,7 @@ final class Bootstrap
             new WpdbConnection(),
             new PublishedSet($options),
             RuleVocabulary::fromManifest(),
-    new MilestoneStore($options)
+            new MilestoneStore($options)
         )))->install();
     }
 

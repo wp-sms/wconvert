@@ -44,9 +44,23 @@ defined('ABSPATH') || exit;
  * payload would be a number that moved when somebody changed the window —
  * which is not a milestone. Two reads, deliberately.
  *
- * **{@see self::of()} is pure and takes what it needs**, the same arrangement
- * {@see \WConvert\Stats\Dashboard} has with the arithmetic and {@see \WConvert\Stats\StatDay}
- * has with the site's timezone. {@see self::read()} is the half that fetches.
+ * ============================================================================
+ * IT SAYS WHAT IS TRUE OF THE DESTINATIONS THIS SITE HAS **NOW**.
+ * ============================================================================
+ * `landed` is not a milestone in the sense the four dates are, and the
+ * difference matters because {@see HealthStore::forget()} drops a
+ * Destination's health when the Destination is deleted (ADR 0008). So a site
+ * that delivered through a Destination it has since removed reads `landed`
+ * false — and that is the honest answer rather than a lost fact: what a
+ * merchant can act on is whether the Destinations they have configured are
+ * receiving anything, and the copy on the screen says exactly that rather than
+ * claiming nothing ever arrived.
+ *
+ * It is one read with no pure half. An earlier draft hoisted the counters and
+ * the Destination list into a `static of()` for the test's convenience while
+ * still taking two stores as objects, which is a seam that existed for one
+ * caller and hoisted half of what it needed. The stores are all cheap to stand
+ * up over a fake, so the test builds them.
  *
  * @since 0.1.0
  */
@@ -65,46 +79,18 @@ final class Milestones
      */
     public function read(): array
     {
-        return self::of(
-            $this->store,
-            $this->stats->firstDays(),
-            $this->health,
-            $this->destinations->all()
-        );
-    }
-
-    /**
-     * The same five, as arithmetic.
-     *
-     * @param array<string, string> $firstDays Kind => the day it was first counted.
-     * @param iterable<mixed> $destinations Whatever the merchant has configured; only the count is read.
-     * @return array<string, mixed>
-     */
-    public static function of(
-        MilestoneStore $store,
-        array $firstDays,
-        HealthStore $health,
-        iterable $destinations
-    ): array {
-        $edit = $store->firstEdit();
-        $configured = false;
-
-        foreach ($destinations as $ignored) {
-            $configured = true;
-
-            break;
-        }
-
+        $edit = $this->store->firstEdit();
+        $firstDays = $this->stats->firstDays();
         $landed = false;
         $failing = false;
 
-        foreach ($health->all() as $entry) {
+        foreach ($this->health->all() as $entry) {
             $landed = $landed || $entry->lastSuccessAt !== null;
             $failing = $failing || $entry->consecutiveFailures > 0;
         }
 
         return [
-            'first_publish' => $store->firstPublish(),
+            'first_publish' => $this->store->firstPublish(),
             // Named off the enum rather than spelled, so a kind renamed in one
             // place cannot leave this reading null forever.
             'first_impression' => $firstDays[StatKind::Impression->value] ?? null,
@@ -113,7 +99,7 @@ final class Milestones
                 ? null
                 : $edit->toArray() + ['part_label' => $edit->part->label()],
             'destinations' => [
-                'configured' => $configured,
+                'configured' => $this->destinations->all() !== [],
                 'landed' => $landed,
                 'failing' => $failing,
             ],

@@ -8,13 +8,13 @@ import apiFetch from '@wordpress/api-fetch';
  * ============================================================================
  * The dashboard read takes a number of days and the far end is resolved on the
  * server. This one takes nothing at all: there is no window over a *first*, so
- * there is nothing here a caller could narrow — and a `days` parameter creeping
- * onto this route would be the first step towards a "first conversion" that
- * moved when somebody switched the analytics window from 30 days to 7.
+ * there is nothing here a caller could narrow.
  *
  * **It is a second request rather than four more fields on the dashboard's
- * payload**, for that same reason: one payload answering for a window and for
- * all time is one field away from being read as answering for the window.
+ * payload**, and the argument for keeping the two apart is written out once,
+ * on the server, at `StatsRepository::firstDays()`. What it comes to here: one
+ * payload answering for a window and for all time is one field away from being
+ * read as answering for the window.
  */
 
 /** The [[Playbook]] suggestion a merchant overrode first. */
@@ -87,15 +87,16 @@ export const readMilestones = () =>
  * returns at most one step, the first unmet one, and the region renders
  * nothing at all when everything is met.
  *
- * **A failing Destination outranks an unreached one**, because it is the
- * sharper fact: "nothing has arrived yet" may just be a queue that has not run,
- * while "it is being refused" is an outage with an error message waiting on
- * another screen.
+ * **A failing Destination is not one of the steps.** It is the only state on
+ * this funnel that already has a screen of its own — with the error text and
+ * the re-push beside it — so a step here would be the second, staler spelling
+ * of an outage that ADR 0042 refuses. It stays on the payload, and it is read
+ * in the disclosure.
  *
  * Exported separately from the component so the ordering is testable without a
  * DOM — it is the whole of the screen's logic, and none of it is layout.
  */
-export type StuckAt = 'publish' | 'impression' | 'conversion' | 'delivery' | 'failing';
+export type StuckAt = 'publish' | 'impression' | 'conversion' | 'delivery';
 
 export function stuckAt(milestones: MilestonePayload): StuckAt | null {
   if (milestones.first_publish === null) {
@@ -110,14 +111,16 @@ export function stuckAt(milestones: MilestonePayload): StuckAt | null {
     return 'conversion';
   }
 
-  if (milestones.destinations.failing) {
-    return 'failing';
-  }
-
   // Only where the merchant asked for one. A Destination is optional — the
   // lead log is the capture and always happens (ADR 0007) — so a site with
   // none configured is finished at its first conversion rather than
   // permanently one step short.
+  //
+  // **`failing` is deliberately not a step.** It is the one state that already
+  // has a screen with the error text and the repair action beside it, and
+  // restating it here would be the second, staler spelling of an outage
+  // ADR 0042 refuses. It travels on the payload — it is the "or did not" half
+  // of the fifth milestone — and it is read in the disclosure.
   if (milestones.destinations.configured && !milestones.destinations.landed) {
     return 'delivery';
   }
