@@ -443,11 +443,28 @@ asset-enqueue time — so it never reaches the browser, and an Optin that does n
 match the current page costs the page nothing. Every other rule is a
 [[Trigger]] or a [[Condition]] and is evaluated client-side.
 
-Five page rules — `post`, `singular`, `archive`, `term`, `url` — plus one
-visitor predicate, `logged_in`, which lives on this axis **only** because the
-client cannot read WordPress's HttpOnly auth cookie. The two are held apart in
-storage: the lists are a union of page sets, so a visitor rule dropped into an
-include list would widen the Optin to the whole site rather than narrow it.
+Five page rules — `post`, `singular`, `archive`, `term`, `url` — plus **two**
+visitor predicates, `logged_in` and `role`, which live on this axis **only**
+because the client cannot read WordPress's HttpOnly auth cookie. The two kinds
+are held apart in storage: the lists are a union of page sets, so a visitor rule
+dropped into an include list would widen the Optin to the whole site rather than
+narrow it.
+
+Each visitor predicate is its own **field** on `Targeting`, and that is the
+whole of holding them apart. `TargetingType` enumerates the page rules and
+nothing else, so there is no way to build a visitor rule inside a list at all —
+which matters because that failure is silent: a *"subscribers only, on the
+pricing page"* Optin dropped into the include list shows to every subscriber on
+every page, and nothing anywhere says so.
+
+`role` is **one predicate over several systems**, not one per system. WordPress
+roles are one answer to *what is this visitor*; a membership level, a plan or an
+enrolment is the same question asked of another plugin. So the merchant sees one
+control listing everything their site can tell them apart by, and an adapter
+implements `RoleSource` and registers with `RoleRegistry` — no rule type is
+added, no manifest entry, no evaluator. Holding **any one** of the chosen roles
+is enough, because the real OR cases are one rule carrying several values
+(ADR 0005), and an emptied set is *any role* rather than *nobody*.
 
 `term` is one rule covering both places a term puts itself on a page — the
 term's own archive, and a singular post carrying it. A merchant choosing "News"

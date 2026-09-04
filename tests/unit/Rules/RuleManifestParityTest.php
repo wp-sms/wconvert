@@ -9,6 +9,8 @@ use WConvert\Rules\RuleKind;
 use WConvert\Rules\RuleManifest;
 use WConvert\Support\SiteDependency;
 use WConvert\Support\Tier;
+use WConvert\Targeting\Targeting;
+use WConvert\Targeting\TargetingRule;
 use WConvert\Targeting\TargetingType;
 
 /**
@@ -74,16 +76,108 @@ final class RuleManifestParityTest extends TestCase
     }
 
     /**
-     * The visitor half of the axis is one predicate held as a field on
-     * Targeting rather than as a member of the include/exclude lists, so it
-     * cannot be checked against the enum. Pinning the set instead: a second
-     * visitor rule would need a second field, and this is what says so.
+     * The visitor half of the axis is held as FIELDS on Targeting rather than
+     * as members of the include/exclude lists, so it cannot be checked against
+     * the enum. The set is pinned instead.
+     *
+     * ========================================================================
+     * IT WAS EXACTLY `logged_in`, AND `role` IS THE SECOND FIELD IT PREDICTED.
+     * ========================================================================
+     * This test read *"a second visitor rule would need a second field, and
+     * this is what says so"*, and it was right: #92 added `role` and this test
+     * failed, which is the mechanism working rather than a line to widen. It
+     * is deliberately NOT loosened to "any visitor rule" — the whole content
+     * of it is that each one of these has a field of its own on
+     * {@see \WConvert\Targeting\Targeting}, and a THIRD arriving must fail
+     * here again rather than pass by being the same kind as the other two.
+     *
+     * `testAVisitorPredicateIsUnbuildableInsideEitherList()` below is the
+     * other half, and it is the one that catches the failure that is silent.
      */
-    public function testTheVisitorHalfOfTheAxisIsExactlyLoggedIn(): void
+    public function testTheVisitorHalfOfTheAxisIsExactlyLoggedInAndRole(): void
     {
         $visitor = array_keys(array_filter($this->axis('targeting'), static fn (array $e): bool => $e['kind'] === 'visitor'));
 
-        $this->assertSame(['logged_in'], $visitor);
+        sort($visitor);
+
+        $this->assertSame(['logged_in', 'role'], $visitor);
+    }
+
+    /**
+     * ========================================================================
+     * EACH VISITOR PREDICATE DECLARES A CONTROL OF ITS OWN.
+     * ========================================================================
+     * They are drawn as FIELDS rather than as rows, so the builder has to tell
+     * them apart — and it does it by the shape of their value, because that
+     * bundle deliberately spells no rule type of its own
+     * (`resources/admin/src/builder/rules/axis.ts`, `api.ts`). Two predicates
+     * sharing a control would make that lookup pick whichever the manifest
+     * declared first, and it would pick it silently: the wrong field drawn
+     * under the right label.
+     *
+     * So the assumption is asserted here rather than hoped for, beside the one
+     * that pins the visitor half by name. A third predicate that reused
+     * `boolean` fails on the pull request that adds it.
+     */
+    public function testEachVisitorPredicateDeclaresAControlOfItsOwn(): void
+    {
+        $controls = [];
+
+        foreach ($this->axis('targeting') as $type => $entry) {
+            if ($entry['kind'] !== 'visitor') {
+                continue;
+            }
+
+            $controls[] = $entry['params']['value']['control'] ?? null;
+        }
+
+        $this->assertNotSame([], $controls, 'no visitor predicate to check, so this asserts nothing');
+        $this->assertSame($controls, array_values(array_unique($controls)), 'two share a control');
+    }
+
+    /**
+     * ========================================================================
+     * A VISITOR PREDICATE CANNOT BE BUILT INSIDE AN INCLUDE OR EXCLUDE LIST.
+     * ========================================================================
+     * **This is the failure that is silent and site-wide**, which is why it is
+     * asserted structurally rather than left to review. An include list is a
+     * UNION of page sets, so a visitor rule dropped into one does not narrow
+     * the Optin — it WIDENS it to the whole site for anyone who matches. There
+     * is no error, no log line and no screen that says so; the merchant's
+     * "subscribers only" popup simply shows to every subscriber on every page,
+     * which is a superset of what they asked for and looks like it works.
+     *
+     * It is structural because {@see TargetingType} enumerates the PAGE rules
+     * and nothing else, and {@see \WConvert\Targeting\TargetingRule::fromArray()}
+     * drops an entry naming a type that enum does not have. So this walks the
+     * manifest's own visitor half rather than a list written here: a third
+     * visitor rule is covered the day it is declared, without anybody
+     * remembering to come back.
+     */
+    public function testAVisitorPredicateIsUnbuildableInsideEitherList(): void
+    {
+        $visitor = array_keys(array_filter($this->axis('targeting'), static fn (array $e): bool => $e['kind'] === 'visitor'));
+
+        $this->assertNotSame([], $visitor, 'no visitor predicate to check, so this asserts nothing');
+
+        foreach ($visitor as $type) {
+            $this->assertNull(
+                TargetingType::tryFrom((string) $type),
+                sprintf('%s is a page rule, so it can sit in a list that unions page sets', $type)
+            );
+
+            $this->assertNull(
+                TargetingRule::fromArray(['type' => $type, 'value' => 'anything']),
+                sprintf('%s can be built as a list member, which widens the Optin site-wide', $type)
+            );
+
+            // And through the whole axis, which is the door config comes in by.
+            foreach (['include', 'exclude'] as $list) {
+                $targeting = Targeting::fromArray([$list => [['type' => $type, 'value' => 'anything']]]);
+
+                $this->assertSame([], $targeting->{$list}, sprintf('%s survived the %s list', $type, $list));
+            }
+        }
     }
 
     /**

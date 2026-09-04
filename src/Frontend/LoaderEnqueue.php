@@ -9,6 +9,7 @@ use WConvert\Optin\PublishedSet;
 use WConvert\Optin\SiteFrequency;
 use WConvert\Rest\Routes;
 use WConvert\Rules\Degradation;
+use WConvert\Targeting\RoleRegistry;
 use WConvert\Template\CartLink;
 use WConvert\Template\PolicyLink;
 
@@ -49,6 +50,11 @@ final class LoaderEnqueue
         private readonly PublishedSet $publishedSet,
         private readonly Degradation $degradation,
         private readonly SiteFrequency $siteFrequency,
+        // What this visitor is, for the Optins that ask. It is passed down
+        // rather than read here so the evaluator stays pure, and the factory
+        // asks it only where a published Optin actually names a role — a
+        // membership adapter's answer may be a query (#92).
+        private readonly RoleRegistry $roles,
     ) {
     }
 
@@ -82,7 +88,7 @@ final class LoaderEnqueue
         // registry of the rule types that actually registered on this request
         // ({@see \WConvert\Rules\SuppliedRules}), which is why the front-end
         // path still asks no tier question of any kind (ADR 0015).
-        $entries = Payload::forRequest($set, RequestContextFactory::forPublishedSet($set), $this->degradation);
+        $entries = Payload::forRequest($set, RequestContextFactory::forPublishedSet($set, $this->roles), $this->degradation);
 
         // An Optin that does not match this page costs this page nothing —
         // not a script, not a byte of payload.

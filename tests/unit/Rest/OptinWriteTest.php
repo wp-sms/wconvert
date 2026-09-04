@@ -11,6 +11,7 @@ use WConvert\Optin\PublishedSet;
 use WConvert\Optin\SiteFrequency;
 use WConvert\Rest\OptinController;
 use WConvert\Rules\RuleCatalogue;
+use WConvert\Targeting\RoleRegistry;
 use WConvert\Rules\RuleVocabulary;
 use WConvert\Support\SiteDependency;
 use WConvert\Template\TemplateLibrary;
@@ -74,7 +75,7 @@ final class OptinWriteTest extends TestCase
             new GoalRegistry($pro, $site),
             $published,
             InstalledRules::withPro($vocabulary),
-            new RuleCatalogue($vocabulary, $pro, $site),
+            new RuleCatalogue($vocabulary, $pro, $site, new RoleRegistry()),
             $this->siteFrequency = new SiteFrequency(new FakeOptionStore())
         );
     }

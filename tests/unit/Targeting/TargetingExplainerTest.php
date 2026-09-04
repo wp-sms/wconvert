@@ -37,6 +37,7 @@ final class TargetingExplainerTest extends TestCase
             archivePostType: $over['archivePostType'] ?? null,
             termIds: $over['termIds'] ?? [],
             isLoggedIn: $over['isLoggedIn'] ?? false,
+            roles: $over['roles'] ?? [],
         );
     }
 
@@ -145,11 +146,69 @@ final class TargetingExplainerTest extends TestCase
     }
 
     /**
+     * **The roles are reported the same way, and the same thing is said out
+     * loud**: the merchant is signed in as themselves, so *"what does a
+     * subscriber see"* is unanswerable here. Both halves travel — what the
+     * Optin wants and what this request holds — so the panel can say which.
+     */
+    public function testTheRolePredicateIsReportedAsWantedAgainstThisRequest(): void
+    {
+        $report = TargetingExplainer::explain(
+            Targeting::fromArray(['roles' => ['subscriber']]),
+            self::context(['isLoggedIn' => true, 'roles' => ['administrator']])
+        );
+
+        $this->assertFalse($report['admits']);
+        $this->assertSame(TargetingExplainer::WRONG_ROLE, $report['reason']);
+        $this->assertSame(
+            ['wanted' => ['subscriber'], 'held' => ['administrator'], 'holds' => false],
+            $report['roles']
+        );
+    }
+
+    /**
+     * **`logged_in` is named before `roles`.**
+     *
+     * A signed-out visitor holds no role, so an Optin wanting both refuses on
+     * both — and telling the merchant about the roles would send them to a
+     * list when what they needed was the sign-in question above it.
+     */
+    public function testTheSignInQuestionIsNamedBeforeTheRoles(): void
+    {
+        $report = TargetingExplainer::explain(
+            Targeting::fromArray(['logged_in' => true, 'roles' => ['subscriber']]),
+            self::context(['isLoggedIn' => false, 'roles' => []])
+        );
+
+        $this->assertSame(TargetingExplainer::WRONG_VISITOR, $report['reason']);
+    }
+
+    /** And the roles win over the lists, because the evaluator asks them first. */
+    public function testTheRolePredicateNamesItselfEvenWhenTheListsWouldAlsoRefuse(): void
+    {
+        $report = TargetingExplainer::explain(
+            Targeting::fromArray(['roles' => ['subscriber'], 'include' => [['type' => 'url', 'value' => '/about']]]),
+            self::context()
+        );
+
+        $this->assertSame(TargetingExplainer::WRONG_ROLE, $report['reason']);
+    }
+
+    /** Nothing chosen is nothing reported, which is what the panel draws off. */
+    public function testAnOptinThatDoesNotAskAboutRolesReportsNone(): void
+    {
+        $report = TargetingExplainer::explain(Targeting::fromArray([]), self::context());
+
+        $this->assertNull($report['roles']);
+    }
+
+    /**
      * ========================================================================
      * THE VERDICT IS THE EVALUATOR'S, ACROSS EVERY SHAPE THE MODEL ALLOWS.
      * ========================================================================
      * Two lists of nought, one or two rules, each matching or not, against the
-     * three states of the visitor predicate. What this holds is that
+     * three states of `logged_in`, the two of `roles`, and both answers this
+     * request could give to each. What this holds is that
      * `admits` never disagrees with {@see TargetingEvaluator::matches()} and
      * that `reason` is null on exactly the ones it admits — the pair that
      * cannot occur is a positive verdict carrying a cause.
@@ -165,30 +224,41 @@ final class TargetingExplainerTest extends TestCase
             foreach ($lists as $exclude) {
                 foreach ([null, true, false] as $loggedIn) {
                     foreach ([true, false] as $visitorIsSignedIn) {
-                        $config = ['include' => $include, 'exclude' => $exclude];
+                        foreach ([null, ['subscriber']] as $roles) {
+                            foreach ([[], ['subscriber']] as $held) {
+                                $config = ['include' => $include, 'exclude' => $exclude];
 
-                        if ($loggedIn !== null) {
-                            $config['logged_in'] = $loggedIn;
+                                if ($loggedIn !== null) {
+                                    $config['logged_in'] = $loggedIn;
+                                }
+
+                                if ($roles !== null) {
+                                    $config['roles'] = $roles;
+                                }
+
+                                $targeting = Targeting::fromArray($config);
+                                $context = self::context([
+                                    'isLoggedIn' => $visitorIsSignedIn,
+                                    'roles' => $held,
+                                ]);
+                                $report = TargetingExplainer::explain($targeting, $context);
+                                $where = (string) json_encode([$config, $visitorIsSignedIn, $held]);
+
+                                $this->assertSame(
+                                    TargetingEvaluator::matches($targeting, $context),
+                                    $report['admits'],
+                                    $where
+                                );
+                                $this->assertSame($report['admits'], $report['reason'] === null, $where);
+
+                                $checked++;
+                            }
                         }
-
-                        $targeting = Targeting::fromArray($config);
-                        $context = self::context(['isLoggedIn' => $visitorIsSignedIn]);
-                        $report = TargetingExplainer::explain($targeting, $context);
-                        $where = (string) json_encode([$config, $visitorIsSignedIn]);
-
-                        $this->assertSame(
-                            TargetingEvaluator::matches($targeting, $context),
-                            $report['admits'],
-                            $where
-                        );
-                        $this->assertSame($report['admits'], $report['reason'] === null, $where);
-
-                        $checked++;
                     }
                 }
             }
         }
 
-        $this->assertSame(96, $checked);
+        $this->assertSame(384, $checked);
     }
 }

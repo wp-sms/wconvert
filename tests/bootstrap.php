@@ -152,6 +152,18 @@ if (!function_exists('current_user_can')) {
  */
 $GLOBALS['wconvertTestUserEmail'] = '';
 
+/**
+ * The roles the current visitor holds, decided by the test.
+ *
+ * The front-end half of the role predicate reads this through
+ * {@see \WConvert\Targeting\WpRoleSource}; everything above that seam takes a
+ * {@see \WConvert\Targeting\RoleRegistry} it was handed, so this is the one
+ * place a role comes from WordPress at all.
+ *
+ * @var list<string> $wconvertTestUserRoles
+ */
+$GLOBALS['wconvertTestUserRoles'] = [];
+
 // Declared rather than faked with a `stdClass`, because PHPStan knows
 // WordPress's own `wp_get_current_user(): WP_User` and a stub returning
 // `object` would make reading the one property WConvert touches an error in a
@@ -160,6 +172,18 @@ if (!class_exists('WP_User')) {
     class WP_User
     {
         public string $user_email = '';
+
+        /**
+         * The roles this user holds, which is what
+         * {@see \WConvert\Targeting\WpRoleSource} reads.
+         *
+         * A real `WP_User` fills this from the site's own role map; here it is
+         * whatever the test said, because the unit under test is the SEAM and
+         * not WordPress's user table.
+         *
+         * @var list<string>
+         */
+        public array $roles = [];
     }
 }
 
@@ -168,6 +192,7 @@ if (!function_exists('wp_get_current_user')) {
     {
         $user = new WP_User();
         $user->user_email = (string) $GLOBALS['wconvertTestUserEmail'];
+        $user->roles = array_values(array_map('strval', (array) ($GLOBALS['wconvertTestUserRoles'] ?? [])));
 
         return $user;
     }

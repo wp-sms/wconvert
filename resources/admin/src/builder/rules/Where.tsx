@@ -24,11 +24,13 @@ import type { Rule, RuleType, Targeting } from '../api';
  * precedence half appears only once both lists hold something, which is the
  * only arrangement in which it decides anything.
  *
- * **`logged_in` moved to the WHO section.** It is still stored on this axis —
- * the browser cannot read WordPress's HttpOnly auth cookie, so only the server
- * can answer it, and read whole the axis is `page-set AND logged_in`
- * (ADR 0005). What moved is the CONTROL, to the section a merchant looks in
- * for a question about who sees the Optin. {@see Who} carries the note.
+ * **The visitor predicates moved to the WHO section.** They are still stored
+ * on this axis — the browser cannot read WordPress's HttpOnly auth cookie, so
+ * only the server can answer `logged_in`, and a membership level is a fact
+ * another plugin holds — and read whole the axis is
+ * `page-set AND logged_in AND roles` (ADR 0005). What moved is the CONTROLS,
+ * to the section a merchant looks in for a question about who sees the Optin.
+ * {@see Who} carries the note.
  *
  * This was `TargetingEditor`, whole; what it lost is its own `<h3>`, because
  * the section above it is the heading now.
@@ -40,8 +42,10 @@ export interface WhereProps {
 }
 
 export function Where({ types, targeting, onChange }: WhereProps) {
-  // The five page rules. `logged_in` is on this axis only because the client
-  // cannot read WordPress's HttpOnly auth cookie, and it is not a page set.
+  // The five page rules, and only those. The visitor predicates are on this
+  // axis only because the client cannot read WordPress's HttpOnly auth cookie,
+  // and neither of them is a page set — which is why they are fields rather
+  // than members of these two lists.
   const pages = types.filter((type) => type.kind === 'page');
 
   const include = targeting.include ?? [];

@@ -21,6 +21,15 @@ final class TargetingEvaluator
             return false;
         }
 
+        // ANY of them, never all: the real OR cases are one rule carrying
+        // several values (ADR 0005), and nobody holds two membership levels
+        // and one WordPress role at once by design. Null is *do not ask*; an
+        // empty list cannot arise, because `Targeting::fromArray()` collapses
+        // one to null rather than store a set nobody can satisfy.
+        if ($targeting->roles !== null && array_intersect($targeting->roles, $context->roles) === []) {
+            return false;
+        }
+
         // Exclude first, and unconditionally: the exclude list is not a filter
         // applied to the include list's result, it is a veto over the whole
         // axis. Checking include first and letting exclude "subtract" reads

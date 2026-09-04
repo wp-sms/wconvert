@@ -25,7 +25,15 @@ enum RuleKind: string
     /** Targeting, page-set half — evaluated by PHP at enqueue, never shipped. */
     case Page = 'page';
 
-    /** Targeting, visitor half — `logged_in`, held as a field beside the lists. */
+    /**
+     * Targeting, visitor half — `logged_in` and `role`, each held as a FIELD
+     * beside the two lists rather than as a member of either.
+     *
+     * The lists union page SETS, so a visitor rule in one would widen the
+     * Optin to the whole site for anyone matching it. `TargetingType`
+     * enumerates the page rules and nothing else, which is what makes that
+     * unbuildable rather than merely discouraged.
+     */
     case Visitor = 'visitor';
 
     /** WHEN an Optin fires. Any one is enough. */

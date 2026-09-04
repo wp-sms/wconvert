@@ -21,6 +21,13 @@ final class RequestContext
      * @param list<int> $termIds    Every term on this request — the queried term on
      *                              a term archive, and the terms attached to the post
      *                              on a singular request.
+     * @param list<string> $roles   Every role or membership THIS visitor holds,
+     *                              unioned across the sources this install has
+     *                              ({@see RoleRegistry}). Empty for the
+     *                              signed-out visitor most page views are, and
+     *                              empty where nothing on this page asks — the
+     *                              same laziness `termIds` has, for the same
+     *                              reason: an adapter's answer may be a query.
      */
     public function __construct(
         public readonly string $path = '/',
@@ -30,6 +37,7 @@ final class RequestContext
         public readonly ?string $archivePostType = null,
         public readonly array $termIds = [],
         public readonly bool $isLoggedIn = false,
+        public readonly array $roles = [],
     ) {
     }
 }

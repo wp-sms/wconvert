@@ -41,6 +41,30 @@ than faked**. The merchant is signed in — that is what grants them
 *this* request: *"It shows only to signed-out visitors. You are signed in, so it
 is not showing to you."* Never simulated.
 
+*Asked a second time, and answered the same way, by
+[#92](https://github.com/navidkashani/wconvert/issues/92)'s `role` predicate —
+which is the sharper version of the same limit. The merchant opened this panel
+by being an administrator, so **"what does a subscriber see" is not merely
+unknown, it is unknowable from here**: the account they are signed in as is the
+only one this request has. So the report carries both halves — the roles the
+Optin WANTS and the ones this request HOLDS — under a `roles` key beside
+`logged_in` in the inspector's JSON tag, and the sentence names the first:*
+"It shows only to visitors holding one of these roles: subscriber. You are
+signed in as somebody else."
+
+*It is its own reason (`wrong_role`) rather than a third arm of the sign-in
+sentence, because the two send a merchant to different places: one is a setting
+they can read off their own account, and this is a fact about the account they
+happen to be signed in as. And `logged_in` is named FIRST where an Optin wants
+both — a signed-out visitor holds no role, so naming the roles would send them
+to a list when what they needed was the question above it.*
+
+*The one thing that is NOT reported is the roles' display names. Those are a
+fact about the install, so naming them would mean shipping the whole offered
+map into a bundle that carries no `@wordpress/i18n` at all, for a sentence one
+Optin in a hundred prints. The slug is what is stored and what an administrator
+recognises.*
+
 ## Why the decision has one spelling
 
 `resources/loader/src/inspect/explain.ts` builds a `Map` of wrapped evaluators

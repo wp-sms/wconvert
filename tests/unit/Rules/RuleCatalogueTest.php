@@ -5,11 +5,13 @@ namespace WConvert\Tests\Unit\Rules;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use WConvert\Rules\RuleCatalogue;
+use WConvert\Targeting\RoleRegistry;
 use WConvert\Rules\RuleVocabulary;
 use WConvert\Support\Availability;
 use WConvert\Support\SiteDependency;
 use WConvert\Support\Tier;
 use WConvert\Tests\Unit\Support\FakeProPresence;
+use WConvert\Tests\Unit\Support\FakeRoleSource;
 use WConvert\Tests\Unit\Support\FakeSitePresence;
 
 /**
@@ -46,7 +48,14 @@ final class RuleCatalogueTest extends TestCase
         return new RuleCatalogue(
             RuleVocabulary::fromManifest(self::PLUGIN_DIR),
             new FakeProPresence($hasPro ? Tier::Elite : Tier::Free),
-            new FakeSitePresence($hasStore ? [SiteDependency::WooCommerce] : [])
+            new FakeSitePresence($hasStore ? [SiteDependency::WooCommerce] : []),
+            // Two sources, because the seam is the feature: WordPress's own
+            // roles, and what a membership adapter would register beside
+            // them. Neither is WordPress here.
+            (new RoleRegistry())->add(
+                new FakeRoleSource(['subscriber' => 'Subscriber', 'customer' => 'Customer']),
+                new FakeRoleSource(['plan_gold' => 'Gold plan'])
+            )
         );
     }
 
@@ -71,14 +80,20 @@ final class RuleCatalogueTest extends TestCase
     }
 
     /**
-     * **The targeting picker covers all five prefixes**, plus the one visitor
-     * predicate that lives on this axis only because the client cannot read
+     * **The targeting picker covers all five prefixes**, plus the two visitor
+     * predicates that live on this axis only because the client cannot read
      * WordPress's HttpOnly auth cookie (CONTEXT.md, Targeting).
+     *
+     * The picker is given all seven and draws five: the visitor half is not a
+     * list member and has no row to add, so `Who.tsx` reads those two off this
+     * same catalogue for their LABELS and their controls and draws them as
+     * fields. Which is why they belong here rather than being filtered out —
+     * a screen cannot name a rule type of its own (`api.ts`).
      */
     public function testTheTargetingPickerIsGivenEveryPrefix(): void
     {
         $this->assertSame(
-            ['post', 'singular', 'archive', 'term', 'url', 'logged_in'],
+            ['post', 'singular', 'archive', 'term', 'url', 'role', 'logged_in'],
             array_map(static fn (array $type): string => (string) $type['type'], self::catalogue()['targeting'])
         );
     }

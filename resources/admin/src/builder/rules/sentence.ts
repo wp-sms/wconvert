@@ -1,7 +1,7 @@
 import { __, _n, _x, sprintf } from '@wordpress/i18n';
 import { fromRule } from '../presets';
 import { momentOf, readable, readableHours } from '../wallTime';
-import type { Entry } from './axis';
+import { visitorWith, type Entry } from './axis';
 import type { Frequency, Rule, RuleParam, RuleType, Schedule, Targeting } from '../api';
 
 /**
@@ -402,6 +402,12 @@ export function whoSummary(
    * *do not ask*, which is not the same as false.
    */
   loggedIn?: boolean,
+  /**
+   * The roles this Optin wants, off the TARGETING axis for the reason
+   * {@link loggedIn} is — and more so: a membership level is a fact another
+   * plugin holds, which no browser could answer. Undefined means *any role*.
+   */
+  roles?: readonly string[],
 ): Summary {
   const signedIn =
     loggedIn === undefined
@@ -410,12 +416,40 @@ export function whoSummary(
         ? __('signed in', 'wconvert')
         : __('signed out', 'wconvert');
 
-  if (entries.length === 0 && signedIn === null) {
+  // ==========================================================================
+  // THE ROLES' OWN NAMES, WHICH IS WHAT THE MERCHANT JUST TICKED.
+  // ==========================================================================
+  // A role's display name is a fact about the INSTALL — whatever registered it,
+  // or whatever a membership adapter offers — so it arrives on the vocabulary
+  // as a param option, exactly as a custom post type's does. Printing the slug
+  // instead would show the merchant `plan_gold` under a control that says
+  // "Gold plan", which is the same drift `format()` exists to prevent one axis
+  // over.
+  //
+  // The two visitor predicates are still read here as clauses rather than
+  // through `phraseOf`, because neither is a member of the rules array at all.
+  const holding =
+    roles === undefined || roles.length === 0
+      ? null
+      : sprintf(
+          /* translators: %s: one or more role names, joined, e.g. “Subscriber or Gold plan”. */
+          __('holding %s', 'wconvert'),
+          join(
+            roles.map((role) => roleName(role, types)),
+            _x('or', 'joins the roles any one of which is enough', 'wconvert'),
+          ),
+        );
+
+  if (entries.length === 0 && signedIn === null && holding === null) {
     return { text: __('Anyone who reaches it', 'wconvert'), attention: false };
   }
 
   const read = entries.map(([rule]) => phraseOf(rule, types));
-  const clauses = [...read.map((each) => each.text), ...(signedIn === null ? [] : [signedIn])];
+  const clauses = [
+    ...read.map((each) => each.text),
+    ...(signedIn === null ? [] : [signedIn]),
+    ...(holding === null ? [] : [holding]),
+  ];
 
   return {
     text: sprintf(
@@ -428,6 +462,24 @@ export function whoSummary(
     // section is flagged even though every rule in it is individually fine.
     attention: read.some((each) => each.attention) || surplus(entries, types).size > 0,
   };
+}
+
+/**
+ * One role's own name on this install, or its slug where nothing offers a word
+ * for it.
+ *
+ * Found through the CONTROL rather than by naming a rule type, because this
+ * bundle spells none of its own ({@link ../api}) — the SAME lookup
+ * {@see DisplayRules} uses to tell the two visitor predicates apart, shared so
+ * the two cannot drift the day a control is renamed. A slug the site no longer
+ * offers still reads as itself, which is the honest answer for a membership
+ * plugin that has been deactivated: the rule is still stored and still says
+ * what it says.
+ */
+function roleName(role: string, types: readonly RuleType[]): string {
+  const declared = visitorWith('role_set', types);
+
+  return declared?.params.value.options.find((option) => option.value === role)?.label ?? role;
 }
 
 // ============================================================================

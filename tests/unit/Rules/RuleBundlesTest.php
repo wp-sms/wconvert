@@ -6,6 +6,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use WConvert\Rules\RuleBundles;
 use WConvert\Rules\RuleCatalogue;
+use WConvert\Targeting\RoleRegistry;
 use WConvert\Rules\RuleLabels;
 use WConvert\Rules\RuleVocabulary;
 use WConvert\Support\SiteDependency;
@@ -37,7 +38,8 @@ final class RuleBundlesTest extends TestCase
         return (new RuleCatalogue(
             RuleVocabulary::fromManifest(self::PLUGIN_DIR),
             new FakeProPresence($hasPro ? Tier::Elite : Tier::Free),
-            new FakeSitePresence($hasStore ? [SiteDependency::WooCommerce] : [])
+            new FakeSitePresence($hasStore ? [SiteDependency::WooCommerce] : []),
+            new RoleRegistry()
         ))->bundles();
     }
 

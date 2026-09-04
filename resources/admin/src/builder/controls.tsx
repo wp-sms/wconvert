@@ -113,7 +113,14 @@ export function ParamControl({ id, param, value, onChange }: ParamControlProps) 
         </select>
       );
 
+    // Two closed sets drawn the same way, and closed for two different
+    // reasons: the device buckets are the manifest's, and the roles are the
+    // SITE's — every role it registered, plus whatever a membership or LMS
+    // adapter offers beside them (`src/Targeting/RoleRegistry.php`). Both are
+    // several values on ONE rule, which is how ADR 0005 answers the real OR
+    // cases without any boolean structure.
     case 'device_set':
+    case 'role_set':
       return <OptionSet id={id} param={param} value={value} onChange={onChange} />;
 
     case 'text_set':
@@ -358,7 +365,7 @@ function ValueList({ value, onChange }: Omit<ParamControlProps, 'param' | 'id'>)
  * not a phrase a summary reads. What it is about is the control, which is the
  * one thing this file already declares (`api.ts`).
  *
- * **`referrer_set` is the only one, and it earns it.** `document.referrer` is
+ * **Each of the three earns it.** `document.referrer` is
  * the page immediately before this one and nothing more — absent on a direct
  * visit, absent where a referrer policy strips it, never a session history. A
  * merchant who reads the rule as *"originally arrived from Google"* targets the
@@ -381,6 +388,11 @@ const HINTS: Partial<Record<RuleParam['control'], () => string>> = {
       'Your site’s own time, not each visitor’s. A window may run past midnight — 22:00 to 02:00 is overnight.',
       'wconvert',
     ),
+  role_set: () =>
+    __(
+      'Holding any one of these is enough. Signed-out visitors hold none, so choosing any role means signed-in visitors only.',
+      'wconvert',
+    ),
 };
 
 /**
@@ -388,7 +400,8 @@ const HINTS: Partial<Record<RuleParam['control'], () => string>> = {
  *
  * `<label>` points at exactly one form control, so a set of checkboxes, a list
  * of values or a pair of times wrapped in one leaves the param's name attached
- * to whichever the browser picks. A list rather than a property on the param,
+ * to whichever the browser picks — which reads as a checkbox called "Shows on"
+ * and two with no name at all. A list rather than a property on the param,
  * because it is a fact about how this file DRAWS a control and the manifest
  * describes the value rather than the markup.
  */
@@ -396,6 +409,7 @@ const GROUPS: ReadonlySet<RuleParam['control']> = new Set<RuleParam['control']>(
   'device_set',
   'text_set',
   'referrer_set',
+  'role_set',
   'hours',
 ]);
 

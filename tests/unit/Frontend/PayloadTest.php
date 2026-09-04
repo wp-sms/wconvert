@@ -67,6 +67,38 @@ final class PayloadTest extends TestCase
     }
 
     /**
+     * **A role never reaches the browser, and it is the sharpest case of the
+     * rule above.**
+     *
+     * Targeting is server-evaluated and stripped from the payload, so what a
+     * cached page carries is the survivors and not the reasons — and the
+     * reasons here are the slugs of a site's own roles and membership levels.
+     * A page listing them would be telling every visitor how the site tells
+     * its members apart, on every page an Optin matched.
+     */
+    public function testARoleTargetIsAnsweredOnTheServerAndNeverShipped(): void
+    {
+        $set = PublishedOptin::fromSet([[
+            'id' => '01A',
+            'targeting' => ['roles' => ['plan_gold']],
+            'payload' => ['display_type' => 'popup'],
+        ]]);
+
+        $holder = new RequestContext(path: '/pricing/', isLoggedIn: true, roles: ['plan_gold']);
+        $stranger = new RequestContext(path: '/pricing/', isLoggedIn: true, roles: ['subscriber']);
+
+        $entries = Payload::forRequest($set, $holder, InstalledRules::free());
+
+        $this->assertSame([['id' => '01A', 'display_type' => 'popup']], $entries);
+        $this->assertStringNotContainsString(
+            'plan_gold',
+            PayloadTag::render($entries, self::CAPTURE, self::BEACON, null, self::ZONE)
+        );
+
+        $this->assertSame([], Payload::forRequest($set, $stranger, InstalledRules::free()));
+    }
+
+    /**
      * `<script type="application/json">` and nothing else. Every JS optimizer
      * tested selects on `script[!type]` or `type="text/javascript"`, so this
      * tag is invisible to all of them and survives aggregation in place

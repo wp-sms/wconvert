@@ -98,6 +98,22 @@ final class InspectorLabels
                     'It shows only to signed-in visitors, and you are signed out.',
                     'wconvert'
                 ),
+                // The same limit one predicate along, and sharper: the panel
+                // opens because this merchant is an administrator, so the
+                // roles they hold are not the roles the Optin is aimed at and
+                // cannot be made to be. Reported as a fact about THIS request.
+                //
+                // One `%s`, filled with the role SLUGS the Optin wants. Not
+                // their display names: those are a fact about the install —
+                // whatever registered them — so naming them would mean
+                // shipping the whole offered map into a bundle for a sentence
+                // one Optin in a hundred prints. The slug is what is stored
+                // and what an administrator recognises.
+                /* translators: %s: one or more role slugs, already joined, e.g. “subscriber, customer”. */
+                'wants_role' => __(
+                    'It shows only to visitors holding one of these roles: %s. You are signed in as somebody else.',
+                    'wconvert'
+                ),
                 'not_in_payload' => __('It did not reach this page.', 'wconvert'),
                 'capped' => __('This browser has already had its allowance.', 'wconvert'),
                 // ============================================================

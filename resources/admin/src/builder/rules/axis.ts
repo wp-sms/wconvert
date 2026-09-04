@@ -37,3 +37,28 @@ export function entriesOffEveryAxis(rules: readonly Rule[], types: readonly Rule
 }
 
 const pairs = (rules: readonly Rule[]): Entry[] => rules.map((rule, index) => [rule, index] as const);
+
+/**
+ * The visitor predicate whose value has this shape, or undefined.
+ *
+ * ============================================================================
+ * BY CONTROL, BECAUSE THIS BUNDLE SPELLS NO RULE TYPE OF ITS OWN.
+ * ============================================================================
+ * There are two visitor predicates on the Targeting axis and they are drawn as
+ * FIELDS rather than rows, so something has to tell them apart — and naming
+ * them, `'logged_in'` and `'role'`, would put a rule type in a bundle that
+ * deliberately has none ({@link ../api}). A control is this file's own
+ * vocabulary, so that is what they are found by.
+ *
+ * **It is only sound while the two declare DIFFERENT controls**, which is not
+ * a hope: `RuleManifestParityTest::testEachVisitorPredicateDeclaresAControlOfItsOwn()`
+ * fails on the pull request that adds a third one sharing a shape, in the same
+ * file that already pins the visitor half by name.
+ *
+ * One function rather than two lookups, because {@see DisplayRules} and the
+ * section summary both need it and a second copy would drift the day a control
+ * is renamed.
+ */
+export function visitorWith(control: string, types: readonly RuleType[]): RuleType | undefined {
+  return types.find((type) => type.kind === 'visitor' && type.params.value?.control === control);
+}

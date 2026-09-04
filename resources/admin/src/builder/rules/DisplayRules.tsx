@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { entriesOffEveryAxis, entriesOn } from './axis';
+import { entriesOffEveryAxis, entriesOn, visitorWith } from './axis';
 import { HowOften } from './HowOften';
 import { Section } from './Section';
 import { StartingPoints, type BundlePatch } from './StartingPoints';
@@ -88,19 +88,37 @@ export function DisplayRules({ vocabulary, value, overlay, onChange, reveal }: D
   const all = [...vocabulary.targeting, ...client];
 
   /*
-   * **`logged_in` is stored on the TARGETING axis and edited under WHO, and
-   * that is not an inconsistency to tidy.** It lives there because the browser
-   * cannot read WordPress's HttpOnly auth cookie, so the server has to answer
-   * it; it is drawn there because *"only signed-in visitors"* is a question
-   * about WHO sees the Optin and a merchant looks for it under that word.
+   * **Both visitor predicates are stored on the TARGETING axis and edited
+   * under WHO, and that is not an inconsistency to tidy.** They live there
+   * because the browser cannot read WordPress's HttpOnly auth cookie, so the
+   * server has to answer `logged_in` — and a membership level is a fact
+   * another plugin holds, which no browser could answer at all. They are drawn
+   * under WHO because *"only signed-in subscribers"* is a question about WHO
+   * sees the Optin, and a merchant looks for it under that word.
    *
    * Moving the STORAGE into the rules array to match would break the axis: a
    * visitor rule dropped into an include list WIDENS the Optin to the whole
    * site for anyone matching it, because the list is a union of page sets
-   * (ADR 0005, as completed by #21). Read whole, the axis is
-   * `page-set AND logged_in`.
+   * (ADR 0005, as completed by #21 and extended by #92). Read whole, the axis
+   * is `page-set AND logged_in AND roles`.
    */
-  const visitor = vocabulary.targeting.find((type) => type.kind === 'visitor');
+  /*
+   * ==========================================================================
+   * TOLD APART BY THEIR CONTROL, BECAUSE THIS BUNDLE SPELLS NO RULE TYPE.
+   * ==========================================================================
+   * There are two visitor predicates now, so `find(kind === 'visitor')` would
+   * silently pick whichever the manifest declared first. Naming them —
+   * `'logged_in'`, `'role'` — would put a rule type in this bundle, which is
+   * the one vocabulary it deliberately does not have: the manifest owns the
+   * types and this file owns the CONTROLS that draw them (`api.ts`).
+   *
+   * So each is found by the shape of its value, which is exactly what a
+   * control is — and that they declare DIFFERENT shapes is asserted rather
+   * than assumed, in the same file that pins the visitor half by name
+   * ({@link visitorWith}).
+   */
+  const visitor = visitorWith('boolean', vocabulary.targeting);
+  const roleType = visitorWith('role_set', vocabulary.targeting);
 
   const replace = (at: number, rule: Rule) =>
     onChange({ rules: rules.map((each, index) => (index === at ? rule : each)) });
@@ -232,8 +250,11 @@ export function DisplayRules({ vocabulary, value, overlay, onChange, reveal }: D
           add={add}
           all={all}
           visitor={visitor}
+          roleType={roleType}
           loggedIn={targeting.logged_in}
           onLoggedIn={(next) => onChange({ targeting: withLoggedIn(targeting, next) })}
+          roles={targeting.roles}
+          onRoles={(next) => onChange({ targeting: withRoles(targeting, next) })}
         />
       </Section>
 
@@ -317,4 +338,21 @@ function withLoggedIn(targeting: Targeting, next: boolean | undefined): Targetin
   delete without.logged_in;
 
   return next === undefined ? without : { ...without, logged_in: next };
+}
+
+/**
+ * The targeting axis with the roles set, or with them gone.
+ *
+ * **Cleared rather than stored empty**, and the two readings differ by the
+ * whole audience: read as a set, an empty one holds for nobody, which would be
+ * an Optin that is published and can never show. An emptied control means *any
+ * role*, which is *do not ask* — the same reading `src/Targeting/Targeting.php`
+ * takes on the way in, so a client that wrote one anyway changes nothing.
+ */
+function withRoles(targeting: Targeting, next: readonly string[] | undefined): Targeting {
+  const without = { ...targeting };
+
+  delete without.roles;
+
+  return next === undefined || next.length === 0 ? without : { ...without, roles: [...next] };
 }

@@ -10,6 +10,7 @@ use WConvert\Optin\Suspension;
 use WConvert\Rest\Routes;
 use WConvert\Rules\Degradation;
 use WConvert\Rules\RuleCatalogue;
+use WConvert\Targeting\RoleRegistry;
 
 defined('ABSPATH') || exit;
 
@@ -113,6 +114,10 @@ final class InspectorEnqueue
         private readonly PublishedSet $publishedSet,
         private readonly Degradation $degradation,
         private readonly RuleCatalogue $rules,
+        // The same registry the loader's path uses, so the panel reports the
+        // roles the page was actually decided against rather than a second
+        // reading of them.
+        private readonly RoleRegistry $roles,
     ) {
     }
 
@@ -176,7 +181,7 @@ final class InspectorEnqueue
         // The same context the payload was decided against: term resolution is
         // conditional on the published set for the reason it always was, so
         // asking again here costs a page with no term rule nothing.
-        $context = RequestContextFactory::forPublishedSet(PublishedOptin::fromSet($set));
+        $context = RequestContextFactory::forPublishedSet(PublishedOptin::fromSet($set), $this->roles);
         $labels = InspectorLabels::all();
 
         add_action('wp_head', static function () use ($summaries, $suspensions, $schedules, $set, $context, $labels): void {

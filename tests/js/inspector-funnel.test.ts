@@ -25,7 +25,7 @@ const optin = (over: Partial<ServerOptin> = {}): ServerOptin => ({
   published: true,
   suspended: null,
   schedule: null,
-  targeting: { admits: true, reason: null, logged_in: null, include: [], exclude: [] },
+  targeting: { admits: true, reason: null, logged_in: null, roles: null, include: [], exclude: [] },
   ...over,
 });
 
@@ -68,7 +68,7 @@ describe('the first gate that closes', () => {
     const row = first([
       optin({
         suspended: 'Suspended — the “Has something in their cart” rule needs WooCommerce',
-        targeting: { admits: false, reason: 'not_included', logged_in: null, include: [], exclude: [] },
+        targeting: { admits: false, reason: 'not_included', logged_in: null, roles: null, include: [], exclude: [] },
       }),
     ]);
 
@@ -78,7 +78,7 @@ describe('the first gate that closes', () => {
   it('names the Targeting gate that closed', () => {
     for (const reason of ['excluded', 'not_included']) {
       const row = first([
-        optin({ targeting: { admits: false, reason, logged_in: null, include: [], exclude: [] } }),
+        optin({ targeting: { admits: false, reason, logged_in: null, roles: null, include: [], exclude: [] } }),
       ]);
 
       expect(row.stopped).toBe(reason);
@@ -101,6 +101,7 @@ describe('the first gate that closes', () => {
             admits: false,
             reason: 'wrong_visitor',
             logged_in: { wanted, holds: false },
+            roles: null,
             include: [],
             exclude: [],
           },
@@ -172,7 +173,7 @@ describe('how far it got', () => {
       'targeting',
       () =>
         first([
-          optin({ targeting: { admits: false, reason: 'excluded', logged_in: null, include: [], exclude: [] } }),
+          optin({ targeting: { admits: false, reason: 'excluded', logged_in: null, roles: null, include: [], exclude: [] } }),
         ], [], new Set()),
     ],
     ['payload', () => first([optin()], [], new Set())],
@@ -349,5 +350,53 @@ describe('an Optin the site-wide allowance vetoed', () => {
   /** No new gate. The funnel is the same eleven steps it was. */
   it('adds no gate to the sequence', () => {
     expect(GATES).toHaveLength(11);
+  });
+});
+
+/**
+ * ============================================================================
+ * THE SECOND VISITOR PREDICATE, REPORTED AS A FACT ABOUT THIS REQUEST.
+ * ============================================================================
+ * The merchant opened this panel by being an administrator, so *"what does a
+ * subscriber see"* is unanswerable here and is never simulated. What can be
+ * said is which roles the Optin wants — and it gets its own key rather than a
+ * third arm of the sign-in sentence, because the two send a merchant to
+ * different places: one is a setting they read off their own account, and this
+ * is a fact about the account they happen to be signed in as.
+ */
+describe('an Optin aimed at a role this visitor does not hold', () => {
+  const wantingRoles = (wanted: string[]) =>
+    first([
+      optin({
+        targeting: {
+          admits: false,
+          reason: 'wrong_role',
+          logged_in: null,
+          roles: { wanted, held: ['administrator'], holds: false },
+          include: [],
+          exclude: [],
+        },
+      }),
+    ]);
+
+  it('names the Targeting gate, with the role sentence', () => {
+    const row = wantingRoles(['subscriber']);
+
+    expect(row.gate).toBe('targeting');
+    expect(row.stopped).toBe('wants_role');
+  });
+
+  /**
+   * The slugs, joined — not their display names, which are a fact about the
+   * install and would mean shipping the whole offered map into this bundle for
+   * a sentence one Optin in a hundred prints.
+   */
+  it('fills the sentence with the roles it wants', () => {
+    expect(wantingRoles(['subscriber', 'customer']).subject).toBe('subscriber, customer');
+  });
+
+  /** Nothing to say where the Optin never asked about roles. */
+  it('fills nothing for an Optin stopped by something else', () => {
+    expect(first([optin()], [entry({ standing: 'capped' })]).subject).toBeNull();
   });
 });

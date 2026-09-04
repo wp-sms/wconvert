@@ -11,6 +11,7 @@ use WConvert\Optin\SiteFrequency;
 use WConvert\Optin\Suspension;
 use WConvert\Rest\OptinController;
 use WConvert\Rules\RuleCatalogue;
+use WConvert\Targeting\RoleRegistry;
 use WConvert\Rules\RuleVocabulary;
 use WConvert\Support\SiteDependency;
 use WConvert\Template\TemplateLibrary;
@@ -126,7 +127,7 @@ final class SuspendedOnTheListTest extends TestCase
             new GoalRegistry($pro, $site),
             $this->publishedSet,
             $degradation,
-            new RuleCatalogue($vocabulary, $pro, $site),
+            new RuleCatalogue($vocabulary, $pro, $site, new RoleRegistry()),
             new SiteFrequency(new FakeOptionStore())
         );
     }

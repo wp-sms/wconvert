@@ -50,6 +50,16 @@
       "on_absence": null,
       "substitute": null
     },
+    "role": {
+      "kind": "visitor",
+      "tier": "free",
+      "requires": null,
+      "params": { "value": { "control": "role_set" } },
+      "presets": {},
+      "consent_category": null,
+      "on_absence": null,
+      "substitute": null
+    },
     "logged_in": {
       "kind": "visitor",
       "tier": "free",

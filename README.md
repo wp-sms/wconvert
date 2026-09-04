@@ -567,6 +567,44 @@ well as a named zone; dispatches a backwards schedule through
 to prove the reader's door is total. **It refuses to run on a site that already
 has Optins**, because it rebuilds the published set.
 
+## Telling visitors apart, and letting another plugin help
+
+The Targeting axis holds two visitor predicates — `logged_in` and `role` — as
+**fields** rather than as members of the include and exclude lists. Those lists
+union page SETS, so a visitor rule in one would not narrow an Optin: it would
+widen it to the whole site for anyone who matched, silently. `TargetingType`
+enumerates the page rules and nothing else, which is what makes that
+unbuildable rather than merely discouraged
+([ADR 0005](docs/adr/0005-the-rule-model-is-three-flat-closed-axes.md)).
+
+`role` is **one predicate over several systems**. WordPress roles are one answer
+to *what is this visitor*; a membership level, a plan or an enrolment is the
+same question asked of another plugin, so they share one rule type, one control
+and one evaluator. A membership or LMS plugin adds a source and changes nothing
+here:
+
+```php
+add_action('wconvert_loaded', function (): void {
+    WConvert\Bootstrap::container()
+        ->resolve(WConvert\Targeting\RoleRegistry::class)
+        ->add(new MyMembershipRoles());   // implements RoleSource
+});
+```
+
+`RoleSource` is two methods: `offered()`, what a merchant may choose, asked once
+while the rules panel renders; and `held()`, what THIS visitor holds, asked on
+every uncached page view of a page whose published set names a role — so it is a
+hot path, and the slugs share one namespace with WordPress's roles.
+
+```bash
+wp eval-file bin/verify-role-sources.php   # registers a source the documented way, then asks both surfaces
+```
+
+That script exists because a unit suite structurally cannot prove the one claim
+the seam makes: `RoleRegistryTest` builds a registry by hand and asserts the
+arithmetic, and a fake registry passes however wrong the container's lifetime
+and the hook's timing are.
+
 ## Placing an inline Optin
 
 `inline` is the one [[Display Type]] that is not an overlay. The other three
