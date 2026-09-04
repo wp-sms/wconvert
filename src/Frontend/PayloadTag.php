@@ -50,12 +50,40 @@ final class PayloadTag
     public const BEACON_ATTRIBUTE = 'data-beacon';
 
     /**
+     * The allowance the whole site shares.
+     *
+     * A third attribute for the first one's reason: it is **one fact about the
+     * site** and the JSON is a list of facts about Optins, so putting it inside
+     * would mean either repeating it per entry or turning a list into an object
+     * with a list in it.
+     *
+     * **Absent is the shipped state and costs nothing.** All four fields
+     * default off at site scope (ADR 0047), so until a merchant configures one
+     * there is no attribute here at all and the page is byte-for-byte the page
+     * it is today. {@see \WConvert\Optin\SiteFrequency::forPayload()} is where
+     * that null is decided.
+     */
+    public const SITE_ALLOWANCE_ATTRIBUTE = 'data-allowance';
+
+    /**
      * @param list<array<string, mixed>> $entries
      * @param string $captureUrl `rest_url()` for the capture route.
      * @param string $beaconUrl `rest_url()` for the beacon route.
+     * @param array<string, mixed>|null $siteAllowance The four fields the whole
+     *   site shares, or null where the merchant has configured none.
+     *
+     *   **Required, and null is the answer most sites give.** A default would
+     *   let a caller forget it and print a page whose site-wide cap silently
+     *   does nothing — and it would let the byte tests measure a tag the front
+     *   end never renders (CLAUDE.md: no back-compat shims; this is the same
+     *   rule read at a signature).
      */
-    public static function render(array $entries, string $captureUrl, string $beaconUrl): string
-    {
+    public static function render(
+        array $entries,
+        string $captureUrl,
+        string $beaconUrl,
+        ?array $siteAllowance
+    ): string {
         if ($entries === []) {
             return '';
         }
@@ -72,13 +100,43 @@ final class PayloadTag
         }
 
         return sprintf(
-            '<script type="application/json" id="%s" %s="%s" %s="%s">%s</script>',
+            '<script type="application/json" id="%s" %s="%s" %s="%s"%s>%s</script>',
             self::ELEMENT_ID,
             self::CAPTURE_ATTRIBUTE,
             esc_url($captureUrl),
             self::BEACON_ATTRIBUTE,
             esc_url($beaconUrl),
+            self::siteAllowanceAttribute($siteAllowance),
             $json
         );
+    }
+
+    /**
+     * The site's allowance as one attribute, or **the empty string**.
+     *
+     * `JSON_FORCE_OBJECT` is not decoration. Every one of the four fields is
+     * optional, so an allowance that turns both switches on and caps no number
+     * encodes as `[]` — a JSON *array*, which `payload.ts` refuses in the same
+     * breath it refuses a blob it cannot parse. `{}` is that same allowance,
+     * readable.
+     *
+     * `esc_attr()` rather than `esc_url()`, because this is JSON rather than a
+     * URL: the double quote on every key is what would otherwise close the
+     * attribute on its first character.
+     *
+     * @param array<string, mixed>|null $allowance
+     */
+    private static function siteAllowanceAttribute(?array $allowance): string
+    {
+        if ($allowance === null) {
+            return '';
+        }
+
+        $json = json_encode($allowance, JSON_FORCE_OBJECT | JSON_UNESCAPED_SLASHES);
+
+        // Unencodable is the same answer as absent, and it fails OPEN: the
+        // page carries no site allowance and behaves as it does today, rather
+        // than carrying half of one.
+        return $json === false ? '' : sprintf(' %s="%s"', self::SITE_ALLOWANCE_ATTRIBUTE, esc_attr($json));
     }
 }

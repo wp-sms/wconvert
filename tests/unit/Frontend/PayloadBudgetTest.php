@@ -44,6 +44,23 @@ final class PayloadBudgetTest extends TestCase
     private const ON_THE_PAGE = 10;
 
     /**
+     * The site-wide allowance at its **largest**, so its bytes are inside the
+     * measurement rather than beside it.
+     *
+     * Every field set and both switches off is the most
+     * {@see \WConvert\Optin\SiteFrequency::forPayload()} can produce — `true`
+     * never travels, so an allowance with both switches ON is SHORTER than
+     * this one. Most sites send null and pay nothing; this is the page that
+     * pays the most (ADR 0047).
+     */
+    private const SITE_ALLOWANCE = [
+        'maxImpressions' => 99,
+        'cooldownDays' => 99,
+        'stopAfterDismiss' => false,
+        'stopAfterConversion' => false,
+    ];
+
+    /**
      * Ten published Optins, all matching one page, each carrying its own
      * diverged snapshot of the shipped Template.
      *
@@ -143,7 +160,8 @@ final class PayloadBudgetTest extends TestCase
         $gzipped = strlen((string) gzencode(PayloadTag::render(
             $entries,
             'https://example.test/wp-json/wconvert/v1/capture',
-            'https://example.test/wp-json/wconvert/v1/beacon'
+            'https://example.test/wp-json/wconvert/v1/beacon',
+            self::SITE_ALLOWANCE
         ), 9));
 
         $this->assertLessThanOrEqual(
@@ -163,7 +181,8 @@ final class PayloadBudgetTest extends TestCase
         $rendered = PayloadTag::render(
             $entries,
             'https://example.test/wp-json/wconvert/v1/capture',
-            'https://example.test/wp-json/wconvert/v1/beacon'
+            'https://example.test/wp-json/wconvert/v1/beacon',
+            self::SITE_ALLOWANCE
         );
 
         $this->assertStringContainsString('"steps"', $rendered);
@@ -196,7 +215,8 @@ final class PayloadBudgetTest extends TestCase
         $rendered = PayloadTag::render(
             $entries,
             'https://example.test/wp-json/wconvert/v1/capture',
-            'https://example.test/wp-json/wconvert/v1/beacon'
+            'https://example.test/wp-json/wconvert/v1/beacon',
+            self::SITE_ALLOWANCE
         );
 
         // Not `"name"`: a `field` node carries one, and it is what the capture
@@ -232,7 +252,8 @@ final class PayloadBudgetTest extends TestCase
         $rendered = PayloadTag::render(
             $entries,
             'https://example.test/wp-json/wconvert/v1/capture',
-            'https://example.test/wp-json/wconvert/v1/beacon'
+            'https://example.test/wp-json/wconvert/v1/beacon',
+            self::SITE_ALLOWANCE
         );
 
         foreach ($library->all() as $id => $entry) {

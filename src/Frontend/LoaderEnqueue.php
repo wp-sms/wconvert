@@ -6,6 +6,7 @@ use WConvert\Assets\BuiltAsset;
 use WConvert\Goal\Goal;
 use WConvert\Optin\PublishedOptin;
 use WConvert\Optin\PublishedSet;
+use WConvert\Optin\SiteFrequency;
 use WConvert\Rest\Routes;
 use WConvert\Rules\Degradation;
 use WConvert\Template\CartLink;
@@ -47,6 +48,7 @@ final class LoaderEnqueue
     public function __construct(
         private readonly PublishedSet $publishedSet,
         private readonly Degradation $degradation,
+        private readonly SiteFrequency $siteFrequency,
     ) {
     }
 
@@ -157,7 +159,18 @@ final class LoaderEnqueue
         $captureUrl = rest_url(Routes::NAMESPACE . '/capture');
         $beaconUrl = rest_url(Routes::NAMESPACE . '/beacon');
 
-        add_action('wp_head', static function () use ($entries, $captureUrl, $beaconUrl): void {
+        // **The allowance the whole site shares, and null on every install
+        // that has not asked for one** (ADR 0047). It is read HERE rather than
+        // frozen into the published set for `PolicyLink`'s reason: a merchant
+        // who changes it corrects every running Optin without republishing
+        // one, and it is safe under the full-page cache because it is a
+        // site-wide setting identical for every visitor.
+        //
+        // Read after the payload is known to be non-empty, so a page with no
+        // matching Optin pays for no option read at all.
+        $siteAllowance = $this->siteFrequency->forPayload();
+
+        add_action('wp_head', static function () use ($entries, $captureUrl, $beaconUrl, $siteAllowance): void {
             // Not escaped, and correctly so: PayloadTag renders JSON with
             // JSON_HEX_TAG, which is the escaping this context needs. Running
             // esc_html() over it would escape the quotes and produce invalid
@@ -170,7 +183,7 @@ final class LoaderEnqueue
             // facts. {@see PayloadTag::render()} is where they are enforced,
             // and tests/unit/Frontend/PayloadTest.php is what holds them.
             // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- PayloadTag::render() escapes for this context: JSON_HEX_TAG on the body, esc_url() on the attributes.
-            echo PayloadTag::render($entries, $captureUrl, $beaconUrl);
+            echo PayloadTag::render($entries, $captureUrl, $beaconUrl, $siteAllowance);
         }, 5);
     }
 

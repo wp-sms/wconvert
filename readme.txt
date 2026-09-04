@@ -29,6 +29,10 @@ it: the placement, the trigger, the copy and the fields, already filled in.
 * **A start and end date**, so a sale switches itself off. Set them in your
   site's own time; nothing shows before the start or after the end, and neither
   is required — an Optin can run from a date, until a date, or between two.
+* **A limit for the whole site**, on top of each Optin's own: stop showing a
+  visitor anything once they close or sign up to something, cap how many they
+  see in total, or put days between them. It is off until you set it, and no
+  Optin can opt out of it.
 * **Lead-magnet delivery by email**, with no third-party service required.
 * **Consent captured as part of the form**, recorded with the wording that was
   on screen at the time.

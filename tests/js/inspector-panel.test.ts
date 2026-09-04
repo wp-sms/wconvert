@@ -82,11 +82,18 @@ const entry = (over: Partial<EntryReport> = {}): EntryReport => ({
   ...over,
 });
 
-function draw(optins: ServerOptin[] = [optin()], browser: EntryReport[] = [entry()]) {
+function draw(optins: ServerOptin[] = [optin()], entries: EntryReport[] = [entry()]) {
   const server: ServerReport = { request: {}, optins, labels: LABELS };
   const panel = createPanel(LABELS);
 
-  panel.render(funnel(server, browser, new Set(browser.map((each) => each.id)), ARRIVAL));
+  panel.render(
+    funnel(
+      server,
+      { entries, siteCapped: false },
+      new Set(entries.map((each) => each.id)),
+      ARRIVAL,
+    ),
+  );
 
   const root = document.getElementById('wconvert-inspector-panel')?.shadowRoot;
 
@@ -341,7 +348,7 @@ describe('the panel', () => {
     const panel = createPanel(LABELS);
 
     panel.render(
-      funnel(server, [entry()], new Set(['A']), {
+      funnel(server, { entries: [entry()], siteCapped: false }, new Set(['A']), {
         ...ARRIVAL,
         deferred: false,
         loaderBeforePayload: true,
@@ -358,7 +365,12 @@ describe('the panel', () => {
     const server: ServerReport = { request: {}, optins: [optin()], labels: LABELS };
     const panel = createPanel(LABELS);
 
-    panel.render(funnel(server, [entry()], new Set(['A']), { ...ARRIVAL, loaderFound: false }));
+    panel.render(
+      funnel(server, { entries: [entry()], siteCapped: false }, new Set(['A']), {
+        ...ARRIVAL,
+        loaderFound: false,
+      }),
+    );
 
     const root = document.getElementById('wconvert-inspector-panel')?.shadowRoot as ShadowRoot;
 

@@ -1,6 +1,7 @@
-import type { PayloadEntry, Rule, RuleEvaluator, VisitorState } from './types';
+import type { Frequency, PayloadEntry, Rule, RuleEvaluator, VisitorState } from './types';
 import { isAllowed } from './frequency';
 import { isWithinWindow } from './schedule';
+import { SITE_SLOT } from './state';
 
 /**
  * The whole decision, in one pure call.
@@ -56,6 +57,26 @@ export interface Decision {
   /** Rule types whose Storage Consent this visitor has withheld. */
   readonly withheld: ReadonlySet<string>;
   readonly state: VisitorState;
+  /**
+   * The allowance the whole site shares, or **undefined where there is none**.
+   *
+   * ==========================================================================
+   * A VETO, NOT A VOTE — AND ABSENT IS THE SHIPPED DEFAULT.
+   * ==========================================================================
+   * The same four fields as an entry's own {@link PayloadEntry.frequency},
+   * held once for the whole site and checked against {@link SITE_SLOT} rather
+   * than against any Optin's record (ADR 0047). An Optin cannot opt out of it:
+   * a per-Optin *ignore the site setting* is the configuration two scopes
+   * exist to delete.
+   *
+   * Undefined is what a site that has asked for nothing sends — which is every
+   * site until a merchant configures one, because all four fields default OFF
+   * at this scope. *One dismissal silences the entire site for a week* is a
+   * claim about what the visitor meant that they did not make, so the page
+   * carries no allowance at all and this decision is byte-for-byte the one it
+   * takes today.
+   */
+  readonly siteFrequency?: Frequency;
   /** Whole days since the epoch. */
   readonly day: number;
   /**
@@ -100,12 +121,30 @@ export const rulesOf = (entry: PayloadEntry): readonly Rule[] => [
 /** Nothing is live except what could still change, so `capped`, `inert` and `shown` are not. */
 const STILL_LIVE: ReadonlySet<Standing> = new Set<Standing>(['ready', 'waiting', 'ineligible', 'blocked']);
 
+/**
+ * Has this device spent the allowance the whole site shares?
+ *
+ * Asked ONCE per decision rather than per entry, because it is one fact about
+ * the page — and asked at all only where the site has configured an allowance,
+ * which is what keeps a site that has asked for nothing on exactly today's
+ * path (ADR 0047).
+ *
+ * Exported so the eligibility inspector can tell a site-vetoed Optin from one
+ * whose own allowance is spent **without a second spelling of the question**.
+ * `explain.ts` calls the real `decide` for exactly that reason; a copy of this
+ * predicate beside it is the same drift one indirection along.
+ */
+export const isSiteCapped = (decision: Decision): boolean =>
+  decision.siteFrequency !== undefined &&
+  !isAllowed(decision.siteFrequency, decision.state[SITE_SLOT], decision.day);
+
 export function decide(decision: Decision): Verdict {
   const candidates: Candidate[] = [];
   const ready: PayloadEntry[] = [];
+  const siteCapped = isSiteCapped(decision);
 
   for (const entry of decision.entries) {
-    const standing = standingOf(entry, decision);
+    const standing = standingOf(entry, decision, siteCapped);
 
     candidates.push({ id: entry.id, standing, overlay: isOverlay(entry) });
 
@@ -134,13 +173,13 @@ export function decide(decision: Decision): Verdict {
   };
 }
 
-function standingOf(entry: PayloadEntry, decision: Decision): Standing {
+function standingOf(entry: PayloadEntry, decision: Decision, siteCapped: boolean): Standing {
   if (decision.shown.has(entry.id)) {
     return 'shown';
   }
 
   // ==========================================================================
-  // THE SCHEDULE AND THE ALLOWANCE, IN THAT ORDER, AND BOTH ARE `capped`.
+  // THE SCHEDULE AND THE TWO SCOPES OF THE ALLOWANCE. ALL THREE ARE `capped`.
   // ==========================================================================
   // `capped` already means *the allowance is spent, and this cannot change on
   // this page view*, which is what being outside a scheduled window is. A
@@ -153,7 +192,16 @@ function standingOf(entry: PayloadEntry, decision: Decision): Standing {
   // the one the merchant can act on: "your sale has not started" sends them to
   // a date they set, where "this browser has had its allowance" is a fact
   // about one device. The inspector reports whichever gate this order picked.
-  if (!isWithinWindow(entry, decision.now) || !isAllowed(entry.frequency, decision.state[entry.id], decision.day)) {
+  //
+  // The SITE's allowance is asked before the Optin's own, and that order is
+  // the veto written down: it holds whatever this Optin's own Frequency says,
+  // so reporting the Optin's would send a merchant to a setting that decided
+  // nothing.
+  if (
+    !isWithinWindow(entry, decision.now) ||
+    siteCapped ||
+    !isAllowed(entry.frequency, decision.state[entry.id], decision.day)
+  ) {
     return 'capped';
   }
 

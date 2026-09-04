@@ -4,6 +4,7 @@ import { ArrowLeft, Plus } from 'lucide-react';
 import { GoalScreen, OptinBuilder } from './builder/lazy';
 import { LeadLog } from './leads/LeadLog';
 import { OptinList } from './optins/OptinList';
+import { SiteAllowance } from './optins/SiteAllowance';
 import { Dashboard } from './stats/Dashboard';
 import { Destinations } from './destinations/Destinations';
 import { Button } from './components/ui/button';
@@ -212,5 +213,16 @@ function OptinsSection({
    * button in a band the merchant has already read past is an empty screen
    * with a dead end in it (ADR 0039).
    */
-  return <OptinList onEdit={onEdit} onCreate={onCreate} />;
+  /*
+   * Two regions, because this screen holds two objects (ADR 0039). The list is
+   * what exists; the allowance below it is how often a visitor may meet ANY of
+   * them, which is a site-wide decision with no Optin to hang on and therefore
+   * nowhere in the builder to live.
+   */
+  return (
+    <div className="flex flex-col gap-5">
+      <OptinList onEdit={onEdit} onCreate={onCreate} />
+      <SiteAllowance />
+    </div>
+  );
 }

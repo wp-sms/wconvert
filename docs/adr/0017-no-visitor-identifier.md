@@ -109,8 +109,20 @@ value that identifies a browser rather than a person.
   it makes the visitor meet six different Optins across six pages instead of
   one. It is in fact **less** identifying than the state it sits beside: four
   values in total, saying nothing about which campaigns this device has met. The
-  claim above is now about two keys and not one, which is why it is noted here
-  rather than only there.*
+  claim above is now about a second SLOT and not a second key, which is why it is
+  noted here rather than only there.*
+  *(Corrected: this read "about two keys and not one", inherited from ADR 0047's
+  original diagram. There has only ever been one persistent key — `wcv1` — and
+  the site-wide allowance is a reserved entry inside it,
+  [`SITE_SLOT`](../../resources/loader/src/state.ts), under a name no ULID can
+  take. Same ladder, same fail-open, no second consent call.)*
+  *Built by [#92](https://github.com/navidkashani/wconvert/issues/92), and the
+  one thing that had to be decided at the write rather than at the read: **the
+  slot is filled only where the site has an allowance to spend.** All four
+  fields are off at that scope until a merchant asks, so a site that has asked
+  for nothing writes exactly the bytes it wrote before this shipped — which is
+  what makes "an upgrade changes nothing about what a live site does" a property
+  of `shell.ts` rather than of the reasoning around it.*
   *Completed by [#22](https://github.com/navidkashani/wconvert/issues/22), which
   built it: the record is `{impressions, last-seen, dismissed, converted}` per
   Optin, and **last-seen is a whole day number rather than a timestamp**. A

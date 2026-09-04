@@ -451,3 +451,101 @@ describe('an Optin outside its scheduled window', () => {
   });
 });
 
+
+/**
+ * The site-wide allowance, across page views.
+ *
+ * `decide` is where the veto is decided; this is where the record it reads
+ * gets written. The two are separable and the second is the half that fails
+ * quietly: a veto reading a slot nothing ever fills is a setting a merchant
+ * turns on and never sees work.
+ */
+describe('the allowance the whole site shares', () => {
+  const SITE = 'site';
+
+  const read = (store: Store): Record<string, Record<string, number>> =>
+    JSON.parse(store.read() ?? '{}') as Record<string, Record<string, number>>;
+
+  /** Two different Optins, so nothing here can pass on a per-Optin record. */
+  const two = [optin({ id: 'a' }), optin({ id: 'b', display_type: 'inline' })];
+
+  function sitePageView(entries: readonly PayloadEntry[], store: Store, at: number, siteFrequency?: object) {
+    const presenter = recordingPresenter();
+
+    start({ loader, entries, presenter, store, now: () => at, siteFrequency });
+
+    return presenter;
+  }
+
+  it('stops a DIFFERENT Optin after the visitor dismisses one', () => {
+    const store = fakeStore();
+    const cap = { stopAfterDismiss: true };
+
+    sitePageView(two, store, march1, cap).dismiss('a');
+
+    expect(sitePageView(two, store, march1 + DAY, cap).shown).toEqual([]);
+  });
+
+  it('holds whatever an Optin’s own allowance says', () => {
+    const store = fakeStore();
+    const cap = { stopAfterDismiss: true };
+    const permissive = [
+      optin({ id: 'a', frequency: { stopAfterDismiss: false, stopAfterConversion: false } }),
+      optin({ id: 'b', display_type: 'inline', frequency: { stopAfterDismiss: false } }),
+    ];
+
+    sitePageView(permissive, store, march1, cap).dismiss('a');
+
+    expect(sitePageView(permissive, store, march1, cap).shown).toEqual([]);
+  });
+
+  it('counts every Optin the visitor met towards one site-wide number', () => {
+    const store = fakeStore();
+    const cap = { maxImpressions: 2 };
+
+    // Two Optins on one page view is two impressions against the site's two.
+    expect(sitePageView(two, store, march1, cap).shown).toEqual(['a', 'b']);
+    expect(sitePageView(two, store, march1 + DAY, cap).shown).toEqual([]);
+  });
+
+  it('waits out a site-wide cooldown and then shows again', () => {
+    const store = fakeStore();
+    const cap = { cooldownDays: 7 };
+
+    expect(sitePageView([optin({ id: 'a' })], store, march1, cap).shown).toEqual(['a']);
+    expect(sitePageView([optin({ id: 'b' })], store, march1 + 6 * DAY, cap).shown).toEqual([]);
+    expect(sitePageView([optin({ id: 'b' })], store, march1 + 7 * DAY, cap).shown).toEqual(['b']);
+  });
+
+  /**
+   * THE DEFAULTS-OFF CASE, ASSERTED ON THE WRITE.
+   *
+   * A site that has configured nothing must not start filling a slot nothing
+   * reads. That is what makes "an upgrade changes nothing about what a live
+   * site does" (ADR 0047) a property of the bytes rather than of the reasoning.
+   */
+  it('writes no site slot at all on a site that has configured no allowance', () => {
+    const store = fakeStore();
+
+    sitePageView(two, store, march1).dismiss('a');
+
+    expect(Object.keys(read(store))).toEqual(['a', 'b']);
+  });
+
+  it('writes the same four fields into the slot, and nothing else', () => {
+    const store = fakeStore();
+    const cap = { maxImpressions: 5 };
+
+    const presenter = sitePageView([optin({ id: 'a' })], store, march1, cap);
+
+    presenter.dismiss('a');
+    presenter.convert('a');
+
+    expect(read(store)[SITE]).toEqual({ i: 1, l: march1 / DAY, d: 1, c: 1 });
+  });
+
+  /** A name no ULID can take, which is the whole of why the slot is safe. */
+  it('reserves a slot that cannot collide with an Optin id', () => {
+    expect(SITE).not.toMatch(/^[0-9A-HJKMNP-TV-Z]{26}$/);
+  });
+});

@@ -60,7 +60,7 @@ final class PayloadTest extends TestCase
         $entries = Payload::forRequest($set, $context, InstalledRules::free());
 
         $this->assertSame([['id' => '01A', 'display_type' => 'popup']], $entries);
-        $this->assertStringNotContainsString('secret-staging-path', PayloadTag::render($entries, self::CAPTURE, self::BEACON));
+        $this->assertStringNotContainsString('secret-staging-path', PayloadTag::render($entries, self::CAPTURE, self::BEACON, null));
     }
 
     /**
@@ -71,7 +71,7 @@ final class PayloadTest extends TestCase
      */
     public function testThePayloadTravelsAsAJsonScriptTag(): void
     {
-        $tag = PayloadTag::render([['id' => '01A', 'display_type' => 'popup']], self::CAPTURE, self::BEACON);
+        $tag = PayloadTag::render([['id' => '01A', 'display_type' => 'popup']], self::CAPTURE, self::BEACON, null);
 
         $this->assertStringStartsWith('<script type="application/json" id="wconvert-payload" ', $tag);
         $this->assertStringEndsWith('</script>', $tag);
@@ -86,7 +86,7 @@ final class PayloadTest extends TestCase
      */
     public function testThePayloadCarriesWhereToPostACapture(): void
     {
-        $tag = PayloadTag::render([['id' => '01A', 'display_type' => 'popup']], self::CAPTURE, self::BEACON);
+        $tag = PayloadTag::render([['id' => '01A', 'display_type' => 'popup']], self::CAPTURE, self::BEACON, null);
 
         $this->assertStringContainsString(sprintf('data-capture="%s"', self::CAPTURE), $tag);
         $this->assertSame(1, substr_count($tag, 'data-capture'));
@@ -100,10 +100,74 @@ final class PayloadTest extends TestCase
      */
     public function testThePayloadCarriesWhereToPostABeacon(): void
     {
-        $tag = PayloadTag::render([['id' => '01A', 'display_type' => 'popup']], self::CAPTURE, self::BEACON);
+        $tag = PayloadTag::render([['id' => '01A', 'display_type' => 'popup']], self::CAPTURE, self::BEACON, null);
 
         $this->assertStringContainsString(sprintf('data-beacon="%s"', self::BEACON), $tag);
         $this->assertSame(1, substr_count($tag, 'data-beacon'));
+    }
+
+    /**
+     * The allowance the whole site shares rides on the element too, for the
+     * two route attributes' reason: one fact about the SITE, and the JSON is a
+     * list of facts about Optins.
+     *
+     * **It is absent until a merchant configures one**, which is every install
+     * — all four fields default OFF at that scope (ADR 0047) — so the common
+     * case costs the page nothing at all.
+     */
+    public function testThePayloadCarriesTheSiteWideAllowanceOnlyOnceThereIsOne(): void
+    {
+        $entries = [['id' => '01A', 'display_type' => 'popup']];
+
+        $this->assertStringNotContainsString(
+            'data-allowance',
+            PayloadTag::render($entries, self::CAPTURE, self::BEACON, null)
+        );
+
+        $tag = PayloadTag::render($entries, self::CAPTURE, self::BEACON, [
+            'cooldownDays' => 3,
+            'stopAfterDismiss' => false,
+        ]);
+
+        $this->assertStringContainsString('data-allowance="', $tag);
+        $this->assertSame(1, substr_count($tag, 'data-allowance'));
+        $this->assertStringContainsString('cooldownDays', $tag);
+    }
+
+    /**
+     * **An object, never an array.** The four fields are all optional, so an
+     * allowance that turns both switches on and caps no number has an empty
+     * shape — and `[]` reaches the browser as a JSON array, which
+     * `payload.ts` refuses. `{}` is the same allowance the loader can read.
+     */
+    public function testAnAllowanceWithNoKeysStillTravelsAsAnObject(): void
+    {
+        $tag = PayloadTag::render(
+            [['id' => '01A', 'display_type' => 'popup']],
+            self::CAPTURE,
+            self::BEACON,
+            []
+        );
+
+        $this->assertStringContainsString('data-allowance="{}"', $tag);
+    }
+
+    /**
+     * The attribute is escaped for an ATTRIBUTE like the two routes beside it.
+     * JSON in an attribute carries double quotes on every key, so this is the
+     * one that would break out on the first character if it were not.
+     */
+    public function testTheSiteAllowanceCannotBreakOutOfItsAttribute(): void
+    {
+        $tag = PayloadTag::render(
+            [['id' => '01A', 'display_type' => 'popup']],
+            self::CAPTURE,
+            self::BEACON,
+            ['maxImpressions' => 2]
+        );
+
+        $this->assertStringContainsString('data-allowance="{&quot;maxImpressions&quot;:2}"', $tag);
+        $this->assertSame(1, substr_count($tag, '</script>'));
     }
 
     /**
@@ -122,7 +186,8 @@ final class PayloadTest extends TestCase
         $tag = PayloadTag::render(
             [['id' => '01A', 'display_type' => 'popup']],
             'https://example.com/wp-json/wconvert/v1/capture?x="><script>alert(1)</script>',
-            self::BEACON
+            self::BEACON,
+            null
         );
 
         $this->assertStringNotContainsString('<script>alert', $tag);
@@ -136,7 +201,7 @@ final class PayloadTest extends TestCase
      */
     public function testCopyContainingAClosingScriptTagCannotBreakOut(): void
     {
-        $tag = PayloadTag::render([['id' => '01A', 'headline' => '</script><script>alert(1)</script>']], self::CAPTURE, self::BEACON);
+        $tag = PayloadTag::render([['id' => '01A', 'headline' => '</script><script>alert(1)</script>']], self::CAPTURE, self::BEACON, null);
 
         $this->assertSame(1, substr_count($tag, '</script>'));
         $this->assertStringNotContainsString('<script>alert', $tag);
@@ -148,7 +213,7 @@ final class PayloadTest extends TestCase
      */
     public function testNoMatchingOptinPrintsNothingAtAll(): void
     {
-        $this->assertSame('', PayloadTag::render([], self::CAPTURE, self::BEACON));
+        $this->assertSame('', PayloadTag::render([], self::CAPTURE, self::BEACON, null));
     }
 
     /**
@@ -187,7 +252,7 @@ final class PayloadTest extends TestCase
         $entries = Payload::forRequest($set, self::at('/'), InstalledRules::withPro());
 
         $this->assertSame([['id' => '01A', 'display_type' => 'popup']], $entries);
-        $this->assertStringNotContainsString('recover_cart', PayloadTag::render($entries, self::CAPTURE, self::BEACON));
+        $this->assertStringNotContainsString('recover_cart', PayloadTag::render($entries, self::CAPTURE, self::BEACON, null));
     }
 
     // ========================================================================

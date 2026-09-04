@@ -19,6 +19,25 @@ import type { Store } from './storage';
 
 export const STATE_KEY = 'wcv1';
 
+/**
+ * The site-wide allowance's slot, inside the one key.
+ *
+ * ============================================================================
+ * A RESERVED ENTRY IN `wcv1`, AND EMPHATICALLY NOT A SECOND KEY.
+ * ============================================================================
+ * ADR 0047's diagram drew `wc_o_<optinId>` and `wc_site` as two `localStorage`
+ * keys, and neither has ever existed — the notation spread from that diagram
+ * into three other documents before anyone read it against this file. So the
+ * site's four fields are one more entry in the map already here: one read, one
+ * write, one rung on the `localStorage → cookie → in-memory` ladder, and no
+ * second consent call.
+ *
+ * `site` is lower case and four characters, so **no ULID can take it**
+ * (`Ulid::PATTERN` is 26 characters of Crockford base32, upper case) and it
+ * cannot collide with an Optin id however many Optins a site has.
+ */
+export const SITE_SLOT = 'site';
+
 /** Whole days since the epoch. */
 export const dayOf = (now: number): number => Math.floor(now / 86_400_000);
 

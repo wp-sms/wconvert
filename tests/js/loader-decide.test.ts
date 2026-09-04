@@ -429,3 +429,100 @@ describe('a schedule', () => {
     expect(decide(input({ entries: [entry({ starts_at: NOW + 3 * day })] })).live).toBe(false);
   });
 });
+
+/**
+ * The site-wide allowance: the same four fields, held once for the whole site,
+ * and checked as a **veto** before any Optin's own allowance (ADR 0047).
+ *
+ * Two properties carry the feature. An Optin cannot opt out of it — there is
+ * no per-Optin *ignore the site setting*, which is the configuration two
+ * scopes exist to delete. And a site that has configured nothing behaves
+ * exactly as it does today, which is what makes shipping this a no-op on every
+ * install until a merchant asks for it.
+ */
+describe('the site-wide allowance', () => {
+  /** The reserved slot inside `wcv1`. A name no ULID can take. */
+  const SITE = 'site';
+
+  it('caps an Optin whose own allowance is untouched', () => {
+    const verdict = decide(
+      input({
+        siteFrequency: { stopAfterDismiss: true },
+        state: { [SITE]: { d: 1 } },
+      }),
+    );
+
+    expect(standings(verdict)).toEqual({ '01JQ0000000000000000000001': 'capped' });
+    expect(verdict.show).toEqual([]);
+  });
+
+  /** No per-Optin override exists, and this is what says so. */
+  it('caps an Optin that has explicitly turned its own switches off', () => {
+    const verdict = decide(
+      input({
+        entries: [entry({ frequency: { stopAfterDismiss: false, stopAfterConversion: false } })],
+        siteFrequency: { stopAfterConversion: true },
+        state: { [SITE]: { c: 1 } },
+      }),
+    );
+
+    expect(standings(verdict)).toEqual({ '01JQ0000000000000000000001': 'capped' });
+  });
+
+  it('counts impressions and cooldowns against the site slot, not against any Optin', () => {
+    const spent = input({ siteFrequency: { maxImpressions: 2 }, state: { [SITE]: { i: 2 } } });
+
+    expect(standings(decide(spent))).toEqual({ '01JQ0000000000000000000001': 'capped' });
+
+    const unspent = input({ siteFrequency: { maxImpressions: 3 }, state: { [SITE]: { i: 2 } } });
+
+    expect(standings(decide(unspent))).toEqual({ '01JQ0000000000000000000001': 'ready' });
+  });
+
+  /**
+   * THE DEFAULTS-OFF CASE. A site that has asked for nothing ships no
+   * allowance at all, so this is the decision every install takes today —
+   * including one whose visitor has dismissed and converted on something.
+   */
+  it('changes nothing on a site that has configured no allowance', () => {
+    const verdict = decide(input({ state: { [SITE]: { i: 9, d: 1, c: 1, l: 20_000 } } }));
+
+    expect(standings(verdict)).toEqual({ '01JQ0000000000000000000001': 'ready' });
+    expect(verdict.show.map((e) => e.id)).toEqual(['01JQ0000000000000000000001']);
+  });
+
+  it('vetoes every Optin on the page, not just the first', () => {
+    const verdict = decide(
+      input({
+        entries: [
+          entry({ id: '01JQ0000000000000000000001' }),
+          entry({ id: '01JQ0000000000000000000002', display_type: 'inline' }),
+        ],
+        siteFrequency: { stopAfterDismiss: true },
+        state: { [SITE]: { d: 1 } },
+      }),
+    );
+
+    expect(standings(verdict)).toEqual({
+      '01JQ0000000000000000000001': 'capped',
+      '01JQ0000000000000000000002': 'capped',
+    });
+  });
+
+  /** `capped` is not a live standing, so the listeners come off. */
+  it('leaves nothing live on the page', () => {
+    expect(
+      decide(input({ siteFrequency: { stopAfterDismiss: true }, state: { [SITE]: { d: 1 } } })).live,
+    ).toBe(false);
+  });
+
+  /**
+   * The device has met nothing yet, so there is no site record and nothing to
+   * be spent. A configured allowance is not itself a veto.
+   */
+  it('allows a visitor the site has never shown anything to', () => {
+    expect(standings(decide(input({ siteFrequency: { maxImpressions: 1, stopAfterDismiss: true } })))).toEqual({
+      '01JQ0000000000000000000001': 'ready',
+    });
+  });
+});

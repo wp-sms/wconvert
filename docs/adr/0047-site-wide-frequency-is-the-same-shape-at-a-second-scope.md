@@ -34,7 +34,7 @@ second read, no second write and no second entry on the
 WConvert's four storage layers. A change to this shape that cannot be made
 compatible is a bump to `wcv2`: old records are abandoned rather than migrated,
 every visitor looks new once, and a frequency cap is precisely the kind of state
-that can afford that. The server's three tables, its seven options and the
+that can afford that. The server's three tables, its eight options and the
 published set have no such escape hatch, which is where the pre-release audit
 spent its attention instead.*
 
@@ -161,6 +161,20 @@ already means *the allowance is spent, and this cannot change on this page
 view*. The eligibility inspector therefore explains it for free, in the words it
 already uses.
 
+*Corrected on the word **first**, by [#92](https://github.com/navidkashani/wconvert/issues/92),
+which built it. "First" is true of the two SCOPES and was written before there
+was a third thing in that clause: [ADR 0050](0050-a-scheduled-optin-stays-in-the-published-set.md)
+has since put a schedule check beside `isAllowed`, and the schedule is asked
+**before** the site's allowance. Both sentences this ADR actually makes still
+hold — the site is checked before any RULE, and it beats the Optin's own
+allowance — but the order in
+[`decide.ts`](../../resources/loader/src/decide.ts) is schedule, then site,
+then Optin, and it is not the order this paragraph reads as. The reason is
+0050's own: a sale that starts on Friday is a date the merchant set and can
+act on, where a spent allowance is a fact about one device. Reporting the
+site-wide cap there would send them to a setting that is not why this
+particular Optin is quiet.*
+
 **It is a `capped`, not a new state.** A seventh member of `Standing`
 distinguishing "capped by this Optin" from "capped by the site" is the thing to
 resist: it widens a vocabulary the whole design keeps closed, to carry a
@@ -193,3 +207,65 @@ feature is the evidence for it that this ADR could not supply on its own.*
   override, no seventh word.
 - `CONTEXT.md` gains [[Frequency]] as a term, because it now has two scopes and
   a term with two scopes is one nobody will spell the same way twice.
+
+## Built by [#92](https://github.com/navidkashani/wconvert/issues/92), and one thing above had to be split
+
+Everything above holds. What it did not distinguish — and could not, because
+the per-Optin scope never needed to — is **which side of the wire "`true` is
+never stored" is about.**
+
+It is about the **payload**, and only the payload. The engine reads `!== false`,
+so an absent switch there is ON, and a `true` in it is bytes on every matching
+page view that cannot change an answer. But this scope's whole decision is that
+an absent switch is **OFF** — so an *option* written the payload's way loses a
+switch the merchant has just turned on, silently, on the round trip. The bug is
+one line and it looks exactly like the rule being followed.
+
+So the two spellings are kept apart on purpose:
+
+| | Absent means | Written by |
+|---|---|---|
+| `wconvert_site_frequency`, the option | **off** — both switches spelled out in full | `SiteFrequency::set()` |
+| `data-allowance`, the payload attribute | **on** — `true` never travels | `SiteFrequency::forPayload()` |
+
+[`SiteFrequency::atThisScope()`](../../src/Optin/SiteFrequency.php) is the one
+place the scope's reading of an absent key lives, and both doors go through it —
+which is why `set()` takes the authored array rather than a `Frequency`: a caller
+building one first would have had `Frequency::fromArray()` turn both switches on
+before this ever saw it.
+
+**And "absent" is not the only way a switch fails to be a yes.** Filling the gaps
+with `$config + ['stopAfterDismiss' => false]` reads as enough and is not: `+`
+leaves a key that is PRESENT alone, so a body of `{"stopAfterDismiss": null}` —
+or `0`, or `"no"` — arrives intact and the engine's `!== false` reads every one
+of them as **on**. Unreachable from the card that ships, reachable from any
+other REST client, and it would turn a site-wide cap on for a merchant who asked
+for nothing. Both switches are therefore resolved to real booleans at that one
+seam.
+
+Four other things this fixed in place rather than in prose:
+
+- **Nothing is shipped and nothing is recorded until there is something to
+  spend.** `forPayload()` returns null while the allowance stops nothing, so a
+  site that has asked for nothing carries no attribute, and `shell.ts` fills the
+  reserved slot only where an allowance arrived. *"An upgrade changes nothing
+  about what a live site does"* is therefore a property of the bytes, asserted
+  on the WRITE in `tests/js/loader-shell.test.ts`.
+- **It rides on the payload TAG, not in the payload.** One fact about the site
+  against a list of facts about Optins — the argument `PayloadTag::CAPTURE_ATTRIBUTE`
+  already makes, applied a third time. `JSON_FORCE_OBJECT` is load-bearing: every
+  field is optional, so the minimal configured allowance encodes as `[]`, and a
+  JSON array is what `payload.ts` refuses.
+- **The veto is asked once per decision, not once per entry**, and it sits
+  between the schedule and the Optin's own allowance. The schedule still wins,
+  because a sale that starts on Friday is a date the merchant set; the site
+  beats the Optin, because the Optin cannot opt out and naming its allowance
+  would send them to a setting that decided nothing.
+- **The inspector's sentence is derived, and `Standing` gained nothing.**
+  `explain.ts` calls the exported `isSiteCapped` rather than a second spelling
+  of the question, and the funnel is the same eleven gates —
+  `tests/js/inspector-funnel.test.ts` counts them. It is **not** a field on a
+  row: `lostArbitration` and `schedule` are derived after the verdict too and
+  both belong to a row because both DIFFER between rows, where this one cannot.
+  It travels beside them on a `BrowserReport`, the way the set of ids that
+  reached the browser already does.

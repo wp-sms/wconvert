@@ -256,3 +256,52 @@ describe('which side of its window', () => {
   });
 });
 
+
+/**
+ * The site-wide allowance, reported as **one fact about the page**.
+ *
+ * `decide` answers `capped` for a site-vetoed Optin exactly as it does for one
+ * whose own allowance is spent, and deliberately (ADR 0047). The distinction
+ * is derived here, from the same predicate the decision was taken with — not
+ * re-implemented, and not per row: the site's allowance is spent or it is not,
+ * and rows cannot disagree about it.
+ */
+describe('the allowance the whole site shares', () => {
+  const spent = { siteFrequency: { stopAfterDismiss: true }, state: { site: { d: 1 } } as VisitorState };
+
+  it('says nothing about a site that has configured no allowance', () => {
+    expect(explain(input()).siteCapped).toBe(false);
+  });
+
+  it('says nothing while a configured allowance is unspent', () => {
+    expect(explain(input({ siteFrequency: { maxImpressions: 3 } })).siteCapped).toBe(false);
+  });
+
+  it('reports a spent site allowance beside the standing it produced', () => {
+    const report = explain(input(spent));
+
+    expect(report.siteCapped).toBe(true);
+    expect(only(report).standing).toBe('capped');
+  });
+
+  /** The site is a veto, so it is true whatever the Optin's own allowance says. */
+  it('reports it for an Optin whose own allowance is spent too', () => {
+    const report = explain(
+      input({
+        ...spent,
+        entries: [entry({ frequency: { stopAfterDismiss: true } })],
+        state: { site: { d: 1 }, A: { d: 1 } } as VisitorState,
+      }),
+    );
+
+    expect(report.siteCapped).toBe(true);
+  });
+
+  /** A capped Optin still gets its rules read out, exactly as before. */
+  it('still reports the rules of an Optin the site vetoed', () => {
+    const report = explain(input(spent));
+
+    expect(only(report).conditions[0].answer).toBe(true);
+    expect(only(report).triggers[0].answer).toBe(true);
+  });
+});

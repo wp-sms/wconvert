@@ -1,4 +1,4 @@
-import type { PayloadEntry } from './types';
+import type { Frequency, PayloadEntry } from './types';
 
 /**
  * Reading the inlined payload.
@@ -39,6 +39,21 @@ export const CAPTURE_ATTRIBUTE = 'data-capture';
 export const BEACON_ATTRIBUTE = 'data-beacon';
 
 /**
+ * The allowance the whole site shares, as the same four fields an entry
+ * carries.
+ *
+ * An attribute rather than a member of the JSON for the reason
+ * {@link CAPTURE_ATTRIBUTE} gives: this is **one fact about the site** and the
+ * JSON is a list of facts about Optins, so putting it inside would mean either
+ * repeating it per entry or turning the list into an object with a list in it.
+ *
+ * It is absent on every site that has configured nothing, which is every site
+ * until a merchant asks — all four fields default OFF at this scope
+ * (ADR 0047) — so the common case costs the page zero bytes.
+ */
+export const SITE_ALLOWANCE_ATTRIBUTE = 'data-allowance';
+
+/**
  * Where to post a capture, or null where this page carries nowhere.
  *
  * Read on demand rather than threaded through `boot`, because it is needed at
@@ -60,6 +75,36 @@ export function captureEndpoint(): string | null {
  */
 export function beaconEndpoint(): string | null {
   return endpointAt(BEACON_ATTRIBUTE);
+}
+
+/**
+ * The site's own allowance, or **undefined where this page carries none**.
+ *
+ * Undefined is the shipped default and not an error: the attribute is printed
+ * only where the merchant has configured something to spend, so its absence is
+ * a site that has asked for nothing rather than a page that lost it.
+ *
+ * A blob that will not parse is undefined too, which fails OPEN — the same
+ * direction {@link readPayload} fails in, and the same one the storage ladder
+ * takes. A visitor meeting one extra popup because an optimiser rewrote an
+ * attribute is annoying; a visitor meeting nothing at all is broken.
+ */
+export function siteAllowance(): Frequency | undefined {
+  const raw = document.getElementById(PAYLOAD_ELEMENT_ID)?.getAttribute(SITE_ALLOWANCE_ATTRIBUTE) ?? '';
+
+  if (raw === '') {
+    return undefined;
+  }
+
+  try {
+    const parsed: unknown = JSON.parse(raw);
+
+    return typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)
+      ? (parsed as Frequency)
+      : undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 function endpointAt(attribute: string): string | null {

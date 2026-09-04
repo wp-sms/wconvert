@@ -1,5 +1,5 @@
 import type { Arrival } from './arrival';
-import type { EntryReport } from './explain';
+import type { BrowserReport, EntryReport } from './explain';
 
 /**
  * The funnel: **the first gate that closes is the answer.**
@@ -162,24 +162,28 @@ export interface Funnel {
  * @param reached Ids the payload actually carries — the "reached the browser"
  *   gate, read off the page rather than recomputed. An Optin that passed
  *   Targeting and is absent here was dropped by something between the two,
- *   and the honest report is that it did not arrive.
+ *   and the honest report is that it did not arrive. It is a page-level fact
+ *   passed beside the rows for the reason {@link BrowserReport.siteCapped}
+ *   travels there rather than on each row.
  */
 export function funnel(
   server: ServerReport,
-  browser: readonly EntryReport[],
+  browser: BrowserReport,
   reached: ReadonlySet<string>,
   arrival: Arrival,
 ): Funnel {
-  const byId = new Map(browser.map((entry) => [entry.id, entry]));
+  const byId = new Map(browser.entries.map((entry) => [entry.id, entry]));
   const names = new Map(server.optins.map((optin) => [optin.id, optin.name]));
-  const winner = browser.find((entry) => entry.overlay && entry.standing === 'ready' && !entry.lostArbitration);
+  const winner = browser.entries.find(
+    (entry) => entry.overlay && entry.standing === 'ready' && !entry.lostArbitration,
+  );
 
   return {
     arrival,
     rows: server.optins.map((optin) => {
       const entry = byId.get(optin.id) ?? null;
 
-      const closed = stoppedAt(optin, entry, reached);
+      const closed = stoppedAt(optin, entry, reached, browser.siteCapped);
 
       return {
         optin,
@@ -243,6 +247,7 @@ function stoppedAt(
   optin: ServerOptin,
   entry: EntryReport | null,
   reached: ReadonlySet<string>,
+  siteCapped: boolean,
 ): { gate: Gate | null; reason: string | null } {
   if (!optin.published) {
     return { gate: 'published', reason: 'draft' };
@@ -279,6 +284,23 @@ function stoppedAt(
       gate: 'schedule',
       reason: entry.schedule === 'before' ? 'before_window' : 'after_window',
     };
+  }
+
+  // ==========================================================================
+  // THE SAME WORD, THE OTHER SENTENCE — AND NO TWELFTH GATE.
+  // ==========================================================================
+  // The site's allowance and this Optin's own both produce `capped`, and both
+  // sit behind the `frequency` gate, because they are the same question at two
+  // scopes (ADR 0047). What differs is where the merchant goes next: one is a
+  // setting on the Optin in front of them, the other is a site-wide setting
+  // that is quietly stopping every Optin on this page at once.
+  //
+  // The SITE is what they are told about, because it is the veto: an Optin
+  // cannot opt out of it, so naming the Optin's own allowance would send them
+  // to a setting that decided nothing. It sits after the schedule for the
+  // mirror reason — a sale that starts on Friday is a date they set.
+  if (entry.standing === 'capped' && siteCapped) {
+    return { gate: 'frequency', reason: 'site_capped' };
   }
 
   if (entry.lostArbitration) {

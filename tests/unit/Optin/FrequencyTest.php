@@ -27,7 +27,6 @@ final class FrequencyTest extends TestCase
     public function testAnUntouchedAllowanceStoresNothing(): void
     {
         $this->assertSame([], Frequency::fromArray([])->toArray());
-        $this->assertTrue(Frequency::fromArray([])->isEmpty());
     }
 
     /**

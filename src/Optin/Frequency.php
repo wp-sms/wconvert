@@ -76,10 +76,34 @@ final class Frequency
         );
     }
 
-    /** Is this the default allowance — nothing capped and nothing turned off? */
-    public function isEmpty(): bool
+    /**
+     * Can this allowance ever refuse a page view?
+     *
+     * ========================================================================
+     * A QUESTION ABOUT THE ANSWER, WHERE {@see self::toArray()} ASKS ABOUT THE
+     * BYTES.
+     * ========================================================================
+     * *"Nothing differs from the engine's defaults"* — an empty `toArray()` —
+     * is what tells a caller to drop the key. It is not this question, and per
+     * Optin the two look alike enough to be confused: an untouched allowance
+     * writes nothing AND still stops after a dismissal, because the engine's
+     * defaults are on.
+     *
+     * At site scope they come apart, which is what this exists for. There both
+     * switches default OFF, so an untouched allowance stops nothing at all —
+     * and there is then nothing for the page to carry and nothing for the
+     * visitor's device to record (ADR 0047, {@see SiteFrequency}).
+     *
+     * (An `isEmpty()` stood here and asked the first question. It had no caller
+     * but its own test, and two same-shaped predicates one of which nothing
+     * used is how the wrong one gets picked.)
+     */
+    public function stopsNothing(): bool
     {
-        return $this->toArray() === [];
+        return $this->maxImpressions === null
+            && $this->cooldownDays === null
+            && !$this->stopAfterDismiss
+            && !$this->stopAfterConversion;
     }
 
     /**

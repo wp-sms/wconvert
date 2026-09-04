@@ -2,7 +2,7 @@ import { createPanel } from './panel';
 import { explain } from './explain';
 import { funnel } from './report';
 import { readArrival } from './arrival';
-import { readPayload } from '../payload';
+import { readPayload, siteAllowance } from '../payload';
 import { withheldTypes } from '../consent';
 import { onConsentChange } from '../consent';
 import { persistentStore } from '../storage';
@@ -62,6 +62,9 @@ export function runInspector(loader: Loader): void {
 
   const entries = readPayload() ?? [];
   const reached = new Set(entries.map((entry) => entry.id));
+  // Read off the page the loader read it off, so the panel explains the
+  // allowance the page is actually being decided against.
+  const siteFrequency = siteAllowance();
   const arrival = readArrival();
   const panel = createPanel(server.labels);
 
@@ -98,13 +101,14 @@ export function runInspector(loader: Loader): void {
       // The snapshot, not a fresh read. See the docblock: re-reading it is
       // what made the panel report a showing Optin as capped.
       state: AT_THE_START,
+      siteFrequency,
       day: dayOf(instant),
       now: instant,
       shown: new Set(),
       overlayDone: false,
     });
 
-    panel.render(funnel(server as ServerReport, report.entries, reached, arrival));
+    panel.render(funnel(server as ServerReport, report, reached, arrival));
   }
 
   onConsentChange(() => {

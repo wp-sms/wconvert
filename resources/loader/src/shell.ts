@@ -1,12 +1,21 @@
-import type { Loader, PayloadEntry, Presenter, RuleEvaluator, VisitorState } from './types';
+import type { Frequency, Loader, PayloadEntry, Presenter, RuleEvaluator, VisitorState } from './types';
 import type { Store } from './storage';
 import type { Beacon } from './beacon';
 import { createBeacon, reporting } from './beacon';
-import { beaconEndpoint } from './payload';
+import { beaconEndpoint, siteAllowance } from './payload';
 import { decide, isOverlay, rulesOf } from './decide';
 import { onConsentChange, withheldTypes } from './consent';
 import { persistentStore } from './storage';
-import { STATE_KEY, dayOf, loadState, saveState, withConversion, withDismissal, withImpression } from './state';
+import {
+  SITE_SLOT,
+  STATE_KEY,
+  dayOf,
+  loadState,
+  saveState,
+  withConversion,
+  withDismissal,
+  withImpression,
+} from './state';
 
 /**
  * The shell: everything impure, in one place.
@@ -36,6 +45,16 @@ export interface ShellOptions {
   readonly now?: () => number;
   readonly store?: Store;
   /**
+   * The allowance the whole site shares, or **undefined where there is none**.
+   *
+   * Defaulted off the page for the reason {@link beacon} is: `boot` starts the
+   * shell with what it read off the payload tag and nothing else. A site that
+   * has configured nothing prints no attribute, so this stays undefined, no
+   * site record is ever written, and the page behaves exactly as it does today
+   * (ADR 0047).
+   */
+  readonly siteFrequency?: Frequency;
+  /**
    * Where the three acts are reported to the site.
    *
    * Defaulted rather than required, because `boot` starts the shell with what
@@ -62,7 +81,20 @@ export function start(options: ShellOptions): () => void {
   const { loader, entries, presenter } = options;
   const now = options.now ?? Date.now;
   const store = options.store ?? persistentStore(STATE_KEY);
+  const siteFrequency = options.siteFrequency ?? siteAllowance();
   const beacon = options.beacon ?? createBeacon(beaconEndpoint());
+
+  /**
+   * Which records one act touches: the Optin's own, and the site's **only
+   * where the site has an allowance to spend**.
+   *
+   * That condition is the defaults-off case made structural. All four fields
+   * are off at site scope until a merchant asks for one, so an install that
+   * has asked for nothing writes exactly the bytes it writes today rather than
+   * filling a slot nothing reads (ADR 0047).
+   */
+  const scopesOf = (id: string): readonly string[] =>
+    siteFrequency === undefined ? [id] : [id, SITE_SLOT];
 
   const evaluators = new Map<string, RuleEvaluator>();
   const shown = new Set<string>();
@@ -123,6 +155,7 @@ export function start(options: ShellOptions): () => void {
         evaluators,
         withheld,
         state,
+        siteFrequency,
         day: dayOf(instant),
         now: instant,
         shown,
@@ -148,13 +181,19 @@ export function start(options: ShellOptions): () => void {
           // The Impression is the presenter's to report, because it has two
           // moments and only a renderer can tell them apart — shown, for an
           // overlay; entered the viewport, for `inline` (CONTEXT.md).
-          impression: () => record((current) => withImpression(current, entry.id, dayOf(now()))),
+          impression: () => {
+            const day = dayOf(now());
+
+            record((current) =>
+              scopesOf(entry.id).reduce((state, slot) => withImpression(state, slot, day), current),
+            );
+          },
           dismiss: () => {
-            record((current) => withDismissal(current, entry.id));
+            record((current) => scopesOf(entry.id).reduce(withDismissal, current));
             run();
           },
           convert: () => {
-            record((current) => withConversion(current, entry.id));
+            record((current) => scopesOf(entry.id).reduce(withConversion, current));
             run();
           },
         }));
