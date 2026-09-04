@@ -197,6 +197,30 @@ final class RuleLabelParityTest extends TestCase
     }
 
     /**
+     * **The two time-of-day presets carry no phrase, and it is a choice.**
+     *
+     * A preset phrase replaces the type's, so *"During office hours"* as a
+     * sentence would hide the window behind it — and 09:00 to 17:00 is a
+     * starting point rather than a claim about THIS merchant's hours. With no
+     * phrase the summary falls back to the type's with the hours substituted
+     * in, so the row reads out the window the Optin actually has.
+     *
+     * Pinned by name rather than derived, for the reason `on_absence: suspend`
+     * is pinned by name in `RuleManifestParityTest`: the whole point is that
+     * somebody chose it, and one quietly gaining a phrase would replace a
+     * merchant's own hours with a label on every row that used it.
+     */
+    public function testTheTimeOfDayPresetsReadOutTheirHoursRatherThanTheirName(): void
+    {
+        foreach (['office_hours', 'evenings'] as $preset) {
+            $this->assertNull(
+                RuleLabels::presetPhrase('time_of_day', $preset),
+                sprintf('time_of_day.%s must read as the window it fixed', $preset)
+            );
+        }
+    }
+
+    /**
      * And the same of a type's own phrase: one placeholder per declared param.
      */
     public function testATypePhraseTakesExactlyItsDeclaredParams(): void

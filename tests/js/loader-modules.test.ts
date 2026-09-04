@@ -156,3 +156,134 @@ describe('device', () => {
     expect(evaluator.holds({ type: 'device', in: ['mobile'] })).toBe(true);
   });
 });
+
+/**
+ * `time_of_day` — a recurring window, **on the SITE's clock**.
+ *
+ * ============================================================================
+ * THE TWO CASES THAT ARE NOT ARITHMETIC.
+ * ============================================================================
+ * A window that crosses midnight is not `from <= at < to`, and a site that
+ * observes daylight saving is not "the offset we shipped". Both are the whole
+ * reason this rule is worth a test rather than a line: the first is an
+ * off-by-a-day that only shows up at night, and the second is an hour wrong
+ * for half the year on a page a cache may serve for weeks.
+ *
+ * The zone reaches the browser on the payload tag and the browser's own tzdata
+ * resolves it, so the site's clock stays right across a transition without
+ * anything being rebuilt.
+ */
+describe('time_of_day', () => {
+  const inZone = (zone: string): void => {
+    const tag = document.createElement('script');
+
+    tag.id = 'wconvert-payload';
+    tag.setAttribute('data-tz', zone);
+    document.body.append(tag);
+  };
+
+  const holdsAt = (between: string, instant: number, zone = 'UTC'): boolean => {
+    document.body.innerHTML = '';
+    inZone(zone);
+    vi.setSystemTime(instant);
+
+    return ask('time_of_day', { type: 'time_of_day', between });
+  };
+
+  afterEach(() => {
+    vi.useRealTimers();
+    document.body.innerHTML = '';
+  });
+
+  it('holds inside an ordinary window and not outside it', () => {
+    expect(holdsAt('09:00-17:00', Date.UTC(2026, 5, 15, 12, 0))).toBe(true);
+    expect(holdsAt('09:00-17:00', Date.UTC(2026, 5, 15, 8, 59))).toBe(false);
+    expect(holdsAt('09:00-17:00', Date.UTC(2026, 5, 15, 20, 0))).toBe(false);
+  });
+
+  /** Half-open, like a schedule: live AT nine and over AT five. */
+  it('opens at its start and closes at its end', () => {
+    expect(holdsAt('09:00-17:00', Date.UTC(2026, 5, 15, 9, 0))).toBe(true);
+    expect(holdsAt('09:00-17:00', Date.UTC(2026, 5, 15, 17, 0))).toBe(false);
+  });
+
+  /**
+   * THE MIDNIGHT CASE. *"Only overnight"* is a window whose end is smaller
+   * than its start, and the arithmetic every implementation gets wrong first
+   * is `at >= from && at < to`, which holds for nobody.
+   */
+  it('holds across midnight, on both sides of it', () => {
+    expect(holdsAt('22:00-02:00', Date.UTC(2026, 5, 15, 23, 30))).toBe(true);
+    expect(holdsAt('22:00-02:00', Date.UTC(2026, 5, 15, 1, 30))).toBe(true);
+    expect(holdsAt('22:00-02:00', Date.UTC(2026, 5, 15, 22, 0))).toBe(true);
+    expect(holdsAt('22:00-02:00', Date.UTC(2026, 5, 15, 2, 0))).toBe(false);
+    expect(holdsAt('22:00-02:00', Date.UTC(2026, 5, 15, 12, 0))).toBe(false);
+  });
+
+  /**
+   * THE DST CASE. One UTC instant, one site, two answers — because London is
+   * an hour ahead of UTC in June and level with it in January.
+   *
+   * Nothing is recomputed on the server for this: the zone travels and the
+   * browser's own tzdata resolves it, so a page cached before a transition is
+   * still right after one.
+   */
+  it('follows the site’s clock across a daylight-saving transition', () => {
+    // 12:00 UTC is 13:00 in London in June, and 12:00 in January.
+    expect(holdsAt('13:00-14:00', Date.UTC(2026, 5, 15, 12, 0), 'Europe/London')).toBe(true);
+    expect(holdsAt('13:00-14:00', Date.UTC(2026, 0, 15, 12, 0), 'Europe/London')).toBe(false);
+    expect(holdsAt('12:00-13:00', Date.UTC(2026, 0, 15, 12, 0), 'Europe/London')).toBe(true);
+  });
+
+  /** And it is the SITE's clock, never the visitor's. */
+  it('answers for the site even where the visitor is a day away', () => {
+    // 23:00 UTC on the 15th is 08:00 on the 16th in Tokyo.
+    expect(holdsAt('08:00-09:00', Date.UTC(2026, 5, 15, 23, 0), 'Asia/Tokyo')).toBe(true);
+    expect(holdsAt('23:00-23:59', Date.UTC(2026, 5, 15, 23, 0), 'Asia/Tokyo')).toBe(false);
+  });
+
+  /**
+   * A site with no city chosen stores a fixed offset, which never observes
+   * daylight saving — so it is arithmetic and needs no tzdata at all.
+   */
+  it('reads a fixed offset, half-hours included', () => {
+    expect(holdsAt('17:00-18:00', Date.UTC(2026, 5, 15, 12, 0), '+05:30')).toBe(true);
+    expect(holdsAt('07:00-08:00', Date.UTC(2026, 5, 15, 12, 0), '-05:00')).toBe(true);
+    // Past midnight the other way: 01:00 UTC is 20:00 the previous day.
+    expect(holdsAt('20:00-21:00', Date.UTC(2026, 5, 15, 1, 0), '-05:00')).toBe(true);
+  });
+
+  /**
+   * **Everything it cannot read holds for nobody**, which is the same fail-shut
+   * rule `decide.ts` gives a rule that throws. The safe direction here is
+   * showing nothing rather than showing at the wrong hour: a merchant who set
+   * opening hours meant them.
+   */
+  it.each([
+    ['a rule with no window at all', undefined],
+    ['a window it cannot parse', 'evenings'],
+    ['an hour that does not exist', '25:00-26:00'],
+    ['a minute that does not exist', '09:60-17:00'],
+    ['a window with no end', '09:00-'],
+    ['a window of no length', '09:00-09:00'],
+  ])('holds for nobody given %s', (_case, between) => {
+    document.body.innerHTML = '';
+    inZone('UTC');
+    vi.setSystemTime(Date.UTC(2026, 5, 15, 12, 0));
+
+    expect(ask('time_of_day', { type: 'time_of_day', between })).toBe(false);
+  });
+
+  /** A page carrying no zone cannot answer, so it answers no. */
+  it('holds for nobody where the page carries no timezone', () => {
+    document.body.innerHTML = '';
+    vi.setSystemTime(Date.UTC(2026, 5, 15, 12, 0));
+
+    expect(ask('time_of_day', { type: 'time_of_day', between: '00:00-23:59' })).toBe(false);
+  });
+
+  /** And a zone string nothing recognises is the same answer. */
+  it('holds for nobody where the zone cannot be read', () => {
+    expect(holdsAt('00:00-23:59', Date.UTC(2026, 5, 15, 12, 0), 'Middle/Earth')).toBe(false);
+  });
+});

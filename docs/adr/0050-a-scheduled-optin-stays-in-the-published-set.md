@@ -64,6 +64,19 @@ schedule; and an admin's browser resolving it at authoring time would resolve
 it against the *editor's* zone, so a site with two editors in two countries
 would have two meanings for one campaign.
 
+*Extended, and bounded, by [#92](https://github.com/navidkashani/wconvert/issues/92)'s
+`time_of_day` [[Condition]] — which is what this section is NOT. A schedule is
+a campaign's lifetime and its boundaries happen at most once each, so they can
+be resolved to instants on the server and the loader can compare two numbers
+and name no zone. A recurring daily window cannot be resolved that way at all:
+there is no finite set of instants, and the offset a named zone is on moves
+twice a year, so an instant baked in at publish would be an hour wrong for half
+of it on a page a cache may serve for weeks. What travels for that rule is the
+**zone**, on the payload tag, and the browser's own tzdata answers — which
+keeps a page cached before a transition right after one. Both are the site's
+clock and never the visitor's; they differ only in whether the arithmetic can
+happen once.*
+
 **The wall time is what is stored, and the instant is recomputed on every
 rebuild.** [`Schedule`](../../src/Optin/Schedule.php) resolves it against
 `wp_timezone()` inside `PublishedProjection`, so a merchant who corrects their

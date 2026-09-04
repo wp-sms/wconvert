@@ -54,6 +54,7 @@ final class RuleLabels
             'exit_intent' => __('About to leave', 'wconvert'),
             'scroll_up' => __('Scrolls back up', 'wconvert'),
             'device' => __('Device', 'wconvert'),
+            'time_of_day' => __('Time of day', 'wconvert'),
             'query_param' => __('A URL parameter', 'wconvert'),
             'referrer' => __('Where they came from', 'wconvert'),
             'cart_has_items' => __('Has something in their cart', 'wconvert'),
@@ -84,6 +85,13 @@ final class RuleLabels
             'click_element.selector' => __('CSS selector', 'wconvert'),
             'device.in' => __('Shows on', 'wconvert'),
             'query_param.key' => __('Parameter name', 'wconvert'),
+            // "Hours" rather than "Window" or "Between": the merchant is
+            // choosing the hours it may show in, and the hint under the
+            // control is what says whose clock those hours are on. A
+            // [[Schedule]]'s two boxes are labelled "Start showing it on"
+            // and are a different question — a campaign's lifetime, not a
+            // window that comes round again every day.
+            'time_of_day.between' => __('Hours', 'wconvert'),
             'query_param.value' => __('Any of these values', 'wconvert'),
             // "Came from" rather than "Referrer": the merchant's word for it,
             // and the one the hint under the control then narrows to the page
@@ -115,6 +123,13 @@ final class RuleLabels
             'device.mobile_only' => __('On mobile only', 'wconvert'),
             'device.not_on_mobile' => __('Anywhere but mobile', 'wconvert'),
             'device.desktop_only' => __('On desktop only', 'wconvert'),
+            // Starting points rather than claims about this merchant's hours,
+            // which is what a preset is (ADR 0005). Both carry no phrase of
+            // their own, so the summary reads the type's with the hours
+            // substituted in — and the merchant sees the actual window rather
+            // than a label that might not be theirs.
+            'time_of_day.office_hours' => __('During office hours', 'wconvert'),
+            'time_of_day.evenings' => __('In the evening', 'wconvert'),
             'query_param.utm_source' => __('Came from a particular source', 'wconvert'),
             'query_param.utm_medium' => __('Came through a particular medium', 'wconvert'),
             'query_param.utm_campaign' => __('Came from a particular campaign', 'wconvert'),
@@ -167,6 +182,8 @@ final class RuleLabels
             'scroll_up' => __('when they scroll back up', 'wconvert'),
             /* translators: %1$s: one or more device names, already joined, e.g. “mobile or tablet”. */
             'device' => __('they are on %1$s', 'wconvert'),
+            /* translators: %1$s: a range of times on a 24-hour clock, e.g. “09:00-17:00”. */
+            'time_of_day' => __('the time on your site is %1$s', 'wconvert'),
             /* translators: 1: a URL parameter name, e.g. “utm_source”. 2: one or more values, already joined. */
             'query_param' => __('%1$s is %2$s', 'wconvert'),
             /* translators: %1$s: one or more traffic sources, already joined, e.g. “Search or example.com”. */

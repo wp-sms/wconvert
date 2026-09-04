@@ -397,6 +397,39 @@ describe('one rule, read', () => {
     expect(phraseOf({ type: 'query_param' }, types).text).toBe('query_param — needs key and value');
   });
 
+  /**
+   * ==========================================================================
+   * A DAILY WINDOW IS ONE PARAM, AND THIS IS THE SENTENCE THAT DECIDED IT.
+   * ==========================================================================
+   * Declared as a `from` and a `to`, a merchant who had filled one would read
+   * *"time_of_day — needs to"* on the collapsed row, and the rule would be
+   * SAVEABLE in that state — a window with one end that holds for nobody. One
+   * param has no such half: the control writes a whole window or nothing, so
+   * the row either reads out the hours or says it needs them.
+   */
+  it('says a daily window needs its hours until both ends are chosen', () => {
+    const missing = phraseOf({ type: 'time_of_day' }, types);
+
+    expect(missing.attention).toBe(true);
+    expect(missing.text).toBe('time_of_day — needs between');
+    expect(phraseOf({ type: 'time_of_day', between: '' }, types).attention).toBe(true);
+  });
+
+  /**
+   * Hours the presets do not fix, so this reads the general form. What a
+   * merchant sees is the window they set — which is why neither preset carries
+   * a phrase of its own in PHP: a label reading *"During office hours"* is a
+   * starting point, not a claim about this merchant's hours, and a sentence
+   * repeating the label would hide the window behind it
+   * (`RuleLabelParityTest`).
+   */
+  it('reads a whole window as one value', () => {
+    const whole = phraseOf({ type: 'time_of_day', between: '10:00-16:00' }, types);
+
+    expect(whole.attention).toBe(false);
+    expect(whole.text).toBe('time_of_day 10:00-16:00');
+  });
+
   /** A type this build has never heard of reads as its raw key, like its row. */
   it('reads an unknown type as its key', () => {
     const unknown = phraseOf({ type: 'moon_phase' }, types);

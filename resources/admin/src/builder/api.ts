@@ -55,6 +55,7 @@ export type Control =
   | 'selector'
   | 'device_set'
   | 'referrer_set'
+  | 'hours'
   | 'boolean'
   | 'post_id'
   | 'term_id'

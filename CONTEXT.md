@@ -355,6 +355,21 @@ A start with no end and an end with no start are both valid. An end at or before
 its start is not, and is refused by the normaliser rather than by any one
 screen. See [ADR 0050](docs/adr/0050-a-scheduled-optin-stays-in-the-published-set.md).
 
+> **A Schedule is not the `time_of_day` [[Condition]], and the two are worth
+> reading together.** A Schedule is a campaign's **lifetime**: two instants,
+> each happening at most once, resolved on the server and compared to
+> `Date.now()`. `time_of_day` is an **eligibility window that comes round again
+> every day** — *only during opening hours* — so there is no finite set of
+> instants to resolve and the offset a zone is on moves twice a year. What
+> travels for it is therefore the **zone** rather than an instant, on the
+> payload tag, and the browser's own tzdata answers: a page cached before a
+> daylight-saving transition is still right after one.
+>
+> Both are the site's clock and never the visitor's, which is the half they
+> share. Where they differ is *when the arithmetic happens* — once at publish,
+> or on every evaluation — and that follows entirely from one of them
+> repeating.
+
 **A `countdown` in a [[Template]] counts to `ends_at` and to nothing else**, so
 there is only ever one deadline and no way for a timer to disagree with the
 schedule it is counting to. The instant the loader compares against is the one

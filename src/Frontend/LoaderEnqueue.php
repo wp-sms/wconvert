@@ -159,18 +159,32 @@ final class LoaderEnqueue
         $captureUrl = rest_url(Routes::NAMESPACE . '/capture');
         $beaconUrl = rest_url(Routes::NAMESPACE . '/beacon');
 
-        // **The allowance the whole site shares, and null on every install
-        // that has not asked for one** (ADR 0047). It is read HERE rather than
-        // frozen into the published set for `PolicyLink`'s reason: a merchant
-        // who changes it corrects every running Optin without republishing
-        // one, and it is safe under the full-page cache because it is a
-        // site-wide setting identical for every visitor.
+        // ====================================================================
+        // TWO FACTS ABOUT THE SITE, BOTH READ HERE RATHER THAN FROZEN INTO THE
+        // PUBLISHED SET.
+        // ====================================================================
+        // Same property `PolicyLink` and `CartLink` have one line up: a
+        // merchant who changes either corrects every running Optin without
+        // republishing one, and both are safe under the full-page cache
+        // because both are site-wide settings identical for every visitor.
         //
-        // Read after the payload is known to be non-empty, so a page with no
-        // matching Optin pays for no option read at all.
+        // **The allowance the whole site shares** is null on every install
+        // that has not asked for one (ADR 0047), and it is read after the
+        // payload is known to be non-empty — so a page with no matching Optin
+        // pays for no option read at all.
+        //
+        // **The site's own clock** is for the rules that ask what time it is
+        // THERE (#92). It is a zone rather than an instant because a recurring
+        // window has no finite set of instants to resolve and the offset a
+        // named zone is on moves twice a year, so the browser's own tzdata
+        // answers and a page cached before a daylight-saving transition is
+        // still right after one. A [[Schedule]]'s instants are the opposite
+        // case and are resolved at publish, because they happen once —
+        // `src/Optin/Schedule.php` is where that split lives.
         $siteAllowance = $this->siteFrequency->forPayload();
+        $timezone = wp_timezone()->getName();
 
-        add_action('wp_head', static function () use ($entries, $captureUrl, $beaconUrl, $siteAllowance): void {
+        add_action('wp_head', static function () use ($entries, $captureUrl, $beaconUrl, $siteAllowance, $timezone): void {
             // Not escaped, and correctly so: PayloadTag renders JSON with
             // JSON_HEX_TAG, which is the escaping this context needs. Running
             // esc_html() over it would escape the quotes and produce invalid
@@ -183,7 +197,7 @@ final class LoaderEnqueue
             // facts. {@see PayloadTag::render()} is where they are enforced,
             // and tests/unit/Frontend/PayloadTest.php is what holds them.
             // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- PayloadTag::render() escapes for this context: JSON_HEX_TAG on the body, esc_url() on the attributes.
-            echo PayloadTag::render($entries, $captureUrl, $beaconUrl, $siteAllowance);
+            echo PayloadTag::render($entries, $captureUrl, $beaconUrl, $siteAllowance, $timezone);
         }, 5);
     }
 

@@ -54,6 +54,21 @@ export const BEACON_ATTRIBUTE = 'data-beacon';
 export const SITE_ALLOWANCE_ATTRIBUTE = 'data-allowance';
 
 /**
+ * The site's own timezone — an IANA name, or a fixed offset.
+ *
+ * A third attribute for {@link CAPTURE_ATTRIBUTE}'s reason: it is **one fact
+ * about the site**, and the JSON beside it is a list of facts about Optins.
+ *
+ * The loader cannot compute it, and must not guess: the visitor's clock is not
+ * the site's clock, and a rule about opening hours answered against the
+ * visitor's zone is the one wrong answer that would look right. It is printed
+ * unconditionally rather than only where a rule needs it, because PHP
+ * deliberately reasons about no client rule type at all (ADR 0005) — and
+ * because it is about twenty bytes beside two full route URLs.
+ */
+export const TIMEZONE_ATTRIBUTE = 'data-tz';
+
+/**
  * Where to post a capture, or null where this page carries nowhere.
  *
  * Read on demand rather than threaded through `boot`, because it is needed at
@@ -107,6 +122,21 @@ export function siteAllowance(): Frequency | undefined {
   }
 }
 
+
+/**
+ * The site's timezone, or **null where this page carries none**.
+ *
+ * Null is a real answer — an optimiser that rewrote the tag, or a page with no
+ * payload at all — and `time_of_day` treats it as one: a rule that cannot be
+ * answered does not hold, which is the same fail-shut rule `decide.ts` gives a
+ * rule that throws. Showing nothing is the safe direction here; showing at the
+ * wrong hour is not.
+ */
+export function siteTimezone(): string | null {
+  return endpointAt(TIMEZONE_ATTRIBUTE);
+}
+
+/** One attribute off the payload element, or null where it is empty or absent. */
 function endpointAt(attribute: string): string | null {
   const endpoint = document.getElementById(PAYLOAD_ELEMENT_ID)?.getAttribute(attribute) ?? '';
 

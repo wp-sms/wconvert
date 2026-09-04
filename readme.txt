@@ -33,6 +33,9 @@ it: the placement, the trigger, the copy and the fields, already filled in.
   visitor anything once they close or sign up to something, cap how many they
   see in total, or put days between them. It is off until you set it, and no
   Optin can opt out of it.
+* **Hours of the day**, so a popup can keep to your opening hours instead of
+  greeting people at three in the morning. It is your site's own clock, and a
+  window may run past midnight.
 * **Lead-magnet delivery by email**, with no third-party service required.
 * **Consent captured as part of the form**, recorded with the wording that was
   on screen at the time.

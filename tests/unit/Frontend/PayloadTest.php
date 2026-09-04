@@ -27,6 +27,9 @@ final class PayloadTest extends TestCase
 
     private const BEACON = 'https://example.test/wp-json/wconvert/v1/beacon';
 
+    /** The site's own clock, as `wp_timezone()->getName()` answers it. */
+    private const ZONE = 'Europe/London';
+
     /**
      * Built from the STORED shape rather than by hand, so these tests keep
      * exercising the parse the front end actually does.
@@ -60,7 +63,7 @@ final class PayloadTest extends TestCase
         $entries = Payload::forRequest($set, $context, InstalledRules::free());
 
         $this->assertSame([['id' => '01A', 'display_type' => 'popup']], $entries);
-        $this->assertStringNotContainsString('secret-staging-path', PayloadTag::render($entries, self::CAPTURE, self::BEACON, null));
+        $this->assertStringNotContainsString('secret-staging-path', PayloadTag::render($entries, self::CAPTURE, self::BEACON, null, self::ZONE));
     }
 
     /**
@@ -71,7 +74,7 @@ final class PayloadTest extends TestCase
      */
     public function testThePayloadTravelsAsAJsonScriptTag(): void
     {
-        $tag = PayloadTag::render([['id' => '01A', 'display_type' => 'popup']], self::CAPTURE, self::BEACON, null);
+        $tag = PayloadTag::render([['id' => '01A', 'display_type' => 'popup']], self::CAPTURE, self::BEACON, null, self::ZONE);
 
         $this->assertStringStartsWith('<script type="application/json" id="wconvert-payload" ', $tag);
         $this->assertStringEndsWith('</script>', $tag);
@@ -86,7 +89,7 @@ final class PayloadTest extends TestCase
      */
     public function testThePayloadCarriesWhereToPostACapture(): void
     {
-        $tag = PayloadTag::render([['id' => '01A', 'display_type' => 'popup']], self::CAPTURE, self::BEACON, null);
+        $tag = PayloadTag::render([['id' => '01A', 'display_type' => 'popup']], self::CAPTURE, self::BEACON, null, self::ZONE);
 
         $this->assertStringContainsString(sprintf('data-capture="%s"', self::CAPTURE), $tag);
         $this->assertSame(1, substr_count($tag, 'data-capture'));
@@ -100,7 +103,7 @@ final class PayloadTest extends TestCase
      */
     public function testThePayloadCarriesWhereToPostABeacon(): void
     {
-        $tag = PayloadTag::render([['id' => '01A', 'display_type' => 'popup']], self::CAPTURE, self::BEACON, null);
+        $tag = PayloadTag::render([['id' => '01A', 'display_type' => 'popup']], self::CAPTURE, self::BEACON, null, self::ZONE);
 
         $this->assertStringContainsString(sprintf('data-beacon="%s"', self::BEACON), $tag);
         $this->assertSame(1, substr_count($tag, 'data-beacon'));
@@ -121,13 +124,16 @@ final class PayloadTest extends TestCase
 
         $this->assertStringNotContainsString(
             'data-allowance',
-            PayloadTag::render($entries, self::CAPTURE, self::BEACON, null)
+            PayloadTag::render($entries, self::CAPTURE, self::BEACON, null, self::ZONE)
         );
 
-        $tag = PayloadTag::render($entries, self::CAPTURE, self::BEACON, [
-            'cooldownDays' => 3,
-            'stopAfterDismiss' => false,
-        ]);
+        $tag = PayloadTag::render(
+            $entries,
+            self::CAPTURE,
+            self::BEACON,
+            ['cooldownDays' => 3, 'stopAfterDismiss' => false],
+            self::ZONE
+        );
 
         $this->assertStringContainsString('data-allowance="', $tag);
         $this->assertSame(1, substr_count($tag, 'data-allowance'));
@@ -146,7 +152,8 @@ final class PayloadTest extends TestCase
             [['id' => '01A', 'display_type' => 'popup']],
             self::CAPTURE,
             self::BEACON,
-            []
+            [],
+            self::ZONE
         );
 
         $this->assertStringContainsString('data-allowance="{}"', $tag);
@@ -163,11 +170,58 @@ final class PayloadTest extends TestCase
             [['id' => '01A', 'display_type' => 'popup']],
             self::CAPTURE,
             self::BEACON,
-            ['maxImpressions' => 2]
+            ['maxImpressions' => 2],
+            self::ZONE
         );
 
         $this->assertStringContainsString('data-allowance="{&quot;maxImpressions&quot;:2}"', $tag);
         $this->assertSame(1, substr_count($tag, '</script>'));
+    }
+
+    /**
+     * The site's own clock rides on the element too, for the two routes'
+     * reason: one fact about the SITE, beside a list of facts about Optins.
+     *
+     * **It is printed always**, rather than only where an entry carries a rule
+     * that reads it. A conditional here would mean PHP asking which CLIENT
+     * rule types this page names, which is the one thing the three-axis split
+     * exists to prevent (ADR 0005) — and the loader is where the decision
+     * belongs anyway: a page with no time rule never reads the attribute.
+     *
+     * It is the counterpart of the allowance above it, and the pair is worth
+     * reading together: both are one fact about the site, and only one of them
+     * is conditional.
+     */
+    public function testThePayloadCarriesTheSitesOwnClock(): void
+    {
+        $tag = PayloadTag::render(
+            [['id' => '01A', 'display_type' => 'popup']],
+            self::CAPTURE,
+            self::BEACON,
+            null,
+            self::ZONE
+        );
+
+        $this->assertStringContainsString('data-tz="Europe/London"', $tag);
+        $this->assertSame(1, substr_count($tag, 'data-tz'));
+    }
+
+    /**
+     * A site with no city chosen stores a fixed offset, which is what
+     * `wp_timezone()->getName()` answers there. It travels verbatim: the
+     * loader reads that shape as arithmetic and never asks `Intl` about it.
+     */
+    public function testAFixedOffsetTravelsAsItIsStored(): void
+    {
+        $tag = PayloadTag::render(
+            [['id' => '01A', 'display_type' => 'popup']],
+            self::CAPTURE,
+            self::BEACON,
+            null,
+            '+05:30'
+        );
+
+        $this->assertStringContainsString('data-tz="+05:30"', $tag);
     }
 
     /**
@@ -187,7 +241,8 @@ final class PayloadTest extends TestCase
             [['id' => '01A', 'display_type' => 'popup']],
             'https://example.com/wp-json/wconvert/v1/capture?x="><script>alert(1)</script>',
             self::BEACON,
-            null
+            null,
+            self::ZONE
         );
 
         $this->assertStringNotContainsString('<script>alert', $tag);
@@ -201,7 +256,7 @@ final class PayloadTest extends TestCase
      */
     public function testCopyContainingAClosingScriptTagCannotBreakOut(): void
     {
-        $tag = PayloadTag::render([['id' => '01A', 'headline' => '</script><script>alert(1)</script>']], self::CAPTURE, self::BEACON, null);
+        $tag = PayloadTag::render([['id' => '01A', 'headline' => '</script><script>alert(1)</script>']], self::CAPTURE, self::BEACON, null, self::ZONE);
 
         $this->assertSame(1, substr_count($tag, '</script>'));
         $this->assertStringNotContainsString('<script>alert', $tag);
@@ -213,7 +268,7 @@ final class PayloadTest extends TestCase
      */
     public function testNoMatchingOptinPrintsNothingAtAll(): void
     {
-        $this->assertSame('', PayloadTag::render([], self::CAPTURE, self::BEACON, null));
+        $this->assertSame('', PayloadTag::render([], self::CAPTURE, self::BEACON, null, self::ZONE));
     }
 
     /**
@@ -252,7 +307,7 @@ final class PayloadTest extends TestCase
         $entries = Payload::forRequest($set, self::at('/'), InstalledRules::withPro());
 
         $this->assertSame([['id' => '01A', 'display_type' => 'popup']], $entries);
-        $this->assertStringNotContainsString('recover_cart', PayloadTag::render($entries, self::CAPTURE, self::BEACON, null));
+        $this->assertStringNotContainsString('recover_cart', PayloadTag::render($entries, self::CAPTURE, self::BEACON, null, self::ZONE));
     }
 
     // ========================================================================
