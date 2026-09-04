@@ -184,3 +184,48 @@ describe('what reaches the visitor device', () => {
     expect(document.cookie).toBe('');
   });
 });
+
+/**
+ * =============================================================================
+ * A FIELD FREE NEVER WROTE, ON A RECORD FREE OWNS.
+ * =============================================================================
+ * [[Pro]] writes a fifth field beside the four here — `v`, the arm of an A/B
+ * test this browser drew (ADR 0045) — into the same `wcv1` record, because it
+ * is a new FIELD on a record that already exists and not a new key and not a
+ * new store.
+ *
+ * So a merchant who deactivates Pro leaves every one of those records behind,
+ * and free reads them from the next page view onwards. **This is free's
+ * promise, so it is asserted in free's suite**: the record is not discarded,
+ * the field is not stripped, and an impression recorded against that Optin
+ * does not take it with it — because a merchant who reactivates Pro must not
+ * find every browser on their site re-drawn into the other arm.
+ *
+ * It costs free's bundle nothing, which is the point: `loadState` PARSES the
+ * blob rather than rebuilding it, and every reducer spreads the record it
+ * updates. Tolerance is what the existing shape already does, and this is what
+ * stops somebody "tidying" it into a rebuild that silently would not.
+ */
+describe('a record carrying a field free never wrote', () => {
+  it('is kept whole rather than discarded', () => {
+    const store = persistentStore(STATE_KEY);
+
+    store.write('{"01JQ0000000000000000000001":{"i":2,"l":20000,"v":1}}');
+
+    expect(loadState(store)).toEqual({
+      '01JQ0000000000000000000001': { i: 2, l: 20_000, v: 1 },
+    });
+  });
+
+  it('keeps it through an impression free records against the same Optin', () => {
+    const store = persistentStore(STATE_KEY);
+
+    store.write('{"01JQ0000000000000000000001":{"v":1}}');
+
+    saveState(store, withImpression(loadState(store), '01JQ0000000000000000000001', 20_001));
+
+    expect(loadState(store)).toEqual({
+      '01JQ0000000000000000000001': { i: 1, l: 20_001, v: 1 },
+    });
+  });
+});

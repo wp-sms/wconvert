@@ -269,15 +269,29 @@ with two arms rather than two campaigns. That is a query condition; storage does
 not constrain the screen, it just has to be able to express it.
 
 Ending a test **never deletes the loser**: the arm that lost is a month of the
-merchant's own history, and an Optin is never hard-deleted anyway.
+merchant's own history, and an Optin is never hard-deleted anyway. Ending one
+is the merchant's decision and never an automatic one — the counters are daily
+totals and the denominator is browsers, so there is no significance WConvert
+could honestly compute. The winner **becomes the campaign**: its `parent_id`
+goes to `NULL` and it takes the parent's name, and nothing is copied onto
+anything, so every row's counters keep meaning exactly one design. There is no
+*finished* flag either — a test is running exactly while a parentless Optin has
+published arms beneath it.
 
 Which arm a browser draws is held as `v` on the parent's own client record —
-`wcv1[parentId].v` — beside the impressions and dismissals already there. So
-the split unit is **the browser record, not the person**: one visitor on two
-devices can meet both arms and be counted twice. That is the same limit
-[[Impression]] and [[Conversion]] already carry, for the same reason, and it is
-why there is no honest count of people anywhere in WConvert. See
-[ADR 0045](docs/adr/0045-an-ab-variant-is-a-whole-optin.md).
+`wcv1[parentId].v` — beside the impressions and dismissals already there. It is
+the arm's **index**, drawn evenly across the published arms the first time this
+browser meets the test, and there is no ratio to set. So the split unit is
+**the browser record, not the person**: one visitor on two devices can meet both
+arms and be counted twice. That is the same limit [[Impression]] and
+[[Conversion]] already carry, for the same reason, and it is why there is no
+honest count of people anywhere in WConvert — the Optins list says so where it
+reports the two numbers.
+
+A Variant is [[Pro]]'s, at the `pro` rung. See
+[ADR 0045](docs/adr/0045-an-ab-variant-is-a-whole-optin.md) for the shape and
+[ADR 0058](docs/adr/0058-a-test-ends-when-the-merchant-says-so.md) for how a
+test runs and ends.
 
 ### Frequency
 

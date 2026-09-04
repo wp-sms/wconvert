@@ -1,5 +1,6 @@
 import { bootProInspector } from './tier';
 import { ELITE_MODULES } from '../modules';
+import { narrowToArms } from '../../../../modules/ab-testing/loader';
 
 /**
  * The eligibility inspector at the **elite** tier.
@@ -19,4 +20,4 @@ import { ELITE_MODULES } from '../modules';
  * call every premium Trigger inert. So the set is this tier's, named from the
  * same place its loader names it.
  */
-export default bootProInspector(ELITE_MODULES);
+export default bootProInspector(ELITE_MODULES, narrowToArms);

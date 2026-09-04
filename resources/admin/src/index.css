@@ -692,6 +692,35 @@
   white-space: nowrap;
 }
 
+/*
+ * ---------------------------------------------------------------------------
+ * AN A/B ARM, NESTED UNDER THE CAMPAIGN IT BELONGS TO.
+ * ---------------------------------------------------------------------------
+ * A [[Variant]] is a whole Optin with its own row and its own counters
+ * (ADR 0045), and the nesting is the entire UI half of that decision: the list
+ * shows parentless Optins only and draws each test's arms beneath their
+ * parent, so a merchant running three tests meets three campaigns rather than
+ * six.
+ *
+ * **It is an inline mark and a gap, not a `padding-inline-start` on the cell.**
+ * The table becomes a stack of row-cards below 640px, where a cell has no
+ * leading edge to indent from — an indent there would push the value away from
+ * the label it is drawn beside. A glyph in the flow moves with the text at
+ * every width and says the same thing on both.
+ */
+#wconvert-admin .wconvert-optin-row-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+#wconvert-admin .wconvert-optin-arm {
+  inline-size: 0.875rem;
+  block-size: 0.875rem;
+  flex: none;
+  color: var(--muted-foreground);
+}
+
 #wconvert-admin .wconvert-table .wconvert-table__actions-row {
   display: flex;
   flex-wrap: nowrap;

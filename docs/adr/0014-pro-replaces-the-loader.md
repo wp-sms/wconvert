@@ -132,6 +132,15 @@ ever sees that queue's output.*
 - **No public `registerRule` seam**, therefore no partial-registration failure mode
   and no documented extension point that immediately becomes a compatibility
   surface.
+  *Read against a second composition parameter by
+  [ADR 0058](0058-a-test-ends-when-the-merchant-says-so.md), and it passes.
+  `boot(loader, presenter, narrow?)` gained a third argument — a pure filter
+  over the payload entries, which is how Pro shows one arm of an A/B test
+  before the engine is asked anything. It is not what this bullet refuses: it
+  is decided in SOURCE, in the entry file, on the same call that already hands
+  `boot` a presenter it did not choose, so there is one script and nothing on
+  the page to reorder. What ADR 0004 catalogues is a second script that must
+  register before the first evaluates, and there is no second script.*
 - **A shared-engine bugfix needs two releases**, and the free one carries wp.org
   review latency while Pro's ships immediately. Booked, not solved.
   *Completed by [ADR 0030](0030-free-and-pro-release-on-independent-tags.md):

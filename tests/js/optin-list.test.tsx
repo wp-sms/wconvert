@@ -17,6 +17,8 @@ const optins = vi.hoisted(() => ({
   publishOptin: vi.fn(),
   unpublishOptin: vi.fn(),
   deleteOptin: vi.fn(),
+  createVariant: vi.fn(),
+  declareWinner: vi.fn(),
 }));
 
 const goals = vi.hoisted(() => ({ listGoals: vi.fn() }));
@@ -37,9 +39,15 @@ const OPTIN = {
   id: '01JQ00000000000000000000AA',
   name: 'Welcome discount',
   goal: 'grow_email_list',
+  parent_id: null,
   published_at: null,
   deleted_at: null,
   suspended: null,
+  // Present on every row including as an empty list, exactly as the route
+  // sends it: a key that appeared only on the rows running a test is a key
+  // this screen would test for existence, and "absent" and "no test" would be
+  // one thing until the day a request half-failed.
+  arms: [],
 };
 
 beforeEach(() => {
@@ -270,5 +278,194 @@ describe('the door into the eligibility inspector', () => {
     await userEvent.click(await screen.findByRole('menuitem', { name: 'Why did nothing show?' }));
 
     expect(await screen.findByText(/a cache is serving that page before WordPress runs/)).toBeInTheDocument();
+  });
+});
+
+/**
+ * =============================================================================
+ * A TEST IS ONE CAMPAIGN WITH ARMS UNDER IT, NEVER TWO CAMPAIGNS.
+ * =============================================================================
+ * This is the entire UI half of ADR 0045. A [[Variant]] is a whole [[Optin]]
+ * with its own row and its own counters — which is what makes the counters need
+ * nothing at all — and the price of that is that storage would show a merchant
+ * running three tests six campaigns. It does not: the list filters to
+ * parentless Optins in SQL and each test's arms are drawn beneath their parent.
+ */
+describe('an A/B test on the list', () => {
+  const ARM_B = {
+    ...OPTIN,
+    id: '01JQ00000000000000000000BB',
+    name: 'Welcome discount (B)',
+    parent_id: OPTIN.id,
+    arms: [],
+  };
+
+  const A_TEST = [{ ...OPTIN, arms: [ARM_B] }];
+
+  const openTheMenuOn = async (name: RegExp) =>
+    userEvent.click(await screen.findByRole('button', { name }));
+
+  beforeEach(() => {
+    window.wconvertAdmin = { exportUrl: '', variants: { availability: 'ready', tier: 'pro' } };
+  });
+
+  it('draws the arms beneath their parent rather than as campaigns of their own', async () => {
+    optins.listOptins.mockResolvedValue(A_TEST);
+
+    render(<OptinList onEdit={() => undefined} />);
+
+    await screen.findByText('Welcome discount (B)');
+
+    const rows = screen.getAllByRole('row');
+
+    // The header, the campaign, and its one arm — never a second campaign.
+    expect(rows).toHaveLength(3);
+    expect(rows[1]).toHaveTextContent('Welcome discount');
+    expect(rows[2]).toHaveTextContent('Welcome discount (B)');
+  });
+
+  /**
+   * On the campaign only. The arms beneath it are already inside it, so a badge
+   * on every row would say one thing three times (ADR 0039/0048: a fact true of
+   * the group belongs to the group).
+   */
+  it('marks the campaign as a test and not each arm', async () => {
+    optins.listOptins.mockResolvedValue(A_TEST);
+
+    render(<OptinList onEdit={() => undefined} />);
+
+    expect(await screen.findAllByText('A/B test')).toHaveLength(1);
+  });
+
+  /**
+   * **The split unit is the browser record, not the person** (ADR 0017,
+   * ADR 0045). A merchant reading 4.2% against 5.1% deserves to know what the
+   * denominator is, and the honest move is to say so where the numbers are
+   * rather than to buy validity with a cookie.
+   */
+  it('says what the two numbers are counting, where they are reported', async () => {
+    optins.listOptins.mockResolvedValue(A_TEST);
+
+    render(<OptinList onEdit={() => undefined} />);
+
+    expect(await screen.findByText(/count browsers, not people/)).toBeInTheDocument();
+  });
+
+  /**
+   * And says nothing on a screen with no test on it. A line that is true,
+   * permanent and attached to no decision taxes every visit and informs one
+   * (ADR 0042).
+   */
+  it('says nothing about browsers on a screen with no test running', async () => {
+    optins.listOptins.mockResolvedValue([OPTIN]);
+
+    render(<OptinList onEdit={() => undefined} />);
+
+    await screen.findByText('Welcome discount');
+
+    expect(screen.queryByText(/count browsers, not people/)).not.toBeInTheDocument();
+  });
+
+  /** A merchant is never asked to name the thing they think of as the other one. */
+  it('creates a variant without asking for a name', async () => {
+    optins.listOptins.mockResolvedValue([OPTIN]);
+    optins.createVariant.mockResolvedValue({ id: ARM_B.id });
+
+    render(<OptinList onEdit={() => undefined} />);
+
+    await openTheMenuOn(/More actions/);
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Test against a variant' }));
+
+    expect(optins.createVariant).toHaveBeenCalledWith(OPTIN.id);
+  });
+
+  /**
+   * ==========================================================================
+   * MARKED BEFORE THE CLICK, WITH THE REASON — AND NEVER AS A DEAD CONTROL.
+   * ==========================================================================
+   * The routes genuinely do not exist on a build without the module (ADR 0015),
+   * so an unmarked item would be a 404 a merchant met by pressing something we
+   * offered them. It EXPLAINS rather than hiding, because this is a list
+   * somebody is reading rather than a creation front door (ADR 0026) — and it
+   * is a label rather than a disabled item, because wp.org Guideline 9 fires on
+   * showing a real control that cannot be used.
+   */
+  it('marks A/B testing as premium rather than offering a control that would 404', async () => {
+    optins.listOptins.mockResolvedValue([OPTIN]);
+    window.wconvertAdmin = {
+      exportUrl: '',
+      variants: { availability: 'locked', tier: 'pro' },
+      tiers: { pro: { name: 'Pro', product_name: 'WConvert Pro' } },
+    };
+
+    render(<OptinList onEdit={() => undefined} />);
+
+    await openTheMenuOn(/More actions/);
+
+    expect(
+      await screen.findByText('A/B testing is available with WConvert Pro.'),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('menuitem', { name: /variant/ })).not.toBeInTheDocument();
+  });
+
+  /**
+   * ==========================================================================
+   * ENDING A TEST CONFIRMS, AND SAYS WHAT THE LOSING ARM KEEPS.
+   * ==========================================================================
+   * It is destructive, so it confirms (ADR 0039). What the sentence carries is
+   * the half a merchant would otherwise assume wrongly: the arm that lost is
+   * not deleted — its row stays and its counts stay readable (ADR 0020).
+   */
+  it('confirms before ending a test, and says the losing arm keeps its numbers', async () => {
+    optins.listOptins.mockResolvedValue(A_TEST);
+    optins.declareWinner.mockResolvedValue(undefined);
+
+    render(<OptinList onEdit={() => undefined} />);
+
+    await openTheMenuOn(/More actions for Welcome discount \(B\)/);
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Use this one' }));
+
+    expect(
+      await screen.findByText(/stops being served — its leads and conversions are kept/),
+    ).toBeInTheDocument();
+    expect(optins.declareWinner).not.toHaveBeenCalled();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Use this one' }));
+
+    expect(optins.declareWinner).toHaveBeenCalledWith(OPTIN.id, ARM_B.id);
+  });
+
+  /**
+   * **The parent is arm A**, so "keep the one I started with" has to be
+   * expressible — otherwise a merchant whose original design won could only end
+   * the test by declaring the loser.
+   */
+  it('lets the campaign itself win', async () => {
+    optins.listOptins.mockResolvedValue(A_TEST);
+    optins.declareWinner.mockResolvedValue(undefined);
+
+    render(<OptinList onEdit={() => undefined} />);
+
+    await openTheMenuOn(/More actions for Welcome discount$/);
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Use this one' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Use this one' }));
+
+    expect(optins.declareWinner).toHaveBeenCalledWith(OPTIN.id, OPTIN.id);
+  });
+
+  /**
+   * Arms are a flat set under one parent — the payload names one experiment, so
+   * a variant of a variant is a shape no test describes and the server refuses
+   * one. It is not offered here either, which is the same rule read before the
+   * click.
+   */
+  it('does not offer to test an arm against a variant of its own', async () => {
+    optins.listOptins.mockResolvedValue(A_TEST);
+
+    render(<OptinList onEdit={() => undefined} />);
+
+    await openTheMenuOn(/More actions for Welcome discount \(B\)/);
+
+    expect(screen.queryByRole('menuitem', { name: /variant/ })).not.toBeInTheDocument();
   });
 });

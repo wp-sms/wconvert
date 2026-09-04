@@ -42,7 +42,15 @@ export const templatePresenter: Presenter = {
     // Asked through `isOverlay` rather than by comparing the string again:
     // the arbitration in `decide` already answers this question, and two
     // spellings of it would eventually disagree about an unknown type.
-    const anchor = isOverlay(entry) ? null : anchorFor(entry.id);
+    // **`entry.anchor` where the server sent one, and this Optin's own id
+    // otherwise.** An Optin normally renders at the anchor naming it, and the
+    // one case that is not true of is an arm of an A/B test: the merchant
+    // placed one block, naming the campaign, and an arm has an id of its own
+    // that no block on the page mentions. Without this, half the traffic on an
+    // inline test would meet nothing at all, silently — so the server says
+    // where an entry renders when it is not its own id, and this reads it
+    // ({@link ../../../src/Optin/PublishedProjection.php}).
+    const anchor = isOverlay(entry) ? null : anchorFor(entry.anchor ?? entry.id);
 
     const mounted = mount({
       displayType: entry.display_type,

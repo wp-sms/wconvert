@@ -238,4 +238,274 @@ final class OptinRepositoryTest extends TestCase
         $this->assertStringContainsString('SELECT id, name, goal, deleted_at FROM %i', $sql);
         $this->assertStringNotContainsString('config', $sql);
     }
+
+    // =========================================================================
+    // A/B: STARTING A TEST, AND ENDING ONE WITHOUT DESTROYING ITS HISTORY.
+    // =========================================================================
+
+    public function testAVariantIsASecondOptinWhoseParentIsTheFirst(): void
+    {
+        $parent = $this->anOptin();
+
+        $variant = $this->repository->createVariant($parent->id);
+
+        $this->assertNotNull($variant);
+        $this->assertNotSame($parent->id, $variant->id, 'a Variant is a whole Optin, with its own id');
+        $this->assertSame($parent->id, $variant->parentId);
+        $this->assertSame($parent->goal, $variant->goal);
+        $this->assertSame($parent->config, $variant->config);
+    }
+
+    /**
+     * Nobody should be asked to name a thing they think of as *the other one*.
+     * The parent is arm A and is never renamed, so the first variant is B.
+     */
+    public function testAVariantIsNotAskedForANameAndTakesItsParentsWithALetter(): void
+    {
+        $parent = $this->anOptin();
+
+        $b = $this->repository->createVariant($parent->id);
+        $c = $this->repository->createVariant($parent->id);
+
+        $this->assertNotNull($b);
+        $this->assertNotNull($c);
+        $this->assertSame('Spring sale (B)', $b->name);
+        $this->assertSame('Spring sale (C)', $c->name);
+    }
+
+    /**
+     * A letter that has been retired is never handed out again. Two rows called
+     * *"Spring sale (B)"* would be two different designs under one label in the
+     * [[Lead]] log, where the name is the only provenance a Lead has.
+     */
+    public function testALetterIsNeverReusedAfterItsArmIsTidiedAway(): void
+    {
+        $parent = $this->anOptin();
+        $first = $this->repository->createVariant($parent->id);
+
+        $this->repository->delete((string) $first?->id);
+
+        $this->assertSame('Spring sale (C)', $this->repository->createVariant($parent->id)?->name);
+    }
+
+    /**
+     * A variant starts where its parent's EDITOR starts, not where its site
+     * does. Copying `published_config` would put a second arm on the site the
+     * moment the button was pressed, which is a test starting without anybody
+     * saying so.
+     */
+    public function testAVariantIsADraftEvenWhenItsParentIsLive(): void
+    {
+        $parent = $this->anOptin();
+        $this->repository->publish($parent->id);
+
+        $variant = $this->repository->createVariant($parent->id);
+
+        $this->assertNull($variant?->publishedAt);
+        $this->assertNull($variant?->publishedConfig);
+        $this->assertSame([$parent->id], array_column($this->publishedSet->all(), 'id'));
+    }
+
+    /**
+     * Arms are a flat set under one parent: the payload's arm triple names one
+     * experiment, and a grandchild would name a parent that is itself an arm of
+     * something else. There is no test that shape describes.
+     */
+    public function testAVariantOfAVariantIsRefused(): void
+    {
+        $parent = $this->anOptin();
+        $variant = $this->repository->createVariant($parent->id);
+
+        $this->assertNull($this->repository->createVariant((string) $variant?->id));
+    }
+
+    public function testTheArmsOfATestAreReadBackBeneathTheirParent(): void
+    {
+        $parent = $this->anOptin();
+        $variant = $this->repository->createVariant($parent->id);
+
+        $this->assertSame(
+            [$variant?->id],
+            array_column($this->repository->armsByParent()[$parent->id] ?? [], 'id')
+        );
+        // The list itself is parentless-only in SQL, which this fake models
+        // the table rather than the query and cannot answer — so what is
+        // asserted here is the statement it issued. A merchant never meeting
+        // two campaigns is proven against a real database in
+        // `bin/verify-ab-test.php`.
+        $this->repository->summaries();
+
+        $this->assertNotEmpty(array_filter(
+            $this->db->statements,
+            static fn (string $sql): bool => str_contains($sql, 'parent_id IS NULL')
+        ));
+    }
+
+    /**
+     * ========================================================================
+     * THE SEAM. ENDING A TEST NEVER DELETES A ROW (ADR 0020).
+     * ========================================================================
+     * The losing arm is a month of the merchant's own history, and a removed
+     * row makes every count naming it uninterpretable. Asserted on the ROW and
+     * on the CONNECTION both: the row is still there with a `deleted_at`
+     * stamp, and no `DELETE` was issued at all — which is the assertion that
+     * fails on the pull request that reaches for one, rather than on the one
+     * that forgets to update a comment.
+     */
+    public function testDeclaringAWinnerSoftDeletesTheLoserAndDeletesNoRow(): void
+    {
+        $parent = $this->anOptin();
+        $loser = $this->repository->createVariant($parent->id);
+        $this->repository->publish($parent->id);
+        $this->repository->publish((string) $loser?->id);
+
+        $this->assertTrue($this->repository->declareWinner($parent->id, $parent->id));
+
+        $tidied = $this->repository->find((string) $loser?->id);
+
+        $this->assertNotNull($tidied, 'the losing row stays, and its counters stay interpretable');
+        $this->assertNotNull($tidied->deletedAt);
+        $this->assertSame([], $this->db->deletes, 'no DELETE was ever issued');
+    }
+
+    /**
+     * The winner stops having a parent and takes the campaign's name, so the
+     * list shows one campaign again and the merchant is not left reading
+     * *"Spring sale (B)"* forever.
+     *
+     * **Nothing is copied onto the parent**, which is the shape ADR 0045
+     * sketched and this refuses: arm B's design on arm A's row would leave one
+     * row whose counters are A's history followed by B's future, under a rate
+     * that is the average of two different designs.
+     */
+    public function testAWinningVariantBecomesTheCampaignRatherThanBeingCopiedOntoIt(): void
+    {
+        $parent = $this->anOptin();
+        $winner = $this->repository->createVariant($parent->id);
+        $this->repository->saveDraft((string) $winner?->id, null, null, ['headline' => 'the winning words']);
+        $this->repository->publish($parent->id);
+        $this->repository->publish((string) $winner?->id);
+
+        $this->repository->declareWinner($parent->id, (string) $winner?->id);
+
+        $promoted = $this->repository->find((string) $winner?->id);
+        $retired = $this->repository->find($parent->id);
+
+        $this->assertNotNull($promoted);
+        $this->assertNotNull($retired);
+
+        $this->assertNull($promoted->parentId);
+        $this->assertSame('Spring sale', $promoted->name);
+        $this->assertSame(['headline' => 'the winning words'], $promoted->config);
+
+        $this->assertNotNull($retired->deletedAt, 'the arm that lost is tidied away, never removed');
+        $this->assertSame(
+            ['targeting' => ['include' => [['type' => 'post', 'value' => 12]]]],
+            $retired->config,
+            "and it keeps its own design, so its own counters stay readable against it"
+        );
+    }
+
+    /**
+     * The test is over in the only place that records it: the payload stops
+     * describing one, because the winner is alone in its group. There is no
+     * `finished` column to set and none to forget.
+     */
+    public function testEndingATestLeavesOneCampaignOnTheSite(): void
+    {
+        $parent = $this->anOptin();
+        $winner = $this->repository->createVariant($parent->id);
+        $this->repository->publish($parent->id);
+        $this->repository->publish((string) $winner?->id);
+
+        $this->repository->declareWinner($parent->id, (string) $winner?->id);
+
+        $set = $this->publishedSet->all();
+
+        $this->assertSame([$winner?->id], array_column($set, 'id'));
+        $this->assertArrayNotHasKey('variant', $set[0]['payload']);
+    }
+
+    /**
+     * ========================================================================
+     * AND THE SAME RULE WHEN A CHILD WINS, WHICH IS WHERE IT ACTUALLY BROKE.
+     * ========================================================================
+     * The parent-wins case above is the easy half: the campaign keeps its row,
+     * so it keeps its children and the count is right. When a CHILD wins it is
+     * promoted to parentless — and if the losers were left hanging under the
+     * old parent, the promoted row would have no children at all, so the next
+     * variant of it would be named `(B)` again beside a soft-deleted `(B)`
+     * that is a different design.
+     *
+     * That is two designs under one label in the [[Lead]] log, where the name
+     * is the only provenance a Lead has (ADR 0002, ADR 0020) — so the losers
+     * are re-parented onto the winner and the whole test's history follows the
+     * campaign that won.
+     */
+    public function testALetterIsNeverReusedAfterAVariantWinsAndTheTestRestarts(): void
+    {
+        $parent = $this->anOptin();
+        $b = $this->repository->createVariant($parent->id);
+        $c = $this->repository->createVariant($parent->id);
+
+        $this->repository->publish($parent->id);
+        $this->repository->publish((string) $b?->id);
+        $this->repository->publish((string) $c?->id);
+
+        $this->repository->declareWinner($parent->id, (string) $c?->id);
+
+        $next = $this->repository->createVariant((string) $c?->id);
+
+        $this->assertNotNull($next);
+        $this->assertSame('Spring sale (D)', $next->name);
+        $this->assertNotSame(
+            $b?->name,
+            $next->name,
+            'a retired letter beside a live one is two designs under one label in the lead log'
+        );
+    }
+
+    /**
+     * Which is the same fact read from the other end: a finished test is one
+     * parentless campaign with every arm it ever ran beneath it, whichever arm
+     * won. Nothing is orphaned under a row that is no longer a campaign.
+     */
+    public function testTheArmsOfAFinishedTestHangBeneathTheWinner(): void
+    {
+        $parent = $this->anOptin();
+        $winner = $this->repository->createVariant($parent->id);
+
+        $this->repository->publish($parent->id);
+        $this->repository->publish((string) $winner?->id);
+
+        $this->repository->declareWinner($parent->id, (string) $winner?->id);
+
+        $this->assertSame(
+            [$parent->id],
+            array_column($this->repository->armsByParent(true)[(string) $winner?->id] ?? [], 'id')
+        );
+        $this->assertSame(
+            [],
+            $this->repository->armsByParent()[(string) $winner?->id] ?? [],
+            'and none of them is still running'
+        );
+    }
+
+    public function testDeclaringAWinnerThatIsNotAnArmOfThisTestIsRefused(): void
+    {
+        $parent = $this->anOptin();
+        $this->repository->createVariant($parent->id);
+        $other = $this->repository->create('Something else', 'grow_email_list', []);
+
+        $this->assertFalse($this->repository->declareWinner($parent->id, $other->id));
+        $this->assertNull($this->repository->find($parent->id)?->deletedAt);
+    }
+
+    public function testDeclaringAWinnerOfATestThatIsNotRunningIsRefused(): void
+    {
+        $parent = $this->anOptin();
+
+        $this->assertFalse($this->repository->declareWinner($parent->id, $parent->id));
+    }
+
 }

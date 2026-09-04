@@ -1,4 +1,5 @@
 import { runInspector } from '@loader/inspect/run';
+import type { PayloadNarrowing } from '@loader/boot';
 import type { LoaderModule } from '@loader/types';
 import { proLoaderFor } from '../compose';
 
@@ -13,6 +14,11 @@ import { proLoaderFor } from '../compose';
  * one rung finer: an Elite inspector on a Basic install would report the cart
  * Conditions as evaluable on a build that cannot evaluate them.
  *
+ * **And the same NARROWING**, which is the same hazard read once more. Pro's
+ * loader shows one arm of a [[Variant]] test and an inspector that showed both
+ * would report an arm this page never considered — so each rung's inspector
+ * entry names whatever its loader entry names.
+ *
  * It shares `proLoaderFor` with the loader and nothing else, which is the whole
  * reason `compose.ts` exists apart from `tier.ts`: this import must never run
  * the other way.
@@ -22,13 +28,15 @@ import { proLoaderFor } from '../compose';
  * until the document is ready — an optimiser may have moved this script above
  * the tags it reads.
  */
-export function bootProInspector(modules: readonly LoaderModule[]) {
+export function bootProInspector(modules: readonly LoaderModule[], narrow?: PayloadNarrowing) {
   const loader = proLoaderFor(modules);
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => runInspector(loader), { once: true });
+    document.addEventListener('DOMContentLoaded', () => runInspector(loader, narrow), {
+      once: true,
+    });
   } else {
-    runInspector(loader);
+    runInspector(loader, narrow);
   }
 
   return loader;

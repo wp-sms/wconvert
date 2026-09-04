@@ -49,6 +49,19 @@ Check (b) reads its identifier list from the rule manifest of
 [ADR 0005](0005-the-rule-model-is-three-flat-closed-axes.md), so it cannot drift
 from what the manifest calls premium.
 
+*And that is also the whole of its reach, which
+[ADR 0058](0058-a-test-ends-when-the-merchant-says-so.md) found by shipping the
+first module the list cannot see. A module whose contribution is not a RULE —
+`ab-testing` contributes a payload narrowing — has no manifest entry for (b) to
+look for, so a bundle carrying the whole of it would pass a check that printed
+a tick. The list is now the manifest's identifiers **plus** the `bundle_marker`
+a module may declare in its own `module.json`, read the same way and drifting
+from the same place; a module that declares none is reported as unscanned
+rather than ticked, which is this ADR's own rule about a check that asserts
+nothing. Recorded inline in
+[ADR 0056](0056-the-tier-ladder-is-a-manifest.md), where the per-rung half of
+it lives.*
+
 *Completed by [#22](https://github.com/navidkashani/wconvert/issues/22): the check
 is only meaningful because **free's loader does not import the manifest**. If it
 did, every `tier: pro` identifier would be inlined into free's bundle by the

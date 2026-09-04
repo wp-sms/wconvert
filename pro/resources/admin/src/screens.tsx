@@ -21,9 +21,22 @@
  * that after free 0.1.0 is on wp.org means changing free to grow an injection
  * seam, in a release every existing install downloads (ADR 0056).
  *
- * A/B testing is the first thing expected to land here, and it lands as an
- * entry in this list plus whatever it renders — no change to free, no
- * registration hook, and no second React on the page.
+ * A/B testing was the first thing expected to land here, and **it did not.**
+ * Starting a test and ending one are two ROW ACTIONS on free's existing Optins
+ * list, and the arms nest inside the list free already draws — so the whole
+ * surface is free's admin rendering a premium capability's `locked` state as
+ * DATA, which is the arrangement ADR 0015 already describes and every other
+ * premium capability already uses. `PRO_SCREENS` stayed empty, the tripwire in
+ * `pro/tests/js/admin-entry.test.ts` did not fire, and no admin build was split
+ * (ADR 0058).
+ *
+ * That is worth reading as evidence rather than as a near miss: the feature
+ * that was expected to force a per-rung admin build turned out not to need one,
+ * because the admin asks the server what this install supplies and draws the
+ * answer. Whatever lands here first will be a screen that genuinely has nowhere
+ * else to be — and it still lands as an entry in this list plus whatever it
+ * renders, with no change to free, no registration hook, and no second React on
+ * the page.
  *
  * **When the first one arrives it needs a Tailwind source too.** Tailwind v4
  * detects its sources from the directory of the CSS file it is asked to build,

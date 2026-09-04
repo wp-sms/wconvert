@@ -35,7 +35,7 @@ defined('ABSPATH') || exit;
 final class OptinRepository
 {
     /** Every column of an Optin, for the one read that legitimately wants them all. */
-    private const FULL_COLUMNS = 'id, name, goal, config, published_config, published_at, deleted_at';
+    private const FULL_COLUMNS = 'id, name, goal, parent_id, config, published_config, published_at, deleted_at';
 
     /**
      * The list view's projection — no LONGTEXT.
@@ -61,8 +61,26 @@ final class OptinRepository
      * enqueue. It is an indexed `VARCHAR(64)` beside a `LONGTEXT` this query
      * already pulls, and it never reaches the browser
      * ({@see \WConvert\Optin\PublishedProjection}).
+     *
+     * ========================================================================
+     * AND `parent_id` IS HERE, WHICH IT WAS NOT WHEN THE COLUMN WAS ADDED.
+     * ========================================================================
+     * The pre-release audit put `parent_id` in {@see self::SUMMARY_COLUMNS}
+     * for the LIST and stopped there. That was right for what it was building
+     * and it left the front end unable to express a test at all: two published
+     * arms reached the browser as two independent entries, and `decide.ts`'s
+     * `arbitrate()` reads two overlays as two campaigns competing for one
+     * screen rather than as one choice between two designs (ADR 0045).
+     *
+     * So the published set is where the link has to arrive, and this is the
+     * column that carries it there. **It never reaches the browser as
+     * itself**: {@see PublishedProjection} turns it into
+     * `[experiment, arm, arms]`, which is a fact about the whole SET and
+     * cannot be derived from one row — and it is computed at the rebuild
+     * below rather than per request, because ADR 0003 rebuilds the set on
+     * write and never on read.
      */
-    private const PROJECTION_COLUMNS = 'id, goal, published_config, published_at, deleted_at';
+    private const PROJECTION_COLUMNS = 'id, goal, parent_id, published_config, published_at, deleted_at';
 
     /** Enough to label a [[Lead]] with the Optin that captured it, and nothing more. */
     private const NAME_COLUMNS = 'id, name';
@@ -96,10 +114,10 @@ final class OptinRepository
             'name' => $name,
             'goal' => $goal,
             // Every Optin created through this method is a campaign in its own
-            // right. A [[Variant]] is created by the ticket that builds A/B,
-            // which is the only thing that will ever write a parent here
-            // (ADR 0045) — spelled as an explicit null for the reason the two
-            // publish columns below are, so the insert names the whole row.
+            // right. {@see self::createVariant()} is the one thing that writes
+            // a parent (ADR 0045) — spelled as an explicit null here for the
+            // reason the two publish columns below are, so the insert names
+            // the whole row.
             'parent_id' => null,
             'config' => (string) wp_json_encode($config),
             'published_config' => null,
@@ -183,6 +201,280 @@ final class OptinRepository
             Connection::TABLE_OPTINS,
             'SELECT ' . self::SUMMARY_COLUMNS . ' FROM %i WHERE ' . $where . ' ORDER BY id DESC LIMIT 500'
         );
+    }
+
+    /**
+     * The arms of every test, grouped by the parent they hang beneath.
+     *
+     * ========================================================================
+     * THE OTHER HALF OF ADR 0045'S LIST, AND IT IS ONE QUERY RATHER THAN 500.
+     * ========================================================================
+     * {@see self::summaries()} filters to parentless Optins, which is the
+     * filter the audit built ahead of the feature. This is the read that draws
+     * each parent's arms beneath it — so a merchant running three tests meets
+     * three campaigns with arms under them rather than six campaigns.
+     *
+     * **Every child in one statement, grouped in PHP.** A per-parent query
+     * would be up to 500 round trips to draw one screen, and the join is the
+     * same one {@see \WConvert\Stats\Dashboard} performs: two reads and the
+     * grouping in PHP, because a `JOIN` here would drag the parent's columns
+     * onto every child row to save an array walk (ADR 0034).
+     *
+     * **Ascending by id**, which is ascending by the moment each arm was
+     * created, so the arms read A, B, C down the screen in the order the
+     * merchant made them. That is the opposite of `summaries()`'s `DESC` and
+     * deliberately so: a LIST is newest-first because the thing you just made
+     * is the thing you want; a test's arms are a sequence, and reversing a
+     * sequence makes B the first thing read.
+     *
+     * **And no `LIMIT`, unlike {@see self::summaries()}.** That cap is right
+     * there because a list view past 500 is a scrolling problem; a cap HERE
+     * would drop an arm out of a test that still has it, so the screen would
+     * show a two-arm test as a one-arm one and a merchant would compare a
+     * number against nothing. That is a wrong screen rather than a short page,
+     * which is the same reason {@see self::names()} and
+     * {@see self::interpretations()} have none — and these are the same short
+     * columns, on rows that exist only while somebody is running a test.
+     *
+     * @return array<string, list<array<string, string|null>>> Parent id => its arms.
+     */
+    public function armsByParent(bool $includeDeleted = false): array
+    {
+        $rows = $this->db->results(
+            Connection::TABLE_OPTINS,
+            'SELECT ' . self::SUMMARY_COLUMNS . ' FROM %i WHERE parent_id IS NOT NULL ORDER BY id ASC'
+        );
+
+        $arms = [];
+
+        foreach ($rows as $row) {
+            $parent = (string) ($row['parent_id'] ?? '');
+
+            // **The soft-delete filter is in PHP and the parent filter is in
+            // SQL**, which is the split every other read here makes for the
+            // same reason: `parent_id IS NOT NULL` is what keeps 500 campaigns
+            // off this query, and a second `WHERE` would only save walking the
+            // arms of tests that have ended — a handful of short rows, against
+            // a predicate that then has to be true in two languages for
+            // {@see self::declareWinner()} and {@see self::countArms()} to
+            // agree about what an arm is.
+            if ($parent === '' || (!$includeDeleted && ($row['deleted_at'] ?? null) !== null)) {
+                continue;
+            }
+
+            $arms[$parent][] = $row;
+        }
+
+        return $arms;
+    }
+
+    /**
+     * Start a test: a second [[Optin]] that is a copy of this one and names it
+     * as its parent.
+     *
+     * ========================================================================
+     * A VARIANT IS A WHOLE OPTIN, AND THIS IS THE ONLY THING THAT WRITES A
+     * PARENT.
+     * ========================================================================
+     * {@see self::create()} spells `parent_id` as an explicit null and says
+     * so; this is the method that comment was waiting for. Everything else
+     * about the row is ordinary — its own ULID, its own `config`, and
+     * therefore its own `(optin_id, stat_date, kind)` counters with no change
+     * to `wconvert_stats` at all (ADR 0045).
+     *
+     * **It is not asked for a name.** Nobody should be asked to name a thing
+     * they think of as *the other one*, so it takes its parent's with a
+     * letter after it — the parent is arm A, the first variant is B. The
+     * letter is counted over ALL of the parent's children including the
+     * soft-deleted ones, so a merchant who ended one test and started another
+     * never gets two rows called *"Welcome (B)"* — which would be two
+     * different designs under one label in the [[Lead]] log, where the name is
+     * the only provenance a Lead has (ADR 0002).
+     *
+     * **The DRAFT is copied and the published copy is not.** A variant starts
+     * where its parent's editor starts and goes live when the merchant
+     * publishes it, exactly as any other Optin does. Copying
+     * `published_config` would put a second arm on the site the moment the
+     * button was pressed, which is a test starting without anybody saying so.
+     *
+     * **A variant of a variant is refused.** Arms are a flat set under one
+     * parent — the payload's `[experiment, arm, arms]` triple has one
+     * experiment id in it, and a grandchild would name a parent that is
+     * itself an arm of something else. There is no test that shape describes.
+     *
+     * Nothing is published, so the set is untouched and there is no rebuild:
+     * this is the same reasoning {@see self::saveDraft()} states.
+     */
+    public function createVariant(string $parentId): ?Optin
+    {
+        $parent = $this->find($parentId);
+
+        if ($parent === null || $parent->isDeleted() || $parent->parentId !== null) {
+            return null;
+        }
+
+        $id = Ulid::generate();
+
+        $this->db->insert(Connection::TABLE_OPTINS, [
+            'id' => $id,
+            'name' => self::nextArmName($parent->name, $this->countArms($parentId)),
+            // The parent's Goal, and not a choice. One test compares two
+            // designs of one campaign; two arms serving different Goals would
+            // be metered by different acts, and the rate under one would not
+            // be the rate under the other (ADR 0020).
+            'goal' => $parent->goal,
+            'parent_id' => $parentId,
+            'config' => (string) wp_json_encode($parent->config),
+            'published_config' => null,
+            'published_at' => null,
+            'deleted_at' => null,
+        ]);
+
+        return $this->find($id);
+    }
+
+    /**
+     * End a test: this arm becomes the campaign, and every other arm is
+     * tidied away.
+     *
+     * ========================================================================
+     * IT NEVER DELETES A ROW, AND {@see Connection} HAS NO `delete()` TO CALL.
+     * ========================================================================
+     * The losing arm is a month of the merchant's own history. A removed row
+     * makes every count naming it uninterpretable (ADR 0020), and "tidy up
+     * the finished test" reads as housekeeping right up to the moment it
+     * destroys the comparison the test was run to produce. The loser is
+     * soft-deleted at most — at which point it behaves like any other tidied
+     * Optin, keeping its counts in the per-[[Goal]] total and dropping out of
+     * the per-Optin list, with no special case anywhere.
+     *
+     * ========================================================================
+     * THE WINNER IS PROMOTED BY MOVING THE ROW, NOT BY COPYING THE DESIGN.
+     * ========================================================================
+     * ADR 0045 sketches this as *"promote the winner's design onto the
+     * parent"*, and that is the one shape it must not be. Copying arm B's
+     * design onto arm A's row leaves one row whose counters are arm A's
+     * history followed by arm B's future, under a rate that is the average of
+     * two different designs — the frozen-at-write blend ADR 0020 exists to
+     * prevent, arriving through a config copy instead of through a column.
+     *
+     * So nothing is copied. The winning row **stops having a parent** and
+     * takes the campaign's name, which is the same rule that named it in the
+     * first place read backwards: a variant is never asked for a name because
+     * it is the other one, and the one that wins is simply the campaign. Every
+     * row's counters keep meaning exactly one design for the whole of its
+     * life.
+     *
+     * There is **no `finished` flag and no new storage**, which is the point:
+     * a test is running exactly while a parentless Optin has arms beneath it,
+     * so ending one is the absence of the rows rather than the presence of a
+     * marker. {@see PublishedProjection} reads it the same way and stops
+     * writing the payload's arm triple on the rebuild this call performs.
+     *
+     * @param string $parentId The test — the parentless Optin the arms hang beneath.
+     * @param string $winnerId The arm that won. The parent itself is a legitimate answer.
+     */
+    public function declareWinner(string $parentId, string $winnerId): bool
+    {
+        $parent = $this->find($parentId);
+
+        if ($parent === null || $parent->isDeleted() || $parent->parentId !== null) {
+            return false;
+        }
+
+        $arms = [$parent->id];
+
+        foreach ($this->armsByParent()[$parentId] ?? [] as $arm) {
+            $arms[] = (string) ($arm['id'] ?? '');
+        }
+
+        // A test needs two arms and a winner has to be one of them. Both are
+        // refusals rather than no-ops: "declare a winner of a test that is not
+        // running" and "declare a winner that is not in it" are mistakes a
+        // caller should hear about, and silently doing nothing would soft-
+        // delete nothing while answering as though it had.
+        if (count($arms) < 2 || !in_array($winnerId, $arms, true)) {
+            return false;
+        }
+
+        if ($winnerId !== $parent->id) {
+            $this->db->update(
+                Connection::TABLE_OPTINS,
+                ['parent_id' => null, 'name' => $parent->name],
+                ['id' => $winnerId]
+            );
+        }
+
+        $now = current_time('mysql');
+
+        foreach ($arms as $arm) {
+            if ($arm === $winnerId) {
+                continue;
+            }
+
+            // ================================================================
+            // THE LOSERS HANG BENEATH THE WINNER, WHICH IS NOT TIDINESS.
+            // ================================================================
+            // The whole test's history follows the campaign that won, so
+            // {@see self::countArms()} can still see every arm this test ever
+            // had — and **a retired letter is never handed out twice.**
+            //
+            // Leaving them under the old parent breaks that the moment a
+            // CHILD wins: the promoted row has no children of its own, so the
+            // next variant of it is named `(B)` again, beside a soft-deleted
+            // `(B)` that is a different design. Two rows under one name in the
+            // [[Lead]] log is two designs under one label, where the name is
+            // the only provenance a Lead has (ADR 0002, ADR 0020).
+            //
+            // It also keeps the shape honest to read: a finished test is one
+            // parentless campaign with every arm it ever ran beneath it,
+            // whichever arm won.
+            $this->db->update(
+                Connection::TABLE_OPTINS,
+                ['deleted_at' => $now, 'parent_id' => $winnerId],
+                ['id' => $arm]
+            );
+        }
+
+        $this->rebuildPublishedSet();
+
+        return true;
+    }
+
+    /**
+     * How many arms this test has ever had, soft-deleted ones included.
+     *
+     * Counted rather than read off the live list because it names the NEXT
+     * arm, and a letter is only unambiguous if a retired one is never handed
+     * out twice ({@see self::createVariant()}).
+     */
+    private function countArms(string $parentId): int
+    {
+        return count($this->armsByParent(true)[$parentId] ?? []);
+    }
+
+    /**
+     * The parent's name with this arm's letter after it.
+     *
+     * The parent is arm A and is never renamed, so the first variant is B.
+     * Past Z it is a number rather than `AA`: twenty-six arms of one test is
+     * not a thing anybody is doing, and a spreadsheet column name would read
+     * as a mistake where *"Welcome (27)"* reads as a count.
+     *
+     * **Truncated to the column**, because `name` is `VARCHAR(255)` and a
+     * parent already at the limit would otherwise have its suffix silently cut
+     * off by MySQL — leaving a variant with exactly its parent's name, which
+     * is the one name it must not have.
+     */
+    private static function nextArmName(string $parent, int $existingArms): string
+    {
+        $position = $existingArms + 1;
+        $suffix = ' (' . ($position < 26 ? chr(ord('A') + $position) : (string) ($position + 1)) . ')';
+
+        $room = 255 - strlen($suffix);
+        $trimmed = strlen($parent) > $room ? rtrim((string) mb_strcut($parent, 0, $room)) : $parent;
+
+        return $trimmed . $suffix;
     }
 
     /**

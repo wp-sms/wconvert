@@ -150,9 +150,11 @@ describe("an Optin row's actions", () => {
         id: '01JQ00000000000000000000AA',
         name: 'Welcome discount',
         goal: 'grow_email_list',
+        parent_id: null,
         published_at: null,
         deleted_at: null,
         suspended: null,
+        arms: [],
       },
     ]);
     goals.listGoals.mockResolvedValue([

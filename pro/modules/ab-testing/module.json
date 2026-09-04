@@ -1,0 +1,8 @@
+{
+  "slug": "ab-testing",
+  "name": "A/B testing",
+  "description": "The arm a browser draws and keeps, the routes that create a Variant and end a test, and the read that tells two arms' numbers apart.",
+
+  "_bundle_marker_note": "A token that appears in this module's BUILT JavaScript and in no lower rung's. bin/check-loader.mjs and bin/verify-artifact-contract.sh scan for it the way they scan for a premium rule identifier, and it exists because this is the first module to ship loader code while declaring no rule type at all — so the identifier scan, which reads its list out of the rule manifest, had nothing of this module's to look for. Without it a Basic bundle carrying the whole arm-drawing routine would pass every check, which is the byte-identical failure ADR 0056 measures WSMS by. `.variant` is the payload key the module reads, minified to a property access and unmistakable in 9 KB of one-line JavaScript.",
+  "bundle_marker": ".variant"
+}

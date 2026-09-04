@@ -23,7 +23,14 @@ const log = vi.hoisted(() => ({
 const optins = vi.hoisted(() => ({ listOptins: vi.fn() }));
 
 vi.mock('../../resources/admin/src/leads/api', () => log);
-vi.mock('../../resources/admin/src/optins/api', () => optins);
+// The network call is stubbed; `flattened` is NOT. It is a pure function over
+// the response, and one of the things this screen decides is whether an A/B
+// arm can label a Lead — a stubbed flatten would let the test answer that for
+// itself. Same reason `optin-list.test.tsx` keeps `statusOf` real.
+vi.mock('../../resources/admin/src/optins/api', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../../resources/admin/src/optins/api')>()),
+  ...optins,
+}));
 
 const { LeadLog } = await import('../../resources/admin/src/leads/LeadLog');
 
@@ -60,8 +67,62 @@ describe('the lead log', () => {
     log.readRetention.mockResolvedValue({ days: null, max_days: 3650 });
     log.exportUrl.mockReturnValue('https://example.test/wp-admin/admin-post.php?action=x&_wpnonce=y');
     optins.listOptins.mockResolvedValue([
-      { id: 'OPTIN1', name: 'Newsletter footer', goal: 'grow_email_list', published_at: null, deleted_at: null },
+      {
+        id: 'OPTIN1',
+        name: 'Newsletter footer',
+        goal: 'grow_email_list',
+        parent_id: null,
+        published_at: null,
+        deleted_at: null,
+        arms: [],
+      },
     ]);
+  });
+
+  /**
+   * ==========================================================================
+   * A LEAD CAPTURED BY AN A/B ARM STILL KNOWS WHICH OPTIN CAPTURED IT.
+   * ==========================================================================
+   * The list route answers **parentless Optins only** (ADR 0045), which is
+   * right for the Optins screen and would leave this one showing a raw ULID in
+   * the Optin column for every Lead an arm captured — and no filter entry for
+   * it either. The name is the only provenance a Lead has, and preserving it
+   * is what the soft delete exists for (ADR 0002, ADR 0020); an arm is not
+   * even deleted.
+   *
+   * The arms are already on the wire, nested under their parent, so this costs
+   * no second read.
+   */
+  it('names the arm that captured a Lead, not just the campaigns', async () => {
+    log.readLog.mockResolvedValue({
+      ...SEVEN_SUBMISSIONS,
+      leads: [{ ...SEVEN_SUBMISSIONS.leads[0], optin_id: 'OPTIN1B' }],
+    });
+    optins.listOptins.mockResolvedValue([
+      {
+        id: 'OPTIN1',
+        name: 'Newsletter footer',
+        goal: 'grow_email_list',
+        parent_id: null,
+        published_at: null,
+        deleted_at: null,
+        arms: [
+          {
+            id: 'OPTIN1B',
+            name: 'Newsletter footer (B)',
+            goal: 'grow_email_list',
+            parent_id: 'OPTIN1',
+            published_at: null,
+            deleted_at: null,
+            arms: [],
+          },
+        ],
+      },
+    ]);
+
+    render(<LeadLog />);
+
+    expect(await screen.findByText('Newsletter footer (B)')).toBeInTheDocument();
   });
 
   it('reports submissions, and says so rather than saying "leads"', async () => {
