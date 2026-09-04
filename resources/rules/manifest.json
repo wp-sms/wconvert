@@ -161,6 +161,22 @@
       "on_absence": "drop",
       "substitute": null
     },
+    "referrer": {
+      "kind": "condition",
+      "tier": "pro",
+      "requires": null,
+      "params": {
+        "in": { "control": "referrer_set", "options": ["direct", "search", "social"] }
+      },
+      "presets": {
+        "from_search": { "in": ["search"] },
+        "from_social": { "in": ["social"] },
+        "arrived_directly": { "in": ["direct"] }
+      },
+      "consent_category": null,
+      "on_absence": "drop",
+      "substitute": null
+    },
     "cart_has_items": {
       "kind": "condition",
       "tier": "elite",

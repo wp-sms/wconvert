@@ -55,6 +55,7 @@ final class RuleLabels
             'scroll_up' => __('Scrolls back up', 'wconvert'),
             'device' => __('Device', 'wconvert'),
             'query_param' => __('A URL parameter', 'wconvert'),
+            'referrer' => __('Where they came from', 'wconvert'),
             'cart_has_items' => __('Has something in their cart', 'wconvert'),
             'cart_value_min' => __('Cart is worth at least', 'wconvert'),
         ];
@@ -84,6 +85,10 @@ final class RuleLabels
             'device.in' => __('Shows on', 'wconvert'),
             'query_param.key' => __('Parameter name', 'wconvert'),
             'query_param.value' => __('Any of these values', 'wconvert'),
+            // "Came from" rather than "Referrer": the merchant's word for it,
+            // and the one the hint under the control then narrows to the page
+            // immediately before this one.
+            'referrer.in' => __('Came from', 'wconvert'),
             // No currency symbol and no formatting: the threshold is in the
             // store's own currency, which is exactly why a [[Playbook]] may
             // not supply one and the param is marked `authored` (ADR 0013).
@@ -113,6 +118,9 @@ final class RuleLabels
             'query_param.utm_source' => __('Came from a particular source', 'wconvert'),
             'query_param.utm_medium' => __('Came through a particular medium', 'wconvert'),
             'query_param.utm_campaign' => __('Came from a particular campaign', 'wconvert'),
+            'referrer.from_search' => __('Came from a search engine', 'wconvert'),
+            'referrer.from_social' => __('Came from social media', 'wconvert'),
+            'referrer.arrived_directly' => __('Arrived with no referring page', 'wconvert'),
         ];
     }
 
@@ -161,6 +169,8 @@ final class RuleLabels
             'device' => __('they are on %1$s', 'wconvert'),
             /* translators: 1: a URL parameter name, e.g. “utm_source”. 2: one or more values, already joined. */
             'query_param' => __('%1$s is %2$s', 'wconvert'),
+            /* translators: %1$s: one or more traffic sources, already joined, e.g. “Search or example.com”. */
+            'referrer' => __('they came from %1$s', 'wconvert'),
             'cart_has_items' => __('their cart is not empty', 'wconvert'),
             /* translators: %1$s: a cart total in the store’s own currency, unformatted. */
             'cart_value_min' => __('their cart is worth at least %1$s', 'wconvert'),
@@ -196,6 +206,9 @@ final class RuleLabels
             'query_param.utm_medium' => __('they arrived through %1$s', 'wconvert'),
             /* translators: %1$s: one or more campaign names, already joined. */
             'query_param.utm_campaign' => __('they came from the %1$s campaign', 'wconvert'),
+            'referrer.from_search' => __('they came from a search engine', 'wconvert'),
+            'referrer.from_social' => __('they came from social media', 'wconvert'),
+            'referrer.arrived_directly' => __('they arrived with no referring page', 'wconvert'),
         ];
     }
 
@@ -214,6 +227,11 @@ final class RuleLabels
             'device_set.mobile' => __('Mobile', 'wconvert'),
             'device_set.tablet' => __('Tablet', 'wconvert'),
             'device_set.desktop' => __('Desktop', 'wconvert'),
+            // The channel names a merchant already reads in their analytics,
+            // so the control and the report agree about what "Direct" means.
+            'referrer_set.direct' => __('Direct', 'wconvert'),
+            'referrer_set.search' => __('Search', 'wconvert'),
+            'referrer_set.social' => __('Social', 'wconvert'),
         ];
     }
 
