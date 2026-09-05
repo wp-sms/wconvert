@@ -48,6 +48,20 @@ export interface GoalEntry {
    * nothing asserting the two agree.
    */
   needs_a_capture: boolean;
+  /**
+   * Whether this Goal's product is a captured contact.
+   *
+   * **The looser half of {@link needs_a_capture}, and it only ever prints a
+   * sentence.** A Goal that counts submissions used to refuse every design
+   * offering the other act, so a list-growing Goal over a design with no field
+   * on it was impossible. ADR 0059 made it reachable, and it is silent: the
+   * Optin saves, runs, counts click-throughs and collects nothing. The
+   * builder's Summary says so ({@see problemsIn}).
+   *
+   * Never a refusal and never a filter. The Optin is not broken — the number
+   * is honest, it just measures something else.
+   */
+  grows_a_list: boolean;
   /** The counted kind this Goal's headline number is read from. */
   headline_kind: string;
   /**

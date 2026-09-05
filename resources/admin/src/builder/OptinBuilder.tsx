@@ -1198,7 +1198,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
               overlay={overlay}
               bound={bound}
               template={template}
-              needsACapture={entryOfGoal?.needs_a_capture === true}
+              growsAList={entryOfGoal?.grows_a_list === true}
               destinations={destinations?.destinations ?? null}
               onGoTo={goTo}
               onGoToSchedule={goToSchedule}
@@ -1303,19 +1303,26 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
                     is always right: it is read off the same tree the renderer
                     draws, rather than off a Goal that used to promise it.
 
-                    `numbers.label` is still what a delivery Goal reads, because
-                    *Deliveries* is a fact about the counted KIND rather than
-                    about the act — the delivery happens after the Conversion,
-                    from a different process (ADR 0008).
+                    **It asks the counted KIND, and that is the honest
+                    question.** Naming the act is right exactly where the
+                    headline IS the Conversion count; where it is read from
+                    another kind the act that produced it is not what the
+                    number measures — a delivery happens after the Conversion,
+                    from a different process (ADR 0008) — so the kind's own
+                    word stands. Branching on `needs_a_capture` gave the same
+                    answer today and asked a different question: that field
+                    says the number is unreachable without a field, which is a
+                    fact about the DESIGN's obligations rather than about what
+                    the figure is called.
                   */}
                   <Stat
                     emphasis
                     label={
-                      entryOfGoal?.needs_a_capture === true
-                        ? numbers.label
-                        : act === 'click'
+                      entryOfGoal?.headline_kind === 'conversion'
+                        ? act === 'click'
                           ? __('Click-throughs', 'wconvert')
                           : __('Submissions', 'wconvert')
+                        : numbers.label
                     }
                     value={formatCount(numbers.report.headline)}
                   />

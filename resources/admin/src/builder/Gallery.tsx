@@ -197,8 +197,11 @@ export function refusalFor(entry: TemplateIndexEntry, fit: Fit): string | null {
 }
 
 /**
- * Would taking this design change what the Optin counts?
+ * What taking THIS design would change about what the Optin counts, or null.
  *
+ * ============================================================================
+ * A NOTE ON THE CARD, NOT A SENTENCE ON THE DIALOG.
+ * ============================================================================
  * **Not a refusal, and it disables nothing.** Switching is allowed and is the
  * whole point of the change; what it does is reinterpret the Optin's history,
  * because `wconvert_stats` carries no act and a [[Conversion]] is read against
@@ -207,10 +210,31 @@ export function refusalFor(entry: TemplateIndexEntry, fit: Fit): string | null {
  *
  * That was impossible before, because the swap was refused outright. It is now
  * something a merchant does casually, so it is said before the click
- * (ADR 0042 rule 3).
+ * (ADR 0042 rule 3) — and **on the card that would do it**. It shipped for a
+ * day as one clause appended to the dialog's header, which was wrong three
+ * ways: it showed before anything was picked, it stayed up while the merchant
+ * hovered a design that changes nothing, and it could not say which direction
+ * because it was not about any particular card.
+ *
+ * It rides {@see TemplateCard}'s `notes` rather than its `reason`, and the two
+ * are held apart precisely for this: a reason dims the render and tells a
+ * screen reader the button cannot be pressed. This one can.
  */
-export const changesTheAct = (entry: TemplateIndexEntry, fit: Fit): boolean =>
-  entry.availability === 'ready' && entry.facets.act !== null && entry.facets.act !== fit.act;
+export function actChangeOf(entry: TemplateIndexEntry, fit: Fit): string | null {
+  if (entry.availability !== 'ready' || entry.facets.act === null || entry.facets.act === fit.act) {
+    return null;
+  }
+
+  return entry.facets.act === 'click'
+    ? __(
+        'Counts click-throughs instead of submissions — including everything this Optin has already counted.',
+        'wconvert',
+      )
+    : __(
+        'Counts submissions instead of click-throughs — including everything this Optin has already counted.',
+        'wconvert',
+      );
+}
 
 /**
  * What a locked design IS, since there is no render of it to look at.
@@ -254,6 +278,13 @@ export function Gallery({
         const locked = renderingFor(entry.availability, 'settings_list') === 'upsell';
         const inUse = entry.id === chosen;
         const refused = refusalFor(entry, fit);
+        /*
+          **Only where the card can actually be taken.** A refused card already
+          says the one thing that matters about it, and a design this install
+          does not have is not one anybody is switching to — two sentences
+          about one card is what ADR 0042 rule 2 forbids.
+        */
+        const changes = locked || refused !== null ? null : actChangeOf(entry, fit);
 
         return (
           <TemplateCard
@@ -263,6 +294,7 @@ export function Gallery({
             template={trees.get(entry.id)}
             current={inUse}
             reason={refused}
+            notes={changes ?? undefined}
             onNear={locked ? undefined : onNear}
             marks={locked ? <Badge variant="warning">{tierName(entry.tier)}</Badge> : undefined}
             absent={

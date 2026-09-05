@@ -82,12 +82,18 @@ final class GoalRegistry
      * that still carried it would be a second answer to a question the design
      * already answers, which is exactly the drift that made this ticket.
      *
-     * **`needs_a_capture` is what replaces it**, and it is a smaller claim: it
-     * says the Goal's own number is unreachable on a design with no field in
-     * it ({@see Goal::needsACapture()}), which is the one Goal-shaped refusal
-     * left. It is resolved here rather than derived from `headline_kind` in
-     * TypeScript for the reason `availability` is — a rule spelled on both
-     * sides is a rule with nothing asserting the two agree.
+     * **`needs_a_capture` and `grows_a_list` are what replace it**, and both
+     * are smaller claims than an act. The first says the Goal's own number is
+     * unreachable on a design with no field in it, and refuses the save; the
+     * second says the Goal's product is a captured contact, and only prints a
+     * sentence ({@see Goal::needsACapture()}, {@see Goal::growsAList()}).
+     *
+     * Both are resolved here rather than derived in TypeScript, for the reason
+     * `availability` is — a rule spelled on both sides is a rule with nothing
+     * asserting the two agree — and both survive the deletion for the same
+     * test: **neither is derivable from a design.** Two byte-identical trees
+     * can serve a Goal that wants a list and one that wants a click-through,
+     * so no walk over a tree could answer either.
      *
      * `headline_kind` still travels because the surface shows the merchant
      * what they are choosing to be measured on, and it is a declaration of the
@@ -112,6 +118,7 @@ final class GoalRegistry
             'label' => $goal->label(),
             'description' => $goal->description(),
             'needs_a_capture' => $goal->needsACapture(),
+            'grows_a_list' => $goal->growsAList(),
             'headline_kind' => $goal->headlineKind()->value,
             'headline_label' => $goal->headlineLabel(),
             'tier' => $goal->tier()->value,

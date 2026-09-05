@@ -228,6 +228,53 @@ describe('a design that converts the other way', () => {
     expect(screen.queryByText(/Your goal counts/)).toBeNull();
   });
 
+  /**
+   * **Offered, and marked — on the card that would do it** (ADR 0042 rule 3).
+   * `wconvert_stats` carries no act, so a [[Conversion]] is read against the
+   * design the Optin holds NOW: a hundred form submissions read as a hundred
+   * click-throughs the moment the design does (ADR 0020).
+   *
+   * The sentence shipped for a day on the dialog's header instead, where it
+   * appeared before anything was picked, stayed up over designs that change
+   * nothing, and could not name a direction.
+   */
+  it('says what taking it would change, on its own card and naming the direction', () => {
+    grid([ENTRIES[0], CLICKS], undefined);
+
+    expect(
+      within(cardFor('Offer panel')).getByText(/Counts click-throughs instead of submissions/),
+    ).toBeInTheDocument();
+    expect(within(cardFor('Offer panel')).getByText(/already counted/)).toBeInTheDocument();
+  });
+
+  /** And the card that changes nothing says nothing. */
+  it('says nothing on a design that converts the way this Optin already does', () => {
+    grid([ENTRIES[0], CLICKS], undefined);
+
+    expect(within(cardFor('Centred card')).queryByText(/instead of/)).toBeNull();
+  });
+
+  it('reads the direction the other way round', () => {
+    grid([ENTRIES[0], CLICKS], undefined, { ...ANY, act: 'click' });
+
+    expect(
+      within(cardFor('Centred card')).getByText(/Counts submissions instead of click-throughs/),
+    ).toBeInTheDocument();
+    expect(within(cardFor('Offer panel')).queryByText(/instead of/)).toBeNull();
+  });
+
+  /**
+   * **One sentence per card.** A refused card already says the one thing that
+   * matters about it, and two sentences about one card is what ADR 0042 rule 2
+   * forbids.
+   */
+  it('is not said on a card that is refused anyway', () => {
+    grid([ENTRIES[0], CLICKS], undefined, { ...ANY, needsACapture: true });
+
+    expect(within(cardFor('Offer panel')).getByText(/captures nothing/)).toBeInTheDocument();
+    expect(within(cardFor('Offer panel')).queryByText(/instead of/)).toBeNull();
+  });
+
   /** And the mirror, which is the pairing that greyed out most of the library. */
   it('is offered the other way round too', () => {
     grid([ENTRIES[0], CLICKS], undefined, { ...ANY, act: 'click' });
@@ -425,6 +472,8 @@ describe('a design this install does not have', () => {
 
     expect(screen.queryByText(/captures nothing/)).toBeNull();
     expect(screen.queryByText(/the other arm/)).toBeNull();
+    // Nor about a switch nobody can make: it is not a design this install has.
+    expect(screen.queryByText(/instead of/)).toBeNull();
   });
 
   /** And it does not ask for a tree there is none of. */

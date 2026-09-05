@@ -142,8 +142,8 @@ const LABELS = {
 };
 
 const GOALS = [
-  { id: 'grow_email_list', label: 'Grow my email list', description: '', needs_a_capture: false, headline_kind: 'conversion', tier: 'free', availability: { available: true } },
-  { id: 'promote_offer', label: 'Promote a sale', description: '', needs_a_capture: false, headline_kind: 'conversion', tier: 'free', availability: { available: true } },
+  { id: 'grow_email_list', label: 'Grow my email list', description: '', needs_a_capture: false, grows_a_list: true, headline_kind: 'conversion', tier: 'free', availability: { available: true } },
+  { id: 'promote_offer', label: 'Promote a sale', description: '', needs_a_capture: false, grows_a_list: true, headline_kind: 'conversion', tier: 'free', availability: { available: true } },
 ];
 
 function optin(over: Record<string, unknown> = {}) {

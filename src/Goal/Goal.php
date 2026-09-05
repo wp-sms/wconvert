@@ -124,6 +124,45 @@ enum Goal: string
     case DeliverLeadMagnet = 'deliver_lead_magnet';
 
     /**
+     * Whether this Goal's product is a captured contact.
+     *
+     * ========================================================================
+     * THE SECOND THING A DESIGN CANNOT ANSWER, AND THE TEST IT PASSES.
+     * ========================================================================
+     * ADR 0059 deleted `convertingAct()` because a registered design already
+     * declared the act and the Goal was a second voice. The test it applied is
+     * the one that matters here: **is this fact derivable from the design?**
+     * The act is; this is not. Two designs can be byte-identical and serve a
+     * Goal that wants a list and one that wants a click-through, and nothing
+     * in a tree says which.
+     *
+     * **It exists because that ticket made a new mistake reachable.** A Goal
+     * that counts submissions used to refuse every design offering the other
+     * act, so *"grow my email list"* over a design with no field on it was
+     * impossible. It is now allowed, and it is silent: the Optin saves, runs,
+     * counts click-throughs, and collects nothing. The merchant finds out when
+     * no [[Lead]]s arrive. So the builder's Summary says so
+     * ({@see \WConvert\Rest\GoalRegistry} carries it to the admin as
+     * `grows_a_list`).
+     *
+     * **A note and never a refusal**, which is the whole difference from
+     * {@see self::needsACapture()} below. The Optin is not broken — a
+     * click-through is a real Conversion and the number is honest — it is
+     * merely not the thing the merchant said they wanted. And it is not a
+     * gallery filter either: pre-pressing a captures chip for a Goal is a Goal
+     * facet in a captures chip's clothes, which ADR 0043 forbids.
+     *
+     * **Which detail it should ask for stays unanswered here.** Email against
+     * phone is the merchant's own judgement, and an SMS list grown from an
+     * email capture is still a list they grew — so this asks whether the
+     * design captures ANYTHING, never what.
+     */
+    public function growsAList(): bool
+    {
+        return $this !== self::RecoverCart && $this !== self::PromoteOffer;
+    }
+
+    /**
      * Whether this Goal's own number is unreachable on a design that captures
      * nothing.
      *
@@ -143,6 +182,14 @@ enum Goal: string
      * chip in the gallery would be a Goal facet in a captures chip's clothes,
      * which ADR 0043 forbids. It is derived rather than listed per case, so a
      * sixth Goal reading the delivery kind arrives already answered.
+     *
+     * **It is the strict half of {@see self::growsAList()} above**, and the
+     * two are ordered rather than parallel: everything that needs a capture
+     * grows a list, and `GoalRegistryTest` asserts that implication so the
+     * pair cannot drift into contradicting each other. What separates them is
+     * the consequence — this one refuses the save, because the headline number
+     * is literally unreachable; that one prints a sentence, because the number
+     * is fine and merely measures something else.
      */
     public function needsACapture(): bool
     {

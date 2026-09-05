@@ -36,9 +36,9 @@ const BUTTON = [0, 'children', 2, 'children', 1];
  */
 const said = (
   template: Template,
-  needsACapture = false,
+  growsAList = false,
   endsAt: string | null = '2026-11-30 23:59',
-) => problemsIn(template, needsACapture, endsAt ?? undefined).map((problem) => problem.said);
+) => problemsIn(template, growsAList, endsAt ?? undefined).map((problem) => problem.said);
 
 const withTokens = (tokens: Record<string, string>): Template => ({
   tree: ENTRY.tree,
@@ -79,16 +79,22 @@ describe('the converting act', () => {
 });
 
 /**
- * The one [[Goal]]-shaped problem left, and it is about what a design CAPTURES.
+ * The one problem ADR 0059 CREATED rather than inherited.
  *
- * The delivery kind is written when a push to the lead-magnet [[Destination]]
- * succeeds, and a design asking the visitor for nothing gives it nothing to
- * push — so the headline reads zero forever, which the save refuses.
+ * A [[Goal]] whose product is a captured contact used to refuse every design
+ * offering the other act, so *"grow my email list"* over a design with no field
+ * on it was impossible. It is allowed now, and it is silent: the Optin saves,
+ * runs, honestly counts click-throughs, and collects nothing. The merchant
+ * finds out when no [[Lead]]s arrive.
+ *
+ * **A sentence and never a refusal**, which is the whole difference from the
+ * stricter capture rule beside it: the Optin is not broken, it is measuring
+ * something other than what the merchant asked for.
  */
-describe('a goal with nothing to deliver to', () => {
-  it('says so on a design that captures nothing', () => {
+describe('a goal that collects contacts, on a design that asks for nothing', () => {
+  it('says so, on the design that asks for nothing', () => {
     expect(said({ tree: CLICKS, tokens: ENTRY.tokens }, true)[0]).toMatch(
-      /no address to deliver to/,
+      /will never collect any/,
     );
   });
 
@@ -96,8 +102,11 @@ describe('a goal with nothing to deliver to', () => {
     expect(said({ tree: ENTRY.tree, tokens: ENTRY.tokens }, true)).toEqual([]);
   });
 
-  /** And nothing at all under a Goal that reads its number from conversions. */
-  it('says nothing where the goal does not count deliveries', () => {
+  /**
+   * And nothing at all under a Goal whose product is a click-through — which
+   * is the pairing this ticket exists to allow, and it must stay quiet.
+   */
+  it('says nothing where the goal does not collect contacts', () => {
     expect(said({ tree: CLICKS, tokens: ENTRY.tokens }, false)).toEqual([]);
   });
 });

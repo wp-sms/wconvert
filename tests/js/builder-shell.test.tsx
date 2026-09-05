@@ -168,6 +168,7 @@ const GOAL = {
   label: 'Grow my email list',
   description: 'Capture email addresses and count every submission.',
   needs_a_capture: false,
+  grows_a_list: true,
   headline_kind: 'conversion',
   headline_label: 'Conversions',
   tier: 'free',
@@ -705,6 +706,27 @@ describe('the way out of the builder', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Discard changes' }));
 
     expect(closed).toHaveBeenCalled();
+  });
+
+  /**
+   * **An ordinary Save sends no [[Goal]]**, which is the regression that would
+   * otherwise re-goal an Optin on every keystroke's worth of work.
+   *
+   * `saveDraft()` writes what it is handed, so a `goal` on every PATCH would
+   * make *"correcting a Goal"* indistinguishable from *"saving"* in anything
+   * that later watches the column. The Goal travels only from the control that
+   * changes one (`builder-change-goal.test.tsx`), and never without the config
+   * beside it — the pair is what the server checks (ADR 0059).
+   */
+  it('sends no goal on an ordinary save', async () => {
+    render(<OptinBuilder id={ID} onClose={vi.fn()} />);
+
+    await userEvent.type(await screen.findByLabelText('Name'), '!');
+    await userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+    await screen.findByText(/Saved\./);
+
+    expect(builder.saveOptin).toHaveBeenCalledTimes(1);
+    expect(builder.saveOptin.mock.calls[0][3]).toBeUndefined();
   });
 
   /** A saved edit is not unsaved work, so the door stops asking. */

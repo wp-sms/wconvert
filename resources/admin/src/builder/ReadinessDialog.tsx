@@ -135,8 +135,7 @@ export interface ReadinessDialogProps {
   /** The design, or undefined before one is picked. */
   readonly template: Template | undefined;
   /**
-   * Whether this Optin's [[Goal]] reads its headline from deliveries, so a
-   * design that captures nothing has no address to deliver to.
+   * Whether this Optin's [[Goal]]'s product is a captured contact.
    *
    * ==========================================================================
    * IT WAS THE CONVERTING ACT, AND IT WAS THE ONE PROP THAT COULD BE UNKNOWN.
@@ -148,12 +147,12 @@ export interface ReadinessDialogProps {
    *
    * Neither half survives. The act is read off the design (ADR 0059), so the
    * problems that were about it are gone and `problemsIn` derives what it
-   * needs from the template itself. What a Goal declares is `needs_a_capture`,
+   * needs from the template itself. What a Goal declares is `grows_a_list`,
    * which is not derivable from a design — and `false` while the registry is
    * still answering is the safe direction: it withholds one note for a moment
    * rather than raising one.
    */
-  readonly needsACapture: boolean;
+  readonly growsAList: boolean;
   readonly destinations: readonly Destination[] | null;
   /** Open the block a problem is about, on the tab that edits it. */
   readonly onGoTo: (path: Path) => void;
@@ -172,7 +171,7 @@ export function ReadinessDialog({
   overlay,
   bound,
   template,
-  needsACapture,
+  growsAList,
   destinations,
   onGoTo,
   onGoToSchedule,
@@ -186,7 +185,7 @@ export function ReadinessDialog({
     // The schedule comes from the same `config` the four sections read, so the
     // countdown check asks the merchant's own end date rather than the payload's
     // resolved instant — which does not exist until the Optin is published.
-    ...(template === undefined ? [] : problemsIn(template, needsACapture, rules.schedule.ends_at)),
+    ...(template === undefined ? [] : problemsIn(template, growsAList, rules.schedule.ends_at)),
     ...where.problems.map((said) => ({ said, path: null })),
   ];
 

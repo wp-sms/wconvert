@@ -589,10 +589,17 @@ declaration is what makes a Goal more than a filter at creation time.
 > exactly one act and the runtime has always read it from the design. What that
 > cost was a wall — five of seven popup designs greyed out under *Promote a sale
 > or offer*, each saying *"your goal counts click-throughs"* without naming
-> which goal, on a screen with no control that changed one. What survives is one
-> refusal: a Goal read from **deliveries** needs a design that captures
-> something, because there is no address to deliver to otherwise. See
+> which goal, on a screen with no control that changed one. See
 > [ADR 0059](docs/adr/0059-the-converting-act-belongs-to-the-design.md).
+>
+> **What a Goal still says about a design is what it CAPTURES, in two
+> strengths.** A Goal read from **deliveries** needs a design that captures
+> something, or there is no address to deliver to — that one refuses the save.
+> A Goal whose product is a captured contact over a design that asks for
+> nothing is merely a likely mistake — the Optin saves, runs, and honestly
+> counts click-throughs, it just will never grow a list — and that one is a
+> sentence in the builder's Summary. Both survive the deletion for one reason:
+> **neither is derivable from a design**, which the converting act was.
 
 The declaration is applied when the analytics screen is *read*, never stamped on
 each Conversion as it happens. So correcting a Goal restates the Optin's whole

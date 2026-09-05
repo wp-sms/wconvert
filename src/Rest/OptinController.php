@@ -245,7 +245,7 @@ final class OptinController implements RestController
 
         return new WP_REST_Response($optin->toArray() + [
             'suspended' => $suspended[$optin->id] ?? null,
-            'sibling_act' => $this->actOfTheOtherArms($optin),
+            'sibling_act' => $this->actOfTheOtherArms($optin->id)?->value,
         ]);
     }
 
@@ -272,12 +272,27 @@ final class OptinController implements RestController
      * where the siblings disagree with each other — a state the write refuses,
      * so reaching it means a hand-edited row, and marking cards against one of
      * two answers would be marking them against a guess.
+     *
+     * ========================================================================
+     * ONE READING, AND THE REFUSAL BELOW SHARES IT.
+     * ========================================================================
+     * This walk and {@see self::refuseAnArmMeteredDifferently()} both answer
+     * *"what do the other arms convert on"*, and they were written twice —
+     * which is the two-sources-can-disagree shape this whole ticket deleted
+     * from {@see Goal}, arriving one file over. The picker marks a card
+     * against this answer and the save refuses against that one, so any daylight
+     * between them is a card the merchant is allowed to press and then refused.
+     *
+     * So there is one method and both callers take it. It also settles the
+     * hand-edited case the same way in both places: siblings that disagree with
+     * each other answer null, and null refuses nothing rather than refusing
+     * against whichever row was read first.
      */
-    private function actOfTheOtherArms(Optin $optin): ?string
+    private function actOfTheOtherArms(string $id): ?ConvertingAct
     {
         $found = null;
 
-        foreach ($this->optins->otherArmsOf($optin->id) as $arm) {
+        foreach ($this->optins->otherArmsOf($id) as $arm) {
             $theirs = ConvertingAct::offeredIn($arm->config['template']['tree'] ?? null);
 
             if (count($theirs) !== 1) {
@@ -291,7 +306,7 @@ final class OptinController implements RestController
             $found = $theirs[0];
         }
 
-        return $found?->value;
+        return $found;
     }
 
     /**
@@ -876,7 +891,9 @@ final class OptinController implements RestController
      * **Asked of the siblings' own configs**, never of a flag: the act a
      * sibling converts on is a fact about the design it holds, and a second
      * copy of it anywhere would be the duplicate declaration this whole ticket
-     * deleted.
+     * deleted. It reads them through {@see self::actOfTheOtherArms()}, which is
+     * the same method `show()` hands to the picker — so a card the gallery
+     * leaves offerable is one this cannot then refuse.
      *
      * **A design offering nothing is not refused here either.** It is refused
      * one method down, under its own sentence — telling a merchant their
@@ -888,34 +905,25 @@ final class OptinController implements RestController
     private function refuseAnArmMeteredDifferently(array $config, string $id): ?WP_Error
     {
         $offered = ConvertingAct::offeredIn($config['template']['tree'] ?? null);
+        $siblings = $this->actOfTheOtherArms($id);
 
-        if (count($offered) !== 1) {
+        if (count($offered) !== 1 || $siblings === null || $offered[0] === $siblings) {
             return null;
         }
 
-        foreach ($this->optins->otherArmsOf($id) as $arm) {
-            $theirs = ConvertingAct::offeredIn($arm->config['template']['tree'] ?? null);
-
-            if (count($theirs) !== 1 || $theirs === $offered) {
-                continue;
-            }
-
-            return new WP_Error(
-                'wconvert_optin_arms_are_not_comparable',
-                $offered[0] === ConvertingAct::Click
-                    ? __(
-                        'This design converts on a click and the other arm of this test converts on a form submission, so the two rates would not be comparable.',
-                        'wconvert'
-                    )
-                    : __(
-                        'This design converts on a form submission and the other arm of this test converts on a click, so the two rates would not be comparable.',
-                        'wconvert'
-                    ),
-                ['status' => 400]
-            );
-        }
-
-        return null;
+        return new WP_Error(
+            'wconvert_optin_arms_are_not_comparable',
+            $offered[0] === ConvertingAct::Click
+                ? __(
+                    'This design converts on a click and the other arm of this test converts on a form submission, so the two rates would not be comparable.',
+                    'wconvert'
+                )
+                : __(
+                    'This design converts on a form submission and the other arm of this test converts on a click, so the two rates would not be comparable.',
+                    'wconvert'
+                ),
+            ['status' => 400]
+        );
     }
 
     /**

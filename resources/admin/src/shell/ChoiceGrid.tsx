@@ -64,7 +64,7 @@ export function ChoiceCard({
   return (
     <li
       aria-current={current ? 'true' : undefined}
-      className={`flex flex-col gap-2 rounded-md border border-border bg-card p-4${current ? ' is-chosen' : ''}`}
+      className={`wconvert-choice flex flex-col gap-2 rounded-md border border-border bg-card p-4${current ? ' is-chosen' : ''}`}
     >
       <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
         <h3

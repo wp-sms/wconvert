@@ -130,6 +130,39 @@ answer as `sibling_act` so the picker can mark it **before** the click
 (ADR 0042 rule 3), and a variant is born comparable because it starts as a copy
 — only an edit can break it.
 
+## And one new problem, which this decision created
+
+Everything above removes a rule. This adds one, and it is the only place where
+deleting `convertingAct()` made a *new* mistake reachable.
+
+A Goal that counts submissions used to refuse every design offering the other
+act, so **"grow my email list" over a design with no field on it was
+impossible.** It is allowed now. And it is silent: the Optin saves, publishes,
+shows, and honestly counts click-throughs. Nothing is broken and no number is
+wrong. What is wrong is that the merchant asked for a list and will never get
+one, and they find out when no [[Lead]]s arrive.
+
+So `Goal::growsAList()` is a second predicate, and it passes the same test that
+decided which of a Goal's declarations survived: **is this derivable from the
+design?** The act is — two designs that differ only in a button's `action`
+differ in what they count. This is not: two byte-identical trees can serve a
+Goal that wants a list and a Goal that wants a click-through, and nothing in a
+tree says which.
+
+The two capture facts are **ordered rather than parallel**, and
+`GoalRegistryTest` asserts the implication so they cannot drift into
+contradicting each other:
+
+| | `needsACapture()` | `growsAList()` |
+|---|---|---|
+| **Which Goals** | the delivery Goal | the three whose product is a contact |
+| **Consequence** | refuses the save, marks the card | one sentence in the Summary |
+| **Why** | the headline number is literally unreachable | the number is fine and measures something else |
+
+It is a note and never a refusal, because refusing would put back the wall this
+document removed, one predicate over. And never a gallery filter, for
+ADR 0043's reason above.
+
 ## Two consequences accepted rather than fixed
 
 ### Switching a design reinterprets an Optin's history
@@ -140,10 +173,17 @@ click-throughs. The **count** stays correct — a Conversion happened either way
 and this is exactly ADR 0020's interpret-at-read principle. What is new is that
 it arrives through an action merchants take casually.
 
-So the design picker's existing warning gains a clause, shown only where a
-design converting the other way is actually on offer for this [[Display Type]]:
-*"A design that converts the other way changes what this Optin counts —
-including everything it has already counted."* Marked before the click.
+So the design picker marks it **on the card that would do it**, naming the
+direction: *"Counts click-throughs instead of submissions — including
+everything this Optin has already counted."* Marked before the click
+(ADR 0042 rule 3), and carried as a `note` rather than a `reason`, because the
+card can still be pressed.
+
+*It shipped for a day as one clause appended to the dialog's header instead,
+which was wrong three ways: it showed before anything was picked, it stayed up
+while the merchant considered a design that changes nothing, and it could not
+name a direction because it was not about any particular card. The predicate it
+should have used was already written and exported beside it, with no callers.*
 
 ### A Goal card's conversion rate can blend two behaviours
 
@@ -187,9 +227,10 @@ param edit.
 ## Consequences
 
 - **`Goal::convertingAct()` is gone**, and with it `converting_act` on
-  `GET /wconvert/v1/goals`. `needs_a_capture` travels in its place —
-  `GoalParityTest`'s *"a surface that genuinely needs to distinguish Goals has a
-  field to do it with"* now names that one.
+  `GET /wconvert/v1/goals`. `needs_a_capture` and `grows_a_list` travel in its
+  place — `GoalParityTest`'s *"a surface that genuinely needs to distinguish
+  Goals has a field to do it with"* now names those. Both are Goal facts a
+  design cannot answer, which is the whole of the test this document applied.
 - **`RejectionReason::MetricMismatch` is gone**, and `PlaybookLibrary` no longer
   checks a Playbook's default Template against its Goal's act. A third party
   filing a capture design under the sale Goal is offering a start a merchant can

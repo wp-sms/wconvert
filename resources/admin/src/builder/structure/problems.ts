@@ -83,15 +83,19 @@ export interface Problem {
 export function problemsIn(
   template: Template,
   /**
-   * Whether this Optin's [[Goal]] reads its headline from deliveries, so a
-   * design capturing nothing has no address to deliver to.
+   * Whether this Optin's [[Goal]]'s product is a captured contact.
    *
    * **It replaces the converting act this used to take**, which is the shape
    * of the whole change: the act is derivable from the `template` argument
    * beside it and was therefore a second copy of it, while what a Goal
    * declares is not derivable from a design at all (ADR 0059).
+   *
+   * The looser of the Goal's two capture facts, deliberately. The stricter one
+   * — a Goal whose headline is read from deliveries — is a refusal, said on
+   * the gallery card and enforced at the write; this is the one that is only
+   * ever a sentence.
    */
-  needsACapture: boolean,
+  growsAList: boolean,
   /**
    * When the Optin stops running, as the merchant typed it — or undefined.
    *
@@ -105,7 +109,7 @@ export function problemsIn(
 ): Problem[] {
   return [
     ...whatCannotConvert(template),
-    ...whatHasNothingToDeliver(template, needsACapture),
+    ...whatCollectsNothing(template, growsAList),
     ...whatCapturesNothing(template),
     ...whatCountsDownToNothing(template, endsAt),
     ...whatLosesWords(template),
@@ -148,37 +152,46 @@ function whatCannotConvert(template: Template): Problem[] {
 }
 
 /**
- * A [[Goal]] read from deliveries, on a design that asks for nothing.
+ * A [[Goal]] whose product is a contact, on a design that asks for nothing.
  *
  * ============================================================================
- * THE ONE GOAL-SHAPED PROBLEM LEFT, AND IT IS ABOUT CAPTURE RATHER THAN ACT.
+ * THE ONE PROBLEM ADR 0059 CREATED, RATHER THAN INHERITED.
  * ============================================================================
- * The delivery kind is written when a push to the lead-magnet [[Destination]]
- * succeeds, and there is nothing to push unless the visitor gave an address.
- * So this design reports **zero forever** under this Goal — the same failure
- * as an Optin with no button, arrived at from the other side — and the save
- * refuses it (ADR 0059).
+ * Every other entry in this file reports something that was already possible.
+ * This one exists because deleting `Goal::convertingAct()` made a new pairing
+ * reachable: *"grow my email list"* over a design whose only button links
+ * away. That used to be refused outright — the gallery greyed the card and the
+ * save rejected it — and it is now allowed.
  *
- * **A note here and never a filter in the gallery.** Pre-pressing a captures
- * chip for a Goal would be a Goal facet in a captures chip's clothes, which
- * ADR 0043 forbids outright. *Which* detail to ask for stays silent for the
- * same reason and a stronger one: an email against a phone number is the
- * merchant's own judgement and nothing enforces it.
+ * **And allowed is right; silent is not.** The Optin saves, publishes, shows,
+ * and honestly counts click-throughs. Nothing is broken. What is wrong is that
+ * the merchant asked for a list and will never get one, and no other surface
+ * in the product will ever mention it — which is exactly the bar the two
+ * non-refusal problems in this file already meet.
+ *
+ * **A sentence, never a refusal and never a gallery filter.** Pre-pressing a
+ * captures chip for a Goal is a Goal facet in a captures chip's clothes, which
+ * ADR 0043 forbids; and refusing the save would put back the wall this ticket
+ * removed, one predicate over.
+ *
+ * **It asks whether the design captures ANYTHING, never what.** Email against
+ * phone is the merchant's own judgement and nothing enforces it — an SMS list
+ * grown from an email capture is still a list they grew.
  *
  * **`path: null`, because the fix is not a block.** It is a design with a
  * field on it, from the Design tab — and adding one to a design that converts
  * on a click is refused by the editor for its own reasons (`catalogue.ts`), so
  * pointing at a block would point at work the merchant cannot do.
  */
-function whatHasNothingToDeliver(template: Template, needsACapture: boolean): Problem[] {
-  if (!needsACapture || capturesTaken(template.tree).length > 0) {
+function whatCollectsNothing(template: Template, growsAList: boolean): Problem[] {
+  if (!growsAList || capturesTaken(template.tree).length > 0) {
     return [];
   }
 
   return [
     {
       said: __(
-        'Your goal counts deliveries and this design asks the visitor for nothing, so there is no address to deliver to. Pick a design with a field on it.',
+        'This goal collects contacts and this design asks the visitor for nothing, so it will never collect any. Pick a design with a field on it.',
         'wconvert',
       ),
       path: null,

@@ -89,6 +89,7 @@ const GOALS = [
     label: 'Grow my email list',
     description: 'Capture email addresses.',
     needs_a_capture: false,
+    grows_a_list: true,
     headline_kind: 'conversion',
     headline_label: 'Conversions',
     tier: 'free',
@@ -99,6 +100,7 @@ const GOALS = [
     label: 'Promote a sale or offer',
     description: 'Send visitors to an offer.',
     needs_a_capture: false,
+    grows_a_list: false,
     headline_kind: 'conversion',
     headline_label: 'Conversions',
     tier: 'free',
@@ -109,6 +111,7 @@ const GOALS = [
     label: 'Deliver a lead magnet',
     description: 'Send a file in exchange for an address.',
     needs_a_capture: true,
+    grows_a_list: true,
     headline_kind: 'lead_magnet_delivered',
     headline_label: 'Deliveries',
     tier: 'free',
@@ -119,6 +122,7 @@ const GOALS = [
     label: 'Bring shoppers back to their cart',
     description: 'Show shoppers the way back.',
     needs_a_capture: false,
+    grows_a_list: false,
     headline_kind: 'conversion',
     headline_label: 'Conversions',
     tier: 'pro',
@@ -360,6 +364,51 @@ describe('the goal picker', () => {
 });
 
 // =============================================================================
+// THE ONE MISTAKE THIS TICKET MADE REACHABLE.
+// =============================================================================
+
+describe('a goal that collects contacts, over a design that asks for nothing', () => {
+  /**
+   * **Allowed, and no longer silent.** Before ADR 0059 this pairing was refused
+   * outright — the card was greyed and the save rejected it. It saves now, runs
+   * now, and honestly counts click-throughs; what it will never do is collect
+   * an address, and no other surface in the product would mention it.
+   *
+   * A sentence in the Summary rather than a refusal: the Optin is not broken,
+   * it is measuring something other than what the merchant asked for.
+   */
+  it('is flagged in the Summary, and still saves', async () => {
+    builder.getOptin.mockResolvedValue(
+      optin({
+        config: { template_id: 'offer-panel', template: { tree: OFFER.tree, tokens: OFFER.tokens } },
+      }),
+    );
+
+    open();
+
+    await userEvent.click(await screen.findByRole('button', { name: /thing to fix/ }));
+
+    expect(await screen.findByText(/will never collect any/)).toBeInTheDocument();
+    expect(screen.getByText(/collects contacts/)).toBeInTheDocument();
+  });
+
+  /** And a goal whose product IS the click-through says nothing at all. */
+  it('says nothing where the goal does not collect contacts', async () => {
+    builder.getOptin.mockResolvedValue(
+      optin({
+        goal: 'promote_offer',
+        config: { template_id: 'offer-panel', template: { tree: OFFER.tree, tokens: OFFER.tokens } },
+      }),
+    );
+
+    open();
+
+    expect(await screen.findByRole('button', { name: 'Summary' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /thing to fix/ })).toBeNull();
+  });
+});
+
+// =============================================================================
 // THE CONFIRM, AND WHAT IT SENDS.
 // =============================================================================
 
@@ -410,18 +459,10 @@ describe('confirming the change', () => {
     expect(screen.getByText('Grow my email list')).toBeInTheDocument();
   });
 
-  /**
-   * **The regression that would re-goal on every keystroke's worth of work.**
-   * `saveDraft()` writes what it is handed, so a `goal` on every PATCH would
-   * make correcting one indistinguishable from saving.
-   */
-  it('leaves the goal alone on an ordinary Save', async () => {
-    open();
-
-    await userEvent.type(await screen.findByLabelText('Name'), '!');
-    await userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
-    await screen.findByText(/Saved\./);
-
-    expect(builder.saveOptin.mock.calls[0][3]).toBeUndefined();
-  });
+  /*
+    **The mirror — "an ordinary Save sends no goal" — lives in
+    `builder-shell.test.tsx`**, beside the other things a Save does and does
+    not do. It is the same regression read from the other end, and asserting it
+    here as well would be two tests that fail together and say the same thing.
+  */
 });
