@@ -142,8 +142,8 @@ const LABELS = {
 };
 
 const GOALS = [
-  { id: 'grow_email_list', label: 'Grow my email list', description: '', converting_act: 'submit', headline_kind: 'conversion', tier: 'free', availability: { available: true } },
-  { id: 'promote_offer', label: 'Promote a sale', description: '', converting_act: 'click', headline_kind: 'conversion', tier: 'free', availability: { available: true } },
+  { id: 'grow_email_list', label: 'Grow my email list', description: '', needs_a_capture: false, grows_a_list: true, headline_kind: 'conversion', tier: 'free', availability: { available: true } },
+  { id: 'promote_offer', label: 'Promote a sale', description: '', needs_a_capture: false, grows_a_list: true, headline_kind: 'conversion', tier: 'free', availability: { available: true } },
 ];
 
 function optin(over: Record<string, unknown> = {}) {
@@ -890,10 +890,14 @@ describe('the inspector', () => {
   });
 
   /**
-   * **The refusals are the save's, met early.** A `link` button on a
-   * submit-metered Optin fails the WHOLE save through
-   * `refuseAMetricItCannotReport`, which is the error this editor exists to
-   * prevent a merchant ever meeting.
+   * **The refusals are the save's, met early — and the reason changed.**
+   *
+   * It read *"this Optin's goal counts form submissions … change the goal to
+   * change this"*, which named a door the builder did not have and a fact that
+   * is no longer true: a [[Goal]] counts no act (ADR 0059). What refuses the
+   * flip is the STEP COUNT — a design that submits has a terminal success step
+   * and one that links away has none (ADR 0025) — so flipping the param alone
+   * leaves a config the save rejects whichever way it went.
    */
   it('refuses to make the button a link, with the reason where the pointer is', async () => {
     await structure();
@@ -904,7 +908,8 @@ describe('the inspector', () => {
     const refused = await screen.findByRole('menuitem', { name: /Goes somewhere else/ });
 
     expect(refused).toHaveAttribute('aria-disabled', 'true');
-    expect(refused).toHaveTextContent('counts form submissions');
+    expect(refused).toHaveTextContent('second step');
+    expect(refused).not.toHaveTextContent(/goal/i);
   });
 
   /** A block with no such question is not offered one. */

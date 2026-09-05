@@ -319,9 +319,11 @@ final class RecordedOnTheRealPathTest extends TestCase
      * Correcting the [[Goal]] is the sharpest of the five, and it is a column
      * rather than a key of `config`.
      *
-     * The correction has to be one the design can still report — `welcome-discount`
-     * is a submit-metered design, so the SMS Goal is settable on it and a
-     * click-metered one is not (ADR 0025).
+     * **Any settable Goal will do now** (ADR 0059). The correction used to
+     * have to be one the design could still report — `welcome-discount` is a
+     * capture design, so the SMS Goal was settable on it and a click-metered
+     * one was not — and the act is the design's now, so the only Goal a
+     * capture design cannot take is none of them.
      */
     public function testCorrectingTheGoalIsRecordedAsTheGoal(): void
     {
@@ -337,15 +339,29 @@ final class RecordedOnTheRealPathTest extends TestCase
      * the same reason a refused schedule does: the route rejects it, so the
      * merchant did not make that change. This is the one that would have been
      * easy to get wrong by recording before the save.
+     *
+     * **The refusal it rides is the last Goal-shaped one** (ADR 0059): a Goal
+     * counting deliveries over a design with no field on it. The Optin starts
+     * from a cart [[Playbook]], whose design captures nothing.
+     *
+     * **And the PATCH carries NO `config`**, deliberately. Both refusals used
+     * to be guarded on an incoming config, so a goal-only PATCH wrote any
+     * settable Goal onto any design with nothing asked — unreachable from the
+     * admin, and this route is scriptable by anyone holding `manage_options`
+     * (ADR 0026). The Goal is checked against the design the Optin already
+     * holds, so this is red without that fix.
      */
     public function testAGoalCorrectionTheDesignCannotReportRecordsNothing(): void
     {
-        $optin = $this->startFromAPlaybook();
+        $draft = $this->prefill->fromPlaybook('cart-straight-away');
+
+        $this->assertNotNull($draft);
+
+        $optin = $this->create($draft['name'], $draft['goal'], $draft['config']);
 
         $request = new WP_REST_Request();
         $request->set_param('id', (string) $optin['id']);
-        $request->set_param('goal', 'promote_offer');
-        $request->set_param('config', $optin['config']);
+        $request->set_param('goal', 'deliver_lead_magnet');
 
         $this->assertInstanceOf(\WP_Error::class, $this->controller()->update($request));
         $this->assertNull($this->milestones()->firstEdit());

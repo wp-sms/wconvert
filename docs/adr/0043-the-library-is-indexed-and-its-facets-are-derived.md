@@ -51,9 +51,30 @@ is already filtered on it. That is
 [ADR 0042](0042-the-admin-speaks-only-when-it-changes-what-you-do-next.md) rule 2
 applied to a toolbar: *does knowing this change what they do next?*
 
+> *Amended by
+> [ADR 0059](0059-the-converting-act-belongs-to-the-design.md): **`act` is no
+> longer the refusal marking**, because no [[Goal]] refuses a design for its
+> act. It is still not a filter and still travels, for two smaller jobs — the
+> picker says, before the click, that a design converting the other way changes
+> what this Optin counts including what it has already counted; and an A/B
+> arm's card is marked where its siblings convert the other way. Both are
+> statements about a DESIGN and an Optin, never about a Goal. `captures` picked
+> up refusal duty instead: a design that captures nothing is refused under a
+> Goal read from deliveries, and on an Optin holding a [[Destination]].*
+
 **There is no Goal facet, and there will not be.** `Gallery.tsx` was right the
 first time: asserting a Goal pairing that does not exist is what this boundary
 prevents.
+
+> *Load-bearing rather than incidental as of
+> [ADR 0059](0059-the-converting-act-belongs-to-the-design.md), which had to
+> answer the obvious follow-up: since a Goal read from deliveries needs a
+> capture, why not pre-press the* Email *chip for it? Because that is a Goal
+> facet wearing a captures chip's clothes, which is exactly this paragraph —
+> and on today's library the SMS Goal would open showing **one** design. It is
+> a note in the builder's Summary instead, on the one case that is genuinely a
+> mistake. Which detail to ask for stays silent altogether: email against phone
+> is the merchant's judgement.*
 
 **The facet vocabulary lives in `resources/templates/manifest.json`**, as a
 sibling `facets` section — exactly as

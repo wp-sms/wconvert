@@ -33,10 +33,14 @@ import type { TemplateNode, TemplateTree } from '@renderer/types';
  *   two elements carrying `id="wc-email"`; their derived [[Slot Role]]s collide
  *   beside, and `TemplateVocabulary::normalize()` settles that by dropping the
  *   later one's. The same refusal `additionsIn` already makes for adding one.
- * - **An action the Goal does not count.** A `link` button on a submit-metered
- *   Optin fails the **whole save** through `refuseAMetricItCannotReport` — a
- *   red bar over an editor that had happily allowed it, which is the error this
- *   editor exists to make a merchant never meet.
+ * - **An action that would leave the design with the wrong number of steps.**
+ *   A submit-metered design has a terminal success step and a click-metered
+ *   one does not (ADR 0025), so flipping the button has to add or remove that
+ *   step — and `⇄` changes one param. It said *"your goal counts form
+ *   submissions … change the goal to change this"*, which was true of a Goal
+ *   that declared an act and is not true of one that does not (ADR 0059).
+ *   Turning the flip ON is the Success Action feature and a separate ticket;
+ *   what changed here is only the reason.
  * - **A `link` while the form still captures.** `render.ts` makes the step
  *   holding a non-`link` button the `<form>`; take that away and every field on
  *   it draws, takes typing, and is read by nothing. The mirror of the refusal
@@ -121,20 +125,41 @@ export function swapsFor(tree: TemplateTree, path: Path, act: ConvertingAct): Sw
 /**
  * Why this button may not do that, or null.
  *
- * The Goal comes first because it is the refusal that would fail the whole
- * save, and because it is the one a merchant can actually act on — changing
- * the Goal is a thing they can do, whereas "there are still fields" is a
- * consequence of the design they are looking at.
+ * ============================================================================
+ * THE FLIP IS STILL REFUSED, AND THE REASON IT GIVES WAS WRONG.
+ * ============================================================================
+ * It said *"This Optin's goal counts form submissions, so its button has to
+ * submit the form. **Change the goal to change this.**"* — two false claims in
+ * one sentence. A Goal counts no act at all now (ADR 0059), and the door it
+ * named was one the builder did not have.
+ *
+ * **What actually refuses it is the STEP COUNT.** A submit-metered design has
+ * two steps, because the post-submit success state is a terminal step; a
+ * click-metered one has one, because the click navigates the visitor away and
+ * an interstitial is worse than the navigation it delays
+ * ({@see ConvertingAct#steps}, ADR 0025). `TemplateLibrary::refuse()` holds
+ * that at registration and the save holds it for an Optin — so flipping the
+ * action alone produces a config that is refused whichever way it is flipped.
+ *
+ * **Turning it on is a real feature and a separate ticket.** It is what
+ * OptinMonster calls a per-button Success Action, and the work is the STEP: a
+ * flip to `link` has to drop the success step and carry its words somewhere, a
+ * flip to `submit` has to build one. That is a document edit, not a param
+ * edit, and this control edits params.
+ *
+ * The Goal comes first no longer; the step rule does, because it is the one
+ * that would fail the whole save. "There are still fields" is second because
+ * it is a consequence of the design the merchant is looking at.
  */
 function whyActionIsRefused(tree: TemplateTree, action: string, act: ConvertingAct): string | null {
   if (action !== actionFor(act)) {
     return act === 'submit'
       ? __(
-          'This Optin’s goal counts form submissions, so its button has to submit the form. Change the goal to change this.',
+          'A design that submits has a second step for what the visitor sees afterwards, and a design that links away has none. Pick a design that links away from the Design tab.',
           'wconvert',
         )
       : __(
-          'This Optin’s goal counts click-throughs, so its button has to go somewhere. Change the goal to change this.',
+          'A design that links away has no second step, and one that submits needs one for what the visitor sees afterwards. Pick a design that submits from the Design tab.',
           'wconvert',
         );
   }

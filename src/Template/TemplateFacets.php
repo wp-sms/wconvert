@@ -42,9 +42,14 @@ defined('ABSPATH') || exit;
  * actually uses. The other three are derived and travel, and none of them is a
  * chip:
  *
- * - `act` is not a filter, it is the **refusal marking** — a design converting
- *   on a click cannot serve a Goal that counts submissions, and that is said on
- *   the card with the reason rather than hidden by a control (ADR 0025).
+ * - `act` is not a filter and **is no longer the refusal marking either**. It
+ *   said *"a design converting on a click cannot serve a Goal that counts
+ *   submissions"*, and no Goal counts an act any more (ADR 0059) — the design
+ *   declares it, alone. It still travels, because the picker says *"this
+ *   design counts click-throughs instead of submissions, including the ones
+ *   this Optin has already counted"* before the switch, and because an A/B
+ *   arm's card is marked where its siblings convert the other way. Both are
+ *   statements about the DESIGN in hand rather than about a Goal.
  * - `asks_consent` is not something a merchant browses by.
  * - `display_type` is the Optin's, and the gallery is already filtered on it —
  *   a question asked twice.
@@ -144,9 +149,9 @@ final class TemplateFacets
      *
      * `act` and `asks_consent` are absent from that vocabulary and stay at
      * their empty values. A locked card is never offered, so it is never
-     * refused for its act either: the message on it is the upsell, and a second
-     * one about a Goal it cannot serve would be a sentence about a design the
-     * merchant cannot have.
+     * refused and never marked: the message on it is the upsell, and a second
+     * one about a design the merchant cannot have would be a sentence about
+     * nothing.
      *
      * @param mixed $authored Whatever the entry wrote under `facets`.
      * @param array<string, list<string>> $offered The manifest's `facets` section.

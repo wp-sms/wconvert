@@ -28,19 +28,29 @@ use WP_REST_Request;
 
 /**
  * =============================================================================
- * THE PAIRING IS ENFORCED AT THE WRITE, NOT ONLY ON THE SCREEN.
+ * WHAT THE WRITE STILL REFUSES, NOW THAT THE ACT BELONGS TO THE DESIGN.
  * =============================================================================
- * **One Optin has exactly one converting act, and its [[Goal]] decides which**
- * (CONTEXT.md, Conversion). A [[Playbook]] is checked against that at
- * registration and a [[Template]] is checked when it is registered, but
- * neither is an enforcement mechanism for an OPTIN: `POST /wconvert/v1/optins`
- * takes a whole design in `config` and is scriptable by anyone holding
- * `manage_options`.
+ * **One Optin has exactly one converting act, and its DESIGN decides which**
+ * (CONTEXT.md, Conversion; ADR 0059). {@see \WConvert\Template\TemplateLibrary}
+ * refuses a design offering two acts or none when it is registered, so a
+ * registered design offers exactly one — and the [[Goal]] declares no act at
+ * all any more, so there is no pairing left to disagree about. The whole
+ * *"this design does not produce the outcome your Goal counts"* family of
+ * refusals is gone, and with it five of seven greyed-out cards.
  *
- * That is ADR 0026's own argument about the goal screen — *"a screen is not an
- * enforcement mechanism"* — applied to the other half of the pairing, and it
- * is what makes ADR 0025's *"the form is not merely unnecessary, it is
- * forbidden"* true of an Optin rather than only of the library.
+ * Three refusals survive, and none of them is about an act matching a Goal:
+ *
+ * 1. **A design that cannot convert at all**, which reports zero forever under
+ *    every Goal (ADR 0020).
+ * 2. **A design that captures nothing**, under a Goal that counts deliveries
+ *    or on an Optin holding [[Destination]] ids (ADR 0025, re-keyed).
+ * 3. **An arm whose design converts differently from its siblings'**, which
+ *    would compare a submission rate against a click rate (ADR 0045).
+ *
+ * Each is enforced HERE and not only on the screen, because
+ * `POST /wconvert/v1/optins` takes a whole design in `config` and is
+ * scriptable by anyone holding `manage_options` — ADR 0026's *"a screen is not
+ * an enforcement mechanism"*.
  */
 #[CoversClass(OptinController::class)]
 final class OptinWriteTest extends TestCase
@@ -116,42 +126,125 @@ final class OptinWriteTest extends TestCase
     }
 
     // ========================================================================
-    // TDD SEAM: THE ONE-STEP, CLICK-METERED SHAPE.
+    // THE ACT IS THE DESIGN'S, SO NO PAIRING IS REFUSED (ADR 0059).
     // ========================================================================
 
     /**
-     * **A cart Optin cannot be given a design with a form on it.**
+     * **A cart Optin CAN be given a design with a form on it**, and this
+     * asserted the opposite.
      *
-     * `stacked-signup` is a two-step, submit-metered design — a form and the
-     * success state after it. Filed under a click-metered Goal it reports
-     * nothing at all, and worse than nothing: a click-metered Optin carrying a
-     * form emits [[Lead]]s that are not [[Conversion]]s, which inverts
-     * CONTEXT.md's rule rather than bending it (ADR 0025).
+     * `stacked-signup` captures a phone number and converts on its submit. Under
+     * the cart [[Goal]] it used to be refused outright — a merchant who wanted
+     * *"enter your email and we'll save your cart"* met a red bar telling them
+     * to pick a design that matched the Goal, with no control anywhere that
+     * changed one. ADR 0025 itself named that use case and routed it to a
+     * different Goal; it now just works where the merchant asked for it.
+     *
+     * The Optin reports the submissions its design produces, under the card its
+     * Goal groups it on, and `wconvert_stats` stores the same `conversion` kind
+     * either way — so nothing about the number changes, only which act produced
+     * it.
      */
-    public function testACartOptinIsRefusedADesignThatCapturesSomething(): void
+    public function testACartOptinTakesADesignThatCapturesSomething(): void
     {
-        $refusal = $this->create(Goal::RecoverCart, ['template_id' => 'stacked-signup']);
+        $created = $this->create(Goal::RecoverCart, ['template_id' => 'stacked-signup']);
 
-        $this->assertInstanceOf(WP_Error::class, $refusal);
-        $this->assertSame('wconvert_optin_metric_mismatch', $refusal->get_error_code());
+        $this->assertIsArray($created);
+        $this->assertSame('recover_cart', $created['goal'] ?? null);
+        $this->assertSame('stacked-signup', $created['config']['template_id'] ?? null);
     }
 
-    /** The mirror: a submit-metered Goal cannot be given the click design. */
-    public function testAnEmailOptinIsRefusedADesignThatOnlyLinksAway(): void
+    /** The mirror: a list-growing Goal takes the design that links away. */
+    public function testAnEmailOptinTakesADesignThatOnlyLinksAway(): void
     {
-        $refusal = $this->create(Goal::GrowEmailList, ['template_id' => 'offer-panel']);
+        $created = $this->create(Goal::GrowEmailList, ['template_id' => 'offer-panel']);
 
-        $this->assertInstanceOf(WP_Error::class, $refusal);
-        $this->assertSame('wconvert_optin_metric_mismatch', $refusal->get_error_code());
+        $this->assertIsArray($created);
+        $this->assertSame('offer-panel', $created['config']['template_id'] ?? null);
     }
 
-    /** And the pairing the cart Goal is actually for is accepted. */
+    /** And the pairing the cart Goal ships Playbooks for is still accepted. */
     public function testACartOptinTakesTheOneStepClickMeteredDesign(): void
     {
         $created = $this->create(Goal::RecoverCart, ['template_id' => 'offer-panel']);
 
         $this->assertIsArray($created);
         $this->assertSame('recover_cart', $created['goal'] ?? null);
+    }
+
+    // ========================================================================
+    // SURVIVING REFUSAL: A GOAL COUNTING DELIVERIES NEEDS A CAPTURE.
+    // ========================================================================
+
+    /**
+     * **The one Goal-shaped refusal left.** `lead_magnet_delivered` is written
+     * when a push to the lead-magnet [[Destination]] succeeds, and there is
+     * nothing to push unless the visitor gave an address — so under a design
+     * with no field on it the headline reads zero forever, which is ADR 0020's
+     * failure that looks broken while being right.
+     */
+    public function testADeliveryGoalIsRefusedADesignThatCapturesNothing(): void
+    {
+        $refusal = $this->create(Goal::DeliverLeadMagnet, ['template_id' => 'offer-panel']);
+
+        $this->assertInstanceOf(WP_Error::class, $refusal);
+        $this->assertSame('wconvert_optin_captures_nothing', $refusal->get_error_code());
+    }
+
+    /** And it takes a design that captures, whatever that design captures. */
+    public function testADeliveryGoalTakesAnyDesignWithAFieldOnIt(): void
+    {
+        $created = $this->create(Goal::DeliverLeadMagnet, ['template_id' => 'stacked-signup']);
+
+        $this->assertIsArray($created);
+        $this->assertSame('deliver_lead_magnet', $created['goal'] ?? null);
+    }
+
+    /**
+     * **A goal-only PATCH is checked against the design the Optin already
+     * holds.**
+     *
+     * Both refusals used to be guarded on an incoming `config`, so
+     * `PATCH {"goal": …}` carrying none wrote any settable Goal onto any design
+     * and any binding with nothing asked at all. It was unreachable from the
+     * admin — which is exactly ADR 0026's point about the goal screen, and this
+     * route is scriptable by anyone holding `manage_options`. It matters more
+     * now that there IS a control that changes a Goal (ADR 0059).
+     */
+    public function testAGoalOnlyPatchIsCheckedAgainstTheStoredDesign(): void
+    {
+        $created = $this->create(Goal::PromoteOffer, ['template_id' => 'offer-panel']);
+
+        $this->assertIsArray($created);
+
+        $request = new WP_REST_Request();
+        $request->set_param('id', $created['id']);
+        $request->set_param('goal', Goal::DeliverLeadMagnet->value);
+
+        $refusal = $this->controller->update($request);
+
+        $this->assertInstanceOf(WP_Error::class, $refusal);
+        $this->assertSame('wconvert_optin_captures_nothing', $refusal->get_error_code());
+    }
+
+    /**
+     * **And a PATCH carrying only a name is not asked the question**, on an
+     * Optin whose stored pairing is fine — the guard is about the pair being
+     * WRITTEN, not about re-auditing a row on every rename.
+     */
+    public function testARenameIsNotAskedAboutTheDesign(): void
+    {
+        $created = $this->create(Goal::PromoteOffer, ['template_id' => 'offer-panel']);
+
+        $this->assertIsArray($created);
+
+        $request = new WP_REST_Request();
+        $request->set_param('id', $created['id']);
+        $request->set_param('name', 'Renamed');
+
+        $response = $this->controller->update($request);
+
+        $this->assertNotInstanceOf(WP_Error::class, $response);
     }
 
     /**
@@ -243,20 +336,27 @@ final class OptinWriteTest extends TestCase
     }
 
     // ========================================================================
-    // AND IT HOLDS NO DESTINATION IDS.
+    // A DESIGN THAT CAPTURES NOTHING HOLDS NO DESTINATION IDS.
     // ========================================================================
 
     /**
      * *"Its Optins carry no form node, write no [[Lead]], snapshot no
-     * [[Consent Record]] and hold no [[Destination]] ids"* (#36). A
-     * click-metered Optin captures nothing, so a bound Destination is
-     * configuration that can never fire.
+     * [[Consent Record]] and hold no [[Destination]] ids"* (#36). An Optin
+     * whose design captures nothing has no Lead to push, so a bound
+     * Destination is configuration that can never fire.
+     *
+     * **Keyed on the DESIGN's capture rather than on the Goal's act**
+     * (ADR 0059), which is what ADR 0025 was always arguing: the reason there
+     * is nothing to send is the absent form, and the act was only ever how
+     * that absence was reached. So it holds on an Optin under any Goal —
+     * including one this install can no longer resolve, which is the case a
+     * Goal-keyed check would have let lapse (ADR 0026).
      *
      * **Refused rather than stripped**, because stripping writes a decision
      * the merchant did not make and leaves them hunting for a binding that is
      * silently gone.
      */
-    public function testAClickMeteredOptinIsRefusedADestination(): void
+    public function testAnOptinWhoseDesignCapturesNothingIsRefusedADestination(): void
     {
         $refusal = $this->create(Goal::RecoverCart, [
             'template_id' => 'offer-panel',
@@ -267,10 +367,34 @@ final class OptinWriteTest extends TestCase
         $this->assertSame('wconvert_optin_captures_nothing', $refusal->get_error_code());
     }
 
-    /** A submit-metered one keeps them, which is the whole point of having them. */
-    public function testASubmitMeteredOptinKeepsItsDestinations(): void
+    /** The same design under a list-growing Goal, refused for the same reason. */
+    public function testTheDestinationRefusalDoesNotDependOnTheGoal(): void
+    {
+        $refusal = $this->create(Goal::GrowEmailList, [
+            'template_id' => 'offer-panel',
+            'destinations' => ['01JQ0000000000000000000001'],
+        ]);
+
+        $this->assertInstanceOf(WP_Error::class, $refusal);
+        $this->assertSame('wconvert_optin_captures_nothing', $refusal->get_error_code());
+    }
+
+    /** A capturing design keeps them, which is the whole point of having them. */
+    public function testAnOptinThatCapturesKeepsItsDestinations(): void
     {
         $created = $this->create(Goal::GrowEmailList, [
+            'template_id' => 'stacked-signup',
+            'destinations' => ['01JQ0000000000000000000001'],
+        ]);
+
+        $this->assertIsArray($created);
+        $this->assertSame(['01JQ0000000000000000000001'], $created['config']['destinations'] ?? null);
+    }
+
+    /** And a capture design under the CART Goal keeps them too (ADR 0059). */
+    public function testACartOptinThatCapturesMayBindADestination(): void
+    {
+        $created = $this->create(Goal::RecoverCart, [
             'template_id' => 'stacked-signup',
             'destinations' => ['01JQ0000000000000000000001'],
         ]);
@@ -284,12 +408,15 @@ final class OptinWriteTest extends TestCase
     // ========================================================================
 
     /**
-     * **Correcting a Goal is allowed and is checked.** A Goal is persistent,
-     * not frozen (CONTEXT.md, Goal) — but re-goaling a form Optin to the cart
-     * Goal would leave a form under a click metric, so the correction is asked
-     * the same question the create was.
+     * **Correcting a Goal is allowed, and under C it is purely editorial.**
+     *
+     * A Goal is persistent, not frozen (CONTEXT.md, Goal). This asserted that
+     * re-goaling a capture Optin onto the cart Goal was REFUSED, because that
+     * would have left a form under a click metric — and there is no click
+     * metric on a Goal any more (ADR 0059). The correction restates the whole
+     * history against the new Goal and touches the design not at all.
      */
-    public function testRegoallingAFormOptinOntoTheCartGoalIsRefused(): void
+    public function testRegoallingACaptureOptinOntoTheCartGoalIsAllowed(): void
     {
         $created = $this->create(Goal::GrowEmailList, ['template_id' => 'stacked-signup']);
 
@@ -300,18 +427,17 @@ final class OptinWriteTest extends TestCase
         $request->set_param('goal', Goal::RecoverCart->value);
         $request->set_param('config', $created['config']);
 
-        $refusal = $this->controller->update($request);
+        $response = $this->controller->update($request);
 
-        $this->assertInstanceOf(WP_Error::class, $refusal);
-        $this->assertSame('wconvert_optin_metric_mismatch', $refusal->get_error_code());
+        $this->assertNotInstanceOf(WP_Error::class, $response);
+        $this->assertSame('recover_cart', $this->optins->find((string) $created['id'])?->goal);
     }
 
     /**
-     * **And an edit that carries no Goal is checked against the stored one.**
-     * Swapping the design alone is the other half of the same mistake, and the
-     * PATCH that does it never mentions a Goal at all.
+     * **And swapping the design alone is allowed too**, which is the edit the
+     * gallery used to refuse on five of seven cards.
      */
-    public function testSwappingInAFormDesignOnACartOptinIsRefused(): void
+    public function testSwappingInACaptureDesignOnACartOptinIsAllowed(): void
     {
         $created = $this->create(Goal::RecoverCart, ['template_id' => 'offer-panel']);
 
@@ -321,10 +447,96 @@ final class OptinWriteTest extends TestCase
         $request->set_param('id', $created['id']);
         $request->set_param('config', ['template_id' => 'stacked-signup', 'rules' => [['type' => 'page_load']]]);
 
+        $response = $this->controller->update($request);
+
+        $this->assertNotInstanceOf(WP_Error::class, $response);
+    }
+
+    // ========================================================================
+    // SURVIVING REFUSAL: TWO ARMS OF ONE TEST CONVERT THE SAME WAY.
+    // ========================================================================
+
+    /**
+     * **The guarantee the shared [[Goal]] used to smuggle in** (ADR 0059).
+     *
+     * {@see \WConvert\Optin\OptinRepository::createVariant()} copies its
+     * parent's Goal and says why: two arms metered by different acts put a
+     * ~3% submission rate beside a ~25% click rate, and the rate under one is
+     * not the rate under the other. That held only because a Goal declared an
+     * act. A [[Variant]] is a whole Optin with its own `config` (ADR 0045), so
+     * without this an edit to one arm breaks the comparison silently.
+     */
+    public function testAnArmWhoseDesignConvertsDifferentlyFromItsSiblingIsRefused(): void
+    {
+        $parent = $this->create(Goal::PromoteOffer, ['template_id' => 'stacked-signup']);
+
+        $this->assertIsArray($parent);
+
+        $arm = $this->optins->createVariant((string) $parent['id']);
+
+        $this->assertNotNull($arm);
+
+        $request = new WP_REST_Request();
+        $request->set_param('id', $arm->id);
+        $request->set_param('config', ['template_id' => 'offer-panel', 'rules' => [['type' => 'page_load']]]);
+
         $refusal = $this->controller->update($request);
 
         $this->assertInstanceOf(WP_Error::class, $refusal);
-        $this->assertSame('wconvert_optin_metric_mismatch', $refusal->get_error_code());
+        $this->assertSame('wconvert_optin_arms_are_not_comparable', $refusal->get_error_code());
+    }
+
+    /** And the parent is asked it too — the parent is arm A, not a container. */
+    public function testTheParentOfATestIsAskedTheSameQuestion(): void
+    {
+        $parent = $this->create(Goal::PromoteOffer, ['template_id' => 'stacked-signup']);
+
+        $this->assertIsArray($parent);
+        $this->assertNotNull($this->optins->createVariant((string) $parent['id']));
+
+        $request = new WP_REST_Request();
+        $request->set_param('id', $parent['id']);
+        $request->set_param('config', ['template_id' => 'offer-panel', 'rules' => [['type' => 'page_load']]]);
+
+        $refusal = $this->controller->update($request);
+
+        $this->assertInstanceOf(WP_Error::class, $refusal);
+        $this->assertSame('wconvert_optin_arms_are_not_comparable', $refusal->get_error_code());
+    }
+
+    /**
+     * **An arm may still be given a different design of the same act**, which
+     * is what an A/B test IS — two designs, one campaign, one metric.
+     */
+    public function testAnArmMayTakeADifferentDesignThatConvertsTheSameWay(): void
+    {
+        $parent = $this->create(Goal::PromoteOffer, ['template_id' => 'stacked-signup']);
+
+        $this->assertIsArray($parent);
+
+        $arm = $this->optins->createVariant((string) $parent['id']);
+
+        $this->assertNotNull($arm);
+
+        $request = new WP_REST_Request();
+        $request->set_param('id', $arm->id);
+        $request->set_param('config', ['template_id' => 'centred-card', 'rules' => [['type' => 'page_load']]]);
+
+        $this->assertNotInstanceOf(WP_Error::class, $this->controller->update($request));
+    }
+
+    /** An Optin that is not part of a test is never asked the question. */
+    public function testAnOptinWithNoArmsMayChangeItsActFreely(): void
+    {
+        $created = $this->create(Goal::PromoteOffer, ['template_id' => 'stacked-signup']);
+
+        $this->assertIsArray($created);
+
+        $request = new WP_REST_Request();
+        $request->set_param('id', $created['id']);
+        $request->set_param('config', ['template_id' => 'offer-panel', 'rules' => [['type' => 'page_load']]]);
+
+        $this->assertNotInstanceOf(WP_Error::class, $this->controller->update($request));
     }
 
     // ========================================================================

@@ -36,9 +36,9 @@ const BUTTON = [0, 'children', 2, 'children', 1];
  */
 const said = (
   template: Template,
-  act: 'submit' | 'click' = 'submit',
+  growsAList = false,
   endsAt: string | null = '2026-11-30 23:59',
-) => problemsIn(template, act, endsAt ?? undefined).map((problem) => problem.said);
+) => problemsIn(template, growsAList, endsAt ?? undefined).map((problem) => problem.said);
 
 const withTokens = (tokens: Record<string, string>): Template => ({
   tree: ENTRY.tree,
@@ -63,16 +63,66 @@ describe('the converting act', () => {
   });
 
   /**
-   * The state ⇄ cannot fix: a design picked for a different job. It fails the
-   * whole save through `refuseAMetricItCannotReport`, and the answer is the
-   * gallery or the Goal rather than a param.
+   * **And it says nothing at all about which act the design offers.**
+   *
+   * Two problems here were *"your goal counts form submissions and this design
+   * converts on a click, so saving it will be refused"* and its mirror. A
+   * [[Goal]] counts no act now (ADR 0059), so the act this design offers is
+   * this Optin's act by definition — there is nothing left for it to disagree
+   * with, and the sentences ended *"…or change the goal"* against a builder
+   * that had no such control.
    */
-  it('says when the design converts the way the Goal does not count', () => {
-    expect(said({ tree: ENTRY.tree, tokens: ENTRY.tokens }, 'click')[0]).toMatch(
-      /counts click-throughs/,
-    );
+  it('never says a design converts the way something else does not count', () => {
+    expect(said({ tree: ENTRY.tree, tokens: ENTRY.tokens })).toEqual([]);
+    expect(said({ tree: CLICKS, tokens: ENTRY.tokens })).toEqual([]);
   });
 });
+
+/**
+ * The one problem ADR 0059 CREATED rather than inherited.
+ *
+ * A [[Goal]] whose product is a captured contact used to refuse every design
+ * offering the other act, so *"grow my email list"* over a design with no field
+ * on it was impossible. It is allowed now, and it is silent: the Optin saves,
+ * runs, honestly counts click-throughs, and collects nothing. The merchant
+ * finds out when no [[Lead]]s arrive.
+ *
+ * **A sentence and never a refusal**, which is the whole difference from the
+ * stricter capture rule beside it: the Optin is not broken, it is measuring
+ * something other than what the merchant asked for.
+ */
+describe('a goal that collects contacts, on a design that asks for nothing', () => {
+  it('says so, on the design that asks for nothing', () => {
+    expect(said({ tree: CLICKS, tokens: ENTRY.tokens }, true)[0]).toMatch(
+      /will never collect any/,
+    );
+  });
+
+  it('says nothing on a design that captures something', () => {
+    expect(said({ tree: ENTRY.tree, tokens: ENTRY.tokens }, true)).toEqual([]);
+  });
+
+  /**
+   * And nothing at all under a Goal whose product is a click-through — which
+   * is the pairing this ticket exists to allow, and it must stay quiet.
+   */
+  it('says nothing where the goal does not collect contacts', () => {
+    expect(said({ tree: CLICKS, tokens: ENTRY.tokens }, false)).toEqual([]);
+  });
+});
+
+/** A one-step design that converts on a click and asks for nothing. */
+const CLICKS: TemplateTree = {
+  steps: [
+    {
+      type: 'stack',
+      children: [
+        { type: 'heading', role: 'headline', text: 'Half price this week' },
+        { type: 'button', action: 'link', role: 'cta_label', label: 'Shop the sale' },
+      ],
+    } as unknown as TemplateNode,
+  ],
+};
 
 /**
  * `render.ts` makes the step holding a non-`link` button the `<form>`, and that
@@ -192,7 +242,7 @@ describe('a countdown with no end date', () => {
    * button took it.
    */
   it('sends the merchant to the schedule rather than to the clock', () => {
-    const problems = problemsIn(withClock, 'submit', undefined);
+    const problems = problemsIn(withClock, false, undefined);
 
     expect(problems).toHaveLength(1);
     expect(problems[0].said).toMatch(/Set an end date/);
@@ -207,7 +257,7 @@ describe('a countdown with no end date', () => {
 
   /** A design with no clock in it is not asked the question at all. */
   it('says nothing about a design that does not count down', () => {
-    expect(said({ tree: ENTRY.tree, tokens: ENTRY.tokens }, 'submit', null)).toEqual([]);
+    expect(said({ tree: ENTRY.tree, tokens: ENTRY.tokens }, false, null)).toEqual([]);
   });
 });
 

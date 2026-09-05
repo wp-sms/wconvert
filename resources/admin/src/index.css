@@ -1670,7 +1670,21 @@
   padding: 1rem;
 }
 
-.wconvert-gallery__card.is-chosen {
+/*
+ * **The card in use, on both grids that have one.** `.wconvert-gallery__card`
+ * is the design picker's and `.wconvert-choice` is `ChoiceCard`'s, which gained
+ * the state when a second screen started picking a [[Goal]] (ADR 0059). One
+ * declaration for both, because "chosen" is one thing and two rules for it is
+ * how the four `--secondary`-on-`--muted` selected states happened
+ * (ADR 0042 rule 5).
+ *
+ * **Both halves are class-prefixed**, which every other rule in this file is
+ * and this one briefly was not: it shipped as a bare `li.is-chosen`, which
+ * matches any `<li>` anywhere in the admin bundle that ever acquires that
+ * class.
+ */
+.wconvert-gallery__card.is-chosen,
+.wconvert-choice.is-chosen {
   border-color: var(--primary);
   box-shadow: 0 0 0 1px var(--primary);
 }

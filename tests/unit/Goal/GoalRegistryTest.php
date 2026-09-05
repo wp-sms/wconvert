@@ -9,7 +9,6 @@ use WConvert\Goal\GoalRegistry;
 use WConvert\Stats\StatKind;
 use WConvert\Support\Availability;
 use WConvert\Support\SiteDependency;
-use WConvert\Template\ConvertingAct;
 use WConvert\Support\Tier;
 use WConvert\Tests\Unit\Support\FakeProPresence;
 use WConvert\Tests\Unit\Support\FakeSitePresence;
@@ -55,19 +54,76 @@ final class GoalRegistryTest extends TestCase
     }
 
     /**
-     * **Three are submit-metered and two convert on a click**, so not every
-     * Conversion is a [[Lead]] (CONTEXT.md, Conversion). Assuming it is makes
-     * any Goal measured by clicks report zero forever.
+     * **No Goal declares a converting act, and exactly one declares that it
+     * needs a capture** (ADR 0059).
+     *
+     * This asserted the five-way split — three submit-metered, two
+     * click-metered — which was the duplicate declaration the design already
+     * carried. What is left is the one Goal-shaped thing a design can fail:
+     * the delivery kind is written when a push to the lead-magnet
+     * [[Destination]] succeeds, and a design with no field on it gives it
+     * nothing to push, so that Goal's headline reads zero forever.
+     *
+     * Asserted over every case rather than over the one, so a sixth Goal
+     * reading the delivery kind cannot arrive without an answer here.
      */
-    public function testThreeGoalsAreMeteredBySubmissionAndTwoByAClick(): void
+    public function testOnlyAGoalCountingDeliveriesNeedsItsDesignToCapture(): void
     {
-        $metered = static fn (ConvertingAct $act): array => array_values(array_map(
+        $needs = array_values(array_map(
             static fn (Goal $goal): string => $goal->value,
-            array_filter(Goal::cases(), static fn (Goal $goal): bool => $goal->convertingAct() === $act)
+            array_filter(Goal::cases(), static fn (Goal $goal): bool => $goal->needsACapture())
         ));
 
-        $this->assertSame(['grow_email_list', 'grow_sms_list', 'deliver_lead_magnet'], $metered(ConvertingAct::Submit));
-        $this->assertSame(['recover_cart', 'promote_offer'], $metered(ConvertingAct::Click));
+        $this->assertSame(['deliver_lead_magnet'], $needs);
+
+        foreach (Goal::cases() as $goal) {
+            $this->assertSame(
+                $goal->headlineKind() === StatKind::LeadMagnetDelivered,
+                $goal->needsACapture(),
+                "{$goal->value} disagrees with the kind it is read from"
+            );
+        }
+    }
+
+    /**
+     * **The looser capture fact, and the implication that orders the two.**
+     *
+     * A Goal whose product is a captured contact used to refuse every design
+     * offering the other act; ADR 0059 allows the pairing and replaces the
+     * refusal with a sentence. So this asks a wider set than
+     * {@see Goal::needsACapture()} — and the two must not drift into
+     * contradicting each other, because a Goal that refuses a design without
+     * being about contacts at all would be a rule nobody could explain.
+     */
+    public function testEveryGoalThatNeedsACaptureAlsoGrowsAList(): void
+    {
+        $grows = array_values(array_map(
+            static fn (Goal $goal): string => $goal->value,
+            array_filter(Goal::cases(), static fn (Goal $goal): bool => $goal->growsAList())
+        ));
+
+        $this->assertSame(['grow_email_list', 'grow_sms_list', 'deliver_lead_magnet'], $grows);
+
+        foreach (Goal::cases() as $goal) {
+            if ($goal->needsACapture()) {
+                $this->assertTrue($goal->growsAList(), "{$goal->value} refuses a design it is not about");
+            }
+        }
+    }
+
+    /**
+     * **And the word for the headline is the KIND's**, so a card grouping an
+     * Optin that submits beside one that links away is headed with something
+     * true of both (ADR 0059).
+     */
+    public function testTheHeadlineWordComesFromTheCountedKind(): void
+    {
+        foreach (Goal::cases() as $goal) {
+            $this->assertSame($goal->headlineKind()->label(), $goal->headlineLabel());
+        }
+
+        $this->assertSame(StatKind::Conversion->label(), Goal::PromoteOffer->headlineLabel());
+        $this->assertSame(StatKind::LeadMagnetDelivered->label(), Goal::DeliverLeadMagnet->headlineLabel());
     }
 
     /**
@@ -201,6 +257,26 @@ final class GoalRegistryTest extends TestCase
 
             $this->assertSame($goal->headlineLabel(), $entry['headline_label']);
             $this->assertNotSame('', $entry['headline_label']);
+        }
+    }
+
+    /**
+     * **And it carries the two capture facts, which are what `converting_act`
+     * left behind** (ADR 0059).
+     *
+     * Both are resolved here rather than derived in the bundle, for the reason
+     * `availability` is — a rule spelled on both sides is a rule with nothing
+     * asserting the two agree — and neither is derivable from a design, which
+     * is the test that decided which of a Goal's declarations survived.
+     */
+    public function testEveryGoalCarriesBothCaptureFacts(): void
+    {
+        foreach ($this->registry()->toArray() as $entry) {
+            $goal = Goal::from((string) $entry['id']);
+
+            $this->assertSame($goal->needsACapture(), $entry['needs_a_capture']);
+            $this->assertSame($goal->growsAList(), $entry['grows_a_list']);
+            $this->assertArrayNotHasKey('converting_act', $entry);
         }
     }
 }

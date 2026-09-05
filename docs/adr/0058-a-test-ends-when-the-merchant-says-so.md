@@ -71,6 +71,20 @@ average of two different designs. That is exactly the frozen-at-write blend
 arriving through a `config` copy instead of through a column — and it destroys
 the comparison in the one row a merchant would go back to read it from.
 
+> ***Sharpened by
+> [ADR 0059](0059-the-converting-act-belongs-to-the-design.md), which found the
+> same blend one step earlier.*** *This paragraph refuses a design swap onto a
+> row that has counted something. The act now belongs to the design, so an
+> ORDINARY design swap on an arm mid-test does the same thing to a live
+> comparison: arm B counting click-throughs against arm A counting submissions
+> is not one test.*
+>
+> *A refusal at the write closes it —* `refuseAnArmMeteredDifferently()` *—
+> and it is the guarantee that used to arrive free, because two arms sharing a
+> [[Goal]] shared an act while a Goal declared one. Swapping an arm for a
+> different design of the SAME act stays allowed, because that is what an A/B
+> test IS.*
+
 **So nothing is copied. The winning row stops having a parent** and takes the
 campaign's name:
 

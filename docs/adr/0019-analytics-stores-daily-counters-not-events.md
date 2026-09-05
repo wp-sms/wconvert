@@ -128,6 +128,10 @@ be paid on every beacon for a read one admin takes on demand.*
   filter. The argument is this one plus a sharper edge: a Goal decides what the
   analytics screen REPORTS, so an open set means a screen that cannot say what
   its headline number means.*
+  *Narrowed by [ADR 0059](0059-the-converting-act-belongs-to-the-design.md): a
+  Goal decides which KIND the headline is read from, and no longer which act
+  produces it — that was a second declaration of a fact the design already
+  carried. The closure argument is untouched and the set is the same five.*
   *Completed by [#26](https://github.com/navidkashani/wconvert/issues/26) as a
   PHP `enum` ([`StatKind`](../../src/Stats/StatKind.php)) over a `VARCHAR(32)`
   column rather than a database `ENUM`: adding a case should be a code change a

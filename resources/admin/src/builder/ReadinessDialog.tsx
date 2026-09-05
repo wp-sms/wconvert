@@ -15,11 +15,11 @@ import type { Loadable } from '../shell/loadable';
 import { destinationsSaid } from './destinations';
 import { problemsIn, type Problem } from './structure/problems';
 import { summarise } from './rules/summaries';
-import type { ConvertingAct } from './structure/catalogue';
 import type { Path } from './panel';
 import type { RuleVocabulary } from './api';
 import type { DisplayRulesValue } from './rules/summaries';
 import type { Destination } from '../destinations/api';
+import { goalSaid } from '../goals/said';
 import type { GoalEntry } from '../goals/api';
 import type { Template } from '@renderer/types';
 
@@ -36,6 +36,15 @@ import type { Template } from '@renderer/types';
  * its design, its words, its rules and its Destinations, and nowhere at all
  * what it exists to produce, what number it will be judged on, or whether the
  * site was serving it.
+ *
+ * **The Goal itself has since moved out in front of this button**, as one
+ * muted line in the band beside a *Change goal* control (ADR 0059). That is
+ * not a contradiction of the argument below: the Goal was the one fact in here
+ * a merchant needed on arrival EVERY time, because it was the thing five of
+ * seven greyed-out design cards kept referring to without naming. The
+ * remaining eight facts still answer questions a merchant asks occasionally,
+ * and this button is still what they cost. The Goal stays in the header here
+ * too, because it is what everything in this dialog is a property OF.
  *
  * ============================================================================
  * IT COST TOO MUCH ROOM TWICE BEFORE IT COST NONE.
@@ -126,14 +135,24 @@ export interface ReadinessDialogProps {
   /** The design, or undefined before one is picked. */
   readonly template: Template | undefined;
   /**
-   * Which act this Optin's Goal is measured by, or null while unknown.
+   * Whether this Optin's [[Goal]]'s product is a captured contact.
    *
-   * **Null suppresses the problem list rather than defaulting to `submit`**,
-   * because two of the four problems are ABOUT the act: a click-metered Optin
-   * read as submit-metered is told its design will be refused, which is a
-   * false alarm on a design that is correct.
+   * ==========================================================================
+   * IT WAS THE CONVERTING ACT, AND IT WAS THE ONE PROP THAT COULD BE UNKNOWN.
+   * ==========================================================================
+   * The act came from the Goal registry, a round trip behind the Optin, so it
+   * was nullable and null SUPPRESSED the whole problem list — because two of
+   * the four problems were about the act, and reading a click-metered Optin as
+   * submit-metered raised a false alarm on a design that was correct.
+   *
+   * Neither half survives. The act is read off the design (ADR 0059), so the
+   * problems that were about it are gone and `problemsIn` derives what it
+   * needs from the template itself. What a Goal declares is `grows_a_list`,
+   * which is not derivable from a design — and `false` while the registry is
+   * still answering is the safe direction: it withholds one note for a moment
+   * rather than raising one.
    */
-  readonly act: ConvertingAct | null;
+  readonly growsAList: boolean;
   readonly destinations: readonly Destination[] | null;
   /** Open the block a problem is about, on the tab that edits it. */
   readonly onGoTo: (path: Path) => void;
@@ -152,7 +171,7 @@ export function ReadinessDialog({
   overlay,
   bound,
   template,
-  act,
+  growsAList,
   destinations,
   onGoTo,
   onGoToSchedule,
@@ -166,7 +185,7 @@ export function ReadinessDialog({
     // The schedule comes from the same `config` the four sections read, so the
     // countdown check asks the merchant's own end date rather than the payload's
     // resolved instant — which does not exist until the Optin is published.
-    ...(template === undefined || act === null ? [] : problemsIn(template, act, rules.schedule.ends_at)),
+    ...(template === undefined ? [] : problemsIn(template, growsAList, rules.schedule.ends_at)),
     ...where.problems.map((said) => ({ said, path: null })),
   ];
 
@@ -238,7 +257,7 @@ export function ReadinessDialog({
             <DialogDescription asChild>
               <div className="wconvert-readiness__subject">
                 <StatusBadge status={status} />
-                <span className="wconvert-readiness__for">{subject(goal, goalId)}</span>
+                <span className="wconvert-readiness__for">{goalSaid(goal, goalId)}</span>
               </div>
             </DialogDescription>
 
@@ -339,33 +358,14 @@ export function ReadinessDialog({
 }
 
 /**
- * What this Optin is for, in the header where its subject belongs.
+ * The subject sentence is {@see goalSaid}'s now, in `goals/said.ts`.
  *
- * **The [[Goal]] and the word for its number, as one clause.** Two of the five
- * Goals convert on a click, so the headline figure is not the same number under
- * every Goal and a Goal named without it is half an answer — but they are one
- * fact about one thing, and two rows in a list of six made them look like two.
- *
- * An id with no registry entry behind it is shown as the id, for
- * {@see OptinList}'s reason: the raw value is the only honest thing left, and
- * blanking it would read as an Optin with no Goal at all. Empty while the
- * registry has not answered, because a raw id flashing into a label teaches a
- * merchant that it means *wait* rather than what it says.
+ * It was `subject()`, right here, and it had one reader. The builder's
+ * page-header band is the second (ADR 0059) — the line that puts a [[Goal]] on
+ * screen rather than one click deep behind this button — and two spellings of
+ * *"Goal · counts Word"* would be two chances for one Optin to be described
+ * differently on one screen.
  */
-function subject(goal: Loadable<GoalEntry | null>, goalId: string): string {
-  const entry = named(goal);
-
-  if (entry === null) {
-    return goal.status === 'loading' ? '' : goalId;
-  }
-
-  return sprintf(
-    /* translators: 1: a Goal, e.g. “Grow my email list”. 2: what its number is called, e.g. “Submissions”. */
-    __('%1$s · counts %2$s', 'wconvert'),
-    entry.label,
-    entry.headline_label,
-  );
-}
 
 /**
  * What a registry answered with, or null where it answered nothing.

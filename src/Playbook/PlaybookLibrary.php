@@ -7,7 +7,6 @@ use WConvert\Rules\RuleVocabulary;
 use WConvert\Support\Rejection;
 use WConvert\Support\RejectionReason;
 use WConvert\Support\Ulid;
-use WConvert\Template\ConvertingAct;
 use WConvert\Template\SlotRoles;
 use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
@@ -192,14 +191,20 @@ final class PlaybookLibrary
             return RejectionReason::UnknownReference;
         }
 
-        // The Goal declares the metric that counts it, and a registered
-        // Template offers exactly one converting act. Paired the wrong way
-        // round the Optin reports nothing at all: the Goal counts a submission
-        // and the design offers a click. Same reasoning as the two-act
-        // rejection (ADR 0020), one layer up where the pairing is made.
-        if (ConvertingAct::offeredIn($template['tree']) !== [$goal->convertingAct()]) {
-            return RejectionReason::MetricMismatch;
-        }
+        // ====================================================================
+        // THERE IS NO PAIRING TO CHECK. THE ACT IS THE DESIGN'S (ADR 0059).
+        // ====================================================================
+        // This refused an entry whose default Template offered the other act
+        // from the Goal it was filed under, and it was right while a Goal
+        // declared an act. It no longer does — a Template offering exactly one
+        // converting act IS the declaration, enforced at its own registration
+        // by {@see TemplateLibrary::refuse()} — so there is no second source to
+        // disagree with and nothing here to compare.
+        //
+        // What the check would cost now is real rather than theoretical: a
+        // third party filing a capture design under the sale Goal is offering
+        // a start the merchant can legitimately want, and refusing it at
+        // registration would drop the card with nothing in any log.
 
         // One Template serves exactly one Display Type (CONTEXT.md, Template),
         // so an entry need not declare one — and one that does must agree with

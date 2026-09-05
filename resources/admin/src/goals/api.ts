@@ -15,7 +15,9 @@ import type { Availability } from './availability';
  * strings `wp i18n make-pot` can only see in PHP, and their Availability is
  * resolved against the install on the server. Naming one here would be a
  * cross-language list with nothing asserting the two agree —
- * `tests/unit/Goal/GoalParityTest.php` fails the day one appears.
+ * `tests/unit/Goal/GoalParityTest.php` fails the day one appears, **including
+ * on a Goal id inside a comment**, which is why nothing below names a case and
+ * every sentence says what a Goal DOES.
  */
 
 /** One [[Goal]], as `GET /wconvert/v1/goals` resolves it for this install. */
@@ -23,13 +25,54 @@ export interface GoalEntry {
   id: string;
   label: string;
   description: string;
-  /** `submit` or `click`. Three of the five are submissions and two are clicks. */
-  converting_act: string;
+  /**
+   * Whether this Goal's own number is unreachable on a design that captures
+   * nothing.
+   *
+   * ==========================================================================
+   * IT REPLACES `converting_act`, AND IT IS A MUCH SMALLER CLAIM.
+   * ==========================================================================
+   * A Goal used to declare the converting act, and this bundle read it to grey
+   * out every design offering the other one — five of seven popup cards under
+   * a Goal that counted clicks, each saying *"your goal counts
+   * click-throughs"* and naming no control that changed a goal. The act is the
+   * DESIGN's now (ADR 0059): the builder derives it with `convertingActOf`
+   * from the tree it is already holding, so there is nothing for a registry
+   * field to add.
+   *
+   * What is left is the one refusal a Goal can still make about a design: the
+   * delivery kind is written when a push to the lead-magnet [[Destination]]
+   * succeeds, and a design with no field on it gives it nothing to push. It is
+   * resolved on the server rather than derived from `headline_kind` here, for
+   * the reason `availability` is — a rule spelled on both sides is a rule with
+   * nothing asserting the two agree.
+   */
+  needs_a_capture: boolean;
+  /**
+   * Whether this Goal's product is a captured contact.
+   *
+   * **The looser half of {@link needs_a_capture}, and it only ever prints a
+   * sentence.** A Goal that counts submissions used to refuse every design
+   * offering the other act, so a list-growing Goal over a design with no field
+   * on it was impossible. ADR 0059 made it reachable, and it is silent: the
+   * Optin saves, runs, counts click-throughs and collects nothing. The
+   * builder's Summary says so ({@see problemsIn}).
+   *
+   * Never a refusal and never a filter. The Optin is not broken — the number
+   * is honest, it just measures something else.
+   */
+  grows_a_list: boolean;
   /** The counted kind this Goal's headline number is read from. */
   headline_kind: string;
   /**
-   * What that number is CALLED — *"Submissions"*, *"Deliveries"*,
-   * *"Click-throughs to the offer"*.
+   * What that number is CALLED — *"Conversions"* or *"Deliveries"*, which is
+   * the counted KIND's own word.
+   *
+   * It was the Goal's, and varied five ways, because a Goal declared the
+   * converting act. One Goal's card can now hold an Optin that submits beside
+   * one that links away (ADR 0059), so a card headed *"Submissions"* would be
+   * wrong about half of it. The precise word survives per Optin, in the
+   * builder, derived from the one design that Optin holds.
    *
    * The dashboard receives it per card, which is enough for a screen reporting
    * counts and useless to the builder: a DRAFT has no card, and *"what will

@@ -95,6 +95,21 @@ see its own inline correction.*
   the same; where it comes from is not.
 - **Changing an Optin's Goal restates its entire history.** This will look like a
   bug to someone. It is the decision.
+
+  > *Reached by a merchant for the first time in
+  > [ADR 0059](0059-the-converting-act-belongs-to-the-design.md), which gives
+  > the builder a **Change goal** control — a Goal was chosen in a wizard that
+  > could not be re-entered, so "changing an Optin's Goal" was a scripted call
+  > until then. The dialog says this sentence in the merchant's own words
+  > before the click, because the builder's Undo watches the design and a Goal
+  > is a column: there is no history entry to walk back to.*
+  >
+  > ***And the same restatement now arrives through a second door.*** *Switching
+  > an Optin to a design that converts the other way is no longer refused, so
+  > 100 form submissions can be read as 100 click-throughs. The COUNT is
+  > untouched — a Conversion happened either way — which is this document's
+  > principle rather than an exception to it; the design picker marks the
+  > change before the click.*
   *Built by [#27](https://github.com/navidkashani/wconvert/issues/27), where the
   sentence stopped being a paragraph.
   [`Goal::headlineKind()`](../../src/Goal/Goal.php) is the declaration and
@@ -113,8 +128,20 @@ see its own inline correction.*
   `bin/verify-stats.php` asserts it against a real `UPDATE` to a real `goal`
   column — because the claim is that no counter was touched, and only a database
   can be watched not touching one.*
-- **One Optin has exactly one converting act, fixed by its Goal**, and the
-  renderer wires the beacon to that node alone. A [[Template]] offering both a
+- **One Optin has exactly one converting act, ~~fixed by its Goal~~ fixed by
+  its DESIGN**, and the renderer wires the beacon to that node alone.
+
+  > *Amended by
+  > [ADR 0059](0059-the-converting-act-belongs-to-the-design.md): this
+  > originally read "fixed by its Goal". The act is **the design's**, and the
+  > Goal declares only the counted kind. The registration-time refusal below is
+  > what always made it true — a registered [[Template]] offers exactly one act
+  > — and `Goal::convertingAct()` was a second declaration of the same fact,
+  > which is why every act-shaped refusal in the product existed: two sources
+  > can disagree. Nothing about interpret-at-read changes; what moves is where
+  > the act is READ FROM. The final sentence of this bullet still holds and
+  > lands somewhere else: there is still no per-Optin "what counts as a
+  > conversion" setting, because the design is the setting.* A [[Template]] offering both a
   form and a click-through CTA is caught as a **registration-time validation
   error** — the pattern
   [0012](0012-degradation-substitutes-triggers-and-drops-conditions.md) and
@@ -128,10 +155,18 @@ see its own inline correction.*
   walk covers every step and every pane, because a `split`'s far pane is exactly
   where a second converting act hides from a reader. A Template offering
   **neither** is refused by the same check — the same rule read the other way,
-  since an Optin that cannot be converted reports zero forever. The pairing is
+  since an Optin that cannot be converted reports zero forever. ~~The pairing is
   checked one layer up too: a [[Playbook]] whose default Template is metered by
   the other act from the [[Goal]] it serves is refused, because that Optin
-  reports nothing at all.*
+  reports nothing at all.~~*
+
+  > *The Playbook check is **deleted** by
+  > [ADR 0059](0059-the-converting-act-belongs-to-the-design.md), along with
+  > `RejectionReason::MetricMismatch`. There is no pairing to check once a Goal
+  > declares no act — and refusing an entry that files a capture design under a
+  > Goal whose bundled Playbooks link away would drop a legitimate start from
+  > the gallery with nothing in any log. The two refusals in this paragraph, at
+  > the Template's own registration, are untouched and are now the whole of it.*
 - **An Optin must never be hard-deleted.** #2's soft delete was argued on
   preserving the Optin's name for CSV export; it is now load-bearing for
   analytics as well, because a removed row makes every count referencing it

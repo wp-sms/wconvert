@@ -2,9 +2,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { ArrowLeft, Sparkles } from 'lucide-react';
 import type { Template } from '@renderer/types';
-import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
-import { ChoiceCard, ChoiceGrid, ChoiceSkeleton } from '../shell/ChoiceGrid';
+import { ChoiceGrid, ChoiceSkeleton } from '../shell/ChoiceGrid';
 import { GallerySkeleton } from '../builder/Gallery';
 import { Preview } from '../builder/Preview';
 import { TemplateCard } from '../builder/TemplateCard';
@@ -19,7 +18,7 @@ import {
 } from '../shell/Region';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
 import { createOptin } from '../optins/api';
-import { renderingFor, tierName, tierProductName } from './availability';
+import { GoalCard, offerableGoals } from './GoalCard';
 import { listGoals, listPlaybooks, prefill, type Draft, type GoalEntry, type PlaybookEntry } from './api';
 
 /**
@@ -173,10 +172,7 @@ function GoalPicker({
     );
   }
 
-  const shown =
-    goals.status === 'ready'
-      ? goals.data.filter((goal) => renderingFor(goal.availability, 'creation_flow') !== 'hide')
-      : [];
+  const shown = goals.status === 'ready' ? offerableGoals(goals.data, 'creation_flow') : [];
 
   return (
     <Region>
@@ -224,42 +220,23 @@ function GoalPicker({
           </EmptyState>
         ) : (
           <ChoiceGrid>
-            {shown.map((goal) => {
-              const rendering = renderingFor(goal.availability, 'creation_flow');
-
-              return (
-                <ChoiceCard
-                  key={goal.id}
-                  id={goal.id}
-                  title={goal.label}
-                  notes={goal.description}
-                  badge={
-                    rendering === 'upsell' ? (
-                      <Badge variant="warning">{tierName(goal.tier)}</Badge>
-                    ) : undefined
-                  }
-                  action={(describedBy) =>
-                    rendering === 'upsell' ? (
-                      // Bundled copy, never fetched (ADR 0015). The tier's
-                      // own name rather than the literal "Pro", so a second
-                      // rung is a `tiers.json` edit (ADR 0056) — at launch
-                      // every rung answers "Pro" and this reads unchanged.
-                      <span className="text-muted-foreground">
-                        {sprintf(
-                          /* translators: %s: the product that supplies it, e.g. “WConvert Pro”. */
-                          __('Available with %s.', 'wconvert'),
-                          tierProductName(goal.tier),
-                        )}
-                      </span>
-                    ) : (
-                      <Button aria-describedby={describedBy} onClick={() => onChoose(goal)}>
-                        {__('Choose', 'wconvert')}
-                      </Button>
-                    )
-                  }
-                />
-              );
-            })}
+            {/*
+              **The card is {@see GoalCard}'s**, and the filter above is
+              {@see offerableGoals}'s. Both moved out when the builder grew a
+              way to CHANGE a Goal (ADR 0059): two screens rendering an
+              [[Availability]] would be two places for *"never sell Pro for
+              something Pro would not give them"* to stop agreeing, which is
+              the load-bearing half of `renderingFor` and not a detail.
+            */}
+            {shown.map((goal) => (
+              <GoalCard
+                key={goal.id}
+                goal={goal}
+                surface="creation_flow"
+                choose={__('Choose', 'wconvert')}
+                onChoose={onChoose}
+              />
+            ))}
           </ChoiceGrid>
         )}
       </RegionBody>

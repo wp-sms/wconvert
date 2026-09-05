@@ -132,10 +132,6 @@ export function narrow(
   );
 }
 
-/** Has the merchant narrowed anything, and is there therefore a way back? */
-export function isNarrowed(chosen: Chosen, query: string): boolean {
-  return query.trim() !== '' || Object.values(chosen).some((values) => values.length > 0);
-}
 
 /**
  * One chip pressed or unpressed, as a whole new selection.

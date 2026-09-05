@@ -8,14 +8,24 @@ defined('ABSPATH') || exit;
  * The countable act an [[Optin]] exists to produce, in one of its two
  * spellings.
  *
- * **One Optin has exactly one converting act, and its [[Goal]] decides which**
- * (CONTEXT.md, Conversion): where the Goal is measured by submissions the
- * form's submit is the Conversion, and where it is measured by click-throughs
- * the CTA is. A [[Template]] offering both is rejected when it is registered,
- * not disambiguated at runtime — an Optin with two candidate Conversions has
- * no honest number to report.
+ * **One Optin has exactly one converting act, and its DESIGN decides which**
+ * (CONTEXT.md, Conversion): a design whose button submits converts on the
+ * submit, and one whose button links away converts on the click. A
+ * [[Template]] offering both is rejected when it is registered, not
+ * disambiguated at runtime — an Optin with two candidate Conversions has no
+ * honest number to report.
  *
- * That is why the detection lives here rather than in the renderer. The
+ * ============================================================================
+ * IT SAID "ITS [[GOAL]] DECIDES WHICH", AND THE GOAL WAS THE SECOND ANSWER.
+ * ============================================================================
+ * A Goal declared a `convertingAct()` as well, and every act-shaped refusal in
+ * the product existed to keep the two from disagreeing — including the one
+ * that greyed out five of seven designs in the picker. The refusal below is
+ * the enforcement and always was: a registered design offers exactly one act,
+ * so there is nothing for a second declaration to add. The Goal's is deleted
+ * (ADR 0059) and this is the only one left.
+ *
+ * That is also why the detection lives here rather than in the renderer. The
  * renderer already knows which button is which; what it cannot do is refuse,
  * because by then a merchant has a published Optin and the refusal would be a
  * blank popup. Registration is the moment there is still an author to tell.

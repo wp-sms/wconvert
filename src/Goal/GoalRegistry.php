@@ -71,11 +71,34 @@ final class GoalRegistry
     /**
      * Every Goal, as the creation flow receives it.
      *
-     * `converting_act` and `headline_kind` travel because the surface shows
-     * the merchant what they are choosing to be measured on, and both are
-     * declarations of the Goal rather than facts about the install. The
-     * gallery filters on Goal only, so nothing else about a Goal needs to
-     * reach the browser.
+     * ========================================================================
+     * `converting_act` TRAVELLED, AND IT WAS THE FIELD EVERY REFUSAL HUNG OFF.
+     * ========================================================================
+     * It went out because a Goal declared the converting act, and the builder
+     * read it to grey out the designs that offered the other one. The act is
+     * the DESIGN's now (ADR 0059) — the admin derives it from the tree it is
+     * already holding, with `convertingActOf` — so the field is gone and the
+     * screens that branched on it read the document instead. A registry entry
+     * that still carried it would be a second answer to a question the design
+     * already answers, which is exactly the drift that made this ticket.
+     *
+     * **`needs_a_capture` and `grows_a_list` are what replace it**, and both
+     * are smaller claims than an act. The first says the Goal's own number is
+     * unreachable on a design with no field in it, and refuses the save; the
+     * second says the Goal's product is a captured contact, and only prints a
+     * sentence ({@see Goal::needsACapture()}, {@see Goal::growsAList()}).
+     *
+     * Both are resolved here rather than derived in TypeScript, for the reason
+     * `availability` is — a rule spelled on both sides is a rule with nothing
+     * asserting the two agree — and both survive the deletion for the same
+     * test: **neither is derivable from a design.** Two byte-identical trees
+     * can serve a Goal that wants a list and one that wants a click-through,
+     * so no walk over a tree could answer either.
+     *
+     * `headline_kind` still travels because the surface shows the merchant
+     * what they are choosing to be measured on, and it is a declaration of the
+     * Goal rather than a fact about the install. The gallery filters on Goal
+     * only, so nothing else about a Goal needs to reach the browser.
      *
      * **`headline_label` travels beside the kind**, because a kind is a value
      * this bundle computes and the word for it is one somebody wrote. The
@@ -94,7 +117,8 @@ final class GoalRegistry
             'id' => $goal->value,
             'label' => $goal->label(),
             'description' => $goal->description(),
-            'converting_act' => $goal->convertingAct()->value,
+            'needs_a_capture' => $goal->needsACapture(),
+            'grows_a_list' => $goal->growsAList(),
             'headline_kind' => $goal->headlineKind()->value,
             'headline_label' => $goal->headlineLabel(),
             'tier' => $goal->tier()->value,

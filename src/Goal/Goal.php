@@ -5,7 +5,6 @@ namespace WConvert\Goal;
 use WConvert\Stats\StatKind;
 use WConvert\Support\SiteDependency;
 use WConvert\Support\Tier;
-use WConvert\Template\ConvertingAct;
 
 defined('ABSPATH') || exit;
 
@@ -37,12 +36,30 @@ defined('ABSPATH') || exit;
  * The index was removed in the pre-release audit rather than left to be
  * rediscovered by whoever next wrote a query expecting it to be there.
  *
- * **Each Goal declares the metric that counts it** — which [[Conversion]] is
- * the one that matters, and whether that Conversion is a [[Lead]]. That
- * declaration is applied when the analytics screen is READ, never stamped on
- * each Conversion as it happens, so correcting a mis-set Goal restates the
- * Optin's whole history rather than splitting it at the moment of the edit
- * (ADR 0020). "Kept for its whole life" means persistent, not frozen.
+ * ============================================================================
+ * A GOAL DECLARES THE COUNTED **KIND**. IT NEVER DECLARES THE ACT.
+ * ============================================================================
+ * Which [[Conversion]] is the one that matters, and whether that Conversion is
+ * a [[Lead]]. That declaration is applied when the analytics screen is READ,
+ * never stamped on each Conversion as it happens, so correcting a mis-set Goal
+ * restates the Optin's whole history rather than splitting it at the moment of
+ * the edit (ADR 0020). "Kept for its whole life" means persistent, not frozen.
+ *
+ * **What a Goal used to declare as well was the converting act, and that was a
+ * duplicate** (ADR 0059). {@see \WConvert\Template\TemplateLibrary::refuse()}
+ * already rejects, at registration, any design offering two acts or none — so
+ * a registered design offers exactly one and the design has always been the
+ * enforced source of truth. The loader agrees: it has one `convert()` callback
+ * reporting one beacon kind, and the word `goal` appears nowhere in
+ * `resources/loader/` or `resources/renderer/` at all. A `convertingAct()`
+ * here was a second declaration of a fact the design already carried, and
+ * every act-shaped refusal in the product existed only because two sources
+ * could disagree.
+ *
+ * So it is gone, and a merchant who opened *Browse designs* to find five of
+ * seven popup designs greyed out now finds none of them greyed. What survives
+ * is what only a Goal can say: the counted kind, the tier, the site
+ * dependency, the words, and the grouping on Analytics.
  *
  * **Availability is data beside each member**, not a second list: `tier` says
  * what only [[Pro]] supplies and {@see self::requires()} says what only the
@@ -53,18 +70,23 @@ defined('ABSPATH') || exit;
  */
 enum Goal: string
 {
-    /** Submit-metered. The email is the [[Lead]]'s identity key. */
+    /** The email a design captures is the [[Lead]]'s identity key. */
     case GrowEmailList = 'grow_email_list';
 
     /**
-     * Submit-metered, and it depends on nothing. A [[Standalone]] install
-     * captures a phone number into the [[Lead]] log like any other capture;
-     * WSMS is a [[Destination]], which is optional by definition.
+     * It depends on nothing. A [[Standalone]] install captures a phone number
+     * into the [[Lead]] log like any other capture; WSMS is a [[Destination]],
+     * which is optional by definition.
+     *
+     * **Nothing makes it prefer a design that asks for a phone number**, and
+     * nothing should: which detail to ask a visitor for is the merchant's own
+     * judgement, and the SMS list a merchant grows from an email capture is
+     * still a list they grew (ADR 0059).
      */
     case GrowSmsList = 'grow_sms_list';
 
     /**
-     * Click-metered, `tier: pro`, and absent outright on a site with no store.
+     * `tier: pro`, and absent outright on a site with no store.
      *
      * The Pro tier is a **correctness fix rather than packaging**: both cart
      * [[Condition]]s are Pro, and ADR 0012 drops a premium Condition on the
@@ -74,17 +96,24 @@ enum Goal: string
      * Goal itself Pro is the only option under which that is impossible rather
      * than merely avoided (ADR 0026).
      *
-     * It captures nothing: no form, no Lead, no [[Consent Record]], no
-     * Destination. Its whole product is a message on the page and a link back
-     * to the cart (ADR 0025).
+     * **ADR 0025's shape is the DESIGN's, not this Goal's** (amended by
+     * ADR 0059). Its own Playbooks all name a one-step, click-metered design
+     * with no form on it, and that design captures nothing, writes no Lead,
+     * snapshots no [[Consent Record]] and holds no Destination. What is no
+     * longer refused is the merchant who wants *"enter your email and we'll
+     * save your cart"* — the case ADR 0025 explicitly wanted routed somewhere
+     * — under this Goal with a capturing design. It now just works, and the
+     * cart CTA stays keyed on the Goal because a design with no link button
+     * has nothing for it to resolve into.
      */
     case RecoverCart = 'recover_cart';
 
-    /** Click-metered, and free. The other Goal with no form (ADR 0025). */
+    /** Free, and the Goal whose bundled [[Playbook]]s link away (ADR 0025). */
     case PromoteOffer = 'promote_offer';
 
     /**
-     * Submit-metered, and the one Goal whose headline is not `conversion`.
+     * The one Goal whose headline is not `conversion`, and therefore the one
+     * that needs its design to capture something ({@see self::needsACapture()}).
      *
      * The delivery happens *after* the Conversion, from a different process,
      * and can fail on its own — which is why it is its own `kind` rather than
@@ -95,20 +124,76 @@ enum Goal: string
     case DeliverLeadMagnet = 'deliver_lead_magnet';
 
     /**
-     * Which countable act this Goal is measured by.
+     * Whether this Goal's product is a captured contact.
      *
-     * Three of the five are submissions and **two convert on a click**, so not
-     * every Conversion is a [[Lead]] (CONTEXT.md, Conversion). This is also
-     * what a [[Playbook]]'s default [[Template]] is checked against at
-     * registration: a Template offering the other act reports nothing for the
-     * Goal it was filed under.
+     * ========================================================================
+     * THE SECOND THING A DESIGN CANNOT ANSWER, AND THE TEST IT PASSES.
+     * ========================================================================
+     * ADR 0059 deleted `convertingAct()` because a registered design already
+     * declared the act and the Goal was a second voice. The test it applied is
+     * the one that matters here: **is this fact derivable from the design?**
+     * The act is; this is not. Two designs can be byte-identical and serve a
+     * Goal that wants a list and one that wants a click-through, and nothing
+     * in a tree says which.
+     *
+     * **It exists because that ticket made a new mistake reachable.** A Goal
+     * that counts submissions used to refuse every design offering the other
+     * act, so *"grow my email list"* over a design with no field on it was
+     * impossible. It is now allowed, and it is silent: the Optin saves, runs,
+     * counts click-throughs, and collects nothing. The merchant finds out when
+     * no [[Lead]]s arrive. So the builder's Summary says so
+     * ({@see \WConvert\Rest\GoalRegistry} carries it to the admin as
+     * `grows_a_list`).
+     *
+     * **A note and never a refusal**, which is the whole difference from
+     * {@see self::needsACapture()} below. The Optin is not broken — a
+     * click-through is a real Conversion and the number is honest — it is
+     * merely not the thing the merchant said they wanted. And it is not a
+     * gallery filter either: pre-pressing a captures chip for a Goal is a Goal
+     * facet in a captures chip's clothes, which ADR 0043 forbids.
+     *
+     * **Which detail it should ask for stays unanswered here.** Email against
+     * phone is the merchant's own judgement, and an SMS list grown from an
+     * email capture is still a list they grew — so this asks whether the
+     * design captures ANYTHING, never what.
      */
-    public function convertingAct(): ConvertingAct
+    public function growsAList(): bool
     {
-        return match ($this) {
-            self::RecoverCart, self::PromoteOffer => ConvertingAct::Click,
-            default => ConvertingAct::Submit,
-        };
+        return $this !== self::RecoverCart && $this !== self::PromoteOffer;
+    }
+
+    /**
+     * Whether this Goal's own number is unreachable on a design that captures
+     * nothing.
+     *
+     * ========================================================================
+     * NAMED FOR WHY, NOT FOR WHICH CASE.
+     * ========================================================================
+     * The delivery kind is written by {@see
+     * \WConvert\Destination\LeadMagnet\DeliveryCount} when a push to the
+     * lead-magnet Destination succeeds, and there is nothing to push to unless
+     * the visitor gave an address. So a Goal reading its headline from that
+     * kind over a design with no `field` in it reports **zero forever** —
+     * ADR 0020's failure that looks broken while being right — and that is a
+     * refusal rather than a note.
+     *
+     * **This is the ONE surviving Goal-shaped refusal about a design**
+     * (ADR 0059), and it is deliberately not a filter: pre-pressing a captures
+     * chip in the gallery would be a Goal facet in a captures chip's clothes,
+     * which ADR 0043 forbids. It is derived rather than listed per case, so a
+     * sixth Goal reading the delivery kind arrives already answered.
+     *
+     * **It is the strict half of {@see self::growsAList()} above**, and the
+     * two are ordered rather than parallel: everything that needs a capture
+     * grows a list, and `GoalRegistryTest` asserts that implication so the
+     * pair cannot drift into contradicting each other. What separates them is
+     * the consequence — this one refuses the save, because the headline number
+     * is literally unreachable; that one prints a sentence, because the number
+     * is fine and merely measures something else.
+     */
+    public function needsACapture(): bool
+    {
+        return $this->headlineKind() === StatKind::LeadMagnetDelivered;
     }
 
     /**
@@ -127,31 +212,37 @@ enum Goal: string
     /**
      * What the headline number is CALLED, on the card that reports it.
      *
-     * This is the metric wording ADR 0020 changed, spelled out: "Leads with an
-     * email" became *conversions on Optins that capture an email*, and the
-     * label the merchant reads follows the [[Conversion]] rather than the
-     * [[Lead]]. The number is the same; where it comes from is not, and a card
-     * headed "Leads" over a number read from `wconvert_stats` would be saying
-     * the thing ADR 0018 depends on nobody saying.
+     * ========================================================================
+     * IT IS THE KIND'S WORD NOW, AND THE FIVE-WAY `match` HAS RETIRED.
+     * ========================================================================
+     * This said *"Submissions"*, *"Click-throughs back to the cart"* and
+     * *"Click-throughs to the offer"* — five wordings over five Goals — and it
+     * could, because a Goal declared the converting act. It no longer does
+     * (ADR 0059), so a card grouping every Optin under one Goal can hold one
+     * that submits beside one that links away, and a card headed
+     * *"Submissions"* over a click-metered Optin's number would be reporting
+     * the thing it exists not to report.
      *
-     * **Two of the five convert on a CLICK**, so the word cannot be one word
-     * for all of them: a Goal measured by click-throughs headed "Submissions"
-     * reports zero forever and looks broken while being right
-     * (CONTEXT.md, Conversion).
+     * **"Conversions" is right for every mix**, and it is what the row already
+     * says: `wconvert_stats` stores `kind = conversion` whichever act
+     * produced it, so the number was never act-specific and only the word was.
+     * It is also what OptinMonster's own glossary does — one word covering
+     * *"submitting their email address … or clicking on a button to be
+     * redirected"*.
      *
-     * In PHP with the rest of the labels, and for the same reason:
+     * **The precise word survives where it is still precise.** The builder's
+     * per-Optin strip says *"Submissions"* or *"Click-throughs"*, derived from
+     * the one design that Optin holds — which is always right, because it
+     * reads the same tree the renderer does.
+     *
+     * Still in PHP with the rest of the labels, and for the same reason:
      * `wp i18n make-pot` cannot see a JavaScript string, and a second spelling
      * in the admin bundle is what `tests/unit/Goal/GoalParityTest.php` fails
      * on.
      */
     public function headlineLabel(): string
     {
-        return match ($this) {
-            self::GrowEmailList, self::GrowSmsList => __('Submissions', 'wconvert'),
-            self::RecoverCart => __('Click-throughs back to the cart', 'wconvert'),
-            self::PromoteOffer => __('Click-throughs to the offer', 'wconvert'),
-            self::DeliverLeadMagnet => __('Deliveries', 'wconvert'),
-        };
+        return $this->headlineKind()->label();
     }
 
     /**

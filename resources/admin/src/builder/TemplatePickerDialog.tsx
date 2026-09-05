@@ -81,6 +81,16 @@ export function TemplatePickerDialog({ open, onOpenChange, ...picker }: Template
               'Your words come with you. Blocks you added, moved or deleted do not — Undo brings them back.',
               'wconvert',
             )}
+            {/*
+              **The second sharp edge is NOT here, and that is the finding.**
+              Switching to a design that converts the other way reinterprets
+              everything this Optin has already counted (ADR 0020, ADR 0059) —
+              which is worth saying before the click, and is worth saying about
+              a CARD. It shipped for a day as one more clause on this line,
+              where it showed before anything was picked, stayed up over designs
+              that change nothing, and could not name a direction. It is
+              {@see actChangeOf} on the card now.
+            */}
           </DialogDescription>
         </DialogHeader>
 

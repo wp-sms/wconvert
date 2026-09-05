@@ -40,18 +40,32 @@ export function ChoiceCard({
   title,
   notes,
   badge,
+  current = false,
   action,
 }: {
   id: string;
   title: string;
   notes: string;
   badge?: ReactNode;
+  /**
+   * This card is the one already in use.
+   *
+   * **`aria-current` and not a colour**, which is the rule the design gallery
+   * already follows: selection said only by a border is selection said only to
+   * people who can see it. It arrived with the second screen that picks a
+   * [[Goal]] (ADR 0059) — the creation flow has no "already chosen" state,
+   * because nothing exists yet to have chosen one.
+   */
+  current?: boolean;
   action: (describedBy: string) => ReactNode;
 }) {
   const titleId = `wconvert-choice-${id}`;
 
   return (
-    <li className="flex flex-col gap-2 rounded-md border border-border bg-card p-4">
+    <li
+      aria-current={current ? 'true' : undefined}
+      className={`wconvert-choice flex flex-col gap-2 rounded-md border border-border bg-card p-4${current ? ' is-chosen' : ''}`}
+    >
       <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
         <h3
           id={titleId}
