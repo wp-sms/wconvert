@@ -12,10 +12,10 @@ import {
 } from '../shell/DataTable';
 import { EmptyState } from '../shell/EmptyState';
 import { PageAction } from '../shell/PageActions';
-import { Region, RegionBody, RegionErrorState, RegionHeader } from '../shell/Region';
+import { Region, RegionBody, RegionError, RegionErrorState, RegionHeader } from '../shell/Region';
 import { Stat, StatRow } from '../shell/Stat';
 import { TableSkeleton } from '../shell/TableSkeleton';
-import { LOADING, failed, ready, type Loadable } from '../shell/loadable';
+import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
 import { Milestones } from '../milestones/Milestones';
 import { readDashboard, type DashboardPayload, type GoalReport, type OptinReport } from './api';
 // Spelled once, because the Optin list and the builder's header read the same
@@ -73,6 +73,7 @@ const WINDOWS = [1, 7, 30, 90] as const;
  */
 export function Dashboard() {
   const [report, setReport] = useState<Loadable<DashboardPayload>>(LOADING);
+  const [refreshError, setRefreshError] = useState<string | null>(null);
   // `null` is "whatever the server opens on", and only the first read is ever
   // in that state.
   const [days, setDays] = useState<number | null>(null);
@@ -80,8 +81,23 @@ export function Dashboard() {
   const refresh = useCallback(async () => {
     try {
       setReport(ready(await readDashboard(days)));
+      setRefreshError(null);
     } catch (cause) {
-      setReport(failed(cause));
+      /*
+       * **A window change that fails must not take the cards with it.** This
+       * set `failed(cause)` unconditionally, so moving from 30 days to 7 over
+       * a flaky connection destroyed every Goal card on screen — the numbers
+       * the merchant already had, thrown away because the request for
+       * DIFFERENT numbers did not arrive.
+       *
+       * Only a FIRST failure has nothing to keep, and that is the arm that
+       * renders the error as the screen's whole content. The other three
+       * multi-fetch screens have guarded this since they were written
+       * ({@see OptinList}, {@see LeadLog}, {@see Destinations}); this was the
+       * one that never did.
+       */
+      setReport((current) => (current.status === 'ready' ? current : failed(cause)));
+      setRefreshError(messageOf(cause));
     }
   }, [days]);
 
@@ -164,6 +180,8 @@ export function Dashboard() {
 
       {payload !== null && payload.goals.length === 0 && (
         <Region label={__('Analytics', 'wconvert')}>
+          {refreshError !== null && <RegionError message={refreshError} />}
+
           <EmptyState
             icon={ChartColumn}
             title={__('Nothing to report yet', 'wconvert')}
@@ -184,8 +202,23 @@ export function Dashboard() {
         fact printed four times — and `dashboard.test.tsx` reads it with
         `findByText`, which fails on a second match rather than passing.
       */}
+      {/*
+        **The refresh error goes on the FIRST card, not above them all.** The
+        window governs every region at once, so the failure belongs to all of
+        them and to none in particular — and `Region` argues against a
+        page-top banner for exactly the reason that would bite here: an error
+        floating above four cards is an error whose subject the merchant has to
+        guess. The first card already carries the one other screen-scoped fact
+        on this page, which is the window itself, so it is where a failure to
+        change that window reads as being about the window.
+      */}
       {payload?.goals.map((card, index) => (
-        <GoalRegion key={card.goal} card={card} window={index === 0 ? payload : null} />
+        <GoalRegion
+          key={card.goal}
+          card={card}
+          window={index === 0 ? payload : null}
+          error={index === 0 ? refreshError : null}
+        />
       ))}
     </div>
   );
@@ -206,9 +239,20 @@ export function Dashboard() {
  * the same window for every card, so repeating it under each would be the same
  * fact stated four times.
  */
-function GoalRegion({ card, window }: { card: GoalReport; window: DashboardPayload | null }) {
+function GoalRegion({
+  card,
+  window,
+  error,
+}: {
+  card: GoalReport;
+  window: DashboardPayload | null;
+  /** A refresh that failed, on the one card that carries screen-scoped facts. */
+  error: string | null;
+}) {
   return (
     <Region>
+      {error !== null && <RegionError message={error} />}
+
       <RegionHeader
         title={card.label}
         level={3}
