@@ -245,7 +245,7 @@ final class PlaybookLibrary
 
         $copy = is_array($entry['copy'] ?? null) ? $entry['copy'] : [];
 
-        if (self::namesSomethingSiteLocal($entry, $copy, $rules)) {
+        if (self::namesSomethingSiteLocal($entry, $copy, $rules, $vocabulary)) {
             return RejectionReason::SiteLocalReference;
         }
 
@@ -320,6 +320,15 @@ final class PlaybookLibrary
      *   wearing a type's clothes. The test is {@see Ulid::isOne()}, which is
      *   the one spelling of "this is a ULID" and does not gain a second copy
      *   here.
+     * - **A [[Slot Role]] the manifest marks `authored_roles`.** Which those
+     *   are is read off the manifest for the reason the rule params above are:
+     *   `code_value` holds a coupon code that exists in one merchant's
+     *   WooCommerce and nowhere else, so a Playbook filling it would ship a
+     *   dead code to every install that used the entry — the same failure a
+     *   post id is, in a different key. Without this the check one level up
+     *   catches only half of it: a Playbook filling `code_value` on a design
+     *   that does not DECLARE the Role is already refused as an unfilled Role,
+     *   and one filling it on a design that does was accepted.
      * - **A privacy-policy link.** A link that declares a label and names no
      *   destination is asking for the one destination only the site can name,
      *   and the renderer resolves it from `get_privacy_policy_url()`
@@ -330,8 +339,12 @@ final class PlaybookLibrary
      * @param array<string, mixed> $entry
      * @param array<string, mixed> $copy
      */
-    private static function namesSomethingSiteLocal(array $entry, array $copy, RuleVocabulary $rules): bool
-    {
+    private static function namesSomethingSiteLocal(
+        array $entry,
+        array $copy,
+        RuleVocabulary $rules,
+        TemplateVocabulary $vocabulary
+    ): bool {
         foreach (self::rulesNamedBy($entry) as [$type, $supplied]) {
             if (array_intersect($supplied, $rules->authoredParamsOf($type)) !== []) {
                 return true;
@@ -350,6 +363,10 @@ final class PlaybookLibrary
                     return true;
                 }
             }
+        }
+
+        if (array_intersect(array_keys($copy), $vocabulary->authoredRoles()) !== []) {
+            return true;
         }
 
         foreach ($copy as $words) {

@@ -46,6 +46,8 @@ final class TemplateLabels
             'consent_text' => __('Consent wording', 'wconvert'),
             'success_headline' => __('Headline after they submit', 'wconvert'),
             'success_body' => __('Body text after they submit', 'wconvert'),
+            /* translators: the discount code shown after a visitor submits, e.g. “WELCOME10”. */
+            'code_value' => __('Discount code', 'wconvert'),
             'email_label' => __('Email label', 'wconvert'),
             'email_placeholder' => __('Email placeholder', 'wconvert'),
             'name_label' => __('Name label', 'wconvert'),
@@ -78,6 +80,8 @@ final class TemplateLabels
             'divider' => __('Divider', 'wconvert'),
             /* translators: a block — the time left, ticking down to the date the Optin stops running. */
             'countdown' => __('Countdown', 'wconvert'),
+            /* translators: a block — one discount code, boxed, the same for every visitor. */
+            'code' => __('Discount code', 'wconvert'),
             'field' => __('Field', 'wconvert'),
             'button' => __('Button', 'wconvert'),
             'consent' => __('Consent checkbox', 'wconvert'),
@@ -260,6 +264,10 @@ final class TemplateLabels
             'rating.value' => __('How many stars', 'wconvert'),
             /* translators: which of the six pictures an Icon block draws. */
             'icon.name' => __('Which picture', 'wconvert'),
+            /* translators: whether a picture is a rectangle or a circle. */
+            'image.shape' => __('Picture shape', 'wconvert'),
+            /* translators: whether a badge sits in the flow of the design or is pinned to its corner. */
+            'badge.place' => __('Where the badge sits', 'wconvert'),
         ];
     }
 
@@ -290,6 +298,15 @@ final class TemplateLabels
             'image.fit.cover' => __('Fill the space, cropping', 'wconvert'),
             /* translators: a picture is scaled down until all of it fits, leaving space around it. */
             'image.fit.contain' => __('Fit the whole picture in', 'wconvert'),
+            /* translators: a picture keeps the design's own corner rounding. */
+            'image.shape.rect' => __('Rectangle', 'wconvert'),
+            /* translators: a picture is cropped to a circle — the shape a portrait beside a quote wants. */
+            'image.shape.circle' => __('Circle', 'wconvert'),
+
+            /* translators: a badge sits in the flow of the design, above or beside the other blocks. */
+            'badge.place.inline' => __('In the design', 'wconvert'),
+            /* translators: a badge is pinned over the top corner of the panel, like a price flash. */
+            'badge.place.corner' => __('Pinned to the corner', 'wconvert'),
 
             /* translators: a form field a visitor cannot leave empty. */
             'field.required.true' => __('Required', 'wconvert'),

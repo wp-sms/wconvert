@@ -37,6 +37,7 @@ export type SlotRole =
   | 'consent_text'
   | 'success_headline'
   | 'success_body'
+  | 'code_value'
   | 'email_label'
   | 'email_placeholder'
   | 'name_label'
@@ -166,6 +167,24 @@ export interface EyebrowNode extends HideableNode {
 export interface BadgeNode extends HideableNode {
   readonly type: 'badge';
   readonly text?: string;
+  /**
+   * Where it sits: in the flow, or pinned to the panel's own corner.
+   *
+   * ==========================================================================
+   * THE ONE PLACEMENT THE GLOBAL TOKENS CANNOT REACH, AND IT IS ONE VALUE.
+   * ==========================================================================
+   * A design's whole look is 22 GLOBAL custom properties, so nothing in the
+   * token set can pin one node anywhere — and the corner flash (*"50% OFF"*
+   * over the top edge of an offer panel) is the single most recognisable
+   * element in this genre. `inline` is what a badge has always done and stays
+   * the default, so every shipped design renders byte-identically without it.
+   *
+   * `corner` positions against `.wc-root`, which is already `position:
+   * relative`. It is the block-start/inline-end corner in LOGICAL properties,
+   * so an `fa_IR` site gets the corner that side of the page actually has
+   * (ADR 0009) with no second spelling.
+   */
+  readonly place?: 'inline' | 'corner';
 }
 
 /**
@@ -226,6 +245,53 @@ export interface CountdownNode extends HideableNode {
 }
 
 /**
+ * The static shared code the offer pays out in — *"WELCOME10"*.
+ *
+ * ============================================================================
+ * ONE CODE, THE SAME FOR EVERY VISITOR, WHICH IS THE ONLY KIND THAT EXISTS.
+ * ============================================================================
+ * [ADR 0025](../../../docs/adr/0025-cart-recovery-captures-nothing.md) settles
+ * what a code may be here, and it settles it in favour of this node:
+ *
+ * > *only a static shared code can ever appear, and a static code the merchant
+ * > already created in WooCommerce is just words they type into the copy.*
+ *
+ * The payload is baked into HTML the full-page cache serves **byte-identically
+ * to every visitor**, so a per-visitor code is impossible in this delivery
+ * model rather than merely unwise. This node is the shape that fact leaves
+ * behind: one string, drawn identically for everyone, minted by nobody. It
+ * therefore does NOT reopen
+ * [ADR 0053](../../../docs/adr/0053-the-spin-to-win-card-is-withdrawn.md) —
+ * the wheel was withdrawn because a prize wheel needs a code PER VISITOR, and
+ * this is the opposite of one.
+ *
+ * **Why it is a node and not a `text`.** A code has to look like a code — a
+ * boxed, letter-spaced, selectable string a visitor can read off a phone
+ * screen and retype — and the only lever `text` has is `--wc-font`, which is
+ * global and would set the whole design in monospace to box one word. Before
+ * this, the success step had nowhere to put the payout except inside
+ * `success_body` prose, which is where a code is least readable and least
+ * copyable.
+ *
+ * **It is deliberately not a button, and there is no copy-to-clipboard.**
+ * `navigator.clipboard` is capability, and this vocabulary's whole claim is
+ * that it expresses content and never capability (ADR 0010). The element is
+ * `user-select: all` instead, so one tap or click selects the whole code —
+ * which is the affordance a visitor actually reaches for, and it costs the
+ * renderer no event handler and the loader no bytes.
+ *
+ * **A Playbook cannot fill this**, and that is correct rather than a gap. A
+ * coupon code names a row on one particular site, and a Playbook can express
+ * nothing site-local (ADR 0013) — so the code arrives the way the cart URL and
+ * the privacy link do: the design ships a placeholder, and the merchant types
+ * theirs into the settings panel.
+ */
+export interface CodeNode extends HideableNode {
+  readonly type: 'code';
+  readonly text?: string;
+}
+
+/**
  * One glyph from a closed set of six.
  *
  * ============================================================================
@@ -252,6 +318,27 @@ export interface ImageNode extends HideableNode {
   readonly src?: string;
   readonly alt?: string;
   readonly fit?: 'cover' | 'contain';
+  /**
+   * A rectangle, or a circle.
+   *
+   * ==========================================================================
+   * `radius` IS GLOBAL, SO AN AVATAR WAS NOT EXPRESSIBLE AT ANY VALUE OF IT.
+   * ==========================================================================
+   * `.wc-image` takes `border-radius: var(--wc-radius)` — the design's ONE
+   * corner, shared with the panel, the button and every input. So the round
+   * portrait beside a testimonial could only be had by rounding the popup, the
+   * button and the email box to match, which is a different design rather than
+   * the same design with an avatar in it.
+   *
+   * A `shape` param is the narrow fix: one value, on the one node it is about,
+   * changing nothing else. `rect` is what an image has always been and stays
+   * the default.
+   *
+   * **It is not `border-radius: 50%` with a free value.** A circle is a shape a
+   * design either wants or does not; a number here would be a second corner
+   * token in the wrong place, arguing with `radius` about the same picture.
+   */
+  readonly shape?: 'rect' | 'circle';
 }
 
 export interface FieldNode extends BaseNode {
@@ -293,6 +380,7 @@ export type LeafNode =
   | BadgeNode
   | DividerNode
   | CountdownNode
+  | CodeNode
   | RatingNode
   | IconNode
   | ImageNode

@@ -95,11 +95,21 @@
         "text"
       ],
       "params": [
+        "place",
         "hidden"
       ],
       "roles": [
         "badge"
-      ]
+      ],
+      "choices": {
+        "place": [
+          "inline",
+          "corner"
+        ]
+      },
+      "defaults": {
+        "place": "inline"
+      }
     },
     "rating": {
       "content": [
@@ -134,6 +144,7 @@
       "copy": [],
       "params": [
         "fit",
+        "shape",
         "hidden"
       ],
       "roles": [],
@@ -141,10 +152,15 @@
         "fit": [
           "cover",
           "contain"
+        ],
+        "shape": [
+          "rect",
+          "circle"
         ]
       },
       "defaults": {
-        "fit": "cover"
+        "fit": "cover",
+        "shape": "rect"
       }
     },
     "icon": {
@@ -184,6 +200,20 @@
         "hidden"
       ],
       "roles": []
+    },
+    "code": {
+      "content": [
+        "text"
+      ],
+      "copy": [
+        "text"
+      ],
+      "params": [
+        "hidden"
+      ],
+      "roles": [
+        "code_value"
+      ]
     },
     "field": {
       "content": [
@@ -277,12 +307,16 @@
     "consent_text",
     "success_headline",
     "success_body",
+    "code_value",
     "email_label",
     "email_placeholder",
     "name_label",
     "name_placeholder",
     "phone_label",
     "phone_placeholder"
+  ],
+  "authored_roles": [
+    "code_value"
   ],
   "fields": [
     "email",

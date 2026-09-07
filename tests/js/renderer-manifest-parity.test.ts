@@ -35,6 +35,7 @@ const MINIMAL: Readonly<Record<string, object>> = {
   rating: {},
   icon: {},
   image: { src: '/x.png', alt: '' },
+  code: { text: 'x' },
   field: { name: 'email' },
   button: { label: 'x' },
   consent: { text: 'x' },
