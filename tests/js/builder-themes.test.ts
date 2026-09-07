@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import vocabulary from '../../resources/templates/manifest.json';
+import { AA_NORMAL, contrastOf } from '../../resources/admin/src/builder/contrast';
 import { isApplied, isColour, isTranslucent, themePresets } from '../../resources/admin/src/builder/themes';
 
 /**
@@ -41,6 +42,51 @@ describe('a theme preset', () => {
   });
 
   /** Three or four ready looks, each distinguishable from the others (#71). */
+  /**
+   * ==========================================================================
+   * A PRESET THAT CANNOT BE READ IS NOT A PRESET, IT IS A BUG WITH A NAME.
+   * ==========================================================================
+   * Four presets could be eyeballed. Twelve cannot, and the failure is not
+   * loud: a `muted` two points under AA looks like a design choice on the
+   * author's monitor and is unreadable fine print on somebody's phone in
+   * daylight — and `muted` is the token the **consent wording and the
+   * unsubscribe line** are set in, which are the two sentences that most have
+   * to be read.
+   *
+   * All three pairs, because each is a different reading job:
+   *
+   * - `fg` on `bg` — the headline and the body.
+   * - `muted` on `bg` — the fine print. Held to AA NORMAL and not to the large
+   *   text threshold, because fine print is the opposite of large.
+   * - `accent-fg` on `accent` — the button label, which is the one piece of
+   *   text a visitor has to read to convert.
+   *
+   * The border is not checked: it is a line rather than text, and holding a
+   * hairline to a text contrast ratio would mean no design could have a subtle
+   * one. The backdrop is not checked either — it is translucent, and
+   * `contrastOf` correctly refuses a colour that composites over something it
+   * cannot see.
+   */
+  it('is readable in all three of the pairs that carry text', () => {
+    for (const preset of themePresets()) {
+      const pairs: ReadonlyArray<readonly [string, string, string]> = [
+        ['fg', preset.tokens.fg ?? '', preset.tokens.bg ?? ''],
+        ['muted', preset.tokens.muted ?? '', preset.tokens.bg ?? ''],
+        ['accent-fg', preset.tokens['accent-fg'] ?? '', preset.tokens.accent ?? ''],
+      ];
+
+      for (const [name, ink, ground] of pairs) {
+        const ratio = contrastOf(ink, ground);
+
+        expect(ratio, `${preset.id}: ${name} (${ink}) on ${ground} could not be read as two opaque colours`).not.toBeNull();
+        expect(
+          ratio ?? 0,
+          `${preset.id}: ${name} (${ink}) on ${ground} is ${(ratio ?? 0).toFixed(2)}:1, under AA`,
+        ).toBeGreaterThanOrEqual(AA_NORMAL);
+      }
+    }
+  });
+
   it('offers several, and none of them is another one', () => {
     const presets = themePresets();
 

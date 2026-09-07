@@ -29,6 +29,10 @@ import type { Tokens } from '@renderer/types';
  * catalogue is not loaded when the bundle is evaluated, so a top-level `__()`
  * would freeze the English string into every locale — the same reason
  * `statusLabel()` in the Optin list is a function.
+ *
+ * **Twelve of them as of the library growth**, and the second eight vary on
+ * ground lightness, ground chroma, corner and accent loudness rather than on
+ * hue alone — see the comment above `forest`.
  */
 
 export interface ThemePreset {
@@ -75,7 +79,15 @@ export function themePresets(): readonly ThemePreset[] {
       tokens: {
         bg: '#fffaf3',
         fg: '#3f2d20',
-        muted: '#8a7361',
+        /*
+         * 4.30:1 until the contrast assertion in
+         * `tests/js/builder-themes.test.ts` was written, which is under AA and
+         * was shipped. `muted` carries the fine print — the consent wording
+         * and the unsubscribe line — so it is the token that most has to be
+         * readable and the one whose failure looks most like a design choice.
+         * Darkened to 4.68:1; the hue is unchanged.
+         */
+        muted: '#846d5b',
         accent: '#c2410c',
         'accent-fg': '#ffffff',
         border: '#efe0cf',
@@ -95,6 +107,154 @@ export function themePresets(): readonly ThemePreset[] {
         border: '#d4d4d8',
         radius: '0rem',
         backdrop: 'rgba(9, 9, 11, 0.45)',
+      },
+    },
+
+    /*
+     * ========================================================================
+     * THE SECOND EIGHT, AND THEY VARY ON MORE THAN HUE.
+     * ========================================================================
+     * Four presets could be four hues and read as four presets. Twelve cannot:
+     * a dozen palettes that differ only in `accent` is one preset shown twelve
+     * times, which is the failure the design library itself is being grown to
+     * avoid.
+     *
+     * So each of these moves at least two of the four levers a preset actually
+     * has — **the ground's lightness, the ground's chroma, the corner, and how
+     * loud the accent is against it.** Three are dark grounds where there was
+     * one; the corner runs from square to 1.5rem where it ran 0 to 0.75; and
+     * two of them (Carbon, Slate) deliberately have no hue at all, because a
+     * merchant whose brand is a photograph wants the panel to get out of the
+     * way.
+     *
+     * **Every value here is a colour or a corner**, as above: type, spacing and
+     * width belong to the DESIGN, so a preset that set them would quietly
+     * restyle the layout the merchant chose in the gallery.
+     *
+     * `muted` carries the fine print, which is small text — so it is held to
+     * AA against its own `bg` like everything else, and that is why several of
+     * these are darker than a muted grey usually looks on its own.
+     * `tests/js/builder-themes.test.ts` asserts all three pairs.
+     */
+
+    {
+      /* translators: a colour preset — deep green on a barely-tinted white. */
+      id: 'forest',
+      label: __('Forest', 'wconvert'),
+      tokens: {
+        bg: '#f6faf7',
+        fg: '#14281d',
+        muted: '#4a6356',
+        accent: '#15803d',
+        'accent-fg': '#ffffff',
+        border: '#d3e3d8',
+        radius: '0.75rem',
+        backdrop: 'rgba(20, 40, 29, 0.6)',
+      },
+    },
+    {
+      /* translators: a colour preset — a dark teal ground with a bright cyan accent. */
+      id: 'ocean',
+      label: __('Ocean', 'wconvert'),
+      tokens: {
+        bg: '#07303a',
+        fg: '#e8fbff',
+        muted: '#8fc2cc',
+        accent: '#22d3ee',
+        'accent-fg': '#05252d',
+        border: '#124a56',
+        radius: '1rem',
+        backdrop: 'rgba(3, 22, 27, 0.72)',
+      },
+    },
+    {
+      /* translators: a colour preset — magenta on a pale pink white. */
+      id: 'berry',
+      label: __('Berry', 'wconvert'),
+      tokens: {
+        bg: '#fdf7fd',
+        fg: '#3b0d3b',
+        muted: '#7a5878',
+        accent: '#a21caf',
+        'accent-fg': '#ffffff',
+        border: '#efdcef',
+        radius: '1.25rem',
+        backdrop: 'rgba(59, 13, 59, 0.55)',
+      },
+    },
+    {
+      /* translators: a colour preset — warm paper and a burnt-orange accent, with a nearly square corner. */
+      id: 'sand',
+      label: __('Sand', 'wconvert'),
+      tokens: {
+        bg: '#f5f1ea',
+        fg: '#2b2620',
+        muted: '#6b6155',
+        accent: '#9a5b23',
+        'accent-fg': '#ffffff',
+        border: '#e0d7c7',
+        radius: '0.25rem',
+        backdrop: 'rgba(43, 38, 32, 0.5)',
+      },
+    },
+    {
+      /* translators: a colour preset — cool grey, with the accent as quiet as the text. */
+      id: 'slate',
+      label: __('Slate', 'wconvert'),
+      tokens: {
+        bg: '#ffffff',
+        fg: '#1e293b',
+        muted: '#556377',
+        accent: '#475569',
+        'accent-fg': '#ffffff',
+        border: '#cbd5e1',
+        radius: '0.375rem',
+        backdrop: 'rgba(15, 23, 42, 0.6)',
+      },
+    },
+    {
+      /* translators: a colour preset — near-black with square corners. The dark counterpart to Minimal. */
+      id: 'carbon',
+      label: __('Carbon', 'wconvert'),
+      tokens: {
+        bg: '#0a0a0a',
+        fg: '#fafafa',
+        muted: '#a1a1aa',
+        accent: '#fafafa',
+        'accent-fg': '#0a0a0a',
+        border: '#2b2b2b',
+        radius: '0rem',
+        backdrop: 'rgba(0, 0, 0, 0.75)',
+      },
+    },
+    {
+      /* translators: a colour preset — a loud red on cream, with a very round corner. */
+      id: 'punch',
+      label: __('Punch', 'wconvert'),
+      tokens: {
+        bg: '#fffbeb',
+        fg: '#1c1917',
+        muted: '#6d6154',
+        accent: '#c2261d',
+        'accent-fg': '#ffffff',
+        border: '#fcdf9e',
+        radius: '1.5rem',
+        backdrop: 'rgba(28, 25, 23, 0.6)',
+      },
+    },
+    {
+      /* translators: a colour preset — a soft indigo on near-white, the quietest of the twelve. */
+      id: 'mist',
+      label: __('Mist', 'wconvert'),
+      tokens: {
+        bg: '#f8fafc',
+        fg: '#334155',
+        muted: '#5a6b80',
+        accent: '#4f46e5',
+        'accent-fg': '#ffffff',
+        border: '#e2e8f0',
+        radius: '1rem',
+        backdrop: 'rgba(51, 65, 85, 0.45)',
       },
     },
   ];
