@@ -155,28 +155,59 @@ final class PrefillPartsParityTest extends TestCase
 
     /**
      * ========================================================================
-     * AND {@see EditedPart::Targeting} IS REACHABLE ONLY BY ADDITION.
+     * {@see EditedPart::Targeting} IS NOW REACHABLE BY MUTATION, AND THAT DAY
+     * WAS PLANNED FOR.
      * ========================================================================
-     * **No bundled Playbook constrains where its Optin shows**, so there is no
-     * `targeting` key in any draft to mutate — which is why the walk above
-     * cannot reach that case, and why it is asserted here rather than
-     * exempted.
+     * This method used to assert the opposite — *no bundled Playbook
+     * constrains where its Optin shows* — and said outright what should happen
+     * when one did:
      *
-     * That is the case's own claim made checkable: *a Playbook that supplied
-     * none suggested everywhere*, so the only way a merchant overrides it is
-     * by adding one. The day a bundled Playbook does ship targeting, this
-     * fails and the walk above gains a fourth part — which is the right way
-     * round.
+     * > The day a bundled Playbook does ship targeting, this fails and the
+     * > walk above gains a fourth part — which is the right way round.
+     *
+     * That day is now. `article-end-newsletter` and `content-upgrade` narrow
+     * to `singular: post` because a content upgrade offered on the checkout
+     * page is the commonest way this Goal is experienced as spam, and
+     * `category-promotion` narrows to `archive: product` for the same reason.
+     *
+     * So the tripwire is replaced by the assertion it was protecting: the walk
+     * above now genuinely reaches `Targeting`, and this holds that true from
+     * the other side. Deleting it and trusting the walk would leave the
+     * coverage silently dependent on a bundled Playbook happening to ship a
+     * key — which is the state this file exists to end.
      */
-    public function testNoBundledPlaybookConstrainsWhereItShows(): void
+    public function testTargetingIsReachedByTheWalkAndNoticedWhenChanged(): void
     {
+        $shipped = [];
+
         foreach ($this->drafts() as $id => $draft) {
-            $this->assertArrayNotHasKey(
-                'targeting',
-                $draft['config'],
-                "{$id} ships targeting; EditedPart::Targeting is now reachable by mutation too"
+            if (!array_key_exists('targeting', $draft['config'])) {
+                continue;
+            }
+
+            $shipped[] = $id;
+
+            $edited = $draft['config'];
+            $edited['targeting'] = ['include' => [['type' => 'url', 'value' => '/changed-by-the-merchant']]];
+
+            $this->assertSame(
+                EditedPart::Targeting,
+                EditedPart::firstChangedBetween(
+                    $draft['config'],
+                    $edited,
+                    $draft['goal'],
+                    $draft['goal'],
+                    $this->templates
+                ),
+                "{$id} ships targeting and changing it is not read as an override of where it shows"
             );
         }
+
+        $this->assertNotSame(
+            [],
+            $shipped,
+            'no bundled Playbook ships targeting, so the walk above cannot reach EditedPart::Targeting by mutation'
+        );
 
         // And adding one is an override, which is the whole of the claim.
         $draft = $this->drafts()['welcome-discount'];
