@@ -35,6 +35,10 @@
 /bin
 /dist
 /node_modules
+# The design-system generator. It reads `resources/admin/src` and drives a
+# throwaway WordPress; nothing in it is loaded by the plugin, and its own
+# output directory is gitignored rather than staged.
+/tools
 # Every Vite config and every factory they share. Named one by one rather than
 # globbed, because .distignore's two forms are an anchored path and a bare
 # name, and a bare `vite.*` would take anything under resources/ with it.
