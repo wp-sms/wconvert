@@ -117,7 +117,7 @@ export function Dashboard() {
         <label className="ms-auto flex items-center gap-2 text-muted-foreground">
           {__('Showing', 'wconvert')}
           <select
-            className="h-9 rounded-md border border-input bg-card ps-3 pe-9 text-sm text-foreground"
+            className="h-9 rounded-md border border-input bg-card ps-3 pe-9 text-body text-foreground"
             value={payload === null || payload.days === 0 ? '' : payload.days}
             onChange={(event) => setDays(Number(event.target.value))}
           >

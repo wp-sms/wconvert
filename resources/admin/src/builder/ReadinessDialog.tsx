@@ -11,6 +11,7 @@ import {
 } from '../components/ui/dialog';
 import { StatusBadge } from '../optins/StatusBadge';
 import { statusOf, type OptinState } from '../optins/api';
+import { Code } from '../shell/Code';
 import type { Loadable } from '../shell/loadable';
 import { destinationsSaid } from './destinations';
 import { problemsIn, type Problem } from './structure/problems';
@@ -387,7 +388,7 @@ const named = <T,>(read: Loadable<T | null>): T | null =>
  * Optin is in a state called `from_a_plugin_we_lack`.
  */
 function Unnamed({ id }: { readonly id: string }) {
-  return <code className="font-mono text-xs">{id}</code>;
+  return <Code>{id}</Code>;
 }
 
 /**

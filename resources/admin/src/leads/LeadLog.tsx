@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../components/ui/select';
+import { Code } from '../shell/Code';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import {
   DataTable,
@@ -545,7 +546,7 @@ function LogRegion({
                       >
                         {Object.entries(lead.fields).map(([name, value]) => (
                           <span key={name} className="block">
-                            <code className="font-mono text-xs text-muted-foreground">{name}</code>{' '}
+                            <Code className="text-muted-foreground">{name}</Code>{' '}
                             {value}
                           </span>
                         ))}

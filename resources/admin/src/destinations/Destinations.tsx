@@ -19,6 +19,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { AddDestinationDialog } from './AddDestinationDialog';
+import { Code } from '../shell/Code';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import {
   DataTable,
@@ -1001,7 +1002,7 @@ function Failures({ failures }: { failures: DestinationsPayload['failures'] }) {
             <DataTableRow key={`${failure.lead}-${failure.at}`}>
               <DataTableCell label={__('When', 'wconvert')}>{failure.at}</DataTableCell>
               <DataTableCell label={__('Lead', 'wconvert')}>
-                <code className="font-mono text-xs text-muted-foreground">{failure.lead}</code>
+                <Code className="text-muted-foreground">{failure.lead}</Code>
               </DataTableCell>
               <DataTableCell label={__('Why', 'wconvert')} className="whitespace-normal">
                 {failure.error}

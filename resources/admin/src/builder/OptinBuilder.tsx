@@ -1341,7 +1341,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
                   below has no way to know about, which is the whole class of
                   bug a shared wrapper exists to remove.
                 */}
-                <p className="mt-2 mb-0 text-sm text-muted-foreground">
+                <p className="mt-2 mb-0 text-body text-muted-foreground">
                   {sprintf(
                     /* translators: %s: a number of days. */
                     _n('The last %s day', 'The last %s days', numbers.days, 'wconvert'),
@@ -1356,10 +1356,10 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
                 {/*
                   The window is the SERVER's default and is not known until the
                   payload lands, so the caption is a bar of exactly one line of
-                  its own type — `1lh` against `text-sm` rather than a number
+                  its own type — `1lh` against `text-body` rather than a number
                   that would have to be kept equal to the type scale.
                 */}
-                <Skeleton aria-hidden="true" className="mt-2 h-[1lh] w-28 text-sm" />
+                <Skeleton aria-hidden="true" className="mt-2 h-[1lh] w-28 text-body" />
               </>
             )}
           </div>
