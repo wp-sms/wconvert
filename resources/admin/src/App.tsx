@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { __ } from '@wordpress/i18n';
-import { ArrowLeft, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { GoalScreen, OptinBuilder } from './builder/lazy';
 import { LeadLog } from './leads/LeadLog';
 import { OptinList } from './optins/OptinList';
@@ -8,6 +8,7 @@ import { SiteAllowance } from './optins/SiteAllowance';
 import { Dashboard } from './stats/Dashboard';
 import { Destinations } from './destinations/Destinations';
 import { Button } from './components/ui/button';
+import { BackLink } from './shell/BuilderSkeleton';
 import { Shell } from './shell/Shell';
 import { NarrowScreenNotice } from './shell/NarrowScreenNotice';
 import { useBuilderViewport } from './hooks/useBuilderViewport';
@@ -139,10 +140,7 @@ function BuilderScreen({ id, onClose }: { id: string; onClose: () => void }) {
      */
     return (
       <Shell>
-        <Button variant="ghost" size="sm" className="mb-4 -ms-3" onClick={onClose}>
-          <ArrowLeft aria-hidden="true" />
-          {__('All Optins', 'wconvert')}
-        </Button>
+        <BackLink className="mb-4" onClose={onClose} />
         <NarrowScreenNotice />
       </Shell>
     );
@@ -193,10 +191,7 @@ function OptinsSection({
           went dead with it; the placement it argued for is still the right
           one, so the reason is restated rather than deleted.
         */}
-        <Button variant="ghost" size="sm" className="mb-4 -ms-3" onClick={onCancelCreate}>
-          <ArrowLeft aria-hidden="true" />
-          {__('All Optins', 'wconvert')}
-        </Button>
+        <BackLink className="mb-4" onClose={onCancelCreate} />
         <GoalScreen
           onCreated={(id) => {
             onCancelCreate();

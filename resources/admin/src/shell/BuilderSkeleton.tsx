@@ -62,18 +62,34 @@ export function BuilderSkeleton({ onClose }: { onClose: () => void }) {
  * skeleton above and {@see OptinBuilder} render the same component, in the same
  * band, and the way out does not move when the wait ends.
  *
- * {@see App} draws its own below 782px, and that is not this one: it sits in
- * the page body above the narrow-screen sentence rather than in the header
- * band, so it carries the spacing of where it stands. There is exactly one of
- * the three on screen at a time.
+ * {@see App} draws its own below 782px and again over the creation flow, and
+ * those are not in the header band: they sit in the page body, so they carry
+ * the spacing of where they stand. There is exactly one of the three on screen
+ * at a time.
+ *
+ * **All three are now this component**, which is what makes that sentence
+ * true rather than aspirational — App spelled the button out twice, so a
+ * change to the way back was a change in three places and the two copies had
+ * already drifted a `size` apart from this one. `-ms-3` travels with the
+ * control, because pulling a ghost button's padding back so its label starts
+ * on the text edge is a fact about the button; `className` is the caller's,
+ * because how much room sits under it is a fact about where it stands.
  *
  * It takes a ref because it is what the unsaved-changes confirm has to put the
  * caret back on — a triggerless dialog restores focus to nothing, which leaves
  * a keyboard merchant on `<body>` ({@see ConfirmDialog}).
  */
-export function BackLink({ onClose, ref }: { onClose: () => void; ref?: Ref<HTMLButtonElement> }) {
+export function BackLink({
+  onClose,
+  ref,
+  className,
+}: {
+  onClose: () => void;
+  ref?: Ref<HTMLButtonElement>;
+  className?: string;
+}) {
   return (
-    <div>
+    <div className={className}>
       <Button ref={ref} variant="ghost" size="sm" className="-ms-3" onClick={onClose}>
         <ArrowLeft aria-hidden="true" />
         {__('All Optins', 'wconvert')}
