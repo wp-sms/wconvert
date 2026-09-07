@@ -133,11 +133,7 @@ export function ChangeGoalDialog({
             </DialogHeader>
 
             {goals.status === 'loading' ? (
-              <ChoiceGrid>
-                {[0, 1, 2, 3].map((row) => (
-                  <ChoiceSkeleton key={row} />
-                ))}
-              </ChoiceGrid>
+              <ChoiceSkeleton />
             ) : shown.length === 0 ? (
               /*
                 The same honest dead end step one has: what is missing is a

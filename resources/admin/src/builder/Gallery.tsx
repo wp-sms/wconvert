@@ -362,7 +362,19 @@ export function Gallery({
  */
 export function GallerySkeleton({ cards = 6 }: { cards?: number }) {
   return (
-    <ul className="wconvert-gallery" aria-hidden="true">
+    <>
+      {/*
+        **The announcement is the component's, not the call site's.** It had
+        none at all and neither did two of its three callers, so a merchant on
+        a screen reader met a silent wait. `aria-hidden` on the grid below is
+        what makes one `role="status"` the right number: six placeholder cards
+        have nothing to say and the word "Loading" has everything.
+      */}
+      <span role="status" className="sr-only">
+        {__('Loading…', 'wconvert')}
+      </span>
+
+      <ul className="wconvert-gallery" aria-hidden="true">
       {Array.from({ length: cards }, (_each, index) => (
         <li key={index} className="wconvert-gallery__card">
           <div className="wconvert-gallery__waiting">
@@ -374,6 +386,7 @@ export function GallerySkeleton({ cards = 6 }: { cards?: number }) {
           </div>
         </li>
       ))}
-    </ul>
+      </ul>
+    </>
   );
 }

@@ -186,11 +186,7 @@ function GoalPicker({
 
       <RegionBody>
         {goals.status === 'loading' ? (
-          <ChoiceGrid>
-            {[0, 1, 2, 3].map((row) => (
-              <ChoiceSkeleton key={row} />
-            ))}
-          </ChoiceGrid>
+          <ChoiceSkeleton />
         ) : shown.length === 0 ? (
           /*
            * **The third state step one was missing.** Loading and failed were

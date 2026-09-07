@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { __ } from '@wordpress/i18n';
 import { Skeleton } from '../components/ui/skeleton';
 import { Description } from './Description';
 
@@ -91,21 +92,49 @@ export function ChoiceCard({
 }
 
 /**
- * A card in the shape of the cards that are coming, never the empty state.
+ * The grid in the shape of the cards that are coming, never the empty state.
  *
  * **`gap-2` because {@see ChoiceCard} is `gap-2`.** It was `gap-3` with an
  * extra `mt-1` before the action, against the card's `gap-2` and its own
  * `mt-1` — so the placeholder was four pixels taller per row than the thing it
  * stands for, and the grid moved when the data landed. That is the one claim
  * this component exists to make.
+ *
+ * ==========================================================================
+ * IT DRAWS THE WHOLE GRID, AND THE ANNOUNCEMENT IS WHY.
+ * ==========================================================================
+ * This used to be ONE card, so every call site wrote
+ * `<ChoiceGrid>{[0,1,2,3].map(…)}</ChoiceGrid>` and owed the `sr-only`
+ * "Loading…" beside it. Three of the four forgot — the creation flow's step
+ * one, its step three and the Change-goal dialog — so three of the four
+ * choice-loading states in this admin said nothing at all to a screen reader.
+ *
+ * An announcement cannot live inside a single card either: four cards would
+ * read "Loading" four times, which is `TableSkeleton`'s reason for putting one
+ * `role="status"` on the first cell of the first row rather than on every
+ * placeholder. Owning the grid is what makes there be exactly one of it, and
+ * it is the shape {@see GallerySkeleton} already had.
  */
-export function ChoiceSkeleton() {
+export function ChoiceSkeleton({ cards = 4 }: { cards?: number }) {
   return (
-    <li className="flex flex-col gap-2 rounded-md border border-border bg-card p-4">
-      <Skeleton aria-hidden="true" className="h-4 w-40 max-w-full" />
-      <Skeleton aria-hidden="true" className="h-3 w-full" />
-      <Skeleton aria-hidden="true" className="h-3 w-2/3" />
-      <Skeleton aria-hidden="true" className="h-9 w-24" />
-    </li>
+    <>
+      <span role="status" className="sr-only">
+        {__('Loading…', 'wconvert')}
+      </span>
+
+      <ChoiceGrid>
+        {Array.from({ length: cards }, (_each, card) => (
+          <li
+            key={card}
+            className="flex flex-col gap-2 rounded-md border border-border bg-card p-4"
+          >
+            <Skeleton aria-hidden="true" className="h-4 w-40 max-w-full" />
+            <Skeleton aria-hidden="true" className="h-3 w-full" />
+            <Skeleton aria-hidden="true" className="h-3 w-2/3" />
+            <Skeleton aria-hidden="true" className="h-9 w-24" />
+          </li>
+        ))}
+      </ChoiceGrid>
+    </>
   );
 }

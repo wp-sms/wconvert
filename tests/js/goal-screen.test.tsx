@@ -126,6 +126,49 @@ beforeEach(() => {
   optins.createOptin.mockResolvedValue({ id: '01JQZK8N3M4P5Q6R7S8T9V0W1X' });
 });
 
+/**
+ * ============================================================================
+ * THREE OF THE FOUR CHOICE-LOADING STATES SAID NOTHING TO A SCREEN READER.
+ * ============================================================================
+ * `ChoiceSkeleton` was one CARD, so every call site drew four of them inside a
+ * `ChoiceGrid` and owed the `sr-only` "Loading…" beside it. One of the four
+ * remembered. `GallerySkeleton` had none of its own either, and its grid is
+ * `aria-hidden`, so two of its three callers announced a silent wait.
+ *
+ * Both skeletons own the announcement now, which is what makes there be
+ * exactly one of it — the reason `TableSkeleton` puts its `role="status"` on
+ * the first cell of the first row rather than on every placeholder.
+ */
+describe('waiting on the goal screen', () => {
+  it('says it is loading while the Goals are arriving', async () => {
+    let land: (goals: unknown) => void = () => undefined;
+    goals.listGoals.mockReturnValue(new Promise((resolve) => (land = resolve)));
+
+    render(<GoalScreen onCreated={() => undefined} />);
+
+    expect(await screen.findByRole('status')).toHaveTextContent('Loading…');
+
+    land(GOALS);
+
+    expect(await screen.findByText('Grow my email list')).toBeInTheDocument();
+  });
+
+  it('says it is loading while the Playbooks are arriving', async () => {
+    let land: (playbooks: unknown) => void = () => undefined;
+    goals.listPlaybooks.mockReturnValue(new Promise((resolve) => (land = resolve)));
+
+    render(<GoalScreen onCreated={() => undefined} />);
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Choose' }));
+
+    expect(await screen.findByRole('status')).toHaveTextContent('Loading…');
+
+    land([PLAYBOOK]);
+
+    expect(await screen.findByText('Welcome discount')).toBeInTheDocument();
+  });
+});
+
 describe('the goal screen', () => {
   /**
    * Absent, not greyed out and not explained. A food blogger with no store

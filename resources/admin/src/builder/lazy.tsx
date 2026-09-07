@@ -1,7 +1,7 @@
 import { Suspense, lazy } from 'react';
 import { __ } from '@wordpress/i18n';
 import { BuilderSkeleton } from '../shell/BuilderSkeleton';
-import { ChoiceGrid, ChoiceSkeleton } from '../shell/ChoiceGrid';
+import { ChoiceSkeleton } from '../shell/ChoiceGrid';
 import { Region, RegionBody, RegionHeader } from '../shell/Region';
 import type { OptinBuilderProps } from './OptinBuilder';
 
@@ -94,14 +94,8 @@ function CreationSkeleton() {
         description={__('What do you want this Optin to do?', 'wconvert')}
       />
       <RegionBody>
-        <span role="status" className="sr-only">
-          {__('Loading…', 'wconvert')}
-        </span>
-        <ChoiceGrid>
-          {[0, 1, 2, 3].map((row) => (
-            <ChoiceSkeleton key={row} />
-          ))}
-        </ChoiceGrid>
+        {/* The announcement travels with the skeleton now. */}
+        <ChoiceSkeleton />
       </RegionBody>
     </Region>
   );
