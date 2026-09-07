@@ -10,7 +10,7 @@
     "accent": "#fef2f2",
     "accent-fg": "#7f1d1d",
     "border": "#991b1b",
-    "heading-size": "1rem",
+    "heading-size": "1.0625rem",
     "heading-weight": "600",
     "tracking": "0.04em",
     "text-size": "0.9375rem",
@@ -20,7 +20,7 @@
     "gap": "0.75rem",
     "width": "100%",
     "align": "center",
-    "shadow": "0 -6px 24px rgba(69, 10, 10, 0.35)",
+    "shadow": "0 -18px 50px -12px rgba(15, 23, 42, 0.35)",
     "motion": "200ms"
   },
   "tree": {
@@ -28,10 +28,30 @@
       {
         "type": "row",
         "children": [
-          { "type": "icon", "id": "n1", "name": "clock" },
-          { "type": "heading", "id": "n2", "level": 2, "role": "headline", "text": "The sale ends in" },
-          { "type": "countdown", "id": "n3" },
-          { "type": "button", "id": "n4", "role": "cta_label", "label": "Shop the sale", "action": "link", "href": "/sale/" }
+          {
+            "type": "icon",
+            "id": "n1",
+            "name": "clock"
+          },
+          {
+            "type": "heading",
+            "id": "n2",
+            "level": 2,
+            "role": "headline",
+            "text": "The sale ends in"
+          },
+          {
+            "type": "countdown",
+            "id": "n3"
+          },
+          {
+            "type": "button",
+            "id": "n4",
+            "role": "cta_label",
+            "label": "Shop the sale",
+            "action": "link",
+            "href": "/sale/"
+          }
         ]
       }
     ]

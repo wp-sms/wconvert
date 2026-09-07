@@ -4,29 +4,53 @@
   "display_type": "popup",
   "tier": "free",
   "tokens": {
-    "bg": "#0f172a",
+    "bg": "#0b1220",
     "fg": "#f8fafc",
-    "muted": "#94a3b8",
-    "accent": "#f59e0b",
-    "accent-fg": "#1c1917",
-    "border": "#1e293b",
-    "heading-size": "1.875rem",
+    "muted": "#93a4c4",
+    "accent": "#fbbf24",
+    "accent-fg": "#1c1204",
+    "border": "#1e2c47",
+    "heading-size": "2.125rem",
     "radius": "1rem",
     "pad": "2.5rem",
     "gap": "1rem",
     "width": "30rem",
     "align": "center",
-    "backdrop": "rgba(2, 6, 23, 0.7)"
+    "backdrop": "rgba(2, 6, 23, 0.7)",
+    "shadow": "0 32px 80px -16px rgba(15, 23, 42, 0.5)",
+    "tracking": "-0.025em",
+    "bg-image": "linear-gradient(160deg, #0b1220 0%, #16233d 60%, #1e3a5f 100%)"
   },
   "tree": {
     "steps": [
       {
         "type": "stack",
         "children": [
-          { "type": "heading", "id": "n1", "role": "headline", "text": "Midseason sale" },
-          { "type": "text", "id": "n2", "role": "body", "text": "Everything reduced for the next three days." },
-          { "type": "button", "id": "n3", "role": "cta_label", "label": "Shop the sale", "action": "link" },
-          { "type": "text", "id": "n4", "role": "fine_print", "text": "Discount applied at the checkout." }
+          {
+            "type": "heading",
+            "id": "n1",
+            "role": "headline",
+            "text": "Midseason sale"
+          },
+          {
+            "type": "text",
+            "id": "n2",
+            "role": "body",
+            "text": "Everything reduced for the next three days."
+          },
+          {
+            "type": "button",
+            "id": "n3",
+            "role": "cta_label",
+            "label": "Shop the sale",
+            "action": "link"
+          },
+          {
+            "type": "text",
+            "id": "n4",
+            "role": "fine_print",
+            "text": "Discount applied at the checkout."
+          }
         ]
       }
     ]

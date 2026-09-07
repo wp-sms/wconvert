@@ -10,13 +10,15 @@
     "accent": "#0f766e",
     "accent-fg": "#ffffff",
     "border": "#e2e8f0",
-    "heading-size": "1.625rem",
+    "heading-size": "1.875rem",
     "radius": "0.75rem",
-    "pad": "2rem",
+    "pad": "2.25rem",
     "gap": "1rem",
     "width": "32rem",
     "align": "center",
-    "backdrop": "rgba(15, 23, 42, 0.6)"
+    "backdrop": "rgba(15, 23, 42, 0.6)",
+    "shadow": "0 18px 50px -12px rgba(15, 23, 42, 0.35)",
+    "tracking": "-0.025em"
   },
   "tree": {
     "steps": [
@@ -124,6 +126,11 @@
       {
         "type": "stack",
         "children": [
+          {
+            "type": "icon",
+            "id": "n15",
+            "name": "check"
+          },
           {
             "type": "heading",
             "id": "n13",
