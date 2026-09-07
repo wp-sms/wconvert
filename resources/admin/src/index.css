@@ -1641,7 +1641,7 @@
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: 999px;
-  font-size: var(--text-sm, 0.8125rem);
+  font-size: var(--text-note);
 }
 
 /* ---------------------------------------------------------------------------
