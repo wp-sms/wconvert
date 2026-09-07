@@ -53,11 +53,18 @@ export interface DestinationsEditorProps {
  *
  * Every row carries where that route lands now, and inline each sentence
  * started at whatever x the name happened to end at — four rows, four left
- * edges, and an eye reading down the list found no column to follow. Indented
- * past the checkbox, so a note lines up under the name it is about rather than
- * under the box.
+ * edges, and an eye reading down the list found no column to follow. So a note
+ * lines up under the name it is about rather than under the box.
+ *
+ * **The row is a two-column grid and the indent is the first column**, which is
+ * what makes that true without anybody measuring. It was `ms-7` — 28px, hand-
+ * computed to clear a 16px checkbox and the space beside it, and a number that
+ * silently stops being right the day either one changes. The checkbox sizes
+ * column one, `gap-x-2` is the same 0.5rem `.wconvert-check` spends on the same
+ * relationship, and every note starts at column two because that is where the
+ * name starts.
  */
-const NOTE = 'block ms-7 mt-0.5';
+const NOTE = 'col-start-2';
 
 export function DestinationsEditor({ bound, available, hint, onChange }: DestinationsEditorProps) {
   return (
@@ -80,33 +87,43 @@ export function DestinationsEditor({ bound, available, hint, onChange }: Destina
             const control = `wconvert-bind-${destination.id}`;
 
             return (
-              <li key={destination.id}>
-                <label>
-                  <input
-                    id={control}
-                    type="checkbox"
-                    /*
-                      **The merchant's name is the accessible name, and the
-                      target only DESCRIBES it.** They are two different jobs:
-                      the name is what they chose to call this route, and
-                      "Sending to Newsletter" is what it does. Folding the
-                      second into the `<label>` would make a screen reader
-                      announce the whole sentence as the checkbox's name — and
-                      rename the control every time somebody re-pointed the
-                      route.
-                    */
-                    aria-describedby={said === null ? undefined : `${control}-target`}
-                    checked={bound.includes(destination.id)}
-                    onChange={(event) =>
-                      onChange(
-                        event.target.checked
-                          ? [...bound, destination.id]
-                          : bound.filter((id) => id !== destination.id)
-                      )
-                    }
-                  />{' '}
+              <li
+                key={destination.id}
+                className="grid grid-cols-[auto_1fr] items-center gap-x-2 gap-y-0.5"
+              >
+                <input
+                  id={control}
+                  type="checkbox"
+                  /*
+                    **The merchant's name is the accessible name, and the
+                    target only DESCRIBES it.** They are two different jobs:
+                    the name is what they chose to call this route, and
+                    "Sending to Newsletter" is what it does. Folding the second
+                    into the `<label>` would make a screen reader announce the
+                    whole sentence as the checkbox's name — and rename the
+                    control every time somebody re-pointed the route.
+                  */
+                  aria-describedby={said === null ? undefined : `${control}-target`}
+                  checked={bound.includes(destination.id)}
+                  onChange={(event) =>
+                    onChange(
+                      event.target.checked
+                        ? [...bound, destination.id]
+                        : bound.filter((id) => id !== destination.id)
+                    )
+                  }
+                />
+                {/*
+                  **`htmlFor` rather than a `<label>` wrapped round the pair**,
+                  which is what this was: the grid needs the box and the name to
+                  be siblings so the box can size column one. It is also the
+                  pattern `index.css` argues for beside the vendored checkbox,
+                  for the separate reason that a wrapping label forwards a click
+                  the control already received.
+                */}
+                <label htmlFor={control} className="min-w-0">
                   {destination.label}
-                </label>{' '}
+                </label>
                 {/*
                   **Where these leads actually land, at the moment the choice
                   is made.** This tab drew `☐ MailPoet` and nothing more, which
