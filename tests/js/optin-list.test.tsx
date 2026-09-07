@@ -58,6 +58,61 @@ beforeEach(() => {
   ]);
 });
 
+/**
+ * ============================================================================
+ * A SCREEN IS FOUR SITUATIONS, AND THIS ONE HAD TESTS FOR EXACTLY ONE.
+ * ============================================================================
+ * `shell/loadable.ts` forces every screen to branch on `loading | ready |
+ * failed`, so the three states are unavoidable in the code and were untested
+ * here, on the Lead log and on the goal screen — nothing at all between the
+ * three of them. That is why they drift without anybody noticing, and it is
+ * what these are for.
+ *
+ * The reference implementation is this screen: all three drawn exactly as the
+ * shared primitives intend, with the first-failure / refresh-failure split
+ * done correctly. Pinning that down is what makes it a reference rather than
+ * an accident.
+ */
+describe('the four situations this screen has to answer', () => {
+  it('says it is loading, and never that there is nothing', async () => {
+    let land: (rows: unknown) => void = () => undefined;
+    optins.listOptins.mockReturnValue(new Promise((resolve) => (land = resolve)));
+
+    render(<OptinList onEdit={() => undefined} />);
+
+    expect(await screen.findByRole('status')).toHaveTextContent('Loading…');
+    expect(screen.queryByText('No Optins yet')).toBeNull();
+
+    land([OPTIN]);
+
+    expect(await screen.findByText('Welcome discount')).toBeInTheDocument();
+  });
+
+  /**
+   * **Never reachable from loading.** The empty state is a CLAIM — you have
+   * none — and `EmptyState`'s docblock names the creation flow saying it while
+   * the answer was still arriving as the bug the type exists to stop.
+   */
+  it('offers the door out where the site genuinely has no Optins', async () => {
+    optins.listOptins.mockResolvedValue([]);
+
+    render(<OptinList onEdit={() => undefined} onCreate={() => undefined} />);
+
+    expect(await screen.findByText('No Optins yet')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Create an Optin/ })).toBeInTheDocument();
+  });
+
+  it('renders a first failure as the region’s whole content', async () => {
+    optins.listOptins.mockRejectedValue(new Error('Sorry, you are not allowed to do that.'));
+
+    render(<OptinList onEdit={() => undefined} />);
+
+    expect(await screen.findByText('Sorry, you are not allowed to do that.')).toBeInTheDocument();
+    // The component's default door, rather than nine call sites spelling it.
+    expect(screen.getByText('Reload the page to try again.')).toBeInTheDocument();
+  });
+});
+
 describe('a row', () => {
   /**
    * **The reason an Optin stopped showing is a description, not fine print.**

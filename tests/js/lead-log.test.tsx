@@ -57,6 +57,88 @@ const SEVEN_SUBMISSIONS = {
   ],
 };
 
+/**
+ * ============================================================================
+ * THE TWO REGIONS ANSWER FOUR SITUATIONS EACH, AND NEITHER WAS TESTED ON ANY.
+ * ============================================================================
+ * `Loadable` forces both regions here to branch on `loading | ready | failed`,
+ * and nothing asserted any of the six branches. The retention card in
+ * particular showed real radios greyed out while it read — a control saying
+ * *you may not change this* about a value nobody had read yet — and no test
+ * would have noticed either the gap or the fix.
+ */
+describe('the four situations the log has to answer', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    log.readRetention.mockResolvedValue({ days: null, max_days: 3650 });
+    log.exportUrl.mockReturnValue('https://example.test/x');
+    optins.listOptins.mockResolvedValue([]);
+  });
+
+  it('says it is loading, and never that there is nothing', async () => {
+    let land: (payload: unknown) => void = () => undefined;
+    log.readLog.mockReturnValue(new Promise((resolve) => (land = resolve)));
+
+    render(<LeadLog />);
+
+    expect((await screen.findAllByRole('status')).length).toBeGreaterThan(0);
+    expect(screen.queryByText('No submissions yet')).toBeNull();
+
+    land({ ...SEVEN_SUBMISSIONS, grouped: false });
+
+    expect(await screen.findByText('sarah@example.com')).toBeInTheDocument();
+  });
+
+  it('offers the door out where nothing has ever been captured', async () => {
+    log.readLog.mockResolvedValue({ submissions: 0, leads: [], groups: [], grouped: false });
+
+    render(<LeadLog />);
+
+    expect(await screen.findByText('No submissions yet')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Go to Optins' })).toBeInTheDocument();
+  });
+
+  it('renders a first failure as the region’s whole content', async () => {
+    log.readLog.mockRejectedValue(new Error('The log could not be read.'));
+
+    render(<LeadLog />);
+
+    expect(await screen.findByText('The log could not be read.')).toBeInTheDocument();
+    expect(screen.getByText('Reload the page to try again.')).toBeInTheDocument();
+  });
+
+  /**
+   * **The retention card is its own region and fails on its own** (ADR 0039),
+   * which is the half of the rule a page-top banner loses: the log above is
+   * fine and says so.
+   */
+  it('fails the retention card without taking the log with it', async () => {
+    log.readLog.mockResolvedValue({ ...SEVEN_SUBMISSIONS, grouped: false });
+    log.readRetention.mockRejectedValue(new Error('The retention period could not be read.'));
+
+    render(<LeadLog />);
+
+    expect(await screen.findByText('The retention period could not be read.')).toBeInTheDocument();
+    expect(screen.getByText('sarah@example.com')).toBeInTheDocument();
+  });
+
+  /**
+   * **A loading state, not four real controls greyed out.** A disabled radio
+   * says *you may not change this*; what was true was *we have not read it
+   * yet*, and the two are not the same claim.
+   */
+  it('draws a placeholder for the retention period rather than dead controls', async () => {
+    log.readLog.mockResolvedValue({ ...SEVEN_SUBMISSIONS, grouped: false });
+    log.readRetention.mockReturnValue(new Promise(() => undefined));
+
+    render(<LeadLog />);
+
+    await screen.findByText('sarah@example.com');
+
+    expect(screen.queryByRole('radio', { name: /Keep them until I delete them/ })).toBeNull();
+  });
+});
+
 describe('the lead log', () => {
   beforeEach(() => {
     vi.clearAllMocks();

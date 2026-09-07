@@ -153,6 +153,35 @@ describe('waiting on the goal screen', () => {
     expect(await screen.findByText('Grow my email list')).toBeInTheDocument();
   });
 
+  it('renders a failed Goal read as the region’s whole content', async () => {
+    goals.listGoals.mockRejectedValue(new Error('Sorry, you are not allowed to do that.'));
+
+    render(<GoalScreen onCreated={() => undefined} />);
+
+    expect(await screen.findByText('Sorry, you are not allowed to do that.')).toBeInTheDocument();
+    // The component's default door. This was the one `RegionErrorState` in the
+    // admin passing no hint, so it named no way out of itself.
+    expect(screen.getByText('Reload the page to try again.')).toBeInTheDocument();
+  });
+
+  /**
+   * **A prefill is a round trip and nothing said so**, so both ways forward
+   * stayed live and a second press started a second prefill. Real `disabled`
+   * rather than `aria-disabled`: this is transient, and a busy control wants to
+   * be out of the way rather than to keep focus for a reason it does not have.
+   */
+  it('takes both ways forward out of reach while a prefill is in flight', async () => {
+    goals.prefill.mockReturnValue(new Promise(() => undefined));
+
+    render(<GoalScreen onCreated={() => undefined} />);
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Choose' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Use this Playbook' }));
+
+    expect(screen.getByRole('button', { name: 'Use this Playbook' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Start from scratch' })).toBeDisabled();
+  });
+
   it('says it is loading while the Playbooks are arriving', async () => {
     let land: (playbooks: unknown) => void = () => undefined;
     goals.listPlaybooks.mockReturnValue(new Promise((resolve) => (land = resolve)));

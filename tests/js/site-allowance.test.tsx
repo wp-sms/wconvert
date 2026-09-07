@@ -49,6 +49,32 @@ describe('the site-wide allowance', () => {
   });
 
   /** Every control empty, which is the state every install ships in. */
+  /**
+   * **A loading state, not four real controls greyed out.** This card showed
+   * its switches and both number fields `disabled` until the read landed —
+   * which says *you may not change this* about a value nobody had read yet,
+   * and then quietly becomes usable. ADR 0039 asks every region that fetches
+   * for the state, and this was one of two that did not draw one.
+   */
+  it('draws a placeholder while it reads, rather than dead controls', async () => {
+    api.readSiteAllowance.mockReturnValue(new Promise(() => undefined));
+
+    render(<SiteAllowance />);
+
+    expect(await screen.findByRole('status')).toHaveTextContent('Loading…');
+    expect(screen.queryByLabelText(/close any Optin/i)).toBeNull();
+  });
+
+  it('renders a failed read as the region’s whole content', async () => {
+    api.readSiteAllowance.mockRejectedValue(new Error('The allowance could not be read.'));
+
+    render(<SiteAllowance />);
+
+    expect(await screen.findByText('The allowance could not be read.')).toBeInTheDocument();
+    expect(screen.getByText('Reload the page to try again.')).toBeInTheDocument();
+    expect(screen.queryByLabelText(/close any Optin/i)).toBeNull();
+  });
+
   it('shows a site that has configured nothing as configuring nothing', async () => {
     render(<SiteAllowance />);
 
