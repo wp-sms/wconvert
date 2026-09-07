@@ -310,3 +310,74 @@ describe('the rules panel against the editor’s blanket rules', () => {
     expect([...CSS.matchAll(/^\.wconvert-choice\s*\{/gm)].length).toBe(1);
   });
 });
+
+/**
+ * ============================================================================
+ * SIX ROLES, AND THE ONE THAT ESCAPED WAS INVISIBLE FOR A DIFFERENT REASON.
+ * ============================================================================
+ * ADR 0037 names type as an axis this admin owns and `index.css` states six
+ * roles for it. Nothing enforced that, and the drift was measured: five
+ * hardcoded `font-size` values here and nine off-scale classes in the admin's
+ * own `.tsx`.
+ *
+ * **One of the five was a live bug that reads as a typo.** `.wconvert-facets`
+ * said `font-size: var(--text-sm, 0.8125rem)` — a scale name from Tailwind
+ * with the intended 13px as a fallback. The file does `@import 'tailwindcss'
+ * important` with no `--text-*: initial` reset, so Tailwind's OWN `--text-sm`
+ * is defined at 0.875rem and the fallback never fired: the chips have been
+ * rendering 14px against a 13px intention, and nothing about the source said
+ * so. The built `public/admin/main.css` emits `--text-sm:.875rem`, which is
+ * where it was confirmed.
+ *
+ * Both assertions below are about that one line, from the two directions it
+ * can come back: a size written as a number, and a size written under a name
+ * the admin does not own.
+ *
+ * **The root-cause fix is closed off**, which is why this is a test. Resetting
+ * the namespace with `@theme { --text-*: initial }` would stop an off-scale
+ * class compiling at all — and would break 27 usages inside `components/ui/`,
+ * which ADR 0036 holds are vendored from upstream. The six-role rule cannot be
+ * made total without forking every vendored component, so it is guarded at the
+ * one boundary where it IS total: the CSS this project writes by hand.
+ */
+describe('the type scale', () => {
+  /** The six, and the modifiers Tailwind pairs with each. */
+  const ROLES = ['micro', 'note', 'body', 'heading', 'title', 'figure'];
+
+  /** Declarations only — a comment naming a size is prose about one. */
+  const DECLARATIONS = CSS.replace(/\/\*[\s\S]*?\*\//g, '');
+
+  /**
+   * `inherit` is the seventh legal value and is not a size: the rule forcing it
+   * over wp-admin's `<p>` and `<td>` exists precisely so a role stated as a
+   * utility elsewhere is the one that wins.
+   */
+  it('states every font-size as one of the six roles, or as inherit', () => {
+    const sizes = [...DECLARATIONS.matchAll(/font-size:\s*([^;}]+)/g)].map(([, value]) =>
+      value.trim(),
+    );
+
+    expect(sizes.length, 'no font-size in the stylesheet at all').toBeGreaterThan(0);
+
+    for (const size of sizes) {
+      expect(size, 'a size off the scale').toMatch(
+        new RegExp(`^(inherit|var\\(--text-(${ROLES.join('|')})\\))$`),
+      );
+    }
+  });
+
+  /**
+   * The names this admin owns are the six. `--text-sm` and its siblings resolve
+   * — to Tailwind's scale, silently — so a fallback beside one never fires and
+   * the mistake looks like a careful line.
+   */
+  it('reads no --text- name the admin does not define', () => {
+    const read = [...DECLARATIONS.matchAll(/var\(\s*(--text-[\w-]+)/g)].map(([, name]) => name);
+
+    for (const name of read) {
+      expect(name, 'a --text- name off the scale').toMatch(
+        new RegExp(`^--text-(${ROLES.join('|')})(--[\\w-]+)?$`),
+      );
+    }
+  });
+});
