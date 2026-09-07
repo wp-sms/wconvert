@@ -84,8 +84,17 @@ export const readMilestones = () =>
  * ============================================================================
  * A checklist of four ticks is the shape ADR 0042 refuses: *"does knowing this
  * change what they do next?"* — and a completed step never does. So this
- * returns at most one step, the first unmet one, and the region renders
- * nothing at all when everything is met.
+ * returns at most one step, the first unmet one, and `NextStep` is drawn only
+ * while there is one.
+ *
+ * **It is `NextStep` that disappears, not the region.** This used to say the
+ * region "renders nothing at all when everything is met", and ADR 0060's matrix
+ * repeated it — but {@see Milestones} renders {@see WhatWasRecorded}
+ * unconditionally in its ready arm, so the collapsed disclosure is on screen
+ * whether or not anything is stuck. The only situation that really draws
+ * nothing is `loading`. Corrected against a capture of the real screen rather
+ * than against a reading of this file; ADR 0060 carries the same correction
+ * inline.
  *
  * **A failing Destination is not one of the steps.** It is the only state on
  * this funnel that already has a screen of its own — with the error text and

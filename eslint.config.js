@@ -33,6 +33,21 @@ export default [
     },
   },
   {
+    // The design-system generator, which is Node AND a browser in one file:
+    // it runs under Node, and the bodies it hands to `page.evaluate()` are
+    // serialised and run inside Chromium. Both global sets are therefore real
+    // here, which is not true of anything in `bin/`.
+    //
+    // Linted rather than ignored because it drives a real WordPress — a typo
+    // costs a four-minute boot to discover.
+    files: ['tools/**/*.mjs'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: { ...globals.node, ...globals.browser },
+    },
+  },
+  {
     files: ['resources/**/*.{ts,tsx}', 'pro/resources/**/*.{ts,tsx}', 'tests/js/**/*.{ts,tsx}', 'pro/tests/js/**/*.{ts,tsx}'],
     languageOptions: {
       ecmaVersion: 'latest',

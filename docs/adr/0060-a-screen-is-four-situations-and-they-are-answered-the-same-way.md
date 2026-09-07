@@ -282,21 +282,38 @@ admin"*. Read down a column to find a gap.
 | **Builder — Design** | none of its own — the index arrives behind `BuilderSkeleton` | `EmptyState` + the other Display Types | `PageError` above the tabs | the design in use + tokens |
 | **Builder — Content** | with the design | `EmptyState` + *Pick a design* | with the frame | tree + inspector |
 | **Builder — Destinations** | `RowsSkeleton` | `EmptyState` | `RegionErrorState` | bindable routes |
-| **Milestones** | renders nothing, deliberately | renders nothing — the common case on a working site | `RegionErrorState` | a next step + what was recorded |
+| **Milestones** | renders nothing, deliberately | the disclosure, collapsed — see the correction below | `RegionErrorState` | a next step + what was recorded |
 
 Two columns are deliberately thin. *Empty* is `n/a` wherever the region holds a
 SETTING rather than a collection: a retention period has no empty state, it has
 a default. And the builder's frame has no empty state because an Optin that does
 not exist is not reachable from it.
 
-**Milestones is the one row that answers three of the four with nothing, and it
-is right.** A region that reserves height for something it will usually not draw
+**Milestones is the one row that answers a situation with nothing, and it is
+right.** A region that reserves height for something it will usually not draw
 pushes the numbers down on every visit and then takes the space back; the honest
 loading state for nothing is nothing. Its FAILURE is still drawn, because a read
 that failed silently leaves the merchant unable to tell there was anything to
 see — which is worse than the checklist ADR 0042 refuses. Both halves are
 argued in place, and the row is here so the asymmetry reads as a decision rather
 than as the gap it looks like from a distance.
+
+> **Corrected: it said *three of the four*, and it said Milestones renders
+> nothing when EMPTY. Only loading is nothing.** `Milestones.tsx` returns `null`
+> for `loading` and draws `RegionErrorState` for `failed`, but its ready arm
+> renders `WhatWasRecorded` **unconditionally** — so the collapsed *"What
+> WConvert has recorded about this site"* disclosure is on screen in both of the
+> remaining situations, with `NextStep` above it only while `stuckAt()` finds an
+> unmet step. That is one summary row rather than a reserved block, so the
+> argument above still holds; what was wrong was the count, and the row's own
+> matrix cell already showed two nothings rather than three.
+>
+> Found by capture, not by reading: the design system's `Screens` group renders
+> every screen in all four situations, and `screen-analytics-empty` has the
+> disclosure in it. `milestones/api.ts` carried the same overstatement — *"the
+> region renders nothing at all when everything is met"* — and is corrected in
+> the same commit. The claim is true of `stuckAt()`, which returns `null`, and
+> not of the region, which still has a disclosure to draw.
 
 ## What this does not decide
 
