@@ -32,6 +32,7 @@ import {
 import { Description } from '../shell/Description';
 import { EmptyState } from '../shell/EmptyState';
 import {
+  PageError,
   Region,
   RegionBody,
   RegionError,
@@ -295,11 +296,13 @@ export function Destinations() {
 
   return (
     <div className="flex flex-col gap-5">
-      {fetchError !== null && (
-        <Region label={__('Destinations', 'wconvert')}>
-          <RegionError message={fetchError} />
-        </Region>
-      )}
+      {/*
+        **One read draws every region below**, so a refresh that fails is the
+        screen's failure rather than any one route's. It was a `RegionError`
+        inside a `Region` holding nothing else — a card whose only content was
+        a band with a bottom border, drawing a rule above nothing.
+      */}
+      {fetchError !== null && <PageError message={fetchError} />}
 
       {/*
         **A settings card's shape, and it used to be a table's.** What is

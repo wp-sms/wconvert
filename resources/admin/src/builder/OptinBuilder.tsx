@@ -16,7 +16,7 @@ import { BackLink, BuilderSkeleton } from '../shell/BuilderSkeleton';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { EmptyState } from '../shell/EmptyState';
 import { PageAction } from '../shell/PageActions';
-import { Region, RegionBody, RegionError, RegionErrorState } from '../shell/Region';
+import { PageError, Region, RegionBody, RegionErrorState } from '../shell/Region';
 import { Skeleton } from '../components/ui/skeleton';
 import { Stat, StatRow, StatRowSkeleton } from '../shell/Stat';
 import { LOADING, failed, messageOf, read, ready, type Loadable } from '../shell/loadable';
@@ -1436,10 +1436,16 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
               <TabsTrigger value="destinations">{__('Destinations', 'wconvert')}</TabsTrigger>
             </TabsList>
 
+            {/*
+              **The save acts on the whole draft**, so its failure is the
+              screen's rather than any one tab's — which is why this sits above
+              the panels and not inside one. It was a `Region` holding nothing
+              but a `RegionError`, whose `border-b` drew a rule above nothing.
+            */}
             {error !== null && (
-              <Region className="mb-4">
-                <RegionError message={error} />
-              </Region>
+              <div className="mb-4">
+                <PageError message={error} />
+              </div>
             )}
 
             {/*

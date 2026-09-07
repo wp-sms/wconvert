@@ -12,7 +12,7 @@ import {
 } from '../shell/DataTable';
 import { EmptyState } from '../shell/EmptyState';
 import { PageAction } from '../shell/PageActions';
-import { Region, RegionBody, RegionError, RegionErrorState, RegionHeader } from '../shell/Region';
+import { PageError, Region, RegionBody, RegionErrorState, RegionHeader } from '../shell/Region';
 import { Skeleton } from '../components/ui/skeleton';
 import { RegionSkeleton } from '../shell/RegionSkeleton';
 import { Stat, StatRow, StatRowSkeleton } from '../shell/Stat';
@@ -162,6 +162,20 @@ export function Dashboard() {
       */}
       <Milestones />
 
+      {/*
+        **Above the cards, because one read draws all of them.** The window
+        governs every region on this screen at once, so a refresh that fails
+        belongs to no Goal in particular and putting it on one would claim it
+        was about that Goal. {@see PageError} is that case — `RegionError`'s
+        rule against a page-top banner is scoped to regions that fail
+        INDEPENDENTLY, which these do not.
+
+        **Only where there is something to keep.** A FIRST failure has no cards
+        under it, so the region below renders the error as its whole content —
+        and this would then say the same sentence twice on one screen.
+      */}
+      {refreshError !== null && payload !== null && <PageError message={refreshError} />}
+
       {report.status === 'failed' && (
         <Region label={__('Analytics', 'wconvert')}>
           <RegionErrorState message={report.message} />
@@ -185,8 +199,6 @@ export function Dashboard() {
 
       {payload !== null && payload.goals.length === 0 && (
         <Region label={__('Analytics', 'wconvert')}>
-          {refreshError !== null && <RegionError message={refreshError} />}
-
           <EmptyState
             icon={ChartColumn}
             title={__('Nothing to report yet', 'wconvert')}
@@ -207,23 +219,8 @@ export function Dashboard() {
         fact printed four times — and `dashboard.test.tsx` reads it with
         `findByText`, which fails on a second match rather than passing.
       */}
-      {/*
-        **The refresh error goes on the FIRST card, not above them all.** The
-        window governs every region at once, so the failure belongs to all of
-        them and to none in particular — and `Region` argues against a
-        page-top banner for exactly the reason that would bite here: an error
-        floating above four cards is an error whose subject the merchant has to
-        guess. The first card already carries the one other screen-scoped fact
-        on this page, which is the window itself, so it is where a failure to
-        change that window reads as being about the window.
-      */}
       {payload?.goals.map((card, index) => (
-        <GoalRegion
-          key={card.goal}
-          card={card}
-          window={index === 0 ? payload : null}
-          error={index === 0 ? refreshError : null}
-        />
+        <GoalRegion key={card.goal} card={card} window={index === 0 ? payload : null} />
       ))}
     </div>
   );
@@ -244,20 +241,9 @@ export function Dashboard() {
  * the same window for every card, so repeating it under each would be the same
  * fact stated four times.
  */
-function GoalRegion({
-  card,
-  window,
-  error,
-}: {
-  card: GoalReport;
-  window: DashboardPayload | null;
-  /** A refresh that failed, on the one card that carries screen-scoped facts. */
-  error: string | null;
-}) {
+function GoalRegion({ card, window }: { card: GoalReport; window: DashboardPayload | null }) {
   return (
     <Region>
-      {error !== null && <RegionError message={error} />}
-
       <RegionHeader
         title={card.label}
         level={3}
