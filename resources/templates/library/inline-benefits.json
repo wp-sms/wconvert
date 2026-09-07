@@ -1,0 +1,102 @@
+{
+  "id": "inline-benefits",
+  "name": "Three across, in the page",
+  "display_type": "inline",
+  "tier": "free",
+  "tokens": {
+    "bg": "#f0fdfa",
+    "fg": "#134e4a",
+    "muted": "#3f7c76",
+    "accent": "#0d9488",
+    "accent-fg": "#ffffff",
+    "border": "#ccfbf1",
+    "heading-size": "1.375rem",
+    "radius": "0.75rem",
+    "pad": "1.75rem",
+    "gap": "1rem",
+    "width": "100%",
+    "align": "center",
+    "shadow": "none"
+  },
+  "tree": {
+    "steps": [
+      {
+        "type": "stack",
+        "children": [
+          {
+            "type": "heading",
+            "id": "n1",
+            "role": "headline",
+            "text": "Why people order from us"
+          },
+          {
+            "type": "grid",
+            "children": [
+              {
+                "type": "row",
+                "children": [
+                  {
+                    "type": "icon",
+                    "id": "n2",
+                    "name": "truck"
+                  },
+                  {
+                    "type": "text",
+                    "id": "n3",
+                    "role": "body",
+                    "text": "Free delivery over £40"
+                  }
+                ]
+              },
+              {
+                "type": "row",
+                "children": [
+                  {
+                    "type": "icon",
+                    "id": "n4",
+                    "name": "clock"
+                  },
+                  {
+                    "type": "text",
+                    "id": "n5",
+                    "role": "body",
+                    "text": "Dispatched same day"
+                  }
+                ]
+              },
+              {
+                "type": "row",
+                "children": [
+                  {
+                    "type": "icon",
+                    "id": "n6",
+                    "name": "check"
+                  },
+                  {
+                    "type": "text",
+                    "id": "n7",
+                    "role": "body",
+                    "text": "Returns for 30 days"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "button",
+            "id": "n8",
+            "role": "cta_label",
+            "label": "Start shopping",
+            "action": "link"
+          },
+          {
+            "type": "text",
+            "id": "n9",
+            "role": "fine_print",
+            "text": "Delivery times are for UK mainland."
+          }
+        ]
+      }
+    ]
+  }
+}

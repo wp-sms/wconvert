@@ -1,0 +1,110 @@
+{
+  "id": "inline-quiet",
+  "name": "Quiet, in the flow",
+  "display_type": "inline",
+  "tier": "free",
+  "tokens": {
+    "bg": "#ffffff",
+    "fg": "#111827",
+    "muted": "#6b7280",
+    "accent": "#111827",
+    "accent-fg": "#ffffff",
+    "border": "#d1d5db",
+    "font": "Georgia, 'Times New Roman', Times, serif",
+    "heading-size": "1.25rem",
+    "heading-weight": "600",
+    "leading": "1.7",
+    "radius": "0.25rem",
+    "pad": "0",
+    "gap": "0.75rem",
+    "width": "100%",
+    "align": "start",
+    "shadow": "none"
+  },
+  "tree": {
+    "steps": [
+      {
+        "type": "stack",
+        "children": [
+          {
+            "type": "divider",
+            "id": "n1"
+          },
+          {
+            "type": "heading",
+            "id": "n2",
+            "role": "headline",
+            "level": 2,
+            "text": "Enjoying this?"
+          },
+          {
+            "type": "text",
+            "id": "n3",
+            "role": "body",
+            "text": "There is one of these every week, and nothing else."
+          },
+          {
+            "type": "row",
+            "children": [
+              {
+                "type": "field",
+                "id": "n4",
+                "name": "email",
+                "label": "Email address",
+                "placeholder": "you@example.com",
+                "required": true
+              },
+              {
+                "type": "button",
+                "id": "n5",
+                "role": "cta_label",
+                "label": "Send it to me",
+                "action": "submit"
+              }
+            ]
+          },
+          {
+            "type": "consent",
+            "id": "n6",
+            "role": "consent_text",
+            "hidden": true,
+            "text": "Email me offers and news. See our %s.",
+            "link": {
+              "label": "Privacy Policy"
+            }
+          },
+          {
+            "type": "divider",
+            "id": "n7"
+          }
+        ]
+      },
+      {
+        "type": "stack",
+        "children": [
+          {
+            "type": "divider",
+            "id": "n8"
+          },
+          {
+            "type": "heading",
+            "id": "n9",
+            "role": "success_headline",
+            "level": 2,
+            "text": "Thank you"
+          },
+          {
+            "type": "text",
+            "id": "n10",
+            "role": "success_body",
+            "text": "The next one lands on Thursday."
+          },
+          {
+            "type": "divider",
+            "id": "n11"
+          }
+        ]
+      }
+    ]
+  }
+}

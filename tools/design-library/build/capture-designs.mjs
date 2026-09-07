@@ -129,6 +129,26 @@ ${containers}
 
     box.className = 'wc-box';
 
+    /*
+      THE BOX CARRIES THE DESIGN'S OWN WIDTH, AND IT HAS TO.
+
+      The panel is sized min(var(--wc-width), 100%), and that 100% resolves
+      against whatever holds the shadow host. A centring grid makes its item
+      shrink-to-fit, so the percentage resolved against a width that was
+      itself derived from the content — and every design whose declared width
+      exceeded its natural content width collapsed to the content. wide-banner
+      asked for 40rem and drew 396px; benefit-grid asked for 32rem, got 369px,
+      and its three-up grid wrapped to two.
+
+      It reads as a design that does not fit its own content and it is nothing
+      of the sort: the same tree in the real container measures exactly 640px.
+      So the box is given a definite width and the percentage has something
+      true to resolve against.
+    */
+    if (design.displayType === 'popup') {
+      box.style.inlineSize = 'min(' + (design.tokens.width || '28rem') + ', 100%)';
+    }
+
     var host = document.createElement('div');
 
     host.className = 'wc-host';

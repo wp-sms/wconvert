@@ -1,0 +1,103 @@
+{
+  "id": "code-reveal",
+  "name": "Code on success",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#fffbeb",
+    "fg": "#1c1917",
+    "muted": "#78716c",
+    "accent": "#b45309",
+    "accent-fg": "#ffffff",
+    "border": "#fde68a",
+    "heading-size": "1.75rem",
+    "heading-weight": "800",
+    "radius": "1rem",
+    "pad": "2.25rem",
+    "gap": "0.875rem",
+    "width": "27rem",
+    "align": "center",
+    "backdrop": "rgba(28, 25, 23, 0.6)"
+  },
+  "tree": {
+    "steps": [
+      {
+        "type": "stack",
+        "children": [
+          {
+            "type": "eyebrow",
+            "id": "n1",
+            "role": "eyebrow",
+            "text": "New customers"
+          },
+          {
+            "type": "heading",
+            "id": "n2",
+            "role": "headline",
+            "text": "Ten percent off, today"
+          },
+          {
+            "type": "text",
+            "id": "n3",
+            "role": "body",
+            "text": "Tell us where to send the code and it is yours."
+          },
+          {
+            "type": "field",
+            "id": "n4",
+            "name": "email",
+            "label": "Email address",
+            "placeholder": "you@example.com",
+            "required": true
+          },
+          {
+            "type": "button",
+            "id": "n5",
+            "role": "cta_label",
+            "label": "Reveal my code",
+            "action": "submit"
+          },
+          {
+            "type": "consent",
+            "id": "n6",
+            "role": "consent_text",
+            "hidden": true,
+            "text": "Email me offers and news. See our %s.",
+            "link": {
+              "label": "Privacy Policy"
+            }
+          },
+          {
+            "type": "text",
+            "id": "n7",
+            "role": "fine_print",
+            "text": "One use per customer. Not with other offers."
+          }
+        ]
+      },
+      {
+        "type": "stack",
+        "children": [
+          {
+            "type": "heading",
+            "id": "n8",
+            "role": "success_headline",
+            "text": "Here it is"
+          },
+          {
+            "type": "code",
+            "id": "n9",
+            "role": "code_value",
+            "text": "WELCOME10"
+          },
+          {
+            "type": "text",
+            "id": "n10",
+            "role": "success_body",
+            "text": "Enter it at the checkout. We have emailed it to you as well."
+          }
+        ]
+      }
+    ]
+  }
+}
