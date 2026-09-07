@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
+import { __ } from '@wordpress/i18n';
 import { Skeleton } from '../components/ui/skeleton';
 import { Description } from './Description';
+import { useShownAfterDelay } from './skeletonDelay';
 
 /**
  * A set of cards, each offering one way forward, and the placeholder for the
@@ -39,6 +41,7 @@ export function ChoiceCard({
   id,
   title,
   notes,
+  reason = null,
   badge,
   current = false,
   action,
@@ -46,6 +49,25 @@ export function ChoiceCard({
   id: string;
   title: string;
   notes: string;
+  /**
+   * Why the action on this card would be refused, or null.
+   *
+   * ========================================================================
+   * A REFUSAL IN `notes` WAS A REFUSAL NO ASSISTIVE TECHNOLOGY COULD READ.
+   * ========================================================================
+   * {@see GoalCard} passed one as `notes`, which lands in the ordinary
+   * `Description` below — and that carries no `id`. This component then handed
+   * the action only `titleId`, so its `aria-describedby` pointed at the TITLE
+   * and never at the reason. The Change-goal dialog therefore disabled a button
+   * and put the reason where nothing would announce it, on the one screen whose
+   * docblock claims *"marked before the click, with the reason (ADR 0042
+   * rule 3)"*.
+   *
+   * `TemplateCard` in the design gallery has always done this correctly — a
+   * separate `reason`, its own id, and both ids handed to the action — so this
+   * is that arrangement brought one surface over rather than invented.
+   */
+  reason?: string | null;
   badge?: ReactNode;
   /**
    * This card is the one already in use.
@@ -60,6 +82,7 @@ export function ChoiceCard({
   action: (describedBy: string) => ReactNode;
 }) {
   const titleId = `wconvert-choice-${id}`;
+  const reasonId = `${titleId}-reason`;
 
   return (
     <li
@@ -76,6 +99,14 @@ export function ChoiceCard({
         {badge}
       </div>
       <Description className="flex-1">{notes}</Description>
+
+      {/*
+        **The reason sits with the control it refuses**, and it has an id so it
+        can be announced with it — `TemplateCard`'s arrangement, one surface
+        over.
+      */}
+      {reason !== null && <Description id={reasonId}>{reason}</Description>}
+
       {/*
         **Four buttons all called "Choose" is four buttons a keyboard user
         cannot tell apart.** The visible label stays short because the card it
@@ -85,27 +116,65 @@ export function ChoiceCard({
         sets AA as the bar, and this is the shape the ARIA practices give for a
         list of cards with one action each.
       */}
-      <div>{action(titleId)}</div>
+      <div>{action(reason !== null ? `${titleId} ${reasonId}` : titleId)}</div>
     </li>
   );
 }
 
 /**
- * A card in the shape of the cards that are coming, never the empty state.
+ * The grid in the shape of the cards that are coming, never the empty state.
  *
  * **`gap-2` because {@see ChoiceCard} is `gap-2`.** It was `gap-3` with an
  * extra `mt-1` before the action, against the card's `gap-2` and its own
  * `mt-1` — so the placeholder was four pixels taller per row than the thing it
  * stands for, and the grid moved when the data landed. That is the one claim
  * this component exists to make.
+ *
+ * ==========================================================================
+ * IT DRAWS THE WHOLE GRID, AND THE ANNOUNCEMENT IS WHY.
+ * ==========================================================================
+ * This used to be ONE card, so every call site wrote
+ * `<ChoiceGrid>{[0,1,2,3].map(…)}</ChoiceGrid>` and owed the `sr-only`
+ * "Loading…" beside it. Three of the four forgot — the creation flow's step
+ * one, its step three and the Change-goal dialog — so three of the four
+ * choice-loading states in this admin said nothing at all to a screen reader.
+ *
+ * An announcement cannot live inside a single card either: four cards would
+ * read "Loading" four times, which is `TableSkeleton`'s reason for putting one
+ * `role="status"` on the first cell of the first row rather than on every
+ * placeholder. Owning the grid is what makes there be exactly one of it, and
+ * it is the shape {@see GallerySkeleton} already had.
  */
-export function ChoiceSkeleton() {
+export function ChoiceSkeleton({ cards = 4 }: { cards?: number }) {
+  /*
+    **It delays, because this step can be entered a second time.** Picking a
+    different [[Goal]] puts a filled step back into `loading`, which is the
+    flicker case {@see useShownAfterDelay} describes — unlike the skeletons
+    that only ever fill a blank region.
+  */
+  if (!useShownAfterDelay()) {
+    return null;
+  }
+
   return (
-    <li className="flex flex-col gap-2 rounded-md border border-border bg-card p-4">
-      <Skeleton aria-hidden="true" className="h-4 w-40 max-w-full" />
-      <Skeleton aria-hidden="true" className="h-3 w-full" />
-      <Skeleton aria-hidden="true" className="h-3 w-2/3" />
-      <Skeleton aria-hidden="true" className="h-9 w-24" />
-    </li>
+    <>
+      <span role="status" className="sr-only">
+        {__('Loading…', 'wconvert')}
+      </span>
+
+      <ChoiceGrid>
+        {Array.from({ length: cards }, (_each, card) => (
+          <li
+            key={card}
+            className="flex flex-col gap-2 rounded-md border border-border bg-card p-4"
+          >
+            <Skeleton aria-hidden="true" className="h-4 w-40 max-w-full" />
+            <Skeleton aria-hidden="true" className="h-3 w-full" />
+            <Skeleton aria-hidden="true" className="h-3 w-2/3" />
+            <Skeleton aria-hidden="true" className="h-9 w-24" />
+          </li>
+        ))}
+      </ChoiceGrid>
+    </>
   );
 }

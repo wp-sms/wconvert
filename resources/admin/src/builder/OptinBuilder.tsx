@@ -9,16 +9,17 @@ import {
 } from 'react';
 import { flushSync } from 'react-dom';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { Check, Monitor, Redo2, Smartphone, Undo2 } from 'lucide-react';
+import { Blocks, Check, Monitor, Redo2, Smartphone, Undo2 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { BackLink, BuilderSkeleton } from '../shell/BuilderSkeleton';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
+import { EmptyState } from '../shell/EmptyState';
 import { PageAction } from '../shell/PageActions';
-import { Region, RegionBody, RegionError, RegionErrorState } from '../shell/Region';
+import { PageError, Region, RegionBody, RegionErrorState } from '../shell/Region';
 import { Skeleton } from '../components/ui/skeleton';
 import { Stat, StatRow, StatRowSkeleton } from '../shell/Stat';
-import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
+import { LOADING, failed, messageOf, read, ready, type Loadable } from '../shell/loadable';
 import { TemplatePickerDialog } from './TemplatePickerDialog';
 import { useTemplateTrees } from './TemplatePicker';
 import { DestinationsEditor } from './DestinationsEditor';
@@ -380,7 +381,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
    * a second fetch would be two round trips and two failure paths for one list
    * that is site-level configuration rather than a function of this Optin.
    */
-  const [destinations, setDestinations] = useState<DestinationsPayload | null>(null);
+  const [destinations, setDestinations] = useState<Loadable<DestinationsPayload>>(LOADING);
   /*
    * **A row the screen has asked the tree to put focus on.** The readiness
    * panel is the only thing that asks: following *"this block will lose its
@@ -611,13 +612,19 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
    * The site's [[Destination]]s: site-level configuration rather than a
    * function of this Optin, so it is read once and survives every edit.
    *
-   * **Its failure reports**, unlike the two above, because a merchant binding a
-   * Destination is acting on this list and an empty one would read as "you have
-   * none" rather than "we could not ask".
+   * **Its failure is the Destinations tab's, not the page's.** It used to go to
+   * `report` and land in the banner above the tab strip — a page-scoped
+   * treatment for a failure that costs exactly one tab, and one that left the
+   * tab itself still drawing "Loading…" underneath it, because `null` meant
+   * both in-flight and failed. `Loadable` carries the third state and
+   * {@see DestinationsEditor} draws it where the merchant is looking, which is
+   * `Region`'s own rule about an error naming a door on this screen.
    */
   useEffect(() => {
-    readDestinations().then(setDestinations).catch(report);
-  }, [report]);
+    readDestinations()
+      .then((payload) => setDestinations(ready(payload)))
+      .catch((cause: unknown) => setDestinations(failed(cause)));
+  }, []);
 
   /*
    * Every change to the design, from wherever it came, as one history entry.
@@ -1038,7 +1045,6 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
         <Region label={__('Optin builder', 'wconvert')}>
           <RegionErrorState
             message={fatal}
-            hint={__('Reload the page to try again.', 'wconvert')}
           />
         </Region>
       </div>
@@ -1199,7 +1205,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
               bound={bound}
               template={template}
               growsAList={entryOfGoal?.grows_a_list === true}
-              destinations={destinations?.destinations ?? null}
+              destinations={read(destinations)?.destinations ?? null}
               onGoTo={goTo}
               onGoToSchedule={goToSchedule}
             />
@@ -1430,10 +1436,16 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
               <TabsTrigger value="destinations">{__('Destinations', 'wconvert')}</TabsTrigger>
             </TabsList>
 
+            {/*
+              **The save acts on the whole draft**, so its failure is the
+              screen's rather than any one tab's — which is why this sits above
+              the panels and not inside one. It was a `Region` holding nothing
+              but a `RegionError`, whose `border-b` drew a rule above nothing.
+            */}
             {error !== null && (
-              <Region className="mb-4">
-                <RegionError message={error} />
-              </Region>
+              <div className="mb-4">
+                <PageError message={error} />
+              </div>
             )}
 
             {/*
@@ -1559,8 +1571,32 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
               <Activity mode={tab === 'content' ? 'visible' : 'hidden'}>
                 <Region label={__('What it says', 'wconvert')}>
                   {entry === null ? (
-                    <RegionBody className="text-muted-foreground">
-                      {__('Pick a design first.', 'wconvert')}
+                    /*
+                      **{@see EmptyState} with the door in it**, which the
+                      child of this very branch already does:
+                      {@see StructureView} draws one for the same class of
+                      state — a design with nothing in it — one level down.
+                      This was a muted sentence with no way out, on a tab a
+                      merchant reaches before choosing a design.
+
+                      The action is the tab change rather than a link, because
+                      the design is chosen one tab over on this same screen.
+                    */
+                    <RegionBody>
+                      <EmptyState
+                        icon={Blocks}
+                        title={__('Nothing to write yet', 'wconvert')}
+                        action={
+                          <Button variant="outline" onClick={() => setTab('design')}>
+                            {__('Pick a design', 'wconvert')}
+                          </Button>
+                        }
+                      >
+                        {__(
+                          'The words on this tab belong to a design. Choose one and they appear here.',
+                          'wconvert',
+                        )}
+                      </EmptyState>
                     </RegionBody>
                   ) : (
                     <>
@@ -1614,37 +1650,45 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
               </Region>
             </TabsContent>
 
+            {/*
+              **No `Region` wrapper here any more**, because the editor draws
+              its own — along with its header, its empty state and its failure.
+              It was the one screen in the admin using none of the shared
+              vocabulary, and wrapping it in a region from outside was how a
+              bare `<h3>` came to sit under a region that already had a name.
+            */}
             <TabsContent value="destinations">
-              <Region label={__('Destinations', 'wconvert')}>
-                <RegionBody className="wconvert-editor">
-                  <DestinationsEditor
-                    bound={bound}
-                    available={destinations?.destinations ?? null}
-                    /*
-                      **The [[Playbook]]'s hint, only while nothing is bound.**
-                      Once the merchant has chosen, what the Playbook wanted is
-                      history — and a permanent line that does not change what
-                      they do next is the tax ADR 0042 rule 2 refuses. The
-                      readiness panel above applies the same test to the same
-                      sentence.
-                    */
-                    hint={
-                      bound.length > 0
-                        ? null
-                        : hintSaid(
-                            hintIn(config),
-                            destinations?.types ?? [],
-                            gallery.labels.fields,
-                            // What is already CONFIGURED, which decides whether
-                            // the hint's type half is still guidance or is
-                            // history — and whether it ends with where to go.
-                            destinations?.destinations ?? [],
-                          )
-                    }
-                    onChange={(next) => edit({ destinations: next })}
-                  />
-                </RegionBody>
-              </Region>
+              <DestinationsEditor
+                bound={bound}
+                available={
+                  destinations.status === 'ready'
+                    ? ready(destinations.data.destinations)
+                    : destinations
+                }
+                types={read(destinations)?.types ?? []}
+                /*
+                  **The [[Playbook]]'s hint, only while nothing is bound.**
+                  Once the merchant has chosen, what the Playbook wanted is
+                  history — and a permanent line that does not change what
+                  they do next is the tax ADR 0042 rule 2 refuses. The
+                  readiness panel above applies the same test to the same
+                  sentence.
+                */
+                hint={
+                  bound.length > 0
+                    ? null
+                    : hintSaid(
+                        hintIn(config),
+                        read(destinations)?.types ?? [],
+                        gallery.labels.fields,
+                        // What is already CONFIGURED, which decides whether
+                        // the hint's type half is still guidance or is
+                        // history — and whether it ends with where to go.
+                        read(destinations)?.destinations ?? [],
+                      )
+                }
+                onChange={(next) => edit({ destinations: next })}
+              />
             </TabsContent>
           </Tabs>
         </div>

@@ -381,8 +381,23 @@ function SwapMenu({
                 {swap.current ? <Check aria-hidden="true" /> : <span className="size-4" aria-hidden="true" />}
                 {said}
               </span>
+              {/*
+                **12px, matching the other refusal in a menu.**
+                {@see StructureView}'s `MenuAction` spends twelve lines
+                measuring this: a reason at body size under a body-size label is
+                a token apart and a hierarchy nowhere, so a menu of several
+                rows with second lines reads as a wall. This one rendered at
+                body size — the exact thing that measurement rejected — beside
+                a sibling menu that had already been fixed.
+
+                `font-normal tracking-normal` take back the small-caps register
+                `text-micro` carries for table headers and stat labels, which is
+                wrong for a sentence.
+              */}
               {swap.refused !== null && (
-                <span className="text-pretty whitespace-normal text-muted-foreground">{swap.refused}</span>
+                <span className="text-micro font-normal tracking-normal text-pretty whitespace-normal text-muted-foreground">
+                  {swap.refused}
+                </span>
               )}
             </DropdownMenuItem>
           );

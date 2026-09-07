@@ -149,7 +149,7 @@ describe('a gallery card', () => {
   it('does not offer the design that is already in use', () => {
     grid(ENTRIES, 'centred-card');
 
-    expect(screen.getByRole('button', { name: /In use/ })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /In use/ })).toHaveAttribute('aria-disabled', 'true');
     expect(screen.getByRole('button', { name: /Use this design/ })).toBeEnabled();
   });
 
@@ -293,7 +293,10 @@ describe('a design that counts nothing at all', () => {
     grid([SILENT], undefined);
 
     expect(screen.getByText('Nothing on this design counts as a conversion.')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Use this design/ })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /Use this design/ })).toHaveAttribute(
+      'aria-disabled',
+      'true',
+    );
   });
 
   it('tells a screen reader why, not just that', () => {
@@ -337,7 +340,10 @@ describe('a design that captures nothing', () => {
 
     const offer = within(cardFor('Offer panel'));
 
-    expect(offer.getByRole('button', { name: /Use this design/ })).toBeDisabled();
+    expect(offer.getByRole('button', { name: /Use this design/ })).toHaveAttribute(
+      'aria-disabled',
+      'true',
+    );
     expect(offer.getByText('This design captures nothing, and your goal counts deliveries.')).toBeInTheDocument();
     expect(within(cardFor('Centred card')).getByRole('button', { name: /Use this design/ })).toBeEnabled();
   });
@@ -374,7 +380,10 @@ describe('a design that would break an A/B comparison', () => {
 
     const offer = within(cardFor('Offer panel'));
 
-    expect(offer.getByRole('button', { name: /Use this design/ })).toBeDisabled();
+    expect(offer.getByRole('button', { name: /Use this design/ })).toHaveAttribute(
+      'aria-disabled',
+      'true',
+    );
     expect(offer.getByText(/the other arm of this test converts on a form submission/)).toBeInTheDocument();
   });
 
@@ -444,6 +453,21 @@ describe('a design this install does not have', () => {
 
     expect(within(cardFor('Two-column offer')).getByText('Pro')).toBeInTheDocument();
     expect(within(cardFor('Centred card')).queryByText('Free')).toBeNull();
+  });
+
+  /**
+   * **Amber says the SITE is holding this back, and a price is not that.**
+   * ADR 0037 reserves the colour for meaning, and this badge spent it on Pro
+   * — so amber meant *suspended*, *paused*, *needs a plugin* AND *buy Pro*
+   * depending which screen the merchant was on. `StartingPoints` already
+   * states the rule and already draws its locked badge grey with a lock.
+   */
+  it('marks a locked design with grey and a lock, never with amber', () => {
+    grid([ENTRIES[0], LOCKED], undefined);
+
+    const badge = within(cardFor('Two-column offer')).getByText('Pro').closest('[data-slot="badge"]');
+
+    expect(badge).toHaveAttribute('data-variant', 'secondary');
   });
 
   /**

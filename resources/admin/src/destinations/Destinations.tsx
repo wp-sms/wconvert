@@ -4,6 +4,7 @@ import {
   CircleAlert,
   CircleCheck,
   Info,
+  Lock,
   Plug,
   RotateCcw,
   Target,
@@ -32,6 +33,7 @@ import {
 import { Description } from '../shell/Description';
 import { EmptyState } from '../shell/EmptyState';
 import {
+  PageError,
   Region,
   RegionBody,
   RegionError,
@@ -39,7 +41,7 @@ import {
   RegionFooter,
   RegionHeader,
 } from '../shell/Region';
-import { TableSkeleton } from '../shell/TableSkeleton';
+import { RegionSkeleton } from '../shell/RegionSkeleton';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
 import {
   deleteDestination,
@@ -63,7 +65,7 @@ import {
   targetSaid,
   toDraft,
 } from './settings';
-import { renderingFor } from '../goals/availability';
+import { renderingFor, tierName, tierProductName } from '../goals/availability';
 
 /**
  * **Where a merchant finds out whether pushing is working.**
@@ -286,7 +288,6 @@ export function Destinations() {
       <Region label={__('Destinations', 'wconvert')}>
         <RegionErrorState
           message={payload.message}
-          hint={__('Reload the page to try again.', 'wconvert')}
         />
       </Region>
     );
@@ -296,22 +297,38 @@ export function Destinations() {
 
   return (
     <div className="flex flex-col gap-5">
-      {fetchError !== null && (
-        <Region label={__('Destinations', 'wconvert')}>
-          <RegionError message={fetchError} />
-        </Region>
-      )}
+      {/*
+        **One read draws every region below**, so a refresh that fails is the
+        screen's failure rather than any one route's. It was a `RegionError`
+        inside a `Region` holding nothing else — a card whose only content was
+        a band with a bottom border, drawing a rule above nothing.
+      */}
+      {fetchError !== null && <PageError message={fetchError} />}
 
+      {/*
+        **A settings card's shape, and it used to be a table's.** What is
+        coming here is a stack of `Configured` cards — a name, an account
+        picker, a run of fields — and this drew a three-column table, which
+        this region does not contain in any state.
+      */}
       {data === null ? (
-        <Region label={__('Destinations', 'wconvert')}>
-          <DataTable>
-            <TableSkeleton columns={3} rows={2} />
-          </DataTable>
-        </Region>
+        <RegionSkeleton label={__('Destinations', 'wconvert')} lines={3} />
       ) : (
         <>
           {data.destinations.length === 0 ? (
             <Region label={__('Destinations', 'wconvert')}>
+              {/*
+                **No action, and the region below is why.** `EmptyState` says
+                an empty state carries the door that fixes it, and this one's
+                door is *Add a destination* — a whole region, on this screen,
+                directly underneath, listing every type the site offers. A
+                button here would be a second door to it, which is the shape
+                ADR 0026 refuses on the Optin list for the same reason.
+
+                The sentence does the other half of the job instead: it says
+                what is still true while there is nothing here, so an empty
+                Destinations screen does not read as leads going nowhere.
+              */}
               <EmptyState icon={Plug} title={__('Nothing is being pushed on', 'wconvert')}>
                 {__(
                   'Every capture is written to the lead log first and always. Add a destination to send it on as well.',
@@ -324,12 +341,7 @@ export function Destinations() {
               <Configured
                 key={destination.id}
                 destination={destination}
-                schema={
-                  data.types.find((type) => type.id === destination.type)?.settings_schema ?? {}
-                }
-                needsConnection={
-                  data.types.find((type) => type.id === destination.type)?.needs_connection ?? false
-                }
+                type={data.types.find((type) => type.id === destination.type)}
                 connections={data.connections.filter(
                   (connection) => connection.type === destination.type,
                 )}
@@ -434,8 +446,7 @@ export function Destinations() {
  */
 function Configured({
   destination,
-  schema,
-  needsConnection,
+  type,
   connections,
   report,
   test,
@@ -448,10 +459,18 @@ function Configured({
   onTestSend,
 }: {
   destination: Destination;
-  /** Every field its TYPE declares, in the order PHP returned them — copy included. */
-  schema: DestinationType['settings_schema'];
-  /** Whether its TYPE has credentials at all. Every free type does not. */
-  needsConnection: boolean;
+  /**
+   * The TYPE this route runs over, or undefined where this build no longer
+   * ships it.
+   *
+   * **It used to be two derived props and it is the whole type now**, because
+   * the card kept needing a third thing off it and answering by hand: the
+   * header said *"A Pro feature"* in a literal string while five other sites
+   * called `tierProductName()`, and *"What it needs is missing"* without ever
+   * naming the plugin — while the settings list twenty lines away names it
+   * correctly from `requires_label` on the same payload.
+   */
+  type: DestinationType | undefined;
   /** The Connections of this Destination's type, masked, for the account picker. */
   connections: readonly Connection[];
   report: RePushReport | null;
@@ -472,6 +491,9 @@ function Configured({
   // Seeded once from what is stored. Keyed by field rather than held as one
   // string, because a type declares as many fields as it likes — the WSMS push
   // has one and the lead magnet email has three.
+  // Every field its TYPE declares, in the order PHP returned them — copy
+  // included — and an empty set where this build no longer ships the type.
+  const schema = type?.settings_schema ?? {};
   const [draft, setDraft] = useState<Record<string, string>>(() => toDraft(schema, destination.settings));
   /**
    * **The name is the merchant's, and it is editable here.**
@@ -525,20 +547,45 @@ function Configured({
 
       <RegionHeader
         title={destination.label}
+        /*
+          **`locked` and `unavailable` are two sentences, not one.** They were
+          two here already — and the `locked` one named the product with a
+          literal "Pro" while five other sites call `tierProductName()`, and
+          the `unavailable` one named no plugin at all while the settings list
+          on the same screen names it correctly from the same `requires_label`.
+          Collapsing them is how a paying customer is shown an advertisement
+          and a merchant is offered a licence we do not sell (ADR 0026).
+        */
         description={
           destination.availability === 'locked'
-            ? __(
-                'A Pro feature this install does not have, so captures are not being sent.',
-                'wconvert',
+            ? sprintf(
+                /* translators: %s: the product that supplies it, e.g. “WConvert Pro”. */
+                __('A %s feature this install does not have, so captures are not being sent.', 'wconvert'),
+                tierProductName(type?.tier),
               )
             : destination.availability === 'unavailable'
-              ? __('What it needs is missing, so captures are not being sent.', 'wconvert')
+              ? sprintf(
+                  /* translators: %s: the plugin or platform it needs, e.g. “WP SMS”. */
+                  __('Needs %s on this site, so captures are not being sent.', 'wconvert'),
+                  type?.requires_label ?? __('something this site does not have', 'wconvert'),
+                )
               : undefined
         }
+        /*
+          **Amber is the site holding this back, and a price is not that**
+          (ADR 0037). One badge for both absences said *paused* about an
+          install that has simply not bought the tier — which is the same
+          collapse as the sentence above, in colour.
+        */
         trailing={
           failing ? (
             <Badge variant="destructive">{__('Failing', 'wconvert')}</Badge>
-          ) : destination.availability !== 'ready' ? (
+          ) : destination.availability === 'locked' ? (
+            <Badge variant="secondary">
+              <Lock aria-hidden="true" />
+              {tierName(type?.tier)}
+            </Badge>
+          ) : destination.availability === 'unavailable' ? (
             <Badge variant="warning">{__('Paused', 'wconvert')}</Badge>
           ) : destination.health.last_success_at === null ? (
             <Badge variant="secondary">{__('Not used yet', 'wconvert')}</Badge>
@@ -713,7 +760,7 @@ function Configured({
           could not say which one a route ran over. Latent while every free
           type authenticates against nothing, and live with the first ESP (#35).
         */}
-        {needsConnection && (
+        {type?.needs_connection === true && (
           <div className="max-w-xl">
             <ConnectionPicker
               id={`wconvert-${destination.id}-connection`}
@@ -794,7 +841,7 @@ function Configured({
             server still guards both: what a screen offers and what a route
             allows are different jobs.
           */}
-          {needsConnection && (
+          {type?.needs_connection === true && (
             <Button
               variant="outline"
               size="sm"
@@ -879,9 +926,20 @@ function Types({
       />
 
       {types.length === 0 ? (
-        <RegionBody className="text-muted-foreground">
-          {__('No destination types are available on this site.', 'wconvert')}
-        </RegionBody>
+        /*
+          **{@see EmptyState} rather than a muted paragraph**, which is the
+          treatment every other nothing-here on this screen already gets. No
+          action, and that is the honest answer: a site with no Destination
+          types has nothing to add and nowhere on this screen to go — what
+          would fix it is installing a plugin, which is not a door this admin
+          owns.
+        */
+        <EmptyState icon={Plug} title={__('No destination types here', 'wconvert')}>
+          {__(
+            'Nothing on this site offers somewhere to send a lead on to. Leads are still captured and exported.',
+            'wconvert',
+          )}
+        </EmptyState>
       ) : (
         <ul className="m-0 list-none p-0">
           {types.map((type) => {
@@ -933,7 +991,13 @@ function Types({
                     {__('Add', 'wconvert')}
                   </Button>
                 ) : rendering === 'upsell' ? (
-                  <span className="text-muted-foreground">{__('Included with Pro.', 'wconvert')}</span>
+                  <span className="text-muted-foreground">
+                    {sprintf(
+                      /* translators: %s: the product that supplies it, e.g. “WConvert Pro”. */
+                      __('Included with %s.', 'wconvert'),
+                      tierProductName(type.tier),
+                    )}
+                  </span>
                 ) : (
                   <span className="text-muted-foreground">
                     {sprintf(
@@ -1004,7 +1068,7 @@ function Failures({ failures }: { failures: DestinationsPayload['failures'] }) {
               <DataTableCell label={__('Lead', 'wconvert')}>
                 <Code className="text-muted-foreground">{failure.lead}</Code>
               </DataTableCell>
-              <DataTableCell label={__('Why', 'wconvert')} className="whitespace-normal">
+              <DataTableCell label={__('Why', 'wconvert')}>
                 {failure.error}
               </DataTableCell>
             </DataTableRow>

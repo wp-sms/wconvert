@@ -1,8 +1,9 @@
 import { __ } from '@wordpress/i18n';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, Lock } from 'lucide-react';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { Skeleton } from '../components/ui/skeleton';
+import { useShownAfterDelay } from '../shell/skeletonDelay';
 import { renderingFor, tierName } from '../goals/availability';
 import { TemplateCard } from './TemplateCard';
 import { nameOf, type TemplateIndexEntry, type TemplateLabelsWithFacets } from '../templates/api';
@@ -296,7 +297,21 @@ export function Gallery({
             reason={refused}
             notes={changes ?? undefined}
             onNear={locked ? undefined : onNear}
-            marks={locked ? <Badge variant="warning">{tierName(entry.tier)}</Badge> : undefined}
+            /*
+              **Grey and a lock, never amber** (ADR 0037). Amber is the
+              reserved meaning that the SITE is holding something back, and
+              spending it on a PRICE made it mean two opposite things on two
+              screens. `StartingPoints` states the rule and already draws it
+              this way.
+            */
+            marks={
+              locked ? (
+                <Badge variant="secondary">
+                  <Lock aria-hidden="true" />
+                  {tierName(entry.tier)}
+                </Badge>
+              ) : undefined
+            }
             absent={
               locked ? (
                 <ul className="wconvert-facets">
@@ -332,11 +347,19 @@ export function Gallery({
                   </a>
                 </Button>
               ) : (
+                /*
+                  **`busy` takes the real attribute and the other two do not.**
+                  A save in flight is transient and wants the control out of
+                  the way; *in use* and a refusal are states of this install
+                  that the merchant may want to read, and a real `disabled`
+                  would put the reason beside them out of the focus order.
+                */
                 <Button
                   variant={inUse ? 'secondary' : 'outline'}
                   size="sm"
                   aria-describedby={describedBy}
-                  disabled={busy || inUse || refused !== null}
+                  disabled={busy}
+                  aria-disabled={inUse || refused !== null}
                   onClick={inUse || refused !== null ? undefined : () => onChoose(entry.id)}
                 >
                   {inUse ? __('In use', 'wconvert') : __('Use this design', 'wconvert')}
@@ -361,8 +384,29 @@ export function Gallery({
  * moment they are deciding whether this product has anything for them.
  */
 export function GallerySkeleton({ cards = 6 }: { cards?: number }) {
+  /*
+    **It delays**, for {@see ChoiceSkeleton}'s reason: the creation flow's step
+    two is re-entered whenever the merchant picks a different [[Goal]], so this
+    can replace a grid that was already full.
+  */
+  if (!useShownAfterDelay()) {
+    return null;
+  }
+
   return (
-    <ul className="wconvert-gallery" aria-hidden="true">
+    <>
+      {/*
+        **The announcement is the component's, not the call site's.** It had
+        none at all and neither did two of its three callers, so a merchant on
+        a screen reader met a silent wait. `aria-hidden` on the grid below is
+        what makes one `role="status"` the right number: six placeholder cards
+        have nothing to say and the word "Loading" has everything.
+      */}
+      <span role="status" className="sr-only">
+        {__('Loading…', 'wconvert')}
+      </span>
+
+      <ul className="wconvert-gallery" aria-hidden="true">
       {Array.from({ length: cards }, (_each, index) => (
         <li key={index} className="wconvert-gallery__card">
           <div className="wconvert-gallery__waiting">
@@ -374,6 +418,7 @@ export function GallerySkeleton({ cards = 6 }: { cards?: number }) {
           </div>
         </li>
       ))}
-    </ul>
+      </ul>
+    </>
   );
 }

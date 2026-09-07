@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { __ } from '@wordpress/i18n';
 import { CircleAlert } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
 import { Description } from './Description';
@@ -135,6 +136,14 @@ export function RegionFooter({ className, children }: { className?: string; chil
  * that can fail independently, and an error a long way from the control that
  * caused it is an error the merchant has to guess the subject of.
  *
+ * **The words "fail independently" are the whole scope of that rule**, and
+ * three screens read past them. Analytics, Destinations and the builder each
+ * make ONE read that feeds every region on the screen — so there is no region
+ * that failed on its own, and the honest placement is above them all. What
+ * those three were doing was `<Region><RegionError /></Region>`: a card
+ * containing nothing but this band, whose `border-b` then drew a line with
+ * nothing under it. {@see PageError} is that case, drawn as what it is.
+ *
  * It carries no dismiss control on purpose: it clears when the next fetch
  * succeeds, so there is no path where a merchant hides a failure and then
  * reads the stale data underneath it as current.
@@ -165,6 +174,14 @@ export function RegionError({ message }: { message: string }) {
  *
  * Used where the region has nothing else to show — a first fetch that failed
  * leaves no table to sit above, so the alert IS the region's content.
+ *
+ * **The hint has a default, and nine of the ten call sites are why.** They all
+ * spelled the identical string; the tenth spelled nothing, so the creation
+ * flow's second step was the one screen in the admin whose failure named no
+ * way out of itself. That is not a decision each caller should be making — an
+ * error the merchant can do nothing about is the shape ADR 0042 rule 3 refuses
+ * — so the door is the component's and a caller passes one only where it has a
+ * better one to offer.
  */
 export function RegionErrorState({ message, hint }: { message: string; hint?: string }) {
   return (
@@ -172,8 +189,39 @@ export function RegionErrorState({ message, hint }: { message: string; hint?: st
       <Alert variant="destructive" className="border-destructive/30 bg-destructive/5">
         <CircleAlert />
         <AlertTitle className="line-clamp-none">{message}</AlertTitle>
-        {hint !== undefined && <AlertDescription>{hint}</AlertDescription>}
+        <AlertDescription>
+          {hint ?? __('Reload the page to try again.', 'wconvert')}
+        </AlertDescription>
       </Alert>
     </RegionBody>
+  );
+}
+
+/**
+ * The failure of a read that feeds **the whole screen**.
+ *
+ * {@see RegionError} is for a region that failed on its own, and its rule
+ * against a page-top banner is scoped to a screen whose regions fail
+ * INDEPENDENTLY. Three screens are not that: Analytics reads one payload and
+ * draws a card per [[Goal]] from it, Destinations reads one payload and draws a
+ * card per route, and the builder's save acts on the whole draft. A failure
+ * there belongs to no card in particular, and putting it on the first one
+ * would claim it was about that card.
+ *
+ * All three hand-rolled it as `<Region><RegionError /></Region>` — a card whose
+ * only content was a band with a bottom border, drawing a rule above nothing.
+ * Here the alert is the whole thing, with no surface behind it, because a
+ * page-scoped error is not a region and should not look like one.
+ *
+ * Like `RegionError` it has no dismiss control: it clears when the next read
+ * succeeds, so a merchant cannot hide it and read the stale data under it as
+ * current.
+ */
+export function PageError({ message }: { message: string }) {
+  return (
+    <Alert variant="destructive" className="border-destructive/30 bg-destructive/5">
+      <CircleAlert />
+      <AlertTitle className="line-clamp-none">{message}</AlertTitle>
+    </Alert>
   );
 }

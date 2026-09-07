@@ -1,19 +1,7 @@
-import { useEffect, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Skeleton } from '../components/ui/skeleton';
 import { DataTableBody, DataTableCell, DataTableRow } from './DataTable';
-
-/**
- * How long a fetch may take before anything is drawn to say it is happening.
- *
- * **A skeleton that flashes is worse than no skeleton.** A local REST call lands
- * in tens of milliseconds, and a placeholder that appears and vanishes inside
- * one is a screen that flickers on every filter change. 160ms is under the
- * threshold where a person reads a delay as the interface being slow, and over
- * the time a fast response takes — so the skeleton appears exactly when there is
- * a wait worth acknowledging.
- */
-const DELAY_MS = 160;
+import { useShownAfterDelay } from './skeletonDelay';
 
 /**
  * Rows in the shape of the rows that are coming.
@@ -27,19 +15,15 @@ const DELAY_MS = 160;
  * announced placeholders — a screen reader has nothing to gain from seven empty
  * cells and everything to gain from the word "Loading".
  *
- * The delay lives here rather than at every call site, because "do not flash"
- * is a property of the skeleton and not a decision each screen should be able
- * to get wrong. A caller renders it the moment it starts fetching and this
- * decides whether that is soon enough to be worth showing.
+ * The delay lives in {@see useShownAfterDelay} rather than at every call site,
+ * because "do not flash" is a property of the skeleton and not a decision each
+ * screen should be able to get wrong. A caller renders it the moment it starts
+ * fetching and that decides whether it is soon enough to be worth showing —
+ * and that hook is where the line between a delaying skeleton and an immediate
+ * one is now written down.
  */
 export function TableSkeleton({ columns, rows = 4 }: { columns: number; rows?: number }) {
-  const [shown, setShown] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setShown(true), DELAY_MS);
-
-    return () => clearTimeout(timer);
-  }, []);
+  const shown = useShownAfterDelay();
 
   if (!shown) {
     return null;

@@ -1,3 +1,5 @@
+import { readFileSync, readdirSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { mirrored } from '../../resources/admin/src/builder/BlockTree';
@@ -6,6 +8,13 @@ import {
   DropdownMenu,
   DropdownMenuTrigger,
 } from '../../resources/admin/src/components/ui/dropdown-menu';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../../resources/admin/src/components/ui/select';
 
 /**
  * ============================================================================
@@ -102,4 +111,81 @@ describe('the vendored Radix wrappers', () => {
 
     expect(screen.getByText('Open').closest('[dir]')).toHaveAttribute('dir', 'rtl');
   });
+
+  /**
+   * **The third one never got the fix, and it was live.** Tabs and
+   * DropdownMenu were both handed `dir={useDirection()}` and both are asserted
+   * above; Select was not — so the Leads screen's Optin filter opened a popup
+   * reading left-to-right inside a right-to-left admin. Analytics and
+   * Destinations use native `<select>`s and inherit the direction for free,
+   * which is how one control came to read two ways on three screens.
+   */
+  it('does the same for a select, which is live on the Leads filter', () => {
+    readRightToLeft();
+
+    render(
+      <Select value="all">
+        <SelectTrigger>
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All Optins</SelectItem>
+        </SelectContent>
+      </Select>,
+    );
+
+    expect(screen.getByRole('combobox').closest('[dir]')).toHaveAttribute('dir', 'rtl');
+  });
+});
+
+/**
+ * ============================================================================
+ * THE CONVENTION IS LOGICAL PROPERTIES, AND ONLY THE VENDORED LAYER BROKE IT.
+ * ============================================================================
+ * Across every `.tsx` this project wrote there are zero physical direction
+ * utilities, and across 4,470 lines of `index.css` there are zero physical
+ * direction properties. `components/ui/` — the code nobody wrote — carried six:
+ * the dialog's close ✕ on the wrong side in all five dialogs, the select
+ * item's check indicator landing on top of its own text, two `sm:text-left`s,
+ * a submenu's `ml-auto`, and the inset padding under them.
+ *
+ * ADR 0036 holds that a vendored file is WConvert's from the moment it lands,
+ * so this is a rule about this project's own code rather than a complaint
+ * about upstream — and it is the guard that would have caught every RTL bug in
+ * this pass.
+ */
+describe('the vendored components against the logical-property convention', () => {
+  const UI = resolve(import.meta.dirname, '../../resources/admin/src/components/ui');
+
+  /**
+   * The four legitimate physical values, each for a reason no logical property
+   * expresses:
+   *
+   * - `top-[50%] left-[50%]` with `translate-x-[-50%]` is a SYMMETRIC centring
+   *   transform. It lands in the same place either way round.
+   * - `data-[side=…]:slide-in-from-…` keys off a side Radix has ALREADY
+   *   resolved for the current direction; rewriting it logically would resolve
+   *   it a second time and undo the first.
+   */
+  const ALLOWED = [
+    /\bleft-\[50%\]/,
+    /\btranslate-x-\[-50%\]/,
+    /data-\[side=(top|bottom|left|right)\]:slide-in-from-(top|bottom|left|right)-\d/,
+  ];
+
+  const PHYSICAL =
+    /\b-?(?:pl|pr|ml|mr|left|right)-(?:\d|auto|px|\[)|\btext-(?:left|right)\b/g;
+
+  it.each(readdirSync(UI).filter((file) => file.endsWith('.tsx')))(
+    'writes %s in logical properties',
+    (file) => {
+      let source = readFileSync(resolve(UI, file), 'utf8');
+
+      for (const allowed of ALLOWED) {
+        source = source.replace(new RegExp(allowed.source, 'g'), '');
+      }
+
+      expect([...source.matchAll(PHYSICAL)].map(([found]) => found)).toEqual([]);
+    },
+  );
 });

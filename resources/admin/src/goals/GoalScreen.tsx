@@ -61,6 +61,7 @@ export function GoalScreen({ onCreated }: { onCreated: (id: string) => void }) {
   const [draft, setDraft] = useState<Draft | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [starting, setStarting] = useState(false);
 
   const report = useCallback((cause: unknown) => setError(messageOf(cause)), []);
 
@@ -81,13 +82,33 @@ export function GoalScreen({ onCreated }: { onCreated: (id: string) => void }) {
       .catch((cause: unknown) => setPlaybooks(failed(cause)));
   };
 
+  /**
+   * **Step two's own busy flag, which it did not have.**
+   *
+   * `prefill` is a round trip and nothing said so: *Use this Playbook* and
+   * *Start from scratch* stayed live with nothing happening, so a merchant on
+   * a slow connection pressed twice and started two prefills. Step three
+   * already guards its create with `busy`; this is the same guard on the step
+   * before it.
+   *
+   * A real `disabled` rather than `aria-disabled`, and that is the line the
+   * admin now draws: a control refused because of what this site IS keeps
+   * focus so its reason stays reachable, and a control that is merely BUSY
+   * takes the pointer and the keyboard out of the way for the half-second it
+   * is working.
+   */
   const start = (playbookId?: string) => {
     if (goal === null) {
       return;
     }
 
+    setStarting(true);
     setError(null);
-    prefill(goal.id, playbookId).then(setDraft).catch(report);
+
+    prefill(goal.id, playbookId)
+      .then(setDraft)
+      .catch(report)
+      .finally(() => setStarting(false));
   };
 
   const save = () => {
@@ -129,6 +150,7 @@ export function GoalScreen({ onCreated }: { onCreated: (id: string) => void }) {
         goal={goal}
         playbooks={playbooks}
         error={error}
+        starting={starting}
         onStart={start}
         onBack={() => {
           setGoal(null);
@@ -166,7 +188,6 @@ function GoalPicker({
         <RegionHeader title={__('Create an Optin', 'wconvert')} trailing={<Step at={1} />} />
         <RegionErrorState
           message={goals.message}
-          hint={__('Reload the page to try again.', 'wconvert')}
         />
       </Region>
     );
@@ -186,11 +207,7 @@ function GoalPicker({
 
       <RegionBody>
         {goals.status === 'loading' ? (
-          <ChoiceGrid>
-            {[0, 1, 2, 3].map((row) => (
-              <ChoiceSkeleton key={row} />
-            ))}
-          </ChoiceGrid>
+          <ChoiceSkeleton />
         ) : shown.length === 0 ? (
           /*
            * **The third state step one was missing.** Loading and failed were
@@ -279,12 +296,15 @@ function PlaybookGallery({
   goal,
   playbooks,
   error,
+  starting,
   onStart,
   onBack,
 }: {
   goal: GoalEntry;
   playbooks: Loadable<PlaybookEntry[]>;
   error: string | null;
+  /** A prefill is in flight, so neither way forward may be pressed again. */
+  starting: boolean;
   onStart: (playbookId?: string) => void;
   onBack: () => void;
 }) {
@@ -344,7 +364,11 @@ function PlaybookGallery({
                 notes={playbook.notes}
                 template={playbook.template}
                 action={(describedBy) => (
-                  <Button aria-describedby={describedBy} onClick={() => onStart(playbook.id)}>
+                  <Button
+                    aria-describedby={describedBy}
+                    disabled={starting}
+                    onClick={() => onStart(playbook.id)}
+                  >
                     {__('Use this Playbook', 'wconvert')}
                   </Button>
                 )}
@@ -358,7 +382,7 @@ function PlaybookGallery({
         onBack={onBack}
         backLabel={__('Pick a different Goal', 'wconvert')}
         forward={
-          <Button variant="outline" onClick={() => onStart()}>
+          <Button variant="outline" disabled={starting} onClick={() => onStart()}>
             {__('Start from scratch', 'wconvert')}
           </Button>
         }
@@ -480,7 +504,13 @@ function StepFooter({
   return (
     <RegionFooter className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
       <Button variant="ghost" disabled={disabled} onClick={onBack}>
-        <ArrowLeft aria-hidden="true" />
+        {/*
+          **Back is the other way in Persian.** A glyph that points along the
+          reading direction has to turn with it, and nothing in this admin was
+          mirrored at all — `rtl:-scale-x-100` is the whole of it, keyed on the
+          `dir` attribute WordPress writes on `<html>`.
+        */}
+        <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />
         {backLabel}
       </Button>
       {forward}

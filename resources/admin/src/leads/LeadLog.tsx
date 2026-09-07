@@ -32,6 +32,7 @@ import {
   RegionFooter,
   RegionHeader,
 } from '../shell/Region';
+import { Skeleton } from '../components/ui/skeleton';
 import { TableSkeleton } from '../shell/TableSkeleton';
 import { Toolbar, ToolbarCount } from '../shell/Toolbar';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
@@ -234,11 +235,30 @@ export function LeadLog() {
           )}
         />
 
-        {retention.status === 'failed' ? (
-          <RegionErrorState
-            message={retention.message}
-            hint={__('Reload the page to try again.', 'wconvert')}
-          />
+        {/*
+          **A region that fetches owes a loading state** (ADR 0039), and this
+          one showed two real radios and a number field greyed out instead. A
+          disabled control says *you may not change this*; what was true was
+          *we have not read it yet*. The Optins screen's allowance card had the
+          identical gap and they agreed with each other while disagreeing with
+          every table on the same screens.
+        */}
+        {retention.status === 'loading' ? (
+          <RegionBody className="flex flex-col gap-3">
+            <span role="status" className="sr-only">
+              {__('Loading…', 'wconvert')}
+            </span>
+
+            <Skeleton aria-hidden="true" className="h-[1lh] w-64 max-w-full" />
+
+            <span aria-hidden="true" className="flex flex-wrap items-center gap-2">
+              <Skeleton className="h-[1lh] w-56 max-w-full" />
+              <Skeleton className="h-(--control-height) w-24" />
+              <Skeleton className="h-[1lh] w-10" />
+            </span>
+          </RegionBody>
+        ) : retention.status === 'failed' ? (
+          <RegionErrorState message={retention.message} />
         ) : (
           <>
             {retentionError !== null && <RegionError message={retentionError} />}
@@ -368,7 +388,6 @@ function LogRegion({
       <Region label={__('Submissions', 'wconvert')}>
         <RegionErrorState
           message={log.message}
-          hint={__('Reload the page to try again.', 'wconvert')}
         />
       </Region>
     );
@@ -540,10 +559,7 @@ function LogRegion({
                       <DataTableCell label={__('Phone', 'wconvert')}>
                         {lead.phone ?? '—'}
                       </DataTableCell>
-                      <DataTableCell
-                        label={__('Captured', 'wconvert')}
-                        className="whitespace-normal"
-                      >
+                      <DataTableCell label={__('Captured', 'wconvert')}>
                         {Object.entries(lead.fields).map(([name, value]) => (
                           <span key={name} className="block">
                             <Code className="text-muted-foreground">{name}</Code>{' '}

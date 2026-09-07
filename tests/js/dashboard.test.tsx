@@ -231,7 +231,8 @@ describe('the analytics screen', () => {
     render(<Dashboard />);
 
     expect(await screen.findByText('100')).toBeInTheDocument();
-    expect(screen.getByText(/No Optins are running under this Goal/)).toBeInTheDocument();
+    expect(screen.getByText('Nothing is running under this Goal')).toBeInTheDocument();
+    expect(screen.getByText('Its numbers are what earlier ones counted.')).toBeInTheDocument();
     expect(screen.queryByRole('table')).not.toBeInTheDocument();
   });
 
@@ -296,6 +297,34 @@ describe('the analytics screen', () => {
     render(<Dashboard />);
 
     expect(await screen.findByText('Sorry, you are not allowed to do that.')).toBeInTheDocument();
+  });
+
+  /**
+   * **A window change that fails must not take the cards with it.**
+   *
+   * This screen set `failed(cause)` unconditionally, so a merchant moving from
+   * 30 days to 7 over a flaky connection watched every Goal card they were
+   * reading disappear and be replaced by one error — the numbers they already
+   * had, thrown away because the request for different numbers did not arrive.
+   *
+   * Every other multi-fetch screen in this admin guards exactly this and says
+   * so in place ({@see OptinList}, {@see LeadLog}, {@see Destinations}): only a
+   * FIRST failure has nothing to keep. This is the fourth.
+   */
+  it('keeps the cards when a window change fails, and says what went wrong', async () => {
+    render(<Dashboard />);
+
+    await screen.findByText('Grow my email list');
+
+    api.readDashboard.mockRejectedValue(new Error('The server did not answer.'));
+
+    await userEvent.selectOptions(screen.getByRole('combobox'), '7');
+
+    expect(await screen.findByText('The server did not answer.')).toBeInTheDocument();
+
+    // Still on screen: the numbers the merchant was reading a moment ago.
+    expect(screen.getByText('Grow my email list')).toBeInTheDocument();
+    expect(screen.getByText('Promote a sale or offer')).toBeInTheDocument();
   });
 
   /**

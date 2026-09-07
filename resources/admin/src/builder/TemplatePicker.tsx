@@ -111,7 +111,7 @@ export function TemplatePicker({
         icon={LayoutTemplate}
         title={sprintf(
           /* translators: %s: a Display Type, e.g. "popup". */
-          __('No designs for “%s” on this site.', 'wconvert'),
+          __('No designs for “%s” on this site', 'wconvert'),
           displayType,
         )}
       >

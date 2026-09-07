@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { ChartColumn } from 'lucide-react';
+import { ChartColumn, Megaphone } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import {
   DataTable,
@@ -12,10 +12,11 @@ import {
 } from '../shell/DataTable';
 import { EmptyState } from '../shell/EmptyState';
 import { PageAction } from '../shell/PageActions';
-import { Region, RegionBody, RegionErrorState, RegionHeader } from '../shell/Region';
-import { Stat, StatRow } from '../shell/Stat';
-import { TableSkeleton } from '../shell/TableSkeleton';
-import { LOADING, failed, ready, type Loadable } from '../shell/loadable';
+import { PageError, Region, RegionBody, RegionErrorState, RegionHeader } from '../shell/Region';
+import { Skeleton } from '../components/ui/skeleton';
+import { RegionSkeleton } from '../shell/RegionSkeleton';
+import { Stat, StatRow, StatRowSkeleton } from '../shell/Stat';
+import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
 import { Milestones } from '../milestones/Milestones';
 import { readDashboard, type DashboardPayload, type GoalReport, type OptinReport } from './api';
 // Spelled once, because the Optin list and the builder's header read the same
@@ -73,6 +74,7 @@ const WINDOWS = [1, 7, 30, 90] as const;
  */
 export function Dashboard() {
   const [report, setReport] = useState<Loadable<DashboardPayload>>(LOADING);
+  const [refreshError, setRefreshError] = useState<string | null>(null);
   // `null` is "whatever the server opens on", and only the first read is ever
   // in that state.
   const [days, setDays] = useState<number | null>(null);
@@ -80,8 +82,23 @@ export function Dashboard() {
   const refresh = useCallback(async () => {
     try {
       setReport(ready(await readDashboard(days)));
+      setRefreshError(null);
     } catch (cause) {
-      setReport(failed(cause));
+      /*
+       * **A window change that fails must not take the cards with it.** This
+       * set `failed(cause)` unconditionally, so moving from 30 days to 7 over
+       * a flaky connection destroyed every Goal card on screen — the numbers
+       * the merchant already had, thrown away because the request for
+       * DIFFERENT numbers did not arrive.
+       *
+       * Only a FIRST failure has nothing to keep, and that is the arm that
+       * renders the error as the screen's whole content. The other three
+       * multi-fetch screens have guarded this since they were written
+       * ({@see OptinList}, {@see LeadLog}, {@see Destinations}); this was the
+       * one that never did.
+       */
+      setReport((current) => (current.status === 'ready' ? current : failed(cause)));
+      setRefreshError(messageOf(cause));
     }
   }, [days]);
 
@@ -145,21 +162,39 @@ export function Dashboard() {
       */}
       <Milestones />
 
+      {/*
+        **Above the cards, because one read draws all of them.** The window
+        governs every region on this screen at once, so a refresh that fails
+        belongs to no Goal in particular and putting it on one would claim it
+        was about that Goal. {@see PageError} is that case — `RegionError`'s
+        rule against a page-top banner is scoped to regions that fail
+        INDEPENDENTLY, which these do not.
+
+        **Only where there is something to keep.** A FIRST failure has no cards
+        under it, so the region below renders the error as its whole content —
+        and this would then say the same sentence twice on one screen.
+      */}
+      {refreshError !== null && payload !== null && <PageError message={refreshError} />}
+
       {report.status === 'failed' && (
         <Region label={__('Analytics', 'wconvert')}>
-          <RegionErrorState
-            message={report.message}
-            hint={__('Reload the page to try again.', 'wconvert')}
-          />
+          <RegionErrorState message={report.message} />
         </Region>
       )}
 
+      {/*
+        **A Goal card's shape, and it used to be a table's.** This drew a
+        headless `DataTable` of four columns while what was coming is a heading,
+        a row of four figures and a sparkline — so every column moved when the
+        data landed, which is the one thing a skeleton exists not to do.
+        `StatRowSkeleton` was already in the file's own sibling and the builder
+        was already using it for this exact strip.
+      */}
       {report.status === 'loading' && (
-        <Region label={__('Analytics', 'wconvert')}>
-          <DataTable>
-            <TableSkeleton columns={4} rows={3} />
-          </DataTable>
-        </Region>
+        <RegionSkeleton label={__('Analytics', 'wconvert')}>
+          <StatRowSkeleton stats={4} />
+          <Skeleton aria-hidden="true" className="h-16 w-full" />
+        </RegionSkeleton>
       )}
 
       {payload !== null && payload.goals.length === 0 && (
@@ -283,12 +318,20 @@ function GoalRegion({ card, window }: { card: GoalReport; window: DashboardPaylo
 function OptinTable({ card }: { card: GoalReport }) {
   if (card.optins.length === 0) {
     return (
-      <RegionBody className="border-t border-border text-muted-foreground">
-        {__(
-          'No Optins are running under this Goal. Its numbers are what earlier ones counted.',
-          'wconvert',
-        )}
-      </RegionBody>
+      /*
+        **{@see EmptyState} and not a muted paragraph**, which is what this
+        was: a sentence in a `RegionBody`, in a screen whose every other
+        nothing-here goes through the primitive. It carries no action, and
+        that is the honest answer rather than an omission — the card above is
+        reporting numbers, so *"go make an Optin"* is not what a merchant
+        reading it came for, and the Optins section is one click away in the
+        page nav either way.
+      */
+      <div className="border-t border-border">
+        <EmptyState icon={Megaphone} title={__('Nothing is running under this Goal', 'wconvert')}>
+          {__('Its numbers are what earlier ones counted.', 'wconvert')}
+        </EmptyState>
+      </div>
     );
   }
 

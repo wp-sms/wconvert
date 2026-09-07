@@ -254,7 +254,13 @@ describe('the destinations screen', () => {
     // And the two absent states stay apart. Collapsing them is what shows a
     // paying customer an advertisement for Pro, and offers a merchant a WP SMS
     // licence we do not sell (ADR 0026).
-    expect(screen.getByText('Included with Pro.')).toBeInTheDocument();
+    //
+    // The product is named by the tier manifest rather than by a literal —
+    // this was the last hardcoded "Pro" on the screen, and `tiers.json` is
+    // what makes a second rung a manifest edit (ADR 0056). With no localised
+    // settings object here it falls back to the word the product has always
+    // used, which is `tierProductName`'s documented last resort.
+    expect(screen.getByText('Included with WConvert Pro.')).toBeInTheDocument();
     expect(screen.queryByText(/Needs null/)).not.toBeInTheDocument();
   });
 

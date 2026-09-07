@@ -1,7 +1,9 @@
 import { render, screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { DestinationsEditor } from '../../resources/admin/src/builder/DestinationsEditor';
-import type { Destination } from '../../resources/admin/src/destinations/api';
+import { LOADING, failed, ready } from '../../resources/admin/src/shell/loadable';
+import type { Loadable } from '../../resources/admin/src/shell/loadable';
+import type { Destination, DestinationType } from '../../resources/admin/src/destinations/api';
 
 /**
  * ============================================================================
@@ -42,15 +44,36 @@ const destination = (over: Partial<Destination> & { id: string; label: string })
   ...over,
 });
 
-const editor = (available: Destination[], bound: string[] = []) =>
+const type = (over: Partial<DestinationType> & { id: string }): DestinationType => ({
+  label: 'MailPoet',
+  icon: 'plug',
+  tier: 'free',
+  requires: null,
+  requires_label: null,
+  availability: 'ready',
+  needs_connection: false,
+  settings_schema: {},
+  ...over,
+});
+
+const editor = (
+  available: Loadable<readonly Destination[]>,
+  bound: string[] = [],
+  types: DestinationType[] = [],
+) =>
   render(
     <DestinationsEditor
       bound={bound}
       available={available}
+      types={types}
       hint={null}
       onChange={vi.fn()}
     />,
   );
+
+/** The overwhelmingly common case: the read landed and there is a list. */
+const listed = (destinations: Destination[], bound: string[] = [], types: DestinationType[] = []) =>
+  editor(ready(destinations), bound, types);
 
 const rowFor = (name: string): HTMLElement => {
   const item = screen.getByRole('checkbox', { name }).closest('li');
@@ -69,7 +92,7 @@ describe('binding an optin to a destination', () => {
    * forbid outright by disabling *Add* once one of a type existed.
    */
   it('names each route and says where it lands', () => {
-    editor([
+    listed([
       destination({ id: 'a', label: 'Newsletter signups', target: 'Newsletter' }),
       destination({ id: 'b', label: 'Product announcements', target: 'Product updates' }),
     ]);
@@ -86,7 +109,7 @@ describe('binding an optin to a destination', () => {
    * that renames itself whenever the route is re-pointed.
    */
   it('describes the checkbox with the target rather than naming it', () => {
-    editor([destination({ id: 'a', label: 'Newsletter signups', target: 'Newsletter' })]);
+    listed([destination({ id: 'a', label: 'Newsletter signups', target: 'Newsletter' })]);
 
     const checkbox = screen.getByRole('checkbox', { name: 'Newsletter signups' });
 
@@ -103,7 +126,7 @@ describe('binding an optin to a destination', () => {
    * same reason and gets the same silence (ADR 0042).
    */
   it('says nothing about a destination that selects nothing', () => {
-    editor([destination({ id: 'a', label: 'The guide', type: 'lead_magnet_email', target: null })]);
+    listed([destination({ id: 'a', label: 'The guide', type: 'lead_magnet_email', target: null })]);
 
     const row = rowFor('The guide');
 
@@ -118,7 +141,7 @@ describe('binding an optin to a destination', () => {
    * next — which is exactly the test ADR 0042 sets.
    */
   it('says so where a destination selects something and nothing is chosen', () => {
-    editor([destination({ id: 'a', label: 'Newsletter signups', target: '' })]);
+    listed([destination({ id: 'a', label: 'Newsletter signups', target: '' })]);
 
     expect(screen.getByText('Not pointed at anything yet.')).toBeInTheDocument();
   });
@@ -129,23 +152,54 @@ describe('binding an optin to a destination', () => {
    * is a different fact from where it would have landed (#4, ADR 0008).
    */
   it('keeps the not-running note beside the target', () => {
-    editor([
-      destination({
-        id: 'a',
-        label: 'Newsletter signups',
-        target: 'Newsletter',
-        availability: 'unavailable',
-      }),
-    ]);
+    listed(
+      [
+        destination({
+          id: 'a',
+          type: 'wsms',
+          label: 'Newsletter signups',
+          target: 'Newsletter',
+          availability: 'unavailable',
+        }),
+      ],
+      [],
+      [type({ id: 'wsms', label: 'WP SMS', requires: 'wp-sms', requires_label: 'WP SMS' })],
+    );
 
     const row = rowFor('Newsletter signups');
 
     expect(within(row).getByText('Sending to Newsletter.')).toBeInTheDocument();
-    expect(within(row).getByText(/Not running here/)).toBeInTheDocument();
+    expect(within(row).getByText(/Needs WP SMS on this site/)).toBeInTheDocument();
+  });
+
+  /**
+   * **`locked` and `unavailable` are two sentences, not one.** This row said
+   * *"not running here"* for both — the exact collapse `Destinations` and
+   * `AddRule` each warn against in a comment, and the one ADR 0026 exists to
+   * stop: it is how a paying customer is shown an advertisement for Pro and a
+   * merchant is offered a licence we do not sell.
+   */
+  it('names the tier for a locked route and the plugin for an unavailable one', () => {
+    listed(
+      [
+        destination({ id: 'a', type: 'paid', label: 'Paid route', availability: 'locked' }),
+        destination({ id: 'b', type: 'wsms', label: 'Plugin route', availability: 'unavailable' }),
+      ],
+      [],
+      [
+        type({ id: 'paid', label: 'Paid', tier: 'pro' }),
+        type({ id: 'wsms', label: 'WP SMS', requires: 'wp-sms', requires_label: 'WP SMS' }),
+      ],
+    );
+
+    expect(within(rowFor('Paid route')).getByText(/Needs WConvert Pro,/)).toBeInTheDocument();
+    expect(
+      within(rowFor('Plugin route')).getByText(/Needs WP SMS on this site/),
+    ).toBeInTheDocument();
   });
 
   it('ticks the destinations this optin is bound to', () => {
-    editor(
+    listed(
       [
         destination({ id: 'a', label: 'Newsletter signups', target: 'Newsletter' }),
         destination({ id: 'b', label: 'Product announcements', target: 'Product updates' }),
@@ -155,5 +209,54 @@ describe('binding an optin to a destination', () => {
 
     expect(screen.getByRole('checkbox', { name: 'Newsletter signups' })).not.toBeChecked();
     expect(screen.getByRole('checkbox', { name: 'Product announcements' })).toBeChecked();
+  });
+});
+
+/**
+ * ============================================================================
+ * IN FLIGHT AND FAILED WERE THE SAME VALUE, AND THE TAB SAID "LOADING" FOREVER.
+ * ============================================================================
+ * `available` was `readonly Destination[] | null`, and its own docblock said
+ * `null` meant *in flight* AND *after one that failed*. The read was
+ * `.then(setDestinations).catch(report)` and the render branched
+ * `available === null ? 'Loading…' : …`, so a failed fetch left this tab
+ * showing a placeholder that would never resolve.
+ *
+ * The docblock above the read argued the right thing — *"an empty one would
+ * read as 'you have none' rather than 'we could not ask'"* — and `T[] | null`
+ * simply could not express the third state its author was reasoning about.
+ * `Loadable` is the union the rest of the admin already uses, and it makes this
+ * unrepresentable rather than merely fixed.
+ */
+describe('the three states of the destinations read', () => {
+  /**
+   * The announcement arrives after `RowsSkeleton`'s anti-flash delay, which is
+   * why this waits: a read that lands inside 160ms draws no placeholder at all,
+   * and that is the point of the delay rather than a race in the test.
+   */
+  it('says it is loading only while the read is in flight', async () => {
+    editor(LOADING);
+
+    expect(await screen.findByRole('status')).toHaveTextContent('Loading…');
+    expect(screen.queryByRole('list')).toBeNull();
+  });
+
+  it('says the read failed rather than that it is still loading', () => {
+    editor(failed(new Error('The site did not answer.')));
+
+    expect(screen.getByText('The site did not answer.')).toBeInTheDocument();
+    expect(screen.queryByText('Loading…')).toBeNull();
+  });
+
+  /**
+   * **Never reachable from loading**, which is the distinction `EmptyState`
+   * exists to hold: "you have none" is a claim, and it must not be made while
+   * the answer is still arriving.
+   */
+  it('offers the way out where the site genuinely has none', () => {
+    editor(ready([]));
+
+    expect(screen.getByText('No destinations yet')).toBeInTheDocument();
+    expect(screen.queryByText('Loading…')).toBeNull();
   });
 });

@@ -79,7 +79,6 @@ export function Milestones() {
       <Region label={__('What WConvert has recorded about this site', 'wconvert')}>
         <RegionErrorState
           message={milestones.message}
-          hint={__('Reload the page to try again.', 'wconvert')}
         />
       </Region>
     );
