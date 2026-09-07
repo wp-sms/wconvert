@@ -98,6 +98,16 @@ final class ProLibraryTest extends TestCase
             'slide-in-review',
             'popup-two-column',
             'inline-cart-nudge',
+            'bar-code',
+            'bar-review',
+            'bar-two-field',
+            'slide-in-code',
+            'slide-in-nudge',
+            'slide-in-benefits',
+            'popup-two-channel',
+            'popup-editorial',
+            'popup-flash',
+            'inline-code-strip',
         ];
 
         foreach ($advertised as $id) {

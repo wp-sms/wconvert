@@ -1,0 +1,116 @@
+{
+  "id": "popup-editorial",
+  "name": "Editorial split",
+  "display_type": "popup",
+  "tier": "basic",
+  "tokens": {
+    "bg": "#fdfcfb",
+    "fg": "#1c1917",
+    "muted": "#78716c",
+    "accent": "#1c1917",
+    "accent-fg": "#fdfcfb",
+    "border": "#e7e5e4",
+    "font": "Georgia, 'Times New Roman', Times, serif",
+    "heading-size": "1.875rem",
+    "heading-weight": "400",
+    "tracking": "-0.02em",
+    "leading": "1.7",
+    "radius": "0rem",
+    "pad": "2rem",
+    "gap": "1.125rem",
+    "width": "40rem",
+    "align": "start",
+    "shadow": "0 24px 64px rgba(28, 25, 23, 0.3)",
+    "backdrop": "rgba(28, 25, 23, 0.6)"
+  },
+  "tree": {
+    "steps": [
+      {
+        "type": "split",
+        "ratio": 0.65,
+        "start": [
+          {
+            "type": "stack",
+            "children": [
+              {
+                "type": "eyebrow",
+                "id": "n1",
+                "role": "eyebrow",
+                "text": "The Saturday letter"
+              },
+              {
+                "type": "heading",
+                "id": "n2",
+                "role": "headline",
+                "text": "One long read, every weekend"
+              },
+              {
+                "type": "text",
+                "id": "n3",
+                "role": "body",
+                "text": "No links, no round-up, no news. One piece worth the twenty minutes."
+              },
+              {
+                "type": "field",
+                "id": "n4",
+                "name": "email",
+                "label": "Email address",
+                "placeholder": "you@example.com",
+                "required": true
+              },
+              {
+                "type": "button",
+                "id": "n5",
+                "role": "cta_label",
+                "label": "Start on Saturday",
+                "action": "submit"
+              },
+              {
+                "type": "consent",
+                "id": "n6",
+                "role": "consent_text",
+                "hidden": true,
+                "text": "Email me offers and news. See our %s.",
+                "link": {
+                  "label": "Privacy Policy"
+                }
+              },
+              {
+                "type": "text",
+                "id": "n7",
+                "role": "fine_print",
+                "text": "Unsubscribe in one click, any time."
+              }
+            ]
+          }
+        ],
+        "end": [
+          {
+            "type": "image",
+            "id": "n8",
+            "src": "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%203%204'%3E%3Crect%20width='3'%20height='4'%20fill='%23e2e8f0'/%3E%3Ccircle%20cx='2'%20cy='1.1'%20r='.5'%20fill='%23f8fafc'/%3E%3Cpath%20d='M0%204l1.1-1.5.85.8L2.5%201.9%203%202.4V4z'%20fill='%23a8b6c8'/%3E%3C/svg%3E",
+            "alt": "A photograph from this weekend’s letter",
+            "fit": "cover"
+          }
+        ]
+      },
+      {
+        "type": "stack",
+        "children": [
+          {
+            "type": "heading",
+            "id": "n9",
+            "role": "success_headline",
+            "text": "See you Saturday"
+          },
+          {
+            "type": "text",
+            "id": "n10",
+            "role": "success_body",
+            "text": "The first one arrives this weekend."
+          }
+        ]
+      }
+    ]
+  }
+}
