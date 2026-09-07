@@ -13,8 +13,9 @@ import {
 import { EmptyState } from '../shell/EmptyState';
 import { PageAction } from '../shell/PageActions';
 import { Region, RegionBody, RegionError, RegionErrorState, RegionHeader } from '../shell/Region';
-import { Stat, StatRow } from '../shell/Stat';
-import { TableSkeleton } from '../shell/TableSkeleton';
+import { Skeleton } from '../components/ui/skeleton';
+import { RegionSkeleton } from '../shell/RegionSkeleton';
+import { Stat, StatRow, StatRowSkeleton } from '../shell/Stat';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
 import { Milestones } from '../milestones/Milestones';
 import { readDashboard, type DashboardPayload, type GoalReport, type OptinReport } from './api';
@@ -170,12 +171,19 @@ export function Dashboard() {
         </Region>
       )}
 
+      {/*
+        **A Goal card's shape, and it used to be a table's.** This drew a
+        headless `DataTable` of four columns while what was coming is a heading,
+        a row of four figures and a sparkline — so every column moved when the
+        data landed, which is the one thing a skeleton exists not to do.
+        `StatRowSkeleton` was already in the file's own sibling and the builder
+        was already using it for this exact strip.
+      */}
       {report.status === 'loading' && (
-        <Region label={__('Analytics', 'wconvert')}>
-          <DataTable>
-            <TableSkeleton columns={4} rows={3} />
-          </DataTable>
-        </Region>
+        <RegionSkeleton label={__('Analytics', 'wconvert')}>
+          <StatRowSkeleton stats={4} />
+          <Skeleton aria-hidden="true" className="h-16 w-full" />
+        </RegionSkeleton>
       )}
 
       {payload !== null && payload.goals.length === 0 && (

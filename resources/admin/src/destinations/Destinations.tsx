@@ -39,7 +39,7 @@ import {
   RegionFooter,
   RegionHeader,
 } from '../shell/Region';
-import { TableSkeleton } from '../shell/TableSkeleton';
+import { RegionSkeleton } from '../shell/RegionSkeleton';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
 import {
   deleteDestination,
@@ -302,12 +302,14 @@ export function Destinations() {
         </Region>
       )}
 
+      {/*
+        **A settings card's shape, and it used to be a table's.** What is
+        coming here is a stack of `Configured` cards — a name, an account
+        picker, a run of fields — and this drew a three-column table, which
+        this region does not contain in any state.
+      */}
       {data === null ? (
-        <Region label={__('Destinations', 'wconvert')}>
-          <DataTable>
-            <TableSkeleton columns={3} rows={2} />
-          </DataTable>
-        </Region>
+        <RegionSkeleton label={__('Destinations', 'wconvert')} lines={3} />
       ) : (
         <>
           {data.destinations.length === 0 ? (

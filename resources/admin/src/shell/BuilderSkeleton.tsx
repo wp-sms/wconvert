@@ -4,7 +4,7 @@ import { ArrowLeft } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Skeleton } from '../components/ui/skeleton';
 import { PageAction } from './PageActions';
-import { Region, RegionBody } from './Region';
+import { RegionSkeleton } from './RegionSkeleton';
 
 /**
  * The builder in the shape of the builder, and the way out of it.
@@ -36,15 +36,10 @@ export function BuilderSkeleton({ onClose }: { onClose: () => void }) {
         <BackLink onClose={onClose} />
         <Skeleton aria-hidden="true" className="mt-3 h-9 w-72 max-w-full" />
       </PageAction>
-      <Region label={__('Optin builder', 'wconvert')}>
-        <RegionBody className="flex flex-col gap-4">
-          <span role="status" className="sr-only">
-            {__('Loading…', 'wconvert')}
-          </span>
-          <Skeleton aria-hidden="true" className="h-4 w-full max-w-md" />
-          <Skeleton aria-hidden="true" className="h-48 w-full" />
-        </RegionBody>
-      </Region>
+      <RegionSkeleton label={__('Optin builder', 'wconvert')}>
+        <Skeleton aria-hidden="true" className="h-4 w-full max-w-md" />
+        <Skeleton aria-hidden="true" className="h-48 w-full" />
+      </RegionSkeleton>
     </div>
   );
 }
