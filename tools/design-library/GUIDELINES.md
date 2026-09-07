@@ -167,6 +167,17 @@ anchor: a tick, or — where the offer pays out in one — a `code`.
 the renderer now (`700` at `.8125rem` of block padding) so no design has to
 remember it.
 
+**A `split` is two sides, not two floating boxes.** The panes are equal height
+and each centres its own contents against the other; a pane holding nothing but
+a picture is filled by it. All three are in the renderer, so no design has to
+ask.
+
+**`pad` is global, so `pad: 0` is never "let the picture bleed".** It is also
+"put the button hard against the opposite edge", because the same zero reaches
+every side of every node. Until per-node padding exists (ADR 0061), a `split`
+with a picture is a **framed** picture — set a real `pad` and let the pane fill
+do the work.
+
 ## 2. What makes two designs different
 
 The library's failure mode is **twenty designs that are one design twenty

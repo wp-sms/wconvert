@@ -103,8 +103,35 @@ export const SHADOW_CSS = [
 
   // `flex-basis` plus `wrap` is what stacks the two panes on a narrow screen,
   // with no media query and no container query to keep in step.
-  `.wc-split{display:flex;flex-wrap:wrap;gap:var(--wc-gap,.75rem);align-items:center}`,
-  `.wc-pane{flex:1 1 12rem;min-inline-size:0}`,
+  /*
+   * ==========================================================================
+   * `stretch` AND NOT `center`, BECAUSE A PANE HOLDING A PICTURE IS A SIDE.
+   * ==========================================================================
+   * Centring left the shorter pane floating with dead space above and below
+   * it — and the shorter pane is almost always the picture, so every
+   * side-by-side design in the library had a band of panel colour along the
+   * top and bottom of its own artwork. It reads as an image that failed to
+   * load into its slot.
+   *
+   * Stretch makes both panes the height of the taller, which is what "side by
+   * side" means. When the split WRAPS at a narrow width there is one item per
+   * line, so this changes nothing there.
+   */
+  `.wc-split{display:flex;flex-wrap:wrap;gap:var(--wc-gap,.75rem);align-items:stretch}`,
+  /*
+   * A pane centres its own contents against the taller pane beside it.
+   *
+   * This is the other half of the `stretch` above, and without it that change
+   * traded one defect for another: the panes became equal height, so the
+   * SHORTER one's content sat at the top with the difference as dead space
+   * under it — a column of text ending two-thirds of the way down a panel
+   * whose other half is a full-bleed picture.
+   *
+   * Centring is what "side by side" means when the two sides are different
+   * lengths, and it is what every specimen of this genre does. A pane holding
+   * nothing but a picture is unaffected: the picture already fills it.
+   */
+  `.wc-pane{flex:1 1 12rem;min-inline-size:0;display:flex;flex-direction:column;justify-content:center}`,
   `.wc-pane:first-child{flex-grow:var(--wc-ratio,.5)}`,
   `.wc-pane:last-child{flex-grow:calc(1 - var(--wc-ratio,.5))}`,
 
@@ -234,6 +261,18 @@ export const SHADOW_CSS = [
   `.wc-glyph{inline-size:1.25em;block-size:1.25em}`,
   `.wc-link{color:inherit}`,
   `.wc-image{display:block;inline-size:100%;block-size:auto;object-fit:cover;border-radius:var(--wc-radius,.5rem)}`,
+  /*
+   * A picture that IS one side of a split fills that side.
+   *
+   * `block-size: auto` leaves it at its natural aspect inside a pane the rule
+   * above just made full height, so the stretch bought nothing and the dead
+   * band stayed. `:only-child` is what scopes this to a pane that is nothing
+   * BUT the picture — an image sitting above text in a pane keeps its own
+   * aspect, which is what that arrangement wants.
+   *
+   * `object-fit` is already `cover`, so filling crops rather than distorts.
+   */
+  `.wc-pane>.wc-image:only-child{block-size:100%}`,
   /*
    * ==========================================================================
    * A CIRCLE, BECAUSE `--wc-radius` IS GLOBAL AND AN AVATAR IS NOT.
