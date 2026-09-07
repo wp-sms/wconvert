@@ -543,6 +543,15 @@ export function StructureView({
  * `aria-disabled` announces the state, keeps the control reachable, and the
  * handler declines. This is the shape the ARIA practices give for exactly this
  * case.
+ *
+ * **The rule now holds across the admin, and the `disabled` props below are
+ * not exceptions to it.** A refused control keeps focus so its reason stays
+ * reachable; a control that is merely BUSY takes the real attribute and gets
+ * out of the way ({@see GoalCard}, {@see Gallery}). The `disabled` on the
+ * menu items in this file reads as a contradiction and is not one: Radix's
+ * `DropdownMenuItem` takes `disabled` as a prop and renders `aria-disabled`,
+ * never the HTML attribute — checked in `@radix-ui/react-menu`, not assumed —
+ * so those rows are already reachable and already announced.
  */
 function RowAction({
   block,

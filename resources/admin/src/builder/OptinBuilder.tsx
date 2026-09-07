@@ -1665,6 +1665,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
                     ? ready(destinations.data.destinations)
                     : destinations
                 }
+                types={read(destinations)?.types ?? []}
                 /*
                   **The [[Playbook]]'s hint, only while nothing is bound.**
                   Once the merchant has chosen, what the Playbook wanted is

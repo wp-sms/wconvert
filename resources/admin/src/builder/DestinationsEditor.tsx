@@ -1,4 +1,4 @@
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { Plug } from 'lucide-react';
 import { Description } from '../shell/Description';
 import { EmptyState } from '../shell/EmptyState';
@@ -10,9 +10,10 @@ import {
   RegionHeader,
 } from '../shell/Region';
 import { RowsSkeleton } from '../shell/RowsSkeleton';
+import { tierProductName } from '../goals/availability';
 import { targetSaid } from '../destinations/settings';
 import type { Loadable } from '../shell/loadable';
-import type { Destination } from '../destinations/api';
+import type { Destination, DestinationType } from '../destinations/api';
 
 /**
  * Which [[Destination]]s this [[Optin]] pushes to.
@@ -57,6 +58,17 @@ export interface DestinationsEditorProps {
    * unrepresentable rather than merely fixed.
    */
   readonly available: Loadable<readonly Destination[]>;
+  /**
+   * The types those routes run over, for the two absences that are not one.
+   *
+   * A `Destination` carries the resolved [[Availability]] and nothing about
+   * WHY, so this row could say only *"not running here"* — one sentence for
+   * *you have not bought the tier* and *this site is missing a plugin*. That
+   * is the collapse `Destinations` and `AddRule` both warn against in comments
+   * and ADR 0026 exists to stop: it is how a paying customer is shown an
+   * advertisement and a merchant is offered a licence we do not sell.
+   */
+  readonly types: readonly DestinationType[];
   /**
    * What the [[Playbook]] this Optin started from expected, in words — or null
    * where it started from none, or named nothing this install can say
@@ -107,7 +119,13 @@ const NOTE = 'col-start-2';
  * `input[type="checkbox"] { margin-inline-end }` was adding six pixels to the
  * grid's own column gap.
  */
-export function DestinationsEditor({ bound, available, hint, onChange }: DestinationsEditorProps) {
+export function DestinationsEditor({
+  bound,
+  available,
+  types,
+  hint,
+  onChange,
+}: DestinationsEditorProps) {
   return (
     <Region>
       <RegionHeader title={__('Where these leads go', 'wconvert')} level={3} />
@@ -131,6 +149,7 @@ export function DestinationsEditor({ bound, available, hint, onChange }: Destina
           {available.data.map((destination) => {
             const said = targetSaid(destination.target);
             const control = `wconvert-bind-${destination.id}`;
+            const type = types.find((candidate) => candidate.id === destination.type);
 
             return (
               <li
@@ -197,10 +216,23 @@ export function DestinationsEditor({ bound, available, hint, onChange }: Destina
                 */}
                 {destination.availability !== 'ready' && (
                   <Description as="span" className={NOTE}>
-                    {__(
-                      'Not running here, so captures are kept, not sent. Re-push from Destinations once it works.',
-                      'wconvert'
-                    )}
+                    {destination.availability === 'locked'
+                      ? sprintf(
+                          /* translators: %s: the product that supplies it, e.g. “WConvert Pro”. */
+                          __(
+                            'Needs %s, so captures are kept here, not sent. Re-push from Destinations once it runs.',
+                            'wconvert'
+                          ),
+                          tierProductName(type?.tier)
+                        )
+                      : sprintf(
+                          /* translators: %s: the plugin or platform it needs, e.g. “WP SMS”. */
+                          __(
+                            'Needs %s on this site, so captures are kept here, not sent. Re-push from Destinations once it runs.',
+                            'wconvert'
+                          ),
+                          type?.requires_label ?? __('something this site does not have', 'wconvert')
+                        )}
                   </Description>
                 )}
               </li>

@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { DestinationsEditor } from '../../resources/admin/src/builder/DestinationsEditor';
 import { LOADING, failed, ready } from '../../resources/admin/src/shell/loadable';
 import type { Loadable } from '../../resources/admin/src/shell/loadable';
-import type { Destination } from '../../resources/admin/src/destinations/api';
+import type { Destination, DestinationType } from '../../resources/admin/src/destinations/api';
 
 /**
  * ============================================================================
@@ -44,19 +44,36 @@ const destination = (over: Partial<Destination> & { id: string; label: string })
   ...over,
 });
 
-const editor = (available: Loadable<readonly Destination[]>, bound: string[] = []) =>
+const type = (over: Partial<DestinationType> & { id: string }): DestinationType => ({
+  label: 'MailPoet',
+  icon: 'plug',
+  tier: 'free',
+  requires: null,
+  requires_label: null,
+  availability: 'ready',
+  needs_connection: false,
+  settings_schema: {},
+  ...over,
+});
+
+const editor = (
+  available: Loadable<readonly Destination[]>,
+  bound: string[] = [],
+  types: DestinationType[] = [],
+) =>
   render(
     <DestinationsEditor
       bound={bound}
       available={available}
+      types={types}
       hint={null}
       onChange={vi.fn()}
     />,
   );
 
 /** The overwhelmingly common case: the read landed and there is a list. */
-const listed = (destinations: Destination[], bound: string[] = []) =>
-  editor(ready(destinations), bound);
+const listed = (destinations: Destination[], bound: string[] = [], types: DestinationType[] = []) =>
+  editor(ready(destinations), bound, types);
 
 const rowFor = (name: string): HTMLElement => {
   const item = screen.getByRole('checkbox', { name }).closest('li');
@@ -135,19 +152,50 @@ describe('binding an optin to a destination', () => {
    * is a different fact from where it would have landed (#4, ADR 0008).
    */
   it('keeps the not-running note beside the target', () => {
-    listed([
-      destination({
-        id: 'a',
-        label: 'Newsletter signups',
-        target: 'Newsletter',
-        availability: 'unavailable',
-      }),
-    ]);
+    listed(
+      [
+        destination({
+          id: 'a',
+          type: 'wsms',
+          label: 'Newsletter signups',
+          target: 'Newsletter',
+          availability: 'unavailable',
+        }),
+      ],
+      [],
+      [type({ id: 'wsms', label: 'WP SMS', requires: 'wp-sms', requires_label: 'WP SMS' })],
+    );
 
     const row = rowFor('Newsletter signups');
 
     expect(within(row).getByText('Sending to Newsletter.')).toBeInTheDocument();
-    expect(within(row).getByText(/Not running here/)).toBeInTheDocument();
+    expect(within(row).getByText(/Needs WP SMS on this site/)).toBeInTheDocument();
+  });
+
+  /**
+   * **`locked` and `unavailable` are two sentences, not one.** This row said
+   * *"not running here"* for both — the exact collapse `Destinations` and
+   * `AddRule` each warn against in a comment, and the one ADR 0026 exists to
+   * stop: it is how a paying customer is shown an advertisement for Pro and a
+   * merchant is offered a licence we do not sell.
+   */
+  it('names the tier for a locked route and the plugin for an unavailable one', () => {
+    listed(
+      [
+        destination({ id: 'a', type: 'paid', label: 'Paid route', availability: 'locked' }),
+        destination({ id: 'b', type: 'wsms', label: 'Plugin route', availability: 'unavailable' }),
+      ],
+      [],
+      [
+        type({ id: 'paid', label: 'Paid', tier: 'pro' }),
+        type({ id: 'wsms', label: 'WP SMS', requires: 'wp-sms', requires_label: 'WP SMS' }),
+      ],
+    );
+
+    expect(within(rowFor('Paid route')).getByText(/Needs WConvert Pro,/)).toBeInTheDocument();
+    expect(
+      within(rowFor('Plugin route')).getByText(/Needs WP SMS on this site/),
+    ).toBeInTheDocument();
   });
 
   it('ticks the destinations this optin is bound to', () => {
