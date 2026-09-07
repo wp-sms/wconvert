@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Input } from '../components/ui/input';
+import { Skeleton } from '../components/ui/skeleton';
 import { Description } from '../shell/Description';
 import {
   Region,
@@ -143,10 +144,35 @@ export function SiteAllowance() {
         )}
       />
 
-      {allowance.status === 'failed' ? (
-        <RegionErrorState
-          message={allowance.message}
-        />
+      {/*
+        **A region that fetches owes a loading state** (ADR 0039), and this one
+        showed four real controls greyed out instead. That is not the same
+        claim: a disabled switch says *you may not change this*, and what was
+        true was *we have not read it yet* — so a merchant met a site-wide
+        setting that looked forbidden and then quietly became usable.
+
+        The placeholders sit in the region's own grid, so nothing moves when
+        the allowance lands.
+      */}
+      {allowance.status === 'loading' ? (
+        <RegionBody>
+          <span role="status" className="sr-only">
+            {__('Loading…', 'wconvert')}
+          </span>
+
+          <div className="wconvert-allowance" aria-hidden="true">
+            <Skeleton className="col-span-full h-[1lh] w-96 max-w-full" />
+            <Skeleton className="col-span-full h-[1lh] w-96 max-w-full" />
+            <Skeleton className="h-[1lh] w-48 max-w-full" />
+            <Skeleton className="h-(--control-height) w-24" />
+            <Skeleton className="h-[1lh] w-32 max-w-full" />
+            <Skeleton className="h-[1lh] w-48 max-w-full" />
+            <Skeleton className="h-(--control-height) w-24" />
+            <Skeleton className="h-[1lh] w-32 max-w-full" />
+          </div>
+        </RegionBody>
+      ) : allowance.status === 'failed' ? (
+        <RegionErrorState message={allowance.message} />
       ) : (
         <>
           {error !== null && <RegionError message={error} />}

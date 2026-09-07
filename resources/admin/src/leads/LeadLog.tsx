@@ -32,6 +32,7 @@ import {
   RegionFooter,
   RegionHeader,
 } from '../shell/Region';
+import { Skeleton } from '../components/ui/skeleton';
 import { TableSkeleton } from '../shell/TableSkeleton';
 import { Toolbar, ToolbarCount } from '../shell/Toolbar';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
@@ -234,10 +235,30 @@ export function LeadLog() {
           )}
         />
 
-        {retention.status === 'failed' ? (
-          <RegionErrorState
-            message={retention.message}
-          />
+        {/*
+          **A region that fetches owes a loading state** (ADR 0039), and this
+          one showed two real radios and a number field greyed out instead. A
+          disabled control says *you may not change this*; what was true was
+          *we have not read it yet*. The Optins screen's allowance card had the
+          identical gap and they agreed with each other while disagreeing with
+          every table on the same screens.
+        */}
+        {retention.status === 'loading' ? (
+          <RegionBody className="flex flex-col gap-3">
+            <span role="status" className="sr-only">
+              {__('Loading…', 'wconvert')}
+            </span>
+
+            <Skeleton aria-hidden="true" className="h-[1lh] w-64 max-w-full" />
+
+            <span aria-hidden="true" className="flex flex-wrap items-center gap-2">
+              <Skeleton className="h-[1lh] w-56 max-w-full" />
+              <Skeleton className="h-(--control-height) w-24" />
+              <Skeleton className="h-[1lh] w-10" />
+            </span>
+          </RegionBody>
+        ) : retention.status === 'failed' ? (
+          <RegionErrorState message={retention.message} />
         ) : (
           <>
             {retentionError !== null && <RegionError message={retentionError} />}
