@@ -1,7 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { Skeleton } from '../components/ui/skeleton';
 import { RegionBody } from './Region';
-import { useShownAfterDelay } from './skeletonDelay';
 
 /**
  * Rows of a plain list, in the shape of the rows that are coming.
@@ -15,14 +14,11 @@ import { useShownAfterDelay } from './skeletonDelay';
  * `aria-hidden` on the bars and one `role="status"` beside them, for
  * `TableSkeleton`'s reason: a screen reader has nothing to gain from four empty
  * rows and everything to gain from the word "Loading".
+ *
+ * No anti-flash delay: this fills a region for the first time and there is
+ * nothing to flicker against — {@see useShownAfterDelay} draws that line.
  */
 export function RowsSkeleton({ rows = 3 }: { rows?: number }) {
-  const shown = useShownAfterDelay();
-
-  if (!shown) {
-    return null;
-  }
-
   return (
     <RegionBody className="flex flex-col gap-3">
       <span role="status" className="flex items-center gap-2">

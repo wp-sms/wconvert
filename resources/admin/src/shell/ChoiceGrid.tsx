@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Skeleton } from '../components/ui/skeleton';
 import { Description } from './Description';
+import { useShownAfterDelay } from './skeletonDelay';
 
 /**
  * A set of cards, each offering one way forward, and the placeholder for the
@@ -116,6 +117,16 @@ export function ChoiceCard({
  * it is the shape {@see GallerySkeleton} already had.
  */
 export function ChoiceSkeleton({ cards = 4 }: { cards?: number }) {
+  /*
+    **It delays, because this step can be entered a second time.** Picking a
+    different [[Goal]] puts a filled step back into `loading`, which is the
+    flicker case {@see useShownAfterDelay} describes — unlike the skeletons
+    that only ever fill a blank region.
+  */
+  if (!useShownAfterDelay()) {
+    return null;
+  }
+
   return (
     <>
       <span role="status" className="sr-only">

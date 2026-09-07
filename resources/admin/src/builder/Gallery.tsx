@@ -3,6 +3,7 @@ import { ExternalLink } from 'lucide-react';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { Skeleton } from '../components/ui/skeleton';
+import { useShownAfterDelay } from '../shell/skeletonDelay';
 import { renderingFor, tierName } from '../goals/availability';
 import { TemplateCard } from './TemplateCard';
 import { nameOf, type TemplateIndexEntry, type TemplateLabelsWithFacets } from '../templates/api';
@@ -361,6 +362,15 @@ export function Gallery({
  * moment they are deciding whether this product has anything for them.
  */
 export function GallerySkeleton({ cards = 6 }: { cards?: number }) {
+  /*
+    **It delays**, for {@see ChoiceSkeleton}'s reason: the creation flow's step
+    two is re-entered whenever the merchant picks a different [[Goal]], so this
+    can replace a grid that was already full.
+  */
+  if (!useShownAfterDelay()) {
+    return null;
+  }
+
   return (
     <>
       {/*

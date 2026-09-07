@@ -15,11 +15,27 @@ const DELAY_MS = 160;
 /**
  * Whether a placeholder has waited long enough to be worth drawing.
  *
- * **It lives here rather than in each skeleton**, for the reason
- * {@see TableSkeleton} already gave for keeping it out of each CALL SITE: "do
- * not flash" is a property of a skeleton and not a decision anyone should be
- * able to get half right. It was true of one skeleton out of five, so four of
- * them flickered on every fast read.
+ * ============================================================================
+ * NOT EVERY SKELETON WANTS THIS, AND THE DIVIDING LINE IS WHAT IT REPLACES.
+ * ============================================================================
+ * One skeleton of five delayed and four painted at once, which read as drift.
+ * It is not: the two behaviours answer different situations, and nothing in
+ * the admin said which was which.
+ *
+ * **A skeleton that replaces content the merchant was already reading waits.**
+ * That is the flicker case — the region has something in it, a re-read lands
+ * in tens of milliseconds, and a placeholder that appears and vanishes inside
+ * one is a screen that blinks. {@see TableSkeleton} is written for exactly
+ * this, and {@see ChoiceSkeleton} and {@see GallerySkeleton} join it because
+ * picking a different [[Goal]] puts a filled step back into `loading`.
+ *
+ * **A skeleton filling a region for the first time paints at once.** There is
+ * nothing to flicker against — the region is blank either way — and drawing
+ * the shape immediately is what reserves the height, which is the whole job of
+ * {@see StatRowSkeleton} (its numbers arrive after the page and would push the
+ * tab strip down) and of {@see RegionSkeleton}. {@see BuilderSkeleton} is the
+ * sharpest case: it carries the way OUT of the builder while the chunk loads,
+ * so 160ms of nothing is 160ms with no way back.
  */
 export function useShownAfterDelay(): boolean {
   const [shown, setShown] = useState(false);
