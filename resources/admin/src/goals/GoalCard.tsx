@@ -1,4 +1,5 @@
 import { __, sprintf } from '@wordpress/i18n';
+import { Lock } from 'lucide-react';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { ChoiceCard } from '../shell/ChoiceGrid';
@@ -104,9 +105,33 @@ export function GoalCard({
     <ChoiceCard
       id={goal.id}
       title={goal.label}
-      notes={refused ?? goal.description}
+      notes={goal.description}
+      /*
+        **The refusal is its own slot, and it used to be `notes`.** That landed
+        in the ordinary description, which carries no id — so the action's
+        `aria-describedby` pointed at the title and never at the reason, on the
+        one screen whose docblock claims the reason is marked before the click.
+        The Goal's own words stay beside it: what this Goal IS does not stop
+        being true because this Optin cannot take it.
+      */
+      reason={refused}
       current={current}
-      badge={rendering === 'upsell' ? <Badge variant="warning">{tierName(goal.tier)}</Badge> : undefined}
+      /*
+        **Grey and a lock, never amber.** Amber is the reserved meaning that
+        the SITE is holding something back — a [[Suspended]] Optin, a paused
+        Destination, a rule needing a plugin — and spending it on a PRICE made
+        it mean two opposite things on two screens a merchant moves between.
+        `StartingPoints` already states the rule and already draws the locked
+        badge this way (ADR 0037).
+      */
+      badge={
+        rendering === 'upsell' ? (
+          <Badge variant="secondary">
+            <Lock aria-hidden="true" />
+            {tierName(goal.tier)}
+          </Badge>
+        ) : undefined
+      }
       action={(describedBy) =>
         rendering === 'upsell' ? (
           /*
@@ -123,10 +148,23 @@ export function GoalCard({
             )}
           </span>
         ) : (
+          /*
+            **`aria-disabled`, not `disabled`**, and the reason is the reason
+            itself: a real `disabled` takes the control out of the focus order,
+            so the sentence saying why it cannot be pressed is a sentence a
+            keyboard user cannot tab to. That is the doctrine
+            {@see StructureView} states for its tree and this admin now holds
+            everywhere — a control refused by what the site IS keeps focus; a
+            control that is merely BUSY takes the real attribute.
+
+            The handler declines rather than the pointer being turned off,
+            because `pointer-events: none` would also stop a click from
+            focusing it.
+          */
           <Button
             aria-describedby={describedBy}
+            aria-disabled={current || refused !== null}
             variant={current ? 'secondary' : 'default'}
-            disabled={current || refused !== null}
             onClick={current || refused !== null ? undefined : () => onChoose(goal)}
           >
             {current ? __('In use', 'wconvert') : choose}

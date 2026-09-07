@@ -41,6 +41,7 @@ export function ChoiceCard({
   id,
   title,
   notes,
+  reason = null,
   badge,
   current = false,
   action,
@@ -48,6 +49,25 @@ export function ChoiceCard({
   id: string;
   title: string;
   notes: string;
+  /**
+   * Why the action on this card would be refused, or null.
+   *
+   * ========================================================================
+   * A REFUSAL IN `notes` WAS A REFUSAL NO ASSISTIVE TECHNOLOGY COULD READ.
+   * ========================================================================
+   * {@see GoalCard} passed one as `notes`, which lands in the ordinary
+   * `Description` below — and that carries no `id`. This component then handed
+   * the action only `titleId`, so its `aria-describedby` pointed at the TITLE
+   * and never at the reason. The Change-goal dialog therefore disabled a button
+   * and put the reason where nothing would announce it, on the one screen whose
+   * docblock claims *"marked before the click, with the reason (ADR 0042
+   * rule 3)"*.
+   *
+   * `TemplateCard` in the design gallery has always done this correctly — a
+   * separate `reason`, its own id, and both ids handed to the action — so this
+   * is that arrangement brought one surface over rather than invented.
+   */
+  reason?: string | null;
   badge?: ReactNode;
   /**
    * This card is the one already in use.
@@ -62,6 +82,7 @@ export function ChoiceCard({
   action: (describedBy: string) => ReactNode;
 }) {
   const titleId = `wconvert-choice-${id}`;
+  const reasonId = `${titleId}-reason`;
 
   return (
     <li
@@ -78,6 +99,14 @@ export function ChoiceCard({
         {badge}
       </div>
       <Description className="flex-1">{notes}</Description>
+
+      {/*
+        **The reason sits with the control it refuses**, and it has an id so it
+        can be announced with it — `TemplateCard`'s arrangement, one surface
+        over.
+      */}
+      {reason !== null && <Description id={reasonId}>{reason}</Description>}
+
       {/*
         **Four buttons all called "Choose" is four buttons a keyboard user
         cannot tell apart.** The visible label stays short because the card it
@@ -87,7 +116,7 @@ export function ChoiceCard({
         sets AA as the bar, and this is the shape the ARIA practices give for a
         list of cards with one action each.
       */}
-      <div>{action(titleId)}</div>
+      <div>{action(reason !== null ? `${titleId} ${reasonId}` : titleId)}</div>
     </li>
   );
 }

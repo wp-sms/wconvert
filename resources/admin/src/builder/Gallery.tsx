@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, Lock } from 'lucide-react';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { Skeleton } from '../components/ui/skeleton';
@@ -297,7 +297,21 @@ export function Gallery({
             reason={refused}
             notes={changes ?? undefined}
             onNear={locked ? undefined : onNear}
-            marks={locked ? <Badge variant="warning">{tierName(entry.tier)}</Badge> : undefined}
+            /*
+              **Grey and a lock, never amber** (ADR 0037). Amber is the
+              reserved meaning that the SITE is holding something back, and
+              spending it on a PRICE made it mean two opposite things on two
+              screens. `StartingPoints` states the rule and already draws it
+              this way.
+            */
+            marks={
+              locked ? (
+                <Badge variant="secondary">
+                  <Lock aria-hidden="true" />
+                  {tierName(entry.tier)}
+                </Badge>
+              ) : undefined
+            }
             absent={
               locked ? (
                 <ul className="wconvert-facets">
@@ -333,11 +347,19 @@ export function Gallery({
                   </a>
                 </Button>
               ) : (
+                /*
+                  **`busy` takes the real attribute and the other two do not.**
+                  A save in flight is transient and wants the control out of
+                  the way; *in use* and a refusal are states of this install
+                  that the merchant may want to read, and a real `disabled`
+                  would put the reason beside them out of the focus order.
+                */
                 <Button
                   variant={inUse ? 'secondary' : 'outline'}
                   size="sm"
                   aria-describedby={describedBy}
-                  disabled={busy || inUse || refused !== null}
+                  disabled={busy}
+                  aria-disabled={inUse || refused !== null}
                   onClick={inUse || refused !== null ? undefined : () => onChoose(entry.id)}
                 >
                   {inUse ? __('In use', 'wconvert') : __('Use this design', 'wconvert')}

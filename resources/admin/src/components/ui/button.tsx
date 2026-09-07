@@ -4,8 +4,24 @@ import { Slot } from "radix-ui"
 
 import { cn } from "@/lib/utils"
 
+/*
+ * ============================================================================
+ * `aria-disabled` LOOKS DISABLED TOO, AND UNTIL NOW IT DID NOT.
+ * ============================================================================
+ * WConvert's, not upstream's — the escalation ADR 0036 names. This admin draws
+ * a line the vendored button knows nothing about: a control refused because of
+ * what the SITE is keeps focus, so the reason it carries stays reachable, while
+ * a control that is merely BUSY takes the real attribute and gets out of the
+ * way ({@see StructureView} argues the same for its roving tabindex).
+ *
+ * Without this, half of that line was invisible: `aria-disabled` announced the
+ * state and rendered a control that looked entirely pressable. `pointer-events`
+ * are deliberately NOT killed — the handler declines instead, because removing
+ * them would also stop a click from focusing the control, which is the whole
+ * thing `aria-disabled` was chosen to keep.
+ */
 const buttonVariants = cva(
-  "inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-disabled:cursor-default aria-disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {

@@ -288,7 +288,15 @@ describe('the goal picker', () => {
     const mine = cardFor('Grow my email list');
 
     expect(mine).toHaveAttribute('aria-current', 'true');
-    expect(within(mine).getByRole('button', { name: 'In use' })).toBeDisabled();
+    /*
+      `aria-disabled` rather than `disabled`: the card stays reachable so the
+      state it announces can be read, which is the line this admin draws
+      between a control refused by what the site IS and one that is merely busy.
+    */
+    expect(within(mine).getByRole('button', { name: 'In use' })).toHaveAttribute(
+      'aria-disabled',
+      'true',
+    );
   });
 
   it('offers every other goal this install can serve', async () => {
@@ -315,6 +323,17 @@ describe('the goal picker', () => {
     expect(locked.getByText('Pro')).toBeInTheDocument();
     expect(locked.getByText(/Available with/)).toBeInTheDocument();
     expect(locked.queryByRole('button')).toBeNull();
+
+    /*
+      **Amber says the SITE is holding this back, and a price is not that**
+      (ADR 0037). This badge was `warning`, so amber meant *suspended*,
+      *paused*, *needs a plugin* AND *buy Pro* depending which screen the
+      merchant was on.
+    */
+    expect(locked.getByText('Pro').closest('[data-slot="badge"]')).toHaveAttribute(
+      'data-variant',
+      'secondary',
+    );
   });
 
   it('hides a goal this site cannot serve at all', async () => {
@@ -349,8 +368,18 @@ describe('the goal picker', () => {
 
     const delivery = within(cardFor('Deliver a lead magnet'));
 
-    expect(delivery.getByRole('button', { name: 'Use this goal' })).toBeDisabled();
+    const refused = delivery.getByRole('button', { name: 'Use this goal' });
+
+    expect(refused).toHaveAttribute('aria-disabled', 'true');
     expect(delivery.getByText(/Design tab/)).toBeInTheDocument();
+
+    /*
+      **The reason is announced WITH the button**, which is the whole of ADR
+      0042 rule 3 and was not true: the refusal was passed as the card's
+      ordinary `notes`, which carry no id, so `aria-describedby` pointed at the
+      title and a screen reader heard a dimmed button and no reason at all.
+    */
+    expect(refused).toHaveAccessibleDescription(/Design tab/);
   });
 
   it('offers it where the design does capture something', async () => {
