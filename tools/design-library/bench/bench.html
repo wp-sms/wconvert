@@ -1,0 +1,576 @@
+<title>WConvert Design Bench</title>
+
+<!--
+  The Design Bench — the RETURN PATH.
+
+  `tools/design-system` is one-way: repo → Claude Design. Designs have to come
+  back as JSON, and this is what they come back through. Paste a tree in, drive
+  every token, judge it in its real container at three widths in both
+  directions, copy it out.
+
+  This file is a TEMPLATE. `build/bench.mjs` replaces the three markers below
+  with the shipping renderer, the shipping manifest and the shipping themes,
+  and writes `out/bench.html` — which is what gets published. The renderer is
+  INLINED because an Artifact cannot load an external script outside its CDN
+  allowlist, and inlining is also what makes the file work from `file://` with
+  no server.
+
+  Authored as page CONTENT — no doctype, no <html>, no <head>, no <body> — so
+  the published wrapper supplies them.
+-->
+
+<style>
+  :root {
+    color-scheme: light;
+    --ink: #0f172a;
+    --ink-2: #475569;
+    --ink-3: #94a3b8;
+    --line: #e2e8f0;
+    --panel: #ffffff;
+    --ground: #f1f5f9;
+    --tint: #2563eb;
+    --stage: #cbd5e1;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) {
+      --ink: #e2e8f0;
+      --ink-2: #94a3b8;
+      --ink-3: #64748b;
+      --line: #1e293b;
+      --panel: #0f172a;
+      --ground: #020617;
+      --tint: #38bdf8;
+      --stage: #1e293b;
+    }
+  }
+
+  :root[data-theme='dark'] {
+    --ink: #e2e8f0;
+    --ink-2: #94a3b8;
+    --ink-3: #64748b;
+    --line: #1e293b;
+    --panel: #0f172a;
+    --ground: #020617;
+    --tint: #38bdf8;
+    --stage: #1e293b;
+  }
+
+  /*
+    Two roles, and the split follows the subject rather than taste: the chrome
+    is a UI sans, and every VALUE on this page — a token, a hex, a length, a
+    tree — is CSS or JSON, so it is set in mono. System stacks on both, because
+    this file has to render from `file://` during the build and a webfont would
+    silently fall back there.
+  */
+  :root {
+    --ui: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font: 13px/1.5 var(--ui);
+    height: 100vh;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 22rem;
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  header {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    align-items: center;
+    padding: .5rem .75rem;
+    background: var(--panel);
+    border-block-end: 1px solid var(--line);
+  }
+
+  h1 {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    margin: 0 .5rem 0 0;
+  }
+
+  .group { display: flex; gap: 2px; background: var(--ground); padding: 2px; border-radius: 7px; }
+
+  .group button {
+    font: inherit;
+    font-size: 12px;
+    border: 0;
+    background: transparent;
+    color: var(--ink-2);
+    padding: .25rem .55rem;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .group button[aria-pressed='true'] { background: var(--panel); color: var(--ink); font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+
+  .spacer { margin-inline-start: auto; }
+
+  .stage-wrap {
+    overflow: auto;
+    padding: 1.5rem;
+    display: grid;
+    place-items: start center;
+    background:
+      repeating-conic-gradient(var(--stage) 0 25%, transparent 0 50%) 50% / 20px 20px;
+  }
+
+  /* The page the design is served on. Its width IS the viewport switcher. */
+  #page {
+    position: relative;
+    background: #fff;
+    color: #111;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, .18);
+    overflow: hidden;
+    transition: inline-size 160ms ease;
+  }
+
+  #page .filler { padding: 1.25rem; color: #64748b; font: 14px/1.7 Georgia, serif; }
+  #page .filler h2 { color: #1e293b; font-size: 20px; margin: 0 0 .5rem; }
+
+  aside {
+    overflow: auto;
+    background: var(--panel);
+    border-inline-start: 1px solid var(--line);
+    padding: .75rem;
+  }
+
+  aside h2 {
+    font-size: 11px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin: 1rem 0 .4rem;
+  }
+
+  aside h2:first-child { margin-block-start: 0; }
+
+  .token { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: .4rem; align-items: center; margin-block-end: .3rem; }
+  .token label { font-size: 11px; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; }
+  .token .pair { display: flex; gap: .25rem; min-width: 0; }
+
+  input[type='text'], textarea, select {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    font-variant-numeric: tabular-nums;
+    width: 100%;
+    min-width: 0;
+    padding: .25rem .4rem;
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    background: var(--ground);
+    color: var(--ink);
+  }
+
+  input[type='color'] { inline-size: 1.8rem; block-size: 1.7rem; padding: 0; border: 1px solid var(--line); border-radius: 5px; background: none; flex: 0 0 auto; }
+
+  textarea { font-size: 11px; line-height: 1.45; resize: vertical; }
+
+  /* The token's own name is a name, not a value, so it stays in the UI face. */
+  .token label { font-family: var(--ui); }
+
+  /* Keyboard focus, visible everywhere. */
+  :is(button, input, select, textarea):focus-visible {
+    outline: 2px solid var(--tint);
+    outline-offset: 1px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+
+  .row { display: flex; gap: .35rem; align-items: center; margin-block-end: .4rem; }
+
+  .act {
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    padding: .3rem .6rem;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--ground);
+    color: var(--ink);
+    cursor: pointer;
+  }
+
+  .act.primary { background: var(--tint); border-color: var(--tint); color: #fff; }
+
+  .note { font-size: 11px; color: var(--ink-3); margin: .3rem 0 0; }
+  .note b { color: #dc2626; }
+
+  @media (max-width: 60rem) {
+    body { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) 18rem; }
+    aside { border-inline-start: 0; border-block-start: 1px solid var(--line); }
+  }
+</style>
+
+<header>
+  <h1>Design Bench</h1>
+
+  <div class="group" id="containers"></div>
+  <div class="group" id="viewports"></div>
+  <div class="group" id="steps"></div>
+  <div class="group" id="directions"></div>
+  <div class="group" id="themes"></div>
+
+  <div class="spacer"></div>
+  <button class="act" id="reset">Reset tokens</button>
+</header>
+
+<div class="stage-wrap"><div id="page"></div></div>
+
+<aside>
+  <h2>Entry JSON</h2>
+  <div class="row">
+    <button class="act primary" id="apply">Apply</button>
+    <button class="act" id="copy">Copy out</button>
+    <button class="act" id="pretty">Format</button>
+  </div>
+  <textarea id="json" rows="14" spellcheck="false"></textarea>
+  <p class="note" id="status"></p>
+
+  <div id="controls"></div>
+</aside>
+
+<script>/*__RENDERER__*/</script>
+
+<script id="wc-manifest" type="application/json">/*__MANIFEST__*/</script>
+<script id="wc-seed" type="application/json">/*__SEED__*/</script>
+
+<script>
+  (function () {
+    'use strict';
+
+    var manifest = JSON.parse(document.getElementById('wc-manifest').textContent);
+    var seed = JSON.parse(document.getElementById('wc-seed').textContent);
+    var themes = WConvertRenderer.themePresets();
+
+    var VIEWPORTS = [320, 768, 1440];
+
+    /*
+      The four containers.
+
+      The design is mounted inside `.wc-box`, which is a WRAPPER around the
+      shadow host and never the host itself: SHADOW_CSS carries an
+      all:initial !important rule on :host, and an !important declaration in
+      :host beats a normal one from outside — so position:absolute set on the
+      host is silently reverted to static, and a bar renders full width at the
+      top of the page. The shipping containers wrap for the same reason.
+
+      The geometry mirrors free's DIALOG_ARMOUR and Pro's PLACEMENT.
+      `build/containers.mjs` asserts that mirror against their source.
+    */
+    var CONTAINERS = {
+      /*
+        No `position:absolute;inset:0` here, unlike the capture harness: there
+        the popup container is a CHILD of the frame, and here `#page` IS the
+        page. Absolutely positioning it took it out of the stage's grid and
+        pinned the popup to the left edge instead of centring it.
+      */
+      popup: {
+        page: 'display:grid;place-items:center;background:var(--wc-bench-backdrop)',
+        box: 'max-inline-size:100%',
+      },
+      inline: { page: '', box: 'padding:1.5rem 1rem' },
+      floating_bar: {
+        page: '',
+        box: 'position:absolute;inset-block-start:auto;inset-block-end:0;inset-inline-start:0;inset-inline-end:0',
+      },
+      slide_in: {
+        page: '',
+        box:
+          'position:absolute;inset-block-start:auto;inset-block-end:1rem;' +
+          'inset-inline-start:auto;inset-inline-end:1rem;inline-size:min(100% - 2rem, 26rem)',
+      },
+    };
+
+    var state = {
+      entry: seed,
+      tokens: Object.assign({}, seed.tokens),
+      container: seed.display_type || 'popup',
+      viewport: 768,
+      step: 0,
+      direction: 'ltr',
+    };
+
+    // ---------------------------------------------------------------- header
+
+    function segmented(id, values, label, read, write) {
+      var host = document.getElementById(id);
+
+      host.replaceChildren();
+
+      values.forEach(function (value) {
+        var button = document.createElement('button');
+
+        button.type = 'button';
+        button.textContent = label(value);
+        button.setAttribute('aria-pressed', String(read() === value));
+        button.onclick = function () {
+          write(value);
+          draw();
+        };
+        host.appendChild(button);
+      });
+    }
+
+    function drawHeader() {
+      segmented('containers', Object.keys(CONTAINERS), function (v) { return v.replace('_', ' '); },
+        function () { return state.container; }, function (v) { state.container = v; });
+
+      segmented('viewports', VIEWPORTS, function (v) { return v + 'px'; },
+        function () { return state.viewport; }, function (v) { state.viewport = v; });
+
+      var steps = [];
+
+      for (var i = 0; i < (state.entry.tree.steps || []).length; i++) { steps.push(i); }
+
+      segmented('steps', steps, function (v) { return 'step ' + (v + 1); },
+        function () { return state.step; }, function (v) { state.step = v; });
+
+      segmented('directions', ['ltr', 'rtl'], function (v) { return v.toUpperCase(); },
+        function () { return state.direction; }, function (v) { state.direction = v; });
+
+      segmented('themes', ['—'].concat(themes.map(function (t) { return t.id; })),
+        function (v) { return v === '—' ? 'own' : themes.filter(function (t) { return t.id === v; })[0].label; },
+        function () { return state.theme || '—'; },
+        function (v) {
+          state.theme = v === '—' ? null : v;
+          state.tokens = Object.assign({}, state.entry.tokens,
+            v === '—' ? {} : themes.filter(function (t) { return t.id === v; })[0].tokens);
+          drawControls();
+        });
+    }
+
+    // -------------------------------------------------------------- controls
+
+    /*
+      A colour picker where the value looks like a colour, a select where the
+      manifest offers choices, and a text box always — read off the VALUE
+      rather than a list of token names, which is the same shape the shipping
+      settings panel uses, so a token added to the manifest grows a control
+      here with nothing edited.
+
+      The text box stays beside every richer control. Token values are
+      unvalidated, and a control that could clobber a clamp() the merchant
+      typed would be this bench deciding a design's value was written wrong.
+    */
+    function isHex(value) { return /^#[0-9a-f]{6}$/i.test(String(value).trim()); }
+
+    function drawControls() {
+      var host = document.getElementById('controls');
+
+      host.replaceChildren();
+
+      var heading = document.createElement('h2');
+
+      heading.textContent = 'Tokens (' + Object.keys(manifest.tokens).length + ')';
+      host.appendChild(heading);
+
+      Object.keys(manifest.tokens).forEach(function (name) {
+        var row = document.createElement('div');
+        var label = document.createElement('label');
+        var pair = document.createElement('div');
+        var value = state.tokens[name] !== undefined ? state.tokens[name] : manifest.tokens[name];
+
+        row.className = 'token';
+        pair.className = 'pair';
+        label.textContent = name;
+        label.title = name;
+
+        var text = document.createElement('input');
+
+        text.type = 'text';
+        text.value = value;
+        // What the token falls back to when a design does not set it. Absence
+        // is a real state here — most designs set eight of the twenty-two.
+        text.placeholder = manifest.tokens[name];
+        text.title = name + ' — default: ' + manifest.tokens[name];
+        text.oninput = function () { set(name, text.value); };
+
+        if (isHex(value)) {
+          var picker = document.createElement('input');
+
+          picker.type = 'color';
+          picker.value = value;
+          picker.oninput = function () { text.value = picker.value; set(name, picker.value); };
+          pair.appendChild(picker);
+        }
+
+        if (manifest.choices[name]) {
+          var select = document.createElement('select');
+
+          manifest.choices[name].forEach(function (choice) {
+            var option = document.createElement('option');
+
+            option.value = choice;
+            option.textContent = choice.length > 28 ? choice.slice(0, 26) + '…' : choice;
+            option.selected = choice === value;
+            select.appendChild(option);
+          });
+
+          select.onchange = function () { text.value = select.value; set(name, select.value); };
+          pair.appendChild(select);
+        }
+
+        pair.appendChild(text);
+        row.appendChild(label);
+        row.appendChild(pair);
+        host.appendChild(row);
+      });
+    }
+
+    function set(name, value) {
+      state.tokens[name] = value;
+      state.theme = null;
+      draw();
+    }
+
+    // ------------------------------------------------------------------ draw
+
+    function draw() {
+      var page = document.getElementById('page');
+      var container = CONTAINERS[state.container] || CONTAINERS.popup;
+
+      page.dir = state.direction;
+      page.style.cssText =
+        'position:relative;inline-size:' + state.viewport + 'px;block-size:' +
+        (state.container === 'inline' ? 'auto' : '620px') + ';' + container.page;
+      page.style.setProperty('--wc-bench-backdrop', state.tokens.backdrop || manifest.tokens.backdrop);
+      page.replaceChildren();
+
+      // Something for the design to sit over, so a bar and a slide-in are
+      // judged against a page rather than against nothing.
+      if (state.container !== 'popup') {
+        var filler = document.createElement('div');
+
+        filler.className = 'filler';
+        filler.innerHTML =
+          '<h2>The page underneath</h2><p>A slide-in may be ignored and a floating bar sits at ' +
+          'the edge of something the visitor is still reading. Neither is judged fairly against ' +
+          'an empty rectangle.</p><p>An inline design sits in this flow, where the block was placed.</p>';
+        page.appendChild(filler);
+      }
+
+      var box = document.createElement('div');
+
+      box.style.cssText = container.box;
+
+      var host = document.createElement('div');
+      var root = host.attachShadow({ mode: 'open' });
+      var style = document.createElement('style');
+
+      style.textContent = WConvertRenderer.SHADOW_CSS;
+      root.appendChild(style);
+
+      try {
+        root.appendChild(WConvertRenderer.render(state.entry.tree, state.tokens, state.step));
+        say('');
+      } catch (error) {
+        say('The renderer threw: ' + error.message, true);
+      }
+
+      box.appendChild(host);
+      page.appendChild(box);
+
+      drawHeader();
+    }
+
+    function say(message, bad) {
+      var status = document.getElementById('status');
+
+      status.innerHTML = bad ? '<b>' + message + '</b>' : message;
+    }
+
+    // ------------------------------------------------------------------ JSON
+
+    var json = document.getElementById('json');
+
+    function show(entry) {
+      json.value = JSON.stringify(entry, null, 2);
+    }
+
+    document.getElementById('apply').onclick = function () {
+      var decoded;
+
+      try {
+        decoded = JSON.parse(json.value);
+      } catch (error) {
+        return say('Not valid JSON: ' + error.message, true);
+      }
+
+      if (!decoded || !decoded.tree || !Array.isArray(decoded.tree.steps)) {
+        return say('No tree.steps — a design with no `tree` becomes a Pro upsell card, silently.', true);
+      }
+
+      state.entry = decoded;
+      state.tokens = Object.assign({}, decoded.tokens);
+      state.theme = null;
+      state.step = 0;
+
+      if (CONTAINERS[decoded.display_type]) {
+        state.container = decoded.display_type;
+      }
+
+      drawControls();
+      draw();
+    };
+
+    document.getElementById('copy').onclick = function () {
+      /*
+        The tokens the BENCH holds, not the ones the entry arrived with — that
+        is the whole point of the return path. Key order matches the library's
+        own export so a copied entry diffs cleanly against a shipped one.
+      */
+      var out = {
+        id: state.entry.id || 'untitled',
+        name: state.entry.name || 'Untitled',
+        display_type: state.container,
+        tier: state.entry.tier || 'free',
+        tokens: state.tokens,
+        tree: state.entry.tree,
+      };
+
+      show(out);
+      json.select();
+
+      try {
+        navigator.clipboard.writeText(JSON.stringify(out, null, 2));
+        say('Copied. Run php bin/verify-templates.php before believing it exists.');
+      } catch (error) {
+        say('Selected — copy it by hand. (' + error.message + ')');
+      }
+    };
+
+    document.getElementById('pretty').onclick = function () {
+      try {
+        show(JSON.parse(json.value));
+        say('');
+      } catch (error) {
+        say('Not valid JSON: ' + error.message, true);
+      }
+    };
+
+    document.getElementById('reset').onclick = function () {
+      state.tokens = Object.assign({}, state.entry.tokens);
+      state.theme = null;
+      drawControls();
+      draw();
+    };
+
+    show(seed);
+    drawControls();
+    draw();
+  })();
+</script>

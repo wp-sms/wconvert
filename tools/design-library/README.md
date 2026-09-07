@@ -1,0 +1,131 @@
+# The design library, regenerated from `resources/templates`
+
+The working set for growing the design library: the portable vocabulary spec,
+a card per design per step, contact sheets at three viewports in both
+directions, and the Design Bench.
+
+```bash
+npm install --no-save playwright       # not a repo dependency; see below
+./tools/design-library/build.sh        # everything, ~30 seconds
+./tools/design-library/build.sh vocabulary bench   # or just some steps
+```
+
+Output goes to `tools/design-library/out/`, which is gitignored. Nothing here
+ships: `/tools` is in `.distignore`.
+
+## A sibling of `tools/design-system`, not a step inside it
+
+Same machinery, different subject. That one mirrors the **wp-admin screens**;
+this one mirrors the **visitor-facing designs**.
+
+**Our capture is far simpler, and it is worth knowing why.** The renderer is
+four files that import nothing but their own types, and
+`render(tree, tokens, step)` asks nothing of the document it is attached to,
+nothing of the site and nothing of the Optin. So a card is a blank page, a
+bundle and a tree — **no WordPress at all**. There is no Playground boot, no
+seed, no `rest_pre_dispatch` harness, and none of the wp-admin traps that
+README records.
+
+What is shared is the contact-sheet tiler, which is **imported** from
+`tools/design-system/build/contact-sheet.mjs` rather than copied. It already
+solves two traps that cost a day between them, and a second copy here would be
+a second copy of both.
+
+## The steps
+
+| Step | What it does |
+|---|---|
+| `vocabulary` | Generates `out/VOCABULARY.md` from `resources/templates/manifest.json` |
+| `prose` | Copies `BRIEF.md` and `GUIDELINES.md`, the two authored files |
+| `renderer` | Bundles the shipping renderer and themes to `out/renderer.iife.js` |
+| `designs` | Writes one card per design per step per direction. No browser |
+| `sheet` | Tiles them into six `contact-sheet-{320,768,1440}-{ltr,rtl}.png` |
+| `bench` | Inlines all of the above into `out/bench.html` |
+
+## `VOCABULARY.md` is the point of this directory
+
+It is **generated**, and that is strictly better than an authored spec with a
+parity test over it: a generated file cannot drift, so there is no test to
+write and none to forget. It is the same move `build/tokens.mjs` makes on
+`index.css` one tool over, for the reason `design-system/build.sh` states —
+*a hand-maintained mirror is one that is wrong from the first commit nobody
+remembered to copy across.*
+
+**Paste the whole file into a system that has never seen this repo** and it can
+emit valid template JSON. That context-stripping is the point rather than a
+convenience: "Constraint Decay" (arXiv 2605.06445) measures capable models
+losing ~30 points of assertion pass rate as explicit structural requirements
+accumulate on real repositories, and a session carrying 61 ADRs, a 1,100-line
+glossary and a closed vocabulary **is** that load. The creative act and the
+constrained act are separated on purpose.
+
+What comes back is checked by `php bin/verify-templates.php`, which diffs the
+raw file against the validator's output node for node.
+
+## The Bench is the return path
+
+`tools/design-system` is one-way: repo → canvas. A design has to come **back**,
+as JSON, and that is what `out/bench.html` is for — paste a tree in, drive all
+22 tokens live, judge it in its real container at 320/768/1440 in both
+directions and against the shipping themes, copy it out.
+
+It is a published Artifact:
+<https://claude.ai/code/artifact/ce24835b-c23e-4313-a79f-80adcf594287>. The
+renderer is **inlined** because an Artifact cannot load an external script
+outside its CDN allowlist — a `<script src>` would fail silently and the page
+would render nothing with no error.
+
+`out/bench.html` is gitignored like everything else here, so republishing after
+a vocabulary change is `./build.sh renderer bench` and then publishing that file
+to the same URL.
+
+`out/library.json` sits beside it with every shipped entry, so a session can
+paste any existing design in rather than only the seed.
+
+## Reading the output
+
+`contact-sheet-320-ltr.png` first. **320 is where a design is tallest**,
+because everything wraps there — a `split` stacks, a `row` breaks, a `grid`
+drops to one column — so a design is at its longest exactly where the screen is
+shortest.
+
+The question the sheets answer, and nothing else does: **are these forty
+designs, or one design forty times?** That is the failure ADR 0010 named when
+it widened the vocabulary the first time, and it is invisible in any view that
+shows one design at a time.
+
+## Things that bit, so they do not bite again
+
+- **The container must WRAP the shadow host and can never BE it.** `SHADOW_CSS`
+  opens with `:host{all:initial!important;display:block!important}`, and while
+  a `:host` rule normally loses to the outer document, an **`!important`
+  declaration inside `:host` beats a normal declaration outside it**. So
+  `position: absolute` set on the host from outside is silently reverted to
+  `static`: the floating bar rendered full width at the **top** of the frame,
+  which reads as a design that does not know where it goes rather than as CSS
+  that never applied. `.wc-box` is the wrapper. The shipping code has the same
+  shape for the same reason — free's `<dialog>` and Pro's popover both
+  *contain* the host.
+- **One step per card, not both.** The first version stacked a design's two
+  steps in one cell, and any popup taller than half of it was clipped top and
+  bottom — which read as two designs colliding. A step is a screen and a cell
+  holds one screen.
+- **A backtick in a JS comment ends a template literal.** Two generators here
+  build HTML with backticks, and both broke on a docblock that quoted `:host`
+  in backticks the way the rest of this repo does. Inside a template literal,
+  write those comments in plain words.
+- **`build/containers.mjs` is the one mirror in this tool**, because the
+  shipping containers are built imperatively — property by property, inline,
+  with `!important` — and there is no stylesheet to lift. It asserts itself
+  against their source and **throws** when they move. A design captured in a
+  container it is not actually served in is a design judged against a lie.
+- **`locked.json` stubs are skipped by the capture.** They are metadata for
+  designs a free tree does not hold, so there is nothing to draw; a stub
+  reaching the sheet would render an empty card, which reads as a broken design
+  rather than an absent one.
+
+## Why Playwright is not in `devDependencies`
+
+CI never runs this, and adding it would make every `npm ci` download a browser
+driver for a script no workflow calls. `npm install --no-save playwright` when
+you need it. Only the `sheet` step uses it — everything else is plain Node.

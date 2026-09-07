@@ -18,6 +18,11 @@ export default [
       'dist/',
       '*.config.*',
       'vite.loader-config.mjs',
+      // A design tool's OUTPUT, not its source. Every `out` directory under
+      // `tools` is gitignored and holds generated artefacts — among them a
+      // browser IIFE of the renderer, which this config would lint as Node and
+      // fail on every `document` in. The generators themselves are linted below.
+      'tools/*/out/',
     ],
   },
   js.configs.recommended,
