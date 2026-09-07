@@ -35,6 +35,20 @@ anything an ADR says. 0014 proposes a loader mode flag that 0028 killed, and
 0015's absence table still reads "tree-shakes out" beside the note correcting
 it. Skimming headlines builds the thing the ADR stopped saying.
 
+### Authoring the design library
+
+`.claude/skills/design-a-template` and `.claude/skills/design-a-playbook` —
+this repo's own skills, and the only two. Both are agent-invocable; call them
+rather than reconstructing the rules.
+
+The design surface is `tools/design-library/`, a **sibling** of
+`tools/design-system/` with the same conventions and a different subject:
+visitor-facing designs rather than wp-admin screens. Its
+`out/VOCABULARY.md` is **generated** from `resources/templates/manifest.json`
+and is self-contained — paste it into a system with no repo context and it can
+emit valid design JSON. Nothing there is authored twice, and `/tools` is in
+`.distignore`.
+
 ### Slash commands
 
 Always fully qualify: `/mattpocock-skills:implement`, never `/implement` — the
