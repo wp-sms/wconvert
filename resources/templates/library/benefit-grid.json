@@ -1,0 +1,143 @@
+{
+  "id": "benefit-grid",
+  "name": "Three reasons",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#ffffff",
+    "fg": "#0f172a",
+    "muted": "#64748b",
+    "accent": "#0f766e",
+    "accent-fg": "#ffffff",
+    "border": "#e2e8f0",
+    "heading-size": "1.625rem",
+    "radius": "0.75rem",
+    "pad": "2rem",
+    "gap": "1rem",
+    "width": "32rem",
+    "align": "center",
+    "backdrop": "rgba(15, 23, 42, 0.6)"
+  },
+  "tree": {
+    "steps": [
+      {
+        "type": "stack",
+        "children": [
+          {
+            "type": "heading",
+            "id": "n1",
+            "role": "headline",
+            "text": "Join 4,000 other readers"
+          },
+          {
+            "type": "text",
+            "id": "n2",
+            "role": "body",
+            "text": "One email a week, and here is what is in it."
+          },
+          {
+            "type": "grid",
+            "children": [
+              {
+                "type": "row",
+                "children": [
+                  {
+                    "type": "icon",
+                    "id": "n3",
+                    "name": "star"
+                  },
+                  {
+                    "type": "text",
+                    "id": "n4",
+                    "role": "body",
+                    "text": "The best thing we read"
+                  }
+                ]
+              },
+              {
+                "type": "row",
+                "children": [
+                  {
+                    "type": "icon",
+                    "id": "n5",
+                    "name": "bolt"
+                  },
+                  {
+                    "type": "text",
+                    "id": "n6",
+                    "role": "body",
+                    "text": "One idea you can use"
+                  }
+                ]
+              },
+              {
+                "type": "row",
+                "children": [
+                  {
+                    "type": "icon",
+                    "id": "n7",
+                    "name": "gift"
+                  },
+                  {
+                    "type": "text",
+                    "id": "n8",
+                    "role": "body",
+                    "text": "Something free, monthly"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "field",
+            "id": "n9",
+            "name": "email",
+            "label": "Email address",
+            "placeholder": "you@example.com",
+            "required": true
+          },
+          {
+            "type": "button",
+            "id": "n10",
+            "role": "cta_label",
+            "label": "Join the list",
+            "action": "submit"
+          },
+          {
+            "type": "consent",
+            "id": "n11",
+            "role": "consent_text",
+            "hidden": true,
+            "text": "Email me offers and news. See our %s.",
+            "link": {
+              "label": "Privacy Policy"
+            }
+          },
+          {
+            "type": "text",
+            "id": "n12",
+            "role": "fine_print",
+            "text": "Unsubscribe in one click, any time."
+          }
+        ]
+      },
+      {
+        "type": "stack",
+        "children": [
+          {
+            "type": "heading",
+            "id": "n13",
+            "role": "success_headline",
+            "text": "You are in"
+          },
+          {
+            "type": "text",
+            "id": "n14",
+            "role": "success_body",
+            "text": "Thursday is the next one."
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "id": "deadline-panel",
+  "name": "Deadline panel",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#0c0a09",
+    "fg": "#fafaf9",
+    "muted": "#a8a29e",
+    "accent": "#dc2626",
+    "accent-fg": "#ffffff",
+    "border": "#292524",
+    "heading-size": "1.75rem",
+    "heading-weight": "800",
+    "tracking": "0.04em",
+    "radius": "0rem",
+    "pad": "2.5rem",
+    "gap": "1.25rem",
+    "width": "30rem",
+    "align": "center",
+    "shadow": "0 24px 64px rgba(0, 0, 0, 0.5)",
+    "backdrop": "rgba(0, 0, 0, 0.72)"
+  },
+  "tree": {
+    "steps": [
+      {
+        "type": "stack",
+        "children": [
+          {
+            "type": "eyebrow",
+            "id": "n1",
+            "role": "eyebrow",
+            "text": "Ends soon"
+          },
+          {
+            "type": "heading",
+            "id": "n2",
+            "role": "headline",
+            "text": "The sale closes in"
+          },
+          {
+            "type": "countdown",
+            "id": "n3"
+          },
+          {
+            "type": "divider",
+            "id": "n4"
+          },
+          {
+            "type": "text",
+            "id": "n5",
+            "role": "body",
+            "text": "Everything reduced until the clock runs out."
+          },
+          {
+            "type": "button",
+            "id": "n6",
+            "role": "cta_label",
+            "label": "Shop before it goes",
+            "action": "link"
+          },
+          {
+            "type": "text",
+            "id": "n7",
+            "role": "fine_print",
+            "text": "Set an end date on the Rules tab and the clock counts to it."
+          }
+        ]
+      }
+    ]
+  }
+}

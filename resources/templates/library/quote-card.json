@@ -1,0 +1,117 @@
+{
+  "id": "quote-card",
+  "name": "A customer says",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#ffffff",
+    "fg": "#111827",
+    "muted": "#6b7280",
+    "accent": "#1d4ed8",
+    "accent-fg": "#ffffff",
+    "border": "#e5e7eb",
+    "font": "Georgia, 'Times New Roman', Times, serif",
+    "heading-size": "1.375rem",
+    "heading-weight": "400",
+    "leading": "1.7",
+    "radius": "0.5rem",
+    "pad": "2rem",
+    "gap": "1rem",
+    "width": "30rem",
+    "align": "start",
+    "backdrop": "rgba(17, 24, 39, 0.55)"
+  },
+  "tree": {
+    "steps": [
+      {
+        "type": "stack",
+        "children": [
+          {
+            "type": "rating",
+            "id": "n1",
+            "value": 5,
+            "role": "rating_text",
+            "text": "1,400 reviews"
+          },
+          {
+            "type": "heading",
+            "id": "n2",
+            "role": "headline",
+            "text": "It arrived in two days and it is the only one I use now."
+          },
+          {
+            "type": "row",
+            "children": [
+              {
+                "type": "image",
+                "id": "n3",
+                "src": "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%201%201'%3E%3Crect%20width='1'%20height='1'%20fill='%23cbd5e1'/%3E%3Ccircle%20cx='.5'%20cy='.38'%20r='.19'%20fill='%23f8fafc'/%3E%3Cpath%20d='M.13%201a.37.37%200%200%201%20.74%200z'%20fill='%23f8fafc'/%3E%3C/svg%3E",
+                "alt": "A photograph of a customer",
+                "fit": "cover",
+                "shape": "circle"
+              },
+              {
+                "type": "text",
+                "id": "n4",
+                "role": "body",
+                "text": "Priya, Manchester"
+              }
+            ]
+          },
+          {
+            "type": "divider",
+            "id": "n5"
+          },
+          {
+            "type": "field",
+            "id": "n6",
+            "name": "email",
+            "label": "Email address",
+            "placeholder": "you@example.com",
+            "required": true
+          },
+          {
+            "type": "button",
+            "id": "n7",
+            "role": "cta_label",
+            "label": "Send me the offer",
+            "action": "submit"
+          },
+          {
+            "type": "consent",
+            "id": "n8",
+            "role": "consent_text",
+            "hidden": true,
+            "text": "Email me offers and news. See our %s.",
+            "link": {
+              "label": "Privacy Policy"
+            }
+          },
+          {
+            "type": "text",
+            "id": "n9",
+            "role": "fine_print",
+            "text": "No spam, and you can unsubscribe at any time."
+          }
+        ]
+      },
+      {
+        "type": "stack",
+        "children": [
+          {
+            "type": "heading",
+            "id": "n10",
+            "role": "success_headline",
+            "text": "On its way"
+          },
+          {
+            "type": "text",
+            "id": "n11",
+            "role": "success_body",
+            "text": "Check your inbox in a minute or two."
+          }
+        ]
+      }
+    ]
+  }
+}

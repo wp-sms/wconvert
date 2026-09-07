@@ -1,0 +1,105 @@
+{
+  "id": "side-note",
+  "name": "Picture on the side",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#ffffff",
+    "fg": "#18181b",
+    "muted": "#71717a",
+    "accent": "#be123c",
+    "accent-fg": "#ffffff",
+    "border": "#e4e4e7",
+    "heading-size": "1.5rem",
+    "radius": "0.75rem",
+    "pad": "1.5rem",
+    "gap": "1.25rem",
+    "width": "34rem",
+    "align": "start",
+    "backdrop": "rgba(24, 24, 27, 0.55)"
+  },
+  "tree": {
+    "steps": [
+      {
+        "type": "split",
+        "ratio": 0.35,
+        "start": [
+          {
+            "type": "image",
+            "id": "n1",
+            "src": "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%203%204'%3E%3Crect%20width='3'%20height='4'%20fill='%23e2e8f0'/%3E%3Ccircle%20cx='2'%20cy='1.1'%20r='.5'%20fill='%23f8fafc'/%3E%3Cpath%20d='M0%204l1.1-1.5.85.8L2.5%201.9%203%202.4V4z'%20fill='%23a8b6c8'/%3E%3C/svg%3E",
+            "alt": "A photograph of the product",
+            "fit": "cover"
+          }
+        ],
+        "end": [
+          {
+            "type": "stack",
+            "children": [
+              {
+                "type": "badge",
+                "id": "n2",
+                "role": "badge",
+                "text": "Back in stock"
+              },
+              {
+                "type": "heading",
+                "id": "n3",
+                "role": "headline",
+                "text": "It is here again"
+              },
+              {
+                "type": "text",
+                "id": "n4",
+                "role": "body",
+                "text": "We made more, and this is the last of them."
+              },
+              {
+                "type": "field",
+                "id": "n5",
+                "name": "email",
+                "label": "Email address",
+                "placeholder": "you@example.com",
+                "required": true
+              },
+              {
+                "type": "button",
+                "id": "n6",
+                "role": "cta_label",
+                "label": "Tell me when it ships",
+                "action": "submit"
+              },
+              {
+                "type": "consent",
+                "id": "n7",
+                "role": "consent_text",
+                "hidden": true,
+                "text": "Email me offers and news. See our %s.",
+                "link": {
+                  "label": "Privacy Policy"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "stack",
+        "children": [
+          {
+            "type": "heading",
+            "id": "n8",
+            "role": "success_headline",
+            "text": "We will let you know"
+          },
+          {
+            "type": "text",
+            "id": "n9",
+            "role": "success_body",
+            "text": "One email, the morning it ships."
+          }
+        ]
+      }
+    ]
+  }
+}

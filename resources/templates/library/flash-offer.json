@@ -1,0 +1,72 @@
+{
+  "id": "flash-offer",
+  "name": "Corner flash",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#4c1d95",
+    "fg": "#f5f3ff",
+    "muted": "#c4b5fd",
+    "accent": "#fbbf24",
+    "accent-fg": "#422006",
+    "border": "#6d28d9",
+    "heading-size": "2rem",
+    "heading-weight": "800",
+    "tracking": "-0.02em",
+    "radius": "1.25rem",
+    "pad": "2.5rem",
+    "gap": "1rem",
+    "width": "28rem",
+    "align": "start",
+    "bg-image": "linear-gradient(135deg, #4c1d95 0%, #7c3aed 55%, #c026d3 100%)",
+    "shadow": "0 24px 64px rgba(76, 29, 149, 0.45)",
+    "backdrop": "rgba(30, 10, 60, 0.7)"
+  },
+  "tree": {
+    "steps": [
+      {
+        "type": "stack",
+        "children": [
+          {
+            "type": "badge",
+            "id": "n1",
+            "role": "badge",
+            "place": "corner",
+            "text": "50% OFF"
+          },
+          {
+            "type": "eyebrow",
+            "id": "n2",
+            "role": "eyebrow",
+            "text": "Three days only"
+          },
+          {
+            "type": "heading",
+            "id": "n3",
+            "role": "headline",
+            "text": "Half price on everything"
+          },
+          {
+            "type": "text",
+            "id": "n4",
+            "role": "body",
+            "text": "The whole range, including the things that never go on sale."
+          },
+          {
+            "type": "button",
+            "id": "n5",
+            "role": "cta_label",
+            "label": "Shop the sale",
+            "action": "link"
+          },
+          {
+            "type": "text",
+            "id": "n6",
+            "role": "fine_print",
+            "text": "Discount applied at the checkout."
+          }
+        ]
+      }
+    ]
+  }
+}

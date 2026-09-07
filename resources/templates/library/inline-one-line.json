@@ -1,0 +1,93 @@
+{
+  "id": "inline-one-line",
+  "name": "One line in the page",
+  "display_type": "inline",
+  "tier": "free",
+  "tokens": {
+    "bg": "#ffffff",
+    "fg": "#1e293b",
+    "muted": "#64748b",
+    "accent": "#2563eb",
+    "accent-fg": "#ffffff",
+    "border": "#e2e8f0",
+    "heading-size": "1.125rem",
+    "radius": "2rem",
+    "pad": "1rem 1.25rem",
+    "gap": "0.625rem",
+    "width": "100%",
+    "align": "start",
+    "shadow": "none"
+  },
+  "tree": {
+    "steps": [
+      {
+        "type": "stack",
+        "children": [
+          {
+            "type": "heading",
+            "id": "n1",
+            "role": "headline",
+            "level": 2,
+            "text": "Get the round-up"
+          },
+          {
+            "type": "row",
+            "children": [
+              {
+                "type": "field",
+                "id": "n2",
+                "name": "name",
+                "label": "First name",
+                "placeholder": "Alex",
+                "required": false
+              },
+              {
+                "type": "field",
+                "id": "n3",
+                "name": "email",
+                "label": "Email address",
+                "placeholder": "you@example.com",
+                "required": true
+              },
+              {
+                "type": "button",
+                "id": "n4",
+                "role": "cta_label",
+                "label": "Join",
+                "action": "submit"
+              }
+            ]
+          },
+          {
+            "type": "consent",
+            "id": "n5",
+            "role": "consent_text",
+            "hidden": true,
+            "text": "Email me offers and news. See our %s.",
+            "link": {
+              "label": "Privacy Policy"
+            }
+          }
+        ]
+      },
+      {
+        "type": "stack",
+        "children": [
+          {
+            "type": "heading",
+            "id": "n6",
+            "role": "success_headline",
+            "level": 2,
+            "text": "You are on the list"
+          },
+          {
+            "type": "text",
+            "id": "n7",
+            "role": "success_body",
+            "text": "The next one goes out on Thursday."
+          }
+        ]
+      }
+    ]
+  }
+}
