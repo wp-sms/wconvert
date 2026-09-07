@@ -425,7 +425,7 @@ export function ConnectionPicker({
           */}
           <select
             id={id}
-            className="h-9 max-w-xl rounded-md border border-input bg-transparent ps-3 pe-9 text-body text-foreground"
+            className="h-(--control-height) max-w-xl rounded-md border border-input bg-transparent ps-3 pe-9 text-body text-foreground"
             value={value ?? ''}
             onChange={(event) => onChange(event.target.value === '' ? null : event.target.value)}
           >

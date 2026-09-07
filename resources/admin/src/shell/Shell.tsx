@@ -288,7 +288,7 @@ function SectionNav({ current }: { current: SectionId }) {
                 href={hashFor(entry.id)}
                 aria-current={active ? 'page' : undefined}
                 className={[
-                  'inline-flex h-8 items-center gap-2 rounded-sm px-3 font-medium',
+                  'inline-flex h-(--control-height-sm) items-center gap-2 rounded-sm px-3 font-medium',
                   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white',
                   active
                     ? 'bg-card text-primary'

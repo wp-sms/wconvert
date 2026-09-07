@@ -208,10 +208,17 @@ export function ReadinessDialog({
         decoration: it is the register the amber is in, and it is the only
         thing on this band a merchant has to notice without reading.
       */}
+      {/*
+        **No `size`, because this band decides it.** This renders into
+        `.wconvert-page-actions`, where `index.css` states that a page-header
+        action is the taller of the two heights (ADR 0039) and forces
+        `--control-height` back on with `!important`. So `size="sm"` never
+        reached the screen — the source said 32px and the button has always
+        been 36, beside a `Save changes` that asks for nothing.
+      */}
       <Button
         type="button"
         variant="ghost"
-        size="sm"
         className={problems.length > 0 ? 'wconvert-readiness__trigger--bad' : undefined}
         onClick={() => setOpen(true)}
       >

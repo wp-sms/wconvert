@@ -418,7 +418,7 @@ function LogRegion({
           value={optinId === '' ? ALL_OPTINS : optinId}
           onValueChange={(value) => onOptinId(value === ALL_OPTINS ? '' : value)}
         >
-          <SelectTrigger id="wconvert-lead-optin" size="sm" className="max-w-full min-w-44">
+          <SelectTrigger id="wconvert-lead-optin" className="max-w-full min-w-44">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

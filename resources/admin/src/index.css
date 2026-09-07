@@ -781,6 +781,27 @@
  * previous one wrote it down — so the fix is to finish the rule rather than to
  * record the anecdote again. The two overrides below are `!important` for the
  * same reason: they now have an important declaration to beat.
+ *
+ * ---------------------------------------------------------------------------
+ * **IT OWNS THE HEIGHT AND NOT THE SHAPE, WHICH IS WHY `size` STILL APPEARS.**
+ *
+ * A `size="sm"` on a `Button` inside one of these strips looks redundant and is
+ * not: the vendored variant is `h-8 gap-1.5 px-3` and the default is
+ * `h-9 gap-2 px-4`, so deleting the prop leaves the height exactly where this
+ * rule puts it and widens the control by 8px. On the Optin list that is three
+ * row actions in a column sized `inline-size: 1%` — 24px taken from the data
+ * columns to remove a prop that was not lying. `size="icon-sm"` is stronger
+ * still: `size-8` is both dimensions, and this rule sets neither inline size.
+ *
+ * `SelectTrigger` is the one that IS purely redundant — its `size` toggles
+ * `h-8` against `h-9` and touches nothing else — which is why the Leads filter
+ * passes none and the buttons beside it still do.
+ *
+ * So: pass no `size` where a strip states the height and the default shape is
+ * wanted; pass one where the control's PADDING is the point. What must never
+ * appear is a `size` this rule then overrides — see `ReadinessDialog`, which
+ * spelled `sm` into `.wconvert-page-actions` and rendered 36px for as long as
+ * it existed.
  * ------------------------------------------------------------------------- */
 @layer utilities {
   /*
