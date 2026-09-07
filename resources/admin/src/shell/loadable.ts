@@ -69,3 +69,20 @@ export const failed = (cause: unknown): Loadable<never> => ({
   status: 'failed',
   message: messageOf(cause),
 });
+
+/**
+ * The data, or null while there is none yet.
+ *
+ * **A narrowing helper and not a second way to model the state.** Every screen
+ * that draws something while a REFRESH is in flight already spells
+ * `x.status === 'ready' ? x.data : null` — Analytics, Destinations and the
+ * builder each wrote it out — and three copies of a narrowing is three places
+ * a `!== 'failed'` could creep in instead.
+ *
+ * It is not for deciding WHAT to draw: that is a branch on `status`, and this
+ * returning `null` for both of the other two arms is precisely the collapse
+ * that left the builder's Destinations tab saying "Loading…" after a failed
+ * read. Use it where the answer is "keep showing what we have".
+ */
+export const read = <T>(loadable: Loadable<T>): T | null =>
+  loadable.status === 'ready' ? loadable.data : null;

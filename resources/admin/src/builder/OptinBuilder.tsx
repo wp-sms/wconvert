@@ -18,7 +18,7 @@ import { PageAction } from '../shell/PageActions';
 import { Region, RegionBody, RegionError, RegionErrorState } from '../shell/Region';
 import { Skeleton } from '../components/ui/skeleton';
 import { Stat, StatRow, StatRowSkeleton } from '../shell/Stat';
-import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
+import { LOADING, failed, messageOf, read, ready, type Loadable } from '../shell/loadable';
 import { TemplatePickerDialog } from './TemplatePickerDialog';
 import { useTemplateTrees } from './TemplatePicker';
 import { DestinationsEditor } from './DestinationsEditor';
@@ -380,7 +380,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
    * a second fetch would be two round trips and two failure paths for one list
    * that is site-level configuration rather than a function of this Optin.
    */
-  const [destinations, setDestinations] = useState<DestinationsPayload | null>(null);
+  const [destinations, setDestinations] = useState<Loadable<DestinationsPayload>>(LOADING);
   /*
    * **A row the screen has asked the tree to put focus on.** The readiness
    * panel is the only thing that asks: following *"this block will lose its
@@ -611,13 +611,19 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
    * The site's [[Destination]]s: site-level configuration rather than a
    * function of this Optin, so it is read once and survives every edit.
    *
-   * **Its failure reports**, unlike the two above, because a merchant binding a
-   * Destination is acting on this list and an empty one would read as "you have
-   * none" rather than "we could not ask".
+   * **Its failure is the Destinations tab's, not the page's.** It used to go to
+   * `report` and land in the banner above the tab strip — a page-scoped
+   * treatment for a failure that costs exactly one tab, and one that left the
+   * tab itself still drawing "Loading…" underneath it, because `null` meant
+   * both in-flight and failed. `Loadable` carries the third state and
+   * {@see DestinationsEditor} draws it where the merchant is looking, which is
+   * `Region`'s own rule about an error naming a door on this screen.
    */
   useEffect(() => {
-    readDestinations().then(setDestinations).catch(report);
-  }, [report]);
+    readDestinations()
+      .then((payload) => setDestinations(ready(payload)))
+      .catch((cause: unknown) => setDestinations(failed(cause)));
+  }, []);
 
   /*
    * Every change to the design, from wherever it came, as one history entry.
@@ -1199,7 +1205,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
               bound={bound}
               template={template}
               growsAList={entryOfGoal?.grows_a_list === true}
-              destinations={destinations?.destinations ?? null}
+              destinations={read(destinations)?.destinations ?? null}
               onGoTo={goTo}
               onGoToSchedule={goToSchedule}
             />
@@ -1614,37 +1620,44 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
               </Region>
             </TabsContent>
 
+            {/*
+              **No `Region` wrapper here any more**, because the editor draws
+              its own — along with its header, its empty state and its failure.
+              It was the one screen in the admin using none of the shared
+              vocabulary, and wrapping it in a region from outside was how a
+              bare `<h3>` came to sit under a region that already had a name.
+            */}
             <TabsContent value="destinations">
-              <Region label={__('Destinations', 'wconvert')}>
-                <RegionBody className="wconvert-editor">
-                  <DestinationsEditor
-                    bound={bound}
-                    available={destinations?.destinations ?? null}
-                    /*
-                      **The [[Playbook]]'s hint, only while nothing is bound.**
-                      Once the merchant has chosen, what the Playbook wanted is
-                      history — and a permanent line that does not change what
-                      they do next is the tax ADR 0042 rule 2 refuses. The
-                      readiness panel above applies the same test to the same
-                      sentence.
-                    */
-                    hint={
-                      bound.length > 0
-                        ? null
-                        : hintSaid(
-                            hintIn(config),
-                            destinations?.types ?? [],
-                            gallery.labels.fields,
-                            // What is already CONFIGURED, which decides whether
-                            // the hint's type half is still guidance or is
-                            // history — and whether it ends with where to go.
-                            destinations?.destinations ?? [],
-                          )
-                    }
-                    onChange={(next) => edit({ destinations: next })}
-                  />
-                </RegionBody>
-              </Region>
+              <DestinationsEditor
+                bound={bound}
+                available={
+                  destinations.status === 'ready'
+                    ? ready(destinations.data.destinations)
+                    : destinations
+                }
+                /*
+                  **The [[Playbook]]'s hint, only while nothing is bound.**
+                  Once the merchant has chosen, what the Playbook wanted is
+                  history — and a permanent line that does not change what
+                  they do next is the tax ADR 0042 rule 2 refuses. The
+                  readiness panel above applies the same test to the same
+                  sentence.
+                */
+                hint={
+                  bound.length > 0
+                    ? null
+                    : hintSaid(
+                        hintIn(config),
+                        read(destinations)?.types ?? [],
+                        gallery.labels.fields,
+                        // What is already CONFIGURED, which decides whether
+                        // the hint's type half is still guidance or is
+                        // history — and whether it ends with where to go.
+                        read(destinations)?.destinations ?? [],
+                      )
+                }
+                onChange={(next) => edit({ destinations: next })}
+              />
             </TabsContent>
           </Tabs>
         </div>
