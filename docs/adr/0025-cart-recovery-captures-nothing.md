@@ -191,6 +191,15 @@ source or none does. The rule is not "cart recovery mints no coupon" — it is
 that **this delivery model can hand nothing to one visitor and not to the
 next**, and a design advertising otherwise is refused wherever it appears.*
 
+*And the sentence above about a static code being "just words they type into the
+copy" turned out to be a vocabulary decision too.
+[ADR 0061](0061-the-vocabulary-widens-by-what-the-library-cannot-draw.md) added a
+`code` leaf on exactly it: one string, drawn identically for every visitor,
+minted by nobody, with the merchant typing in the code they already made in
+WooCommerce. That is the shape this paragraph leaves behind rather than an
+exception to it — and it is why `code` does not reopen ADR 0053, which refused
+the wheel for needing a code PER VISITOR.*
+
 *Asserted rather than argued as of [#36](https://github.com/navidkashani/wconvert/issues/36):
 `tests/unit/Pro/WooCommerce/NoWriteIntoWooCommerceTest.php` reads both plugin trees
 and fails on a coupon, an order, a cart mutation or a write into WooCommerce's

@@ -48,6 +48,7 @@ final class TemplateVocabulary
      * @param array<string, array{content: list<string>, copy: list<string>, params: list<string>, roles: list<string>}> $nodes
      * @param list<string> $tokens
      * @param list<string> $roles
+     * @param list<string> $authoredRoles
      * @param list<string> $schemes
      * @param list<string> $fields
      * @param array<string, list<string>> $facets
@@ -58,6 +59,7 @@ final class TemplateVocabulary
         private readonly array $nodes,
         private readonly array $tokens,
         private readonly array $roles,
+        private readonly array $authoredRoles,
         private readonly array $schemes,
         private readonly array $fields,
         private readonly array $facets = [],
@@ -152,6 +154,32 @@ final class TemplateVocabulary
     }
 
     /**
+     * The [[Slot Role]]s a [[Playbook]] may **not** supply.
+     *
+     * ========================================================================
+     * THE SAME DECLARATION `authored` IS FOR A RULE PARAM, ONE MANIFEST OVER.
+     * ========================================================================
+     * {@see \WConvert\Rules\RuleVocabulary::authoredParamsOf()} marks the
+     * params that name something only one site has — a post id, a term id, a
+     * CSS selector — and that single mark is what refuses a Playbook carrying
+     * one. A Role can be site-local in exactly the same way and for exactly the
+     * same reason: `code_value` holds a coupon code that exists in one
+     * merchant's WooCommerce and nowhere else, so a Playbook filling it would
+     * ship a dead code to every install that used it.
+     *
+     * Declared in the manifest rather than listed in
+     * {@see \WConvert\Playbook\PlaybookLibrary}, so the fact lives where both
+     * runtimes already read and a second Role of this kind arrives enforced
+     * rather than arriving as a rule somebody remembered to add.
+     *
+     * @return list<string>
+     */
+    public function authoredRoles(): array
+    {
+        return $this->authoredRoles;
+    }
+
+    /**
      * Which of a node type's keys are WORDS.
      *
      * The same source {@see self::withoutCopy()} strips against, read from the
@@ -201,6 +229,7 @@ final class TemplateVocabulary
             $nodes,
             array_map('strval', array_keys(self::section($manifest, 'tokens'))),
             self::strings($manifest['roles'] ?? []),
+            self::strings($manifest['authored_roles'] ?? []),
             self::strings($manifest['schemes'] ?? []),
             self::strings($manifest['fields'] ?? []),
             array_map(

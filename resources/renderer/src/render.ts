@@ -1,6 +1,7 @@
 import type {
   BadgeNode,
   ButtonNode,
+  CodeNode,
   ConsentNode,
   EyebrowNode,
   FieldNode,
@@ -134,11 +135,13 @@ function elementFor(node: TemplateNode): HTMLElement | null {
     case 'eyebrow':
       return words('p', 'wc-eyebrow', (node as EyebrowNode).text);
     case 'badge':
-      return words('span', 'wc-badge', (node as BadgeNode).text);
+      return badge(node as BadgeNode);
     case 'divider':
       return divider();
     case 'countdown':
       return countdown();
+    case 'code':
+      return words('span', 'wc-code', (node as CodeNode).text);
     case 'rating':
       return rating(node as RatingNode);
     case 'icon':
@@ -207,6 +210,23 @@ function split(node: SplitNode): HTMLElement {
  * a link inside it is what `text` is for, and an eyebrow reading *"LIMITED
  * TIME %s"* is a design that wanted a paragraph.
  */
+/**
+ * A badge, in the flow or pinned to the panel's corner.
+ *
+ * A modifier CLASS rather than a custom property, and that is forced rather
+ * than stylistic: `renderer-manifest-parity` asserts that the only
+ * `var(--wc-*)` names the stylesheet reads are declared TOKENS and layout
+ * params, so a `--wc-place` would fail the build. It is also the right shape —
+ * placement is one of two states, not a value on a scale.
+ *
+ * `inline` adds nothing, so a design that never heard of this param renders
+ * byte-identically to one that spells the default. That equality is what
+ * `renderer-manifest-parity`'s absent-versus-declared case checks.
+ */
+function badge(node: BadgeNode): HTMLElement {
+  return words('span', node.place === 'corner' ? 'wc-badge wc-badge-corner' : 'wc-badge', node.text);
+}
+
 function words(tag: string, className: string, text: string | undefined): HTMLElement {
   const element = document.createElement(tag);
 
@@ -494,6 +514,13 @@ function image(node: ImageNode): HTMLElement | null {
 
   if (node.fit === 'contain') {
     element.style.setProperty('object-fit', 'contain');
+  }
+
+  // A circle is the one shape `--wc-radius` cannot give one picture without
+  // rounding the panel, the button and every input to match. `rect` adds
+  // nothing, so a design without the param is unchanged.
+  if (node.shape === 'circle') {
+    element.className = 'wc-image wc-image-circle';
   }
 
   return element;

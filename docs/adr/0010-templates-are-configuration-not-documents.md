@@ -126,6 +126,24 @@ third-party ones. Under configuration they are properties of the one renderer.
   panes. A snapshot carrying the old `columns: 3` still renders: the key is
   dropped on the way in and ignored if it arrives anyway.*
 
+  ***Widened a third time, and this time with a stated admission test.***
+  *[ADR 0061](0061-the-vocabulary-widens-by-what-the-library-cannot-draw.md)
+  took the library from 20 designs to ~42 and had to answer whether the
+  vocabulary widens with it. It does, by one rule: **a member earns its place by
+  naming something the library provably cannot draw** — not something it draws
+  verbosely. Three passed: a `code` leaf for the static shared discount code
+  (which is [ADR 0025](0025-cart-recovery-captures-nothing.md)'s own conclusion
+  about coupons, not a reopening of
+  [ADR 0053](0053-the-spin-to-win-card-is-withdrawn.md)), `image.shape` for a
+  circle, and `badge.place` for the corner flash. A `list` node, a `progress`
+  indicator and a third step were each considered and refused by that same test.*
+
+  ***The same ADR declined per-node styling, which is this ADR's real
+  ceiling.*** *Every design's look is 22 **global** custom properties, so nothing
+  can tint one panel or give the form a different ground from the headline. That
+  is a genuine limit and removing it would amend the bargain this ADR is named
+  for — so it stays, with 0061 recording what evidence would reopen it.*
+
   *An `icon` is the one member that draws a SHAPE rather than a box of text, and
   its set is closed for this ADR's own reason — an `src` would be the remote
   asset [ADR 0013](0013-playbook-copy-carries-no-markup.md) keeps out, and an

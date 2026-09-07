@@ -140,6 +140,24 @@ export const SHADOW_CSS = [
    */
   `.wc-eyebrow{margin:0;font-size:.75em;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--wc-muted,#6b7280)}`,
   `.wc-badge{align-self:start;font-size:.75em;font-weight:600;line-height:1.4;padding-block:.125rem;padding-inline:.5rem;border-radius:calc(var(--wc-radius,.5rem)/2);background:var(--wc-accent,#2563eb);color:var(--wc-accent-fg,#fff)}`,
+  /*
+   * ==========================================================================
+   * THE CORNER FLASH — THE ONE PLACEMENT 22 GLOBAL TOKENS CANNOT REACH.
+   * ==========================================================================
+   * `.wc-root` is already `position: relative`, so this needs no new
+   * containing block. It is pinned by `--wc-pad` rather than by a number of
+   * its own, which is what keeps it aligned with the content it is flashing
+   * over — a design with generous padding gets a badge inside that air rather
+   * than one floating in it.
+   *
+   * **Inside the box and never overhanging it.** `.wc-root` carries
+   * `overflow: auto` for the tall-design case, so an overhanging corner would
+   * be clipped on exactly the designs that most want one.
+   *
+   * Logical properties, so a `fa_IR` site flashes the corner that side of the
+   * page actually has with no second spelling (ADR 0009).
+   */
+  `.wc-badge-corner{position:absolute;inset-block-start:var(--wc-pad,1.5rem);inset-inline-end:var(--wc-pad,1.5rem)}`,
   // `1px` and not a token: a rule the merchant can make 8px thick is a rule
   // that stops being a rule. Its COLOUR is the design's border colour, which is
   // the lever that matters.
@@ -148,6 +166,31 @@ export const SHADOW_CSS = [
   // Tabular figures so the digits do not jitter as they tick — the one thing a
   // countdown does that nothing else in this vocabulary does.
   `.wc-countdown{font-variant-numeric:tabular-nums;font-weight:var(--wc-heading-weight,700);letter-spacing:var(--wc-tracking,normal)}`,
+
+  /*
+   * ==========================================================================
+   * A CODE HAS TO LOOK LIKE A CODE, AND `--wc-font` IS THE WHOLE DESIGN'S.
+   * ==========================================================================
+   * Monospace is spelled literally rather than read from a token because the
+   * token sets the DESIGN's face; routing this through it would mean setting a
+   * whole popup in monospace to box one word. Letter-spacing for the same
+   * reason a countdown gets tabular figures — a code is read character by
+   * character and retyped, so the characters have to be separable.
+   *
+   * **`user-select: all` is the copy affordance, and it is the whole of it.**
+   * `navigator.clipboard` is capability, and this vocabulary expresses content
+   * and never capability (ADR 0010). One tap or click takes the whole string,
+   * which is what a visitor on a phone actually reaches for — at the cost of
+   * no event handler here and no bytes in the loader. Safari still needs the
+   * prefix.
+   *
+   * A dashed border, because that is what a coupon looks like everywhere a
+   * visitor has already seen one. `display: block` with centred text rather
+   * than `align-self: start`: a flex column stretches it either way, so
+   * centring inside the box is what makes it sit right under both a
+   * start-aligned and a centre-aligned design.
+   */
+  `.wc-code{display:block;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:1.125em;font-weight:700;letter-spacing:.12em;text-align:center;-webkit-user-select:all;user-select:all;padding-block:.625rem;padding-inline:1rem;border:1px dashed var(--wc-border,#e5e7eb);border-radius:calc(var(--wc-radius,.5rem)/2)}`,
 
   `.wc-rating{display:flex;flex-wrap:wrap;align-items:center;gap:.375rem}`,
   `.wc-stars{display:inline-flex;color:var(--wc-border,#e5e7eb)}`,
@@ -161,6 +204,21 @@ export const SHADOW_CSS = [
   `.wc-glyph{inline-size:1.25em;block-size:1.25em}`,
   `.wc-link{color:inherit}`,
   `.wc-image{display:block;inline-size:100%;block-size:auto;object-fit:cover;border-radius:var(--wc-radius,.5rem)}`,
+  /*
+   * ==========================================================================
+   * A CIRCLE, BECAUSE `--wc-radius` IS GLOBAL AND AN AVATAR IS NOT.
+   * ==========================================================================
+   * The rule above takes the design's ONE corner, shared with the panel, the
+   * button and every input — so the round portrait beside a testimonial could
+   * only be had by rounding all of them to match, which is a different design
+   * rather than the same design with an avatar in it.
+   *
+   * A fixed square rather than a percentage of whatever holds it: `50%` of a
+   * `100%`-wide image is an ellipse, and a portrait that changed size with its
+   * container is a portrait that is enormous in a `split` pane and a dot in a
+   * `row`. `flex:0 0 auto` is what stops a `row` stretching it back out.
+   */
+  `.wc-image-circle{inline-size:4.5rem;block-size:4.5rem;flex:0 0 auto;border-radius:50%}`,
 
   /*
    * ==========================================================================

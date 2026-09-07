@@ -152,3 +152,12 @@ to `wcv2` (CONTEXT.md, [[Storage Consent]]).
 browser storage, and wall 3 is answered against it. A reopening needs a prize
 this delivery model can hand to one visitor and not to the next — which means it
 starts at ADR 0003 and ADR 0025, not here.
+
+*A `code` leaf landed in the vocabulary anyway, and it does **not** touch this.*
+*[ADR 0061](0061-the-vocabulary-widens-by-what-the-library-cannot-draw.md) added
+one on ADR 0025's own line about a static shared code. The distinction is
+precisely the one above: a `code` node draws **one string, identical for every
+visitor**, which is what this delivery model can serve — and a wheel needs a
+prize it can hand to one visitor and not to the next, which it still cannot. A
+design pairing the two would be a wheel again and is refused for the reason
+stated here.*

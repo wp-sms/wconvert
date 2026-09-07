@@ -77,6 +77,28 @@ final class TemplateLabelParityTest extends TestCase
         );
     }
 
+    /**
+     * **An author-only [[Slot Role]] is first a Slot Role.**
+     *
+     * `authored_roles` is what refuses a [[Playbook]] filling `code_value`
+     * ({@see \WConvert\Playbook\PlaybookLibrary}), and it is a second list
+     * naming members of the first. A name misspelled there refuses nothing and
+     * fails nowhere: the intersection is simply always empty, so the Playbook
+     * that ships a dead discount code registers cleanly.
+     */
+    public function testEveryAuthorOnlySlotRoleIsASlotRole(): void
+    {
+        $manifest = self::manifest();
+
+        /** @var list<string> $authored */
+        $authored = $manifest['authored_roles'];
+        /** @var list<string> $roles */
+        $roles = $manifest['roles'];
+
+        $this->assertNotSame([], $authored, 'the manifest marks no Role author-only, so this asserts nothing');
+        $this->assertSame([], array_values(array_diff($authored, $roles)));
+    }
+
     public function testEveryFieldKindIsNamed(): void
     {
         /** @var list<string> $fields */

@@ -155,6 +155,31 @@ final class PlaybookRegistrationTest extends TestCase
         );
     }
 
+    /**
+     * **Rejection two, in its fourth shape: a discount code in the copy.**
+     *
+     * A coupon code exists in one merchant's WooCommerce and nowhere else, so
+     * an entry carrying one ships a dead code to every install that uses it —
+     * the same failure a post id is, in a different key. Which Roles are
+     * author-only is read off the template manifest's `authored_roles` for the
+     * reason the rule params are read off `authored`: a list here would be the
+     * hand-maintained cross-cutting list this project keeps refusing
+     * (ADR 0019).
+     *
+     * **It is refused ahead of the unfilled-Role check, and the order is the
+     * decision.** `centred-card` does not declare `code_value`, so without this
+     * arm the entry was already refused — as `UnfilledSlotRole`, which tells
+     * its author to go and pick a design that HAS the slot. The honest answer
+     * is that no design makes this fillable by a Playbook.
+     */
+    public function testAPlaybookSupplyingAnAuthorOnlySlotRoleIsRejected(): void
+    {
+        $this->assertRejected(
+            self::entry(['copy' => ['headline' => 'Ten percent off', 'code_value' => 'WELCOME10']]),
+            RejectionReason::SiteLocalReference
+        );
+    }
+
     public function testAPlaybookNamingATermIdInItsTargetingIsRejected(): void
     {
         $this->assertRejected(

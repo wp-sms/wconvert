@@ -31,4 +31,16 @@ lives — there is no runtime check behind it.
   ids. `destination_hint` names Destination *types* and the [[Lead]] fields the
   Playbook needs, and nothing else.
 - No images, and no markup of any kind.
-- The default Template's converting act must be the one its [[Goal]] counts.
+- **No `code_value`.** A discount code names a row on one particular site, so it
+  is the one [[Slot Role]] a Playbook cannot fill — the design ships a
+  placeholder and the merchant types theirs in
+  ([ADR 0061](../../docs/adr/0061-the-vocabulary-widens-by-what-the-library-cannot-draw.md)).
+
+There is **no check that the default Template's converting act matches the
+Goal**, and there used not to be a Goal-side act to match it against.
+[ADR 0059](../../docs/adr/0059-the-converting-act-belongs-to-the-design.md)
+deleted every design↔Goal coupling: a Template offering exactly one converting
+act **is** the declaration, enforced at its own registration by
+`TemplateLibrary::refuse()`. This README asserted the old check for three
+commits after it was removed. A third party filing a capture design under the
+sale Goal is offering a start a merchant can legitimately want.
