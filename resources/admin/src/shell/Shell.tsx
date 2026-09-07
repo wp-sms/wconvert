@@ -233,7 +233,7 @@ function PageHeader({
         {actions}
         <div ref={actionSlot} className="contents" />
       </div>
-      <Description className="mt-1.5">{descriptionFor(section)}</Description>
+      <Description className="mt-1">{descriptionFor(section)}</Description>
     </>
   );
 }
