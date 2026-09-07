@@ -231,7 +231,8 @@ describe('the analytics screen', () => {
     render(<Dashboard />);
 
     expect(await screen.findByText('100')).toBeInTheDocument();
-    expect(screen.getByText(/No Optins are running under this Goal/)).toBeInTheDocument();
+    expect(screen.getByText('Nothing is running under this Goal')).toBeInTheDocument();
+    expect(screen.getByText('Its numbers are what earlier ones counted.')).toBeInTheDocument();
     expect(screen.queryByRole('table')).not.toBeInTheDocument();
   });
 

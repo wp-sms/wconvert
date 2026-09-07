@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { ChartColumn } from 'lucide-react';
+import { ChartColumn, Megaphone } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import {
   DataTable,
@@ -327,12 +327,20 @@ function GoalRegion({
 function OptinTable({ card }: { card: GoalReport }) {
   if (card.optins.length === 0) {
     return (
-      <RegionBody className="border-t border-border text-muted-foreground">
-        {__(
-          'No Optins are running under this Goal. Its numbers are what earlier ones counted.',
-          'wconvert',
-        )}
-      </RegionBody>
+      /*
+        **{@see EmptyState} and not a muted paragraph**, which is what this
+        was: a sentence in a `RegionBody`, in a screen whose every other
+        nothing-here goes through the primitive. It carries no action, and
+        that is the honest answer rather than an omission — the card above is
+        reporting numbers, so *"go make an Optin"* is not what a merchant
+        reading it came for, and the Optins section is one click away in the
+        page nav either way.
+      */
+      <div className="border-t border-border">
+        <EmptyState icon={Megaphone} title={__('Nothing is running under this Goal', 'wconvert')}>
+          {__('Its numbers are what earlier ones counted.', 'wconvert')}
+        </EmptyState>
+      </div>
     );
   }
 

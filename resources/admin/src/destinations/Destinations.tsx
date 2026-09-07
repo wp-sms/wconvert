@@ -879,9 +879,20 @@ function Types({
       />
 
       {types.length === 0 ? (
-        <RegionBody className="text-muted-foreground">
-          {__('No destination types are available on this site.', 'wconvert')}
-        </RegionBody>
+        /*
+          **{@see EmptyState} rather than a muted paragraph**, which is the
+          treatment every other nothing-here on this screen already gets. No
+          action, and that is the honest answer: a site with no Destination
+          types has nothing to add and nowhere on this screen to go — what
+          would fix it is installing a plugin, which is not a door this admin
+          owns.
+        */
+        <EmptyState icon={Plug} title={__('No destination types here', 'wconvert')}>
+          {__(
+            'Nothing on this site offers somewhere to send a lead on to. Leads are still captured and exported.',
+            'wconvert',
+          )}
+        </EmptyState>
       ) : (
         <ul className="m-0 list-none p-0">
           {types.map((type) => {

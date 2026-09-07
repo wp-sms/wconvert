@@ -9,11 +9,12 @@ import {
 } from 'react';
 import { flushSync } from 'react-dom';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { Check, Monitor, Redo2, Smartphone, Undo2 } from 'lucide-react';
+import { Blocks, Check, Monitor, Redo2, Smartphone, Undo2 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { BackLink, BuilderSkeleton } from '../shell/BuilderSkeleton';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
+import { EmptyState } from '../shell/EmptyState';
 import { PageAction } from '../shell/PageActions';
 import { Region, RegionBody, RegionError, RegionErrorState } from '../shell/Region';
 import { Skeleton } from '../components/ui/skeleton';
@@ -1565,8 +1566,32 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
               <Activity mode={tab === 'content' ? 'visible' : 'hidden'}>
                 <Region label={__('What it says', 'wconvert')}>
                   {entry === null ? (
-                    <RegionBody className="text-muted-foreground">
-                      {__('Pick a design first.', 'wconvert')}
+                    /*
+                      **{@see EmptyState} with the door in it**, which the
+                      child of this very branch already does:
+                      {@see StructureView} draws one for the same class of
+                      state — a design with nothing in it — one level down.
+                      This was a muted sentence with no way out, on a tab a
+                      merchant reaches before choosing a design.
+
+                      The action is the tab change rather than a link, because
+                      the design is chosen one tab over on this same screen.
+                    */
+                    <RegionBody>
+                      <EmptyState
+                        icon={Blocks}
+                        title={__('Nothing to write yet', 'wconvert')}
+                        action={
+                          <Button variant="outline" onClick={() => setTab('design')}>
+                            {__('Pick a design', 'wconvert')}
+                          </Button>
+                        }
+                      >
+                        {__(
+                          'The words on this tab belong to a design. Choose one and they appear here.',
+                          'wconvert',
+                        )}
+                      </EmptyState>
                     </RegionBody>
                   ) : (
                     <>
