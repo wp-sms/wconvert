@@ -85,19 +85,27 @@ export function ChoiceCard({
         sets AA as the bar, and this is the shape the ARIA practices give for a
         list of cards with one action each.
       */}
-      <div className="mt-1">{action(titleId)}</div>
+      <div>{action(titleId)}</div>
     </li>
   );
 }
 
-/** A card in the shape of the cards that are coming, never the empty state. */
+/**
+ * A card in the shape of the cards that are coming, never the empty state.
+ *
+ * **`gap-2` because {@see ChoiceCard} is `gap-2`.** It was `gap-3` with an
+ * extra `mt-1` before the action, against the card's `gap-2` and its own
+ * `mt-1` — so the placeholder was four pixels taller per row than the thing it
+ * stands for, and the grid moved when the data landed. That is the one claim
+ * this component exists to make.
+ */
 export function ChoiceSkeleton() {
   return (
-    <li className="flex flex-col gap-3 rounded-md border border-border bg-card p-4">
+    <li className="flex flex-col gap-2 rounded-md border border-border bg-card p-4">
       <Skeleton aria-hidden="true" className="h-4 w-40 max-w-full" />
       <Skeleton aria-hidden="true" className="h-3 w-full" />
       <Skeleton aria-hidden="true" className="h-3 w-2/3" />
-      <Skeleton aria-hidden="true" className="mt-1 h-9 w-24" />
+      <Skeleton aria-hidden="true" className="h-9 w-24" />
     </li>
   );
 }

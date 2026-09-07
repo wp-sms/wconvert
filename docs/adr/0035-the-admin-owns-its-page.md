@@ -7,13 +7,28 @@ whole page and admin notices are suppressed on it. Everything a merchant sees on
 
 _Amended by [#69](https://github.com/navidkashani/wconvert/issues/69), recorded
 here by [#74](https://github.com/navidkashani/wconvert/issues/74): **"no
-`.button`" is not true of the builder's four editors**, and has not been since
-the builder converted. `SettingsPanel`, `RuleRows`, `TargetingEditor` and
-`DestinationsEditor` still emit `.button`, `regular-text`, `description`,
-`widefat` and bare `<select>`s, and `index.css` (~line 872) retargets their
-COLOUR and RADIUS to WConvert's tokens while leaving the box model, the sizes
-and the focus behaviour exactly as WordPress drew them. `table.wp-list-table`
-is likewise styled rather than absent._
+`.button`" is not true of the builder's settings column**, and has not been
+since the builder converted. ~~`SettingsPanel`, `RuleRows`, `TargetingEditor`
+and `DestinationsEditor`~~ still emit `.button`, `regular-text`, `description`,
+`widefat` and bare `<select>`s, and `index.css` (~~around line 872~~ — the
+`#wconvert-admin :is(.button, .button-secondary)` block) retargets their COLOUR
+and RADIUS to WConvert's tokens while leaving the box model, the sizes and the
+focus behaviour exactly as WordPress drew them. `table.wp-list-table` is
+likewise styled rather than absent._
+
+> **Corrected: two of those four components no longer exist, and "four" was
+> never a stable number.** `SettingsPanel` dissolved into `SlotFields`, `Tokens`
+> and `DevExport` at the Content/Structure merge (ADR 0010, `CONTEXT.md`);
+> `TargetingEditor` became `builder/rules/Where.tsx` whole, which its own
+> docblock records. `RuleRows` and `DestinationsEditor` are unchanged and still
+> emit these classes.
+>
+> The boundary is what survives, and it is a PLACE rather than a list: the
+> builder's settings column. What emits WordPress markup there today is
+> `SlotFields`, `Tokens`, `DevExport`, `RuleRows`, `DestinationsEditor`,
+> `BlockInspector`, `controls.tsx` and `rules/ObjectPicker` — eight, because
+> naming components was always going to date faster than naming the column they
+> sit in. The line number went the same way; the selector is the anchor now.
 
 _That is a staged boundary, not a reversal of this ADR. The reason it is a
 boundary and not a hybrid — the posture eliminated two sections below — is that

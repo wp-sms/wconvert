@@ -530,8 +530,8 @@
 [data-slot="alert-dialog-overlay"],
 [data-slot="alert-dialog-content"] {
   font-family: var(--font-sans);
-  font-size: 0.875rem;
-  line-height: 1.5;
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
   color: var(--foreground);
 }
 
@@ -781,6 +781,27 @@
  * previous one wrote it down — so the fix is to finish the rule rather than to
  * record the anecdote again. The two overrides below are `!important` for the
  * same reason: they now have an important declaration to beat.
+ *
+ * ---------------------------------------------------------------------------
+ * **IT OWNS THE HEIGHT AND NOT THE SHAPE, WHICH IS WHY `size` STILL APPEARS.**
+ *
+ * A `size="sm"` on a `Button` inside one of these strips looks redundant and is
+ * not: the vendored variant is `h-8 gap-1.5 px-3` and the default is
+ * `h-9 gap-2 px-4`, so deleting the prop leaves the height exactly where this
+ * rule puts it and widens the control by 8px. On the Optin list that is three
+ * row actions in a column sized `inline-size: 1%` — 24px taken from the data
+ * columns to remove a prop that was not lying. `size="icon-sm"` is stronger
+ * still: `size-8` is both dimensions, and this rule sets neither inline size.
+ *
+ * `SelectTrigger` is the one that IS purely redundant — its `size` toggles
+ * `h-8` against `h-9` and touches nothing else — which is why the Leads filter
+ * passes none and the buttons beside it still do.
+ *
+ * So: pass no `size` where a strip states the height and the default shape is
+ * wanted; pass one where the control's PADDING is the point. What must never
+ * appear is a `size` this rule then overrides — see `ReadinessDialog`, which
+ * spelled `sm` into `.wconvert-page-actions` and rendered 36px for as long as
+ * it existed.
  * ------------------------------------------------------------------------- */
 @layer utilities {
   /*
@@ -901,9 +922,9 @@
   #wconvert-admin .wconvert-table > tbody > tr > td::before {
     content: attr(data-label);
     color: var(--muted-foreground);
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
+    font-size: var(--text-micro);
+    font-weight: var(--text-micro--font-weight);
+    letter-spacing: var(--text-micro--letter-spacing);
     text-align: start;
     text-transform: uppercase;
   }
@@ -1641,7 +1662,7 @@
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: 999px;
-  font-size: var(--text-sm, 0.8125rem);
+  font-size: var(--text-note);
 }
 
 /* ---------------------------------------------------------------------------
@@ -2959,7 +2980,7 @@
   border-radius: var(--radius);
   color: var(--foreground);
   font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: 0.875rem;
+  font-size: var(--text-body);
 }
 
 .wconvert-picker input[type="text"]:focus {
@@ -3051,9 +3072,22 @@
   min-inline-size: 0;
 }
 
+/*
+ * **12px from the scale, not the 11px this used to spell.** `0.6875rem` was a
+ * size the six roles do not contain and nothing else in the admin uses — a
+ * seventh role with one caller. `--text-micro` is the label register these
+ * captions belong to, and folding them into it is what keeps the rule that
+ * every size on screen is one of six.
+ *
+ * The size and its line-height, and not the weight or the tracking: those two
+ * make `micro` read as a small-caps LABEL, which is why {@see Stat} and the
+ * stacked-table header add `uppercase` beside them. This is a sentence-case
+ * caption over a slider — "Top and bottom", "Sides" — and it has the narrowest
+ * column in the builder to fit in.
+ */
 .wconvert-token__axis-name {
-  font-size: 0.6875rem;
-  line-height: 1.2;
+  font-size: var(--text-micro);
+  line-height: var(--text-micro--line-height);
   color: var(--muted-foreground);
 }
 

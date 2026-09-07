@@ -24,6 +24,7 @@ import {
   DataTableHead,
   DataTableRow,
 } from '../shell/DataTable';
+import { Code } from '../shell/Code';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { InspectDialog } from './InspectDialog';
 import { StatusBadge } from './StatusBadge';
@@ -586,7 +587,7 @@ function Row({
         An empty cell for a few frames says nothing false.
       */}
       <DataTableCell label={__('Goal', 'wconvert')}>
-        {goal === undefined ? null : (goal ?? <code className="font-mono text-xs">{optin.goal}</code>)}
+        {goal === undefined ? null : (goal ?? <Code>{optin.goal}</Code>)}
       </DataTableCell>
 
       {/*

@@ -91,7 +91,7 @@ export function SettingsControl({
         <textarea
           id={id}
           rows={5}
-          className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+          className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-body shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
           value={value}
           onChange={(e) => onChange(e.target.value)}
         />
@@ -425,7 +425,7 @@ export function ConnectionPicker({
           */}
           <select
             id={id}
-            className="h-9 max-w-xl rounded-md border border-input bg-transparent ps-3 pe-9 text-sm text-foreground"
+            className="h-(--control-height) max-w-xl rounded-md border border-input bg-transparent ps-3 pe-9 text-body text-foreground"
             value={value ?? ''}
             onChange={(event) => onChange(event.target.value === '' ? null : event.target.value)}
           >

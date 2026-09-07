@@ -61,7 +61,7 @@ export function TemplatePickerDialog({ open, onOpenChange, ...picker }: Template
         a library of forty from pushing its own header off the top.
       */}
       <DialogContent className="wconvert-picker max-h-[85vh] gap-0 overflow-hidden p-0 sm:max-w-[80rem]">
-        <DialogHeader className="border-b border-border px-4 py-3">
+        <DialogHeader className="border-b border-border px-4 py-2.5">
           <DialogTitle>{__('Browse designs', 'wconvert')}</DialogTitle>
           {/*
             **The one sentence this screen does say, and it is here because it

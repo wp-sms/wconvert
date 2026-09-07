@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../components/ui/select';
+import { Code } from '../shell/Code';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import {
   DataTable,
@@ -417,7 +418,7 @@ function LogRegion({
           value={optinId === '' ? ALL_OPTINS : optinId}
           onValueChange={(value) => onOptinId(value === ALL_OPTINS ? '' : value)}
         >
-          <SelectTrigger id="wconvert-lead-optin" size="sm" className="max-w-full min-w-44">
+          <SelectTrigger id="wconvert-lead-optin" className="max-w-full min-w-44">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -545,7 +546,7 @@ function LogRegion({
                       >
                         {Object.entries(lead.fields).map(([name, value]) => (
                           <span key={name} className="block">
-                            <code className="font-mono text-xs text-muted-foreground">{name}</code>{' '}
+                            <Code className="text-muted-foreground">{name}</Code>{' '}
                             {value}
                           </span>
                         ))}

@@ -659,6 +659,41 @@ describe('the builder shell', () => {
  * what the site serves, and editing is deliberately not publishing. The price
  * of an explicit Save is that the one door out has to ask.
  */
+/**
+ * ============================================================================
+ * A CONTROL IN THIS BAND MUST NOT ASK FOR A HEIGHT THE BAND OVERRULES.
+ * ============================================================================
+ * `index.css` states that a page-header action is the taller of the two
+ * heights (ADR 0039) and forces `--control-height` back on with `!important`.
+ * The Summary trigger passed `size="sm"` into it anyway — so the source said
+ * 32px, the screen drew 36, and there was no way to notice: the assertion a
+ * reader makes is that the prop does something.
+ *
+ * This is the one of the three type/size guards that cannot be a source-text
+ * assertion, because the contradiction is not visible in either file on its
+ * own — it needs the button and the band in the same tree, which is what this
+ * suite already puts there.
+ *
+ * **`icon-sm` is deliberately not caught.** `size-8` is BOTH dimensions and
+ * the band overrides neither inline size, so Undo and Redo pass it for the
+ * width and take the band's height on purpose. `sm` is the one whose only
+ * effect here is a height that never lands.
+ */
+describe('the page-header band', () => {
+  it('holds no control asking for a height the band overrules', async () => {
+    open();
+
+    await screen.findByRole('tab', { name: 'Design' });
+
+    const band = document.querySelector('.wconvert-page-actions');
+
+    expect(band, 'the builder draws no page-actions band').not.toBeNull();
+    expect([...band!.querySelectorAll('[data-size="sm"]')].map((node) => node.textContent)).toEqual(
+      [],
+    );
+  });
+});
+
 describe('the way out of the builder', () => {
   /**
    * **Waits for the builder before leaving it, and that is not ceremony.** The
