@@ -164,10 +164,7 @@ export function Dashboard() {
 
       {report.status === 'failed' && (
         <Region label={__('Analytics', 'wconvert')}>
-          <RegionErrorState
-            message={report.message}
-            hint={__('Reload the page to try again.', 'wconvert')}
-          />
+          <RegionErrorState message={report.message} />
         </Region>
       )}
 

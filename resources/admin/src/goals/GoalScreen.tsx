@@ -166,7 +166,6 @@ function GoalPicker({
         <RegionHeader title={__('Create an Optin', 'wconvert')} trailing={<Step at={1} />} />
         <RegionErrorState
           message={goals.message}
-          hint={__('Reload the page to try again.', 'wconvert')}
         />
       </Region>
     );

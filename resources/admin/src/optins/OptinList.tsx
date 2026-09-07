@@ -233,7 +233,6 @@ export function OptinList({
       <Region label={__('Optins', 'wconvert')}>
         <RegionErrorState
           message={list.message}
-          hint={__('Reload the page to try again.', 'wconvert')}
         />
       </Region>
     );

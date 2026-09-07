@@ -237,7 +237,6 @@ export function LeadLog() {
         {retention.status === 'failed' ? (
           <RegionErrorState
             message={retention.message}
-            hint={__('Reload the page to try again.', 'wconvert')}
           />
         ) : (
           <>
@@ -368,7 +367,6 @@ function LogRegion({
       <Region label={__('Submissions', 'wconvert')}>
         <RegionErrorState
           message={log.message}
-          hint={__('Reload the page to try again.', 'wconvert')}
         />
       </Region>
     );

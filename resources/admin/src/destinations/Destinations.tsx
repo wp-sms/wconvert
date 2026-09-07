@@ -286,7 +286,6 @@ export function Destinations() {
       <Region label={__('Destinations', 'wconvert')}>
         <RegionErrorState
           message={payload.message}
-          hint={__('Reload the page to try again.', 'wconvert')}
         />
       </Region>
     );
@@ -314,6 +313,18 @@ export function Destinations() {
         <>
           {data.destinations.length === 0 ? (
             <Region label={__('Destinations', 'wconvert')}>
+              {/*
+                **No action, and the region below is why.** `EmptyState` says
+                an empty state carries the door that fixes it, and this one's
+                door is *Add a destination* — a whole region, on this screen,
+                directly underneath, listing every type the site offers. A
+                button here would be a second door to it, which is the shape
+                ADR 0026 refuses on the Optin list for the same reason.
+
+                The sentence does the other half of the job instead: it says
+                what is still true while there is nothing here, so an empty
+                Destinations screen does not read as leads going nowhere.
+              */}
               <EmptyState icon={Plug} title={__('Nothing is being pushed on', 'wconvert')}>
                 {__(
                   'Every capture is written to the lead log first and always. Add a destination to send it on as well.',

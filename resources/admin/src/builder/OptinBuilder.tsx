@@ -1045,7 +1045,6 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
         <Region label={__('Optin builder', 'wconvert')}>
           <RegionErrorState
             message={fatal}
-            hint={__('Reload the page to try again.', 'wconvert')}
           />
         </Region>
       </div>

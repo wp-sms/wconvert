@@ -117,7 +117,6 @@ export function DestinationsEditor({ bound, available, hint, onChange }: Destina
       ) : available.status === 'failed' ? (
         <RegionErrorState
           message={available.message}
-          hint={__('Reload the page to try again.', 'wconvert')}
         />
       ) : available.data.length === 0 ? (
         <EmptyState icon={Plug} title={__('No destinations yet', 'wconvert')}>

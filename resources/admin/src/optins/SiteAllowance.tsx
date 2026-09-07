@@ -146,7 +146,6 @@ export function SiteAllowance() {
       {allowance.status === 'failed' ? (
         <RegionErrorState
           message={allowance.message}
-          hint={__('Reload the page to try again.', 'wconvert')}
         />
       ) : (
         <>

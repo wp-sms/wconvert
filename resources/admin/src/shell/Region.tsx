@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { __ } from '@wordpress/i18n';
 import { CircleAlert } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
 import { Description } from './Description';
@@ -165,6 +166,14 @@ export function RegionError({ message }: { message: string }) {
  *
  * Used where the region has nothing else to show — a first fetch that failed
  * leaves no table to sit above, so the alert IS the region's content.
+ *
+ * **The hint has a default, and nine of the ten call sites are why.** They all
+ * spelled the identical string; the tenth spelled nothing, so the creation
+ * flow's second step was the one screen in the admin whose failure named no
+ * way out of itself. That is not a decision each caller should be making — an
+ * error the merchant can do nothing about is the shape ADR 0042 rule 3 refuses
+ * — so the door is the component's and a caller passes one only where it has a
+ * better one to offer.
  */
 export function RegionErrorState({ message, hint }: { message: string; hint?: string }) {
   return (
@@ -172,7 +181,9 @@ export function RegionErrorState({ message, hint }: { message: string; hint?: st
       <Alert variant="destructive" className="border-destructive/30 bg-destructive/5">
         <CircleAlert />
         <AlertTitle className="line-clamp-none">{message}</AlertTitle>
-        {hint !== undefined && <AlertDescription>{hint}</AlertDescription>}
+        <AlertDescription>
+          {hint ?? __('Reload the page to try again.', 'wconvert')}
+        </AlertDescription>
       </Alert>
     </RegionBody>
   );

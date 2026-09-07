@@ -418,7 +418,7 @@ export function StructureView({
   if (template.tree.steps.length === 0) {
     return (
       <RegionBody>
-        <EmptyState icon={Blocks} title={__('This design has nothing in it yet.', 'wconvert')}>
+        <EmptyState icon={Blocks} title={__('This design has nothing in it yet', 'wconvert')}>
           {__('Pick a design on the Design tab and its blocks will be listed here.', 'wconvert')}
         </EmptyState>
       </RegionBody>
