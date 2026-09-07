@@ -273,6 +273,19 @@ function PageHeader({
  * 5.95:1, which is the highest-contrast pair available and reads as selected
  * rather than as slightly-different. The inactive labels sit at 85% white,
  * measured at 4.78:1 — quieter than the pill without dropping under the bar.
+ *
+ * **The two literal whites below are the only ones in the admin, and neither
+ * has a token to become.** Every other colour on every screen reads a custom
+ * property; these two do not, because there is no token for either job.
+ * `hover:bg-white/10` is *a translucent lift over the primary* — it has to be
+ * the bar's own colour plus light, which a solid `--accent` cannot be over a
+ * petrol ground. `focus-visible:outline-white` is *a focus ring that clears the
+ * primary*: `--ring` is petrol, and a petrol ring on a petrol bar is a focus
+ * indicator a keyboard merchant cannot see.
+ *
+ * Inventing `--nav-hover` and `--nav-ring` for one caller each would be two
+ * tokens whose only definition is this component — so they stay literal and
+ * the reason stays here, where the next audit will find it.
  */
 function SectionNav({ current }: { current: SectionId }) {
   return (
