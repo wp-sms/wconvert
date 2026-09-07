@@ -1068,7 +1068,7 @@ function Failures({ failures }: { failures: DestinationsPayload['failures'] }) {
               <DataTableCell label={__('Lead', 'wconvert')}>
                 <Code className="text-muted-foreground">{failure.lead}</Code>
               </DataTableCell>
-              <DataTableCell label={__('Why', 'wconvert')} className="whitespace-normal">
+              <DataTableCell label={__('Why', 'wconvert')}>
                 {failure.error}
               </DataTableCell>
             </DataTableRow>

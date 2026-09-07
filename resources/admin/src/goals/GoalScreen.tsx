@@ -504,7 +504,13 @@ function StepFooter({
   return (
     <RegionFooter className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
       <Button variant="ghost" disabled={disabled} onClick={onBack}>
-        <ArrowLeft aria-hidden="true" />
+        {/*
+          **Back is the other way in Persian.** A glyph that points along the
+          reading direction has to turn with it, and nothing in this admin was
+          mirrored at all — `rtl:-scale-x-100` is the whole of it, keyed on the
+          `dir` attribute WordPress writes on `<html>`.
+        */}
+        <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />
         {backLabel}
       </Button>
       {forward}

@@ -340,6 +340,51 @@ describe('the rules panel against the editor’s blanket rules', () => {
  * made total without forking every vendored component, so it is guarded at the
  * one boundary where it IS total: the CSS this project writes by hand.
  */
+/**
+ * ============================================================================
+ * 4,470 LINES AND NOT ONE PHYSICAL DIRECTION PROPERTY. IT STAYS THAT WAY.
+ * ============================================================================
+ * This is the convention the file holds perfectly and nothing asserted — every
+ * box here is `inline-start`/`inline-end`, `block-start`/`block-end`, and the
+ * only exception is the one `box-shadow` forces, because that property has no
+ * logical form and states its `:dir(rtl)` override in place.
+ *
+ * The companion assertion over `components/ui/*.tsx` lives in
+ * `admin-rtl.test.tsx`, which is where the vendored layer's six violations
+ * were: that layer is where every RTL bug in this admin has been found, and
+ * ADR 0036 holds those files are WConvert's from the moment they land.
+ */
+describe('the direction convention', () => {
+  /** Declarations only — a comment naming `left` is prose about one. */
+  const DECLARATIONS = CSS.replace(/\/\*[\s\S]*?\*\//g, '');
+
+  it('states no physical direction property, and no physical value either', () => {
+    /*
+      Both halves, because `text-align: left` is the second one and reads as
+      innocent: the PROPERTY is logical-looking and the VALUE is what pins it.
+      `start`/`end` are the logical values, and this file already uses them.
+    */
+    const physical = [
+      /(?:^|[\s;{])(?:margin|padding|border|inset)?-?(?:left|right)\s*:/gi,
+      /(?:text-align|float|clear)\s*:\s*(?:left|right)\b/gi,
+    ];
+
+    for (const pattern of physical) {
+      expect([...DECLARATIONS.matchAll(pattern)].map(([found]) => found.trim())).toEqual([]);
+    }
+  });
+
+  /**
+   * `box-shadow` has no logical form, so the selected-block rail is physical by
+   * necessity — and therefore owes the override that makes it right the other
+   * way round. This asserts the exception is complete rather than that it does
+   * not exist.
+   */
+  it('mirrors the one shadow that cannot be logical', () => {
+    expect(DECLARATIONS).toMatch(/:dir\(rtl\)\s*\{[^}]*box-shadow:\s*inset\s+-2px/);
+  });
+});
+
 describe('the type scale', () => {
   /** The six, and the modifiers Tailwind pairs with each. */
   const ROLES = ['micro', 'note', 'body', 'heading', 'title', 'figure'];

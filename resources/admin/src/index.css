@@ -652,11 +652,24 @@
  * target the in-row actions need, stated as the row's own height rather than
  * as a minimum on the buttons inside it.
  */
+/*
+ * **`overflow-wrap: anywhere`, and a 60-character email is why.** The value
+ * track shrinks correctly at 360px and a single unbreakable token does not:
+ * an address, a captured field's value, a provider error carrying a URL. Every
+ * one of those overflows its own card on all four reading screens, and there
+ * was no `overflow-wrap` anywhere in this file.
+ *
+ * `anywhere` rather than `break-word`, because the two differ on exactly the
+ * case that matters here: `anywhere` lets the long word count towards the
+ * cell's `min-content` width, so a grid track sized from content shrinks to
+ * fit it instead of being sized by the unbreakable string and then clipping.
+ */
 #wconvert-admin .wconvert-table > tbody > tr > td {
   padding: 0.6875rem 1rem;
   font-size: inherit;
   text-align: start;
   vertical-align: middle;
+  overflow-wrap: anywhere;
 }
 
 /*
@@ -2315,6 +2328,17 @@
 .wconvert-block[data-selected='true'] {
   background: color-mix(in srgb, var(--ring) 12%, transparent);
   box-shadow: inset 2px 0 0 0 var(--ring);
+}
+
+/*
+ * **`box-shadow` has no logical form**, so the rail on the selected block is
+ * the one physical direction left in this file — and a rail pinned to the
+ * physical left sits on the wrong edge of a right-to-left tree, away from the
+ * indentation it is supposed to mark. Every other box here is logical; this is
+ * the exception the property forces, stated rather than left to be found.
+ */
+.wconvert-block[data-selected='true']:dir(rtl) {
+  box-shadow: inset -2px 0 0 0 var(--ring);
 }
 
 .wconvert-block__name {

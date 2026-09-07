@@ -212,7 +212,14 @@ export function BlockRow({
               onExpand(!expanded);
             }}
           >
-            {expanded ? <ChevronDown /> : <ChevronRight />}
+            {/*
+              **Mirrored, and its own component already mirrors the arrow
+              KEYS.** {@see BlockTree}'s `mirrored()` swaps ← and → under a
+              right-to-left locale and has a test proving it; the twist beside
+              those keys pointed the same way whichever direction the tree ran,
+              so the glyph and the key it stands for disagreed.
+            */}
+            {expanded ? <ChevronDown /> : <ChevronRight className="rtl:-scale-x-100" />}
           </button>
         )}
 

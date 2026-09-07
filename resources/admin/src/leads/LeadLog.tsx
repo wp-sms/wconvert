@@ -559,10 +559,7 @@ function LogRegion({
                       <DataTableCell label={__('Phone', 'wconvert')}>
                         {lead.phone ?? '—'}
                       </DataTableCell>
-                      <DataTableCell
-                        label={__('Captured', 'wconvert')}
-                        className="whitespace-normal"
-                      >
+                      <DataTableCell label={__('Captured', 'wconvert')}>
                         {Object.entries(lead.fields).map(([name, value]) => (
                           <span key={name} className="block">
                             <Code className="text-muted-foreground">{name}</Code>{' '}

@@ -552,7 +552,19 @@ function Row({
           a fixed indent there would be a card pushed off its own edge.
         */}
         <span className="wconvert-optin-row-name">
-          {arm && <CornerDownRight aria-hidden="true" className="wconvert-optin-arm" />}
+          {/*
+            **The whole visual grammar of ADR 0045's nesting, pointing the
+            wrong way.** This glyph says *this row belongs to the one above it*,
+            and unmirrored in a right-to-left admin it points away from the
+            campaign it is an arm of — on a reading screen, where the nesting is
+            the only thing separating a test's arms from six unrelated Optins.
+          */}
+          {arm && (
+            <CornerDownRight
+              aria-hidden="true"
+              className="wconvert-optin-arm rtl:-scale-x-100"
+            />
+          )}
           <button
             type="button"
             onClick={onEdit}
@@ -601,7 +613,7 @@ function Row({
         `optin.suspended` directly here would be a second way of asking, and the
         two would eventually answer differently.
       */}
-      <DataTableCell label={__('Status', 'wconvert')} className="whitespace-normal">
+      <DataTableCell label={__('Status', 'wconvert')}>
         <StatusBadge status={status} />
         {status === 'suspended' && optin.suspended !== null && (
           /*
