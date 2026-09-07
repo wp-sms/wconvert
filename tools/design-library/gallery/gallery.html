@@ -1,0 +1,487 @@
+<title>WConvert Design Library</title>
+
+<!--
+  The whole library, on one page, drawn by the shipping renderer.
+
+  This is the answer to "where can I see the templates?" — the contact sheets
+  are PNGs on somebody's disk and the Bench shows one design at a time. This
+  shows all of them, live, in their real containers.
+
+  A TEMPLATE. `build/gallery.mjs` replaces the markers with the renderer
+  bundle, the container CSS and every library entry, and writes
+  `out/gallery.html`. The renderer is INLINED because a published Artifact
+  cannot load an external script outside its CDN allowlist — a `<script src>`
+  would fail silently and the page would render nothing at all.
+
+  Authored as page CONTENT — no doctype, no <html>, <head> or <body>.
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+  /*
+    The chrome is deliberately quiet and cool, because everything it frames is
+    a design competing for attention. A gallery that had a palette of its own
+    would be arguing with its own exhibits — so the page is one neutral with a
+    slight petrol bias, and the only saturated thing on it is the work.
+  */
+  :root {
+    color-scheme: light;
+    --ground: #eef2f3;
+    --plate: #ffffff;
+    --sunk: #e3e9eb;
+    --ink: #12242b;
+    --ink-2: #46595f;
+    --ink-3: #7b8e94;
+    --rule: #d3dee0;
+    --petrol: #0f6e79;
+    --stage: #dbe3e5;
+    --stage-line: #c8d4d6;
+    --pro: #8a5a0b;
+    --pro-bg: #f6ecd8;
+    --free: #1c6b45;
+    --free-bg: #dcece4;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) {
+      --ground: #0c1517;
+      --plate: #131f22;
+      --sunk: #0a1113;
+      --ink: #e6efef;
+      --ink-2: #a5b9bc;
+      --ink-3: #768d92;
+      --rule: #22363a;
+      --petrol: #4fb3be;
+      --stage: #0a1113;
+      --stage-line: #1b2c2f;
+      --pro: #e0b368;
+      --pro-bg: #32250f;
+      --free: #6fd3a0;
+      --free-bg: #112f24;
+    }
+  }
+
+  :root[data-theme='dark'] {
+    --ground: #0c1517;
+    --plate: #131f22;
+    --sunk: #0a1113;
+    --ink: #e6efef;
+    --ink-2: #a5b9bc;
+    --ink-3: #768d92;
+    --rule: #22363a;
+    --petrol: #4fb3be;
+    --stage: #0a1113;
+    --stage-line: #1b2c2f;
+    --pro: #e0b368;
+    --pro-bg: #32250f;
+    --free: #6fd3a0;
+    --free-bg: #112f24;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font: 14px/1.55 ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .mono {
+    font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .wrap { max-width: 86rem; margin-inline: auto; padding-inline: clamp(1rem, 3vw, 2.5rem); }
+
+  header { border-block-end: 1px solid var(--rule); padding-block: clamp(2rem, 5vw, 3.5rem) 1.5rem; }
+
+  .eyebrow {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: .6875rem;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  h1 {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-size: clamp(2.25rem, 1.7rem + 2.4vw, 3.5rem);
+    line-height: 1;
+    letter-spacing: -.015em;
+    margin: .5rem 0 .75rem;
+    text-wrap: balance;
+  }
+
+  .lede { max-width: 62ch; color: var(--ink-2); margin: 0; }
+  .lede strong { color: var(--ink); font-weight: 600; }
+
+  /* The count strip — what the library actually holds, read off the data. */
+  .tally {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-block-start: 1.75rem;
+  }
+  .tally div { background: var(--plate); padding: .85rem .95rem; }
+  .tally dt {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .625rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin: 0 0 .3rem;
+  }
+  .tally dd {
+    margin: 0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 1.35rem;
+    font-weight: 600;
+    letter-spacing: -.02em;
+    line-height: 1;
+  }
+
+  /* ---------------------------------------------------------------- filters */
+  .bar {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 5;
+    background: color-mix(in srgb, var(--ground) 88%, transparent);
+    backdrop-filter: blur(8px);
+    border-block-end: 1px solid var(--rule);
+    padding-block: .7rem;
+  }
+  .bar .wrap { display: flex; flex-wrap: wrap; gap: .5rem 1.25rem; align-items: center; }
+
+  .group { display: flex; gap: 2px; background: var(--sunk); padding: 2px; border-radius: 7px; }
+  .group button {
+    font: inherit;
+    font-size: .8125rem;
+    border: 0;
+    background: transparent;
+    color: var(--ink-2);
+    padding: .28rem .6rem;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .group button[aria-pressed='true'] {
+    background: var(--plate);
+    color: var(--ink);
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgba(18, 36, 43, .1);
+  }
+  .group button:focus-visible { outline: 2px solid var(--petrol); outline-offset: 1px; }
+
+  .shown { margin-inline-start: auto; font-size: .8125rem; color: var(--ink-3); }
+
+  /* ------------------------------------------------------------------ cards */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+    gap: 1.25rem;
+    padding-block: 1.75rem 4rem;
+  }
+
+  .card {
+    background: var(--plate);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card__stage {
+    position: relative;
+    overflow: hidden;
+    background: var(--stage);
+    background-image:
+      linear-gradient(var(--stage-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--stage-line) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  /*
+    The design is drawn at its real width and then SCALED to fit the card, so
+    every card shows the same design a visitor would see rather than a design
+    reflowed to a card's width. `transform` keeps the layout honest; changing
+    the width would silently re-run the design's own breakpoints.
+  */
+  .card__scale { position: absolute; inset-block-start: 0; inset-inline-start: 0; transform-origin: 0 0; }
+
+  .card__meta {
+    border-block-start: 1px solid var(--rule);
+    padding: .7rem .8rem;
+    display: grid;
+    gap: .3rem;
+  }
+  .card__name { font-weight: 600; line-height: 1.25; }
+  .card__facts { display: flex; flex-wrap: wrap; gap: .35rem; align-items: center; }
+
+  .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .625rem;
+    font-weight: 600;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    padding: .2rem .4rem;
+    border-radius: 2px;
+    background: var(--sunk);
+    color: var(--ink-3);
+  }
+  .tag--free { background: var(--free-bg); color: var(--free); }
+  .tag--pro { background: var(--pro-bg); color: var(--pro); }
+
+  .card__id {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .6875rem;
+    color: var(--ink-3);
+    word-break: break-all;
+  }
+
+  .empty { padding: 3rem 0; color: var(--ink-3); }
+
+  footer { border-block-start: 1px solid var(--rule); padding-block: 1.5rem 3rem; color: var(--ink-3); font-size: .8125rem; }
+  footer p { margin: 0 0 .4rem; max-width: 62ch; }
+  code {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .85em;
+    background: var(--sunk);
+    padding: .1em .35em;
+    border-radius: 2px;
+    color: var(--ink);
+  }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<header>
+  <div class="wrap">
+    <span class="eyebrow">WConvert &middot; the shipping design library</span>
+    <h1>Every design, drawn by the renderer that ships it</h1>
+    <p class="lede">
+      Not pictures of designs &mdash; each card below is the real entry JSON, run through the real
+      renderer, inside a shadow root, in its real container geometry. If a card looks wrong,
+      <strong>the design is wrong</strong>.
+    </p>
+    <dl class="tally" id="tally"></dl>
+  </div>
+</header>
+
+<div class="bar">
+  <div class="wrap">
+    <div class="group" id="f-type"></div>
+    <div class="group" id="f-tier"></div>
+    <div class="group" id="f-step"></div>
+    <span class="shown mono" id="shown"></span>
+  </div>
+</div>
+
+<main class="wrap">
+  <div class="grid" id="grid"></div>
+  <p class="empty" id="empty" hidden>Nothing matches those filters.</p>
+</main>
+
+<footer class="wrap">
+  <p>
+    Generated from <code>resources/templates/library</code> and
+    <code>pro/modules/*/templates</code> by <code>tools/design-library/build.sh gallery</code>.
+    The words in every design are placeholder a visitor never reads &mdash; copy comes from the
+    Playbook, which is what keeps one design usable for every Goal.
+  </p>
+  <p>
+    A <strong>Pro</strong> design is absent from the free build rather than shipped and refused,
+    so a free install sees a card and a link to a preview, never a tree.
+  </p>
+</footer>
+
+<script>/*__RENDERER__*/</script>
+<script id="wc-library" type="application/json">/*__LIBRARY__*/</script>
+
+<style id="wc-containers">/*__CONTAINERS__*/</style>
+
+<script>
+  (function () {
+    'use strict';
+
+    var LIBRARY = JSON.parse(document.getElementById('wc-library').textContent);
+    var grid = document.getElementById('grid');
+    var empty = document.getElementById('empty');
+
+    var state = { type: 'all', tier: 'all', step: 0 };
+
+    // --------------------------------------------------------------- tally
+    var byType = {};
+    var free = 0;
+
+    LIBRARY.forEach(function (d) {
+      byType[d.display_type] = (byType[d.display_type] || 0) + 1;
+      if (d.tier === 'free') { free++; }
+    });
+
+    var tally = [['Designs', LIBRARY.length], ['Free', free], ['Pro', LIBRARY.length - free]];
+
+    Object.keys(byType).sort().forEach(function (t) {
+      tally.push([t.replace('_', ' '), byType[t]]);
+    });
+
+    document.getElementById('tally').innerHTML = tally.map(function (row) {
+      return '<div><dt>' + row[0] + '</dt><dd>' + row[1] + '</dd></div>';
+    }).join('');
+
+    // ------------------------------------------------------------- filters
+    function segmented(id, values, label, read, write) {
+      var host = document.getElementById(id);
+
+      host.replaceChildren();
+
+      values.forEach(function (value) {
+        var button = document.createElement('button');
+
+        button.type = 'button';
+        button.textContent = label(value);
+        button.setAttribute('aria-pressed', String(read() === value));
+        button.onclick = function () { write(value); draw(); };
+        host.appendChild(button);
+      });
+    }
+
+    function controls() {
+      segmented('f-type', ['all'].concat(Object.keys(byType).sort()),
+        function (v) { return v === 'all' ? 'All types' : v.replace('_', ' '); },
+        function () { return state.type; }, function (v) { state.type = v; });
+
+      segmented('f-tier', ['all', 'free', 'pro'],
+        function (v) { return v === 'all' ? 'All tiers' : v === 'free' ? 'Free' : 'Pro'; },
+        function () { return state.tier; }, function (v) { state.tier = v; });
+
+      segmented('f-step', [0, 1],
+        function (v) { return v === 0 ? 'Step 1' : 'Success step'; },
+        function () { return state.step; }, function (v) { state.step = v; });
+    }
+
+    // ---------------------------------------------------------------- draw
+    /*
+      Every design is drawn at the width it declares and then scaled down to
+      the card. Re-flowing it into the card instead would re-run the design's
+      own wrapping — a `split` stacks, a `row` breaks — so the card would show
+      a design nobody is ever served.
+    */
+    var CARD = 320;
+
+    /*
+      The page each design is drawn on, per Display Type — and the HEIGHT
+      matters as much as the width. A fixed-height stage gave a floating bar
+      twenty rem of empty grid above a 60px strip, so the one design type
+      whose whole point is that it is small read as the one that failed to
+      render. A bar gets a short page, a popup a tall one.
+
+      Width is the design's real viewport, not the card's: re-flowing a design
+      into 320px would re-run its own wrapping, so the card would show
+      something no visitor is ever served.
+    */
+    var STAGE = {
+      floating_bar: { w: 760, h: 260 },
+      inline: { w: 760, h: 420 },
+      popup: { w: 620, h: 520 },
+      slide_in: { w: 620, h: 460 },
+    };
+
+    function stageFor(design) {
+      return STAGE[design.display_type] || STAGE.popup;
+    }
+
+    function card(design) {
+      var el = document.createElement('article');
+
+      el.className = 'card';
+
+      var stage = document.createElement('div');
+
+      stage.className = 'card__stage';
+
+      var scale = document.createElement('div');
+      var page = stageFor(design);
+      var ratio = CARD / page.w;
+
+      scale.className = 'card__scale wc-container-' + design.display_type;
+      scale.style.inlineSize = page.w + 'px';
+      scale.style.blockSize = page.h + 'px';
+      scale.style.transform = 'scale(' + ratio + ')';
+      stage.style.blockSize = Math.round(page.h * ratio) + 'px';
+
+      var box = document.createElement('div');
+
+      box.className = 'wc-box';
+
+      if (design.display_type === 'popup') {
+        box.style.inlineSize = 'min(' + ((design.tokens || {}).width || '28rem') + ', 100%)';
+      }
+
+      var host = document.createElement('div');
+      var root = host.attachShadow({ mode: 'open' });
+      var style = document.createElement('style');
+
+      style.textContent = WConvertRenderer.SHADOW_CSS;
+      root.appendChild(style);
+
+      var step = Math.min(state.step, design.tree.steps.length - 1);
+
+      root.appendChild(WConvertRenderer.render(design.tree, design.tokens || {}, step));
+
+      box.appendChild(host);
+      scale.appendChild(box);
+      stage.appendChild(scale);
+
+      var meta = document.createElement('div');
+
+      meta.className = 'card__meta';
+      meta.innerHTML =
+        '<div class="card__name"></div>' +
+        '<div class="card__facts">' +
+          '<span class="tag tag--' + (design.tier === 'free' ? 'free' : 'pro') + '">' +
+            (design.tier === 'free' ? 'Free' : design.tier) + '</span>' +
+          '<span class="tag">' + design.display_type.replace('_', ' ') + '</span>' +
+          '<span class="tag">' + design.tree.steps.length + ' step' +
+            (design.tree.steps.length === 1 ? '' : 's') + '</span>' +
+        '</div>' +
+        '<div class="card__id"></div>';
+
+      meta.querySelector('.card__name').textContent = design.name;
+      meta.querySelector('.card__id').textContent = design.id;
+
+      el.appendChild(stage);
+      el.appendChild(meta);
+
+      return el;
+    }
+
+    function draw() {
+      var shown = LIBRARY.filter(function (d) {
+        var tier = d.tier === 'free' ? 'free' : 'pro';
+
+        return (state.type === 'all' || d.display_type === state.type)
+          && (state.tier === 'all' || tier === state.tier);
+      });
+
+      grid.replaceChildren();
+      shown.forEach(function (d) { grid.appendChild(card(d)); });
+
+      empty.hidden = shown.length > 0;
+      document.getElementById('shown').textContent =
+        shown.length + ' of ' + LIBRARY.length + ' shown';
+
+      controls();
+    }
+
+    draw();
+  })();
+</script>
