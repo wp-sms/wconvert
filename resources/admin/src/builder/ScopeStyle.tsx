@@ -1,4 +1,6 @@
 import { __, sprintf } from '@wordpress/i18n';
+import { Button } from '../components/ui/button';
+import { ClipboardCopy, ClipboardPaste } from 'lucide-react';
 import { AA_NORMAL, READABLE_PAIRS, contrastOf } from './contrast';
 import { TokenField, groupName } from './Tokens';
 import {
@@ -6,6 +8,7 @@ import {
   groupsOf,
   scopeChainOf,
   sourceOfToken,
+  withScopeBag,
   withScopeToken,
   type Path,
   type Scope,
@@ -13,7 +16,7 @@ import {
 } from './panel';
 import { Description } from '../shell/Description';
 import { nameOf, type TemplateLabels } from '../templates/api';
-import type { Template } from '@renderer/types';
+import type { Template, Tokens } from '@renderer/types';
 
 /**
  * The look of ONE BOX — the same token controls the design panel draws, bound
@@ -57,6 +60,8 @@ export function ScopeStyle({
   onOpenToken,
   onSelect,
   onChange,
+  copied,
+  onCopy,
 }: {
   template: Template;
   labels: TemplateLabels;
@@ -67,6 +72,20 @@ export function ScopeStyle({
   /** Select another block — how the leaf case hands over the box that decides. */
   onSelect: (path: Path) => void;
   onChange: (template: Template) => void;
+  /**
+   * A bag the merchant has copied off another box, or null.
+   *
+   * ==========================================================================
+   * THE STATE IS THE SCREEN'S, BECAUSE THE ACT SPANS TWO SELECTIONS.
+   * ==========================================================================
+   * Copy on one box and paste on another: this component is rebuilt between
+   * those two presses, so it cannot be the thing holding it. It is not the
+   * system clipboard either — a token bag is not text a merchant would paste
+   * anywhere else, and reading the real clipboard means a permission prompt for
+   * an act that never leaves this screen.
+   */
+  copied: Tokens | null;
+  onCopy: (tokens: Tokens | null) => void;
 }) {
   const chain = path === null ? [] : scopeChainOf(template.tree, path);
   const here = chain.length > 0 && path !== null && chain[chain.length - 1]?.path.length === path.length
@@ -94,6 +113,51 @@ export function ScopeStyle({
           nameOf(labels.layouts, here.type),
         )}
       </Description>
+
+      {/*
+        **Copy a look, and paste it onto the next box.** Three boxes tinted the
+        same way is the ordinary case in a reference-class design — a cream
+        panel above a cream panel — and the alternative is setting six tokens
+        three times and getting one of the eighteen wrong.
+
+        **Paste REPLACES rather than merges.** A merge would leave whatever the
+        target already set and produce a box that is neither what was copied nor
+        what was there, which is a state nothing on screen could explain; undo
+        is what pays for the bluntness, the same bargain block delete makes.
+      */}
+      <div className="wconvert-scope__clipboard">
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          disabled={Object.keys(here.tokens).length === 0}
+          onClick={() => onCopy(here.tokens)}
+        >
+          <ClipboardCopy aria-hidden="true" />
+          {__('Copy this look', 'wconvert')}
+        </Button>
+
+        {copied !== null && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() =>
+              onChange({
+                ...template,
+                tree: withScopeBag(template.tree, here.path, copied),
+              })
+            }
+          >
+            <ClipboardPaste aria-hidden="true" />
+            {sprintf(
+              /* translators: %d: how many settings were copied off another block. */
+              __('Paste %d setting(s)', 'wconvert'),
+              Object.keys(copied).length,
+            )}
+          </Button>
+        )}
+      </div>
 
       <ScopeContrast chain={chain} template={template} labels={labels} />
 

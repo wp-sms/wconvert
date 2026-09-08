@@ -66,7 +66,7 @@ import { numbersByOptin, readDashboard, type OptinNumbers } from '../stats/api';
 import { formatCount, formatRate } from '../stats/format';
 import { readDestinations, type DestinationsPayload } from '../destinations/api';
 import { adminSettings } from '../settings';
-import type { Template } from '@renderer/types';
+import type { Template, Tokens as TokenBag } from '@renderer/types';
 
 /**
  * The builder: pick a design, adjust it, and set the rules that decide who
@@ -306,6 +306,20 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
    * does not work.
    */
   const [openToken, setOpenToken] = useState<string | null>(null);
+  /*
+   * A box's look, copied off one block and waiting to be pasted onto another.
+   *
+   * ==========================================================================
+   * IT IS THE SCREEN'S BECAUSE THE ACT SPANS TWO SELECTIONS.
+   * ==========================================================================
+   * Copy on one box, select another, paste. The inspector is rebuilt between
+   * those two presses, so it cannot be the thing holding it — the same reason
+   * `openToken` lives here. It is deliberately NOT the system clipboard: a
+   * token bag is not text a merchant would paste anywhere else, and reading the
+   * real one means a permission prompt for an act that never leaves this
+   * screen.
+   */
+  const [copiedLook, setCopiedLook] = useState<TokenBag | null>(null);
   const [step, setStep] = useState(0);
   const [device, setDevice] = useState<Device>('desktop');
   const [selection, setSelection] = useState<Selection | null>(null);
@@ -1675,6 +1689,8 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
                               onOpenToken={setOpenToken}
                               onSelect={(path: Path) => chooseFromTree(keyAt(entry, path), path)}
                               onChange={(next: Template) => edit({ template: next })}
+                              copied={copiedLook}
+                              onCopy={setCopiedLook}
                             />
                           )}
                           {adminSettings()?.dev === true && (

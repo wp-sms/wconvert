@@ -191,6 +191,26 @@ export const isChoiceHeld = (held: unknown, choice: string, fallback?: string): 
 /** Every Slot Role the vocabulary declares, in the order it declares them. */
 export const ROLES = vocabulary.roles as readonly string[];
 
+/**
+ * The Roles a [[Playbook]] may **not** fill — the merchant's own to type.
+ *
+ * ============================================================================
+ * THE ADMIN READS THIS BECAUSE IT MUST NOT HAND ONE OUT BY DEFAULT.
+ * ============================================================================
+ * `code_value` holds a coupon that exists in one merchant's shop; `wordmark`
+ * holds their name. PHP reads this list to refuse a Playbook that fills one
+ * ({@see \WConvert\Template\TemplateVocabulary::authoredRoles()}); the editor
+ * reads it for the mirror-image reason — `freeRoleFor` walks a kind's declared
+ * Roles and takes the first unclaimed one, and an authored Role is unclaimed on
+ * most designs. Without this, adding a heading to a design that already has its
+ * headline handed the merchant a block called *Your name*.
+ *
+ * A default is a guess and these are the two Roles nobody can guess. They stay
+ * OFFERED — the ⇄ menu still lists them — because a masthead is a real thing a
+ * merchant adds; what they are not is what a new block silently becomes.
+ */
+export const AUTHORED_ROLES = vocabulary.authored_roles as readonly string[];
+
 /** What a `field` may capture. Closed, because the capture path canonicalises per kind. */
 export const FIELDS = vocabulary.fields as readonly string[];
 
@@ -755,6 +775,21 @@ export function sourceOfToken(
  * every scoped edit gets the merchant back to exactly the tree they started
  * with rather than to one carrying `"tokens": {}` on three boxes.
  */
+/**
+ * The same design with one box's WHOLE bag replaced.
+ *
+ * What *Paste this look* writes. It replaces rather than merges for the reason
+ * a design switch takes a fresh snapshot rather than reconciling two: a merge
+ * leaves whatever the target already set and produces a box that is neither
+ * what was copied nor what was there, which is a state nothing on screen can
+ * explain. Undo pays for the bluntness, the same bargain a block delete makes.
+ *
+ * An empty bag clears the key, exactly as {@see withScopeToken} does.
+ */
+export function withScopeBag(tree: TemplateTree, path: Path, tokens: Tokens): TemplateTree {
+  return withValue(tree, path, 'tokens', Object.keys(tokens).length === 0 ? undefined : { ...tokens });
+}
+
 export function withScopeToken(
   tree: TemplateTree,
   path: Path,

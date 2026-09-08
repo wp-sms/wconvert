@@ -859,13 +859,23 @@ and ~~unique across the Template's whole tree~~ **claimable by more than one nod
 > switching Template. See
 > [ADR 0051](docs/adr/0051-a-slot-role-repeats-and-binds-in-order.md).
 
-> **One Role exists that a [[Playbook]] can never fill.** `code_value` holds the
-> static shared discount code, and a coupon code names a row on one particular
-> site — so it arrives the way the cart URL and the privacy link do: the design
-> ships a placeholder and the merchant types theirs into the settings panel. It
-> is a Role rather than plain text so that the code survives switching Template
-> like every other slot. See
+> **~~One Role exists~~ Two Roles exist that a [[Playbook]] can never fill.**
+> `code_value` holds the static shared discount code, and a coupon code names a
+> row on one particular site — so it arrives the way the cart URL and the privacy
+> link do: the design ships a placeholder and the merchant types theirs into the
+> editor. It is a Role rather than plain text so that the code survives switching
+> Template like every other slot. See
 > [ADR 0061](docs/adr/0061-the-vocabulary-widens-by-what-the-library-cannot-draw.md).
+>
+> **`wordmark` is the second, and it arrived for the same reason.** It holds the
+> shop's or publication's own name, above the offer — the masthead thirteen of
+> the sixteen reference designs carry. Unbound it is a role-less leaf, so the
+> merchant's own name is thrown away at the next design switch; bound as
+> `headline` a Playbook writes the campaign headline into the logo. Being
+> `authored` is also what keeps it out of the editor's *first unclaimed Role*
+> preference: a default is a guess, and a shop's name is the one thing nobody can
+> guess. See
+> [ADR 0062](docs/adr/0062-a-token-bag-is-scoped-to-the-box-that-carries-it.md).
 
 Slot Roles are the seam between the two halves of a designed Optin: a Template
 declares which Roles it offers, a [[Playbook]] supplies copy against them, and

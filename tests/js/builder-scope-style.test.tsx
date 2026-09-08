@@ -297,6 +297,41 @@ describe('the Style half of the inspector', () => {
     expect(screen.queryByRole('button', { name: /^From Column/ })).toBeNull();
   });
 
+  /**
+   * ==========================================================================
+   * COPY A LOOK ONTO THE NEXT BOX, BECAUSE THREE CREAM PANELS IS THE ORDINARY
+   * CASE.
+   * ==========================================================================
+   * The alternative is setting six tokens three times and getting one of the
+   * eighteen wrong. It replaces rather than merges: a merge leaves whatever the
+   * target already set and produces a box that is neither what was copied nor
+   * what was there, and undo pays for the bluntness.
+   */
+  it('copies one boxs look and pastes it onto another, replacing what was there', async () => {
+    await style(/Coloured box/);
+    await userEvent.click(screen.getByRole('button', { name: 'Copy this look' }));
+
+    // The inner Column, which sets nothing of its own.
+    const tree = screen.getByRole('treegrid', { name: 'Blocks in this design' });
+
+    await userEvent.click(within(within(tree).getByRole('row', { name: /Column/ })).getAllByRole('button')[0]!);
+    await userEvent.click(screen.getByRole('button', { name: /^Paste 2 setting/ }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+
+    const inner = (saved().tree.steps[0] as unknown as {
+      children: { children: { tokens?: Record<string, string> }[] }[];
+    }).children[0]?.children[0];
+
+    expect(inner?.tokens).toEqual({ bg: '#fff4df', fg: '#331e17' });
+  });
+
+  /** Nothing to copy is nothing to offer, so the control refuses rather than lies. */
+  it('will not copy a box that sets nothing of its own', async () => {
+    await style(/Column/);
+
+    expect(screen.getByRole('button', { name: 'Copy this look' })).toBeDisabled();
+  });
+
   /** And following it selects that box, so the next press changes the value. */
   it('opens the box a value came from', async () => {
     await style(/Column/);

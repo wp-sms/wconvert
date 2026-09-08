@@ -4653,3 +4653,17 @@ body.wconvert-fullscreen .wconvert-structure > .wconvert-inspector,
 body.wconvert-fullscreen .wconvert-structure > .wconvert-builder__preview {
   inset-block-start: 1rem;
 }
+
+/* ---------------------------------------------------------------------------
+ * COPY A LOOK, PASTE IT ONTO THE NEXT BOX.
+ *
+ * Two ghost buttons on one line, because they are one act split across two
+ * selections and neither is the panel's primary control — the token fields
+ * under them are.
+ * ------------------------------------------------------------------------- */
+.wconvert-scope__clipboard {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-inline-start: calc(var(--spacing) * -3);
+}

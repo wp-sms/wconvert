@@ -48,6 +48,25 @@ final class TemplateLabels
             'success_body' => __('Body text after they submit', 'wconvert'),
             /* translators: the discount code shown after a visitor submits, e.g. “WELCOME10”. */
             'code_value' => __('Discount code', 'wconvert'),
+            /*
+             * ================================================================
+             * THE SECOND ROLE A PLAYBOOK MAY NEVER FILL, AND FOR THE SAME
+             * REASON AS THE FIRST.
+             * ================================================================
+             * Thirteen of the sixteen designs in the reference set carry a
+             * masthead — the shop's name, above the offer. A design had nowhere
+             * to put one: unbound it is a role-less leaf, so the merchant's own
+             * shop name is thrown away at the next design switch, and bound as
+             * `headline` a Playbook writes the campaign headline into the logo.
+             *
+             * So it is a Role of its own and it is `authored`, exactly as
+             * `code_value` is: a shop's name names ONE site and nowhere else,
+             * so a Playbook filling it would ship somebody else's brand to
+             * every install that used it. The design ships a placeholder and
+             * the merchant types theirs in.
+             */
+            /* translators: the shop or publication's own name, shown above the offer. */
+            'wordmark' => __('Your name', 'wconvert'),
             'email_label' => __('Email label', 'wconvert'),
             'email_placeholder' => __('Email placeholder', 'wconvert'),
             'name_label' => __('Name label', 'wconvert'),

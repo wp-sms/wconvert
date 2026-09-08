@@ -249,6 +249,39 @@ roving tabindex still gives the whole grid one stop; the preview's own two named
 controls now sit between it and the inspector. Recorded rather than absorbed,
 because the old guarantee was written down and this is not it.
 
+## Three things the plan left open, decided
+
+**Copy a scope's look — built.** Three boxes tinted the same way is the ordinary
+case in a reference-class design, and the alternative is setting six tokens
+three times and getting one of the eighteen wrong. *Paste* **replaces** rather
+than merges: a merge leaves whatever the target already set and produces a box
+that is neither what was copied nor what was there, which is a state nothing on
+screen could explain. Undo pays for the bluntness, the same bargain a block
+delete makes. The copied bag is the SCREEN's state and not the panel's, because
+the act spans two selections — and deliberately not the system clipboard, since
+a token bag is not text anyone would paste elsewhere and reading the real one
+means a permission prompt for an act that never leaves this screen.
+
+**A wordmark Slot Role — added.** Thirteen of the sixteen reference designs
+carry a masthead, and a design had nowhere to put one: unbound it is a role-less
+leaf, so the merchant's own shop name is thrown away at the next design switch;
+bound as `headline` a Playbook writes the campaign headline into the logo. So
+`wordmark` is a Role of its own on `eyebrow` and `heading`, and it is
+**`authored`** — the second Role a Playbook may never fill, for exactly
+`code_value`'s reason: a shop's name names one site and nowhere else, so a
+Playbook filling it would ship somebody else's brand to every install that used
+it. `ledger-card`'s masthead is the first to claim it.
+
+**The narrow variant — not built, and the numbers are why it can wait rather
+than why it cannot happen.** The reference set retunes at every breakpoint, and
+a per-breakpoint bag is the item that doubles what a scope stores. The room
+exists: the richest design ships at 677 B against a 1,024 B cap. What does not
+exist is a design that needs it — every one of the five authored here holds at
+320, 768 and 1440 on the tokens it already has, because `clamp()` widths,
+`auto-fit` grids and a wrapping `split` do the retuning without a second bag.
+It is reopened by a design that provably cannot hold at 320, which is the same
+admission test ADR 0061 set for a vocabulary member.
+
 ## Consequences
 
 - **The scope is a LAYOUT's, and only a layout's.** `tokens` is declared in the

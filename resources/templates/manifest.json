@@ -76,7 +76,8 @@
       ],
       "roles": [
         "headline",
-        "success_headline"
+        "success_headline",
+        "wordmark"
       ],
       "choices": {
         "level": [
@@ -108,7 +109,8 @@
         "hidden"
       ],
       "roles": [
-        "eyebrow"
+        "eyebrow",
+        "wordmark"
       ]
     },
     "text": {
@@ -366,6 +368,7 @@
     "success_headline",
     "success_body",
     "code_value",
+    "wordmark",
     "email_label",
     "email_placeholder",
     "name_label",
@@ -374,7 +377,8 @@
     "phone_placeholder"
   ],
   "authored_roles": [
-    "code_value"
+    "code_value",
+    "wordmark"
   ],
   "fields": [
     "email",

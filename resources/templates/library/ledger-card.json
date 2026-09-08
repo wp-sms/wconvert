@@ -31,7 +31,7 @@
       {
         "type": "stack",
         "children": [
-          { "type": "eyebrow", "id": "n1", "role": "eyebrow", "text": "The Friday letter" },
+          { "type": "eyebrow", "id": "n1", "role": "wordmark", "text": "The Friday letter" },
           { "type": "heading", "id": "n2", "role": "headline", "size": "xl", "text": "One long read, every Friday" },
           {
             "type": "grid",
