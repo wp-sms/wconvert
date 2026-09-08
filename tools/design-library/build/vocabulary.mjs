@@ -201,6 +201,10 @@ ${table(['Layout', 'Children go in', 'Params', 'Values (**default**)'], layouts)
   fit, wrapping by construction: three across on a desktop, one per line on a
   phone. The only route to a three-up, since \`split\` is exactly two panes.
 
+**Every layout takes a \`tokens\` bag**, which is why the param appears on all
+four. It is not a value from a list — it is the same token object the design
+carries, re-declared for this box and everything inside it. See §6.
+
 ## 4. The ${Object.keys(manifest.nodes).length} leaves
 
 ${table(['Leaf', 'Content keys', 'Params', 'Values (**default**)', 'Slot Roles it may claim'], nodes)}
@@ -276,11 +280,35 @@ unusual:
 "shadow":   "0 32px 80px rgba(79, 70, 229, 0.35)"
 \`\`\`
 
-**They are GLOBAL.** All ${Object.keys(manifest.tokens).length} apply to the whole design, so nothing can tint one
-pane, or give the form a different ground from the headline. A \`split\` with a
-coloured half is drawn with an \`image\`, or approximated with a hard-stop
-gradient on \`bg-image\`:
-\`linear-gradient(90deg, #0f172a 0 50%, #ffffff 50% 100%)\`.
+### Scope: the same names, set on one box
+
+The design's \`tokens\` object applies to the whole design. **Any layout node may
+re-declare any of the same ${Object.keys(manifest.tokens).length} names for itself and everything inside it**, by
+carrying a \`tokens\` bag of its own:
+
+\`\`\`json
+{ "type": "stack",
+  "tokens": { "bg": "#fff4df", "fg": "#331e17", "pad": "2rem" },
+  "children": [ ] }
+\`\`\`
+
+They are CSS custom properties, so they inherit — a bag is the design's value
+overridden for one subtree, and a leaf reads the nearest bag above it. This is
+how one design holds a cream panel beside a dark one, or gives the form a
+different ground from the headline.
+
+**The names are the same ${Object.keys(manifest.tokens).length} and the closure is the same.** A name outside the
+table is dropped from a bag exactly as it is from the design's own tokens, and a
+value that is not a string or a number is dropped too. There is no per-node
+\`class\` and no \`style\`; a bag is the only way a node says anything about how it
+looks.
+
+A bag is **arrangement, not copy** — it survives \`withoutCopy\`, so a Playbook
+fills words into a design and never repaints it.
+
+Bags nest. A \`split\` may set the design's dark ground on itself and a \`stack\`
+inside one pane may set a light one, and the pane that sets nothing keeps what
+it inherited.
 
 Two background layers, and the order is the feature: \`overlay\` paints **on top
 of** \`bg-image\`, which is the only reason light text over a photograph is
@@ -295,7 +323,7 @@ to the default above.
 - An \`href\` may use one of ${list(manifest.schemes)}. Anything else renders no
   anchor at all.
 
-## 8. The six silent authoring failures
+## 8. The seven silent authoring failures
 
 Ranked by how long each one costs before you notice.
 
@@ -314,8 +342,12 @@ Ranked by how long each one costs before you notice.
 4. **A Role on the wrong node type is KEPT.** The validator checks a Role
    against the whole list, not against the ones its node type declares.
 5. **An undeclared param or token is dropped**, so the design renders with the
-   default and looks nearly right.
-6. **A \`split\` written with \`children\`** loses both panes and everything in
+   default and looks nearly right. This includes a name inside a node's
+   \`tokens\` bag — and a bag that keeps nothing leaves no key at all, so the
+   node looks untouched rather than empty.
+6. **A \`tokens\` bag on a LEAF is dropped whole.** Only layouts declare the
+   param. A \`heading\` given its own ground silently keeps the one it inherited.
+7. **A \`split\` written with \`children\`** loses both panes and everything in
    them.
 
 \`php bin/verify-templates.php\` reports every one of these by name. Run it

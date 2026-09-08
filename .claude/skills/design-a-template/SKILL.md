@@ -6,9 +6,10 @@ description: Author a new WConvert design (a [[Template]]) — a node tree plus 
 # Designing a Template
 
 A [[Template]] is **configuration, not a document** (ADR 0010): a JSON node
-tree over a closed vocabulary plus 22 CSS custom properties. It carries no
-HTML, no CSS and — this is the part that catches everyone — **no words a
-visitor reads**. Copy lives on the [[Playbook]]; a design's own text is
+tree over a closed vocabulary plus 22 CSS custom properties — set for the whole
+design, and re-declared on any layout node for what is inside it (ADR 0062). It
+carries no HTML, no CSS and — this is the part that catches everyone — **no
+words a visitor reads**. Copy lives on the [[Playbook]]; a design's own text is
 placeholder that exists so the gallery has something to show.
 
 That boundary is what keeps the library small. With copy held elsewhere a
@@ -113,9 +114,10 @@ written anywhere.
 ## What cannot be imported, and why there is no mapper
 
 HTML from anywhere — a competitor, a canvas, a generator — **cannot cross**.
-Per-node colours, positioned badges, decorative shapes and second CTAs have no
-home in the vocabulary and `TemplateVocabulary::normalize()` drops them
-**silently**.
+Positioned badges, decorative shapes and second CTAs have no home in the
+vocabulary and `TemplateVocabulary::normalize()` drops them **silently**.
+Per-node colours DO have a home — a layout's `tokens` bag — but only in the 22
+declared names, and only on a layout.
 
 An HTML→JSON mapper is easy to write and unsafe to trust, which is exactly why
 there is not one ([#18](https://github.com/navidkashani/wconvert/issues/18)).
@@ -123,16 +125,25 @@ Author against `VOCABULARY.md` instead.
 
 ## The ceiling, stated plainly
 
-The 22 tokens are **global**. Nothing can tint one pane or give the form a
-different ground from the headline. ADR 0061 declined per-node styling and
-records what evidence would reopen it.
+The 22 token **names** are closed and that is the ceiling. Where each one
+APPLIES is not: since ADR 0062 any layout node carries its own `tokens` bag,
+re-declaring the same names for itself and everything inside it. Custom
+properties inherit, so a `split` can hold a cream pane beside a dark one and the
+form can have a different ground from the headline. Bags nest.
 
-What is available instead is larger than it looks: **token values are
-unvalidated** — only the names are checked — so `clamp()` widths, asymmetric
-`pad`, arbitrary radii, gradients through `bg-image` and washes through
-`overlay` all work today. ADR 0054: `choices` is *an offer, not a limit*. A
-`split` with a coloured half is drawn with an `image`, or approximated with
-`linear-gradient(90deg, #0f172a 0 50%, #ffffff 50% 100%)`.
+ADR 0061 declined per-node styling as "rung 3" and named the evidence that would
+reopen it; ADR 0062 records the reopening, and that the evidence was a different
+kind than the one asked for.
+
+What is still out of reach: **arrangement**. There is no per-node `class`, no
+`style`, no positioning, and nothing that moves a box somewhere the layout did
+not put it. A design that wants the photo on the other side is a different
+design.
+
+Beyond the bag, **token values are unvalidated** — only the names are checked —
+so `clamp()` widths, asymmetric `pad`, arbitrary radii, gradients through
+`bg-image` and washes through `overlay` all work today. ADR 0054: `choices` is
+*an offer, not a limit*.
 
 ## Watch items
 

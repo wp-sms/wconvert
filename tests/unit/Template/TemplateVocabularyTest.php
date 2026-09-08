@@ -276,4 +276,108 @@ final class TemplateVocabularyTest extends TestCase
             $this->assertArrayNotHasKey('hidden', $node, sprintf('%s may not be hidden', $node['type']));
         }
     }
+
+    /**
+     * ========================================================================
+     * A SCOPED BAG GOES THROUGH THE SAME CLOSURE THE DESIGN'S TOKENS DO.
+     * ========================================================================
+     * Every other param a node carries is a SCALAR, and the loop that keeps
+     * them copies the value verbatim — which is safe exactly because there is
+     * nothing inside a scalar to be unsafe. A token bag is a map, and it is the
+     * first param that is, so the verbatim copy would have carried arbitrary
+     * KEYS into `element.style.setProperty('--wc-' + name, value)`. That is a
+     * property-name injection in the one place ADR 0010 claims none exists,
+     * which is why ADR 0062 routes both scopes through one private `tokens()`
+     * rather than trusting the caller (ADR 0062).
+     */
+    public function testAScopedTokenNameOutsideTheVocabularyIsDropped(): void
+    {
+        $normalized = self::normalize([
+            'tree' => ['steps' => [[
+                'type' => 'stack',
+                'tokens' => ['bg' => '#fff4df', 'wobble' => '3deg', '--evil' => 'x'],
+                'children' => [],
+            ]]],
+        ]);
+
+        $this->assertSame(['bg' => '#fff4df'], $normalized['tree']['steps'][0]['tokens']);
+    }
+
+    /**
+     * And a value that is not a scalar has no spelling as a custom property at
+     * all, so a nested structure is refused rather than flattened into one.
+     */
+    public function testAScopedTokenValueThatIsNotAScalarIsDropped(): void
+    {
+        $normalized = self::normalize([
+            'tree' => ['steps' => [[
+                'type' => 'stack',
+                'tokens' => ['bg' => ['#fff', 'url(javascript:alert(1))'], 'fg' => '#331e17'],
+                'children' => [],
+            ]]],
+        ]);
+
+        $this->assertSame(['fg' => '#331e17'], $normalized['tree']['steps'][0]['tokens']);
+    }
+
+    /**
+     * A bag that survives to nothing leaves no key behind, so a design that
+     * spelled one wrong is byte-identical to one that never spelled it — the
+     * same equality the renderer's absent-versus-default cases turn on.
+     */
+    public function testABagThatKeepsNothingLeavesNoKey(): void
+    {
+        $normalized = self::normalize([
+            'tree' => ['steps' => [['type' => 'row', 'tokens' => ['wobble' => '3deg'], 'children' => []]]],
+        ]);
+
+        $this->assertArrayNotHasKey('tokens', $normalized['tree']['steps'][0]);
+    }
+
+    /**
+     * Every layout carries one, and a LEAF carries none — a bag re-declares
+     * tokens for what is INSIDE a box, and a leaf has no inside.
+     */
+    public function testEveryLayoutMayCarryABagAndNoLeafMay(): void
+    {
+        $normalized = self::normalize([
+            'tree' => ['steps' => [[
+                'type' => 'stack',
+                'tokens' => ['bg' => '#111'],
+                'children' => [
+                    ['type' => 'row', 'tokens' => ['bg' => '#222'], 'children' => []],
+                    ['type' => 'grid', 'tokens' => ['bg' => '#333'], 'children' => []],
+                    ['type' => 'split', 'tokens' => ['bg' => '#444'], 'start' => [], 'end' => []],
+                    ['type' => 'heading', 'text' => 'Join', 'tokens' => ['bg' => '#555']],
+                ],
+            ]]],
+        ]);
+
+        $step = $normalized['tree']['steps'][0];
+
+        $this->assertSame(['bg' => '#111'], $step['tokens']);
+
+        foreach (array_slice($step['children'], 0, 3) as $node) {
+            $this->assertArrayHasKey('tokens', $node, sprintf('%s may carry a bag', $node['type']));
+        }
+
+        $this->assertArrayNotHasKey('tokens', $step['children'][3]);
+    }
+
+    /**
+     * The words come out with everything else that is not words, because a bag
+     * is arrangement rather than copy: a [[Playbook]] fills a headline into a
+     * design and never repaints it.
+     */
+    public function testACopyOfATreeKeepsItsScopedBags(): void
+    {
+        $stripped = self::vocabulary()->withoutCopy(['steps' => [[
+            'type' => 'stack',
+            'tokens' => ['bg' => '#fff4df'],
+            'children' => [['type' => 'heading', 'text' => 'Join']],
+        ]]]);
+
+        $this->assertSame(['bg' => '#fff4df'], $stripped['steps'][0]['tokens']);
+        $this->assertArrayNotHasKey('text', $stripped['steps'][0]['children'][0]);
+    }
 }

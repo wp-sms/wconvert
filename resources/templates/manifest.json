@@ -2,16 +2,21 @@
   "layouts": {
     "stack": {
       "children": "list",
-      "params": []
+      "params": [
+        "tokens"
+      ]
     },
     "row": {
       "children": "list",
-      "params": []
+      "params": [
+        "tokens"
+      ]
     },
     "split": {
       "children": "panes",
       "params": [
-        "ratio"
+        "ratio",
+        "tokens"
       ],
       "choices": {
         "ratio": [
@@ -26,7 +31,9 @@
     },
     "grid": {
       "children": "list",
-      "params": []
+      "params": [
+        "tokens"
+      ]
     }
   },
   "nodes": {

@@ -275,7 +275,21 @@ function LayoutParams({
   onParam: (key: string, value: unknown) => void;
 }) {
   const declared = LAYOUTS[type];
-  const params: readonly string[] = declared?.params ?? [];
+
+  /*
+   * ==========================================================================
+   * A PARAM WITHOUT `choices` IS NOT A CONTROL THIS COMPONENT DRAWS.
+   * ==========================================================================
+   * `choices` is what says "this param enumerates", and {@see ParamChoice} is a
+   * radio group — so a param that names a BAG rather than a value (`tokens`,
+   * since ADR 0062) would render an empty group under a translated legend,
+   * which is the shape ADR 0054 rule 1 refuses: a control must have the shape
+   * of its value. The bag has its own editor; this filter is what keeps the two
+   * from drawing each other's.
+   */
+  const params: readonly string[] = (declared?.params ?? []).filter(
+    (param) => (declared?.choices?.[param] ?? []).length > 0,
+  );
 
   return (
     <>

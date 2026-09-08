@@ -190,6 +190,30 @@ final class TemplateLabels
     {
         return [
             'split.ratio' => __('How the space is divided', 'wconvert'),
+            /*
+             * ================================================================
+             * FOUR ENTRIES FOR ONE CONTROL, BECAUSE THE KEY IS PER LAYOUT.
+             * ================================================================
+             * `tokens` is the same bag on every layout and the words are the
+             * same words, and it is still spelled four times: this map is keyed
+             * `"{layout}.{param}"` because a param name means nothing on its
+             * own, and {@see \WConvert\Tests\Unit\Template\TemplateLabelParityTest::testEveryLayoutParamIsNamed()}
+             * walks every layout's `params` with no opt-out. A shared entry
+             * would be a fifth spelling of "which layouts exist".
+             *
+             * **It has no `choices`, and that is what makes it a bag rather
+             * than an enum.** The block inspector draws a radio group per param
+             * that enumerates and skips one that does not, so these words head
+             * the Style panel rather than an empty legend.
+             */
+            /* translators: the colours, spacing and type this box sets for itself and everything inside it. */
+            'stack.tokens' => __('Style for this box', 'wconvert'),
+            /* translators: the colours, spacing and type this box sets for itself and everything inside it. */
+            'row.tokens' => __('Style for this box', 'wconvert'),
+            /* translators: the colours, spacing and type this box sets for itself and everything inside it. */
+            'split.tokens' => __('Style for this box', 'wconvert'),
+            /* translators: the colours, spacing and type this box sets for itself and everything inside it. */
+            'grid.tokens' => __('Style for this box', 'wconvert'),
         ];
     }
 

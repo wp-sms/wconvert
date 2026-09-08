@@ -631,6 +631,17 @@ come from the [[Playbook]] that prefilled the Optin, or from the user. Whatever
 placeholder text a Template carries exists so the gallery has something to show, and
 is never copied into an Optin.
 
+> **"How it is styled" has a scope.** The design sets the 22 tokens for the
+> whole of itself, and **any layout node may re-declare the same names for what
+> is inside it** by carrying a `tokens` bag of its own — which is how one design
+> holds a cream panel beside a dark one, or gives the form a different ground
+> from the headline. The names are the closed 22 at both scopes and the
+> validation is one function, so a scoped bag is still configuration with
+> nothing to sanitise. What no bag can do is **move a box**: a merchant may
+> change anything about a box and not where the boxes are, and a design that
+> wants the picture on the other side is a different design. See
+> [ADR 0062](docs/adr/0062-a-token-bag-is-scoped-to-the-box-that-carries-it.md).
+
 > **That boundary is what keeps the library small.** Copy is what makes an Optin
 > serve a particular [[Goal]], so with the copy held elsewhere a Template is
 > **goal-agnostic** — the library is a set of designs per [[Display Type]], not a

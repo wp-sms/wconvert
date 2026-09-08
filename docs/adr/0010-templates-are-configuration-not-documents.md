@@ -44,6 +44,19 @@ remote `<script>`." A document-model template distributed through a remote libra
 therefore needs a CSS sanitiser, which is the same `!important` arms race #10
 rejected scoped CSS for.
 
+*Corrected, in place, because this paragraph over-reads the guideline it cites.
+Guideline 8 is about **executable code and assets loaded from outside the
+plugin** — its force here is against a REMOTE stylesheet and a remotely supplied
+payload, not against CSS as such. A plugin shipping its own stylesheet in its
+own ZIP breaks nothing, and every WordPress plugin does it; this one does too,
+in `css.ts`. So the sentence proves less than it sounds like it proves: what it
+actually rules out is a template library **distributed from our servers** whose
+entries carry style, which is the arrangement #10 was describing. The
+conclusion below is unaffected and reached by the other three counts as well —
+a configuration template has no CSS to sanitise because of its shape, not
+because a guideline forbids one. Recorded here rather than only in the ticket,
+per the amend-in-place rule.*
+
 A configuration template has no CSS to sanitise. Validation against the manifest
 drops unknown node types and unknown tokens; there is no HTML, so `wp_kses` does not
 apply to templates at all. "Content, never capability" stops being a rule enforced at
@@ -139,10 +152,34 @@ third-party ones. Under configuration they are properties of the one renderer.
   indicator and a third step were each considered and refused by that same test.*
 
   ***The same ADR declined per-node styling, which is this ADR's real
-  ceiling.*** *Every design's look is 22 **global** custom properties, so nothing
-  can tint one panel or give the form a different ground from the headline. That
-  is a genuine limit and removing it would amend the bargain this ADR is named
-  for — so it stays, with 0061 recording what evidence would reopen it.*
+  ceiling.*** *~~Every design's look is 22 **global** custom properties, so
+  nothing can tint one panel or give the form a different ground from the
+  headline.~~ That is a genuine limit and removing it would amend the bargain
+  this ADR is named for — so it stays, with 0061 recording what evidence would
+  reopen it.*
+
+  ***Amended by [ADR 0062](0062-a-token-bag-is-scoped-to-the-box-that-carries-it.md):
+  the tokens are no longer global, and the bargain is not amended.*** *Any
+  LAYOUT node may carry a `tokens` bag re-declaring the same closed 22 for
+  itself and everything inside it, so a panel can be tinted and the form can
+  have a different ground from the headline. What made that affordable is that
+  it changes **where a value applies** and nothing else: the names stay closed,
+  custom properties already inherit so there is no cascade to implement, and the
+  bag goes through the same `TemplateVocabulary::tokens()` the design's own
+  tokens do — which is what keeps "there is no CSS to sanitise" literally true.*
+
+  ***The one thing that clause got wrong is worth naming, because it is this
+  ADR's own safety claim.*** *`node()` copied every declared param verbatim,
+  which is correct for a scalar and is a property-name injection for a map: an
+  arbitrary key would have reached `style.setProperty('--wc-' + name, value)` in
+  the one place this ADR says none exists. A bag is the first non-scalar param,
+  so it has a clause of its own beside `link` and `href`, and anything nested
+  added later needs the same.*
+
+  ***Still out of reach, deliberately: arrangement.*** *There is no per-node
+  `class`, no `style`, no positioning. A merchant may change anything about a
+  box and not where the boxes are — which is exactly where a canvas would begin,
+  and the line 0061's Depicter teardown said not to cross.*
 
   *An `icon` is the one member that draws a SHAPE rather than a box of text, and
   its set is closed for this ADR's own reason — an `src` would be the remote

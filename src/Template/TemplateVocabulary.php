@@ -404,6 +404,30 @@ final class TemplateVocabulary
                 continue;
             }
 
+            /*
+             * ================================================================
+             * THE ONE NESTED STRUCTURE A PARAM MAY BE, AND THE ONLY ONE.
+             * ================================================================
+             * Every other param is a scalar, so `$kept[$key] = $node[$key]`
+             * below is safe by the shape of what it copies. A token bag is not
+             * a scalar — it is a map — and copied verbatim it would reach
+             * `element.style.setProperty('--wc-' + name, value)` in the
+             * renderer carrying names nobody declared. That is a property-name
+             * injection in the one place ADR 0010 says none exists, so it goes
+             * through the same closure the DESIGN's tokens already go through:
+             * a name outside the 22 is dropped, and a value that is not a
+             * scalar has no spelling as a custom property at all.
+             */
+            if ($key === 'tokens') {
+                $tokens = $this->tokens($node[$key]);
+
+                if ($tokens !== []) {
+                    $kept[$key] = $tokens;
+                }
+
+                continue;
+            }
+
             $kept[$key] = $node[$key];
         }
 

@@ -65,9 +65,9 @@ raw file against the validator's output node for node.
 ## The Bench is the return path
 
 `tools/design-system` is one-way: repo → canvas. A design has to come **back**,
-as JSON, and that is what `out/bench.html` is for — paste a tree in, drive all
-22 tokens live, judge it in its real container at 320/768/1440 in both
-directions and against the shipping themes, copy it out.
+as JSON, and that is what `out/bench.html` is for — paste a tree in, drive every
+token live, judge it in its real container at 320/768/1440 in both directions and
+against the shipping themes, copy it out.
 
 It is a published Artifact:
 <https://claude.ai/code/artifact/ce24835b-c23e-4313-a79f-80adcf594287>. The

@@ -50,15 +50,37 @@ export function render(tree: TemplateTree, tokens: Tokens, step = 0): HTMLElemen
 
   root.className = 'wc-root';
 
-  for (const [name, value] of Object.entries(tokens)) {
-    root.style.setProperty(TOKEN_PREFIX + name, value);
-  }
+  scope(root, tokens);
 
   if (node !== undefined) {
     appendNode(root, node);
   }
 
   return root;
+}
+
+/**
+ * Write a token bag onto one element, as the custom properties it names.
+ *
+ * ============================================================================
+ * THE SAME THREE LINES AT TWO SCOPES, WHICH IS WHY THERE IS A FUNCTION.
+ * ============================================================================
+ * The design's own tokens land on `.wc-root`; a layout's bag lands on that
+ * layout's element. Custom properties inherit, so the second is the first
+ * re-declared further in — a panel with `--wc-bg` set paints everything inside
+ * it and nothing outside, at no runtime cost beyond the `setProperty` calls
+ * (ADR 0062).
+ *
+ * **Nothing here checks the names.** The 22 are closed and
+ * `TemplateVocabulary` drops anything outside them on the way in, at both
+ * scopes, through one private `tokens()`. This module is handed a bag that has
+ * already been through it — the same bargain the whole renderer takes with the
+ * tree it draws.
+ */
+function scope(element: HTMLElement, tokens: Tokens | undefined): void {
+  for (const [name, value] of Object.entries(tokens ?? {})) {
+    element.style.setProperty(TOKEN_PREFIX + name, value);
+  }
 }
 
 /** Does this subtree hold the converting act that is a submission? */
@@ -159,10 +181,12 @@ function elementFor(node: TemplateNode): HTMLElement | null {
   }
 }
 
-function layout(node: TemplateNode & { children?: readonly TemplateNode[] }): HTMLElement {
+function layout(node: TemplateNode & { children?: readonly TemplateNode[]; tokens?: Tokens }): HTMLElement {
   const element = document.createElement('div');
 
   element.className = `wc-${node.type}`;
+
+  scope(element, node.tokens);
 
   for (const child of node.children ?? []) {
     appendNode(element, child);
@@ -183,6 +207,8 @@ function split(node: SplitNode): HTMLElement {
   const element = document.createElement('div');
 
   element.className = 'wc-split';
+
+  scope(element, node.tokens);
 
   if (typeof node.ratio === 'number') {
     element.style.setProperty(TOKEN_PREFIX + 'ratio', String(node.ratio));

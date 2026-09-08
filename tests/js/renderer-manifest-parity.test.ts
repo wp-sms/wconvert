@@ -194,6 +194,62 @@ describe('every default the manifest declares', () => {
 });
 
 /**
+ * ============================================================================
+ * A TOKEN BAG IS A PARAM, SO IT IS ASSERTED THE WAY EVERY OTHER PARAM IS.
+ * ============================================================================
+ * The manifest says which layouts carry one; this asks the renderer to draw
+ * each and looks at where the properties landed. **On that element and nowhere
+ * else** is the whole claim — inheritance does the rest, and a bag that leaked
+ * onto `.wc-root` would be the global set with extra steps (ADR 0062).
+ */
+describe('every layout the manifest gives a token bag', () => {
+  const scoped = Object.entries(manifest.layouts).filter(([, entry]) =>
+    (entry.params as readonly string[]).includes('tokens'),
+  );
+
+  it('is every layout there is, so the cases below cover the vocabulary', () => {
+    expect(scoped).toHaveLength(Object.keys(manifest.layouts).length);
+  });
+
+  it.each(scoped)('writes it as custom properties on its own element: %s', (type) => {
+    const root = render(
+      { steps: [{ type, tokens: { bg: '#fff4df', pad: '2rem' }, children: [], start: [], end: [] }] } as TemplateTree,
+      { bg: '#ffffff' },
+    );
+    const element = root.firstElementChild as HTMLElement;
+
+    expect(element.style.getPropertyValue('--wc-bg')).toBe('#fff4df');
+    expect(element.style.getPropertyValue('--wc-pad')).toBe('2rem');
+    // The design's own value is still on the root, untouched. That is what
+    // makes the bag an OVERRIDE for a subtree rather than an edit to the design.
+    expect(root.style.getPropertyValue('--wc-bg')).toBe('#ffffff');
+  });
+
+  it.each(scoped)('renders identically to one carrying no bag at all: %s', (type) => {
+    const shape = (extra: object) =>
+      render({ steps: [{ type, children: [], start: [], end: [], ...extra }] } as TemplateTree, {})
+        .firstElementChild?.outerHTML;
+
+    expect(shape({ tokens: {} })).toBe(shape({}));
+  });
+
+  /**
+   * The names are closed at the boundary and not here, which is the same
+   * layering `hidden` has: `TemplateVocabulary` decides what a tree may say,
+   * the renderer draws what it is handed. Asserted so the day someone adds a
+   * second check here it is a deliberate change rather than a quiet one.
+   */
+  it('draws whatever names it is handed, because closure is the boundarys job', () => {
+    const element = render(
+      { steps: [{ type: 'stack', tokens: { wobble: '3deg' }, children: [] }] } as TemplateTree,
+      {},
+    ).firstElementChild as HTMLElement;
+
+    expect(element.style.getPropertyValue('--wc-wobble')).toBe('3deg');
+  });
+});
+
+/**
  * Tokens are the other half of the vocabulary, and an unconsumed one is worse
  * than a missing one: it rides the payload on every page view, is offered in
  * the settings panel, and changes nothing on screen.

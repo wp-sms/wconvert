@@ -171,13 +171,15 @@ export interface BadgeNode extends HideableNode {
    * Where it sits: in the flow, or pinned to the panel's own corner.
    *
    * ==========================================================================
-   * THE ONE PLACEMENT THE GLOBAL TOKENS CANNOT REACH, AND IT IS ONE VALUE.
+   * THE ONE PLACEMENT NO TOKEN CAN REACH, AT ANY SCOPE, AND IT IS ONE VALUE.
    * ==========================================================================
-   * A design's whole look is 22 GLOBAL custom properties, so nothing in the
-   * token set can pin one node anywhere — and the corner flash (*"50% OFF"*
-   * over the top edge of an offer panel) is the single most recognisable
-   * element in this genre. `inline` is what a badge has always done and stays
-   * the default, so every shipped design renders byte-identically without it.
+   * A design's look is 22 token NAMES, and since ADR 0062 any layout may
+   * re-declare them for what is inside it. Scoping answered *where a value
+   * applies*; it does not add a value that pins a node to a corner, because
+   * none of the 22 spells position — and the corner flash (*"50% OFF"* over the
+   * top edge of an offer panel) is the single most recognisable element in this
+   * genre. `inline` is what a badge has always done and stays the default, so
+   * every shipped design renders byte-identically without it.
    *
    * `corner` positions against `.wc-root`, which is already `position:
    * relative`. It is the block-start/inline-end corner in LOGICAL properties,
@@ -391,11 +393,37 @@ export type LeafNode =
 export interface StackNode {
   readonly type: 'stack';
   readonly children?: readonly TemplateNode[];
+  /**
+   * Tokens re-declared for this box and everything inside it.
+   *
+   * The names are the same 22 the design sets; what a bag adds is an answer to
+   * WHERE. Custom properties inherit, so a `stack` carrying `{"bg":"#fff4df"}`
+   * paints its own ground and its children's and leaves the rest of the design
+   * alone — which is how one design holds a cream panel beside a dark one
+   * without a second stylesheet (ADR 0062).
+   *
+   * Closed at both scopes by one `TemplateVocabulary::tokens()`, so a name
+   * outside the 22 never reaches `style.setProperty`.
+   */
+  readonly tokens?: Tokens;
 }
 
 export interface RowNode {
   readonly type: 'row';
   readonly children?: readonly TemplateNode[];
+  /**
+   * Tokens re-declared for this box and everything inside it.
+   *
+   * The names are the same 22 the design sets; what a bag adds is an answer to
+   * WHERE. Custom properties inherit, so a `stack` carrying `{"bg":"#fff4df"}`
+   * paints its own ground and its children's and leaves the rest of the design
+   * alone — which is how one design holds a cream panel beside a dark one
+   * without a second stylesheet (ADR 0062).
+   *
+   * Closed at both scopes by one `TemplateVocabulary::tokens()`, so a name
+   * outside the 22 never reaches `style.setProperty`.
+   */
+  readonly tokens?: Tokens;
 }
 
 /**
@@ -410,6 +438,19 @@ export interface SplitNode {
   readonly end?: readonly TemplateNode[];
   /** How much of the inline axis the first pane takes, as a fraction. */
   readonly ratio?: number;
+  /**
+   * Tokens re-declared for this box and everything inside it.
+   *
+   * The names are the same 22 the design sets; what a bag adds is an answer to
+   * WHERE. Custom properties inherit, so a `stack` carrying `{"bg":"#fff4df"}`
+   * paints its own ground and its children's and leaves the rest of the design
+   * alone — which is how one design holds a cream panel beside a dark one
+   * without a second stylesheet (ADR 0062).
+   *
+   * Closed at both scopes by one `TemplateVocabulary::tokens()`, so a name
+   * outside the 22 never reaches `style.setProperty`.
+   */
+  readonly tokens?: Tokens;
 }
 
 /**
@@ -439,6 +480,19 @@ export interface SplitNode {
 export interface GridNode {
   readonly type: 'grid';
   readonly children?: readonly TemplateNode[];
+  /**
+   * Tokens re-declared for this box and everything inside it.
+   *
+   * The names are the same 22 the design sets; what a bag adds is an answer to
+   * WHERE. Custom properties inherit, so a `stack` carrying `{"bg":"#fff4df"}`
+   * paints its own ground and its children's and leaves the rest of the design
+   * alone — which is how one design holds a cream panel beside a dark one
+   * without a second stylesheet (ADR 0062).
+   *
+   * Closed at both scopes by one `TemplateVocabulary::tokens()`, so a name
+   * outside the 22 never reaches `style.setProperty`.
+   */
+  readonly tokens?: Tokens;
 }
 
 export type LayoutNode = StackNode | RowNode | SplitNode | GridNode;
@@ -493,6 +547,11 @@ export interface TemplateTree {
  * INSIDE the shadow host, at roughly 80 bytes gzipped each — which is what
  * makes configuration cheap where a document-model template's own stylesheet
  * was not (ADR 0010).
+ *
+ * The same type is what a LAYOUT carries in its own `tokens` bag. There is one
+ * set of names and one closure over it; the only difference between the design
+ * bag and a node's is which element the properties land on, and inheritance
+ * does the rest (ADR 0062).
  */
 export type Tokens = Readonly<Record<string, string>>;
 
