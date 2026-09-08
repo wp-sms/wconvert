@@ -227,6 +227,55 @@ export const TOKENS: readonly TokenDeclaration[] = Object.entries(
 ).map(([name, fallback]) => ({ name, fallback }));
 
 /**
+ * The two tokens whose absence resolves to ANOTHER token rather than to a
+ * literal.
+ *
+ * ============================================================================
+ * A MANIFEST DEFAULT CANNOT SAY "WHATEVER `bg` IS", SO THIS SAYS IT.
+ * ============================================================================
+ * `.wc-input` reads `var(--wc-input-bg,var(--wc-bg,#fff))` and `.wc-heading`
+ * reads `var(--wc-heading-font,var(--wc-font,…))` — both added with the scoped
+ * bag, both deliberately chained so that every design shipped before them
+ * renders identically. The manifest declares one string per token, and no
+ * string expresses *the design's own ground*.
+ *
+ * That gap is not cosmetic. {@see resolvedToken} feeds the AA contrast check,
+ * and the manifest's `#ffffff` for `input-bg` would have reported a dark
+ * design's near-white text as unreadable on a white field the visitor never
+ * sees — a warning about a surface that does not exist, on precisely the
+ * designs a scoped bag is for.
+ *
+ * **It is a second spelling of two CSS declarations and there is no way for it
+ * not to be**, so it is two entries in one place rather than a `??` in each
+ * consumer, and the comment above each rule in `css.ts` names it.
+ */
+const FALLS_BACK_TO: Readonly<Record<string, string>> = {
+  'input-bg': 'bg',
+  'heading-font': 'font',
+};
+
+/**
+ * What the renderer will actually resolve a token to, given a design.
+ *
+ * The design's own value, else the token it chains to, else the manifest's
+ * literal. This is what a check must read: a ratio computed from an empty
+ * control is a verdict on a colour nobody chose.
+ */
+export function resolvedToken(tokens: Readonly<Record<string, string>>, name: string): string {
+  const held = tokens[name];
+
+  if (held !== undefined && held !== '') {
+    return held;
+  }
+
+  const chained = FALLS_BACK_TO[name];
+
+  return chained === undefined
+    ? (TOKENS.find((token) => token.name === name)?.fallback ?? '')
+    : resolvedToken(tokens, chained);
+}
+
+/**
  * What the Design panel OFFERS for a token, where offering a list is the only
  * usable control.
  *

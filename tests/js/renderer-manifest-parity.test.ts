@@ -250,6 +250,59 @@ describe('every layout the manifest gives a token bag', () => {
 });
 
 /**
+ * ============================================================================
+ * THE ONE LAYOUT THAT PAINTS, AND THE THREE THINGS THAT MAKES TRUE.
+ * ============================================================================
+ * Every other layout arranges and draws nothing, so a scoped bag on one is
+ * visible only through what inherits it. A `panel` reads the properties in
+ * scope and draws the box — which is what makes a cream panel beside a dark one
+ * expressible at all (ADR 0062).
+ */
+describe('the panel', () => {
+  const panel = (extra: object): HTMLElement =>
+    render({ steps: [{ type: 'panel', children: [], ...extra }] } as TemplateTree, {})
+      .firstElementChild as HTMLElement;
+
+  /**
+   * **The reset is the non-obvious half.** `.wc-panel` paints the same two
+   * background layers `.wc-root` does, so a design with one picture would paint
+   * it again — cover and centred — inside every panel in it. A panel inherits
+   * the design's COLOURS and not its photograph.
+   */
+  it('starts from the designs colours and not its picture', () => {
+    const root = render(
+      { steps: [{ type: 'panel', children: [] }] } as TemplateTree,
+      { bg: '#0f172a', 'bg-image': 'url(/hero.jpg)', overlay: 'rgba(0,0,0,.5)' },
+    );
+    const element = root.firstElementChild as HTMLElement;
+
+    expect(element.style.getPropertyValue('--wc-bg-image')).toBe('none');
+    expect(element.style.getPropertyValue('--wc-overlay')).toBe('#0000');
+    // Only the picture. The ground is inherited, which is the whole point of a
+    // panel with no bag reading as the design it sits in.
+    expect(element.style.getPropertyValue('--wc-bg')).toBe('');
+    expect(root.style.getPropertyValue('--wc-bg-image')).toBe('url(/hero.jpg)');
+  });
+
+  it('lets its own bag win over that reset, which is what a photo pane is', () => {
+    const element = panel({ tokens: { 'bg-image': 'url(/pane.jpg)', overlay: 'rgba(0,0,0,.35)' } });
+
+    expect(element.style.getPropertyValue('--wc-bg-image')).toBe('url(/pane.jpg)');
+    expect(element.style.getPropertyValue('--wc-overlay')).toBe('rgba(0,0,0,.35)');
+  });
+
+  it('writes edges as a modifier attribute, and nothing at all for the default', () => {
+    expect(panel({ edges: 'block-start' }).dataset.edges).toBe('block-start');
+    expect(panel({ edges: 'all' }).dataset.edges).toBe('all');
+    expect(panel({ edges: 'none' }).outerHTML).toBe(panel({}).outerHTML);
+  });
+
+  it('writes min as the custom property the stylesheet reads', () => {
+    expect(panel({ min: '16rem' }).style.getPropertyValue('--wc-min')).toBe('16rem');
+  });
+});
+
+/**
  * Tokens are the other half of the vocabulary, and an unconsumed one is worse
  * than a missing one: it rides the payload on every page view, is offered in
  * the settings panel, and changes nothing on screen.

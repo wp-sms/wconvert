@@ -86,7 +86,13 @@ const LABELS = {
     button: 'Button',
     consent: 'Consent checkbox',
   },
-  layouts: { stack: 'Column', row: 'Row', split: 'Side by side', grid: 'Equal columns' },
+  layouts: {
+    stack: 'Column',
+    row: 'Row',
+    split: 'Side by side',
+    grid: 'Equal columns',
+    panel: 'Coloured box',
+  },
   // The menu shows what a layout DOES, because *Row* and *Side by side* are two
   // words a merchant cannot tell apart from their names alone.
   layoutNotes: {
@@ -94,6 +100,7 @@ const LABELS = {
     row: 'Blocks along one line.',
     split: 'Two panes, each holding its own blocks.',
     grid: 'Three across, one per line on a phone.',
+    panel: 'A box with its own colours, holding other blocks.',
   },
   layoutParams: { 'split.ratio': 'How the space is divided' },
   layoutParamValues: {
@@ -656,6 +663,7 @@ describe('adding a block', () => {
       'Row',
       'Side by side',
       'Equal columns',
+      'Coloured box',
     ]) {
       expect(
         await screen.findByRole('menuitem', { name: new RegExp(`^${kind}\\b`) }),

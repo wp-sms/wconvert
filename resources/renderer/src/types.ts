@@ -173,10 +173,10 @@ export interface BadgeNode extends HideableNode {
    * ==========================================================================
    * THE ONE PLACEMENT NO TOKEN CAN REACH, AT ANY SCOPE, AND IT IS ONE VALUE.
    * ==========================================================================
-   * A design's look is 22 token NAMES, and since ADR 0062 any layout may
-   * re-declare them for what is inside it. Scoping answered *where a value
+   * A design's look is a closed set of token NAMES, and since ADR 0062 any
+   * layout may re-declare them for what is inside it. Scoping answered *where a value
    * applies*; it does not add a value that pins a node to a corner, because
-   * none of the 22 spells position — and the corner flash (*"50% OFF"* over the
+   * no token spells position — and the corner flash (*"50% OFF"* over the
    * top edge of an offer panel) is the single most recognisable element in this
    * genre. `inline` is what a badge has always done and stays the default, so
    * every shipped design renders byte-identically without it.
@@ -396,14 +396,14 @@ export interface StackNode {
   /**
    * Tokens re-declared for this box and everything inside it.
    *
-   * The names are the same 22 the design sets; what a bag adds is an answer to
-   * WHERE. Custom properties inherit, so a `stack` carrying `{"bg":"#fff4df"}`
+   * The names are the same ones the design sets; what a bag adds is an answer
+   * to WHERE. Custom properties inherit, so a `stack` carrying `{"bg":"#fff4df"}`
    * paints its own ground and its children's and leaves the rest of the design
    * alone — which is how one design holds a cream panel beside a dark one
    * without a second stylesheet (ADR 0062).
    *
-   * Closed at both scopes by one `TemplateVocabulary::tokens()`, so a name
-   * outside the 22 never reaches `style.setProperty`.
+   * Closed at both scopes by one `TemplateVocabulary::tokens()`, so an
+   * undeclared name never reaches `style.setProperty`.
    */
   readonly tokens?: Tokens;
 }
@@ -414,14 +414,14 @@ export interface RowNode {
   /**
    * Tokens re-declared for this box and everything inside it.
    *
-   * The names are the same 22 the design sets; what a bag adds is an answer to
-   * WHERE. Custom properties inherit, so a `stack` carrying `{"bg":"#fff4df"}`
+   * The names are the same ones the design sets; what a bag adds is an answer
+   * to WHERE. Custom properties inherit, so a `stack` carrying `{"bg":"#fff4df"}`
    * paints its own ground and its children's and leaves the rest of the design
    * alone — which is how one design holds a cream panel beside a dark one
    * without a second stylesheet (ADR 0062).
    *
-   * Closed at both scopes by one `TemplateVocabulary::tokens()`, so a name
-   * outside the 22 never reaches `style.setProperty`.
+   * Closed at both scopes by one `TemplateVocabulary::tokens()`, so an
+   * undeclared name never reaches `style.setProperty`.
    */
   readonly tokens?: Tokens;
 }
@@ -441,14 +441,14 @@ export interface SplitNode {
   /**
    * Tokens re-declared for this box and everything inside it.
    *
-   * The names are the same 22 the design sets; what a bag adds is an answer to
-   * WHERE. Custom properties inherit, so a `stack` carrying `{"bg":"#fff4df"}`
+   * The names are the same ones the design sets; what a bag adds is an answer
+   * to WHERE. Custom properties inherit, so a `stack` carrying `{"bg":"#fff4df"}`
    * paints its own ground and its children's and leaves the rest of the design
    * alone — which is how one design holds a cream panel beside a dark one
    * without a second stylesheet (ADR 0062).
    *
-   * Closed at both scopes by one `TemplateVocabulary::tokens()`, so a name
-   * outside the 22 never reaches `style.setProperty`.
+   * Closed at both scopes by one `TemplateVocabulary::tokens()`, so an
+   * undeclared name never reaches `style.setProperty`.
    */
   readonly tokens?: Tokens;
 }
@@ -483,19 +483,69 @@ export interface GridNode {
   /**
    * Tokens re-declared for this box and everything inside it.
    *
-   * The names are the same 22 the design sets; what a bag adds is an answer to
-   * WHERE. Custom properties inherit, so a `stack` carrying `{"bg":"#fff4df"}`
+   * The names are the same ones the design sets; what a bag adds is an answer
+   * to WHERE. Custom properties inherit, so a `stack` carrying `{"bg":"#fff4df"}`
    * paints its own ground and its children's and leaves the rest of the design
    * alone — which is how one design holds a cream panel beside a dark one
    * without a second stylesheet (ADR 0062).
    *
-   * Closed at both scopes by one `TemplateVocabulary::tokens()`, so a name
-   * outside the 22 never reaches `style.setProperty`.
+   * Closed at both scopes by one `TemplateVocabulary::tokens()`, so an
+   * undeclared name never reaches `style.setProperty`.
    */
   readonly tokens?: Tokens;
 }
 
-export type LayoutNode = StackNode | RowNode | SplitNode | GridNode;
+/**
+ * A stack that PAINTS — the box a scoped bag is visible in.
+ *
+ * ============================================================================
+ * THE OTHER FOUR ARRANGE. THIS ONE IS A SURFACE.
+ * ============================================================================
+ * A `stack` with `{"bg":"#fff4df"}` re-declares the token for everything
+ * inside it, and nothing draws it: `.wc-stack` paints no background, so the
+ * cream is inherited by children that happen to read `--wc-bg` and by nothing
+ * else. A `panel` reads the properties in scope and draws the box — ground,
+ * picture, padding, corner, edge — which is what a scoped bag was for
+ * (ADR 0062).
+ *
+ * **`media` is not a second member, and that is deliberate.** A photo pane is
+ * a `panel` carrying `bg-image`, `overlay` and `min`. A second layout would
+ * have added a child-key shape to four files and a branch to a hardcoded test;
+ * what it buys is content spread top-and-bottom rather than stacked, which is
+ * a `spread` param the day a design needs it.
+ */
+export interface PanelNode {
+  readonly type: 'panel';
+  readonly children?: readonly TemplateNode[];
+  /**
+   * Tokens re-declared for this box and everything inside it — and, on a
+   * panel, the ones it DRAWS.
+   *
+   * {@see StackNode.tokens} for what a bag is. The difference here is only
+   * that something reads them: `.wc-panel` paints `bg`, `bg-image`, `overlay`,
+   * `pad`, `radius` and `fg`, so the bag is visible on the box rather than only
+   * on what is inside it.
+   */
+  readonly tokens?: Tokens;
+  /**
+   * A rule above, an outline all round, or neither.
+   *
+   * A modifier attribute rather than a custom property, exactly as
+   * `badge.place` is a modifier class: the stylesheet may read no `--wc-*` name
+   * outside the tokens and the declared layout params, and three states is not
+   * a scale. `none` writes no attribute, so absent renders identically to
+   * declared.
+   */
+  readonly edges?: 'none' | 'block-start' | 'all';
+  /**
+   * A floor under the panel's height, so a photo pane does not collapse to its
+   * content. On a scale, so it IS a custom property — the same shape
+   * `split.ratio` has.
+   */
+  readonly min?: string | number;
+}
+
+export type LayoutNode = StackNode | RowNode | SplitNode | GridNode | PanelNode;
 
 /**
  * Any node. `{ type: string }` is deliberately part of the union: a snapshot

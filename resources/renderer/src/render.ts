@@ -147,6 +147,7 @@ function elementFor(node: TemplateNode): HTMLElement | null {
     case 'stack':
     case 'row':
     case 'grid':
+    case 'panel':
       return layout(node);
     case 'split':
       return split(node as SplitNode);
@@ -181,10 +182,52 @@ function elementFor(node: TemplateNode): HTMLElement | null {
   }
 }
 
-function layout(node: TemplateNode & { children?: readonly TemplateNode[]; tokens?: Tokens }): HTMLElement {
+function layout(
+  node: TemplateNode & {
+    children?: readonly TemplateNode[];
+    tokens?: Tokens;
+    edges?: string;
+    min?: string | number;
+  },
+): HTMLElement {
   const element = document.createElement('div');
 
   element.className = `wc-${node.type}`;
+
+  if (node.type === 'panel') {
+    /*
+     * ========================================================================
+     * A PANEL INHERITS THE DESIGN'S COLOURS AND NOT ITS PHOTOGRAPH.
+     * ========================================================================
+     * Every other token is wanted further in: a panel with no bag should read
+     * as the design it is inside. `bg-image` is the exception, and it is not a
+     * taste call — `.wc-panel` paints the same two background layers
+     * `.wc-root` does, so a design with one picture would paint it AGAIN,
+     * cover and centred, inside every panel in it. Reset before the bag rather
+     * than after, so a photo pane's own `bg-image` still wins.
+     *
+     * `overlay` goes with it because an overlay is a wash over that picture; a
+     * panel that wants one over its own ground says so in its bag.
+     */
+    element.style.setProperty(TOKEN_PREFIX + 'bg-image', 'none');
+    element.style.setProperty(TOKEN_PREFIX + 'overlay', '#0000');
+
+    // A modifier ATTRIBUTE and not a custom property, for the reason
+    // `badge.place` is a modifier class: the parity test asserts the
+    // stylesheet reads no `--wc-*` name outside the tokens and the declared
+    // layout params, and an edge treatment is one of three states rather than
+    // a value on a scale. `none` writes nothing, so absent and default are the
+    // same markup.
+    if (node.edges !== undefined && node.edges !== 'none') {
+      element.dataset.edges = node.edges;
+    }
+
+    // `min` IS on a scale, so it is a custom property — the same shape
+    // `split.ratio` has, and declared as a layout param for the same reason.
+    if (node.min !== undefined) {
+      element.style.setProperty(TOKEN_PREFIX + 'min', String(node.min));
+    }
+  }
 
   scope(element, node.tokens);
 

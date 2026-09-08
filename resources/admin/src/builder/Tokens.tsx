@@ -4,7 +4,7 @@ import { HexColorInput, HexColorPicker, RgbaStringColorPicker } from 'react-colo
 import { Button } from '../components/ui/button';
 import { ChevronDown, RotateCcw } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
-import { CHOICES, TOKENS, groupsOf, withToken, type TokenGroupId } from './panel';
+import { CHOICES, groupsOf, resolvedToken, withToken, type TokenGroupId } from './panel';
 import { getThemeTokens, type SiteFont } from './api';
 import { MediaControl } from './SlotFields';
 import {
@@ -1247,9 +1247,9 @@ function Reset({
  * is the first control in this product that lets someone fail AA for somebody
  * else — in one click, silently, discovered later from a customer.
  *
- * **Three pairs, and `backdrop` is deliberately not one of them.** It sits
+ * **Four pairs, and `backdrop` is deliberately not one of them.** It sits
  * behind the popup rather than behind text, so a ratio for it would be a number
- * about nothing. The three that are here are every place the renderer paints
+ * about nothing. The four that are here are every place the renderer paints
  * words on a surface.
  *
  * **It sits WITH the colours now.** It was above a closed disclosure that
@@ -1257,11 +1257,11 @@ function Reset({
  * colours at all — a verdict on something the merchant could not see.
  */
 function Contrast({ template, labels }: { template: Template; labels: TemplateLabels }) {
-  // The Optin's own value, else what the manifest declares — which is exactly
-  // what the renderer resolves, so the ratio is the one a visitor gets rather
-  // than the one an empty control implies.
-  const value = (name: string) =>
-    template.tokens[name] ?? TOKENS.find((token) => token.name === name)?.fallback ?? '';
+  // The Optin's own value, else the token this one chains to, else what the
+  // manifest declares — which is exactly what the renderer resolves, so the
+  // ratio is the one a visitor gets rather than the one an empty control
+  // implies ({@see resolvedToken}).
+  const value = (name: string) => resolvedToken(template.tokens, name);
 
   const read = PAIRS.map(([fg, bg, sample]) => {
     const ratio = contrastOf(value(fg), value(bg));
@@ -1376,6 +1376,11 @@ const PAIRS: readonly (readonly [string, string, string])[] = [
   ['fg', 'bg', 'Aa'],
   ['muted', 'bg', 'Aa'],
   ['accent-fg', 'accent', 'Go'],
+  // The field's own ground, since `input-bg` gave it one. A light form on a
+  // dark panel is the design a scoped bag exists for, and the input is the one
+  // control a visitor must find — so the pair the check covered before
+  // (`fg`/`bg`) is now a ratio about a surface the field may not be sitting on.
+  ['fg', 'input-bg', 'Aa'],
 ];
 
 /**

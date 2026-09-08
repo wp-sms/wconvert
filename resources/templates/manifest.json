@@ -34,6 +34,31 @@
       "params": [
         "tokens"
       ]
+    },
+    "panel": {
+      "children": "list",
+      "params": [
+        "edges",
+        "min",
+        "tokens"
+      ],
+      "choices": {
+        "edges": [
+          "none",
+          "block-start",
+          "all"
+        ],
+        "min": [
+          "0",
+          "10rem",
+          "16rem",
+          "24rem"
+        ]
+      },
+      "defaults": {
+        "edges": "none",
+        "min": "0"
+      }
     }
   },
   "nodes": {
@@ -286,7 +311,9 @@
     "accent": "#2563eb",
     "accent-fg": "#ffffff",
     "border": "#e5e7eb",
+    "input-bg": "#ffffff",
     "font": "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
+    "heading-font": "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
     "heading-size": "1.5rem",
     "heading-weight": "700",
     "tracking": "normal",
@@ -375,6 +402,12 @@
       "'Helvetica Neue', Helvetica, Arial, sans-serif",
       "Georgia, 'Times New Roman', Times, serif",
       "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+    ],
+    "heading-font": [
+      "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
+      "'Helvetica Neue', Helvetica, Arial, sans-serif",
+      "Georgia, 'Times New Roman', Times, serif",
+      "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
     ]
   },
   "facets": {
@@ -382,7 +415,8 @@
       "stack",
       "row",
       "split",
-      "grid"
+      "grid",
+      "panel"
     ],
     "captures": [
       "email",

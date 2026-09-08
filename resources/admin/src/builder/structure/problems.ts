@@ -1,6 +1,6 @@
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { AA_NORMAL, contrastOf } from '../contrast';
-import { TOKENS, type Path } from '../panel';
+import { resolvedToken, type Path } from '../panel';
 import { formStep, losesWordsOnSwitch } from './catalogue';
 import { convertingActOf } from './guards';
 import { capturesTaken, nodesOf } from './tree';
@@ -314,15 +314,14 @@ function whatLosesWords(template: Template): Problem[] {
 /**
  * Colour pairs a visitor may not be able to read.
  *
- * The three places the renderer paints words on a surface, against AA for body
+ * The four places the renderer paints words on a surface, against AA for body
  * text. `backdrop` is deliberately absent: it sits behind the popup rather than
  * behind text. A pair {@see contrastOf} cannot read is not reported — a
  * translucent colour has no ratio of its own, and a guess here would be a
  * warning about nothing or a silence about something.
  */
 function whatCannotBeRead(template: Template): Problem[] {
-  const value = (name: string) =>
-    template.tokens[name] ?? TOKENS.find((token) => token.name === name)?.fallback ?? '';
+  const value = (name: string) => resolvedToken(template.tokens, name);
 
   return PAIRS.flatMap(([fg, bg, said]) => {
     const ratio = contrastOf(value(fg), value(bg));
@@ -347,5 +346,21 @@ const PAIRS: readonly (readonly [string, string, () => string])[] = [
     'accent-fg',
     'accent',
     () => __('The button’s label is too close to the button to be readable.', 'wconvert'),
+  ],
+  /*
+   * ==========================================================================
+   * THE PAIR THAT ARRIVED WITH `input-bg`, AND THE ONE IT MATTERS MOST FOR.
+   * ==========================================================================
+   * A field took the design's own ground until a `panel` could paint a second
+   * one, so `fg`/`bg` covered it. Now it does not: a light form on a dark panel
+   * is exactly the design a scoped bag is for, and the input is the one control
+   * a visitor MUST find. Without this line the AA check silently stops covering
+   * it — the ratio it reports would still be about the design's background, on
+   * a box that no longer has that background.
+   */
+  [
+    'fg',
+    'input-bg',
+    () => __('The text in the form fields is too close to their background to be readable.', 'wconvert'),
   ],
 ];

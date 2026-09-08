@@ -113,6 +113,15 @@ final class TemplateLabels
             'split' => __('Side by side', 'wconvert'),
             /* translators: a layout — as many equal columns as fit, wrapping onto the next line. */
             'grid' => __('Equal columns', 'wconvert'),
+            /*
+             * **Named for what it IS and not for what it does**, which is the
+             * opposite of the choice `stack` made one line up. *Column* says
+             * what a stack is FOR because every step is already one; a panel is
+             * a THING on the screen — a box with its own colour — and the
+             * merchant is going to point at it.
+             */
+            /* translators: a layout — a box with its own background colour, holding other blocks. */
+            'panel' => __('Coloured box', 'wconvert'),
         ];
     }
 
@@ -169,6 +178,15 @@ final class TemplateLabels
              */
             /* translators: what the Equal columns layout does. */
             'grid' => __('Three across, one per line on a phone.', 'wconvert'),
+            /*
+             * **The note has to say what makes it different from a Column**,
+             * because the two hold their children identically and a merchant
+             * reading two menu items called *Column* and *Coloured box* has one
+             * question. The answer is the whole feature: this one has its own
+             * colour, and everything inside it inherits.
+             */
+            /* translators: what the Coloured box layout does. */
+            'panel' => __('A box with its own colours, holding other blocks.', 'wconvert'),
         ];
     }
 
@@ -214,6 +232,12 @@ final class TemplateLabels
             'split.tokens' => __('Style for this box', 'wconvert'),
             /* translators: the colours, spacing and type this box sets for itself and everything inside it. */
             'grid.tokens' => __('Style for this box', 'wconvert'),
+            /* translators: the colours, spacing and type this box sets for itself and everything inside it. */
+            'panel.tokens' => __('Style for this box', 'wconvert'),
+            /* translators: whether the coloured box has a rule above it, a border all round, or neither. */
+            'panel.edges' => __('Border', 'wconvert'),
+            /* translators: the least tall the coloured box may be, so a box holding only a picture does not collapse. */
+            'panel.min' => __('Least height', 'wconvert'),
         ];
     }
 
@@ -243,6 +267,43 @@ final class TemplateLabels
             'split.ratio.0.5' => __('Even', 'wconvert'),
             /* translators: a side-by-side split. The LOGICAL second pane is narrower — it reads “left” in a right-to-left locale. */
             'split.ratio.0.65' => __('Narrow right', 'wconvert'),
+
+            /*
+             * ================================================================
+             * `block-start` IS LOGICAL, AND THE ENGLISH WORD IS DIRECTIONAL.
+             * ================================================================
+             * The same bargain `align`'s three values make one section down.
+             * The renderer draws `border-block-start`, which is the top of the
+             * box in every writing mode this plugin has ever been read in and
+             * is the INLINE start of it in a vertical one — so the word here is
+             * the one an English reader needs, and the translator resolves it
+             * for their own direction. The vocabulary itself never names a
+             * physical side (ADR 0009), which is why the stored value is
+             * `block-start` and not `top`.
+             */
+            /* translators: a coloured box with no border at all. */
+            'panel.edges.none' => __('None', 'wconvert'),
+            /* translators: a border treatment — a thick coloured rule along the block-start edge. In a vertical writing mode this is not the top of the screen. */
+            'panel.edges.block-start' => __('A rule above', 'wconvert'),
+            /* translators: a border treatment — a thin line all the way round the box. */
+            'panel.edges.all' => __('All round', 'wconvert'),
+
+            /*
+             * **Named for the JOB and not for the measurement.** `16rem` is not
+             * a thing to put in front of anybody, and the three that are not
+             * zero are the three heights a picture pane is ever asked for. The
+             * renderer takes any length, so a design shipping `18rem` keeps it
+             * and the control shows nothing checked — the same bargain every
+             * other `choices` list makes.
+             */
+            /* translators: a minimum height — none, so the box is as tall as what is in it. */
+            'panel.min.0' => __('As tall as its contents', 'wconvert'),
+            /* translators: a minimum height for a box holding a picture. */
+            'panel.min.10rem' => __('Short', 'wconvert'),
+            /* translators: a minimum height for a box holding a picture. */
+            'panel.min.16rem' => __('Medium', 'wconvert'),
+            /* translators: a minimum height for a box holding a picture. */
+            'panel.min.24rem' => __('Tall', 'wconvert'),
         ];
     }
 
@@ -488,7 +549,11 @@ final class TemplateLabels
             'accent' => __('Button', 'wconvert'),
             'accent-fg' => __('Button text', 'wconvert'),
             'border' => __('Borders', 'wconvert'),
+            /* translators: the background colour of a text box a visitor types into. Separate from the design's own background, so a form on a dark panel stays readable. */
+            'input-bg' => __('Field background', 'wconvert'),
             'font' => __('Font', 'wconvert'),
+            /* translators: a second typeface used only for headings, where the design wants one different from its body text. */
+            'heading-font' => __('Heading font', 'wconvert'),
             'heading-size' => __('Heading size', 'wconvert'),
             'heading-weight' => __('Heading weight', 'wconvert'),
             /* translators: the space between letters in a heading. Typographers call it tracking; "letter spacing" is the phrase a merchant knows. */
@@ -581,6 +646,24 @@ final class TemplateLabels
             'font.Georgia, \'Times New Roman\', Times, serif' => __('Serif', 'wconvert'),
             /* translators: a font choice — a typeface whose letters are all one width. */
             'font.ui-monospace, SFMono-Regular, Menlo, Consolas, monospace' => __('Monospace', 'wconvert'),
+
+            /*
+             * **The same four stacks, spelled a second time, and the duplication
+             * is forced rather than lazy.** The key is `"{token}.{value}"`
+             * because the value IS the identity, so a shared entry would need a
+             * key that names no token — and the parity test walks `choices`
+             * per token with no opt-out. What that buys is the thing it costs:
+             * the day the heading list and the body list stop being the same
+             * list, nothing here has to be untangled.
+             */
+            /* translators: a font choice — the operating system's own interface typeface. */
+            "heading-font.system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" => __('System', 'wconvert'),
+            /* translators: a font choice — a typeface with no serifs. */
+            "heading-font.'Helvetica Neue', Helvetica, Arial, sans-serif" => __('Sans serif', 'wconvert'),
+            /* translators: a font choice — a typeface with serifs. */
+            'heading-font.Georgia, \'Times New Roman\', Times, serif' => __('Serif', 'wconvert'),
+            /* translators: a font choice — a typeface whose letters are all one width. */
+            'heading-font.ui-monospace, SFMono-Regular, Menlo, Consolas, monospace' => __('Monospace', 'wconvert'),
 
             /*
              * **Named for the weight a reader sees, not for the number.** `600`

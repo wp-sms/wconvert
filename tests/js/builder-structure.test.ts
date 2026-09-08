@@ -337,6 +337,7 @@ describe('what the catalogue offers', () => {
       'row',
       'split',
       'grid',
+      'panel',
     ]);
   });
 

@@ -181,6 +181,35 @@ third-party ones. Under configuration they are properties of the one renderer.
   box and not where the boxes are — which is exactly where a canvas would begin,
   and the line 0061's Depicter teardown said not to cross.*
 
+  ***And a fifth layout came with it, because a bag with nothing drawing it is
+  invisible.*** *`stack`, `row`, `split` and `grid` arrange and paint nothing —
+  the design's ground is `.wc-root`'s and there is exactly one of it — so a
+  `stack` with `{"bg":"#fff4df"}` tinted only what inside it happened to read
+  `--wc-bg`. **`panel`** is a `stack` that DRAWS the tokens in scope: ground,
+  picture, wash, padding, corner, edge. It is the whole of what makes a cream
+  box beside a dark one expressible, and it takes two params of its own,
+  `edges` and `min`.*
+
+  ***A photo pane is a `panel` and there is no `media` node.*** *A second
+  child-key shape would have cost `TemplateTree::CHILD_KEYS`, `panel.ts`,
+  `TemplateVocabulary::childKeysOf` and `vocabulary.mjs` an edit each, plus a
+  branch in a hardcoded test, to buy content spread top-and-bottom rather than
+  stacked. `bg-image` + `overlay` + `min` on a `panel` in a `split` pane draws
+  the same thing, and a `spread` param buys the rest the day a design needs it.*
+
+  ***Two tokens landed beside it, and each closes a hole the panel opened.***
+  *`input-bg` — a field took the design's own `bg`, which was right while there
+  was one surface and is wrong the moment a panel paints a second: a light form
+  on a navy panel had a navy input with light text in it. `heading-font` — eight
+  of the sixteen reference designs set a display face, and a design had exactly
+  one face for everything. **Both chain to the token they replaced**
+  (`var(--wc-input-bg,var(--wc-bg,#fff))`), so every design shipped before them
+  renders identically — and that chain is the one thing the manifest cannot
+  spell, since a default is one string and no string means "whatever `bg` is".
+  `resources/admin/src/builder/panel.ts`'s `resolvedToken` is where it is
+  spelled a second time, deliberately and in one place, because the AA contrast
+  check reads it.*
+
   *An `icon` is the one member that draws a SHAPE rather than a box of text, and
   its set is closed for this ADR's own reason — an `src` would be the remote
   asset [ADR 0013](0013-playbook-copy-carries-no-markup.md) keeps out, and an

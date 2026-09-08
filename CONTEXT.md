@@ -631,7 +631,7 @@ come from the [[Playbook]] that prefilled the Optin, or from the user. Whatever
 placeholder text a Template carries exists so the gallery has something to show, and
 is never copied into an Optin.
 
-> **"How it is styled" has a scope.** The design sets the 22 tokens for the
+> **"How it is styled" has a scope.** The design sets its tokens for the
 > whole of itself, and **any layout node may re-declare the same names for what
 > is inside it** by carrying a `tokens` bag of its own — which is how one design
 > holds a cream panel beside a dark one, or gives the form a different ground

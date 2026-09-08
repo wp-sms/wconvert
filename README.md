@@ -146,8 +146,8 @@ and its implementation arrive in the same commit.
 ## The template vocabulary
 
 [`resources/templates/manifest.json`](resources/templates/manifest.json) is the
-closed list of everything a Template may name: eleven leaf nodes, four layouts,
-the token set, the Slot Roles and the field kinds. A Template is a JSON node
+closed list of everything a Template may name: the leaf nodes, the layouts, the
+token set, the Slot Roles and the field kinds. A Template is a JSON node
 tree plus tokens with **no HTML and no CSS in it**
 ([ADR 0010](docs/adr/0010-templates-are-configuration-not-documents.md)), so
 validating against this manifest is the whole of the sanitisation story —

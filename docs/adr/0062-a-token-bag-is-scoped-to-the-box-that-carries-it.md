@@ -1,8 +1,7 @@
 # A token bag is scoped to the box that carries it
 
 Any layout node may re-declare the design's tokens for itself and everything
-inside it. The **names stay the closed 22**; what is new is an answer to
-*where*.
+inside it. The **names stay closed**; what is new is an answer to *where*.
 
 ```jsonc
 { "type": "stack", "tokens": { "bg": "#fff4df", "fg": "#331e17" },
@@ -55,8 +54,8 @@ the private `tokens()` that already validated the design's bag.
 
 **The merchant's model does not grow.** The Style controls are the ones the
 Design tab already had; what changed is that they are now addressed at a scope
-rather than only at the root. Selecting the step gives you the design's 22, the
-way the Design tab always did.
+rather than only at the root. Selecting the step gives you the design's own
+tokens, the way the Design tab always did.
 
 ## What it deliberately does not buy
 
@@ -104,6 +103,50 @@ purchase rather than the strength of the demand:
 The payload half of 0061's objection was measured rather than argued: see the
 consequences.
 
+## A bag needs something that draws it
+
+`stack`, `row`, `split` and `grid` arrange and paint nothing. The design's
+ground is `.wc-root`'s and there is exactly one of it — so a `stack` carrying
+`{"bg":"#fff4df"}` tints only what inside it happens to read `--wc-bg`, which is
+a text colour on a paragraph and not a cream box.
+
+**`panel`** is the fifth layout: a `stack` that draws the tokens in scope as a
+box — ground, picture, wash, padding, corner, edge — plus two params of its own,
+`edges` (a rule above, an outline all round, or neither) and `min` (a floor
+under its height). It is the whole of what makes the reference set's two-material
+designs expressible.
+
+Two things about it are worth stating because neither is obvious:
+
+- **A photo pane is a `panel`, and there is no `media` node.** `bg-image` +
+  `overlay` + `min`, in a `split` pane. A second child-key shape would have cost
+  four files an edit and a hardcoded test a branch, to buy content spread
+  top-and-bottom rather than stacked. A `spread` param buys that back if a design
+  needs it.
+- **A panel inherits the design's colours and not its picture.** It paints the
+  same two background layers `.wc-root` does, so one `bg-image` on the design
+  would be painted again — cover, centred — inside every panel in it. `render.ts`
+  resets `bg-image` and `overlay` on every panel *before* the bag is applied, so
+  a photo pane's own picture still wins.
+
+## Two tokens, and each closes a hole the panel opened
+
+- **`input-bg`.** A field took the design's own `bg`, which was right while
+  there was one surface and is wrong the moment a panel paints a second: a light
+  form on a navy panel had a navy input with light text in it, and the input is
+  the one control a visitor MUST find. `['fg','input-bg']` joins the AA contrast
+  pairs for exactly that reason.
+- **`heading-font`.** Eight of the sixteen reference designs set a display face,
+  and a design had exactly one face for everything.
+
+**Both chain to the token they replaced** — `var(--wc-input-bg,var(--wc-bg,#fff))`
+— so every design shipped before them renders identically. That chain is the one
+thing the manifest cannot spell: a default is one string, and no string means
+*whatever `bg` is*. So it is spelled a second time, once, in
+`resources/admin/src/builder/panel.ts`'s `resolvedToken`, because the contrast
+check reads a resolved value and a manifest `#ffffff` would have reported a dark
+design's near-white text as unreadable on a white field no visitor sees.
+
 ## Consequences
 
 - **The scope is a LAYOUT's, and only a layout's.** `tokens` is declared in the
@@ -123,8 +166,10 @@ consequences.
   today.
 - **A literal hex does not follow a theme change.** The Style panel flags one
   and offers a one-click conversion to a token reference, which does.
-- **The free loader grew 10 B gzipped**, to 8,178 B of 12,288. The elite loader
-  is 10,137 B, leaving 2,151 B.
+- **The free loader is 8,191 B gzipped of 12,288** — 13 B for the bag, the panel
+  and both tokens together, because a new CSS rule built from strings the sheet
+  already contains is nearly free once gzipped. The elite loader is 10,145 B,
+  leaving 2,143 B.
 - **The payload budget is not raised.** `PayloadBudgetTest` measures 1,308 B of
   2,048 today — 36% of headroom, not the breach an earlier estimate claimed. A
   bag is a handful of highly compressible bytes per scope, and the instrument

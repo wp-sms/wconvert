@@ -6,8 +6,9 @@ description: Author a new WConvert design (a [[Template]]) — a node tree plus 
 # Designing a Template
 
 A [[Template]] is **configuration, not a document** (ADR 0010): a JSON node
-tree over a closed vocabulary plus 22 CSS custom properties — set for the whole
-design, and re-declared on any layout node for what is inside it (ADR 0062). It
+tree over a closed vocabulary plus a closed set of CSS custom properties — set
+for the whole design, and re-declared on any layout node for what is inside it
+(ADR 0062). It
 carries no HTML, no CSS and — this is the part that catches everyone — **no
 words a visitor reads**. Copy lives on the [[Playbook]]; a design's own text is
 placeholder that exists so the gallery has something to show.
@@ -116,8 +117,8 @@ written anywhere.
 HTML from anywhere — a competitor, a canvas, a generator — **cannot cross**.
 Positioned badges, decorative shapes and second CTAs have no home in the
 vocabulary and `TemplateVocabulary::normalize()` drops them **silently**.
-Per-node colours DO have a home — a layout's `tokens` bag — but only in the 22
-declared names, and only on a layout.
+Per-node colours DO have a home — a layout's `tokens` bag — but only in the
+declared token names, and only on a layout.
 
 An HTML→JSON mapper is easy to write and unsafe to trust, which is exactly why
 there is not one ([#18](https://github.com/navidkashani/wconvert/issues/18)).
@@ -125,11 +126,20 @@ Author against `VOCABULARY.md` instead.
 
 ## The ceiling, stated plainly
 
-The 22 token **names** are closed and that is the ceiling. Where each one
-APPLIES is not: since ADR 0062 any layout node carries its own `tokens` bag,
+The token **names** are closed and that is the ceiling. Where each one APPLIES
+is not: since ADR 0062 any layout node carries its own `tokens` bag,
 re-declaring the same names for itself and everything inside it. Custom
 properties inherit, so a `split` can hold a cream pane beside a dark one and the
 form can have a different ground from the headline. Bags nest.
+
+**A bag is only visible where something draws it, and `panel` is that
+something.** Every other layout arranges and paints nothing, so a `stack` with
+`{"bg":"…"}` tints only what inside it happens to read `--wc-bg`. A `panel`
+holds its children in a column exactly as `stack` does *and* draws the box —
+ground, picture, wash, padding, corner, edge. A photo pane is a `panel` carrying
+`bg-image`, `overlay` and `min`; there is no `media` node and there will not be
+one. A panel resets `bg-image` and `overlay` before its own bag applies, so the
+design's picture is not repainted inside every panel in it.
 
 ADR 0061 declined per-node styling as "rung 3" and named the evidence that would
 reopen it; ADR 0062 records the reopening, and that the evidence was a different

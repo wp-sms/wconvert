@@ -86,7 +86,7 @@ property every colour chip already has.
 
 `TemplateVocabulary::tokens()` checks token *names* and accepts any string as a
 value, so `box-shadow: banana` reaches the page and the CSSOM drops the
-declaration in silence. That is true of all 22 tokens, it is documented, and
+declaration in silence. That is true of every token, it is documented, and
 jsdom will not catch it either — its CSSOM never rejects a bad value. **Adding
 validation to one control would imply the other twenty-one have it.** They do
 not, deliberately, and a chip strip is not the place to change that.

@@ -415,8 +415,8 @@ final class TemplateVocabulary
              * renderer carrying names nobody declared. That is a property-name
              * injection in the one place ADR 0010 says none exists, so it goes
              * through the same closure the DESIGN's tokens already go through:
-             * a name outside the 22 is dropped, and a value that is not a
-             * scalar has no spelling as a custom property at all.
+             * an undeclared name is dropped, and a value that is not a scalar
+             * has no spelling as a custom property at all.
              */
             if ($key === 'tokens') {
                 $tokens = $this->tokens($node[$key]);

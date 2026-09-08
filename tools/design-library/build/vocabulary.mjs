@@ -187,7 +187,7 @@ The step holding the submit button **is** the \`<form>\`. So every \`field\` and
 every \`consent\` node must live in that step. A field on any other step draws,
 takes typing, and is read by nothing.
 
-## 3. The four layouts
+## 3. The ${Object.keys(manifest.layouts).length} layouts
 
 ${table(['Layout', 'Children go in', 'Params', 'Values (**default**)'], layouts)}
 
@@ -200,9 +200,19 @@ ${table(['Layout', 'Children go in', 'Params', 'Values (**default**)'], layouts)
 - \`grid\` — \`repeat(auto-fit, minmax(8rem, 1fr))\`. As many equal columns as
   fit, wrapping by construction: three across on a desktop, one per line on a
   phone. The only route to a three-up, since \`split\` is exactly two panes.
+- \`panel\` — the only layout that **paints**. It holds its children in a column
+  exactly as \`stack\` does, and it draws the tokens in scope as a box: ground,
+  picture, wash, padding, corner, edge. That is what makes a scoped bag
+  *visible* — a cream box beside a dark one is two panels with different bags.
+  A photo pane is a \`panel\` carrying \`bg-image\`, \`overlay\` and \`min\`.
 
-**Every layout takes a \`tokens\` bag**, which is why the param appears on all
-four. It is not a value from a list — it is the same token object the design
+  **It inherits the design's colours and not its picture.** A panel resets
+  \`bg-image\` and \`overlay\` before its own bag is applied, so one \`bg-image\` on
+  the design is not painted again inside every panel in it. A panel that wants
+  a picture says so in its own bag.
+
+**Every layout takes a \`tokens\` bag**, which is why the param appears on all of
+them. It is not a value from a list — it is the same token object the design
 carries, re-declared for this box and everything inside it. See §6.
 
 ## 4. The ${Object.keys(manifest.nodes).length} leaves

@@ -46,8 +46,13 @@ Rung 1 is true and is not sufficient, and rung 3 is the wrong purchase.
 
 **Rung 1 is real and it is the floor, not the answer.** Everything above about
 unvalidated token values holds, and the theme work and most of the design work
-rides on it. But a token is global by construction, so no value of any of the 22
-can put a flash on a corner, box one string, or round one picture. Those are not
+rides on it. But a token is global by construction, so no value of any of them
+can put a flash on a corner, box one string, or round one picture.
+*(Amended by [ADR 0062](0062-a-token-bag-is-scoped-to-the-box-that-carries-it.md):
+a token is no longer global by construction — a layout re-declares one for what
+is inside it. The three ABSENCES named in this sentence are unaffected, which is
+why the members admitted below are still the right purchase: none of them is a
+colour decision.)* Those are not
 colour decisions that a bolder palette reaches; they are absences.
 
 **Rung 3 buys the largest thing and buys the wrong thing.** The visual teardown
