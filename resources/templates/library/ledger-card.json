@@ -1,0 +1,115 @@
+{
+  "id": "ledger-card",
+  "name": "Ledger card",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#f7f5f0",
+    "fg": "#1c1a17",
+    "muted": "#6f6a61",
+    "accent": "#1c1a17",
+    "accent-fg": "#f7f5f0",
+    "border": "#cfc8ba",
+    "input-bg": "#ffffff",
+    "font": "'Helvetica Neue', Helvetica, Arial, sans-serif",
+    "heading-font": "Georgia, 'Times New Roman', Times, serif",
+    "heading-size": "1.375rem",
+    "heading-weight": "400",
+    "tracking": "-0.01em",
+    "text-size": "0.9375rem",
+    "leading": "1.7",
+    "radius": "0",
+    "pad": "2.25rem",
+    "gap": "1.25rem",
+    "width": "30rem",
+    "align": "start",
+    "shadow": "0 1px 2px rgba(28, 26, 23, 0.08)",
+    "backdrop": "rgba(28, 26, 23, 0.45)"
+  },
+  "tree": {
+    "steps": [
+      {
+        "type": "stack",
+        "children": [
+          { "type": "eyebrow", "id": "n1", "role": "eyebrow", "text": "The Friday letter" },
+          { "type": "heading", "id": "n2", "role": "headline", "size": "xl", "text": "One long read, every Friday" },
+          {
+            "type": "grid",
+            "tokens": { "gap": "1rem" },
+            "children": [
+              {
+                "type": "panel",
+                "edges": "all",
+                "tokens": { "pad": "0.875rem", "gap": "0.25rem" },
+                "children": [
+                  { "type": "icon", "id": "n3", "name": "clock" },
+                  { "type": "text", "id": "n4", "role": "body", "size": "s", "text": "Eight minutes, no more." }
+                ]
+              },
+              {
+                "type": "panel",
+                "edges": "all",
+                "tokens": { "pad": "0.875rem", "gap": "0.25rem" },
+                "children": [
+                  { "type": "icon", "id": "n5", "name": "gift" },
+                  { "type": "text", "id": "n6", "role": "body", "size": "s", "text": "Subscriber-only archive." }
+                ]
+              },
+              {
+                "type": "panel",
+                "edges": "all",
+                "tokens": { "pad": "0.875rem", "gap": "0.25rem" },
+                "children": [
+                  { "type": "icon", "id": "n7", "name": "check" },
+                  { "type": "text", "id": "n8", "role": "body", "size": "s", "text": "One click to leave." }
+                ]
+              }
+            ]
+          },
+          { "type": "divider", "id": "n9" },
+          {
+            "type": "row",
+            "children": [
+              {
+                "type": "field",
+                "id": "n10",
+                "name": "email",
+                "label": "Email address",
+                "placeholder": "you@example.com",
+                "required": true
+              },
+              { "type": "button", "id": "n11", "role": "cta_label", "label": "Subscribe", "action": "submit" }
+            ]
+          },
+          {
+            "type": "consent",
+            "id": "n12",
+            "role": "consent_text",
+            "hidden": true,
+            "text": "Email me offers and news. See our %s.",
+            "link": { "label": "Privacy Policy" }
+          },
+          {
+            "type": "text",
+            "id": "n13",
+            "role": "fine_print",
+            "size": "s",
+            "text": "No spam, and you can unsubscribe at any time."
+          }
+        ]
+      },
+      {
+        "type": "stack",
+        "children": [
+          { "type": "heading", "id": "n14", "role": "success_headline", "size": "xl", "text": "Confirmed" },
+          {
+            "type": "text",
+            "id": "n15",
+            "role": "success_body",
+            "text": "The next letter goes out on Friday morning. Look for it then."
+          }
+        ]
+      }
+    ]
+  }
+}

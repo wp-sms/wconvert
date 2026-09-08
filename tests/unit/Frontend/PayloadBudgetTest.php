@@ -8,6 +8,7 @@ use WConvert\Frontend\Payload;
 use WConvert\Frontend\PayloadTag;
 use WConvert\Optin\PublishedOptin;
 use WConvert\Targeting\RequestContext;
+use WConvert\Template\DesignBudget;
 use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
 use WConvert\Tests\Unit\Support\InstalledRules;
@@ -38,8 +39,8 @@ final class PayloadBudgetTest extends TestCase
 {
     private const PLUGIN_DIR = __DIR__ . '/../../..';
 
-    /** ≤2KB gzipped, per page (ADR 0010, issue #9). */
-    private const BUDGET = 2048;
+    /** ≤2KB gzipped, per page (ADR 0010, issue #9) — {@see DesignBudget::PER_PAGE}. */
+    private const BUDGET = DesignBudget::PER_PAGE;
 
     private const ON_THE_PAGE = 10;
 
@@ -79,7 +80,23 @@ final class PayloadBudgetTest extends TestCase
         // with the gallery's placeholder words taken out of it — and then the
         // merchant's own words written back onto its Slot Roles. Measuring the
         // gallery entry instead would measure copy no visitor ever sees.
-        $snapshot = $library->snapshotInto(['template_id' => 'centred-card']);
+        //
+        // ====================================================================
+        // THE RICHEST DESIGN THE LIBRARY SHIPS, DERIVED — NOT `centred-card`.
+        // ====================================================================
+        // It was `centred-card` by name, which was the whole library's shape
+        // when the fixture was written and is now one of its plainest entries:
+        // eight slots, one layout, no scoped bags. A library of
+        // reference-class designs carries three to four times the copy and
+        // nests boxes inside boxes (ADR 0062), so a fixture pinned to the
+        // simplest design would go on passing while the designs a merchant
+        // actually picks moved the number.
+        //
+        // Derived rather than named for the reason every other list in this
+        // codebase is: a design authored next month is measured on the day it
+        // lands, and nobody has to remember to repoint a constant.
+        $id = self::richest($library);
+        $snapshot = $library->snapshotInto(['template_id' => $id]);
 
         self::assertArrayHasKey('template', $snapshot, 'the shipped template is what this measures');
 
@@ -92,7 +109,7 @@ final class PayloadBudgetTest extends TestCase
                 'targeting' => ['include' => [['type' => 'url', 'value' => '/pricing']]],
                 'payload' => [
                     'display_type' => 'popup',
-                    'template_id' => 'centred-card',
+                    'template_id' => $id,
                     'priority' => $i,
                     'template' => [
                         'tree' => self::withCopy($template['tree'], $i),
@@ -106,6 +123,38 @@ final class PayloadBudgetTest extends TestCase
         }
 
         return PublishedOptin::fromSet($set);
+    }
+
+    /**
+     * Which shipped design costs the most, measured rather than judged.
+     *
+     * Gzipped alone, which is deliberately the harsher measurement: on a real
+     * page ten snapshots compress against each other, and what this is picking
+     * out is the design with the most of its own to say.
+     *
+     * **Every design, not just the popups.** A `display_type` decides where a
+     * design is drawn and not what it costs, and the payload budget is bytes.
+     * The fixture then renders whichever one wins as a popup, which is what an
+     * Optin's payload carries regardless.
+     */
+    private static function richest(TemplateLibrary $library): string
+    {
+        $costs = [];
+
+        foreach (array_keys($library->all()) as $id) {
+            $snapshot = $library->snapshotInto(['template_id' => (string) $id]);
+
+            $costs[(string) $id] = strlen((string) gzencode(
+                (string) json_encode($snapshot['template'] ?? []),
+                9
+            ));
+        }
+
+        self::assertNotSame([], $costs, 'the library ships nothing, so this fixture measures nothing');
+
+        arsort($costs);
+
+        return (string) array_key_first($costs);
     }
 
     /**
@@ -234,8 +283,16 @@ final class PayloadBudgetTest extends TestCase
         }
 
         // And the provenance that IS carried, so the assertion above cannot be
-        // satisfied by a payload that stopped naming its design at all.
-        $this->assertStringContainsString('"template_id":"centred-card"', $rendered);
+        // satisfied by a payload that stopped naming its design at all. The id
+        // is derived, like the fixture's, so this does not pin the suite to one
+        // design's name in two places.
+        $this->assertStringContainsString(
+            sprintf('"template_id":"%s"', self::richest(TemplateLibrary::fromDirectory(
+                TemplateVocabulary::fromManifest(self::PLUGIN_DIR),
+                self::PLUGIN_DIR
+            ))),
+            $rendered
+        );
     }
 
     /**

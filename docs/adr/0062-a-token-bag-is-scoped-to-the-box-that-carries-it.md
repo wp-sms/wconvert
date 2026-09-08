@@ -273,12 +273,34 @@ because the old guarantee was written down and this is not it.
   contains is nearly free once gzipped — and the type scale's ten rules cost
   120 B, which is the whole of the difference. The elite loader is 10,277 B,
   leaving 2,011 B.
-- **The payload budget is not raised.** `PayloadBudgetTest` measures 1,308 B of
-  2,048 today — 36% of headroom, not the breach an earlier estimate claimed. A
-  bag is a handful of highly compressible bytes per scope, and the instrument
-  changes rather than the budget: the fixture measures the richest design
-  actually shipped, and `LibraryLintTest` gains a per-design cap so one
-  extravagant design is caught at authoring time rather than at page render.
+- **The payload budget is not raised, and both instruments changed.** An early
+  reading claimed ten rich designs came to ~2,320 B against 2,048 and that the
+  budget had to grow. It does not: the fixture measures well inside 2,048 with
+  36% in hand. So the budget stands and the measuring does the moving.
+
+  `PayloadBudgetTest` no longer names `centred-card` — it **derives** the richest
+  design the library ships and measures ten of that. Pinning the fixture to the
+  plainest design is how it would have gone on passing while the designs a
+  merchant actually picks moved the number.
+
+  `LibraryLintTest` gains a **per-design cap**, `DesignBudget::PER_DESIGN`,
+  which is `PER_PAGE / 2`: a design costing more than half a page measured alone
+  is one design eating a page two Optins are meant to share. The richest design
+  shipped is 677 B, so the line is generous — it is not a target, and a cap that
+  argues with ordinary authoring is one people route around. What it catches is
+  the realistic failure, an embedded raster image, which the per-page test would
+  report two commits later naming a page rather than a design.
+
+  **The builder's meter reads the same constant over the wire**, the way
+  `InspectorEnqueue::PARAM` does, so the merchant and the test are measuring
+  against one number rather than two that agree today.
+- **Five reference-class designs ship on the new vocabulary.** `cream-coupon`
+  (a display number over a cream panel, with the coupon on an accent-ruled panel
+  in the success step), `ink-split` (the navy pane beside a white form ADR 0061
+  named as the canonical missing design), `ledger-card` (a serif display face
+  over three outlined benefit panels), `inline-rule` and `inline-tinted`. Every
+  one of them uses something that did not exist before this ADR, and none of
+  them is a palette swap of anything already in the library.
 - **Trees get deeper**, because a scope is a box and boxes nest. `BlockTree`
   indents and collapses already, and collapse state stays in React and never in
   the tree.

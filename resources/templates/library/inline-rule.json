@@ -1,0 +1,86 @@
+{
+  "id": "inline-rule",
+  "name": "Inline rule",
+  "display_type": "inline",
+  "tier": "free",
+  "tokens": {
+    "bg": "#ffffff",
+    "fg": "#18181b",
+    "muted": "#71717a",
+    "accent": "#7c2d12",
+    "accent-fg": "#ffffff",
+    "border": "#e4e4e7",
+    "input-bg": "#ffffff",
+    "heading-font": "Georgia, 'Times New Roman', Times, serif",
+    "heading-size": "1.375rem",
+    "heading-weight": "400",
+    "leading": "1.6",
+    "radius": "0",
+    "pad": "0",
+    "gap": "0",
+    "width": "42rem",
+    "align": "start",
+    "shadow": "none"
+  },
+  "tree": {
+    "steps": [
+      {
+        "type": "panel",
+        "edges": "block-start",
+        "tokens": { "border": "#7c2d12", "pad": "1.75rem 0 0", "gap": "0.75rem" },
+        "children": [
+          { "type": "heading", "id": "n1", "role": "headline", "size": "xl", "text": "Keep reading, on Fridays" },
+          {
+            "type": "text",
+            "id": "n2",
+            "role": "body",
+            "text": "One long piece a week, written for people who finish things."
+          },
+          {
+            "type": "row",
+            "children": [
+              {
+                "type": "field",
+                "id": "n3",
+                "name": "email",
+                "label": "Email address",
+                "placeholder": "you@example.com",
+                "required": true
+              },
+              { "type": "button", "id": "n4", "role": "cta_label", "label": "Subscribe", "action": "submit" }
+            ]
+          },
+          {
+            "type": "consent",
+            "id": "n5",
+            "role": "consent_text",
+            "hidden": true,
+            "text": "Email me offers and news. See our %s.",
+            "link": { "label": "Privacy Policy" }
+          },
+          {
+            "type": "text",
+            "id": "n6",
+            "role": "fine_print",
+            "size": "s",
+            "text": "No spam, and you can unsubscribe at any time."
+          }
+        ]
+      },
+      {
+        "type": "panel",
+        "edges": "block-start",
+        "tokens": { "border": "#7c2d12", "pad": "1.75rem 0 0", "gap": "0.5rem" },
+        "children": [
+          { "type": "heading", "id": "n7", "role": "success_headline", "size": "xl", "text": "You are subscribed" },
+          {
+            "type": "text",
+            "id": "n8",
+            "role": "success_body",
+            "text": "The next piece lands on Friday. Nothing else will."
+          }
+        ]
+      }
+    ]
+  }
+}

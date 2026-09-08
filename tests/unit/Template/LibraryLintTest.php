@@ -4,6 +4,9 @@ namespace WConvert\Tests\Unit\Template;
 
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
+use WConvert\Template\DesignBudget;
+use WConvert\Template\TemplateLibrary;
+use WConvert\Template\TemplateVocabulary;
 
 /**
  * bin/verify-templates.php, against the shipped library and against fixtures.
@@ -94,6 +97,56 @@ final class LibraryLintTest extends TestCase
         $result = $this->lint();
 
         $this->assertSame(0, $result['status'], $result['output']);
+    }
+
+    /**
+     * ========================================================================
+     * A CAP PER DESIGN, BECAUSE THE PAGE BUDGET CANNOT NAME THE CULPRIT.
+     * ========================================================================
+     * {@see \WConvert\Tests\Unit\Frontend\PayloadBudgetTest} holds ADR 0010's
+     * ≤2KB gzipped **per page**, which is the number a visitor actually pays and
+     * the right thing to defend. What it cannot do is say *which design* did it:
+     * it measures ten Optins together, and a failure there names the page.
+     *
+     * That mattered less while every design was one layout and eight slots. It
+     * matters now: a scoped token bag is repeatable and nests (ADR 0062), so a
+     * reference-class design can carry three to four times the copy and a
+     * handful of bags, and the first thing anyone would know about it is a
+     * budget test going red two commits later on a fixture that names something
+     * else.
+     *
+     * **The SNAPSHOT, not the file.** What a page pays for is the tree with the
+     * gallery's placeholder words taken out of it, plus the tokens — which is
+     * what `snapshotInto()` produces and what an Optin stores. A pretty-printed
+     * file with a docblock in it is not what a visitor downloads.
+     *
+     * **Gzipped alone**, which is deliberately harsher than reality: on a page
+     * ten snapshots compress against each other. A design that fits on its own
+     * fits beside its siblings.
+     *
+     * The cap is `DesignBudget::PER_DESIGN`, which the builder's own payload
+     * meter reads over the wire — so a merchant and this test are measuring
+     * against one number rather than two that agree today.
+     */
+    public function testNoShippedDesignIsOverItsOwnByteCap(): void
+    {
+        $vocabulary = TemplateVocabulary::fromManifest(dirname(self::SCRIPT, 2));
+        $library = TemplateLibrary::fromDirectory($vocabulary, dirname(self::SCRIPT, 2));
+
+        $entries = $library->all();
+
+        $this->assertNotSame([], $entries, 'the library ships nothing, so this test asserts nothing');
+
+        foreach (array_keys($entries) as $id) {
+            $snapshot = $library->snapshotInto(['template_id' => (string) $id]);
+            $bytes = strlen((string) gzencode((string) json_encode($snapshot['template'] ?? []), 9));
+
+            $this->assertLessThanOrEqual(
+                DesignBudget::PER_DESIGN,
+                $bytes,
+                sprintf('%s is %d B gzipped against a %d B cap', $id, $bytes, DesignBudget::PER_DESIGN)
+            );
+        }
     }
 
     /**

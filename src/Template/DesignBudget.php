@@ -51,17 +51,25 @@ final class DesignBudget
     /**
      * One design's own snapshot — tree plus tokens — gzipped, on its own.
      *
-     * **Derived rather than chosen.** The page budget is 2,048 B for everything
-     * on it; a page carrying two Optins is ordinary and one carrying three is
-     * not rare. A design gzipped ALONE compresses far worse than the same design
-     * beside nine near-identical siblings, so this is deliberately not
-     * `PER_PAGE / 3` — it is the size at which one design measured in isolation
-     * is still comfortably a third of a page once the compressor has the rest of
-     * the page to work with.
+     * **Half the page**, and that is the whole of the derivation: a design that
+     * costs more than `PER_PAGE / 2` measured ALONE is one design eating a page
+     * two Optins are meant to share. It is a generous line rather than a tight
+     * one — the richest design the library ships measures 677 B, so there is
+     * more than half again in hand — because this is not a target and a cap
+     * that argues with ordinary authoring is a cap people route around.
+     *
+     * What it actually catches is the one realistic failure: an embedded raster
+     * `bg-image` or `image.src`, which is a step change rather than a drift and
+     * which the per-PAGE test would only report two commits later, naming a page
+     * rather than the design.
+     *
+     * Measured alone rather than beside its siblings, which is harsher than
+     * reality: on a page ten snapshots compress against each other, so a design
+     * that fits on its own fits beside them.
      *
      * A design over this is not refused; nothing at runtime reads this. It fails
      * the library lint, at authoring time, which is the only moment anyone can
      * do anything about it.
      */
-    public const PER_DESIGN = 1536;
+    public const PER_DESIGN = self::PER_PAGE / 2;
 }
