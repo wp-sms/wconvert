@@ -2201,219 +2201,53 @@
 }
 
 /* ---------------------------------------------------------------------------
- * THE SPLIT: THE TREE AND THE INSPECTOR SIDE BY SIDE, ONCE THERE IS ROOM.
+ * THE TWO-PANE SPLIT AT 48rem IS GONE, AND THE DELETION IS THE POINT.
  *
- * **48rem is derived, not chosen.** `768 − 352 inspector − 24 gap = 392`, which
- * is precisely the tree width this editor already survives at the 1024px
- * stacking point. The rule that produced it: never split until the tree would
- * be narrower than a width it already works at.
+ * It put the tree and the inspector side by side from 48rem (768px) up, and it
+ * was right for a `.wconvert-structure` that held two panes. It now holds
+ * three: the preview moved into the middle of it (ADR 0062), and it spans,
+ * because a 496px stage does not fit beside a 352px inspector at 768px of
+ * container.
  *
- * **22rem (352px) for the inspector** sits with Gutenberg's ~350px block
- * settings sidebar, which is the closest comparable there is — a panel of
- * controls for one selected node, in a WordPress admin.
+ * With a spanning item between them, auto-placement puts the tree on row one
+ * and the inspector on row THREE — beside nothing, with the preview's full
+ * width between. The fix that suggests itself is `order` on the preview, and it
+ * is the wrong one: it would make the visual order tree · inspector · preview
+ * while the DOM order stays tree · preview · inspector, which is a focus order
+ * that disagrees with the reading order at exactly the widths a merchant is
+ * most likely to be on a keyboard.
  *
- * Below the query this collapses to the flex column above, which is not a
- * fallback invented here: it is exactly the arrangement that shipped, and the
- * one ADR 0039's placement rule was written for.
+ * So below 67rem this is the flex column it already was, in source order, and
+ * the panes take their columns in one step rather than two. The `48rem` number
+ * is not lost — it is what `.wconvert-blocks`'s own overflow rule was written
+ * for, and that rule is untouched.
  * ------------------------------------------------------------------------- */
-/* ---------------------------------------------------------------------------
- * THE ROW ABOVE THE PANES: THE DESIGN'S NAME, ITS CHECKS, ITS COST.
- *
- * It spans, because it is about none of the three panes. `wrap` rather than a
- * second query: the three groups in it are a name, a strip of chips and a small
- * cluster of controls, and any of them may be long in a locale that is not
- * English.
- * ------------------------------------------------------------------------- */
-.wconvert-structure__head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem 1rem;
-}
-
-/* ---------------------------------------------------------------------------
- * THE CHECKS STRIP.
- *
- * A row of chips, one per check, whether it passed or not — the point being
- * that six ticks is a statement and an empty space is not. Wrapping, because
- * six named checks do not fit beside a design name at 1024px.
- * ------------------------------------------------------------------------- */
-.wconvert-checks {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.25rem 0.5rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.wconvert-check {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  font-size: var(--text-micro);
-  color: var(--muted-foreground);
-  background: transparent;
-  border: 0;
-  padding: 0;
-}
-
-.wconvert-check svg {
-  inline-size: 0.875em;
-  block-size: 0.875em;
-}
-
-/*
- * **Only the failing chip carries colour.** Six green ticks is a decoration a
- * merchant reads once; six quiet ones with a red one among them is a state they
- * can scan. Same argument the contrast readout makes about a passing ratio.
- */
-.wconvert-check[data-state='fail'] {
-  color: var(--destructive);
-  font-weight: 600;
-}
-
-button.wconvert-check {
-  cursor: pointer;
-}
-
-button.wconvert-check:hover {
-  text-decoration: underline;
-}
-
-/* ---------------------------------------------------------------------------
- * THE SIZE METER.
- *
- * A word and a number, not a bar: the merchant is being told a fact, and a bar
- * would imply a limit that is enforced. Nothing at runtime reads this budget.
- * ------------------------------------------------------------------------- */
-.wconvert-meter {
-  font-size: var(--text-micro);
-  color: var(--muted-foreground);
-  white-space: nowrap;
-}
-
-.wconvert-meter[data-over='true'] {
-  color: var(--destructive);
-  font-weight: 600;
-}
-
-/* ---------------------------------------------------------------------------
- * A BUTTON THAT READS AS A LINK, FOR A DOOR INSIDE A SENTENCE.
- *
- * `ScopeStyle` says *"this block takes its look from the Coloured box"* and the
- * way to that box belongs in the sentence rather than under it — a button
- * styled as a button would be a second control for a sentence that is one
- * thought. It stays a `<button>` because it performs an action rather than
- * navigating (ADR 0054 rule 1).
- * ------------------------------------------------------------------------- */
-.wconvert-linkish {
-  font: inherit;
-  color: var(--primary);
-  background: transparent;
-  border: 0;
-  padding: 0;
-  cursor: pointer;
-  text-decoration: underline;
-}
-
-/* ---------------------------------------------------------------------------
- * THE SCOPE STYLE PANEL: THE SAME TOKEN CONTROLS, BOUND TO ONE BOX.
- * ------------------------------------------------------------------------- */
-.wconvert-scope {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.wconvert-scope__token {
-  display: flex;
-  flex-direction: column;
-  gap: 0.125rem;
-}
-
-/*
- * **Only the surprising source speaks.** *Set here* is already said by the
- * reset control appearing, and *from the design* is what a merchant assumes —
- * so this line is drawn only for a value inherited from another box, which is
- * the one thing they cannot see (ADR 0042 rule 2).
- */
-.wconvert-scope__from {
-  margin: 0;
-  font-size: var(--text-micro);
-}
-
-.wconvert-scope__contrast {
-  margin: 0;
-  padding-inline-start: 1rem;
-  font-size: var(--text-note);
-  color: var(--destructive);
-}
-
-@container (min-width: 48rem) {
-  .wconvert-structure {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 22rem;
-    /*
-     * `start` rather than the default stretch, which is what makes the sticky
-     * inspector below work at all: a stretched item is as tall as the row and
-     * so has nothing to travel within. It is the same recipe the preview column
-     * uses against `.wconvert-builder`.
-     */
-    align-items: start;
-  }
-
-  /*
-   * The hint and the live region are about the whole tab, so they span it. The
-   * two panes then claim a column each — stated rather than left to auto
-   * placement, so a paragraph added here later does not silently push the
-   * inspector into a row of its own.
-   */
-  .wconvert-structure > * {
-    grid-column: 1 / -1;
-  }
-
-  .wconvert-structure > .wconvert-blocks {
-    grid-column: 1;
-  }
-
-  .wconvert-structure > .wconvert-builder__preview {
-    grid-column: 1 / -1;
-  }
-
-  .wconvert-structure > .wconvert-inspector {
-    grid-column: 2;
-    /*
-     * **The problem the width was spent on.** The preview is sticky and stays;
-     * the inspector was not and did not, so selecting a block low in a fifteen
-     * block design scrolled the merchant away from the row they had just
-     * clicked to reach the box they clicked it for.
-     *
-     * `4rem` clears wp-admin's own sticky toolbar, which is the one piece of
-     * chrome ADR 0035 deliberately leaves in place — the same number, for the
-     * same reason, as the preview column's.
-     */
-    position: sticky;
-    inset-block-start: 4rem;
-    /* The cap below is a stacked-column concern; the track is the measure here. */
-    max-inline-size: none;
-  }
-}
 
 /* ---------------------------------------------------------------------------
  * THREE PANES: THE LIST, THE RENDER, THE CONTROLS.
  *
  * ============================================================================
- * 65rem IS DERIVED THE SAME WAY 48rem WAS, ONE PANE FURTHER ON.
+ * 67rem IS ADDED UP, NOT CHOSEN, AND THE PREVIEW IS WHAT ADDS IT UP.
  * ============================================================================
- * `16 tree + 31 preview + 22 inspector + 2 × 1.5 gaps ≈ 72rem`, and the tree
- * and the preview both have give: the tree is a list of short rows and the
- * preview's own floor is the design's declared width. 65rem (1040px) is where
- * all three still hold their jobs — and it is a CONTAINER query, so a folded
- * admin menu buys 124px of it rather than the viewport lying by that much
- * (`.wconvert-builder__tabs` is the container, declared above).
+ * `11rem tree + 31rem preview + 22rem inspector + 2 × 1.5rem gaps = 67rem`
+ * (1072px), which is the narrowest container where every pane still holds its
+ * job.
+ *
+ * **31rem is the preview's floor and it is not negotiable**, for the reason the
+ * aside it came from spells out one screen up: the stage has 1rem of padding
+ * and a 1px border, so anything under 31rem clamps a design that asks for 28rem
+ * to less than its own measure — which is the one thing a live-rendered preview
+ * exists not to do. Measured at 1280 with the admin menu expanded, a fixed
+ * 16rem tree left the preview at 468px and the design rendered 14px narrow.
+ *
+ * So the TREE is what gives. It is a list of short rows and the one pane that
+ * reads fine narrower, and `minmax(11rem, 16rem)` beside a `minmax(31rem, 1fr)`
+ * preview is what makes the give go the right way: the preview takes its floor
+ * first and the tree takes what is left, down to 11rem and no further.
+ *
+ * A CONTAINER query, so a folded admin menu buys 124px of it rather than the
+ * viewport lying by that much (`.wconvert-builder__tabs` is the container,
+ * declared above).
  *
  * **Below it, the panes stack rather than becoming a slide-over.** A modal
  * inspector was considered and is not what shipped: `StructureView` documents
@@ -2426,9 +2260,27 @@ button.wconvert-check:hover {
  * it costs a scroll rather than a modality. The Full width toggle is what buys
  * room back when a merchant wants it.
  * ------------------------------------------------------------------------- */
-@container (min-width: 65rem) {
+@container (min-width: 67rem) {
   .wconvert-structure {
-    grid-template-columns: 16rem minmax(0, 1fr) 22rem;
+    display: grid;
+    grid-template-columns: minmax(11rem, 16rem) minmax(31rem, 1fr) 22rem;
+    /*
+     * `start` rather than the default stretch, which is what makes the sticky
+     * panes below work at all: a stretched item is as tall as the row and so
+     * has nothing to travel within. It is the same recipe the preview column
+     * uses against `.wconvert-builder`.
+     */
+    align-items: start;
+  }
+
+  /*
+   * The header, the hint and the live region are about the whole tab, so they
+   * span it. The three panes then claim a column each — stated rather than left
+   * to auto placement, so a paragraph added here later does not silently push
+   * the inspector into a row of its own.
+   */
+  .wconvert-structure > * {
+    grid-column: 1 / -1;
   }
 
   .wconvert-structure > .wconvert-blocks {
@@ -2448,6 +2300,20 @@ button.wconvert-check:hover {
 
   .wconvert-structure > .wconvert-inspector {
     grid-column: 3;
+    /*
+     * **The problem the width was spent on.** The preview is sticky and stays;
+     * the inspector was not and did not, so selecting a block low in a fifteen
+     * block design scrolled the merchant away from the row they had just
+     * clicked to reach the box they clicked it for.
+     *
+     * `4rem` clears wp-admin's own sticky toolbar, which is the one piece of
+     * chrome ADR 0035 deliberately leaves in place — the same number, for the
+     * same reason, as the preview's.
+     */
+    position: sticky;
+    inset-block-start: 4rem;
+    /* The cap below is a stacked-column concern; the track is the measure here. */
+    max-inline-size: none;
   }
 }
 
