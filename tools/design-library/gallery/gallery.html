@@ -199,8 +199,25 @@
     flex-direction: column;
   }
 
+  /*
+    ==========================================================================
+    THE STAGE ABSORBS THE ROW, AND THE DESIGN STAYS CENTRED IN IT.
+    ==========================================================================
+    Cards in a row are the height of the tallest — that is grid's `stretch`,
+    and it is what keeps the name and the tags on one line across a row.
+    The question is where the difference goes.
+
+    It went below the meta strip first, as up to 120px of blank card, which
+    reads as one that failed to finish loading. `align-items: start` fixed that
+    and traded it for a staggered grid with nothing lining up.
+
+    So the stage takes it instead: it grows with the card and the design sits
+    centred in whatever height it ends up with. The extra is stage — the same
+    grid pattern every other card has — rather than emptiness.
+  */
   .card__stage {
     position: relative;
+    flex: 1 1 auto;
     overflow: hidden;
     background: var(--stage);
     background-image:
@@ -215,7 +232,17 @@
     reflowed to a card's width. `transform` keeps the layout honest; changing
     the width would silently re-run the design's own breakpoints.
   */
-  .card__scale { position: absolute; inset-block-start: 0; inset-inline-start: 0; transform-origin: 0 0; }
+  /*
+    Centred by `top: 50%` plus a negative margin the observer sets in pixels.
+    A percentage `translate` would resolve against the element's own UNSCALED
+    height — which is two to three times the height it actually occupies — so
+    it would push the design clean out of the card.
+  */
+  .card__scale { position: absolute; inset-block-start: 50%; inset-inline-start: 0; transform-origin: 0 0; }
+
+  /* A popup floats centred on its page, with air around it at every size. */
+  .card__scale.wc-container-popup { display: grid; place-items: center; padding: 2.5rem 1.5rem; }
+  .card__scale.wc-container-inline { display: grid; align-content: center; padding: 2rem 1.5rem; }
 
   .card__meta {
     border-block-start: 1px solid var(--rule);
@@ -388,11 +415,31 @@
       into 320px would re-run its own wrapping, so the card would show
       something no visitor is ever served.
     */
+    /*
+      The page each design is drawn on, per Display Type — a WIDTH, and a
+      FLOOR for the height rather than the height itself.
+
+      Fixing the height was the first attempt and it clipped half the library:
+      a popup taller than the guess was cut off top and bottom, which reads as
+      a broken design rather than as a card that is too short. Designs vary
+      from a 60px bar to a 700px two-step panel, so no single number is right
+      and picking one per type only moves the problem.
+
+      The floor matters for the two that are absolutely positioned — a bar and
+      a slide-in contribute no height to their page, so without one their card
+      would collapse to nothing.
+    */
     var STAGE = {
-      floating_bar: { w: 760, h: 260 },
-      inline: { w: 760, h: 420 },
-      popup: { w: 620, h: 520 },
-      slide_in: { w: 620, h: 460 },
+      // A bar and a slide-in are absolutely positioned, so they contribute no
+      // height to their page — without a floor their card would collapse to
+      // nothing, and the floor is also what shows WHERE on a page they sit.
+      floating_bar: { w: 760, min: 190 },
+      slide_in: { w: 620, min: 300 },
+      // A popup and an inline design are in flow, so their own height is the
+      // right height and a floor only adds emptiness. `inline` carried 220 and
+      // a one-line bar then floated in twice its own height of blank grid.
+      inline: { w: 760, min: 0 },
+      popup: { w: 620, min: 0 },
     };
 
     function stageFor(design) {
@@ -414,9 +461,14 @@
 
       scale.className = 'card__scale wc-container-' + design.display_type;
       scale.style.inlineSize = page.w + 'px';
-      scale.style.blockSize = page.h + 'px';
+      scale.style.minBlockSize = page.min + 'px';
       scale.style.transform = 'scale(' + ratio + ')';
-      stage.style.blockSize = Math.round(page.h * ratio) + 'px';
+
+      // The stage cannot be sized until the design has been laid out, so the
+      // card records what it needs and `fit()` measures every one of them in
+      // one pass — see there for why it is not done here.
+      el.dataset.ratio = String(ratio);
+      el.dataset.floor = String(page.min);
 
       var box = document.createElement('div');
 
@@ -464,6 +516,56 @@
       return el;
     }
 
+    /*
+      Size every stage to the design it actually holds — and keep sizing it.
+
+      A `transform: scale()` does not change layout, so the stage has to be
+      TOLD the scaled height, and that height is only knowable once the browser
+      has laid the design out. A single measuring pass after building the cards
+      was the first attempt and it left three designs clipped: a data-URI image
+      has no height at the moment its element is appended, so `photo-offer` was
+      measured at 196px when it needed 449.
+
+      An observer is the right shape rather than a longer wait. It catches the
+      images, the webfont swapping in, and a filter re-render, and it needs no
+      guess about how long any of those take. Setting the STAGE's height cannot
+      resize the `.card__scale` it watches — that element is absolutely
+      positioned and sized by its own contents — so there is no loop here.
+    */
+    var watcher = new ResizeObserver(function (entries) {
+      entries.forEach(function (entry) {
+        var el = entry.target.closest('.card');
+
+        /*
+          A bar and a slide-in are ABSOLUTELY positioned, so they add no height
+          to their page and the page stayed at its floor — 300px, while
+          `slide-in-photo` needs 483. It overflowed the top of its own stage by
+          183px and was cut off. So for those two the box is measured and the
+          page is grown to hold it; the page's own resize then runs the branch
+          below, which sizes the stage.
+
+          64px of air above the card, which is what makes it read as a corner
+          of a page rather than as a card that happens to be the page.
+        */
+        if (entry.target.classList.contains('wc-box')) {
+          var page = entry.target.closest('.card__scale');
+
+          page.style.minBlockSize =
+            Math.max(Number(el.dataset.floor), entry.target.offsetHeight + 64) + 'px';
+
+          return;
+        }
+
+        var scaled = Math.ceil(entry.target.offsetHeight * Number(el.dataset.ratio));
+
+        // The stage is at LEAST the design's height and grows with the row;
+        // the negative margin is what keeps the design in the middle of
+        // whatever height it ends up with.
+        el.querySelector('.card__stage').style.minBlockSize = scaled + 'px';
+        entry.target.style.marginBlockStart = -Math.round(scaled / 2) + 'px';
+      });
+    });
+
     function draw() {
       var shown = LIBRARY.filter(function (d) {
         var tier = d.tier === 'free' ? 'free' : 'pro';
@@ -472,8 +574,14 @@
           && (state.tier === 'all' || tier === state.tier);
       });
 
+      watcher.disconnect();
       grid.replaceChildren();
       shown.forEach(function (d) { grid.appendChild(card(d)); });
+      grid.querySelectorAll('.card__scale').forEach(function (scale) { watcher.observe(scale); });
+      // Only the two that float free of the flow need their box watched.
+      grid.querySelectorAll(
+        '.wc-container-floating_bar > .wc-box, .wc-container-slide_in > .wc-box',
+      ).forEach(function (box) { watcher.observe(box); });
 
       empty.hidden = shown.length > 0;
       document.getElementById('shown').textContent =
