@@ -6,8 +6,12 @@ import {
   TOKENS,
   groupOf,
   groupsOf,
+  resolvedToken,
+  scopeChainOf,
   slotsOf,
+  sourceOfToken,
   withHidden,
+  withScopeToken,
   withValue,
 } from '../../resources/admin/src/builder/panel';
 import type { TemplateNode, TemplateTree, Tokens } from '@renderer/types';
@@ -221,5 +225,117 @@ describe('the manifest’s choices', () => {
       expect(values.length, token).toBeGreaterThan(1);
       expect(new Set(values).size, token).toBe(values.length);
     }
+  });
+});
+
+/**
+ * ============================================================================
+ * THE SCOPE WALK — WHAT A TOKEN RESOLVES TO AT ONE PLACE IN THE TREE.
+ * ============================================================================
+ * Custom properties inherit, so the value a visitor is shown is the nearest bag
+ * ABOVE a block that names the token (ADR 0062). The browser does that walk for
+ * free and the editor cannot, which is why it is spelled here — and why a panel
+ * that showed the design's value on a block inside a cream box would name a
+ * colour nobody sees.
+ */
+describe('the scope chain', () => {
+  /** A box inside a box, with a leaf at the bottom of it. */
+  const NESTED = {
+    steps: [
+      {
+        type: 'stack',
+        children: [
+          {
+            type: 'panel',
+            tokens: { bg: '#fff4df', fg: '#331e17' },
+            children: [
+              { type: 'stack', tokens: { fg: '#000000' }, children: [{ type: 'heading', text: 'x' }] },
+            ],
+          },
+        ],
+      },
+    ],
+  } as unknown as TemplateTree;
+
+  /** The heading, at the bottom of both boxes. */
+  const LEAF = [0, 'children', 0, 'children', 0, 'children', 0];
+  /** The inner stack. */
+  const INNER = [0, 'children', 0, 'children', 0];
+
+  it('is every box a block sits inside, outermost first', () => {
+    expect(scopeChainOf(NESTED, LEAF).map((scope) => scope.type)).toEqual(['stack', 'panel', 'stack']);
+  });
+
+  /**
+   * **A leaf is not in it.** A bag applies to a box and everything inside it, so
+   * a leaf has nothing to apply to and the vocabulary drops `tokens` on one — a
+   * leaf in the chain would be a scope nothing can ever be written to.
+   */
+  it('stops at the last box, never at the block itself', () => {
+    expect(scopeChainOf(NESTED, LEAF)).toHaveLength(3);
+    expect(scopeChainOf(NESTED, LEAF).at(-1)?.path).toEqual(INNER);
+  });
+
+  it('reads a value from the nearest box that names it', () => {
+    const chain = scopeChainOf(NESTED, LEAF);
+
+    // `fg` is set twice; the inner one wins, and it is this box's own.
+    expect(sourceOfToken(chain, {}, 'fg')).toMatchObject({ from: 'here', value: '#000000' });
+    // `bg` is only on the panel, one step out.
+    expect(sourceOfToken(chain, {}, 'bg')).toMatchObject({ from: 'scope', value: '#fff4df' });
+  });
+
+  it('falls through to the design, and then to what the manifest declares', () => {
+    const chain = scopeChainOf(NESTED, LEAF);
+
+    expect(sourceOfToken(chain, { accent: '#ff0000' }, 'accent')).toMatchObject({
+      from: 'design',
+      value: '#ff0000',
+    });
+    expect(sourceOfToken(chain, {}, 'accent')).toMatchObject({ from: 'default' });
+  });
+
+  /**
+   * **The two chained tokens resolve to what the STYLESHEET resolves them to.**
+   * `.wc-input` reads `var(--wc-input-bg,var(--wc-bg,#fff))`, so an unset
+   * `input-bg` on a dark design is that design's ground and not the manifest's
+   * white — which is the difference between the AA check reporting a real
+   * surface and reporting one no visitor sees.
+   */
+  it('follows a token that chains to another token', () => {
+    expect(resolvedToken({ bg: '#0f172a' }, 'input-bg')).toBe('#0f172a');
+    expect(resolvedToken({ 'input-bg': '#ffffff', bg: '#0f172a' }, 'input-bg')).toBe('#ffffff');
+    expect(resolvedToken({ font: 'Georgia, serif' }, 'heading-font')).toBe('Georgia, serif');
+  });
+});
+
+describe('writing a token onto one box', () => {
+  const ONE = {
+    steps: [{ type: 'stack', children: [{ type: 'panel', children: [] }] }],
+  } as unknown as TemplateTree;
+
+  const PANEL = [0, 'children', 0];
+
+  it('creates the bag on that box and touches nothing else', () => {
+    const next = withScopeToken(ONE, PANEL, 'bg', '#fff4df');
+    const panel = (next.steps[0] as unknown as { children: { tokens?: Tokens }[] }).children[0];
+
+    expect(panel?.tokens).toEqual({ bg: '#fff4df' });
+    expect(next.steps[0]).not.toHaveProperty('tokens');
+  });
+
+  /**
+   * **An emptied bag leaves no key**, which is the rule `TemplateVocabulary`
+   * applies on the way in for the same reason: a design whose bag kept nothing
+   * is byte-identical to one that carries none, so undoing every scoped edit
+   * gets the merchant back to the tree they started with rather than to one
+   * carrying `"tokens": {}` on three boxes.
+   */
+  it('drops the bag entirely when the last value is cleared', () => {
+    const set = withScopeToken(ONE, PANEL, 'bg', '#fff4df');
+    const cleared = withScopeToken(set, PANEL, 'bg', '');
+    const panel = (cleared.steps[0] as unknown as { children: Record<string, unknown>[] }).children[0];
+
+    expect(panel).not.toHaveProperty('tokens');
   });
 });

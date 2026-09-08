@@ -702,6 +702,15 @@ that captures nothing are both refused elsewhere. It is also how consent capture
 is off by default and one click from on ([ADR 0032](docs/adr/0032-consent-capture-is-first-class-in-the-template.md))
 — every capture design ships the `consent` node hidden.
 
+> **Corrected again, and the tab it names is gone.** There is no *Content* tab
+> and no *Design* tab: there is **Design**, and it is three panes — the block
+> tree, the live render, and an inspector whose two halves are *what it says*
+> and *how it looks*. The token controls moved into the second half because a
+> token has a SCOPE now and *which box* is a selection
+> ([ADR 0062](docs/adr/0062-a-token-bag-is-scoped-to-the-box-that-carries-it.md)).
+> Everything the note below says about the vocabulary being the ceiling is
+> unchanged.
+>
 > **Corrected.** This paragraph opened *"The settings panel edits tokens, slot
 > content and slot visibility and never* arrangement*"*, and both halves of that
 > stopped being true at the Content/Structure merge: `SettingsPanel` no longer

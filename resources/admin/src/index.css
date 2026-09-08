@@ -1860,6 +1860,23 @@
 }
 
 /*
+ * **The Design tab is ONE column here, and three inside it.**
+ *
+ * The other two tabs are an editor with the preview in a column beside them,
+ * which is what these two media queries have always described. *Design* is
+ * three panes — list · render · controls — and the render is the middle one, so
+ * the preview cannot be a sibling of the tab strip: it is a child of the pane
+ * grid, placed by `.wconvert-structure` below (ADR 0062).
+ *
+ * So the outer grid collapses to one track and the panes take the whole
+ * measure, which is also what makes the container query below see the full
+ * width rather than the width left over after a 31rem aside.
+ */
+.wconvert-builder[data-tab='design'] {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/*
  * **Wider once there is room, because the device toggle needs it to mean
  * anything.** Every shipped design asks for `--wc-width: 28rem` and `.wc-root`
  * takes `min(that, 100%)` — so in a column narrower than 28rem the desktop
@@ -1875,7 +1892,7 @@
  * own 90rem, above.
  */
 @media (min-width: 1280px) {
-  .wconvert-builder {
+  .wconvert-builder:not([data-tab='design']) {
     grid-template-columns: minmax(0, 1fr) 31rem;
   }
 }
@@ -2199,6 +2216,142 @@
  * fallback invented here: it is exactly the arrangement that shipped, and the
  * one ADR 0039's placement rule was written for.
  * ------------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------------
+ * THE ROW ABOVE THE PANES: THE DESIGN'S NAME, ITS CHECKS, ITS COST.
+ *
+ * It spans, because it is about none of the three panes. `wrap` rather than a
+ * second query: the three groups in it are a name, a strip of chips and a small
+ * cluster of controls, and any of them may be long in a locale that is not
+ * English.
+ * ------------------------------------------------------------------------- */
+.wconvert-structure__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+}
+
+/* ---------------------------------------------------------------------------
+ * THE CHECKS STRIP.
+ *
+ * A row of chips, one per check, whether it passed or not — the point being
+ * that six ticks is a statement and an empty space is not. Wrapping, because
+ * six named checks do not fit beside a design name at 1024px.
+ * ------------------------------------------------------------------------- */
+.wconvert-checks {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.wconvert-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: var(--text-micro);
+  color: var(--muted-foreground);
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+
+.wconvert-check svg {
+  inline-size: 0.875em;
+  block-size: 0.875em;
+}
+
+/*
+ * **Only the failing chip carries colour.** Six green ticks is a decoration a
+ * merchant reads once; six quiet ones with a red one among them is a state they
+ * can scan. Same argument the contrast readout makes about a passing ratio.
+ */
+.wconvert-check[data-state='fail'] {
+  color: var(--destructive);
+  font-weight: 600;
+}
+
+button.wconvert-check {
+  cursor: pointer;
+}
+
+button.wconvert-check:hover {
+  text-decoration: underline;
+}
+
+/* ---------------------------------------------------------------------------
+ * THE SIZE METER.
+ *
+ * A word and a number, not a bar: the merchant is being told a fact, and a bar
+ * would imply a limit that is enforced. Nothing at runtime reads this budget.
+ * ------------------------------------------------------------------------- */
+.wconvert-meter {
+  font-size: var(--text-micro);
+  color: var(--muted-foreground);
+  white-space: nowrap;
+}
+
+.wconvert-meter[data-over='true'] {
+  color: var(--destructive);
+  font-weight: 600;
+}
+
+/* ---------------------------------------------------------------------------
+ * A BUTTON THAT READS AS A LINK, FOR A DOOR INSIDE A SENTENCE.
+ *
+ * `ScopeStyle` says *"this block takes its look from the Coloured box"* and the
+ * way to that box belongs in the sentence rather than under it — a button
+ * styled as a button would be a second control for a sentence that is one
+ * thought. It stays a `<button>` because it performs an action rather than
+ * navigating (ADR 0054 rule 1).
+ * ------------------------------------------------------------------------- */
+.wconvert-linkish {
+  font: inherit;
+  color: var(--primary);
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* ---------------------------------------------------------------------------
+ * THE SCOPE STYLE PANEL: THE SAME TOKEN CONTROLS, BOUND TO ONE BOX.
+ * ------------------------------------------------------------------------- */
+.wconvert-scope {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.wconvert-scope__token {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+/*
+ * **Only the surprising source speaks.** *Set here* is already said by the
+ * reset control appearing, and *from the design* is what a merchant assumes —
+ * so this line is drawn only for a value inherited from another box, which is
+ * the one thing they cannot see (ADR 0042 rule 2).
+ */
+.wconvert-scope__from {
+  margin: 0;
+  font-size: var(--text-micro);
+}
+
+.wconvert-scope__contrast {
+  margin: 0;
+  padding-inline-start: 1rem;
+  font-size: var(--text-note);
+  color: var(--destructive);
+}
+
 @container (min-width: 48rem) {
   .wconvert-structure {
     display: grid;
@@ -2226,6 +2379,10 @@
     grid-column: 1;
   }
 
+  .wconvert-structure > .wconvert-builder__preview {
+    grid-column: 1 / -1;
+  }
+
   .wconvert-structure > .wconvert-inspector {
     grid-column: 2;
     /*
@@ -2242,6 +2399,55 @@
     inset-block-start: 4rem;
     /* The cap below is a stacked-column concern; the track is the measure here. */
     max-inline-size: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * THREE PANES: THE LIST, THE RENDER, THE CONTROLS.
+ *
+ * ============================================================================
+ * 65rem IS DERIVED THE SAME WAY 48rem WAS, ONE PANE FURTHER ON.
+ * ============================================================================
+ * `16 tree + 31 preview + 22 inspector + 2 × 1.5 gaps ≈ 72rem`, and the tree
+ * and the preview both have give: the tree is a list of short rows and the
+ * preview's own floor is the design's declared width. 65rem (1040px) is where
+ * all three still hold their jobs — and it is a CONTAINER query, so a folded
+ * admin menu buys 124px of it rather than the viewport lying by that much
+ * (`.wconvert-builder__tabs` is the container, declared above).
+ *
+ * **Below it, the panes stack rather than becoming a slide-over.** A modal
+ * inspector was considered and is not what shipped: `StructureView` documents
+ * that the inspector comes after the tree in the DOM *and therefore after it in
+ * the tab order*, and a Radix dialog portals to `document.body` — which moves
+ * the panel out of source order, adds a focus trap to a panel a merchant tabs
+ * in and out of constantly, and would rewrite the 73KB of treegrid keyboard
+ * assertions that guarantee any of it. Stacking is what shipped at 48rem
+ * already, it is the arrangement ADR 0039's placement rule was written for, and
+ * it costs a scroll rather than a modality. The Full width toggle is what buys
+ * room back when a merchant wants it.
+ * ------------------------------------------------------------------------- */
+@container (min-width: 65rem) {
+  .wconvert-structure {
+    grid-template-columns: 16rem minmax(0, 1fr) 22rem;
+  }
+
+  .wconvert-structure > .wconvert-blocks {
+    grid-column: 1;
+  }
+
+  .wconvert-structure > .wconvert-builder__preview {
+    grid-column: 2;
+    /*
+     * It follows the panes down, exactly as it did in the column it came from.
+     * `4rem` clears wp-admin's own sticky toolbar, which is the one piece of
+     * chrome ADR 0035 deliberately leaves in place.
+     */
+    position: sticky;
+    inset-block-start: 4rem;
+  }
+
+  .wconvert-structure > .wconvert-inspector {
+    grid-column: 3;
   }
 }
 
@@ -4525,4 +4731,59 @@
 
 .wconvert-export {
   margin-block-start: 1.5rem;
+}
+
+/* ---------------------------------------------------------------------------
+ * FULL WIDTH: wp-admin's OWN CHROME, HIDDEN BY A CLASS ON <body>.
+ *
+ * ============================================================================
+ * THE MECHANISM IS GUTENBERG'S AND THE DEFAULT IS DELIBERATELY NOT.
+ * ============================================================================
+ * `FullscreenMode` toggles a class on `document.body` and the hiding is CSS
+ * elsewhere; this is that CSS, under a name of our own so the two stylesheets
+ * cannot hide each other's chrome on a screen where both are loaded.
+ *
+ * **Default off**, because it costs the merchant their navigation — the thing
+ * people install plugins to undo in the block editor. Three panes fit at ~1040px
+ * of container without it; this is what a merchant reaches for when they want
+ * more room, which is a different act from what they are given on arrival
+ * (ADR 0062). Escape exits, and the class is removed when the builder unmounts.
+ *
+ * ~192px: 160px of expanded admin menu plus the 32px toolbar.
+ *
+ * `!important` on the offsets, because wp-admin states them with high enough
+ * specificity in its own media queries that a plain declaration loses on the
+ * exact widths where it matters most (ADR 0035 already accepts this trade for
+ * the toolbar's own height).
+ * ------------------------------------------------------------------------- */
+body.wconvert-fullscreen #adminmenumain,
+body.wconvert-fullscreen #wpadminbar,
+body.wconvert-fullscreen #wpfooter {
+  display: none;
+}
+
+body.wconvert-fullscreen #wpcontent,
+body.wconvert-fullscreen #wpbody-content {
+  margin-inline-start: 0 !important;
+  padding-inline-start: 0 !important;
+}
+
+/*
+ * The toolbar reserved its height on `<html>`, so hiding it without this leaves
+ * 32px of nothing at the top of the screen — which is the whole gain, given
+ * back.
+ */
+html.wp-toolbar:has(body.wconvert-fullscreen) {
+  padding-block-start: 0;
+}
+
+/*
+ * **The sticky offsets go with the toolbar.** The preview and the inspector
+ * both stick at `4rem` to clear it; with it gone that is 64px of gap they hold
+ * open above themselves for chrome that is not there.
+ */
+body.wconvert-fullscreen .wconvert-builder__preview,
+body.wconvert-fullscreen .wconvert-structure > .wconvert-inspector,
+body.wconvert-fullscreen .wconvert-structure > .wconvert-builder__preview {
+  inset-block-start: 1rem;
 }

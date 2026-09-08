@@ -1,4 +1,4 @@
-import { useId } from 'react';
+import { useId, useState, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { ArrowLeftRight, Check } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -8,10 +8,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '../components/ui/dropdown-menu';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { ParamChoice } from './ParamChoice';
 import { SlotFields } from './SlotFields';
 import { nameOfBlock } from './BlockRow';
-import { LAYOUTS, slotsOf, withHidden, withValue, type Path } from './panel';
+import { LAYOUTS, slotsOf, withHidden, withValue, type Path, type Slot } from './panel';
 import { nodeAt, nodesOf, samePath } from './structure/tree';
 import { swapLabel, swapNameOf, swapSaid, swapsFor, withSwapped } from './structure/swap';
 import type { ConvertingAct } from './structure/catalogue';
@@ -114,6 +115,29 @@ export interface BlockInspectorProps {
   readonly endsAt?: string;
   /** Take the merchant to the field that sets it. */
   readonly onSetEndDate?: () => void;
+  /**
+   * How the selected block LOOKS, as the second half of this panel.
+   *
+   * ==========================================================================
+   * THE DESIGN TAB DISSOLVED IN HERE, EXACTLY AS `SettingsPanel` DISSOLVED.
+   * ==========================================================================
+   * There was a tab called *Design* holding the token controls for the whole
+   * Optin, and a tab called *Content* holding this. Since ADR 0062 a token has a
+   * SCOPE — the design's own, or one box's — and "which box" is a selection,
+   * which is the question this panel already answers. So the controls come to
+   * the selection like every other control on this screen, and one concept
+   * replaces two.
+   *
+   * Passed in rather than built here because what it draws depends on what is
+   * selected — the design's own tokens at a step root, one box's bag inside
+   * one — and both need state this panel does not hold (which picker is open,
+   * what the library entry declared). This panel's job is the two tabs and the
+   * heading over them.
+   *
+   * Absent means no second tab at all, which is what the panel was before and
+   * what it still is anywhere a design has not been chosen.
+   */
+  readonly look?: ReactNode;
 }
 
 export function BlockInspector({
@@ -125,8 +149,17 @@ export function BlockInspector({
   onSwap,
   endsAt,
   onSetEndDate,
+  look,
 }: BlockInspectorProps) {
   const heading = useId();
+  /*
+    **Which half is open is remembered across selections, and that is the
+    point.** A merchant restyling three boxes in a row presses *Style* once;
+    one who is writing copy never sees it move. Resetting to *Content* on every
+    click would make the second box a second press, which is the *"one click
+    short"* failure ADR 0054 rule 4 names.
+  */
+  const [half, setHalf] = useState('content');
   const block = path === null ? null : nodesOf(template.tree).find((each) => samePath(each.path, path)) ?? null;
   const slot = path === null ? null : slotsOf(template.tree).find((each) => samePath(each.path, path)) ?? null;
 
@@ -134,11 +167,29 @@ export function BlockInspector({
     return (
       <div className="wconvert-inspector">
         <Description>{__('Pick a block to edit what it says.', 'wconvert')}</Description>
+        {/*
+          **The look is still reachable with nothing selected**, because with
+          nothing selected the look on offer is the DESIGN's — which is what the
+          Design tab used to be, and losing it behind "select something first"
+          would be a tab that vanished rather than one that moved.
+        */}
+        {look}
       </div>
     );
   }
 
   const name = nameOfBlock(block, labels);
+  const body = contentBody({
+    template,
+    labels,
+    path,
+    block,
+    slot,
+    name,
+    onChange,
+    endsAt,
+    onSetEndDate,
+  });
 
   return (
     /*
@@ -173,6 +224,65 @@ export function BlockInspector({
         <SwapMenu template={template} labels={labels} path={path} act={act} onSwap={onSwap} />
       </div>
 
+      {look === undefined ? (
+        body
+      ) : (
+        /*
+          **Two halves of one panel, and the heading stays above both.** *What
+          it says* and *how it looks* are two questions about the SAME selected
+          block, which is exactly what a tab strip is for — and the alternative,
+          both stacked, puts the token controls a scroll below the words on a
+          22rem column.
+        */
+        <Tabs value={half} onValueChange={setHalf}>
+          <TabsList aria-label={sprintf(
+            /* translators: %s: what the selected block is called, e.g. “Headline”. */
+            __('%s: what it says, or how it looks', 'wconvert'),
+            name,
+          )}>
+            <TabsTrigger value="content">{__('Content', 'wconvert')}</TabsTrigger>
+            <TabsTrigger value="style">{__('Style', 'wconvert')}</TabsTrigger>
+          </TabsList>
+          <TabsContent value="content">{body}</TabsContent>
+          <TabsContent value="style">{look}</TabsContent>
+        </Tabs>
+      )}
+    </div>
+  );
+}
+
+/**
+ * The controls for what the selected block SAYS — the panel as it was before
+ * the look moved in beside it.
+ *
+ * Split out as a variable rather than a component so the two halves reconcile
+ * as the same elements they always did: `SlotFields` is keyed by path to hold a
+ * caret across a redraw, and a new component around it would remount the tree
+ * under that key on the first render after the split.
+ */
+function contentBody({
+  template,
+  labels,
+  path,
+  block,
+  slot,
+  name,
+  onChange,
+  endsAt,
+  onSetEndDate,
+}: {
+  template: Template;
+  labels: TemplateLabels;
+  path: Path;
+  block: { readonly type: string; readonly level: number };
+  slot: Slot | null;
+  name: string;
+  onChange: (template: Template, coalesce?: string) => void;
+  endsAt?: string;
+  onSetEndDate?: () => void;
+}) {
+  return (
+    <>
       {slot === null ? (
         <>
           <Description>
@@ -240,7 +350,7 @@ export function BlockInspector({
           onHidden={(hidden) => onChange({ ...template, tree: withHidden(template.tree, slot.path, hidden) })}
         />
       )}
-    </div>
+    </>
   );
 }
 

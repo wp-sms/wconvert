@@ -1,5 +1,5 @@
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { AA_NORMAL, contrastOf } from '../contrast';
+import { AA_NORMAL, READABLE_PAIRS, contrastOf, pairKey } from '../contrast';
 import { resolvedToken, type Path } from '../panel';
 import { formStep, losesWordsOnSwitch } from './catalogue';
 import { convertingActOf } from './guards';
@@ -70,7 +70,51 @@ export interface Problem {
    * and the other is a named place on a screen.
    */
   readonly go?: 'schedule';
+  /**
+   * WHICH check produced this, so a strip can name its own source.
+   *
+   * ==========================================================================
+   * A LIST OF SENTENCES CANNOT SAY WHAT IT LOOKED AT.
+   * ==========================================================================
+   * The readiness verdict reads out what is wrong, which is the right shape for
+   * a merchant about to publish. It is the wrong shape while somebody is
+   * RESTYLING: a design tab that says nothing is a design tab that either
+   * checked six things and liked them, or checked nothing — and those look
+   * identical (ADR 0042 rule 3, a control that says nothing must not be
+   * mistakable for one that is off).
+   *
+   * So each problem names its check, the design pane draws one chip per check
+   * whether it passed or not, and the chip that failed carries the sentence
+   * that was already being computed. Nothing new is derived; what is new is
+   * that the checks are countable.
+   *
+   * **Optional, and the absence is meaningful.** The readiness verdict also
+   * carries problems that are not about the DESIGN — an unreachable Destination
+   * is one — and those name no check because the design pane's strip is not
+   * about them. A problem with no check is reported in the verdict and drawn on
+   * no chip.
+   */
+  readonly check?: CheckId;
 }
+
+/**
+ * The six checks, in the order {@see problemsIn} runs them — worst first.
+ *
+ * Exported so the strip can draw one chip per check without a second list of
+ * them, which is the fifth cross-cutting list this codebase keeps refusing
+ * (ADR 0019). A seventh check added below arrives on screen with no component
+ * edited.
+ */
+export const CHECKS = [
+  'converts',
+  'collects',
+  'captures',
+  'countdown',
+  'words',
+  'readable',
+] as const;
+
+export type CheckId = (typeof CHECKS)[number];
 
 /**
  * Everything wrong with this design, worst first.
@@ -147,6 +191,7 @@ function whatCannotConvert(template: Template): Problem[] {
         'wconvert',
       ),
       path: null,
+      check: 'converts',
     },
   ];
 }
@@ -195,6 +240,7 @@ function whatCollectsNothing(template: Template, growsAList: boolean): Problem[]
         'wconvert',
       ),
       path: null,
+      check: 'collects',
     },
   ];
 }
@@ -230,6 +276,7 @@ function whatCapturesNothing(template: Template): Problem[] {
             'wconvert',
           ),
     path: block.path,
+    check: 'captures',
   }));
 }
 
@@ -276,6 +323,7 @@ function whatCountsDownToNothing(template: Template, endsAt: string | undefined)
       ),
       path: null,
       go: 'schedule',
+      check: 'countdown',
     },
   ];
 }
@@ -307,6 +355,7 @@ function whatLosesWords(template: Template): Problem[] {
         at.length,
       ),
       path: at[0].path,
+      check: 'words',
     },
   ];
 }
@@ -323,44 +372,31 @@ function whatLosesWords(template: Template): Problem[] {
 function whatCannotBeRead(template: Template): Problem[] {
   const value = (name: string) => resolvedToken(template.tokens, name);
 
-  return PAIRS.flatMap(([fg, bg, said]) => {
+  return READABLE_PAIRS.flatMap(([fg, bg]) => {
     const ratio = contrastOf(value(fg), value(bg));
+    const said = SAID[pairKey(fg, bg)];
 
-    return ratio === null || ratio >= AA_NORMAL ? [] : [{ said: said(), path: null }];
+    return ratio === null || ratio >= AA_NORMAL || said === undefined
+      ? []
+      : [{ said: said(), path: null, check: 'readable' as const }];
   });
 }
 
-const PAIRS: readonly (readonly [string, string, () => string])[] = [
-  [
-    'fg',
-    'bg',
-    () =>
-      __('The text colour is too close to the background to be readable. Change one of them.', 'wconvert'),
-  ],
-  [
-    'muted',
-    'bg',
-    () => __('The quiet text is too close to the background to be readable.', 'wconvert'),
-  ],
-  [
-    'accent-fg',
-    'accent',
-    () => __('The button’s label is too close to the button to be readable.', 'wconvert'),
-  ],
-  /*
-   * ==========================================================================
-   * THE PAIR THAT ARRIVED WITH `input-bg`, AND THE ONE IT MATTERS MOST FOR.
-   * ==========================================================================
-   * A field took the design's own ground until a `panel` could paint a second
-   * one, so `fg`/`bg` covered it. Now it does not: a light form on a dark panel
-   * is exactly the design a scoped bag is for, and the input is the one control
-   * a visitor MUST find. Without this line the AA check silently stops covering
-   * it — the ratio it reports would still be about the design's background, on
-   * a box that no longer has that background.
-   */
-  [
-    'fg',
-    'input-bg',
-    () => __('The text in the form fields is too close to their background to be readable.', 'wconvert'),
-  ],
-];
+/**
+ * What each pair SAYS in the verdict, keyed by the pair {@see READABLE_PAIRS}
+ * declares.
+ *
+ * The pairs are shared and the sentences are this screen's, which is the split
+ * that stopped three copies of the list drifting: a pair added there arrives
+ * here unnamed and reports nothing, and the test below fails rather than the
+ * check silently narrowing.
+ */
+const SAID: Readonly<Record<string, () => string>> = {
+  'fg/bg': () =>
+    __('The text colour is too close to the background to be readable. Change one of them.', 'wconvert'),
+  'muted/bg': () => __('The quiet text is too close to the background to be readable.', 'wconvert'),
+  'accent-fg/accent': () =>
+    __('The button’s label is too close to the button to be readable.', 'wconvert'),
+  'fg/input-bg': () =>
+    __('The text in the form fields is too close to their background to be readable.', 'wconvert'),
+};

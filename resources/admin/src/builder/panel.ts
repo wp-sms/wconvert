@@ -644,6 +644,128 @@ export function withHidden(tree: TemplateTree, path: Path, hidden: boolean): Tem
   });
 }
 
+/**
+ * The boxes a block sits inside, outermost first, ending with the block itself.
+ *
+ * ============================================================================
+ * A SCOPE CHAIN IS WHAT MAKES "WHERE DOES THIS COLOUR COME FROM" ANSWERABLE.
+ * ============================================================================
+ * Since ADR 0062 any layout carries a `tokens` bag that applies to itself and
+ * everything inside it, and custom properties inherit — so the value a leaf is
+ * actually drawn with is the nearest bag above it that names the token, and
+ * that is a walk the browser does for free and the editor cannot. A panel that
+ * showed the design's value on a block sitting inside a cream box would be a
+ * control naming a colour the visitor never sees.
+ *
+ * A path is `[step, key, index, key, index, …]`, so the ancestors are exactly
+ * its odd-length prefixes. Only nodes that CAN carry a bag are returned: a
+ * leaf's `tokens` is dropped on the way in, so a leaf in the chain would be a
+ * scope nothing can ever be written to.
+ */
+export interface Scope {
+  readonly path: Path;
+  readonly type: string;
+  readonly tokens: Tokens;
+}
+
+export function scopeChainOf(tree: TemplateTree, path: Path): Scope[] {
+  const chain: Scope[] = [];
+
+  for (let at = 1; at <= path.length; at += 2) {
+    const here = path.slice(0, at);
+    const node = nodeOf(tree, here);
+
+    if (node !== null && LAYOUTS[node.type] !== undefined) {
+      chain.push({ path: here, type: node.type, tokens: node.tokens ?? {} });
+    }
+  }
+
+  return chain;
+}
+
+/**
+ * The node one path names, or null.
+ *
+ * **`structure/tree.ts` has this too, and it is not imported.** That module
+ * imports THIS one for the vocabulary, so reaching back would be a cycle
+ * between the two files every other module in the editor depends on. Six lines
+ * against an import cycle is the right trade, and the walk is the path's own
+ * shape rather than a rule either file invented.
+ */
+function nodeOf(tree: TemplateTree, path: Path): (TemplateNode & { tokens?: Tokens }) | null {
+  const [step, ...rest] = path;
+  let node = (typeof step === 'number' ? tree.steps[step] : undefined) ?? null;
+
+  for (let at = 0; at < rest.length && node !== null; at += 2) {
+    const children = typeof rest[at] === 'string' ? (node as Record<string, unknown>)[rest[at]] : null;
+    const index = rest[at + 1];
+
+    node = Array.isArray(children) && typeof index === 'number'
+      ? ((children[index] as TemplateNode | undefined) ?? null)
+      : null;
+  }
+
+  return node;
+}
+
+/**
+ * Where a token's value comes from at one place in the tree.
+ *
+ * `here` is this block's own bag, `scope` is the nearest box above it that
+ * names the token, `design` is the Optin's own token map, and `default` is what
+ * the manifest declares. The four are the whole answer, and the panel prints
+ * the middle two because those are the ones a merchant cannot see.
+ */
+export interface TokenSource {
+  readonly from: 'here' | 'scope' | 'design' | 'default';
+  readonly value: string;
+  /** The box it came from, where `from` is `scope`. */
+  readonly scope?: Scope;
+}
+
+export function sourceOfToken(
+  chain: readonly Scope[],
+  tokens: Readonly<Record<string, string>>,
+  name: string,
+): TokenSource {
+  for (let at = chain.length - 1; at >= 0; at -= 1) {
+    const held = chain[at]?.tokens[name];
+
+    if (held !== undefined && held !== '') {
+      return at === chain.length - 1
+        ? { from: 'here', value: held }
+        : { from: 'scope', value: held, scope: chain[at] };
+    }
+  }
+
+  const design = tokens[name];
+
+  return design !== undefined && design !== ''
+    ? { from: 'design', value: design }
+    : { from: 'default', value: resolvedToken(tokens, name) };
+}
+
+/**
+ * The same design with one token set on ONE BOX, or cleared back to whatever it
+ * sits inside.
+ *
+ * **An emptied bag leaves no key**, which is the same rule
+ * {@see \WConvert\Template\TemplateVocabulary} applies on the way in: a design
+ * whose bag kept nothing is byte-identical to one that carries none, so undoing
+ * every scoped edit gets the merchant back to exactly the tree they started
+ * with rather than to one carrying `"tokens": {}` on three boxes.
+ */
+export function withScopeToken(
+  tree: TemplateTree,
+  path: Path,
+  name: string,
+  value: string,
+): TemplateTree {
+  const bag = withToken(nodeOf(tree, path)?.tokens ?? {}, name, value);
+
+  return withValue(tree, path, 'tokens', Object.keys(bag).length === 0 ? undefined : bag);
+}
+
 /** The same design with one token set, or cleared back to the template's own. */
 export function withToken(tokens: Tokens, name: string, value: string): Tokens {
   const next = { ...tokens };

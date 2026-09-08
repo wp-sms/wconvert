@@ -173,6 +173,82 @@ It also separates two questions that were one key: `heading.level` is the
 document outline, `heading.size` is how big it is drawn. A design with a display
 number and a subtitle needs a small `h2` and a large `h3`.
 
+## The editor that edits them
+
+**The Design tab dissolved into the inspector**, exactly as `SettingsPanel`
+dissolved into `SlotFields` / `Tokens` / `DevExport` before it. A token has a
+scope now — the design's own, or one box's — and *which box* is a **selection**,
+which is the question the inspector already answers. So the token controls come
+to the selection like every other control on this screen, choosing a design
+became a row above the panes, and the tab that held both had nothing left in it.
+Four tabs became three, and one concept replaced two.
+
+```
+┌ Structure ─┬─ Preview ──────────┬─ Inspector ─┐
+│ block tree │ the live render    │ Content     │
+│ 16rem      │ ≥31rem             │ Style       │
+└────────────┴────────────────────┴─────────────┘
+```
+
+**Everything is reused.** `BlockTree` (the ARIA treegrid vendored from
+Gutenberg, ADR 0036), `BlockInspector`, `SlotFields`, `Tokens`, `Preview` with
+`slots.ts`'s key mapping, `structure/history.ts`, `structure/guards.ts`,
+`useBlockDrag`. Four things are new:
+
+- **`ScopeStyle`** — the token controls `Tokens.tsx` already renders, bound to
+  the selected box's bag. It adds no control. What it adds is the three things a
+  scope makes necessary and a global set never did: what a token *resolves to*
+  here (the nearest bag above the block, which is what the browser reaches by
+  inheriting), *where that came from* (only the surprising answer speaks — a
+  value from another box, with the way to that box), and *what clearing means*
+  (at the design, back to the design's own; here, back to whatever this box sits
+  inside).
+- **The checks strip** — one chip per check, drawn whether it passed or not.
+  The readiness verdict says what is *wrong*, which is right before publishing
+  and wrong while restyling: a screen that says nothing has either checked six
+  things and liked them or checked nothing, and a scoped bag can fail AA for a
+  visitor in one press without a single number moving on the design panel. The
+  six checks are the ones `problems.ts` already computed, including the
+  role-less-leaf one from `catalogue.ts`'s `losesWordsOnSwitch`; each now names
+  itself.
+- **The payload meter** — this design's snapshot, gzipped, against
+  `DesignBudget::PER_DESIGN`. Gzipped and not raw, via `CompressionStream`,
+  because raw JSON is 3–4× the real figure and a meter that lies pessimistically
+  teaches a merchant to ignore it. No `CompressionStream`, no meter — there is
+  no honest way to print a figure in the wrong unit beside a budget.
+- **The Full width toggle** — a class on `document.body` plus our own CSS hiding
+  `#adminmenumain`, `#wpadminbar` and `#wpfooter`, which is the mechanism
+  Gutenberg's own `FullscreenMode` uses. Remembered in `localStorage`, so it
+  needs no endpoint; Escape exits; the class is removed on unmount, because
+  `<body>` outlives this screen. **Default off**, because it costs the merchant
+  their navigation — which is the thing people install plugins to undo in the
+  block editor.
+
+**A container query and not a media query**, at 65rem of container, following
+the precedent already in `index.css` for the two-pane split: wp-admin's menu is
+160px expanded and 36px folded, so a viewport-keyed breakpoint is wrong by 124px
+on a folded menu.
+
+### Two things the plan asked for that are not what shipped
+
+**Below the breakpoint the panes STACK; the inspector is not a slide-over.**
+A modal inspector was the plan and is not what landed. `StructureView` documents
+that the inspector comes after the tree in the DOM *and therefore after it in
+the tab order*, and a Radix dialog portals to `document.body` — which moves the
+panel out of source order, adds a focus trap to a panel a merchant tabs in and
+out of constantly, and would rewrite the 73KB of treegrid keyboard assertions
+that guarantee any of it. Stacking is what already shipped at 48rem, it is the
+arrangement ADR 0039's placement rule was written for, and it costs a scroll
+rather than a modality. Full width is what buys room back.
+
+**The inspector is now the second Tab stop out of the tree rather than the
+first.** Three panes read *list · render · controls*, and the render is between
+them in the DOM as well as on the screen, because a tab order that disagrees
+with the visual order is the failure the grid would otherwise introduce. The
+roving tabindex still gives the whole grid one stop; the preview's own two named
+controls now sit between it and the inspector. Recorded rather than absorbed,
+because the old guarantee was written down and this is not it.
+
 ## Consequences
 
 - **The scope is a LAYOUT's, and only a layout's.** `tokens` is declared in the

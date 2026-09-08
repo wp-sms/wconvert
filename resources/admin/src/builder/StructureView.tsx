@@ -108,12 +108,18 @@ import type { Template, TemplateTree } from '@renderer/types';
  * the amendment is recorded in ADR 0039 rather than assumed here.
  *
  * ============================================================================
- * THE PREVIEW IS NOT IN HERE. IT IS THE SCREEN'S (ADR 0040).
+ * THE PREVIEW IS STILL THE SCREEN'S. IT IS NOW PLACED HERE.
  * ============================================================================
- * It is pinned beside every tab, which is the mistake the settings panel made
- * before #69 and the one this must not repeat: a second preview drawn inside
- * this tab would be a second render of the same tree, disagreeing with the
- * first the moment either got a keystroke ahead.
+ * It was pinned beside every tab — which was right, and which put it to the
+ * RIGHT of the inspector. Three panes read *list · render · controls*, so the
+ * render belongs in the middle, and the only way for a grid to put it there is
+ * for it to be a child of the grid.
+ *
+ * So it arrives as a NODE rather than being built here, and the rule it was
+ * protecting is unchanged: there is exactly one `<Preview>` on the screen, the
+ * screen owns it, and this component neither renders one nor knows what is in
+ * it. A second preview drawn here would be a second render of the same tree,
+ * disagreeing with the first the moment either got a keystroke ahead (ADR 0040).
  */
 
 export interface StructureViewProps {
@@ -162,6 +168,25 @@ export interface StructureViewProps {
   readonly endsAt?: string;
   /** Take the merchant to the field that sets it. */
   readonly onSetEndDate?: () => void;
+  /**
+   * The screen's one preview, placed between the tree and the inspector.
+   *
+   * A node and not a component: this file must stay unable to render a second
+   * one. Null where the screen is drawing it somewhere else, which is what the
+   * other two tabs do.
+   */
+  readonly preview?: ReactNode;
+  /**
+   * A row about the whole design, above all three panes.
+   *
+   * The design's name and the way to change it. It spans rather than sitting in
+   * a pane because it is about none of them — and it is passed in for the same
+   * reason the preview is: choosing a design takes a fresh snapshot on the
+   * server, which is the screen's business and not this tree's.
+   */
+  readonly header?: ReactNode;
+  /** How the selected block looks — {@see BlockInspectorProps.look}. */
+  readonly look?: ReactNode;
 }
 
 export function StructureView({
@@ -174,6 +199,9 @@ export function StructureView({
   focus,
   endsAt,
   onSetEndDate,
+  preview,
+  header,
+  look,
 }: StructureViewProps) {
   /*
    * **One line that is both the visible answer and the announced one.**
@@ -418,6 +446,7 @@ export function StructureView({
   if (template.tree.steps.length === 0) {
     return (
       <RegionBody>
+        {header}
         <EmptyState icon={Blocks} title={__('This design has nothing in it yet', 'wconvert')}>
           {__('Pick a design on the Design tab and its blocks will be listed here.', 'wconvert')}
         </EmptyState>
@@ -427,6 +456,8 @@ export function StructureView({
 
   return (
     <RegionBody className="wconvert-structure">
+      {header}
+
       {/*
         **"Beside it" rather than "below it".** The inspector is under the tree
         in a narrow container and beside it in a wide one, so the sentence names
@@ -492,6 +523,14 @@ export function StructureView({
       />
 
       {/*
+        **The render, between the list and the controls.** In the DOM as well as
+        on the screen: three panes that read left to right and top to bottom the
+        same way are three panes a keyboard and a screen reader meet in the order
+        the eye does.
+      */}
+      {preview}
+
+      {/*
         **After the tree in the DOM, and therefore after it in the tab order.**
         Selecting a row must not pull focus into here — focus belongs on the row
         the merchant is on, which is what makes ↑↓ keep working after a click —
@@ -523,6 +562,7 @@ export function StructureView({
         }}
         endsAt={endsAt}
         onSetEndDate={onSetEndDate}
+        look={look}
       />
     </RegionBody>
   );
