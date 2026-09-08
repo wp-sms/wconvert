@@ -339,8 +339,19 @@ final class TemplateLabels
     public static function nodeParams(): array
     {
         return [
-            /* translators: a heading's rank inside the Optin — whether it is the main heading or one under it. Not its size, which is a token. */
+            /*
+             * **`level` and `size` are two questions and the label for `level`
+             * used to answer both.** It read *"Not its size, which is a token"*,
+             * and that was true while a design had one heading size for every
+             * heading in it. A design with a display number and a subtitle needs
+             * a small `h2` and a large `h3`, which is the pair no token reaches.
+             */
+            /* translators: a heading's rank inside the Optin — whether it is the main heading or one under it. This is the document outline, not how big it is drawn. */
             'heading.level' => __('Heading rank', 'wconvert'),
+            /* translators: how big this heading is drawn, as a step up or down from the design's own heading size. */
+            'heading.size' => __('Heading size', 'wconvert'),
+            /* translators: how big this paragraph is drawn, as a step up or down from the design's own text size. */
+            'text.size' => __('Text size', 'wconvert'),
             /* translators: how a picture fills the space it is given. */
             'image.fit' => __('How the picture fills its space', 'wconvert'),
             /* translators: whether a visitor must fill a form field in before they can submit. */
@@ -378,6 +389,49 @@ final class TemplateLabels
             'heading.level.1' => __('Main heading', 'wconvert'),
             /* translators: a heading rank. This heading sits under the main one. */
             'heading.level.2' => __('Sub-heading', 'wconvert'),
+
+            /*
+             * ================================================================
+             * ONE SET OF WORDS, SPELLED TWICE, FOR THE SAME REASON `tokens` IS.
+             * ================================================================
+             * The key is `"{node}.{param}.{value}"` because a param name means
+             * nothing on its own, and the parity test walks every node's
+             * `choices` with no opt-out. What the duplication buys is the day a
+             * heading's steps and a paragraph's steps stop being the same list.
+             *
+             * **Named for the SIZE and not for the step.** `2xl` is a token in a
+             * type scale and not a thing to put in front of anybody; a merchant
+             * picking how big a number is drawn is choosing between *Huge* and
+             * *Large*. `Normal` is the design's own size and is what a block
+             * gets when nothing is chosen, which is why it is named at all
+             * rather than left as an empty chip.
+             */
+            /* translators: a type size step — the largest step — a display number, not a sentence. */
+            'heading.size.3xl' => __('Huge', 'wconvert'),
+            /* translators: a type size step — a step for a short display line. */
+            'heading.size.2xl' => __('Extra large', 'wconvert'),
+            /* translators: a type size step — one step up from the design’s own size. */
+            'heading.size.xl' => __('Large', 'wconvert'),
+            /* translators: a type size step — the design’s own size, which is what a block gets when nothing is chosen. */
+            'heading.size.m' => __('Normal', 'wconvert'),
+            /* translators: a type size step — one step down from the design’s own size. */
+            'heading.size.s' => __('Small', 'wconvert'),
+            /* translators: a type size step — the smallest step — fine print. */
+            'heading.size.xs' => __('Very small', 'wconvert'),
+
+            /* translators: a type size step — the largest step — a display number, not a sentence. */
+            'text.size.3xl' => __('Huge', 'wconvert'),
+            /* translators: a type size step — a step for a short display line. */
+            'text.size.2xl' => __('Extra large', 'wconvert'),
+            /* translators: a type size step — one step up from the design’s own size. */
+            'text.size.xl' => __('Large', 'wconvert'),
+            /* translators: a type size step — the design’s own size, which is what a block gets when nothing is chosen. */
+            'text.size.m' => __('Normal', 'wconvert'),
+            /* translators: a type size step — one step down from the design’s own size. */
+            'text.size.s' => __('Small', 'wconvert'),
+            /* translators: a type size step — the smallest step — fine print. */
+            'text.size.xs' => __('Very small', 'wconvert'),
+
 
             /* translators: a picture is scaled up until it fills the space, and the overflow is cropped away. */
             'image.fit.cover' => __('Fill the space, cropping', 'wconvert'),

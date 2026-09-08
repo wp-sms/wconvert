@@ -175,6 +175,49 @@ export const SHADOW_CSS = [
   `[data-role=fine_print]{font-size:.8125em;color:var(--wc-muted,#6b7280)}`,
 
   /*
+   * ==========================================================================
+   * THE TYPE SCALE — SIX STEPS, AND THE MOST RECOGNISABLE MOVE IN THE GENRE.
+   * ==========================================================================
+   * *"15%"* at 90px beside its own sentence at 24px is what a discount design
+   * looks like, and until now a design had ONE heading size and ONE text size.
+   * The token still decides the scale; a step MULTIPLIES it, so a design that
+   * sets `heading-size` moves all six together and the merchant's one lever
+   * still works.
+   *
+   * **Ten rules and not five**, because the base differs: a heading scales
+   * `heading-size` and a paragraph scales `text-size`. The obvious compression —
+   * one `--wc-scale` the two base rules read — is exactly what the parity test
+   * forbids, since a node param is not a token and the stylesheet may read no
+   * `--wc-*` name that is not one (see `sized()` in `render.ts`).
+   *
+   * `m` has no rule at all: it is the base, and it is the default, so a design
+   * that spells it renders byte-identically to one that does not.
+   *
+   * **Specificity is doing real work here.** `h3.wc-heading` is (0,1,1) and
+   * these are (0,2,0), so an explicit step beats the rank-derived sub-heading
+   * size rather than composing with it — which is the honest reading of a
+   * merchant who set a size: they said how big, not how much smaller than the
+   * other thing.
+   */
+  `.wc-heading.wc-3xl{font-size:calc(var(--wc-heading-size,1.5rem)*2.5)}`,
+  `.wc-heading.wc-2xl{font-size:calc(var(--wc-heading-size,1.5rem)*2)}`,
+  `.wc-heading.wc-xl{font-size:calc(var(--wc-heading-size,1.5rem)*1.5)}`,
+  `.wc-heading.wc-s{font-size:calc(var(--wc-heading-size,1.5rem)*.75)}`,
+  `.wc-heading.wc-xs{font-size:calc(var(--wc-heading-size,1.5rem)*.625)}`,
+  `.wc-text.wc-3xl{font-size:calc(var(--wc-text-size,1rem)*2.5)}`,
+  `.wc-text.wc-2xl{font-size:calc(var(--wc-text-size,1rem)*2)}`,
+  `.wc-text.wc-xl{font-size:calc(var(--wc-text-size,1rem)*1.5)}`,
+  `.wc-text.wc-s{font-size:calc(var(--wc-text-size,1rem)*.75)}`,
+  `.wc-text.wc-xs{font-size:calc(var(--wc-text-size,1rem)*.625)}`,
+  /*
+   * A display number is a number, and at 2.5× the base a heading's line box is
+   * mostly air above and below it. `1.2` is right for a two-line headline and
+   * wrong for *"15%"* on its own; the two big steps get a tighter one so the
+   * thing sits on its own baseline rather than floating in a band.
+   */
+  `.wc-3xl,.wc-2xl{line-height:1.05}`,
+
+  /*
    * The eyebrow and the badge are the same short string wearing two jobs, and
    * the typography is the whole of what distinguishes them: an eyebrow is a
    * quiet LABEL above something, a badge is a loud thing stuck ON it. Neither

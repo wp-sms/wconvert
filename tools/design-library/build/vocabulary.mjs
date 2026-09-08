@@ -245,6 +245,12 @@ Notes that the table cannot carry:
   code is impossible here. Ship a plausible placeholder — \`WELCOME10\` — and the
   merchant types theirs in.
 - **\`consent\` ships \`hidden: true\`** in every design that has one.
+- **\`size\` on a \`heading\` or a \`text\` is a step on the type scale**, and it
+  MULTIPLIES that leaf's own size token rather than replacing it — so
+  \`heading-size\` still sets the scale and a step moves with it. \`m\` is the base
+  and the default. This is what puts *"15%"* at 90px beside its own sentence at
+  24px, and it is a different question from \`heading.level\`, which is the
+  document outline and not a size.
 
 ## 5. Slot Roles
 

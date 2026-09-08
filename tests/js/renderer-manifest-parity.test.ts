@@ -251,6 +251,56 @@ describe('every layout the manifest gives a token bag', () => {
 
 /**
  * ============================================================================
+ * THE TYPE SCALE — A MODIFIER CLASS, AND IT HAS TO BE ONE.
+ * ============================================================================
+ * The stylesheet may read no `--wc-*` name outside the declared tokens and the
+ * declared layout params, and a NODE param is neither — so `size` cannot be a
+ * custom property under any name. This asserts the class, and that every step
+ * the manifest offers has a rule to draw it: a step with no rule is a chip in
+ * the inspector that changes nothing.
+ */
+describe('the type scale', () => {
+  const sizes = manifest.nodes.heading.choices.size as readonly string[];
+
+  it('offers the same steps on both leaves that take one', () => {
+    expect(manifest.nodes.text.choices.size).toEqual(sizes);
+  });
+
+  it.each(sizes.filter((size) => size !== manifest.nodes.heading.defaults.size))(
+    'draws a rule for every step it offers: %s',
+    (size) => {
+      expect(CSS).toContain(`.wc-heading.wc-${size}{`);
+      expect(CSS).toContain(`.wc-text.wc-${size}{`);
+    },
+  );
+
+  it.each(sizes)('writes the step as a class beside the leafs own: %s', (size) => {
+    const step = renderStep({
+      type: 'stack',
+      children: [
+        { type: 'heading', text: 'x', size },
+        { type: 'text', text: 'x', size },
+      ],
+    });
+    const expected = size === 'm' ? ['wc-heading', 'wc-text'] : [`wc-heading wc-${size}`, `wc-text wc-${size}`];
+
+    expect([...(step?.children ?? [])].map((child) => child.className)).toEqual(expected);
+  });
+
+  /**
+   * A step multiplies the leaf's own size TOKEN, so the merchant's one lever
+   * still moves all six together. Read off the declaration rather than
+   * computed, because jsdom resolves no `calc()` against a stylesheet it never
+   * loaded.
+   */
+  it('multiplies the token rather than replacing it', () => {
+    expect(CSS).toContain('.wc-heading.wc-3xl{font-size:calc(var(--wc-heading-size,1.5rem)*');
+    expect(CSS).toContain('.wc-text.wc-3xl{font-size:calc(var(--wc-text-size,1rem)*');
+  });
+});
+
+/**
+ * ============================================================================
  * THE ONE LAYOUT THAT PAINTS, AND THE THREE THINGS THAT MAKES TRUE.
  * ============================================================================
  * Every other layout arranges and draws nothing, so a scoped bag on one is

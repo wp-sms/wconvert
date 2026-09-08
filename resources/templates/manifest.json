@@ -71,6 +71,7 @@
       ],
       "params": [
         "level",
+        "size",
         "hidden"
       ],
       "roles": [
@@ -81,10 +82,19 @@
         "level": [
           "1",
           "2"
+        ],
+        "size": [
+          "3xl",
+          "2xl",
+          "xl",
+          "m",
+          "s",
+          "xs"
         ]
       },
       "defaults": {
-        "level": "1"
+        "level": "1",
+        "size": "m"
       }
     },
     "eyebrow": {
@@ -111,13 +121,27 @@
         "link"
       ],
       "params": [
+        "size",
         "hidden"
       ],
       "roles": [
         "body",
         "fine_print",
         "success_body"
-      ]
+      ],
+      "choices": {
+        "size": [
+          "3xl",
+          "2xl",
+          "xl",
+          "m",
+          "s",
+          "xs"
+        ]
+      },
+      "defaults": {
+        "size": "m"
+      }
     },
     "badge": {
       "content": [

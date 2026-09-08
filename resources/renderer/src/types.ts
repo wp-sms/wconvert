@@ -133,14 +133,51 @@ interface HideableNode extends BaseNode {
 export interface HeadingNode extends HideableNode {
   readonly type: 'heading';
   readonly text?: string;
-  /** Heading rank inside the Optin, 1 or 2. Not a size — size is a token. */
+  /**
+   * Heading rank inside the Optin, 1 or 2. Not a size — {@link HeadingNode.size}
+   * is that, and the two were one key until a design needed a small `h2`.
+   */
   readonly level?: 1 | 2;
+  /**
+   * A step on the type scale — a MULTIPLE of this element's own size token.
+   *
+   * ==========================================================================
+   * NOT THE SAME QUESTION AS `level`, WHICH IS WHY BOTH EXIST.
+   * ==========================================================================
+   * `level` is the document outline: is this the Optin's heading or one under
+   * it. `size` is how big it is drawn. They were one thing while a design had
+   * one heading size, and *"15%"* at 90px beside its own sentence at 24px is
+   * the design that needs them apart — the most recognisable move in this
+   * genre, and unexpressible until now.
+   *
+   * **A multiple and not a length.** `heading-size` (or `text-size`) still
+   * decides the scale, so the merchant's one lever moves all six steps
+   * together. `m` is the base, adds no class, and is the default.
+   */
+  readonly size?: '3xl' | '2xl' | 'xl' | 'm' | 's' | 'xs';
 }
 
 export interface TextNode extends HideableNode {
   readonly type: 'text';
   readonly text?: string;
   readonly link?: SlotLink;
+  /**
+   * A step on the type scale — a MULTIPLE of this element's own size token.
+   *
+   * ==========================================================================
+   * NOT THE SAME QUESTION AS `level`, WHICH IS WHY BOTH EXIST.
+   * ==========================================================================
+   * `level` is the document outline: is this the Optin's heading or one under
+   * it. `size` is how big it is drawn. They were one thing while a design had
+   * one heading size, and *"15%"* at 90px beside its own sentence at 24px is
+   * the design that needs them apart — the most recognisable move in this
+   * genre, and unexpressible until now.
+   *
+   * **A multiple and not a length.** `heading-size` (or `text-size`) still
+   * decides the scale, so the merchant's one lever moves all six steps
+   * together. `m` is the base, adds no class, and is the default.
+   */
+  readonly size?: '3xl' | '2xl' | 'xl' | 'm' | 's' | 'xs';
 }
 
 /**

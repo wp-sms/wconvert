@@ -154,7 +154,7 @@ function elementFor(node: TemplateNode): HTMLElement | null {
     case 'heading':
       return heading(node as HeadingNode);
     case 'text':
-      return sentence('p', 'wc-text', node as TextNode);
+      return sentence('p', sized('wc-text', (node as TextNode).size), node as TextNode);
     case 'eyebrow':
       return words('p', 'wc-eyebrow', (node as EyebrowNode).text);
     case 'badge':
@@ -473,10 +473,30 @@ function wrap(tag: string, className: string, child: Node): HTMLElement {
   return element;
 }
 
+/**
+ * A step on the type scale, as a modifier class.
+ *
+ * ============================================================================
+ * A CLASS AND NOT A CUSTOM PROPERTY, AND THAT IS FORCED RATHER THAN STYLISTIC.
+ * ============================================================================
+ * `renderer-manifest-parity` asserts the stylesheet reads no `--wc-*` name
+ * outside the declared tokens and the declared LAYOUT params — node params are
+ * excluded — so a `--wc-size`, or a `--wc-scale` under any name, would fail the
+ * build. The same rule `badge.place` and `image.shape` are already modifier
+ * classes for.
+ *
+ * **`m` adds nothing**, so a design that never heard of this param renders
+ * byte-identically to one that spells the default. That equality is what the
+ * absent-versus-declared case checks.
+ */
+function sized(className: string, size: string | undefined): string {
+  return size === undefined || size === 'm' ? className : `${className} wc-${size}`;
+}
+
 function heading(node: HeadingNode): HTMLElement {
   const element = document.createElement(node.level === 2 ? 'h3' : 'h2');
 
-  element.className = 'wc-heading';
+  element.className = sized('wc-heading', node.size);
   element.textContent = node.text ?? '';
 
   return element;

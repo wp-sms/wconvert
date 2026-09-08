@@ -147,6 +147,32 @@ thing the manifest cannot spell: a default is one string, and no string means
 check reads a resolved value and a manifest `#ffffff` would have reported a dark
 design's near-white text as unreadable on a white field no visitor sees.
 
+## And one step that is not a token at all
+
+`size` — six steps on the type scale (`3xl 2xl xl m s xs`) on `heading` and
+`text`, as a **modifier class**. It is in this ADR because it is the other half
+of the same design: a scoped bag paints a box, and `size` is what puts *"15%"*
+at 90px beside its own sentence at 24px inside it. The most recognisable move in
+the genre, and unexpressible until now — a design had one heading size and one
+text size.
+
+**It cannot be a custom property, and that is forced.** The parity suite asserts
+the stylesheet reads no `--wc-*` name outside the declared tokens and the
+declared LAYOUT params; a node param is neither, so `--wc-size` — or a
+`--wc-scale` under any name — fails the build. The same rule `badge.place` and
+`image.shape` are already modifier classes for. `m` adds no class, so a design
+that spells the default renders byte-identically to one that does not.
+
+**A step multiplies the leaf's own size token rather than replacing it**, so
+`heading-size` still sets the scale and the merchant's one lever moves all six
+together. That costs ten CSS rules rather than five, because a heading scales
+`heading-size` and a paragraph scales `text-size` and the obvious compression is
+the custom property the test forbids.
+
+It also separates two questions that were one key: `heading.level` is the
+document outline, `heading.size` is how big it is drawn. A design with a display
+number and a subtitle needs a small `h2` and a large `h3`.
+
 ## Consequences
 
 - **The scope is a LAYOUT's, and only a layout's.** `tokens` is declared in the
@@ -166,10 +192,11 @@ design's near-white text as unreadable on a white field no visitor sees.
   today.
 - **A literal hex does not follow a theme change.** The Style panel flags one
   and offers a one-click conversion to a token reference, which does.
-- **The free loader is 8,191 B gzipped of 12,288** — 13 B for the bag, the panel
-  and both tokens together, because a new CSS rule built from strings the sheet
-  already contains is nearly free once gzipped. The elite loader is 10,145 B,
-  leaving 2,143 B.
+- **The free loader is 8,311 B gzipped of 12,288.** The bag, the panel and both
+  tokens together cost 13 B — a CSS rule built from strings the sheet already
+  contains is nearly free once gzipped — and the type scale's ten rules cost
+  120 B, which is the whole of the difference. The elite loader is 10,277 B,
+  leaving 2,011 B.
 - **The payload budget is not raised.** `PayloadBudgetTest` measures 1,308 B of
   2,048 today — 36% of headroom, not the breach an earlier estimate claimed. A
   bag is a handful of highly compressible bytes per scope, and the instrument
