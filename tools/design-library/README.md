@@ -80,6 +80,27 @@ Designs are drawn at the width they declare and then **scaled** into the card,
 because re-flowing one into 320px would re-run its own wrapping and show a
 design nobody is ever served.
 
+## The round trip
+
+```bash
+./tools/design-library/build.sh vocabulary     # writes out/VOCABULARY.md
+#   paste that file + a brief into any system, anywhere
+pbpaste | node tools/design-library/build/import.mjs
+composer verify:templates
+./tools/design-library/build.sh designs sheet gallery
+```
+
+`import.mjs` files each entry by its **tier** — free designs to
+`resources/templates/library`, paid ones to the Pro module that owns their
+Display Type — and refuses three mistakes before writing rather than after: an
+entry with no `tree` (which lands as a silent Pro upsell card for the design in
+the file), a bar or slide-in at the free tier (free has no container to mount
+one in), and an id the library already holds.
+
+It does **not** verify. `bin/verify-templates.php` is the authority on whether a
+design survives registration and it names six failures precisely; a second,
+worse summary in front of it would help nobody.
+
 ## The Bench is the return path
 
 `tools/design-system` is one-way: repo → canvas. A design has to come **back**,
