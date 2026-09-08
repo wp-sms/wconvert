@@ -18,7 +18,7 @@
     "muted": "#a5b4fc",
     "accent": "#facc15",
     "accent-fg": "#1e1b4b",
-    "border": "#312e81",
+    "border": "#4f4aa8",
     "radius": "0.375rem",
     "shadow": "0 -18px 50px -12px rgba(15, 23, 42, 0.35)",
     "tracking": "-0.01em"

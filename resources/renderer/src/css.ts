@@ -313,21 +313,39 @@ export const SHADOW_CSS = [
   `.wc-row>.wc-field{flex:1 1 12rem}`,
   /*
    * ==========================================================================
-   * A BUTTON THAT WRAPPED ONTO ITS OWN LINE FILLS IT.
+   * A WRAPPED ROW FOLLOWS THE DESIGN'S OWN ALIGNMENT.
    * ==========================================================================
    * `.wc-row` wraps by construction, and a field beside a button needs about
-   * 20rem to stay on one line — so in any panel narrower than that the button
-   * wraps and, sized to its content, sat as a small stray control under a
-   * full-width field. On a centre-aligned design it sat under it and to the
-   * LEFT, which reads as a broken layout.
+   * 20rem to stay on one line — so in a narrower panel the button wraps onto
+   * its own line and, sized to its content, sat there as a small stray control
+   * under a full-width field, hard LEFT in a centre-aligned design.
    *
-   * `flex-grow` rather than `inline-size: 100%`: growing fills whatever is
-   * left on the line, so a button that wrapped alone takes the width and one
-   * that did not still shares the row. The field keeps the larger basis, so a
-   * one-line form still gives most of the room to the input.
+   * `flex-grow: 1` was the first fix and it was wrong: it also grows a button
+   * that did NOT wrap, so every floating bar's CTA swelled to fill half the
+   * strip. A bar's button must hug its label.
+   *
+   * `--wc-align` already holds exactly `start`, `center` or `end` — the three
+   * values `justify-content` wants — so a centred design centres its wrapped
+   * button and a bar, which aligns `start`, is untouched.
    */
-  `.wc-row>.wc-button{flex-grow:1}`,
+  `.wc-row{justify-content:var(--wc-align,start)}`,
   `.wc-label{font-size:.8125em;font-weight:500;color:var(--wc-muted,#6b7280)}`,
+  /*
+   * ==========================================================================
+   * A LABEL INSIDE A ROW IS READ, NOT SEEN.
+   * ==========================================================================
+   * `.wc-field` stacks its label above its input, which is right in a column
+   * and wrong in a `row`: a floating bar is one strip of page furniture, and
+   * stacking "Email address" above the box doubled its height and put a second
+   * competing line of text next to the offer. Every bar in the library looked
+   * like a form that had fallen into a strip.
+   *
+   * **Hidden from the eye and not from the accessibility tree.** The label
+   * still names its input for a screen reader and still takes the click; the
+   * placeholder is what a sighted visitor reads, which is what this genre does
+   * in a horizontal form and only there.
+   */
+  `.wc-row>.wc-field>.wc-label{position:absolute;inline-size:1px;block-size:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}`,
   /*
    * ==========================================================================
    * AN INSET RING RATHER THAN A BORDER, AND IT IS NOT A STYLISTIC PREFERENCE.

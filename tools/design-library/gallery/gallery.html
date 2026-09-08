@@ -402,8 +402,6 @@
       own wrapping — a `split` stacks, a `row` breaks — so the card would show
       a design nobody is ever served.
     */
-    var CARD = 320;
-
     /*
       The page each design is drawn on, per Display Type — and the HEIGHT
       matters as much as the width. A fixed-height stage gave a floating bar
@@ -457,17 +455,13 @@
 
       var scale = document.createElement('div');
       var page = stageFor(design);
-      var ratio = CARD / page.w;
 
       scale.className = 'card__scale wc-container-' + design.display_type;
       scale.style.inlineSize = page.w + 'px';
       scale.style.minBlockSize = page.min + 'px';
-      scale.style.transform = 'scale(' + ratio + ')';
 
-      // The stage cannot be sized until the design has been laid out, so the
-      // card records what it needs and `fit()` measures every one of them in
-      // one pass — see there for why it is not done here.
-      el.dataset.ratio = String(ratio);
+      // The scale itself is set by `measure()`, once the stage has a width.
+      el.dataset.pageW = String(page.w);
       el.dataset.floor = String(page.min);
 
       var box = document.createElement('div');
@@ -532,37 +526,61 @@
       resize the `.card__scale` it watches — that element is absolutely
       positioned and sized by its own contents — so there is no loop here.
     */
+    /*
+      ========================================================================
+      THE SCALE IS MEASURED FROM THE CARD, NOT ASSUMED.
+      ========================================================================
+      This used a constant 320px card. The grid columns are `1fr`, so on any
+      screen wide enough the cards are WIDER than that — and every design then
+      sat in the left 320px of its card with bare grid to the right of it. On a
+      floating bar, whose whole point is that it spans the page, that reads as
+      a bar that does not span: three of them looked broken and the geometry
+      was right the whole time.
+
+      So the ratio comes from the stage's own width, recomputed whenever it
+      changes. That also makes the gallery responsive for free.
+    */
+    function measure(el) {
+      var stage = el.querySelector('.card__stage');
+      var scale = el.querySelector('.card__scale');
+      var ratio = stage.clientWidth / Number(el.dataset.pageW);
+
+      if (!(ratio > 0)) {
+        return;
+      }
+
+      scale.style.transform = 'scale(' + ratio + ')';
+
+      var scaled = Math.ceil(scale.offsetHeight * ratio);
+
+      // The stage is at LEAST the design's height and grows with the row; the
+      // negative margin keeps the design centred in whatever height it gets.
+      stage.style.minBlockSize = scaled + 'px';
+      scale.style.marginBlockStart = -Math.round(scaled / 2) + 'px';
+    }
+
     var watcher = new ResizeObserver(function (entries) {
       entries.forEach(function (entry) {
         var el = entry.target.closest('.card');
 
         /*
           A bar and a slide-in are ABSOLUTELY positioned, so they add no height
-          to their page and the page stayed at its floor — 300px, while
-          `slide-in-photo` needs 483. It overflowed the top of its own stage by
-          183px and was cut off. So for those two the box is measured and the
-          page is grown to hold it; the page's own resize then runs the branch
-          below, which sizes the stage.
+          to their page and it stayed at its floor — 300px, while
+          `slide-in-photo` needs 483, so it overflowed its own stage by 183px.
+          Their box is measured and the page grown to hold it; the page's own
+          resize then runs `measure()`.
 
-          64px of air above the card, which is what makes it read as a corner
-          of a page rather than as a card that happens to be the page.
+          64px of air above, which is what makes it read as the corner of a
+          page rather than as a card that happens to be the page.
         */
         if (entry.target.classList.contains('wc-box')) {
-          var page = entry.target.closest('.card__scale');
-
-          page.style.minBlockSize =
+          entry.target.closest('.card__scale').style.minBlockSize =
             Math.max(Number(el.dataset.floor), entry.target.offsetHeight + 64) + 'px';
 
           return;
         }
 
-        var scaled = Math.ceil(entry.target.offsetHeight * Number(el.dataset.ratio));
-
-        // The stage is at LEAST the design's height and grows with the row;
-        // the negative margin is what keeps the design in the middle of
-        // whatever height it ends up with.
-        el.querySelector('.card__stage').style.minBlockSize = scaled + 'px';
-        entry.target.style.marginBlockStart = -Math.round(scaled / 2) + 'px';
+        measure(el);
       });
     });
 
@@ -577,7 +595,10 @@
       watcher.disconnect();
       grid.replaceChildren();
       shown.forEach(function (d) { grid.appendChild(card(d)); });
-      grid.querySelectorAll('.card__scale').forEach(function (scale) { watcher.observe(scale); });
+      grid.querySelectorAll('.card').forEach(function (el) {
+        watcher.observe(el.querySelector('.card__stage'));
+        watcher.observe(el.querySelector('.card__scale'));
+      });
       // Only the two that float free of the flow need their box watched.
       grid.querySelectorAll(
         '.wc-container-floating_bar > .wc-box, .wc-container-slide_in > .wc-box',

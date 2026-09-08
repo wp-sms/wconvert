@@ -167,6 +167,19 @@ anchor: a tick, or — where the offer pays out in one — a `code`.
 the renderer now (`700` at `.8125rem` of block padding) so no design has to
 remember it.
 
+**A field's ground is `--wc-bg`, so on a dark design only the ring shows it.**
+Pick a `border` clearly lighter than the ground or the input is invisible — a
+bar asking for an address with nothing that looks like a box to type in. Aim
+for 2:1 against the ground; it is a boundary, not text, so AA does not apply.
+
+**A `row` hides its fields' labels, so write the placeholder.** Stacking a
+label above an input doubles a bar's height and puts a second competing line of
+text beside the offer. The label is still there for a screen reader — but a
+sighted visitor reads the placeholder, so it has to say what the field is.
+
+**A three-up label is two or three words.** Three benefits across a 32rem panel
+is ~9rem each; anything longer wraps to two lines and the icon wraps with it.
+
 **A `split` is two sides, not two floating boxes.** The panes are equal height
 and each centres its own contents against the other; a pane holding nothing but
 a picture is filled by it. All three are in the renderer, so no design has to
