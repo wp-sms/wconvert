@@ -66,8 +66,21 @@ export const A_DESIGNS_OWN_WIDTH = '28rem';
  * `resources/templates/manifest.json` as well, and
  * `renderer-manifest-parity` asserts the two agree — the renderer imports no
  * manifest.
+ *
+ * **24rem is derived rather than chosen: it is where a `split` stops being side
+ * by side.** A pane's `flex-basis` is `12rem` and there are exactly two of
+ * them, so below 24rem the panes have already wrapped into a column. Retuning
+ * at the same width as the layout gives up means the two mechanisms cannot
+ * disagree — a design does not retune while still side by side, or stay tuned
+ * for two columns after it has one.
+ *
+ * A phone measure would have been the obvious number and is the wrong one. The
+ * common ones straddle it — 360, 375, 390, 412 — so half the phones in
+ * circulation would have wrapped without retuning or retuned without wrapping,
+ * and the switch in the builder would have been drawn at a width the query did
+ * not fire at.
  */
-export const A_NARROW_DESIGN = '22.5rem';
+export const A_NARROW_DESIGN = '24rem';
 
 export const SHADOW_CSS = [
   `:host{all:initial!important;display:block!important}`,
@@ -694,5 +707,5 @@ export const SHADOW_CSS = [
    * desktop, and the viewport would call it wide. `.wc-root` is the container,
    * declared above.
    * --------------------------------------------------------------------- */
-  `@container wc (max-width:22.5rem){.wc-stack[data-narrow],.wc-row[data-narrow],.wc-split[data-narrow],.wc-grid[data-narrow],.wc-panel[data-narrow],.wc-media[data-narrow]{--wc-bg:var(--wc-n-bg)!important;--wc-fg:var(--wc-n-fg)!important;--wc-muted:var(--wc-n-muted)!important;--wc-accent:var(--wc-n-accent)!important;--wc-accent-fg:var(--wc-n-accent-fg)!important;--wc-border:var(--wc-n-border)!important;--wc-input-bg:var(--wc-n-input-bg)!important;--wc-font:var(--wc-n-font)!important;--wc-heading-font:var(--wc-n-heading-font)!important;--wc-heading-size:var(--wc-n-heading-size)!important;--wc-heading-weight:var(--wc-n-heading-weight)!important;--wc-tracking:var(--wc-n-tracking)!important;--wc-text-size:var(--wc-n-text-size)!important;--wc-leading:var(--wc-n-leading)!important;--wc-radius:var(--wc-n-radius)!important;--wc-pad:var(--wc-n-pad)!important;--wc-gap:var(--wc-n-gap)!important;--wc-width:var(--wc-n-width)!important;--wc-align:var(--wc-n-align)!important;--wc-bg-image:var(--wc-n-bg-image)!important;--wc-overlay:var(--wc-n-overlay)!important;--wc-shadow:var(--wc-n-shadow)!important;--wc-motion:var(--wc-n-motion)!important;--wc-backdrop:var(--wc-n-backdrop)!important}}`,
+  `@container wc (max-width:24rem){.wc-stack[data-narrow],.wc-row[data-narrow],.wc-split[data-narrow],.wc-grid[data-narrow],.wc-panel[data-narrow],.wc-media[data-narrow]{--wc-bg:var(--wc-n-bg)!important;--wc-fg:var(--wc-n-fg)!important;--wc-muted:var(--wc-n-muted)!important;--wc-accent:var(--wc-n-accent)!important;--wc-accent-fg:var(--wc-n-accent-fg)!important;--wc-border:var(--wc-n-border)!important;--wc-input-bg:var(--wc-n-input-bg)!important;--wc-font:var(--wc-n-font)!important;--wc-heading-font:var(--wc-n-heading-font)!important;--wc-heading-size:var(--wc-n-heading-size)!important;--wc-heading-weight:var(--wc-n-heading-weight)!important;--wc-tracking:var(--wc-n-tracking)!important;--wc-text-size:var(--wc-n-text-size)!important;--wc-leading:var(--wc-n-leading)!important;--wc-radius:var(--wc-n-radius)!important;--wc-pad:var(--wc-n-pad)!important;--wc-gap:var(--wc-n-gap)!important;--wc-width:var(--wc-n-width)!important;--wc-align:var(--wc-n-align)!important;--wc-bg-image:var(--wc-n-bg-image)!important;--wc-overlay:var(--wc-n-overlay)!important;--wc-shadow:var(--wc-n-shadow)!important;--wc-motion:var(--wc-n-motion)!important;--wc-backdrop:var(--wc-n-backdrop)!important}}`,
 ].join('');

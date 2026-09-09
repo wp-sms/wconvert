@@ -2160,17 +2160,130 @@
   overflow: auto;
 }
 
+/* ---------------------------------------------------------------------------
+ * THE MERCHANT'S PAGE, AS MUCH OF IT AS THE PREVIEW NEEDS TO BE HONEST.
+ *
+ * ============================================================================
+ * A BAR CENTRED IN A BOX IS NOT A BAR.
+ * ============================================================================
+ * The stage was a centred surface and `Preview` mounts `inline` whatever the
+ * Optin is, which is right for a gallery card and wrong here: two of the four
+ * [[Display Type]]s are ABOUT where they sit. A floating bar pinned to the
+ * block-end edge of a page and a slide-in tucked into its corner are the whole
+ * of what makes either a different design from a popup, and neither reads as
+ * anything floating in the middle of an empty pane.
+ *
+ * **The admin draws the page; the renderer draws the design.** Free's
+ * `mount.ts` knows `inline` and `popup`; the two Pro containers live in
+ * `pro/resources/renderer/src/popover.ts`. A preview that asked the renderer
+ * for a bar would draw nothing on a free install or put Pro's container in
+ * free's admin bundle, which `bin/verify-source-contract.sh` refuses. It is
+ * also the truer division: what Pro's container adds is the top layer, the
+ * anchoring and the motion, and what a merchant judges here is the design
+ * against a page.
+ * ------------------------------------------------------------------------- */
+.wconvert-site {
+  position: relative;
+  inline-size: 100%;
+  min-block-size: 26rem;
+  display: flex;
+  flex-direction: column;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  /* The three overlays are placed against this box, so none may escape it. */
+  overflow: hidden;
+}
+
+.wconvert-site__page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 1.25rem;
+}
+
+/*
+ * **Three grey bars and a grey block, deliberately not lorem ipsum.** Enough
+ * for *"this sits over a page"* and not enough to read: anything readable
+ * competes with the design being judged, and would need translating.
+ */
+.wconvert-site__ghost {
+  flex: none;
+  block-size: 0.5rem;
+  border-radius: 2px;
+  background: var(--border);
+  opacity: 0.55;
+}
+
+.wconvert-site__ghost[data-ghost='head'] {
+  block-size: 1.1rem;
+  inline-size: 60%;
+}
+
+.wconvert-site__ghost[data-ghost='block'] {
+  block-size: 5rem;
+}
+
 /*
  * **The stage is the width the design is being judged at**, handed down as a
- * custom property rather than spelled here: on Desktop it is the design's OWN
- * `width` token, and on Mobile it is a phone. `.wc-root` takes
- * `min(--wc-width, 100%)` of whatever contains it, so this is the `100%` — and
- * a stage that just filled the column left the popup hard against its leading
- * edge, reading as a broken float rather than as a popup.
+ * custom property rather than spelled here: at its own width it is the design's
+ * OWN `width` token, and at narrow it is inside the renderer's own breakpoint.
+ * `.wc-root` takes `min(--wc-width, 100%)` of whatever contains it, so this is
+ * the `100%` — and a slot that just filled the page left the popup hard
+ * against its leading edge, reading as a broken float rather than as a popup.
  */
-.wconvert-builder__stage > .wconvert-preview {
+.wconvert-site__slot > .wconvert-preview {
   inline-size: var(--wconvert-stage, 100%);
   max-inline-size: 100%;
+}
+
+/*
+ * `inline` is the one that stays in the flow, because that is what `inline`
+ * MEANS: it renders where it was embedded and may sit far below the fold,
+ * which is why its Impression is counted on entering the viewport rather than
+ * on being shown (CONTEXT.md, Impression).
+ */
+.wconvert-site__slot {
+  margin-block: 0.4rem;
+}
+
+/*
+ * The other three take themselves out of the flow, exactly as they do on a
+ * real page. Every offset is logical, so a Persian preview puts the slide-in in
+ * the corner a Persian visitor would find it in (ADR 0038).
+ */
+.wconvert-site[data-display-type='popup'] .wconvert-site__slot {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  overflow: auto;
+  /*
+   * The design's own `backdrop` token, which is the one thing about a popup
+   * that is not inside the shadow root — `DOCUMENT_CSS` puts it on
+   * `dialog::backdrop` for exactly that reason. The literal is this admin's
+   * fallback for a design that declares none, and matches the renderer's.
+   */
+  background: var(--wconvert-backdrop, rgba(15, 23, 42, 0.55));
+}
+
+.wconvert-site[data-display-type='floating_bar'] .wconvert-site__slot {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  margin: 0;
+}
+
+.wconvert-site[data-display-type='slide_in'] .wconvert-site__slot {
+  position: absolute;
+  inset-block-end: 0.9rem;
+  inset-inline-end: 0.9rem;
+  margin: 0;
+  max-inline-size: 26rem;
 }
 
 /*
@@ -4902,4 +5015,101 @@ body.wconvert-fullscreen .wconvert-structure > .wconvert-builder__preview {
   font-size: var(--text-micro);
   line-height: var(--text-micro--line-height);
   list-style: none;
+}
+
+/* ---------------------------------------------------------------------------
+ * THE SCOPE EDITOR'S FOUR NEW ROWS.
+ *
+ * A count on a row, a source on a chip, the mode banner, and the readout of
+ * what a box actually stores. All four exist because a scope is INVISIBLE
+ * otherwise: a restyled box looks exactly like an untouched one, and a check
+ * that cites nothing reads as an opinion (ADR 0062, ADR 0063, ADR 0064).
+ * ------------------------------------------------------------------------- */
+
+/*
+ * **Petrol and not amber or green**, which is the whole of what this chip
+ * means: it is neither a warning nor a pass, it is a FACT about the row — this
+ * box is where some of the design's look lives. `--ring` is the admin's own
+ * "this is the thing" colour, which the selected-block rail already uses.
+ */
+.wconvert-block__chip--sets {
+  background: color-mix(in srgb, var(--ring) 12%, transparent);
+  color: var(--ring);
+  font-variant-numeric: tabular-nums;
+}
+
+/*
+ * The class or ADR that enforces a check, beside the words for it.
+ *
+ * **Quieter than the check's own name and never quieter than legible.** It is
+ * the second thing read on the chip and the reason the first is trustworthy, so
+ * it takes the muted colour and keeps the size — a `--text-micro` that is
+ * already this admin's floor (ADR 0038, and the 9px in the reference tool
+ * fails the bar).
+ *
+ * Hidden below the container width where the strip would wrap onto three
+ * lines: the source is what a merchant reads once while deciding whether to
+ * act, and the `title` carries it at every width.
+ */
+.wconvert-checks__source {
+  color: var(--muted-foreground);
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: var(--text-micro);
+  line-height: var(--text-micro--line-height);
+  opacity: 0.8;
+}
+
+@container (max-width: 62rem) {
+  .wconvert-checks__source {
+    display: none;
+  }
+}
+
+/*
+ * The mode, said where the controls it changes are.
+ *
+ * It carries the id because it is a `<p>` — `#wconvert-admin :is(p, li, td, …)`
+ * forces `font-size: inherit` over a bare class, which is the trap this file
+ * documents four times over.
+ */
+#wconvert-admin .wconvert-scope__narrow {
+  margin: 0;
+  padding: 0.5rem 0.625rem;
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--ring) 10%, transparent);
+  color: var(--foreground);
+  font-size: var(--text-micro);
+  line-height: var(--text-micro--line-height);
+  text-wrap: pretty;
+}
+
+/*
+ * What is stored for this box, as data.
+ *
+ * `<details>` closed, so it costs one line until it is asked for — the panel
+ * above it is what a merchant reads and this is what an author checks.
+ */
+.wconvert-scope__json > summary {
+  color: var(--muted-foreground);
+  font-size: var(--text-micro);
+  line-height: var(--text-micro--line-height);
+  letter-spacing: var(--text-micro--letter-spacing);
+  font-weight: var(--text-micro--font-weight);
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+#wconvert-admin .wconvert-scope__json > pre {
+  margin: 0.375rem 0 0;
+  padding: 0.5rem 0.625rem;
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--foreground);
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: var(--text-micro);
+  line-height: 1.6;
+  /* A bag of 24 tokens is taller than the pane; the scroll is the readout's. */
+  max-block-size: 14rem;
+  overflow: auto;
+  white-space: pre;
 }

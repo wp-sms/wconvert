@@ -503,7 +503,7 @@ describe('the builder shell', () => {
    * keeps ADR 0040's "exactly one render of the tree" literal. Holding the
    * element from before the tab change asserted that the same DOM node
    * survived, which was never the guarantee; the guarantee is that a preview is
-   * on screen and is the same preview, which its device control still being on
+   * on screen and is the same preview, which its width control still being on
    * whatever the merchant chose is the sharper test of.
    */
   it('keeps the preview on screen while the rules are being edited', async () => {
@@ -513,28 +513,34 @@ describe('the builder shell', () => {
 
     await userEvent.click(
       within(await screen.findByRole('complementary', { name: 'Preview' })).getByRole('button', {
-        name: 'Mobile',
+        name: 'Narrow',
       }),
     );
     await userEvent.click(within(strip).getByRole('tab', { name: 'Display rules' }));
 
     const preview = await screen.findByRole('complementary', { name: 'Preview' });
 
-    expect(within(preview).getByRole('button', { name: 'Mobile' })).toHaveAttribute(
+    expect(within(preview).getByRole('button', { name: 'Narrow' })).toHaveAttribute(
       'aria-pressed',
       'true',
     );
   });
 
-  /** Mobile is a WIDTH, because reflow is the question a phone preview answers. */
-  it('constrains the preview when the merchant asks for a phone', async () => {
+  /**
+   * **It is a WIDTH and it was called a device.** The narrow bag is measured
+   * against the design's own container (ADR 0064), so an `inline` Optin in a
+   * 280px sidebar is narrow on a desktop and a control labelled *Mobile* says
+   * the opposite. The switch also decides which of a box's two bags the
+   * inspector edits, which it did not before.
+   */
+  it('constrains the preview when the merchant asks for the narrow width', async () => {
     open();
 
     const preview = await screen.findByRole('complementary', { name: 'Preview' });
 
-    await userEvent.click(within(preview).getByRole('button', { name: 'Mobile' }));
+    await userEvent.click(within(preview).getByRole('button', { name: 'Narrow' }));
 
-    expect(preview.querySelector('[data-device]')).toHaveAttribute('data-device', 'mobile');
+    expect(preview.querySelector('[data-width]')).toHaveAttribute('data-width', 'narrow');
   });
 
   /**

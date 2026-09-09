@@ -84,6 +84,101 @@ import type { Template, Tokens as TokenMap } from '@renderer/types';
  * never WConvert's own admin palette, which are different things that both
  * answer to the word "theme".
  */
+/**
+ * The ready-made looks, as one control over the DESIGN's own tokens.
+ *
+ * ============================================================================
+ * IT WAS THE FIRST GROUP IN THIS PANEL, WHICH IS THE ONE PLACE IT COULD NOT BE.
+ * ============================================================================
+ * The inspector draws {@see Tokens} only while nothing or a whole step is
+ * selected — anything else is that box's own bag (ADR 0062). So selecting a
+ * headline hid the theme picker, and a merchant restyling a box had to
+ * deselect to change the palette they were restyling *against*. A theme sets
+ * the design's tokens whatever is selected, so it belongs over all three panes
+ * rather than inside the pane that is about one box.
+ *
+ * **A popover and not a `Select`**, because the swatches are the whole
+ * affordance: ADR 0054 rule 3 is that a control shows the shape of its value,
+ * and a list of names would be six words for six palettes a merchant would
+ * choose between by looking. It is a popover and not the grid itself because a
+ * toolbar has one line.
+ *
+ * **Moved rather than repeated.** Two theme pickers is the same defect two
+ * controls for one token is (#71): a merchant can watch them disagree.
+ */
+export function Themes({
+  template,
+  onChange,
+}: {
+  template: Template;
+  onChange: (template: Template) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const presets = themePresets();
+  const current = presets.find((preset) => isApplied(preset, template.tokens));
+
+  const write = (tokens: Readonly<Record<string, string>>) =>
+    onChange({
+      ...template,
+      tokens: Object.entries(tokens).reduce(
+        (carried, [name, value]) => withToken(carried, name, value),
+        template.tokens,
+      ),
+    });
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button type="button" variant="outline" size="sm">
+          <span aria-hidden="true" className="wconvert-theme__swatches">
+            {['bg', 'fg', 'accent'].map((token) => (
+              <span
+                key={token}
+                className="wconvert-theme__swatch"
+                style={{ background: template.tokens[token] }}
+              />
+            ))}
+          </span>
+          {/*
+            **The name where there is one, and the word for "none of these"
+            where there is not.** A design the merchant has since edited matches
+            no preset, and a picker showing the first one would be claiming a
+            palette they are not on.
+          */}
+          {current?.label ?? __('Custom look', 'wconvert')}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent align="end" className="w-auto">
+        <div className="wconvert-themes" role="group" aria-label={__('Ready-made looks', 'wconvert')}>
+          {presets.map((preset) => (
+            <button
+              key={preset.id}
+              type="button"
+              className="wconvert-theme"
+              aria-pressed={isApplied(preset, template.tokens)}
+              onClick={() => {
+                write(preset.tokens);
+                setOpen(false);
+              }}
+            >
+              <span aria-hidden="true" className="wconvert-theme__swatches">
+                {['bg', 'fg', 'accent'].map((token) => (
+                  <span
+                    key={token}
+                    className="wconvert-theme__swatch"
+                    style={{ background: preset.tokens[token] }}
+                  />
+                ))}
+              </span>
+              {preset.label}
+            </button>
+          ))}
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 export function Tokens({
   template,
   labels,
@@ -146,7 +241,6 @@ export function Tokens({
   onError: (cause: unknown) => void;
 }) {
   const [copied, setCopied] = useState<number | null>(null);
-  const presets = themePresets();
   const groups = groupsOf();
 
   const write = (tokens: Readonly<Record<string, string>>) =>
@@ -176,35 +270,8 @@ export function Tokens({
         docblock describes for the tabs that had a `RegionHeader`. The groups
         below are the structure, in one register, and this is the first of them.
       */}
-      <section className="wconvert-group" aria-label={__('Ready-made looks', 'wconvert')}>
-        <h5 className="wconvert-group__name">{__('Ready-made looks', 'wconvert')}</h5>
-
-        <div className="wconvert-themes">
-        {presets.map((preset) => {
-          const current = isApplied(preset, template.tokens);
-
-          return (
-            <button
-              key={preset.id}
-              type="button"
-              className="wconvert-theme"
-              aria-pressed={current}
-              onClick={() => write(preset.tokens)}
-            >
-              <span aria-hidden="true" className="wconvert-theme__swatches">
-                {['bg', 'fg', 'accent'].map((token) => (
-                  <span
-                    key={token}
-                    className="wconvert-theme__swatch"
-                    style={{ background: preset.tokens[token] }}
-                  />
-                ))}
-              </span>
-              {preset.label}
-            </button>
-          );
-        })}
-        </div>
+      <section className="wconvert-group" aria-label={__('Your theme’s own palette', 'wconvert')}>
+        <h5 className="wconvert-group__name">{__('Your theme’s own palette', 'wconvert')}</h5>
 
         <p className="wconvert-themes__theme">
         {/*

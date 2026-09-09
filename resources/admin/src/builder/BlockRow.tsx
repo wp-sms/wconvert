@@ -307,6 +307,56 @@ export function BlockRow({
                 by scanning; the sentence travels beside it, as a `title` for a
                 pointer and in the accessibility tree for everyone else.
               */}
+              {/*
+                ================================================================
+                A RESTYLED BOX LOOKS EXACTLY LIKE AN UNTOUCHED ONE OTHERWISE.
+                ================================================================
+                A bag applies to a box and everything inside it (ADR 0062), and
+                nothing about a row said which boxes carried one — so after
+                restyling a design box by box, finding the nine tokens set on
+                the second panel meant selecting every panel and reading the
+                reset buttons.
+
+                **A count and not a dot**, because the number is the fact a
+                merchant acts on: *nine* says this box is where the design's
+                look actually lives, and *one* says somebody nudged a padding.
+                `9+2` is nine at full width and two more at narrow (ADR 0064),
+                which is also the payload's shape.
+              */}
+              {block.sets > 0 && (
+                <span
+                  className="wconvert-block__chip wconvert-block__chip--sets"
+                  title={
+                    block.setsNarrow > 0
+                      ? sprintf(
+                          /* translators: 1: how many style settings this block carries. 2: how many more it carries for narrow widths. */
+                          __(
+                            'This block sets %1$d thing(s) about how it and everything inside it looks, and %2$d more when the design is narrow.',
+                            'wconvert',
+                          ),
+                          block.sets,
+                          block.setsNarrow,
+                        )
+                      : sprintf(
+                          /* translators: %d: how many style settings this block carries. */
+                          __(
+                            'This block sets %d thing(s) about how it and everything inside it looks.',
+                            'wconvert',
+                          ),
+                          block.sets,
+                        )
+                  }
+                >
+                  {block.setsNarrow > 0
+                    ? sprintf(
+                        /* translators: 1: a count of style settings. 2: a count of extra settings for narrow widths. Kept as digits because it is on every row of a scanned list. */
+                        __('%1$d+%2$d', 'wconvert'),
+                        block.sets,
+                        block.setsNarrow,
+                      )
+                    : String(block.sets)}
+                </span>
+              )}
               {losesWordsOnSwitch(block) && (
                 <span
                   className="wconvert-block__chip wconvert-block__chip--warn"

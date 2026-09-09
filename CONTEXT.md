@@ -727,6 +727,14 @@ is off by default and one click from on ([ADR 0032](docs/adr/0032-consent-captur
 > and *how it looks*. The token controls moved into the second half because a
 > token has a SCOPE now and *which box* is a selection
 > ([ADR 0062](docs/adr/0062-a-token-bag-is-scoped-to-the-box-that-carries-it.md)).
+>
+> **And every box in the render is selectable, which it was not.** Selection was
+> addressed by [[Slot Role]] and no container carries one, so a press on a
+> coloured box reached the nearest leaf inside it — the primary gesture of a
+> scope editor, missing. The renderer stamps the address when the admin asks
+> for it, off for every visitor. The render is also drawn inside a mock page
+> now, because a floating bar centred in an empty pane is not a floating bar.
+> See [ADR 0065](docs/adr/0065-the-editor-is-the-scope-editor-now.md).
 > Everything the note below says about the vocabulary being the ceiling is
 > unchanged.
 >

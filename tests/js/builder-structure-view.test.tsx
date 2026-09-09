@@ -1277,12 +1277,16 @@ describe('undo and redo, where they act on the whole draft', () => {
   it('takes a preset back, from the tab the preset was applied on', async () => {
     await design();
 
-    await userEvent.click(screen.getByRole('button', { name: /Midnight/ }));
-
-    expect(screen.getByRole('button', { name: /Midnight/ })).toHaveAttribute(
-      'aria-pressed',
-      'true',
-    );
+    /*
+      **The picker is in the header row now**, over all three panes rather than
+      inside the inspector — a theme sets the design's tokens whatever is
+      selected, and inside the inspector it disappeared the moment a merchant
+      selected a headline. So it is opened before it is used, and that is the
+      only thing about this case that changed: it is still one history entry
+      and still undone from the tab it was applied on.
+    */
+    await userEvent.click(screen.getByRole('button', { name: /Custom look|Classic/ }));
+    await userEvent.click(await screen.findByRole('button', { name: /Midnight/ }));
 
     await userEvent.click(screen.getByRole('button', { name: 'Undo' }));
     await userEvent.click(screen.getByRole('button', { name: 'Save changes' }));

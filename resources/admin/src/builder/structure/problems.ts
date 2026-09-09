@@ -117,6 +117,42 @@ export const CHECKS = [
 export type CheckId = (typeof CHECKS)[number];
 
 /**
+ * What ENFORCES each check, named where the merchant can see it.
+ *
+ * ============================================================================
+ * A WARNING NOBODY CAN TRACE IS A WARNING PEOPLE LEARN TO DISMISS.
+ * ============================================================================
+ * The strip draws six chips and the failing one carries a sentence. What it
+ * could not say is *who says so* — and the six are not one kind of thing: two
+ * are refusals the server makes at the write, two are rules the vocabulary or
+ * the renderer imposes, and two are nothing but this file's own opinion about
+ * what will cost the merchant later.
+ *
+ * That difference is exactly what a merchant needs in order to decide whether
+ * to act. *The save will refuse this* and *nothing will ever mention this
+ * again* are the two ends of it, and a chip that looks identical for both
+ * teaches them to ignore both (ADR 0042 rule 2).
+ *
+ * **Per CHECK and not per problem**, which is the shape the plan asked for the
+ * other way round. A passing chip has a source too — *six checks pass* is only
+ * legible if a reader can see what was doing the checking — and a field on
+ * `Problem` could cite one only while something was wrong. It would also be the
+ * same string repeated by every producer of the same check.
+ *
+ * Not translated, and that is deliberate: these are file names and ADR
+ * numbers. A translator has nothing to do with `OptinController` and a
+ * localised class name is a class name nobody can grep for.
+ */
+export const CHECK_SOURCES: Readonly<Record<CheckId, string>> = {
+  converts: 'OptinController::refuseADesignThatCannotConvert()',
+  collects: 'OptinController::refuseADesignThatCapturesNothing()',
+  captures: 'render.ts — the step that submits IS the form',
+  countdown: 'ADR 0052',
+  words: 'SlotRoles::bind()',
+  readable: 'ADR 0038 — AA on small text',
+};
+
+/**
  * Everything wrong with this design, worst first.
  *
  * Ordered by what it costs: a design that cannot save at all, then one that

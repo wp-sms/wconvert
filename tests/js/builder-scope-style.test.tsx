@@ -348,6 +348,164 @@ describe('the Style half of the inspector', () => {
   });
 });
 
+/**
+ * ============================================================================
+ * THE WIDTH SWITCH USED TO MOVE THE PREVIEW AND CHANGE NOTHING ABOUT WHAT WAS
+ * EDITED.
+ * ============================================================================
+ * A box carries its tokens twice now (ADR 0064), and the same twenty-four
+ * controls edit either bag — so the switch that decides which width is on
+ * screen also decides which one they write to. That is what makes it a mode
+ * rather than a second panel: the merchant sets the narrow values while looking
+ * at the narrow render.
+ */
+describe('the narrow bag, through the width switch', () => {
+  /** Put the preview — and therefore the inspector — on the narrow width. */
+  async function narrow() {
+    await userEvent.click(
+      within(await screen.findByRole('complementary', { name: 'Preview' })).getByRole('button', {
+        name: 'Narrow',
+      }),
+    );
+  }
+
+  it('says which width it is setting, because the controls are identical', async () => {
+    await style(/Coloured box/);
+
+    expect(screen.queryByText(/setting the narrow look/)).toBeNull();
+
+    await narrow();
+
+    expect(screen.getByText(/setting the narrow look/)).toBeInTheDocument();
+  });
+
+  it('writes into the narrow bag and leaves the full-width one alone', async () => {
+    await style(/Coloured box/);
+    await narrow();
+
+    await userEvent.click(screen.getByRole('button', { name: /Choose a colour for Background/ }));
+    await userEvent.clear(screen.getByLabelText('Background value'));
+    await userEvent.type(screen.getByLabelText('Background value'), '#123456');
+    await userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+
+    const panel = (saved().tree.steps[0] as unknown as {
+      children: { tokens?: Record<string, string>; narrow?: Record<string, string> }[];
+    }).children[0];
+
+    expect(panel?.narrow?.bg).toBe('#123456');
+    // The fixture's own full-width value, untouched — which is the whole point
+    // of the second bag rather than a second set of controls.
+    expect(panel?.tokens?.bg).toBe('#fff4df');
+  });
+
+  /**
+   * **A value set on the box's own WIDE bag is still *set here* at narrow**,
+   * and the two sentences are what a reset button alone could not tell apart:
+   * it appears whenever a value is set at either width, so a merchant editing
+   * at narrow could not see which of the two they were looking at.
+   */
+  it('tells set-here and set-for-narrow apart', async () => {
+    builder.getOptin.mockResolvedValue(
+      optin(
+        {
+          steps: [
+            {
+              type: 'stack',
+              children: [
+                {
+                  type: 'panel',
+                  tokens: { bg: '#fff4df' },
+                  narrow: { pad: '1rem' },
+                  children: [{ type: 'button', role: 'cta_label', label: 'Go', action: 'submit' }],
+                },
+              ],
+            },
+            { type: 'stack', children: [{ type: 'text', role: 'success_body', text: 'Done' }] },
+          ],
+        } as unknown as TemplateTree,
+        { bg: '#ffffff' },
+      ),
+    );
+
+    await style(/Coloured box/);
+
+    expect(screen.getByText('Set on this box')).toBeInTheDocument();
+
+    await narrow();
+
+    // `pad` is the one the narrow bag names; `bg` is inherited from the box's
+    // own wide bag, which is a different sentence.
+    expect(screen.getByText('Set for narrow only')).toBeInTheDocument();
+    expect(screen.getByText('Set on this box')).toBeInTheDocument();
+  });
+});
+
+/**
+ * ============================================================================
+ * A HEX SURVIVES EVERY THEME THE MERCHANT TRIES, AND THAT IS THE PROBLEM.
+ * ============================================================================
+ * A theme moves the design's colours; a scoped bag that spelled one does not
+ * move with it — so the deeper a design is styled, the less a theme does
+ * (ADR 0063). A value that NAMES a colour token follows it.
+ */
+describe('a scoped colour that follows the palette', () => {
+  it('offers the conversion where the value is a literal the merchant set', async () => {
+    await style(/Coloured box/);
+
+    await userEvent.click(screen.getByRole('button', { name: /Choose a colour for Background/ }));
+    await userEvent.clear(screen.getByLabelText('Background value'));
+    await userEvent.type(screen.getByLabelText('Background value'), '#123456');
+    await userEvent.keyboard('{Escape}');
+
+    /*
+      Named for the token it will FOLLOW rather than for the one being set, in
+      the label stub's own words — `bg` follows `accent`, which the stub calls
+      *Button*. The identity is the one mapping that cannot be written:
+      `--wc-bg: var(--wc-bg)` is a cycle CSS discards.
+    */
+    await userEvent.click(screen.getByRole('button', { name: /→ Button/ }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+
+    const panel = (saved().tree.steps[0] as unknown as {
+      children: { tokens?: Record<string, string> }[];
+    }).children[0];
+
+    expect(panel?.tokens?.bg).toBe('accent');
+  });
+
+  /**
+   * **A control that changes nothing is the one thing ADR 0054 rule 3
+   * forbids.** A press on `→ Highlight` where the value already reads `accent`
+   * would rewrite it to itself.
+   */
+  it('stops offering it once the value already names a token', async () => {
+    builder.getOptin.mockResolvedValue(
+      optin(
+        {
+          steps: [
+            {
+              type: 'stack',
+              children: [
+                {
+                  type: 'panel',
+                  tokens: { bg: 'accent' },
+                  children: [{ type: 'button', role: 'cta_label', label: 'Go', action: 'submit' }],
+                },
+              ],
+            },
+            { type: 'stack', children: [{ type: 'text', role: 'success_body', text: 'Done' }] },
+          ],
+        } as unknown as TemplateTree,
+        { bg: '#ffffff', accent: '#263f2c' },
+      ),
+    );
+
+    await style(/Coloured box/);
+
+    expect(screen.queryByRole('button', { name: /→ / })).toBeNull();
+  });
+});
+
 describe('the checks strip', () => {
   /**
    * ==========================================================================
@@ -366,6 +524,81 @@ describe('the checks strip', () => {
     expect(within(strip).getAllByRole('listitem')).toHaveLength(6);
     expect(within(strip).getByText('Readable')).toBeInTheDocument();
     expect(within(strip).getByText('Counts something')).toBeInTheDocument();
+  });
+
+  /**
+   * ==========================================================================
+   * A WARNING NOBODY CAN TRACE IS A WARNING PEOPLE LEARN TO DISMISS.
+   * ==========================================================================
+   * The six are not one kind of thing: two are refusals the server makes at the
+   * write, two are rules the vocabulary or the renderer imposes, and two are
+   * nothing but this file's own opinion about what will cost the merchant
+   * later. *The save will refuse this* and *nothing will ever mention this
+   * again* are the two ends of that, and a chip that looks identical for both
+   * teaches a merchant to ignore both (ADR 0042 rule 2).
+   */
+  it('cites what enforces each one, passing or not', async () => {
+    render(<OptinBuilder id={ID} onClose={vi.fn()} />);
+
+    const strip = await screen.findByRole('list', { name: 'Checks on this design' });
+
+    expect(within(strip).getByText(/refuseADesignThatCannotConvert/)).toBeInTheDocument();
+    expect(within(strip).getByText('ADR 0052')).toBeInTheDocument();
+    // Every chip, not only the failing ones: *six checks pass* is legible only
+    // if a reader can see what was doing the checking.
+    expect(within(strip).getAllByRole('listitem')).toHaveLength(6);
+    expect(within(strip).getAllByText(/ADR|::|render\.ts/)).toHaveLength(6);
+  });
+});
+
+/**
+ * ============================================================================
+ * A RESTYLED BOX LOOKED EXACTLY LIKE AN UNTOUCHED ONE IN A LIST OF ROWS.
+ * ============================================================================
+ * A bag applies to a box and everything inside it, and nothing about the row
+ * said which boxes carried one — so after restyling a design box by box the
+ * only way to find the nine tokens set on the second panel was to select every
+ * panel in turn and read the reset buttons.
+ */
+describe('the tree’s override count', () => {
+  it('counts what a box sets, and says nothing for one that sets nothing', async () => {
+    builder.getOptin.mockResolvedValue(
+      optin(
+        {
+          steps: [
+            {
+              type: 'stack',
+              children: [
+                {
+                  type: 'panel',
+                  tokens: { bg: '#fff4df', pad: '2rem' },
+                  narrow: { pad: '1rem' },
+                  children: [{ type: 'button', role: 'cta_label', label: 'Go', action: 'submit' }],
+                },
+                { type: 'panel', children: [{ type: 'text', role: 'body', text: 'Plain' }] },
+              ],
+            },
+            { type: 'stack', children: [{ type: 'text', role: 'success_body', text: 'Done' }] },
+          ],
+        } as unknown as TemplateTree,
+        { bg: '#ffffff' },
+      ),
+    );
+
+    render(<OptinBuilder id={ID} onClose={vi.fn()} />);
+
+    const tree = await screen.findByRole('treegrid', { name: 'Blocks in this design' });
+    const boxes = within(tree).getAllByRole('row', { name: /Coloured box/ });
+
+    // Two at full width and one more at narrow, which is also the payload's
+    // shape.
+    expect(boxes[0]).toHaveTextContent('2+1');
+    expect(
+      within(boxes[0] as HTMLElement).getByTitle(/sets 2 thing/),
+      'the count carries its own sentence, because a bare number is a number',
+    ).toBeInTheDocument();
+    // And a box that sets nothing draws no chip at all, rather than a zero.
+    expect(within(boxes[1] as HTMLElement).queryByTitle(/sets \d/)).toBeNull();
   });
 });
 

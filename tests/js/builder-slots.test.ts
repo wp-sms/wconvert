@@ -143,9 +143,10 @@ describe('the address a block is known by', () => {
 
     expect(consent, 'the fixture has no consent slot to hide').toBeDefined();
 
-    const shown = { ...ENTRY, tree: withHidden(ENTRY.tree, (consent as { path: never }).path, false) };
-    const hidden = { ...ENTRY, tree: withHidden(ENTRY.tree, (consent as { path: never }).path, true) };
-    const at = keyOf((consent as { path: never }).path);
+    const where = (consent as NonNullable<typeof consent>).path;
+    const shown = { ...ENTRY, tree: withHidden(ENTRY.tree, where, false) };
+    const hidden = { ...ENTRY, tree: withHidden(ENTRY.tree, where, true) };
+    const at = keyOf(where);
 
     expect(inPreview(shown, 0)).toContain(at);
     expect(inPreview(hidden, 0)).not.toContain(at);

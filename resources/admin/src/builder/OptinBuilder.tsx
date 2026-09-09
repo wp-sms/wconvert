@@ -1,12 +1,4 @@
-import {
-  Activity,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type CSSProperties,
-} from 'react';
+import { Activity, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { flushSync } from 'react-dom';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { Blocks, Check, Monitor, Redo2, Smartphone, Undo2 } from 'lucide-react';
@@ -33,7 +25,7 @@ import { Fullscreen } from './Fullscreen';
 import { PayloadMeter } from './PayloadMeter';
 import { ScopeStyle } from './ScopeStyle';
 import { StructureView } from './StructureView';
-import { Tokens } from './Tokens';
+import { Themes, Tokens } from './Tokens';
 import { canRedo, canUndo, historyOf, redo, remember, undo, type History } from './structure/history';
 import { problemsIn } from './structure/problems';
 import { capturesTaken, firstBlockOf, nearestTo, samePath } from './structure/tree';
@@ -186,22 +178,40 @@ type TabId = 'design' | 'rules' | 'destinations';
 /**
  * Which width the preview is drawn at.
  *
- * Two, not a slider: the question a merchant has is "does my headline fit on a
- * phone", and it is answered by one narrow width rather than by dragging until
- * it breaks. 375px is the iPhone measure every mobile-popup guide is written
- * against.
+ * ============================================================================
+ * IT WAS `desktop` | `mobile`, AND IT MOVED THE PREVIEW AND NOTHING ELSE.
+ * ============================================================================
+ * Two names for two devices, when the thing being chosen is a WIDTH — which is
+ * the exact confusion ADR 0064 is careful about, because the narrow bag is
+ * measured against the design's own container: an `inline` Optin in a 280px
+ * sidebar is narrow on a desktop, and a switch labelled *Mobile* says the
+ * opposite.
+ *
+ * And it changed only what was DRAWN. A box carries its tokens twice now, so
+ * this switch also decides which of the two the inspector is editing — the
+ * merchant sets the narrow values while looking at the narrow render, which is
+ * what makes a mode legible rather than modal.
+ *
+ * Two, not a slider: the question is *does this hold together when it is
+ * narrow*, and it is answered by one narrow width rather than by dragging until
+ * it breaks.
  */
-type Device = 'desktop' | 'mobile';
+type Width = 'own' | 'narrow';
 
 /**
- * The phone the mobile preview stands in for.
+ * What the narrow preview is drawn at.
  *
- * 375px is the iPhone measure every mobile-popup guide is written against, and
- * it is a VIEWPORT rather than a container: a popup on a phone is as wide as
- * the phone lets it be, so this is what `--wc-width`'s `min(…, 100%)` resolves
- * against.
+ * **Inside `A_NARROW_DESIGN` rather than at a phone measure**, and that is the
+ * whole of what makes the switch honest: the narrow bag fires below the
+ * renderer's own breakpoint, so a stage set to 375px when the breakpoint is
+ * 384px would draw the full-width design under a control that says *Narrow* and
+ * edit values nothing on screen was using.
+ *
+ * 22rem (352px) is inside it with room for the stage's own padding, and it is
+ * narrower than every phone in circulation — which is the right direction to
+ * err, because a design that holds together here holds together on all of them.
  */
-const PHONE_WIDTH = '375px';
+const NARROW_WIDTH = '22rem';
 
 /**
  * What the design itself asks to be drawn at.
@@ -304,7 +314,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
    */
   const [copiedLook, setCopiedLook] = useState<TokenBag | null>(null);
   const [step, setStep] = useState(0);
-  const [device, setDevice] = useState<Device>('desktop');
+  const [width, setWidth] = useState<Width>('own');
   const [selection, setSelection] = useState<Selection | null>(null);
   /**
    * This Optin's numbers, in the three states a region that fetches has.
@@ -1075,7 +1085,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
    * On *Design* it is the middle of three panes and {@see StructureView} places
    * it; on the other two it is the column beside them. Both places render THIS
    * node, and only one at a time, which is what keeps ADR 0040's rule literal:
-   * there is exactly one render of the tree on the screen. Its step and device
+   * there is exactly one render of the tree on the screen. Its step and width
    * live in this component's state, so moving between the two positions loses
    * nothing.
    */
@@ -1083,7 +1093,8 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
     <PreviewColumn
       entry={entry}
       step={{ value: step, onChange: setStep }}
-      device={{ value: device, onChange: setDevice }}
+      width={{ value: width, onChange: setWidth }}
+      displayType={config === null ? EVERY_INSTALL_HAS : displayTypeOf(config, templates)}
       /*
         **The outline says "this is the block you are working on", so it goes
         when the merchant stops working on blocks.** Left up over the rules tab
@@ -1596,6 +1607,30 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
 
                           <div className="flex items-center gap-2">
                             {/*
+                              ================================================
+                              A LOOK IS ABOUT THE DESIGN, SO IT CANNOT LIVE
+                              INSIDE A PANEL THAT IS ABOUT ONE BOX.
+                              ================================================
+                              The ready-made looks were the first group inside
+                              {@see Tokens}, which the inspector draws only
+                              while nothing or a whole step is selected — so
+                              selecting a headline hid the theme picker, and a
+                              merchant restyling a box had to deselect to
+                              change the palette they were restyling against.
+                              A theme sets the DESIGN's tokens whatever is
+                              selected, so it belongs over all three panes.
+
+                              **Moved rather than repeated.** Two theme
+                              pickers is the same defect two controls for one
+                              token is (#71) — a merchant can watch them
+                              disagree.
+                            */}
+                            <Themes
+                              template={entry}
+                              onChange={(next: Template) => edit({ template: next })}
+                            />
+
+                            {/*
                               **The cost, where it is spent.** A scoped bag is
                               repeatable and nests, so a design restyled box by
                               box can grow without anything on screen saying so
@@ -1664,6 +1699,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
                               onChange={(next: Template) => edit({ template: next })}
                               copied={copiedLook}
                               onCopy={setCopiedLook}
+                              width={width === 'narrow' ? 'narrow' : 'tokens'}
                             />
                           )}
                           {adminSettings()?.dev === true && (
@@ -1746,7 +1782,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
 
           Remounting on a tab change costs nothing this screen does not already
           pay — the preview remounts on every keystroke, deliberately, because
-          the renderer reads nothing ambient — and `step` and `device` live
+          the renderer reads nothing ambient — and `step` and `width` live
           here, so nothing is lost across the move.
         */}
         {tab !== 'design' && previewPane}
@@ -1867,9 +1903,9 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
 /**
  * A value this column shows and the control that changes it, as one thing.
  *
- * The step and the device are two **controlled pairs**: a value the parent
+ * The step and the width are two **controlled pairs**: a value the parent
  * holds and the setter that moves it, meaningless apart. Spelled as four props
- * they read as four independent inputs, and a caller could hand over a device
+ * they read as four independent inputs, and a caller could hand over a width
  * with no way to change it — a toggle that does nothing, which the types would
  * have allowed. `value`/`onChange` rather than names of this file's own,
  * because that is what every controlled component in this tree already spells.
@@ -1891,19 +1927,30 @@ interface Controlled<T> {
 function PreviewColumn({
   entry,
   step,
-  device,
+  width,
+  displayType,
   selected,
   onSelect,
 }: {
   entry: TemplateEntry | null;
   step: Controlled<number>;
-  device: Controlled<Device>;
+  width: Controlled<Width>;
+  /**
+   * Which container this Optin is shown in, so the stage can draw it.
+   *
+   * A filter and never the primary axis (CONTEXT.md, Display Type) — it is the
+   * Optin's own, read the same way the gallery reads it, and there is no
+   * control for it here on purpose: a design authored as a popup falls apart as
+   * a bar, which is why the gallery filters by type rather than offering a
+   * switch that would need the design swapped with it.
+   */
+  displayType: string;
   selected: SlotKey | null;
   onSelect: (key: SlotKey) => void;
 }) {
   const steps = entry?.tree.steps.length ?? 0;
   const shown = Math.min(step.value, Math.max(steps - 1, 0));
-  const measure = device.value === 'mobile' ? PHONE_WIDTH : (entry?.tokens.width ?? OWN_WIDTH);
+  const measure = width.value === 'narrow' ? NARROW_WIDTH : (entry?.tokens.width ?? OWN_WIDTH);
 
   return (
     <aside className="wconvert-builder__preview" aria-label={__('Preview', 'wconvert')}>
@@ -1952,37 +1999,128 @@ function PreviewColumn({
             type="button"
             size="icon-sm"
             variant="ghost"
-            aria-pressed={device.value === 'desktop'}
-            onClick={() => device.onChange('desktop')}
+            aria-pressed={width.value === 'own'}
+            onClick={() => width.onChange('own')}
           >
             <Monitor aria-hidden="true" />
-            <span className="sr-only">{__('Desktop', 'wconvert')}</span>
+            {/*
+              **Not "Full width", which is the Fullscreen toggle's name** three
+              controls along this same row. Two controls with one accessible
+              name on one screen is a screen reader announcing the same button
+              twice, and `getByRole` finding the wrong one.
+            */}
+            <span className="sr-only">{__('The design’s own width', 'wconvert')}</span>
           </Button>
           <Button
             type="button"
             size="icon-sm"
             variant="ghost"
-            aria-pressed={device.value === 'mobile'}
-            onClick={() => device.onChange('mobile')}
+            aria-pressed={width.value === 'narrow'}
+            onClick={() => width.onChange('narrow')}
           >
             <Smartphone aria-hidden="true" />
-            <span className="sr-only">{__('Mobile', 'wconvert')}</span>
+            <span className="sr-only">{__('Narrow', 'wconvert')}</span>
           </Button>
         </div>
       </div>
 
       <div
         className="wconvert-builder__stage"
-        data-device={device.value}
+        data-width={width.value}
         style={{ '--wconvert-stage': measure } as CSSProperties}
       >
         {entry === null ? (
           <p className="m-0 text-muted-foreground">{__('Pick a design to see it here.', 'wconvert')}</p>
         ) : (
-          <Preview template={entry} step={shown} selected={selected} onSelect={onSelect} />
+          <MockPage displayType={displayType} backdrop={entry.tokens.backdrop}>
+            <Preview template={entry} step={shown} selected={selected} onSelect={onSelect} />
+          </MockPage>
         )}
       </div>
     </aside>
+  );
+}
+
+/**
+ * The merchant's page, as much of it as the preview needs to be honest.
+ *
+ * ============================================================================
+ * A BAR CENTRED IN A BOX IS NOT A BAR, AND A CORNER CARD WITH NO CORNER IS NOT
+ * A SLIDE-IN.
+ * ============================================================================
+ * The stage was a centred surface and {@see Preview} mounts `inline`
+ * unconditionally, which is right for a gallery card — a card is a picture —
+ * and wrong for the builder: two of the four [[Display Type]]s are ABOUT where
+ * they sit. A floating bar pinned to the block-end edge of a page and a
+ * slide-in tucked into its corner are the whole of what makes either one a
+ * different design from a popup, and neither read as anything at all floating
+ * in the middle of an empty pane.
+ *
+ * ============================================================================
+ * THE ADMIN DRAWS THE PAGE. THE RENDERER DRAWS THE DESIGN.
+ * ============================================================================
+ * The obvious alternative is to let `mount()` place it, and it is closed off in
+ * free: free's `mount.ts` knows `inline` and `popup`, and the two Pro
+ * containers live in `pro/resources/renderer/src/popover.ts` — so a preview
+ * that asked the renderer for a bar would either draw nothing on a free
+ * install or put Pro's container in free's admin bundle, which
+ * `bin/verify-source-contract.sh` exists to refuse.
+ *
+ * It is also the truer division. What Pro's container adds is the top layer,
+ * the anchoring and the motion; what a MERCHANT is judging here is the design
+ * against a page, and that is chrome. So the design is the real render inside a
+ * real shadow root, and the page around it is four CSS rules.
+ *
+ * **The ghost lines are deliberately not lorem ipsum.** They are three grey
+ * bars and a grey block: enough for *"this sits over a page"* and not enough to
+ * read, because anything readable competes with the design being judged and
+ * would need translating.
+ */
+function MockPage({
+  displayType,
+  backdrop,
+  children,
+}: {
+  displayType: string;
+  /**
+   * The design's own `backdrop`, which is the one thing about a popup that is
+   * not inside the shadow root.
+   *
+   * `DOCUMENT_CSS` puts it on `dialog::backdrop` for exactly that reason — a
+   * `::backdrop` pseudo cannot see the tokens on the first element inside the
+   * root. So the page reads the same token here rather than guessing, and a
+   * design with a green wash over the page is previewed with one.
+   */
+  backdrop?: string;
+  children: ReactNode;
+}) {
+  return (
+    <div
+      className="wconvert-site"
+      data-display-type={displayType}
+      style={
+        backdrop === undefined ? undefined : ({ '--wconvert-backdrop': backdrop } as CSSProperties)
+      }
+    >
+      <div className="wconvert-site__page">
+        {/*
+          **The ghosts are `aria-hidden`, the slot is not, and the slot is
+          BETWEEN them.** An `inline` Optin renders where it was embedded — in
+          the flow, with the page's own content above and below it — so a slot
+          that sat after the page could draw the other three and never that
+          one. The three overlays take themselves out of the flow from here,
+          which is exactly what they do on a real page.
+        */}
+        <span className="wconvert-site__ghost" data-ghost="head" aria-hidden="true" />
+        <span className="wconvert-site__ghost" aria-hidden="true" />
+        <span className="wconvert-site__ghost" aria-hidden="true" />
+
+        <div className="wconvert-site__slot">{children}</div>
+
+        <span className="wconvert-site__ghost" data-ghost="block" aria-hidden="true" />
+        <span className="wconvert-site__ghost" aria-hidden="true" />
+      </div>
+    </div>
   );
 }
 

@@ -146,4 +146,7 @@ that the merchant cannot move a box.
   (`min(var(--wc-width),100%)`), so inline-size containment changes nothing
   about what it draws.
 - The width switch in the builder stops being preview-only: it selects which
-  bag the inspector edits.
+  bag the inspector edits. See
+  [ADR 0065](0065-the-editor-is-the-scope-editor-now.md), which also moves this
+  breakpoint from 22.5rem to **24rem** — where a `split` stops being side by
+  side — so the two mechanisms cannot disagree about when a design is narrow.

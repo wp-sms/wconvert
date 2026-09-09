@@ -157,6 +157,24 @@ export interface Block {
    * cannot help, because the block is not in it.
    */
   readonly hidden: boolean;
+  /**
+   * How many tokens this box sets, at each of the two widths.
+   *
+   * ==========================================================================
+   * A RESTYLED BOX LOOKS EXACTLY LIKE AN UNTOUCHED ONE IN A LIST OF ROWS.
+   * ==========================================================================
+   * A bag applies to a box and everything inside it, and nothing about the row
+   * said which boxes carried one — so after restyling a design box by box the
+   * only way to find the nine tokens set on the second panel was to select
+   * every panel in turn and read the reset buttons. The tree lists what a
+   * design is MADE of; a scope is now part of that (ADR 0062, ADR 0064).
+   *
+   * Zero for a leaf, always: a leaf's `tokens` is dropped on the way in, so a
+   * count on one would be a number about a key the vocabulary does not keep.
+   */
+  readonly sets: number;
+  /** The same, for the narrow bag. Zero where the box carries none. */
+  readonly setsNarrow: number;
 }
 
 /**
@@ -209,6 +227,8 @@ function collect(
     // thing to the row and another to whatever counts.
     action: node.type === 'button' ? (typeof action === 'string' ? action : 'submit') : null,
     hidden: (node as { hidden?: boolean }).hidden === true,
+    sets: Object.keys((node as { tokens?: object }).tokens ?? {}).length,
+    setsNarrow: Object.keys((node as { narrow?: object }).narrow ?? {}).length,
     // Filled in by {@link numbered} once the whole tree is collected.
     at: 0,
     says: saysOf(node),

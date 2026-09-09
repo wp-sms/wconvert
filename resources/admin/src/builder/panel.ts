@@ -686,7 +686,28 @@ export interface Scope {
   readonly path: Path;
   readonly type: string;
   readonly tokens: Tokens;
+  /** The same bag again, for the narrow width (ADR 0064). */
+  readonly narrow: Tokens;
 }
+
+/**
+ * Which of a box's two bags is being read or written.
+ *
+ * ============================================================================
+ * IT IS THE SAME CONTROLS AT A SECOND WIDTH, AND THAT IS WHY IT IS A MODE.
+ * ============================================================================
+ * A box carries `tokens` and, since ADR 0064, `narrow`. Twenty-four more
+ * controls beside the twenty-four is a panel nobody can read; the same
+ * twenty-four with a switch above them is one panel and one question — *which
+ * width am I setting this for?*
+ *
+ * The switch is the preview's own width control, which is what makes the mode
+ * legible: the merchant is looking at the narrow render while they edit the
+ * narrow bag. Before this it moved the preview and changed nothing about what
+ * was edited, so the two halves of the same question sat on one screen
+ * pretending to be one.
+ */
+export type WidthBag = 'tokens' | 'narrow';
 
 export function scopeChainOf(tree: TemplateTree, path: Path): Scope[] {
   const chain: Scope[] = [];
@@ -696,12 +717,30 @@ export function scopeChainOf(tree: TemplateTree, path: Path): Scope[] {
     const node = nodeOf(tree, here);
 
     if (node !== null && LAYOUTS[node.type] !== undefined) {
-      chain.push({ path: here, type: node.type, tokens: node.tokens ?? {} });
+      chain.push({
+        path: here,
+        type: node.type,
+        tokens: node.tokens ?? {},
+        narrow: (node as { narrow?: Tokens }).narrow ?? {},
+      });
     }
   }
 
   return chain;
 }
+
+/**
+ * What one box says about a token at one width.
+ *
+ * At the design's own width that is its `tokens` and nothing else. At narrow it
+ * is `narrow` where the box names it there and `tokens` otherwise — the same
+ * merge the renderer mirrors (ADR 0064), so the panel answers what a visitor
+ * on a phone actually sees rather than what the narrow bag happens to spell.
+ */
+const heldBy = (scope: Scope, name: string, width: WidthBag): string | undefined =>
+  width === 'narrow' && scope.narrow[name] !== undefined && scope.narrow[name] !== ''
+    ? scope.narrow[name]
+    : scope.tokens[name];
 
 /**
  * The node one path names, or null.
@@ -737,7 +776,21 @@ function nodeOf(tree: TemplateTree, path: Path): (TemplateNode & { tokens?: Toke
  * the middle two because those are the ones a merchant cannot see.
  */
 export interface TokenSource {
-  readonly from: 'here' | 'scope' | 'design' | 'default';
+  /**
+   * Where the value came from.
+   *
+   * `here` is this block's own bag at the design's own width, `narrow` is its
+   * own bag at the narrow one, `scope` is the nearest box above it that names
+   * the token, `design` is the Optin's own token map, and `default` is what the
+   * manifest declares.
+   *
+   * **`narrow` and `here` are told apart on purpose**, and only one of them can
+   * be reached at a time: at the design's own width there is no narrow value to
+   * report, and at narrow a value inherited from the box's OWN wide bag is
+   * still *set here* — just not for this width, which is a different sentence
+   * and a different reset.
+   */
+  readonly from: 'here' | 'narrow' | 'scope' | 'design' | 'default';
   readonly value: string;
   /** The box it came from, where `from` is `scope`. */
   readonly scope?: Scope;
@@ -747,14 +800,20 @@ export function sourceOfToken(
   chain: readonly Scope[],
   tokens: Readonly<Record<string, string>>,
   name: string,
+  width: WidthBag = 'tokens',
 ): TokenSource {
   for (let at = chain.length - 1; at >= 0; at -= 1) {
-    const held = chain[at]?.tokens[name];
+    const scope = chain[at];
+    const held = scope === undefined ? undefined : heldBy(scope, name, width);
 
     if (held !== undefined && held !== '') {
-      return at === chain.length - 1
-        ? { from: 'here', value: held }
-        : { from: 'scope', value: held, scope: chain[at] };
+      if (at < chain.length - 1) {
+        return { from: 'scope', value: held, scope };
+      }
+
+      const narrow = width === 'narrow' && scope?.narrow[name] !== undefined && scope.narrow[name] !== '';
+
+      return { from: narrow ? 'narrow' : 'here', value: held };
     }
   }
 
@@ -786,8 +845,13 @@ export function sourceOfToken(
  *
  * An empty bag clears the key, exactly as {@see withScopeToken} does.
  */
-export function withScopeBag(tree: TemplateTree, path: Path, tokens: Tokens): TemplateTree {
-  return withValue(tree, path, 'tokens', Object.keys(tokens).length === 0 ? undefined : { ...tokens });
+export function withScopeBag(
+  tree: TemplateTree,
+  path: Path,
+  tokens: Tokens,
+  width: WidthBag = 'tokens',
+): TemplateTree {
+  return withValue(tree, path, width, Object.keys(tokens).length === 0 ? undefined : { ...tokens });
 }
 
 export function withScopeToken(
@@ -795,10 +859,12 @@ export function withScopeToken(
   path: Path,
   name: string,
   value: string,
+  width: WidthBag = 'tokens',
 ): TemplateTree {
-  const bag = withToken(nodeOf(tree, path)?.tokens ?? {}, name, value);
+  const node = nodeOf(tree, path) as { tokens?: Tokens; narrow?: Tokens } | null;
+  const bag = withToken((width === 'narrow' ? node?.narrow : node?.tokens) ?? {}, name, value);
 
-  return withValue(tree, path, 'tokens', Object.keys(bag).length === 0 ? undefined : bag);
+  return withValue(tree, path, width, Object.keys(bag).length === 0 ? undefined : bag);
 }
 
 /** The same design with one token set, or cleared back to the template's own. */

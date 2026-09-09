@@ -13,7 +13,11 @@ import {
   type Path,
   type Scope,
   type TokenSource,
+  type WidthBag,
 } from './panel';
+import { A_NARROW_DESIGN } from '@renderer/css';
+import { REFERABLE } from '@renderer/render';
+import { isColour } from './themes';
 import { Description } from '../shell/Description';
 import { nameOf, type TemplateLabels } from '../templates/api';
 import type { Template, Tokens } from '@renderer/types';
@@ -62,6 +66,7 @@ export function ScopeStyle({
   onChange,
   copied,
   onCopy,
+  width,
 }: {
   template: Template;
   labels: TemplateLabels;
@@ -86,6 +91,14 @@ export function ScopeStyle({
    */
   copied: Tokens | null;
   onCopy: (tokens: Tokens | null) => void;
+  /**
+   * Which of the box's two bags these controls edit.
+   *
+   * The preview's own width switch decides it, which is what makes the mode
+   * legible rather than modal: the merchant is looking at the narrow render
+   * while they set the narrow values (ADR 0064).
+   */
+  width: WidthBag;
 }) {
   const chain = path === null ? [] : scopeChainOf(template.tree, path);
   const here = chain.length > 0 && path !== null && chain[chain.length - 1]?.path.length === path.length
@@ -97,9 +110,10 @@ export function ScopeStyle({
   }
 
   const write = (name: string) => (value: string) =>
-    onChange({ ...template, tree: withScopeToken(template.tree, here.path, name, value) });
+    onChange({ ...template, tree: withScopeToken(template.tree, here.path, name, value, width) });
 
-  const source = (name: string): TokenSource => sourceOfToken(chain, template.tokens, name);
+  const source = (name: string): TokenSource =>
+    sourceOfToken(chain, template.tokens, name, width);
 
   return (
     <div className="wconvert-scope">
@@ -113,6 +127,30 @@ export function ScopeStyle({
           nameOf(labels.layouts, here.type),
         )}
       </Description>
+
+      {/*
+        ==================================================================
+        THE MODE IS SAID OUT LOUD, BECAUSE IT IS THE SAME TWENTY-FOUR
+        CONTROLS.
+        ==================================================================
+        The controls below are identical at both widths and write to different
+        places, which is exactly the state a screen has to name — a merchant
+        who set a colour at narrow and cannot find it at full width has met a
+        mode they were not told about (ADR 0042 rule 2). It also says what it
+        COSTS, because this is the one bag that doubles what a design stores.
+      */}
+      {width === 'narrow' && (
+        <p className="wconvert-scope__narrow">
+          {sprintf(
+            /* translators: %s: a CSS width, e.g. “24rem”. */
+            __(
+              'You are setting the narrow look — what a visitor sees below %s. Everything you leave alone keeps its full-width value, and every value you set here is stored twice.',
+              'wconvert',
+            ),
+            A_NARROW_DESIGN,
+          )}
+        </p>
+      )}
 
       {/*
         **Copy a look, and paste it onto the next box.** Three boxes tinted the
@@ -130,8 +168,8 @@ export function ScopeStyle({
           type="button"
           variant="ghost"
           size="sm"
-          disabled={Object.keys(here.tokens).length === 0}
-          onClick={() => onCopy(here.tokens)}
+          disabled={Object.keys(bagOf(here, width)).length === 0}
+          onClick={() => onCopy(bagOf(here, width))}
         >
           <ClipboardCopy aria-hidden="true" />
           {__('Copy this look', 'wconvert')}
@@ -145,7 +183,7 @@ export function ScopeStyle({
             onClick={() =>
               onChange({
                 ...template,
-                tree: withScopeBag(template.tree, here.path, copied),
+                tree: withScopeBag(template.tree, here.path, copied, width),
               })
             }
           >
@@ -159,7 +197,7 @@ export function ScopeStyle({
         )}
       </div>
 
-      <ScopeContrast chain={chain} template={template} labels={labels} />
+      <ScopeContrast chain={chain} template={template} labels={labels} width={width} />
 
       {groupsOf(TOKENS).map((group) => (
         <section key={group.id} className="wconvert-group" aria-label={groupName(group.id)}>
@@ -181,7 +219,11 @@ export function ScopeStyle({
                     the inside out, so this is the same answer the browser
                     reaches by inheriting the property.
                   */
-                  fallback={from.from === 'here' ? inherited(chain, template, token.name) : from.value}
+                  fallback={
+                    from.from === 'here' || from.from === 'narrow'
+                      ? inherited(chain, template, token.name, width)
+                      : from.value
+                  }
                   standard={token.fallback}
                   /*
                     Empty, and that is what makes the reset mean *clear*.
@@ -191,7 +233,7 @@ export function ScopeStyle({
                     and therefore into inheritance.
                   */
                   design=""
-                  value={here.tokens[token.name] ?? ''}
+                  value={bagOf(here, width)[token.name] ?? ''}
                   open={openToken === token.name}
                   onOpenChange={(open) => onOpenToken(open ? token.name : null)}
                   onChange={write(token.name)}
@@ -201,19 +243,62 @@ export function ScopeStyle({
                     label,
                   )}
                 />
-                <SourceNote from={from} labels={labels} onSelect={onSelect} />
+                <SourceNote
+                  from={from}
+                  token={token.name}
+                  labels={labels}
+                  onSelect={onSelect}
+                  onRefer={() => write(token.name)(follows(token.name) ?? '')}
+                />
               </div>
             );
           })}
         </section>
       ))}
+
+      <ScopeJson scope={here} width={width} />
     </div>
   );
 }
 
+/** Which of a box's two bags a width is looking at. */
+const bagOf = (scope: Scope, width: WidthBag): Tokens =>
+  width === 'narrow' ? scope.narrow : scope.tokens;
+
 /** What this token resolves to with this box's own value taken out of the way. */
-function inherited(chain: readonly Scope[], template: Template, name: string): string {
-  return sourceOfToken(chain.slice(0, -1), template.tokens, name).value;
+function inherited(
+  chain: readonly Scope[],
+  template: Template,
+  name: string,
+  width: WidthBag,
+): string {
+  return sourceOfToken(chain.slice(0, -1), template.tokens, name, width).value;
+}
+
+/**
+ * Which colour token a name would follow, or null where it names none.
+ *
+ * ============================================================================
+ * A VALUE THAT NAMES A TOKEN IS HOW A SCOPE SURVIVES A THEME (ADR 0063).
+ * ============================================================================
+ * The obvious mapping is the identity — `bg` follows `bg` — and it is the one
+ * thing that cannot be written: `--wc-bg: var(--wc-bg)` is a cycle CSS
+ * discards, and the renderer writes such a value verbatim for exactly that
+ * reason. So a token follows the one a palette would pair it with, which is
+ * also what a merchant means by the press: *make this box the accent colour.*
+ */
+function follows(name: string): string | null {
+  const pairs: Readonly<Record<string, string>> = {
+    bg: 'accent',
+    fg: 'accent-fg',
+    'input-bg': 'bg',
+    'accent-fg': 'bg',
+    accent: 'fg',
+    border: 'muted',
+    muted: 'fg',
+  };
+
+  return pairs[name] ?? null;
 }
 
 /**
@@ -229,28 +314,80 @@ function inherited(chain: readonly Scope[], template: Template, name: string): s
  */
 function SourceNote({
   from,
+  token,
   labels,
   onSelect,
+  onRefer,
 }: {
   from: TokenSource;
+  token: string;
   labels: TemplateLabels;
   onSelect: (path: Path) => void;
+  /** Replace a literal colour with the name of the token it should follow. */
+  onRefer: () => void;
 }) {
-  if (from.from !== 'scope' || from.scope === undefined) {
+  const scope = from.scope;
+
+  /*
+    **A value that names a token follows the theme; a hex does not** (ADR 0063).
+    Offered only where it would change something: the value is a literal colour
+    the merchant set on THIS box, and the token has one it can sensibly follow.
+    A press on `→ accent` where the value already reads `accent` would be a
+    control that does nothing, which is the one thing ADR 0054 rule 3 forbids.
+  */
+  const literal =
+    (from.from === 'here' || from.from === 'narrow')
+    && isColour(from.value)
+    && !REFERABLE.includes(from.value)
+    && REFERABLE.includes(token)
+    && follows(token) !== null;
+
+  if (from.from === 'design' || from.from === 'default') {
     return null;
   }
 
-  const scope = from.scope;
-
   return (
     <p className="wconvert-scope__from">
-      <button type="button" className="wconvert-linkish" onClick={() => onSelect(scope.path)}>
-        {sprintf(
-          /* translators: %s: what the enclosing block is called, e.g. “Coloured box”. */
-          __('From %s', 'wconvert'),
-          nameOf(labels.layouts, scope.type),
-        )}
-      </button>
+      {from.from === 'scope' && scope !== undefined ? (
+        <button type="button" className="wconvert-linkish" onClick={() => onSelect(scope.path)}>
+          {sprintf(
+            /* translators: %s: what the enclosing block is called, e.g. “Coloured box”. */
+            __('From %s', 'wconvert'),
+            nameOf(labels.layouts, scope.type),
+          )}
+        </button>
+      ) : (
+        /*
+          **Two sentences that a reset button alone could not tell apart.** The
+          reset appears whenever a value is set on this box, at either width —
+          so *set here* and *set for narrow only* looked identical, and a
+          merchant editing at narrow could not see which of the two they were
+          looking at.
+        */
+        <span data-set={from.from}>
+          {from.from === 'narrow'
+            ? __('Set for narrow only', 'wconvert')
+            : __('Set on this box', 'wconvert')}
+        </span>
+      )}
+
+      {literal && (
+        <button
+          type="button"
+          className="wconvert-linkish"
+          onClick={onRefer}
+          title={__(
+            'Follow the palette instead of this exact colour, so a ready-made look moves it.',
+            'wconvert',
+          )}
+        >
+          {sprintf(
+            /* translators: %s: a colour setting's name, e.g. “Highlight”. */
+            __('→ %s', 'wconvert'),
+            nameOf(labels.tokens, follows(token) ?? ''),
+          )}
+        </button>
+      )}
     </p>
   );
 }
@@ -325,12 +462,14 @@ function ScopeContrast({
   chain,
   template,
   labels,
+  width,
 }: {
   chain: readonly Scope[];
   template: Template;
   labels: TemplateLabels;
+  width: WidthBag;
 }) {
-  const value = (name: string) => sourceOfToken(chain, template.tokens, name).value;
+  const value = (name: string) => sourceOfToken(chain, template.tokens, name, width).value;
 
   const wrong = READABLE_PAIRS.flatMap(([fg, bg]) => {
     const ratio = contrastOf(value(fg), value(bg));
@@ -356,5 +495,48 @@ function ScopeContrast({
         </li>
       ))}
     </ul>
+  );
+}
+
+/**
+ * What is actually STORED for this box, as the design carries it.
+ *
+ * ============================================================================
+ * THE ONE PLACE A SCOPE IS LEGIBLE AS DATA, AND IT IS NOT A DEBUG PANEL.
+ * ============================================================================
+ * Every control above answers *what does this token resolve to here*, which is
+ * the question a merchant has. The question an AUTHOR has is the other one:
+ * what did I set, and what am I paying for it — because a scope is repeatable,
+ * it nests, and twenty-four controls showing inherited values look exactly like
+ * twenty-four controls showing set ones until you read the reset buttons.
+ *
+ * So this prints the keys and nothing else: the params the box declares and its
+ * two bags. Not the children — a box's own record is what it is about, and a
+ * subtree would be the whole design again at every level.
+ *
+ * **It is on for everybody rather than behind `dev`**, unlike
+ * {@see DevExport}. That one hands over the whole tree and takes one back,
+ * which is an editing surface; this is a readout of one node, and the merchant
+ * it is for is the one who set nine tokens on a box and wants to know which
+ * nine. `<details>`, closed, so it costs a line until it is asked for.
+ */
+function ScopeJson({ scope, width }: { scope: Scope; width: WidthBag }) {
+  const stored = {
+    ...(Object.keys(scope.tokens).length === 0 ? {} : { tokens: scope.tokens }),
+    ...(Object.keys(scope.narrow).length === 0 ? {} : { narrow: scope.narrow }),
+  };
+  const count = Object.keys(width === 'narrow' ? scope.narrow : scope.tokens).length;
+
+  return (
+    <details className="wconvert-scope__json">
+      <summary>
+        {sprintf(
+          /* translators: %d: how many settings this block carries at the width being edited. */
+          __('What is stored here (%d)', 'wconvert'),
+          count,
+        )}
+      </summary>
+      <pre>{JSON.stringify(stored, null, 2)}</pre>
+    </details>
   );
 }
