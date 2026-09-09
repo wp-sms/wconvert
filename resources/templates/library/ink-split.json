@@ -1,0 +1,110 @@
+{
+  "id": "ink-split",
+  "name": "Ink split",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#ffffff",
+    "fg": "#0f172a",
+    "muted": "#64748b",
+    "accent": "#0f172a",
+    "accent-fg": "#ffffff",
+    "border": "#e2e8f0",
+    "input-bg": "#ffffff",
+    "heading-size": "1.5rem",
+    "heading-weight": "700",
+    "tracking": "-0.01em",
+    "radius": "0.75rem",
+    "pad": "0",
+    "gap": "0",
+    "width": "38rem",
+    "align": "start",
+    "shadow": "0 28px 70px rgba(15, 23, 42, 0.35)",
+    "backdrop": "rgba(2, 6, 23, 0.6)"
+  },
+  "tree": {
+    "steps": [
+      {
+        "type": "split",
+        "ratio": 0.35,
+        "start": [
+          {
+            "type": "panel",
+            "min": "16rem",
+            "tokens": {
+              "bg": "#0f172a",
+              "fg": "#f8fafc",
+              "muted": "#cbd5e1",
+              "bg-image": "linear-gradient(150deg, #1e293b 0%, #0f172a 55%, #020617 100%)",
+              "overlay": "rgba(2, 6, 23, 0.25)",
+              "pad": "2rem",
+              "gap": "0.5rem",
+              "radius": "0"
+            },
+            "children": [
+              { "type": "eyebrow", "id": "n1", "role": "eyebrow", "text": "Members only" },
+              { "type": "heading", "id": "n2", "role": "headline", "size": "2xl", "text": "First pick on Fridays" },
+              {
+                "type": "text",
+                "id": "n3",
+                "role": "body",
+                "text": "New stock goes out to the list a day before it goes on the shelf."
+              }
+            ]
+          }
+        ],
+        "end": [
+          {
+            "type": "panel",
+            "tokens": { "bg": "#ffffff", "pad": "2rem", "gap": "0.75rem", "radius": "0" },
+            "children": [
+              {
+                "type": "field",
+                "id": "n4",
+                "name": "email",
+                "label": "Email address",
+                "placeholder": "you@example.com",
+                "required": true
+              },
+              { "type": "button", "id": "n5", "role": "cta_label", "label": "Get first pick", "action": "submit" },
+              {
+                "type": "consent",
+                "id": "n6",
+                "role": "consent_text",
+                "hidden": true,
+                "text": "Email me offers and news. See our %s.",
+                "link": { "label": "Privacy Policy" }
+              },
+              {
+                "type": "text",
+                "id": "n7",
+                "role": "fine_print",
+                "size": "s",
+                "text": "One email a week. Unsubscribe at any time."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "stack",
+        "children": [
+          {
+            "type": "panel",
+            "tokens": { "pad": "2.5rem 2rem", "gap": "0.5rem", "align": "center" },
+            "children": [
+              { "type": "icon", "id": "n8", "name": "check" },
+              { "type": "heading", "id": "n9", "role": "success_headline", "size": "xl", "text": "You are in" },
+              {
+                "type": "text",
+                "id": "n10",
+                "role": "success_body",
+                "text": "Friday’s list lands in your inbox before anyone else sees it."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

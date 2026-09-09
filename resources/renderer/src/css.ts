@@ -101,6 +101,44 @@ export const SHADOW_CSS = [
    */
   `.wc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(8rem,1fr));gap:var(--wc-gap,.75rem)}`,
 
+  /*
+   * ==========================================================================
+   * THE ONE LAYOUT THAT PAINTS. EVERY OTHER ONE ONLY ARRANGES.
+   * ==========================================================================
+   * `stack`, `row`, `grid` and `split` place their children and draw nothing —
+   * the design's ground is `.wc-root`'s and there is exactly one of it. A
+   * `panel` is a stack that paints the tokens IN SCOPE, which is what makes a
+   * scoped bag visible: a cream box beside a dark one is a `panel` with
+   * `{"bg":"#fff4df"}` next to a `panel` with `{"bg":"#0f172a"}`, and neither
+   * needs a rule of its own (ADR 0062).
+   *
+   * It reads the same properties `.wc-root` reads, including the two-layer
+   * background in the same order — `overlay` first so it paints ON TOP of
+   * `bg-image`, which is the only reason light text over a photograph is
+   * legible. That is what makes a photo pane a `panel` rather than a second
+   * member: `bg-image` + `overlay` + `min`, in a `split` pane.
+   *
+   * **`render.ts` resets the picture on every panel** before the bag is
+   * applied, so a panel inherits the design's COLOURS and not its photograph.
+   * Without that, one `bg-image` on the design would be painted again, cover
+   * and centred, inside every panel in it.
+   */
+  `.wc-panel{display:flex;flex-direction:column;gap:var(--wc-gap,.75rem);min-block-size:var(--wc-min,0);padding:var(--wc-pad,1.5rem);border-radius:var(--wc-radius,.5rem);color:var(--wc-fg,#111827);background:var(--wc-bg,#fff);background-image:linear-gradient(var(--wc-overlay,#0000),var(--wc-overlay,#0000)),var(--wc-bg-image,none);background-size:cover;background-position:center}`,
+  /*
+   * Two edge treatments, and the widths are different because the jobs are.
+   * `block-start` is a GRAPHIC — the accent rule over a result panel, which is
+   * the single most copied device in this genre — so it is thick enough to read
+   * as one. `all` is an OUTLINE, so it is a hairline; a card outlined at half a
+   * rem is a box with a frame around it.
+   *
+   * Logical on both axes, so an `fa_IR` site and a vertical writing mode each
+   * get the edge they actually have (ADR 0009). `none` is the default and adds
+   * no attribute, so a design that never heard of this param renders
+   * byte-identically to one that spells it.
+   */
+  `.wc-panel[data-edges=block-start]{border-block-start:.5rem solid var(--wc-border,#e5e7eb)}`,
+  `.wc-panel[data-edges=all]{border:1px solid var(--wc-border,#e5e7eb)}`,
+
   // `flex-basis` plus `wrap` is what stacks the two panes on a narrow screen,
   // with no media query and no container query to keep in step.
   `.wc-split{display:flex;flex-wrap:wrap;gap:var(--wc-gap,.75rem);align-items:center}`,
@@ -108,7 +146,16 @@ export const SHADOW_CSS = [
   `.wc-pane:first-child{flex-grow:var(--wc-ratio,.5)}`,
   `.wc-pane:last-child{flex-grow:calc(1 - var(--wc-ratio,.5))}`,
 
-  `.wc-heading{margin:0;font-size:var(--wc-heading-size,1.5rem);font-weight:var(--wc-heading-weight,700);letter-spacing:var(--wc-tracking,normal);line-height:1.2}`,
+  /*
+   * **A display face is the second thing a reference-class design decides**,
+   * after its palette — eight of the sixteen designs in the reference set set
+   * one, and until now a design had exactly one face for everything. So
+   * `heading-font` falls back to `font` rather than to a stack of its own: a
+   * design that sets only `font` is unchanged to the byte, and one that sets
+   * both gets a display face over body text without saying the body stack
+   * twice.
+   */
+  `.wc-heading{margin:0;font-family:var(--wc-heading-font,var(--wc-font,system-ui,sans-serif));font-size:var(--wc-heading-size,1.5rem);font-weight:var(--wc-heading-weight,700);letter-spacing:var(--wc-tracking,normal);line-height:1.2}`,
   /*
    * **A sub-heading is smaller, or `level` is a control that does nothing.**
    * `render.ts` draws an `h3` for `level: 2` and an `h2` otherwise, and both
@@ -128,6 +175,49 @@ export const SHADOW_CSS = [
   `[data-role=fine_print]{font-size:.8125em;color:var(--wc-muted,#6b7280)}`,
 
   /*
+   * ==========================================================================
+   * THE TYPE SCALE — SIX STEPS, AND THE MOST RECOGNISABLE MOVE IN THE GENRE.
+   * ==========================================================================
+   * *"15%"* at 90px beside its own sentence at 24px is what a discount design
+   * looks like, and until now a design had ONE heading size and ONE text size.
+   * The token still decides the scale; a step MULTIPLIES it, so a design that
+   * sets `heading-size` moves all six together and the merchant's one lever
+   * still works.
+   *
+   * **Ten rules and not five**, because the base differs: a heading scales
+   * `heading-size` and a paragraph scales `text-size`. The obvious compression —
+   * one `--wc-scale` the two base rules read — is exactly what the parity test
+   * forbids, since a node param is not a token and the stylesheet may read no
+   * `--wc-*` name that is not one (see `sized()` in `render.ts`).
+   *
+   * `m` has no rule at all: it is the base, and it is the default, so a design
+   * that spells it renders byte-identically to one that does not.
+   *
+   * **Specificity is doing real work here.** `h3.wc-heading` is (0,1,1) and
+   * these are (0,2,0), so an explicit step beats the rank-derived sub-heading
+   * size rather than composing with it — which is the honest reading of a
+   * merchant who set a size: they said how big, not how much smaller than the
+   * other thing.
+   */
+  `.wc-heading.wc-3xl{font-size:calc(var(--wc-heading-size,1.5rem)*2.5)}`,
+  `.wc-heading.wc-2xl{font-size:calc(var(--wc-heading-size,1.5rem)*2)}`,
+  `.wc-heading.wc-xl{font-size:calc(var(--wc-heading-size,1.5rem)*1.5)}`,
+  `.wc-heading.wc-s{font-size:calc(var(--wc-heading-size,1.5rem)*.75)}`,
+  `.wc-heading.wc-xs{font-size:calc(var(--wc-heading-size,1.5rem)*.625)}`,
+  `.wc-text.wc-3xl{font-size:calc(var(--wc-text-size,1rem)*2.5)}`,
+  `.wc-text.wc-2xl{font-size:calc(var(--wc-text-size,1rem)*2)}`,
+  `.wc-text.wc-xl{font-size:calc(var(--wc-text-size,1rem)*1.5)}`,
+  `.wc-text.wc-s{font-size:calc(var(--wc-text-size,1rem)*.75)}`,
+  `.wc-text.wc-xs{font-size:calc(var(--wc-text-size,1rem)*.625)}`,
+  /*
+   * A display number is a number, and at 2.5× the base a heading's line box is
+   * mostly air above and below it. `1.2` is right for a two-line headline and
+   * wrong for *"15%"* on its own; the two big steps get a tighter one so the
+   * thing sits on its own baseline rather than floating in a band.
+   */
+  `.wc-3xl,.wc-2xl{line-height:1.05}`,
+
+  /*
    * The eyebrow and the badge are the same short string wearing two jobs, and
    * the typography is the whole of what distinguishes them: an eyebrow is a
    * quiet LABEL above something, a badge is a loud thing stuck ON it. Neither
@@ -142,7 +232,7 @@ export const SHADOW_CSS = [
   `.wc-badge{align-self:start;font-size:.75em;font-weight:600;line-height:1.4;padding-block:.125rem;padding-inline:.5rem;border-radius:calc(var(--wc-radius,.5rem)/2);background:var(--wc-accent,#2563eb);color:var(--wc-accent-fg,#fff)}`,
   /*
    * ==========================================================================
-   * THE CORNER FLASH — THE ONE PLACEMENT 22 GLOBAL TOKENS CANNOT REACH.
+   * THE CORNER FLASH — THE ONE PLACEMENT NO TOKEN REACHES, AT ANY SCOPE.
    * ==========================================================================
    * `.wc-root` is already `position: relative`, so this needs no new
    * containing block. It is pinned by `--wc-pad` rather than by a number of
@@ -243,7 +333,15 @@ export const SHADOW_CSS = [
   `.wc-field{display:flex;flex-direction:column;gap:.25rem;text-align:start}`,
   `.wc-row>.wc-field{flex:1 1 12rem}`,
   `.wc-label{font-size:.875em;color:var(--wc-muted,#6b7280)}`,
-  `.wc-input{inline-size:100%;font:inherit;color:inherit;background:var(--wc-bg,#fff);border:1px solid var(--wc-border,#e5e7eb);border-radius:var(--wc-radius,.5rem);padding-block:.625rem;padding-inline:.75rem}`,
+  /*
+   * **A field on a dark panel needs a ground of its own.** The input took the
+   * design's `bg`, which was right while there was one surface and is wrong the
+   * moment a `panel` paints a second: a white form on a navy panel had a navy
+   * input with white text in it, and the one control a visitor MUST find looked
+   * like the panel it sits on. `input-bg` falls back to `bg`, so every design
+   * shipped before this renders identically.
+   */
+  `.wc-input{inline-size:100%;font:inherit;color:inherit;background:var(--wc-input-bg,var(--wc-bg,#fff));border:1px solid var(--wc-border,#e5e7eb);border-radius:var(--wc-radius,.5rem);padding-block:.625rem;padding-inline:.75rem}`,
 
   `.wc-button{display:inline-block;font:inherit;font-weight:600;text-align:center;text-decoration:none;cursor:pointer;border:0;border-radius:var(--wc-radius,.5rem);background:var(--wc-accent,#2563eb);color:var(--wc-accent-fg,#fff);padding-block:.625rem;padding-inline:1.25rem;transition:opacity var(--wc-motion,200ms) ease}`,
   /*

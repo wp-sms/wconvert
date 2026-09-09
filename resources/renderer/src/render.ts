@@ -50,15 +50,37 @@ export function render(tree: TemplateTree, tokens: Tokens, step = 0): HTMLElemen
 
   root.className = 'wc-root';
 
-  for (const [name, value] of Object.entries(tokens)) {
-    root.style.setProperty(TOKEN_PREFIX + name, value);
-  }
+  scope(root, tokens);
 
   if (node !== undefined) {
     appendNode(root, node);
   }
 
   return root;
+}
+
+/**
+ * Write a token bag onto one element, as the custom properties it names.
+ *
+ * ============================================================================
+ * THE SAME THREE LINES AT TWO SCOPES, WHICH IS WHY THERE IS A FUNCTION.
+ * ============================================================================
+ * The design's own tokens land on `.wc-root`; a layout's bag lands on that
+ * layout's element. Custom properties inherit, so the second is the first
+ * re-declared further in — a panel with `--wc-bg` set paints everything inside
+ * it and nothing outside, at no runtime cost beyond the `setProperty` calls
+ * (ADR 0062).
+ *
+ * **Nothing here checks the names.** The 22 are closed and
+ * `TemplateVocabulary` drops anything outside them on the way in, at both
+ * scopes, through one private `tokens()`. This module is handed a bag that has
+ * already been through it — the same bargain the whole renderer takes with the
+ * tree it draws.
+ */
+function scope(element: HTMLElement, tokens: Tokens | undefined): void {
+  for (const [name, value] of Object.entries(tokens ?? {})) {
+    element.style.setProperty(TOKEN_PREFIX + name, value);
+  }
 }
 
 /** Does this subtree hold the converting act that is a submission? */
@@ -125,13 +147,14 @@ function elementFor(node: TemplateNode): HTMLElement | null {
     case 'stack':
     case 'row':
     case 'grid':
+    case 'panel':
       return layout(node);
     case 'split':
       return split(node as SplitNode);
     case 'heading':
       return heading(node as HeadingNode);
     case 'text':
-      return sentence('p', 'wc-text', node as TextNode);
+      return sentence('p', sized('wc-text', (node as TextNode).size), node as TextNode);
     case 'eyebrow':
       return words('p', 'wc-eyebrow', (node as EyebrowNode).text);
     case 'badge':
@@ -159,10 +182,54 @@ function elementFor(node: TemplateNode): HTMLElement | null {
   }
 }
 
-function layout(node: TemplateNode & { children?: readonly TemplateNode[] }): HTMLElement {
+function layout(
+  node: TemplateNode & {
+    children?: readonly TemplateNode[];
+    tokens?: Tokens;
+    edges?: string;
+    min?: string | number;
+  },
+): HTMLElement {
   const element = document.createElement('div');
 
   element.className = `wc-${node.type}`;
+
+  if (node.type === 'panel') {
+    /*
+     * ========================================================================
+     * A PANEL INHERITS THE DESIGN'S COLOURS AND NOT ITS PHOTOGRAPH.
+     * ========================================================================
+     * Every other token is wanted further in: a panel with no bag should read
+     * as the design it is inside. `bg-image` is the exception, and it is not a
+     * taste call — `.wc-panel` paints the same two background layers
+     * `.wc-root` does, so a design with one picture would paint it AGAIN,
+     * cover and centred, inside every panel in it. Reset before the bag rather
+     * than after, so a photo pane's own `bg-image` still wins.
+     *
+     * `overlay` goes with it because an overlay is a wash over that picture; a
+     * panel that wants one over its own ground says so in its bag.
+     */
+    element.style.setProperty(TOKEN_PREFIX + 'bg-image', 'none');
+    element.style.setProperty(TOKEN_PREFIX + 'overlay', '#0000');
+
+    // A modifier ATTRIBUTE and not a custom property, for the reason
+    // `badge.place` is a modifier class: the parity test asserts the
+    // stylesheet reads no `--wc-*` name outside the tokens and the declared
+    // layout params, and an edge treatment is one of three states rather than
+    // a value on a scale. `none` writes nothing, so absent and default are the
+    // same markup.
+    if (node.edges !== undefined && node.edges !== 'none') {
+      element.dataset.edges = node.edges;
+    }
+
+    // `min` IS on a scale, so it is a custom property — the same shape
+    // `split.ratio` has, and declared as a layout param for the same reason.
+    if (node.min !== undefined) {
+      element.style.setProperty(TOKEN_PREFIX + 'min', String(node.min));
+    }
+  }
+
+  scope(element, node.tokens);
 
   for (const child of node.children ?? []) {
     appendNode(element, child);
@@ -183,6 +250,8 @@ function split(node: SplitNode): HTMLElement {
   const element = document.createElement('div');
 
   element.className = 'wc-split';
+
+  scope(element, node.tokens);
 
   if (typeof node.ratio === 'number') {
     element.style.setProperty(TOKEN_PREFIX + 'ratio', String(node.ratio));
@@ -404,10 +473,30 @@ function wrap(tag: string, className: string, child: Node): HTMLElement {
   return element;
 }
 
+/**
+ * A step on the type scale, as a modifier class.
+ *
+ * ============================================================================
+ * A CLASS AND NOT A CUSTOM PROPERTY, AND THAT IS FORCED RATHER THAN STYLISTIC.
+ * ============================================================================
+ * `renderer-manifest-parity` asserts the stylesheet reads no `--wc-*` name
+ * outside the declared tokens and the declared LAYOUT params — node params are
+ * excluded — so a `--wc-size`, or a `--wc-scale` under any name, would fail the
+ * build. The same rule `badge.place` and `image.shape` are already modifier
+ * classes for.
+ *
+ * **`m` adds nothing**, so a design that never heard of this param renders
+ * byte-identically to one that spells the default. That equality is what the
+ * absent-versus-declared case checks.
+ */
+function sized(className: string, size: string | undefined): string {
+  return size === undefined || size === 'm' ? className : `${className} wc-${size}`;
+}
+
 function heading(node: HeadingNode): HTMLElement {
   const element = document.createElement(node.level === 2 ? 'h3' : 'h2');
 
-  element.className = 'wc-heading';
+  element.className = sized('wc-heading', node.size);
   element.textContent = node.text ?? '';
 
   return element;

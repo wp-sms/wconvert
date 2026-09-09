@@ -28,9 +28,14 @@ import { hintIn, hintSaid } from './destinations';
 import { Preview } from './Preview';
 import { DisplayRules, type DisplayRulesValue } from './rules/DisplayRules';
 import { DevExport } from './DevExport';
+import { CheckStrip } from './CheckStrip';
+import { Fullscreen } from './Fullscreen';
+import { PayloadMeter } from './PayloadMeter';
+import { ScopeStyle } from './ScopeStyle';
 import { StructureView } from './StructureView';
 import { Tokens } from './Tokens';
 import { canRedo, canUndo, historyOf, redo, remember, undo, type History } from './structure/history';
+import { problemsIn } from './structure/problems';
 import { capturesTaken, firstBlockOf, nearestTo, samePath } from './structure/tree';
 import { convertingActOf } from './structure/guards';
 import type { ConvertingAct } from './structure/catalogue';
@@ -61,7 +66,7 @@ import { numbersByOptin, readDashboard, type OptinNumbers } from '../stats/api';
 import { formatCount, formatRate } from '../stats/format';
 import { readDestinations, type DestinationsPayload } from '../destinations/api';
 import { adminSettings } from '../settings';
-import type { Template } from '@renderer/types';
+import type { Template, Tokens as TokenBag } from '@renderer/types';
 
 /**
  * The builder: pick a design, adjust it, and set the rules that decide who
@@ -162,7 +167,21 @@ type Config = Record<string, unknown>;
  * The look — presets, the theme copy, the fifteen tokens — moved to **Design**,
  * which is what the word means and which until now only picked a template.
  */
-type TabId = 'design' | 'content' | 'rules' | 'destinations';
+/**
+ * ============================================================================
+ * THREE, AND THE ONE THAT WENT IS *Design* RATHER THAN *Content*.
+ * ============================================================================
+ * There were four: Design (choose one, and its tokens), Content (the block tree
+ * and its inspector), Rules and Destinations. Since ADR 0062 a token has a
+ * SCOPE — the design's own, or one box's — and "which box" is a selection,
+ * which is the question the inspector already answers. So the token controls
+ * moved into it as a second half, choosing a design became a row above the
+ * panes, and the tab that held both had nothing left in it.
+ *
+ * The name *Design* survives on the tab that does the designing, which is where
+ * a merchant was already looking for it.
+ */
+type TabId = 'design' | 'rules' | 'destinations';
 
 /**
  * Which width the preview is drawn at.
@@ -287,6 +306,20 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
    * does not work.
    */
   const [openToken, setOpenToken] = useState<string | null>(null);
+  /*
+   * A box's look, copied off one block and waiting to be pasted onto another.
+   *
+   * ==========================================================================
+   * IT IS THE SCREEN'S BECAUSE THE ACT SPANS TWO SELECTIONS.
+   * ==========================================================================
+   * Copy on one box, select another, paste. The inspector is rebuilt between
+   * those two presses, so it cannot be the thing holding it — the same reason
+   * `openToken` lives here. It is deliberately NOT the system clipboard: a
+   * token bag is not text a merchant would paste anywhere else, and reading the
+   * real one means a permission prompt for an act that never leaves this
+   * screen.
+   */
+  const [copiedLook, setCopiedLook] = useState<TokenBag | null>(null);
   const [step, setStep] = useState(0);
   const [device, setDevice] = useState<Device>('desktop');
   const [selection, setSelection] = useState<Selection | null>(null);
@@ -849,7 +882,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
   const chooseFromPreview = useCallback((key: SlotKey) => {
     // One editing surface now, so there is no longer a tab this must NOT yank
     // a merchant away from: clicking a block asks to edit that block.
-    setTab('content');
+    setTab('design');
     /*
      * **The key arrives; the path is looked up.** The preview names slots and
      * only slots (ADR 0040), so it cannot hand over an address — which is
@@ -967,7 +1000,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
    * if following it lands a selection on a list nobody is looking at.
    */
   const goTo = (path: Path) => {
-    setTab('content');
+    setTab('design');
     chooseFromTree(keyAt(template, path), path);
     setFocusRow({ path });
   };
@@ -1061,6 +1094,40 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
   if (config === null || vocabulary === null || gallery === null) {
     return <BuilderSkeleton onClose={onClose} />;
   }
+
+  /*
+   * ==========================================================================
+   * ONE PREVIEW, BUILT ONCE, PLACED IN ONE OF TWO POSITIONS.
+   * ==========================================================================
+   * On *Design* it is the middle of three panes and {@see StructureView} places
+   * it; on the other two it is the column beside them. Both places render THIS
+   * node, and only one at a time, which is what keeps ADR 0040's rule literal:
+   * there is exactly one render of the tree on the screen. Its step and device
+   * live in this component's state, so moving between the two positions loses
+   * nothing.
+   */
+  const previewPane = (
+    <PreviewColumn
+      entry={entry}
+      step={{ value: step, onChange: setStep }}
+      device={{ value: device, onChange: setDevice }}
+      /*
+        **The outline says "this is the block you are working on", so it goes
+        when the merchant stops working on blocks.** Left up over the rules tab
+        it is a highlight with nothing on screen explaining it — the affordance
+        reading as decoration, which is the one thing ADR 0037 asks this admin
+        not to do.
+
+        The SELECTION is not cleared with it, which is the change the merge made
+        necessary. It used to be, because the outline was all it drove; it now
+        also decides what the inspector is showing, and a merchant returning
+        from the rules to an editor with no block open would meet an empty panel
+        for a reason nothing on screen explains.
+      */
+      selected={tab === 'design' ? (selection?.key ?? null) : null}
+      onSelect={chooseFromPreview}
+    />
+  );
 
   return (
     <div className="flex flex-col gap-5">
@@ -1373,7 +1440,15 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
 
       </PageAction>
 
-      <div className="wconvert-builder">
+      {/*
+        **`data-tab` is the shell's own arrangement, said once in the DOM.**
+        *Design* is three panes with the preview in the middle of them; the
+        other two are an editor with the preview in a column beside it. That is
+        one grid with two column templates rather than two grids, and the
+        attribute is what lets the stylesheet tell them apart without a class
+        per tab.
+      */}
+      <div className="wconvert-builder" data-tab={tab}>
         <div className="wconvert-builder__tabs">
           {/*
             **The space under the tab strip is spelled ONCE, here, and `mb-4` on
@@ -1429,9 +1504,15 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
               setTab(value as TabId);
             }}
           >
-            <TabsList>
+            {/*
+              **Named, because there are now two tablists on this screen.** The
+              inspector's *Content · Style* is a second one, nested inside this
+              tab's own panel — legal, and indistinguishable to a screen reader
+              walking tabs unless each says what it switches. A merchant hearing
+              *"tab, Content"* twice on one screen has been told nothing.
+            */}
+            <TabsList aria-label={__('What you are editing', 'wconvert')}>
               <TabsTrigger value="design">{__('Design', 'wconvert')}</TabsTrigger>
-              <TabsTrigger value="content">{__('Content', 'wconvert')}</TabsTrigger>
               <TabsTrigger value="rules">{__('Display rules', 'wconvert')}</TabsTrigger>
               <TabsTrigger value="destinations">{__('Destinations', 'wconvert')}</TabsTrigger>
             </TabsList>
@@ -1450,190 +1531,179 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
 
             {/*
               ================================================================
-              CONTENT AND DESIGN STAY MOUNTED, AND STOP RUNNING WHILE HIDDEN.
+              DESIGN STAYS MOUNTED, AND STOPS RUNNING WHILE HIDDEN.
               ================================================================
-              `forceMount` is what keeps them; `<Activity mode="hidden">` is
-              what makes keeping them affordable and, more importantly, SAFE.
+              `forceMount` is what keeps it; `<Activity mode="hidden">` is what
+              makes keeping it affordable and, more importantly, SAFE.
 
               Affordable: React skips rendering a hidden Activity's children at
               normal priority, so the tab a merchant is not looking at is not
               re-rendered on every keystroke in the one they are.
 
               Safe: an Activity's effects are torn down while it is hidden, and
-              this screen has effects that move FOCUS — the tree puts it back on
-              a row after a redraw. A merely `hidden` tab would take the caret
+              this tab has effects that move FOCUS — the tree puts it back on a
+              row after a redraw. A merely `hidden` tab would take the caret
               somewhere nobody can see.
 
-              **Both of them, and Design is the addition.** Content, because
-              rebuilding the tree's scroll position, its expanded rows and its
-              caret on every switch would make one screen feel like several.
-              Design, because it now holds a `<details>` disclosure and fifteen
-              controls, and a merchant who opened *Every setting* to change two
-              colours should not find it closed again on the way back from the
-              preview. The other two hold nothing a re-mount loses.
+              **One tab rather than two now**, and the reasons the other one had
+              came with it: the tree's scroll position, its expanded rows, its
+              caret, and the disclosure state of the token controls that used to
+              be a tab of their own. The other two hold nothing a re-mount loses.
             */}
             <TabsContent value="design" forceMount>
               <Activity mode={tab === 'design' ? 'visible' : 'hidden'}>
                 <Region label={__('The design', 'wconvert')}>
-                  {/*
-                    **No `.wconvert-editor` and no `TabNote`, and both removals
-                    are the same rule.**
-
-                    `.wconvert-editor` supplies a PROSE rhythm — 0.75rem above
-                    and below every `<p>` and heading — to the three editors that
-                    still render WordPress's controls. This tab stopped being one
-                    of those when it was rebuilt against the component
-                    vocabulary, and keeping the class meant those margins landed
-                    on children of a flex column that also had `gap-4`. Flex gaps
-                    do not collapse with margins, so a 16px rhythm rendered as 40
-                    in some places and 28 in others: nothing in the panel was the
-                    distance it was written to be. One container, one rhythm.
-
-                    *"Saves straight away, and keeps your words"* was a sentence
-                    about a mechanism, permanently above a gallery, answering a
-                    question nobody had asked yet — and a merchant who reads it
-                    before their first click learns nothing they can act on. The
-                    gallery teaches it in one press.
-                  */}
-                  <RegionBody className="flex flex-col gap-4">
-                    {/*
-                      ============================================================
-                      THE TAB KEEPS THE LOOK. CHOOSING A DESIGN IS ITS OWN SURFACE.
-                      ============================================================
-                      **A region holds exactly one concern** (ADR 0039), and this
-                      one held two: *choose a design* and *adjust the look*. At
-                      three cards that was invisible; at forty the gallery swamps
-                      the tokens the tab is named for, and the merchant who came
-                      to change one colour scrolls past the whole library to
-                      reach it.
-
-                      So the gallery moved behind one button, and what is left is
-                      the name of the design in use beside the way to change it —
-                      which is also the only thing this row has to say. There is
-                      no sentence above it: *"Saves straight away, and keeps your
-                      words"* was deleted for exactly this reason, and the
-                      picker's own header now says the part that is sharp
-                      (ADR 0042 rule 2).
-                    */}
-                    <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-                      <span className="min-w-0 text-foreground">
-                        {chosenName(templateId, templates)}
-                      </span>
-                      <Button ref={browse} variant="outline" onClick={() => setBrowsing(true)}>
-                        {__('Browse designs', 'wconvert')}
-                      </Button>
-                    </div>
-
-                    {/*
-                      **The look, where the word Design already promised it.**
-                      It was the second half of a tab called *Content*, under a
-                      heading reading "How it looks" — the one question Content
-                      is not about — while the tab named after choosing a design
-                      offered no way to change how the chosen one looked.
-                    */}
-                    {entry !== null && (
-                      <>
-                        <Tokens
-                          template={entry}
-                          labels={gallery.labels}
-                          openToken={openToken}
-                          onOpenToken={setOpenToken}
-                          /*
-                            **The library entry's own tokens**, which is the
-                            only thing that can answer "what have I actually
-                            changed?" — an Optin's map is a snapshot of the
-                            design's, so measuring against the manifest would
-                            call every token the design set an override.
-
-                            Empty where this install no longer ships the entry,
-                            which is the same stance `MerchantsOwn` takes for
-                            the same comparison: without something to compare
-                            against, "the merchant's" and "the design's" are
-                            indistinguishable and guessing costs more.
-                          */
-                          design={
-                            templateId === undefined ? {} : (trees.get(templateId)?.tokens ?? {})
-                          }
-                          onChange={(next) => edit({ template: next })}
-                          onError={report}
-                        />
-                        {adminSettings()?.dev === true && (
-                          <DevExport entry={entry} onChange={(next) => edit({ template: next })} />
-                        )}
-                      </>
-                    )}
-                  </RegionBody>
-                </Region>
-              </Activity>
-            </TabsContent>
-
-            <TabsContent value="content" forceMount>
-              <Activity mode={tab === 'content' ? 'visible' : 'hidden'}>
-                <Region label={__('What it says', 'wconvert')}>
                   {entry === null ? (
                     /*
-                      **{@see EmptyState} with the door in it**, which the
-                      child of this very branch already does:
-                      {@see StructureView} draws one for the same class of
-                      state — a design with nothing in it — one level down.
-                      This was a muted sentence with no way out, on a tab a
-                      merchant reaches before choosing a design.
-
-                      The action is the tab change rather than a link, because
-                      the design is chosen one tab over on this same screen.
+                      **{@see EmptyState} with the door in it**, and the door is
+                      now the picker rather than another tab: there is no tab
+                      left to send the merchant to, which is the whole of what
+                      the merge changed here.
                     */
                     <RegionBody>
                       <EmptyState
                         icon={Blocks}
-                        title={__('Nothing to write yet', 'wconvert')}
+                        title={__('Nothing to edit yet', 'wconvert')}
                         action={
-                          <Button variant="outline" onClick={() => setTab('design')}>
+                          <Button ref={browse} variant="outline" onClick={() => setBrowsing(true)}>
                             {__('Pick a design', 'wconvert')}
                           </Button>
                         }
                       >
                         {__(
-                          'The words on this tab belong to a design. Choose one and they appear here.',
+                          'Everything on this tab belongs to a design. Choose one and its blocks appear here.',
                           'wconvert',
                         )}
                       </EmptyState>
                     </RegionBody>
                   ) : (
-                    <>
-                      {/*
-                        **The verdict is not here any more, and it is not
-                        gone.** It was a popover in a `DesignToolbar` on this
-                        tab and on Design, on the argument that its scope is the
-                        design. That is the smaller scope: *"nothing on this
-                        design counts as a conversion"* answers **is this Optin
-                        ready**, which is what {@see ReadinessPanel} above the
-                        tab strip asks — so it is readable from all four tabs
-                        now, read out rather than behind a press, and it still
-                        opens the block it names. `problemsIn` is untouched.
-                      */}
-                      <StructureView
-                        template={entry}
-                        labels={gallery.labels}
-                        act={act}
-                        selected={selection?.path ?? null}
-                        onSelect={chooseFromTree}
-                        onChange={(next, coalesce) => edit({ template: next }, coalesce)}
-                        focus={focusRow}
-                        endsAt={displayRules.schedule.ends_at}
-                        onSetEndDate={goToSchedule}
-                      />
-                    </>
+                    <StructureView
+                      template={entry}
+                      labels={gallery.labels}
+                      act={act}
+                      selected={selection?.path ?? null}
+                      onSelect={chooseFromTree}
+                      onChange={(next, coalesce) => edit({ template: next }, coalesce)}
+                      focus={focusRow}
+                      endsAt={displayRules.schedule.ends_at}
+                      onSetEndDate={goToSchedule}
+                      /*
+                        ====================================================
+                        THE ROW ABOVE THE PANES, AND IT IS ABOUT NONE OF THEM.
+                        ====================================================
+                        A region holds exactly one concern (ADR 0039) and the
+                        old Design tab held two: *choose a design* and *adjust
+                        the look*. The look is the inspector's second half now;
+                        what is left is the name of the design in use beside the
+                        way to change it, which is one line and belongs over all
+                        three panes rather than in any of them.
+                      */
+                      header={
+                        <div className="wconvert-structure__head">
+                          <span className="min-w-0 text-foreground">
+                            {chosenName(templateId, templates)}
+                          </span>
+
+                          {/*
+                            **What was checked, beside the design being
+                            changed.** The verdict above the tabs says what is
+                            WRONG; this says what was looked at, which is the
+                            thing a merchant restyling a box cannot otherwise
+                            tell from a screen that has gone quiet. Same
+                            problems, same words, same route to the block.
+                          */}
+                          <CheckStrip
+                            problems={problemsIn(
+                              entry,
+                              entryOfGoal?.grows_a_list === true,
+                              displayRules.schedule.ends_at,
+                            )}
+                            onGoTo={goTo}
+                          />
+
+                          <div className="flex items-center gap-2">
+                            {/*
+                              **The cost, where it is spent.** A scoped bag is
+                              repeatable and nests, so a design restyled box by
+                              box can grow without anything on screen saying so
+                              (ADR 0062).
+                            */}
+                            <PayloadMeter template={entry} />
+                            <Fullscreen />
+                            <Button ref={browse} variant="outline" onClick={() => setBrowsing(true)}>
+                              {__('Browse designs', 'wconvert')}
+                            </Button>
+                          </div>
+                        </div>
+                      }
+                      /*
+                        **The one preview on the screen, handed to the middle
+                        pane.** It is rendered here so there is exactly one of
+                        it, and only while this tab is the visible one — the
+                        other two draw it in the column beside them, and two
+                        mounted previews would be two renders of one tree
+                        (ADR 0040).
+                      */
+                      preview={tab === 'design' ? previewPane : null}
+                      /*
+                        **The Design tab, dissolved into the inspector.**
+                        Nothing selected, or a whole step selected, is the
+                        DESIGN's own tokens — the outermost scope, which is what
+                        that tab always edited. Anything else is that box's own
+                        bag (ADR 0062).
+                      */
+                      look={
+                        <>
+                          {selection === null || selection.path.length <= 1 ? (
+                            <Tokens
+                              template={entry}
+                              labels={gallery.labels}
+                              openToken={openToken}
+                              onOpenToken={setOpenToken}
+                              /*
+                                **The library entry's own tokens**, which is the
+                                only thing that can answer "what have I actually
+                                changed?" — an Optin's map is a snapshot of the
+                                design's, so measuring against the manifest
+                                would call every token the design set an
+                                override.
+
+                                Empty where this install no longer ships the
+                                entry, which is the same stance `MerchantsOwn`
+                                takes for the same comparison.
+                              */
+                              design={
+                                templateId === undefined
+                                  ? {}
+                                  : (trees.get(templateId)?.tokens ?? {})
+                              }
+                              onChange={(next) => edit({ template: next })}
+                              onError={report}
+                            />
+                          ) : (
+                            <ScopeStyle
+                              template={entry}
+                              labels={gallery.labels}
+                              path={selection.path}
+                              openToken={openToken}
+                              onOpenToken={setOpenToken}
+                              onSelect={(path: Path) => chooseFromTree(keyAt(entry, path), path)}
+                              onChange={(next: Template) => edit({ template: next })}
+                              copied={copiedLook}
+                              onCopy={setCopiedLook}
+                            />
+                          )}
+                          {adminSettings()?.dev === true && (
+                            <DevExport entry={entry} onChange={(next) => edit({ template: next })} />
+                          )}
+                        </>
+                      }
+                    />
                   )}
                 </Region>
               </Activity>
             </TabsContent>
 
-            {/*
-              **One tab, three labelled sections.** Triggers, Conditions and
-              page targeting are three answers to one question, and the two
-              editors underneath are unchanged — the merge is a tab, not a
-              model.
-            */}
             <TabsContent value="rules">
               <Region label={__('Display rules', 'wconvert')}>
                 <RegionBody className="wconvert-editor">
@@ -1693,26 +1763,20 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
           </Tabs>
         </div>
 
-        <PreviewColumn
-          entry={entry}
-          step={{ value: step, onChange: setStep }}
-          device={{ value: device, onChange: setDevice }}
-          /*
-            **The outline says "this is the block you are working on", so it
-            goes when the merchant stops working on blocks.** Left up over the
-            rules tab it is a highlight with nothing on screen explaining it —
-            the affordance reading as decoration, which is the one thing
-            ADR 0037 asks this admin not to do.
+        {/*
+          **The one preview, drawn beside the tab that is not the editor.**
+          On *Design* it is the middle pane and is handed to {@see StructureView}
+          instead; here it is the column it has always been. The `tab !==` is
+          what keeps there being exactly one of it: two mounted previews are two
+          renders of one tree, disagreeing the moment either gets a keystroke
+          ahead (ADR 0040).
 
-            The SELECTION is not cleared with it, which is the change the merge
-            made necessary. It used to be, because the outline was all it drove;
-            it now also decides what the inspector is showing, and a merchant
-            returning from the rules to an editor with no block open would meet
-            an empty panel for a reason nothing on screen explains.
-          */
-          selected={tab === 'content' ? (selection?.key ?? null) : null}
-          onSelect={chooseFromPreview}
-        />
+          Remounting on a tab change costs nothing this screen does not already
+          pay — the preview remounts on every keystroke, deliberately, because
+          the renderer reads nothing ambient — and `step` and `device` live
+          here, so nothing is lost across the move.
+        */}
+        {tab !== 'design' && previewPane}
       </div>
 
       {/*

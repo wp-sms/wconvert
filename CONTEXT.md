@@ -631,6 +631,17 @@ come from the [[Playbook]] that prefilled the Optin, or from the user. Whatever
 placeholder text a Template carries exists so the gallery has something to show, and
 is never copied into an Optin.
 
+> **"How it is styled" has a scope.** The design sets its tokens for the
+> whole of itself, and **any layout node may re-declare the same names for what
+> is inside it** by carrying a `tokens` bag of its own — which is how one design
+> holds a cream panel beside a dark one, or gives the form a different ground
+> from the headline. The names are the closed 22 at both scopes and the
+> validation is one function, so a scoped bag is still configuration with
+> nothing to sanitise. What no bag can do is **move a box**: a merchant may
+> change anything about a box and not where the boxes are, and a design that
+> wants the picture on the other side is a different design. See
+> [ADR 0062](docs/adr/0062-a-token-bag-is-scoped-to-the-box-that-carries-it.md).
+
 > **That boundary is what keeps the library small.** Copy is what makes an Optin
 > serve a particular [[Goal]], so with the copy held elsewhere a Template is
 > **goal-agnostic** — the library is a set of designs per [[Display Type]], not a
@@ -691,6 +702,15 @@ that captures nothing are both refused elsewhere. It is also how consent capture
 is off by default and one click from on ([ADR 0032](docs/adr/0032-consent-capture-is-first-class-in-the-template.md))
 — every capture design ships the `consent` node hidden.
 
+> **Corrected again, and the tab it names is gone.** There is no *Content* tab
+> and no *Design* tab: there is **Design**, and it is three panes — the block
+> tree, the live render, and an inspector whose two halves are *what it says*
+> and *how it looks*. The token controls moved into the second half because a
+> token has a SCOPE now and *which box* is a selection
+> ([ADR 0062](docs/adr/0062-a-token-bag-is-scoped-to-the-box-that-carries-it.md)).
+> Everything the note below says about the vocabulary being the ceiling is
+> unchanged.
+>
 > **Corrected.** This paragraph opened *"The settings panel edits tokens, slot
 > content and slot visibility and never* arrangement*"*, and both halves of that
 > stopped being true at the Content/Structure merge: `SettingsPanel` no longer
@@ -839,13 +859,23 @@ and ~~unique across the Template's whole tree~~ **claimable by more than one nod
 > switching Template. See
 > [ADR 0051](docs/adr/0051-a-slot-role-repeats-and-binds-in-order.md).
 
-> **One Role exists that a [[Playbook]] can never fill.** `code_value` holds the
-> static shared discount code, and a coupon code names a row on one particular
-> site — so it arrives the way the cart URL and the privacy link do: the design
-> ships a placeholder and the merchant types theirs into the settings panel. It
-> is a Role rather than plain text so that the code survives switching Template
-> like every other slot. See
+> **~~One Role exists~~ Two Roles exist that a [[Playbook]] can never fill.**
+> `code_value` holds the static shared discount code, and a coupon code names a
+> row on one particular site — so it arrives the way the cart URL and the privacy
+> link do: the design ships a placeholder and the merchant types theirs into the
+> editor. It is a Role rather than plain text so that the code survives switching
+> Template like every other slot. See
 > [ADR 0061](docs/adr/0061-the-vocabulary-widens-by-what-the-library-cannot-draw.md).
+>
+> **`wordmark` is the second, and it arrived for the same reason.** It holds the
+> shop's or publication's own name, above the offer — the masthead thirteen of
+> the sixteen reference designs carry. Unbound it is a role-less leaf, so the
+> merchant's own name is thrown away at the next design switch; bound as
+> `headline` a Playbook writes the campaign headline into the logo. Being
+> `authored` is also what keeps it out of the editor's *first unclaimed Role*
+> preference: a default is a guess, and a shop's name is the one thing nobody can
+> guess. See
+> [ADR 0062](docs/adr/0062-a-token-bag-is-scoped-to-the-box-that-carries-it.md).
 
 Slot Roles are the seam between the two halves of a designed Optin: a Template
 declares which Roles it offers, a [[Playbook]] supplies copy against them, and

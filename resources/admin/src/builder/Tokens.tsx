@@ -4,7 +4,7 @@ import { HexColorInput, HexColorPicker, RgbaStringColorPicker } from 'react-colo
 import { Button } from '../components/ui/button';
 import { ChevronDown, RotateCcw } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
-import { CHOICES, TOKENS, groupsOf, withToken, type TokenGroupId } from './panel';
+import { CHOICES, groupsOf, resolvedToken, withToken, type TokenGroupId } from './panel';
 import { getThemeTokens, type SiteFont } from './api';
 import { MediaControl } from './SlotFields';
 import {
@@ -19,7 +19,7 @@ import {
   urlIn,
   type Axis,
 } from './themes';
-import { AA_NORMAL, contrastOf } from './contrast';
+import { AA_NORMAL, READABLE_PAIRS, contrastOf, pairKey } from './contrast';
 import { nameOf, type TemplateLabels } from '../templates/api';
 import type { Template, Tokens as TokenMap } from '@renderer/types';
 
@@ -281,7 +281,7 @@ export function Tokens({
  * about lands under `other` and gets a text box, which is ADR 0010 kept rather
  * than a fifth cross-cutting list to maintain.
  */
-function groupName(id: TokenGroupId): string {
+export function groupName(id: TokenGroupId): string {
   switch (id) {
     case 'colour':
       return __('Colour', 'wconvert');
@@ -393,7 +393,7 @@ function Palette({
  * the browser, so the merchant still sees the colour without a control offering
  * to destroy it.
  */
-function TokenField({
+export function TokenField({
   token,
   label,
   labels,
@@ -404,6 +404,7 @@ function TokenField({
   open,
   onOpenChange,
   onChange,
+  resetSaid,
 }: {
   /** The token's own name — the key its choices and its value labels are under. */
   token: string;
@@ -427,12 +428,25 @@ function TokenField({
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onChange: (value: string) => void;
+  /**
+   * What the reset control SAYS, where "back to the design's own" is not what
+   * pressing it does.
+   *
+   * At a scope, clearing a token means *back to whatever this box sits inside*
+   * — which may be a box two levels out rather than the design — so
+   * {@see ScopeStyle} passes its own sentence. Optional, because the design
+   * panel's own sentence is right for the design panel and a required prop
+   * would be one more thing for every call site to get right.
+   */
+  resetSaid?: string;
 }) {
   const field = useId();
   // Empty means "whatever the design says", so every control below opens on the
   // design's own value while the STORED value stays empty.
   const shown = value === '' ? fallback : value;
-  const reset = <Reset label={label} value={value} design={design} onChange={onChange} />;
+  const reset = (
+    <Reset label={label} said={resetSaid} value={value} design={design} onChange={onChange} />
+  );
   const offered = CHOICES[token];
 
   if (isColour(shown)) {
@@ -1195,11 +1209,14 @@ function familyIn(stack: string): string {
  */
 function Reset({
   label,
+  said,
   value,
   design,
   onChange,
 }: {
   label: string;
+  /** {@see TokenField.resetSaid} — the design panel's own sentence where absent. */
+  said?: string;
   value: string;
   /** What the design declared, or empty where it declared nothing. */
   design: string;
@@ -1226,11 +1243,12 @@ function Reset({
     >
       <RotateCcw aria-hidden="true" />
       <span className="sr-only">
-        {sprintf(
-          /* translators: %s: what the setting is for, e.g. “Background”. */
-          __('Put %s back to the design’s own', 'wconvert'),
-          label,
-        )}
+        {said ??
+          sprintf(
+            /* translators: %s: what the setting is for, e.g. “Background”. */
+            __('Put %s back to the design’s own', 'wconvert'),
+            label,
+          )}
       </span>
     </Button>
   );
@@ -1247,9 +1265,9 @@ function Reset({
  * is the first control in this product that lets someone fail AA for somebody
  * else — in one click, silently, discovered later from a customer.
  *
- * **Three pairs, and `backdrop` is deliberately not one of them.** It sits
+ * **Four pairs, and `backdrop` is deliberately not one of them.** It sits
  * behind the popup rather than behind text, so a ratio for it would be a number
- * about nothing. The three that are here are every place the renderer paints
+ * about nothing. The four that are here are every place the renderer paints
  * words on a surface.
  *
  * **It sits WITH the colours now.** It was above a closed disclosure that
@@ -1257,13 +1275,15 @@ function Reset({
  * colours at all — a verdict on something the merchant could not see.
  */
 function Contrast({ template, labels }: { template: Template; labels: TemplateLabels }) {
-  // The Optin's own value, else what the manifest declares — which is exactly
-  // what the renderer resolves, so the ratio is the one a visitor gets rather
-  // than the one an empty control implies.
-  const value = (name: string) =>
-    template.tokens[name] ?? TOKENS.find((token) => token.name === name)?.fallback ?? '';
+  // The Optin's own value, else the token this one chains to, else what the
+  // manifest declares — which is exactly what the renderer resolves, so the
+  // ratio is the one a visitor gets rather than the one an empty control
+  // implies ({@see resolvedToken}).
+  const value = (name: string) => resolvedToken(template.tokens, name);
 
-  const read = PAIRS.map(([fg, bg, sample]) => {
+  const read = READABLE_PAIRS.map(([fg, bg]) => {
+    const sample = SAMPLE[pairKey(fg, bg)] ?? 'Aa';
+
     const ratio = contrastOf(value(fg), value(bg));
 
     return {
@@ -1372,11 +1392,16 @@ function Contrast({ template, labels }: { template: Template; labels: TemplateLa
  * without knowing what 4.5 means. `Go` for the button, because that is what a
  * button says.
  */
-const PAIRS: readonly (readonly [string, string, string])[] = [
-  ['fg', 'bg', 'Aa'],
-  ['muted', 'bg', 'Aa'],
-  ['accent-fg', 'accent', 'Go'],
-];
+/**
+ * The lettered sample per pair, keyed by the pair {@see READABLE_PAIRS}
+ * declares. The pairs are shared; the letters are this readout's.
+ */
+const SAMPLE: Readonly<Record<string, string>> = {
+  'fg/bg': 'Aa',
+  'muted/bg': 'Aa',
+  'accent-fg/accent': 'Go',
+  'fg/input-bg': 'Aa',
+};
 
 /**
  * A colour, chosen rather than typed — with the hex still typeable.

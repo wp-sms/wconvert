@@ -194,6 +194,165 @@ describe('every default the manifest declares', () => {
 });
 
 /**
+ * ============================================================================
+ * A TOKEN BAG IS A PARAM, SO IT IS ASSERTED THE WAY EVERY OTHER PARAM IS.
+ * ============================================================================
+ * The manifest says which layouts carry one; this asks the renderer to draw
+ * each and looks at where the properties landed. **On that element and nowhere
+ * else** is the whole claim — inheritance does the rest, and a bag that leaked
+ * onto `.wc-root` would be the global set with extra steps (ADR 0062).
+ */
+describe('every layout the manifest gives a token bag', () => {
+  const scoped = Object.entries(manifest.layouts).filter(([, entry]) =>
+    (entry.params as readonly string[]).includes('tokens'),
+  );
+
+  it('is every layout there is, so the cases below cover the vocabulary', () => {
+    expect(scoped).toHaveLength(Object.keys(manifest.layouts).length);
+  });
+
+  it.each(scoped)('writes it as custom properties on its own element: %s', (type) => {
+    const root = render(
+      { steps: [{ type, tokens: { bg: '#fff4df', pad: '2rem' }, children: [], start: [], end: [] }] } as TemplateTree,
+      { bg: '#ffffff' },
+    );
+    const element = root.firstElementChild as HTMLElement;
+
+    expect(element.style.getPropertyValue('--wc-bg')).toBe('#fff4df');
+    expect(element.style.getPropertyValue('--wc-pad')).toBe('2rem');
+    // The design's own value is still on the root, untouched. That is what
+    // makes the bag an OVERRIDE for a subtree rather than an edit to the design.
+    expect(root.style.getPropertyValue('--wc-bg')).toBe('#ffffff');
+  });
+
+  it.each(scoped)('renders identically to one carrying no bag at all: %s', (type) => {
+    const shape = (extra: object) =>
+      render({ steps: [{ type, children: [], start: [], end: [], ...extra }] } as TemplateTree, {})
+        .firstElementChild?.outerHTML;
+
+    expect(shape({ tokens: {} })).toBe(shape({}));
+  });
+
+  /**
+   * The names are closed at the boundary and not here, which is the same
+   * layering `hidden` has: `TemplateVocabulary` decides what a tree may say,
+   * the renderer draws what it is handed. Asserted so the day someone adds a
+   * second check here it is a deliberate change rather than a quiet one.
+   */
+  it('draws whatever names it is handed, because closure is the boundarys job', () => {
+    const element = render(
+      { steps: [{ type: 'stack', tokens: { wobble: '3deg' }, children: [] }] } as TemplateTree,
+      {},
+    ).firstElementChild as HTMLElement;
+
+    expect(element.style.getPropertyValue('--wc-wobble')).toBe('3deg');
+  });
+});
+
+/**
+ * ============================================================================
+ * THE TYPE SCALE — A MODIFIER CLASS, AND IT HAS TO BE ONE.
+ * ============================================================================
+ * The stylesheet may read no `--wc-*` name outside the declared tokens and the
+ * declared layout params, and a NODE param is neither — so `size` cannot be a
+ * custom property under any name. This asserts the class, and that every step
+ * the manifest offers has a rule to draw it: a step with no rule is a chip in
+ * the inspector that changes nothing.
+ */
+describe('the type scale', () => {
+  const sizes = manifest.nodes.heading.choices.size as readonly string[];
+
+  it('offers the same steps on both leaves that take one', () => {
+    expect(manifest.nodes.text.choices.size).toEqual(sizes);
+  });
+
+  it.each(sizes.filter((size) => size !== manifest.nodes.heading.defaults.size))(
+    'draws a rule for every step it offers: %s',
+    (size) => {
+      expect(CSS).toContain(`.wc-heading.wc-${size}{`);
+      expect(CSS).toContain(`.wc-text.wc-${size}{`);
+    },
+  );
+
+  it.each(sizes)('writes the step as a class beside the leafs own: %s', (size) => {
+    const step = renderStep({
+      type: 'stack',
+      children: [
+        { type: 'heading', text: 'x', size },
+        { type: 'text', text: 'x', size },
+      ],
+    });
+    const expected = size === 'm' ? ['wc-heading', 'wc-text'] : [`wc-heading wc-${size}`, `wc-text wc-${size}`];
+
+    expect([...(step?.children ?? [])].map((child) => child.className)).toEqual(expected);
+  });
+
+  /**
+   * A step multiplies the leaf's own size TOKEN, so the merchant's one lever
+   * still moves all six together. Read off the declaration rather than
+   * computed, because jsdom resolves no `calc()` against a stylesheet it never
+   * loaded.
+   */
+  it('multiplies the token rather than replacing it', () => {
+    expect(CSS).toContain('.wc-heading.wc-3xl{font-size:calc(var(--wc-heading-size,1.5rem)*');
+    expect(CSS).toContain('.wc-text.wc-3xl{font-size:calc(var(--wc-text-size,1rem)*');
+  });
+});
+
+/**
+ * ============================================================================
+ * THE ONE LAYOUT THAT PAINTS, AND THE THREE THINGS THAT MAKES TRUE.
+ * ============================================================================
+ * Every other layout arranges and draws nothing, so a scoped bag on one is
+ * visible only through what inherits it. A `panel` reads the properties in
+ * scope and draws the box — which is what makes a cream panel beside a dark one
+ * expressible at all (ADR 0062).
+ */
+describe('the panel', () => {
+  const panel = (extra: object): HTMLElement =>
+    render({ steps: [{ type: 'panel', children: [], ...extra }] } as TemplateTree, {})
+      .firstElementChild as HTMLElement;
+
+  /**
+   * **The reset is the non-obvious half.** `.wc-panel` paints the same two
+   * background layers `.wc-root` does, so a design with one picture would paint
+   * it again — cover and centred — inside every panel in it. A panel inherits
+   * the design's COLOURS and not its photograph.
+   */
+  it('starts from the designs colours and not its picture', () => {
+    const root = render(
+      { steps: [{ type: 'panel', children: [] }] } as TemplateTree,
+      { bg: '#0f172a', 'bg-image': 'url(/hero.jpg)', overlay: 'rgba(0,0,0,.5)' },
+    );
+    const element = root.firstElementChild as HTMLElement;
+
+    expect(element.style.getPropertyValue('--wc-bg-image')).toBe('none');
+    expect(element.style.getPropertyValue('--wc-overlay')).toBe('#0000');
+    // Only the picture. The ground is inherited, which is the whole point of a
+    // panel with no bag reading as the design it sits in.
+    expect(element.style.getPropertyValue('--wc-bg')).toBe('');
+    expect(root.style.getPropertyValue('--wc-bg-image')).toBe('url(/hero.jpg)');
+  });
+
+  it('lets its own bag win over that reset, which is what a photo pane is', () => {
+    const element = panel({ tokens: { 'bg-image': 'url(/pane.jpg)', overlay: 'rgba(0,0,0,.35)' } });
+
+    expect(element.style.getPropertyValue('--wc-bg-image')).toBe('url(/pane.jpg)');
+    expect(element.style.getPropertyValue('--wc-overlay')).toBe('rgba(0,0,0,.35)');
+  });
+
+  it('writes edges as a modifier attribute, and nothing at all for the default', () => {
+    expect(panel({ edges: 'block-start' }).dataset.edges).toBe('block-start');
+    expect(panel({ edges: 'all' }).dataset.edges).toBe('all');
+    expect(panel({ edges: 'none' }).outerHTML).toBe(panel({}).outerHTML);
+  });
+
+  it('writes min as the custom property the stylesheet reads', () => {
+    expect(panel({ min: '16rem' }).style.getPropertyValue('--wc-min')).toBe('16rem');
+  });
+});
+
+/**
  * Tokens are the other half of the vocabulary, and an unconsumed one is worse
  * than a missing one: it rides the payload on every page view, is offered in
  * the settings panel, and changes nothing on screen.

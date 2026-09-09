@@ -32,6 +32,7 @@ import {
   remember,
   undo,
 } from '../../resources/admin/src/builder/structure/history';
+import { AUTHORED_ROLES, LEAVES } from '../../resources/admin/src/builder/panel';
 import type { TemplateNode, TemplateTree } from '@renderer/types';
 
 /**
@@ -337,6 +338,7 @@ describe('what the catalogue offers', () => {
       'row',
       'split',
       'grid',
+      'panel',
     ]);
   });
 
@@ -469,6 +471,30 @@ describe('a block the catalogue builds', () => {
     // A kind that declares no Roles still gets none: an `image` holds no words,
     // and a `field`'s Roles are derived from what it captures.
     expect(freeRoleFor(TREE, 'image')).toBeNull();
+  });
+
+  /**
+   * ==========================================================================
+   * AN AUTHORED ROLE IS NEVER HANDED OUT, ONLY EVER CHOSEN.
+   * ==========================================================================
+   * `wordmark` and `code_value` name something only one site has, so a Playbook
+   * may not fill either — and they are unclaimed on nearly every design, which
+   * is exactly what makes the *first unclaimed Role* preference reach for one.
+   * Adding a second heading to a design whose headline is taken handed the
+   * merchant a block called **Your name**.
+   *
+   * Read off the manifest's own `authored_roles` rather than a list here, so a
+   * third one of these arrives excluded.
+   */
+  it('never hands a new block a Role only the merchant can fill', () => {
+    for (const type of Object.keys(LEAVES)) {
+      const role = freeRoleFor(TREE, type);
+
+      expect(AUTHORED_ROLES, `${type} was given ${String(role)}`).not.toContain(role);
+    }
+
+    expect(AUTHORED_ROLES.length, 'the manifest declares none, so this asserts nothing')
+      .toBeGreaterThan(0);
   });
 
   /** A field capturing nothing the build knows renders NOTHING (`render.ts`). */

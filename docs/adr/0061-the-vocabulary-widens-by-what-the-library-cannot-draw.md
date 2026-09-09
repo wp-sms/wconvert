@@ -32,14 +32,27 @@ member.
 22 **global** custom properties, so nothing can tint one panel, or give the form
 a different ground from the headline. That is the real ceiling.
 
+> *Reopened and taken, in part, by
+> [ADR 0062](0062-a-token-bag-is-scoped-to-the-box-that-carries-it.md).* **A
+> token bag is now scoped**: any LAYOUT node re-declares the same closed 22 for
+> what is inside it. Read the rest of this section knowing that — and read [what
+> would reopen rung 3](#what-would-reopen-rung-3) below, which is amended with
+> an honest account of the evidence, because it was **not** the evidence this
+> ADR asked for.
+
 ## Rung 2, and narrowly
 
 Rung 1 is true and is not sufficient, and rung 3 is the wrong purchase.
 
 **Rung 1 is real and it is the floor, not the answer.** Everything above about
 unvalidated token values holds, and the theme work and most of the design work
-rides on it. But a token is global by construction, so no value of any of the 22
-can put a flash on a corner, box one string, or round one picture. Those are not
+rides on it. But a token is global by construction, so no value of any of them
+can put a flash on a corner, box one string, or round one picture.
+*(Amended by [ADR 0062](0062-a-token-bag-is-scoped-to-the-box-that-carries-it.md):
+a token is no longer global by construction — a layout re-declares one for what
+is inside it. The three ABSENCES named in this sentence are unaffected, which is
+why the members admitted below are still the right purchase: none of them is a
+colour decision.)* Those are not
 colour decisions that a bolder palette reaches; they are absences.
 
 **Rung 3 buys the largest thing and buys the wrong thing.** The visual teardown
@@ -53,6 +66,22 @@ It would also amend
 [ADR 0010](0010-template-model-is-node-tree-plus-tokens.md)'s central bargain —
 *configuration, not a document* — for a payoff the market says is not where this
 product wins.
+
+> *Amended by [ADR 0062](0062-a-token-bag-is-scoped-to-the-box-that-carries-it.md).*
+> **Three of those four prices turned out not to be the price.** Only *layouts*
+> carry a bag, not every node — a leaf has no inside for a scope to apply to.
+> The panel stays the same 22 controls, bound to a selection instead of only to
+> the root, so it did not become a per-node inspector of new controls. And the
+> budget did not move: `PayloadBudgetTest` measures 1,308 B of 2,048, and the
+> instrument changed (measure the richest shipped design; cap per design in
+> `LibraryLintTest`) rather than the budget. ADR 0010's bargain is untouched
+> because the names stay closed and the bag goes through the same validation the
+> design's tokens do.
+>
+> **The Depicter verdict is not overturned and is the reason the line sits where
+> it does.** What 0062 bought is *ground*, which is what this ADR's own
+> reopening clause named; what it refused is *placement*, which is where a
+> canvas begins.
 
 So the widening is **rung 2, admitted one member at a time, and the admission
 test is the title of this ADR: a member earns its place by naming something the
@@ -152,6 +181,32 @@ merchants rather than from a competitor's gallery, is the evidence that would
 make the payload and panel cost worth arguing about. Until then the split's two
 panes share the design's ground, and `bg-image` with a hard-stop gradient is the
 honest approximation.
+
+> ### It was reopened, and the evidence was a different kind
+>
+> *[ADR 0062](0062-a-token-bag-is-scoped-to-the-box-that-carries-it.md), which
+> scoped the token bag to any layout node.*
+>
+> **The evidence was a 16-design reference set we commissioned** — a brief we
+> wrote, answered by designs we asked for. That is not "three designs a merchant
+> demonstrably wants, from real merchants rather than from a competitor's
+> gallery." It is closer to the thing this paragraph was written to exclude, and
+> saying otherwise would make this clause decorative.
+>
+> What actually carried the decision was two things this paragraph did not
+> anticipate:
+>
+> 1. **The reference set's own source is a token bag per scope**, including a
+>    nested one. So the question stopped being "should we buy per-node styling"
+>    and became "the designs we want are already written in our architecture,
+>    one level in" — a much smaller purchase than the one priced above.
+> 2. **The canonical example named in this very paragraph** — the split with a
+>    navy pane beside a white form — is what a scoped bag draws, in the terms
+>    this sentence used.
+>
+> The honest reading is that the *admission test* held (ground, not placement)
+> and the *evidence bar* was relaxed. Recorded so the next reader can weigh it
+> rather than inherit it.
 
 ## Consequences
 

@@ -86,7 +86,13 @@ const LABELS = {
     button: 'Button',
     consent: 'Consent checkbox',
   },
-  layouts: { stack: 'Column', row: 'Row', split: 'Side by side', grid: 'Equal columns' },
+  layouts: {
+    stack: 'Column',
+    row: 'Row',
+    split: 'Side by side',
+    grid: 'Equal columns',
+    panel: 'Coloured box',
+  },
   // The menu shows what a layout DOES, because *Row* and *Side by side* are two
   // words a merchant cannot tell apart from their names alone.
   layoutNotes: {
@@ -94,6 +100,7 @@ const LABELS = {
     row: 'Blocks along one line.',
     split: 'Two panes, each holding its own blocks.',
     grid: 'Three across, one per line on a phone.',
+    panel: 'A box with its own colours, holding other blocks.',
   },
   layoutParams: { 'split.ratio': 'How the space is divided' },
   layoutParamValues: {
@@ -173,14 +180,33 @@ beforeEach(() => {
 /**
  * Open the builder and land on the editing tab.
  *
- * **Called `structure()` still, and the tab is called Content.** That is the
- * merge: the tree, the row controls and the inspector are one screen, and it
- * kept the word merchants already had.
+ * **Called `structure()` still, and the tab is called Design.** That is the
+ * second merge: the tree, the row controls, the inspector, the preview AND the
+ * token controls are one screen (ADR 0062), and *Design* is the word the tab
+ * that does the designing now carries. It is the tab the builder opens on, so
+ * this is an assertion that it did rather than a press.
  */
 async function structure() {
   render(<OptinBuilder id={ID} onClose={vi.fn()} />);
 
-  await userEvent.click(await screen.findByRole('tab', { name: 'Content' }));
+  await screen.findByRole('tab', { name: 'Design' });
+}
+
+/**
+ * Open the builder and get to the DESIGN's own token controls.
+ *
+ * Two presses rather than none, and each of them is the point of the merge:
+ * the look lives on a selection, and the design's own look is the outermost
+ * scope's. `Open the design’s look` is the door {@see ScopeStyle} draws on any
+ * block that cannot carry a bag of its own, which is every leaf.
+ */
+async function designLook() {
+  render(<OptinBuilder id={ID} onClose={vi.fn()} />);
+
+  const halves = await screen.findByRole('tablist', { name: /what it says, or how it looks/ });
+
+  await userEvent.click(within(halves).getByRole('tab', { name: 'Style' }));
+  await userEvent.click(await screen.findByRole('button', { name: 'Open the design’s look' }));
 }
 
 /**
@@ -225,6 +251,14 @@ function row(name: string): HTMLElement {
 function panel(): HTMLElement {
   const open = screen
     .getAllByRole('tabpanel')
+    /*
+      **Top-level panels only.** The inspector has a tab strip of its own now —
+      *what it says* and *how it looks* for the selected block (ADR 0062) — and
+      its open panel is a second active `tabpanel` nested inside this one. A
+      panel that is inside another panel is not the tab the merchant is looking
+      at; it is a half of it.
+    */
+    .filter((each) => each.parentElement?.closest('[role="tabpanel"]') === null)
     .filter((each) => each.dataset.state === 'active');
 
   expect(open, 'expected exactly one open tab panel').toHaveLength(1);
@@ -656,6 +690,7 @@ describe('adding a block', () => {
       'Row',
       'Side by side',
       'Equal columns',
+      'Coloured box',
     ]) {
       expect(
         await screen.findByRole('menuitem', { name: new RegExp(`^${kind}\\b`) }),
@@ -945,23 +980,43 @@ describe('the inspector', () => {
    * the list after a click — so `Tab` is the documented way down, and the DOM
    * order is what makes it land there.
    */
-  it('leaves focus on the row, and Tab from it reaches the controls below', async () => {
+  /**
+   * ==========================================================================
+   * ONE TAB LEAVES THE GRID. THE INSPECTOR IS THE SECOND STOP, NOT THE FIRST.
+   * ==========================================================================
+   * This asserted a single Tab landed inside the inspector, and it was true
+   * while the panes were *list · controls* with the preview in a column beside
+   * all four tabs. Three panes read *list · render · controls* (ADR 0062), and
+   * the render is between them in the DOM as well as on the screen — because a
+   * tab order that disagreed with the visual order is the failure the grid
+   * would otherwise introduce, and this admin puts source order first
+   * everywhere else for exactly that reason.
+   *
+   * So the guarantee is stated as what it actually is: the roving tabindex
+   * gives the grid ONE stop, Tab leaves it, and the inspector is reachable from
+   * the keyboard without a mouse. The cost is the preview's own named controls
+   * in between, which are not a trap.
+   */
+  it('leaves focus on the row, and Tab from it walks out of the grid to the inspector', async () => {
     await structure();
     await select('Headline');
 
     expect(within(row('Headline')).getAllByRole('button')[0]).toHaveFocus();
 
+    const inspector = screen.getByRole('group', { name: 'Headline' });
+    const grid = screen.getByRole('treegrid', { name: 'Blocks in this design' });
+
     await userEvent.tab();
 
-    /*
-     * Into the inspector rather than onto a particular control in it: which
-     * comes first is the SLOT's shape — a hideable one leads with its
-     * visibility checkbox — and the guarantee is that one Tab leaves the grid
-     * and arrives here, which is what the roving tabindex is for.
-     */
-    expect(screen.getByRole('group', { name: 'Headline' })).toContainElement(
-      document.activeElement as HTMLElement,
-    );
+    // Out of the grid on the first press, which is the whole of what a roving
+    // tabindex buys and the thing a thirty-row design would otherwise cost.
+    expect(grid).not.toContainElement(document.activeElement as HTMLElement);
+
+    for (let press = 0; press < 8 && !inspector.contains(document.activeElement); press += 1) {
+      await userEvent.tab();
+    }
+
+    expect(inspector).toContainElement(document.activeElement as HTMLElement);
   });
 
   /**
@@ -1063,9 +1118,7 @@ describe('the verdict', () => {
    * about the Optin rather than about the tab that caused it.
    */
   it('is readable from every tab, including the ones that cannot cause it', async () => {
-    render(<OptinBuilder id={ID} onClose={vi.fn()} />);
-
-    await screen.findByRole('tab', { name: 'Design' });
+    await designLook();
 
     // The stub names no tokens, so `nameOf` falls back to the raw key — which
     // is what a build whose vocabulary is ahead of its translations shows too.
@@ -1178,11 +1231,9 @@ describe('undo and redo', () => {
  * was written for.
  */
 describe('undo and redo, where they act on the whole draft', () => {
-  /** The builder as it opens, which is on the Design tab. */
+  /** The builder as it opens, with the design's own token controls reached. */
   async function design() {
-    render(<OptinBuilder id={ID} onClose={vi.fn()} />);
-
-    await screen.findByRole('tab', { name: 'Design' });
+    await designLook();
   }
 
   /**

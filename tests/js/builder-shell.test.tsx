@@ -254,13 +254,28 @@ describe('the builder shell', () => {
    * the commit that moves it rather than quietly rewritten. The ADR's own tab
    * count is struck through again in the same commit.
    */
-  it('offers four tabs, with the three rule surfaces under one of them', async () => {
+  /**
+   * ========================================================================
+   * THREE, AND THE ONE THAT WENT IS *Design* RATHER THAN *Content*.
+   * ========================================================================
+   * The tab called Design held the token controls for the whole Optin. Since
+   * ADR 0062 a token has a SCOPE — the design's own, or one box's — and *which
+   * box* is a selection, which is the question the inspector already answers.
+   * So the controls moved into it as a second half, choosing a design became a
+   * row above the panes, and the tab that held both had nothing left in it. The
+   * name survives on the tab that does the designing.
+   *
+   * Read off the top-level tablist by name, because the inspector has a second
+   * one nested inside this tab's own panel and `getAllByRole('tab')` cannot
+   * tell them apart.
+   */
+  it('offers three tabs, with the three rule surfaces under one of them', async () => {
     open();
 
-    expect(await screen.findByRole('tab', { name: 'Design' })).toBeInTheDocument();
-    expect(screen.getAllByRole('tab').map((tab) => tab.textContent)).toEqual([
+    const strip = await screen.findByRole('tablist', { name: 'What you are editing' });
+
+    expect(within(strip).getAllByRole('tab').map((tab) => tab.textContent)).toEqual([
       'Design',
-      'Content',
       'Display rules',
       'Destinations',
     ]);
@@ -277,7 +292,7 @@ describe('the builder shell', () => {
   it('lists every block of the design, layouts included, as a treegrid', async () => {
     open();
 
-    await userEvent.click(await screen.findByRole('tab', { name: 'Content' }));
+    await screen.findByRole('tab', { name: 'Design' });
 
     const tree = screen.getByRole('treegrid', { name: 'Blocks in this design' });
 
@@ -294,7 +309,7 @@ describe('the builder shell', () => {
   it('names a row by the words the block is showing, and states its place separately', async () => {
     open();
 
-    await userEvent.click(await screen.findByRole('tab', { name: 'Content' }));
+    await screen.findByRole('tab', { name: 'Design' });
 
     const headline = screen.getByRole('row', { name: /Headline/ });
 
@@ -311,7 +326,7 @@ describe('the builder shell', () => {
   it('marks a block selected when its row is clicked', async () => {
     open();
 
-    await userEvent.click(await screen.findByRole('tab', { name: 'Content' }));
+    await screen.findByRole('tab', { name: 'Design' });
     await userEvent.click(labelOf(/Headline/));
 
     expect(screen.getByRole('row', { name: /Headline/ })).toHaveAttribute('aria-selected', 'true');
@@ -325,7 +340,7 @@ describe('the builder shell', () => {
   it('keeps one tab stop across the whole tree', async () => {
     open();
 
-    await userEvent.click(await screen.findByRole('tab', { name: 'Content' }));
+    await screen.findByRole('tab', { name: 'Design' });
 
     const tree = screen.getByRole('treegrid', { name: 'Blocks in this design' });
     const tabbable = within(tree).getAllByRole('button').filter((button) => button.tabIndex === 0);
@@ -345,25 +360,28 @@ describe('the builder shell', () => {
   it('has the first block selected on arrival, so the inspector is never empty', async () => {
     open();
 
-    await userEvent.click(await screen.findByRole('tab', { name: 'Content' }));
+    await screen.findByRole('tab', { name: 'Design' });
 
     expect(screen.getByRole('row', { name: /Headline/ })).toHaveAttribute('aria-selected', 'true');
     expect(screen.getByRole('group', { name: 'Headline' })).toBeInTheDocument();
   });
 
   /**
-   * **The selection survives a walk to the look and back.** Design holds the
-   * tokens now, and a merchant who went to change a colour and came back should
-   * find the block they were on still open — the outline in the preview must
-   * not blink off and on for no reason they could name.
+   * **The selection survives a walk to the look and back.** The look is the
+   * inspector's second half now, and a merchant who went to change a colour and
+   * came back should find the block they were on still open — the outline in
+   * the preview must not blink off and on for no reason they could name.
    */
-  it('keeps the selected block while the merchant goes to the design and back', async () => {
+  it('keeps the selected block while the merchant goes to the look and back', async () => {
     open();
 
-    await userEvent.click(await screen.findByRole('tab', { name: 'Content' }));
+    await screen.findByRole('tab', { name: 'Design' });
     await userEvent.click(labelOf(/Body text/));
-    await userEvent.click(screen.getByRole('tab', { name: 'Design' }));
-    await userEvent.click(screen.getByRole('tab', { name: 'Content' }));
+
+    const halves = screen.getByRole('tablist', { name: /what it says, or how it looks/ });
+
+    await userEvent.click(within(halves).getByRole('tab', { name: 'Style' }));
+    await userEvent.click(within(halves).getByRole('tab', { name: 'Content' }));
 
     expect(screen.getByRole('row', { name: /Body text/ })).toHaveAttribute('aria-selected', 'true');
   });
@@ -388,10 +406,13 @@ describe('the builder shell', () => {
   it('keeps the block open while the merchant is away editing the rules', async () => {
     open();
 
-    await userEvent.click(await screen.findByRole('tab', { name: 'Content' }));
+    await screen.findByRole('tab', { name: 'Design' });
     await userEvent.click(labelOf(/Body text/));
-    await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
-    await userEvent.click(screen.getByRole('tab', { name: 'Content' }));
+
+    const strip = screen.getByRole('tablist', { name: 'What you are editing' });
+
+    await userEvent.click(within(strip).getByRole('tab', { name: 'Display rules' }));
+    await userEvent.click(within(strip).getByRole('tab', { name: 'Design' }));
 
     expect(screen.getByRole('row', { name: /Body text/ })).toHaveAttribute('aria-selected', 'true');
     expect(screen.getByRole('group', { name: 'Body text' })).toBeInTheDocument();
@@ -475,16 +496,34 @@ describe('the builder shell', () => {
    * **The preview follows every tab.** Inside the settings panel it was on one
    * of them, which is the same as saying a merchant tightening a Trigger could
    * not see what they were tightening.
+   *
+   * **Re-queried rather than held, because it MOVES.** On *Design* it is the
+   * middle of three panes and on the other two it is the column beside them
+   * (ADR 0062) — one node, two positions, one mounted at a time, which is what
+   * keeps ADR 0040's "exactly one render of the tree" literal. Holding the
+   * element from before the tab change asserted that the same DOM node
+   * survived, which was never the guarantee; the guarantee is that a preview is
+   * on screen and is the same preview, which its device control still being on
+   * whatever the merchant chose is the sharper test of.
    */
   it('keeps the preview on screen while the rules are being edited', async () => {
     open();
 
+    const strip = await screen.findByRole('tablist', { name: 'What you are editing' });
+
+    await userEvent.click(
+      within(await screen.findByRole('complementary', { name: 'Preview' })).getByRole('button', {
+        name: 'Mobile',
+      }),
+    );
+    await userEvent.click(within(strip).getByRole('tab', { name: 'Display rules' }));
+
     const preview = await screen.findByRole('complementary', { name: 'Preview' });
 
-    await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
-
-    expect(preview).toBeInTheDocument();
-    expect(within(preview).getByRole('button', { name: 'Mobile' })).toBeInTheDocument();
+    expect(within(preview).getByRole('button', { name: 'Mobile' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
   });
 
   /** Mobile is a WIDTH, because reflow is the question a phone preview answers. */

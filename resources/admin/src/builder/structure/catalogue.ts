@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { FIELDS, LAYOUTS, LEAVES, ROLES, childKeysOf } from '../panel';
+import { AUTHORED_ROLES, FIELDS, LAYOUTS, LEAVES, ROLES, childKeysOf } from '../panel';
 import { capturesTaken, nodeAt, rolesTaken, type Spot } from './tree';
 import type { TemplateNode, TemplateTree } from '@renderer/types';
 
@@ -296,9 +296,25 @@ function blankLayout(type: string): TemplateNode {
  * captures. Both are carried across a Template switch by other means, which is
  * why {@link losesWordsOnSwitch} asks the manifest rather than asking whether
  * `role` is set.
+ *
+ * ============================================================================
+ * AN AUTHORED ROLE IS NEVER HANDED OUT, ONLY EVER CHOSEN.
+ * ============================================================================
+ * `wordmark` and `code_value` name something only one site has — a shop's name,
+ * a coupon in one merchant's WooCommerce — which is why a [[Playbook]] may not
+ * fill either ({@see AUTHORED_ROLES}). They are unclaimed on nearly every
+ * design, so the *first unclaimed Role* preference would reach for one the
+ * moment a design's own headline was taken: adding a second heading handed the
+ * merchant a block called **Your name**.
+ *
+ * A default is a guess, and these are the two Roles nobody can guess. They stay
+ * OFFERED in the ⇄ menu, because a masthead is a real thing to add; what they
+ * are not is what a new block silently becomes.
  */
 export function freeRoleFor(tree: TemplateTree, type: string): string | null {
-  const declared = (LEAVES[type]?.roles ?? []).filter((role) => ROLES.includes(role));
+  const declared = (LEAVES[type]?.roles ?? [])
+    .filter((role) => ROLES.includes(role))
+    .filter((role) => !AUTHORED_ROLES.includes(role));
   const taken = rolesTaken(tree);
 
   return declared.find((role) => !taken.includes(role)) ?? declared[0] ?? null;
