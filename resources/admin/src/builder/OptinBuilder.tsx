@@ -11,6 +11,7 @@ import { PageAction } from '../shell/PageActions';
 import { PageError, Region, RegionBody, RegionErrorState } from '../shell/Region';
 import { Skeleton } from '../components/ui/skeleton';
 import { Stat, StatRow, StatRowSkeleton } from '../shell/Stat';
+import { Toolbar } from '../shell/Toolbar';
 import { LOADING, failed, messageOf, read, ready, type Loadable } from '../shell/loadable';
 import { TemplatePickerDialog } from './TemplatePickerDialog';
 import { useTemplateTrees } from './TemplatePicker';
@@ -1582,30 +1583,29 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
                         way to change it, which is one line and belongs over all
                         three panes rather than in any of them.
                       */
-                      header={
-                        <div className="wconvert-structure__head">
-                          <span className="min-w-0 text-foreground">
-                            {chosenName(templateId, templates)}
-                          </span>
+                      /*
+                        ====================================================
+                        THE STRIP ABOVE THE PANES, AND IT IS ABOUT NONE OF THEM.
+                        ====================================================
+                        A region holds exactly one concern (ADR 0039) and the
+                        old Design tab held two: *choose a design* and *adjust
+                        the look*. The look is the inspector's second half now;
+                        what is left is the name of the design in use beside the
+                        way to change it, which is one line and belongs over all
+                        three panes rather than in any of them.
 
-                          {/*
-                            **What was checked, beside the design being
-                            changed.** The verdict above the tabs says what is
-                            WRONG; this says what was looked at, which is the
-                            thing a merchant restyling a box cannot otherwise
-                            tell from a screen that has gone quiet. Same
-                            problems, same words, same route to the block.
-                          */}
-                          <CheckStrip
-                            problems={problemsIn(
-                              entry,
-                              entryOfGoal?.grows_a_list === true,
-                              displayRules.schedule.ends_at,
-                            )}
-                            onGoTo={goTo}
-                          />
-
-                          <div className="flex items-center gap-2">
+                        **It is a {@see Toolbar} rather than a hand-rolled row**,
+                        which is what a strip holding what is scoped to the
+                        region under it already IS (ADR 0039). It also carries
+                        `.wconvert-toolbar`, so every control in it takes
+                        `--control-height-sm` from `index.css` — and `Browse
+                        designs` stops being the one 36px button in a row of 32s
+                        without a `size` being passed to it.
+                      */
+                      toolbar={
+                        <Toolbar
+                          trailing={
+                            <>
                             {/*
                               ================================================
                               A LOOK IS ABOUT THE DESIGN, SO IT CANNOT LIVE
@@ -1641,9 +1641,47 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
                             <Button ref={browse} variant="outline" onClick={() => setBrowsing(true)}>
                               {__('Browse designs', 'wconvert')}
                             </Button>
-                          </div>
-                        </div>
+                            </>
+                          }
+                        >
+                          <span className="min-w-0 truncate text-foreground">
+                            {chosenName(templateId, templates)}
+                          </span>
+                        </Toolbar>
                       }
+                      /*
+                        ====================================================
+                        WHAT WAS CHECKED, AT THE FOOT OF THE CARD.
+                        ====================================================
+                        The verdict above the tabs says what is WRONG; this says
+                        what was looked at, which is the thing a merchant
+                        restyling a box cannot otherwise tell from a screen that
+                        has gone quiet. Same problems, same words, same route to
+                        the block.
+
+                        **It was in the header row and is a band at the bottom
+                        now** (ADR 0066). Six monospace chips across the top of a
+                        work surface is the loudest thing on the tab saying the
+                        quietest fact — *six checks pass* — and diagnostics are
+                        consulted rather than worked in.
+                      */
+                      checks={
+                        <CheckStrip
+                          problems={problemsIn(
+                            entry,
+                            entryOfGoal?.grows_a_list === true,
+                            displayRules.schedule.ends_at,
+                          )}
+                          onGoTo={goTo}
+                        />
+                      }
+                      /*
+                        Which of the selected box's two bags the card's stored
+                        readout counts — the same answer the Style panel is
+                        given, from the same state, so the two cannot disagree
+                        about which width the merchant is editing (ADR 0064).
+                      */
+                      width={width === 'narrow' ? 'narrow' : 'tokens'}
                       /*
                         **The one preview on the screen, handed to the middle
                         pane.** It is rendered here so there is exactly one of

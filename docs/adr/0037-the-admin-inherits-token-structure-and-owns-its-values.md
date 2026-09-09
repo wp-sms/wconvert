@@ -118,6 +118,17 @@ acquires a `--primary` that fails on the one control nobody screenshotted.
   `figure` (the one emphasised number per [[Goal]]). Reaching for a raw
   `text-lg` is what produced the 18px that existed for no reason but an
   upstream default.
+
+  _Amended by [ADR 0066](0066-the-editors-chrome-is-one-card-with-three-named-panes.md):
+  **there are eight**, and this sentence is what said how to add them. The
+  builder's Design tab is a WORK SURFACE rather than a page of copy — a block's
+  kind, a token's name, a check's word are furniture ON the thing being edited —
+  and at `micro` the block tree ran five of twelve block names under their own
+  row menu. So `--text-label` (11px, sentence case) and `--text-meta` (9px,
+  uppercase, tracked) were **decided**, at the reference editor's own values, and
+  the decision is recorded where this ADR implies it should be: the `ROLES` array
+  in `admin-stylesheet.test.ts`, which is the one place a role costs a line.
+  They are the Design tab's only; every other screen still floors at `micro`._
 - **A future WConvert brand does not start from zero.** Whatever a logo and a
   wordmark eventually say, the surface they land on already has a committed
   colour rather than a placeholder to be negotiated then.

@@ -166,14 +166,23 @@ export function BlockInspector({
   if (block === null || path === null) {
     return (
       <div className="wconvert-inspector">
-        <Description>{__('Pick a block to edit what it says.', 'wconvert')}</Description>
         {/*
-          **The look is still reachable with nothing selected**, because with
-          nothing selected the look on offer is the DESIGN's — which is what the
-          Design tab used to be, and losing it behind "select something first"
-          would be a tab that vanished rather than one that moved.
+          **The pane keeps a head band with nothing selected, and it names what
+          the panel is actually showing** — which is the DESIGN's own tokens,
+          not an empty panel. A third column that loses its head while the two
+          beside it keep theirs reads as a pane that failed to load.
         */}
-        {look}
+        <div className="wconvert-pane__head">{__('The design', 'wconvert')}</div>
+        <div className="wconvert-inspector__body">
+          <Description>{__('Pick a block to edit what it says.', 'wconvert')}</Description>
+          {/*
+            **The look is still reachable with nothing selected**, because with
+            nothing selected the look on offer is the DESIGN's — which is what
+            the Design tab used to be, and losing it behind "select something
+            first" would be a tab that vanished rather than one that moved.
+          */}
+          {look}
+        </div>
       </div>
     );
   }
@@ -191,63 +200,97 @@ export function BlockInspector({
     onSetEndDate,
   });
 
-  return (
-    /*
-      **A named group, because it is a set of controls about one thing.** A
-      screen reader arriving by Tab out of the tree hears which block these
-      belong to before the first field, and it is named by the heading rather
-      than by a second copy of the same words.
-    */
-    <div role="group" aria-labelledby={heading} className="wconvert-inspector">
-      <div className="wconvert-inspector__head">
-        {/*
-          **A heading, not a bolded line.** The inspector is a second region
-          in this tab — under the tree in a narrow container and beside it in a
-          wide one — and a screen reader walking headings has to be able to land
-          on it either way. It is also where the merchant's focus arrives when
-          they Tab out of the grid.
-        */}
-        <h4 id={heading} className="wconvert-inspector__name">
-          {name}
-        </h4>
+  /*
+    ==========================================================================
+    THE HEAD IS THIS PANE'S HEAD BAND, AND THE TAB STRIP IS IN IT (ADR 0066).
+    ==========================================================================
+    The three panes each say what they are in a band across their top —
+    STRUCTURE, PREVIEW, and this one, named by the block because the block is
+    what the whole pane is about. *Content* and *Style* belong in it for the
+    same reason the tree's count does: they say what the pane is SHOWING, which
+    is a pane head's job, and a strip on its own line under the band was a
+    second row of chrome on the narrowest of the three columns.
+  */
+  const head = (
+    <div className="wconvert-inspector__head">
+      {/*
+        **A heading, not a bolded line.** The inspector is a second region
+        in this tab — under the tree in a narrow container and beside it in a
+        wide one — and a screen reader walking headings has to be able to land
+        on it either way. It is also where the merchant's focus arrives when
+        they Tab out of the grid.
+      */}
+      <h4 id={heading} className="wconvert-inspector__name">
+        {name}
+      </h4>
 
-        {/*
-          What KIND of block it is, where the name did not already say so. A
-          slot named by its Slot Role reads "Headline", and a merchant who has
-          to reason about what may go where is helped by knowing that is a
-          heading.
-        */}
-        {block.leaf && block.role !== null && (
-          <span className="wconvert-inspector__kind">{nameOf(labels.nodes, block.type)}</span>
-        )}
+      {/*
+        What KIND of block it is, where the name did not already say so. A
+        slot named by its Slot Role reads "Headline", and a merchant who has
+        to reason about what may go where is helped by knowing that is a
+        heading.
+      */}
+      {block.leaf && block.role !== null && (
+        <span className="wconvert-inspector__kind">{nameOf(labels.nodes, block.type)}</span>
+      )}
 
-        <SwapMenu template={template} labels={labels} path={path} act={act} onSwap={onSwap} />
-      </div>
-
-      {look === undefined ? (
-        body
-      ) : (
-        /*
-          **Two halves of one panel, and the heading stays above both.** *What
-          it says* and *how it looks* are two questions about the SAME selected
-          block, which is exactly what a tab strip is for — and the alternative,
-          both stacked, puts the token controls a scroll below the words on a
-          22rem column.
-        */
-        <Tabs value={half} onValueChange={setHalf}>
-          <TabsList aria-label={sprintf(
+      {look !== undefined && (
+        <TabsList
+          className="wconvert-inspector__halves"
+          aria-label={sprintf(
             /* translators: %s: what the selected block is called, e.g. “Headline”. */
             __('%s: what it says, or how it looks', 'wconvert'),
             name,
-          )}>
-            <TabsTrigger value="content">{__('Content', 'wconvert')}</TabsTrigger>
-            <TabsTrigger value="style">{__('Style', 'wconvert')}</TabsTrigger>
-          </TabsList>
-          <TabsContent value="content">{body}</TabsContent>
-          <TabsContent value="style">{look}</TabsContent>
-        </Tabs>
+          )}
+        >
+          <TabsTrigger value="content">{__('Content', 'wconvert')}</TabsTrigger>
+          <TabsTrigger value="style">{__('Style', 'wconvert')}</TabsTrigger>
+        </TabsList>
       )}
+
+      <SwapMenu template={template} labels={labels} path={path} act={act} onSwap={onSwap} />
     </div>
+  );
+
+  /*
+    **A named group, because it is a set of controls about one thing.** A screen
+    reader arriving by Tab out of the tree hears which block these belong to
+    before the first field, and it is named by the heading rather than by a
+    second copy of the same words.
+  */
+  if (look === undefined) {
+    return (
+      <div role="group" aria-labelledby={heading} className="wconvert-inspector">
+        {head}
+        <div className="wconvert-inspector__body">{body}</div>
+      </div>
+    );
+  }
+
+  return (
+    /*
+      **Two halves of one panel, and the head stays above both.** *What it says*
+      and *how it looks* are two questions about the SAME selected block, which
+      is exactly what a tab strip is for — and the alternative, both stacked,
+      puts the token controls a scroll below the words on a 22rem column.
+
+      The `Tabs` root is the pane now rather than a box inside it, because the
+      strip and the panels are in different bands and Radix needs one ancestor
+      over the pair.
+    */
+    <Tabs
+      value={half}
+      onValueChange={setHalf}
+      role="group"
+      aria-labelledby={heading}
+      className="wconvert-inspector"
+    >
+      {head}
+      <div className="wconvert-inspector__body">
+        <TabsContent value="content">{body}</TabsContent>
+        <TabsContent value="style">{look}</TabsContent>
+      </div>
+    </Tabs>
   );
 }
 

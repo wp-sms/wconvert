@@ -140,6 +140,16 @@ AAA is explicitly not the bar. It would rule out the palette on
 [ADR 0037](0037-the-admin-inherits-token-structure-and-owns-its-values.md)'s own
 numbers, and it is not what a WordPress admin screen is held to anywhere else.
 
+**Nothing above is a minimum FONT SIZE, and this ADR has never set one.** The
+floors are the four things listed: contrast ratios, the blocking lint, 24 × 24
+pointer targets, and the two viewports. Said explicitly because `index.css` spent
+a release carrying a comment that cited this ADR for a 12px type floor and used
+it to refuse a 9px register —
+[ADR 0066](0066-the-editors-chrome-is-one-card-with-three-named-panes.md) is
+where that was found, corrected in place, and where what a small register IS held
+to is written down instead: full-strength `--muted-foreground`, and no text that
+is the only copy of itself.
+
 ### SC 2.5.7 is why the block tree's ↑↓ buttons survived a drag handle
 
 *Recorded for the next person to tidy that row, so the reason is found before
@@ -177,12 +187,26 @@ menu's *Move up* / *Move down* are 32px pointer controls on the same page doing
 exactly that. It is the same three-paths argument the section above makes for
 2.5.7, read against a different criterion.
 
+_Amended by [ADR 0066](0066-the-editors-chrome-is-one-card-with-three-named-panes.md):
+**those controls are 24px now**, at `--control-height-xs`, and the argument is
+unchanged rather than merely surviving — Equivalent asks for a control that
+*meets* 24 × 24, and 24 × 24 is what they are. What moved is that they no longer
+clear it by eight pixels._
+
 **The twist does not.** It expands a row, and no other *pointer* control on the
 page does — ← and → are keyboard, which 2.5.8 does not count, exactly as 2.5.7
 does not count `Alt+↑`. Spacing cannot save it either: a 24px circle centred on
 a 20px twist intersects the label button 4px away. So it is 24 × 24, and the
 row's height went to 40px with 4px of block padding to hold it — which the row
 needed anyway, having been exactly as tall as the 32px button inside it.
+
+_Amended by [ADR 0066](0066-the-editors-chrome-is-one-card-with-three-named-panes.md):
+**the row is 32px**, and it is still exactly the control inside it. 40px was
+never a fact about the row — it was 32px of `icon-sm` action plus 8px of air.
+The actions are `icon-xs` (24px) now, so the same 8px lands on 32. The twist did
+not move, for the reason this section gives, and it is now the tallest thing in
+the row: 24 + 4 + 4 = 32 is a FLOOR, which is why this editor does not reach the
+reference tool's 22px however far the type shrinks._
 
 **The lesson for the next control added to this row:** the exceptions are read
 one at a time against the specific function, and *"there is a keyboard way"* is

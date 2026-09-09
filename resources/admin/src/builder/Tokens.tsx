@@ -1297,7 +1297,13 @@ function Reset({
     <Button
       type="button"
       variant="ghost"
-      size="icon-sm"
+      /*
+        24px — `--control-height-xs`, the height of a control INSIDE the work
+        surface. A reset appears beside a swatch in a 9.5rem grid cell, so at
+        32px it was a third of the cell for a control that is absent whenever
+        nothing has been changed.
+      */
+      size="icon-xs"
       className="wconvert-token__reset"
       /*
         **It writes the design's value back rather than clearing**, because

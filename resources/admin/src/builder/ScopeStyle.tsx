@@ -168,7 +168,7 @@ export function ScopeStyle({
         <Button
           type="button"
           variant="ghost"
-          size="sm"
+          size="xs"
           disabled={Object.keys(bagOf(here, width)).length === 0}
           onClick={() => onCopy(bagOf(here, width))}
         >
@@ -180,7 +180,7 @@ export function ScopeStyle({
           <Button
             type="button"
             variant="ghost"
-            size="sm"
+            size="xs"
             onClick={() =>
               onChange({
                 ...template,
@@ -277,7 +277,6 @@ export function ScopeStyle({
         </section>
       ))}
 
-      <ScopeJson scope={here} width={width} />
     </div>
   );
 }
@@ -544,6 +543,18 @@ function ScopeContrast({
  * What is actually STORED for this box, as the design carries it.
  *
  * ============================================================================
+ * IT IS THE CARD'S BOTTOM BAND AND NOT THE PANEL'S LAST ITEM (ADR 0066).
+ * ============================================================================
+ * It was the twenty-fifth thing in this panel, under twenty-four controls about
+ * the box's parts, reachable on a 22rem column only by scrolling past all of
+ * them. A readout about the WHOLE box does not belong at the end of the list of
+ * its parts, and the editor's card has a foot for exactly this: it spans the
+ * three panes, so a bag of twenty-four tokens is read across the measure rather
+ * than down a gutter. {@see StructureView} draws it and computes the scope with
+ * `scopeChainOf`; this exports the readout because everything it knows about a
+ * bag is here.
+ *
+ * ============================================================================
  * THE ONE PLACE A SCOPE IS LEGIBLE AS DATA, AND IT IS NOT A DEBUG PANEL.
  * ============================================================================
  * Every control above answers *what does this token resolve to here*, which is
@@ -562,7 +573,21 @@ function ScopeContrast({
  * it is for is the one who set nine tokens on a box and wants to know which
  * nine. `<details>`, closed, so it costs a line until it is asked for.
  */
-function ScopeJson({ scope, width }: { scope: Scope; width: WidthBag }) {
+export function ScopeJson({
+  scope,
+  name,
+  width,
+}: {
+  scope: Scope;
+  /**
+   * What the box is called, because the band is not under its panel any more.
+   *
+   * *"What is stored here"* was honest at the foot of one box's controls and is
+   * not at the foot of a card holding three panes — *here* would be the card.
+   */
+  name: string;
+  width: WidthBag;
+}) {
   const stored = {
     ...(Object.keys(scope.tokens).length === 0 ? {} : { tokens: scope.tokens }),
     ...(Object.keys(scope.narrow).length === 0 ? {} : { narrow: scope.narrow }),
@@ -573,8 +598,9 @@ function ScopeJson({ scope, width }: { scope: Scope; width: WidthBag }) {
     <details className="wconvert-scope__json">
       <summary>
         {sprintf(
-          /* translators: %d: how many settings this block carries at the width being edited. */
-          __('What is stored here (%d)', 'wconvert'),
+          /* translators: 1: what the box is called, e.g. “Coloured box”. 2: how many settings it carries at the width being edited. */
+          __('What is stored on %1$s (%2$d)', 'wconvert'),
+          name,
           count,
         )}
       </summary>

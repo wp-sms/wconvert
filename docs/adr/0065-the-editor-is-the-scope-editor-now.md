@@ -183,6 +183,11 @@ one of these was invisible to the suite.
   `OptinController::refuseADesignThatCapturesNothing()` in a monospace register
   wrapped onto three lines across the top of the tab. `CHECK_SOURCES` is two
   strings now: a short name for the chip and the sentence for the tooltip.
+  _Completed by [ADR 0066](0066-the-editors-chrome-is-one-card-with-three-named-panes.md):
+  shortening the strings was half of it. The strip was still six monospace chips
+  across the TOP of a work surface, announcing the quietest fact on the tab as
+  loudly as anything on it; it is a band at the bottom now, and the sources are
+  `--text-meta` rather than hidden below 62rem by a container query._
 - **`media`'s label ran under the row's ⋯ menu.** *Picture with text on it* is
   twenty-three characters on an 11rem tree; it is *Picture box*, and what it
   does moved to the note where it belongs.
@@ -201,7 +206,11 @@ one of these was invisible to the suite.
 **Two things were tried and reverted, and the reason is worth more than the
 change.** Making the row's name truncate rather than overflow looks like the
 obvious fix for the label problem and is worse: the row's furniture is 176px of
-a 254px pane, so every leaf came out as *Yo…*. `flex-shrink` weights do not
+a 254px pane, so every leaf came out as *Yo…*. _The furniture is smaller under
+[ADR 0066](0066-the-editors-chrome-is-one-card-with-three-named-panes.md) — 24px
+action cells, a 12px depth step, an 11px kind — and this conclusion is unchanged:
+a name may still not jump or truncate under a pointer. What shrinking bought is
+that the ordinary row no longer needs the scroll._ `flex-shrink` weights do not
 save it — the deficit is bigger than the words are — and collapsing the two
 hover-only action cells would make every row's name jump under the pointer.
 The pressure goes on the labels instead, which is why `media` is two words.
@@ -210,6 +219,16 @@ The pressure goes on the labels instead, which is why `media` is two words.
 admin's 12px floor and take the artifact's `.04em`/600 — and `--text-micro` is
 already 12px/.04em/600 (ADR 0037). Mono is used where the content is genuinely
 code: the check sources and the stored-JSON readout.
+
+_Corrected by [ADR 0066](0066-the-editors-chrome-is-one-card-with-three-named-panes.md):
+**it needed two roles, and "the admin's 12px floor" was not a thing this admin
+had.** ADR 0038 sets contrast ratios, a blocking lint, pointer targets and
+viewports — no minimum font size. The floor was invented in a comment in
+`index.css`, cited to that ADR, and believed here; it is why this pass shipped
+the behaviour and left every surface a step or two too large. `--text-label`
+(11px) and `--text-meta` (9px) are the artifact's own values, and the row's kind
+— which stated no size at all and inherited 14px body — is what the first one was
+for._
 
 ## Verified on a real WordPress
 
