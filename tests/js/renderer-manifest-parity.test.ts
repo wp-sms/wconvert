@@ -301,6 +301,45 @@ describe('the type scale', () => {
 
 /**
  * ============================================================================
+ * A WRAPPED PANE FILLS ITS LINE, AND jsdom CANNOT SEE THAT.
+ * ============================================================================
+ * `flex-grow` distributes FREE space, so a value below 1 distributes only that
+ * fraction of it. Side by side the two grows sum to 1 and the line is consumed
+ * exactly; WRAPPED, each pane is alone on its line with a grow of `.35` or `.5`
+ * and stops short — measured in a browser at 320px, `split-hero` drew two 228px
+ * panes in a 264px row.
+ *
+ * It was invisible for as long as a pane drew nothing, and a `panel` inside one
+ * is what made it a dark box with a stripe of the design's own background down
+ * its edge (ADR 0062).
+ *
+ * **This is a source-text assertion and it is the cheap belt.** Vitest runs
+ * jsdom with `css: false`, so nothing here computes layout and the fault was
+ * found by measuring a real browser. What a text assertion CAN do is notice the
+ * one-line edit that brings it back.
+ */
+describe('the panes of a split', () => {
+  it('floors both grows at 1, so either fills a line it is alone on', () => {
+    const grows = [...CSS.matchAll(/\.wc-pane:(?:first|last)-child\{flex-grow:([^}]+)\}/g)].map(
+      ([, value]) => value,
+    );
+
+    expect(grows).toHaveLength(2);
+
+    for (const grow of grows) {
+      expect(grow, 'a grow that can resolve below 1 leaves a wrapped pane short').toMatch(/^max\(1,/);
+    }
+  });
+
+  /** And the ratio between them is still what divides a SHARED line. */
+  it('keeps the ratio the manifest declares', () => {
+    expect(CSS).toContain('var(--wc-ratio,.5)*10');
+    expect(CSS).toContain('(1 - var(--wc-ratio,.5))*10');
+  });
+});
+
+/**
+ * ============================================================================
  * THE ONE LAYOUT THAT PAINTS, AND THE THREE THINGS THAT MAKES TRUE.
  * ============================================================================
  * Every other layout arranges and draws nothing, so a scoped bag on one is

@@ -170,8 +170,30 @@ export const SHADOW_CSS = [
    * nothing but a picture is unaffected: the picture already fills it.
    */
   `.wc-pane{flex:1 1 12rem;min-inline-size:0;display:flex;flex-direction:column;justify-content:center}`,
-  `.wc-pane:first-child{flex-grow:var(--wc-ratio,.5)}`,
-  `.wc-pane:last-child{flex-grow:calc(1 - var(--wc-ratio,.5))}`,
+  /*
+   * ==========================================================================
+   * THE GROWS ARE SCALED BY TEN, AND THAT IS A BUG FIX RATHER THAN A STYLE.
+   * ==========================================================================
+   * `flex-grow` distributes FREE SPACE, and a value below 1 distributes only
+   * that fraction of it. Side by side the two grows sum to 1 and the line is
+   * consumed exactly — which is why this was right for as long as a pane drew
+   * nothing. Wrapped, each pane is alone on its line with a grow of `.35` or
+   * `.5`, so it takes a third or a half of the space beyond its `12rem` basis
+   * and stops: measured at 320px, `split-hero` drew two 228px panes in a 264px
+   * row and `inline-split` two of 209 and 223 in 240.
+   *
+   * **It was invisible until a pane had a ground.** A transparent pane that is
+   * 40px short of the line looks like a pane; a `panel` inside one is a dark
+   * box with a stripe of the design's own background down its edge (ADR 0062).
+   *
+   * Ten, because only the RATIO between two grows matters once their sum
+   * clears 1 — so `3.5 : 6.5` divides a shared line exactly as `.35 : .65`
+   * did, and either alone now fills its own. `max()` keeps that true for a
+   * design shipping a fraction below `.1`, which `choices` permits and no
+   * shipped design uses (ADR 0054: an offer, not a limit).
+   */
+  `.wc-pane:first-child{flex-grow:max(1,calc(var(--wc-ratio,.5)*10))}`,
+  `.wc-pane:last-child{flex-grow:max(1,calc((1 - var(--wc-ratio,.5))*10))}`,
 
   /*
    * **A display face is the second thing a reference-class design decides**,
