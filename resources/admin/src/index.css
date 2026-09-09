@@ -2701,7 +2701,7 @@
 .wconvert-block {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.1875rem;
   min-block-size: 2rem;
   padding-block: 0.25rem;
   padding-inline: 0.5rem;
@@ -2711,6 +2711,19 @@
 
 .wconvert-block:first-child {
   border-block-start: 0;
+}
+
+/*
+ * **The divider is 1px OF the row's 32, not 1px on top of it.**
+ *
+ * `min-block-size` is not what decides this row's height — the 24px twist plus
+ * 4px of air above and below is 32 on its own, so the minimum never binds and a
+ * `border-block-start` added 33. Measured in a browser: every row but the first
+ * was a pixel taller than every rule here says, which is the kind of thing only
+ * a `getBoundingClientRect()` finds.
+ */
+.wconvert-block:not(:first-child) {
+  padding-block-start: calc(0.25rem - 1px);
 }
 
 /*
@@ -2866,9 +2879,26 @@
  * bought back before the furniture moves at all.
  *
  * The furniture then moves too: three `icon-xs` cells rather than three
- * `icon-sm` (72px, not 96) and a 12px depth step rather than 16. Together the
- * same pane holds ~17 characters where it held ~8, and *Headline after they
- * submit* — one of the five that ran under the `⋯` — fits.
+ * `icon-sm` (72px, not 96) and a 12px depth step rather than 16.
+ *
+ * **Measured in a browser, because the arithmetic has three regimes and only
+ * two of them come out clean.** *Headline after they submit* is the longest of
+ * the five names that ran under their own `⋯`:
+ *
+ * | | tree pane | it overlaps by |
+ * |---|---|---|
+ * | 1680, menu expanded | 256px | 0px |
+ * | 1280, menu folded | 256px | 0px |
+ * | 1280, menu expanded | 222px | 34px |
+ *
+ * The third is not fixable from here and is stated rather than papered over.
+ * At 1280 with the menu out, the container is 1070px: the inspector takes 22rem
+ * and the preview takes its non-negotiable 31rem floor, so the tree gets 222 —
+ * and 222 minus this row's furniture leaves ~38px of label for ~133px of word.
+ * No further shaving reaches it; widening the tree means narrowing the preview
+ * below the width at which it stops rendering designs at their own measure,
+ * which is the one thing a live preview exists not to do. Full width is the
+ * merchant's answer and the pane's own scroll is the fallback.
  *
  * **What is unchanged is why it does not truncate.** Two of the three action
  * cells are `opacity: 0` until the row is hovered, focused or selected, and
@@ -2920,7 +2950,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  inline-size: 1rem;
+  inline-size: 0.875rem;
   flex: none;
   color: var(--muted-foreground);
   cursor: grab;
@@ -2933,10 +2963,11 @@
 
 /*
  * A step gets none, so the rows that DO drag have to line up with the one that
- * does not — the grip's width, spent as indentation on a step's own row.
+ * does not — the grip's width plus the row's gap, spent as indentation on a
+ * step's own row.
  */
 .wconvert-block[data-step='true'] .wconvert-block__name {
-  padding-inline-start: 1.25rem;
+  padding-inline-start: 1.0625rem;
 }
 
 /*

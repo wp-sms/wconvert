@@ -8,14 +8,24 @@
  * changes a hex — so this reads `index.css` and fails loudly if the blocks it
  * expects have moved, rather than emitting a stale file.
  *
- * Two blocks come out:
+ * Three blocks come out:
  *
  * - `@theme inline { … }` — the Tailwind theme, which is what maps a utility
  *   name onto a custom property.
+ * - `@theme static { … }` — the TYPE SCALE, which is a separate block because
+ *   its values are literal rather than references to `:root` (`inline` stops a
+ *   custom property being emitted at all, and hand-written CSS in `index.css`
+ *   reads `var(--text-heading)` directly).
  * - `:root { … }` — the values themselves.
  *
- * A plain-CSS mirror of the second is appended, so the file also stands alone
+ * A plain-CSS mirror of the last two is appended, so the file also stands alone
  * in a canvas that has no Tailwind to interpret `@theme`.
+ *
+ * **The type scale was missing from this mirror until ADR 0066**, which is
+ * exactly the failure this program exists to prevent — the design system showed
+ * a palette, a radius and three control heights beside not one of the eight
+ * type roles, so the axis ADR 0037 added in the same breath as the colours was
+ * the one axis a reader could not check.
  */
 
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -53,6 +63,7 @@ function block(opener) {
 }
 
 const theme = block('@theme inline {');
+const scale = block('@theme static {');
 const root = block(':root {');
 
 /*
@@ -62,7 +73,7 @@ const root = block(':root {');
  * mirror rather than a second source: it is written from the block above, in
  * this file, on every build.
  */
-const declarations = [...root.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)]
+const declarations = [...`${root}${scale}`.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)]
   .map(([, name, value]) => `  ${name}: ${value.trim().replace(/\s+/g, ' ')};`)
   .join('\n');
 
@@ -75,6 +86,8 @@ const out = `/*
  */
 
 ${theme}
+
+${scale}
 
 ${root}
 
@@ -93,4 +106,6 @@ ${declarations}
 
 writeFileSync(resolve(SCRATCH, 'out/tokens.css'), out);
 
-console.log(`  tokens.css (${theme.split('\n').length + root.split('\n').length} lines lifted, ${declarations.split('\n').length} properties mirrored)`);
+console.log(
+  `  tokens.css (${theme.split('\n').length + scale.split('\n').length + root.split('\n').length} lines lifted, ${declarations.split('\n').length} properties mirrored)`
+);

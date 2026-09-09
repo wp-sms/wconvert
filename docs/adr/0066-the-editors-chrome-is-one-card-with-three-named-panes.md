@@ -169,6 +169,55 @@ the panes still stack, and the division is `border-block-start` instead.
   its smallest. A roll-out is a decision about the whole admin and would be
   taken against the whole admin.
 
+## Verified on a real WordPress
+
+Playground, both plugins mounted, per CLAUDE.md — and `npm run build`, not
+`build:admin`, because Pro *deregisters* free's admin script. Read out of the
+page: the one WConvert stylesheet the browser loads is
+`wconvert-pro/public/admin/main.css`.
+
+Driven with Playwright rather than the Chrome extension, and measured with
+`getBoundingClientRect()` rather than read off a screenshot. A design with 20
+blocks over two steps (`fieldwork`), at 1280 and 1680, menu expanded and folded,
+LTR and RTL. No console errors, no page errors, nothing over 400.
+
+| | held? | |
+|---|---|---|
+| a leaf row is 32px | **yes** | every row, exactly, at every width |
+| its twist is 24 × 24 | **yes** | and it is the tallest thing in the row |
+| the three panes take their floors at 1280 | **yes** | 222 / 496 / 352 — the tree is 46px WIDER than the plan predicted, because the three 1.5rem gaps between three boxes are one 1px rule now |
+| nothing over 14px but the inspector's heading | **yes** | 16 (that heading) · 14 · 13 · 12 · 11 · 9, and 14 is the tab strip outside the card |
+| the check sources fit at every width | **yes** | six chips on one line at 1280; the container query that hid them is gone |
+| the sticky panes still travel | **yes** | `.wconvert-pane__stick` pins at 4rem inside a stretched pane |
+| *Headline after they submit* fits at 1280 with the menu expanded | **no** | see below |
+
+**The one number that does not hold, and it is arithmetic rather than an
+oversight.** At 1280 with wp-admin's menu out, the container is 1070px: the
+inspector takes 22rem and the preview takes its non-negotiable 31rem floor, so
+the tree gets **222px** — and 222 minus the row's furniture leaves ~38px of
+label for a ~133px word. It overlaps its own `⋯` by 34px.
+
+At **1680** it overlaps by **0**, and at **1280 with the menu folded** — which
+is 124px the container query can actually see — by **0**. The longest name in
+the design, *Body text after they submit*, overlaps by 4px at both. Against the
+five names the ticket screenshotted, that is the symptom gone at two of the
+three widths and much reduced at the third.
+
+Closing the third would mean narrowing the preview below the width at which it
+stops rendering a design at its own measure, which is the one thing a live
+preview exists not to do. *Full width* is the merchant's answer and the tree's
+own scroll is the fallback.
+
+### One thing fixed on the way past
+
+**The design system's token mirror had no type scale in it at all.**
+`tools/design-system/build/tokens.mjs` lifted `@theme inline` and `:root` and
+not `@theme static`, so the generated `tokens.css` showed a palette, a radius
+and the control heights beside not one of the roles — the axis ADR 0037 added in
+the same breath as the colours was the one axis a reader of the mirror could not
+check. It lifts all three blocks now. Re-shot: the four reading screens are
+unchanged, which is what "the Design tab only" is supposed to mean.
+
 ## Consequences
 
 - **`--text-label` and `--text-meta` exist, and the scale is eight roles.**
@@ -188,6 +237,8 @@ the panes still stack, and the division is `border-block-start` instead.
   allows the flag after the value: `TabsTrigger` ships `text-sm` as an
   `!important` utility, so the inspector's own strip cannot state a size without
   one (ADR 0042 rule 6). The flag says nothing about which role was spelled.
+- **The design system lifts `@theme static` too**, so its `tokens.css` carries
+  the eight type roles rather than only colour, radius and the control heights.
 - **The check strip's container query is deleted.** It hid every source below
   62rem because six of them wrapped onto three lines at 12px. At 9px they fit,
   which is a better answer than removing the information was.
