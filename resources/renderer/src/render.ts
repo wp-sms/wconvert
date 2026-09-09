@@ -60,6 +60,31 @@ export function render(tree: TemplateTree, tokens: Tokens, step = 0): HTMLElemen
 }
 
 /**
+ * Colour names a token's VALUE may be, so a scope can follow the theme.
+ *
+ * ============================================================================
+ * WITHOUT IT, EVERY SCOPE IS A HEX AND A THEME MOVES NOTHING INSIDE ONE.
+ * ============================================================================
+ * A theme sets the design's colours; a scoped bag re-declares them further in
+ * (ADR 0062). Written verbatim, `{"bg":"#263f2c"}` on a panel is a colour that
+ * survives every theme the merchant tries — so the deeper a design is styled,
+ * the less a theme does, and the box they most want to follow the palette is
+ * the one that never will.
+ *
+ * `{"bg":"accent"}` follows it. And it follows it **in CSS rather than here**:
+ * the value becomes `var(--wc-accent)`, which resolves at the element against
+ * whatever is in scope, at no cost to this module and with no resolution order
+ * to get wrong. A theme applied after the render moves it too.
+ *
+ * **Closed to the six colours**, because those are the ones a palette is made
+ * of and a `pad` that follows `gap` is a coincidence rather than an intent. It
+ * is asserted against the manifest's own `referable` section by
+ * `renderer-manifest-parity`, exactly as {@link SAFE_SCHEMES} is — the renderer
+ * still imports no manifest.
+ */
+export const REFERABLE = ['bg', 'fg', 'muted', 'accent', 'accent-fg', 'border', 'input-bg'];
+
+/**
  * Write a token bag onto one element, as the custom properties it names.
  *
  * ============================================================================
@@ -76,10 +101,20 @@ export function render(tree: TemplateTree, tokens: Tokens, step = 0): HTMLElemen
  * scopes, through one private `tokens()`. This module is handed a bag that has
  * already been through it — the same bargain the whole renderer takes with the
  * tree it draws.
+ *
+ * The VALUES are unvalidated too, and that is what makes {@link REFERABLE} the
+ * renderer's call rather than the boundary's: a value naming a colour token
+ * becomes a reference to it, and every other value is written exactly as it
+ * was. A name referring to itself is written verbatim as well — `var(--wc-bg)`
+ * on `--wc-bg` is a cycle CSS discards, which would silently unset the one
+ * property the author was trying to set.
  */
 function scope(element: HTMLElement, tokens: Tokens | undefined): void {
   for (const [name, value] of Object.entries(tokens ?? {})) {
-    element.style.setProperty(TOKEN_PREFIX + name, value);
+    element.style.setProperty(
+      TOKEN_PREFIX + name,
+      value !== name && REFERABLE.includes(value) ? `var(${TOKEN_PREFIX}${value})` : value,
+    );
   }
 }
 
@@ -148,6 +183,7 @@ function elementFor(node: TemplateNode): HTMLElement | null {
     case 'row':
     case 'grid':
     case 'panel':
+    case 'media':
       return layout(node);
     case 'split':
       return split(node as SplitNode);
@@ -188,30 +224,48 @@ function layout(
     tokens?: Tokens;
     edges?: string;
     min?: string | number;
+    notch?: boolean;
   },
 ): HTMLElement {
   const element = document.createElement('div');
 
   element.className = `wc-${node.type}`;
 
-  if (node.type === 'panel') {
-    /*
-     * ========================================================================
-     * A PANEL INHERITS THE DESIGN'S COLOURS AND NOT ITS PHOTOGRAPH.
-     * ========================================================================
-     * Every other token is wanted further in: a panel with no bag should read
-     * as the design it is inside. `bg-image` is the exception, and it is not a
-     * taste call — `.wc-panel` paints the same two background layers
-     * `.wc-root` does, so a design with one picture would paint it AGAIN,
-     * cover and centred, inside every panel in it. Reset before the bag rather
-     * than after, so a photo pane's own `bg-image` still wins.
-     *
-     * `overlay` goes with it because an overlay is a wash over that picture; a
-     * panel that wants one over its own ground says so in its bag.
-     */
+  /*
+   * **The floor under a box that draws a picture**, and it is declared by the
+   * two layouts that can. `min` IS on a scale, so it is a custom property —
+   * the same shape `split.ratio` has — and the manifest is what says which
+   * layouts offer it, so a third one arrives here for free.
+   */
+  if (node.min !== undefined) {
+    element.style.setProperty(TOKEN_PREFIX + 'min', String(node.min));
+  }
+
+  /*
+   * ==========================================================================
+   * A BOX THAT PAINTS INHERITS THE DESIGN'S COLOURS AND NOT ITS PHOTOGRAPH.
+   * ==========================================================================
+   * Every other token is wanted further in: a panel with no bag should read as
+   * the design it is inside. `bg-image` is the exception, and it is not a
+   * taste call — `.wc-panel` paints the same two background layers `.wc-root`
+   * does, so a design with one picture would paint it AGAIN, cover and
+   * centred, inside every panel in it. Reset before the bag rather than after,
+   * so a photo pane's own `bg-image` still wins.
+   *
+   * `overlay` goes with it because an overlay is a wash over that picture; a
+   * box that wants one over its own ground says so in its bag.
+   *
+   * **`media` takes the same reset for the same reason**, and it is the case
+   * that makes the rule read oddly: a media with no picture in its bag draws
+   * the design's ground rather than its photograph, which is an empty box
+   * waiting for one instead of the design's own art repeated at a second size.
+   */
+  if (node.type === 'panel' || node.type === 'media') {
     element.style.setProperty(TOKEN_PREFIX + 'bg-image', 'none');
     element.style.setProperty(TOKEN_PREFIX + 'overlay', '#0000');
+  }
 
+  if (node.type === 'panel') {
     // A modifier ATTRIBUTE and not a custom property, for the reason
     // `badge.place` is a modifier class: the parity test asserts the
     // stylesheet reads no `--wc-*` name outside the tokens and the declared
@@ -222,10 +276,12 @@ function layout(
       element.dataset.edges = node.edges;
     }
 
-    // `min` IS on a scale, so it is a custom property — the same shape
-    // `split.ratio` has, and declared as a layout param for the same reason.
-    if (node.min !== undefined) {
-      element.style.setProperty(TOKEN_PREFIX + 'min', String(node.min));
+    // Two circles punched out of the corners, so the merchant's own page shows
+    // through them. A modifier attribute for `edges`'s reason, and `false`
+    // writes nothing — a design that never heard of the param renders
+    // byte-identically to one that spells the default.
+    if (node.notch === true) {
+      element.dataset.notch = 'true';
     }
   }
 
@@ -300,9 +356,42 @@ function words(tag: string, className: string, text: string | undefined): HTMLEl
   const element = document.createElement(tag);
 
   element.className = className;
-  element.textContent = text ?? '';
+  lines(element, text ?? '');
 
   return element;
+}
+
+/**
+ * Authored text, with the line breaks in it.
+ *
+ * ============================================================================
+ * EVERY HEADLINE IN THE REFERENCE SET BREAKS ITS OWN LINE, AND `textContent`
+ * ATE ALL OF THEM.
+ * ============================================================================
+ * *"Room⏎to grow."* is one heading and two lines, and where the break falls is
+ * most of what a display headline IS — the alternative is two `heading` nodes
+ * with a gap between them, which is a different thing that happens to look
+ * similar at one width.
+ *
+ * `SlotFields` has given the merchant a `<textarea>` for this text since it
+ * was written, so they could already type a newline; what happened to it was
+ * that `textContent` collapsed it to a space and nothing said so.
+ *
+ * **Structure and never markup.** Each line is a text node and each break is a
+ * real `<br>`, so this is one more place that does not reach `innerHTML`
+ * (ADR 0013). An empty line writes the `<br>` and no text node, which is what
+ * makes a deliberate blank line survive.
+ */
+function lines(element: HTMLElement, text: string): void {
+  text.split('\n').forEach((line, at) => {
+    if (at > 0) {
+      element.appendChild(document.createElement('br'));
+    }
+
+    if (line !== '') {
+      element.appendChild(document.createTextNode(line));
+    }
+  });
 }
 
 /**
@@ -497,22 +586,43 @@ function heading(node: HeadingNode): HTMLElement {
   const element = document.createElement(node.level === 2 ? 'h3' : 'h2');
 
   element.className = sized('wc-heading', node.size);
-  element.textContent = node.text ?? '';
+  lines(element, node.text ?? '');
 
   return element;
 }
 
 /**
- * The two leaves that are a sentence which may hold one link. Named for the
- * shape rather than for either node, because the rule is the same for both.
+ * The two leaves that are a sentence which may hold one link and one run of
+ * emphasis. Named for the shape rather than for either node, because the rule
+ * is the same for both.
  */
-type Sentence = Pick<TextNode | ConsentNode, 'text' | 'link'>;
+type Sentence = Pick<TextNode | ConsentNode, 'text' | 'link' | 'emphasis'>;
 
 /**
- * The one placeholder a sentence may carry, and the only reason a leaf holds
+ * The two placeholders a sentence may carry, and the only reason a leaf holds
  * more than a string (ADR 0013).
+ *
+ * ============================================================================
+ * TWO MARKS RATHER THAN ONE FILLER FOR ONE MARK, AND THAT IS WHAT REMOVES THE
+ * AMBIGUITY.
+ * ============================================================================
+ * `%s` was alone while a link was the only structure a sentence could hold.
+ * Emphasis is the second, and giving it the same mark would mean a sentence
+ * carrying both had one slot and two claimants — a rule about which wins,
+ * decided in this file, that nothing on the merchant's screen could explain.
+ *
+ * So *"Take %b off, and read our %s."* is one sentence with both, and the
+ * split does the telling apart. `%b` for bold, beside `%s` for string, which
+ * is the spelling the merchant already meets in `SlotFields`.
  */
 const PLACEHOLDER = '%s';
+const EMPHASIS = '%b';
+
+/** Both marks, kept by the split so each piece is either text or a mark. */
+const MARKS = /(%s|%b)/;
+
+/** Both marks with the space in front, for the pass that removes an unfilled one. */
+const UNFILLED = / ?(%s|%b)/g;
 
 /**
  * Schemes an `<a>` may carry.
@@ -530,46 +640,85 @@ const PLACEHOLDER = '%s';
 export const SAFE_SCHEMES = ['http:', 'https:', 'mailto:'];
 
 /**
- * A sentence that may hold one link, built as STRUCTURE and never as markup.
+ * A sentence that may hold one link and one run of emphasis, built as
+ * STRUCTURE and never as markup.
  *
- * The text is split on the placeholder and the `<a>` is constructed here, so
- * no code path in the renderer reaches `innerHTML` — which is what keeps an
- * XSS sink out of the loader's hot path (ADR 0013).
+ * The text is split on the placeholders and both elements are constructed
+ * here, so no code path in the renderer reaches `innerHTML` — which is what
+ * keeps an XSS sink out of the loader's hot path (ADR 0013).
  *
- * With no href the link renders NOTHING, and the placeholder goes with it
+ * With no href the link renders NOTHING, and its placeholder goes with it
  * along with the space in front of it. Never a dead `#`: a site with no
  * privacy policy configured has no link to offer, and offering a broken one is
- * worse than offering none (ADR 0032).
+ * worse than offering none (ADR 0032). An absent emphasis is treated
+ * identically — one rule for both marks rather than two that could drift.
  */
 function sentence(tag: string, className: string, node: Sentence): HTMLElement {
   const element = document.createElement(tag);
-  const text = node.text ?? '';
   const href = safeHref(node.link?.href);
 
   element.className = className;
 
-  // No link, no destination for one, or NOWHERE TO PUT ONE: all three render
-  // the sentence and no anchor. The placeholder goes with it, and the space in
-  // front of it goes too. A sentence carrying no `%s` has no place for a link,
-  // and appending the label to the end of it produces a word glued to the last
-  // one — evidence of a sentence nobody wrote.
-  if (node.link === undefined || href === null || !text.includes(PLACEHOLDER)) {
-    element.textContent = text.replace(/ ?%s/g, '');
+  // No link, no destination for one, or no emphasis to lift: the mark renders
+  // nothing and the space in front of it goes too. A word appended to the end
+  // of a sentence that had no place for it is evidence of a sentence nobody
+  // wrote.
+  const anchor =
+    node.link === undefined || href === null ? null : link(node.link.label, href);
+  const strong =
+    node.emphasis === undefined || node.emphasis === '' ? null : words('strong', 'wc-strong', node.emphasis);
 
-    return element;
-  }
+  fill(element, node.text ?? '', anchor, strong);
 
-  const [before, ...after] = text.split(PLACEHOLDER);
+  return element;
+}
+
+function link(label: string, href: string): HTMLElement {
   const anchor = document.createElement('a');
 
   anchor.className = 'wc-link';
   anchor.href = href;
-  anchor.textContent = node.link.label;
+  anchor.textContent = label;
   anchor.rel = 'noopener';
 
-  element.append(before ?? '', anchor, after.join(PLACEHOLDER));
+  return anchor;
+}
 
-  return element;
+/**
+ * One sentence's text, its line breaks, and whatever fills its marks.
+ *
+ * Two passes over the string and no branch per mark: the first removes a mark
+ * nothing fills, the second splits on what is left. A piece that is a mark is
+ * the element for it; every other piece is text, and goes through
+ * {@link lines} so a sentence breaks its own line exactly as a heading does.
+ */
+function fill(element: HTMLElement, text: string, anchor: Node | null, strong: Node | null): void {
+  const parts: Record<string, Node | null> = { [PLACEHOLDER]: anchor, [EMPHASIS]: strong };
+  const stripped = text.replace(UNFILLED, (whole, mark: string) => (parts[mark] === null ? '' : whole));
+
+  for (const piece of stripped.split(MARKS)) {
+    // The guard is what makes the lookup safe: `piece` is arbitrary authored
+    // copy otherwise, and a sentence containing the word `constructor` would
+    // otherwise reach a prototype property and try to append a function.
+    const part = piece === PLACEHOLDER || piece === EMPHASIS ? parts[piece] : null;
+
+    if (part !== null) {
+      /*
+       * **One link and one emphasis per sentence, and a second mark of the
+       * same kind is literal text.** The rule predates emphasis — it is what
+       * `[before, ...after].join(PLACEHOLDER)` did — and it is asserted from
+       * both sides by `tests/fixtures/consent-sentences.json`, because
+       * `WConvert\Lead\ConsentRecord` composes the same sentence in PHP for
+       * the Consent Record and evidence that disagrees with what was shown is
+       * evidence of nothing.
+       */
+      parts[piece] = null;
+      element.appendChild(part);
+      continue;
+    }
+
+    lines(element, piece);
+  }
 }
 
 function safeHref(href: SlotLink['href']): string | null {

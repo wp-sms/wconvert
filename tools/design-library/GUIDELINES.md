@@ -185,11 +185,26 @@ and each centres its own contents against the other; a pane holding nothing but
 a picture is filled by it. All three are in the renderer, so no design has to
 ask.
 
-**`pad` is global, so `pad: 0` is never "let the picture bleed".** It is also
-"put the button hard against the opposite edge", because the same zero reaches
-every side of every node. Until per-node padding exists (ADR 0061), a `split`
-with a picture is a **framed** picture — set a real `pad` and let the pane fill
-do the work.
+**~~`pad` is global, so `pad: 0` is never "let the picture bleed".~~** It was,
+and the sentence has inverted: `pad` is scoped now (ADR 0062), so `pad: 0` on
+the DESIGN plus a real `pad` on each box is exactly how a full-bleed split is
+written — that is what `fieldwork` does. What survives is the warning that made
+it: a zero reaches every side of every node **inside** the box that sets it, so
+set it on the design and never on a container holding a form.
+
+**A `media` needs three things or it is not a picture.** `bg-image` in its own
+bag, because it resets the design's; `min`, because the spread has nothing to
+spread across otherwise and the box collapses to the two lines on it; and `fg`,
+because the design's ink was chosen against the design's ground and not against
+your photograph. The `overlay` is a layer under the words rather than a
+background wash, so a scrim can be as dark as the type needs.
+
+**A `notch` is only visible where the halves paint and the design does not.**
+Punch a hole in a blue panel sitting on a blue `.wc-root` and the hole shows
+blue — the mask removes the panel and the design's ground is still behind it.
+So a ticket sets `bg: "#0000"` on the design and paints each half, and the
+perforation shows the merchant's page. Pair it with `edges: "block-start"`: the
+rule is the tear line and the holes are its ends.
 
 ## 2. What makes two designs different
 

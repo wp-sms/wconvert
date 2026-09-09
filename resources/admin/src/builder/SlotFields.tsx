@@ -99,6 +99,20 @@ export function SlotFields({
               value={held}
               onChange={(value) => onValue(key, value)}
             />
+            {/*
+              **The mark is where the words go, and it has to be said in the
+              same breath as the box that holds them.** `emphasis` is the
+              second placeholder a sentence carries and the only key whose
+              value renders NOWHERE unless the sentence has a place for it —
+              which is a control that silently does nothing, and the one thing
+              ADR 0054 rule 3 says a control may not be. `link` says the same
+              sentence about `%s` inside {@see LinkControl}.
+            */}
+            {key === 'emphasis' && (
+              <span className="description">
+                {__('Put %b in the text above where the bold words should sit.', 'wconvert')}
+              </span>
+            )}
           </label>
         );
       })}
@@ -278,9 +292,12 @@ export function LinkControl({
  * - **`src` on an image** is an address a merchant should not have to type.
  *   The media library is WordPress's own picker, and it degrades to the URL
  *   field where the script is absent.
- * - **`text` on anything but a heading** wraps. A headline is one line by
- *   construction; a body paragraph and a consent sentence are not, and a
- *   single-line box for them is a control that hides most of what it holds.
+ * - **`text`** wraps, on everything including a heading. It used to say *"on
+ *   anything but a heading. A headline is one line by construction"*, and that
+ *   stopped being true the day a newline became a `<br>`: every headline in
+ *   the reference set breaks its own line, so where the break falls is now the
+ *   most design-bearing thing a merchant types into this box. A single-line
+ *   input cannot show them where it is.
  * - **Everything else** keeps the box it had. `label`, `placeholder` and `alt`
  *   are short by nature and a bigger control would be a bigger target for the
  *   same three words.
@@ -296,7 +313,7 @@ export function controlFor(key: string, slot: Pick<Slot, 'type'>): KeyControlKin
     return slot.type === 'image' ? 'media' : 'url';
   }
 
-  return key === 'text' && slot.type !== 'heading' ? 'multiline' : 'text';
+  return key === 'text' ? 'multiline' : 'text';
 }
 
 function KeyControl({

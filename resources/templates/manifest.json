@@ -40,6 +40,7 @@
       "params": [
         "edges",
         "min",
+        "notch",
         "tokens"
       ],
       "choices": {
@@ -53,10 +54,33 @@
           "10rem",
           "16rem",
           "24rem"
+        ],
+        "notch": [
+          "false",
+          "true"
         ]
       },
       "defaults": {
         "edges": "none",
+        "min": "0",
+        "notch": "false"
+      }
+    },
+    "media": {
+      "children": "list",
+      "params": [
+        "min",
+        "tokens"
+      ],
+      "choices": {
+        "min": [
+          "0",
+          "10rem",
+          "16rem",
+          "24rem"
+        ]
+      },
+      "defaults": {
         "min": "0"
       }
     }
@@ -116,11 +140,13 @@
     "text": {
       "content": [
         "text",
-        "link"
+        "link",
+        "emphasis"
       ],
       "copy": [
         "text",
-        "link"
+        "link",
+        "emphasis"
       ],
       "params": [
         "size",
@@ -315,11 +341,13 @@
     "consent": {
       "content": [
         "text",
-        "link"
+        "link",
+        "emphasis"
       ],
       "copy": [
         "text",
-        "link"
+        "link",
+        "emphasis"
       ],
       "params": [
         "hidden"
@@ -390,6 +418,15 @@
     "https",
     "mailto"
   ],
+  "referable": [
+    "bg",
+    "fg",
+    "muted",
+    "accent",
+    "accent-fg",
+    "border",
+    "input-bg"
+  ],
   "choices": {
     "align": [
       "start",
@@ -445,7 +482,8 @@
       "row",
       "split",
       "grid",
-      "panel"
+      "panel",
+      "media"
     ],
     "captures": [
       "email",

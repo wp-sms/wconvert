@@ -118,11 +118,22 @@ designs expressible.
 
 Two things about it are worth stating because neither is obvious:
 
-- **A photo pane is a `panel`, and there is no `media` node.** `bg-image` +
+- ~~**A photo pane is a `panel`, and there is no `media` node.**~~ `bg-image` +
   `overlay` + `min`, in a `split` pane. A second child-key shape would have cost
   four files an edit and a hardcoded test a branch, to buy content spread
   top-and-bottom rather than stacked. A `spread` param buys that back if a design
   needs it.
+
+  > *Amended by [ADR 0063](0063-the-five-things-the-reference-designs-still-could-not-say.md):
+  > this originally read* "a photo pane is a `panel`, and there is no `media`
+  > node" *— and `media` is the sixth layout now. Every clause above is true and
+  > the conclusion was wrong: the cost estimate was right, and the benefit was
+  > described as one design's preference when* **thirteen of the sixteen
+  > reference designs put a wordmark at the top of one photograph and a display
+  > line at the bottom of the same one.** *The spread is not something a design
+  > might want on top of a photo pane; it is what putting type on a picture is.
+  > A `panel` is still the right answer for a photo pane with nothing written on
+  > it.*
 - **A panel inherits the design's colours and not its picture.** It paints the
   same two background layers `.wc-root` does, so one `bg-image` on the design
   would be painted again — cover, centred — inside every panel in it. `render.ts`

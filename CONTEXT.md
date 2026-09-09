@@ -641,6 +641,15 @@ is never copied into an Optin.
 > change anything about a box and not where the boxes are, and a design that
 > wants the picture on the other side is a different design. See
 > [ADR 0062](docs/adr/0062-a-token-bag-is-scoped-to-the-box-that-carries-it.md).
+>
+> **A scoped colour may name another colour rather than spell one**, and that
+> is what makes a scope survive a theme. `{"bg": "accent"}` follows whatever
+> `accent` is where the box sits; a hex does not, so the deeper a design was
+> styled the less a theme did — with twelve themes and forty-nine designs, the
+> box a merchant most wants to follow the palette was the one that never would.
+> Closed to the seven colour names, and resolved in CSS rather than by the
+> renderer, so a theme applied after the render moves it too. See
+> [ADR 0063](docs/adr/0063-the-five-things-the-reference-designs-still-could-not-say.md).
 
 > **That boundary is what keeps the library small.** Copy is what makes an Optin
 > serve a particular [[Goal]], so with the copy held elsewhere a Template is

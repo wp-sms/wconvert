@@ -204,12 +204,33 @@ ${table(['Layout', 'Children go in', 'Params', 'Values (**default**)'], layouts)
   exactly as \`stack\` does, and it draws the tokens in scope as a box: ground,
   picture, wash, padding, corner, edge. That is what makes a scoped bag
   *visible* — a cream box beside a dark one is two panels with different bags.
-  A photo pane is a \`panel\` carrying \`bg-image\`, \`overlay\` and \`min\`.
+  A photo pane with nothing written on it is a \`panel\` carrying \`bg-image\`,
+  \`overlay\` and \`min\`.
 
   **It inherits the design's colours and not its picture.** A panel resets
   \`bg-image\` and \`overlay\` before its own bag is applied, so one \`bg-image\` on
   the design is not painted again inside every panel in it. A panel that wants
   a picture says so in its own bag.
+
+  \`notch: true\` punches two circles out of its top corners so the page shows
+  through — the torn-ticket perforation, and the one ornament a token cannot
+  reach. Pair it with \`edges: "block-start"\`: the rule is the tear line and the
+  holes are its ends.
+- \`media\` — the **second** layout that paints, and the difference from
+  \`panel\` is what it does with spare room. A panel stacks its children at the
+  top; a media pushes the first to its top edge and the last to its bottom.
+  That is a wordmark above a display line on one photograph, which is the
+  commonest shape in the reference set.
+
+  It takes the same picture reset a panel does, so a media with no \`bg-image\`
+  in its own bag is an empty box waiting for one. Give it \`min\` — the spread
+  has nothing to spread across otherwise — and \`fg\`, because the design's own
+  ink is chosen against the design's own ground and not against your
+  photograph.
+
+  The \`overlay\` on a media is a **layer between the picture and the words**
+  rather than the background wash a panel paints, so it darkens the photograph
+  and never the type on it.
 
 **Every layout takes a \`tokens\` bag**, which is why the param appears on all of
 them. It is not a value from a list — it is the same token object the design
@@ -232,6 +253,21 @@ Notes that the table cannot carry:
   splits on \`%s\` and builds the \`<a>\` itself. **Omit \`href\` for the privacy
   policy** — the site fills it in at render, and with no policy configured the
   link renders nothing rather than a dead \`#\`.
+- **They can hold one run of emphasis too, the same way.** Write \`%b\` and a
+  sibling \`emphasis\` string:
+  \`"text": "Take %b your first order.", "emphasis": "10% off"\`. It renders as a
+  \`<strong>\` and is **weight only** — it inherits the colour of the sentence
+  around it, so the same mark is safe in fine print.
+
+  One link and one emphasis per sentence. A second \`%s\` or \`%b\` is literal
+  text, and a mark with nothing to fill it renders nothing — along with the
+  space in front of it.
+- **A newline in any authored text is a line break.** \`"Room\\nto grow."\`
+  renders as two lines with a real \`<br>\` between them, on a \`heading\`, a
+  \`text\`, an \`eyebrow\`, a \`badge\` and a \`code\` alike. Where a display
+  headline breaks is most of what it IS, so write the break rather than hoping
+  for the wrap — and two \`heading\` nodes with a gap between them is a
+  different thing that only looks similar at one width.
 - **\`icon\` is a closed set of six glyphs** the renderer owns. There is no
   \`src\`: a remote SVG is an off-site asset and an inline one is markup.
 - **\`image\` needs a \`src\`, or it renders nothing at all.** Use a \`data:\` URI so
@@ -329,6 +365,25 @@ it inherited.
 Two background layers, and the order is the feature: \`overlay\` paints **on top
 of** \`bg-image\`, which is the only reason light text over a photograph is
 legible.
+
+### A token as a VALUE, so a scope follows the theme
+
+A colour token's value may be the **name of another colour token**, and it then
+resolves to whatever that one is in scope:
+
+\`\`\`json
+{ "type": "panel", "tokens": { "bg": "accent", "fg": "accent-fg" } }
+\`\`\`
+
+Only these names may be used this way: ${list(manifest.referable)}. Anything
+else is written verbatim, as every value always was — including a name
+referring to itself, which is a cycle CSS would discard.
+
+**This is what makes a scope survive a theme.** A theme moves the design's
+colours; a bag that spelled a hex does not move with it, so the box a merchant
+most wants to follow the palette is the one that never would. Reach for a
+literal colour where the box is deliberately outside the palette — a
+photographic ground, a brand black — and for a name everywhere else.
 
 **Only set the tokens a design actually decides.** Anything omitted falls back
 to the default above.

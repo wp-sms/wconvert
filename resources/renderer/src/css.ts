@@ -139,6 +139,65 @@ export const SHADOW_CSS = [
   `.wc-panel[data-edges=block-start]{border-block-start:.5rem solid var(--wc-border,#e5e7eb)}`,
   `.wc-panel[data-edges=all]{border:1px solid var(--wc-border,#e5e7eb)}`,
 
+  /*
+   * ==========================================================================
+   * THE ONE ORNAMENT SCOPING CANNOT REACH, AND THE ONLY `mask` IN THE PRODUCT.
+   * ==========================================================================
+   * Of the eighteen decorations in the reference set, seventeen are a token in
+   * disguise: a photo scrim is `overlay`, a tick bullet is an `icon`, a ring is
+   * the data URI nine designs already use for `image`. A perforation is the
+   * one that is not, because it has to REMOVE the panel — the ground behind a
+   * punched notch is the merchant's own page, and no background layer can name
+   * that.
+   *
+   * Two circles, at the top corners, which is where a ticket tears. It pairs
+   * with `edges: block-start`: the rule is the perforation line and the holes
+   * are its ends.
+   *
+   * **`intersect` is what makes two layers one shape.** Each gradient is
+   * transparent inside its own circle and opaque everywhere else, so composing
+   * them keeps only what both agree is opaque — everything but the two holes.
+   * The DEFAULT composite is `add`, so an engine that does not understand this
+   * property draws a panel with no notches rather than a panel with no
+   * corners: it degrades to the design without the ornament, which is the only
+   * degradation worth having.
+   *
+   * The `-webkit-` pair is Safari before 15.4, and it costs almost nothing
+   * compressed because it is the same string twice.
+   */
+  `.wc-panel[data-notch=true]{-webkit-mask-image:radial-gradient(circle 10px at 0 0,#0000 10px,#000 10.5px),radial-gradient(circle 10px at 100% 0,#0000 10px,#000 10.5px);mask-image:radial-gradient(circle 10px at 0 0,#0000 10px,#000 10.5px),radial-gradient(circle 10px at 100% 0,#0000 10px,#000 10.5px);-webkit-mask-composite:source-in;mask-composite:intersect}`,
+
+  /*
+   * ==========================================================================
+   * A PICTURE THAT HOLDS THINGS. `panel` PAINTS A BOX; THIS IS TYPE ON ART.
+   * ==========================================================================
+   * `justify-content:space-between` is the whole difference and it is not a
+   * nicety: thirteen of the sixteen reference designs put a wordmark at the
+   * top of one photograph and a display line at the bottom of the SAME one, so
+   * spreading the children to the far edges is what putting type on a picture
+   * IS. A `panel` stacks them at the top and leaves the room underneath.
+   *
+   * `min` is load-bearing here rather than a nicety, for the reason the spread
+   * makes obvious: two short lines with nothing to spread across are two short
+   * lines.
+   *
+   * **The overlay is a LAYER of its own and not the second background layer.**
+   * On `.wc-root` and `.wc-panel` the wash is painted into `background-image`
+   * above the picture, which is right where the box's own text is the thing
+   * being made legible. Here the children sit ON the picture, so a wash in the
+   * background would darken the photograph and the words equally. A
+   * pseudo-element sits between the two — no extra markup, and the children
+   * take `position:relative` to clear it.
+   */
+  `.wc-media{position:relative;display:flex;flex-direction:column;justify-content:space-between;gap:var(--wc-gap,.75rem);min-block-size:var(--wc-min,0);padding:var(--wc-pad,1.5rem);border-radius:var(--wc-radius,.5rem);overflow:hidden;color:var(--wc-fg,#111827);background:var(--wc-bg,#fff);background-image:var(--wc-bg-image,none);background-size:cover;background-position:center}`,
+  `.wc-media::before{content:"";position:absolute;inset:0;background:var(--wc-overlay,#0000);pointer-events:none}`,
+  `.wc-media>*{position:relative}`,
+  /*
+   * A media alone in a pane fills it, exactly as an image alone in one does —
+   * the rule below this one, for the same design and the same reason.
+   */
+  `.wc-pane>.wc-media{block-size:100%}`,
+
   // `flex-basis` plus `wrap` is what stacks the two panes on a narrow screen,
   // with no media query and no container query to keep in step.
   /*
@@ -372,6 +431,21 @@ export const SHADOW_CSS = [
   `.wc-stack>.wc-icon,.wc-stack>.wc-image-circle{align-self:var(--wc-align,start)}`,
   `.wc-glyph{inline-size:1.25em;block-size:1.25em}`,
   `.wc-link{color:inherit}`,
+
+  /*
+   * ==========================================================================
+   * EMPHASIS IS WEIGHT, AND NOTHING ELSE, ON PURPOSE.
+   * ==========================================================================
+   * *"Take **10% off** your first order"* is 71 sentences across the reference
+   * set, and every one of them lifts the run by WEIGHT. A colour would be the
+   * obvious second declaration and is the wrong one: the same `%b` sits in
+   * fine print — which is already `--wc-muted` — so tinting it `--wc-accent`
+   * would put the loudest colour in the design on the quietest line in it.
+   *
+   * `inherit` on colour is therefore the feature rather than an omission: an
+   * emphasised run is the sentence around it, said harder.
+   */
+  `.wc-strong{font-weight:700}`,
   `.wc-image{display:block;inline-size:100%;block-size:auto;object-fit:cover;border-radius:var(--wc-radius,.5rem)}`,
   /*
    * A picture that IS one side of a split fills that side.

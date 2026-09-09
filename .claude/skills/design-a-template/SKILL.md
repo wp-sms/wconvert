@@ -132,14 +132,35 @@ re-declaring the same names for itself and everything inside it. Custom
 properties inherit, so a `split` can hold a cream pane beside a dark one and the
 form can have a different ground from the headline. Bags nest.
 
-**A bag is only visible where something draws it, and `panel` is that
-something.** Every other layout arranges and paints nothing, so a `stack` with
-`{"bg":"…"}` tints only what inside it happens to read `--wc-bg`. A `panel`
-holds its children in a column exactly as `stack` does *and* draws the box —
-ground, picture, wash, padding, corner, edge. A photo pane is a `panel` carrying
-`bg-image`, `overlay` and `min`; there is no `media` node and there will not be
-one. A panel resets `bg-image` and `overlay` before its own bag applies, so the
-design's picture is not repainted inside every panel in it.
+**A bag is only visible where something draws it, and two layouts are that
+something.** `stack`, `row`, `split` and `grid` arrange and paint nothing, so a
+`stack` with `{"bg":"…"}` tints only what inside it happens to read `--wc-bg`.
+
+- A **`panel`** holds its children in a column exactly as `stack` does *and*
+  draws the box — ground, picture, wash, padding, corner, edge. A photo pane
+  with nothing written on it is a `panel` carrying `bg-image`, `overlay` and
+  `min`. `notch: true` punches two circles out of its top corners so the page
+  shows through — the one ornament a token cannot reach, and only visible where
+  the halves paint and the design's own ground does not.
+- A **`media`** is the picture box: the same two background layers, and its
+  children pushed to its top and bottom edges rather than stacked. That is a
+  wordmark above a display line on one photograph, which thirteen of the
+  sixteen reference designs are. Give it `min`, or the spread has nothing to
+  spread across, and `fg`, because the design's ink was chosen against the
+  design's ground and not against your picture.
+
+Both reset `bg-image` and `overlay` before their own bag applies, so the
+design's picture is not repainted inside every box in it (ADR 0063).
+
+**Copy carries three things beyond the words.** A newline is a real line break
+on every text leaf — write where a display headline breaks rather than hoping
+for the wrap. `%s` plus a `link` object is an anchor, and `%b` plus an
+`emphasis` string is a `<strong>`; one of each per sentence, a second mark is
+literal, and a mark with nothing to fill it renders nothing.
+
+**A colour token's value may name another colour token** — `{"bg": "accent"}` —
+and it then follows the theme. Reach for a literal hex only where the box is
+deliberately outside the palette.
 
 ADR 0061 declined per-node styling as "rung 3" and named the evidence that would
 reopen it; ADR 0062 records the reopening, and that the evidence was a different

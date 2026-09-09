@@ -3,7 +3,7 @@ import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import manifest from '../../resources/templates/manifest.json';
 import { DOCUMENT_CSS, SHADOW_CSS } from '@renderer/css';
-import { SAFE_SCHEMES, render } from '@renderer/render';
+import { REFERABLE, SAFE_SCHEMES, render } from '@renderer/render';
 import type { TemplateTree } from '@renderer/types';
 
 /**
@@ -388,6 +388,271 @@ describe('the panel', () => {
 
   it('writes min as the custom property the stylesheet reads', () => {
     expect(panel({ min: '16rem' }).style.getPropertyValue('--wc-min')).toBe('16rem');
+  });
+});
+
+/**
+ * ============================================================================
+ * THE SECOND LAYOUT THAT PAINTS, AND THE SPREAD IS THE WHOLE OF IT.
+ * ============================================================================
+ * A `panel` and a `media` draw the same two background layers; what tells them
+ * apart is what each does with room it has more of than its contents need. A
+ * panel stacks at the top and a media pushes to both edges, which is what a
+ * wordmark above a headline on one photograph is — thirteen of the sixteen
+ * reference designs.
+ *
+ * jsdom computes no layout, so the spread itself is a source-text assertion.
+ * What IS behavioural here is everything that reaches the markup.
+ */
+describe('the media', () => {
+  const media = (extra: object): HTMLElement =>
+    render({ steps: [{ type: 'media', children: [], ...extra }] } as TemplateTree, {})
+      .firstElementChild as HTMLElement;
+
+  /** The same reset a `panel` takes, for the same reason and in the same place. */
+  it('starts from the designs colours and not its picture', () => {
+    const root = render(
+      { steps: [{ type: 'media', children: [] }] } as TemplateTree,
+      { bg: '#0f172a', 'bg-image': 'url(/hero.jpg)', overlay: 'rgba(0,0,0,.5)' },
+    );
+    const element = root.firstElementChild as HTMLElement;
+
+    expect(element.style.getPropertyValue('--wc-bg-image')).toBe('none');
+    expect(element.style.getPropertyValue('--wc-overlay')).toBe('#0000');
+    expect(element.style.getPropertyValue('--wc-bg')).toBe('');
+  });
+
+  it('lets its own bag win over that reset, which is what putting type on art is', () => {
+    const element = media({ tokens: { 'bg-image': 'url(/plant.jpg)', overlay: 'linear-gradient(#0008,#000c)' } });
+
+    expect(element.style.getPropertyValue('--wc-bg-image')).toBe('url(/plant.jpg)');
+    expect(element.style.getPropertyValue('--wc-overlay')).toBe('linear-gradient(#0008,#000c)');
+  });
+
+  it('writes min as the custom property the stylesheet reads', () => {
+    expect(media({ min: '26rem' }).style.getPropertyValue('--wc-min')).toBe('26rem');
+  });
+
+  /**
+   * **The overlay is a LAYER and not the second background layer**, which is
+   * the one thing about this rule that is not the panel's. On a panel the wash
+   * is painted into `background-image` above the picture, which is right where
+   * the box's own text is what is being made legible; here the children sit ON
+   * the picture, so a wash in the background would darken the photograph and
+   * the words on it equally.
+   */
+  it('washes the picture from a layer the children sit above', () => {
+    expect(CSS).toContain('.wc-media::before{');
+    expect(CSS).toMatch(/\.wc-media::before\{[^}]*background:var\(--wc-overlay/);
+    expect(CSS).toContain('.wc-media>*{position:relative}');
+    // And the wash is NOT in its own background-image, or it would be under
+    // the picture rather than over it.
+    expect(/\.wc-media\{([^}]*)\}/.exec(CSS)?.[1] ?? '').not.toContain('--wc-overlay');
+  });
+
+  it('spreads its children to both edges, which is the whole difference from a panel', () => {
+    const rule = /\.wc-media\{([^}]*)\}/.exec(CSS)?.[1] ?? '';
+
+    expect(rule).toContain('justify-content:space-between');
+    expect(rule).toContain('min-block-size:var(--wc-min,0)');
+  });
+});
+
+/**
+ * ============================================================================
+ * THE ONE ORNAMENT SCOPING CANNOT REACH.
+ * ============================================================================
+ * A punched notch has to REMOVE the panel so the merchant's own page shows
+ * through, and no background layer can name that ground. It is the only `mask`
+ * in the product and the only new CSS property the whole scoping proposal
+ * added.
+ */
+describe('the notch', () => {
+  const panel = (extra: object): HTMLElement =>
+    render({ steps: [{ type: 'panel', children: [], ...extra }] } as TemplateTree, {})
+      .firstElementChild as HTMLElement;
+
+  it('writes it as a modifier attribute, and nothing at all for the default', () => {
+    expect(panel({ notch: true }).dataset.notch).toBe('true');
+    expect(panel({ notch: false }).outerHTML).toBe(panel({}).outerHTML);
+  });
+
+  /**
+   * **`intersect` is what makes two layers one shape**, and the DEFAULT
+   * composite is `add` — so an engine that does not understand the property
+   * draws a panel with no notches rather than a panel with no corners. That is
+   * the only degradation worth having, and it is what makes the prefixed pair
+   * optional rather than load-bearing.
+   */
+  it('composes the two circles by intersection, in both spellings', () => {
+    const rule = /\.wc-panel\[data-notch=true\]\{([^}]*)\}/.exec(CSS)?.[1] ?? '';
+
+    expect(rule).toContain('mask-composite:intersect');
+    expect(rule).toContain('-webkit-mask-composite:source-in');
+    expect([...rule.matchAll(/radial-gradient/g)]).toHaveLength(4);
+  });
+});
+
+/**
+ * ============================================================================
+ * EVERY HEADLINE IN THE REFERENCE SET BREAKS ITS OWN LINE.
+ * ============================================================================
+ * `SlotFields` has handed the merchant a `<textarea>` for body copy since it
+ * was written, so a newline was always typeable; `textContent` collapsed every
+ * one of them to a space and nothing said so.
+ *
+ * **Structure and never markup**, which is the same rule the link has: each
+ * line is a text node and each break is a real `<br>`, so this is one more
+ * place that does not reach `innerHTML` (ADR 0013).
+ */
+describe('a line break in authored copy', () => {
+  const drawn = (node: object): Element =>
+    renderStep({ type: 'stack', children: [node] })?.firstElementChild as Element;
+
+  it.each([
+    ['heading', { type: 'heading', text: 'Room\nto grow.' }],
+    ['text', { type: 'text', text: 'Room\nto grow.' }],
+    ['eyebrow', { type: 'eyebrow', text: 'Room\nto grow.' }],
+    ['badge', { type: 'badge', text: 'Room\nto grow.' }],
+    ['code', { type: 'code', text: 'Room\nto grow.' }],
+  ])('is a <br> on a %s, and the text either side of it survives', (_type, node) => {
+    const element = drawn(node);
+
+    expect(element.querySelectorAll('br')).toHaveLength(1);
+    expect(element.textContent).toBe('Roomto grow.');
+    expect(element.innerHTML).toBe('Room<br>to grow.');
+  });
+
+  it('writes a break with no text node for a deliberate blank line', () => {
+    expect(drawn({ type: 'text', text: 'one\n\ntwo' }).innerHTML).toBe('one<br><br>two');
+  });
+
+  it('leaves copy with no newline in it exactly as it was', () => {
+    expect(drawn({ type: 'heading', text: 'Room to grow.' }).innerHTML).toBe('Room to grow.');
+  });
+
+  /** A sentence breaks its own line too, on both sides of a placeholder. */
+  it('breaks a sentence either side of its link', () => {
+    const element = drawn({
+      type: 'text',
+      text: 'Read our %s\nbefore you sign up.',
+      link: { label: 'privacy policy', href: 'https://example.test/p/' },
+    });
+
+    expect(element.querySelectorAll('br')).toHaveLength(1);
+    expect(element.querySelector('a')?.textContent).toBe('privacy policy');
+  });
+});
+
+/**
+ * ============================================================================
+ * THE SECOND PLACEHOLDER, AND IT IS THE SAME MACHINERY AS THE FIRST.
+ * ============================================================================
+ * 71 sentences across the sixteen reference designs lift a run of words —
+ * *"Take **10% off** your first order"* — and until now the vocabulary could
+ * express it as two paragraphs or not at all.
+ *
+ * The record of what a `consent` sentence SAYS is asserted from both languages
+ * by `tests/fixtures/consent-sentences.json`; this is the markup half, which
+ * only the renderer has.
+ */
+describe('inline emphasis', () => {
+  const drawn = (node: object): Element =>
+    renderStep({ type: 'stack', children: [node] })?.firstElementChild as Element;
+
+  it('builds a <strong> and never markup', () => {
+    const element = drawn({ type: 'text', text: 'Take %b your first order.', emphasis: '10% off' });
+
+    expect(element.innerHTML).toBe('Take <strong class="wc-strong">10% off</strong> your first order.');
+  });
+
+  it('carries a link and an emphasis in one sentence, told apart by the mark', () => {
+    const element = drawn({
+      type: 'text',
+      text: 'Take %b, and read our %s.',
+      emphasis: '10% off',
+      link: { label: 'privacy policy', href: 'https://example.test/p/' },
+    });
+
+    expect(element.querySelector('strong')?.textContent).toBe('10% off');
+    expect(element.querySelector('a')?.textContent).toBe('privacy policy');
+    expect(element.textContent).toBe('Take 10% off, and read our privacy policy.');
+  });
+
+  /** Emphasis breaks its own line, because it is words like any other. */
+  it('breaks a line inside the emphasised run', () => {
+    expect(drawn({ type: 'text', text: '%b now.', emphasis: 'Two\nlines' }).innerHTML).toBe(
+      '<strong class="wc-strong">Two<br>lines</strong> now.',
+    );
+  });
+
+  /**
+   * Weight and nothing else. The same `%b` sits in fine print, which is
+   * already `--wc-muted`, so tinting it `--wc-accent` would put the loudest
+   * colour in the design on the quietest line in it.
+   */
+  it('is weight, and inherits its colour', () => {
+    expect(CSS).toContain('.wc-strong{font-weight:700}');
+  });
+});
+
+/**
+ * ============================================================================
+ * A VALUE THAT NAMES A TOKEN, SO A SCOPE CAN FOLLOW A THEME.
+ * ============================================================================
+ * Written verbatim, `{"bg":"#263f2c"}` on a panel survives every theme the
+ * merchant tries — so the deeper a design is styled, the less a theme does.
+ *
+ * It resolves in CSS rather than in the renderer, which is what makes it free:
+ * `var(--wc-accent)` is answered at the element by whatever is in scope, and a
+ * theme applied after the render moves it too.
+ */
+describe('a token used as a value', () => {
+  const scoped = (tokens: Record<string, string>, design: Record<string, string> = {}): HTMLElement =>
+    render({ steps: [{ type: 'panel', children: [], tokens }] } as TemplateTree, design)
+      .firstElementChild as HTMLElement;
+
+  it('is the same list the manifest declares', () => {
+    expect([...REFERABLE].sort()).toEqual([...manifest.referable].sort());
+  });
+
+  it('is every colour token and nothing else', () => {
+    // The colours are what a palette is made of; a `pad` that follows `gap` is
+    // a coincidence rather than an intent.
+    expect(REFERABLE.every((name) => name in manifest.tokens)).toBe(true);
+    expect(REFERABLE).not.toContain('pad');
+  });
+
+  it.each(REFERABLE)('becomes a reference to it: %s', (name) => {
+    // Written onto a DIFFERENT token, because a name referring to itself is
+    // the one case that stays verbatim — asserted on its own below.
+    const on = name === 'bg' ? 'fg' : 'bg';
+
+    expect(scoped({ [on]: name }).style.getPropertyValue(`--wc-${on}`)).toBe(`var(--wc-${name})`);
+  });
+
+  it('writes every other value exactly as it was', () => {
+    expect(scoped({ bg: '#fff4df' }).style.getPropertyValue('--wc-bg')).toBe('#fff4df');
+    expect(scoped({ pad: 'gap' }).style.getPropertyValue('--wc-pad')).toBe('gap');
+    expect(scoped({ bg: 'wobble' }).style.getPropertyValue('--wc-bg')).toBe('wobble');
+  });
+
+  /**
+   * `var(--wc-bg)` on `--wc-bg` is a cycle CSS discards, so honouring it would
+   * silently unset the one property the author was trying to set.
+   */
+  it('writes a name referring to itself verbatim', () => {
+    expect(scoped({ bg: 'bg' }).style.getPropertyValue('--wc-bg')).toBe('bg');
+  });
+
+  it('leaves the designs own value on the root, so the reference has something to find', () => {
+    const root = render(
+      { steps: [{ type: 'panel', children: [], tokens: { bg: 'accent' } }] } as TemplateTree,
+      { accent: '#263f2c' },
+    );
+
+    expect(root.style.getPropertyValue('--wc-accent')).toBe('#263f2c');
+    expect((root.firstElementChild as HTMLElement).style.getPropertyValue('--wc-bg')).toBe('var(--wc-accent)');
   });
 });
 

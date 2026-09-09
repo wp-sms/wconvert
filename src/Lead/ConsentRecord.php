@@ -19,9 +19,9 @@ defined('ABSPATH') || exit;
  * payload was projected from.
  *
  * That makes this the PHP spelling of one rule the renderer also has:
- * `resources/renderer/src/render.ts` splits a sentence on `%s` and constructs
- * the `<a>` itself, and with no href it drops the placeholder along with the
- * space in front of it. Two spellings of one rule is a real cost, paid here
+ * `resources/renderer/src/render.ts` splits a sentence on `%s` and `%b` and
+ * constructs the `<a>` and the `<strong>` itself, and with nothing to fill a
+ * mark it drops it along with the space in front of it. Two spellings of one rule is a real cost, paid here
  * because the alternative is evidence the browser wrote.
  * `tests/unit/Lead/ConsentSentenceParityTest.php` and
  * `tests/js/renderer-consent-parity.test.ts` read the same fixtures from both
@@ -31,8 +31,11 @@ defined('ABSPATH') || exit;
  */
 final class ConsentRecord
 {
-    /** The one placeholder a sentence may carry, and the only reason a leaf holds more than a string (ADR 0013). */
+    /** Where the link goes, and the only reason a leaf held more than a string (ADR 0013). */
     private const PLACEHOLDER = '%s';
+
+    /** Where the emphasis goes. {@see \WConvert\Template\TemplateVocabulary} declares both as content. */
+    private const EMPHASIS = '%b';
 
     /**
      * @param array<string, mixed> $node The `consent` node, as the Optin published it.
@@ -43,29 +46,54 @@ final class ConsentRecord
         $text = is_string($node['text'] ?? null) ? $node['text'] : '';
         $link = is_array($node['link'] ?? null) ? $node['link'] : [];
         $href = self::safeHref($link['href'] ?? null, $schemes);
+        $emphasis = $node['emphasis'] ?? null;
 
-        // No link, no destination the renderer would follow, or NOWHERE TO PUT
-        // ONE: all three rendered the sentence and no anchor, and the
-        // placeholder went with it along with the space in front of it
-        // (ADR 0032). The three conditions, in that order, are exactly the
-        // guard `sentence()` uses in `resources/renderer/src/render.ts`.
-        if ($link === [] || $href === null || !str_contains($text, self::PLACEHOLDER)) {
-            return (string) preg_replace('/ ?' . preg_quote(self::PLACEHOLDER, '/') . '/', '', $text);
+        /*
+         * What each mark is replaced by, or null where nothing fills it.
+         *
+         * No link, no destination the renderer would follow: both render the
+         * sentence and no anchor, and the placeholder goes with it along with
+         * the space in front of it (ADR 0032). The conditions are exactly the
+         * guard `sentence()` uses in `resources/renderer/src/render.ts`, and
+         * emphasis takes the same one for the same reason — a word appended to
+         * a sentence that had no place for it is evidence of a sentence nobody
+         * wrote.
+         *
+         * An empty LABEL is not the same as an absent link, and the asymmetry
+         * is the point: the renderer builds the anchor and sets its text, so
+         * an empty label renders an empty anchor and the mark is replaced by
+         * nothing — leaving the space in front of it, which the strip below
+         * would have removed. An empty EMPHASIS builds no element at all, so
+         * it strips.
+         */
+        $fills = [
+            self::PLACEHOLDER => $link === [] || $href === null
+                ? null
+                : (is_string($link['label'] ?? null) ? $link['label'] : ''),
+            self::EMPHASIS => is_string($emphasis) && $emphasis !== '' ? $emphasis : null,
+        ];
+
+        foreach ($fills as $mark => $fill) {
+            // Nothing to fill it with, or NOWHERE TO PUT ONE. The second is
+            // what `split()` gives the renderer for free — a text with no mark
+            // in it has no piece that is one — and it has to be said out loud
+            // here, or a sentence with no `%s` acquires the link label glued
+            // to its last word.
+            if ($fill === null || !str_contains($text, $mark)) {
+                $text = (string) preg_replace('/ ?' . preg_quote($mark, '/') . '/', '', $text);
+
+                continue;
+            }
+
+            // Only the FIRST mark of a kind is filled. A sentence carries one
+            // link and one run of emphasis, so a second `%s` or `%b` stays
+            // literal text — which is what the renderer does when it meets a
+            // mark it has already spent, and this has to be the same sentence.
+            [$before, $after] = array_pad(explode($mark, $text, 2), 2, '');
+            $text = $before . $fill . $after;
         }
 
-        // Only the FIRST placeholder is the link. A sentence carries one, so a
-        // second `%s` stays literal text — which is what the renderer does when
-        // it rejoins the remainder, and this has to be the same sentence.
-        //
-        // An empty label is NOT a special case here, and the asymmetry is the
-        // point: the renderer builds the anchor and sets its text, so an empty
-        // label renders an empty anchor and the placeholder is replaced by
-        // nothing — leaving the space in front of it, which the strip branch
-        // above would have removed.
-        $label = is_string($link['label'] ?? null) ? $link['label'] : '';
-        [$before, $after] = array_pad(explode(self::PLACEHOLDER, $text, 2), 2, '');
-
-        return $before . $label . $after;
+        return $text;
     }
 
     /**

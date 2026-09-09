@@ -88,7 +88,14 @@ const NESTED: TemplateTree = {
 const LABELS = {
   roles: { headline: 'Headline', cta_label: 'Button label', success_headline: 'Headline after they submit' },
   nodes: { heading: 'Heading', button: 'Button' },
-  layouts: { stack: 'Column', row: 'Row', split: 'Side by side', grid: 'Equal columns', panel: 'Coloured box' },
+  layouts: {
+    stack: 'Column',
+    row: 'Row',
+    split: 'Side by side',
+    grid: 'Equal columns',
+    panel: 'Coloured box',
+    media: 'Picture with text on it',
+  },
   layoutNotes: {
     stack: 'Blocks stacked top to bottom.',
     row: 'Blocks along one line.',

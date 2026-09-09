@@ -62,6 +62,29 @@ export interface SlotLink {
   readonly href?: string | null;
 }
 
+/**
+ * Words inside a sentence that carry more weight than the ones around them.
+ *
+ * ============================================================================
+ * THE SECOND PLACEHOLDER, AND IT IS THE SAME MACHINERY AS THE FIRST.
+ * ============================================================================
+ * *"Take **10% off** your first order"* is the commonest sentence in this
+ * genre — 71 of them across the sixteen reference designs — and until now the
+ * vocabulary could express it only as two paragraphs or not at all. It is
+ * `%b` where `SlotLink` is `%s`: the renderer splits the text on it and
+ * constructs the `<strong>` itself, so no code path reaches `innerHTML` and
+ * the rule ADR 0013 set is unchanged rather than widened.
+ *
+ * **A string and not an object**, because emphasis has nothing an anchor's
+ * `href` is. And one run per sentence, for the reason there is one link per
+ * sentence: two would need two placeholders to tell apart, and a sentence
+ * needing that is a sentence wanting a rich-text box.
+ *
+ * Absent, `%b` renders nothing and the space in front of it goes too —
+ * identical to how an absent link is treated, and for the same reason.
+ */
+export type SlotEmphasis = string;
+
 interface BaseNode {
   readonly type: string;
   readonly role?: SlotRole;
@@ -161,6 +184,8 @@ export interface TextNode extends HideableNode {
   readonly type: 'text';
   readonly text?: string;
   readonly link?: SlotLink;
+  /** What `%b` in the text is filled with. {@see SlotEmphasis}. */
+  readonly emphasis?: SlotEmphasis;
   /**
    * A step on the type scale — a MULTIPLE of this element's own size token.
    *
@@ -410,6 +435,8 @@ export interface ConsentNode extends HideableNode {
   readonly type: 'consent';
   readonly text?: string;
   readonly link?: SlotLink;
+  /** What `%b` in the text is filled with. {@see SlotEmphasis}. */
+  readonly emphasis?: SlotEmphasis;
 }
 
 export type LeafNode =
@@ -545,11 +572,16 @@ export interface GridNode {
  * picture, padding, corner, edge — which is what a scoped bag was for
  * (ADR 0062).
  *
- * **`media` is not a second member, and that is deliberate.** A photo pane is
- * a `panel` carrying `bg-image`, `overlay` and `min`. A second layout would
- * have added a child-key shape to four files and a branch to a hardcoded test;
- * what it buys is content spread top-and-bottom rather than stacked, which is
- * a `spread` param the day a design needs it.
+ * ~~**`media` is not a second member, and that is deliberate.**~~
+ *
+ * > **It is a second member now, and the day a design needed it came
+ * > immediately.** This said a photo pane is a `panel` carrying `bg-image`,
+ * > `overlay` and `min`, and that what a second layout buys is *"content
+ * > spread top-and-bottom rather than stacked, which is a `spread` param the
+ * > day a design needs it"*. Thirteen of the sixteen reference designs put a
+ * > wordmark at the top of the art and a display line at the bottom of the
+ * > SAME box, so the spread is not one design's want — it is what putting type
+ * > on a picture IS. {@see MediaNode}, and ADR 0062's amendment.
  */
 export interface PanelNode {
   readonly type: 'panel';
@@ -580,9 +612,71 @@ export interface PanelNode {
    * `split.ratio` has.
    */
   readonly min?: string | number;
+  /**
+   * Two circles punched out of the panel's corners, so the page shows through.
+   *
+   * ==========================================================================
+   * THE ONE ORNAMENT SCOPING CANNOT REACH, AND THE ONLY `mask` IN THE PRODUCT.
+   * ==========================================================================
+   * Every other decoration in the reference set is a token in disguise: a
+   * photo scrim is `overlay`, a tick bullet is an `icon`, a ring is the data
+   * URI nine designs already use for `image`. A perforation is not, because it
+   * has to **remove** the popup rather than paint over it — the ground behind
+   * a punched notch is the merchant's own page, which no background layer can
+   * name.
+   *
+   * A boolean rather than a size, and a modifier attribute rather than a
+   * custom property, for `edges`'s reason: the stylesheet may read no `--wc-*`
+   * name outside the tokens and the declared layout params, and a hole is one
+   * of two states. `false` writes no attribute, so absent renders identically
+   * to declared.
+   */
+  readonly notch?: boolean;
 }
 
-export type LayoutNode = StackNode | RowNode | SplitNode | GridNode | PanelNode;
+/**
+ * A picture that HOLDS things — the box a wordmark and a display line sit on.
+ *
+ * ============================================================================
+ * `panel` PAINTS A BOX. THIS ONE IS A PICTURE WITH TYPE ON IT.
+ * ============================================================================
+ * The difference is not the background — a `panel` already draws `bg-image`
+ * and `overlay`, and for a photo pane holding nothing that is the whole job.
+ * It is what the box does with room it has more of than its contents need:
+ * a `panel` stacks its children at the top and a `media` **spreads them to the
+ * far edges**, which is what a masthead above and a headline below one
+ * photograph is. Thirteen of the sixteen reference designs are that shape.
+ *
+ * It carries `min` for the same reason a photo `panel` does — a picture with
+ * two short lines on it collapses to two short lines — and it is the ONE
+ * layout where `min` is load-bearing rather than a nicety, since the spread
+ * has nothing to spread across without it.
+ *
+ * **The overlay is a layer of its own here**, not the second background layer
+ * `panel` uses: the children sit above it, so the wash darkens the photograph
+ * and never the words on it. That is `::before` in the stylesheet and no extra
+ * markup.
+ */
+export interface MediaNode {
+  readonly type: 'media';
+  readonly children?: readonly TemplateNode[];
+  /**
+   * Tokens re-declared for this box and everything inside it — and, on a
+   * media, the ones it DRAWS.
+   *
+   * {@see StackNode.tokens} for what a bag is. `bg-image` is the one that
+   * makes this layout what it is, and `fg` beside it is what makes the type on
+   * the picture legible without touching the design's own ink.
+   */
+  readonly tokens?: Tokens;
+  /**
+   * A floor under the picture's height, so it does not collapse to the two
+   * lines on it. The same shape {@see PanelNode.min} has.
+   */
+  readonly min?: string | number;
+}
+
+export type LayoutNode = StackNode | RowNode | SplitNode | GridNode | PanelNode | MediaNode;
 
 /**
  * Any node. `{ type: string }` is deliberately part of the union: a snapshot

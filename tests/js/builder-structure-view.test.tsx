@@ -92,6 +92,7 @@ const LABELS = {
     split: 'Side by side',
     grid: 'Equal columns',
     panel: 'Coloured box',
+    media: 'Picture with text on it',
   },
   // The menu shows what a layout DOES, because *Row* and *Side by side* are two
   // words a merchant cannot tell apart from their names alone.
@@ -101,6 +102,7 @@ const LABELS = {
     split: 'Two panes, each holding its own blocks.',
     grid: 'Three across, one per line on a phone.',
     panel: 'A box with its own colours, holding other blocks.',
+    media: 'A picture, with the first block at its top and the last at its bottom.',
   },
   layoutParams: { 'split.ratio': 'How the space is divided' },
   layoutParamValues: {
@@ -848,11 +850,20 @@ describe('the inspector', () => {
   });
 
   /**
-   * **A body paragraph is not a headline.** A single-line box for a sentence
-   * that wraps is a control hiding most of what it holds; a heading is one line
-   * by construction and keeps the box it had.
+   * ==========================================================================
+   * A HEADLINE IS NO LONGER ONE LINE BY CONSTRUCTION.
+   * ==========================================================================
+   * This asserted the opposite: a body paragraph got a `<textarea>` and a
+   * headline kept its single-line box, *"because a heading is one line by
+   * construction"*. That was true for exactly as long as the renderer ate a
+   * newline — and every headline in the reference set breaks its own, so where
+   * the break falls is now the most design-bearing thing a merchant types into
+   * this box. A single-line input cannot show them where it is.
+   *
+   * A `label` and a `placeholder` still keep theirs: three words in a bigger
+   * target is a bigger target for three words.
    */
-  it('gives a wrapping sentence room and a headline a single line', async () => {
+  it('gives every sentence room, including a headline that breaks its own line', async () => {
     await structure();
     await select('Body text');
 
@@ -860,7 +871,7 @@ describe('the inspector', () => {
 
     await select('Headline');
 
-    expect(inspector('Headline').getByLabelText('Text')).toHaveAttribute('type', 'text');
+    expect(inspector('Headline').getByLabelText('Text').tagName).toBe('TEXTAREA');
   });
 
   /**
