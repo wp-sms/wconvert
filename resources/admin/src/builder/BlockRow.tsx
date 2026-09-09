@@ -297,9 +297,32 @@ export function BlockRow({
                   </span>
                 </span>
               )}
+              {/*
+                **The same treatment `counted` gets, and it was missing for the
+                same reason it was needed.** *words will be lost* names a
+                mechanism a merchant has never met — Slot Roles are the seam
+                copy travels on and nothing on this screen says the word — so
+                four syllables on a row read as a warning with no subject. The
+                chip stays four words because it is on every row of a list read
+                by scanning; the sentence travels beside it, as a `title` for a
+                pointer and in the accessibility tree for everyone else.
+              */}
               {losesWordsOnSwitch(block) && (
-                <span className="wconvert-block__chip wconvert-block__chip--warn">
+                <span
+                  className="wconvert-block__chip wconvert-block__chip--warn"
+                  title={__(
+                    'This block has no Slot Role, so what you type in it is dropped when you switch design.',
+                    'wconvert',
+                  )}
+                >
                   {__('words will be lost', 'wconvert')}
+                  <span className="sr-only">
+                    {' '}
+                    {__(
+                      '— this block has no Slot Role, so what you type in it is dropped when you switch design.',
+                      'wconvert',
+                    )}
+                  </span>
                 </span>
               )}
             </button>

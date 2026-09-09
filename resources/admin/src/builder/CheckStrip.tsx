@@ -51,14 +51,14 @@ export function CheckStrip({
                 whole of what either can offer, so `title` carries the sentence
                 and the chip stays a chip (ADR 0054 rule 1).
               */
-              <span className="wconvert-check" data-state={failed === undefined ? 'pass' : 'fail'} title={failed?.said}>
+              <span className="wconvert-checks__chip" data-state={failed === undefined ? 'pass' : 'fail'} title={failed?.said}>
                 <Icon aria-hidden="true" />
                 {name}
               </span>
             ) : (
               <button
                 type="button"
-                className="wconvert-check"
+                className="wconvert-checks__chip"
                 data-state="fail"
                 title={failed.said}
                 onClick={() => onGoTo(failed.path as Path)}

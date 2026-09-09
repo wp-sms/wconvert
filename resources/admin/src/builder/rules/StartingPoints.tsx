@@ -94,7 +94,7 @@ export function StartingPoints({ bundles, onApply }: StartingPointsProps) {
                     of its own in the small-caps label register, which gave a
                     piece of metadata the same weight as the pitch above it.
                   */}
-                    <Badge variant="secondary" className="wconvert-starter__tag">
+                    <Badge variant="secondary">
                       {sectionsIn(bundle)}
                     </Badge>
                   </span>
@@ -124,7 +124,7 @@ export function StartingPoints({ bundles, onApply }: StartingPointsProps) {
                 <span className="wconvert-starter__head">
                   <span className="wconvert-starter__name text-body font-semibold">{bundle.label}</span>
                   {rendering === 'upsell' ? (
-                    <Badge variant="secondary" className="wconvert-starter__tag">
+                    <Badge variant="secondary">
                       <Lock aria-hidden="true" />
                       {/*
                         A Starting point is a GROUP of rules and carries no
@@ -139,7 +139,7 @@ export function StartingPoints({ bundles, onApply }: StartingPointsProps) {
                   ) : (
                     // Amber is the reserved meaning it already carries on the
                     // Optin list: the SITE is holding this back (ADR 0037).
-                    <Badge variant="warning" className="wconvert-starter__tag">
+                    <Badge variant="warning">
                       {sprintf(
                         /* translators: %s: the plugin the site needs, e.g. “WooCommerce”. */
                         __('Needs %s', 'wconvert'),

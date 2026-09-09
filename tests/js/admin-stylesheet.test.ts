@@ -1,5 +1,5 @@
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { readdirSync, readFileSync } from 'node:fs';
+import { join, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 /**
@@ -426,3 +426,95 @@ describe('the type scale', () => {
     }
   });
 });
+
+/**
+ * ============================================================================
+ * A CLASS WITH NO RULE IS A COMPONENT THAT RENDERS AND LOOKS LIKE A MISTAKE.
+ * ============================================================================
+ * ADR 0062's work wrote `.wconvert-structure__head`, `.wconvert-checks`,
+ * `.wconvert-meter`, `.wconvert-linkish` and three `.wconvert-scope__*` rows,
+ * and a later rewrite of that region of `index.css` deleted every one of them
+ * before they were ever committed. The Design tab's own header shipped as a
+ * bulleted `<ul>` of check chips with no pass/fail colour beside an unstyled
+ * meter, and nothing anywhere failed.
+ *
+ * **The sharpest one did not even render unstyled.** The chip was
+ * `.wconvert-check`, which is `#wconvert-admin .wconvert-check` — the LeadLog
+ * checkbox row, written for something else entirely — so it took a rule that
+ * fit badly and looked deliberate.
+ *
+ * So the set is DERIVED rather than listed. A list is the thing that was lost:
+ * whoever deletes the next region will not come here to remove its name.
+ *
+ * **A class beside a utility is exempt, and that is the file's own
+ * convention** — `.wconvert-starter__name text-body font-semibold` states its
+ * type as a utility because Tailwind's are `!important` (ADR 0035) and a
+ * stylesheet rule for it could not win. What this catches is the other case:
+ * a `wconvert-` class carrying the whole of a component's look, alone in its
+ * `className`, with nothing in the stylesheet behind it.
+ */
+describe('every class the builder renders', () => {
+  const BUILDER = resolve(import.meta.dirname, '../../resources/admin/src/builder');
+
+  /** Every class name that is the WHOLE of what a `className` states. */
+  const RENDERED = new Set<string>();
+
+  for (const file of sources(BUILDER)) {
+    const source = readFileSync(file, 'utf8');
+
+    /*
+      Both shapes: the bare attribute, and an expression — which covers
+      `cn('a', flag && 'b')` and a template literal with one hole in it. The
+      `id`, `htmlFor` and `name` attributes are deliberately NOT read: half the
+      `wconvert-` strings in the rules panel are element ids, and an id needs no
+      rule.
+    */
+    for (const [, quoted, braced] of source.matchAll(
+      /className=(?:"([^"]*)"|\{((?:[^{}]|\{[^{}]*\})*)\})/g,
+    )) {
+      const literals =
+        quoted !== undefined
+          ? [quoted]
+          : [...(braced ?? '').matchAll(/(['"`])([^'"`\n]*)\1/g)].map(([, , text]) => text);
+
+      for (const literal of literals) {
+        const names = literal.split(/\s+/).filter((name) => name !== '');
+
+        // A utility beside it means the look is stated there, not here.
+        if (names.some((name) => !name.startsWith('wconvert-'))) {
+          continue;
+        }
+
+        for (const name of names) {
+          // `wconvert-rule-${id}` leaves a prefix, which is not a class.
+          if (!name.endsWith('-')) {
+            RENDERED.add(name);
+          }
+        }
+      }
+    }
+  }
+
+  const STYLED = new Set([...CSS.matchAll(/\.(wconvert-[\w-]+)/g)].map(([, name]) => name));
+
+  it('reads a set worth asserting over', () => {
+    expect(RENDERED.size).toBeGreaterThan(40);
+  });
+
+  it.each([...RENDERED].sort())('has a rule for .%s', (name) => {
+    expect(STYLED.has(name), `.${name} is rendered by the builder and styled nowhere`).toBe(true);
+  });
+});
+
+/** Every `.ts`/`.tsx` under a directory, depth first. */
+function sources(directory: string): string[] {
+  return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+    const path = join(directory, entry.name);
+
+    if (entry.isDirectory()) {
+      return sources(path);
+    }
+
+    return /\.tsx?$/.test(entry.name) ? [path] : [];
+  });
+}

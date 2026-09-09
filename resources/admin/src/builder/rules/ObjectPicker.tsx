@@ -276,7 +276,7 @@ export function ObjectPicker({ id, kind, value, onChange }: ObjectPickerProps) {
               onClick={() => commit(hit)}
               onMouseEnter={() => setActive(at)}
             >
-              <span className="wconvert-picker__title">{hit.title}</span>{' '}
+              <span>{hit.title}</span>{' '}
               {/* The id, always. Two pages genuinely do share a title. */}
               <span className="wconvert-picker__id text-micro">#{hit.id}</span>
             </div>

@@ -4667,3 +4667,239 @@ body.wconvert-fullscreen .wconvert-structure > .wconvert-builder__preview {
   gap: 0.25rem;
   margin-inline-start: calc(var(--spacing) * -3);
 }
+
+/* ---------------------------------------------------------------------------
+ * THE ROW ABOVE THE THREE PANES, AND THE SCOPE PANEL UNDER IT.
+ *
+ * ============================================================================
+ * SEVEN CLASSES SHIPPED WITH NO RULE AT ALL, AND ONE OF THEM LANDED ON ANOTHER
+ * COMPONENT'S.
+ * ============================================================================
+ * ADR 0062's work added `.wconvert-structure__head`, `.wconvert-checks`,
+ * `.wconvert-meter`, `.wconvert-linkish` and the three `.wconvert-scope__*`
+ * rows to the admin, and a later rewrite of this region removed the CSS for
+ * every one of them before it was ever committed. What shipped was a bulleted
+ * `<ul>` of check chips with no pass/fail colour beside an unstyled meter — on
+ * the header of the tab the whole release is about.
+ *
+ * **The chip is renamed, and that is the sharp half.** It was
+ * `.wconvert-check`, which is `#wconvert-admin .wconvert-check` above — the
+ * LeadLog checkbox row — so the strip did not render unstyled, it rendered
+ * wearing a rule written for something else and looked deliberate. One class,
+ * one component, which is a rule this file already asserts for
+ * `.wconvert-choice`.
+ *
+ * `admin-stylesheet.test.ts` now derives the whole set from the builder's own
+ * sources, so a deleted region fails a build rather than shipping.
+ * ------------------------------------------------------------------------- */
+
+/*
+ * **Four things, and only the name may shrink.** The design's name, the check
+ * strip, the meter and the two buttons. The name is the one item with no floor
+ * — a long design name is still readable truncated, and a check chip that
+ * wraps mid-word is not.
+ */
+.wconvert-structure__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  min-block-size: var(--control-height);
+}
+
+.wconvert-structure__head > :last-child {
+  margin-inline-start: auto;
+}
+
+/* ---------------------------------------------------------------------------
+ * WHAT WAS LOOKED AT — SIX CHIPS, DRAWN WHETHER THEY PASSED OR NOT.
+ *
+ * A list, because it is a set of countable statements and a screen reader
+ * should say how many; a list with no markers, because a bullet in a toolbar
+ * row is a bullet in a toolbar row. `#wconvert-admin :not(.wconvert-editor) >
+ * ul > li` at (1,1,2) is what a bare class here would lose to, which is the
+ * trap `.wconvert-readiness__list` already documents four screens up.
+ * ------------------------------------------------------------------------- */
+#wconvert-admin .wconvert-checks {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#wconvert-admin .wconvert-checks > li {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/*
+ * **Passing is quiet and failing is not, and the difference is not colour
+ * alone.** The icon changes with the state — a tick for a pass, a triangle for
+ * a fail — so the strip is readable in greyscale and to anyone who cannot tell
+ * the two grounds apart (ADR 0038).
+ */
+.wconvert-checks__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding-block: 0.125rem;
+  padding-inline: 0.375rem;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--muted-foreground);
+  font-size: var(--text-micro);
+  line-height: var(--text-micro--line-height);
+  white-space: nowrap;
+}
+
+.wconvert-checks__chip > svg {
+  flex: none;
+  inline-size: 0.875rem;
+  block-size: 0.875rem;
+}
+
+.wconvert-checks__chip[data-state='pass'] > svg {
+  color: var(--success);
+}
+
+/*
+ * Amber is the reserved meaning it carries everywhere else in this admin: not
+ * an error, something the merchant should look at. A failing check is exactly
+ * that — the design still renders, publishes and runs.
+ */
+.wconvert-checks__chip[data-state='fail'] {
+  background: color-mix(in srgb, var(--warning) 14%, transparent);
+  color: var(--warning);
+}
+
+/*
+ * The button variant is a chip that goes somewhere, and it says so under the
+ * pointer. The blanket `cursor: pointer` for `button` already covers the hand;
+ * this is the ring, which is the same treatment every other control here has.
+ */
+.wconvert-checks__chip:is(button):hover {
+  background: color-mix(in srgb, var(--warning) 22%, transparent);
+}
+
+.wconvert-checks__chip:is(button):focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* ---------------------------------------------------------------------------
+ * WHAT THIS DESIGN COSTS A VISITOR.
+ *
+ * A label rather than a bar, because the number a merchant acts on is a share
+ * and the two figures behind it are a `title`. It turns amber over the budget
+ * and never red: nothing at runtime reads this and a design over it still
+ * renders, so it is a fact and not a refusal.
+ * ------------------------------------------------------------------------- */
+.wconvert-meter {
+  flex: none;
+  color: var(--muted-foreground);
+  font-size: var(--text-micro);
+  line-height: var(--text-micro--line-height);
+  white-space: nowrap;
+  cursor: help;
+}
+
+.wconvert-meter[data-over='true'] {
+  color: var(--warning);
+  font-weight: 600;
+}
+
+/* ---------------------------------------------------------------------------
+ * A BUTTON THAT READS AS A LINK, BECAUSE WHAT IT DOES IS GO SOMEWHERE.
+ *
+ * *From Coloured box* and *Open that box* both move the selection, which is
+ * navigation inside one screen — an `<a>` with no `href` is the wrong element
+ * and a `Button` beside a sentence is a control where a phrase belongs.
+ * ------------------------------------------------------------------------- */
+#wconvert-admin .wconvert-linkish {
+  display: inline;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--primary);
+  font: inherit;
+  text-align: start;
+  text-decoration: underline;
+  text-underline-offset: 0.125em;
+  cursor: pointer;
+}
+
+#wconvert-admin .wconvert-linkish:hover {
+  color: var(--foreground);
+}
+
+#wconvert-admin .wconvert-linkish:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ---------------------------------------------------------------------------
+ * THE LOOK OF ONE BOX.
+ *
+ * The same column the design's own panel is, so switching between the two by
+ * selecting a different block does not reflow the inspector.
+ * ------------------------------------------------------------------------- */
+.wconvert-scope {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/*
+ * A token and the sentence saying where its value came from, as one item. The
+ * gap is small on purpose: the note belongs to the control above it, and a
+ * gap the size of the group's would read as a row of its own.
+ */
+.wconvert-scope__token {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/*
+ * **It carries the id**, or `#wconvert-admin :is(p, li, td, th, …)` at (1,1,0)
+ * forces `font-size: inherit` over a bare class and the note renders at body
+ * size under a control it is a footnote to.
+ */
+#wconvert-admin .wconvert-scope__from {
+  margin: 0;
+  color: var(--muted-foreground);
+  font-size: var(--text-micro);
+  line-height: var(--text-micro--line-height);
+}
+
+/*
+ * The one thing on this panel that is a warning. Same amber, same reason as
+ * the failing chip above: a pair too close to read is not an error — it
+ * renders, and it is unreadable for somebody else.
+ */
+#wconvert-admin .wconvert-scope__contrast {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0.5rem 0.625rem;
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--warning) 12%, transparent);
+  color: var(--warning);
+  list-style: none;
+  text-wrap: pretty;
+}
+
+#wconvert-admin .wconvert-scope__contrast > li {
+  margin: 0;
+  padding: 0;
+  font-size: var(--text-micro);
+  line-height: var(--text-micro--line-height);
+  list-style: none;
+}
