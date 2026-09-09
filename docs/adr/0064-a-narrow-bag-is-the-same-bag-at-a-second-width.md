@@ -1,7 +1,18 @@
 # A narrow bag is the same bag at a second width
 
 A layout node may carry a second token bag beside `tokens`, applying only where
-the design is narrower than `manifest.narrow` (22.5rem / 360px).
+the design is narrower than `manifest.narrow` — **24rem (384px)**, which is
+where a `split` stops being side by side: a pane's `flex-basis` is `12rem` and
+there are exactly two of them. Retuning at the width the layout gives up at
+means the two mechanisms cannot disagree about when a design is narrow.
+
+A phone measure would have been the obvious number and is the wrong one. The
+common ones straddle it — 360, 375, 390, 412 — so half the phones in
+circulation would have wrapped without retuning or retuned without wrapping.
+It was 22.5rem for one commit and
+[ADR 0065](0065-the-editor-is-the-scope-editor-now.md) is where it moved,
+because the builder's own width switch had to be drawn at a width the query
+actually fires at.
 
 ```jsonc
 { "type": "media",
@@ -42,7 +53,7 @@ So the renderer writes a retuned box's values under a **second set of property
 names** — `--wc-n-bg`, `--wc-n-pad` — and one rule remaps every one of them:
 
 ```css
-@container wc (max-width:22.5rem){
+@container wc (max-width:24rem){
   .wc-stack[data-narrow],…,.wc-media[data-narrow]{
     --wc-bg:var(--wc-n-bg)!important; … × 24 }}
 ```
