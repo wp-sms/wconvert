@@ -12,6 +12,11 @@ That is the whole change. It is not a style attribute, not a class, not a
 per-node CSS bag: it is the object a design already carries at the root,
 written one level in.
 
+> *Completed by [ADR 0064](0064-a-narrow-bag-is-the-same-bag-at-a-second-width.md):
+> a node may carry the bag **twice**, the second one applying below 360px of
+> container. Same names, same closure; what it needed was a mirror of property
+> names and one container query, because inline style has no conditional form.*
+
 ## It was found rather than invented
 
 A 16-design reference set was commissioned to show what the library is missing,

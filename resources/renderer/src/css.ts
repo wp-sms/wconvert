@@ -57,6 +57,18 @@ export const DOCUMENT_CSS = `dialog.wconvert-dialog::backdrop{background:var(--w
  */
 export const A_DESIGNS_OWN_WIDTH = '28rem';
 
+/**
+ * The width below which a design's `narrow` bags take over.
+ *
+ * Named rather than written into the rule below for {@link A_DESIGNS_OWN_WIDTH}'s
+ * reason: the ADMIN has to draw a width switch at exactly this number, and the
+ * merchant is told where it fires. It is declared in
+ * `resources/templates/manifest.json` as well, and
+ * `renderer-manifest-parity` asserts the two agree — the renderer imports no
+ * manifest.
+ */
+export const A_NARROW_DESIGN = '22.5rem';
+
 export const SHADOW_CSS = [
   `:host{all:initial!important;display:block!important}`,
   `*,::before,::after{box-sizing:border-box}`,
@@ -81,7 +93,7 @@ export const SHADOW_CSS = [
    *
    * `none` is a legal layer in the list, so the default costs no branch.
    */
-  `.wc-root{font-family:var(--wc-font,system-ui,sans-serif);font-size:var(--wc-text-size,1rem);line-height:var(--wc-leading,1.5);color:var(--wc-fg,#111827);background:var(--wc-bg,#fff);background-image:linear-gradient(var(--wc-overlay,#0000),var(--wc-overlay,#0000)),var(--wc-bg-image,none);background-size:cover;background-position:center;border-radius:var(--wc-radius,.5rem);padding:var(--wc-pad,1.5rem);text-align:var(--wc-align,start);inline-size:min(var(--wc-width,${A_DESIGNS_OWN_WIDTH}),100%);max-block-size:85vh;overflow:auto;position:relative;box-shadow:var(--wc-shadow,0 10px 40px rgba(0,0,0,.18))}`,
+  `.wc-root{font-family:var(--wc-font,system-ui,sans-serif);font-size:var(--wc-text-size,1rem);line-height:var(--wc-leading,1.5);color:var(--wc-fg,#111827);background:var(--wc-bg,#fff);background-image:linear-gradient(var(--wc-overlay,#0000),var(--wc-overlay,#0000)),var(--wc-bg-image,none);background-size:cover;background-position:center;border-radius:var(--wc-radius,.5rem);padding:var(--wc-pad,1.5rem);container:wc/inline-size;text-align:var(--wc-align,start);inline-size:min(var(--wc-width,${A_DESIGNS_OWN_WIDTH}),100%);max-block-size:85vh;overflow:auto;position:relative;box-shadow:var(--wc-shadow,0 10px 40px rgba(0,0,0,.18))}`,
 
   `.wc-stack{display:flex;flex-direction:column;gap:var(--wc-gap,.75rem)}`,
   `.wc-row{display:flex;flex-wrap:wrap;align-items:center;gap:var(--wc-gap,.75rem)}`,
@@ -646,4 +658,41 @@ export const SHADOW_CSS = [
    * press Close on an overlay that never finishes closing.
    */
   `@media (prefers-reduced-motion:reduce){*{transition-duration:.01ms!important;animation-duration:.01ms!important}}`,
+
+  /* ------------------------------------------------------------------------
+   * A SECOND BAG PER BOX, AND ONE RULE IS THE WHOLE RUNTIME OF IT.
+   *
+   * ========================================================================
+   * INLINE STYLE HAS NO CONDITIONAL FORM, SO THE SWITCH LIVES HERE.
+   * ========================================================================
+   * A token bag is written with `setProperty` and there is no `@media` form of
+   * that; a stylesheet, conversely, cannot name one node in a tree it has
+   * never seen. The bridge is a MIRROR: `render.ts` writes a retuned box's
+   * values under `--wc-n-*`, and this remaps every one of them onto the name
+   * the rest of the stylesheet already reads.
+   *
+   * **`!important`, because it has to beat an inline declaration.** The wide
+   * bag is on the element's own `style`, which outranks every stylesheet rule
+   * that is not important. Inside a shadow root the only thing this can
+   * outrank is the design's own inline properties, which is precisely what it
+   * is for.
+   *
+   * **`[data-narrow]` is the correctness argument, not an optimisation.**
+   * `--wc-n-bg` inherits, so an ungated remap would fire on every descendant:
+   * a child of a retuned box that sets its OWN `bg` and no narrow bag would be
+   * repainted with its ancestor's narrow ground. Gated, a box with no narrow
+   * bag is untouched at every width and inherits its ancestor's already-remapped
+   * value the ordinary way — which is what a scope means.
+   *
+   * **A name in neither bag resolves to nothing, and that is the fallback.**
+   * `var(--wc-n-fg)` with `--wc-n-fg` unset is invalid at computed-value time,
+   * which for a custom property means *inherit* — so the remap needs no
+   * fallback and cannot accidentally pin a value the box never set.
+   *
+   * A CONTAINER query and not a media query, for the reason ADR 0062's own
+   * inspector query gives: an `inline` Optin in a sidebar is narrow on a
+   * desktop, and the viewport would call it wide. `.wc-root` is the container,
+   * declared above.
+   * --------------------------------------------------------------------- */
+  `@container wc (max-width:22.5rem){.wc-stack[data-narrow],.wc-row[data-narrow],.wc-split[data-narrow],.wc-grid[data-narrow],.wc-panel[data-narrow],.wc-media[data-narrow]{--wc-bg:var(--wc-n-bg)!important;--wc-fg:var(--wc-n-fg)!important;--wc-muted:var(--wc-n-muted)!important;--wc-accent:var(--wc-n-accent)!important;--wc-accent-fg:var(--wc-n-accent-fg)!important;--wc-border:var(--wc-n-border)!important;--wc-input-bg:var(--wc-n-input-bg)!important;--wc-font:var(--wc-n-font)!important;--wc-heading-font:var(--wc-n-heading-font)!important;--wc-heading-size:var(--wc-n-heading-size)!important;--wc-heading-weight:var(--wc-n-heading-weight)!important;--wc-tracking:var(--wc-n-tracking)!important;--wc-text-size:var(--wc-n-text-size)!important;--wc-leading:var(--wc-n-leading)!important;--wc-radius:var(--wc-n-radius)!important;--wc-pad:var(--wc-n-pad)!important;--wc-gap:var(--wc-n-gap)!important;--wc-width:var(--wc-n-width)!important;--wc-align:var(--wc-n-align)!important;--wc-bg-image:var(--wc-n-bg-image)!important;--wc-overlay:var(--wc-n-overlay)!important;--wc-shadow:var(--wc-n-shadow)!important;--wc-motion:var(--wc-n-motion)!important;--wc-backdrop:var(--wc-n-backdrop)!important}}`,
 ].join('');

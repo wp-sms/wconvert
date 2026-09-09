@@ -2,7 +2,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import manifest from '../../resources/templates/manifest.json';
-import { DOCUMENT_CSS, SHADOW_CSS } from '@renderer/css';
+import { A_NARROW_DESIGN, DOCUMENT_CSS, SHADOW_CSS } from '@renderer/css';
 import { REFERABLE, SAFE_SCHEMES, render } from '@renderer/render';
 import type { TemplateTree } from '@renderer/types';
 
@@ -668,10 +668,165 @@ describe('every token the manifest declares', () => {
 
   it('is the only custom property the stylesheet reads, beside the declared layout params', () => {
     const params = Object.values(manifest.layouts).flatMap((layout) => layout.params);
-    const declared = new Set([...Object.keys(manifest.tokens), ...params]);
+    /*
+      **`n-` is the narrow spelling of a declared token and nothing else.** The
+      rule is unchanged — the stylesheet may read no `--wc-*` name outside the
+      declared tokens and the declared layout params — and `--wc-n-bg` is
+      `--wc-bg` at a second width, mirrored by `render.ts`'s `retune` so one
+      container query can remap it. Enumerated rather than pattern-matched, so
+      a `--wc-n-wobble` still fails.
+    */
+    const declared = new Set([
+      ...Object.keys(manifest.tokens),
+      ...Object.keys(manifest.tokens).map((token) => `n-${token}`),
+      ...params,
+    ]);
     const read = [...CSS.matchAll(/var\(--wc-([a-z-]+)/g)].map((match) => match[1]);
 
     expect([...new Set(read)].filter((name) => !declared.has(name))).toEqual([]);
+  });
+});
+
+/**
+ * ============================================================================
+ * A SECOND BAG PER BOX, AND THE MIRROR IS WHAT MAKES IT EXPRESSIBLE AT ALL.
+ * ============================================================================
+ * A token bag is written with `setProperty` and inline style has no
+ * conditional form; a stylesheet cannot name one node in a tree it has never
+ * seen. So `render.ts` writes a retuned box's values under `--wc-n-*` and one
+ * `@container` rule remaps them.
+ *
+ * **The completeness of the mirror is the load-bearing half**, and it is what
+ * a browser found wrong the first time: an unset `var(--wc-n-heading-font)` is
+ * guaranteed-invalid rather than inherited, so a remap that found nothing
+ * wiped the property and the stylesheet fell to its own literal fallback.
+ */
+describe('the narrow bag', () => {
+  const retuned = (node: object, design: Record<string, string> = {}): HTMLElement =>
+    render({ steps: [node] } as TemplateTree, design).firstElementChild as HTMLElement;
+
+  it('fires at the width the manifest declares', () => {
+    expect(A_NARROW_DESIGN).toBe(manifest.narrow);
+    expect(CSS).toContain(`@container wc (max-width:${manifest.narrow})`);
+  });
+
+  it('is measured against the design rather than the viewport', () => {
+    // An `inline` Optin in a sidebar is narrow on a desktop, and a media query
+    // would call it wide.
+    expect(CSS).toMatch(/\.wc-root\{[^}]*container:wc\/inline-size/);
+  });
+
+  it('costs a box that sets none nothing at all', () => {
+    const plain = retuned({ type: 'panel', children: [], tokens: { bg: '#fff4df' } });
+
+    expect(plain.dataset.narrow).toBeUndefined();
+    expect(plain.getAttribute('style')).not.toContain('--wc-n-');
+  });
+
+  it('is an empty bag away from being absent, so a cleared one leaves no attribute', () => {
+    expect(retuned({ type: 'panel', children: [], narrow: {} }).outerHTML).toBe(
+      retuned({ type: 'panel', children: [] }).outerHTML,
+    );
+  });
+
+  it('marks the box, so the remap reaches it and reaches nothing inside it', () => {
+    const outer = retuned({
+      type: 'panel',
+      tokens: { bg: '#fff4df' },
+      narrow: { pad: '1rem' },
+      children: [{ type: 'panel', children: [], tokens: { bg: '#0f172a' } }],
+    });
+
+    expect(outer.dataset.narrow).toBe('');
+    // The child sets its OWN ground and no narrow bag. An ungated remap would
+    // repaint it with the ancestor's narrow value, because `--wc-n-bg`
+    // inherits; gated, it is untouched at every width.
+    expect((outer.firstElementChild as HTMLElement).dataset.narrow).toBeUndefined();
+  });
+
+  it('mirrors every token in scope and not only the ones the box set', () => {
+    const box = retuned(
+      {
+        type: 'panel',
+        children: [],
+        tokens: { bg: '#fff4df' },
+        narrow: { pad: '1rem' },
+      },
+      { 'heading-font': 'Georgia, serif', accent: '#263f2c' },
+    );
+
+    // The narrow value, the box's own, and the DESIGN's — all three, or the
+    // remap finds an unset property and the stylesheet falls to its literal.
+    expect(box.style.getPropertyValue('--wc-n-pad')).toBe('1rem');
+    expect(box.style.getPropertyValue('--wc-n-bg')).toBe('#fff4df');
+    expect(box.style.getPropertyValue('--wc-n-heading-font')).toBe('Georgia, serif');
+    expect(box.style.getPropertyValue('--wc-n-accent')).toBe('#263f2c');
+  });
+
+  it('mirrors what an ancestor set, through a box that set nothing', () => {
+    const root = render(
+      {
+        steps: [
+          {
+            type: 'panel',
+            tokens: { bg: '#fff4df' },
+            children: [
+              { type: 'stack', children: [{ type: 'panel', children: [], narrow: { pad: '1rem' } }] },
+            ],
+          },
+        ],
+      } as TemplateTree,
+      { fg: '#253c2b' },
+    );
+    const inner = root.querySelector('.wc-stack > .wc-panel') as HTMLElement;
+
+    expect(inner.style.getPropertyValue('--wc-n-bg')).toBe('#fff4df');
+    expect(inner.style.getPropertyValue('--wc-n-fg')).toBe('#253c2b');
+  });
+
+  /**
+   * A `panel` and a `media` reset the design's picture before their own bag
+   * applies, and the mirror has to carry the reset or a retuned photo pane
+   * repaints the design's art below 360px.
+   */
+  it('mirrors the picture reset a painting box makes', () => {
+    const box = retuned(
+      { type: 'media', children: [], narrow: { pad: '1rem' } },
+      { 'bg-image': 'url(/hero.jpg)' },
+    );
+
+    expect(box.style.getPropertyValue('--wc-n-bg-image')).toBe('none');
+  });
+
+  it('remaps every declared token, so none of them is stranded at narrow', () => {
+    const rule = /@container wc \(max-width:[^)]+\)\{[^{]+\{([^}]*)\}/.exec(CSS)?.[1] ?? '';
+
+    for (const token of Object.keys(manifest.tokens)) {
+      expect(rule, token).toContain(`--wc-${token}:var(--wc-n-${token})!important`);
+    }
+  });
+
+  /**
+   * **`!important`, and it is not decoration.** The wide bag is on the
+   * element's own `style`, which outranks every stylesheet rule that is not
+   * important — so without it the remap loses to the thing it exists to
+   * override.
+   */
+  it('states the remap with enough force to beat the inline bag it overrides', () => {
+    const rule = /@container wc \(max-width:[^)]+\)\{[^{]+\{([^}]*)\}/.exec(CSS)?.[1] ?? '';
+
+    expect([...rule.matchAll(/!important/g)]).toHaveLength(Object.keys(manifest.tokens).length);
+  });
+
+  /**
+   * A reference always points at the WIDE name, at both prefixes:
+   * `--wc-n-accent` exists only on a box that carries a narrow bag, so a
+   * mirror pointing at itself would resolve to nothing on most of them.
+   */
+  it('keeps a token-as-value pointing at the wide name', () => {
+    const box = retuned({ type: 'panel', children: [], narrow: { bg: 'accent' } });
+
+    expect(box.style.getPropertyValue('--wc-n-bg')).toBe('var(--wc-accent)');
   });
 });
 

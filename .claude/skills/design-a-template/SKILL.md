@@ -162,6 +162,20 @@ literal, and a mark with nothing to fill it renders nothing.
 and it then follows the theme. Reach for a literal hex only where the box is
 deliberately outside the palette.
 
+**A layout may carry the bag twice.** `narrow` is the same names again, applying
+below 360px of *container* — so an inline Optin in a sidebar retunes on a
+desktop (ADR 0064). Reach for it where shrinking is not the same as retuning: a
+photo pane that is 440px of a split and the whole width on a phone wants less
+padding and smaller display type, not the same values in a narrower box.
+Everything that merely needs to be smaller already is — a `split` stacks, a
+`grid` drops to one column. It is the one thing that **doubles what a scope
+stores**, so set the two or three tokens that retune and not the bag again.
+
+**A floor is only needed where the picture is the taller thing.** `.wc-split`
+is `align-items: stretch`, so a `media` beside a form is already the form's
+height and `min` adds nothing — and once the split wraps, `min` is what leaves
+a 384px picture above the fold on a phone.
+
 ADR 0061 declined per-node styling as "rung 3" and named the evidence that would
 reopen it; ADR 0062 records the reopening, and that the evidence was a different
 kind than the one asked for.

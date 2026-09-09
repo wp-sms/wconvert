@@ -232,9 +232,10 @@ ${table(['Layout', 'Children go in', 'Params', 'Values (**default**)'], layouts)
   rather than the background wash a panel paints, so it darkens the photograph
   and never the type on it.
 
-**Every layout takes a \`tokens\` bag**, which is why the param appears on all of
-them. It is not a value from a list — it is the same token object the design
-carries, re-declared for this box and everything inside it. See §6.
+**Every layout takes a \`tokens\` bag and a \`narrow\` one**, which is why both
+params appear on all of them. Neither is a value from a list — each is the same
+token object the design carries, re-declared for this box and everything inside
+it, the second applying only below ${manifest.narrow}. See §6.
 
 ## 4. The ${Object.keys(manifest.nodes).length} leaves
 
@@ -384,6 +385,37 @@ colours; a bag that spelled a hex does not move with it, so the box a merchant
 most wants to follow the palette is the one that never would. Reach for a
 literal colour where the box is deliberately outside the palette — a
 photographic ground, a brand black — and for a name everywhere else.
+
+### \`narrow\`: the same bag again, below ${manifest.narrow}
+
+A layout may carry a second bag beside \`tokens\`, and it applies **only where
+the design is narrower than ${manifest.narrow}** — a phone, or an \`inline\`
+Optin in a sidebar:
+
+\`\`\`json
+{ "type": "media",
+  "tokens": { "pad": "1.75rem 1.375rem", "heading-size": "1.625rem" },
+  "narrow": { "pad": "1.25rem 1.125rem", "heading-size": "1.25rem" } }
+\`\`\`
+
+Same names, same closure, same drop-when-empty. A box that sets none costs
+nothing at all.
+
+**It is a CONTAINER width and not the viewport's**, so an inline Optin in a
+280px sidebar retunes on a desktop — which is the case a media query gets
+wrong.
+
+**Reach for it where shrinking is not the same as retuning.** A photo pane that
+is 440px of a split and the whole width on a phone wants *less* padding and
+*smaller* display type, not the same values in a narrower box. Anything that
+merely needs to be smaller already is: the panes of a \`split\` stack, a
+\`grid\` drops to one column, and \`.wc-root\` is \`min(width, 100%)\`.
+
+**It is the most expensive thing a design can carry**, because it is the one
+that doubles what a scope stores. \`wconvert_optins.config\` rides the page
+payload on every matching view against a budget
+(\`tests/unit/Frontend/PayloadBudgetTest.php\`), so set the two or three tokens
+that actually retune and not the whole bag again.
 
 **Only set the tokens a design actually decides.** Anything omitted falls back
 to the default above.

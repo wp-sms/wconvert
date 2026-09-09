@@ -642,6 +642,16 @@ is never copied into an Optin.
 > wants the picture on the other side is a different design. See
 > [ADR 0062](docs/adr/0062-a-token-bag-is-scoped-to-the-box-that-carries-it.md).
 >
+> **A bag may be carried TWICE**, and the second one is the width. `narrow`
+> holds the same names again and applies below 360px of *container* — so an
+> `inline` Optin in a 280px sidebar retunes on a desktop, which is the case a
+> viewport query gets wrong. It is what lets a photo pane that is 440px of a
+> split be the whole width on a phone with less padding and smaller display
+> type, rather than the same values in a narrower box. It is also the one thing
+> in the vocabulary that **doubles what a scope stores**, and the payload is
+> inlined into every matching page. See
+> [ADR 0064](docs/adr/0064-a-narrow-bag-is-the-same-bag-at-a-second-width.md).
+>
 > **A scoped colour may name another colour rather than spell one**, and that
 > is what makes a scope survive a theme. `{"bg": "accent"}` follows whatever
 > `accent` is where the box sits; a hex does not, so the deeper a design was

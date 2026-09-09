@@ -282,6 +282,35 @@ final class TemplateLabels
             'media.tokens' => __('Style for this box', 'wconvert'),
             /* translators: the least tall the picture may be, so it does not collapse to the two lines written on it. */
             'media.min' => __('Least height', 'wconvert'),
+
+            /*
+             * ================================================================
+             * THE SAME WORDS AT EVERY LAYOUT, AND THE SIXTH SPELLING OF THE
+             * SAME LIST.
+             * ================================================================
+             * Exactly the bargain `*.tokens` one section up makes and for the
+             * same reason: a param name means nothing on its own, the parity
+             * test walks every layout's `params` with no opt-out, and a shared
+             * entry would be another spelling of *which layouts exist*.
+             *
+             * **The width is not in the words**, and that is deliberate. It is
+             * `manifest.narrow` — one number, read by the renderer's container
+             * query — and putting it here would be a second place it is
+             * written, in a string a translator can edit. The panel that draws
+             * this control says the number, from the manifest.
+             */
+            /* translators: a second set of colours, spacing and type for when the design is narrow — on a phone, or in a sidebar. */
+            'stack.narrow' => __('Style when it is narrow', 'wconvert'),
+            /* translators: a second set of colours, spacing and type for when the design is narrow — on a phone, or in a sidebar. */
+            'row.narrow' => __('Style when it is narrow', 'wconvert'),
+            /* translators: a second set of colours, spacing and type for when the design is narrow — on a phone, or in a sidebar. */
+            'split.narrow' => __('Style when it is narrow', 'wconvert'),
+            /* translators: a second set of colours, spacing and type for when the design is narrow — on a phone, or in a sidebar. */
+            'grid.narrow' => __('Style when it is narrow', 'wconvert'),
+            /* translators: a second set of colours, spacing and type for when the design is narrow — on a phone, or in a sidebar. */
+            'panel.narrow' => __('Style when it is narrow', 'wconvert'),
+            /* translators: a second set of colours, spacing and type for when the design is narrow — on a phone, or in a sidebar. */
+            'media.narrow' => __('Style when it is narrow', 'wconvert'),
         ];
     }
 

@@ -3,20 +3,23 @@
     "stack": {
       "children": "list",
       "params": [
-        "tokens"
+        "tokens",
+        "narrow"
       ]
     },
     "row": {
       "children": "list",
       "params": [
-        "tokens"
+        "tokens",
+        "narrow"
       ]
     },
     "split": {
       "children": "panes",
       "params": [
         "ratio",
-        "tokens"
+        "tokens",
+        "narrow"
       ],
       "choices": {
         "ratio": [
@@ -32,7 +35,8 @@
     "grid": {
       "children": "list",
       "params": [
-        "tokens"
+        "tokens",
+        "narrow"
       ]
     },
     "panel": {
@@ -41,7 +45,8 @@
         "edges",
         "min",
         "notch",
-        "tokens"
+        "tokens",
+        "narrow"
       ],
       "choices": {
         "edges": [
@@ -70,7 +75,8 @@
       "children": "list",
       "params": [
         "min",
-        "tokens"
+        "tokens",
+        "narrow"
       ],
       "choices": {
         "min": [
@@ -427,6 +433,7 @@
     "border",
     "input-bg"
   ],
+  "narrow": "22.5rem",
   "choices": {
     "align": [
       "start",

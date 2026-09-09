@@ -470,6 +470,28 @@ export interface StackNode {
    * undeclared name never reaches `style.setProperty`.
    */
   readonly tokens?: Tokens;
+  /**
+   * The same bag again, for the width below which the design retunes.
+   *
+   * ==========================================================================
+   * THE ONE ITEM THAT DOUBLES WHAT A SCOPE STORES, AND IT IS OPT-IN PER BOX.
+   * ==========================================================================
+   * A 440px photo pane is 142px on a phone, and the reference set retunes it
+   * rather than letting it shrink: less padding, a shorter floor, a smaller
+   * display size. There is no way to say that with one bag, because a bag is
+   * written as inline custom properties and inline style has no conditional
+   * form.
+   *
+   * So this is the same closed names at the same box, applying **below**
+   * `manifest.narrow`, and the renderer mirrors it onto a second set of
+   * property names that one container query remaps ({@see render.ts}'s
+   * `retune`). A box that never sets one costs nothing at all — no attribute,
+   * no properties, no bytes.
+   *
+   * Two keys rather than one `{wide, narrow}` object, because the wide bag is
+   * what every design already carries and every design already stored.
+   */
+  readonly narrow?: Tokens;
 }
 
 export interface RowNode {
@@ -488,6 +510,8 @@ export interface RowNode {
    * undeclared name never reaches `style.setProperty`.
    */
   readonly tokens?: Tokens;
+  /** The same bag again, below `manifest.narrow`. {@see StackNode.narrow}. */
+  readonly narrow?: Tokens;
 }
 
 /**
@@ -515,6 +539,8 @@ export interface SplitNode {
    * undeclared name never reaches `style.setProperty`.
    */
   readonly tokens?: Tokens;
+  /** The same bag again, below `manifest.narrow`. {@see StackNode.narrow}. */
+  readonly narrow?: Tokens;
 }
 
 /**
@@ -557,6 +583,8 @@ export interface GridNode {
    * undeclared name never reaches `style.setProperty`.
    */
   readonly tokens?: Tokens;
+  /** The same bag again, below `manifest.narrow`. {@see StackNode.narrow}. */
+  readonly narrow?: Tokens;
 }
 
 /**
@@ -596,6 +624,8 @@ export interface PanelNode {
    * on what is inside it.
    */
   readonly tokens?: Tokens;
+  /** The same bag again, below `manifest.narrow`. {@see StackNode.narrow}. */
+  readonly narrow?: Tokens;
   /**
    * A rule above, an outline all round, or neither.
    *
@@ -669,6 +699,8 @@ export interface MediaNode {
    * the picture legible without touching the design's own ink.
    */
   readonly tokens?: Tokens;
+  /** The same bag again, below `manifest.narrow`. {@see StackNode.narrow}. */
+  readonly narrow?: Tokens;
   /**
    * A floor under the picture's height, so it does not collapse to the two
    * lines on it. The same shape {@see PanelNode.min} has.

@@ -406,7 +406,7 @@ final class TemplateVocabulary
 
             /*
              * ================================================================
-             * THE ONE NESTED STRUCTURE A PARAM MAY BE, AND THE ONLY ONE.
+             * THE ONLY NESTED STRUCTURE A PARAM MAY BE, AND THERE ARE TWO.
              * ================================================================
              * Every other param is a scalar, so `$kept[$key] = $node[$key]`
              * below is safe by the shape of what it copies. A token bag is not
@@ -418,7 +418,15 @@ final class TemplateVocabulary
              * an undeclared name is dropped, and a value that is not a scalar
              * has no spelling as a custom property at all.
              */
-            if ($key === 'tokens') {
+            /*
+             * **`narrow` is the same bag at a second width**, so it takes the
+             * same closure and the same drop-when-empty. Two keys rather than
+             * one nested `{wide, narrow}` object, because the wide bag is what
+             * every design already carries and every design already stored —
+             * wrapping it would be a migration over every saved Optin to
+             * express a key most designs never set.
+             */
+            if ($key === 'tokens' || $key === 'narrow') {
                 $tokens = $this->tokens($node[$key]);
 
                 if ($tokens !== []) {

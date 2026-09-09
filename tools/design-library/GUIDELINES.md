@@ -199,6 +199,19 @@ because the design's ink was chosen against the design's ground and not against
 your photograph. The `overlay` is a layer under the words rather than a
 background wash, so a scrim can be as dark as the type needs.
 
+**A `narrow` bag is for retuning, not for shrinking.** Everything that merely
+needs to be smaller already is: a `split` stacks, a `grid` drops to one column,
+`.wc-root` is `min(width, 100%)`. Reach for `narrow` where the values
+themselves are wrong at 360px — a photo pane that is 440px of a split and the
+whole width on a phone wants less padding and smaller display type. Two or
+three tokens, never the bag again: it is the one thing that doubles what a
+design stores (ADR 0064).
+
+**A `min` is only needed where the picture is the taller thing.** `.wc-split`
+is `align-items: stretch`, so a `media` beside a form is already the form's
+height. Set one anyway and the phone gets a 384px picture above the fold, with
+no way to retune it — `narrow` carries tokens and `min` is a param.
+
 **A `notch` is only visible where the halves paint and the design does not.**
 Punch a hole in a blue panel sitting on a blue `.wc-root` and the hole shows
 blue — the mask removes the panel and the design's ground is still behind it.

@@ -32,6 +32,12 @@ import type {
 const TOKEN_PREFIX = '--wc-';
 
 /**
+ * The same names again, for the narrow bag. {@see retune} for why there is a
+ * second set rather than a conditional first one.
+ */
+const NARROW_PREFIX = '--wc-n-';
+
+/**
  * Render one step of a template.
  *
  * The returned element is **the first element inside the shadow host**, and
@@ -53,7 +59,7 @@ export function render(tree: TemplateTree, tokens: Tokens, step = 0): HTMLElemen
   scope(root, tokens);
 
   if (node !== undefined) {
-    appendNode(root, node);
+    appendNode(root, node, tokens);
   }
 
   return root;
@@ -109,10 +115,16 @@ export const REFERABLE = ['bg', 'fg', 'muted', 'accent', 'accent-fg', 'border', 
  * on `--wc-bg` is a cycle CSS discards, which would silently unset the one
  * property the author was trying to set.
  */
-function scope(element: HTMLElement, tokens: Tokens | undefined): void {
+function scope(element: HTMLElement, tokens: Tokens | undefined, prefix = TOKEN_PREFIX): void {
   for (const [name, value] of Object.entries(tokens ?? {})) {
     element.style.setProperty(
-      TOKEN_PREFIX + name,
+      prefix + name,
+      /*
+        **A reference always points at the WIDE name**, at both prefixes. A
+        narrow bag saying `{"bg":"accent"}` means *follow the accent* — and
+        `--wc-n-accent` exists only on a box that carries a narrow bag, so
+        pointing the mirror at itself would resolve to nothing on most of them.
+      */
       value !== name && REFERABLE.includes(value) ? `var(${TOKEN_PREFIX}${value})` : value,
     );
   }
@@ -138,7 +150,7 @@ function submits(node: TemplateNode): boolean {
  * would take the whole Optin off the page for one unrecognised leaf
  * (ADR 0010).
  */
-function appendNode(parent: HTMLElement, node: TemplateNode): void {
+function appendNode(parent: HTMLElement, node: TemplateNode, scoped: Tokens): void {
   // A slot the merchant switched off in the settings panel. Skipped rather
   // than removed from the tree, because the panel edits content and visibility
   // and never arrangement — so switching it back on is one click and not a
@@ -147,7 +159,7 @@ function appendNode(parent: HTMLElement, node: TemplateNode): void {
     return;
   }
 
-  const element = elementFor(node);
+  const element = elementFor(node, scoped);
 
   if (element === null) {
     return;
@@ -177,16 +189,16 @@ function appendNode(parent: HTMLElement, node: TemplateNode): void {
   parent.appendChild(element);
 }
 
-function elementFor(node: TemplateNode): HTMLElement | null {
+function elementFor(node: TemplateNode, scoped: Tokens): HTMLElement | null {
   switch (node.type) {
     case 'stack':
     case 'row':
     case 'grid':
     case 'panel':
     case 'media':
-      return layout(node);
+      return layout(node, scoped);
     case 'split':
-      return split(node as SplitNode);
+      return split(node as SplitNode, scoped);
     case 'heading':
       return heading(node as HeadingNode);
     case 'text':
@@ -222,10 +234,12 @@ function layout(
   node: TemplateNode & {
     children?: readonly TemplateNode[];
     tokens?: Tokens;
+    narrow?: Tokens;
     edges?: string;
     min?: string | number;
     notch?: boolean;
   },
+  scoped: Tokens,
 ): HTMLElement {
   const element = document.createElement('div');
 
@@ -260,9 +274,11 @@ function layout(
    * the design's ground rather than its photograph, which is an empty box
    * waiting for one instead of the design's own art repeated at a second size.
    */
-  if (node.type === 'panel' || node.type === 'media') {
-    element.style.setProperty(TOKEN_PREFIX + 'bg-image', 'none');
-    element.style.setProperty(TOKEN_PREFIX + 'overlay', '#0000');
+  const reset: Tokens =
+    node.type === 'panel' || node.type === 'media' ? { 'bg-image': 'none', overlay: '#0000' } : {};
+
+  if (Object.keys(reset).length > 0) {
+    scope(element, reset);
   }
 
   if (node.type === 'panel') {
@@ -287,11 +303,77 @@ function layout(
 
   scope(element, node.tokens);
 
+  /*
+   * **What every token resolves to HERE**, which is what a retuned box needs
+   * and what nothing else in this module has ever had to know. See
+   * {@link retune}: the mirror it writes has to be complete, because a name
+   * the remap finds unset is not inherited — it is guaranteed-invalid, and
+   * falls to whatever literal the stylesheet spells beside it.
+   *
+   * Built only where a bag says something, so a design with no bags threads
+   * one object all the way down and allocates nothing.
+   */
+  const here = inScope(scoped, reset, node.tokens);
+
+  retune(element, here, node.narrow);
+
   for (const child of node.children ?? []) {
-    appendNode(element, child);
+    appendNode(element, child, here);
   }
 
   return element;
+}
+
+/** The bag in scope at this box: what it inherited, its own reset, its own bag. */
+function inScope(scoped: Tokens, reset: Tokens, own: Tokens | undefined): Tokens {
+  return own === undefined && Object.keys(reset).length === 0
+    ? scoped
+    : { ...scoped, ...reset, ...own };
+}
+
+/**
+ * The same bag again, for the width below which the design retunes.
+ *
+ * ============================================================================
+ * ONE ATTRIBUTE AND A MIRRORED SET OF NAMES, BECAUSE INLINE STYLE HAS NO IF.
+ * ============================================================================
+ * A bag is written with `setProperty`, and there is no conditional form of
+ * that — so the switch has to be in the stylesheet, and the stylesheet cannot
+ * name one node. The mirror is what bridges the two: this writes the narrow
+ * values under `--wc-n-*`, and one `@container` rule in `css.ts` remaps every
+ * `--wc-n-x` onto `--wc-x` for the boxes that carry one.
+ *
+ * **`data-narrow` gates it, and the gate is the whole correctness argument.**
+ * Without it the remap would fire on every box: `--wc-n-bg` inherits, so a
+ * child of a retuned box that sets its OWN `bg` and no narrow bag would be
+ * repainted with its ancestor's narrow ground. Gated, a box with no narrow bag
+ * is untouched at every width and inherits its ancestor's remapped value the
+ * ordinary way — which is exactly what a scope means.
+ *
+ * **The mirror is EVERY token in scope, not the narrow bag and not the box's
+ * own.** This is the part that was wrong first time and was found in a
+ * browser: an unset `var(--wc-n-heading-font)` is not *inherited*, it is
+ * **guaranteed-invalid** — so the remap wiped the property and
+ * `.wc-heading{font-family:var(--wc-heading-font,var(--wc-font,…))}` fell to
+ * its own literal fallback. Fieldwork's serif display line came out in the
+ * body face below 360px, and only there.
+ *
+ * So a retuned box is handed what every one of the 24 names resolves to where
+ * it sits — threaded down the walk, which is the only new thing this module
+ * has had to know — with the narrow bag written over the top. The remap then
+ * always finds a value and needs no fallback.
+ *
+ * It costs 24 `setProperty` calls on a retuned box and nothing at all on every
+ * other box, and it costs the PAYLOAD nothing: what is stored is the narrow
+ * bag the author wrote.
+ */
+function retune(element: HTMLElement, here: Tokens, narrow: Tokens | undefined): void {
+  if (narrow === undefined || Object.keys(narrow).length === 0) {
+    return;
+  }
+
+  element.dataset.narrow = '';
+  scope(element, { ...here, ...narrow }, NARROW_PREFIX);
 }
 
 /**
@@ -302,12 +384,16 @@ function layout(
  * direction crosses every boundary, so RTL correctness is a matter of the
  * vocabulary never naming a physical side (ADR 0009).
  */
-function split(node: SplitNode): HTMLElement {
+function split(node: SplitNode, scoped: Tokens): HTMLElement {
   const element = document.createElement('div');
 
   element.className = 'wc-split';
 
   scope(element, node.tokens);
+
+  const here = inScope(scoped, {}, node.tokens);
+
+  retune(element, here, node.narrow);
 
   if (typeof node.ratio === 'number') {
     element.style.setProperty(TOKEN_PREFIX + 'ratio', String(node.ratio));
@@ -319,7 +405,7 @@ function split(node: SplitNode): HTMLElement {
     pane.className = 'wc-pane';
 
     for (const child of children) {
-      appendNode(pane, child);
+      appendNode(pane, child, here);
     }
 
     element.appendChild(pane);

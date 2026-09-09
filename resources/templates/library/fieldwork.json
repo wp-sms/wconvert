@@ -32,7 +32,6 @@
         "start": [
           {
             "type": "media",
-            "min": "24rem",
             "tokens": {
               "bg": "#546c49",
               "fg": "#ffffff",
@@ -57,7 +56,11 @@
                 "role": "headline",
                 "text": "Room\nto grow."
               }
-            ]
+            ],
+            "narrow": {
+              "pad": "1.25rem 1.125rem",
+              "heading-size": "1.25rem"
+            }
           }
         ],
         "end": [
@@ -123,7 +126,6 @@
         "start": [
           {
             "type": "media",
-            "min": "24rem",
             "tokens": {
               "bg": "#546c49",
               "fg": "#ffffff",
@@ -148,7 +150,11 @@
                 "role": "success_headline",
                 "text": "Make\nyourself\nat home."
               }
-            ]
+            ],
+            "narrow": {
+              "pad": "1.25rem 1.125rem",
+              "heading-size": "1.25rem"
+            }
           }
         ],
         "end": [
