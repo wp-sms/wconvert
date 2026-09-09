@@ -53,15 +53,22 @@ Type and Goal. **Do not design "a Black Friday popup".** Design a popup that a
 Black Friday Playbook can fill.
 
 **Nothing can be imported.** A design is a node tree over a closed vocabulary —
-4 layouts, 13 leaves — plus 22 CSS custom properties, and anything unrecognised
-is dropped **silently**. So HTML from anywhere else cannot cross: per-node
-colours, positioned badges, decorative shapes and second CTAs have no home and
-vanish without a word. There is no HTML→JSON mapper and there will not be one.
+the layouts, the leaves and the CSS custom properties `VOCABULARY.md` lists —
+and anything unrecognised is dropped **silently**. So HTML from anywhere else
+cannot cross: positioned badges, decorative shapes and second CTAs have no home
+and vanish without a word. There is no HTML→JSON mapper and there will not be
+one.
 
-**The 22 tokens are GLOBAL.** Nothing can tint one pane, or give the form a
-different ground from the headline. That is the real ceiling and it is
-deliberate (ADR 0061). A `split` with a coloured half is drawn with an `image`,
-or approximated with a hard-stop gradient on `bg-image`.
+**Tokens have a SCOPE, and that is the ceiling lift.** The design sets them for
+the whole of itself, and **any layout node re-declares the same names for what
+is inside it** by carrying a `tokens` bag of its own — so a pane can be tinted
+and the form can have a different ground from the headline (ADR 0062). The names
+are the same closed set at every scope; bags nest.
+
+**What no bag reaches is ARRANGEMENT.** No per-node `class`, no `style`, no
+positioning, nothing that moves a box somewhere the layout did not put it. A
+design that wants the picture on the other side is a different design. That is
+the real ceiling and it is deliberate (ADR 0061, ADR 0062).
 
 **Token values are unvalidated.** Only the names are checked. `clamp()` widths,
 asymmetric `pad`, gradients and arbitrary radii all work — the "suggested

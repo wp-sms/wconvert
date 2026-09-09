@@ -48,6 +48,25 @@ final class TemplateLabels
             'success_body' => __('Body text after they submit', 'wconvert'),
             /* translators: the discount code shown after a visitor submits, e.g. “WELCOME10”. */
             'code_value' => __('Discount code', 'wconvert'),
+            /*
+             * ================================================================
+             * THE SECOND ROLE A PLAYBOOK MAY NEVER FILL, AND FOR THE SAME
+             * REASON AS THE FIRST.
+             * ================================================================
+             * Thirteen of the sixteen designs in the reference set carry a
+             * masthead — the shop's name, above the offer. A design had nowhere
+             * to put one: unbound it is a role-less leaf, so the merchant's own
+             * shop name is thrown away at the next design switch, and bound as
+             * `headline` a Playbook writes the campaign headline into the logo.
+             *
+             * So it is a Role of its own and it is `authored`, exactly as
+             * `code_value` is: a shop's name names ONE site and nowhere else,
+             * so a Playbook filling it would ship somebody else's brand to
+             * every install that used it. The design ships a placeholder and
+             * the merchant types theirs in.
+             */
+            /* translators: the shop or publication's own name, shown above the offer. */
+            'wordmark' => __('Your name', 'wconvert'),
             'email_label' => __('Email label', 'wconvert'),
             'email_placeholder' => __('Email placeholder', 'wconvert'),
             'name_label' => __('Name label', 'wconvert'),
@@ -113,6 +132,15 @@ final class TemplateLabels
             'split' => __('Side by side', 'wconvert'),
             /* translators: a layout — as many equal columns as fit, wrapping onto the next line. */
             'grid' => __('Equal columns', 'wconvert'),
+            /*
+             * **Named for what it IS and not for what it does**, which is the
+             * opposite of the choice `stack` made one line up. *Column* says
+             * what a stack is FOR because every step is already one; a panel is
+             * a THING on the screen — a box with its own colour — and the
+             * merchant is going to point at it.
+             */
+            /* translators: a layout — a box with its own background colour, holding other blocks. */
+            'panel' => __('Coloured box', 'wconvert'),
         ];
     }
 
@@ -169,6 +197,15 @@ final class TemplateLabels
              */
             /* translators: what the Equal columns layout does. */
             'grid' => __('Three across, one per line on a phone.', 'wconvert'),
+            /*
+             * **The note has to say what makes it different from a Column**,
+             * because the two hold their children identically and a merchant
+             * reading two menu items called *Column* and *Coloured box* has one
+             * question. The answer is the whole feature: this one has its own
+             * colour, and everything inside it inherits.
+             */
+            /* translators: what the Coloured box layout does. */
+            'panel' => __('A box with its own colours, holding other blocks.', 'wconvert'),
         ];
     }
 
@@ -190,6 +227,36 @@ final class TemplateLabels
     {
         return [
             'split.ratio' => __('How the space is divided', 'wconvert'),
+            /*
+             * ================================================================
+             * FOUR ENTRIES FOR ONE CONTROL, BECAUSE THE KEY IS PER LAYOUT.
+             * ================================================================
+             * `tokens` is the same bag on every layout and the words are the
+             * same words, and it is still spelled four times: this map is keyed
+             * `"{layout}.{param}"` because a param name means nothing on its
+             * own, and {@see \WConvert\Tests\Unit\Template\TemplateLabelParityTest::testEveryLayoutParamIsNamed()}
+             * walks every layout's `params` with no opt-out. A shared entry
+             * would be a fifth spelling of "which layouts exist".
+             *
+             * **It has no `choices`, and that is what makes it a bag rather
+             * than an enum.** The block inspector draws a radio group per param
+             * that enumerates and skips one that does not, so these words head
+             * the Style panel rather than an empty legend.
+             */
+            /* translators: the colours, spacing and type this box sets for itself and everything inside it. */
+            'stack.tokens' => __('Style for this box', 'wconvert'),
+            /* translators: the colours, spacing and type this box sets for itself and everything inside it. */
+            'row.tokens' => __('Style for this box', 'wconvert'),
+            /* translators: the colours, spacing and type this box sets for itself and everything inside it. */
+            'split.tokens' => __('Style for this box', 'wconvert'),
+            /* translators: the colours, spacing and type this box sets for itself and everything inside it. */
+            'grid.tokens' => __('Style for this box', 'wconvert'),
+            /* translators: the colours, spacing and type this box sets for itself and everything inside it. */
+            'panel.tokens' => __('Style for this box', 'wconvert'),
+            /* translators: whether the coloured box has a rule above it, a border all round, or neither. */
+            'panel.edges' => __('Border', 'wconvert'),
+            /* translators: the least tall the coloured box may be, so a box holding only a picture does not collapse. */
+            'panel.min' => __('Least height', 'wconvert'),
         ];
     }
 
@@ -219,6 +286,43 @@ final class TemplateLabels
             'split.ratio.0.5' => __('Even', 'wconvert'),
             /* translators: a side-by-side split. The LOGICAL second pane is narrower — it reads “left” in a right-to-left locale. */
             'split.ratio.0.65' => __('Narrow right', 'wconvert'),
+
+            /*
+             * ================================================================
+             * `block-start` IS LOGICAL, AND THE ENGLISH WORD IS DIRECTIONAL.
+             * ================================================================
+             * The same bargain `align`'s three values make one section down.
+             * The renderer draws `border-block-start`, which is the top of the
+             * box in every writing mode this plugin has ever been read in and
+             * is the INLINE start of it in a vertical one — so the word here is
+             * the one an English reader needs, and the translator resolves it
+             * for their own direction. The vocabulary itself never names a
+             * physical side (ADR 0009), which is why the stored value is
+             * `block-start` and not `top`.
+             */
+            /* translators: a coloured box with no border at all. */
+            'panel.edges.none' => __('None', 'wconvert'),
+            /* translators: a border treatment — a thick coloured rule along the block-start edge. In a vertical writing mode this is not the top of the screen. */
+            'panel.edges.block-start' => __('A rule above', 'wconvert'),
+            /* translators: a border treatment — a thin line all the way round the box. */
+            'panel.edges.all' => __('All round', 'wconvert'),
+
+            /*
+             * **Named for the JOB and not for the measurement.** `16rem` is not
+             * a thing to put in front of anybody, and the three that are not
+             * zero are the three heights a picture pane is ever asked for. The
+             * renderer takes any length, so a design shipping `18rem` keeps it
+             * and the control shows nothing checked — the same bargain every
+             * other `choices` list makes.
+             */
+            /* translators: a minimum height — none, so the box is as tall as what is in it. */
+            'panel.min.0' => __('As tall as its contents', 'wconvert'),
+            /* translators: a minimum height for a box holding a picture. */
+            'panel.min.10rem' => __('Short', 'wconvert'),
+            /* translators: a minimum height for a box holding a picture. */
+            'panel.min.16rem' => __('Medium', 'wconvert'),
+            /* translators: a minimum height for a box holding a picture. */
+            'panel.min.24rem' => __('Tall', 'wconvert'),
         ];
     }
 
@@ -254,8 +358,19 @@ final class TemplateLabels
     public static function nodeParams(): array
     {
         return [
-            /* translators: a heading's rank inside the Optin — whether it is the main heading or one under it. Not its size, which is a token. */
+            /*
+             * **`level` and `size` are two questions and the label for `level`
+             * used to answer both.** It read *"Not its size, which is a token"*,
+             * and that was true while a design had one heading size for every
+             * heading in it. A design with a display number and a subtitle needs
+             * a small `h2` and a large `h3`, which is the pair no token reaches.
+             */
+            /* translators: a heading's rank inside the Optin — whether it is the main heading or one under it. This is the document outline, not how big it is drawn. */
             'heading.level' => __('Heading rank', 'wconvert'),
+            /* translators: how big this heading is drawn, as a step up or down from the design's own heading size. */
+            'heading.size' => __('Heading size', 'wconvert'),
+            /* translators: how big this paragraph is drawn, as a step up or down from the design's own text size. */
+            'text.size' => __('Text size', 'wconvert'),
             /* translators: how a picture fills the space it is given. */
             'image.fit' => __('How the picture fills its space', 'wconvert'),
             /* translators: whether a visitor must fill a form field in before they can submit. */
@@ -293,6 +408,49 @@ final class TemplateLabels
             'heading.level.1' => __('Main heading', 'wconvert'),
             /* translators: a heading rank. This heading sits under the main one. */
             'heading.level.2' => __('Sub-heading', 'wconvert'),
+
+            /*
+             * ================================================================
+             * ONE SET OF WORDS, SPELLED TWICE, FOR THE SAME REASON `tokens` IS.
+             * ================================================================
+             * The key is `"{node}.{param}.{value}"` because a param name means
+             * nothing on its own, and the parity test walks every node's
+             * `choices` with no opt-out. What the duplication buys is the day a
+             * heading's steps and a paragraph's steps stop being the same list.
+             *
+             * **Named for the SIZE and not for the step.** `2xl` is a token in a
+             * type scale and not a thing to put in front of anybody; a merchant
+             * picking how big a number is drawn is choosing between *Huge* and
+             * *Large*. `Normal` is the design's own size and is what a block
+             * gets when nothing is chosen, which is why it is named at all
+             * rather than left as an empty chip.
+             */
+            /* translators: a type size step — the largest step — a display number, not a sentence. */
+            'heading.size.3xl' => __('Huge', 'wconvert'),
+            /* translators: a type size step — a step for a short display line. */
+            'heading.size.2xl' => __('Extra large', 'wconvert'),
+            /* translators: a type size step — one step up from the design’s own size. */
+            'heading.size.xl' => __('Large', 'wconvert'),
+            /* translators: a type size step — the design’s own size, which is what a block gets when nothing is chosen. */
+            'heading.size.m' => __('Normal', 'wconvert'),
+            /* translators: a type size step — one step down from the design’s own size. */
+            'heading.size.s' => __('Small', 'wconvert'),
+            /* translators: a type size step — the smallest step — fine print. */
+            'heading.size.xs' => __('Very small', 'wconvert'),
+
+            /* translators: a type size step — the largest step — a display number, not a sentence. */
+            'text.size.3xl' => __('Huge', 'wconvert'),
+            /* translators: a type size step — a step for a short display line. */
+            'text.size.2xl' => __('Extra large', 'wconvert'),
+            /* translators: a type size step — one step up from the design’s own size. */
+            'text.size.xl' => __('Large', 'wconvert'),
+            /* translators: a type size step — the design’s own size, which is what a block gets when nothing is chosen. */
+            'text.size.m' => __('Normal', 'wconvert'),
+            /* translators: a type size step — one step down from the design’s own size. */
+            'text.size.s' => __('Small', 'wconvert'),
+            /* translators: a type size step — the smallest step — fine print. */
+            'text.size.xs' => __('Very small', 'wconvert'),
+
 
             /* translators: a picture is scaled up until it fills the space, and the overflow is cropped away. */
             'image.fit.cover' => __('Fill the space, cropping', 'wconvert'),
@@ -464,7 +622,11 @@ final class TemplateLabels
             'accent' => __('Button', 'wconvert'),
             'accent-fg' => __('Button text', 'wconvert'),
             'border' => __('Borders', 'wconvert'),
+            /* translators: the background colour of a text box a visitor types into. Separate from the design's own background, so a form on a dark panel stays readable. */
+            'input-bg' => __('Field background', 'wconvert'),
             'font' => __('Font', 'wconvert'),
+            /* translators: a second typeface used only for headings, where the design wants one different from its body text. */
+            'heading-font' => __('Heading font', 'wconvert'),
             'heading-size' => __('Heading size', 'wconvert'),
             'heading-weight' => __('Heading weight', 'wconvert'),
             /* translators: the space between letters in a heading. Typographers call it tracking; "letter spacing" is the phrase a merchant knows. */
@@ -557,6 +719,24 @@ final class TemplateLabels
             'font.Georgia, \'Times New Roman\', Times, serif' => __('Serif', 'wconvert'),
             /* translators: a font choice — a typeface whose letters are all one width. */
             'font.ui-monospace, SFMono-Regular, Menlo, Consolas, monospace' => __('Monospace', 'wconvert'),
+
+            /*
+             * **The same four stacks, spelled a second time, and the duplication
+             * is forced rather than lazy.** The key is `"{token}.{value}"`
+             * because the value IS the identity, so a shared entry would need a
+             * key that names no token — and the parity test walks `choices`
+             * per token with no opt-out. What that buys is the thing it costs:
+             * the day the heading list and the body list stop being the same
+             * list, nothing here has to be untangled.
+             */
+            /* translators: a font choice — the operating system's own interface typeface. */
+            "heading-font.system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" => __('System', 'wconvert'),
+            /* translators: a font choice — a typeface with no serifs. */
+            "heading-font.'Helvetica Neue', Helvetica, Arial, sans-serif" => __('Sans serif', 'wconvert'),
+            /* translators: a font choice — a typeface with serifs. */
+            'heading-font.Georgia, \'Times New Roman\', Times, serif' => __('Serif', 'wconvert'),
+            /* translators: a font choice — a typeface whose letters are all one width. */
+            'heading-font.ui-monospace, SFMono-Regular, Menlo, Consolas, monospace' => __('Monospace', 'wconvert'),
 
             /*
              * **Named for the weight a reader sees, not for the number.** `600`

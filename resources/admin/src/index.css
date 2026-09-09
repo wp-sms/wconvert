@@ -1860,6 +1860,23 @@
 }
 
 /*
+ * **The Design tab is ONE column here, and three inside it.**
+ *
+ * The other two tabs are an editor with the preview in a column beside them,
+ * which is what these two media queries have always described. *Design* is
+ * three panes — list · render · controls — and the render is the middle one, so
+ * the preview cannot be a sibling of the tab strip: it is a child of the pane
+ * grid, placed by `.wconvert-structure` below (ADR 0062).
+ *
+ * So the outer grid collapses to one track and the panes take the whole
+ * measure, which is also what makes the container query below see the full
+ * width rather than the width left over after a 31rem aside.
+ */
+.wconvert-builder[data-tab='design'] {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/*
  * **Wider once there is room, because the device toggle needs it to mean
  * anything.** Every shipped design asks for `--wc-width: 28rem` and `.wc-root`
  * takes `min(that, 100%)` — so in a column narrower than 28rem the desktop
@@ -1875,7 +1892,7 @@
  * own 90rem, above.
  */
 @media (min-width: 1280px) {
-  .wconvert-builder {
+  .wconvert-builder:not([data-tab='design']) {
     grid-template-columns: minmax(0, 1fr) 31rem;
   }
 }
@@ -2184,39 +2201,83 @@
 }
 
 /* ---------------------------------------------------------------------------
- * THE SPLIT: THE TREE AND THE INSPECTOR SIDE BY SIDE, ONCE THERE IS ROOM.
+ * THE TWO-PANE SPLIT AT 48rem IS GONE, AND THE DELETION IS THE POINT.
  *
- * **48rem is derived, not chosen.** `768 − 352 inspector − 24 gap = 392`, which
- * is precisely the tree width this editor already survives at the 1024px
- * stacking point. The rule that produced it: never split until the tree would
- * be narrower than a width it already works at.
+ * It put the tree and the inspector side by side from 48rem (768px) up, and it
+ * was right for a `.wconvert-structure` that held two panes. It now holds
+ * three: the preview moved into the middle of it (ADR 0062), and it spans,
+ * because a 496px stage does not fit beside a 352px inspector at 768px of
+ * container.
  *
- * **22rem (352px) for the inspector** sits with Gutenberg's ~350px block
- * settings sidebar, which is the closest comparable there is — a panel of
- * controls for one selected node, in a WordPress admin.
+ * With a spanning item between them, auto-placement puts the tree on row one
+ * and the inspector on row THREE — beside nothing, with the preview's full
+ * width between. The fix that suggests itself is `order` on the preview, and it
+ * is the wrong one: it would make the visual order tree · inspector · preview
+ * while the DOM order stays tree · preview · inspector, which is a focus order
+ * that disagrees with the reading order at exactly the widths a merchant is
+ * most likely to be on a keyboard.
  *
- * Below the query this collapses to the flex column above, which is not a
- * fallback invented here: it is exactly the arrangement that shipped, and the
- * one ADR 0039's placement rule was written for.
+ * So below 67rem this is the flex column it already was, in source order, and
+ * the panes take their columns in one step rather than two. The `48rem` number
+ * is not lost — it is what `.wconvert-blocks`'s own overflow rule was written
+ * for, and that rule is untouched.
  * ------------------------------------------------------------------------- */
-@container (min-width: 48rem) {
+
+/* ---------------------------------------------------------------------------
+ * THREE PANES: THE LIST, THE RENDER, THE CONTROLS.
+ *
+ * ============================================================================
+ * 67rem IS ADDED UP, NOT CHOSEN, AND THE PREVIEW IS WHAT ADDS IT UP.
+ * ============================================================================
+ * `11rem tree + 31rem preview + 22rem inspector + 2 × 1.5rem gaps = 67rem`
+ * (1072px), which is the narrowest container where every pane still holds its
+ * job.
+ *
+ * **31rem is the preview's floor and it is not negotiable**, for the reason the
+ * aside it came from spells out one screen up: the stage has 1rem of padding
+ * and a 1px border, so anything under 31rem clamps a design that asks for 28rem
+ * to less than its own measure — which is the one thing a live-rendered preview
+ * exists not to do. Measured at 1280 with the admin menu expanded, a fixed
+ * 16rem tree left the preview at 468px and the design rendered 14px narrow.
+ *
+ * So the TREE is what gives. It is a list of short rows and the one pane that
+ * reads fine narrower, and `minmax(11rem, 16rem)` beside a `minmax(31rem, 1fr)`
+ * preview is what makes the give go the right way: the preview takes its floor
+ * first and the tree takes what is left, down to 11rem and no further.
+ *
+ * A CONTAINER query, so a folded admin menu buys 124px of it rather than the
+ * viewport lying by that much (`.wconvert-builder__tabs` is the container,
+ * declared above).
+ *
+ * **Below it, the panes stack rather than becoming a slide-over.** A modal
+ * inspector was considered and is not what shipped: `StructureView` documents
+ * that the inspector comes after the tree in the DOM *and therefore after it in
+ * the tab order*, and a Radix dialog portals to `document.body` — which moves
+ * the panel out of source order, adds a focus trap to a panel a merchant tabs
+ * in and out of constantly, and would rewrite the 73KB of treegrid keyboard
+ * assertions that guarantee any of it. Stacking is what shipped at 48rem
+ * already, it is the arrangement ADR 0039's placement rule was written for, and
+ * it costs a scroll rather than a modality. The Full width toggle is what buys
+ * room back when a merchant wants it.
+ * ------------------------------------------------------------------------- */
+@container (min-width: 67rem) {
   .wconvert-structure {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 22rem;
+    grid-template-columns: minmax(11rem, 16rem) minmax(31rem, 1fr) 22rem;
     /*
      * `start` rather than the default stretch, which is what makes the sticky
-     * inspector below work at all: a stretched item is as tall as the row and
-     * so has nothing to travel within. It is the same recipe the preview column
+     * panes below work at all: a stretched item is as tall as the row and so
+     * has nothing to travel within. It is the same recipe the preview column
      * uses against `.wconvert-builder`.
      */
     align-items: start;
   }
 
   /*
-   * The hint and the live region are about the whole tab, so they span it. The
-   * two panes then claim a column each — stated rather than left to auto
-   * placement, so a paragraph added here later does not silently push the
-   * inspector into a row of its own.
+   * The header, the hint and the live region are about the whole tab, so they
+   * span it. The three panes then claim a column each — stated rather than left
+   * to auto placement, so a paragraph added here later does not silently push
+   * the inspector into a row of its own.
    */
   .wconvert-structure > * {
     grid-column: 1 / -1;
@@ -2226,8 +2287,19 @@
     grid-column: 1;
   }
 
-  .wconvert-structure > .wconvert-inspector {
+  .wconvert-structure > .wconvert-builder__preview {
     grid-column: 2;
+    /*
+     * It follows the panes down, exactly as it did in the column it came from.
+     * `4rem` clears wp-admin's own sticky toolbar, which is the one piece of
+     * chrome ADR 0035 deliberately leaves in place.
+     */
+    position: sticky;
+    inset-block-start: 4rem;
+  }
+
+  .wconvert-structure > .wconvert-inspector {
+    grid-column: 3;
     /*
      * **The problem the width was spent on.** The preview is sticky and stays;
      * the inspector was not and did not, so selecting a block low in a fifteen
@@ -2236,7 +2308,7 @@
      *
      * `4rem` clears wp-admin's own sticky toolbar, which is the one piece of
      * chrome ADR 0035 deliberately leaves in place — the same number, for the
-     * same reason, as the preview column's.
+     * same reason, as the preview's.
      */
     position: sticky;
     inset-block-start: 4rem;
@@ -4525,4 +4597,73 @@
 
 .wconvert-export {
   margin-block-start: 1.5rem;
+}
+
+/* ---------------------------------------------------------------------------
+ * FULL WIDTH: wp-admin's OWN CHROME, HIDDEN BY A CLASS ON <body>.
+ *
+ * ============================================================================
+ * THE MECHANISM IS GUTENBERG'S AND THE DEFAULT IS DELIBERATELY NOT.
+ * ============================================================================
+ * `FullscreenMode` toggles a class on `document.body` and the hiding is CSS
+ * elsewhere; this is that CSS, under a name of our own so the two stylesheets
+ * cannot hide each other's chrome on a screen where both are loaded.
+ *
+ * **Default off**, because it costs the merchant their navigation — the thing
+ * people install plugins to undo in the block editor. Three panes fit at ~1040px
+ * of container without it; this is what a merchant reaches for when they want
+ * more room, which is a different act from what they are given on arrival
+ * (ADR 0062). Escape exits, and the class is removed when the builder unmounts.
+ *
+ * ~192px: 160px of expanded admin menu plus the 32px toolbar.
+ *
+ * `!important` on the offsets, because wp-admin states them with high enough
+ * specificity in its own media queries that a plain declaration loses on the
+ * exact widths where it matters most (ADR 0035 already accepts this trade for
+ * the toolbar's own height).
+ * ------------------------------------------------------------------------- */
+body.wconvert-fullscreen #adminmenumain,
+body.wconvert-fullscreen #wpadminbar,
+body.wconvert-fullscreen #wpfooter {
+  display: none;
+}
+
+body.wconvert-fullscreen #wpcontent,
+body.wconvert-fullscreen #wpbody-content {
+  margin-inline-start: 0 !important;
+  padding-inline-start: 0 !important;
+}
+
+/*
+ * The toolbar reserved its height on `<html>`, so hiding it without this leaves
+ * 32px of nothing at the top of the screen — which is the whole gain, given
+ * back.
+ */
+html.wp-toolbar:has(body.wconvert-fullscreen) {
+  padding-block-start: 0;
+}
+
+/*
+ * **The sticky offsets go with the toolbar.** The preview and the inspector
+ * both stick at `4rem` to clear it; with it gone that is 64px of gap they hold
+ * open above themselves for chrome that is not there.
+ */
+body.wconvert-fullscreen .wconvert-builder__preview,
+body.wconvert-fullscreen .wconvert-structure > .wconvert-inspector,
+body.wconvert-fullscreen .wconvert-structure > .wconvert-builder__preview {
+  inset-block-start: 1rem;
+}
+
+/* ---------------------------------------------------------------------------
+ * COPY A LOOK, PASTE IT ONTO THE NEXT BOX.
+ *
+ * Two ghost buttons on one line, because they are one act split across two
+ * selections and neither is the panel's primary control — the token fields
+ * under them are.
+ * ------------------------------------------------------------------------- */
+.wconvert-scope__clipboard {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-inline-start: calc(var(--spacing) * -3);
 }

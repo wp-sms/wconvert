@@ -9,7 +9,7 @@
  * design is not: it is JSON, it has to come BACK, and the only way to know
  * whether it is any good is to watch the real renderer draw it.
  *
- * So the Bench takes a tree in, drives all 22 tokens live, shows it in its real
+ * So the Bench takes a tree in, drives every token live, shows it in its real
  * container at three widths in both directions and against the shipping
  * themes, and hands the JSON back out.
  *

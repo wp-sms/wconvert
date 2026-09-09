@@ -8,6 +8,7 @@ use WConvert\Support\Availability;
 use WConvert\Support\ProPresence;
 use WConvert\Support\TierManifest;
 use WConvert\Support\WpProPresence;
+use WConvert\Template\DesignBudget;
 
 defined('ABSPATH') || exit;
 
@@ -250,6 +251,13 @@ final class AdminMenu
             // Targeting tickets are about.
             'homeUrl' => (string) home_url('/'),
             'inspectParam' => InspectorEnqueue::PARAM,
+            // **What one design may cost, so the builder can draw a meter.**
+            // The same constant `LibraryLintTest` caps a shipped design at, sent
+            // over rather than written a second time in TypeScript — a meter
+            // measured against its own copy of the number is a meter that stays
+            // green on the day the cap moves. Same reason `inspectParam` is
+            // here, one line up.
+            'designBudget' => DesignBudget::PER_DESIGN,
             // **What to call each paid tier**, read from `tiers.json` rather
             // than written into five components as the literal "Pro"
             // (ADR 0056). At launch every rung answers "Pro", so nothing on

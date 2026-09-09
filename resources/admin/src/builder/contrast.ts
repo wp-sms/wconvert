@@ -32,6 +32,41 @@
 export const AA_NORMAL = 4.5;
 
 /**
+ * Every place the renderer paints words on a surface.
+ *
+ * ============================================================================
+ * ONE LIST, BECAUSE THREE SCREENS ASK THE SAME QUESTION.
+ * ============================================================================
+ * The Design panel draws a readout with a lettered sample, `structure/problems`
+ * reports a sentence in the readiness verdict, and {@see ScopeStyle} measures
+ * the same pairs resolved at one BOX. Each had its own array, keyed the same way
+ * and carrying one extra column of its own — which is three places for the AA
+ * check to quietly stop covering something. It already nearly happened: a field
+ * took the design's `bg` until `input-bg` gave it a ground of its own, and the
+ * pair had to be added to every copy in lockstep or the one control a visitor
+ * must find would go unchecked on exactly the designs a scope is for.
+ *
+ * So the PAIRS live here and each screen maps its own extra onto them by
+ * `"{fg}/{bg}"`. `backdrop` is deliberately absent: it sits behind the popup
+ * rather than behind text, so a ratio for it would be a number about nothing.
+ */
+export const READABLE_PAIRS: readonly (readonly [fg: string, bg: string])[] = [
+  ['fg', 'bg'],
+  ['muted', 'bg'],
+  ['accent-fg', 'accent'],
+  /*
+   * The field's own ground, since `input-bg` gave it one (ADR 0062). A light
+   * form on a dark panel is the design a scoped bag exists for, and without this
+   * the ratio reported would be about a surface the field is no longer sitting
+   * on.
+   */
+  ['fg', 'input-bg'],
+];
+
+/** A pair's key in the per-screen maps that hang words or a sample off it. */
+export const pairKey = (fg: string, bg: string): string => `${fg}/${bg}`;
+
+/**
  * The contrast ratio between two colours, or null where either cannot be read.
  *
  * Between 1 (identical) and 21 (black on white). Order does not matter: the

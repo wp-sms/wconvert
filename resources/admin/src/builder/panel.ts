@@ -191,6 +191,26 @@ export const isChoiceHeld = (held: unknown, choice: string, fallback?: string): 
 /** Every Slot Role the vocabulary declares, in the order it declares them. */
 export const ROLES = vocabulary.roles as readonly string[];
 
+/**
+ * The Roles a [[Playbook]] may **not** fill — the merchant's own to type.
+ *
+ * ============================================================================
+ * THE ADMIN READS THIS BECAUSE IT MUST NOT HAND ONE OUT BY DEFAULT.
+ * ============================================================================
+ * `code_value` holds a coupon that exists in one merchant's shop; `wordmark`
+ * holds their name. PHP reads this list to refuse a Playbook that fills one
+ * ({@see \WConvert\Template\TemplateVocabulary::authoredRoles()}); the editor
+ * reads it for the mirror-image reason — `freeRoleFor` walks a kind's declared
+ * Roles and takes the first unclaimed one, and an authored Role is unclaimed on
+ * most designs. Without this, adding a heading to a design that already has its
+ * headline handed the merchant a block called *Your name*.
+ *
+ * A default is a guess and these are the two Roles nobody can guess. They stay
+ * OFFERED — the ⇄ menu still lists them — because a masthead is a real thing a
+ * merchant adds; what they are not is what a new block silently becomes.
+ */
+export const AUTHORED_ROLES = vocabulary.authored_roles as readonly string[];
+
 /** What a `field` may capture. Closed, because the capture path canonicalises per kind. */
 export const FIELDS = vocabulary.fields as readonly string[];
 
@@ -225,6 +245,55 @@ export interface TokenDeclaration {
 export const TOKENS: readonly TokenDeclaration[] = Object.entries(
   vocabulary.tokens as Readonly<Record<string, string>>,
 ).map(([name, fallback]) => ({ name, fallback }));
+
+/**
+ * The two tokens whose absence resolves to ANOTHER token rather than to a
+ * literal.
+ *
+ * ============================================================================
+ * A MANIFEST DEFAULT CANNOT SAY "WHATEVER `bg` IS", SO THIS SAYS IT.
+ * ============================================================================
+ * `.wc-input` reads `var(--wc-input-bg,var(--wc-bg,#fff))` and `.wc-heading`
+ * reads `var(--wc-heading-font,var(--wc-font,…))` — both added with the scoped
+ * bag, both deliberately chained so that every design shipped before them
+ * renders identically. The manifest declares one string per token, and no
+ * string expresses *the design's own ground*.
+ *
+ * That gap is not cosmetic. {@see resolvedToken} feeds the AA contrast check,
+ * and the manifest's `#ffffff` for `input-bg` would have reported a dark
+ * design's near-white text as unreadable on a white field the visitor never
+ * sees — a warning about a surface that does not exist, on precisely the
+ * designs a scoped bag is for.
+ *
+ * **It is a second spelling of two CSS declarations and there is no way for it
+ * not to be**, so it is two entries in one place rather than a `??` in each
+ * consumer, and the comment above each rule in `css.ts` names it.
+ */
+const FALLS_BACK_TO: Readonly<Record<string, string>> = {
+  'input-bg': 'bg',
+  'heading-font': 'font',
+};
+
+/**
+ * What the renderer will actually resolve a token to, given a design.
+ *
+ * The design's own value, else the token it chains to, else the manifest's
+ * literal. This is what a check must read: a ratio computed from an empty
+ * control is a verdict on a colour nobody chose.
+ */
+export function resolvedToken(tokens: Readonly<Record<string, string>>, name: string): string {
+  const held = tokens[name];
+
+  if (held !== undefined && held !== '') {
+    return held;
+  }
+
+  const chained = FALLS_BACK_TO[name];
+
+  return chained === undefined
+    ? (TOKENS.find((token) => token.name === name)?.fallback ?? '')
+    : resolvedToken(tokens, chained);
+}
 
 /**
  * What the Design panel OFFERS for a token, where offering a list is the only
@@ -593,6 +662,143 @@ export function withHidden(tree: TemplateTree, path: Path, hidden: boolean): Tem
 
     return next as TemplateNode;
   });
+}
+
+/**
+ * The boxes a block sits inside, outermost first, ending with the block itself.
+ *
+ * ============================================================================
+ * A SCOPE CHAIN IS WHAT MAKES "WHERE DOES THIS COLOUR COME FROM" ANSWERABLE.
+ * ============================================================================
+ * Since ADR 0062 any layout carries a `tokens` bag that applies to itself and
+ * everything inside it, and custom properties inherit — so the value a leaf is
+ * actually drawn with is the nearest bag above it that names the token, and
+ * that is a walk the browser does for free and the editor cannot. A panel that
+ * showed the design's value on a block sitting inside a cream box would be a
+ * control naming a colour the visitor never sees.
+ *
+ * A path is `[step, key, index, key, index, …]`, so the ancestors are exactly
+ * its odd-length prefixes. Only nodes that CAN carry a bag are returned: a
+ * leaf's `tokens` is dropped on the way in, so a leaf in the chain would be a
+ * scope nothing can ever be written to.
+ */
+export interface Scope {
+  readonly path: Path;
+  readonly type: string;
+  readonly tokens: Tokens;
+}
+
+export function scopeChainOf(tree: TemplateTree, path: Path): Scope[] {
+  const chain: Scope[] = [];
+
+  for (let at = 1; at <= path.length; at += 2) {
+    const here = path.slice(0, at);
+    const node = nodeOf(tree, here);
+
+    if (node !== null && LAYOUTS[node.type] !== undefined) {
+      chain.push({ path: here, type: node.type, tokens: node.tokens ?? {} });
+    }
+  }
+
+  return chain;
+}
+
+/**
+ * The node one path names, or null.
+ *
+ * **`structure/tree.ts` has this too, and it is not imported.** That module
+ * imports THIS one for the vocabulary, so reaching back would be a cycle
+ * between the two files every other module in the editor depends on. Six lines
+ * against an import cycle is the right trade, and the walk is the path's own
+ * shape rather than a rule either file invented.
+ */
+function nodeOf(tree: TemplateTree, path: Path): (TemplateNode & { tokens?: Tokens }) | null {
+  const [step, ...rest] = path;
+  let node = (typeof step === 'number' ? tree.steps[step] : undefined) ?? null;
+
+  for (let at = 0; at < rest.length && node !== null; at += 2) {
+    const children = typeof rest[at] === 'string' ? (node as Record<string, unknown>)[rest[at]] : null;
+    const index = rest[at + 1];
+
+    node = Array.isArray(children) && typeof index === 'number'
+      ? ((children[index] as TemplateNode | undefined) ?? null)
+      : null;
+  }
+
+  return node;
+}
+
+/**
+ * Where a token's value comes from at one place in the tree.
+ *
+ * `here` is this block's own bag, `scope` is the nearest box above it that
+ * names the token, `design` is the Optin's own token map, and `default` is what
+ * the manifest declares. The four are the whole answer, and the panel prints
+ * the middle two because those are the ones a merchant cannot see.
+ */
+export interface TokenSource {
+  readonly from: 'here' | 'scope' | 'design' | 'default';
+  readonly value: string;
+  /** The box it came from, where `from` is `scope`. */
+  readonly scope?: Scope;
+}
+
+export function sourceOfToken(
+  chain: readonly Scope[],
+  tokens: Readonly<Record<string, string>>,
+  name: string,
+): TokenSource {
+  for (let at = chain.length - 1; at >= 0; at -= 1) {
+    const held = chain[at]?.tokens[name];
+
+    if (held !== undefined && held !== '') {
+      return at === chain.length - 1
+        ? { from: 'here', value: held }
+        : { from: 'scope', value: held, scope: chain[at] };
+    }
+  }
+
+  const design = tokens[name];
+
+  return design !== undefined && design !== ''
+    ? { from: 'design', value: design }
+    : { from: 'default', value: resolvedToken(tokens, name) };
+}
+
+/**
+ * The same design with one token set on ONE BOX, or cleared back to whatever it
+ * sits inside.
+ *
+ * **An emptied bag leaves no key**, which is the same rule
+ * {@see \WConvert\Template\TemplateVocabulary} applies on the way in: a design
+ * whose bag kept nothing is byte-identical to one that carries none, so undoing
+ * every scoped edit gets the merchant back to exactly the tree they started
+ * with rather than to one carrying `"tokens": {}` on three boxes.
+ */
+/**
+ * The same design with one box's WHOLE bag replaced.
+ *
+ * What *Paste this look* writes. It replaces rather than merges for the reason
+ * a design switch takes a fresh snapshot rather than reconciling two: a merge
+ * leaves whatever the target already set and produces a box that is neither
+ * what was copied nor what was there, which is a state nothing on screen can
+ * explain. Undo pays for the bluntness, the same bargain a block delete makes.
+ *
+ * An empty bag clears the key, exactly as {@see withScopeToken} does.
+ */
+export function withScopeBag(tree: TemplateTree, path: Path, tokens: Tokens): TemplateTree {
+  return withValue(tree, path, 'tokens', Object.keys(tokens).length === 0 ? undefined : { ...tokens });
+}
+
+export function withScopeToken(
+  tree: TemplateTree,
+  path: Path,
+  name: string,
+  value: string,
+): TemplateTree {
+  const bag = withToken(nodeOf(tree, path)?.tokens ?? {}, name, value);
+
+  return withValue(tree, path, 'tokens', Object.keys(bag).length === 0 ? undefined : bag);
 }
 
 /** The same design with one token set, or cleared back to the template's own. */

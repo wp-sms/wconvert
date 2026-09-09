@@ -2,16 +2,21 @@
   "layouts": {
     "stack": {
       "children": "list",
-      "params": []
+      "params": [
+        "tokens"
+      ]
     },
     "row": {
       "children": "list",
-      "params": []
+      "params": [
+        "tokens"
+      ]
     },
     "split": {
       "children": "panes",
       "params": [
-        "ratio"
+        "ratio",
+        "tokens"
       ],
       "choices": {
         "ratio": [
@@ -26,7 +31,34 @@
     },
     "grid": {
       "children": "list",
-      "params": []
+      "params": [
+        "tokens"
+      ]
+    },
+    "panel": {
+      "children": "list",
+      "params": [
+        "edges",
+        "min",
+        "tokens"
+      ],
+      "choices": {
+        "edges": [
+          "none",
+          "block-start",
+          "all"
+        ],
+        "min": [
+          "0",
+          "10rem",
+          "16rem",
+          "24rem"
+        ]
+      },
+      "defaults": {
+        "edges": "none",
+        "min": "0"
+      }
     }
   },
   "nodes": {
@@ -39,20 +71,31 @@
       ],
       "params": [
         "level",
+        "size",
         "hidden"
       ],
       "roles": [
         "headline",
-        "success_headline"
+        "success_headline",
+        "wordmark"
       ],
       "choices": {
         "level": [
           "1",
           "2"
+        ],
+        "size": [
+          "3xl",
+          "2xl",
+          "xl",
+          "m",
+          "s",
+          "xs"
         ]
       },
       "defaults": {
-        "level": "1"
+        "level": "1",
+        "size": "m"
       }
     },
     "eyebrow": {
@@ -66,7 +109,8 @@
         "hidden"
       ],
       "roles": [
-        "eyebrow"
+        "eyebrow",
+        "wordmark"
       ]
     },
     "text": {
@@ -79,13 +123,27 @@
         "link"
       ],
       "params": [
+        "size",
         "hidden"
       ],
       "roles": [
         "body",
         "fine_print",
         "success_body"
-      ]
+      ],
+      "choices": {
+        "size": [
+          "3xl",
+          "2xl",
+          "xl",
+          "m",
+          "s",
+          "xs"
+        ]
+      },
+      "defaults": {
+        "size": "m"
+      }
     },
     "badge": {
       "content": [
@@ -279,7 +337,9 @@
     "accent": "#2563eb",
     "accent-fg": "#ffffff",
     "border": "#e5e7eb",
+    "input-bg": "#ffffff",
     "font": "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
+    "heading-font": "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
     "heading-size": "1.5rem",
     "heading-weight": "700",
     "tracking": "normal",
@@ -308,6 +368,7 @@
     "success_headline",
     "success_body",
     "code_value",
+    "wordmark",
     "email_label",
     "email_placeholder",
     "name_label",
@@ -316,7 +377,8 @@
     "phone_placeholder"
   ],
   "authored_roles": [
-    "code_value"
+    "code_value",
+    "wordmark"
   ],
   "fields": [
     "email",
@@ -369,6 +431,12 @@
       "'Helvetica Neue', Helvetica, Arial, sans-serif",
       "Georgia, 'Times New Roman', Times, serif",
       "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+    ],
+    "heading-font": [
+      "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
+      "'Helvetica Neue', Helvetica, Arial, sans-serif",
+      "Georgia, 'Times New Roman', Times, serif",
+      "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
     ]
   },
   "facets": {
@@ -376,7 +444,8 @@
       "stack",
       "row",
       "split",
-      "grid"
+      "grid",
+      "panel"
     ],
     "captures": [
       "email",

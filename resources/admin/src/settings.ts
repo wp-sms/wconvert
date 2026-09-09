@@ -61,6 +61,16 @@ export interface AdminSettings {
    */
   readonly inspectParam?: string;
   /**
+   * What one design's snapshot may cost, gzipped — `DesignBudget::PER_DESIGN`.
+   *
+   * The builder draws a meter against it while a merchant spends bytes on
+   * scoped styling, and the same constant caps a shipped design in
+   * `LibraryLintTest`. It travels for the reason `inspectParam` does: a number
+   * written a second time here is a meter that stays green on the day the cap
+   * moves.
+   */
+  readonly designBudget?: number;
+  /**
    * What to call each paid tier, keyed by slug — `basic`, `pro`, `elite`.
    *
    * ==========================================================================
