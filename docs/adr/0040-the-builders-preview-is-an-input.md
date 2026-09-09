@@ -203,6 +203,46 @@ design's first block — rather than cleared.*
 > becomes a one-scheme test, which is the same guarantee with less to keep in
 > step.*
 
+> **Completed: addressing every box was necessary and not sufficient. A press
+> takes the OUTER box first and goes one level deeper per press.**
+>
+> *The amendment above made containers addressable and then answered with
+> `closest()` — the innermost box under the pointer. That is the right answer to*
+> what did I point at *and the wrong one to* what am I working on*: on any real
+> design the innermost thing under a pointer is a leaf, a leaf carries no
+> `tokens` bag (ADR 0062), and the Style panel's whole subject is boxes. So
+> pressing a box reported the leaf inside it, the panel said* "this block takes
+> its look from Column" *, and pressing again in the same place said it again.
+> The feature this ADR's fourth amendment says was missing was addressed and
+> still not reachable.*
+>
+> *Measured on `split-hero` at 1400px, gridding the rendered card: of 168 points,
+> **21 selected the Column and none at all reached the design** — every pixel of
+> the design is covered by a child, so an innermost-wins press could never land
+> on it. After: 78 select the Column, 84 the Image, and the design is reachable.*
+>
+> *So a press walks the chain. The first takes the outermost box inside the
+> design; each further press at the same point goes one deeper; the press after
+> the innermost takes the design itself; and a press somewhere else starts again
+> at the top, because the selection is no longer on the way. **The design is the
+> last link rather than the first** — it is in every press's chain, so leading
+> with it would put a step between the merchant and every box on screen, and it
+> is the one scope with two other routes to it (the tree's top row and the Style
+> panel's own link).*
+>
+> ***A dashed outline under the pointer says what the next press would take**,
+> and it is not a garnish: every addressable element already carried
+> `cursor: pointer`, so the whole preview said "clickable" and nothing said
+> what. Dashed against the selection's solid, because the distinction being
+> drawn is* chosen *against* would be chosen *— which has to survive greyscale
+> (ADR 0038).*
+>
+> *One ordering hazard, found by measuring rather than by reading: the events are
+> `pointerdown`, `focus`, `click`, so focusing a capture field settled the
+> selection before the press was handled and the drill then stepped one level too
+> deep. A press decides for itself now; a Tab, which has no press to defer to,
+> still selects the control it landed on.*
+
 ## Why a string and not an element reference
 
 The preview is remounted on every keystroke — the renderer builds DOM and reads

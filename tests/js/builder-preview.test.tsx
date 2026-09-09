@@ -223,22 +223,125 @@ describe('a container in the preview', () => {
   });
 
   /**
-   * **The innermost box wins, and that is why the listener is delegated.** A
-   * handler per element fired three times on one press — the headline, the
-   * media it is in, the split that holds both — and the last to run was the
-   * outermost, so pressing a headline selected the whole step.
+   * ==========================================================================
+   * A PRESS TAKES THE OUTER BOX, AND THE NEXT ONE GOES A LEVEL DEEPER.
+   * ==========================================================================
+   * This was *"answers with the innermost box under the pointer"* — `closest()`
+   * from the press — which is the right answer to *what did I point at* and the
+   * wrong one to *what am I working on*. On any real design the innermost thing
+   * under a pointer is a leaf, a leaf carries no `tokens` bag, and the Style
+   * panel's whole subject is boxes: so pressing a box reported the headline
+   * inside it and the panel said *"this block takes its look from Column"*,
+   * every time, for every box.
+   *
+   * Measured on `split-hero` before the change: of 168 points across the
+   * preview, 21 selected the Column and NONE reached the design at all — its
+   * children cover every pixel of it. The chain is walked now, one link per
+   * press, and the design is the last link rather than the first.
    */
-  it('answers with the innermost box under the pointer, not the outermost', async () => {
+  const chainFrom = (role: string) => {
+    const leaf = slots().find((slot) => slot.dataset.role === role) as HTMLElement;
+    const box = leaf.parentElement?.closest<HTMLElement>('[data-path]') as HTMLElement;
+    const design = boxes()[0] as HTMLElement;
+
+    return { leaf, box, design };
+  };
+
+  it('takes the outer box first, so a box is what a press on one selects', async () => {
     const chosen = vi.fn();
 
     render(<Preview template={FIELDWORK} onSelect={chosen} />);
 
-    const headline = slots().find((slot) => slot.dataset.role === 'headline');
+    const { leaf, box } = chainFrom('headline');
 
-    await userEvent.click(headline as HTMLElement);
+    await userEvent.click(leaf);
 
     expect(chosen).toHaveBeenCalledTimes(1);
-    expect(chosen).toHaveBeenCalledWith(keyOfElement(headline as HTMLElement));
+    expect(chosen).toHaveBeenCalledWith(keyOfElement(box));
+  });
+
+  it('goes one level deeper when the same point is pressed again', async () => {
+    const chosen = vi.fn();
+    const { rerender } = render(<Preview template={FIELDWORK} onSelect={chosen} />);
+
+    const { leaf, box } = chainFrom('headline');
+
+    // The selection the first press produced, handed back the way the builder
+    // hands it back — which is what the second press steps on from.
+    rerender(<Preview template={FIELDWORK} selected={keyOfElement(box)} onSelect={chosen} />);
+    await userEvent.click(leaf);
+
+    expect(chosen).toHaveBeenLastCalledWith(keyOfElement(leaf));
+  });
+
+  /**
+   * **The design is the last link, and before this it was reachable from no
+   * point in the preview at all** — every pixel of it is covered by a child, so
+   * an innermost-wins press could never land on it. It is last rather than
+   * first because it is in every press's chain: leading with it would put a
+   * step between the merchant and every box on the screen.
+   */
+  it('takes the design itself on the press after the innermost', async () => {
+    const chosen = vi.fn();
+    const { rerender } = render(<Preview template={FIELDWORK} onSelect={chosen} />);
+
+    const { leaf, design } = chainFrom('headline');
+
+    rerender(<Preview template={FIELDWORK} selected={keyOfElement(leaf)} onSelect={chosen} />);
+    await userEvent.click(leaf);
+
+    expect(chosen).toHaveBeenLastCalledWith(keyOfElement(design));
+  });
+
+  /**
+   * A selection that is not on the way to the point pressed says nothing about
+   * how deep that press should go, so it starts again at the top.
+   */
+  it('starts again at the outer box when the press lands somewhere else', async () => {
+    const chosen = vi.fn();
+    const { rerender } = render(<Preview template={FIELDWORK} onSelect={chosen} />);
+
+    const { leaf, box } = chainFrom('headline');
+    const elsewhere = slots().find((slot) => slot.dataset.role !== 'headline') as HTMLElement;
+
+    rerender(<Preview template={FIELDWORK} selected={keyOfElement(elsewhere)} onSelect={chosen} />);
+    await userEvent.click(leaf);
+
+    expect(chosen).toHaveBeenLastCalledWith(keyOfElement(box));
+  });
+
+  /**
+   * **Without this the drill is a guess.** Every addressable element already
+   * carries `cursor: pointer`, so the whole preview says "clickable" and
+   * nothing said what — which is what made a merchant press the same spot twice
+   * expecting a different answer. Dashed against the selection's solid, because
+   * what is being drawn is *chosen* against *would be chosen*.
+   */
+  it('shows what the next press would take, under the pointer', async () => {
+    render(<Preview template={FIELDWORK} onSelect={vi.fn()} />);
+
+    const { leaf, box } = chainFrom('headline');
+
+    await userEvent.hover(leaf);
+
+    expect(box.style.outline).toContain('dashed');
+    expect(leaf.style.outline).toBe('');
+  });
+
+  it('lets the selection win where the hint would land on it too', async () => {
+    const { rerender } = render(<Preview template={FIELDWORK} onSelect={vi.fn()} />);
+
+    const { leaf, box } = chainFrom('headline');
+
+    rerender(<Preview template={FIELDWORK} selected={keyOfElement(box)} onSelect={vi.fn()} />);
+    // Over the LEAF: the chain there is design → box → leaf, and the box is
+    // already selected, so one link on is the leaf. Hovering the box's own
+    // ground instead is a two-link chain and hints the design, which is the
+    // press that would actually happen there.
+    await userEvent.hover(leaf);
+
+    expect(box.style.outline).toContain('solid');
+    expect(leaf.style.outline).toContain('dashed');
   });
 
   /**

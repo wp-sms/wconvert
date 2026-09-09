@@ -84,6 +84,26 @@ import type { Template } from '@renderer/types';
 const OUTLINE = '2px solid var(--ring, #0f6e79)';
 
 /**
+ * What the NEXT press would take, drawn under the pointer.
+ *
+ * ============================================================================
+ * WITHOUT IT THE DRILL IS A GUESS, AND THAT IS WHAT MADE BOXES FEEL BROKEN.
+ * ============================================================================
+ * Every addressable element already gets `cursor: pointer`, so the whole
+ * preview says "clickable" — and nothing said WHAT. A merchant aiming at a
+ * coloured box hit the headline inside it, got *"this block takes its look
+ * from Column"* and pressed again in the same place expecting a different
+ * answer. Measured on `split-hero` before this: of 168 points across the
+ * preview, 21 selected the Column and none at all reached the design.
+ *
+ * Dashed rather than a second colour, because the difference being drawn is
+ * *chosen* against *would be chosen* — a state and its preview, which is the
+ * one distinction a merchant with a colour-vision deficiency must still get
+ * (ADR 0038). The selected outline always wins where both would land.
+ */
+const HINT = '2px dashed var(--ring, #0f6e79)';
+
+/**
  * What is already a control, because the preview is the real render.
  *
  * A design's capture field is an `<input>` and its CTA is a `<button>` or an
@@ -91,6 +111,67 @@ const OUTLINE = '2px solid var(--ring, #0f6e79)';
  * wrapping them in a `role="button"` would announce an input as a button.
  */
 const FOCUSABLE = 'a[href],button,input,select,textarea';
+
+/**
+ * The addressable boxes under a point, outermost first, ending with the
+ * element actually pressed.
+ *
+ * `.wc-pane` is the one thing the renderer draws that is not a node and carries
+ * no `data-path`, so it drops out by construction rather than by name — the
+ * same reason {@see SLOT_SELECTOR} can be one attribute.
+ */
+function chainAt(root: HTMLElement, target: Element): SlotKey[] {
+  const chain: SlotKey[] = [];
+
+  for (let el: Element | null = target; el !== null && el !== root; el = el.parentElement) {
+    const key = el instanceof HTMLElement && el.matches(SLOT_SELECTOR) ? keyOfElement(el) : null;
+
+    if (key !== null) {
+      chain.unshift(key);
+    }
+  }
+
+  return chain;
+}
+
+/**
+ * What a press at this point selects, given what is selected already.
+ *
+ * ============================================================================
+ * THE OUTER BOX FIRST, THEN ONE LEVEL DEEPER PER PRESS.
+ * ============================================================================
+ * It used to be `closest()` — the innermost box under the pointer, always. That
+ * is the right answer to *"what did I point at"* and the wrong one to *"what am
+ * I working on"*: on any real design the innermost thing under a pointer is a
+ * leaf, a leaf carries no `tokens` bag, and the Style panel's whole subject is
+ * boxes. A box was reachable only through the few-pixel gaps BETWEEN the
+ * leaves, and the design's own look was not reachable at all — its children
+ * cover every pixel of it.
+ *
+ * So a press walks the chain instead. The first lands on the outermost box
+ * inside the design; each further press in the same place goes one level
+ * deeper; and the press after the innermost takes the design itself, which is
+ * how the outermost scope became pointer-reachable at all. Pressing somewhere
+ * else starts again at the top, because the selection is no longer on the way.
+ *
+ * **The design is last rather than first**, and that is the whole ordering
+ * argument: it is one scope out of every press's chain, so leading with it
+ * would put a step between the merchant and every box on the screen. It is
+ * also the one scope with two other routes to it — the tree's top row and the
+ * Style panel's own link — so it is the cheapest one to put at the end.
+ */
+function nextInChain(chain: readonly SlotKey[], selected: SlotKey | null): SlotKey | null {
+  const [design, ...inside] = chain;
+
+  if (design === undefined) {
+    return null;
+  }
+
+  const cycle = inside.length === 0 ? [design] : [...inside, design];
+  const at = selected === null ? -1 : cycle.indexOf(selected);
+
+  return cycle[(at + 1) % cycle.length] ?? null;
+}
 
 /**
  * What a countdown counts to on THIS side of the boundary.
@@ -147,6 +228,21 @@ export function Preview({ template, step = 0, selected = null, onSelect }: Previ
    * to it, where a rebind is cheap, and out of the one that builds it.
    */
   const selectable = onSelect !== undefined;
+  /** What the next press would take, drawn dashed under the pointer. */
+  const [hint, setHint] = useState<SlotKey | null>(null);
+  /*
+   * **The selection, readable from a listener that must not be rebound.**
+   *
+   * The press handler is delegated precisely so it survives a tree that is
+   * rebuilt on every keystroke; putting `selected` in its dependencies would
+   * rebind it on every selection instead, which is the cost the delegation was
+   * paying to avoid. A ref is the selection at press time and nothing else.
+   */
+  const selectedAt = useRef<SlotKey | null>(selected);
+
+  useEffect(() => {
+    selectedAt.current = selected;
+  }, [selected]);
 
   /*
    * **The site's own privacy policy, filled in at the render** (#77).
@@ -211,9 +307,22 @@ export function Preview({ template, step = 0, selected = null, onSelect }: Previ
     };
 
     /*
+     * **Whether a focus arrived on the end of a press.**
+     *
+     * The events are `pointerdown`, then `focus`, then `click` — so a press on
+     * the capture field settles the selection on the field before the press
+     * itself has been handled, and the drill below would then step one level
+     * PAST where it should. A press decides for itself; a Tab still does not.
+     */
+    let pressing = false;
+
+    on(root, 'pointerdown', () => {
+      pressing = true;
+    });
+
+    /*
      * ========================================================================
-     * ONE DELEGATED LISTENER, BECAUSE EVERY BOX IS SELECTABLE NOW AND BOXES
-     * NEST.
+     * ONE DELEGATED LISTENER, BECAUSE EVERY BOX IS SELECTABLE AND BOXES NEST.
      * ========================================================================
      * A handler per element was right while only LEAVES were addressable —
      * nothing was inside anything else, so nothing bubbled into a second
@@ -222,14 +331,15 @@ export function Preview({ template, step = 0, selected = null, onSelect }: Previ
      * would fire on one press and the last to run would win, which is the
      * OUTERMOST box.
      *
-     * `closest` from the press answers the other way round — the innermost box
-     * the merchant actually pointed at — and it is one listener rather than one
-     * per node in a tree that is rebound on every keystroke.
+     * One listener over the whole chain answers on purpose instead — see
+     * {@see nextInChain} for which link in it a press takes.
      */
     on(root, 'click', (event) => {
       const target = event.target;
-      const hit = target instanceof Element ? target.closest<HTMLElement>(SLOT_SELECTOR) : null;
-      const key = hit === null ? null : keyOfElement(hit);
+      const chain = target instanceof Element ? chainAt(root, target) : [];
+      const key = nextInChain(chain, selectedAt.current);
+
+      pressing = false;
 
       if (key === null) {
         return;
@@ -243,7 +353,26 @@ export function Preview({ template, step = 0, selected = null, onSelect }: Previ
        */
       event.preventDefault();
       onSelect(key);
+      /*
+       * The hint keeps pointing one press ahead rather than going stale under a
+       * pointer that has not moved: the merchant sees where a second press
+       * lands before making it, which is the whole of what makes a drill
+       * legible rather than a thing that happens to them.
+       */
+      setHint(nextInChain(chain, key));
     });
+
+    on(root, 'pointerover', (event) => {
+      const target = event.target;
+
+      setHint(
+        target instanceof Element ? nextInChain(chainAt(root, target), selectedAt.current) : null,
+      );
+    });
+
+    // `pointerleave` does not bubble, which is exactly why it is bound here:
+    // the pointer has left the whole render, not merely one box inside it.
+    on(root, 'pointerleave', () => setHint(null));
 
     for (const slot of root.querySelectorAll<HTMLElement>(SLOT_SELECTOR)) {
       const key = keyOfElement(slot);
@@ -285,7 +414,13 @@ export function Preview({ template, step = 0, selected = null, onSelect }: Previ
       const focusable = slot.matches(FOCUSABLE) ? slot : slot.querySelector<HTMLElement>(FOCUSABLE);
 
       if (focusable !== null) {
-        on(focusable, 'focus', () => onSelect(key));
+        on(focusable, 'focus', () => {
+          // A press settles its own selection below, one chain link at a time.
+          // A Tab has no press to defer to and selects the control it landed on.
+          if (!pressing) {
+            onSelect(key);
+          }
+        });
 
         continue;
       }
@@ -327,6 +462,8 @@ export function Preview({ template, step = 0, selected = null, onSelect }: Previ
       for (const off of bound) {
         off();
       }
+
+      setHint(null);
     };
   }, [root, onSelect]);
 
@@ -336,9 +473,13 @@ export function Preview({ template, step = 0, selected = null, onSelect }: Previ
     }
 
     for (const slot of root.querySelectorAll<HTMLElement>(SLOT_SELECTOR)) {
-      const chosen = keyOfElement(slot) === selected;
+      const key = keyOfElement(slot);
+      const chosen = key === selected;
+      // The selection wins where both would land, so the hint never draws over
+      // the answer to "what am I working on" with "what would you get next".
+      const hinted = !chosen && key !== null && key === hint;
 
-      slot.style.outline = chosen ? OUTLINE : '';
+      slot.style.outline = chosen ? OUTLINE : hinted ? HINT : '';
       /*
        * **Inside for a box, outside for a leaf.** A `panel` is often
        * full-bleed against the design's own edge, so an outline offset outward
@@ -346,9 +487,9 @@ export function Preview({ template, step = 0, selected = null, onSelect }: Previ
        * selected box then reads as unselected on the two sides that matter.
        */
       slot.style.outlineOffset =
-        chosen ? (slot.querySelector(SLOT_SELECTOR) === null ? '2px' : '-2px') : '';
+        chosen || hinted ? (slot.querySelector(SLOT_SELECTOR) === null ? '2px' : '-2px') : '';
     }
-  }, [root, selected]);
+  }, [root, selected, hint]);
 
   return <div ref={anchor} className="wconvert-preview" />;
 }
