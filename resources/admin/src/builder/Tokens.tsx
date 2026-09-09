@@ -286,7 +286,10 @@ export function Tokens({
           It stays here with the presets rather than inside either group,
           because what it writes spans two of them.
         */}
-          <Button type="button" variant="outline" size="sm" onClick={copyTheme}>
+          {/* An action inside the work surface, not one a merchant came to the
+              screen to press — the 24px tier, like the resets and swatches
+              around it. */}
+          <Button type="button" variant="outline" size="xs" onClick={copyTheme}>
             {__('Copy my theme’s palette and font', 'wconvert')}
           </Button>
           {copied !== null && (

@@ -472,6 +472,19 @@ the selection rather than clearing it.
   merchant came to the SCREEN to press. 24px is WCAG 2.2 SC 2.5.8's bar exactly
   and is a floor, not a step. The vendored `Button` had shipped `size="icon-xs"`
   at `size-6` since the first vendor commit with zero call sites._
+
+  _Completed for the inside of a pane: **within the work surface the three
+  become two, and the taller of the two is 2rem rather than 2.25.** The scope
+  test above is about the SCREEN, and it hands a pane the wrong answer — the
+  inspector's fields stood at `--control-height` beside chips, swatches, sliders
+  and resets at `--control-height-xs`, which is a 254px column reading as two
+  unrelated scales stacked. Inside a pane a control is one of two things: a
+  field you TYPE INTO (2rem) or a chip or action you PRESS (1.5rem). `index.css`
+  states the first as `#wconvert-admin .wconvert-inspector :is(select, input…)`
+  at (1,2,0), which beats the screen's (1,1,0) rule on the cascade without an
+  `!important`. `.wconvert-token__exact` is the one exception and proves the
+  distinction: it is the numeric readout of a 1.5rem slider it shares a row
+  with, not a field for prose, so it takes the slider's height._
 - **Status is a `Badge`, never plain text**, and the words are translated. The
   badge is the only thing in a Status column, so an id with no registry entry
   stays a `<code>` in the Goal column and never becomes a badge that would read

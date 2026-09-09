@@ -21,9 +21,35 @@ import type { ReactNode } from 'react';
  * control added here later inherits the height without anybody remembering to
  * pass a size.
  */
-export function Toolbar({ children, trailing }: { children?: ReactNode; trailing?: ReactNode }) {
+export function Toolbar({
+  children,
+  trailing,
+  dense = false,
+}: {
+  children?: ReactNode;
+  trailing?: ReactNode;
+  /**
+   * Spend the builder card's gutter instead of the screen's own inset.
+   *
+   * **A toolbar inside a card is not a toolbar across a screen.** `px-4` is
+   * right where this strip spans the page — the Lead log's filters, the design
+   * picker's — and 16px where every band under it is 8 is the top of the five
+   * steps the card's left edge took on the way down. The builder passes it;
+   * `LeadLog` and `TemplatePicker` do not, and are untouched.
+   *
+   * The number lives in `index.css` rather than as a second Tailwind class,
+   * because `px-4` compiles to `!important` in the utilities layer and only a
+   * layered `!important` rule beats it — the recipe ADR 0042 rule 6 states and
+   * this file already spends four times over.
+   */
+  dense?: boolean;
+}) {
   return (
-    <div className="wconvert-toolbar flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-border px-4 py-2.5">
+    <div
+      className={`wconvert-toolbar${
+        dense ? ' wconvert-toolbar--dense' : ''
+      } flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-border px-4 py-2.5`}
+    >
       <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2">{children}</div>
       {trailing !== undefined && (
         <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2">{trailing}</div>

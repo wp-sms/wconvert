@@ -122,11 +122,49 @@ Region                                      the card, already there
 
 - **A head band replaces each pane's outline**, and does the job better: an
   outline says *this is a separate thing*, a head says *this is the structure*.
+
+  _Completed: **a head is a BAND and the pane's name is a thing inside it**, and
+  the three bands are one height. As shipped, `.wconvert-pane__head` carried the
+  9px uppercase register itself, which is what stopped anything but a word being
+  put in one — so the three heads came out at 27px (a 14px line), 33px (the ⇄
+  swap at `icon-sm`) and 63px (a head band stacked on the preview's own control
+  bar), and the three pane bodies started at three different `y` on a tab whose
+  whole subject is one design read across three columns. The word moved to
+  `.wconvert-pane__name`, every head takes `min-block-size:
+  var(--control-height-sm)`, the swap dropped to the 24px tier, and the render
+  pane lost its separate head — `.wconvert-builder__bar` **is** its head now,
+  carrying `.wconvert-pane__head` and a `name` on the Design tab only. The floor
+  is the small control height because the tallest thing a head may hold is a
+  small control._
 - **The toolbar is a `Toolbar`**, which is what a strip holding what is scoped
   to the region under it already is (ADR 0039). It carries `.wconvert-toolbar`,
   which is in `index.css`'s small-height list — so `Browse designs` stopped
   being the one 36px control in a row of 32s without a `size` being passed to
   it.
+
+  _Amended: **it is a `<Toolbar dense>`, because a strip inside a card is not a
+  strip across a screen.** `Toolbar`'s `px-4` was the top of a left edge that
+  stepped 16 → 12 → 12 → 10 → 8 → 12 → 12 down the card, with
+  `.wconvert-scope__clipboard` hanging 4px OUTSIDE its pane on a
+  `calc(var(--spacing) * -3)` naming a variable `index.css` never declared. The
+  card states its inset once as `--wconvert-gutter` (0.5rem) and every band and
+  pane spends it by name. `dense` is builder-only — `LeadLog` and
+  `TemplatePicker` still span a screen and keep `px-4` — and the number lives in
+  the utilities layer, because `px-4` is an `!important` utility and ADR 0042
+  rule 6 is that only a layered `!important` beats one.
+  `tests/js/admin-stylesheet.test.ts` derives the guard from the selector's
+  subject rather than from a list of class names, because a list is the thing
+  that rots._
+- **The bands of the card share one floor and the fields one rhythm.** A band —
+  head, hint, said, checks, stored — is `--control-height-sm` tall, and a
+  failing check chip takes `--control-height-xs`, which it had no floor for at
+  all: six chips of 9px and 11px text came to about 20px, and the failing ones
+  are the pressable ones, so the smallest target on the strip was the only one
+  anybody needs to hit (SC 2.5.8). Inside the inspector the gap between two
+  fields is 0.5rem, stated on the `TabsContent` that actually holds them —
+  `.wconvert-inspector__body > * + *` never reached a field, because Radix's
+  panel sits between the two, which is why *Alt text* had 8px above it and
+  *Picture shape* had none.
 - **The checks moved from the top to the bottom.** Six monospace chips across
   the top of a work surface is the loudest thing on the tab announcing the
   quietest fact — *six checks pass*. Diagnostics are consulted; they are not

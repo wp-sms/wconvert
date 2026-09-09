@@ -553,8 +553,10 @@ function Countdown({
               )}
       </p>
 
+      {/* The same 24px tier: this repairs the group it sits in rather than
+          acting on the Optin. */}
       {onSetEndDate !== undefined && (
-        <Button type="button" variant="secondary" size="sm" onClick={onSetEndDate}>
+        <Button type="button" variant="secondary" size="xs" onClick={onSetEndDate}>
           <CalendarClock aria-hidden="true" />
           {/*
             Two labels, because one of them would be wrong half the time: *Set

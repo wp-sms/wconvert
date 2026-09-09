@@ -517,7 +517,17 @@ function SwapMenu({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button type="button" variant="ghost" size="sm" className="wconvert-inspector__swap">
+        {/*
+          **`xs` and not `sm`: it is the only reason this head stood 33px**
+          against the tree's 27, and a head is one band at one height now.
+
+          `xs` rather than the `icon-xs` the plan named, because this button
+          carries the swap's NAME beside its arrows — *Image*, *Column* — and
+          `icon-xs` is a 24 x 24 square that would clip it. `xs` is the same
+          24px floor with room for the word, which is what was actually being
+          asked for.
+        */}
+        <Button type="button" variant="ghost" size="xs" className="wconvert-inspector__swap">
           <ArrowLeftRight aria-hidden="true" />
           {name}
         </Button>
