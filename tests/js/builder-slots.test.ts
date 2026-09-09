@@ -3,26 +3,38 @@ import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { render } from '../../resources/renderer/src/render';
 import { slotsOf, withHidden } from '../../resources/admin/src/builder/panel';
+import { nodesOf } from '../../resources/admin/src/builder/structure/tree';
 import {
   SLOT_SELECTOR,
-  capturesKey,
+  keyOf,
   keyOfElement,
-  keyOfSlot,
-  roleKey,
+  pathOfKey,
 } from '../../resources/admin/src/builder/slots';
 import type { TemplateEntry } from '../../resources/admin/src/templates/api';
 
 /**
- * **The two sides of the preview name the same slot the same way**, which is
- * the whole of what makes a click in the preview reach the block that edits it
+ * **The two sides of the preview address the same block the same way**, which
+ * is the whole of what makes a click in the preview reach the row that edits it
  * (ADR 0040).
  *
  * That is not a layout question and so it is not on the wrong side of #29's
- * line: the panel derives a key from a {@link Slot} and the preview derives one
- * from DOM the renderer stamped, in two files that share no code path. If the
- * two ever disagree, nothing throws and nothing looks broken — clicking a
- * headline simply does nothing, silently, forever. That is exactly the failure
- * shape worth a test.
+ * line: the editor holds a `Path` and the preview reads a string the renderer
+ * stamped, in two files that share no code path. If the two ever disagree,
+ * nothing throws and nothing looks broken — clicking a headline simply does
+ * nothing, silently, forever. That is exactly the failure shape worth a test.
+ *
+ * ============================================================================
+ * IT WAS A [[Slot Role]] AND AN ORDINAL, AND IT COULD NOT NAME A BOX.
+ * ============================================================================
+ * `role:headline`, `captures:email`, `role:body#2`. Every container carries
+ * neither, so `SLOT_SELECTOR` did not match one — a click on a coloured box
+ * reached the nearest leaf inside it, and a *scope* editor whose primary
+ * gesture is *select that box* could not select a box. `image`, `icon`,
+ * `divider` and `countdown` were unclickable for the same reason.
+ *
+ * The renderer stamps the address now, on every element, when the admin asks
+ * (ADR 0040, amended). So these assertions are about one scheme rather than
+ * two lists agreeing.
  *
  * It runs against a REAL library entry through the REAL renderer, so it cannot
  * pass against a vocabulary the product does not ship.
@@ -32,152 +44,122 @@ const ENTRY = JSON.parse(
   readFileSync(resolve(import.meta.dirname, '../../resources/templates/library/centred-card.json'), 'utf8'),
 ) as TemplateEntry;
 
-/** Every key the PREVIEW offers, for one rendered step. */
-function keysInPreview(step: number): string[] {
-  const root = render(ENTRY.tree, ENTRY.tokens, step);
+/** A design with a container in it, so the case that was missing is covered. */
+const FIELDWORK = JSON.parse(
+  readFileSync(resolve(import.meta.dirname, '../../resources/templates/library/fieldwork.json'), 'utf8'),
+) as TemplateEntry;
+
+/** Every address the PREVIEW offers, for one rendered step. */
+function inPreview(entry: TemplateEntry, step: number): string[] {
+  const root = render(entry.tree, entry.tokens, step, { paths: true });
 
   return Array.from(root.querySelectorAll<HTMLElement>(SLOT_SELECTOR))
     .map(keyOfElement)
     .filter((key): key is string => key !== null);
 }
 
-/** Every key the PANEL offers, across every step. */
-function keysInPanel(tree = ENTRY.tree): string[] {
-  return slotsOf(tree)
-    .map(keyOfSlot)
-    .filter((key): key is string => key !== null);
-}
+/** Every address the EDITOR offers, across every step. */
+const inEditor = (entry: TemplateEntry): string[] => nodesOf(entry.tree).map((block) => keyOf(block.path));
 
-describe('the key a slot is known by', () => {
-  /**
-   * A [[Slot Role]] where one is declared, and the capture kind where one is
-   * not — because a `field`'s Roles are DERIVED from what it captures rather
-   * than declared, so it carries no `role` to be found by (CONTEXT.md, Slot
-   * Role). That derivation is the reason the renderer stamps `data-captures` at
-   * all.
-   */
-  it('is the Role, or what the field captures', () => {
-    expect(keysInPanel()).toContain(roleKey('headline'));
-    expect(keysInPanel()).toContain(capturesKey('email'));
+describe('the address a block is known by', () => {
+  it('is off by default, because a visitor has nothing to select', () => {
+    const root = render(ENTRY.tree, ENTRY.tokens, 0);
+
+    expect(root.querySelectorAll(SLOT_SELECTOR)).toHaveLength(0);
+    expect(root.outerHTML).not.toContain('data-path');
   });
 
-  /** A key from one side is a key on the other, for the same rendered step. */
-  it('agrees between the panel and the preview', () => {
-    const panel = new Set(keysInPanel());
+  it('is the path, spelled the same on both sides', () => {
+    const editor = inEditor(ENTRY);
 
-    for (const step of [0, 1]) {
-      const preview = keysInPreview(step);
+    expect(editor).toContain('0');
+    expect(inPreview(ENTRY, 0).every((key) => editor.includes(key))).toBe(true);
+  });
 
-      expect(preview.length).toBeGreaterThan(0);
+  /**
+   * **The case the old scheme could not express at all.** `fieldwork`'s step is
+   * a `split` holding a `media` and a `panel`, and none of the three carries a
+   * Role or a capture kind.
+   */
+  it('names a container, which is the whole reason it changed', () => {
+    const boxes = inPreview(FIELDWORK, 0);
 
-      for (const key of preview) {
-        expect(panel).toContain(key);
-      }
+    // The step root, the media, the panel — and the leaves inside both.
+    expect(boxes).toContain('0');
+    expect(boxes).toContain('0.start.0');
+    expect(boxes).toContain('0.end.0');
+    expect(boxes).toContain('0.start.0.children.0');
+    expect(boxes.every((key) => inEditor(FIELDWORK).includes(key))).toBe(true);
+  });
+
+  /** A `.wc-pane` is the one thing the renderer draws that is not a node. */
+  it('addresses nothing the renderer invented, so a pane is not selectable', () => {
+    const root = render(FIELDWORK.tree, FIELDWORK.tokens, 0, { paths: true });
+
+    for (const pane of root.querySelectorAll<HTMLElement>('.wc-pane')) {
+      expect(pane.dataset.path).toBeUndefined();
     }
   });
 
-  /**
-   * **Every slot the merchant can see is clickable.** The consent slot ships
-   * hidden (ADR 0032) and the renderer skips it, so the first step's visible
-   * keys are the rest of the step and nothing else.
-   */
-  it('covers every slot the renderer actually drew', () => {
-    expect(keysInPreview(0)).toEqual([
-      roleKey('headline'),
-      roleKey('body'),
-      capturesKey('email'),
-      roleKey('cta_label'),
-      roleKey('fine_print'),
-    ]);
+  it('reads back as the path it spelled, with numbers as numbers', () => {
+    expect(pathOfKey('0.start.0.children.1')).toEqual([0, 'start', 0, 'children', 1]);
+    expect(keyOf(pathOfKey('1.children.0'))).toBe('1.children.0');
   });
 
   /**
-   * And a slot switched ON in the panel becomes clickable, with no second
-   * spelling anywhere: the key was always derivable, the element simply was not
-   * being drawn.
+   * A Role repeats (ADR 0051), and a design may claim `body` three times. The
+   * old scheme needed an ordinal for that and the ordinal had to be counted in
+   * document order on one side and tree order on the other; a path is distinct
+   * by construction.
    */
-  it('reaches a slot the merchant switches back on', () => {
-    const consent = slotsOf(ENTRY.tree).find((slot) => slot.type === 'consent');
-
-    expect(consent).toBeDefined();
-
-    const shown = render(withHidden(ENTRY.tree, consent!.path, false), ENTRY.tokens, 0);
-
-    expect(
-      Array.from(shown.querySelectorAll<HTMLElement>(SLOT_SELECTOR)).map(keyOfElement),
-    ).toContain(roleKey('consent_text'));
-  });
-
-  /**
-   * A layout node is unaddressable, and that is correct rather than a gap: it
-   * says nothing the merchant edits, so there is no block in the panel for a
-   * click to travel to.
-   */
-  it('names nothing for a node with neither a Role nor a capture kind', () => {
-    expect(keyOfSlot({ role: null, captures: null, hidden: false, at: 0 })).toBeNull();
-    expect(keyOfElement(document.createElement('div'))).toBeNull();
-  });
-
-  /**
-   * ==========================================================================
-   * A REPEATED ROLE IS THE CASE A NAME ALONE CANNOT NAME.
-   * ==========================================================================
-   * Roles repeat (ADR 0051), so a three-benefit row has three `body` slots. If
-   * the key were the Role alone, clicking the third would select the first and
-   * selecting any would outline all three — and nothing would throw, which is
-   * why this is asserted rather than assumed.
-   *
-   * The two sides derive the ordinal from different things — the panel from the
-   * tree walk, the preview from document order — so the assertion is that they
-   * come out the same, against the REAL renderer.
-   */
-  describe('where a Role is claimed more than once', () => {
-    const REPEATED = {
+  it('tells three same-named slots apart with no ordinal to keep in step', () => {
+    const three = {
       steps: [
         {
           type: 'stack',
           children: [
-            { type: 'text', role: 'body', text: 'Free shipping' },
-            { type: 'text', role: 'body', text: 'Early drops' },
-            { type: 'text', role: 'body', text: '48h returns' },
-            { type: 'button', role: 'cta_label', label: 'Join', action: 'link', href: '/x' },
+            { type: 'text', role: 'body', text: 'one' },
+            { type: 'text', role: 'body', text: 'two' },
+            { type: 'text', role: 'body', text: 'three' },
           ],
         },
       ],
-    } as unknown as TemplateEntry['tree'];
+    };
+    const root = render(three as never, {}, 0, { paths: true });
 
-    it('numbers them, leaving the first bare', () => {
-      expect(keysInPanel(REPEATED)).toEqual([
-        roleKey('body'),
-        roleKey('body', 1),
-        roleKey('body', 2),
-        roleKey('cta_label'),
-      ]);
-    });
+    expect(
+      Array.from(root.querySelectorAll<HTMLElement>(SLOT_SELECTOR)).map(keyOfElement),
+    ).toEqual(['0', '0.children.0', '0.children.1', '0.children.2']);
+  });
 
-    it('agrees with the preview, element for element', () => {
-      const root = render(REPEATED, {});
+  /**
+   * **A hidden slot is absent from both sides**, and it always was: the
+   * renderer skips it, so there is nothing in the preview to click or outline.
+   * The row is still selectable in the tree, by path — which is now the same
+   * address, so the two cannot disagree about which block a gap belongs to.
+   */
+  it('is absent from the preview for a slot the merchant switched off', () => {
+    const consent = slotsOf(ENTRY.tree).find((slot) => slot.role === 'consent_text');
 
-      expect(Array.from(root.querySelectorAll<HTMLElement>(SLOT_SELECTOR)).map(keyOfElement)).toEqual(
-        keysInPanel(REPEATED),
-      );
-    });
+    expect(consent, 'the fixture has no consent slot to hide').toBeDefined();
 
-    /**
-     * **A hidden slot takes no ordinal**, because the renderer skips it — and a
-     * count that included it would put the two sides one apart for every slot
-     * after it, which is the silent version of this whole failure.
-     */
-    it('skips a hidden slot on both sides, so the numbering still lines up', () => {
-      const hidden = withHidden(REPEATED, [0, 'children', 1], true);
-      const root = render(hidden, {});
+    const shown = { ...ENTRY, tree: withHidden(ENTRY.tree, (consent as { path: never }).path, false) };
+    const hidden = { ...ENTRY, tree: withHidden(ENTRY.tree, (consent as { path: never }).path, true) };
+    const at = keyOf((consent as { path: never }).path);
 
-      expect(Array.from(root.querySelectorAll<HTMLElement>(SLOT_SELECTOR)).map(keyOfElement)).toEqual([
-        roleKey('body'),
-        roleKey('body', 1),
-        roleKey('cta_label'),
-      ]);
-      expect(keysInPanel(hidden)).toEqual([roleKey('body'), roleKey('body', 1), roleKey('cta_label')]);
-    });
+    expect(inPreview(shown, 0)).toContain(at);
+    expect(inPreview(hidden, 0)).not.toContain(at);
+    // And the editor still has a row for it, so it can be switched back on.
+    expect(inEditor(hidden)).toContain(at);
+  });
+
+  it('answers null for an element nothing stamped', () => {
+    expect(keyOfElement(document.createElement('div'))).toBeNull();
+  });
+
+  /** The success step is a step of its own, and its addresses say so. */
+  it('carries the step, so a block on step 2 is not a block on step 1', () => {
+    expect(inPreview(ENTRY, 1).every((key) => key.startsWith('1'))).toBe(true);
+    expect(inPreview(ENTRY, 0).every((key) => key.startsWith('0'))).toBe(true);
   });
 });

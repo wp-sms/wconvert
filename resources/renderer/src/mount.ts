@@ -107,6 +107,15 @@ export interface MountOptions {
    * which the container cannot know (ADR 0025).
    */
   readonly onConvert?: () => void;
+  /**
+   * Stamp every element with its own address in the tree.
+   *
+   * The BUILDER's, and nobody else's: it is what makes the preview an editing
+   * surface for a box that carries no [[Slot Role]] — a `panel`, a `split` —
+   * and it is bytes on every element of every design on a page that has nothing
+   * to select. {@see \@renderer/render's RenderOptions}.
+   */
+  readonly paths?: boolean;
 }
 
 export interface Mounted {
@@ -200,7 +209,7 @@ export function shell(template: Template, chrome: HTMLElement | null, options: M
   style.textContent = SHADOW_CSS;
   shadow.appendChild(style);
 
-  let root = render(template.tree, template.tokens);
+  let root = render(template.tree, template.tokens, 0, { paths: options.paths });
 
   bind(root);
   shadow.appendChild(root);
@@ -275,7 +284,7 @@ export function shell(template: Template, chrome: HTMLElement | null, options: M
       return root;
     },
     step(index: number): HTMLElement {
-      const next = render(template.tree, template.tokens, index);
+      const next = render(template.tree, template.tokens, index, { paths: options.paths });
 
       bind(next);
       root.replaceWith(next);

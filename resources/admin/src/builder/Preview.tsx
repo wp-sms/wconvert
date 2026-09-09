@@ -118,11 +118,16 @@ const A_PREVIEW_DEADLINE = Date.now() + 2 * 60 * 60 * 1000;
 export interface PreviewProps {
   readonly template: Template;
   readonly step?: number;
-  /** The slot drawn as selected, named the way `slots.ts` names it. */
+  /** The block drawn as selected, addressed the way `slots.ts` addresses one. */
   readonly selected?: SlotKey | null;
   /**
-   * A slot was clicked. Omitted in the gallery, where a card is a picture and
+   * A block was clicked. Omitted in the gallery, where a card is a picture and
    * every pointer event is turned off in the stylesheet anyway.
+   *
+   * **Its presence is what asks the renderer for addresses.** A card that
+   * cannot be clicked has nothing to name, so it mounts without them and pays
+   * no bytes for the attribute — the same line ADR 0040 draws for a visitor's
+   * page, drawn once here rather than at every call site.
    */
   readonly onSelect?: (key: SlotKey) => void;
 }
@@ -136,6 +141,12 @@ export function Preview({ template, step = 0, selected = null, onSelect }: Previ
    * screen.
    */
   const [root, setRoot] = useState<HTMLElement | null>(null);
+  /*
+   * Read as a boolean so a caller passing a fresh arrow function on every
+   * render does not remount the tree — `onSelect` is in the effects that BIND
+   * to it, where a rebind is cheap, and out of the one that builds it.
+   */
+  const selectable = onSelect !== undefined;
 
   /*
    * **The site's own privacy policy, filled in at the render** (#77).
@@ -165,6 +176,7 @@ export function Preview({ template, step = 0, selected = null, onSelect }: Previ
       template: drawn,
       anchor: anchor.current,
       endsAt: A_PREVIEW_DEADLINE,
+      paths: selectable,
     });
 
     mounted.show();
@@ -184,7 +196,7 @@ export function Preview({ template, step = 0, selected = null, onSelect }: Previ
       mounted.close();
       setRoot(null);
     };
-  }, [drawn, step]);
+  }, [drawn, step, selectable]);
 
   useEffect(() => {
     if (root === null || onSelect === undefined) {
@@ -198,6 +210,41 @@ export function Preview({ template, step = 0, selected = null, onSelect }: Previ
       bound.push(() => target.removeEventListener(type, handle));
     };
 
+    /*
+     * ========================================================================
+     * ONE DELEGATED LISTENER, BECAUSE EVERY BOX IS SELECTABLE NOW AND BOXES
+     * NEST.
+     * ========================================================================
+     * A handler per element was right while only LEAVES were addressable —
+     * nothing was inside anything else, so nothing bubbled into a second
+     * handler. Every node carries an address now (`slots.ts`), and a headline
+     * inside a coloured box inside a split is three of them: three handlers
+     * would fire on one press and the last to run would win, which is the
+     * OUTERMOST box.
+     *
+     * `closest` from the press answers the other way round — the innermost box
+     * the merchant actually pointed at — and it is one listener rather than one
+     * per node in a tree that is rebound on every keystroke.
+     */
+    on(root, 'click', (event) => {
+      const target = event.target;
+      const hit = target instanceof Element ? target.closest<HTMLElement>(SLOT_SELECTOR) : null;
+      const key = hit === null ? null : keyOfElement(hit);
+
+      if (key === null) {
+        return;
+      }
+
+      /*
+       * The converting act is a real `<a>` or a real submit button, because
+       * the preview is the real render. Neither may act: a navigation would
+       * take the merchant off the builder mid-edit. `shell()` already guards
+       * the submit; this is the other half.
+       */
+      event.preventDefault();
+      onSelect(key);
+    });
+
     for (const slot of root.querySelectorAll<HTMLElement>(SLOT_SELECTOR)) {
       const key = keyOfElement(slot);
 
@@ -207,20 +254,9 @@ export function Preview({ template, step = 0, selected = null, onSelect }: Previ
 
       slot.style.cursor = 'pointer';
 
-      on(slot, 'click', (event) => {
-        /*
-         * The converting act is a real `<a>` or a real submit button, because
-         * the preview is the real render. Neither may act: a navigation would
-         * take the merchant off the builder mid-edit. `shell()` already guards
-         * the submit; this is the other half.
-         */
-        event.preventDefault();
-        onSelect(key);
-      });
-
       /*
        * ====================================================================
-       * IT IS REACHABLE WITHOUT A MOUSE, AND IN TWO DIFFERENT WAYS.
+       * IT IS REACHABLE WITHOUT A MOUSE, AND THE THIRD WAY IS THE BLOCK TREE.
        * ====================================================================
        * A click handler on a heading is a pointer-only affordance, and this is
        * an editing surface rather than a picture — so WCAG 2.1 AA's first
@@ -236,12 +272,31 @@ export function Preview({ template, step = 0, selected = null, onSelect }: Previ
        * A heading or a line of fine print is focusable by nothing, so it is
        * made so — one tab stop, named for what it says, activated by Enter or
        * Space the way its `role` promises.
+       *
+       * **A BOX is neither, and its route is the tree.** A `panel` announced
+       * as a button would be named by every word inside it, and six nested
+       * boxes are six tab stops between one headline and the next. The block
+       * tree is a treegrid over the same nodes, in the same region, before the
+       * preview in the DOM — a keyboard route to every box that already
+       * exists and is already asserted at length. So a box is pointer-only
+       * here on purpose, and so is anything else this cannot NAME: an `image`
+       * has no words, and *"Edit “”"* is worse than no tab stop.
        */
       const focusable = slot.matches(FOCUSABLE) ? slot : slot.querySelector<HTMLElement>(FOCUSABLE);
 
       if (focusable !== null) {
         on(focusable, 'focus', () => onSelect(key));
 
+        continue;
+      }
+
+      if (slot.querySelector(SLOT_SELECTOR) !== null) {
+        continue;
+      }
+
+      const said = (slot.textContent ?? '').trim();
+
+      if (said === '') {
         continue;
       }
 
@@ -252,7 +307,7 @@ export function Preview({ template, step = 0, selected = null, onSelect }: Previ
         sprintf(
           /* translators: %s: what a slot in the preview currently says. */
           __('Edit “%s”', 'wconvert'),
-          (slot.textContent ?? '').trim(),
+          said,
         ),
       );
 
@@ -284,7 +339,14 @@ export function Preview({ template, step = 0, selected = null, onSelect }: Previ
       const chosen = keyOfElement(slot) === selected;
 
       slot.style.outline = chosen ? OUTLINE : '';
-      slot.style.outlineOffset = chosen ? '2px' : '';
+      /*
+       * **Inside for a box, outside for a leaf.** A `panel` is often
+       * full-bleed against the design's own edge, so an outline offset outward
+       * is drawn beyond the popup and clipped by `.wc-root`'s `overflow` — the
+       * selected box then reads as unselected on the two sides that matter.
+       */
+      slot.style.outlineOffset =
+        chosen ? (slot.querySelector(SLOT_SELECTOR) === null ? '2px' : '-2px') : '';
     }
   }, [root, selected]);
 

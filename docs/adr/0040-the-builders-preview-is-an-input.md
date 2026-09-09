@@ -171,6 +171,38 @@ block rather than at the position it held; and a save replaces the tree, so the
 path is re-resolved outward — the block, else whatever held it, else the
 design's first block — rather than cleared.*
 
+> **Amended a fourth time, and this one deletes the whole scheme:
+> [ADR 0065](0065-the-editor-is-the-scope-editor-now.md). The traffic is the
+> PATH, in both directions, and there is one address rather than two that have
+> to agree.**
+>
+> *A Role could not name a `panel`, a `split`, a `stack` or a `media` at all,
+> because none of them carries one — so `SLOT_SELECTOR` never matched a
+> container and a press on a coloured box reached the nearest leaf inside it.
+> For a scope editor whose primary gesture is* select that box *that is not a
+> gap in the addressing, it is the feature missing. `image`, `icon`, `divider`
+> and `countdown` were unclickable for the same reason.*
+>
+> *So `render()` stamps `data-path` on every element it draws — **only when the
+> caller asks**, through a `RenderOptions` flag `mount()` defaults to silence.
+> The payload promise this ADR is careful about is therefore intact in the
+> direction it was written for: a visitor's page carries no addresses and pays
+> no bytes for them, and the flag is on for exactly one caller.*
+>
+> *What IS given up is the capability argument, and it is worth being plain
+> about rather than reworded. A path is a way to reach a node; a Role was not.
+> That mattered when the receiver might have been something other than the
+> admin — and it is not: the preview is mounted BY the admin, inside wp-admin,
+> in a closed shadow root, by the one program that already holds the tree and
+> PATCHes it. An address in that DOM lets nothing write that could not already,
+> and `Preview.tsx` still writes nothing.*
+>
+> *The ordinal, the per-step counting, the two derivations and the
+> hidden-slot-has-no-key rule all go with it — a path is distinct by
+> construction, and `slots.ts` is a parse and a join. The two-derivation test
+> becomes a one-scheme test, which is the same guarantee with less to keep in
+> step.*
+
 ## Why a string and not an element reference
 
 The preview is remounted on every keystroke — the renderer builds DOM and reads

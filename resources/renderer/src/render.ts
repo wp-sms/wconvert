@@ -46,7 +46,7 @@ const NARROW_PREFIX = '--wc-n-';
  * the outer tree beats a normal `:host` rule — OceanWP's reset names `div` and
  * pushed its body font across the boundary that way (ADR 0009).
  */
-export function render(tree: TemplateTree, tokens: Tokens, step = 0): HTMLElement {
+export function render(tree: TemplateTree, tokens: Tokens, step = 0, options: RenderOptions = {}): HTMLElement {
   const node = tree.steps[step];
 
   // A submit button outside a form submits nothing, so the step that holds one
@@ -59,10 +59,41 @@ export function render(tree: TemplateTree, tokens: Tokens, step = 0): HTMLElemen
   scope(root, tokens);
 
   if (node !== undefined) {
-    appendNode(root, node, tokens);
+    appendNode(root, node, tokens, options.paths === true ? String(step) : null);
   }
 
   return root;
+}
+
+/**
+ * What the caller wants beyond the design itself.
+ *
+ * ============================================================================
+ * ONE OPTION, AND IT IS OFF FOR EVERY VISITOR ON EVERY PAGE.
+ * ============================================================================
+ * `paths` stamps every element with its own address in the tree, which is what
+ * makes the builder's preview an editing surface rather than a picture: a
+ * `panel` and a `split` carry no [[Slot Role]] and no capture kind, so before
+ * this there was nothing on them for a click to name — and a scope editor whose
+ * primary gesture is *select that box* could not select a box.
+ *
+ * **An option rather than always on**, because an address is bytes on every
+ * element of every design on every page an Optin matches. ADR 0010's payload
+ * budget is what that would spend, and a visitor has nothing to select. The
+ * builder asks; `mount()`'s default is silence.
+ *
+ * **It is not a capability**, which is the half ADR 0040 cared about: an
+ * address in the DOM of a closed shadow root inside wp-admin lets nothing
+ * write that could not already. The admin holds the tree and PATCHes it; the
+ * preview reports where a press landed and stops there, exactly as it did when
+ * it reported a Role.
+ */
+export interface RenderOptions {
+  /**
+   * Stamp `data-path` on every element, so a caller holding the tree can name
+   * what was clicked. Off by default — see above.
+   */
+  readonly paths?: boolean;
 }
 
 /**
@@ -150,7 +181,7 @@ function submits(node: TemplateNode): boolean {
  * would take the whole Optin off the page for one unrecognised leaf
  * (ADR 0010).
  */
-function appendNode(parent: HTMLElement, node: TemplateNode, scoped: Tokens): void {
+function appendNode(parent: HTMLElement, node: TemplateNode, scoped: Tokens, at: string | null): void {
   // A slot the merchant switched off in the settings panel. Skipped rather
   // than removed from the tree, because the panel edits content and visibility
   // and never arrangement — so switching it back on is one click and not a
@@ -159,7 +190,7 @@ function appendNode(parent: HTMLElement, node: TemplateNode, scoped: Tokens): vo
     return;
   }
 
-  const element = elementFor(node, scoped);
+  const element = elementFor(node, scoped, at);
 
   if (element === null) {
     return;
@@ -186,19 +217,26 @@ function appendNode(parent: HTMLElement, node: TemplateNode, scoped: Tokens): vo
     element.dataset.captures = captures;
   }
 
+  // Where this node sits in the tree, for a caller that holds one. Written
+  // only where {@link RenderOptions.paths} asked, so a visitor's page carries
+  // none of it.
+  if (at !== null) {
+    element.dataset.path = at;
+  }
+
   parent.appendChild(element);
 }
 
-function elementFor(node: TemplateNode, scoped: Tokens): HTMLElement | null {
+function elementFor(node: TemplateNode, scoped: Tokens, at: string | null): HTMLElement | null {
   switch (node.type) {
     case 'stack':
     case 'row':
     case 'grid':
     case 'panel':
     case 'media':
-      return layout(node, scoped);
+      return layout(node, scoped, at);
     case 'split':
-      return split(node as SplitNode, scoped);
+      return split(node as SplitNode, scoped, at);
     case 'heading':
       return heading(node as HeadingNode);
     case 'text':
@@ -240,6 +278,7 @@ function layout(
     notch?: boolean;
   },
   scoped: Tokens,
+  at: string | null,
 ): HTMLElement {
   const element = document.createElement('div');
 
@@ -317,11 +356,22 @@ function layout(
 
   retune(element, here, node.narrow);
 
-  for (const child of node.children ?? []) {
-    appendNode(element, child, here);
+  for (const [index, child] of (node.children ?? []).entries()) {
+    appendNode(element, child, here, into(at, 'children', index));
   }
 
   return element;
+}
+
+/**
+ * One step down the address, or null where nobody asked for one.
+ *
+ * The spelling is the ADMIN's `Path` joined on a dot — `0.children.2` — because
+ * the admin is the only caller that reads it and a second spelling would be a
+ * string two programs have to agree about. `slots.ts` parses it back.
+ */
+function into(at: string | null, key: string, index: number): string | null {
+  return at === null ? null : `${at}.${key}.${index}`;
 }
 
 /** The bag in scope at this box: what it inherited, its own reset, its own bag. */
@@ -384,7 +434,7 @@ function retune(element: HTMLElement, here: Tokens, narrow: Tokens | undefined):
  * direction crosses every boundary, so RTL correctness is a matter of the
  * vocabulary never naming a physical side (ADR 0009).
  */
-function split(node: SplitNode, scoped: Tokens): HTMLElement {
+function split(node: SplitNode, scoped: Tokens, at: string | null): HTMLElement {
   const element = document.createElement('div');
 
   element.className = 'wc-split';
@@ -399,13 +449,13 @@ function split(node: SplitNode, scoped: Tokens): HTMLElement {
     element.style.setProperty(TOKEN_PREFIX + 'ratio', String(node.ratio));
   }
 
-  for (const children of [node.start ?? [], node.end ?? []]) {
+  for (const key of ['start', 'end'] as const) {
     const pane = document.createElement('div');
 
     pane.className = 'wc-pane';
 
-    for (const child of children) {
-      appendNode(pane, child, here);
+    for (const [index, child] of (node[key] ?? []).entries()) {
+      appendNode(pane, child, here, into(at, key, index));
     }
 
     element.appendChild(pane);

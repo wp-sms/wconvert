@@ -34,7 +34,6 @@ import {
   nodeAt,
   nodesOf,
   rolesLostBy,
-  samePath,
   spotOf,
   withDuplicated,
   withInserted,
@@ -45,7 +44,6 @@ import {
 } from './structure/tree';
 import { LEAVES, childKeysOf, type Path } from './panel';
 import { nameOf, type TemplateLabels } from '../templates/api';
-import { keyOfSlot, type SlotKey } from './slots';
 import type { Template, TemplateTree } from '@renderer/types';
 
 /**
@@ -142,7 +140,7 @@ export interface StructureViewProps {
   readonly act: ConvertingAct;
   /** Which block is live, as its path. Null only while the design holds none. */
   readonly selected: Path | null;
-  readonly onSelect: (key: SlotKey | null, path: Path) => void;
+  readonly onSelect: (path: Path) => void;
   /**
    * The design, changed. `coalesce` names the control a keystroke came from,
    * so a burst of typing in the inspector is one undo entry — see
@@ -253,16 +251,14 @@ export function StructureView({
     setSaid(sentence);
 
     /*
-     * **The selection follows the act, not the position it used to hold.** A
-     * key survived a move for free — it named the slot rather than the place —
-     * and a path does not, so the block moved is re-addressed here. It is the
-     * same call for a delete, where the path is deliberately whatever took
-     * focus: the next sibling, else the parent. Either way the inspector shows
-     * a block rather than blanking.
+     * **The selection follows the act, not the block that used to be there.**
+     * An address is a POSITION now (`slots.ts`), so after a move, a delete or
+     * an insert the path in hand names whatever landed at it — which is what
+     * this hands on. For a delete that is deliberately whatever took focus: the
+     * next sibling, else the parent. Either way the inspector shows a block
+     * rather than blanking.
      */
-    const landed = nodesOf(tree).find((block) => samePath(block.path, path));
-
-    onSelect(landed === undefined ? null : keyOfSlot(landed), path);
+    onSelect(path);
   };
 
   const refuse = (reason: string) => {

@@ -44,7 +44,7 @@ import { offerableGoals } from '../goals/GoalCard';
 import { goalSaid } from '../goals/said';
 import { ChangeGoalDialog } from './ChangeGoalDialog';
 import { stepName } from './BlockRow';
-import { TOKENS, slotsOf, type Path } from './panel';
+import { TOKENS, type Path } from './panel';
 import {
   getOptin,
   getRules,
@@ -54,7 +54,7 @@ import {
   type RuleVocabulary,
   type Targeting,
 } from './api';
-import { keyOfSlot, pathOfKey, type Selection, type SlotKey } from './slots';
+import { keyOf, pathOfKey, type Selection, type SlotKey } from './slots';
 import {
   getTemplateTrees,
   listTemplates,
@@ -234,23 +234,6 @@ function typesInto(target: EventTarget | null): boolean {
     target instanceof HTMLTextAreaElement ||
     (target instanceof HTMLInputElement && TYPES_INTO.has(target.type))
   );
-}
-
-/**
- * The [[Slot Role]] key at a path, or null where the block has none.
- *
- * A layout has no slot and a role-less leaf has no key, and both are addressable
- * — which is exactly why the selection carries a `Path` beside the key
- * (`slots.ts`). The preview simply cannot outline what it cannot name.
- */
-function keyAt(template: Template | undefined, path: Path): SlotKey | null {
-  if (template === undefined) {
-    return null;
-  }
-
-  const slot = slotsOf(template.tree).find((each) => samePath(each.path, path));
-
-  return slot === undefined ? null : keyOfSlot(slot);
 }
 
 export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
@@ -720,19 +703,17 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
         return null;
       }
 
-      const slot = slotsOf(template.tree).find((each) => samePath(each.path, path));
-
-      return { path, key: slot === undefined ? null : keyOfSlot(slot), from: 'tree' };
+      return { path, from: 'tree' };
     });
   }, [template]);
 
   /*
    * **The selection re-resolved against whatever the tree now is.**
    *
-   * A key survived every kind of change for free, because it named a slot
-   * rather than a place. A path does not: a save replaces the tree with the
-   * server's normalised copy, and an undo can restore a design the selected
-   * block was never in. Neither may leave the inspector pointing at nothing.
+   * An address is a POSITION, so it does not survive every kind of change for
+   * free: a save replaces the tree with the server's normalised copy, and an
+   * undo can restore a design the selected block was never in. Neither may
+   * leave the inspector pointing at nothing.
    *
    * {@see nearestTo} walks outward rather than clearing — the block, else
    * whatever was holding it, else the design's first block — because a blank
@@ -757,10 +738,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
         return null;
       }
 
-      const slot = slotsOf(template.tree).find((each) => samePath(each.path, path));
-      const key = slot === undefined ? null : keyOfSlot(slot);
-
-      return samePath(path, current.path) && key === current.key ? current : { ...current, path, key };
+      return samePath(path, current.path) ? current : { ...current, path };
     });
   }, [template]);
 
@@ -884,29 +862,24 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
     // a merchant away from: clicking a block asks to edit that block.
     setTab('design');
     /*
-     * **The key arrives; the path is looked up.** The preview names slots and
-     * only slots (ADR 0040), so it cannot hand over an address — which is
-     * exactly the property that lets it stay unable to write. The tree is read
-     * through the setter so this callback stays stable across renders:
-     * {@see Preview} re-binds every listener in the shadow tree when it changes.
+     * **The address arrives already spelled**, because the renderer stamped it
+     * (ADR 0040, amended). It used to be a Slot Role that had to be searched
+     * for in the tree, which is why a `panel` — with no Role — could not be
+     * clicked at all.
+     *
+     * A parse and not a lookup, so nothing here needs the tree: this callback
+     * stays stable across renders, which matters because {@see Preview}
+     * re-binds every listener in the shadow tree when it changes.
      */
-    setConfig((current) => {
-      const tree = (current?.template as Template | undefined)?.tree;
-
-      setSelection(
-        tree === undefined ? null : { path: pathOfKey(tree, key) ?? [], key, from: 'preview' },
-      );
-
-      return current;
-    });
+    setSelection({ path: pathOfKey(key), from: 'preview' });
   }, []);
 
   /*
    * A row was clicked in the block tree. It outlines the block in the preview
    * and moves no caret: the merchant already has focus, on the row.
    */
-  const chooseFromTree = useCallback((key: SlotKey | null, path: Path) => {
-    setSelection({ path, key, from: 'tree' });
+  const chooseFromTree = useCallback((path: Path) => {
+    setSelection({ path, from: 'tree' });
 
     /*
      * **Selecting a block puts the preview on the step it lives in.** A block
@@ -1001,7 +974,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
    */
   const goTo = (path: Path) => {
     setTab('design');
-    chooseFromTree(keyAt(template, path), path);
+    chooseFromTree(path);
     setFocusRow({ path });
   };
 
@@ -1124,7 +1097,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
         from the rules to an editor with no block open would meet an empty panel
         for a reason nothing on screen explains.
       */
-      selected={tab === 'design' ? (selection?.key ?? null) : null}
+      selected={tab === 'design' && selection !== null ? keyOf(selection.path) : null}
       onSelect={chooseFromPreview}
     />
   );
@@ -1687,7 +1660,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
                               path={selection.path}
                               openToken={openToken}
                               onOpenToken={setOpenToken}
-                              onSelect={(path: Path) => chooseFromTree(keyAt(entry, path), path)}
+                              onSelect={chooseFromTree}
                               onChange={(next: Template) => edit({ template: next })}
                               copied={copiedLook}
                               onCopy={setCopiedLook}
