@@ -146,6 +146,28 @@
    */
   --control-height: 2.25rem;
   --control-height-sm: 2rem;
+
+  /*
+   * **A third, and it is the same argument the second one made, one scope in.**
+   *
+   * 2rem is what qualifies the SCREEN around the work — a toolbar's filters, a
+   * table's row actions. 1.5rem is what sits INSIDE the work surface: the three
+   * action cells on a tree row, the reset beside a token, the two clipboard
+   * buttons on a box's look. Those are not controls a merchant came to the
+   * screen to press; they are the furniture of the thing being edited, and at
+   * 32px three of them took 96px of a 254px pane.
+   *
+   * **24px is the floor and not a step on the way down.** WCAG 2.2 SC 2.5.8
+   * wants 24 × 24 CSS px, and this is exactly that — spent where the palette's
+   * own 8px gaps also keep the *spacing* exception in reserve. Nothing in this
+   * admin goes below it, and the row's twist is what proves the rule has teeth:
+   * ADR 0038 worked the exceptions one at a time and the twist cleared none of
+   * them, so it is 24 × 24 and the row floors at 32px rather than at the
+   * reference editor's 22px.
+   *
+   * ADR 0039 is amended inline with this, where it states two.
+   */
+  --control-height-xs: 1.5rem;
   --radius-sm: max(calc(var(--radius) - 2px), 0px);
   --radius-md: var(--radius);
   --radius-lg: calc(var(--radius) + 2px);
@@ -161,7 +183,7 @@
 
 /*
  * ============================================================================
- * THE TYPE SCALE. SIX ROLES, AND EVERY SIZE IN THE ADMIN IS ONE OF THEM.
+ * THE TYPE SCALE. EIGHT ROLES, AND EVERY SIZE IN THE ADMIN IS ONE OF THEM.
  * ============================================================================
  * **The block above owns colour, radius, shadow and control height, and never
  * owned type** — so every `text-*` in this admin was stock Tailwind, chosen per
@@ -175,6 +197,22 @@
  *
  * ADR 0037 now names type as the fourth axis this admin owns: the token NAMES
  * follow Tailwind's `--text-*` contract, and the VALUES are WConvert's.
+ *
+ * **It was six and is eight, which ADR 0037 anticipated rather than forbade.**
+ * That ADR says a seventh role is *"a decision rather than a class"* — a bar to
+ * clear, not a wall — and the Design tab is where it was cleared twice. Its
+ * three panes are a WORK SURFACE: a block's kind, a token's name and a check's
+ * word are furniture ON the thing being edited rather than copy to read, and at
+ * `micro` the tree's rows reserved 176px of furniture in a 254px pane and ran
+ * five block names under their own `⋯` menu. `label` and `meta` are those two
+ * registers, and their values are the reference editor's own — measured against
+ * it rather than interpolated down from `micro`.
+ *
+ * **No size floor was traded away to get them, because this admin has never had
+ * one.** ADR 0038's floors are contrast ratios, a blocking `jsx-a11y` lint,
+ * 24 × 24 pointer targets and the two viewports — not a minimum font size. A
+ * comment in this file claimed otherwise and cited that ADR for it; the claim
+ * is gone from where it sat, below.
  *
  * **A plain `@theme` and not the `@theme inline` above, and the distinction is
  * load-bearing.** `inline` exists for a variable that REFERENCES another
@@ -193,6 +231,43 @@
  * right.
  */
 @theme static {
+  /*
+   * 9 — meta ABOUT a label: a pane's name, where a value came from, a count.
+   *
+   * **The register that says what a thing IS rather than saying the thing.**
+   * A pane head reading STRUCTURE, the source `BlockRow.tsx` under a check's
+   * word, the count on a *sets* chip: every one of them is read once to place
+   * what is beside it and then read past. Uppercase and widely tracked is the
+   * dominant use, so it is in the token — the two chips that want looser
+   * tracking restate `letter-spacing` alone.
+   *
+   * It is small, and it is small deliberately: this is the size at which a
+   * pane's name stops competing with the pane's contents. Nothing a merchant
+   * must READ is set in it — every sentence on the tab is `micro` or larger,
+   * and each of these has its full words in a `title` or beside it.
+   */
+  --text-meta: 0.5625rem;
+  --text-meta--line-height: 0.875rem;
+  --text-meta--letter-spacing: 0.13em;
+  --text-meta--font-weight: 600;
+
+  /*
+   * 11 — the label register: a block's kind, a token's name, a check's word.
+   *
+   * **The one the block tree was missing entirely.** `.wconvert-block__kind`
+   * stated no size at all, so a row's name inherited 14px body — the same size
+   * as a paragraph of prose, for a word that is a label on a control. At 11px
+   * the same 254px pane holds ~17 characters where it held ~8.
+   *
+   * Sentence case and barely tracked, which is what separates it from `meta`
+   * above: this is a NAME, and a name is read as a word rather than scanned as
+   * a category.
+   */
+  --text-label: 0.6875rem;
+  --text-label--line-height: 1rem;
+  --text-label--letter-spacing: 0.01em;
+  --text-label--font-weight: 500;
+
   /*
    * 12 — table headers, chips, badges, stat labels.
    *
@@ -435,7 +510,7 @@
  * it rather than three hundred lines away from it.
  *
  * 90rem is 1440px. What the extra 288px buys is a THIRD PANE and not a wider
- * column — see `.wconvert-structure`'s container query below, and the field cap
+ * column — see `.wconvert-panes`'s container query below, and the field cap
  * on `.wconvert-inspector` that stops a `widefat` input growing with it.
  *
  * `data-measure` is written by the frame and by nothing else, on the element
@@ -1866,7 +1941,7 @@
  * which is what these two media queries have always described. *Design* is
  * three panes — list · render · controls — and the render is the middle one, so
  * the preview cannot be a sibling of the tab strip: it is a child of the pane
- * grid, placed by `.wconvert-structure` below (ADR 0062).
+ * grid, placed by `.wconvert-panes` below (ADR 0062, ADR 0066).
  *
  * So the outer grid collapses to one track and the panes take the whole
  * measure, which is also what makes the container query below see the full
@@ -2135,6 +2210,37 @@
     border: 1px solid transparent !important;
     color: var(--muted-foreground) !important;
   }
+
+  /*
+   * ==========================================================================
+   * THE INSPECTOR'S HALVES, AT THE HEIGHT OF THE BAND THEY ARE IN (ADR 0066).
+   * ==========================================================================
+   * `Tabs` is `flex gap-2` and `TabsList` is `h-9` through a
+   * `group-data-[orientation=horizontal]/tabs:` variant — three vendored
+   * `!important` utilities, so a `gap-0` or an `h-6` at the call site is a
+   * coin toss on source order at best and loses outright to the group variant.
+   * This is the sixth-and-seventh time this file has had to state a vendored
+   * size from here, and the recipe is the one ADR 0042 rule 6 gives: same
+   * layer, `!important`, and specificity that beats a single class.
+   *
+   * The gap is zero because the head and the body are BANDS now — a rule
+   * between them, not a space. The strip is `--control-height-xs` because it
+   * sits inside a work surface's head, which is the height that means.
+   */
+  #wconvert-admin .wconvert-inspector {
+    gap: 0 !important;
+  }
+
+  #wconvert-admin .wconvert-inspector__head [data-slot="tabs-list"] {
+    block-size: var(--control-height-xs) !important;
+  }
+
+  #wconvert-admin .wconvert-inspector__head [data-slot="tabs-trigger"] {
+    padding-inline: 0.375rem !important;
+    font-size: var(--text-meta) !important;
+    line-height: var(--text-meta--line-height) !important;
+    letter-spacing: 0.02em !important;
+  }
 }
 
 @media (min-width: 1024px) {
@@ -2307,17 +2413,120 @@
  * the vocabulary lets a merchant nest as deep as they like and a `.depth-4`
  * ladder would have a floor nobody chose.
  * ------------------------------------------------------------------------- */
-.wconvert-structure {
+/* ---------------------------------------------------------------------------
+ * THE PANES, AND THE CARD THEY ARE INSIDE.
+ *
+ * ============================================================================
+ * IT WAS THREE FLOATING BOXES IN A CARD'S BODY. IT IS THE CARD (ADR 0066).
+ * ============================================================================
+ * `Region` has always been `overflow-hidden rounded-md border border-border
+ * bg-card` — it *is* the surface the reference editor calls `.tool`. What kept
+ * the panes from being that card's contents was two rules and neither was
+ * about the panes: `RegionBody`'s `px-4 py-4` inset them from its edge, and the
+ * tree and the inspector each drew a `border` and a `radius` of their own. Four
+ * edges inside one edge is what made the tab read as a window manager.
+ *
+ * So: no body padding, no per-pane box, and the division between columns is a
+ * single `border-inline-start` rather than two facing borders with a gutter
+ * between them. What each pane IS gets said by a head band instead of by an
+ * outline, which is the swap this whole rule is.
+ *
+ * **`stretch` and not `start`, which is the one thing that had to change to
+ * make a divider a divider.** With `align-items: start` a 22rem inspector next
+ * to a 90-row tree draws its rule for a fifth of the card and stops — a line
+ * that begins and ends in the middle of a surface reads as a mistake. Stretched,
+ * every rule runs the height of the card. What that costs is stated where it is
+ * paid: the sticky offsets move one level in, onto the pane BODIES, because a
+ * stretched item is as tall as its row and so has nothing left to travel in.
+ * ------------------------------------------------------------------------- */
+.wconvert-panes {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+}
+
+.wconvert-pane {
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 0;
+}
+
+/*
+ * Stacked, the panes divide on the block axis — which is the same rule the
+ * container query below turns onto the inline axis, and it is stated in this
+ * direction because this one is the default.
+ */
+.wconvert-pane + .wconvert-pane {
+  border-block-start: 1px solid var(--border);
+}
+
+/*
+ * **What the pane IS, in the register that says so and no louder.**
+ *
+ * `--text-meta`, uppercase, on `--surface`: a pane head is read once on arrival
+ * to place what is under it, and then never again. It replaces the border each
+ * pane used to draw, and it does the job better — an outline says *this is a
+ * separate thing* and a head says *this is the structure*.
+ *
+ * The trailing half is a fact about the pane rather than a control: how many
+ * blocks the tree holds, which [[Display Type]] the render is drawing.
+ */
+.wconvert-pane__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.375rem 0.625rem;
+  border-block-end: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted-foreground);
+  font-size: var(--text-meta);
+  line-height: var(--text-meta--line-height);
+  letter-spacing: var(--text-meta--letter-spacing);
+  font-weight: var(--text-meta--font-weight);
+  text-transform: uppercase;
+}
+
+/*
+ * The quieter half of the head — a count, a display type — which is a fact
+ * about the pane and not a second name for it.
+ */
+.wconvert-pane__what {
+  flex: none;
+  opacity: 0.75;
+  font-variant-numeric: tabular-nums;
+  text-transform: none;
+}
+
+/*
+ * **The head and the body travel together, which is what this wrapper is for.**
+ *
+ * The preview and the inspector follow the panes down (see the container query
+ * below). A `position: sticky` on the BODY alone would leave each pane's head
+ * band scrolling away above it — the name of a pane disappearing off a pane
+ * that is still on screen — so what sticks is the pair.
+ *
+ * Every pane has one, including the tree's, where it does nothing: the tree is
+ * the tallest column, so its wrapper is exactly as tall as its pane and has no
+ * travel. Symmetric markup for one inert case is cheaper than a wrapper that
+ * appears on two children out of three.
+ */
+.wconvert-pane__stick {
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 0;
+}
+
+/* Each pane's contents own their own padding: a tree row is full-bleed, the
+ * inspector's fields are not, and the stage draws its own. */
+.wconvert-pane__body {
+  min-inline-size: 0;
 }
 
 /* ---------------------------------------------------------------------------
  * THE TWO-PANE SPLIT AT 48rem IS GONE, AND THE DELETION IS THE POINT.
  *
  * It put the tree and the inspector side by side from 48rem (768px) up, and it
- * was right for a `.wconvert-structure` that held two panes. It now holds
+ * was right for a pane grid that held two panes. It now holds
  * three: the preview moved into the middle of it (ADR 0062), and it spans,
  * because a 496px stage does not fit beside a 352px inspector at 768px of
  * container.
@@ -2374,58 +2583,52 @@
  * room back when a merchant wants it.
  * ------------------------------------------------------------------------- */
 @container (min-width: 67rem) {
-  .wconvert-structure {
+  .wconvert-panes {
     display: grid;
-    grid-template-columns: minmax(11rem, 16rem) minmax(31rem, 1fr) 22rem;
     /*
-     * `start` rather than the default stretch, which is what makes the sticky
-     * panes below work at all: a stretched item is as tall as the row and so
-     * has nothing to travel within. It is the same recipe the preview column
-     * uses against `.wconvert-builder`.
+     * **The tracks are unchanged, and the gaps they were added up with are
+     * gone.** 67rem is still `11 + 31 + 22 + 2 × 1.5rem of gap`, which now
+     * buys 48px of slack rather than being spent on air between three boxes —
+     * a divider is 1px and takes none.
      */
-    align-items: start;
+    grid-template-columns: minmax(11rem, 16rem) minmax(31rem, 1fr) 22rem;
+    align-items: stretch;
   }
 
   /*
-   * The header, the hint and the live region are about the whole tab, so they
-   * span it. The three panes then claim a column each — stated rather than left
-   * to auto placement, so a paragraph added here later does not silently push
-   * the inspector into a row of its own.
+   * Beside each other, the division is on the inline axis — and it is ONE
+   * border per boundary rather than each pane drawing its own edge, which is
+   * the difference between a rule and a gutter.
    */
-  .wconvert-structure > * {
-    grid-column: 1 / -1;
+  .wconvert-pane + .wconvert-pane {
+    border-block-start: 0;
+    border-inline-start: 1px solid var(--border);
   }
 
-  .wconvert-structure > .wconvert-blocks {
-    grid-column: 1;
-  }
-
-  .wconvert-structure > .wconvert-builder__preview {
-    grid-column: 2;
-    /*
-     * It follows the panes down, exactly as it did in the column it came from.
-     * `4rem` clears wp-admin's own sticky toolbar, which is the one piece of
-     * chrome ADR 0035 deliberately leaves in place.
-     */
+  /*
+   * ==========================================================================
+   * THE STICKY OFFSETS MOVED ONE LEVEL IN, AND THE REASON IS `stretch`.
+   * ==========================================================================
+   * These were on the panes themselves, which worked while the panes were
+   * `align-items: start` and therefore each only as tall as its own contents. A
+   * stretched pane is as tall as the card, so it has nowhere to travel — the
+   * BODY inside it does.
+   *
+   * **Why it is worth keeping at all**, unchanged from when it was won: the
+   * preview follows the panes down, and the inspector does too, because
+   * selecting a block low in a fifteen-block design used to scroll the merchant
+   * away from the row they had just clicked to reach the box they clicked it
+   * for. `4rem` clears wp-admin's own sticky toolbar, which is the one piece of
+   * chrome ADR 0035 deliberately leaves in place.
+   */
+  .wconvert-pane--render > .wconvert-pane__stick,
+  .wconvert-pane--controls > .wconvert-pane__stick {
     position: sticky;
     inset-block-start: 4rem;
   }
 
-  .wconvert-structure > .wconvert-inspector {
-    grid-column: 3;
-    /*
-     * **The problem the width was spent on.** The preview is sticky and stays;
-     * the inspector was not and did not, so selecting a block low in a fifteen
-     * block design scrolled the merchant away from the row they had just
-     * clicked to reach the box they clicked it for.
-     *
-     * `4rem` clears wp-admin's own sticky toolbar, which is the one piece of
-     * chrome ADR 0035 deliberately leaves in place — the same number, for the
-     * same reason, as the preview's.
-     */
-    position: sticky;
-    inset-block-start: 4rem;
-    /* The cap below is a stacked-column concern; the track is the measure here. */
+  /* The cap below is a stacked-column concern; the track is the measure here. */
+  .wconvert-pane--controls .wconvert-inspector {
     max-inline-size: none;
   }
 }
@@ -2439,30 +2642,53 @@
 .wconvert-blocks {
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  /*
+   * **No border and no radius: the pane is the edge now** (ADR 0066). This drew
+   * its own box while it was one of three floating in a card's body, which put
+   * an outline inside an outline 16px away from it.
+   */
   overflow-x: auto;
 }
 
 /*
- * **2.5rem, and the row's height was exactly the button inside it.**
+ * **2rem, and the row's height is still exactly the control inside it.**
  *
- * It was `--control-height-sm` with `padding-block: 0` — so the 32px `icon-sm`
+ * ===========================================================================
+ * IT WENT 32 → 40 → 32, AND ONLY THE MIDDLE STEP WAS ABOUT THE ROW.
+ * ===========================================================================
+ * It was `--control-height-sm` with `padding-block: 0` — the 32px `icon-sm`
  * actions touched the border above and the border below, and thirty rows read
- * as one dense block with no air in it. 40px with 4px of block padding gives a
- * 32px control room to stand in, and it is what lets the twist below reach
- * 24 × 24 without any button changing size.
+ * as one dense block. 40px with 4px of block padding was the fix, and it was a
+ * fix for the ACTION's size rather than for the row's: a 32px button needs 8px
+ * of air, and the twist could then reach 24 × 24 for free.
+ *
+ * The actions are `icon-xs` now — `--control-height-xs`, 24px, which is SC
+ * 2.5.8's bar exactly rather than eight pixels over it — so the same 4px of
+ * air lands the row on 32. **The twist did not move**: it is 24 × 24 for the
+ * reason ADR 0038 gives, which is that no other POINTER control on the page
+ * expands a row, and it is now the tallest thing in here. So 24 + 4 + 4 = 32
+ * is a floor and not a preference, and it is why this row does not reach the
+ * reference editor's 22px however much the type shrinks.
+ *
+ * The depth step goes 1rem → 0.75rem with it. Indentation only has to be
+ * legible as a step, and at four levels deep the old one spent 64px of a 254px
+ * pane saying so.
  */
 /*
  * ============================================================================
  * A ROW IS `max-content` WIDE AND THE PANE SCROLLS. IT WAS TRIED THE OTHER WAY.
  * ============================================================================
  * `inline-size: 100%` here makes the name truncate instead of running past the
- * pane's edge, and it is **worse**, measured: the row's furniture is a grip, a
- * twist, three 32px action cells and the depth indent — 176px of a 256px pane
+ * pane's edge, and it is **worse**, measured: the row's furniture was a grip, a
+ * twist, three 32px action cells and a 16px depth step — 176px of a 256px pane
  * at 1680 with the menu expanded — so the name got 78px and *Your name* came
  * out as *Yo…* on every leaf. An ellipsis on every row is less readable than
  * an overflow the container already scrolls to reach.
+ *
+ * _The furniture is smaller now — 24px action cells and a 12px step, against an
+ * 11px kind — and the conclusion is unchanged rather than merely surviving: a
+ * name still may not jump or truncate under a pointer. What the shrink bought
+ * is that the ordinary row no longer NEEDS the scroll._
  *
  * Two of those three action cells are `opacity: 0` until the row is hovered,
  * focused or selected, and they hold their 64px throughout. Collapsing them
@@ -2476,10 +2702,10 @@
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  min-block-size: 2.5rem;
+  min-block-size: 2rem;
   padding-block: 0.25rem;
   padding-inline: 0.5rem;
-  padding-inline-start: calc(0.5rem + var(--wconvert-depth, 0) * 1rem);
+  padding-inline-start: calc(0.5rem + var(--wconvert-depth, 0) * 0.75rem);
   border-block-start: 1px solid var(--border);
 }
 
@@ -2612,10 +2838,10 @@
 .wconvert-block__label {
   display: flex;
   align-items: baseline;
-  gap: 0.5rem;
+  gap: 0.375rem;
   flex: 1;
   min-inline-size: 0;
-  padding: 0.25rem;
+  padding: 0.125rem;
   border: 0;
   border-radius: var(--radius);
   background: none;
@@ -2625,37 +2851,51 @@
 
 /*
  * ============================================================================
- * IT DOES NOT SHRINK, AND MAKING IT SHRINK WAS TRIED AND IS WORSE.
+ * IT STATED NO SIZE AT ALL, WHICH IS WHY FIVE NAMES RAN UNDER THEIR OWN MENU.
  * ============================================================================
- * A long name runs under the row's own ⋯ menu, and `.wconvert-blocks` is an
- * `overflow-x: auto` scroll container so the merchant can reach it. Letting
- * the name truncate instead looks like the obvious fix and is not, measured at
- * 1680 with the menu expanded: the row's furniture is a grip, a twist, three
- * 32px action cells and the depth indent — **176px of a 254px pane** — so the
- * name got 78px and *Your name* came out as *Yo…* on every leaf row in the
- * design. An ellipsis on every row is less readable than an overflow the pane
- * already scrolls to reach, and `flex-shrink` weights do not save it: the
- * deficit is bigger than the words are.
+ * *This rule read: "it does not shrink, and making it shrink was tried and is
+ * worse."* That is still true and it was never the whole answer. The measured
+ * complaint behind it — **176px of furniture in a 254px pane**, so the name got
+ * 78px and *Your name* came out as *Yo…* — is arithmetic with two terms, and
+ * every previous pass argued about the pane and left the type alone.
  *
- * Two of those three action cells are `opacity: 0` until the row is hovered,
- * focused or selected, and they hold their 64px throughout. Collapsing them
- * would buy the name back and make every row's name JUMP under the pointer,
- * which is the one thing a list read by scanning may not do.
+ * The type was the bigger term. This element declared `flex` and `color` and no
+ * `font-size`, so a block's KIND — a label on a control — inherited 14px body
+ * and was set exactly as large as a paragraph of prose. `--text-label` is the
+ * register it always belonged to, and 11px against 14px is ~3 characters in 8
+ * bought back before the furniture moves at all.
  *
- * So the pressure goes on the LABELS instead: `TemplateLabels::layouts()` keeps
- * every layout to two words, which is why `media` is *Picture box* and not
- * *Picture with text on it* (ADR 0063). Widening the pane is the real fix and
- * is a change to `.wconvert-structure`'s track sizing rather than to this rule.
+ * The furniture then moves too: three `icon-xs` cells rather than three
+ * `icon-sm` (72px, not 96) and a 12px depth step rather than 16. Together the
+ * same pane holds ~17 characters where it held ~8, and *Headline after they
+ * submit* — one of the five that ran under the `⋯` — fits.
+ *
+ * **What is unchanged is why it does not truncate.** Two of the three action
+ * cells are `opacity: 0` until the row is hovered, focused or selected, and
+ * they hold their width throughout; collapsing them would make every row's name
+ * JUMP under the pointer, which is the one thing a list read by scanning may
+ * not do. And the pressure still goes on the LABELS as well:
+ * `TemplateLabels::layouts()` keeps every layout to two words, which is why
+ * `media` is *Picture box* (ADR 0063).
  */
 .wconvert-block__kind {
   flex: none;
   color: var(--foreground);
+  font-size: var(--text-label);
+  line-height: var(--text-label--line-height);
+  letter-spacing: var(--text-label--letter-spacing);
+  font-weight: var(--text-label--font-weight);
 }
 
 /*
  * What the block SAYS, truncated. A row is named by its words rather than by
  * "item 3 of 5", and a headline long enough to wrap would make the rows
  * different heights and the tree unreadable as a list.
+ *
+ * **`note` → `micro`, and the step it keeps is the point.** It was 13px under a
+ * 14px kind — a one-pixel difference doing the work of *what it is, then what
+ * it says*. The kind is 11px now, so this takes 12px: one step, drawn as one
+ * step, rather than a gap the eye has to be told about.
  */
 .wconvert-block__says {
   min-inline-size: 0;
@@ -2663,7 +2903,8 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   color: var(--muted-foreground);
-  font-size: var(--text-note);
+  font-size: var(--text-micro);
+  line-height: var(--text-micro--line-height);
 }
 
 /*
@@ -2773,10 +3014,24 @@
 .wconvert-block__chip {
   flex: none;
   padding-block: 0.0625rem;
-  padding-inline: 0.375rem;
+  padding-inline: 0.25rem;
   border-radius: var(--radius);
-  font-size: var(--text-micro);
-  line-height: var(--text-micro--line-height);
+  /*
+   * **`meta`, because a chip is about the row rather than in it.** *counted*
+   * and *words will be lost* are marks a merchant reads once while scanning and
+   * then reads past, which is the whole of what that register is for — and
+   * every one of them carries its full sentence in an `sr-only` span beside it,
+   * so nothing is only available at this size.
+   *
+   * The tracking is restated NARROWER than the token's, which is the one thing
+   * these do not take from it: `meta`'s 0.13em is drawn for an uppercase pane
+   * head with three words in it, and a chip is one lowercase word in a 6rem
+   * space.
+   */
+  font-size: var(--text-meta);
+  line-height: var(--text-meta--line-height);
+  letter-spacing: 0.02em;
+  font-weight: var(--text-meta--font-weight);
   white-space: nowrap;
 }
 
@@ -2798,11 +3053,14 @@
 .wconvert-block__pane {
   flex: none;
   padding-block: 0.0625rem;
-  padding-inline: 0.375rem;
+  padding-inline: 0.25rem;
   border-radius: var(--radius);
   background: var(--surface);
   color: var(--muted-foreground);
-  font-size: var(--text-micro);
+  font-size: var(--text-meta);
+  line-height: var(--text-meta--line-height);
+  letter-spacing: 0.02em;
+  font-weight: var(--text-meta--font-weight);
 }
 
 /* ---------------------------------------------------------------------------
@@ -2868,14 +3126,23 @@
  * have nothing to do with width.
  * ------------------------------------------------------------------------- */
 /*
- * **1rem, matching every other card's body.** It was 0.75rem, which put the
- * inspector's fields 4px inside the tree's rows beside them — the same 4px
- * stagger the reading screens' tables had down their left edge.
+ * **0.5rem, and it is a PANE now rather than a card.**
+ *
+ * *This read: "1rem, matching every other card's body."* That was the right
+ * number while the inspector was a floating box beside two other floating
+ * boxes — its padding had to match the card body it was pretending to be. It
+ * is one of three columns inside one card now, divided from its neighbours by
+ * a `border-inline-start` and headed by its own `.wconvert-pane__head`
+ * (ADR 0066), so the card's body padding is the card's and this is the gutter
+ * between a control and a rule 1px away.
+ *
+ * The border and the radius go with the argument: a pane inside a card that
+ * draws its own box is a box in a box, which is what made three panes read as
+ * three windows.
  */
 .wconvert-inspector {
-  padding: 1rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
   background: var(--card);
   /*
    * **The field cap, and it only ever binds in the stacked arrangement.**
@@ -2892,11 +3159,27 @@
   max-inline-size: 44rem;
 }
 
+/*
+ * **This IS the third pane's head band**, which is why it is drawn like the
+ * other two and named by the block rather than by the word *INSPECTOR*: a pane
+ * whose whole subject is the selection is named by the selection. The tab strip
+ * joins it for the same reason the count joins the tree's — *Content* and
+ * *Style* say what this pane is showing, which is what a pane head is for, and
+ * a strip of its own under the band was a second row of chrome on the narrowest
+ * column.
+ */
 .wconvert-inspector__head {
   display: flex;
-  align-items: baseline;
-  gap: 0.5rem;
+  align-items: center;
+  gap: 0.375rem;
   flex-wrap: wrap;
+  padding: 0.25rem 0.5rem;
+  border-block-end: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.wconvert-inspector__body {
+  padding: 0.5rem;
 }
 
 /*
@@ -2908,6 +3191,17 @@
  */
 .wconvert-inspector__name {
   margin: 0;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  /*
+   * **The one thing on this tab still set above 14px**, and it earns it: it is
+   * the name of what every control in the pane acts on, and it is where focus
+   * arrives when a merchant tabs out of the tree. Everything around it went
+   * down a register, which is what makes 16px read as a heading here rather
+   * than as one more line of the same size.
+   */
   font-size: var(--text-heading);
   line-height: var(--text-heading--line-height);
   font-weight: 600;
@@ -2923,26 +3217,40 @@
  * ⇄ — the only control that changes what a block IS. Pushed to the trailing
  * edge, because it is a different question from the name beside it: the header
  * says what this is, and this offers what else it could be.
+ *
+ * **The auto margin moved onto the tab strip**, which is now between the two:
+ * two auto margins in one flex row split the free space between them and put
+ * the strip in the middle of the band rather than against its end.
  */
 .wconvert-inspector__swap {
+  flex: none;
+}
+
+.wconvert-inspector__halves {
+  flex: none;
   margin-inline-start: auto;
 }
 
 .wconvert-inspector__kind {
-  padding-inline: 0.375rem;
+  flex: none;
+  padding-inline: 0.25rem;
   border-radius: var(--radius);
-  background: var(--surface);
+  background: var(--card);
   color: var(--muted-foreground);
-  font-size: var(--text-micro);
+  font-size: var(--text-meta);
+  line-height: var(--text-meta--line-height);
+  letter-spacing: 0.02em;
+  font-weight: var(--text-meta--font-weight);
 }
 
 /*
- * The first control sits under the heading rather than against it. `SlotFields`
- * draws no frame of its own, so this is where the gap between the name and the
- * fields is decided.
+ * The panel's own items sit apart from each other rather than against. Stated
+ * on the BODY rather than as `.wconvert-inspector > :not(head)`, which is what
+ * it was while the head was a sibling of the fields; the head is a band above
+ * them now and the rule that skipped it has nothing left to skip.
  */
-.wconvert-inspector > :not(.wconvert-inspector__head) {
-  margin-block-start: 0.5rem;
+.wconvert-inspector__body > * + * {
+  margin-block-start: 0.375rem;
 }
 
 /* ---------------------------------------------------------------------------
@@ -2956,10 +3264,18 @@
 }
 
 /*
- * **A preset is a control a merchant came to this tab to press, so it stands at
- * `--control-height`** (ADR 0039). It was 39px — padding around a line, no
- * stated height — which is neither of the two heights this admin has and three
- * pixels off one of them, so a row of presets sat a little taller than the
+ * **A preset stands at `--control-height-xs`, and the scope is what moved.**
+ *
+ * *This read: "a preset is a control a merchant came to this tab to press, so
+ * it stands at `--control-height`" (ADR 0039).* The test is unchanged and the
+ * answer to it is: a preset is not a control anybody came to the SCREEN for —
+ * it is one of six swatched buttons inside a popover inside a pane, which is
+ * ADR 0039's own reading of scope applied one level further in than that ADR
+ * had a level for. The third height is that level, amended into it inline.
+ *
+ * What the original note found is still worth keeping: it was 39px — padding
+ * around a line, no stated height — which is none of the heights this admin has
+ * and three pixels off one of them, so a row of presets sat taller than the
  * swatches under it for no reason anybody chose.
  *
  * `min-block-size` rather than `block-size`, because the label wraps: a preset
@@ -2969,9 +3285,9 @@
 .wconvert-theme {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  min-block-size: var(--control-height);
-  padding: 0.25rem 0.75rem;
+  gap: 0.375rem;
+  min-block-size: var(--control-height-xs);
+  padding: 0.125rem 0.5rem;
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -3093,8 +3409,8 @@
 .wconvert-group {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  padding-block-start: 1rem;
+  gap: 0.5rem;
+  padding-block-start: 0.625rem;
   border-block-start: 1px solid var(--border);
 }
 
@@ -3104,13 +3420,19 @@
   border-block-start: 0;
 }
 
+/*
+ * **`meta`, which is the register a group NAME has always been in.** *COLOUR*
+ * over eight swatches is not a heading a merchant reads; it is the word that
+ * says which eight these are, read once on arrival. At `micro` it stood as tall
+ * as the swatch names under it and the panel read as a stack of equals.
+ */
 .wconvert-group__name {
   margin: 0;
   color: var(--muted-foreground);
-  font-size: var(--text-micro);
-  line-height: var(--text-micro--line-height);
-  letter-spacing: var(--text-micro--letter-spacing);
-  font-weight: var(--text-micro--font-weight);
+  font-size: var(--text-meta);
+  line-height: var(--text-meta--line-height);
+  letter-spacing: var(--text-meta--letter-spacing);
+  font-weight: var(--text-meta--font-weight);
   text-transform: uppercase;
 }
 
@@ -3174,11 +3496,11 @@
 .wconvert-swatch {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.375rem;
   inline-size: 100%;
-  min-block-size: var(--control-height);
-  padding-block: 0.3125rem;
-  padding-inline: 0.5rem;
+  min-block-size: var(--control-height-xs);
+  padding-block: 0.1875rem;
+  padding-inline: 0.375rem;
   background: var(--card);
   border: 1px solid var(--input);
   border-radius: var(--radius);
@@ -3216,19 +3538,33 @@
   min-inline-size: 0;
 }
 
+/*
+ * **Both lines are `label`, and the VALUE is the one that changed twice.** The
+ * name was `note` (13px) over a value that stated nothing and inherited 14px —
+ * so the two lines of a swatch were a 13px caption under a 14px reading of
+ * `#ffffff`, which is a hex code set larger than the word naming it.
+ *
+ * They are one register now, separated by colour and by the face: the value
+ * takes `--font-mono`, which is what a hex code and a `28rem` are. The token is
+ * spelled without a fallback stack — `:root` already gives it one, and the
+ * three call sites in this file each used to restate a DIFFERENT one.
+ */
 .wconvert-swatch__name {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   color: var(--muted-foreground);
-  font-size: var(--text-note);
-  line-height: var(--text-note--line-height);
+  font-size: var(--text-label);
+  line-height: var(--text-label--line-height);
 }
 
 .wconvert-swatch__value {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  line-height: var(--text-label--line-height);
 }
 
 .wconvert-picker {
@@ -3251,15 +3587,15 @@
  */
 .wconvert-picker input[type="text"] {
   inline-size: 100%;
-  block-size: var(--control-height);
+  block-size: var(--control-height-xs);
   margin: 0;
   padding-inline: 0.5rem;
   background: var(--card);
   border: 1px solid var(--input);
   border-radius: var(--radius);
   color: var(--foreground);
-  font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: var(--text-body);
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
 }
 
 .wconvert-picker input[type="text"]:focus {
@@ -3302,14 +3638,16 @@
  * 100% rule now excludes these two by name (see THE FIELD, below), and the
  * floor here is what stops a sibling added later starving it again.
  *
- * The height is `--control-height` because a `input[type=range]` at the UA
- * default is ~22px, and this is a control a merchant came to the tab to use —
- * which is ADR 0039's own test for which of the two heights applies.
+ * The height was `--control-height` because a `input[type=range]` at the UA
+ * default is ~22px and stating nothing leaves it there. It is
+ * `--control-height-xs` now, which is the same fix at the size the pane it sits
+ * in is drawn at: 24px is still over the UA default, and it is SC 2.5.8's bar
+ * for the thumb a merchant drags.
  */
 .wconvert-token__slider {
   flex: 1;
   min-inline-size: 6rem;
-  block-size: var(--control-height);
+  block-size: var(--control-height-xs);
   margin: 0;
   cursor: pointer;
 }
@@ -3352,21 +3690,29 @@
 }
 
 /*
- * **12px from the scale, not the 11px this used to spell.** `0.6875rem` was a
- * size the six roles do not contain and nothing else in the admin uses — a
- * seventh role with one caller. `--text-micro` is the label register these
- * captions belong to, and folding them into it is what keeps the rule that
- * every size on screen is one of six.
+ * ============================================================================
+ * IT SPELLED 11px, WAS FOLDED INTO 12, AND IS 9 — AND ONLY THE MIDDLE STEP
+ * WAS WRONG.
+ * ============================================================================
+ * *This read: "`0.6875rem` was a size the six roles do not contain and nothing
+ * else in the admin uses — a seventh role with one caller."* The rule it was
+ * defending is right and stands: a raw size at a call site is a role nobody
+ * decided. What was wrong was the conclusion — the answer to one caller wanting
+ * a size the scale lacks is to decide the role or to spend an existing one, and
+ * folding it up into `micro` was the third thing, which is to pretend the need
+ * was not real. 0.6875rem is `--text-label` now, decided in the open.
+ *
+ * These captions are not it. "Top and bottom" and "Sides" over two sliders say
+ * which slider is which — meta ABOUT the control rather than the control's own
+ * label — so they take `meta`, in the narrowest column in the builder.
  *
  * The size and its line-height, and not the weight or the tracking: those two
- * make `micro` read as a small-caps LABEL, which is why {@see Stat} and the
- * stacked-table header add `uppercase` beside them. This is a sentence-case
- * caption over a slider — "Top and bottom", "Sides" — and it has the narrowest
- * column in the builder to fit in.
+ * make `meta` read as a small-caps LABEL, which is right for a pane head and
+ * wrong for a sentence-case caption.
  */
 .wconvert-token__axis-name {
-  font-size: var(--text-micro);
-  line-height: var(--text-micro--line-height);
+  font-size: var(--text-meta);
+  line-height: var(--text-meta--line-height);
   color: var(--muted-foreground);
 }
 
@@ -3406,8 +3752,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
-  min-block-size: var(--control-height);
-  padding-inline: 0.625rem;
+  min-block-size: var(--control-height-xs);
+  padding-inline: 0.5rem;
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -3542,15 +3888,30 @@
   cursor: pointer;
 }
 
-/* `- 4px` against the group's 1px padding and 1px border: 32 + 2 + 2 = 36. */
+/*
+ * **`--control-height-xs` flat, not a `calc` off it, and that is the whole
+ * difference between this and the rule it replaces.**
+ *
+ * It read `calc(var(--control-height) - 4px)` — 32px inside a group whose 2px
+ * padding and 1px border make 38 — and the subtraction was there so the GROUP
+ * came out at a stated height. Carried down verbatim that arithmetic gives
+ * `24 - 4 = 20`, and 20px is under SC 2.5.8's 24 × 24 for a control a merchant
+ * presses. So the segment takes the height and the group is 24 + 4 + 2 = 30:
+ * the label is the pointer target, and it is the one that has to clear the bar.
+ *
+ * The size comes with it — these were 14px body, which is a chip set as large
+ * as the sentence above it.
+ */
 .wconvert-choice__label {
   display: inline-flex;
   align-items: center;
-  min-block-size: calc(var(--control-height) - 4px);
-  padding-inline: 0.625rem;
+  min-block-size: var(--control-height-xs);
+  padding-inline: 0.5rem;
   border: 1px solid transparent;
   border-radius: max(calc(var(--radius) - 2px), 0px);
   color: var(--muted-foreground);
+  font-size: var(--text-micro);
+  line-height: var(--text-micro--line-height);
   white-space: nowrap;
 }
 
@@ -4832,8 +5193,8 @@ html.wp-toolbar:has(body.wconvert-fullscreen) {
  * open above themselves for chrome that is not there.
  */
 body.wconvert-fullscreen .wconvert-builder__preview,
-body.wconvert-fullscreen .wconvert-structure > .wconvert-inspector,
-body.wconvert-fullscreen .wconvert-structure > .wconvert-builder__preview {
+body.wconvert-fullscreen .wconvert-pane--render > .wconvert-pane__stick,
+body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
   inset-block-start: 1rem;
 }
 
@@ -4876,22 +5237,75 @@ body.wconvert-fullscreen .wconvert-structure > .wconvert-builder__preview {
  * sources, so a deleted region fails a build rather than shipping.
  * ------------------------------------------------------------------------- */
 
+/* ---------------------------------------------------------------------------
+ * THE ROW ABOVE THE PANES IS A `Toolbar` NOW, AND THE CHECKS LEFT IT.
+ *
+ * ============================================================================
+ * IT HELD FOUR THINGS AND ONE OF THEM WAS NOT A CONTROL (ADR 0066).
+ * ============================================================================
+ * *This was `.wconvert-structure__head`: "four things, and only the name may
+ * shrink — the design's name, the check strip, the meter and the two buttons."*
+ * Three of those four qualify the design being edited, which is exactly what
+ * {@see Toolbar} is for and what `.wconvert-toolbar` in the small-height list
+ * above already sizes — so `Browse designs` stopped being the one 36px control
+ * in a row of 32s by joining the strip that states the height rather than by
+ * being passed a `size`.
+ *
+ * **The fourth was diagnostics, and it is at the bottom now.** Six monospace
+ * chips across the top of a work surface is the loudest thing on the tab
+ * announcing the quietest fact — *nothing is wrong* — which is the shape the
+ * reference editor puts in a footer band and this one put in a header. What is
+ * read while working goes at the top; what is consulted goes at the bottom.
+ * ------------------------------------------------------------------------- */
+
 /*
- * **Four things, and only the name may shrink.** The design's name, the check
- * strip, the meter and the two buttons. The name is the one item with no floor
- * — a long design name is still readable truncated, and a check chip that
- * wraps mid-word is not.
+ * The tree's keyboard contract, said once, under the toolbar and over all three
+ * panes — because it is about none of them and true of the tab.
+ *
+ * **It carries the id**, or `#wconvert-admin :is(p, li, td, th, …)` at (1,1,0)
+ * forces `font-size: inherit` over a bare class and this renders at body size.
+ * That trap is documented five times in this file and has been walked into
+ * every one of them.
  */
-.wconvert-structure__head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem 0.75rem;
-  min-block-size: var(--control-height);
+#wconvert-admin .wconvert-hint {
+  margin: 0;
+  padding: 0.25rem 0.75rem;
+  border-block-end: 1px solid var(--border);
+  color: var(--muted-foreground);
+  font-size: var(--text-meta);
+  line-height: var(--text-meta--line-height);
+  letter-spacing: 0.02em;
+  text-wrap: pretty;
 }
 
-.wconvert-structure__head > :last-child {
-  margin-inline-start: auto;
+/*
+ * The one sentence this tab prints that a merchant did NOT ask for — *Headline,
+ * moved down, 3 of 6* — drawn only while there is one. It is the visible half
+ * of the live region, so it takes the size of something read rather than the
+ * hint's, and it sits in the same band.
+ */
+#wconvert-admin .wconvert-said {
+  margin: 0;
+  padding: 0.25rem 0.75rem;
+  border-block-end: 1px solid var(--border);
+  color: var(--foreground);
+  font-size: var(--text-micro);
+  line-height: var(--text-micro--line-height);
+  text-wrap: pretty;
+}
+
+/*
+ * **What is stored for the selected box, at the foot of the card.**
+ *
+ * It was the last item inside the inspector's Style tab, which put a readout
+ * about the whole box under twenty-four controls about its parts — reachable
+ * only by scrolling past all of them, on the one pane that is 22rem wide. The
+ * card has a bottom band and this is what it is for (ADR 0066): a `<details>`
+ * closed, costing one line, spanning the measure it needs when it is opened.
+ */
+.wconvert-stored {
+  padding: 0.375rem 0.75rem;
+  border-block-start: 1px solid var(--border);
 }
 
 /* ---------------------------------------------------------------------------
@@ -4909,7 +5323,15 @@ body.wconvert-fullscreen .wconvert-structure > .wconvert-builder__preview {
   align-items: center;
   gap: 0.25rem;
   margin: 0;
-  padding: 0;
+  /*
+   * **A band at the foot of the card rather than a row at the top of it**
+   * (ADR 0066). The padding and the rule above it are what make it one: it is a
+   * sibling of `.wconvert-panes` inside the same `Region`, so it spans all
+   * three columns and divides from them the way the toolbar divides from above.
+   */
+  padding: 0.375rem 0.75rem;
+  border-block-start: 1px solid var(--border);
+  background: var(--surface);
   list-style: none;
 }
 
@@ -4935,15 +5357,24 @@ body.wconvert-fullscreen .wconvert-structure > .wconvert-builder__preview {
   border-radius: var(--radius);
   background: var(--surface);
   color: var(--muted-foreground);
-  font-size: var(--text-micro);
-  line-height: var(--text-micro--line-height);
+  /*
+   * **The WORD is `label` and the source under it is `meta`**, which is the
+   * whole shape of a chip here: *Readable* is what the check is called and
+   * `contrast.ts` is what enforces it, and one is read while the other is
+   * glanced at. They were both `micro`, so the source competed with the name it
+   * qualifies on a strip of six.
+   */
+  font-size: var(--text-label);
+  line-height: var(--text-label--line-height);
+  letter-spacing: var(--text-label--letter-spacing);
+  font-weight: var(--text-label--font-weight);
   white-space: nowrap;
 }
 
 .wconvert-checks__chip > svg {
   flex: none;
-  inline-size: 0.875rem;
-  block-size: 0.875rem;
+  inline-size: 0.75rem;
+  block-size: 0.75rem;
 }
 
 .wconvert-checks__chip[data-state='pass'] > svg {
@@ -4985,8 +5416,10 @@ body.wconvert-fullscreen .wconvert-structure > .wconvert-builder__preview {
 .wconvert-meter {
   flex: none;
   color: var(--muted-foreground);
-  font-size: var(--text-micro);
-  line-height: var(--text-micro--line-height);
+  font-size: var(--text-meta);
+  line-height: var(--text-meta--line-height);
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
   white-space: nowrap;
   cursor: help;
 }
@@ -5035,7 +5468,7 @@ body.wconvert-fullscreen .wconvert-structure > .wconvert-builder__preview {
 .wconvert-scope {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.625rem;
 }
 
 /*
@@ -5051,7 +5484,7 @@ body.wconvert-fullscreen .wconvert-structure > .wconvert-builder__preview {
 .wconvert-scope__token {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.125rem;
 }
 
 /*
@@ -5084,8 +5517,15 @@ body.wconvert-fullscreen .wconvert-structure > .wconvert-builder__preview {
   gap: 0.375rem;
   margin: 0;
   color: var(--muted-foreground);
-  font-size: var(--text-micro);
-  line-height: var(--text-micro--line-height);
+  /*
+   * **`meta`, because *From Coloured box* is a provenance and not a sentence.**
+   * It is read once, on the one token in twenty-four where it appears at all,
+   * and its job is to be noticed rather than to be read at length — the press
+   * beside it is what a merchant actually acts on.
+   */
+  font-size: var(--text-meta);
+  line-height: var(--text-meta--line-height);
+  letter-spacing: 0.02em;
 }
 
 /*
@@ -5109,8 +5549,9 @@ body.wconvert-fullscreen .wconvert-structure > .wconvert-builder__preview {
 #wconvert-admin .wconvert-scope__contrast > li {
   margin: 0;
   padding: 0;
-  font-size: var(--text-micro);
-  line-height: var(--text-micro--line-height);
+  font-size: var(--text-meta);
+  line-height: var(--text-meta--line-height);
+  letter-spacing: 0.02em;
   list-style: none;
 }
 
@@ -5138,28 +5579,33 @@ body.wconvert-fullscreen .wconvert-structure > .wconvert-builder__preview {
 /*
  * The class or ADR that enforces a check, beside the words for it.
  *
- * **Quieter than the check's own name and never quieter than legible.** It is
- * the second thing read on the chip and the reason the first is trustworthy, so
- * it takes the muted colour and keeps the size — a `--text-micro` that is
- * already this admin's floor (ADR 0038, and the 9px in the reference tool
- * fails the bar).
+ * **Quieter than the check's own name, and the claim that it could not be
+ * quieter was invented.**
  *
- * Hidden below the container width where the strip would wrap onto three
- * lines: the source is what a merchant reads once while deciding whether to
- * act, and the `title` carries it at every width.
+ * *This read: "it takes the muted colour and keeps the size — a `--text-micro`
+ * that is already this admin's floor (ADR 0038, and the 9px in the reference
+ * tool fails the bar)."* **ADR 0038 states no minimum font size.** Its floors
+ * are contrast ratios, a blocking `jsx-a11y` lint, 24 × 24 pointer targets and
+ * the 360/782px viewports — and none of them is about type. The citation was
+ * wrong, and it is the reason the whole strip stayed a wall of monospace across
+ * the top of the tab for one release longer than it had to.
+ *
+ * It is `--text-meta` — the reference editor's own 9px — and the two things
+ * that make that legible are stated rather than assumed: it carries the muted
+ * colour at full opacity against `--surface`, and every source is repeated in
+ * the chip's `title` in full. Nothing here is the only copy of anything.
+ *
+ * **And the container query that hid half the strip is gone with it.** At 9px
+ * six sources fit on one line at every width the tab has, so there is nothing
+ * left to hide — which is the better answer to "it wraps onto three lines" than
+ * removing the information was.
  */
 .wconvert-checks__source {
   color: var(--muted-foreground);
-  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
-  font-size: var(--text-micro);
-  line-height: var(--text-micro--line-height);
-  opacity: 0.8;
-}
-
-@container (max-width: 62rem) {
-  .wconvert-checks__source {
-    display: none;
-  }
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  line-height: var(--text-meta--line-height);
+  letter-spacing: 0.02em;
 }
 
 /*
@@ -5188,10 +5634,10 @@ body.wconvert-fullscreen .wconvert-structure > .wconvert-builder__preview {
  */
 .wconvert-scope__json > summary {
   color: var(--muted-foreground);
-  font-size: var(--text-micro);
-  line-height: var(--text-micro--line-height);
-  letter-spacing: var(--text-micro--letter-spacing);
-  font-weight: var(--text-micro--font-weight);
+  font-size: var(--text-meta);
+  line-height: var(--text-meta--line-height);
+  letter-spacing: var(--text-meta--letter-spacing);
+  font-weight: var(--text-meta--font-weight);
   text-transform: uppercase;
   cursor: pointer;
 }
@@ -5202,8 +5648,8 @@ body.wconvert-fullscreen .wconvert-structure > .wconvert-builder__preview {
   border-radius: var(--radius);
   background: var(--surface);
   color: var(--foreground);
-  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
-  font-size: var(--text-micro);
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
   line-height: 1.6;
   /* A bag of 24 tokens is taller than the pane; the scroll is the readout's. */
   max-block-size: 14rem;

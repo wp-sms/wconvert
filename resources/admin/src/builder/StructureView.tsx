@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 import {
   ArrowDown,
   ArrowUp,
@@ -20,10 +20,10 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '../components/ui/dropdown-menu';
-import { Description } from '../shell/Description';
 import { EmptyState } from '../shell/EmptyState';
 import { RegionBody } from '../shell/Region';
 import { BlockInspector } from './BlockInspector';
+import { ScopeJson } from './ScopeStyle';
 import { BlockTree } from './BlockTree';
 import { useBlockDrag } from './useBlockDrag';
 import { nameOfBlock, sentenceFor, type Control } from './BlockRow';
@@ -42,7 +42,7 @@ import {
   type Block,
   type Spot,
 } from './structure/tree';
-import { LEAVES, childKeysOf, type Path } from './panel';
+import { LEAVES, childKeysOf, scopeChainOf, type Path, type WidthBag } from './panel';
 import { nameOf, type TemplateLabels } from '../templates/api';
 import type { Template, TemplateTree } from '@renderer/types';
 
@@ -175,16 +175,36 @@ export interface StructureViewProps {
    */
   readonly preview?: ReactNode;
   /**
-   * A row about the whole design, above all three panes.
+   * The strip at the top of the card: the design's name and what qualifies it.
    *
-   * The design's name and the way to change it. It spans rather than sitting in
-   * a pane because it is about none of them — and it is passed in for the same
-   * reason the preview is: choosing a design takes a fresh snapshot on the
-   * server, which is the screen's business and not this tree's.
+   * ==========================================================================
+   * IT WAS `header` AND HELD THE CHECK STRIP TOO. THE TWO ARE NOT ONE THING.
+   * ==========================================================================
+   * A toolbar holds what is scoped to the region under it (ADR 0039) — the
+   * design's name, the ready-made looks, the payload meter, the two buttons.
+   * The six check chips are DIAGNOSTICS: read when something looks wrong, not
+   * while working, and at the top of a work surface they were the loudest thing
+   * on the tab saying the quietest fact. They have their own slot at the foot
+   * of the card now (ADR 0066), which is where the reference editor puts them.
+   *
+   * Both are passed in for the reason the preview is: choosing a design takes a
+   * fresh snapshot on the server, which is the screen's business and not this
+   * tree's.
    */
-  readonly header?: ReactNode;
+  readonly toolbar?: ReactNode;
+  /** The six checks, in the card's bottom band. {@see CheckStrip}. */
+  readonly checks?: ReactNode;
   /** How the selected block looks — {@see BlockInspectorProps.look}. */
   readonly look?: ReactNode;
+  /**
+   * Which of the selected box's two bags the stored readout counts (ADR 0064).
+   *
+   * The preview's own width switch decides it and the screen holds it, so it
+   * arrives here the same way it arrives at {@see ScopeStyle} — this component
+   * draws the readout at the foot of the card and would otherwise have to guess
+   * which of the two bags the merchant is looking at.
+   */
+  readonly width?: WidthBag;
 }
 
 export function StructureView({
@@ -198,8 +218,10 @@ export function StructureView({
   endsAt,
   onSetEndDate,
   preview,
-  header,
+  toolbar,
+  checks,
   look,
+  width = 'tokens',
 }: StructureViewProps) {
   /*
    * **One line that is both the visible answer and the announced one.**
@@ -439,10 +461,23 @@ export function StructureView({
     blocks,
   });
 
+  /*
+    **The box whose stored record the card's foot prints**, which is the
+    selected block itself where it carries a bag and the nearest box above it
+    where it does not — a leaf has no `tokens`, and the honest answer to *what
+    is stored for this* is the record of the box that decides for it.
+
+    Computed here rather than handed over: this component already holds
+    `template` and `selected`, and a second source for the same walk is two
+    chances for the two to disagree about one design (`panel.ts`).
+  */
+  const chain = selected === null ? [] : scopeChainOf(template.tree, selected);
+  const stored = chain[chain.length - 1];
+
   if (template.tree.steps.length === 0) {
     return (
       <RegionBody>
-        {header}
+        {toolbar}
         <EmptyState icon={Blocks} title={__('This design has nothing in it yet', 'wconvert')}>
           {__('Pick a design on the Design tab and its blocks will be listed here.', 'wconvert')}
         </EmptyState>
@@ -451,21 +486,43 @@ export function StructureView({
   }
 
   return (
-    <RegionBody className="wconvert-structure">
-      {header}
+    /*
+      ==========================================================================
+      THE CARD IS THE EDITOR. THESE ARE ITS BANDS, IN THE ORDER THEY ARE READ.
+      ==========================================================================
+      A fragment and not a `RegionBody`, which is the whole of what changed
+      structurally (ADR 0066). `Region` is already `overflow-hidden rounded-md
+      border bg-card`; `RegionBody`'s `px-4 py-4` is what held the panes off its
+      edge, and with three panes each drawing a border of their own the result
+      was four boxes in a box. So these are direct children of the card:
+
+        toolbar   what the design is, and what changes it
+        hint      the tree's keyboard contract, said once for all three panes
+        panes     list · render · controls, divided by one rule each
+        checks    six diagnostics, quietly, at the bottom
+        stored    what the selected box actually holds, as data
+
+      The two ends are what moved. Everything between them is where it was.
+    */
+    <>
+      {toolbar}
 
       {/*
         **"Beside it" rather than "below it".** The inspector is under the tree
         in a narrow container and beside it in a wide one, so the sentence names
         neither — a hint that says *below* on a screen where the panel is to the
         right is a hint the merchant checks and disbelieves.
+
+        It spans the card rather than sitting in the tree's pane, because it is
+        about the tree AND the preview AND the panel — and spanning is what lets
+        it be one line at `--text-meta` instead of three inside an 11rem column.
       */}
-      <Description>
+      <p className="wconvert-hint">
         {__(
           'Pick a block to edit it and see it highlighted in the preview. Arrow keys move through the list; the buttons on each row move a block within the one it is in, and it can be dragged there by its name.',
           'wconvert',
         )}
-      </Description>
+      </p>
 
       {/*
         **The region is always here; the SENTENCE is only here when there is
@@ -489,78 +546,146 @@ export function StructureView({
       </p>
 
       {said !== null && (
-        <p aria-hidden="true" className="m-0 text-pretty text-note text-foreground">
+        <p aria-hidden="true" className="wconvert-said">
           {said}
         </p>
       )}
 
-      <BlockTree
-        tree={template.tree}
-        labels={labels}
-        selected={selected}
-        onSelect={onSelect}
-        onMove={move}
-        focusOn={focusOn}
-        drag={drag}
-        actions={(block, { control, tabIndex }) => (
-          <RowAction
-            block={block}
-            control={control}
-            tabIndex={tabIndex}
-            labels={labels}
-            tree={template.tree}
-            act={act}
-            onMove={move}
-            onAdd={add}
-            onDuplicate={duplicate}
-            onRemove={remove}
+      <div className="wconvert-panes">
+        {/*
+          **No `--list` modifier, and its absence is the convention rather than
+          an oversight.** `--render` and `--controls` exist because rules select
+          them — they are the two panes that follow the merchant down the page.
+          Nothing selects the tree's, and `admin-stylesheet.test.ts` fails a
+          build for a class the builder renders and the stylesheet does not
+          style, which is exactly the right answer to a modifier added for
+          symmetry.
+        */}
+        <div className="wconvert-pane">
+          <div className="wconvert-pane__stick">
+            <div className="wconvert-pane__head">
+              {__('Structure', 'wconvert')}
+              {/*
+                **A count and not a title.** What a merchant wants to know from
+                the head of a list is how long it is — and it is the one number
+                on this tab that says whether the design they picked is the size
+                they thought it was.
+              */}
+              <span className="wconvert-pane__what">
+                {sprintf(
+                  /* translators: %d: how many blocks the design holds. */
+                  _n('%d block', '%d blocks', blocks.length, 'wconvert'),
+                  blocks.length,
+                )}
+              </span>
+            </div>
+            <div className="wconvert-pane__body">
+              <BlockTree
+                tree={template.tree}
+                labels={labels}
+                selected={selected}
+                onSelect={onSelect}
+                onMove={move}
+                focusOn={focusOn}
+                drag={drag}
+                actions={(block, { control, tabIndex }) => (
+                  <RowAction
+                    block={block}
+                    control={control}
+                    tabIndex={tabIndex}
+                    labels={labels}
+                    tree={template.tree}
+                    act={act}
+                    onMove={move}
+                    onAdd={add}
+                    onDuplicate={duplicate}
+                    onRemove={remove}
+                  />
+                )}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/*
+          **The render, between the list and the controls.** In the DOM as well
+          as on the screen: three panes that read left to right and top to
+          bottom the same way are three panes a keyboard and a screen reader
+          meet in the order the eye does.
+        */}
+        <div className="wconvert-pane wconvert-pane--render">
+          <div className="wconvert-pane__stick">
+            <div className="wconvert-pane__head">{__('Preview', 'wconvert')}</div>
+            <div className="wconvert-pane__body">{preview}</div>
+          </div>
+        </div>
+
+        <div className="wconvert-pane wconvert-pane--controls">
+          <div className="wconvert-pane__stick">
+            <div className="wconvert-pane__body">
+              {/*
+                **After the tree in the DOM, and therefore after it in the tab order.**
+                Selecting a row must not pull focus into here — focus belongs on the row
+                the merchant is on, which is what makes ↑↓ keep working after a click —
+                so `Tab` is the documented way in and the source order is what makes it
+                land.
+
+                That holds at both arrangements, which is why the split is a grid over
+                this order rather than a reordering of it: the tree takes column one and
+                this takes column two, so *beside* and *under* read the same to a
+                keyboard and to a screen reader.
+              */}
+              <BlockInspector
+                template={template}
+                labels={labels}
+                path={selected}
+                act={act}
+                onChange={onChange}
+                /*
+                  A swap is worth saying out loud: it renames the row and it changes
+                  the Slot Roles derived from what a field captures, so the preview's
+                  key moves under a selection that has not. The row keeps focus — the
+                  merchant is in the inspector, and yanking them back to the list
+                  after an edit they made in the panel would be the tree answering a
+                  question they asked somewhere else.
+                */
+                onSwap={(next, sentence) => {
+                  onChange(next);
+                  setSaid(sentence);
+                }}
+                endsAt={endsAt}
+                onSetEndDate={onSetEndDate}
+                look={look}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/*
+        **What was looked at, at the bottom.** It was in the header row, which
+        put six monospace chips announcing *nothing is wrong* above everything a
+        merchant came to the tab to do. Same six checks, same words, same route
+        to the block (ADR 0066).
+      */}
+      {checks}
+
+      {/*
+        **What the selected box actually stores**, spanning the card rather than
+        buried under twenty-four controls in a 22rem column. Absent where there
+        is no box to print — nothing selected, or a design with no layout above
+        the selection, which the chain answers either way.
+      */}
+      {stored !== undefined && (
+        <div className="wconvert-stored">
+          <ScopeJson
+            scope={stored}
+            name={nameOf(labels.layouts, stored.type)}
+            width={width}
           />
-        )}
-      />
-
-      {/*
-        **The render, between the list and the controls.** In the DOM as well as
-        on the screen: three panes that read left to right and top to bottom the
-        same way are three panes a keyboard and a screen reader meet in the order
-        the eye does.
-      */}
-      {preview}
-
-      {/*
-        **After the tree in the DOM, and therefore after it in the tab order.**
-        Selecting a row must not pull focus into here — focus belongs on the row
-        the merchant is on, which is what makes ↑↓ keep working after a click —
-        so `Tab` is the documented way in and the source order is what makes it
-        land.
-
-        That holds at both arrangements, which is why the split is a grid over
-        this order rather than a reordering of it: the tree takes column one and
-        this takes column two, so *beside* and *under* read the same to a
-        keyboard and to a screen reader.
-      */}
-      <BlockInspector
-        template={template}
-        labels={labels}
-        path={selected}
-        act={act}
-        onChange={onChange}
-        /*
-          A swap is worth saying out loud: it renames the row and it changes
-          the Slot Roles derived from what a field captures, so the preview's
-          key moves under a selection that has not. The row keeps focus — the
-          merchant is in the inspector, and yanking them back to the list
-          after an edit they made in the panel would be the tree answering a
-          question they asked somewhere else.
-        */
-        onSwap={(next, sentence) => {
-          onChange(next);
-          setSaid(sentence);
-        }}
-        endsAt={endsAt}
-        onSetEndDate={onSetEndDate}
-        look={look}
-      />
-    </RegionBody>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -622,7 +747,26 @@ function RowAction({
       <Button
         type="button"
         variant="ghost"
-        size="icon-sm"
+        /*
+          ==================================================================
+          `icon-xs` IS 24px, AND 24px IS THE FLOOR RATHER THAN A STEP TOWARDS
+          ONE.
+          ==================================================================
+          These were `icon-sm` — 32px — and three of them reserved 96px of a
+          254px pane, which is most of why five block names ran under this
+          row's own `⋯`. WCAG 2.2 SC 2.5.8 wants 24 × 24 CSS px and the
+          vendored `icon-xs` is `size-6`, so this lands ON the criterion
+          rather than under it.
+
+          **What did NOT happen is these becoming a pane foot**, which is
+          where the reference editor puts its move controls. SC 2.5.7 wants a
+          single-pointer alternative to the drag that is adjacent to the thing
+          it moves — W3C's own cited example is *"sortable lists: adjacent
+          controls for moving elements up or down"* — and ADR 0038 is explicit
+          that a row which replaced these with the grip would fail outright.
+          They may shrink; they may not leave (ADR 0066).
+        */
+        size="icon-xs"
         tabIndex={tabIndex}
         aria-disabled={stuck}
         /*
@@ -670,7 +814,7 @@ function RowAction({
     */
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button type="button" variant="ghost" size="icon-sm" tabIndex={tabIndex}>
+        <Button type="button" variant="ghost" size="icon-xs" tabIndex={tabIndex}>
           <MoreHorizontal aria-hidden="true" />
           {/*
             Named for the block, like the arrows above it: fifteen buttons

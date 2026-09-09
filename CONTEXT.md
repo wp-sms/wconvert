@@ -738,6 +738,14 @@ is off by default and one click from on ([ADR 0032](docs/adr/0032-consent-captur
 > Everything the note below says about the vocabulary being the ceiling is
 > unchanged.
 >
+> **The three panes are one card now, not three.** They sit inside the
+> region's own border with a rule between each, each named by a head band —
+> *STRUCTURE · 12 blocks*, *PREVIEW*, and the selected block's own name over
+> *Content* / *Style*. The check strip moved from the top of the tab to a band
+> at its foot, and what a box stores joined it there. Two type roles were added
+> for it, `label` (11px) and `meta` (9px), and they are the Design tab's only.
+> See [ADR 0066](docs/adr/0066-the-editors-chrome-is-one-card-with-three-named-panes.md).
+>
 > **Corrected.** This paragraph opened *"The settings panel edits tokens, slot
 > content and slot visibility and never* arrangement*"*, and both halves of that
 > stopped being true at the Content/Structure merge: `SettingsPanel` no longer

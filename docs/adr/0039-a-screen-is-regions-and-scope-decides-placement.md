@@ -460,6 +460,18 @@ the selection rather than clearing it.
   bound now — a preset and a size slider are controls a merchant came to the tab
   to use, so both take `--control-height`. A height that is written down and not
   applied is worse than one that was never written down: it reads as decided._
+
+  _Amended again by [ADR 0066](0066-the-editors-chrome-is-one-card-with-three-named-panes.md):
+  **there are three.** `--control-height-xs` (1.5rem) is this consequence's own
+  scope test applied one level further in than it had a level for — 2rem
+  qualifies the SCREEN, 1.5rem sits inside the WORK SURFACE: a tree row's three
+  action cells, a token's reset, a box's clipboard buttons, the theme presets and
+  the swatches. Three 32px cells were 96px of a 254px pane. The preset and the
+  slider named in the amendment above move with it, and the test that placed them
+  is unchanged — a preset inside a popover inside a pane is not a control a
+  merchant came to the SCREEN to press. 24px is WCAG 2.2 SC 2.5.8's bar exactly
+  and is a floor, not a step. The vendored `Button` had shipped `size="icon-xs"`
+  at `size-6` since the first vendor commit with zero call sites._
 - **Status is a `Badge`, never plain text**, and the words are translated. The
   badge is the only thing in a Status column, so an id with no registry entry
   stays a `<code>` in the Goal column and never becomes a badge that would read

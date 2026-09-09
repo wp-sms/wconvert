@@ -96,7 +96,7 @@ export function Shell({
    * design asks for.
    *
    * So this screen gets 1440px, and the extra buys a third pane rather than a
-   * wider single column — see `.wconvert-structure`'s container query in
+   * wider single column — see `.wconvert-panes`'s container query in
    * `index.css`, and the field cap that stops the inspector's `widefat` inputs
    * growing past a readable measure with it.
    *

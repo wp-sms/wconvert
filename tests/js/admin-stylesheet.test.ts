@@ -386,18 +386,44 @@ describe('the direction convention', () => {
 });
 
 describe('the type scale', () => {
-  /** The six, and the modifiers Tailwind pairs with each. */
-  const ROLES = ['micro', 'note', 'body', 'heading', 'title', 'figure'];
+  /**
+   * The eight, and the modifiers Tailwind pairs with each.
+   *
+   * ==========================================================================
+   * THIS ARRAY IS WHERE A NEW ROLE IS DECIDED, WHICH IS WHY IT IS A LIST.
+   * ==========================================================================
+   * ADR 0037 says a role past the original six is *"a decision rather than a
+   * class"*. Nothing about this test inspects a VALUE — it asserts only that
+   * every size in the stylesheet is spelled as one of the names below — so the
+   * cost of a seventh is exactly one line here, and that is deliberate: the
+   * line is the decision, taken once, in the open, instead of a `0.6875rem`
+   * appearing at a call site and never being seen again.
+   *
+   * `label` (11) and `meta` (9) were that decision, taken for the Design tab's
+   * three panes: a block's kind, a token's name and a check's word are
+   * furniture on a work surface rather than copy, and at `micro` the tree ran
+   * five block names under their own row menu. They are NOT a floor being
+   * lowered — ADR 0038 sets contrast ratios, pointer targets and viewports, and
+   * has never set a minimum font size.
+   */
+  const ROLES = ['meta', 'label', 'micro', 'note', 'body', 'heading', 'title', 'figure'];
 
   /** Declarations only — a comment naming a size is prose about one. */
   const DECLARATIONS = CSS.replace(/\/\*[\s\S]*?\*\//g, '');
 
   /**
-   * `inherit` is the seventh legal value and is not a size: the rule forcing it
+   * `inherit` is the ninth legal value and is not a size: the rule forcing it
    * over wp-admin's `<p>` and `<td>` exists precisely so a role stated as a
    * utility elsewhere is the one that wins.
+   *
+   * **`!important` is allowed after the value and is not part of it.** A size
+   * that has to beat a vendored utility takes the flag — Tailwind's are
+   * `!important` and for important declarations the cascade runs layers in
+   * reverse, so `text-sm` on `TabsTrigger` cannot be overridden without one
+   * (ADR 0042 rule 6). What this test is about is which ROLE was spelled, and
+   * the flag says nothing about that.
    */
-  it('states every font-size as one of the six roles, or as inherit', () => {
+  it('states every font-size as one of the eight roles, or as inherit', () => {
     const sizes = [...DECLARATIONS.matchAll(/font-size:\s*([^;}]+)/g)].map(([, value]) =>
       value.trim(),
     );
@@ -406,13 +432,13 @@ describe('the type scale', () => {
 
     for (const size of sizes) {
       expect(size, 'a size off the scale').toMatch(
-        new RegExp(`^(inherit|var\\(--text-(${ROLES.join('|')})\\))$`),
+        new RegExp(`^(inherit|var\\(--text-(${ROLES.join('|')})\\))( !important)?$`),
       );
     }
   });
 
   /**
-   * The names this admin owns are the six. `--text-sm` and its siblings resolve
+   * The names this admin owns are the eight. `--text-sm` and its siblings resolve
    * — to Tailwind's scale, silently — so a fallback beside one never fires and
    * the mistake looks like a careful line.
    */
