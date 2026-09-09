@@ -1097,6 +1097,14 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
       width={{ value: width, onChange: setWidth }}
       displayType={config === null ? EVERY_INSTALL_HAS : displayTypeOf(config, templates)}
       /*
+        **Named only where it is a pane.** On *Design* this column sits between
+        the tree and the inspector as the middle of three, and the three heads
+        are one band at one height; on the other three tabs it is the column
+        beside the tab's own card, which has its own heading and does not want a
+        second one.
+      */
+      name={tab === 'design' ? __('Preview', 'wconvert') : undefined}
+      /*
         **The outline says "this is the block you are working on", so it goes
         when the merchant stops working on blocks.** Left up over the rules tab
         it is a highlight with nothing on screen explaining it — the affordance
@@ -1604,6 +1612,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
                       */
                       toolbar={
                         <Toolbar
+                          dense
                           trailing={
                             <>
                             {/*
@@ -1967,6 +1976,7 @@ function PreviewColumn({
   step,
   width,
   displayType,
+  name,
   selected,
   onSelect,
 }: {
@@ -1983,6 +1993,20 @@ function PreviewColumn({
    * switch that would need the design swapped with it.
    */
   displayType: string;
+  /**
+   * The pane's name, when this column IS a pane of the three.
+   *
+   * **The render pane had two bands stacked on it** — a `.wconvert-pane__head`
+   * saying *Preview* from {@see StructureView}, and this bar underneath it — so
+   * its body started 36px below the two beside it. There is one band now and
+   * this is it: the bar carries the head's class when it carries a name, and the
+   * name is a `.wconvert-pane__name` inside it rather than the band's own text,
+   * which is what lets a band hold controls at all.
+   *
+   * Passed only on *Design*. On the other three tabs this is the column beside
+   * the panes rather than one of them, and a column is not named twice.
+   */
+  name?: string;
   selected: SlotKey | null;
   onSelect: (key: SlotKey) => void;
 }) {
@@ -1992,7 +2016,12 @@ function PreviewColumn({
 
   return (
     <aside className="wconvert-builder__preview" aria-label={__('Preview', 'wconvert')}>
-      <div className="wconvert-builder__bar flex flex-wrap items-center justify-between gap-2">
+      <div
+        className={`wconvert-builder__bar flex flex-wrap items-center justify-between gap-2${
+          name === undefined ? '' : ' wconvert-pane__head'
+        }`}
+      >
+        {name === undefined ? null : <span className="wconvert-pane__name">{name}</span>}
         {/*
           **`.wconvert-segmented` is the same control the tab strip is**, and
           which answer is current is decided there rather than here — see
@@ -2011,7 +2040,7 @@ function PreviewColumn({
               <Button
                 key={index}
                 type="button"
-                size="sm"
+                size="xs"
                 variant="ghost"
                 aria-pressed={index === shown}
                 onClick={() => step.onChange(index)}
@@ -2028,14 +2057,14 @@ function PreviewColumn({
               </Button>
             ))}
           </div>
-        ) : (
+        ) : name === undefined ? (
           <span />
-        )}
+        ) : null}
 
         <div className="wconvert-segmented flex">
           <Button
             type="button"
-            size="icon-sm"
+            size="icon-xs"
             variant="ghost"
             aria-pressed={width.value === 'own'}
             onClick={() => width.onChange('own')}
@@ -2051,7 +2080,7 @@ function PreviewColumn({
           </Button>
           <Button
             type="button"
-            size="icon-sm"
+            size="icon-xs"
             variant="ghost"
             aria-pressed={width.value === 'narrow'}
             onClick={() => width.onChange('narrow')}
@@ -2062,18 +2091,31 @@ function PreviewColumn({
         </div>
       </div>
 
-      <div
-        className="wconvert-builder__stage"
-        data-width={width.value}
-        style={{ '--wconvert-stage': measure } as CSSProperties}
-      >
-        {entry === null ? (
-          <p className="m-0 text-muted-foreground">{__('Pick a design to see it here.', 'wconvert')}</p>
-        ) : (
-          <MockPage displayType={displayType} backdrop={entry.tokens.backdrop}>
-            <Preview template={entry} step={shown} selected={selected} onSelect={onSelect} />
-          </MockPage>
-        )}
+      {/*
+        **A pane is a head band and a body, and when this column is named it is
+        both.** The stage takes the `.wconvert-pane__body` wrapper the other two
+        panes' contents have, so all three bodies start at the same `y` rather
+        than two agreeing and this one starting at the pane's own top edge.
+        `StructureView` renders no wrapper of its own for this pane — there
+        would be two — and `display: contents` is what makes the wrapper vanish
+        on the three tabs where this is a column beside the panes and not one.
+      */}
+      <div className={name === undefined ? 'contents' : 'wconvert-pane__body'}>
+        <div
+          className="wconvert-builder__stage"
+          data-width={width.value}
+          style={{ '--wconvert-stage': measure } as CSSProperties}
+        >
+          {entry === null ? (
+            <p className="m-0 text-muted-foreground">
+              {__('Pick a design to see it here.', 'wconvert')}
+            </p>
+          ) : (
+            <MockPage displayType={displayType} backdrop={entry.tokens.backdrop}>
+              <Preview template={entry} step={shown} selected={selected} onSelect={onSelect} />
+            </MockPage>
+          )}
+        </div>
       </div>
     </aside>
   );

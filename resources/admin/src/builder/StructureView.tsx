@@ -564,7 +564,7 @@ export function StructureView({
         <div className="wconvert-pane">
           <div className="wconvert-pane__stick">
             <div className="wconvert-pane__head">
-              {__('Structure', 'wconvert')}
+              <span className="wconvert-pane__name">{__('Structure', 'wconvert')}</span>
               {/*
                 **A count and not a title.** What a merchant wants to know from
                 the head of a list is how long it is — and it is the one number
@@ -613,11 +613,18 @@ export function StructureView({
           bottom the same way are three panes a keyboard and a screen reader
           meet in the order the eye does.
         */}
+        {/*
+          **No head of its own: the preview's own bar IS its head.**
+
+          It had both, so this pane wore two stacked bands and its body started
+          36px below the two beside it — the tree's head at 27px, this pair at
+          63. `PreviewColumn` takes a `name` on this tab and renders it as a
+          `.wconvert-pane__name` inside the bar it already drew, which is one
+          band holding a word and two controls rather than a word band above a
+          control band.
+        */}
         <div className="wconvert-pane wconvert-pane--render">
-          <div className="wconvert-pane__stick">
-            <div className="wconvert-pane__head">{__('Preview', 'wconvert')}</div>
-            <div className="wconvert-pane__body">{preview}</div>
-          </div>
+          <div className="wconvert-pane__stick">{preview}</div>
         </div>
 
         <div className="wconvert-pane wconvert-pane--controls">
