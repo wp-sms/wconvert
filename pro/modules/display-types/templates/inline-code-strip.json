@@ -1,21 +1,22 @@
 {
-  "id": "inline-one-line",
-  "name": "One line in the page",
+  "id": "inline-code-strip",
+  "name": "Strip that hands over a code",
   "display_type": "inline",
-  "tier": "free",
+  "tier": "basic",
   "tokens": {
-    "bg": "#f8fafc",
-    "fg": "#1e293b",
-    "muted": "#5a6b80",
-    "accent": "#1d4ed8",
+    "bg": "#eef2ff",
+    "fg": "#1e1b4b",
+    "muted": "#4f46e5",
+    "accent": "#4338ca",
     "accent-fg": "#ffffff",
-    "border": "#dbe3ec",
-    "heading-size": "1.375rem",
-    "radius": "0.625rem",
-    "pad": "1.5rem 1.75rem",
-    "gap": "0.875rem",
+    "border": "#c7d2fe",
+    "heading-size": "1.5rem",
+    "heading-weight": "700",
+    "radius": "0.75rem",
+    "pad": "1.5rem",
+    "gap": "0.75rem",
     "width": "100%",
-    "align": "start",
+    "align": "center",
     "shadow": "none",
     "tracking": "-0.02em"
   },
@@ -28,8 +29,7 @@
             "type": "heading",
             "id": "n1",
             "role": "headline",
-            "level": 2,
-            "text": "Get the round-up"
+            "text": "Ten percent off, on this page only"
           },
           {
             "type": "row",
@@ -37,14 +37,6 @@
               {
                 "type": "field",
                 "id": "n2",
-                "name": "name",
-                "label": "First name",
-                "placeholder": "Alex",
-                "required": false
-              },
-              {
-                "type": "field",
-                "id": "n3",
                 "name": "email",
                 "label": "Email address",
                 "placeholder": "you@example.com",
@@ -52,22 +44,28 @@
               },
               {
                 "type": "button",
-                "id": "n4",
+                "id": "n3",
                 "role": "cta_label",
-                "label": "Join",
+                "label": "Reveal the code",
                 "action": "submit"
               }
             ]
           },
           {
             "type": "consent",
-            "id": "n5",
+            "id": "n4",
             "role": "consent_text",
             "hidden": true,
             "text": "Email me offers and news. See our %s.",
             "link": {
               "label": "Privacy Policy"
             }
+          },
+          {
+            "type": "text",
+            "id": "n5",
+            "role": "fine_print",
+            "text": "One use per customer."
           }
         ]
       },
@@ -75,22 +73,22 @@
         "type": "stack",
         "children": [
           {
-            "type": "icon",
-            "id": "n8",
-            "name": "check"
-          },
-          {
             "type": "heading",
             "id": "n6",
             "role": "success_headline",
-            "level": 2,
-            "text": "You are on the list"
+            "text": "Here it is"
+          },
+          {
+            "type": "code",
+            "id": "n7",
+            "role": "code_value",
+            "text": "PAGE10"
           },
           {
             "type": "text",
-            "id": "n7",
+            "id": "n8",
             "role": "success_body",
-            "text": "The next one goes out on Thursday."
+            "text": "Enter it at the checkout."
           }
         ]
       }

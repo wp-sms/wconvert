@@ -10,7 +10,7 @@
     "accent": "#facc15",
     "accent-fg": "#0f172a",
     "border": "#1e293b",
-    "heading-size": "1rem",
+    "heading-size": "1.125rem",
     "heading-weight": "600",
     "text-size": "0.9375rem",
     "leading": "1.5",
@@ -19,7 +19,7 @@
     "gap": "0.75rem",
     "width": "24rem",
     "align": "start",
-    "shadow": "0 12px 32px rgba(2, 6, 23, 0.5)",
+    "shadow": "0 18px 50px -12px rgba(15, 23, 42, 0.35)",
     "motion": "300ms"
   },
   "tree": {
@@ -40,10 +40,33 @@
           {
             "type": "stack",
             "children": [
-              { "type": "rating", "id": "n2", "value": 5, "role": "rating_text", "text": "1,400 reviews" },
-              { "type": "text", "id": "n3", "role": "body", "text": "“It arrived in two days and it is the only one I use now.”" },
-              { "type": "text", "id": "n4", "role": "fine_print", "text": "Priya, Manchester" },
-              { "type": "button", "id": "n5", "role": "cta_label", "label": "Read the reviews", "action": "link", "href": "/reviews/" }
+              {
+                "type": "rating",
+                "id": "n2",
+                "value": 5,
+                "role": "rating_text",
+                "text": "1,400 reviews"
+              },
+              {
+                "type": "text",
+                "id": "n3",
+                "role": "body",
+                "text": "“It arrived in two days and it is the only one I use now.”"
+              },
+              {
+                "type": "text",
+                "id": "n4",
+                "role": "fine_print",
+                "text": "Priya, Manchester"
+              },
+              {
+                "type": "button",
+                "id": "n5",
+                "role": "cta_label",
+                "label": "Read the reviews",
+                "action": "link",
+                "href": "/reviews/"
+              }
             ]
           }
         ]

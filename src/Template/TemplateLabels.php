@@ -806,14 +806,32 @@ final class TemplateLabels
              * sits at the bottom of the viewport. They open on *Custom* with
              * their own value intact, which is what `choices` means.
              */
+            /*
+             * **Every one of these carries a NEGATIVE spread except the
+             * flattest, and that is the whole difference.** The four offered
+             * before were plain blurs — `0 10px 40px rgba(0,0,0,.18)` — which
+             * spread the blur outward from the full footprint and read as a
+             * grey haze under the panel rather than as a panel lifted off the
+             * page. Pulling the blur back inside the footprint is what makes a
+             * shadow look like light, and it is the single cheapest thing that
+             * separates this library from the specimens it was measured
+             * against.
+             *
+             * They are also tinted toward the ink rather than pure black:
+             * `rgba(15, 23, 42, …)` is the slate the rest of the library is
+             * drawn in, and a neutral-black shadow under a coloured panel
+             * reads as dirt.
+             */
             /* translators: a shadow depth — the design casts no shadow at all. */
             'shadow.none' => __('None', 'wconvert'),
             /* translators: a shadow depth — barely there, the design sits almost flat on the page. */
-            'shadow.0 1px 2px rgba(0, 0, 0, 0.08)' => __('Soft', 'wconvert'),
-            /* translators: a shadow depth — the default. */
-            'shadow.0 10px 40px rgba(0, 0, 0, 0.18)' => __('Normal', 'wconvert'),
-            /* translators: a shadow depth — the design lifts well off the page behind it. */
-            'shadow.0 24px 64px rgba(0, 0, 0, 0.3)' => __('Deep', 'wconvert'),
+            'shadow.0 1px 2px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.1)' => __('Flat', 'wconvert'),
+            /* translators: a shadow depth — the design sits just above the page. */
+            'shadow.0 4px 12px -2px rgba(15, 23, 42, 0.12), 0 12px 32px -8px rgba(15, 23, 42, 0.18)' => __('Raised', 'wconvert'),
+            /* translators: a shadow depth — the default. The design lifts clearly off the page. */
+            'shadow.0 18px 50px -12px rgba(15, 23, 42, 0.35)' => __('Lifted', 'wconvert'),
+            /* translators: a shadow depth — the design floats well above the page behind it. */
+            'shadow.0 32px 80px -16px rgba(15, 23, 42, 0.5)' => __('Floating', 'wconvert'),
         ];
     }
 

@@ -41,6 +41,7 @@ a second copy of both.
 | `designs` | Writes one card per design per step per direction. No browser |
 | `sheet` | Tiles them into six `contact-sheet-{320,768,1440}-{ltr,rtl}.png` |
 | `bench` | Inlines all of the above into `out/bench.html` |
+| `gallery` | Inlines every entry into `out/gallery.html` — the whole library, one page |
 
 ## `VOCABULARY.md` is the point of this directory
 
@@ -61,6 +62,44 @@ constrained act are separated on purpose.
 
 What comes back is checked by `php bin/verify-templates.php`, which diffs the
 raw file against the validator's output node for node.
+
+## Three views, and each answers a different question
+
+| | Answers | Shape |
+|---|---|---|
+| **Contact sheets** | *are these forty designs, or one design forty times?* | six PNGs on the disk of whoever ran the build |
+| **Gallery** | *where can I see the templates?* | a link you can send someone |
+| **Bench** | *what would this look like if I changed that?* | one design, every token live, and a way back out to JSON |
+
+The gallery is the one to reach for first:
+<https://claude.ai/code/artifact/dbb3b0e2-5fd0-403c-9769-b244fb6144be>
+
+Every card is the real entry JSON through the real renderer, in a shadow root,
+in its real container geometry — filterable by Display Type, tier and step.
+Designs are drawn at the width they declare and then **scaled** into the card,
+because re-flowing one into 320px would re-run its own wrapping and show a
+design nobody is ever served.
+
+## The round trip
+
+```bash
+./tools/design-library/build.sh vocabulary     # writes out/VOCABULARY.md
+#   paste that file + a brief into any system, anywhere
+pbpaste | node tools/design-library/build/import.mjs
+composer verify:templates
+./tools/design-library/build.sh designs sheet gallery
+```
+
+`import.mjs` files each entry by its **tier** — free designs to
+`resources/templates/library`, paid ones to the Pro module that owns their
+Display Type — and refuses three mistakes before writing rather than after: an
+entry with no `tree` (which lands as a silent Pro upsell card for the design in
+the file), a bar or slide-in at the free tier (free has no container to mount
+one in), and an id the library already holds.
+
+It does **not** verify. `bin/verify-templates.php` is the authority on whether a
+design survives registration and it names six failures precisely; a second,
+worse summary in front of it would help nobody.
 
 ## The Bench is the return path
 

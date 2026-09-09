@@ -10,7 +10,7 @@
     "accent": "#0f766e",
     "accent-fg": "#ffffff",
     "border": "#e5e7eb",
-    "heading-size": "1.25rem",
+    "heading-size": "1.375rem",
     "heading-weight": "700",
     "tracking": "-0.02em",
     "text-size": "0.9375rem",
@@ -20,7 +20,7 @@
     "gap": "0.75rem",
     "width": "24rem",
     "align": "start",
-    "shadow": "0 12px 32px rgba(15, 23, 42, 0.16)",
+    "shadow": "0 18px 50px -12px rgba(15, 23, 42, 0.35)",
     "motion": "300ms"
   },
   "tree": {
@@ -28,35 +28,75 @@
       {
         "type": "stack",
         "children": [
-          { "type": "eyebrow", "id": "n1", "role": "eyebrow", "text": "The list" },
-          { "type": "heading", "id": "n2", "role": "headline", "text": "One email a week. That is it." },
+          {
+            "type": "eyebrow",
+            "id": "n1",
+            "role": "eyebrow",
+            "text": "The list"
+          },
+          {
+            "type": "heading",
+            "id": "n2",
+            "role": "headline",
+            "text": "One email a week. That is it."
+          },
           {
             "type": "grid",
             "children": [
               {
                 "type": "row",
                 "children": [
-                  { "type": "icon", "id": "n3", "name": "truck" },
-                  { "type": "text", "id": "n4", "role": "body", "text": "Free shipping" }
+                  {
+                    "type": "icon",
+                    "id": "n3",
+                    "name": "truck"
+                  },
+                  {
+                    "type": "text",
+                    "id": "n4",
+                    "role": "body",
+                    "text": "Free shipping"
+                  }
                 ]
               },
               {
                 "type": "row",
                 "children": [
-                  { "type": "icon", "id": "n5", "name": "bolt" },
-                  { "type": "text", "id": "n6", "role": "body", "text": "Early drops" }
+                  {
+                    "type": "icon",
+                    "id": "n5",
+                    "name": "bolt"
+                  },
+                  {
+                    "type": "text",
+                    "id": "n6",
+                    "role": "body",
+                    "text": "Early drops"
+                  }
                 ]
               },
               {
                 "type": "row",
                 "children": [
-                  { "type": "icon", "id": "n7", "name": "check" },
-                  { "type": "text", "id": "n8", "role": "body", "text": "48h returns" }
+                  {
+                    "type": "icon",
+                    "id": "n7",
+                    "name": "check"
+                  },
+                  {
+                    "type": "text",
+                    "id": "n8",
+                    "role": "body",
+                    "text": "48h returns"
+                  }
                 ]
               }
             ]
           },
-          { "type": "divider", "id": "n9" },
+          {
+            "type": "divider",
+            "id": "n9"
+          },
           {
             "type": "field",
             "id": "n10",
@@ -65,24 +105,51 @@
             "placeholder": "you@example.com",
             "required": true
           },
-          { "type": "button", "id": "n11", "role": "cta_label", "label": "Join the list", "action": "submit" },
+          {
+            "type": "button",
+            "id": "n11",
+            "role": "cta_label",
+            "label": "Join the list",
+            "action": "submit"
+          },
           {
             "type": "consent",
             "id": "n12",
             "role": "consent_text",
             "hidden": true,
             "text": "Email me offers and news. See our %s.",
-            "link": { "label": "Privacy Policy" }
+            "link": {
+              "label": "Privacy Policy"
+            }
           },
-          { "type": "text", "id": "n13", "role": "fine_print", "text": "Unsubscribe in one click, any time." }
+          {
+            "type": "text",
+            "id": "n13",
+            "role": "fine_print",
+            "text": "Unsubscribe in one click, any time."
+          }
         ]
       },
       {
         "type": "stack",
         "children": [
-          { "type": "icon", "id": "n14", "name": "check" },
-          { "type": "heading", "id": "n15", "role": "success_headline", "text": "You are on the list" },
-          { "type": "text", "id": "n16", "role": "success_body", "text": "The first one lands on Thursday." }
+          {
+            "type": "icon",
+            "id": "n14",
+            "name": "check"
+          },
+          {
+            "type": "heading",
+            "id": "n15",
+            "role": "success_headline",
+            "text": "You are on the list"
+          },
+          {
+            "type": "text",
+            "id": "n16",
+            "role": "success_body",
+            "text": "The first one lands on Thursday."
+          }
         ]
       }
     ]

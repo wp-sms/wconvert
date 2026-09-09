@@ -10,12 +10,14 @@
     "accent": "#0f172a",
     "accent-fg": "#ffffff",
     "border": "#e2e8f0",
-    "heading-size": "1.375rem",
+    "heading-size": "1.5rem",
     "radius": "0.5rem",
     "pad": "1.5rem",
     "gap": "0.875rem",
     "width": "34rem",
-    "align": "start"
+    "align": "start",
+    "shadow": "none",
+    "tracking": "-0.02em"
   },
   "tree": {
     "steps": [
@@ -70,6 +72,11 @@
       {
         "type": "stack",
         "children": [
+          {
+            "type": "icon",
+            "id": "n9",
+            "name": "check"
+          },
           {
             "type": "heading",
             "id": "n7",

@@ -24,7 +24,9 @@
       "preview_url": "https://wconvert.com/designs/bar-with-a-field/",
       "facets": {
         "shape": "row",
-        "captures": ["email"],
+        "captures": [
+          "email"
+        ],
         "has_image": false
       }
     },
@@ -48,7 +50,9 @@
       "preview_url": "https://wconvert.com/designs/corner-card/",
       "facets": {
         "shape": "stack",
-        "captures": ["email"],
+        "captures": [
+          "email"
+        ],
         "has_image": false
       }
     },
@@ -60,7 +64,9 @@
       "preview_url": "https://wconvert.com/designs/corner-card-with-a-picture/",
       "facets": {
         "shape": "split",
-        "captures": ["email"],
+        "captures": [
+          "email"
+        ],
         "has_image": true
       }
     },
@@ -84,7 +90,10 @@
       "preview_url": "https://wconvert.com/designs/two-column-offer/",
       "facets": {
         "shape": "split",
-        "captures": ["name", "email"],
+        "captures": [
+          "name",
+          "email"
+        ],
         "has_image": true
       }
     },
@@ -97,6 +106,142 @@
       "facets": {
         "shape": "row",
         "captures": [],
+        "has_image": false
+      }
+    },
+    {
+      "id": "bar-code",
+      "name": "Bar that hands over a code",
+      "display_type": "floating_bar",
+      "tier": "basic",
+      "preview_url": "https://wconvert.com/designs/bar-that-hands-over-a-code/",
+      "facets": {
+        "shape": "row",
+        "captures": [
+          "email"
+        ],
+        "has_image": false
+      }
+    },
+    {
+      "id": "bar-review",
+      "name": "Bar with the stars",
+      "display_type": "floating_bar",
+      "tier": "basic",
+      "preview_url": "https://wconvert.com/designs/bar-with-the-stars/",
+      "facets": {
+        "shape": "row",
+        "captures": [],
+        "has_image": false
+      }
+    },
+    {
+      "id": "bar-two-field",
+      "name": "Bar that asks twice",
+      "display_type": "floating_bar",
+      "tier": "basic",
+      "preview_url": "https://wconvert.com/designs/bar-that-asks-twice/",
+      "facets": {
+        "shape": "row",
+        "captures": [
+          "email",
+          "name"
+        ],
+        "has_image": false
+      }
+    },
+    {
+      "id": "slide-in-code",
+      "name": "Corner card with a code",
+      "display_type": "slide_in",
+      "tier": "basic",
+      "preview_url": "https://wconvert.com/designs/corner-card-with-a-code/",
+      "facets": {
+        "shape": "stack",
+        "captures": [
+          "email"
+        ],
+        "has_image": false
+      }
+    },
+    {
+      "id": "slide-in-nudge",
+      "name": "Corner nudge",
+      "display_type": "slide_in",
+      "tier": "basic",
+      "preview_url": "https://wconvert.com/designs/corner-nudge/",
+      "facets": {
+        "shape": "row",
+        "captures": [],
+        "has_image": false
+      }
+    },
+    {
+      "id": "slide-in-benefits",
+      "name": "Corner card with reasons",
+      "display_type": "slide_in",
+      "tier": "basic",
+      "preview_url": "https://wconvert.com/designs/corner-card-with-reasons/",
+      "facets": {
+        "shape": "stack",
+        "captures": [
+          "email"
+        ],
+        "has_image": false
+      }
+    },
+    {
+      "id": "popup-two-channel",
+      "name": "Email and phone",
+      "display_type": "popup",
+      "tier": "basic",
+      "preview_url": "https://wconvert.com/designs/email-and-phone/",
+      "facets": {
+        "shape": "stack",
+        "captures": [
+          "email",
+          "phone"
+        ],
+        "has_image": false
+      }
+    },
+    {
+      "id": "popup-editorial",
+      "name": "Editorial split",
+      "display_type": "popup",
+      "tier": "basic",
+      "preview_url": "https://wconvert.com/designs/editorial-split/",
+      "facets": {
+        "shape": "split",
+        "captures": [
+          "email"
+        ],
+        "has_image": true
+      }
+    },
+    {
+      "id": "popup-flash",
+      "name": "Flash over a picture",
+      "display_type": "popup",
+      "tier": "basic",
+      "preview_url": "https://wconvert.com/designs/flash-over-a-picture/",
+      "facets": {
+        "shape": "stack",
+        "captures": [],
+        "has_image": false
+      }
+    },
+    {
+      "id": "inline-code-strip",
+      "name": "Strip that hands over a code",
+      "display_type": "inline",
+      "tier": "basic",
+      "preview_url": "https://wconvert.com/designs/strip-that-hands-over-a-code/",
+      "facets": {
+        "shape": "stack",
+        "captures": [
+          "email"
+        ],
         "has_image": false
       }
     }

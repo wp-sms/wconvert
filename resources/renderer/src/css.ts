@@ -141,10 +141,59 @@ export const SHADOW_CSS = [
 
   // `flex-basis` plus `wrap` is what stacks the two panes on a narrow screen,
   // with no media query and no container query to keep in step.
-  `.wc-split{display:flex;flex-wrap:wrap;gap:var(--wc-gap,.75rem);align-items:center}`,
-  `.wc-pane{flex:1 1 12rem;min-inline-size:0}`,
-  `.wc-pane:first-child{flex-grow:var(--wc-ratio,.5)}`,
-  `.wc-pane:last-child{flex-grow:calc(1 - var(--wc-ratio,.5))}`,
+  /*
+   * ==========================================================================
+   * `stretch` AND NOT `center`, BECAUSE A PANE HOLDING A PICTURE IS A SIDE.
+   * ==========================================================================
+   * Centring left the shorter pane floating with dead space above and below
+   * it — and the shorter pane is almost always the picture, so every
+   * side-by-side design in the library had a band of panel colour along the
+   * top and bottom of its own artwork. It reads as an image that failed to
+   * load into its slot.
+   *
+   * Stretch makes both panes the height of the taller, which is what "side by
+   * side" means. When the split WRAPS at a narrow width there is one item per
+   * line, so this changes nothing there.
+   */
+  `.wc-split{display:flex;flex-wrap:wrap;gap:var(--wc-gap,.75rem);align-items:stretch}`,
+  /*
+   * A pane centres its own contents against the taller pane beside it.
+   *
+   * This is the other half of the `stretch` above, and without it that change
+   * traded one defect for another: the panes became equal height, so the
+   * SHORTER one's content sat at the top with the difference as dead space
+   * under it — a column of text ending two-thirds of the way down a panel
+   * whose other half is a full-bleed picture.
+   *
+   * Centring is what "side by side" means when the two sides are different
+   * lengths, and it is what every specimen of this genre does. A pane holding
+   * nothing but a picture is unaffected: the picture already fills it.
+   */
+  `.wc-pane{flex:1 1 12rem;min-inline-size:0;display:flex;flex-direction:column;justify-content:center}`,
+  /*
+   * ==========================================================================
+   * THE GROWS ARE SCALED BY TEN, AND THAT IS A BUG FIX RATHER THAN A STYLE.
+   * ==========================================================================
+   * `flex-grow` distributes FREE SPACE, and a value below 1 distributes only
+   * that fraction of it. Side by side the two grows sum to 1 and the line is
+   * consumed exactly — which is why this was right for as long as a pane drew
+   * nothing. Wrapped, each pane is alone on its line with a grow of `.35` or
+   * `.5`, so it takes a third or a half of the space beyond its `12rem` basis
+   * and stops: measured at 320px, `split-hero` drew two 228px panes in a 264px
+   * row and `inline-split` two of 209 and 223 in 240.
+   *
+   * **It was invisible until a pane had a ground.** A transparent pane that is
+   * 40px short of the line looks like a pane; a `panel` inside one is a dark
+   * box with a stripe of the design's own background down its edge (ADR 0062).
+   *
+   * Ten, because only the RATIO between two grows matters once their sum
+   * clears 1 — so `3.5 : 6.5` divides a shared line exactly as `.35 : .65`
+   * did, and either alone now fills its own. `max()` keeps that true for a
+   * design shipping a fraction below `.1`, which `choices` permits and no
+   * shipped design uses (ADR 0054: an offer, not a limit).
+   */
+  `.wc-pane:first-child{flex-grow:max(1,calc(var(--wc-ratio,.5)*10))}`,
+  `.wc-pane:last-child{flex-grow:max(1,calc((1 - var(--wc-ratio,.5))*10))}`,
 
   /*
    * **A display face is the second thing a reference-class design decides**,
@@ -154,8 +203,12 @@ export const SHADOW_CSS = [
    * design that sets only `font` is unchanged to the byte, and one that sets
    * both gets a display face over body text without saying the body stack
    * twice.
+   *
+   * `1.12` and not `1.2`, which is a BODY leading: a display heading set at it
+   * looks slack, and the bigger `heading-size` gets the worse it reads — which
+   * is the direction both this token and the library moved.
    */
-  `.wc-heading{margin:0;font-family:var(--wc-heading-font,var(--wc-font,system-ui,sans-serif));font-size:var(--wc-heading-size,1.5rem);font-weight:var(--wc-heading-weight,700);letter-spacing:var(--wc-tracking,normal);line-height:1.2}`,
+  `.wc-heading{margin:0;font-family:var(--wc-heading-font,var(--wc-font,system-ui,sans-serif));font-size:var(--wc-heading-size,1.5rem);font-weight:var(--wc-heading-weight,700);letter-spacing:var(--wc-tracking,normal);line-height:1.12}`,
   /*
    * **A sub-heading is smaller, or `level` is a control that does nothing.**
    * `render.ts` draws an `h3` for `level: 2` and an `h2` otherwise, and both
@@ -172,7 +225,10 @@ export const SHADOW_CSS = [
    */
   `h3.wc-heading{font-size:calc(var(--wc-heading-size,1.5rem)*.72)}`,
   `.wc-text{margin:0}`,
-  `[data-role=fine_print]{font-size:.8125em;color:var(--wc-muted,#6b7280)}`,
+  // `.8125em` is small body text, not fine print — it sat close enough to the
+  // body copy that a design with both read as two paragraphs of equal weight.
+  // `.6875em` is the size this genre actually sets a consent line at.
+  `[data-role=fine_print]{font-size:.6875em;line-height:1.5;color:var(--wc-muted,#6b7280)}`,
 
   /*
    * ==========================================================================
@@ -291,9 +347,44 @@ export const SHADOW_CSS = [
   // `em` throughout, so an icon beside body text is the size of body text and
   // one in a `grid` cell scales with whatever the design set.
   `.wc-icon{display:inline-flex;color:var(--wc-accent,#2563eb)}`,
+  /*
+   * ==========================================================================
+   * A GLYPH IN A COLUMN FOLLOWS THE DESIGN'S OWN ALIGNMENT, OR IT SITS ALONE
+   * ON THE LEFT OF A CENTRED DESIGN.
+   * ==========================================================================
+   * `.wc-stack` is `flex-direction: column`, so its default `align-items:
+   * stretch` makes an `inline-flex` icon full width — and the glyph then draws
+   * at the START of that width regardless of `text-align`. On a centred design
+   * the tick sat hard left under a centred headline, which reads as a broken
+   * layout rather than as a missing rule.
+   *
+   * `--wc-align` already holds exactly `start`, `center` or `end`, which are
+   * the three values `align-self` wants — so this is the token doing the job
+   * it was named for, with nothing new to declare.
+   *
+   * **Scoped to `.wc-stack` on purpose.** In a `row` the cross axis is
+   * vertical, where `align-items: center` is already right and honouring
+   * `--wc-align` would top-align every icon in a floating bar.
+   *
+   * The circular image has the same shape — a fixed size in a stretch
+   * container — and is covered by the same rule.
+   */
+  `.wc-stack>.wc-icon,.wc-stack>.wc-image-circle{align-self:var(--wc-align,start)}`,
   `.wc-glyph{inline-size:1.25em;block-size:1.25em}`,
   `.wc-link{color:inherit}`,
   `.wc-image{display:block;inline-size:100%;block-size:auto;object-fit:cover;border-radius:var(--wc-radius,.5rem)}`,
+  /*
+   * A picture that IS one side of a split fills that side.
+   *
+   * `block-size: auto` leaves it at its natural aspect inside a pane the rule
+   * above just made full height, so the stretch bought nothing and the dead
+   * band stayed. `:only-child` is what scopes this to a pane that is nothing
+   * BUT the picture — an image sitting above text in a pane keeps its own
+   * aspect, which is what that arrangement wants.
+   *
+   * `object-fit` is already `cover`, so filling crops rather than distorts.
+   */
+  `.wc-pane>.wc-image:only-child{block-size:100%}`,
   /*
    * ==========================================================================
    * A CIRCLE, BECAUSE `--wc-radius` IS GLOBAL AND AN AVATAR IS NOT.
@@ -332,18 +423,81 @@ export const SHADOW_CSS = [
    */
   `.wc-field{display:flex;flex-direction:column;gap:.25rem;text-align:start}`,
   `.wc-row>.wc-field{flex:1 1 12rem}`,
-  `.wc-label{font-size:.875em;color:var(--wc-muted,#6b7280)}`,
   /*
-   * **A field on a dark panel needs a ground of its own.** The input took the
-   * design's `bg`, which was right while there was one surface and is wrong the
-   * moment a `panel` paints a second: a white form on a navy panel had a navy
-   * input with white text in it, and the one control a visitor MUST find looked
-   * like the panel it sits on. `input-bg` falls back to `bg`, so every design
-   * shipped before this renders identically.
+   * ==========================================================================
+   * A WRAPPED ROW FOLLOWS THE DESIGN'S OWN ALIGNMENT.
+   * ==========================================================================
+   * `.wc-row` wraps by construction, and a field beside a button needs about
+   * 20rem to stay on one line — so in a narrower panel the button wraps onto
+   * its own line and, sized to its content, sat there as a small stray control
+   * under a full-width field, hard LEFT in a centre-aligned design.
+   *
+   * `flex-grow: 1` was the first fix and it was wrong: it also grows a button
+   * that did NOT wrap, so every floating bar's CTA swelled to fill half the
+   * strip. A bar's button must hug its label.
+   *
+   * `--wc-align` already holds exactly `start`, `center` or `end` — the three
+   * values `justify-content` wants — so a centred design centres its wrapped
+   * button and a bar, which aligns `start`, is untouched.
    */
-  `.wc-input{inline-size:100%;font:inherit;color:inherit;background:var(--wc-input-bg,var(--wc-bg,#fff));border:1px solid var(--wc-border,#e5e7eb);border-radius:var(--wc-radius,.5rem);padding-block:.625rem;padding-inline:.75rem}`,
+  `.wc-row{justify-content:var(--wc-align,start)}`,
+  `.wc-label{font-size:.8125em;font-weight:500;color:var(--wc-muted,#6b7280)}`,
+  /*
+   * ==========================================================================
+   * A LABEL INSIDE A ROW IS READ, NOT SEEN.
+   * ==========================================================================
+   * `.wc-field` stacks its label above its input, which is right in a column
+   * and wrong in a `row`: a floating bar is one strip of page furniture, and
+   * stacking "Email address" above the box doubled its height and put a second
+   * competing line of text next to the offer. Every bar in the library looked
+   * like a form that had fallen into a strip.
+   *
+   * **Hidden from the eye and not from the accessibility tree.** The label
+   * still names its input for a screen reader and still takes the click; the
+   * placeholder is what a sighted visitor reads, which is what this genre does
+   * in a horizontal form and only there.
+   */
+  `.wc-row>.wc-field>.wc-label{position:absolute;inline-size:1px;block-size:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}`,
+  /*
+   * ==========================================================================
+   * AN INSET RING RATHER THAN A BORDER, AND IT IS NOT A STYLISTIC PREFERENCE.
+   * ==========================================================================
+   * A `1px solid` border is drawn OUTSIDE the padding box, so on a design
+   * whose `bg` is dark the field was a dark box with a dark hairline round it
+   * — invisible, on the one control a visitor has to find. The ring is an
+   * inset shadow, so it composites over whatever ground the field is on and
+   * reads on both.
+   *
+   * **The ring and `input-bg` are the same defect fixed from two ends, and
+   * both are kept.** The ring makes the field's EDGE read on an unknown
+   * ground; `input-bg` decides what that ground is, falling back to `bg` so
+   * every design shipped before it renders identically (ADR 0062). Neither
+   * replaces the other: a light field on a dark panel needs the token, and a
+   * field on a ground nobody predicted needs the ring.
+   *
+   * `color-mix` is not reachable here — the ring has to work against an
+   * unknown ground — so it is a translucent black plus a translucent white,
+   * one of which is always the visible one.
+   */
+  `.wc-input{inline-size:100%;font:inherit;color:inherit;background:var(--wc-input-bg,var(--wc-bg,#fff));border:0;border-radius:var(--wc-radius,.5rem);box-shadow:inset 0 0 0 1px var(--wc-border,#e5e7eb);padding-block:.75rem;padding-inline:.875rem}`,
 
-  `.wc-button{display:inline-block;font:inherit;font-weight:600;text-align:center;text-decoration:none;cursor:pointer;border:0;border-radius:var(--wc-radius,.5rem);background:var(--wc-accent,#2563eb);color:var(--wc-accent-fg,#fff);padding-block:.625rem;padding-inline:1.25rem;transition:opacity var(--wc-motion,200ms) ease}`,
+
+  /*
+   * ==========================================================================
+   * THE CONVERTING CONTROL IS THE HEAVIEST THING ON THE PANEL, OR IT IS NOT A
+   * CALL TO ACTION.
+   * ==========================================================================
+   * This was `600` at `.625rem` of block padding, which is the weight and the
+   * height of a form control rather than of the one element the whole design
+   * exists to get pressed. Against a specimen of the genre it read as a
+   * secondary button in every design at once — and no token could fix it,
+   * because neither weight nor padding is one.
+   *
+   * `700` and `.8125rem`, which is the shape this genre actually uses. The
+   * inline padding stays generous for the same reason it always was: a label
+   * that says what happens ("Send my code") is longer than "Submit".
+   */
+  `.wc-button{display:inline-block;font:inherit;font-weight:700;text-align:center;text-decoration:none;cursor:pointer;border:0;border-radius:var(--wc-radius,.5rem);background:var(--wc-accent,#2563eb);color:var(--wc-accent-fg,#fff);padding-block:.8125rem;padding-inline:1.25rem;transition:opacity var(--wc-motion,200ms) ease}`,
   /*
    * ==========================================================================
    * THE ONLY MOTION INSIDE THE BOUNDARY, AND IT IS ON THE CONTROL THAT MATTERS.
@@ -372,7 +526,10 @@ export const SHADOW_CSS = [
   // the way out, and it must not be able to make the reason its form was
   // refused invisible. So the colour is a literal and not a token.
   `.wc-error{margin:0;color:#b91c1c;font-size:.875em;font-weight:600}`,
-  `.wc-input[aria-invalid]{border-color:#b91c1c}`,
+  // Follows the ring above. `border-color` styled a border this no longer
+  // draws, so the invalid state was silently invisible the moment the field
+  // changed shape — which is the one state that must not be.
+  `.wc-input[aria-invalid]{box-shadow:inset 0 0 0 2px #b91c1c}`,
 
   // Container chrome, not vocabulary: a template cannot omit the way out.
   `.wc-close{position:absolute;inset-block-start:.5rem;inset-inline-end:.5rem;inline-size:2rem;block-size:2rem;font:inherit;font-size:1.25rem;line-height:1;cursor:pointer;color:var(--wc-muted,#6b7280);background:transparent;border:0;border-radius:var(--wc-radius,.5rem)}`,

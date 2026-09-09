@@ -339,3 +339,15 @@ admission test ADR 0061 set for a vocabulary member.
   the tree.
 - **Translation is untouched.** A bag adds no string, and node ids stay the
   translation key.
+- **It made a latent `split` defect visible, and the fix is the renderer's.**
+  `.wc-pane`'s grows were `.35` and `.65`, which sum to 1 and divide a shared
+  line exactly — and which, once the panes WRAP, leave each one alone on its
+  line taking only that fraction of the free space beyond its `12rem` basis.
+  Measured at 320px: `split-hero` drew two 228px panes in a 264px row,
+  `inline-split` two of 209 and 223 in 240.
+
+  **Every split design in the library had this and nobody could see it**, because
+  a pane that draws nothing cannot look short. A `panel` inside one is a dark box
+  with a stripe of the design's own background down its edge, which is how it was
+  found. The grows are scaled by ten and floored at 1, so the ratio still divides
+  a shared line and either pane fills its own.

@@ -70,9 +70,10 @@ const LABELS: TemplateLabels = {
     'align.center': 'Centre',
     'align.end': 'Right',
     'shadow.none': 'None',
-    'shadow.0 1px 2px rgba(0, 0, 0, 0.08)': 'Soft',
-    'shadow.0 10px 40px rgba(0, 0, 0, 0.18)': 'Normal',
-    'shadow.0 24px 64px rgba(0, 0, 0, 0.3)': 'Deep',
+    'shadow.0 1px 2px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.1)': 'Flat',
+    'shadow.0 4px 12px -2px rgba(15, 23, 42, 0.12), 0 12px 32px -8px rgba(15, 23, 42, 0.18)': 'Raised',
+    'shadow.0 18px 50px -12px rgba(15, 23, 42, 0.35)': 'Lifted',
+    'shadow.0 32px 80px -16px rgba(15, 23, 42, 0.5)': 'Floating',
   },
   tokens: {
     bg: 'Background',
@@ -699,9 +700,9 @@ describe('a shadow', () => {
     look({ design: {} });
 
     // Checked on the manifest's own fallback, which is the common case.
-    expect(screen.getByRole('radio', { name: 'Normal' })).toBeChecked();
+    expect(screen.getByRole('radio', { name: 'Lifted' })).toBeChecked();
     expect(screen.getByRole('radio', { name: 'None' })).toBeInTheDocument();
-    expect(screen.getByRole('radio', { name: 'Deep' })).toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: 'Floating' })).toBeInTheDocument();
   });
 
   /**

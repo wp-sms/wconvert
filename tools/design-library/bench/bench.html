@@ -85,12 +85,31 @@
     grid-column: 1 / -1;
     display: flex;
     flex-wrap: wrap;
-    gap: .5rem;
+    gap: .4rem .75rem;
     align-items: center;
     padding: .5rem .75rem;
     background: var(--panel);
     border-block-end: 1px solid var(--line);
   }
+
+  /*
+    The theme switcher is a SELECT and not a chip group. It was chips, which
+    was right at four presets and wrong at twelve: thirteen chips wrapped onto
+    a second row and pushed Reset tokens onto a line of its own, so the toolbar
+    read as two unrelated bars. A control that enumerates twelve things is a
+    menu.
+  */
+  header label {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    font-size: 11px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  header select { inline-size: auto; min-inline-size: 8rem; }
 
   h1 {
     font-size: 13px;
@@ -117,14 +136,49 @@
 
   .spacer { margin-inline-start: auto; }
 
+  /*
+    `justify-content: safe center` and NOT `place-items: center`. The page is a
+    fixed viewport width — 1440px at the widest — and the stage column is
+    whatever is left after the panel. Ordinary centring overflows equally on
+    both sides, and the overflow on the START side is unreachable by scrolling,
+    so the 1440 preview was clipped down its left edge with no way to see it.
+    `safe` collapses to `start` exactly when it would otherwise overflow.
+  */
   .stage-wrap {
     overflow: auto;
     padding: 1.5rem;
     display: grid;
-    place-items: start center;
+    align-content: start;
+    justify-content: safe center;
     background:
       repeating-conic-gradient(var(--stage) 0 25%, transparent 0 50%) 50% / 20px 20px;
   }
+
+  /*
+    ==========================================================================
+    THE FILLER, THE BACKDROP AND THE PANEL SHARE ONE GRID CELL.
+    ==========================================================================
+    That is what lets all three of these be true at once: the panel floats over
+    the page rather than under it, the page GROWS to whatever the panel needs
+    instead of clipping it, and the panel keeps a definite containing block so
+    its own `min(width, 100%)` has something real to resolve against.
+
+    The last one is the subtle one. An absolutely positioned box is
+    shrink-to-fit, so the percentage resolved against a width derived from the
+    panel's own content — and `split-hero`, which asks for 38rem, collapsed to
+    a stack. `capture-designs.mjs` carries the same note for the same reason.
+  */
+  #page.wc-container-popup { display: grid; padding: 2rem 1rem; }
+  /*
+    The backdrop is excluded from the shared cell on purpose. An absolutely
+    positioned grid child WITH a definite `grid-area` takes that area as its
+    containing block, so `inset: 0` stopped at the content box and left the
+    page's own padding uncovered — a white band across the top of every popup
+    preview. Left as `auto` it resolves against the grid container's padding
+    box, which is the whole page.
+  */
+  #page.wc-container-popup > :not(.backdrop) { grid-area: 1 / 1; }
+  #page.wc-container-popup > .wc-box { place-self: center; }
 
   /* The page the design is served on. Its width IS the viewport switcher. */
   #page {
@@ -136,14 +190,23 @@
     transition: inline-size 160ms ease;
   }
 
-  #page .filler { padding: 1.25rem; color: #64748b; font: 14px/1.7 Georgia, serif; }
-  #page .filler h2 { color: #1e293b; font-size: 20px; margin: 0 0 .5rem; }
+  #page .filler { padding: 1.5rem 1.75rem; color: #64748b; font: 15px/1.75 Georgia, 'Times New Roman', serif; }
+  #page .filler h2 { color: #1e293b; font-size: 22px; line-height: 1.2; margin: 0 0 .6rem; }
+  #page .filler p { margin: 0 0 .8rem; max-width: 60ch; }
+
+  /*
+    The backdrop is a LAYER over the page, not the page's own background.
+    Painting it on `#page` meant a popup preview was a flat grey rectangle with
+    no page in it at all — so nothing conveyed how big the design is relative
+    to what it covers, which is the one thing a stage exists to show.
+  */
+  #page .backdrop { position: absolute; inset: 0; }
 
   aside {
     overflow: auto;
     background: var(--panel);
     border-inline-start: 1px solid var(--line);
-    padding: .75rem;
+    padding: .875rem;
   }
 
   aside h2 {
@@ -156,9 +219,23 @@
 
   aside h2:first-child { margin-block-start: 0; }
 
-  .token { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: .4rem; align-items: center; margin-block-end: .3rem; }
+  /*
+    A fixed track for the swatch or the menu, so every text box on the panel
+    starts and ends on the same two lines. It was `display: flex`, which sized
+    each control to its own content — so a row with a colour swatch, a row with
+    a font menu and a row with neither all had their text box in a different
+    place, and twenty-two of them read as a ragged edge rather than a list.
+  */
+  .token {
+    display: grid;
+    grid-template-columns: 6.5rem minmax(0, 1fr);
+    gap: .4rem;
+    align-items: center;
+    margin-block-end: .35rem;
+  }
   .token label { font-size: 11px; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; }
-  .token .pair { display: flex; gap: .25rem; min-width: 0; }
+  .token .pair { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr); gap: .3rem; min-width: 0; align-items: center; }
+  .token .pair--plain { grid-template-columns: minmax(0, 1fr); }
 
   input[type='text'], textarea, select {
     font-family: var(--mono);
@@ -173,9 +250,9 @@
     color: var(--ink);
   }
 
-  input[type='color'] { inline-size: 1.8rem; block-size: 1.7rem; padding: 0; border: 1px solid var(--line); border-radius: 5px; background: none; flex: 0 0 auto; }
+  input[type='color'] { inline-size: 100%; block-size: 1.7rem; padding: 0; border: 1px solid var(--line); border-radius: 5px; background: none; }
 
-  textarea { font-size: 11px; line-height: 1.45; resize: vertical; }
+  textarea { font-size: 11px; line-height: 1.5; resize: vertical; min-block-size: 16rem; }
 
   /* The token's own name is a name, not a value, so it stays in the UI face. */
   .token label { font-family: var(--ui); }
@@ -222,7 +299,8 @@
   <div class="group" id="viewports"></div>
   <div class="group" id="steps"></div>
   <div class="group" id="directions"></div>
-  <div class="group" id="themes"></div>
+
+  <label>Theme <select id="themes"></select></label>
 
   <div class="spacer"></div>
   <button class="act" id="reset">Reset tokens</button>
@@ -278,10 +356,16 @@
         page. Absolutely positioning it took it out of the stage's grid and
         pinned the popup to the left edge instead of centring it.
       */
-      popup: {
-        page: 'display:grid;place-items:center;background:var(--wc-bench-backdrop)',
-        box: 'max-inline-size:100%',
-      },
+      /*
+        ONE grid cell, holding the filler, the backdrop and the panel — see
+        `.wc-container-popup` in the stylesheet. Absolute centring was the
+        first attempt and it was wrong twice: an absolutely positioned box is
+        shrink-to-fit, so the panel's own `min(width, 100%)` resolved against
+        its own content and `split-hero` collapsed to a stack; and it took the
+        panel out of flow, so a design taller than the page was clipped top and
+        bottom with nowhere to grow.
+      */
+      popup: { page: '', box: '' },
       inline: { page: '', box: 'padding:1.5rem 1rem' },
       floating_bar: {
         page: '',
@@ -342,15 +426,27 @@
       segmented('directions', ['ltr', 'rtl'], function (v) { return v.toUpperCase(); },
         function () { return state.direction; }, function (v) { state.direction = v; });
 
-      segmented('themes', ['—'].concat(themes.map(function (t) { return t.id; })),
-        function (v) { return v === '—' ? 'own' : themes.filter(function (t) { return t.id === v; })[0].label; },
-        function () { return state.theme || '—'; },
-        function (v) {
-          state.theme = v === '—' ? null : v;
-          state.tokens = Object.assign({}, state.entry.tokens,
-            v === '—' ? {} : themes.filter(function (t) { return t.id === v; })[0].tokens);
-          drawControls();
-        });
+      var picker = document.getElementById('themes');
+
+      picker.replaceChildren();
+
+      [{ id: '', label: 'The design\u2019s own' }].concat(themes).forEach(function (theme) {
+        var option = document.createElement('option');
+
+        option.value = theme.id;
+        option.textContent = theme.label;
+        option.selected = (state.theme || '') === theme.id;
+        picker.appendChild(option);
+      });
+
+      picker.onchange = function () {
+        var chosen = themes.filter(function (t) { return t.id === picker.value; })[0];
+
+        state.theme = chosen ? chosen.id : null;
+        state.tokens = Object.assign({}, state.entry.tokens, chosen ? chosen.tokens : {});
+        drawControls();
+        draw();
+      };
     }
 
     // -------------------------------------------------------------- controls
@@ -388,6 +484,12 @@
         pair.className = 'pair';
         label.textContent = name;
         label.title = name;
+
+        var rich = isHex(value) || manifest.choices[name] !== undefined;
+
+        if (!rich) {
+          pair.className = 'pair pair--plain';
+        }
 
         var text = document.createElement('input');
 
@@ -444,28 +546,54 @@
       var container = CONTAINERS[state.container] || CONTAINERS.popup;
 
       page.dir = state.direction;
+      // The class the stylesheet's own container rules key off. The inline
+      // `cssText` below carries what CONTAINERS declares; the class carries
+      // what needs a real selector, which is anything about the page's
+      // CHILDREN — a descendant is not reachable from an inline style.
+      page.className = 'wc-container-' + state.container;
       page.style.cssText =
-        'position:relative;inline-size:' + state.viewport + 'px;block-size:' +
-        (state.container === 'inline' ? 'auto' : '620px') + ';' + container.page;
-      page.style.setProperty('--wc-bench-backdrop', state.tokens.backdrop || manifest.tokens.backdrop);
+        'position:relative;inline-size:' + state.viewport + 'px;min-block-size:' +
+        (state.container === 'inline' ? '0' : '620px') + ';' + container.page;
       page.replaceChildren();
 
-      // Something for the design to sit over, so a bar and a slide-in are
-      // judged against a page rather than against nothing.
-      if (state.container !== 'popup') {
-        var filler = document.createElement('div');
+      /*
+        EVERY container gets a page underneath, popup included. It used to be
+        skipped for popups, on the theory that a backdrop covers it — which is
+        exactly backwards: with nothing behind it the preview was a flat grey
+        rectangle, and how much of a page a popup covers is the single thing a
+        stage exists to show.
+      */
+      var filler = document.createElement('div');
 
-        filler.className = 'filler';
-        filler.innerHTML =
-          '<h2>The page underneath</h2><p>A slide-in may be ignored and a floating bar sits at ' +
-          'the edge of something the visitor is still reading. Neither is judged fairly against ' +
-          'an empty rectangle.</p><p>An inline design sits in this flow, where the block was placed.</p>';
-        page.appendChild(filler);
+      filler.className = 'filler';
+      filler.innerHTML =
+        '<h2>The page underneath</h2>' +
+        '<p>A popup covers this. A floating bar sits at the edge of it and a slide-in in the ' +
+        'corner of it, both while the visitor is still reading. None of the three is judged ' +
+        'fairly against an empty rectangle.</p>' +
+        '<p>An inline design sits in this flow, where the merchant placed the block \u2014 so it ' +
+        'covers nothing at all, and is the only one of the four a visitor never has to dismiss.</p>';
+      page.appendChild(filler);
+
+      // The backdrop is a LAYER over that page rather than the page's own
+      // ground, so the words stay visible through it at whatever alpha the
+      // design's `backdrop` token carries.
+      if (state.container === 'popup') {
+        var backdrop = document.createElement('div');
+
+        backdrop.className = 'backdrop';
+        backdrop.style.background = state.tokens.backdrop || manifest.tokens.backdrop;
+        page.appendChild(backdrop);
       }
 
       var box = document.createElement('div');
 
+      box.className = 'wc-box';
       box.style.cssText = container.box;
+
+      if (state.container === 'popup') {
+        box.style.inlineSize = 'min(' + (state.tokens.width || manifest.tokens.width) + ', 100%)';
+      }
 
       var host = document.createElement('div');
       var root = host.attachShadow({ mode: 'open' });

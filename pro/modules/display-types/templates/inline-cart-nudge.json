@@ -10,9 +10,9 @@
     "accent": "#1c1917",
     "accent-fg": "#fafaf9",
     "border": "#e7e5e4",
-    "heading-size": "1.125rem",
+    "heading-size": "1.1875rem",
     "heading-weight": "600",
-    "tracking": "normal",
+    "tracking": "-0.01em",
     "text-size": "0.9375rem",
     "leading": "1.4",
     "radius": "0.5rem",
@@ -28,15 +28,35 @@
       {
         "type": "row",
         "children": [
-          { "type": "icon", "id": "n1", "name": "truck" },
+          {
+            "type": "icon",
+            "id": "n1",
+            "name": "truck"
+          },
           {
             "type": "stack",
             "children": [
-              { "type": "heading", "id": "n2", "role": "headline", "text": "Your basket is still here" },
-              { "type": "text", "id": "n3", "role": "body", "text": "Everything you added is saved." }
+              {
+                "type": "heading",
+                "id": "n2",
+                "role": "headline",
+                "text": "Your basket is still here"
+              },
+              {
+                "type": "text",
+                "id": "n3",
+                "role": "body",
+                "text": "Everything you added is saved."
+              }
             ]
           },
-          { "type": "button", "id": "n4", "role": "cta_label", "label": "Back to my basket", "action": "link" }
+          {
+            "type": "button",
+            "id": "n4",
+            "role": "cta_label",
+            "label": "Back to my basket",
+            "action": "link"
+          }
         ]
       }
     ]

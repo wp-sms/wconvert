@@ -1,0 +1,53 @@
+{
+  "id": "slide-in-nudge",
+  "name": "Corner nudge",
+  "display_type": "slide_in",
+  "tier": "basic",
+  "tokens": {
+    "width": "20rem",
+    "align": "start",
+    "motion": "200ms",
+    "bg": "#0f172a",
+    "fg": "#f8fafc",
+    "muted": "#94a3b8",
+    "accent": "#38bdf8",
+    "accent-fg": "#0f172a",
+    "border": "#1e293b",
+    "heading-size": "1.0625rem",
+    "heading-weight": "600",
+    "text-size": "0.9375rem",
+    "radius": "0.75rem",
+    "pad": "1rem 1.125rem",
+    "gap": "0.625rem",
+    "shadow": "0 18px 50px -12px rgba(15, 23, 42, 0.35)",
+    "tracking": "-0.01em"
+  },
+  "tree": {
+    "steps": [
+      {
+        "type": "row",
+        "children": [
+          {
+            "type": "icon",
+            "id": "n1",
+            "name": "bolt"
+          },
+          {
+            "type": "heading",
+            "id": "n2",
+            "role": "headline",
+            "level": 2,
+            "text": "Delivery is free this week"
+          },
+          {
+            "type": "button",
+            "id": "n3",
+            "role": "cta_label",
+            "label": "Shop",
+            "action": "link"
+          }
+        ]
+      }
+    ]
+  }
+}

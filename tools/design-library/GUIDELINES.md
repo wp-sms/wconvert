@@ -133,6 +133,64 @@ them in tree order.
 
 ---
 
+## 1a. The craft floor
+
+§1 is about whether a design *converts*. This is about whether it looks like
+somebody made it. Measured against a specimen of the genre, the library failed
+on six things and every one of them was cheap.
+
+**A shadow carries a negative spread, or it is a smudge.**
+`0 10px 40px rgba(0,0,0,.18)` spreads the blur outward from the full footprint
+and reads as grey haze under the panel. `0 18px 50px -12px rgba(15,23,42,.35)`
+pulls it back inside and reads as light. Tint it toward the ink, never pure
+black — a neutral shadow under a coloured panel reads as dirt. **A bar's casts
+upward**, because a bar sits at the block-end edge.
+
+**Anything at or above 1.5rem takes negative tracking.** `-0.02em` as a floor,
+`-0.045em` at display sizes. A large heading at default tracking is the single
+most reliable sign that nobody set the type.
+
+**A heading is not a paragraph, and its size is not its scale.** The panel has
+to grow with it: 1.75rem of heading in 1.5rem of padding is a headline in a box
+that does not fit it. Move `pad` and `heading-size` together.
+
+**Placeholder art is artwork, not a grey camera icon.** A layered SVG gradient
+— two or three soft blobs over a diagonal ramp — reads as a picture at any size,
+needs no photograph, costs about 400 bytes, and does not look like a missing
+asset. That is what an `image` slot should ship with; the merchant swaps it.
+
+**The success step is a design, not a receipt.** Two lines of text centred in a
+panel sized for a form is the commonest defect in this library. Give it an
+anchor: a tick, or — where the offer pays out in one — a `code`.
+
+**The converting control is the heaviest thing on the panel.** That one is in
+the renderer now (`700` at `.8125rem` of block padding) so no design has to
+remember it.
+
+**A field's ground is `--wc-bg`, so on a dark design only the ring shows it.**
+Pick a `border` clearly lighter than the ground or the input is invisible — a
+bar asking for an address with nothing that looks like a box to type in. Aim
+for 2:1 against the ground; it is a boundary, not text, so AA does not apply.
+
+**A `row` hides its fields' labels, so write the placeholder.** Stacking a
+label above an input doubles a bar's height and puts a second competing line of
+text beside the offer. The label is still there for a screen reader — but a
+sighted visitor reads the placeholder, so it has to say what the field is.
+
+**A three-up label is two or three words.** Three benefits across a 32rem panel
+is ~9rem each; anything longer wraps to two lines and the icon wraps with it.
+
+**A `split` is two sides, not two floating boxes.** The panes are equal height
+and each centres its own contents against the other; a pane holding nothing but
+a picture is filled by it. All three are in the renderer, so no design has to
+ask.
+
+**`pad` is global, so `pad: 0` is never "let the picture bleed".** It is also
+"put the button hard against the opposite edge", because the same zero reaches
+every side of every node. Until per-node padding exists (ADR 0061), a `split`
+with a picture is a **framed** picture — set a real `pad` and let the pane fill
+do the work.
+
 ## 2. What makes two designs different
 
 The library's failure mode is **twenty designs that are one design twenty

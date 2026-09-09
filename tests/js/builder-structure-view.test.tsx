@@ -1803,17 +1803,23 @@ describe('the icon picker', () => {
         template: {
           tree: {
             ...ENTRY.tree,
-            steps: ENTRY.tree.steps.map((step, at) =>
-              at === 0
-                ? {
-                    ...step,
-                    children: [
-                      { type: 'icon', name: 'gift' },
-                      ...((step as { children?: unknown[] }).children ?? []),
-                    ],
-                  }
-                : step,
-            ),
+            /*
+             * Step 0 gains the icon this test is about; every OTHER step is
+             * stripped of icons it may already carry. The fixture is the
+             * shipping `centred-card`, whose success step opens with a tick —
+             * so inheriting it gave the tree two Icon rows and `row()`, which
+             * insists on exactly one, failed a test about the picker for a
+             * reason that had nothing to do with the picker.
+             */
+            steps: ENTRY.tree.steps.map((step, at) => {
+              const children = ((step as { children?: { type?: string }[] }).children ?? []).filter(
+                (child) => child.type !== 'icon',
+              );
+
+              return at === 0
+                ? { ...step, children: [{ type: 'icon', name: 'gift' }, ...children] }
+                : { ...step, children };
+            }),
           },
           tokens: ENTRY.tokens,
         },
