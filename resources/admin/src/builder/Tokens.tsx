@@ -130,7 +130,7 @@ export function Themes({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button type="button" variant="outline" size="sm">
-          <span aria-hidden="true" className="wconvert-theme__swatches">
+          <span aria-hidden="true" className="wconvert-theme__swatches" data-shape="row">
             {['bg', 'fg', 'accent'].map((token) => (
               <span
                 key={token}

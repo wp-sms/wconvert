@@ -67,6 +67,43 @@ export const READABLE_PAIRS: readonly (readonly [fg: string, bg: string])[] = [
 export const pairKey = (fg: string, bg: string): string => `${fg}/${bg}`;
 
 /**
+ * Which leaves read a pair's foreground, so a box holding none of them says
+ * nothing about it.
+ *
+ * ============================================================================
+ * THREE OF THE FOUR PAIRS WARN ABOUT COLOURS A BOX MAY NOT DRAW AT ALL.
+ * ============================================================================
+ * At the DESIGN there is nothing to filter: every pair is somewhere in the
+ * tree, and a design's `muted` is read by its fine print wherever that sits.
+ * At a SCOPE it is different — `fieldwork`'s photo pane holds two headings and
+ * nothing else, so measuring `muted` on it reported *"Quiet text on Background
+ * is 1.1 to 1"* about a colour with no text in that box to draw it, beside a
+ * second warning about a field ground with no field.
+ *
+ * Two sentences that change nothing a merchant would do, on the box they are
+ * most likely to be restyling — which is [ADR 0042](../../../docs/adr/0042-the-admin-speaks-only-when-it-changes-what-you-do-next.md)
+ * rule 2 exactly, and it teaches them to read past the one warning that
+ * matters.
+ *
+ * **An empty list means always**, which `fg`/`bg` is: a box that paints has a
+ * ground and everything in it has ink, whatever kind of leaf it turns out to
+ * be.
+ *
+ * **By node TYPE and not by [[Slot Role]]**, and that over-reports slightly: a
+ * `text` reads `--wc-muted` only where its Role is `fine_print`, so a box
+ * holding one body paragraph still measures the pair. That is the right
+ * direction to err — the alternative is a pair going unmeasured on a design
+ * that later adds fine print to the box — and it is a far smaller error than
+ * measuring all four everywhere.
+ */
+export const PAIR_READERS: Readonly<Record<string, readonly string[]>> = {
+  [pairKey('fg', 'bg')]: [],
+  [pairKey('muted', 'bg')]: ['text', 'eyebrow', 'field', 'consent', 'rating'],
+  [pairKey('accent-fg', 'accent')]: ['button', 'badge'],
+  [pairKey('fg', 'input-bg')]: ['field'],
+};
+
+/**
  * The contrast ratio between two colours, or null where either cannot be read.
  *
  * Between 1 (identical) and 21 (black on white). Order does not matter: the

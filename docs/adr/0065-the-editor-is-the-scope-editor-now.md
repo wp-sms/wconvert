@@ -172,6 +172,74 @@ because the number is the fact a merchant acts on: *nine* says this box is where
 the design's look lives and *one* says somebody nudged a padding. `9+2` is nine
 at full width and two more at narrow, which is also the payload's shape.
 
+## The look, measured rather than eyeballed
+
+Everything above is behaviour. This is the pass over density and type against
+the reference tool, done in a real WordPress at 1280 and 1680 with the menu
+expanded and folded, LTR and RTL — because jsdom computes no layout and every
+one of these was invisible to the suite.
+
+- **The check strip read as debug output.** Six chips carrying
+  `OptinController::refuseADesignThatCapturesNothing()` in a monospace register
+  wrapped onto three lines across the top of the tab. `CHECK_SOURCES` is two
+  strings now: a short name for the chip and the sentence for the tooltip.
+- **`media`'s label ran under the row's ⋯ menu.** *Picture with text on it* is
+  twenty-three characters on an 11rem tree; it is *Picture box*, and what it
+  does moved to the note where it belongs.
+- **A scope's Style tab was ~1,600px of column** against the design panel's
+  two-thirds of that, with the same twenty-four controls. The colour group uses
+  the palette grid the design panel already has, and `.wconvert-palette`'s floor
+  went from 11rem to 9.5rem — measured, because 11rem fits exactly one column in
+  a 22rem inspector, so the grid had been drawing a column of full-width rows on
+  the only screen it appears on.
+- **The theme trigger read as a toggle.** Three overlapping circles beside one
+  word inside a small outline button is a switch; on the toolbar they are
+  squared and unoverlapped, and the preset cards keep the circles.
+- **A source note and its `→ token` press ran together** as *Set on this
+  box→ Button*.
+
+**Two things were tried and reverted, and the reason is worth more than the
+change.** Making the row's name truncate rather than overflow looks like the
+obvious fix for the label problem and is worse: the row's furniture is 176px of
+a 254px pane, so every leaf came out as *Yo…*. `flex-shrink` weights do not
+save it — the deficit is bigger than the words are — and collapsing the two
+hover-only action cells would make every row's name jump under the pointer.
+The pressure goes on the labels instead, which is why `media` is two words.
+
+**The type register needed nothing.** The plan's decision was to keep the
+admin's 12px floor and take the artifact's `.04em`/600 — and `--text-micro` is
+already 12px/.04em/600 (ADR 0037). Mono is used where the content is genuinely
+code: the check sources and the stored-JSON readout.
+
+## Verified on a real WordPress
+
+Playground, both plugins mounted, per CLAUDE.md — a green suite is not a
+booting plugin.
+
+- The admin boots with no console errors and no 404s; every REST route answers
+  200; the builder loads a `fieldwork` Optin, selects the `media` container,
+  edits its scoped tokens and switches width.
+- **A visitor's page carries no addresses.** The popup mounts, and
+  `querySelectorAll('[data-path]')` inside its shadow root returns **0** —
+  which is the whole of what `RenderOptions.paths` promises. `media`, the two
+  `<br>`s and the `<strong>` all render.
+- **The bundles have to be rebuilt in pairs, and this is how that is found.**
+  Pro *deregisters* free's admin script, so the browser was loading
+  `wconvert-pro/public/admin/main.css` while `npm run build:admin` had been
+  rewriting free's — three rounds of "the CSS did not change" before the
+  stylesheet URL was read out of the page.
+
+### One defect found and deliberately not fixed
+
+**A `popup` renders pinned to the top-left of the viewport rather than
+centred**, and it is not this work's: verified identical with `main`'s loader
+built from the merge-base. `DIALOG_ARMOUR` in `mount.ts` sets `inline-size:
+auto` and `block-size: auto` beside `inset: 0` and `margin: auto`, and for a
+fixed-position box that means *stretch to the inset box* — so `margin: auto`
+has nothing to distribute and the design sits at the start of a
+viewport-sized dialog. Fixing the shipped popup container is a decision of its
+own and needs verifying across all four [[Display Type]]s.
+
 ## What it cost
 
 | | before | after |

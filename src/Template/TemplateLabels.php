@@ -146,9 +146,15 @@ final class TemplateLabels
              * same call `panel` made one line up: a merchant is going to point
              * at the photograph, and *"Spread box"* names the mechanism they
              * would have to be taught before the word meant anything.
+             *
+             * **Two words, parallel with *Coloured box*.** It was *"Picture
+             * with text on it"*, which is what it DOES and belongs in the note
+             * below — measured in a browser, twenty-three characters ran under
+             * the ⋯ menu on every row of an 11rem tree, on a design that has
+             * two of them.
              */
-            /* translators: a layout — a picture with text on it, the first block at its top edge and the last at its bottom. */
-            'media' => __('Picture with text on it', 'wconvert'),
+            /* translators: a layout — a picture with blocks on it, the first at its top edge and the last at its bottom. */
+            'media' => __('Picture box', 'wconvert'),
         ];
     }
 

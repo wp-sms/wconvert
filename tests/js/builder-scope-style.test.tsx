@@ -94,7 +94,7 @@ const LABELS = {
     split: 'Side by side',
     grid: 'Equal columns',
     panel: 'Coloured box',
-    media: 'Picture with text on it',
+    media: 'Picture box',
   },
   layoutNotes: {
     stack: 'Blocks stacked top to bottom.',
@@ -506,6 +506,77 @@ describe('a scoped colour that follows the palette', () => {
   });
 });
 
+/**
+ * ============================================================================
+ * A WARNING ABOUT A COLOUR THE BOX DOES NOT DRAW IS THE ONE THAT TEACHES A
+ * MERCHANT TO READ PAST THE REST.
+ * ============================================================================
+ * At the design every pair is somewhere in the tree. At a scope it is
+ * different: `fieldwork`'s photo pane holds two headings and nothing else, and
+ * measuring all four pairs on it reported *"Quiet text on Background is 1.1 to
+ * 1"* about a colour with no text in that box to draw it — beside a second
+ * warning about a field ground with no field (ADR 0042 rule 2).
+ */
+describe('the readability readout at a scope', () => {
+  /** A box with a failing `muted` and nothing in it that reads `muted`. */
+  const HEADINGS_ONLY = {
+    steps: [
+      {
+        type: 'stack',
+        children: [
+          {
+            type: 'panel',
+            tokens: { bg: '#546c49', fg: '#ffffff', muted: '#56634e' },
+            children: [{ type: 'heading', role: 'headline', text: 'Room to grow.' }],
+          },
+          { type: 'button', role: 'cta_label', label: 'Go', action: 'submit' },
+        ],
+      },
+      { type: 'stack', children: [{ type: 'text', role: 'success_body', text: 'Done' }] },
+    ],
+  } as unknown as TemplateTree;
+
+  it('says nothing about a pair no leaf in the box reads', async () => {
+    builder.getOptin.mockResolvedValue(optin(HEADINGS_ONLY, { bg: '#ffffff', fg: '#111827' }));
+
+    await style(/Coloured box/);
+
+    // `muted` on this box's ground is 1.1:1 and would have been reported.
+    expect(screen.queryByText(/Quiet text on Background/)).toBeNull();
+  });
+
+  it('still says it where the box holds something that reads it', async () => {
+    builder.getOptin.mockResolvedValue(
+      optin(
+        {
+          steps: [
+            {
+              type: 'stack',
+              children: [
+                {
+                  type: 'panel',
+                  tokens: { bg: '#546c49', fg: '#ffffff', muted: '#56634e' },
+                  children: [
+                    { type: 'heading', role: 'headline', text: 'Room to grow.' },
+                    { type: 'text', role: 'fine_print', size: 's', text: 'Terms apply.' },
+                  ],
+                },
+                { type: 'button', role: 'cta_label', label: 'Go', action: 'submit' },
+              ],
+            },
+            { type: 'stack', children: [{ type: 'text', role: 'success_body', text: 'Done' }] },
+          ],
+        } as unknown as TemplateTree,
+        { bg: '#ffffff', fg: '#111827' },
+      ),
+    );
+
+    await style(/Coloured box/);
+
+    expect(screen.getByText(/Quiet text on Background/)).toBeInTheDocument();
+  });
+});
+
 describe('the checks strip', () => {
   /**
    * ==========================================================================
@@ -542,12 +613,20 @@ describe('the checks strip', () => {
 
     const strip = await screen.findByRole('list', { name: 'Checks on this design' });
 
-    expect(within(strip).getByText(/refuseADesignThatCannotConvert/)).toBeInTheDocument();
+    /*
+      **A NAME on the chip and the sentence in the tooltip**, which is where
+      the two lengths come apart: spelling only the long form put
+      `OptinController::refuseADesignThatCapturesNothing()` on screen six times
+      across two lines in a monospace register, and it read as debug output
+      rather than as *six checks pass*.
+    */
+    expect(within(strip).getAllByText('OptinController')).toHaveLength(2);
     expect(within(strip).getByText('ADR 0052')).toBeInTheDocument();
+    expect(within(strip).getByTitle(/counts to the Optin/)).toBeInTheDocument();
     // Every chip, not only the failing ones: *six checks pass* is legible only
     // if a reader can see what was doing the checking.
     expect(within(strip).getAllByRole('listitem')).toHaveLength(6);
-    expect(within(strip).getAllByText(/ADR|::|render\.ts/)).toHaveLength(6);
+    expect(within(strip).getAllByText(/^(ADR \d+|OptinController|render\.ts|SlotRoles)$/)).toHaveLength(6);
   });
 });
 

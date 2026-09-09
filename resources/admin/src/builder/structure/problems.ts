@@ -139,17 +139,24 @@ export type CheckId = (typeof CHECKS)[number];
  * `Problem` could cite one only while something was wrong. It would also be the
  * same string repeated by every producer of the same check.
  *
+ * **Two strings, because the chip and the tooltip want different lengths.**
+ * `at` is one short token — six chips fit one line at 1680 and two at 1280 —
+ * and `how` is the sentence a merchant reads once while deciding. Spelling only
+ * the long form put `OptinController::refuseADesignThatCapturesNothing()` on
+ * screen six times across two lines in a monospace register, which reads as
+ * debug output rather than as *six checks pass*.
+ *
  * Not translated, and that is deliberate: these are file names and ADR
  * numbers. A translator has nothing to do with `OptinController` and a
  * localised class name is a class name nobody can grep for.
  */
-export const CHECK_SOURCES: Readonly<Record<CheckId, string>> = {
-  converts: 'OptinController::refuseADesignThatCannotConvert()',
-  collects: 'OptinController::refuseADesignThatCapturesNothing()',
-  captures: 'render.ts — the step that submits IS the form',
-  countdown: 'ADR 0052',
-  words: 'SlotRoles::bind()',
-  readable: 'ADR 0038 — AA on small text',
+export const CHECK_SOURCES: Readonly<Record<CheckId, { at: string; how: string }>> = {
+  converts: { at: 'OptinController', how: 'refuseADesignThatCannotConvert() refuses the write' },
+  collects: { at: 'OptinController', how: 'refuseADesignThatCapturesNothing() refuses the write' },
+  captures: { at: 'render.ts', how: 'the step that holds the submit button IS the form' },
+  countdown: { at: 'ADR 0052', how: 'a countdown counts to the Optin’s own end date and nothing else' },
+  words: { at: 'SlotRoles', how: 'bind() writes a Playbook’s words back only where a Role binds' },
+  readable: { at: 'ADR 0038', how: 'AA on small text' },
 };
 
 /**

@@ -92,7 +92,7 @@ const LABELS = {
     split: 'Side by side',
     grid: 'Equal columns',
     panel: 'Coloured box',
-    media: 'Picture with text on it',
+    media: 'Picture box',
   },
   // The menu shows what a layout DOES, because *Row* and *Side by side* are two
   // words a merchant cannot tell apart from their names alone.

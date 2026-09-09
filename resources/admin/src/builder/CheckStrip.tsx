@@ -58,7 +58,7 @@ export function CheckStrip({
               >
                 <Icon aria-hidden="true" />
                 {name}
-                <span className="wconvert-checks__source">{CHECK_SOURCES[check]}</span>
+                <span className="wconvert-checks__source">{CHECK_SOURCES[check].at}</span>
               </span>
             ) : (
               <button
@@ -70,7 +70,7 @@ export function CheckStrip({
               >
                 <Icon aria-hidden="true" />
                 {name}
-                <span className="wconvert-checks__source">{CHECK_SOURCES[check]}</span>
+                <span className="wconvert-checks__source">{CHECK_SOURCES[check].at}</span>
               </button>
             )}
           </li>
@@ -89,7 +89,10 @@ export function CheckStrip({
  * see {@link CHECK_SOURCES}.
  */
 function said(check: CheckId, wrong: string | undefined): string {
-  return wrong === undefined ? CHECK_SOURCES[check] : `${wrong}\n\n${CHECK_SOURCES[check]}`;
+  const { at, how } = CHECK_SOURCES[check];
+  const source = `${at} — ${how}`;
+
+  return wrong === undefined ? source : `${wrong}\n\n${source}`;
 }
 
 /**

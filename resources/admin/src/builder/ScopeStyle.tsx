@@ -1,7 +1,8 @@
 import { __, sprintf } from '@wordpress/i18n';
 import { Button } from '../components/ui/button';
 import { ClipboardCopy, ClipboardPaste } from 'lucide-react';
-import { AA_NORMAL, READABLE_PAIRS, contrastOf } from './contrast';
+import { AA_NORMAL, PAIR_READERS, READABLE_PAIRS, contrastOf, pairKey } from './contrast';
+import { nodesOf } from './structure/tree';
 import { TokenField, groupName } from './Tokens';
 import {
   TOKENS,
@@ -203,6 +204,25 @@ export function ScopeStyle({
         <section key={group.id} className="wconvert-group" aria-label={groupName(group.id)}>
           <h5 className="wconvert-group__name">{groupName(group.id)}</h5>
 
+          {/*
+            ==============================================================
+            THE COLOURS ARE A GRID HERE FOR THE REASON THEY ARE ONE ON THE
+            DESIGN PANEL: THEY ARE COMPARED RATHER THAN READ DOWN.
+            ==============================================================
+            This panel drew all twenty-four one per row, so a photo pane's
+            Style tab was ~1,600px of column — measured in a browser — while
+            the design's own panel, with the same twenty-four, fitted in
+            two-thirds of that. Seven full-width rows for a seven-character
+            value is a column of settings, which is the right shape for seven
+            different questions and the wrong one for seven answers to one.
+            `index.css` says exactly this about `.wconvert-palette`, and this is
+            that rule applied at the second scope rather than a second rule.
+
+            **The source note goes with each cell** rather than under the grid,
+            because *from Coloured box* is about one token and a line under
+            seven of them would be about none of them.
+          */}
+          <div className={group.id === 'colour' ? 'wconvert-palette' : undefined}>
           {group.tokens.map((token) => {
             const from = source(token.name);
             const label = nameOf(labels.tokens, token.name);
@@ -253,6 +273,7 @@ export function ScopeStyle({
               </div>
             );
           })}
+          </div>
         </section>
       ))}
 
@@ -471,7 +492,28 @@ function ScopeContrast({
 }) {
   const value = (name: string) => sourceOfToken(chain, template.tokens, name, width).value;
 
+  /*
+    **What this box actually holds**, which is what decides which pairs are
+    worth measuring on it: a photo pane holding two headings has no fine print
+    and no field, so `muted` and `input-bg` there are colours nothing in the
+    box draws ({@see PAIR_READERS}).
+
+    The subtree is found by prefix rather than walked again — `nodesOf` is the
+    one walk this editor has, and every block under this box has this box's
+    path as its own prefix by construction.
+  */
+  const here = chain[chain.length - 1]?.path ?? [];
+  const inside = nodesOf(template.tree)
+    .filter((block) => block.path.length >= here.length && here.every((step, at) => block.path[at] === step))
+    .map((block) => block.type);
+
   const wrong = READABLE_PAIRS.flatMap(([fg, bg]) => {
+    const readers = PAIR_READERS[pairKey(fg, bg)] ?? [];
+
+    if (readers.length > 0 && !readers.some((type) => inside.includes(type))) {
+      return [];
+    }
+
     const ratio = contrastOf(value(fg), value(bg));
 
     return ratio === null || ratio >= AA_NORMAL ? [] : [{ fg, bg, ratio }];
