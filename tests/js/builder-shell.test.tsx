@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ruleTypes } from './support/rule-types';
@@ -675,7 +675,22 @@ describe('the builder shell', () => {
 
     await screen.findByRole('tab', { name: 'Design' });
 
-    expect(screen.queryByText('Loading…')).toBeNull();
+    /*
+     * **Waited for rather than asserted outright, and the tab is why it had to
+     * be.** `getOptin` and `readDashboard` are two independent promise chains:
+     * the tab appears when the first resolves, which says nothing at all about
+     * whether the second's `setStats` has flushed. Asserted directly this
+     * passed on a fast machine and failed on CI — `<div class="sr-only">
+     * Loading…</div>` was still in the tree — which is a race in the test and
+     * not a skeleton that pulses forever.
+     *
+     * The claim is unchanged: what this names is that the row STOPS being
+     * reserved once the read comes back empty.
+     */
+    await waitFor(() => {
+      expect(screen.queryByText('Loading…')).toBeNull();
+    });
+
     expect(screen.queryByText('Impressions')).toBeNull();
     expect(document.querySelectorAll('[data-slot="skeleton"]')).toHaveLength(0);
   });
