@@ -9,7 +9,11 @@ destination setup and placement guidance under
 Its completed verification is recorded below. Phase 3 connects addressable
 reports, capture history and delivery recovery under
 [ADR 0071](../adr/0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md);
-its completed local verification is recorded below, with PR CI still pending.
+its completed local verification is recorded below, and
+[CI passed on 5d57068](https://github.com/navidkashani/wconvert/actions/runs/34492334584).
+Phase 4 simplifies creation and display settings under
+[ADR 0072](../adr/0072-setup-choices-state-their-effect-and-scope.md), with completed
+local and WordPress verification below. Current-head CI is recorded on the PR.
 Other proposals remain separate work. This review claims no tested provider delivery.
 
 ## What a successful experience means
