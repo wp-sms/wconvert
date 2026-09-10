@@ -112,6 +112,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
 
   const [browsing, setBrowsing] = useState(false);
   const browse = useRef<HTMLButtonElement>(null);
+  const restoreBrowseFocus = useRef(false);
 
   const [fatal, setFatal] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -123,6 +124,12 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
   const [showLayers, setShowLayers] = useState(false);
   const [previewing, setPreviewing] = useState(false);
   const [preparing, setPreparing] = useState(false);
+  useEffect(() => {
+    if (!browsing && !busy && !preparing && restoreBrowseFocus.current) {
+      restoreBrowseFocus.current = false;
+      browse.current?.focus();
+    }
+  }, [browsing, busy, preparing]);
   const [details, setDetails] = useState(false);
   useEffect(() => {
     document.body.classList.add('wconvert-editing');
@@ -203,7 +210,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
 
   const overlay = config === null || displayTypeOf(config, templates) !== 'inline';
 
-  const { trees, want } = useTemplateTrees(getTemplateTrees);
+  const { trees, want, failed: failedTrees, retry: retryTree } = useTemplateTrees(getTemplateTrees);
 
   useEffect(() => {
     if (templateId !== undefined) {
@@ -853,18 +860,8 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
 
       <TemplatePickerDialog
         open={browsing}
-        onOpenChange={(next) => {
-          setBrowsing(next);
-
-          // Radix restores focus to its own trigger, and this dialog has none:
-          // it is opened from a button that stays on a tab which may itself be
-          // hidden by the time it closes. Naming the control is what puts the
-          // caret back rather than on `<body>` — the same fix `ConfirmDialog`
-          // needed and for the same reason.
-          if (!next) {
-            browse.current?.focus();
-          }
-        }}
+        onOpenChange={setBrowsing}
+        onClosed={() => browse.current?.focus()}
         index={gallery}
         trees={trees}
         displayType={displayTypeOf(config, templates)}
@@ -877,7 +874,10 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
         }}
         busy={busy}
         onNear={want}
+        failed={failedTrees}
+        onRetry={retryTree}
         onChoose={(picked) => {
+          restoreBrowseFocus.current = true;
           setBrowsing(false);
           setPreparing(true);
           setBusy(true);

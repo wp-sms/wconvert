@@ -1,0 +1,169 @@
+import { useEffect, useId, useRef, useState } from 'react';
+import { __, sprintf } from '@wordpress/i18n';
+import { ArrowLeft, Monitor, Smartphone } from 'lucide-react';
+import { Button } from '../components/ui/button';
+import { Badge } from '../components/ui/badge';
+import { Skeleton } from '../components/ui/skeleton';
+import { Preview } from './Preview';
+import { A_DESIGNS_OWN_WIDTH } from '@renderer/css';
+import { actChangeOf, refusalFor, type Fit } from './Gallery';
+import type { TemplateIndexEntry, TemplateLabelsWithFacets } from '../templates/api';
+import type { Template } from '@renderer/types';
+
+export interface TemplateDesignDetailProps {
+  readonly entry: TemplateIndexEntry;
+  readonly template?: Template;
+  readonly labels: TemplateLabelsWithFacets;
+  readonly current: boolean;
+  readonly fit: Fit;
+  readonly busy: boolean;
+  readonly onChoose: (id: string) => void;
+  readonly onBack: () => void;
+  readonly loadError?: boolean;
+  readonly onRetry?: () => void;
+}
+
+/** Percentage widths need a stable desktop containing block before visual scaling. */
+const DESKTOP_CONTENT_WIDTH = '64rem';
+
+/** Inspect the library's sample, then deliberately replace the working draft. */
+export function TemplateDesignDetail({
+  entry, template, labels, current, fit, busy, onChoose, onBack, loadError = false, onRetry,
+}: TemplateDesignDetailProps) {
+  const [device, setDevice] = useState<'desktop' | 'mobile'>('desktop');
+  const [step, setStep] = useState(0);
+  const heading = useRef<HTMLHeadingElement>(null);
+  const stage = useRef<HTMLDivElement>(null);
+  const page = useRef<HTMLDivElement>(null);
+  const [size, setSize] = useState<{ width: number; height: number; availableWidth: number } | null>(null);
+  const id = useId();
+  useEffect(() => { heading.current?.focus(); }, [entry.id]);
+  const refused = refusalFor(entry, fit);
+  const changed = refused === null && !current ? actChangeOf(entry, fit) : null;
+  const shown = Math.min(step, Math.max(0, (template?.tree.steps.length ?? 1) - 1));
+  const relativeWidth = template?.tokens.width?.includes('%') === true;
+  const measure = device === 'mobile' ? '22rem' : relativeWidth
+    ? DESKTOP_CONTENT_WIDTH : template?.tokens.width ?? A_DESIGNS_OWN_WIDTH;
+  useEffect(() => {
+    const paper = page.current;
+    const area = stage.current;
+    if (paper === null || area === null) return;
+    const read = () => {
+      // offset dimensions stay at the requested size even while transform fits
+      // it visually. Reading the transformed rectangle would create a loop.
+      if (paper.offsetWidth <= 0 || area.clientWidth <= 0) return;
+      const style = getComputedStyle(area);
+      const padding = (Number.parseFloat(style.paddingInlineStart) || 0)
+        + (Number.parseFloat(style.paddingInlineEnd) || 0);
+      const next = {
+        width: paper.offsetWidth,
+        height: paper.offsetHeight,
+        availableWidth: Math.max(1, area.clientWidth - padding),
+      };
+      setSize((current) => current !== null && current.width === next.width
+        && current.height === next.height && current.availableWidth === next.availableWidth ? current : next);
+    };
+    read();
+    if (typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(read);
+    observer.observe(area);
+    observer.observe(paper);
+    return () => observer.disconnect();
+  }, [template, measure, shown]);
+  const scale = size === null ? 1 : Math.min(1, size.availableWidth / size.width);
+  const unavailable = entry.availability !== 'ready';
+  const cannotApply = current || refused !== null || unavailable || template === undefined;
+  const fieldNames = entry.facets.captures.map((field) =>
+    labels.fields?.[field] ?? labels.facetValues[`captures.${field}`] ?? field,
+  );
+  const describedBy = [
+    `${id}-title`, `${id}-replacement`,
+    current ? `${id}-current` : null,
+    refused !== null ? `${id}-refusal` : null,
+    changed !== null ? `${id}-change` : null,
+    template === undefined ? `${id}-load` : null,
+    unavailable ? `${id}-unavailable` : null,
+  ].filter(Boolean).join(' ');
+
+  return (
+    <section className="wconvert-design-detail" aria-labelledby={`${id}-title`}>
+      <div className="wconvert-design-detail__header">
+        <Button variant="ghost" size="sm" disabled={busy} onClick={onBack}>
+          <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />
+          {__('Back to designs', 'wconvert')}
+        </Button>
+        <h3 ref={heading} tabIndex={-1} id={`${id}-title`}>{entry.name}</h3>
+        {current && <Badge id={`${id}-current`} variant="secondary">{__('Current design', 'wconvert')}</Badge>}
+      </div>
+
+      <div className="wconvert-design-detail__controls">
+        <div role="group" aria-label={__('Preview size', 'wconvert')} className="wconvert-segmented">
+          <Button variant="ghost" size="sm" aria-pressed={device === 'desktop'} onClick={() => setDevice('desktop')}>
+            <Monitor aria-hidden="true" />{__('Desktop', 'wconvert')}
+          </Button>
+          <Button variant="ghost" size="sm" aria-pressed={device === 'mobile'} onClick={() => setDevice('mobile')}>
+            <Smartphone aria-hidden="true" />{__('Mobile', 'wconvert')}
+          </Button>
+        </div>
+        {template !== undefined && template.tree.steps.length > 1 && (
+          <div role="group" aria-label={__('Preview screen', 'wconvert')} className="wconvert-segmented">
+            {template.tree.steps.map((_, index) => (
+              <Button key={index} variant="ghost" size="sm" aria-pressed={shown === index} onClick={() => setStep(index)}>
+                {index === 0 ? entry.facets.act === 'submit' ? __('Form', 'wconvert') : __('Main screen', 'wconvert') : index === 1 ? __('Success screen', 'wconvert') : sprintf(__('Screen %d', 'wconvert'), index + 1)}
+              </Button>
+            ))}
+          </div>
+        )}
+        <span className="text-note text-muted-foreground">
+          <span>{__('Preview with sample content', 'wconvert')}</span>
+          {relativeWidth && device === 'desktop' && <span className="block">{__('Full-width layout in a sample desktop area', 'wconvert')}</span>}
+          {scale < 1 && <span className="block" aria-label={__('Preview scale', 'wconvert')}>{sprintf(__('Fit · %d%%', 'wconvert'), Math.round(scale * 100))}</span>}
+        </span>
+      </div>
+
+      <div className="wconvert-design-detail__layout">
+        <div ref={stage} className="wconvert-design-detail__stage" data-device={device}>
+          {template !== undefined ? (
+            <div className="wconvert-design-detail__measure"
+              style={{ inlineSize: size === null ? measure : size.width * scale, blockSize: size === null ? undefined : size.height * scale }}>
+              <div ref={page} className="wconvert-design-detail__preview" data-step={shown} inert aria-hidden="true"
+                style={{ inlineSize: measure, transform: `scale(${scale})` }}>
+                <Preview template={template} step={shown} />
+              </div>
+            </div>
+          ) : loadError ? (
+            <div className="wconvert-design-detail__error">
+              <p id={`${id}-load`} role="alert">{__('This design preview could not be loaded.', 'wconvert')}</p>
+              {onRetry !== undefined && <Button variant="outline" onClick={onRetry}>{__('Retry preview', 'wconvert')}</Button>}
+            </div>
+          ) : (
+            <div className="wconvert-design-detail__loading">
+              <p id={`${id}-load`} role="status">{__('Loading design preview…', 'wconvert')}</p>
+              <Skeleton aria-hidden="true" className="h-64 w-full" />
+            </div>
+          )}
+        </div>
+
+        <div className="wconvert-design-detail__facts">
+          <dl>
+            <div><dt>{__('Collects', 'wconvert')}</dt><dd>{fieldNames.length > 0 ? fieldNames.join(', ') : __('No form fields', 'wconvert')}</dd></div>
+            <div><dt>{__('Visitor action', 'wconvert')}</dt><dd>{entry.facets.act === 'submit' ? __('Submits a form', 'wconvert') : entry.facets.act === 'click' ? __('Follows a link', 'wconvert') : __('No conversion action', 'wconvert')}</dd></div>
+            {entry.facets.asks_consent && <div><dt>{__('Consent', 'wconvert')}</dt><dd>{__('Includes a consent checkbox', 'wconvert')}</dd></div>}
+          </dl>
+          <div className="wconvert-design-detail__actions">
+            <p id={`${id}-replacement`} className="text-note text-muted-foreground">
+              {__('Replaces your draft’s layout. Some text may move, be hidden or left empty; added blocks may be removed. Check each screen afterwards. Undo restores your previous design.', 'wconvert')}
+            </p>
+            {refused !== null && <p id={`${id}-refusal`} className="text-note text-warning">{refused}</p>}
+            {changed !== null && <p id={`${id}-change`} className="text-note text-warning">{changed}</p>}
+            {unavailable && <p id={`${id}-unavailable`} className="text-note text-muted-foreground">{__('This design is not installed here.', 'wconvert')}</p>}
+            <Button disabled={busy} aria-disabled={cannotApply} aria-describedby={describedBy}
+              onClick={cannotApply || busy ? undefined : () => onChoose(entry.id)}>
+              {busy ? __('Applying design…', 'wconvert') : current ? __('Current design', 'wconvert') : __('Use this design', 'wconvert')}
+            </Button>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}

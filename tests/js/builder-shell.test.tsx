@@ -4,7 +4,7 @@ import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ruleTypes } from './support/rule-types';
-import type { TemplateEntry } from '../../resources/admin/src/templates/api';
+import type { TemplateEntry, TemplateIndex, TemplateIndexEntry } from '../../resources/admin/src/templates/api';
 
 /**
  * The builder shell, against the four decisions #69 and #71 make about it that
@@ -76,6 +76,9 @@ const { OptinBuilder } = await import('../../resources/admin/src/builder/OptinBu
 const ENTRY = JSON.parse(
   readFileSync(resolve(import.meta.dirname, '../../resources/templates/library/centred-card.json'), 'utf8'),
 ) as TemplateEntry;
+const ALTERNATE = JSON.parse(
+  readFileSync(resolve(import.meta.dirname, '../../resources/templates/library/split-hero.json'), 'utf8'),
+) as TemplateEntry;
 
 const ID = '01JQ00000000000000000000AA';
 
@@ -135,7 +138,7 @@ const LABELS = {
  * per-card from `/templates/trees` as the grid brings them near the viewport,
  * which is what these two fixtures are.
  */
-const CARD = {
+const CARD: TemplateIndexEntry = {
   id: ENTRY.id,
   name: ENTRY.name,
   display_type: ENTRY.display_type,
@@ -146,8 +149,13 @@ const CARD = {
     captures: ['email'],
     shape: 'stack',
     has_image: false,
-    asks_consent: true,
+    asks_consent: false,
   },
+};
+const INDEX: TemplateIndex = {
+  templates: [CARD],
+  labels: LABELS,
+  facets: { shape: ['stack', 'row', 'split'], captures: ['email', 'name', 'phone'], has_image: ['true'] },
 };
 
 /**
@@ -211,11 +219,7 @@ beforeEach(() => {
     (_id: string, _name: string, config: Record<string, unknown>, goal?: string) =>
       Promise.resolve({ ...optin(), config: structuredClone(config), ...(goal === undefined ? {} : { goal }) }),
   );
-  templates.listTemplates.mockResolvedValue({
-    templates: [CARD],
-    labels: LABELS,
-    facets: { shape: ['stack', 'row', 'split'], captures: ['email', 'name', 'phone'], has_image: ['true'] },
-  });
+  templates.listTemplates.mockResolvedValue(INDEX);
   templates.getTemplateTrees.mockResolvedValue({
     templates: [{ id: ENTRY.id, tree: ENTRY.tree, tokens: ENTRY.tokens }],
   });
@@ -447,7 +451,7 @@ describe('the builder shell', () => {
    * exception ADR 0039 otherwise refuses — so the affordance STATES what it
    * takes rather than asking a second question in front of the first.
    */
-  it('opens the picker, and says what picking a design will take', async () => {
+  it('opens a sample preview and puts replacement consequences beside Apply', async () => {
     open();
 
     await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
@@ -456,8 +460,14 @@ describe('the builder shell', () => {
     const picker = within(await screen.findByRole('dialog'));
 
     expect(picker.getByText('Browse designs')).toBeInTheDocument();
-    expect(picker.getByText(/Some text may be empty/)).toBeInTheDocument();
-    expect(picker.getByRole('button', { name: /In use/ })).toBeInTheDocument();
+    expect(picker.queryByRole('button', { name: 'Use this design' })).not.toBeInTheDocument();
+    await userEvent.click(picker.getByRole('button', { name: 'Preview design' }));
+    expect(picker.getByText('Preview with sample content')).toBeInTheDocument();
+    const current = picker.getByRole('button', { name: 'Current design' });
+    expect(current).toHaveAttribute('aria-disabled', 'true');
+    expect(current).toHaveAccessibleDescription(/Replaces your draft’s layout.*Undo restores your previous design/);
+    expect(templates.prepareTemplate).not.toHaveBeenCalled();
+    expect(builder.saveOptin).not.toHaveBeenCalled();
   });
 
   /**
@@ -1124,6 +1134,18 @@ describe('the summary', () => {
 
 
 describe('changing templates in the draft', () => {
+  const loadAlternate = () => {
+    templates.listTemplates.mockResolvedValue({
+      ...INDEX,
+      templates: [CARD, { ...CARD, id: ALTERNATE.id, name: ALTERNATE.name,
+        facets: { ...CARD.facets, shape: 'split', has_image: true } }],
+    } satisfies TemplateIndex);
+    templates.getTemplateTrees.mockResolvedValue({ templates: [
+      { id: ENTRY.id, tree: ENTRY.tree, tokens: ENTRY.tokens },
+      { id: ALTERNATE.id, tree: ALTERNATE.tree, tokens: ALTERNATE.tokens },
+    ] });
+  };
+
   it('does not add an Undo action just because the server returns a fresh object on Save', async () => {
     open();
     await userEvent.type(await screen.findByRole('textbox', { name: 'Name' }), ' renamed');
@@ -1134,28 +1156,54 @@ describe('changing templates in the draft', () => {
   });
 
   it('is undoable before Save and includes later edits when saved', async () => {
-    const prepared = { tree: ENTRY.tree, tokens: { ...ENTRY.tokens, bg: '#abcdef' } };
-    templates.listTemplates.mockResolvedValue({
-      templates: [CARD, { ...CARD, id: 'alternate', name: 'Alternate' }], labels: LABELS,
-    });
-    templates.getTemplateTrees.mockResolvedValue({ templates: [
-      { id: ENTRY.id, tree: ENTRY.tree, tokens: ENTRY.tokens }, { id: 'alternate', ...prepared },
-    ] });
+    const prepared = { tree: ALTERNATE.tree, tokens: ALTERNATE.tokens };
+    loadAlternate();
     templates.prepareTemplate.mockResolvedValue(prepared);
     open();
     await userEvent.click(await screen.findByRole('button', { name: 'Change template' }));
-    await userEvent.click(await screen.findByRole('button', { name: 'Use this design' }));
-    await waitFor(() => expect(templates.prepareTemplate).toHaveBeenCalledWith('alternate', { tree: ENTRY.tree, tokens: ENTRY.tokens }, 'centred-card'));
+    const picker = within(await screen.findByRole('dialog'));
+    const alternateCard = picker.getByText(ALTERNATE.name).closest('li') as HTMLElement;
+    await userEvent.click(within(alternateCard).getByRole('button', { name: 'Preview design' }));
+    expect(picker.getByRole('heading', { name: ALTERNATE.name })).toHaveFocus();
+    await userEvent.click(picker.getByRole('button', { name: 'Mobile' }));
+    await userEvent.click(picker.getByRole('button', { name: 'Success screen' }));
+    expect(templates.prepareTemplate).not.toHaveBeenCalled();
     expect(builder.saveOptin).not.toHaveBeenCalled();
+    await userEvent.click(picker.getByRole('button', { name: 'Use this design' }));
+    await waitFor(() => expect(templates.prepareTemplate).toHaveBeenCalledWith(ALTERNATE.id, { tree: ENTRY.tree, tokens: ENTRY.tokens }, ENTRY.id));
+    expect(builder.saveOptin).not.toHaveBeenCalled();
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Undo' })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Change template' })).toHaveFocus());
+    expect(screen.getByText(ALTERNATE.name)).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Undo' }));
+    expect(screen.getByText(ENTRY.name)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
     await userEvent.click(screen.getByRole('button', { name: 'Redo' }));
+    expect(screen.getByText(ALTERNATE.name)).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: /Choose a colour for Background/ }));
     await userEvent.clear(screen.getByLabelText('Background value'));
     await userEvent.type(screen.getByLabelText('Background value'), '#123456');
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
     expect(builder.saveOptin).toHaveBeenCalledWith(ID, 'Welcome discount', expect.objectContaining({
-      template_id: 'alternate', template: { tree: ENTRY.tree, tokens: { ...ENTRY.tokens, bg: '#123456' } },
-    }), undefined, 'alternate');
+      template_id: ALTERNATE.id, template: { tree: ALTERNATE.tree, tokens: { ...ALTERNATE.tokens, bg: '#123456' } },
+    }), undefined, ALTERNATE.id);
+  });
+
+  it('keeps the original draft and returns focus when applying a design fails', async () => {
+    loadAlternate();
+    templates.prepareTemplate.mockRejectedValue(new Error('The design could not be prepared. Try again.'));
+    open();
+    await userEvent.click(await screen.findByRole('button', { name: 'Change template' }));
+    const picker = within(await screen.findByRole('dialog'));
+    const alternateCard = picker.getByText(ALTERNATE.name).closest('li') as HTMLElement;
+    await userEvent.click(within(alternateCard).getByRole('button', { name: 'Preview design' }));
+    await userEvent.click(picker.getByRole('button', { name: 'Use this design' }));
+    expect(await screen.findByText('The design could not be prepared. Try again.')).toBeVisible();
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Change template' })).toHaveFocus());
+    expect(screen.getByText(ENTRY.name)).toBeInTheDocument();
+    expect(screen.queryByText(ALTERNATE.name)).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Undo' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
+    expect(builder.saveOptin).not.toHaveBeenCalled();
   });
 });

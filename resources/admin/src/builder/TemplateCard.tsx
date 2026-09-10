@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { __ } from '@wordpress/i18n';
+import { Button } from '../components/ui/button';
 import { Skeleton } from '../components/ui/skeleton';
 import { Description } from '../shell/Description';
 import { Preview } from './Preview';
@@ -128,6 +130,8 @@ export interface TemplateCardProps {
   readonly action: (describedBy: string) => ReactNode;
   /** This card is near the viewport and its design is worth fetching. */
   readonly onNear?: (id: string) => void;
+  readonly loadError?: boolean;
+  readonly onRetry?: () => void;
 }
 
 export function TemplateCard({
@@ -141,6 +145,8 @@ export function TemplateCard({
   absent,
   action,
   onNear,
+  loadError = false,
+  onRetry,
 }: TemplateCardProps) {
   const card = useRef<HTMLLIElement>(null);
   /*
@@ -201,6 +207,7 @@ export function TemplateCard({
 
   const nameId = `wconvert-design-${id}`;
   const reasonId = `wconvert-refused-${id}`;
+  const notesId = `wconvert-design-notes-${id}`;
 
   return (
     <li
@@ -229,7 +236,14 @@ export function TemplateCard({
       {absent !== undefined ? (
         <div className="wconvert-gallery__absent">{absent}</div>
       ) : near && template !== undefined ? (
-        <Preview template={template} />
+        <div className="wconvert-gallery__preview flex min-w-0 flex-1" inert aria-hidden="true">
+          <Preview template={template} />
+        </div>
+      ) : loadError ? (
+        <div className="wconvert-gallery__waiting wconvert-gallery__error">
+          <Description>{__('Preview could not be loaded.', 'wconvert')}</Description>
+          {onRetry !== undefined && <Button variant="outline" size="sm" onClick={onRetry} aria-describedby={nameId}>{__('Retry preview', 'wconvert')}</Button>}
+        </div>
       ) : (
         <div className="wconvert-gallery__waiting">
           <Skeleton aria-hidden="true" className="size-full" />
@@ -257,9 +271,9 @@ export function TemplateCard({
           so the button announces why it cannot be pressed rather than
           announcing only that it cannot.
         */}
-        {notes !== undefined && <Description>{notes}</Description>}
+        {notes !== undefined && <Description id={notesId}>{notes}</Description>}
         {reason !== null && <Description id={reasonId}>{reason}</Description>}
-        {action(reason !== null ? `${nameId} ${reasonId}` : nameId)}
+        {action([nameId, reason !== null ? reasonId : null, notes !== undefined ? notesId : null].filter(Boolean).join(' '))}
       </div>
     </li>
   );

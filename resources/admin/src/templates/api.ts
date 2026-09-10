@@ -34,18 +34,19 @@ export interface TemplateFacets {
    * construction because an entry offering two or none is refused at
    * registration (ADR 0020).
    *
-   * **Not a filter.** It is the refusal marking: a design converting on a click
-   * cannot serve a [[Goal]] that counts submissions, and that is said on the
-   * card with the reason rather than hidden by a control (ADR 0025). Null on a
-   * locked card, which is never offered and so is never refused.
+   * An optional merchant-chosen gallery filter, never preselected from a Goal
+   * (ADR 0069). Goals do not refuse an act; a change still warns about reporting
+   * history, and A/B siblings must agree (ADR 0059). Null on a locked card,
+   * whose design is not available for inspection or compatibility checks.
    */
   act: 'submit' | 'click' | null;
-  /** What a visitor is asked for, in manifest order. */
+  /** What a visitor is asked for, in manifest order. Gallery selections require every chosen field. */
   captures: string[];
-  /** Step 0's root layout — `stack`, `row` or `split`. */
+  /** Step 0's root layout, from the manifest's layout vocabulary. */
   shape: string | null;
+  /** Image nodes or image URLs in painted backgrounds; decorative gradients do not count. */
   has_image: boolean;
-  /** Derived and carried, and never a chip: nobody browses designs by this. */
+  /** Shown as a detail-preview fact, rather than a gallery filter. */
   asks_consent: boolean;
 }
 
@@ -69,7 +70,7 @@ export interface TemplateIndexEntry {
   id: string;
   name: string;
   display_type: string;
-  /** `free` or `pro`. The one AUTHORED fact about an entry. */
+  /** The registry's tier id. The one AUTHORED facet of an entry. */
   tier: string;
   /**
    * `ready` or `locked`, resolved on the server, and never `unavailable`: no
@@ -224,7 +225,7 @@ export interface TemplateLabels {
  * `layoutParamValues` take — because the value IS the identity and an id would
  * be a second spelling of something the manifest already spells once.
  *
- * Two of the three borrow words the admin already says: a `shape` chip and a
+ * Shape and capture choices borrow words the admin already says: a `shape` chip and a
  * row in the structure editor name the same layout, composed from one string on
  * the server so a translator has one to get right rather than two that must
  * agree.
@@ -240,13 +241,14 @@ export interface TemplateLabelsWithFacets extends TemplateLabels {
  *
  * The vocabulary comes from `resources/templates/manifest.json` rather than
  * from this bundle, which is ADR 0010's rule read literally: a control that
- * ENUMERATES reads its enumeration from the manifest. A facet added there
- * arrives as a chip strip with nothing in this file edited.
+ * ENUMERATES reads its enumeration from the manifest. The picker presents
+ * relevant values for the current Display Type and keeps secondary choices in
+ * More filters; it does not need every preview tree to derive the controls.
  */
 export interface TemplateIndex {
   templates: TemplateIndexEntry[];
   labels: TemplateLabelsWithFacets;
-  /** `{ shape: [...], captures: [...], has_image: ['true'] }`, in chip order. */
+  /** `{ shape: [...], captures: [...], has_image: ['true'] }`, in vocabulary order. */
   facets: Record<string, string[]>;
 }
 
@@ -255,15 +257,16 @@ export const listTemplates = () => apiFetch<TemplateIndex>({ path: '/wconvert/v1
 /**
  * The designs behind a handful of cards — the ones on screen.
  *
- * Batched into one request because a grid brings a row into view at a time and
- * one fetch per card is a request storm the moment somebody scrolls. Capped on
- * the server at what a full screen of cards can be, so a hand-written URL
+ * Nearby cards are batched into requests of at most 24 ids, matching the server
+ * cap. One fetch per card would create a request storm when scrolling. The cap
+ * also means a hand-written URL
  * cannot ask for the whole library back through the route built to avoid
  * sending it.
  *
  * An id with no design behind it — a locked card, an entry this install no
- * longer ships — is simply absent from the answer rather than an error. The
- * card that asked keeps what it had.
+ * longer ships — is simply absent from the answer rather than an error. An
+ * absent requested preview is a local load failure with explicit Retry in the
+ * picker, as is a rejected request; viewport re-entry does not retry it forever.
  */
 export const getTemplateTrees = (ids: readonly string[]) =>
   apiFetch<{ templates: TemplateDesign[] }>({

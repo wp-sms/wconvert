@@ -99,12 +99,18 @@ onto the capture, it holds under every Goal including one this install can no
 longer resolve, which is the lapse a Goal-keyed check would have had
 ([ADR 0026](0026-a-goal-the-site-cannot-serve-is-hidden.md)).
 
-**Not a filter.** Pre-pressing a captures chip in the gallery for a Goal would
+**Never a Goal-imposed filter.** Pre-pressing a captures chip in the gallery for a Goal would
 be a Goal facet in a captures chip's clothes, which
 [ADR 0043](0043-the-library-is-indexed-and-its-facets-are-derived.md) forbids
 outright — and on today's library the SMS Goal would open showing **one**
 design. Which detail to ask a visitor for stays silent altogether: email against
 phone is the merchant's judgement, and nothing enforces it.
+
+As amended by
+[ADR 0069](0069-the-library-helps-merchants-compare-before-applying.md), the
+merchant may explicitly narrow designs by **Fill in a form / Follow a link**
+or the details a form must include. These are optional capability choices; a
+Goal does not preselect them, and they do not alter the compatibility checks.
 
 ### 2. An A/B arm's design converts the same way as its siblings'
 
@@ -160,8 +166,9 @@ contradicting each other:
 | **Why** | the headline number is literally unreachable | the number is fine and measures something else |
 
 It is a note and never a refusal, because refusing would put back the wall this
-document removed, one predicate over. And never a gallery filter, for
-ADR 0043's reason above.
+document removed, one predicate over. Nor does this Goal note automatically
+filter the gallery, for ADR 0043's reason above. The merchant's explicit
+capability filters follow ADR 0069; they do not derive from `growsAList()`.
 
 ## Two consequences accepted rather than fixed
 

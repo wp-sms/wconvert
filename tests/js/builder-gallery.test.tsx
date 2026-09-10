@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import type { Template } from '../../resources/renderer/src/types';
@@ -22,8 +22,8 @@ import type {
  * or whether an off-screen one costs anything. Deferred mounting is worse than
  * invisible: jsdom has no `IntersectionObserver` at all, so every card in this
  * file reports itself near the viewport and mounts — which is the documented
- * degradation ({@see TemplateCard}) and is exactly why the browser pass drives
- * this with Playwright rather than the Chrome extension.
+ * degradation ({@see TemplateCard}). Geometry and keyboard behavior also need
+ * verification in the real WordPress browser.
  *
  * What IS assertable is everything the merchant reads: which designs a chip
  * leaves on screen, what a locked card offers instead of a design, and that a
@@ -284,6 +284,37 @@ describe('a design that converts the other way', () => {
   });
 });
 
+describe('comparing cards before previewing', () => {
+  it('describes the actual fields or link action and reserves change warnings for Apply', async () => {
+    const onPreview = vi.fn();
+    const onChoose = vi.fn();
+    const both = card({ id: 'both', name: 'Choose your channel', captures: ['email', 'phone'] });
+    render(
+      <Gallery entries={[both, CLICKS]} trees={TREES} labels={LABELS} chosen={undefined}
+        fit={ANY} busy={false} onChoose={onChoose} onNear={vi.fn()} onPreview={onPreview} />,
+    );
+
+    expect(within(cardFor('Choose your channel')).getByText('Collects Email address, Phone number')).toBeInTheDocument();
+    expect(within(cardFor('Offer panel')).getByText('Follows a link')).toBeInTheDocument();
+    expect(screen.queryByText(/Counts click-throughs instead of submissions/)).toBeNull();
+
+    await userEvent.click(within(cardFor('Offer panel')).getByRole('button', { name: 'Preview design' }));
+    expect(onPreview).toHaveBeenCalledWith('offer-panel');
+    expect(onChoose).not.toHaveBeenCalled();
+  });
+
+  it('keeps compatibility reasons visible alongside the concise summary', () => {
+    render(
+      <Gallery entries={[CLICKS]} trees={TREES} labels={LABELS} chosen={undefined}
+        fit={{ ...ANY, bound: true }} busy={false} onChoose={vi.fn()} onNear={vi.fn()} onPreview={vi.fn()} />,
+    );
+
+    expect(screen.getByText('Follows a link')).toBeInTheDocument();
+    expect(screen.getByText(/no leads to send/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Preview design' })).toBeEnabled();
+  });
+});
+
 describe('a design that counts nothing at all', () => {
   /**
    * **The worse failure, and it kept its words.** It renders, publishes and
@@ -525,7 +556,7 @@ describe('a design this install does not have', () => {
 // THE TOOLBAR.
 // =============================================================================
 
-/** Ten designs, which is past the point where narrowing is worth a toolbar. */
+/** Nine popup designs and one design excluded by the Optin's display type. */
 const LIBRARY: TemplateIndexEntry[] = [
   card({ id: 'a-column-email', name: 'Column email' }),
   card({ id: 'b-column-phone', name: 'Column phone', captures: ['phone'] }),
@@ -555,32 +586,31 @@ const picker = (entries: TemplateIndexEntry[], displayType = 'popup') =>
 
 /** Every design name currently on screen, in grid order. */
 const shown = () =>
-  [...document.querySelectorAll('.wconvert-gallery__card [id^="wconvert-design-"]')].map(
-    (each) => each.textContent,
+  [...document.querySelectorAll('.wconvert-gallery__card')].map(
+    (each) => each.querySelector('[id^="wconvert-design-"]')?.textContent,
   );
 
 describe('the toolbar', () => {
-  /**
-   * **It appears only when the set is large enough to need it**, which is the
-   * toolbar's own rule for the count read one control over: *a count is stated
-   * only where the set can be large enough to need one*. A chip strip over
-   * eight designs is a line that taxes every visit and informs none
-   * (ADR 0042 rule 2), and a fresh install is exactly that.
-   */
-  it('is absent on a library small enough to read', () => {
+  it('keeps search and field requirements available on a small library', () => {
     picker(LIBRARY.slice(0, 5));
 
-    expect(screen.queryByRole('group', { name: 'Shape' })).toBeNull();
-    expect(screen.queryByRole('searchbox')).toBeNull();
-    expect(screen.getAllByRole('listitem').length).toBeGreaterThan(0);
+    expect(screen.getByRole('searchbox', { name: 'Search designs' })).toBeInTheDocument();
+    expect(screen.getByRole('group', { name: 'Must include' })).toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent('5 of 5 designs');
+    expect(shown()).toHaveLength(5);
   });
 
-  it('appears once there are enough designs to narrow', () => {
+  it('puts field requirements first and layout inside More filters', async () => {
     picker(LIBRARY);
 
-    expect(screen.getByRole('group', { name: 'Shape' })).toBeInTheDocument();
-    expect(screen.getByRole('group', { name: 'Asks for' })).toBeInTheDocument();
-    expect(screen.getByRole('group', { name: 'Picture' })).toBeInTheDocument();
+    expect(screen.getByRole('group', { name: 'Must include' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'With a picture' })).toBeInTheDocument();
+    expect(screen.queryByRole('group', { name: 'Layout' })).toBeNull();
+    const more = screen.getByRole('button', { name: 'More filters' });
+    expect(more).toHaveAttribute('aria-expanded', 'false');
+    await userEvent.click(more);
+    expect(more).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByRole('group', { name: 'Layout' })).toBeInTheDocument();
   });
 
   /**
@@ -591,13 +621,15 @@ describe('the toolbar', () => {
   it('counts what is on screen, out loud', async () => {
     picker(LIBRARY);
 
-    const count = screen.getByText('9 designs');
+    const count = screen.getByRole('status');
 
+    expect(count).toHaveTextContent('9 of 9 designs');
     expect(count.closest('[aria-live="polite"]')).not.toBeNull();
 
+    await userEvent.click(screen.getByRole('button', { name: 'More filters' }));
     await userEvent.click(screen.getByRole('button', { name: 'Row' }));
 
-    expect(screen.getByText('2 designs')).toBeInTheDocument();
+    expect(count).toHaveTextContent('2 of 9 designs');
   });
 
   /** One Template serves exactly one Display Type, so it is not asked twice. */
@@ -613,19 +645,16 @@ describe('narrowing the library', () => {
   it('keeps only the designs arranged that way', async () => {
     picker(LIBRARY);
 
+    await userEvent.click(screen.getByRole('button', { name: 'More filters' }));
     await userEvent.click(screen.getByRole('button', { name: 'Side by side' }));
 
     expect(shown()).toEqual(['Split photo', 'Split email']);
   });
 
-  /**
-   * **OR within a facet**, which is what pressing two chips means — and it is
-   * why there is no "All" chip: nothing pressed is no constraint, so the
-   * unfiltered state is the empty one.
-   */
-  it('widens within one facet and narrows across two', async () => {
+  it('allows alternative layouts while still requiring the selected field', async () => {
     picker(LIBRARY);
 
+    await userEvent.click(screen.getByRole('button', { name: 'More filters' }));
     await userEvent.click(screen.getByRole('button', { name: 'Row' }));
     await userEvent.click(screen.getByRole('button', { name: 'Side by side' }));
 
@@ -644,6 +673,7 @@ describe('narrowing the library', () => {
   it('says a chip is pressed as a state rather than as a colour', async () => {
     picker(LIBRARY);
 
+    await userEvent.click(screen.getByRole('button', { name: 'More filters' }));
     const chip = screen.getByRole('button', { name: 'Row' });
 
     expect(chip).toHaveAttribute('aria-pressed', 'false');
@@ -659,6 +689,43 @@ describe('narrowing the library', () => {
     await userEvent.click(screen.getByRole('button', { name: 'With a picture' }));
 
     expect(shown()).toEqual(['Split photo', 'Column photo']);
+  });
+
+  it('requires both Email and Phone and explains the narrowed result count', async () => {
+    picker([
+      card({ id: 'email-only', name: 'Quiet invitation', captures: ['email'] }),
+      card({ id: 'phone-only', name: 'Quick updates', captures: ['phone'] }),
+      card({ id: 'both-fields', name: 'Choose your channel', captures: ['email', 'phone'] }),
+    ]);
+
+    const fields = within(screen.getByRole('group', { name: 'Must include' }));
+    await userEvent.click(fields.getByRole('button', { name: 'Email address' }));
+    expect(shown()).toEqual(['Quiet invitation', 'Choose your channel']);
+    await userEvent.click(fields.getByRole('button', { name: 'Phone number' }));
+
+    expect(shown()).toEqual(['Choose your channel']);
+    expect(screen.getByRole('status')).toHaveTextContent('1 of 3 designs');
+    expect(fields.getByRole('button', { name: 'Email address' })).toHaveAttribute('aria-pressed', 'true');
+    expect(fields.getByRole('button', { name: 'Phone number' })).toHaveAttribute('aria-pressed', 'true');
+
+    await userEvent.click(screen.getByRole('button', { name: 'Remove filter: Email address' }));
+    expect(shown()).toEqual(['Quick updates', 'Choose your channel']);
+  });
+
+  it('lets merchants show installed designs while keeping the full library recoverable', async () => {
+    picker([ENTRIES[0], LOCKED]);
+    expect(shown()).toEqual(['Centred card', 'Two-column offer']);
+
+    await userEvent.click(screen.getByRole('button', { name: 'More filters' }));
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Available on this site' }));
+
+    expect(shown()).toEqual(['Centred card']);
+    expect(screen.getByRole('status')).toHaveTextContent('1 of 2 designs');
+    expect(screen.queryByRole('link', { name: 'See this design' })).toBeNull();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Clear filters' }));
+    expect(shown()).toEqual(['Centred card', 'Two-column offer']);
+    expect(screen.getByRole('checkbox', { name: 'Available on this site' })).not.toBeChecked();
   });
 });
 
@@ -676,6 +743,17 @@ describe('searching the library', () => {
     await userEvent.type(screen.getByRole('searchbox'), 'SPLIT');
 
     expect(shown()).toEqual(['Split photo', 'Split email']);
+  });
+
+  it('finds a design by its fields and imagery without needing those words in its name', async () => {
+    picker([
+      card({ id: 'fieldwork', name: 'Fieldwork', captures: ['email'], has_image: true }),
+      card({ id: 'quieter-frequency', name: 'A quieter frequency', captures: ['email'] }),
+    ]);
+
+    await userEvent.type(screen.getByRole('searchbox'), 'email picture');
+    expect(shown()).toEqual(['Fieldwork']);
+    expect(screen.getByRole('status')).toHaveTextContent('1 of 2 designs');
   });
 
   /**
@@ -698,12 +776,46 @@ describe('searching the library', () => {
   it('clears the chips as well as the box', async () => {
     picker(LIBRARY);
 
+    await userEvent.click(screen.getByRole('button', { name: 'More filters' }));
     await userEvent.click(screen.getByRole('button', { name: 'Side by side' }));
     await userEvent.type(screen.getByRole('searchbox'), 'zzz');
     await userEvent.click(screen.getByRole('button', { name: 'Clear filters' }));
 
     expect(screen.getByRole('button', { name: 'Side by side' })).toHaveAttribute('aria-pressed', 'false');
     expect(shown()).toHaveLength(9);
+  });
+});
+
+describe('inspecting before applying a design', () => {
+  it('preserves the query and filters on Back without changing the draft', async () => {
+    const onChoose = vi.fn();
+    render(
+      <TemplatePicker index={{ templates: ENTRIES, labels: LABELS, facets: FACETS }} trees={TREES}
+        displayType="popup" chosen={undefined} fit={ANY} busy={false} onChoose={onChoose} onNear={vi.fn()} />,
+    );
+    await userEvent.type(screen.getByRole('searchbox'), 'centred');
+    await userEvent.click(screen.getByRole('button', { name: 'Email address' }));
+    const preview = screen.getByRole('button', { name: 'Preview design' });
+    await userEvent.click(preview);
+
+    expect(screen.queryByRole('searchbox')).toBeNull();
+    expect(screen.getByRole('heading', { name: 'Centred card' })).toHaveFocus();
+    expect(screen.getByText('Preview with sample content')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Mobile' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Success screen' }));
+    expect(onChoose).not.toHaveBeenCalled();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Back to designs' }));
+    expect(screen.getByRole('searchbox')).toHaveValue('centred');
+    expect(screen.getByRole('button', { name: 'Email address' })).toHaveAttribute('aria-pressed', 'true');
+    expect(shown()).toEqual(['Centred card']);
+    await waitFor(() => expect(preview).toHaveFocus());
+    expect(onChoose).not.toHaveBeenCalled();
+
+    await userEvent.click(preview);
+    await userEvent.click(screen.getByRole('button', { name: 'Use this design' }));
+    expect(onChoose).toHaveBeenCalledTimes(1);
+    expect(onChoose).toHaveBeenCalledWith('centred-card');
   });
 });
 
@@ -716,7 +828,7 @@ describe('a Display Type with no designs', () => {
     picker(LIBRARY, 'floating_bar');
 
     expect(screen.getByText(/No designs for/)).toBeInTheDocument();
-    expect(screen.queryByRole('group', { name: 'Shape' })).toBeNull();
+    expect(screen.queryByRole('searchbox')).toBeNull();
   });
 });
 
@@ -729,11 +841,8 @@ describe('a Display Type with no designs', () => {
  * because a Goal that counted clicks refused every submit-metered design in the
  * library — which is most of it.
  *
- * **No Goal refuses a design for its act now** (ADR 0059), so the state is
- * unreachable. And the door was dead code even while it was reachable: it
- * appeared only when the set was narrowed, and the toolbar that narrows it
- * renders at nine designs per [[Display Type]] while free ships eight popup
- * entries and six inline ones. There were no chips to clear.
+ * **No Goal refuses a design for its act now** (ADR 0059). The design remains
+ * inspectable, and the detail explains what applying it would change.
  */
 describe('the note about a Goal every design refuses', () => {
   it('is gone, and no card is greyed for its act', async () => {
@@ -750,11 +859,13 @@ describe('the note about a Goal every design refuses', () => {
       />,
     );
 
+    await userEvent.click(screen.getByRole('button', { name: 'More filters' }));
     await userEvent.click(screen.getByRole('button', { name: 'Column' }));
     await userEvent.click(screen.getByRole('button', { name: 'Phone number' }));
 
     expect(screen.queryByText(/None of these counts/)).toBeNull();
     expect(screen.queryByText(/change the Goal/i)).toBeNull();
-    expect(screen.getAllByRole('button', { name: /Use this design/ }).every((each) => !each.hasAttribute('disabled'))).toBe(true);
+    expect(shown()).toEqual(['Column phone']);
+    expect(screen.getByRole('button', { name: 'Preview design' })).toBeEnabled();
   });
 });
