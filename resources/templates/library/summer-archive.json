@@ -1,0 +1,147 @@
+{
+  "id": "summer-archive",
+  "name": "The summer archive",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#f45a31",
+    "fg": "#3a1d14",
+    "muted": "#583021",
+    "accent": "#331e17",
+    "accent-fg": "#fff8ec",
+    "border": "#b34024",
+    "input-bg": "#fff8ec",
+    "font": "'DM Sans', system-ui, sans-serif",
+    "heading-font": "'Barlow Condensed', Impact, 'Arial Narrow', sans-serif",
+    "heading-size": "1.9rem",
+    "heading-weight": "700",
+    "tracking": "-0.025em",
+    "text-size": "0.75rem",
+    "leading": "1.6",
+    "radius": "0",
+    "pad": "0",
+    "gap": "0",
+    "width": "40rem",
+    "shadow": "0 25px 50px -30px rgba(99, 40, 20, 0.5), 0 5px 13px -10px rgba(99, 40, 20, 0.25)",
+    "backdrop": "rgba(58, 29, 20, 0.55)"
+  },
+  "tree": {
+    "steps": [
+      {
+        "type": "panel",
+        "tokens": {
+          "pad": "1.88rem",
+          "gap": "1.5rem"
+        },
+        "narrow": {
+          "pad": "1.81rem 1.5rem 1.56rem",
+          "gap": "1.31rem"
+        },
+        "children": [
+          {
+            "type": "split",
+            "ratio": 0.65,
+            "start": [
+              {
+                "type": "stack",
+                "tokens": {
+                  "gap": "1.69rem"
+                },
+                "narrow": {
+                  "gap": "1.5rem"
+                },
+                "children": [
+                  {
+                    "type": "heading",
+                    "id": "n1",
+                    "level": 2,
+                    "size": "xs",
+                    "role": "wordmark",
+                    "text": "weekender / archive"
+                  },
+                  {
+                    "type": "stack",
+                    "tokens": {
+                      "gap": "0.5rem"
+                    },
+                    "children": [
+                      {
+                        "type": "eyebrow",
+                        "id": "n2",
+                        "role": "eyebrow",
+                        "text": "The summer edit"
+                      },
+                      {
+                        "type": "heading",
+                        "id": "n3",
+                        "size": "3xl",
+                        "role": "headline",
+                        "text": "Good days.\n30% off."
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "end": [
+              {
+                "type": "stack",
+                "tokens": {
+                  "gap": "1.25rem"
+                },
+                "children": [
+                  {
+                    "type": "stack",
+                    "tokens": {
+                      "gap": "0.56rem"
+                    },
+                    "children": [
+                      {
+                        "type": "divider",
+                        "id": "n4"
+                      },
+                      {
+                        "type": "eyebrow",
+                        "id": "n10",
+                        "role": "eyebrow",
+                        "text": "The sale ends in"
+                      },
+                      {
+                        "type": "countdown",
+                        "id": "n5"
+                      },
+                      {
+                        "type": "divider",
+                        "id": "n6"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "text",
+                    "id": "n7",
+                    "role": "body",
+                    "text": "Linen shirts. Easy shorts.\nLast season, still a good idea."
+                  },
+                  {
+                    "type": "button",
+                    "id": "n8",
+                    "role": "cta_label",
+                    "label": "Shop the summer sale",
+                    "action": "link"
+                  },
+                  {
+                    "type": "text",
+                    "id": "n9",
+                    "size": "s",
+                    "role": "fine_print",
+                    "text": "Selected summer styles only. Prices as marked. No code needed."
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

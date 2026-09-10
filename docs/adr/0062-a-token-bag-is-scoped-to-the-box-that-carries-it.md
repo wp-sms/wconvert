@@ -332,10 +332,22 @@ admission test ADR 0061 set for a vocabulary member.
   plainest design is how it would have gone on passing while the designs a
   merchant actually picks moved the number.
 
+  > *Corrected by the port of six reference designs.* Deriving was right and
+  > **both halves of how were wrong.** Ten is not a page — at most one overlay
+  > wins a page view — and it is now five, at which the costliest design
+  > measures 1,854 B of 2,048. And *richest* was measured as one snapshot
+  > gzipped ALONE, which does not order designs the way a page does: on a page
+  > the art dedupes across the copies and the diverged copy does not, so the
+  > cost follows text-node count rather than solo bytes. The picker measured
+  > `fieldwork` at 913 B and missed designs costing 60–80 B more per page — the
+  > shape of failure this bullet was written to prevent, one level in. It now
+  > measures the page. **The budget still stands and the measuring still does
+  > the moving.**
+
   `LibraryLintTest` gains a **per-design cap**, `DesignBudget::PER_DESIGN`,
   which is `PER_PAGE / 2`: a design costing more than half a page measured alone
   is one design eating a page two Optins are meant to share. The richest design
-  shipped is 677 B, so the line is generous — it is not a target, and a cap that
+  shipped is 677 B (1,004 B once the reference designs landed), so the line is generous — it is not a target, and a cap that
   argues with ordinary authoring is one people route around. What it catches is
   the realistic failure, an embedded raster image, which the per-page test would
   report two commits later naming a page rather than a design.
