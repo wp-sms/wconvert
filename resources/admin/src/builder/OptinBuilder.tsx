@@ -69,11 +69,14 @@ import { formatCount, formatRate } from '../stats/format';
 import { readDestinations, type DestinationsPayload } from '../destinations/api';
 import { adminSettings } from '../settings';
 import { publishOptin } from '../optins/api';
+import type { EditingState } from '../hooks/useAdminNavigation';
 import type { Template, Tokens as TokenBag } from '@renderer/types';
 
 export interface OptinBuilderProps {
   readonly id: string;
   readonly onClose: () => void;
+  readonly backLabel?: string;
+  readonly onEditingStateChange?: (state: EditingState) => void;
 }
 
 type Config = Record<string, unknown>;
@@ -100,7 +103,7 @@ function typesInto(target: EventTarget | null): boolean {
   );
 }
 
-export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
+export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange }: OptinBuilderProps) {
   const [name, setName] = useState('');
   const [config, setConfig] = useState<Config | null>(null);
   const [goal, setGoal] = useState<string | null>(null);
@@ -124,6 +127,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
   const [saved, setSaved] = useState(false);
   const [baseline, setBaseline] = useState('');
   const dirty = config !== null && baseline !== JSON.stringify({ name, config });
+  useEffect(() => { onEditingStateChange?.({ dirty, busy }); }, [dirty, busy, onEditingStateChange]);
   const [showLayers, setShowLayers] = useState(false);
   const [previewing, setPreviewing] = useState(false);
   const [preparing, setPreparing] = useState(false);
@@ -504,19 +508,12 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
 
   const leave = () => (dirty ? setLeaving(true) : onClose());
 
-  useEffect(() => {
-    const follow = () => leave();
-
-    window.addEventListener('hashchange', follow);
-
-    return () => window.removeEventListener('hashchange', follow);
-  });
 
   if (fatal !== null) {
     return (
       <div className="flex flex-col gap-5">
         <PageAction>
-          <BackLink onClose={onClose} />
+          <BackLink onClose={onClose} label={backLabel} />
         </PageAction>
         <Region label={__('Optin builder', 'wconvert')}>
           <RegionErrorState message={fatal} />
@@ -526,7 +523,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
   }
 
   if (config === null || vocabulary === null || gallery === null) {
-    return <BuilderSkeleton onClose={onClose} />;
+    return <BuilderSkeleton onClose={onClose} backLabel={backLabel} />;
   }
 
   const previewPane =
@@ -572,7 +569,8 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
           type="button"
           variant="ghost"
           size="icon-sm"
-          aria-label={__('Back to Optins', 'wconvert')}
+          aria-label={backLabel ?? __('Back to Optins', 'wconvert')}
+          title={backLabel ?? __('Back to Optins', 'wconvert')}
           onClick={leave}
         >
           <ArrowLeft aria-hidden="true" />

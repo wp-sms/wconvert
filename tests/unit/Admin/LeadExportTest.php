@@ -6,6 +6,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use WConvert\Admin\LeadExport;
 use WConvert\Lead\LeadCsv;
+use WConvert\Lead\LeadQuery;
 use WConvert\Lead\LeadRepository;
 use WConvert\Milestone\MilestoneStore;
 use WConvert\Optin\OptinRepository;
@@ -131,4 +132,22 @@ final class LeadExportTest extends TestCase
         $this->assertStringContainsString('lead_id', $csv);
         $this->assertSame(1, substr_count(trim($csv), "\n") + 1);
     }
+    public function testEveryStreamedBatchKeepsTheAppliedFiltersAndSnapshotButNotTheUiPageCursor(): void
+    {
+        $snapshot = '01J99999990000000000000000';
+        $last = '01J0000000AAAAAAAAAAAAAAAA';
+        $query = new LeadQuery(optinId: '01J0000000BBBBBBBBBBBBBBBB', identifier: 'sarah@example.com',
+            from: '2026-08-01', to: '2026-08-31', snapshot: $snapshot, before: '01J0000000CCCCCCCCCCCCCCCC');
+        $this->db->answers = [[], [self::leadRow($last)], []];
+        $handle = fopen('php://memory', 'r+');
+        self::assertNotFalse($handle);
+        $this->export->stream($handle, $query->optinId, $query);
+        fclose($handle);
+        $filters = $query->constraints()['params'];
+        $this->assertSame([...$filters, '', 500], $this->db->reads[1]['params']);
+        $this->assertSame([...$filters, $last, 500], $this->db->reads[2]['params']);
+        $this->assertStringContainsString('optin_id = %s AND email = %s', $this->db->reads[1]['sql']);
+        $this->assertSame([], $this->db->writes);
+    }
+
 }

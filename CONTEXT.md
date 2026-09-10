@@ -56,6 +56,13 @@ invented.
 
 WConvert owns Leads.
 
+The capture-history read can locate a complete canonical email/phone or exact
+Lead ID, narrow by Optin and site-calendar dates, and page the matching events.
+Grouping and group drilldown remain views of those events, not Contact profiles.
+CSV takes all retained matches under the view's upper capture bound, not just
+the visible page. Newer captures require refresh; deletion can still remove
+earlier rows. See [ADR 0071](docs/adr/0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md).
+
 ### Conversion
 
 A visitor doing the thing an [[Optin]] exists to make them do — the countable
@@ -245,6 +252,12 @@ by the whole log.
 A Retention Period is disclosed: the privacy-policy text WConvert registers
 states the configured period, so setting one writes the merchant's disclosure
 for them.
+
+The admin's controls are a draft until **Save retention**. Enabling or changing
+automatic deletion confirms the actual chosen days before writing; typing,
+clearing or leaving the number field does not commit a policy. The disclosure
+continues to describe the saved setting if a write fails. This changes no
+existing option/default or prune behavior ([ADR 0071](docs/adr/0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md)).
 
 ### Optin
 
@@ -971,11 +984,15 @@ rather than a step in anyone's journey
 visible to the *merchant*, on Destination health and in the failure ring, which
 is where it can be acted on.
 
-A **test send** is the merchant's own address pushed to a Destination to prove it
-works. It writes no Lead — a Lead has exactly one origin and carries a
+A **test send** pushes an explicitly chosen sample email to the Destination's
+saved route. The merchant sees the recipient and possible external effect
+before sending; the WordPress profile supplies a visible suggestion, never an
+implicit endpoint default. The sample contains email only. It writes no Lead —
+a Lead has exactly one origin and carries a
 [[Consent Record]] that cannot be invented — it is answered immediately rather
 than queued, and it moves no counter at all: a failed test is a question
-answered, not an outage.
+answered, not an outage. Success establishes a handoff, not subscription or
+inbox receipt ([ADR 0071](docs/adr/0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md)).
 
 Its sibling is a **connection test**, and the two are kept apart because they
 answer different questions. A connection test asks whether the stored
@@ -985,6 +1002,14 @@ credentials are fine and the [[Lead]] is not arriving. A Destination whose type
 has no [[Connection]] has nothing to check and says so — every free type is in
 that state — because reporting success there would teach the merchant that this
 button is the other one.
+
+Recovery remains broad: re-push uses retained Leads from Optins whose published
+configuration binds the Destination, since its last success. It can replay an
+already successful send; a displayed failure row or skipped count is not its
+exact selection. The report's delivery gap is narrower knowledge still: a
+same-period difference of daily conversion/send totals, not a per-Lead pending
+or failure count. Named-route and capture links help investigate those facts
+without creating a delivery ledger ([ADR 0071](docs/adr/0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md)).
 
 ### Connection
 

@@ -192,18 +192,12 @@ final class Dashboard
      * also absorbs the two replay seams
      * {@see \WConvert\Destination\LeadMagnet\DeliveryCount} names.
      *
-     * A count here is *not yet delivered* rather than *failed*: a Conversion
-     * whose push is still queued or backing off is in it. That is the honest
-     * reading of the subtraction and the copy on the card says so.
-     *
-     * **And the field is named for that reading.** It shipped as
-     * `delivery_failures`, which was wrong twice over: it contradicted its own
-     * copy, and it collided with
-     * {@see \WConvert\Destination\DeliveryFailures} — a bounded ring of
-     * ~200 *terminal* failures, which is the opposite population. One name for
-     * two opposite things is the collision CONTEXT.md's glossary exists to
-     * stop, so the payload field is `undelivered_conversions` and the class
-     * keeps the name that describes what it holds.
+     * This is an aggregate difference within the selected daily window,
+     * not a per-Lead pending or failed population. Delayed deliveries and
+     * replayed sends can offset submissions from different captures. The UI
+     * names the period difference and links to Destination health for evidence.
+     * `undelivered_conversions` retains its existing payload key; terminal
+     * failures are separately held by Destination\DeliveryFailures.
      *
      * It walks the Goal's slice a second time rather than being handed
      * {@see self::numbers()}'s totals. Two parameters that must agree — `$rows`

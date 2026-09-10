@@ -91,6 +91,16 @@ out of the reach of an email-addressed request.*
   absent all read as *keep forever*, deliberately: a merchant clearing the field
   is turning retention off, and the reading that empties their log on the next
   cron run is the one this must never take.
+  *The admin interaction is made explicit by
+  [0071](0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md).
+  The option's empty/nonpositive reading remains keep-forever, but clearing a
+  number field does not itself write an option. The controls hold a local draft;
+  Save retention validates and confirms the exact chosen automatic-deletion
+  period before writing, including changes to an existing period. Keeping
+  forever is a separate choice followed by Save. Errors preserve the draft and
+  the disclosure continues to state the saved policy. Neither selecting a radio
+  nor typing/blur commits a suggested period. No existing site's option or daily
+  prune behavior changes through this UI revision.*
 - Client-side visitor state is untouched by erasure, and correctly so — after
   [ADR 0017](0017-no-visitor-identifier.md) it contains no personal data.
 - **The prune is a range over the primary key, not over `created_at`.** See

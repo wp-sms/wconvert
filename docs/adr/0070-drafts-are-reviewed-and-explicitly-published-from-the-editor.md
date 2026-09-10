@@ -84,5 +84,8 @@ indication, empty-design rejection, destination creation without automatic
 binding, shared-settings scope, missing-reference cleanup, and placement copy.
 Check dialog focus and busy-state behavior in WordPress. Tests and browser
 evidence are recorded in the review after they run; this decision claims no
-verified provider delivery. Addressable editor URLs, richer provider metadata,
-capture-field expansion and delivery recovery remain separate work.
+verified provider delivery. Addressable editor URLs and connected capture/recovery
+flows are now covered by
+[0071](0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md),
+including guarded dirty/busy navigation and exact test recipients. Richer provider
+metadata and capture-field expansion remain separate work.

@@ -6,8 +6,11 @@ slice is identified. The gallery slice is complete under
 Phase 2 adds editor review/publishing, saved-change visibility, in-editor
 destination setup and placement guidance under
 [ADR 0070](../adr/0070-drafts-are-reviewed-and-explicitly-published-from-the-editor.md).
-Its final integration and WordPress verification are still in progress. Other
-proposals remain separate work. This review claims no tested provider delivery.
+Its completed verification is recorded below. Phase 3 connects addressable
+reports, capture history and delivery recovery under
+[ADR 0071](../adr/0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md);
+its completed local verification is recorded below, with PR CI still pending.
+Other proposals remain separate work. This review claims no tested provider delivery.
 
 ## What a successful experience means
 
@@ -236,8 +239,11 @@ essential design checks from warnings. Inline placement includes the existing
 block and shortcode; published site checks explicitly use the current signed-in
 session and published version. They do not promise anonymous-visitor visibility.
 
-Addressable editor URLs, a visual draft/live comparison, richer provider checks,
-Goal-specific promised-outcome checks, and schedule labels remain follow-ups.
+Phase 3 adds addressable editor URLs and preserves the originating report or
+capture filters. Dirty/busy navigation is guarded, including when an open editor
+is narrowed below its working width. A visual draft/live comparison, richer
+provider checks, Goal-specific promised-outcome checks and schedule labels remain
+follow-ups.
 
 Sources: [list actions](../../resources/admin/src/optins/OptinList.tsx),
 [snapshot publishing](../../src/Optin/OptinRepository.php),
@@ -249,21 +255,35 @@ Sources: [list actions](../../resources/admin/src/optins/OptinList.tsx),
 
 **Optins asks:** “What is running, what needs attention, and which one do I edit?”
 Keep search, status filters and intact A/B families. Phase 2 adds saved changes
-awaiting publication and **Publish changes**. Direct paths to results and captures
-remain proposed. Published must not imply
-that an ended, scheduled or unplaced design is being shown now.
+awaiting publication and **Publish changes**. **Delivered in Phase 3:** row actions
+open individual results and captured leads; the links retain the report's actual
+period. Published still must not imply that an ended, scheduled or unplaced
+design is being shown now.
 
 **Analytics asks:** “Did this offer work, and what should I inspect next?”
-Optin names in breakdowns are still plain text. Make them routes to editing and
-captures, retaining the period. Consider an equal-length previous-period comparison
-using existing daily counters. Do not average unlike Goal rates or call every
-conversion a Lead.
+**Delivered in Phase 3:** Optin names open focused results, with routes to the
+editor and matching captures. The focused page uses that Optin's numbers and
+series, not Goal totals. Editor return links preserve the accepted period; capture
+links use the payload's actual start/end dates even if a requested refresh fails.
+The UI distinguishes requested and displayed periods, supports bookmarked custom
+periods, and explains missing impressions and unavailable individual results.
+The delivery gap is explicitly a same-period difference of event totals, not
+particular Leads awaiting delivery. An expandable explanation covers deleted
+Optins, changed Goals and retention's independence from historical counters.
+
+Equal-length previous-period comparison remains a proposal using existing daily
+counters. Do not average unlike Goal rates or call every conversion a Lead.
 
 **Leads asks:** “Can I find a capture and see exactly what was submitted?”
-The normal read defaults to 50 events with no cursor/offset. Grouped results lack
-event drilldown and hide the truncation notice. Add honest limits, pagination,
-identifier search and group-to-event navigation. Export needs explicit scope;
-Contact status, follow-up workflow and editable Lead records remain out of scope.
+**Delivered in Phase 3:** exact canonical email/phone or Lead-ID search combines
+with Optin and inclusive site-date filters. Older/Newer pages use a ULID upper
+capture bound and cursor; refresh starts a new view. Group drilldown retains the
+email-first partition and filters, with its own event paging and export. Counts
+remain submissions. CSV explicitly covers all retained matching events across
+pages under the applied filters and snapshot. Failed reads preserve the previous
+table and its export scope. Retention or privacy deletion can still remove rows
+after the view loads; the snapshot is not a stored copy. Contact status, follow-up
+workflow and editable Lead records remain out of scope.
 
 Sources: [Optins](../../resources/admin/src/optins/OptinList.tsx),
 [Analytics](../../resources/admin/src/stats/Dashboard.tsx),
@@ -273,30 +293,38 @@ Sources: [Optins](../../resources/admin/src/optins/OptinList.tsx),
 ## 8. Manage delivery, recovery and occasional settings
 
 **Destinations asks:** “Where does this route go, what uses it, and how do I fix it?”
-Compact summaries are a good base. Show Optin usage before shared settings are
-changed. A skipped-capture message currently tells merchants to re-push while
-that action may remain inside Settings because only failures expose it. Bring
-recovery beside the reason. Terminal failures need the route name and a link to
-the capture, not just a raw Lead id. They are a bounded diagnostic log, not a
-complete per-Lead delivery ledger.
+**Delivered in Phase 3:** skipped-capture recovery sits beside its explanation,
+with the published-binding and last-success scope stated explicitly. It can
+replay already successful sends and is not restricted to the skipped count.
+Terminal failures name the Destination and link to that route and the exact
+capture; removed references have explicit missing states. The ring remains
+bounded diagnostics, not a complete per-Lead delivery ledger. Showing Optin
+usage before shared settings are changed remains a useful follow-up.
 
 **Testing asks:** “Who receives this test, and what does it prove?”
-Send test currently acts immediately and defaults to the WordPress user's email.
-Show a small test form with the recipient and likely effect before sending.
-Distinguish connection check, sample push, local form preview and real visitor
-capture. A successful handoff does not establish subscription confirmation or
-actual inbox receipt. A test push must still create no synthetic Lead.
+**Delivered in Phase 3:** Send a test opens a form showing the saved named route,
+recipient and likely external effect. The WordPress profile email is a visible
+`test_sample` suggestion; the endpoint requires the chosen email explicitly and
+never silently substitutes it. The sample includes no invented name or phone.
+Unsaved destination settings are called out because the test uses saved settings.
+Connection check, sample push, local form preview and real visitor capture remain
+different operations. A successful handoff does not establish subscription
+confirmation or actual inbox receipt. A test push creates no Lead, queued job,
+health event or report counter.
 
 **Retention asks:** “Exactly what will be deleted, and when?”
-Enabling deletion commits the suggested 90 days before the merchant can edit the
-period; subsequent edits save on blur. Let the merchant choose a draft period,
-then explicitly save/confirm that actual value and its consequence. Keep the
-current saved-state disclosure. Do not change an existing site's retention or
-site-wide frequency defaults as a side effect of this redesign.
+**Delivered in Phase 3:** both choices are local drafts until Save retention.
+Automatic deletion starts with an empty period and confirms the actual validated
+days before a write, including changes to an existing period. Typing, Enter in
+the field and blur do not save; there is no intermediate suggested-90-day write.
+Failures retain the draft and accurate saved disclosure. Confirmation Cancel
+keeps the draft; Cancel changes restores the stored policy and focus. The
+existing daily prune and site-wide default remain unchanged, as do site-wide
+frequency settings.
 
 Sources: [destination management](../../resources/admin/src/destinations/Destinations.tsx),
 [test endpoint](../../src/Rest/DestinationController.php),
-[retention](../../resources/admin/src/leads/LeadLog.tsx),
+[retention](../../resources/admin/src/leads/LeadRetention.tsx),
 [site limits](../../resources/admin/src/optins/SiteAllowance.tsx).
 
 ## 9. Improve fields and the internal format through real use
@@ -327,9 +355,11 @@ separately for explicit sign-off. Keep authoring metadata out of visitor payload
    search/filter/detail-preview journeys in WordPress. Retain draft/Undo safety.
 2. **Finish and update confidently:** Phase 2 delivers Publish changes,
    actionable review, in-editor destination setup and inline placement.
-   Addressable editor routes and provider compatibility metadata remain next.
-3. **Understand and recover:** connect reports, captures and route failures;
-   expose skipped-delivery recovery; make test recipients and retention explicit.
+   Phase 3 adds addressable editor routes; provider compatibility metadata remains
+   separate work.
+3. **Understand and recover:** Phase 3 connects reports, captures and route
+   failures, exposes skipped-delivery recovery, and makes test recipients and
+   retention explicit. Verification is recorded separately below.
 4. **Refine the setup language:** simplify creation, regroup display rules,
    clarify undo/mobile scope, and decide the enquiry positioning.
 5. **Extend a proven handoff:** verify one deliberate capture and named provider
@@ -342,17 +372,24 @@ Phase 2 is recorded in [0070](../adr/0070-drafts-are-reviewed-and-explicitly-pub
 with publishing in [0067](../adr/0067-the-editor-starts-with-the-preview-and-the-selected-element.md)
 and the narrow editor action-placement exception in
 [0039](../adr/0039-a-screen-is-regions-and-scope-decides-placement.md) amended inline.
+Phase 3 is recorded in
+[0071](../adr/0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md),
+with reading/navigation [0068](../adr/0068-reading-pages-put-results-and-routes-before-occasional-settings.md),
+editor routing [0070](../adr/0070-drafts-are-reviewed-and-explicitly-published-from-the-editor.md),
+capture reads [0033](../adr/0033-the-lead-log-reads-without-a-new-index.md),
+retention [0018](../adr/0018-erasure-deletes-rather-than-anonymises.md),
+recovery [0008](../adr/0008-delivery-state-is-destination-health-not-per-lead.md)
+and report interpretation [0020](../adr/0020-conversions-are-interpreted-at-read.md)
+amended inline.
 Future implementation must amend affected decisions inline: creation/action
 scope [0039](../adr/0039-a-screen-is-regions-and-scope-decides-placement.md);
 actionable guidance [0042](../adr/0042-the-admin-speaks-only-when-it-changes-what-you-do-next.md);
 editor history/publishing [0067](../adr/0067-the-editor-starts-with-the-preview-and-the-selected-element.md);
 reading/recovery placement [0068](../adr/0068-reading-pages-put-results-and-routes-before-occasional-settings.md).
 Revisit [0050](../adr/0050-a-scheduled-optin-stays-in-the-published-set.md) before exposing
-schedule state on the list, [0033](../adr/0033-the-lead-log-reads-without-a-new-index.md)
-for log paging, and [0018](../adr/0018-erasure-deletes-rather-than-anonymises.md)
-for retention interaction. Field evolution must also update the relevant capture,
-template and destination contracts. These are future amendments, not decisions
-silently adopted by this review.
+schedule state on the list. Field evolution must also update the relevant
+capture, template and destination contracts. Those remaining recommendations
+are not decisions silently adopted by this review.
 
 ## Completed gallery slice and verification
 
@@ -426,3 +463,54 @@ audience or file is correctly configured, or that a successful promotion produce
 a delivered message. The next handoff slice should establish that metadata and
 then verify one deliberate capture against a named provider and recipient before
 extending the capture-field format.
+
+## Phase 3 delivered implementation
+
+Phase 3 connects Optin results, focused reports, exact capture history, editor
+return routes and named Destination/failure links. Hash navigation preserves a
+dirty or busy editor until navigation is accepted; an already-open draft also
+survives a narrow viewport. Report links retain accepted periods, and capture
+history adds exact search, inclusive dates, cursor pages, email-first group
+drilldown and all-matches export under a shared upper capture bound.
+
+Retention now requires explicit Save and exact-period deletion confirmation.
+Skipped recovery states the existing broad replay scope. Test sends require a
+reviewed email sample and saved route, without an implicit profile fallback.
+The report's aggregate delivery gap no longer claims to count pending Leads.
+These changes add no schema, index, delivery ledger, Contact status or new
+capture origin.
+
+### Verification
+
+Local verification is complete: the frontend suite passes **2,081 tests across
+85 files**, and PHP passes **1,782 tests / 7,752 assertions**. Full PHPStan,
+TypeScript, ESLint and Free/Pro admin builds pass. **PR CI remains pending**;
+its result is not inferred from local checks.
+
+Real local WordPress checks followed report → focused Optin → captured leads
+with the correct start/end dates. The Optins row's **View results** action also
+opened that Optin's matching report. The retention flow displayed a 45-day deletion
+confirmation, then Cancel and Cancel changes restored the saved keep-forever
+policy without writing it. A MailPoet test dialog showed the profile email as a
+visible suggestion and was cancelled without sending. An incomplete search for
+`alex` returned an actionable complete-identifier error.
+
+Navigation checks edited the Optin name locally, used Back → Keep editing,
+narrowed to 641px, and widened again with the name intact. Back → Discard then
+returned to the original focused Analytics route. The narrow notice's Back
+action also requested discard before leaving. The 360px reading pages showed no
+horizontal overflow. These checks persisted no draft, capture, test-send,
+retention or recovery changes.
+The original six Optins remained unchanged: one published and five drafts.
+
+The isolated populated fixture exercised 140 submissions; an exact email search
+matched 65 and its Older page showed the remaining 15. Group history had its own
+Older navigation. A failed report-period request retained the accepted numbers,
+dates and links, and retry updated them. A terminal-failure capture link resolved
+one exact submission. The fixture also showed no horizontal overflow at 360px.
+Fixture data is not evidence of a real capture, provider push or inbox delivery.
+
+The Optin list’s View results action opened the matching focused report. The
+original six visible Optins remained: one published and five drafts, with the
+existing published Optin’s saved unpublished changes preserved. Temporary
+viewport overrides were reset after verification.

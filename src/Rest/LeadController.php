@@ -3,6 +3,9 @@
 namespace WConvert\Rest;
 
 use WConvert\Lead\LeadLog;
+use WConvert\Lead\LeadQuery;
+use InvalidArgumentException;
+use WP_Error;
 use WConvert\Retention\RetentionPeriod;
 use WConvert\Support\Ulid;
 use WP_REST_Request;
@@ -57,6 +60,13 @@ final class LeadController implements RestController
                     // nothing else — the response's `submissions` is the same
                     // number either way (ADR 0021).
                     'grouped' => ['type' => 'boolean', 'default' => false],
+                    'lead_id' => ['type' => 'string', 'pattern' => '^' . Ulid::PATTERN . '$'],
+                    'identifier' => ['type' => 'string', 'maxLength' => 254],
+                    'group_identifier' => ['type' => 'string', 'maxLength' => 254],
+                    'from' => ['type' => 'string', 'maxLength' => 10],
+                    'to' => ['type' => 'string', 'maxLength' => 10],
+                    'cursor' => ['type' => 'string', 'maxLength' => 128],
+                    'snapshot' => ['type' => 'string', 'pattern' => '^' . Ulid::PATTERN . '$'],
                     'per_page' => [
                         'type' => 'integer',
                         'default' => self::DEFAULT_PER_PAGE,
@@ -87,14 +97,19 @@ final class LeadController implements RestController
         ]);
     }
 
-    public function index(WP_REST_Request $request): WP_REST_Response
+    public function index(WP_REST_Request $request): WP_REST_Response|WP_Error
     {
-        $optinId = (string) $request->get_param('optin_id');
+        try {
+            $query = LeadQuery::fromInput($request->get_params());
+        } catch (InvalidArgumentException $invalid) {
+            return new WP_Error('wconvert_invalid_lead_query', $invalid->getMessage(), ['status' => 400]);
+        }
 
         return new WP_REST_Response($this->log->read(
-            $optinId === '' ? null : $optinId,
+            $query->optinId,
             (bool) $request->get_param('grouped'),
-            (int) $request->get_param('per_page')
+            (int) ($request->get_param('per_page') ?? self::DEFAULT_PER_PAGE),
+            $query
         ));
     }
 

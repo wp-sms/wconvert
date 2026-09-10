@@ -13,6 +13,7 @@ use WConvert\Destination\ConfiguredTarget;
 use WConvert\Destination\PushDispatcher;
 use WConvert\Destination\PushOutcome;
 use WConvert\Destination\TestReport;
+use WConvert\Lead\Identifier;
 use WConvert\Support\Ulid;
 use WP_Error;
 use WP_REST_Request;
@@ -125,25 +126,10 @@ final class DestinationController implements RestController
                 'callback' => [$this, 'testSend'],
                 'permission_callback' => [Routes::class, 'canManage'],
                 'args' => [
-                    // **One argument, and it is an override rather than the
-                    // way in.** The address defaults to the pressing
-                    // merchant's own, which is what the button sends with; this
-                    // is how a colleague's inbox or a seed address is reached,
-                    // and it is what lets `bin/verify-destinations.php` prove a
-                    // real send on a request that has no user at all.
-                    //
-                    // There is no `phone`. A test proves the integration and
-                    // an email does that for every type WConvert has; a second
-                    // identifier nothing on the screen can supply would be a
-                    // parameter with no caller and no test.
-                    //
-                    // Sanitised on the way in, as every string arg in this REST
-                    // layer is. `format => email` is deliberately NOT declared:
-                    // it would make WordPress reject the request outright, and
-                    // what a merchant needs from a typo is the screen's own
-                    // sentence rather than a 400 with a schema error in it
-                    // (ADR 0042).
-                    'email' => ['type' => 'string', 'sanitize_callback' => 'sanitize_email'],
+                    // Explicit, never silently taken from the WordPress profile.
+                    // Identifier::email validates the same value a capture uses;
+                    // sanitizing first could turn a typo into another address.
+                    'email' => ['type' => 'string'],
                 ],
             ],
         ]);
@@ -152,6 +138,12 @@ final class DestinationController implements RestController
     public function index(): WP_REST_Response
     {
         return new WP_REST_Response([
+            // A suggestion displayed before Send, not permission to send it.
+            // The endpoint's sample contains email only, never name or phone.
+            'test_sample' => [
+                'email' => Identifier::email(wp_get_current_user()->user_email),
+                'fields' => ['email'],
+            ],
             'types' => array_values(array_map(
                 fn (DestinationType $type): array => [
                     'id' => $type->id(),
@@ -314,12 +306,10 @@ final class DestinationController implements RestController
      * integration ({@see \WConvert\Destination\PushSubject}). What differs is
      * where the values came from, and nothing else.
      *
-     * The address defaults to the logged-in administrator's own, because the
-     * merchant pressing this is the person who should receive whatever it
-     * sends — the lead-magnet email really does deliver — and asking them to
-     * type it is a step with one correct answer. Where there is no address to
-     * default to, this says so in its own words rather than passing a type's
-     * internal reason up to somebody who pressed a button.
+     * The merchant reviews the sample address and saved route before sending.
+     * The profile is a visible suggestion on the read payload, never an implicit
+     * recipient here. The same identifier normalizer as capture validates it;
+     * the existing provider still decides whether the push can succeed.
      *
      * It writes no [[Lead]], queues nothing, and moves no counter:
      * {@see PushDispatcher::test()} is where that is guaranteed, and this
@@ -343,14 +333,12 @@ final class DestinationController implements RestController
             return $this->reported(TestReport::unavailable());
         }
 
-        $email = self::optionalString($request->get_param('email'))
-            ?? self::optionalString(wp_get_current_user()->user_email);
+        $email = Identifier::email(self::optionalString($request->get_param('email')) ?? '');
 
         if ($email === null) {
-            // Asked and answered HERE rather than left to the type, which
-            // would say *"the Lead carries no email address"* — true, internal,
-            // and no help to somebody who pressed a button (ADR 0042).
-            return $this->reported(TestReport::noAddress());
+            return $this->reported(TestReport::failed(
+                __('Enter a valid email address for this test. Nothing has been sent.', 'wconvert')
+            ));
         }
 
         $result = $this->dispatcher->test($destination->id, ['email' => $email]);

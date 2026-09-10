@@ -12,7 +12,9 @@ import { BackLink } from './shell/BuilderSkeleton';
 import { Shell } from './shell/Shell';
 import { NarrowScreenNotice } from './shell/NarrowScreenNotice';
 import { useBuilderViewport } from './hooks/useBuilderViewport';
-import { sectionFrom, type SectionId } from './nav';
+import { editorHref, leadsHref, reportHref } from './nav';
+import { useAdminNavigation, type EditingState } from './hooks/useAdminNavigation';
+import { ConfirmDialog } from './shell/ConfirmDialog';
 
 /**
  * The WConvert admin screen.
@@ -31,23 +33,15 @@ import { sectionFrom, type SectionId } from './nav';
  * starts from — a button on the Optin list rather than the top of every visit.
  *
  * **The frame is WConvert's as of ADR 0035** and the hash router underneath it
- * is #62's, unchanged. `nav.ts` was always the load-bearing half of that
+ * extends #62 with addressable reading state and guarded editor routes. `nav.ts` was always the load-bearing half of that
  * ticket; the `nav-tab` strip it fed was scaffolding, and {@see Shell} is what
  * replaced it.
  */
 export function App() {
-  const [editing, setEditing] = useState<string | null>(null);
-  /*
-   * Held here rather than inside {@see OptinsSection} because the button that
-   * starts creation now sits in the page header, which is the frame's. The
-   * state and the control that sets it belong on the same side of that line —
-   * the alternative is a button in the header reaching into a child's state,
-   * which is the shape that quietly grows a context.
-   */
+  const navigation = useAdminNavigation();
+  const { route, navigate } = navigation;
+  const section = route.section;
   const [creating, setCreating] = useState(false);
-  const [section, setSection] = useState<SectionId>(() =>
-    sectionFrom(typeof window === 'undefined' ? '' : window.location.hash),
-  );
 
   const createButton = (
     <Button onClick={() => setCreating(true)}>
@@ -56,30 +50,22 @@ export function App() {
     </Button>
   );
 
-  /*
-   * The browser is the source of truth for which section is open, so the back
-   * button works without this screen keeping a history of its own. Listening
-   * rather than only writing is the whole of it: a `pushState` nobody listens
-   * to leaves Back changing the URL and nothing else.
-   *
-   * **It keeps running while the builder is open, and that is what makes Back
-   * land somewhere.** The `editing !== null` branch below returns before
-   * `section` is read, so for a while this looked like the reason Back did
-   * nothing in the builder. It is not: the builder listens for the same event
-   * and leaves through its own unsaved-changes guard ({@see OptinBuilder}),
-   * which is where the guard lives and therefore where the listener has to be.
-   * This one is what decides which section it lands on afterwards.
-   */
-  useEffect(() => {
-    const follow = () => setSection(sectionFrom(window.location.hash));
-
-    window.addEventListener('hashchange', follow);
-
-    return () => window.removeEventListener('hashchange', follow);
-  }, []);
-
-  if (editing !== null) {
-    return <BuilderScreen id={editing} onClose={() => setEditing(null)} />;
+  // Navigation keeps the editor mounted while unsaved changes await a decision.
+  // Its accepted route changes only after the merchant discards or saves them.
+  if (route.editId !== undefined) {
+    return <>
+      <BuilderScreen key={navigation.hash} id={route.editId}
+        backLabel={route.returnTo.startsWith('#analytics') ? __('Back to Analytics', 'wconvert')
+          : route.returnTo.startsWith('#leads') ? __('Back to Leads', 'wconvert') : __('Back to Optins', 'wconvert')}
+        onEditingStateChange={navigation.onEditingStateChange}
+        onNarrowClose={() => navigation.requestNavigation(route.returnTo)}
+        onClose={() => navigate(route.returnTo)} />
+      <ConfirmDialog open={navigation.pending} onOpenChange={(open) => { if (!open) navigation.stay(); }}
+        title={__('Leave without saving?', 'wconvert')}
+        description={__('Your changes to this Optin will be lost.', 'wconvert')}
+        confirmLabel={__('Discard changes', 'wconvert')} cancelLabel={__('Keep editing', 'wconvert')}
+        onConfirm={navigation.discard} returnFocusTo={navigation.returnFocusTo} />
+    </>;
   }
 
   return (
@@ -89,12 +75,12 @@ export function App() {
           creating={creating}
           onCreate={() => setCreating(true)}
           onCancelCreate={() => setCreating(false)}
-          onEdit={setEditing}
+          onEdit={(id) => navigate(editorHref(id, navigation.hash || '#optins'))}
         />
       )}
-      {section === 'analytics' && <Dashboard />}
-      {section === 'leads' && <LeadLog />}
-      {section === 'destinations' && <Destinations />}
+      {section === 'analytics' && <Dashboard query={route.report} onQueryChange={(query) => navigate(reportHref(query))} />}
+      {section === 'leads' && <LeadLog query={route.leads} onQueryChange={(query) => navigate(leadsHref(query))} />}
+      {section === 'destinations' && <Destinations destinationId={route.destinationId} />}
     </Shell>
   );
 }
@@ -102,52 +88,31 @@ export function App() {
 /**
  * The builder, or the sentence that stands where it would.
  *
- * **The gate is here rather than inside {@see OptinBuilder}**, so a viewport
- * too narrow for the builder does not mount it: the panel fetches a template,
- * renders a live preview through the renderer the loader imports and sticks it
- * to the scroll, none of which is work worth doing behind a message saying it
- * cannot be shown.
- *
- * **It now saves the BYTES as well, and that is #73.** The import above is
- * `builder/lazy`, not the builder — so the four reading screens never fetch
- * it, and neither does this arm: the chunk is requested when the boundary
- * mounts, and below 782px the boundary is never rendered at all. The saving
- * and the work now go together, where the gate used to buy only the second.
- *
- * The `Shell` is drawn HERE rather than inside the boundary, so the masthead
- * and the header band are on screen the instant the merchant clicks. Only the
- * inside of the page waits.
- *
- * **`wide` is set on this arm and nowhere else**, which is the whole of the
- * per-screen measure: the builder is the one screen that is a place rather than
- * a list, and 1440px is what buys it a tree, an inspector and a preview side by
- * side instead of one column with the controls below the fold. This branch
- * already renders a `Shell` of its own — `bareHeader` is the other thing only
- * the builder asks for — so it is one more prop on the call site that is
- * already the exception, rather than a new fork.
- *
- * The narrow arm above stays at the reading measure deliberately: it is a
- * sentence and a button, and there is nothing there to spend width on.
+ * Initial arrival below 782px does not fetch the lazy editor or its data
+ * (ADR 0038). Once opened, a draft survives window resizing or rotation:
+ * the editor stays mounted, hidden and inert, behind the narrow notice.
+ * A dialog already open may finish or close without losing its own edits.
+ * The visible way out uses the same unsaved-work guard as browser navigation.
  */
-function BuilderScreen({ id, onClose }: { id: string; onClose: () => void }) {
+function BuilderScreen({ id, onClose, onNarrowClose, backLabel, onEditingStateChange }: {
+  id: string; onClose: () => void; onNarrowClose: () => void; backLabel: string; onEditingStateChange: (state: EditingState) => void;
+}) {
   const fits = useBuilderViewport();
-
-  if (!fits) {
-    /*
-     * The way out is rendered HERE and only here, because {@see OptinBuilder}
-     * draws its own and it is not on screen. Two back buttons is what the
-     * first version of this shipped.
-     */
-    return (
-      <Shell>
-        <BackLink className="mb-4" onClose={onClose} />
-        <NarrowScreenNotice />
-      </Shell>
-    );
-  }
+  const [opened, setOpened] = useState(fits);
+  useEffect(() => { if (fits) setOpened(true); }, [fits]);
 
   return (
-    <OptinBuilder id={id} onClose={onClose} />
+    <>
+      {!fits && <Shell>
+        <BackLink className="mb-4" onClose={onNarrowClose} label={backLabel} />
+        <NarrowScreenNotice />
+      </Shell>}
+      {/* First arrival on a phone still avoids the lazy chunk and reads. Once
+          mounted, keep the draft alive if the window narrows or rotates. */}
+      {(fits || opened) && <div hidden={!fits} inert={!fits}>
+        <OptinBuilder id={id} onClose={onClose} backLabel={backLabel} onEditingStateChange={onEditingStateChange} />
+      </div>}
+    </>
   );
 }
 

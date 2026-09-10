@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { routeFrom, type ReportQuery } from '../../resources/admin/src/nav';
 
 /**
  * The analytics screen, and the four decisions it exists to hold.
@@ -15,9 +16,8 @@ import userEvent from '@testing-library/user-event';
  * the merchant's today, and a date built in the browser is the day of whoever
  * is at the keyboard.
  *
- * **A metric nothing writes yet says why it is zero.** This is the first
- * screen a merchant meets that on, and a bare 0 beside real conversions reads
- * as a bug.
+ * **A period's delivery gap is not a live queue count.** Conversions and
+ * deliveries are daily events, not linked cohorts on this report.
  *
  * **And an undefined rate is not a zero one.** "0%" is a claim that visitors
  * saw it and did not act.
@@ -89,8 +89,7 @@ describe('the analytics screen', () => {
     // On the card, and again as the column heading of its Optin table — the
     // word travels with the payload rather than being spelled per surface.
     expect(screen.getAllByText('Submissions').length).toBeGreaterThanOrEqual(2);
-    // Two of the five Goals convert on a click, and a card headed
-    // "Submissions" over one of them reports zero forever.
+    // Labels are supplied by the report rather than inferred in the client.
     expect(screen.getAllByText('Click-throughs to the offer').length).toBeGreaterThan(0);
   });
 
@@ -195,7 +194,7 @@ describe('the analytics screen', () => {
    * it is drawing. A number here means the server decided there was one to
    * report.
    */
-  it('reports conversions with no delivery where the server sends a number', async () => {
+  it('describes the aggregate delivery gap as events in this period, not a live queue count', async () => {
     api.readDashboard.mockResolvedValue({
       ...TWO_GOALS,
       goals: [
@@ -213,8 +212,11 @@ describe('the analytics screen', () => {
 
     render(<Dashboard />);
 
-    expect(await screen.findByText(/Conversions with no delivery yet/)).toBeInTheDocument();
-    expect(screen.getByText(/Conversions with no delivery yet/).closest('div')).toHaveTextContent('10');
+    expect(await screen.findByText('10 more submissions than lead-magnet deliveries were recorded in this period.')).toBeInTheDocument();
+    expect(screen.getByText('These totals count events on the day they happen. Check Destinations for forwarding delays or errors.')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Review forwarding' })).toHaveAttribute('href', '#destinations');
+    expect(screen.queryByText(/no delivery yet/i)).toBeNull();
+    expect(screen.queryByText(/10 (queued|failed|pending)/i)).toBeNull();
   });
 
   /**
@@ -231,8 +233,8 @@ describe('the analytics screen', () => {
     render(<Dashboard />);
 
     expect(await screen.findByText('100')).toBeInTheDocument();
-    expect(screen.getByText('Nothing is running under this Goal')).toBeInTheDocument();
-    expect(screen.getByText('Its numbers are what earlier ones counted.')).toBeInTheDocument();
+    expect(screen.getByText('No existing Optins under this Goal')).toBeInTheDocument();
+    expect(screen.getByText('These totals include results from deleted Optins.')).toBeInTheDocument();
     expect(screen.queryByRole('columnheader', { name: 'Optin' })).not.toBeInTheDocument();
   });
 
@@ -321,11 +323,14 @@ describe('the analytics screen', () => {
 
     await userEvent.selectOptions(screen.getByRole('combobox'), '7');
 
-    expect(await screen.findByText('Showing the previous report. The server did not answer.')).toBeInTheDocument();
+    expect(await screen.findByText('Could not load the requested period. Showing the previous report and its dates. The server did not answer.')).toBeInTheDocument();
 
     // Still on screen: the numbers the merchant was reading a moment ago.
     expect(screen.getByRole('heading', { name: 'Grow my email list' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Promote a sale or offer' })).toBeInTheDocument();
+    expect(screen.getByText('Requested period')).toBeInTheDocument();
+    expect(screen.getByRole('combobox', { name: 'Report period' })).toHaveValue('7');
+    expect(screen.getByText('Showing 2026-07-27 to 2026-08-25, in your site’s timezone.')).toBeInTheDocument();
   });
 
   /**
@@ -389,4 +394,180 @@ describe('the analytics screen', () => {
     expect(screen.getByRole('combobox')).toHaveValue('1');
   });
 
+});
+
+describe('report drill-down and returning to the displayed period', () => {
+  const optinId = TWO_GOALS.goals[0].optins[0].id;
+  const goal = TWO_GOALS.goals[0].goal;
+  const hrefOf = (name: string) => screen.getByRole('link', { name }).getAttribute('href') ?? '';
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    api.readDashboard.mockResolvedValue(TWO_GOALS);
+  });
+
+  it('shows the selected Optin’s numbers and daily series without substituting its Goal totals', async () => {
+    api.readDashboard.mockResolvedValue({
+      ...TWO_GOALS,
+      goals: [{
+        ...TWO_GOALS.goals[0],
+        optins: [{
+          ...TWO_GOALS.goals[0].optins[0],
+          headline: 7,
+          impressions: 42,
+          dismissals: 2,
+          conversion_rate: 0.1667,
+          by_day: { '2026-08-24': 3, '2026-08-25': 4 },
+        }],
+      }, TWO_GOALS.goals[1]],
+    });
+    render(<Dashboard query={{ days: 30, optinId }} />);
+    const heading = await screen.findByRole('heading', { name: 'Newsletter footer' });
+    const region = within(heading.closest('section')!);
+
+    expect(region.getByText('7', { selector: 'dd' })).toBeInTheDocument();
+    expect(region.getByText('42', { selector: 'dd' })).toBeInTheDocument();
+    expect(region.getByText('2', { selector: 'dd' })).toBeInTheDocument();
+    expect(region.getByText('16.7%', { selector: 'dd' })).toBeInTheDocument();
+    expect(region.queryByText('100', { selector: 'dd' })).toBeNull();
+    expect(region.queryByText('1,000', { selector: 'dd' })).toBeNull();
+    expect(screen.queryByRole('heading', { name: 'Promote a sale or offer' })).toBeNull();
+    expect(screen.queryByRole('table', { name: /^Optins for/ })).toBeNull();
+
+    await userEvent.click(region.getByText('View daily numbers'));
+    const daily = region.getByRole('table', { name: 'Submissions per day' });
+    expect(within(daily).getByRole('row', { name: '2026-08-24 3' })).toBeInTheDocument();
+    expect(within(daily).getByRole('row', { name: '2026-08-25 4' })).toBeInTheDocument();
+    expect(routeFrom(hrefOf('Edit this Optin')).editId).toBe(optinId);
+  });
+
+  it.each([false, true])('keeps report, editor and capture links on the accepted period after refresh fails (focused: %s)', async (focused) => {
+    const query: ReportQuery = { days: 30, goal, ...(focused ? { optinId } : {}) };
+    const onQueryChange = vi.fn();
+    const { rerender } = render(<Dashboard query={query} onQueryChange={onQueryChange} />);
+    await screen.findByRole('heading', { name: focused ? 'Newsletter footer' : 'Grow my email list' });
+    api.readDashboard.mockRejectedValueOnce(new Error('The new period could not be loaded.'));
+    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Report period' }), '7');
+    expect(onQueryChange).toHaveBeenLastCalledWith({ ...query, days: 7 });
+    rerender(<Dashboard query={{ ...query, days: 7 }} onQueryChange={onQueryChange} />);
+    await screen.findByText(/Could not load the requested period.*The new period could not be loaded\./);
+    expect(screen.getByText('Requested period')).toBeInTheDocument();
+    expect(screen.getByText('Showing 2026-07-27 to 2026-08-25, in your site’s timezone.')).toBeInTheDocument();
+
+    if (!focused) await userEvent.click(screen.getByText('View 1 Optin'));
+    const editor = routeFrom(hrefOf(focused ? 'Edit this Optin' : 'Edit Newsletter footer'));
+    expect(editor.editId).toBe(optinId);
+    expect(routeFrom(editor.returnTo).report).toEqual({ days: 30, goal, optinId: focused ? optinId : undefined });
+    expect(routeFrom(hrefOf(focused ? 'View captured leads' : 'View captures for Newsletter footer')).leads).toMatchObject({
+      optinId,
+      from: '2026-07-27',
+      to: '2026-08-25',
+    });
+    expect(routeFrom(hrefOf(focused ? 'All Optin results' : 'Newsletter footer')).report).toEqual({
+      days: 30,
+      goal,
+      optinId: focused ? undefined : optinId,
+    });
+
+    api.readDashboard.mockResolvedValue({ ...TWO_GOALS, days: 7, from: '2026-08-19' });
+    await userEvent.click(screen.getByRole('button', { name: 'Retry loading report' }));
+    await screen.findByText('Showing 2026-08-19 to 2026-08-25, in your site’s timezone.');
+    expect(screen.queryByText('Requested period')).toBeNull();
+    const refreshed = routeFrom(hrefOf(focused ? 'Edit this Optin' : 'Edit Newsletter footer'));
+    expect(routeFrom(refreshed.returnTo).report.days).toBe(7);
+    expect(routeFrom(hrefOf(focused ? 'View captured leads' : 'View captures for Newsletter footer')).leads.from).toBe('2026-08-19');
+  });
+
+  it('reports controlled period and Goal changes while waiting for the parent to accept them', async () => {
+    const onQueryChange = vi.fn();
+    const { rerender } = render(<Dashboard query={{ days: 30 }} onQueryChange={onQueryChange} />);
+    await screen.findByRole('heading', { name: 'Grow my email list' });
+    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Report period' }), '7');
+    expect(onQueryChange).toHaveBeenLastCalledWith({ days: 7 });
+    expect(api.readDashboard).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole('combobox', { name: 'Report period' })).toHaveValue('30');
+
+    api.readDashboard.mockResolvedValue({ ...TWO_GOALS, days: 7, from: '2026-08-19' });
+    rerender(<Dashboard query={{ days: 7 }} onQueryChange={onQueryChange} />);
+    await screen.findByText('Showing 2026-08-19 to 2026-08-25, in your site’s timezone.');
+    await userEvent.click(screen.getByRole('button', { name: 'Promote a sale or offer' }));
+    expect(onQueryChange).toHaveBeenLastCalledWith({ days: 7, goal: 'promote_offer' });
+    expect(screen.getByRole('heading', { name: 'Grow my email list' })).toBeInTheDocument();
+
+    rerender(<Dashboard query={{ days: 7, goal: 'promote_offer' }} onQueryChange={onQueryChange} />);
+    expect(screen.queryByRole('heading', { name: 'Grow my email list' })).toBeNull();
+    expect(screen.getByRole('button', { name: 'Promote a sale or offer' })).toHaveAttribute('aria-pressed', 'true');
+    await userEvent.click(screen.getByRole('button', { name: 'All goals' }));
+    expect(onQueryChange).toHaveBeenLastCalledWith({ days: 7, goal: undefined });
+    expect(api.readDashboard).toHaveBeenCalledTimes(2);
+  });
+
+  it('clears Optin focus through a real bookmarkable link that retains the accepted Goal and period', async () => {
+    const onQueryChange = vi.fn();
+    const { rerender } = render(<Dashboard query={{ days: 30, goal, optinId }} onQueryChange={onQueryChange} />);
+    await screen.findByRole('heading', { name: 'Newsletter footer' });
+    const target = routeFrom(hrefOf('All Optin results'));
+    expect(target.section).toBe('analytics');
+    expect(target.report).toEqual({ days: 30, goal, optinId: undefined });
+    // App accepts the link's hash and passes its parsed query back into the page.
+    await act(async () => { rerender(<Dashboard query={target.report} onQueryChange={onQueryChange} />); });
+    expect(screen.getByRole('heading', { name: 'Grow my email list' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Newsletter footer' })).toBeNull();
+    expect(screen.getByRole('button', { name: 'Grow my email list' })).toHaveAttribute('aria-pressed', 'true');
+    expect(api.readDashboard).toHaveBeenCalledTimes(1);
+  });
+
+  it('honours a custom 366-day bookmark and preserves it when editing the reported Optin', async () => {
+    api.readDashboard.mockResolvedValue({ ...TWO_GOALS, days: 366, from: '2025-08-25' });
+    const query = routeFrom(`#analytics?days=366&optin=${optinId}`).report;
+    render(<Dashboard query={query} />);
+    await screen.findByRole('heading', { name: 'Newsletter footer' });
+
+    expect(api.readDashboard).toHaveBeenCalledWith(366);
+    expect(screen.getByRole('combobox', { name: 'Report period' })).toHaveValue('366');
+    expect(screen.getByRole('option', { name: 'The last 366 days' })).toBeInTheDocument();
+    const editor = routeFrom(hrefOf('Edit this Optin'));
+    expect(routeFrom(editor.returnTo).report).toEqual({ days: 366, goal: undefined, optinId });
+    expect(routeFrom(hrefOf('View captured leads')).leads.from).toBe('2025-08-25');
+  });
+
+  it.each(['DELETED_OPTIN', 'UNKNOWN_OPTIN'])('explains unavailable individual results for %s without relabelling Goal totals', async (missingId) => {
+    if (missingId === 'DELETED_OPTIN') {
+      api.readDashboard.mockResolvedValue({
+        ...TWO_GOALS,
+        goals: TWO_GOALS.goals.map((card) => ({ ...card, optins: [] })),
+      });
+    }
+    render(<Dashboard query={{ days: 30, optinId: missingId }} />);
+    const unavailable = await screen.findByRole('region', { name: 'Optin report' });
+    expect(within(unavailable).getByText('This Optin is not available in the report')).toBeVisible();
+    expect(screen.getByText('A deleted Optin keeps its historical counts in its Goal’s totals, but no longer has an individual report.')).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Grow my email list' })).toBeNull();
+    expect(screen.queryByText('100', { selector: 'dd' })).toBeNull();
+    expect(screen.queryByRole('link', { name: 'Edit this Optin' })).toBeNull();
+    expect(screen.queryByRole('link', { name: 'View captured leads' })).toBeNull();
+    expect(routeFrom(hrefOf('View all results')).report).toEqual({ days: 30, goal: undefined, optinId: undefined });
+  });
+
+  it('does not assign a whole Goal’s delivery gap to one focused Optin', async () => {
+    api.readDashboard.mockResolvedValue({
+      ...TWO_GOALS,
+      goals: [{ ...TWO_GOALS.goals[0], headline_label: 'Deliveries', undelivered_conversions: 10 }],
+    });
+    render(<Dashboard query={{ days: 30, optinId }} />);
+    await screen.findByRole('heading', { name: 'Newsletter footer' });
+    expect(screen.getByText('Deliveries', { selector: 'dt' })).toBeInTheDocument();
+    expect(screen.queryByText(/more submissions than lead-magnet deliveries/)).toBeNull();
+    expect(screen.queryByRole('link', { name: 'Review forwarding' })).toBeNull();
+  });
+
+  it('explains rate, delivery, deleted-Optin and retention limits where the report is read', async () => {
+    render(<Dashboard />);
+    await screen.findByRole('heading', { name: 'Grow my email list' });
+    await userEvent.click(screen.getByText('How these numbers work'));
+    expect(screen.getByText(/Conversion rate is visitor actions divided by impressions.*A dash means there were no impressions\./)).toBeVisible();
+    expect(screen.getByText(/Deliveries counts recorded sends.*Delivery totals do not prove inbox arrival\./)).toBeVisible();
+    expect(screen.getByText(/Goal totals include deleted Optins.*Changing an Optin’s Goal moves its historical counts/)).toBeVisible();
+    expect(screen.getByText('Reports use daily counters. Deleting captured leads through retention does not remove those historical counts.')).toBeVisible();
+  });
 });

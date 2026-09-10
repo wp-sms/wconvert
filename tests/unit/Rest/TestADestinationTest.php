@@ -124,8 +124,10 @@ final class TestADestinationTest extends TestCase
      */
     private function send(string $id): array
     {
+        $request = $this->request($id);
+        $request->set_param('email', 'merchant@example.com');
         /** @var \WP_REST_Response $response */
-        $response = $this->controller->testSend($this->request($id));
+        $response = $this->controller->testSend($request);
 
         /** @var array{outcome: string, message: string} $body */
         $body = $response->get_data();
@@ -307,23 +309,20 @@ final class TestADestinationTest extends TestCase
     }
 
     /**
-     * The address defaults to the merchant's own, because the person pressing
-     * the button is who should receive whatever it sends — the lead-magnet
-     * email really does deliver.
+     * The explicit sample is the same canonical input a captured address uses.
      */
-    public function testTheTestGoesToTheMerchantsOwnAddressAndWritesNoLead(): void
+    public function testTheExplicitSampleContainsOnlyEmailAndWritesNoLead(): void
     {
         $this->send($this->destination->id);
 
         $subject = $this->type->pushed[0];
 
-        self::assertSame('merchant@example.com', $subject->values['email']);
+        self::assertSame(['email' => 'merchant@example.com'], $subject->values);
         self::assertTrue($subject->isTest, 'A type that must say so can.');
     }
 
     /**
-     * A merchant may send it somewhere else — a colleague's inbox, a seed
-     * address — and that is the only reason the parameter exists.
+     * Changing the visible sample changes exactly what the provider receives.
      */
     public function testAnExplicitAddressWins(): void
     {
@@ -388,15 +387,43 @@ final class TestADestinationTest extends TestCase
      * button. ADR 0042: the admin speaks only when it changes what you do
      * next, and this sentence says what to do next.
      */
-    public function testWithNoAddressToDefaultToItSaysSoRatherThanLeakingATypesOwnReason(): void
+    public function testAnOmittedAddressNeverSilentlyUsesTheWordPressProfile(): void
     {
-        $GLOBALS['wconvertTestUserEmail'] = '';
-
-        $sent = $this->send($this->destination->id);
-
-        self::assertSame('skipped', $sent['outcome']);
-        self::assertStringContainsString('WordPress profile', $sent['message']);
+        /** @var \WP_REST_Response $response */
+        $response = $this->controller->testSend($this->request($this->destination->id));
+        /** @var array{outcome: string, message: string} $sent */
+        $sent = $response->get_data();
+        self::assertSame('failed', $sent['outcome']);
+        self::assertStringContainsString('Enter a valid email address', $sent['message']);
         self::assertSame([], $this->type->pushed, 'Nothing was attempted, so nothing can have been sent.');
+    }
+
+    public function testInvalidSamplesAreRefusedBeforeTheProviderAndWithoutMutatingHealth(): void
+    {
+        $before = $this->options->all();
+        foreach (['', 'not-an-address', 'one@example.com,two@example.com', "recipient\n@example.com"] as $email) {
+            $request = $this->request($this->destination->id);
+            $request->set_param('email', $email);
+            /** @var \WP_REST_Response $response */
+            $response = $this->controller->testSend($request);
+            self::assertSame('failed', $response->get_data()['outcome']);
+        }
+        self::assertSame([], $this->type->pushed);
+        self::assertSame($before, $this->options->all());
+        self::assertSame([], $this->db->writes);
+        self::assertSame([], $this->queue->jobs);
+    }
+
+    public function testTheReadSuggestsAVisibleSampleWithoutSendingAnything(): void
+    {
+        $GLOBALS['wconvertTestUserEmail'] = ' Merchant@Example.com ';
+        $payload = $this->controller->index()->get_data();
+        self::assertSame(['email' => 'merchant@example.com', 'fields' => ['email']], $payload['test_sample']);
+        self::assertSame([], $this->type->pushed);
+        self::assertSame([], $this->db->writes);
+        self::assertSame([], $this->queue->jobs);
+        $GLOBALS['wconvertTestUserEmail'] = '';
+        self::assertNull($this->controller->index()->get_data()['test_sample']['email']);
     }
 
     /**

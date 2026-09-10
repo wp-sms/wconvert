@@ -55,10 +55,10 @@ const Creation = lazy(() => deferred().then((module) => ({ default: module.GoalS
  * to work before the chunk lands, and the control that leaves cannot be inside
  * the chunk it is waiting for.
  */
-export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
+export function OptinBuilder(props: OptinBuilderProps) {
   return (
-    <Suspense fallback={<BuilderSkeleton onClose={onClose} />}>
-      <Builder id={id} onClose={onClose} />
+    <Suspense fallback={<BuilderSkeleton onClose={props.onClose} backLabel={props.backLabel} />}>
+      <Builder {...props} />
     </Suspense>
   );
 }

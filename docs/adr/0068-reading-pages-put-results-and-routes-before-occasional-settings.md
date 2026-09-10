@@ -25,22 +25,35 @@ old 639px breakpoint. Values and actions must remain readable at 360px.
   server's registry order and each Goal's own metric. Daily bars use the actual
   daily series, with zero-height quiet days and an expandable exact-number
   table. Optin breakdowns are expandable. No site-wide conversion average or
-  cross-Goal leaderboard is introduced. A conversion without delivery links
-  to Destinations and is not labelled a terminal failure.
+  cross-Goal leaderboard is introduced. A same-period excess of conversions over
+  recorded lead-magnet deliveries links to Destinations. It is neither a terminal
+  failure count nor a population of Leads awaiting delivery; see the correction
+  in [0071](0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md).
 - **Leads:** submissions remain the total, including in the grouped view.
   Names are readable directly; other captured values open within their row.
   This is an immutable capture log, not a Contact profile or consent-status
-  editor. Export continues to use the applied Optin filter.
+  editor. [0071](0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md)
+  extends the applied scope to exact identifier/Lead-ID and date filters, bounded
+  cursor pages, group-to-event drilldown and all-matches CSV export.
 - **Destinations:** configured routes show their identity, target and health
   first. Add a destination reveals the available types. Settings open within
   the route; hiding them preserves edits, while Cancel restores stored values.
   Failure reports and existing connection and test actions remain available.
-  Re-push stays visible for a failing route and otherwise lives with Settings. This work does not send a test or change delivery semantics.
+  Re-push stays visible for a failing route and otherwise lives with Settings.
+  [0071](0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md)
+  also puts it beside skipped captures, names failure routes/captures and makes
+  the test recipient explicit before a real push. These changes preserve the
+  existing recovery scope and delivery semantics.
 
 Site-wide frequency and Lead retention use a shared settings disclosure. Its
 closed state reports the saved configuration. Contents stay mounted so folding
 the section cannot discard an edit, and a new error opens it. Existing explicit
 saves and destructive confirmations still apply.
+
+*Extended by [0071](0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md):
+retention controls now hold an unsaved draft. Explicit Save confirms the actual
+chosen deletion period; toggling and blur no longer write settings. Addressable
+reading filters and editor return links preserve the investigation across pages.*
 
 ## Reading failures and history
 

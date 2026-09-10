@@ -77,19 +77,10 @@ export interface GoalReport extends Numbers {
   /** What the headline number is CALLED — two of the five convert on a click. */
   headline_label: string;
   /**
-   * Conversions that have no delivery yet, clamped at zero — or **null on
-   * every Goal but the lead-magnet one.**
-   *
-   * The server decides which, because this bundle cannot: no Goal id is
-   * spelled anywhere in it, so a card has no way to know which Goal it is
-   * drawing. Null means "there is nothing to say here", and the row is not
-   * rendered.
-   *
-   * It reads *not yet delivered* rather than *failed*: a Conversion whose push
-   * is still queued or backing off is in it — which is what the name says. It
-   * shipped as `delivery_failures`, contradicting both this sentence and
-   * `WConvert\Destination\DeliveryFailures`, a ring of ~200 *terminal*
-   * failures on the PHP side. Two opposite populations under one name.
+   * Same-period conversions minus recorded deliveries, clamped at zero;
+   * null on Goals that do not count lead-magnet deliveries. This aggregate
+   * difference is not a per-Lead backlog: a later delivery can land in a
+   * different daily window, and replayed sends can be counted again.
    */
   undelivered_conversions: number | null;
   optins: OptinReport[];

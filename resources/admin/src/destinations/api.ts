@@ -147,6 +147,8 @@ export interface DestinationsPayload {
   destinations: Destination[];
   connections: Connection[];
   failures: DeliveryFailure[];
+  /** Suggested visible sample only. Sending always requires an explicit address. */
+  test_sample?: { email: string | null; fields: readonly ['email'] };
 }
 
 export interface RePushReport {
@@ -213,5 +215,5 @@ export const testConnection = (id: string) =>
  * appears. It writes no Lead, queues nothing and moves no counter (ADR 0008,
  * ADR 0031).
  */
-export const testSend = (id: string) =>
-  apiFetch<TestReport>({ path: path(`/${id}/test-send`), method: 'POST' });
+export const testSend = (id: string, email: string) =>
+  apiFetch<TestReport>({ path: path(`/${id}/test-send`), method: 'POST', data: { email } });

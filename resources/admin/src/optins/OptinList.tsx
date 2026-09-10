@@ -35,6 +35,7 @@ import { EmptyState } from '../shell/EmptyState';
 import { Region, RegionError, RegionErrorState, RegionFooter } from '../shell/Region';
 import { TableSkeleton } from '../shell/TableSkeleton';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
+import { leadsHref, reportHref } from '../nav';
 import { numbersByOptin, readDashboard, type OptinNumbers } from '../stats/api';
 import { formatCount, formatRate } from '../stats/format';
 import {
@@ -149,6 +150,7 @@ export function OptinList({
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<'all' | OptinStatus>('all');
   const [reportDays, setReportDays] = useState<number | null>(null);
+  const [reportRange, setReportRange] = useState<{ from: string; to: string }>();
   /*
    * **Whether this install can start a test — resolved once for the screen.**
    * `settings.ts` calls it *"a fact about the SCREEN and not about a row"*, and
@@ -217,6 +219,7 @@ export function OptinList({
     readDashboard(null).then((payload) => {
       setNumbers(numbersByOptin(payload));
       setReportDays(payload.days);
+      setReportRange({ from: payload.from, to: payload.to });
     }).catch(() => undefined);
   }, []);
 
@@ -336,6 +339,8 @@ export function OptinList({
                     testableTier={testableTier}
                     goal={labelFor(row)}
                     numbers={numbers[row.id]}
+                    reportDays={reportDays}
+                    reportRange={reportRange}
                     busy={busyId === row.id}
                     onEdit={() => onEdit(row.id)}
                     onPublish={() => void run(row.id, () => publishOptin(row.id))}
@@ -362,7 +367,7 @@ export function OptinList({
       {rows.length > 0 && reportDays !== null && (
         <RegionFooter className="flex flex-wrap items-center justify-between gap-2">
           <span>{reportDays === 1 ? __('Figures for today', 'wconvert') : sprintf(__('Figures for the last %d days', 'wconvert'), reportDays)}</span>
-          <a className="font-medium text-primary hover:underline" href="#analytics">{__('View reports', 'wconvert')}</a>
+          <a className="font-medium text-primary hover:underline" href={reportHref({ days: reportDays })}>{__('View reports', 'wconvert')}</a>
         </RegionFooter>
       )}
 
@@ -513,6 +518,8 @@ function Row({
   testableTier,
   goal,
   numbers,
+  reportDays,
+  reportRange,
   busy,
   onEdit,
   onPublish,
@@ -543,6 +550,8 @@ function Row({
    */
   goal: string | null | undefined;
   numbers: OptinNumbers | undefined;
+  reportDays: number | null;
+  reportRange: { from: string; to: string } | undefined;
   busy: boolean;
   onEdit: () => void;
   onPublish: () => void;
@@ -738,6 +747,13 @@ function Row({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
+            <DropdownMenuItem asChild>
+              <a href={reportHref({ optinId: optin.id, days: reportDays ?? undefined })}>{__('View results', 'wconvert')}</a>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <a href={leadsHref({ optinId: optin.id, ...reportRange })}>{__('View captured leads', 'wconvert')}</a>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
             {/*
               ============================================================
               STARTING A TEST IS THE CAMPAIGN'S ACTION, NOT AN ARM'S.

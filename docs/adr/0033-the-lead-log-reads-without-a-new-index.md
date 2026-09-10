@@ -53,6 +53,15 @@ That is a real cost, and it is the right one to accept for now: it is an
 add `idx_optin_created` — and it should be taken when someone can show the
 scan actually hurting, not before.
 
+*Extended by [0071](0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md):
+the 50-row default is now a page, with a maximum of 200 requested rows. A shared
+`LeadQuery` adds exact canonical identifier/Lead-ID and inclusive site-date
+filters. Its ULID upper bound and last-ID cursor page the same retained scope;
+date bounds and event cursors use the primary key, with no offset or new index.
+Counts and all-matches CSV share the filters and upper bound but ignore the page
+cursor. The bound excludes newer captures, not subsequent privacy/retention
+deletions. Filtered scans retain the cost tradeoff above.*
+
 ## Why grouping needs none
 
 Grouping is `GROUP BY` over the identifier, and
@@ -71,6 +80,14 @@ touching a row.
 The group's "last submitted" is read off that ULID rather than fetched as a
 `MAX(created_at)`, for the same reason: adding `created_at` to the aggregate
 would force a row lookup per row and lose the covering read.
+
+*Extended by [0071](0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md):
+group paging applies `HAVING MAX(id) < cursor` after each aggregate, not an event
+cursor inside `WHERE`, which would split a group and change its count. Drilldown
+reuses the email-first partition: a phone group requires `email IS NULL` even
+though an ordinary exact-phone search may match rows that also carry email.
+Additional Optin/date/search predicates can change the optimizer's access path;
+this extension does not claim that every combined filter remains index-only.*
 
 ## What this costs
 
