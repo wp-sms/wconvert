@@ -16,10 +16,8 @@ import { PageActionSlotProvider } from './PageActions';
  * footer — is the part WordPress still owns and this deliberately leaves
  * alone.
  *
- * **A petrol masthead, a white page header, and then the page.** The bar is
- * the strongest statement available that this screen is not WordPress's,
- * which is the whole of ADR 0035, and it is what both of the plugin admins
- * worth measuring against do with their identity.
+ * White navigation and a pale page heading keep the reading screens aligned
+ * with the editor (ADR 0068). Regions retain their own surfaces.
  *
  * **The shell does not draw a surface around the screen.** It did, and that
  * was wrong: a Leads screen is a table AND a retention setting, two different
@@ -80,35 +78,7 @@ export function Shell({
    * which is what stops the two drifting apart a second time.
    */
   bareHeader?: boolean;
-  /**
-   * Draw this screen at the wider measure.
-   *
-   * ==========================================================================
-   * THE BUILDER IS A PLACE RATHER THAN A LIST, SO IT GETS ITS OWN MEASURE.
-   * ==========================================================================
-   * 1152px is right for the four reading screens — they are tables and prose,
-   * and the line-length research is unambiguous about not widening those. It
-   * was never chosen for an editor, and three things followed from applying it
-   * to one anyway: the tab column came out at 616px, which is quoted in three
-   * places as the reason the block inspector sits UNDER the tree rather than
-   * beside it; selecting a block low in a long tree put its controls below the
-   * fold; and the live preview was clamped ~4% under the width every shipped
-   * design asks for.
-   *
-   * So this screen gets 1440px, and the extra buys a third pane rather than a
-   * wider single column — see `.wconvert-panes`'s container query in
-   * `index.css`, and the field cap that stops the inspector's `widefat` inputs
-   * growing past a readable measure with it.
-   *
-   * **Nothing forbade this.** ADR 0038 owns the responsive FLOORS and its whole
-   * posture is that the builder is allowed different numbers from the reading
-   * screens; ADR 0039 owns anatomy and ordering and says nothing about measure.
-   * `index.css` carried a dead comment describing exactly this rule, justified
-   * in exactly these terms, left behind when the two measures converged. WSMS
-   * does the same thing from the other end — `app-shell.tsx` defaults to
-   * `max-w-5xl` and keeps a `FULL_WIDTH_SECTIONS` allowlist; this is the same
-   * mechanism with a cap instead of no cap.
-   */
+  /** Override the reading screen's 80rem measure with 90rem (ADR 0068). */
   wide?: boolean;
   children: ReactNode;
 }) {
@@ -135,9 +105,9 @@ export function Shell({
       */}
       <div
         data-measure={wide ? 'wide' : 'default'}
-        className="font-sans text-body leading-normal text-foreground"
+        className="wconvert-panel font-sans text-body leading-normal text-foreground"
       >
-        <div className="bg-primary">
+        <div className="wconvert-panel-nav">
           <div className="wconvert-measure mx-auto flex w-full flex-wrap items-center gap-x-6 gap-y-2 px-4 py-2.5 sm:px-6">
             <Wordmark />
             {section !== undefined && <SectionNav current={section} />}
@@ -145,7 +115,7 @@ export function Shell({
         </div>
 
         {banded && (
-          <div className="border-b border-border bg-card">
+          <div className="wconvert-panel-heading">
             <div className="wconvert-measure mx-auto w-full px-4 py-4 sm:px-6">
               {section === undefined ? (
                 <div ref={setTarget} />
@@ -156,14 +126,14 @@ export function Shell({
           </div>
         )}
 
-        <main className="wconvert-measure mx-auto w-full px-4 py-5 sm:px-6">{children}</main>
+        <main className="wconvert-panel-main wconvert-measure mx-auto w-full px-4 py-5 sm:px-6">{children}</main>
       </div>
     </PageActionSlotProvider>
   );
 }
 
 /**
- * A tile and a word, inverted for the bar they sit on.
+ * A petrol tile and a word on the white navigation bar.
  *
  * There is no logo yet, and this is shaped so that there being one later is a
  * change to one component rather than to a layout — ADR 0037's point that a
@@ -174,11 +144,11 @@ function Wordmark() {
     <div className="flex items-center gap-2.5">
       <span
         aria-hidden="true"
-        className="grid size-7 place-items-center rounded-sm bg-card text-body font-bold text-primary"
+        className="grid size-7 place-items-center rounded-sm bg-primary text-body font-bold text-primary-foreground"
       >
         W
       </span>
-      <span className="text-heading font-semibold tracking-tight text-primary-foreground">
+      <span className="text-heading font-semibold tracking-tight text-foreground">
         {__('WConvert', 'wconvert')}
       </span>
     </div>
@@ -194,11 +164,8 @@ function Wordmark() {
  * what it holds, and an action slot — so #64-#72 convert a screen without
  * each inventing a header, and a merchant meets the same anatomy five times.
  *
- * **The action sits BESIDE the title, not at the far edge.** Both of the
- * plugin admins worth measuring against do this — ACF's *"Field Groups
- * + Add New"*, Gravity Forms' *"Forms  Add New"* — and the reason is that the
- * eye pairs them: a button a thousand pixels away from the words it acts on
- * is a button in the same band rather than a button about that thing.
+ * Page actions sit at the trailing edge of the title row, wrapping below it
+ * at narrow widths. Their scope is still the whole page (ADR 0068).
  *
  * **At most TWO actions, and only actions that act on the whole screen**
  * (ADR 0039). The order is primary solid, then secondary outline, reading
@@ -227,7 +194,7 @@ function PageHeader({
   return (
     <>
       <div className="wconvert-page-actions flex flex-wrap items-center gap-x-3 gap-y-2">
-        <h1 className="m-0 me-1 text-title font-semibold leading-tight tracking-tight text-foreground">
+        <h1 className="m-0 me-auto text-title font-semibold leading-tight tracking-tight text-foreground">
           {entry?.label}
         </h1>
         {actions}
@@ -302,10 +269,10 @@ function SectionNav({ current }: { current: SectionId }) {
                 aria-current={active ? 'page' : undefined}
                 className={[
                   'inline-flex h-(--control-height-sm) items-center gap-2 rounded-sm px-3 font-medium',
-                  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white',
+                  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring',
                   active
-                    ? 'bg-card text-primary'
-                    : 'text-primary-foreground/85 hover:bg-white/10 hover:text-primary-foreground',
+                    ? 'bg-secondary text-primary'
+                    : 'text-muted-foreground hover:bg-muted hover:text-foreground',
                 ].join(' ')}
               >
                 <Icon aria-hidden="true" className="size-4" />

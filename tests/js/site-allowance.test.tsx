@@ -60,6 +60,7 @@ describe('the site-wide allowance', () => {
     api.readSiteAllowance.mockReturnValue(new Promise(() => undefined));
 
     render(<SiteAllowance />);
+    await userEvent.click(screen.getByRole('button', { name: /How often anything shows/ }));
 
     expect(await screen.findByRole('status')).toHaveTextContent('Loading…');
     expect(screen.queryByLabelText(/close any Optin/i)).toBeNull();
@@ -69,6 +70,7 @@ describe('the site-wide allowance', () => {
     api.readSiteAllowance.mockRejectedValue(new Error('The allowance could not be read.'));
 
     render(<SiteAllowance />);
+    await userEvent.click(screen.getByRole('button', { name: /How often anything shows/ }));
 
     expect(await screen.findByText('The allowance could not be read.')).toBeInTheDocument();
     expect(screen.getByText('Reload the page to try again.')).toBeInTheDocument();
@@ -77,6 +79,7 @@ describe('the site-wide allowance', () => {
 
   it('shows a site that has configured nothing as configuring nothing', async () => {
     render(<SiteAllowance />);
+    await userEvent.click(screen.getByRole('button', { name: /How often anything shows/ }));
 
     expect(await screen.findByRole('checkbox', { name: /close any Optin/i })).not.toBeChecked();
     expect(screen.getByRole('checkbox', { name: /sign up to anything/i })).not.toBeChecked();
@@ -91,12 +94,14 @@ describe('the site-wide allowance', () => {
    */
   it('says on the card that it applies on top of every Optin', async () => {
     render(<SiteAllowance />);
+    await userEvent.click(screen.getByRole('button', { name: /How often anything shows/ }));
 
-    expect(await screen.findByText(/on top of each one’s own settings/i)).toBeInTheDocument();
+    expect(await screen.findByText(/in addition to its own display rules/i)).toBeInTheDocument();
   });
 
   it('turns a switch on by ticking it, and sends the other three unchanged', async () => {
     render(<SiteAllowance />);
+    await userEvent.click(screen.getByRole('button', { name: /How often anything shows/ }));
 
     await userEvent.click(await screen.findByRole('checkbox', { name: /close any Optin/i }));
 
@@ -112,6 +117,7 @@ describe('the site-wide allowance', () => {
    */
   it('commits a typed number when the field is left, not while it is typed', async () => {
     render(<SiteAllowance />);
+    await userEvent.click(screen.getByRole('button', { name: /How often anything shows/ }));
 
     await userEvent.type(await screen.findByLabelText(/at most this many/i), '10');
 
@@ -130,6 +136,7 @@ describe('the site-wide allowance', () => {
     api.readSiteAllowance.mockResolvedValue({ ...OFF, maxImpressions: 4 });
 
     render(<SiteAllowance />);
+    await userEvent.click(screen.getByRole('button', { name: /How often anything shows/ }));
 
     await waitFor(() => expect(maxField()).toHaveValue(4));
 
@@ -146,6 +153,7 @@ describe('the site-wide allowance', () => {
     api.readSiteAllowance.mockResolvedValue({ ...OFF, maxImpressions: 4 });
 
     render(<SiteAllowance />);
+    await userEvent.click(screen.getByRole('button', { name: /How often anything shows/ }));
 
     await waitFor(() => expect(maxField()).toHaveValue(4));
 
@@ -160,6 +168,7 @@ describe('the site-wide allowance', () => {
     api.saveSiteAllowance.mockRejectedValue(new Error('The site is read-only'));
 
     render(<SiteAllowance />);
+    await userEvent.click(screen.getByRole('button', { name: /How often anything shows/ }));
 
     await userEvent.click(await screen.findByRole('checkbox', { name: /close any Optin/i }));
 
@@ -191,6 +200,7 @@ describe('a number and a switch, one after the other', () => {
     );
 
     render(<SiteAllowance />);
+    await userEvent.click(screen.getByRole('button', { name: /How often anything shows/ }));
 
     await userEvent.type(await screen.findByLabelText(/at most this many/i), '10');
     await userEvent.click(screen.getByRole('checkbox', { name: /close any Optin/i }));

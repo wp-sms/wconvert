@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { CornerDownRight, Megaphone, MoreHorizontal, Plus, Split, Stethoscope, Trash2, Trophy } from 'lucide-react';
+import { CornerDownRight, Megaphone, MoreHorizontal, Plus, Search, Split, Stethoscope, Trash2, Trophy } from 'lucide-react';
+import { Input } from '../components/ui/input';
+import { Toolbar } from '../shell/Toolbar';
 import { listGoals } from '../goals/api';
 import { Button } from '../components/ui/button';
 import {
@@ -45,6 +47,7 @@ import {
   statusOf,
   unpublishOptin,
   type OptinSummary,
+  type OptinStatus,
 } from './api';
 
 /**
@@ -147,6 +150,9 @@ export function OptinList({
    * the request.
    */
   const [inspecting, setInspecting] = useState(false);
+  const [query, setQuery] = useState('');
+  const [filter, setFilter] = useState<'all' | OptinStatus>('all');
+  const [reportDays, setReportDays] = useState<number | null>(null);
   /*
    * **Whether this install can start a test — resolved once for the screen.**
    * `settings.ts` calls it *"a fact about the SCREEN and not about a row"*, and
@@ -212,7 +218,10 @@ export function OptinList({
   // the reason stated above the component: a row without its numbers is a row
   // that still publishes.
   useEffect(() => {
-    readDashboard(null).then((payload) => setNumbers(numbersByOptin(payload))).catch(() => undefined);
+    readDashboard(null).then((payload) => {
+      setNumbers(numbersByOptin(payload));
+      setReportDays(payload.days);
+    }).catch(() => undefined);
   }, []);
 
   const run = async (id: string, action: () => Promise<unknown>) => {
@@ -239,10 +248,39 @@ export function OptinList({
   }
 
   const rows = list.status === 'ready' ? list.data : [];
+  // An A/B test stays together when either its parent or an arm matches.
+  const matchesStatus = (optin: OptinSummary) =>
+    filter === 'all' || [optin, ...optin.arms].some((row) => statusOf(row) === filter);
+  const visible = rows.filter((optin) => matchesStatus(optin) &&
+    [optin, ...optin.arms].some((row) => row.name.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase())));
+  const filters = [
+    { id: 'all', label: __('All', 'wconvert') },
+    { id: 'published', label: __('Published', 'wconvert') },
+    { id: 'draft', label: __('Drafts', 'wconvert') },
+    { id: 'suspended', label: __('Needs attention', 'wconvert') },
+  ] as const;
 
   return (
-    <Region label={__('Optins', 'wconvert')}>
+    <Region label={__('Optins', 'wconvert')} className="wconvert-optin-list">
       {error !== null && <RegionError message={error} />}
+      {rows.length > 0 && (
+        <Toolbar trailing={
+          <label className="wconvert-panel-search">
+            <Search aria-hidden="true" />
+            <span className="sr-only">{__('Search Optins', 'wconvert')}</span>
+            <Input type="search" value={query} placeholder={__('Search Optins…', 'wconvert')} onChange={(event) => setQuery(event.target.value)} />
+          </label>
+        }>
+          <div className="wconvert-panel-filters" role="group" aria-label={__('Filter Optins by status', 'wconvert')}>
+            {filters.map((item) => (
+              <button type="button" key={item.id} aria-pressed={filter === item.id} onClick={() => setFilter(item.id)}>
+                {item.label}
+                <span>{rows.filter((optin) => item.id === 'all' || [optin, ...optin.arms].some((row) => statusOf(row) === item.id)).length}</span>
+              </button>
+            ))}
+          </div>
+        </Toolbar>
+      )}
 
       {list.status === 'ready' && rows.length === 0 ? (
         <EmptyState
@@ -259,6 +297,11 @@ export function OptinList({
         >
           {__('Pick a goal and we’ll start you with a design built for it.', 'wconvert')}
         </EmptyState>
+      ) : list.status === 'ready' && visible.length === 0 ? (
+        <EmptyState icon={Search} title={__('No Optins match these filters', 'wconvert')}
+          action={<Button variant="outline" onClick={() => { setQuery(''); setFilter('all'); }}>{__('Clear filters', 'wconvert')}</Button>}>
+          {__('Try another name or choose a different status.', 'wconvert')}
+        </EmptyState>
       ) : (
         <DataTable>
           <DataTableHead>
@@ -274,7 +317,7 @@ export function OptinList({
             <TableSkeleton columns={6} />
           ) : (
             <DataTableBody>
-              {rows.flatMap((optin) => {
+              {visible.flatMap((optin) => {
                 const labelFor = (row: OptinSummary) =>
                   labels.status === 'ready' ? labels.data[row.goal] ?? null : undefined;
 
@@ -319,6 +362,12 @@ export function OptinList({
             </DataTableBody>
           )}
         </DataTable>
+      )}
+      {rows.length > 0 && reportDays !== null && (
+        <RegionFooter className="flex flex-wrap items-center justify-between gap-2">
+          <span>{reportDays === 1 ? __('Figures for today', 'wconvert') : sprintf(__('Figures for the last %d days', 'wconvert'), reportDays)}</span>
+          <a className="font-medium text-primary hover:underline" href="#analytics">{__('View reports', 'wconvert')}</a>
+        </RegionFooter>
       )}
 
       {/*

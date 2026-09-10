@@ -289,6 +289,12 @@ SETTING rather than a collection: a retention period has no empty state, it has
 a default. And the builder's frame has no empty state because an Optin that does
 not exist is not reachable from it.
 
+*Extended by [ADR 0068](0068-reading-pages-put-results-and-routes-before-occasional-settings.md): Analytics and Leads retain the last successful
+response during a refresh and expose retry on failure. A later request owns the
+result; a stale response cannot overwrite it. Dates and Lead row/export state
+continue to describe the response actually shown. Occasional settings may start
+closed with a saved-state summary, but a new error opens the disclosure.*
+
 **Milestones is the one row that answers a situation with nothing, and it is
 right.** A region that reserves height for something it will usually not draw
 pushes the numbers down on every visit and then takes the space back; the honest

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { Download, Inbox } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -12,7 +12,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../components/ui/select';
-import { Code } from '../shell/Code';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import {
   DataTable,
@@ -30,8 +29,8 @@ import {
   RegionError,
   RegionErrorState,
   RegionFooter,
-  RegionHeader,
 } from '../shell/Region';
+import { SettingsDisclosure } from '../shell/SettingsDisclosure';
 import { Skeleton } from '../components/ui/skeleton';
 import { TableSkeleton } from '../shell/TableSkeleton';
 import { Toolbar, ToolbarCount } from '../shell/Toolbar';
@@ -98,8 +97,13 @@ export function LeadLog() {
   const [log, setLog] = useState<Loadable<LeadLogPayload>>(LOADING);
   const [optins, setOptins] = useState<OptinSummary[]>([]);
   const [logError, setLogError] = useState<string | null>(null);
+  const [namesError, setNamesError] = useState<string | null>(null);
+  const [namesRetry, setNamesRetry] = useState(0);
   const [optinId, setOptinId] = useState('');
   const [grouped, setGrouped] = useState(false);
+  const [applied, setApplied] = useState({ optinId: '', grouped: false });
+  const [updating, setUpdating] = useState(false);
+  const [retry, setRetry] = useState(0);
 
   const [retention, setRetention] = useState<Loadable<Retention>>(LOADING);
   const [retentionError, setRetentionError] = useState<string | null>(null);
@@ -112,22 +116,21 @@ export function LeadLog() {
    */
   const deleteRadio = useRef<HTMLInputElement>(null);
 
-  const refresh = useCallback(async () => {
-    try {
-      setLog(ready(await readLog(optinId, grouped)));
-      setLogError(null);
-    } catch (cause) {
-      // The rows already on screen stay: a filter change that fails must not
-      // empty a log the merchant is reading. Only a FIRST failure has nothing
-      // to keep, and that arm renders the error as the region's whole content.
-      setLog((current) => (current.status === 'ready' ? current : failed(cause)));
-      setLogError(messageOf(cause));
-    }
-  }, [optinId, grouped]);
-
   useEffect(() => {
-    void refresh();
-  }, [refresh]);
+    let active = true;
+    setUpdating(true);
+    readLog(optinId, grouped).then((data) => {
+      if (!active) return;
+      setLog(ready(data));
+      setApplied({ optinId, grouped: data.grouped });
+      setLogError(null);
+    }).catch((cause: unknown) => {
+      if (!active) return;
+      setLog((current) => current.status === 'ready' ? current : failed(cause));
+      setLogError(messageOf(cause));
+    }).finally(() => { if (active) setUpdating(false); });
+    return () => { active = false; };
+  }, [optinId, grouped, retry]);
 
   useEffect(() => {
     // Deleted Optins included: a Lead outlives the Optin that captured it,
@@ -141,9 +144,9 @@ export function LeadLog() {
       // arms NESTED (ADR 0045) and an A/B arm captures Leads like any other
       // Optin. Without this the Optin column shows a raw ULID for exactly
       // those rows, and the filter cannot offer them at all.
-      .then((list) => setOptins(flattened(list)))
-      .catch((cause: unknown) => setLogError(messageOf(cause)));
-  }, []);
+      .then((list) => { setOptins(flattened(list)); setNamesError(null); })
+      .catch((cause: unknown) => setNamesError(messageOf(cause)));
+  }, [namesRetry]);
 
   useEffect(() => {
     readRetention()
@@ -194,7 +197,8 @@ export function LeadLog() {
     commitRetention(Math.min(days, period?.max_days ?? SUGGESTED_DAYS));
   };
 
-  const csv = exportUrl(optinId);
+  // The export, filter labels and row shape describe the same successful read.
+  const csv = exportUrl(applied.optinId);
 
   return (
     <div className="flex flex-col gap-5">
@@ -217,23 +221,25 @@ export function LeadLog() {
 
       <LogRegion
         log={log}
-        error={logError}
+        error={logError ?? namesError}
         optins={optins}
-        optinId={optinId}
-        onOptinId={setOptinId}
-        grouped={grouped}
-        onGrouped={setGrouped}
+        optinId={applied.optinId}
+        onOptinId={(id) => { setOptinId(id); setRetry((value) => value + 1); }}
+        grouped={applied.grouped}
+        onGrouped={(value) => { setGrouped(value); setRetry((held) => held + 1); }}
         nameOf={nameOf}
       />
 
-      <Region>
-        <RegionHeader
-          title={__('How long leads are kept', 'wconvert')}
-          description={__(
-            'This applies to every lead above, whichever Optin captured it.',
-            'wconvert',
-          )}
-        />
+      {updating && log.status === 'ready' && <p role="status" className="m-0 text-note text-muted-foreground">{__('Updating submissions…', 'wconvert')}</p>}
+      {(logError !== null || namesError !== null) && <Button variant="outline" className="self-start" onClick={() => {
+        if (logError !== null) setRetry((value) => value + 1);
+        if (namesError !== null) setNamesRetry((value) => value + 1);
+      }}>{__('Retry loading submissions', 'wconvert')}</Button>}
+      <SettingsDisclosure title={__('How long leads are kept', 'wconvert')}
+        summary={period === null ? __('Lead retention settings', 'wconvert') : period.days === null
+          ? __('Kept until you delete them', 'wconvert')
+          : sprintf(_n('Automatically deleted after %d day', 'Automatically deleted after %d days', period.days, 'wconvert'), period.days)}
+        attention={retention.status === 'failed' || retentionError !== null}>
 
         {/*
           **A region that fetches owes a loading state** (ADR 0039), and this
@@ -332,7 +338,7 @@ export function LeadLog() {
             </RegionBody>
           </>
         )}
-      </Region>
+      </SettingsDisclosure>
 
       <ConfirmDialog
         open={confirming}
@@ -464,7 +470,7 @@ function LogRegion({
             onCheckedChange={(checked) => onGrouped(checked === true)}
           />
           <Label htmlFor="wconvert-lead-grouped">
-            {__('Group submissions that share an email or phone', 'wconvert')}
+            {__('Group by email or phone', 'wconvert')}
           </Label>
         </span>
       </Toolbar>
@@ -524,7 +530,7 @@ function LogRegion({
                 ? data.groups.map((group) => (
                     <DataTableRow key={group.identifier}>
                       <DataTableCell label={__('Identifier', 'wconvert')}>
-                        {group.identifier}
+                        <bdi dir="ltr">{group.identifier}</bdi>
                       </DataTableCell>
                       <DataTableCell label={__('Submissions', 'wconvert')} numeric>
                         {sprintf(
@@ -534,14 +540,14 @@ function LogRegion({
                         )}
                       </DataTableCell>
                       <DataTableCell label={__('Last submitted', 'wconvert')}>
-                        {group.latest_at ?? '—'}
+                        <bdi dir="ltr">{group.latest_at ?? '—'}</bdi>
                       </DataTableCell>
                     </DataTableRow>
                   ))
                 : data.leads.map((lead) => (
                     <DataTableRow key={lead.id}>
                       <DataTableCell label={__('Submitted', 'wconvert')}>
-                        {lead.created_at}
+                        <bdi dir="ltr">{lead.created_at}</bdi>
                       </DataTableCell>
                       <DataTableCell label={__('Optin', 'wconvert')}>
                         {nameOf(lead.optin_id)}
@@ -554,18 +560,29 @@ function LogRegion({
                         visible.
                       */}
                       <DataTableCell label={__('Email', 'wconvert')}>
-                        {lead.email ?? '—'}
+                        <bdi dir="ltr">{lead.email ?? '—'}</bdi>
                       </DataTableCell>
-                      <DataTableCell label={__('Phone', 'wconvert')}>
-                        {lead.phone ?? '—'}
+                      <DataTableCell label={__('Phone', 'wconvert')} className="wconvert-lead-phone">
+                        <bdi dir="ltr">{lead.phone ?? '—'}</bdi>
                       </DataTableCell>
                       <DataTableCell label={__('Captured', 'wconvert')}>
-                        {Object.entries(lead.fields).map(([name, value]) => (
-                          <span key={name} className="block">
-                            <Code className="text-muted-foreground">{name}</Code>{' '}
-                            {value}
-                          </span>
-                        ))}
+                        <div>
+                          {lead.fields.name && <span className="block font-medium">{lead.fields.name}</span>}
+                          {Object.keys(lead.fields).some((name) => name !== 'name') && (
+                            <details className="wconvert-capture-details">
+                              <summary>{__('View captured details', 'wconvert')}</summary>
+                              <dl>
+                                {Object.entries(lead.fields).filter(([name]) => name !== 'name').map(([name, value]) => (
+                                  <div key={name}>
+                                    <dt className="text-note text-muted-foreground">{name === 'consent_text' ? __('Consent text', 'wconvert') : name.replaceAll('_', ' ')}</dt>
+                                    <dd className="m-0">{value}</dd>
+                                </div>
+                              ))}
+                            </dl>
+                          </details>
+                        )}
+                        {Object.keys(lead.fields).length === 0 && '—'}
+                        </div>
                       </DataTableCell>
                     </DataTableRow>
                   ))}

@@ -209,6 +209,7 @@ describe('the destinations screen', () => {
     render(<Destinations />);
 
     expect(await screen.findByText(/3 failures in a row. Last error: Gateway timeout/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Re-push leads/ })).toBeVisible();
   });
 
   /**
@@ -326,6 +327,7 @@ describe('the destinations screen', () => {
     });
 
     render(<Destinations />);
+    for (const button of await screen.findAllByRole('button', { name: 'Settings' })) await userEvent.click(button);
 
     // A URL input, a text input and a textarea — one per declared field.
     expect(await screen.findByLabelText(/Link to the file/)).toHaveAttribute('type', 'url');
@@ -343,6 +345,7 @@ describe('the destinations screen', () => {
     });
 
     render(<Destinations />);
+    for (const button of await screen.findAllByRole('button', { name: 'Settings' })) await userEvent.click(button);
 
     expect(await screen.findByLabelText(/Link to the file/)).toHaveValue('https://example.com/guide.pdf');
     expect(screen.getByLabelText(/Message/)).toHaveValue('Here you go: {link}');
@@ -362,6 +365,7 @@ describe('the destinations screen', () => {
     });
 
     render(<Destinations />);
+    for (const button of await screen.findAllByRole('button', { name: 'Settings' })) await userEvent.click(button);
 
     await userEvent.clear(await screen.findByLabelText(/Subject line/));
     await userEvent.type(screen.getByLabelText(/Subject line/), 'Your guide');
@@ -387,6 +391,7 @@ describe('the destinations screen', () => {
    */
   it('still round-trips the WSMS tag list as a list of ids', async () => {
     render(<Destinations />);
+    for (const button of await screen.findAllByRole('button', { name: 'Settings' })) await userEvent.click(button);
 
     const input = await screen.findByLabelText(/Tags to add/);
 
@@ -423,6 +428,7 @@ describe('the destinations screen', () => {
     });
 
     render(<Destinations />);
+    for (const button of await screen.findAllByRole('button', { name: 'Settings' })) await userEvent.click(button);
 
     // By NAME. A merchant never sees `3` or `4`.
     const newsletter = await screen.findByLabelText('Newsletter');
@@ -466,6 +472,7 @@ describe('the destinations screen', () => {
     });
 
     render(<Destinations />);
+    for (const button of await screen.findAllByRole('button', { name: 'Settings' })) await userEvent.click(button);
 
     await userEvent.click(await screen.findByLabelText('Offers'));
     await userEvent.click(screen.getByRole('button', { name: 'Save' }));
@@ -540,6 +547,7 @@ describe('the destinations screen', () => {
     });
 
     render(<Destinations />);
+    for (const button of await screen.findAllByRole('button', { name: 'Settings' })) await userEvent.click(button);
 
     await userEvent.click(await screen.findByRole('button', { name: 'Save' }));
 
@@ -560,6 +568,7 @@ describe('the destinations screen', () => {
     api.rePush.mockResolvedValue({ jobs: 10000, capped: true, since: '2026-08-22 10:00:00' });
 
     render(<Destinations />);
+    await userEvent.click(await screen.findByRole('button', { name: 'Settings' }));
 
     await userEvent.click(await screen.findByRole('button', { name: /Re-push leads/ }));
 
@@ -583,6 +592,7 @@ describe('the destinations screen', () => {
     api.saveDestination.mockReturnValue(new Promise(() => {}));
 
     render(<Destinations />);
+    for (const button of await screen.findAllByRole('button', { name: 'Settings' })) await userEvent.click(button);
 
     const wsms = regionFor(await screen.findByRole('heading', { name: 'WP SMS contacts' }));
     const magnet = regionFor(screen.getByRole('heading', { name: 'Lead magnet email' }));
@@ -611,6 +621,7 @@ describe('the destinations screen', () => {
     api.saveDestination.mockRejectedValue(new Error('That file link is not reachable.'));
 
     render(<Destinations />);
+    for (const button of await screen.findAllByRole('button', { name: 'Settings' })) await userEvent.click(button);
 
     const magnet = regionFor(await screen.findByRole('heading', { name: 'Lead magnet email' }));
 
@@ -642,6 +653,7 @@ describe('the destinations screen', () => {
     api.saveDestination.mockResolvedValue(undefined);
 
     render(<Destinations />);
+    for (const button of await screen.findAllByRole('button', { name: 'Settings' })) await userEvent.click(button);
 
     const wsms = regionFor(await screen.findByRole('heading', { name: 'WP SMS contacts' }));
 
@@ -699,6 +711,8 @@ describe('a destination is a named route', () => {
    */
   it('offers Add even where a destination of that type is already configured', async () => {
     render(<Destinations />);
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Add a destination' })).toBeEnabled());
+    await userEvent.click(screen.getByRole('button', { name: 'Add a destination' }));
 
     expect(await screen.findByRole('button', { name: 'Add' })).not.toBeDisabled();
   });
@@ -711,6 +725,8 @@ describe('a destination is a named route', () => {
    */
   it('names and points a new route in one step', async () => {
     render(<Destinations />);
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Add a destination' })).toBeEnabled());
+    await userEvent.click(screen.getByRole('button', { name: 'Add a destination' }));
 
     await userEvent.click(await screen.findByRole('button', { name: 'Add' }));
 
@@ -744,6 +760,8 @@ describe('a destination is a named route', () => {
    */
   it('keeps a name the merchant typed when the target changes under it', async () => {
     render(<Destinations />);
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Add a destination' })).toBeEnabled());
+    await userEvent.click(screen.getByRole('button', { name: 'Add a destination' }));
 
     await userEvent.click(await screen.findByRole('button', { name: 'Add' }));
 
@@ -773,6 +791,8 @@ describe('a destination is a named route', () => {
     api.saveDestination.mockRejectedValue(new Error('MailPoet is not answering.'));
 
     render(<Destinations />);
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Add a destination' })).toBeEnabled());
+    await userEvent.click(screen.getByRole('button', { name: 'Add a destination' }));
 
     await userEvent.click(await screen.findByRole('button', { name: 'Add' }));
 
@@ -796,6 +816,7 @@ describe('a destination is a named route', () => {
    */
   it('renames a configured route', async () => {
     render(<Destinations />);
+    for (const button of await screen.findAllByRole('button', { name: 'Settings' })) await userEvent.click(button);
 
     const name = await screen.findByLabelText('Name');
 
@@ -827,6 +848,7 @@ describe('a destination is a named route', () => {
     });
 
     render(<Destinations />);
+    for (const button of await screen.findAllByRole('button', { name: 'Settings' })) await userEvent.click(button);
 
     expect(await screen.findByLabelText('Name')).toHaveValue('MailPoet');
     expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
@@ -1031,4 +1053,27 @@ describe('testing a destination', () => {
     // The destructive palette is what the screen reserves for a real failure.
     expect(note.closest('[class*="destructive"]')).toBeNull();
   });
+  it('keeps health visible while settings are closed and preserves edits on reopening', async () => {
+    api.readDestinations.mockResolvedValue(TWO_DESTINATIONS);
+    render(<Destinations />);
+    const region = regionFor(await screen.findByRole('heading', { name: 'WP SMS contacts' }));
+    const settings = within(region).getByRole('button', { name: 'Settings' });
+    expect(settings).toHaveAttribute('aria-expanded', 'false');
+    expect(within(region).queryByRole('button', { name: /Re-push leads/ })).toBeNull();
+    expect(within(region).queryByRole('textbox', { name: 'Name' })).not.toBeInTheDocument();
+    expect(within(region).getByRole('button', { name: 'Send a test' })).toBeVisible();
+    await userEvent.click(settings);
+    const name = within(region).getByRole('textbox', { name: 'Name' });
+    await userEvent.clear(name);
+    await userEvent.type(name, 'Newsletter signups');
+    await userEvent.click(settings);
+    await userEvent.click(settings);
+    expect(within(region).getByRole('textbox', { name: 'Name' })).toHaveValue('Newsletter signups');
+    await userEvent.click(within(region).getByRole('button', { name: 'Cancel' }));
+    expect(settings).toHaveFocus();
+    await userEvent.click(settings);
+    expect(within(region).getByRole('textbox', { name: 'Name' })).toHaveValue('WP SMS contacts');
+    expect(api.saveDestination).not.toHaveBeenCalled();
+  });
+
 });

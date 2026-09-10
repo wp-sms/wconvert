@@ -65,7 +65,9 @@ change what they do?"**
 acceptance criterion asks for five milestones readable on an admin screen, and
 the obvious build is five dates in a list — every one of them true, permanent
 and attached to no action. So the region draws **at most one step, the first
-one not reached**, and renders nothing at all on a site that is converting. The
+one not reached**, while the recorded-dates disclosure remains on a site that
+is converting (ADR 0060). [ADR 0068](0068-reading-pages-put-results-and-routes-before-occasional-settings.md) places both after routine Goal
+reports and uses later evidence to avoid suggesting an already-completed step. The
 dates go behind a `<details>` whose real content is its last sentence: the
 `readme.txt` promise that none of this leaves the site, with what was recorded
 as the evidence for it. That is the rule's test passed rather than dodged — the

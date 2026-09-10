@@ -27,21 +27,16 @@ import { readMilestones, stuckAt, type MilestonePayload, type StuckAt } from './
  * - Converting and nothing reaching a [[Destination]] — the Destinations
  *   screen, where the error text and the repair actions already are.
  *
- * So this region draws **at most one step**, and renders nothing at all once
- * they are all met. It is the same editorial call ADR 0042 made about the
- * contrast checker: print the pair that is wrong, and one line when none is.
+ * This region draws at most one next step. Once every step is met, only the
+ * disclosure of recorded dates remains (ADR 0060).
  *
  * The dates themselves are still readable — see {@link WhatWasRecorded} —
  * because "the values are readable on an admin screen" is an acceptance
  * criterion. They are behind a disclosure, and the reason is not tidiness:
  * what that disclosure is FOR is the sentence at the bottom of it.
  *
- * **Both halves sit above the Goal cards, on one read.** The step has to,
- * because it explains the wall of zeroes underneath it; the disclosure follows
- * it rather than sitting at the foot of the screen so that the two share a
- * single fetch. Splitting them would mean either a second request for the same
- * tiny payload or a cache shared between two components — both of which are
- * more machinery than a closed one-line `<summary>` is worth.
+ * Both halves follow the Goal reports and share one read (ADR 0068). Routine
+ * reporting comes first; setup guidance and recorded dates stay available.
  */
 export function Milestones() {
   const [milestones, setMilestones] = useState<Loadable<MilestonePayload>>(LOADING);

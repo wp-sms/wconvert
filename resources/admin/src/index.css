@@ -32,6 +32,7 @@
  * deliberately immediate; ADR 0036 records why.
  */
 @import 'tw-animate-css';
+@import './panel.css';
 
 /*
  * **`dark:` is bound to a class, and no element carries it.**
@@ -832,6 +833,8 @@
 
 #wconvert-admin .wconvert-table .wconvert-table__actions-row {
   display: flex;
+  inline-size: max-content;
+  min-inline-size: 100%;
   flex-wrap: nowrap;
   align-items: center;
   justify-content: flex-end;
@@ -997,7 +1000,8 @@
   }
 }
 
-@media (max-width: 639px) {
+/* Six-column reading tables need card rows before their actions are clipped. */
+@media (max-width: 900px) {
   #wconvert-admin .wconvert-table,
   #wconvert-admin .wconvert-table > tbody,
   #wconvert-admin .wconvert-table > tbody > tr,
@@ -1095,6 +1099,7 @@
   }
 
   #wconvert-admin .wconvert-table .wconvert-table__actions-row {
+    inline-size: auto;
     flex-wrap: wrap;
     justify-content: flex-start;
   }

@@ -3,11 +3,12 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 import {
   CircleAlert,
   CircleCheck,
+  ChevronDown,
   Info,
   Lock,
   Plug,
+  Plus,
   RotateCcw,
-  Target,
   Trash2,
   TriangleAlert,
   Zap,
@@ -42,6 +43,7 @@ import {
   RegionHeader,
 } from '../shell/Region';
 import { RegionSkeleton } from '../shell/RegionSkeleton';
+import { PageAction } from '../shell/PageActions';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
 import {
   deleteDestination,
@@ -153,6 +155,8 @@ export function Destinations() {
    * by the type's id.
    */
   const [adding, setAdding] = useState<DestinationType | null>(null);
+  const [showTypes, setShowTypes] = useState(false);
+  const typesRegion = useRef<HTMLDivElement>(null);
   const returnFocus = useRef<HTMLElement | null>(null);
 
   const refresh = useCallback(async () => {
@@ -297,6 +301,17 @@ export function Destinations() {
 
   return (
     <div className="flex flex-col gap-5">
+      <PageAction>
+        <Button disabled={data === null} onClick={() => {
+          setShowTypes(true);
+          requestAnimationFrame(() => {
+            typesRegion.current?.scrollIntoView?.({ block: 'nearest' });
+            typesRegion.current?.querySelector<HTMLElement>('button')?.focus();
+          });
+        }}>
+          <Plus aria-hidden="true" />{__('Add a destination', 'wconvert')}
+        </Button>
+      </PageAction>
       {/*
         **One read draws every region below**, so a refresh that fails is the
         screen's failure rather than any one route's. It was a `RegionError`
@@ -329,7 +344,7 @@ export function Destinations() {
                 what is still true while there is nothing here, so an empty
                 Destinations screen does not read as leads going nowhere.
               */}
-              <EmptyState icon={Plug} title={__('Nothing is being pushed on', 'wconvert')}>
+              <EmptyState icon={Plug} title={__('Leads are saved in WConvert only', 'wconvert')}>
                 {__(
                   'Every capture is written to the lead log first and always. Add a destination to send it on as well.',
                   'wconvert',
@@ -361,6 +376,7 @@ export function Destinations() {
             ))
           )}
 
+          <div ref={typesRegion} hidden={!showTypes && data.destinations.length > 0}>
           <Types
             types={data.types}
             errors={errors}
@@ -371,6 +387,7 @@ export function Destinations() {
             }}
           />
 
+          </div>
           <Failures failures={data.failures} />
         </>
       )}
@@ -510,6 +527,9 @@ function Configured({
   const [label, setLabel] = useState(destination.label);
   const [connection, setConnection] = useState(destination.connection);
   const removeTrigger = useRef<HTMLButtonElement>(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const settingsTrigger = useRef<HTMLButtonElement>(null);
+  const TypeIcon = iconFor(type?.icon ?? 'plug');
   const failing = destination.health.consecutive_failures > 0;
   /*
    * Whether the two *Test* buttons can do anything. The region above already
@@ -528,7 +548,6 @@ function Configured({
    * otherwise draw an empty padded block under its own header.
    */
   const reporting =
-    lands !== null ||
     failing ||
     pushed !== null ||
     destination.health.skipped_captures > 0 ||
@@ -545,6 +564,9 @@ function Configured({
       */}
       {error !== null && <RegionError message={error} />}
 
+      <div className="wconvert-route-heading">
+      <span className="wconvert-route-icon"><TypeIcon aria-hidden="true" /></span>
+      <div className="wconvert-route-heading__body">
       <RegionHeader
         title={destination.label}
         /*
@@ -569,7 +591,7 @@ function Configured({
                   __('Needs %s on this site, so captures are not being sent.', 'wconvert'),
                   type?.requires_label ?? __('something this site does not have', 'wconvert'),
                 )
-              : undefined
+              : lands ?? type?.label
         }
         /*
           **Amber is the site holding this back, and a price is not that**
@@ -595,26 +617,10 @@ function Configured({
         }
       />
 
+      </div>
+      </div>
       {reporting && (
         <RegionBody className="flex flex-col gap-3">
-          {/*
-            **Where this route lands, first, because it is what makes one route
-            different from another.**
-
-            Three states and not two — {@see targetSaid} owns the wording and
-            `ConfiguredTarget` owns the rule. `null` draws nothing: a lead-magnet
-            email selects nothing and is perfectly configured, and a provider we
-            could not reach is a question we could not ask. Saying *"not pointed
-            at anything yet"* for either reports a fault against something that
-            works (ADR 0042).
-          */}
-          {lands !== null && (
-            <p className="m-0 flex items-center gap-2 text-muted-foreground">
-              <Target aria-hidden="true" className="size-4 shrink-0" />
-              {lands}
-            </p>
-          )}
-
           {failing ? (
             <Alert variant="destructive" className="border-destructive/30 bg-destructive/5">
               <CircleAlert />
@@ -739,6 +745,7 @@ function Configured({
         renameable, and so is a Destination whose type this install cannot see
         and whose schema therefore arrives empty.
       */}
+      <div hidden={!settingsOpen} className="wconvert-route-settings" id={`wconvert-settings-${destination.id}`}>
       <RegionBody className="flex flex-col gap-4 border-t border-border">
         <div className="flex max-w-xl flex-col gap-1.5">
           <Label htmlFor={`wconvert-${destination.id}-label`}>{__('Name', 'wconvert')}</Label>
@@ -797,7 +804,7 @@ function Configured({
           </div>
         ))}
 
-        <div>
+        <div className="flex items-center gap-2">
           <Button
             variant="outline"
             disabled={busy}
@@ -811,17 +818,28 @@ function Configured({
           >
             {__('Save', 'wconvert')}
           </Button>
+          <Button variant="ghost" disabled={busy} onClick={() => {
+            setDraft(toDraft(schema, destination.settings));
+            setLabel(destination.label);
+            setConnection(destination.connection);
+            setSettingsOpen(false);
+            settingsTrigger.current?.focus();
+          }}>{__('Cancel', 'wconvert')}</Button>
         </div>
       </RegionBody>
 
+      </div>
       {/*
         **Re-push repairs and Remove destroys, and they are not the same
-        weight.** They were two `.button`s side by side; now the recovery
-        action is the visible one and Remove is a quiet destructive control at
-        the far edge, behind a confirm (ADR 0039).
+        weight.** Recovery stays visible for a failing route; otherwise it is
+        available with Settings. Remove remains a quiet destructive control
+        behind Settings and a confirm (ADR 0068).
       */}
       <RegionFooter className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
         <div className="flex flex-wrap items-center gap-2">
+          <Button ref={settingsTrigger} variant="outline" size="sm" aria-expanded={settingsOpen} aria-controls={`wconvert-settings-${destination.id}`} onClick={() => setSettingsOpen(!settingsOpen)}>
+            {__('Settings', 'wconvert')}<ChevronDown aria-hidden="true" className={settingsOpen ? 'rotate-180' : ''} />
+          </Button>
           {/*
             **Two verbs, and the order is the order a merchant needs them in.**
 
@@ -861,12 +879,12 @@ function Configured({
             <Zap aria-hidden="true" />
             {__('Send a test', 'wconvert')}
           </Button>
-          <Button variant="outline" size="sm" disabled={busy} onClick={() => onRePush(destination)}>
+          {(settingsOpen || failing) && <Button variant="outline" size="sm" disabled={busy} onClick={() => onRePush(destination)}>
             <RotateCcw aria-hidden="true" />
             {__('Re-push leads since the last success', 'wconvert')}
-          </Button>
+          </Button>}
         </div>
-        <Button
+        {settingsOpen && <Button
           ref={removeTrigger}
           variant="ghost"
           size="sm"
@@ -876,7 +894,7 @@ function Configured({
         >
           <Trash2 aria-hidden="true" />
           {__('Remove', 'wconvert')}
-        </Button>
+        </Button>}
       </RegionFooter>
     </Region>
   );

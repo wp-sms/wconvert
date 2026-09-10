@@ -2,7 +2,11 @@
 
 Status: product recommendations, not a new set of accepted architecture decisions.
 The preview-width repair and corrections to outdated authoring instructions are
-implemented in this review. The wider improvements below remain proposed.
+implemented in this review. A subsequent pass implements the four reading-page
+improvements described in [ADR 0068](../adr/0068-reading-pages-put-results-and-routes-before-occasional-settings.md): Optin search
+and filters, reports with daily charts, readable capture details, compact route
+settings and saved-state disclosures. Other recommendations below remain
+proposed.
 The domain docs also clarify that a stored capture does not establish a
 Contact's subscription status; this preserves the existing ownership boundary.
 

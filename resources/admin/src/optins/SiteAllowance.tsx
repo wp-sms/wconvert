@@ -1,15 +1,14 @@
 import { useEffect, useState } from 'react';
-import { __ } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 import { Input } from '../components/ui/input';
 import { Skeleton } from '../components/ui/skeleton';
 import { Description } from '../shell/Description';
 import {
-  Region,
   RegionBody,
   RegionError,
   RegionErrorState,
-  RegionHeader,
 } from '../shell/Region';
+import { SettingsDisclosure } from '../shell/SettingsDisclosure';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
 import { readSiteAllowance, saveSiteAllowance, type SiteAllowance as Allowance } from './api';
 
@@ -135,14 +134,16 @@ export function SiteAllowance() {
   };
 
   return (
-    <Region>
-      <RegionHeader
-        title={__('How often anything shows', 'wconvert')}
-        description={__(
-          'This applies to every Optin above, on top of each one’s own settings. Left alone, only each Optin’s own settings apply.',
-          'wconvert',
-        )}
-      />
+    <SettingsDisclosure
+      title={__('How often anything shows', 'wconvert')}
+      summary={current === null
+        ? __('Site-wide display limits', 'wconvert')
+        : allowanceSummary(current)}
+      attention={allowance.status === 'failed' || error !== null}
+    >
+      <Description className="px-4 pt-4">
+        {__('These limits apply to every Optin, in addition to its own display rules.', 'wconvert')}
+      </Description>
 
       {/*
         **A region that fetches owes a loading state** (ADR 0039), and this one
@@ -248,8 +249,25 @@ export function SiteAllowance() {
           </RegionBody>
         </>
       )}
-    </Region>
+    </SettingsDisclosure>
   );
+}
+
+function allowanceSummary(allowance: Allowance): string {
+  const limits = [
+    allowance.stopAfterDismiss ? __('Stop after a dismissal', 'wconvert') : null,
+    allowance.stopAfterConversion ? __('Stop after a conversion', 'wconvert') : null,
+    allowance.maxImpressions === null ? null : sprintf(
+      _n('At most %d impression', 'At most %d impressions', allowance.maxImpressions, 'wconvert'),
+      allowance.maxImpressions,
+    ),
+    allowance.cooldownDays === null ? null : sprintf(
+      _n('%d day between Optins', '%d days between Optins', allowance.cooldownDays, 'wconvert'),
+      allowance.cooldownDays,
+    ),
+  ].filter(Boolean);
+
+  return limits.length ? limits.join(' · ') : __('No site-wide limits. Each Optin uses its own display rules.', 'wconvert');
 }
 
 const draftsOf = (allowance: Allowance) => ({

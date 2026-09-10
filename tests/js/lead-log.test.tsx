@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 /**
@@ -107,6 +107,18 @@ describe('the four situations the log has to answer', () => {
     expect(screen.getByText('Reload the page to try again.')).toBeInTheDocument();
   });
 
+  it('retries a failed Optin-name lookup without losing a successfully loaded log', async () => {
+    log.readLog.mockResolvedValue({ ...SEVEN_SUBMISSIONS, grouped: false });
+    optins.listOptins.mockRejectedValueOnce(new Error('Optin names could not be read.'));
+    render(<LeadLog />);
+    await screen.findByText('Optin names could not be read.');
+    expect(screen.getByText('sarah@example.com')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Retry loading submissions' }));
+    await waitFor(() => expect(screen.queryByText('Optin names could not be read.')).toBeNull());
+    expect(optins.listOptins).toHaveBeenCalledTimes(2);
+    expect(log.readLog).toHaveBeenCalledTimes(1);
+  });
+
   /**
    * **The retention card is its own region and fails on its own** (ADR 0039),
    * which is the half of the rule a page-top banner loses: the log above is
@@ -132,6 +144,7 @@ describe('the four situations the log has to answer', () => {
     log.readRetention.mockReturnValue(new Promise(() => undefined));
 
     render(<LeadLog />);
+    await userEvent.click(screen.getByRole('button', { name: /How long leads are kept/ }));
 
     await screen.findByText('sarah@example.com');
 
@@ -222,7 +235,7 @@ describe('the lead log', () => {
 
     expect(await screen.findByText('7 submissions')).toBeInTheDocument();
 
-    await userEvent.click(await screen.findByLabelText(/Group submissions/));
+    await userEvent.click(await screen.findByLabelText(/Group by email or phone/));
 
     await waitFor(() => expect(screen.getByText('2 submissions')).toBeInTheDocument());
     expect(screen.getByText('7 submissions')).toBeInTheDocument();
@@ -232,7 +245,7 @@ describe('the lead log', () => {
     render(<LeadLog />);
 
     await screen.findByText('7 submissions');
-    await userEvent.click(screen.getByLabelText(/Group submissions/));
+    await userEvent.click(screen.getByLabelText(/Group by email or phone/));
 
     await waitFor(() => expect(screen.getByText('2 submissions')).toBeInTheDocument());
 
@@ -269,6 +282,7 @@ describe('the lead log', () => {
    */
   it('opens on keep-forever', async () => {
     render(<LeadLog />);
+    await userEvent.click(screen.getByRole('button', { name: /How long leads are kept/ }));
 
     expect(await screen.findByLabelText(/Keep them until I delete them/)).toBeChecked();
   });
@@ -285,6 +299,7 @@ describe('the lead log', () => {
     log.saveRetention.mockResolvedValue({ days: 90, max_days: 3650 });
 
     render(<LeadLog />);
+    await userEvent.click(screen.getByRole('button', { name: /How long leads are kept/ }));
 
     const field = await screen.findByRole('spinbutton');
 
@@ -304,6 +319,7 @@ describe('the lead log', () => {
     log.saveRetention.mockResolvedValue({ days: 7, max_days: 3650 });
 
     render(<LeadLog />);
+    await userEvent.click(screen.getByRole('button', { name: /How long leads are kept/ }));
 
     const field = await screen.findByRole('spinbutton');
 
@@ -323,6 +339,7 @@ describe('the lead log', () => {
     log.saveRetention.mockResolvedValue({ days: null, max_days: 3650 });
 
     render(<LeadLog />);
+    await userEvent.click(screen.getByRole('button', { name: /How long leads are kept/ }));
 
     await userEvent.click(await screen.findByLabelText(/Keep them until I delete them/));
 
@@ -342,4 +359,19 @@ describe('the lead log', () => {
 
     expect(link).toHaveAttribute('href', expect.stringContaining('_wpnonce'));
   });
+  it('does not relabel old rows or change the export while grouping is loading', async () => {
+    render(<LeadLog />);
+    await screen.findByRole('columnheader', { name: 'Submitted' });
+    let finish!: (value: unknown) => void;
+    log.readLog.mockReturnValue(new Promise((resolve) => { finish = resolve; }));
+    await userEvent.click(screen.getByLabelText('Group by email or phone'));
+    expect(screen.getByRole('columnheader', { name: 'Submitted' })).toBeInTheDocument();
+    expect(screen.queryByRole('columnheader', { name: 'Identifier' })).not.toBeInTheDocument();
+    expect(screen.getByText('Updating submissions…')).toBeInTheDocument();
+    await act(async () => finish({ ...SEVEN_SUBMISSIONS, grouped: true }));
+    expect(screen.getByRole('columnheader', { name: 'Identifier' })).toBeInTheDocument();
+    expect(screen.queryByRole('columnheader', { name: 'Submitted' })).not.toBeInTheDocument();
+    expect(log.exportUrl).toHaveBeenLastCalledWith('');
+  });
+
 });

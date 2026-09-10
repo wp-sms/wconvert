@@ -76,7 +76,7 @@ being asked *what does this act on?*
 
 | An action acts on… | It lives… | As |
 |---|---|---|
-| the screen | the page header, beside the title | primary solid / secondary outline, **max two** |
+| the screen | the page header, trailing edge of the title row (ADR 0068) | primary solid / secondary outline, **max two** |
 | a region's data set | that region's toolbar, trailing edge | secondary, `sm` |
 | one row | the row's trailing Actions cell | ghost, `sm`; more than two collapse to an overflow menu |
 | a selection | replacing the toolbar's filter side while a selection exists | — |
@@ -98,6 +98,10 @@ because the table's other rule still holds: a filter is not an action, and the
 position beside the title is what pairs an action with the thing it acts on.
 Recorded here rather than only in the commit that moved it, because this
 paragraph is what a reader reaches for.*
+
+*Placement amended by [ADR 0068](0068-reading-pages-put-results-and-routes-before-occasional-settings.md): page actions also occupy the trailing
+edge of the title row, wrapping at narrow widths. Scope and the two-action cap
+are unchanged; position alone does not distinguish a filter from an action.*
 
 **Two is the cap on page-header actions, and it is a cap on the header rather
 than on the screen.** A third page-scoped action is the signal that one of them
@@ -204,7 +208,11 @@ screen a nicer word for a Goal and must not cost the merchant the buttons beside
 it. A page-level error banner turns that deliberate degradation into a screen
 that announces it is broken.
 
-## The table breakpoint is 640px, and it is neither number ADR 0038 owns
+## The table breakpoint is 900px, and it is neither floor ADR 0038 owns
+
+*Amended by [ADR 0068](0068-reading-pages-put-results-and-routes-before-occasional-settings.md): the original 640px threshold left the Optin
+name and Goal squeezed and its actions clipped at 641px in WordPress. Card rows
+now apply at 900px and below.*
 
 [ADR 0038](0038-the-admin-holds-different-floors-to-the-loader.md) already owns
 two widths, and **a table may reuse neither**:
@@ -217,7 +225,7 @@ two widths, and **a table may reuse neither**:
 
 Reusing either would make one number mean two things, and the next person to
 move one would move the other by accident. So the table gets its own: **below
-640px a table becomes a stacked list of row-cards**, one card per row,
+901px a table becomes a stacked list of row-cards**, one card per row,
 label-and-value pairs inside.
 
 The two alternatives were both refused on what they cost the reader. **Horizontal

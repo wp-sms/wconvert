@@ -9,7 +9,7 @@ Alongside it, the other floors the admin holds: **WCAG 2.1 AA**, enforced by
 lint; **360px on the reading screens and 782px on the builder**; and **no dark
 mode in 0.1.0**.
 
-*The responsive range is split at both ends. The ceiling — 1152px on the reading
+*The responsive range is split at both ends. The ceiling — 1280px on the reading
 screens, 1440px on the builder — is [its own section](#the-measure-is-split-for-the-same-reason-the-floor-is)
 below, added later and by the same argument.*
 
@@ -79,9 +79,9 @@ The floors above are the same decision at the bottom of the range, and the
 argument does not stop being true at the top of it. So the **ceiling** is split
 too, and by the same test — what is this screen, and what does it need?
 
-- **Reading screens cap at 72rem (1152px).** They are tables and prose, and the
-  line-length research is unambiguous: widening a column of sentences makes it
-  harder to read, not easier.
+- **Reading screens cap at 80rem (1280px)**, amended by [ADR 0068](0068-reading-pages-put-results-and-routes-before-occasional-settings.md).
+  Tables gain room for names and actions; long capture details retain a narrower
+  measure. Reading tables become labelled cards at 900px and below.
 - **The builder caps at 90rem (1440px).** It is a place rather than a list —
   a block tree, the controls for whichever block is selected, and a live preview
   of the design, three things a merchant works between rather than reads down.

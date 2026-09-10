@@ -1,15 +1,8 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { ChartColumn, Megaphone } from 'lucide-react';
 import { Button } from '../components/ui/button';
-import {
-  DataTable,
-  DataTableBody,
-  DataTableCell,
-  DataTableColumn,
-  DataTableHead,
-  DataTableRow,
-} from '../shell/DataTable';
+import { DataTable, DataTableBody, DataTableCell, DataTableColumn, DataTableHead, DataTableRow } from '../shell/DataTable';
 import { EmptyState } from '../shell/EmptyState';
 import { PageAction } from '../shell/PageActions';
 import { PageError, Region, RegionBody, RegionErrorState, RegionHeader } from '../shell/Region';
@@ -19,302 +12,108 @@ import { Stat, StatRow, StatRowSkeleton } from '../shell/Stat';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
 import { Milestones } from '../milestones/Milestones';
 import { readDashboard, type DashboardPayload, type GoalReport, type OptinReport } from './api';
-// Spelled once, because the Optin list and the builder's header read the same
-// two numbers and "—" must not become "0%" on one screen and not another.
 import { formatCount, formatRate } from './format';
+import { ActivityChart } from './ActivityChart';
 
-/**
- * The windows the merchant can ask for, in days.
- *
- * **Days, never dates.** `1` is today alone, which is what "Today" means to
- * somebody looking at a dashboard, and the far end of every one of these is
- * resolved on the SERVER against the site's timezone. A date picker here would
- * be a picker over the browser's calendar, which belongs to whoever is sitting
- * at the keyboard rather than to the site.
- *
- * Which of them is selected on arrival is **not decided here**: the first read
- * sends no `days` at all and the server's own default answers, so
- * `StatRange::DEFAULT_DAYS` is spelled once and this bundle never has to keep
- * a copy of it in step.
- */
 const WINDOWS = [1, 7, 30, 90] as const;
 
-/**
- * The analytics screen.
- *
- * ============================================================================
- * PER-GOAL CARDS, NEVER A LEADERBOARD.
- * ============================================================================
- * There is no site-wide conversion rate on this screen and no ranking between
- * Goals, because "click-throughs to the offer" and "conversions on Optins that
- * capture an email" are different acts and ranking them against each other
- * means nothing. Comparison is offered *within* a Goal — its Optins sit inside
- * its card — and *within* an Optin over time, by changing the window.
- *
- * That is a property of the payload rather than of this file: an Optin's
- * numbers arrive inside its Goal's card, so there is no flat list here to
- * sort. This screen could not build a leaderboard if it wanted to.
- *
- * **Every word naming a Goal or its metric comes from the server.** The five
- * Goals live in one PHP enum, their labels are translatable strings
- * `wp i18n make-pot` can only see there, and a Goal id spelled in this bundle
- * is what `tests/unit/Goal/GoalParityTest.php` fails on.
- *
- * **One region per Goal** (ADR 0039), because a Goal's performance is one
- * concern and two Goals are two. What each region holds stopped being a
- * bulleted list of numbers: a merchant scanning a card is comparing
- * magnitudes, and magnitudes are compared as figures with their names under
- * them ({@see Stat}), never as *"Impressions 0"* prose.
- *
- * **The window is in the page header, and that amends ADR 0039's own
- * sentence.** It governs every region on the screen at once, so a copy in each
- * region's toolbar would be four controls that must be kept in agreement — the
- * ADR's placement table is about ACTIONS, and this is a filter over the whole
- * screen.
- */
+/** Goals retain their own metrics. Different outcomes are never averaged together. */
 export function Dashboard() {
   const [report, setReport] = useState<Loadable<DashboardPayload>>(LOADING);
   const [refreshError, setRefreshError] = useState<string | null>(null);
-  // `null` is "whatever the server opens on", and only the first read is ever
-  // in that state.
+  // The server chooses the initial period in the site's timezone.
   const [days, setDays] = useState<number | null>(null);
-
-  const refresh = useCallback(async () => {
-    try {
-      setReport(ready(await readDashboard(days)));
-      setRefreshError(null);
-    } catch (cause) {
-      /*
-       * **A window change that fails must not take the cards with it.** This
-       * set `failed(cause)` unconditionally, so moving from 30 days to 7 over
-       * a flaky connection destroyed every Goal card on screen — the numbers
-       * the merchant already had, thrown away because the request for
-       * DIFFERENT numbers did not arrive.
-       *
-       * Only a FIRST failure has nothing to keep, and that is the arm that
-       * renders the error as the screen's whole content. The other three
-       * multi-fetch screens have guarded this since they were written
-       * ({@see OptinList}, {@see LeadLog}, {@see Destinations}); this was the
-       * one that never did.
-       */
-      setReport((current) => (current.status === 'ready' ? current : failed(cause)));
-      setRefreshError(messageOf(cause));
-    }
-  }, [days]);
+  const [updating, setUpdating] = useState(false);
+  const [retry, setRetry] = useState(0);
+  const [goal, setGoal] = useState<string | null>(null);
 
   useEffect(() => {
-    void refresh();
-  }, [refresh]);
+    let active = true;
+    setUpdating(true);
+    readDashboard(days).then((data) => {
+      if (!active) return;
+      setReport(ready(data));
+      setRefreshError(null);
+    }).catch((cause: unknown) => {
+      if (!active) return;
+      // A failed refresh keeps the previous report and its actual date range.
+      setReport((current) => current.status === 'ready' ? current : failed(cause));
+      setRefreshError(messageOf(cause));
+    }).finally(() => { if (active) setUpdating(false); });
+    return () => { active = false; };
+  }, [days, retry]);
 
   const payload = report.status === 'ready' ? report.data : null;
+  const selected = payload?.goals.some((card) => card.goal === goal) ? goal : null;
 
   return (
     <div className="flex flex-col gap-5">
-      {/*
-        **A native `<select>`, and it stays one.** The vendored Radix select is
-        the right control for a filter inside a region's toolbar, where it sits
-        beside other controls we drew; here it is one control in the page
-        header, it is read by `dashboard.test.tsx` as a `combobox` with a
-        VALUE, and a four-item window picker gains nothing from a portal.
-      */}
       <PageAction>
-        {/*
-          **`ms-auto`, because this is a filter and not an action.** ADR 0039
-          pairs an ACTION with the title — the eye reads "Optins + Create an
-          Optin" as one object — and a window picker sitting in that position
-          reads as part of the screen's name. Pushed to the trailing edge it
-          reads as what it is: a control over everything below it. It still
-          wraps under the title on a narrow viewport, where there is no trailing
-          edge to go to.
-
-          `pe-9` clears the arrow the browser draws. Preflight does not strip a
-          select's appearance, so at `px-2` the chevron sat on top of the last
-          letter of "The last 30 days".
-        */}
         <label className="ms-auto flex items-center gap-2 text-muted-foreground">
           {__('Showing', 'wconvert')}
-          <select
-            className="h-(--control-height) rounded-md border border-input bg-card ps-3 pe-9 text-body text-foreground"
-            value={payload === null || payload.days === 0 ? '' : payload.days}
-            onChange={(event) => setDays(Number(event.target.value))}
-          >
-            {WINDOWS.map((window) => (
-              <option key={window} value={window}>
-                {window === 1
-                  ? __('Today', 'wconvert')
-                  : sprintf(
-                      /* translators: %s: a number of days. */
-                      _n('The last %s day', 'The last %s days', window, 'wconvert'),
-                      String(window),
-                    )}
-              </option>
-            ))}
+          <select className="h-(--control-height) rounded-md border border-input bg-card ps-3 pe-9 text-body text-foreground"
+            value={days ?? payload?.days ?? ''} onChange={(event) => setDays(Number(event.target.value))}>
+            {WINDOWS.map((window) => <option key={window} value={window}>
+              {window === 1 ? __('Today', 'wconvert') : sprintf(_n('The last %s day', 'The last %s days', window, 'wconvert'), String(window))}
+            </option>)}
           </select>
         </label>
       </PageAction>
-
-      {/*
-        **Above the numbers, because it explains them.** A wall of zeros on
-        four Goal cards is the same screen whether an Optin was never published
-        or a caching plugin removed the loader, and the merchant cannot tell
-        the two apart from anything below this. It renders nothing once the
-        site is converting (ADR 0042).
-      */}
+      {payload !== null && payload.goals.length > 1 && (
+        <div className="wconvert-panel-filters" role="group" aria-label={__('Filter reports by goal', 'wconvert')}>
+          <button type="button" aria-pressed={selected === null} onClick={() => setGoal(null)}>{__('All goals', 'wconvert')}</button>
+          {payload.goals.map((card) => <button type="button" key={card.goal} aria-pressed={selected === card.goal} onClick={() => setGoal(card.goal)}>{card.label}</button>)}
+        </div>
+      )}
+      {payload !== null && payload.from !== '' && (
+        <div className="flex flex-wrap items-center justify-between gap-2 text-note text-muted-foreground">
+          <span>{payload.from === payload.to ? payload.from : sprintf(__('%1$s to %2$s, in your site’s timezone.', 'wconvert'), payload.from, payload.to)}</span>
+          {updating && <span role="status">{__('Updating report…', 'wconvert')}</span>}
+        </div>
+      )}
+      {refreshError !== null && payload !== null && <PageError message={sprintf(__('Showing the previous report. %s', 'wconvert'), refreshError)} />}
+      {report.status === 'failed' && <Region label={__('Analytics', 'wconvert')}><RegionErrorState message={report.message} /></Region>}
+      {refreshError !== null && <Button variant="outline" className="self-start" onClick={() => setRetry((value) => value + 1)}>{__('Retry loading report', 'wconvert')}</Button>}
+      {report.status === 'loading' && <RegionSkeleton label={__('Analytics', 'wconvert')}>
+        <StatRowSkeleton stats={4} /><Skeleton aria-hidden="true" className="h-36 w-full" />
+      </RegionSkeleton>}
+      {payload !== null && payload.goals.length === 0 && <Region label={__('Analytics', 'wconvert')}>
+        <EmptyState icon={ChartColumn} title={__('Nothing to report yet', 'wconvert')}
+          action={<Button asChild variant="outline"><a href="#optins">{__('Go to Optins', 'wconvert')}</a></Button>}>
+          {__('Publish an Optin and its numbers appear here.', 'wconvert')}
+        </EmptyState>
+      </Region>}
+      {payload?.goals.filter((card) => selected === null || card.goal === selected).map((card) => <GoalRegion key={card.goal} card={card} />)}
       <Milestones />
-
-      {/*
-        **Above the cards, because one read draws all of them.** The window
-        governs every region on this screen at once, so a refresh that fails
-        belongs to no Goal in particular and putting it on one would claim it
-        was about that Goal. {@see PageError} is that case — `RegionError`'s
-        rule against a page-top banner is scoped to regions that fail
-        INDEPENDENTLY, which these do not.
-
-        **Only where there is something to keep.** A FIRST failure has no cards
-        under it, so the region below renders the error as its whole content —
-        and this would then say the same sentence twice on one screen.
-      */}
-      {refreshError !== null && payload !== null && <PageError message={refreshError} />}
-
-      {report.status === 'failed' && (
-        <Region label={__('Analytics', 'wconvert')}>
-          <RegionErrorState message={report.message} />
-        </Region>
-      )}
-
-      {/*
-        **A Goal card's shape, and it used to be a table's.** This drew a
-        headless `DataTable` of four columns while what was coming is a heading,
-        a row of four figures and a sparkline — so every column moved when the
-        data landed, which is the one thing a skeleton exists not to do.
-        `StatRowSkeleton` was already in the file's own sibling and the builder
-        was already using it for this exact strip.
-      */}
-      {report.status === 'loading' && (
-        <RegionSkeleton label={__('Analytics', 'wconvert')}>
-          <StatRowSkeleton stats={4} />
-          <Skeleton aria-hidden="true" className="h-16 w-full" />
-        </RegionSkeleton>
-      )}
-
-      {payload !== null && payload.goals.length === 0 && (
-        <Region label={__('Analytics', 'wconvert')}>
-          <EmptyState
-            icon={ChartColumn}
-            title={__('Nothing to report yet', 'wconvert')}
-            action={
-              <Button asChild variant="outline">
-                <a href="#optins">{__('Go to Optins', 'wconvert')}</a>
-              </Button>
-            }
-          >
-            {__('Publish an Optin and its numbers appear here.', 'wconvert')}
-          </EmptyState>
-        </Region>
-      )}
-
-      {/*
-        The window is stated ONCE, on the first card. It is the same window for
-        every region on the screen, so repeating it under each would be one
-        fact printed four times — and `dashboard.test.tsx` reads it with
-        `findByText`, which fails on a second match rather than passing.
-      */}
-      {payload?.goals.map((card, index) => (
-        <GoalRegion key={card.goal} card={card} window={index === 0 ? payload : null} />
-      ))}
     </div>
   );
 }
 
-/**
- * One Goal's region.
- *
- * The headline is named by the server, because two of the five Goals convert
- * on a CLICK — a card headed "Submissions" over a click-metered Goal reports
- * zero forever and looks broken while being right.
- *
- * The heading is an `<h3>` rather than a region's usual `<h2>`: these are a
- * repeating SET under the page's own subject rather than a list of unrelated
- * concerns, and `dashboard.test.tsx` pins the level from the other side.
- *
- * **The window sits on the first region's title line and nowhere else.** It is
- * the same window for every card, so repeating it under each would be the same
- * fact stated four times.
- */
-function GoalRegion({ card, window }: { card: GoalReport; window: DashboardPayload | null }) {
+function GoalRegion({ card }: { card: GoalReport }) {
   return (
     <Region>
-      <RegionHeader
-        title={card.label}
-        level={3}
-        trailing={
-          window === null || window.from === '' ? undefined : (
-            <span className="text-muted-foreground tabular-nums">
-              {window.from === window.to
-                ? window.from
-                : sprintf(
-                    /* translators: 1: the first day of the window. 2: the last day. */
-                    __('%1$s to %2$s, in your site’s timezone.', 'wconvert'),
-                    window.from,
-                    window.to,
-                  )}
-            </span>
-          )
-        }
-      />
-
-      <RegionBody className="flex flex-col gap-4">
+      <RegionHeader title={card.label} level={3} />
+      <RegionBody className="flex flex-col gap-5">
         <StatRow>
           <Stat label={card.headline_label} value={formatCount(card.headline)} emphasis />
           <Stat label={__('Impressions', 'wconvert')} value={formatCount(card.impressions)} />
-          <Stat
-            label={__('Conversion rate', 'wconvert')}
-            value={formatRate(card.conversion_rate)}
-          />
+          <Stat label={__('Conversion rate', 'wconvert')} value={formatRate(card.conversion_rate)} />
           <Stat label={__('Dismissals', 'wconvert')} value={formatCount(card.dismissals)} />
-          {/*
-            **`conversions − deliveries`, and only the server knows whether there
-            is one.** This bundle spells no Goal id — `GoalParityTest` fails on
-            any of the five appearing here — so a card cannot ask which Goal it
-            is drawing. `null` is the server saying there is nothing to report,
-            and the stat is absent rather than zero.
-
-            The copy is "no delivery yet" rather than "failed" on purpose: a
-            Conversion whose push is still queued or backing off is counted here
-            too, and calling that a failure would be a stronger claim than the
-            subtraction supports. The field is named `undelivered_conversions`
-            for the same reason — it shipped as `delivery_failures`, which said
-            the opposite of the copy directly beneath it.
-          */}
-          {card.undelivered_conversions !== null && (
-            <Stat
-              label={_n(
-                'Conversion with no delivery yet',
-                'Conversions with no delivery yet',
-                card.undelivered_conversions,
-                'wconvert',
-              )}
-              value={formatCount(card.undelivered_conversions)}
-            />
-          )}
+          {card.undelivered_conversions !== null && <Stat
+            label={_n('Conversion with no delivery yet', 'Conversions with no delivery yet', card.undelivered_conversions, 'wconvert')}
+            value={formatCount(card.undelivered_conversions)} />}
         </StatRow>
-
-        <Sparkline label={card.headline_label} byDay={card.by_day} />
+        <ActivityChart label={card.headline_label} byDay={card.by_day} />
+        {(card.undelivered_conversions ?? 0) > 0 && <a className="text-note font-medium text-primary hover:underline" href="#destinations">{__('Check delivery in Destinations', 'wconvert')}</a>}
       </RegionBody>
-
-      <OptinTable card={card} />
+      <details className="wconvert-panel-details border-t border-border">
+        <summary>{sprintf(_n('View %d Optin', 'View %d Optins', card.optins.length, 'wconvert'), card.optins.length)}</summary>
+        <OptinTable card={card} />
+      </details>
     </Region>
   );
 }
 
-/**
- * The Optins under one Goal.
- *
- * **Soft-deleted Optins are absent here and their counts are still in the card
- * above.** A merchant tidying up in March must not watch February's goal total
- * fall, and this list is what they are running rather than what they have ever
- * run.
- */
 function OptinTable({ card }: { card: GoalReport }) {
   if (card.optins.length === 0) {
     return (
@@ -337,7 +136,7 @@ function OptinTable({ card }: { card: GoalReport }) {
 
   return (
     <div className="border-t border-border">
-      <DataTable>
+      <DataTable label={sprintf(__('Optins for %s', 'wconvert'), card.label)}>
         <DataTableHead>
           <DataTableColumn>{__('Optin', 'wconvert')}</DataTableColumn>
           <DataTableColumn numeric>{card.headline_label}</DataTableColumn>
