@@ -1,0 +1,247 @@
+{
+  "id": "makers-index",
+  "name": "The maker's index",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#f4e8dc",
+    "fg": "#58362b",
+    "muted": "#77594b",
+    "accent": "#813c2b",
+    "accent-fg": "#fff9e9",
+    "border": "#cdb29d",
+    "input-bg": "#fffaf3",
+    "font": "'DM Sans', system-ui, sans-serif",
+    "heading-font": "'Instrument Serif', Georgia, serif",
+    "heading-size": "2.56rem",
+    "heading-weight": "400",
+    "tracking": "-0.025em",
+    "text-size": "0.81rem",
+    "leading": "1.6",
+    "radius": "0.19rem",
+    "pad": "0",
+    "gap": "0",
+    "width": "35rem",
+    "shadow": "0 25px 50px -30px rgba(112, 53, 39, 0.5), 0 5px 13px -10px rgba(112, 53, 39, 0.25)",
+    "backdrop": "rgba(88, 54, 43, 0.55)"
+  },
+  "tree": {
+    "steps": [
+      {
+        "type": "split",
+        "ratio": 0.35,
+        "start": [
+          {
+            "type": "media",
+            "min": "10rem",
+            "tokens": {
+              "bg": "#b46f54",
+              "fg": "#fff6e8",
+              "border": "#e6b9a4",
+              "pad": "1.81rem 1.25rem 1.38rem",
+              "gap": "1.25rem"
+            },
+            "children": [
+              {
+                "type": "heading",
+                "id": "n1",
+                "level": 2,
+                "size": "xs",
+                "role": "wordmark",
+                "text": "slow clay"
+              },
+              {
+                "type": "image",
+                "id": "n2",
+                "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 12'%3E%3Cpath d='M13 3.6h1c3 0 3 4.6 0 4.6h-1' fill='none' stroke='%23f0cfaa' stroke-width='1.2'/%3E%3Cpath d='M4.3 2.8a4.6 1.1 0 0 1 9.2 0l-.9 6.3c-.2 2-6.6 2-7 0z' fill='%23edc9a1'/%3E%3Cellipse cx='8.9' cy='2.8' rx='3.7' ry='.7' fill='%2384543b'/%3E%3C/svg%3E",
+                "alt": "A stoneware mug"
+              },
+              {
+                "type": "stack",
+                "tokens": {
+                  "gap": "0.6rem"
+                },
+                "children": [
+                  {
+                    "type": "divider",
+                    "id": "n3"
+                  },
+                  {
+                    "type": "text",
+                    "id": "n4",
+                    "size": "xs",
+                    "role": "body",
+                    "text": "THE MORNING MUG\nOat glaze / 300 ml\nMade in small batches"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "end": [
+          {
+            "type": "panel",
+            "tokens": {
+              "pad": "2.62rem 1.62rem 1.56rem",
+              "gap": "0.85rem"
+            },
+            "narrow": {
+              "pad": "1.81rem 1.38rem 1.5rem"
+            },
+            "children": [
+              {
+                "type": "eyebrow",
+                "id": "n5",
+                "role": "eyebrow",
+                "text": "Between batches"
+              },
+              {
+                "type": "heading",
+                "id": "n6",
+                "role": "headline",
+                "text": "Your morning\nmug will return."
+              },
+              {
+                "type": "text",
+                "id": "n7",
+                "role": "body",
+                "text": "Leave your email for a note when the oat glazed mug is back on the shelf."
+              },
+              {
+                "type": "field",
+                "id": "n8",
+                "name": "email",
+                "label": "Email address",
+                "placeholder": "you@example.com",
+                "required": true
+              },
+              {
+                "type": "consent",
+                "id": "n9",
+                "role": "consent_text",
+                "hidden": true,
+                "text": "Tell me about new pieces from the studio. See our %s.",
+                "link": {
+                  "label": "Privacy Policy"
+                }
+              },
+              {
+                "type": "button",
+                "id": "n10",
+                "role": "cta_label",
+                "label": "Tell me when it returns",
+                "action": "submit"
+              },
+              {
+                "type": "text",
+                "id": "n11",
+                "size": "s",
+                "role": "fine_print",
+                "text": "One restock email for this mug. No newsletter.\nCancel from your confirmation email."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "split",
+        "ratio": 0.35,
+        "start": [
+          {
+            "type": "media",
+            "min": "10rem",
+            "tokens": {
+              "bg": "#b46f54",
+              "fg": "#fff6e8",
+              "border": "#e6b9a4",
+              "pad": "1.81rem 1.25rem 1.38rem",
+              "gap": "1.25rem"
+            },
+            "children": [
+              {
+                "type": "heading",
+                "id": "n20",
+                "level": 2,
+                "size": "xs",
+                "role": "wordmark",
+                "text": "slow clay"
+              },
+              {
+                "type": "image",
+                "id": "n21",
+                "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 12'%3E%3Cpath d='M13 3.6h1c3 0 3 4.6 0 4.6h-1' fill='none' stroke='%23f0cfaa' stroke-width='1.2'/%3E%3Cpath d='M4.3 2.8a4.6 1.1 0 0 1 9.2 0l-.9 6.3c-.2 2-6.6 2-7 0z' fill='%23edc9a1'/%3E%3Cellipse cx='8.9' cy='2.8' rx='3.7' ry='.7' fill='%2384543b'/%3E%3C/svg%3E",
+                "alt": "A stoneware mug"
+              },
+              {
+                "type": "stack",
+                "tokens": {
+                  "gap": "0.6rem"
+                },
+                "children": [
+                  {
+                    "type": "divider",
+                    "id": "n22"
+                  },
+                  {
+                    "type": "text",
+                    "id": "n23",
+                    "size": "xs",
+                    "role": "success_body",
+                    "text": "THE MORNING MUG\nOat glaze / 300 ml\nYour chosen piece"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "end": [
+          {
+            "type": "panel",
+            "tokens": {
+              "pad": "2.62rem 1.62rem 1.56rem",
+              "gap": "0.85rem"
+            },
+            "narrow": {
+              "pad": "1.81rem 1.38rem 1.5rem"
+            },
+            "children": [
+              {
+                "type": "badge",
+                "id": "n24",
+                "role": "badge",
+                "text": "You are on the list"
+              },
+              {
+                "type": "heading",
+                "id": "n25",
+                "role": "success_headline",
+                "text": "A note from\nthe next firing."
+              },
+              {
+                "type": "text",
+                "id": "n26",
+                "role": "success_body",
+                "text": "We will let %b know when this mug is available. There is no payment and no reservation.",
+                "emphasis": "your inbox"
+              },
+              {
+                "type": "text",
+                "id": "n27",
+                "size": "xl",
+                "role": "success_body",
+                "text": "Some things are\nworth making slowly."
+              },
+              {
+                "type": "text",
+                "id": "n28",
+                "size": "s",
+                "role": "fine_print",
+                "text": "One restock email. Cancel using the link in your confirmation."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

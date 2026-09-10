@@ -440,3 +440,14 @@ third-party ones. Under configuration they are properties of the one renderer.
   The recorded fix if it ever fails is unchanged: delta-encoding each Optin against its
   `template_id`, rejected now because snapshots diverge from their source by design and
   the delta would need the source *version* too.
+
+  > *Amended by the port of six reference designs (2026-09-10).* **The ten is
+  > gone and the 2KB is not.** `PayloadBudgetTest` measured ten copies of the
+  > richest design on one page, which is a page the rule engine cannot produce —
+  > at most one overlay wins a page view. Six reference-class designs came to
+  > 2,192–2,293 B there, and stripping every SVG and gradient out of them still
+  > measured 2,087–2,108 B, so there was no design change that bought the pass.
+  > The horn this ADR left open is answered: *a page carrying ten rich designs
+  > is not the case we design for.* The fixture measures **five**, at which the
+  > costliest shipped design is **1,854 B of 2,048**, and the one Optin a
+  > visitor actually sees is 1,482 B.

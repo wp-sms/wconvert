@@ -118,6 +118,10 @@ author wrote.
 | `fieldwork`, snapshotted | 910 B | 913 B (cap 1,024) |
 | Ten of it on one page | 1,570 B | 1,594 B (budget 2,048) |
 
+*The fixture measured ten at the time. It measures five now, and for why, see
+[ADR 0063](0063-the-five-things-the-reference-designs-still-could-not-say.md)'s
+correction note.*
+
 360 bytes of loader for the mechanism and 3 bytes of payload for the one design
 that uses it. The plan that asked for this named it *"the item that doubles what
 a scope stores"* and said to reconsider it if the budget tightened; it did not.

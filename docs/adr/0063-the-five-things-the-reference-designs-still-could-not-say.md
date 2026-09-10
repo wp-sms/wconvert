@@ -194,6 +194,20 @@ rich designs is not the case we design for"*. Neither was needed yet. It will
 bind again, and when it does the recorded fix is still the one ADR 0010 named
 and rejected.
 
+> *Corrected by the port of six reference designs.* **It bound again, and the
+> recorded fix did not work.** The six came to 2,192–2,293 B at ten, and
+> stripping every SVG and gradient out of them still measured 2,087–2,108 B —
+> shorter art bought nothing, because on that page the art dedupes across the
+> ten copies and the diverged copy does not. So the warning's second horn is
+> the one taken: **a page carrying ten rich designs is not the case we design
+> for.** The fixture measures five, the costliest design measures 1,854 B of
+> 2,048 at it, and ADR 0010's budget is untouched.
+>
+> The art-stripped run also went green, which is the part worth keeping: with
+> the art gone the *picker* went back to `fieldwork` at 2,025 B, so the guard
+> would have passed while three shipped designs were over. It chose by one
+> snapshot gzipped alone; it measures the page now.
+
 ## Two designs, because a param no design uses is a word in a menu
 
 `grid`'s own deletion note says it: *"a layout that cannot be configured and is
