@@ -69,7 +69,7 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
   padding-inline: 10px;
   box-shadow: none;
 }
-#wconvert-admin .wconvert-workspace__navigation button[data-state='active'] {
+#wconvert-admin .wconvert-workspace__navigation button[data-state="active"] {
   background: #eff4f1;
   color: var(--primary);
 }
@@ -98,7 +98,7 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
   min-height: 0;
   margin: 0;
 }
-#wconvert-admin .wconvert-workspace__design[data-state='inactive'] {
+#wconvert-admin .wconvert-workspace__design[data-state="inactive"] {
   display: none;
 }
 #wconvert-admin .wconvert-workspace__toolbar {
@@ -129,12 +129,14 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
 #wconvert-admin .wconvert-segmented button {
   height: 27px;
 }
-#wconvert-admin .wconvert-segmented button[aria-pressed='true'] {
+#wconvert-admin .wconvert-segmented button[aria-pressed="true"] {
   background: white;
   color: var(--primary);
   box-shadow: 0 1px 3px #142c211a;
 }
-#wconvert-admin .wconvert-workspace__toolbar button[aria-pressed='true']:not(.wconvert-segmented button) {
+#wconvert-admin
+  .wconvert-workspace__toolbar
+  button[aria-pressed="true"]:not(.wconvert-segmented button) {
   background: #edf4f0;
   color: var(--primary);
 }
@@ -146,7 +148,7 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
   flex: 1;
   min-height: 0;
 }
-#wconvert-admin .wconvert-workspace .wconvert-panes[data-layers='true'] {
+#wconvert-admin .wconvert-workspace .wconvert-panes[data-layers="true"] {
   grid-template-columns: 256px minmax(0, 1fr) 312px;
 }
 #wconvert-admin .wconvert-workspace .wconvert-pane {
@@ -267,39 +269,56 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
   width: 16px;
   height: 16px;
 }
-#wconvert-admin .wconvert-workspace .wconvert-inspector__halves {
-  display: flex;
-  height: 41px;
-  gap: 0;
-  padding: 0 16px;
-  margin: 0;
-  width: 100%;
-  border-radius: 0;
-  border-bottom: 1px solid var(--editor-rule);
-  background: white;
-}
-#wconvert-admin .wconvert-inspector__halves button {
-  flex: 1;
-  height: 100%;
-  border-radius: 0;
-  box-shadow: none;
-  border-bottom: 2px solid transparent;
-}
-#wconvert-admin .wconvert-inspector__halves button[data-state='active'] {
-  color: var(--primary);
-  border-bottom-color: var(--primary);
+@layer utilities {
+  #wconvert-admin
+    .wconvert-workspace
+    .wconvert-inspector__head
+    .wconvert-inspector__halves {
+    /* Important utilities win by layer first, then specificity. */
+    display: flex !important;
+    block-size: 41px !important;
+    gap: 0;
+    padding: 0 var(--wconvert-gutter) !important;
+    margin: 0;
+    inline-size: 100% !important;
+    border-radius: 0 !important;
+    border: 0 !important;
+    border-block-end: 1px solid var(--editor-rule) !important;
+    background: white !important;
+  }
+  #wconvert-admin .wconvert-workspace .wconvert-inspector__halves button {
+    flex: 1;
+    block-size: 100% !important;
+    font-size: var(--text-note) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    border-block-end: 2px solid transparent !important;
+  }
+  #wconvert-admin
+    .wconvert-workspace
+    .wconvert-inspector__halves
+    button[data-state="active"] {
+    color: var(--primary) !important;
+    border-block-end-color: var(--primary) !important;
+  }
 }
 #wconvert-admin .wconvert-workspace .wconvert-inspector__body {
   padding: var(--wconvert-gutter);
 }
-#wconvert-admin .wconvert-workspace .wconvert-inspector__body > [data-slot='tabs-content'] {
+#wconvert-admin
+  .wconvert-workspace
+  .wconvert-inspector__body
+  > [data-slot="tabs-content"] {
   gap: 16px;
 }
 #wconvert-admin .wconvert-workspace .wconvert-inspector__body label {
   font-size: var(--text-label);
   font-weight: 500;
 }
-#wconvert-admin .wconvert-workspace .wconvert-inspector__body input:not([type='range'], [type='checkbox']),
+#wconvert-admin
+  .wconvert-workspace
+  .wconvert-inspector__body
+  input:not([type="range"], [type="checkbox"]),
 #wconvert-admin .wconvert-workspace .wconvert-inspector__body textarea {
   font-size: var(--text-micro);
 }
@@ -320,7 +339,10 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
   letter-spacing: 0.04em;
   margin: 0;
 }
-#wconvert-admin .wconvert-workspace .wconvert-scope__token + .wconvert-scope__token {
+#wconvert-admin
+  .wconvert-workspace
+  .wconvert-scope__token
+  + .wconvert-scope__token {
   margin-top: 12px;
 }
 #wconvert-admin .wconvert-workspace .wconvert-palette .wconvert-scope__token {
@@ -615,19 +637,10 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
 #wconvert-admin .wconvert-workspace .wconvert-inspector__body button {
   box-shadow: none;
 }
-#wconvert-admin .wconvert-workspace .wconvert-inspector__halves {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  inline-size: calc(100% - var(--wconvert-gutter) * 2);
-  margin: 0 var(--wconvert-gutter) 12px;
-  padding: 3px;
-  min-block-size: 36px;
-}
-#wconvert-admin .wconvert-workspace .wconvert-inspector__halves button {
-  min-block-size: 30px;
-  font-size: var(--text-note);
-}
-#wconvert-admin .wconvert-workspace .wconvert-inspector__body .wconvert-linkish {
+#wconvert-admin
+  .wconvert-workspace
+  .wconvert-inspector__body
+  .wconvert-linkish {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -646,7 +659,9 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
   inline-size: 100%;
   gap: 2px;
   padding-inline: var(--wconvert-gutter);
-  padding-inline-start: calc(var(--wconvert-gutter) + var(--wconvert-depth, 0) * 8px);
+  padding-inline-start: calc(
+    var(--wconvert-gutter) + var(--wconvert-depth, 0) * 8px
+  );
 }
 #wconvert-admin .wconvert-workspace .wconvert-block__kind {
   flex: 1 0 100%;
@@ -661,7 +676,11 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
 }
 #wconvert-admin
   .wconvert-workspace
-  :is(.wconvert-block__says, .wconvert-block__pane, .wconvert-block__chip--sets) {
+  :is(
+    .wconvert-block__says,
+    .wconvert-block__pane,
+    .wconvert-block__chip--sets
+  ) {
   position: absolute;
   inline-size: 1px;
   block-size: 1px;
@@ -673,7 +692,7 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
   #wconvert-admin .wconvert-workspace .wconvert-panes {
     position: relative;
   }
-  #wconvert-admin .wconvert-workspace .wconvert-panes[data-layers='true'] {
+  #wconvert-admin .wconvert-workspace .wconvert-panes[data-layers="true"] {
     grid-template-columns: minmax(0, 1fr) 280px;
   }
   #wconvert-admin .wconvert-workspace .wconvert-pane--layers {
