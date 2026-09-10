@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { mount } from '@renderer/mount';
+import { A_DESIGNS_OWN_WIDTH } from '@renderer/css';
 import { SLOT_SELECTOR, keyOfElement, type SlotKey } from './slots';
 import { policyUrl, withPolicyLink } from './policy';
 import type { Template } from '@renderer/types';
@@ -463,5 +464,15 @@ export function Preview({ template, step = 0, selected = null, onSelect, interac
     }
   }, [root, selected, hint]);
 
-  return <div ref={anchor} className="wconvert-preview" />;
+  // The protected shadow host resets all outer styles. Give its containing
+  // block a width: intrinsic flex sizing otherwise sees only the padding of
+  // the size-contained .wc-root and collapses gallery/creation previews.
+  return (
+    <div className="wconvert-preview">
+      <div
+        ref={anchor}
+        style={{ inlineSize: template.tokens.width ?? A_DESIGNS_OWN_WIDTH, maxInlineSize: '100%' }}
+      />
+    </div>
+  );
 }

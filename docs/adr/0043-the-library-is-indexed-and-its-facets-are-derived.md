@@ -191,6 +191,15 @@ work to 360px.
   network, no layout measurement — so a card that comes back draws the same
   pixels. The alternative was a dependency inside a bundle whose halves are
   reported at every build (ADR 0038).
+- **A preview needs a definite containing width outside its shadow host.**
+  The renderer uses inline-size containment for mobile layout, so intrinsic
+  flex sizing cannot use its contents to size the host. In gallery and creation
+  cards this collapsed some previews to a strip. `Preview` now gives its mount
+  wrapper the design's width (or the renderer's default), capped at the available
+  width. The wrapper sits outside the host's `all: initial !important` reset;
+  the visitor renderer and its protection from page styles are unchanged.
+  Real WordPress checks cover gallery cards at 1024px, creation previews, and
+  the editor's 600px desktop and 352px mobile canvases.
 - **Picking a design after editing the structure is destructive, and the
   affordance says so.** `snapshotInto()` carries copy by [[Slot Role]] and
   `MerchantsOwn` carries image `src`/`alt` and button `href` — but **blocks the

@@ -39,8 +39,9 @@ the visitor is in a position to wait for.
 So work out what a visitor-facing error could actually mean here:
 
 - **The ESP push failed?** The Lead is in `wconvert_leads`. The job is queued and
-  will be retried five times with backoff. The visitor is on the list. Telling
-  them "something went wrong" is false, and it invites them to submit again —
+  will be retried five times with backoff. The capture is safely recorded;
+  this does not establish a Contact's subscription status in the ESP. Telling
+  them the capture failed is false, and it invites them to submit again —
   producing a second Lead, because Leads are never deduplicated
   (`CONTEXT.md`, Lead).
 - **The local write failed?** Then the database is down, or the plugin is broken,

@@ -7,8 +7,8 @@ description: Author a new WConvert design (a [[Template]]) — a node tree plus 
 
 A [[Template]] is **configuration, not a document** (ADR 0010): a JSON node
 tree over a closed vocabulary plus a closed set of CSS custom properties — set
-for the whole design, and re-declared on any layout node for what is inside it
-(ADR 0062). It
+for the whole design, and re-declared on layouts and leaves for their own
+appearance (ADRs 0062 and 0067). It
 carries no HTML, no CSS and — this is the part that catches everyone — **no
 words a visitor reads**. Copy lives on the [[Playbook]]; a design's own text is
 placeholder that exists so the gallery has something to show.
@@ -17,9 +17,10 @@ That boundary is what keeps the library small. With copy held elsewhere a
 design is Goal-agnostic, so the gallery is *N designs per [[Display Type]]*
 rather than a design for every pairing of Display Type and [[Goal]].
 
-**The builder has no canvas** ([#15](https://github.com/navidkashani/wconvert/issues/15)),
-so this library is the entire design surface of the product. There is nowhere
-for a merchant to escape to.
+**The builder starts with a preview and a contextual inspector** (ADR 0067).
+Merchants can edit selected elements and use the optional Layers panel for
+structure. A library design should still be a complete starting point: getting
+a usable Optin must not require rebuilding its layout.
 
 ## The loop
 
@@ -117,8 +118,8 @@ written anywhere.
 HTML from anywhere — a competitor, a canvas, a generator — **cannot cross**.
 Positioned badges, decorative shapes and second CTAs have no home in the
 vocabulary and `TemplateVocabulary::normalize()` drops them **silently**.
-Per-node colours DO have a home — a layout's `tokens` bag — but only in the
-declared token names, and only on a layout.
+Per-node colours DO have a home — a layout or leaf's `tokens` bag — using the
+declared token names. A value affects the elements that read that token.
 
 An HTML→JSON mapper is easy to write and unsafe to trust, which is exactly why
 there is not one ([#18](https://github.com/navidkashani/wconvert/issues/18)).
@@ -127,8 +128,8 @@ Author against `VOCABULARY.md` instead.
 ## The ceiling, stated plainly
 
 The token **names** are closed and that is the ceiling. Where each one APPLIES
-is not: since ADR 0062 any layout node carries its own `tokens` bag,
-re-declaring the same names for itself and everything inside it. Custom
+is not: ADR 0062 added layout `tokens` bags and ADR 0067 extended them to leaves,
+re-declaring the same names for the element and everything inside it. Custom
 properties inherit, so a `split` can hold a cream pane beside a dark one and the
 form can have a different ground from the headline. Bags nest.
 
@@ -162,9 +163,10 @@ literal, and a mark with nothing to fill it renders nothing.
 and it then follows the theme. Reach for a literal hex only where the box is
 deliberately outside the palette.
 
-**A layout may carry the bag twice.** `narrow` is the same names again, applying
-below 360px of *container* — so an inline Optin in a sidebar retunes on a
-desktop (ADR 0064). Reach for it where shrinking is not the same as retuning: a
+**A layout or leaf may carry the bag twice.** `narrow` is the same names again,
+applying below 24rem (384px) of *container* — so an inline Optin in a sidebar
+retunes on a desktop (ADRs 0064 and 0067). Reach for it where shrinking is not
+the same as retuning: a
 photo pane that is 440px of a split and the whole width on a phone wants less
 padding and smaller display type, not the same values in a narrower box.
 Everything that merely needs to be smaller already is — a `split` stacks, a
@@ -180,10 +182,10 @@ ADR 0061 declined per-node styling as "rung 3" and named the evidence that would
 reopen it; ADR 0062 records the reopening, and that the evidence was a different
 kind than the one asked for.
 
-What is still out of reach: **arrangement**. There is no per-node `class`, no
-`style`, no positioning, and nothing that moves a box somewhere the layout did
-not put it. A design that wants the photo on the other side is a different
-design.
+**Arrangement stays within the tree's layout vocabulary.** The editor offers
+guarded move, copy, delete and layout controls. There is no per-node `class`,
+arbitrary `style`, or absolute positioning; the layout still decides where its
+children go.
 
 Beyond the bag, **token values are unvalidated** — only the names are checked —
 so `clamp()` widths, asymmetric `pad`, arbitrary radii, gradients through

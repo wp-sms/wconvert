@@ -609,8 +609,9 @@ history rather than splitting it at the moment of the edit — which is what mak
 "Kept for its whole life" means persistent, not frozen: a Goal never evaporates
 off the Optin, but it can be corrected.
 
-> **And there is a control that corrects it**, in the builder's page-header band
-> beside the line that states it. It was chosen in a wizard that could not be
+> **And there is a control that corrects it**, in the builder's Optin details
+> ([ADR 0067](docs/adr/0067-the-editor-starts-with-the-preview-and-the-selected-element.md)).
+> It was chosen in a wizard that could not be
 > re-entered, so "corrected" meant a scripted call — which is why the server's
 > own refusal had the words *"or change the Goal"* deleted from it. Correcting
 > one is purely editorial: it moves which card reports the Optin and what its
@@ -961,8 +962,9 @@ the provider's *shape*, never of a person's state.
 
 A Destination failing is **invisible to the visitor**. That is what "fallible
 without the capture failing" means followed through: the [[Lead]] is already
-written, the push is queued and retried, and the visitor is on the list — so
-there is no error state in a [[Template]] and there will not be one. The only
+written and the push is queued and retried. That confirms the capture, not a
+Contact's subscription status, which belongs to the receiving system. There
+is no delivery-error state in a [[Template]] and there will not be one. The only
 thing such a state could report is the local write failing, which is an outage
 rather than a step in anyone's journey
 ([ADR 0044](docs/adr/0044-there-is-no-visitor-facing-error-state.md)). Failure is
