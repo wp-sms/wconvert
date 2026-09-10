@@ -23,6 +23,7 @@ export default [
       // browser IIFE of the renderer, which this config would lint as Node and
       // fail on every `document` in. The generators themselves are linted below.
       'tools/*/out/',
+      '.superdesign/tmp/',
     ],
   },
   js.configs.recommended,
