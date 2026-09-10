@@ -484,8 +484,8 @@ capture origin.
 
 Local verification is complete: the frontend suite passes **2,081 tests across
 85 files**, and PHP passes **1,782 tests / 7,752 assertions**. Full PHPStan,
-TypeScript, ESLint and Free/Pro admin builds pass. **PR CI remains pending**;
-its result is not inferred from local checks.
+TypeScript, ESLint and Free/Pro admin builds pass. PR CI is checked separately
+against the pushed commit; its result is not inferred from local checks.
 
 Real local WordPress checks followed report → focused Optin → captured leads
 with the correct start/end dates. The Optins row's **View results** action also
@@ -501,7 +501,9 @@ returned to the original focused Analytics route. The narrow notice's Back
 action also requested discard before leaving. The 360px reading pages showed no
 horizontal overflow. These checks persisted no draft, capture, test-send,
 retention or recovery changes.
-The original six Optins remained unchanged: one published and five drafts.
+The original six Optins remained unchanged: one published and five drafts, with
+the published Optin’s saved unpublished changes preserved. Temporary viewport
+overrides were reset after verification.
 
 The isolated populated fixture exercised 140 submissions; an exact email search
 matched 65 and its Older page showed the remaining 15. Group history had its own
@@ -510,7 +512,3 @@ dates and links, and retry updated them. A terminal-failure capture link resolve
 one exact submission. The fixture also showed no horizontal overflow at 360px.
 Fixture data is not evidence of a real capture, provider push or inbox delivery.
 
-The Optin list’s View results action opened the matching focused report. The
-original six visible Optins remained: one published and five drafts, with the
-existing published Optin’s saved unpublished changes preserved. Temporary
-viewport overrides were reset after verification.
