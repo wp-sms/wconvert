@@ -13,8 +13,9 @@ found a real image background excluded from “With a picture” and keyboard fo
 entering sample preview content.
 
 This decision changes the gallery and its handoff to the editor. The review's
-other proposals, including publishing, destination setup, capture fields and
-report navigation, remain proposed and are not adopted here.
+other proposals are not adopted here. Publishing and destination setup are
+subsequently addressed by [ADR 0070](0070-drafts-are-reviewed-and-explicitly-published-from-the-editor.md);
+capture fields and report navigation remain separate work.
 
 ## Find designs by what they actually offer
 

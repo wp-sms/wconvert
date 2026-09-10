@@ -409,10 +409,10 @@ describe('a goal that collects contacts, over a design that asks for nothing', (
    * now, and honestly counts click-throughs; what it will never do is collect
    * an address, and no other surface in the product would mention it.
    *
-   * A sentence in the Summary rather than a refusal: the Optin is not broken,
+   * A sentence in the launch review rather than a refusal: the Optin is not broken,
    * it is measuring something other than what the merchant asked for.
    */
-  it('is flagged in the Summary, and still saves', async () => {
+  it('is flagged in the launch review and remains publishable', async () => {
     builder.getOptin.mockResolvedValue(
       optin({
         config: { template_id: 'offer-panel', template: { tree: OFFER.tree, tokens: OFFER.tokens } },
@@ -421,10 +421,11 @@ describe('a goal that collects contacts, over a design that asks for nothing', (
 
     open();
 
-    await userEvent.click(await screen.findByRole('button', { name: /thing to fix/ }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Review & publish' }));
 
     expect(await screen.findByText(/will never collect any/)).toBeInTheDocument();
     expect(screen.getByText(/collects contacts/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Publish Optin' })).toBeEnabled();
   });
 
   /** And a goal whose product IS the click-through says nothing at all. */
@@ -438,8 +439,9 @@ describe('a goal that collects contacts, over a design that asks for nothing', (
 
     open();
 
-    expect(await screen.findByRole('button', { name: 'Summary' })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /thing to fix/ })).toBeNull();
+    await userEvent.click(await screen.findByRole('button', { name: 'Review & publish' }));
+    expect(screen.queryByText(/will never collect any/)).toBeNull();
+    expect(screen.getByRole('button', { name: 'Publish Optin' })).toBeEnabled();
   });
 });
 

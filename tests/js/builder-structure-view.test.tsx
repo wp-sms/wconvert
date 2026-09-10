@@ -17,11 +17,9 @@ import type { TemplateNode, TemplateTree } from '@renderer/types';
  * assembled screen can answer: **does pressing the button reach them, and does
  * what comes back get sent to the server?**
  *
- * It deliberately does NOT test the keyboard model. jsdom models neither focus
- * nor roving tabindex nor the top layer (`tests/js/setup.ts`), so an assertion
- * about ← → here would be an assertion about jsdom. That gap is recorded rather
- * than papered over: Vitest 4's Browser Mode is what closes it, in a pull
- * request of its own.
+ * Shortcut ownership is asserted from dispatched events. Native roving focus,
+ * layout and top-layer behavior still need a real browser pass; these event
+ * tests do not stand in for those interactions.
  */
 
 const builder = vi.hoisted(() => ({
@@ -161,6 +159,9 @@ function optin(over: Record<string, unknown> = {}) {
     name: 'Welcome discount',
     goal: 'grow_email_list',
     published_at: null,
+    deleted_at: null,
+    suspended: null,
+    has_unpublished_changes: false,
     config: { template_id: 'centred-card', template: { tree: ENTRY.tree, tokens: ENTRY.tokens } },
     ...over,
   };
@@ -1105,8 +1106,8 @@ describe('the verdict', () => {
    * exactly — a permanent line that taxes every visit and informs one — and it
    * applies to a status chip as squarely as to a sentence.
    *
-   * That still holds where the verdict now lives. The readiness panel is
-   * permanent; its **To fix** block is not, and a sound design draws none of it.
+     * The launch review remains available without making an unconditional
+     * promise about what will happen on a visitor's actual page.
    */
   it('says nothing at all when nothing is wrong with the design', async () => {
     await structure();
@@ -1138,20 +1139,20 @@ describe('the verdict', () => {
     await userEvent.type(screen.getByLabelText('muted value'), '#f4f4f5');
 
     /*
-      **On the collapsed row**, which is what a merchant sees on every visit:
-      the panel opens closed, so the count is the part that has to reach them
-      without a press. The sentence itself is one click away, and readable from
-      whichever tab they are on rather than from the two that edit the design.
+      The launch review is available from every editor tab. Opening it exposes
+      the advisory warning without turning a colour choice into a publish block.
     */
-    expect(await screen.findByText('1 thing to fix')).toBeInTheDocument();
+    await userEvent.click(await screen.findByRole('button', { name: 'Review & publish' }));
+    expect(screen.getByRole('heading', { name: '1 thing to review' })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Keep editing' }));
 
     await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
 
-    expect(screen.getByText('1 thing to fix')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Review & publish' }));
 
-    await userEvent.click(screen.getByRole('button', { name: /thing to fix/ }));
-
+    expect(screen.getByRole('heading', { name: '1 thing to review' })).toBeInTheDocument();
     expect(screen.getByText(/too close to the background/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Save & publish' })).toBeEnabled();
   });
 
   /**
@@ -1169,7 +1170,7 @@ describe('the verdict', () => {
     await structure();
     await menu('Fine print');
     await userEvent.click(screen.getByRole('menuitem', { name: /Duplicate/ }));
-    await userEvent.click(screen.getByRole('button', { name: /thing to fix/ }));
+    await userEvent.click(screen.getByRole('button', { name: 'Review & publish' }));
 
     const problem = screen.getByRole('button', { name: /no name of its own/ });
 
@@ -1208,6 +1209,30 @@ describe('undo and redo', () => {
     expect(rowNames()).not.toContain('Fine print');
   });
 
+  it('keeps the design unchanged when an undo shortcut is pressed inside launch review', async () => {
+    await structure();
+    await userEvent.click(within(row('Headline')).getByRole('button', { name: 'Move Headline down' }));
+    expect(rowNames().slice(0, 3)).toEqual(['The form', 'Body text', 'Headline']);
+    expect(screen.getByRole('button', { name: 'Undo' })).toBeEnabled();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Review & publish' }));
+    // Focus a non-text control: text inputs already have their own undo guard.
+    const keepEditing = screen.getByRole('button', { name: 'Keep editing' });
+    keepEditing.focus();
+    expect(keepEditing).toHaveFocus();
+    await userEvent.keyboard('{Meta>}z{/Meta}');
+    await userEvent.keyboard('{Control>}z{/Control}');
+    expect(screen.getByRole('dialog', { name: 'Review & publish' })).toBeInTheDocument();
+    await userEvent.click(keepEditing);
+
+    expect(rowNames().slice(0, 3)).toEqual(['The form', 'Body text', 'Headline']);
+    expect(screen.getByRole('button', { name: 'Undo' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Redo' })).toBeDisabled();
+    // The history still works once the merchant has deliberately returned to editing.
+    await userEvent.click(screen.getByRole('button', { name: 'Undo' }));
+    expect(rowNames().slice(0, 3)).toEqual(['The form', 'Headline', 'Body text']);
+  });
+
   /**
    * **Undoing across a save is allowed, and re-marks the screen dirty.**
    * `config` is the draft and `published_config` is what the site serves, so a
@@ -1221,12 +1246,12 @@ describe('undo and redo', () => {
     await userEvent.click(within(row('Headline')).getByRole('button', { name: 'Move Headline down' }));
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
 
-    expect(await screen.findByText(/^Saved$/)).toBeInTheDocument();
+    expect(await screen.findByText(/^Draft saved$/)).toBeInTheDocument();
 
     await userEvent.click(screen.getByRole('button', { name: 'Undo' }));
 
     expect(rowNames().slice(0, 3)).toEqual(['The form', 'Headline', 'Body text']);
-    expect(screen.queryByText(/^Saved$/)).toBeNull();
+    expect(screen.queryByText(/^Draft saved$/)).toBeNull();
   });
 });
 

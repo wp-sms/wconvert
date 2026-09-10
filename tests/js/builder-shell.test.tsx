@@ -36,6 +36,7 @@ const builder = vi.hoisted(() => ({
 }));
 
 const templates = vi.hoisted(() => ({ listTemplates: vi.fn(), getTemplateTrees: vi.fn(), prepareTemplate: vi.fn() }));
+const publishing = vi.hoisted(() => ({ publishOptin: vi.fn() }));
 const stats = vi.hoisted(() => ({ readDashboard: vi.fn() }));
 const destinations = vi.hoisted(() => ({ readDestinations: vi.fn() }));
 const goals = vi.hoisted(() => ({ listGoals: vi.fn(), listPlaybooks: vi.fn() }));
@@ -65,7 +66,12 @@ vi.mock('../../resources/admin/src/stats/api', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../../resources/admin/src/stats/api')>()),
   ...stats,
 }));
-vi.mock('../../resources/admin/src/destinations/api', () => destinations);
+vi.mock('../../resources/admin/src/destinations/api', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../../resources/admin/src/destinations/api')>()), ...destinations,
+}));
+vi.mock('../../resources/admin/src/optins/api', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../../resources/admin/src/optins/api')>()), ...publishing,
+}));
 vi.mock('../../resources/admin/src/goals/api', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../../resources/admin/src/goals/api')>()),
   ...goals,
@@ -203,6 +209,7 @@ function optin(over: Record<string, unknown> = {}) {
     name: 'Welcome discount',
     goal: 'grow_email_list',
     published_at: null,
+    has_unpublished_changes: false,
     deleted_at: null,
     suspended: null,
     config: { template_id: 'centred-card', template: { tree: ENTRY.tree, tokens: ENTRY.tokens } },
@@ -215,9 +222,10 @@ beforeEach(() => {
   vi.clearAllMocks();
   builder.getOptin.mockResolvedValue(optin());
   builder.getRules.mockResolvedValue(vocabulary);
+  publishing.publishOptin.mockResolvedValue({ published_at: '2026-09-10 12:00:00', has_unpublished_changes: false, deleted_at: null, suspended: null });
   builder.saveOptin.mockImplementation(
     (_id: string, _name: string, config: Record<string, unknown>, goal?: string) =>
-      Promise.resolve({ ...optin(), config: structuredClone(config), ...(goal === undefined ? {} : { goal }) }),
+      Promise.resolve({ ...optin(), name: _name, config: structuredClone(config), ...(goal === undefined ? {} : { goal }) }),
   );
   templates.listTemplates.mockResolvedValue(INDEX);
   templates.getTemplateTrees.mockResolvedValue({
@@ -811,7 +819,7 @@ describe('the way out of the builder', () => {
 
     await userEvent.type(await screen.findByLabelText('Name'), '!');
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
-    await screen.findByText(/^Saved$/);
+    await screen.findByText(/^Draft saved$/);
 
     expect(builder.saveOptin).toHaveBeenCalledTimes(1);
     expect(builder.saveOptin.mock.calls[0][3]).toBeUndefined();
@@ -825,7 +833,7 @@ describe('the way out of the builder', () => {
 
     await userEvent.type(await screen.findByLabelText('Name'), '!');
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
-    await screen.findByText(/^Saved$/);
+    await screen.findByText(/^Draft saved$/);
     await userEvent.click(screen.getByRole('button', { name: 'Back to Optins' }));
 
     expect(closed).toHaveBeenCalled();
@@ -858,7 +866,7 @@ describe('the summary', () => {
    * query for one named *"When"* matches nothing at all.
    */
   const fact = (name: string) =>
-    screen.getByText(name, { selector: 'dt' }).nextElementSibling;
+    screen.getByRole('button', { name }).closest('dt')?.nextElementSibling;
 
   /**
    * Press the trigger in the page-header band.
@@ -870,7 +878,7 @@ describe('the summary', () => {
    * keystroke, and the editor's own floor is 782px (ADR 0038).
    */
   const summary = async () =>
-    userEvent.click(await screen.findByRole('button', { name: /Summary|thing to fix/ }));
+    userEvent.click(await screen.findByRole('button', { name: 'Review & publish' }));
 
   /**
    * **The eight facts still cost one button; the [[Goal]] no longer does.**
@@ -882,7 +890,7 @@ describe('the summary', () => {
   it('costs the screen one button until it is asked for', async () => {
     open();
 
-    expect(await screen.findByRole('button', { name: 'Summary' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: 'Review & publish' })).toBeInTheDocument();
     expect(screen.queryByText('On every page')).toBeNull();
     expect(screen.queryByText('Started from')).toBeNull();
   });
@@ -918,7 +926,7 @@ describe('the summary', () => {
     await summary();
 
     expect(await screen.findByRole('dialog')).toBeInTheDocument();
-    expect(fact('Started from')?.textContent).toBe('Welcome discount');
+    expect(screen.getByText('Started from:', { exact: false })).toHaveTextContent('Welcome discount');
   });
 
   /**
@@ -944,7 +952,7 @@ describe('the summary', () => {
     await summary();
 
     expect(await screen.findByRole('dialog')).toBeInTheDocument();
-    expect(fact('Started from')?.textContent).toBe('welcome-discount');
+    expect(screen.getByText('Started from:', { exact: false })).toHaveTextContent('welcome-discount');
   });
 
   /**
@@ -1121,7 +1129,7 @@ describe('the summary', () => {
 
     await summary();
 
-    expect(await screen.findByText('WP SMS contacts', { selector: 'dd' })).toBeInTheDocument();
+    expect(await screen.findByText('WP SMS contacts', { selector: 'p' })).toBeInTheDocument();
 
     // Out of the modal before touching the screen behind it.
     await userEvent.keyboard('{Escape}');
@@ -1150,7 +1158,7 @@ describe('changing templates in the draft', () => {
     open();
     await userEvent.type(await screen.findByRole('textbox', { name: 'Name' }), ' renamed');
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
-    await screen.findByText('Saved');
+    await screen.findByText('Draft saved');
     expect(screen.getByRole('button', { name: 'Undo' })).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
   });
@@ -1206,4 +1214,80 @@ describe('changing templates in the draft', () => {
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
     expect(builder.saveOptin).not.toHaveBeenCalled();
   });
+});
+
+describe('publishing from the editor', () => {
+  const review = async () => {
+    await userEvent.click(await screen.findByRole('button', { name: 'Review & publish' }));
+    return within(await screen.findByRole('dialog'));
+  };
+
+  it('keeps saved draft updates separate until the merchant publishes them', async () => {
+    builder.getOptin.mockResolvedValue(optin({ published_at: '2026-09-01 00:00:00', has_unpublished_changes: true }));
+    open();
+    expect(await screen.findByText('Unpublished changes')).toBeInTheDocument();
+    const dialog = await review();
+    expect(publishing.publishOptin).not.toHaveBeenCalled();
+    await userEvent.click(dialog.getByRole('button', { name: 'Publish changes' }));
+    await dialog.findByRole('button', { name: 'Done' });
+    expect(publishing.publishOptin).toHaveBeenCalledWith(ID);
+    expect(builder.saveOptin).not.toHaveBeenCalled();
+    await userEvent.click(dialog.getByRole('button', { name: 'Done' }));
+    expect(screen.getByText('Published')).toBeInTheDocument();
+    expect((await review()).getByRole('button', { name: 'Publish changes' })).toBeDisabled();
+  });
+
+  it('waits for the latest edits to save before promoting the saved snapshot', async () => {
+    let accept!: (value: ReturnType<typeof optin>) => void;
+    builder.saveOptin.mockImplementation(() => new Promise((resolve) => { accept = resolve; }));
+    open();
+    await userEvent.type(await screen.findByLabelText('Name'), ' updated');
+    const dialog = await review();
+    await userEvent.click(dialog.getByRole('button', { name: 'Save & publish' }));
+    expect(builder.saveOptin).toHaveBeenCalledTimes(1);
+    expect(publishing.publishOptin).not.toHaveBeenCalled();
+    expect(dialog.getByRole('button', { name: 'Publishing…' })).toBeDisabled();
+    accept(optin({ name: 'Welcome discount updated' }));
+    await dialog.findByRole('button', { name: 'Done' });
+    expect(publishing.publishOptin).toHaveBeenCalledTimes(1);
+  });
+
+  it('never publishes an older saved draft after the latest save is refused', async () => {
+    builder.saveOptin.mockRejectedValue(new Error('This field is invalid.'));
+    open();
+    await userEvent.type(await screen.findByLabelText('Name'), ' updated');
+    const dialog = await review();
+    await userEvent.click(dialog.getByRole('button', { name: 'Save & publish' }));
+    expect(await dialog.findByRole('alert')).toHaveTextContent('This field is invalid.');
+    expect(publishing.publishOptin).not.toHaveBeenCalled();
+    await userEvent.click(dialog.getByRole('button', { name: 'Keep editing' }));
+    expect(screen.getByLabelText('Name')).toHaveValue('Welcome discount updated');
+    expect(screen.getByText('Unsaved changes')).toBeInTheDocument();
+  });
+
+  it('keeps a successfully saved draft after publication fails and retries only publication', async () => {
+    publishing.publishOptin.mockRejectedValueOnce(new Error('Could not publish.'));
+    open();
+    await userEvent.type(await screen.findByLabelText('Name'), ' updated');
+    const dialog = await review();
+    await userEvent.click(dialog.getByRole('button', { name: 'Save & publish' }));
+    expect(await dialog.findByRole('alert')).toHaveTextContent('Could not publish.');
+    expect(dialog.queryByRole('button', { name: 'Save & publish' })).toBeNull();
+    await userEvent.click(dialog.getByRole('button', { name: 'Publish Optin' }));
+    await dialog.findByRole('button', { name: 'Done' });
+    expect(builder.saveOptin).toHaveBeenCalledTimes(1);
+    expect(publishing.publishOptin).toHaveBeenCalledTimes(2);
+  });
+});
+
+it('prevents opening a second save path while a draft save is pending', async () => {
+  let accept!: (value: ReturnType<typeof optin>) => void;
+  builder.saveOptin.mockImplementation(() => new Promise((resolve) => { accept = resolve; }));
+  open();
+  await userEvent.type(await screen.findByLabelText('Name'), ' updated');
+  await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
+  expect(screen.getByRole('button', { name: 'Optin details' })).toBeDisabled();
+  expect(screen.getByRole('button', { name: 'Back to Optins' })).toBeDisabled();
+  accept(optin({ name: 'Welcome discount updated' }));
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Optin details' })).toBeEnabled());
 });

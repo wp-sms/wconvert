@@ -81,6 +81,13 @@ being asked *what does this act on?*
 | one row | the row's trailing Actions cell | ghost, `sm`; more than two collapse to an overflow menu |
 | a selection | replacing the toolbar's filter side while a selection exists | — |
 
+*Editor exception in [ADR 0070](0070-drafts-are-reviewed-and-explicitly-published-from-the-editor.md):
+the destination-selection region places its compact **Add destination** and
+**Refresh** actions at the trailing edge of its heading. Both act on that
+region; a separate otherwise-empty toolbar would repeat the same section
+boundary. Per-destination Settings stays on its row. This does not move other
+region actions or change the reading screens' page-action cap.*
+
 That table answers the open questions directly rather than by taste. Leads'
 Export CSV acts on the screen's whole log, so it is page-scoped and belongs
 beside the title. Analytics' range picker changes what one region shows, so it

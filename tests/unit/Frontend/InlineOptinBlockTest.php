@@ -13,6 +13,7 @@ use WConvert\Optin\PublishedSet;
 use WConvert\Rules\RuleVocabulary;
 use WConvert\Tests\Unit\Support\FakeConnection;
 use WConvert\Tests\Unit\Support\FakeOptionStore;
+use WConvert\Tests\Unit\Support\OptinDesign;
 
 /**
  * The block's two halves that are not the anchor: **what it is filed under,
@@ -75,7 +76,7 @@ final class InlineOptinBlockTest extends TestCase
     {
         $optin = $this->optins->create($name, 'grow_email_list', [
             'display_type' => $displayType,
-            'template' => ['tree' => ['steps' => []], 'tokens' => []],
+            'template' => OptinDesign::template(),
         ]);
 
         $this->optins->publish($optin->id);
@@ -187,7 +188,7 @@ final class InlineOptinBlockTest extends TestCase
      */
     public function testAnOptinWithNoDisplayTypeIsAPopupAndNotOffered(): void
     {
-        $optin = $this->optins->create('No type', 'grow_email_list', ['template' => ['tree' => ['steps' => []]]]);
+        $optin = $this->optins->create('No type', 'grow_email_list', ['template' => OptinDesign::template()]);
         $this->optins->publish($optin->id);
 
         $this->assertSame([], $this->offered());

@@ -1,8 +1,7 @@
 import apiFetch from '@wordpress/api-fetch';
 
 /**
- * The three facts an Optin's state is read from, **wherever the row came
- * from.**
+ * The state facts shared by the list and editor, wherever the row came from.
  *
  * The list projection carries them and so does the whole Optin the builder
  * reads, and both screens have to reach the same answer about one campaign:
@@ -13,6 +12,8 @@ import apiFetch from '@wordpress/api-fetch';
 export interface OptinState {
   published_at: string | null;
   deleted_at: string | null;
+  /** Saved configuration differs from the live snapshot; false for drafts and deleted Optins. */
+  has_unpublished_changes: boolean;
   /**
    * Why this Optin is [[Suspended]], already written as a sentence — or null
    * where it is running.
@@ -133,7 +134,7 @@ export const createOptin = (name: string, goal: string, config: Record<string, u
 // column onto another and rebuilds the published set, which a `status` field
 // would hide.
 export const publishOptin = (id: string) =>
-  apiFetch<unknown>({ path: path(`/${id}/publish`), method: 'POST' });
+  apiFetch<OptinState>({ path: path(`/${id}/publish`), method: 'POST' });
 
 export const unpublishOptin = (id: string) =>
   apiFetch<unknown>({ path: path(`/${id}/unpublish`), method: 'POST' });

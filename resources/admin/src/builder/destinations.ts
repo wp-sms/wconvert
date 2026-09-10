@@ -148,7 +148,7 @@ export function hintSaid(
       ? sprintf(
           /* translators: %s: one or more destination types, e.g. “WP SMS”. */
           __(
-            'The playbook this started from works well with a destination like %s. Add one on the Destinations screen.',
+            'The playbook this started from works well with a destination like %s. Add a destination here.',
             'wconvert',
           ),
           listWithAnd(named),
@@ -164,7 +164,7 @@ export function hintSaid(
     ? sprintf(
         /* translators: 1: what it captures, e.g. “Email address”. 2: destination types, e.g. “WP SMS”. */
         __(
-          'The playbook this started from captures %1$s, and works well with a destination like %2$s. Add one on the Destinations screen.',
+          'The playbook this started from captures %1$s, and works well with a destination like %2$s. Add a destination here.',
           'wconvert',
         ),
         listWithAnd(captured),

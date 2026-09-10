@@ -198,8 +198,10 @@ final class OptinController implements RestController
         // performs for the same reason (ADR 0034).
         $arms = $this->optins->armsByParent($includeDeleted);
 
-        $describe = static fn (array $row): array => $row
-            + ['suspended' => $suspended[$row['id'] ?? ''] ?? null];
+        $describe = static fn (array $row): array => array_replace($row, [
+            'suspended' => $suspended[$row['id'] ?? ''] ?? null,
+            'has_unpublished_changes' => (bool) ($row['has_unpublished_changes'] ?? false),
+        ]);
 
         return new WP_REST_Response(array_map(
             // Present on every row, including as null and as an empty list. A
@@ -536,7 +538,33 @@ final class OptinController implements RestController
      */
     public function publish(WP_REST_Request $request)
     {
-        return self::respond($this->optins->publish((string) $request->get_param('id')));
+        $id = (string) $request->get_param('id');
+        $optin = $this->optins->find($id);
+
+        if ($optin === null || $optin->isDeleted()) {
+            return self::notFound();
+        }
+
+        if (!$optin->hasDesign()) {
+            return new WP_Error(
+                'wconvert_optin_needs_a_design',
+                __('Choose a design before publishing. You can keep saving this Optin as a draft.', 'wconvert'),
+                ['status' => 400]
+            );
+        }
+
+        $published = $this->optins->publish($id);
+
+        if ($published === null) {
+            return self::notFound();
+        }
+
+        // A successful promotion is not necessarily showing on this install.
+        // Return the confirmed state so the editor needs no second request to
+        // distinguish a published snapshot from a suspended one.
+        $suspended = Suspension::reasonsIn($this->publishedSet->all(), $this->degradation, $this->rules);
+
+        return new WP_REST_Response($published->toArray() + ['suspended' => $suspended[$id] ?? null]);
     }
 
     /**

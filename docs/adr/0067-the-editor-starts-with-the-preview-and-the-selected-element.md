@@ -7,8 +7,9 @@ reference editor. The production editor adopts that flow.
 ## Workspace
 
 The builder owns its viewport, while the other admin screens retain Shell.
-The header holds the name, Design / Display rules / Destinations, draft status,
-Undo / Redo, Preview, Save draft and Optin details. WordPress navigation stays
+The header holds the name, Design / Display rules / Destinations, Undo / Redo,
+Preview, Save draft, Review & publish and Optin details. Draft/publication status
+stays visible in the footer at every supported editor width. WordPress navigation stays
 visible by default; Full width remains optional and remembered per browser.
 
 Design opens with a large canvas and design settings. Layers is optional and
@@ -26,9 +27,12 @@ visible replacement action using WordPress's media library.
 The form preview accepts local input and advances to the success screen without
 sending a capture or following a destination link. The canvas is an editing and
 form-testing surface, not a simulation of the site's actual page placement.
-Readiness stays available in the footer. Goal and performance move to Optin
-details; payload/export tools remain developer-only. The technical check strip
-is no longer permanent merchant-facing chrome.
+Readiness opens through **Review & publish** in the header, with actions back to
+the relevant editor section. This replaces the former footer Summary under
+[ADR 0070](0070-drafts-are-reviewed-and-explicitly-published-from-the-editor.md).
+Goal and performance move to Optin details; payload/export tools remain
+developer-only. The technical check strip is no longer permanent merchant-facing
+chrome.
 
 ## Appearance remains a closed vocabulary
 
@@ -67,7 +71,11 @@ The metadata is not persisted. No database schema or storage is added.
 
 The picker warns that content may be empty, moved or hidden and asks the merchant
 to inspect both screens. Choosing between sample content and carried content is
-deferred, as the user requested. Publishing remains a separate action on the list.
+deferred, as the user requested. Publishing remains separate from Save draft,
+but no longer requires returning to the list: **Review & publish** offers an
+explicit promotion in the editor. A dirty draft is saved first and is promoted
+only if that save succeeds. The list also offers **Publish changes** when saved
+configuration differs from the published snapshot. See [ADR 0070](0070-drafts-are-reviewed-and-explicitly-published-from-the-editor.md).
 
 ## Validation
 

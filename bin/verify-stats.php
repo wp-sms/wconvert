@@ -64,6 +64,8 @@ use WConvert\Stats\StatKind;
 use WConvert\Stats\StatsRepository;
 use WConvert\Storage\WpOptionStore;
 use WConvert\Support\Ulid;
+use WConvert\Template\TemplateLibrary;
+use WConvert\Template\TemplateVocabulary;
 
 if (!defined('ABSPATH')) {
     fwrite(STDERR, "Run this through WordPress: wp eval-file bin/verify-stats.php\n");
@@ -599,7 +601,8 @@ echo "The beacon endpoint\n";
 // socket. Nothing else can prove the controller wires its three collaborators
 // together, because a `WP_REST_Request` faithful enough to prove it is a
 // WordPress install with extra steps.
-$published = $optins->create('Beacon check', 'grow_email_list', []);
+$design = TemplateLibrary::fromDirectory(TemplateVocabulary::fromManifest())->snapshotInto(['template_id' => 'offer-panel']);
+$published = $optins->create('Beacon check', 'grow_email_list', $design);
 $optins->publish($published->id);
 $unpublished = $optins->create('Never published', 'grow_email_list', []);
 
@@ -699,7 +702,7 @@ $verify->check(
 
 echo "The rate limit\n";
 
-$limited = $optins->create('Rate limit check', 'grow_email_list', []);
+$limited = $optins->create('Rate limit check', 'grow_email_list', $design);
 $optins->publish($limited->id);
 
 // A SECOND address, with an allowance of its own. The checks above spent a
@@ -800,7 +803,7 @@ $milestones = new MilestoneStore($options);
 
 $verify->check('a site that has published nothing has no activation milestone', null, $milestones->firstPublish());
 
-$activated = $optins->create('Activation', 'grow_email_list', ['rules' => [['type' => 'page_load']]]);
+$activated = $optins->create('Activation', 'grow_email_list', $design + ['rules' => [['type' => 'page_load']]]);
 
 $optins->publish($activated->id);
 

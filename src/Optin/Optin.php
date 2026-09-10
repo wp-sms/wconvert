@@ -41,6 +41,8 @@ final class Optin
          * test.
          */
         public readonly ?string $parentId = null,
+        /** Raw stored JSON comparison, supplied by reads to match the SQL list projection. */
+        private readonly ?bool $snapshotsDiffer = null,
     ) {
     }
 
@@ -61,6 +63,7 @@ final class Optin
             // driver that hands back `''` for it must not produce an Optin
             // claiming to be an arm of a test with no id.
             ($row['parent_id'] ?? '') === '' ? null : (string) $row['parent_id'],
+            ($row['config'] ?? null) !== ($row['published_config'] ?? null),
         );
     }
 
@@ -72,6 +75,25 @@ final class Optin
     public function isDeleted(): bool
     {
         return $this->deletedAt !== null;
+    }
+
+    /** A draft may be incomplete; promotion requires at least one design screen. */
+    public function hasDesign(): bool
+    {
+        $steps = $this->config['template']['tree']['steps'] ?? null;
+
+        return is_array($steps) && $steps !== [];
+    }
+
+    /**
+     * Saved changes awaiting promotion, never an additional stored state.
+     * Compare the stored representation, including case and key order, just
+     * like the list's BINARY comparison. Repository writes use wp_json_encode;
+     * carrying the raw comparison also keeps hand-edited JSON consistent.
+     */
+    public function hasUnpublishedChanges(): bool
+    {
+        return $this->isPublished() && ($this->snapshotsDiffer ?? $this->config !== $this->publishedConfig);
     }
 
     /**
@@ -89,6 +111,7 @@ final class Optin
             'config' => $this->config,
             'published_config' => $this->publishedConfig,
             'published_at' => $this->publishedAt,
+            'has_unpublished_changes' => $this->hasUnpublishedChanges(),
             'deleted_at' => $this->deletedAt,
             'parent_id' => $this->parentId,
             'status' => $this->isDeleted() ? 'deleted' : ($this->isPublished() ? 'published' : 'draft'),

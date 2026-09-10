@@ -1,5 +1,8 @@
-import { __, sprintf } from '@wordpress/i18n';
-import { Plug } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { __, _n, sprintf } from '@wordpress/i18n';
+import { Plug, Plus, RefreshCw, Settings2 } from 'lucide-react';
+import { Button } from '../components/ui/button';
+import { DestinationSetupDialog } from './DestinationSetupDialog';
 import { Description } from '../shell/Description';
 import { EmptyState } from '../shell/EmptyState';
 import {
@@ -13,7 +16,7 @@ import { RowsSkeleton } from '../shell/RowsSkeleton';
 import { tierProductName } from '../goals/availability';
 import { targetSaid } from '../destinations/settings';
 import type { Loadable } from '../shell/loadable';
-import type { Destination, DestinationType } from '../destinations/api';
+import type { Connection, Destination, DestinationType } from '../destinations/api';
 
 /**
  * Which [[Destination]]s this [[Optin]] pushes to.
@@ -83,180 +86,112 @@ export interface DestinationsEditorProps {
    */
   readonly hint: string | null;
   readonly onChange: (bound: string[]) => void;
+  readonly connections: readonly Connection[];
+  readonly onRefresh: () => void;
+  readonly onSaved: (destinations: readonly Destination[]) => void;
 }
 
-/**
- * **What a row says about itself goes UNDER the name, not beside it.**
- *
- * Every row carries where that route lands now, and inline each sentence
- * started at whatever x the name happened to end at — four rows, four left
- * edges, and an eye reading down the list found no column to follow. So a note
- * lines up under the name it is about rather than under the box.
- *
- * **The row is a two-column grid and the indent is the first column**, which is
- * what makes that true without anybody measuring. It was `ms-7` — 28px, hand-
- * computed to clear a 16px checkbox and the space beside it, and a number that
- * silently stops being right the day either one changes. The checkbox sizes
- * column one, `gap-x-2` is the same 0.5rem `.wconvert-check` spends on the same
- * relationship, and every note starts at column two because that is where the
- * name starts.
- */
-const NOTE = 'col-start-2';
-
-/**
- * ============================================================================
- * IT DREW NONE OF THE SHARED VOCABULARY, AND IT WAS THE ONLY SCREEN THAT DID.
- * ============================================================================
- * A raw `<section>`, a bare `<h3>`, and `<p className="description">` for both
- * of the two states it had — WordPress's own class, on the one tab in the
- * builder that had no reason to wear it. Every other region in this admin is
- * {@see Region} plus {@see RegionHeader}, its empty state is {@see EmptyState}
- * with the door out of it, and its failure is a {@see RegionErrorState}.
- *
- * It also leaves `.wconvert-editor` behind with the WordPress markup: that
- * class exists to retarget wp-admin's controls (ADR 0035's staged boundary),
- * and the rows here are a grid this file draws. Its
- * `input[type="checkbox"] { margin-inline-end }` was adding six pixels to the
- * grid's own column gap.
- */
+/** Choices edit this Optin's draft; setup edits a shared site destination. */
 export function DestinationsEditor({
-  bound,
-  available,
-  types,
-  hint,
-  onChange,
+  bound, available, types, hint, connections, onChange, onRefresh, onSaved,
 }: DestinationsEditorProps) {
+  const [setup, setSetup] = useState<'add' | Destination | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const returnFocus = useRef<HTMLElement | null>(null);
+  const missing = available.status === 'ready'
+    ? bound.filter((id) => !available.data.some((destination) => destination.id === id)) : [];
+
   return (
-    <Region>
-      <RegionHeader title={__('Where these leads go', 'wconvert')} level={3} />
+    <>
+      <Region>
+        <RegionHeader title={__('Where these leads go', 'wconvert')} level={3}
+          description={__('Choose destinations for this Optin. Leads are always captured here and can be exported.', 'wconvert')}
+          trailing={<div className="flex flex-wrap items-center gap-2">
+            <Button variant="outline" size="sm" disabled={available.status === 'loading'} onClick={onRefresh}>
+              <RefreshCw aria-hidden="true" />{__('Refresh', 'wconvert')}
+            </Button>
+            <Button size="sm" disabled={available.status !== 'ready'} onClick={(event) => {
+              returnFocus.current = event.currentTarget;
+              setNotice(null);
+              setSetup('add');
+            }}><Plus aria-hidden="true" />{__('Add destination', 'wconvert')}</Button>
+          </div>} />
 
-      {available.status === 'loading' ? (
-        <RowsSkeleton />
-      ) : available.status === 'failed' ? (
-        <RegionErrorState
-          message={available.message}
-        />
-      ) : available.data.length === 0 ? (
-        <EmptyState icon={Plug} title={__('No destinations yet', 'wconvert')}>
-          {__(
-            'Leads are still captured and exported — a destination only sends them on.',
-            'wconvert'
-          )}
-        </EmptyState>
-      ) : (
-        <RegionBody>
-        <ul className="wconvert-choices">
-          {available.data.map((destination) => {
-            const said = targetSaid(destination.target);
-            const control = `wconvert-bind-${destination.id}`;
-            const type = types.find((candidate) => candidate.id === destination.type);
+        {notice !== null && <RegionBody className="border-b border-border"><p role="status" className="m-0 text-note">{notice}</p></RegionBody>}
 
-            return (
-              <li
-                key={destination.id}
-                className="grid grid-cols-[auto_1fr] items-center gap-x-2 gap-y-0.5"
-              >
-                <input
-                  id={control}
-                  type="checkbox"
-                  /*
-                    **The merchant's name is the accessible name, and the
-                    target only DESCRIBES it.** They are two different jobs:
-                    the name is what they chose to call this route, and
-                    "Sending to Newsletter" is what it does. Folding the second
-                    into the `<label>` would make a screen reader announce the
-                    whole sentence as the checkbox's name — and rename the
-                    control every time somebody re-pointed the route.
-                  */
-                  aria-describedby={said === null ? undefined : `${control}-target`}
-                  checked={bound.includes(destination.id)}
-                  onChange={(event) =>
-                    onChange(
-                      event.target.checked
-                        ? [...bound, destination.id]
-                        : bound.filter((id) => id !== destination.id)
-                    )
-                  }
-                />
-                {/*
-                  **`htmlFor` rather than a `<label>` wrapped round the pair**,
-                  which is what this was: the grid needs the box and the name to
-                  be siblings so the box can size column one. It is also the
-                  pattern `index.css` argues for beside the vendored checkbox,
-                  for the separate reason that a wrapping label forwards a click
-                  the control already received.
-                */}
-                <label htmlFor={control} className="min-w-0">
-                  {destination.label}
-                </label>
-                {/*
-                  **Where these leads actually land, at the moment the choice
-                  is made.** This tab drew `☐ MailPoet` and nothing more, which
-                  says nothing about which of two MailPoet routes is being
-                  bound — and telling them apart is the whole reason a
-                  Destination carries a name.
-
-                  `null` draws nothing at all: the lead-magnet email selects
-                  nothing and is perfectly configured, and a provider that could
-                  not be reached is a question nobody could ask. The wording and
-                  the three states are `targetSaid`'s.
-                */}
-                {said !== null && (
-                  <Description as="span" id={`${control}-target`} className={NOTE}>
-                    {said}
-                  </Description>
-                )}
-                {/*
-                  **Nothing waits.** A Destination whose type is not `ready` is
-                  skipped at dispatch and never enqueued — a job whose handler
-                  cannot succeed would retry against nothing forever — so the
-                  captures are kept and the pushes are LOST until a bulk re-push
-                  replays them. Copy that said "pushes wait" would describe a
-                  queue that does not exist (#4, ADR 0008).
-                */}
-                {destination.availability !== 'ready' && (
-                  <Description as="span" className={NOTE}>
-                    {destination.availability === 'locked'
-                      ? sprintf(
-                          /* translators: %s: the product that supplies it, e.g. “WConvert Pro”. */
-                          __(
-                            'Needs %s, so captures are kept here, not sent. Re-push from Destinations once it runs.',
-                            'wconvert'
-                          ),
-                          tierProductName(type?.tier)
-                        )
-                      : sprintf(
-                          /* translators: %s: the plugin or platform it needs, e.g. “WP SMS”. */
-                          __(
-                            'Needs %s on this site, so captures are kept here, not sent. Re-push from Destinations once it runs.',
-                            'wconvert'
-                          ),
-                          type?.requires_label ?? __('something this site does not have', 'wconvert')
+        {available.status === 'loading' ? <RowsSkeleton />
+          : available.status === 'failed' ? <RegionErrorState message={available.message} hint={__('Use Refresh to try again. Your Optin draft stays here.', 'wconvert')} />
+          : available.data.length === 0 ? (
+            <EmptyState icon={Plug} title={__('No destinations yet', 'wconvert')}>
+              {__('Add a destination to send leads to another service or plugin. You can also keep using WConvert on its own.', 'wconvert')}
+            </EmptyState>
+          ) : (
+            <RegionBody>
+              <ul className="wconvert-choices">
+                {available.data.map((destination) => {
+                  const said = targetSaid(destination.target);
+                  const control = `wconvert-bind-${destination.id}`;
+                  const type = types.find((candidate) => candidate.id === destination.type);
+                  const missingConnection = type?.needs_connection === true
+                    && !connections.some((connection) => connection.id === destination.connection && connection.type === destination.type);
+                  const description = [type ? `${control}-provider` : null, said === null ? null : `${control}-target`,
+                    destination.availability === 'ready' ? null : `${control}-availability`,
+                    missingConnection ? `${control}-connection` : null].filter(Boolean).join(' ');
+                  return (
+                    <li key={destination.id} className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-3">
+                      <input id={control} type="checkbox" className="mt-1" aria-describedby={description || undefined}
+                        checked={bound.includes(destination.id)} onChange={(event) => onChange(event.target.checked
+                          ? [...bound, destination.id] : bound.filter((id) => id !== destination.id))} />
+                      <div className="min-w-0">
+                        <label htmlFor={control} className="font-medium">{destination.label}</label>
+                        {type !== undefined && <Description as="span" id={`${control}-provider`} className="block">{type.label}</Description>}
+                        {said !== null && <Description as="span" id={`${control}-target`} className="block">{said}</Description>}
+                        {missingConnection && <Description as="span" id={`${control}-connection`} className="block text-warning">
+                          {__('This destination needs an account. Open Settings to review its connection.', 'wconvert')}
+                        </Description>}
+                        {destination.availability !== 'ready' && (
+                          <Description as="span" id={`${control}-availability`} className="block text-warning">
+                            {destination.availability === 'locked'
+                              ? sprintf(__('Needs %s, so captures are kept here, not sent. Re-push from Destinations once it runs.', 'wconvert'), tierProductName(type?.tier))
+                              : sprintf(__('Needs %s on this site, so captures are kept here, not sent. Re-push from Destinations once it runs.', 'wconvert'), type?.requires_label ?? __('something this site does not have', 'wconvert'))}
+                          </Description>
                         )}
-                  </Description>
-                )}
-              </li>
-            );
-          })}
-        </ul>
-        </RegionBody>
-      )}
+                      </div>
+                      {type !== undefined && <Button variant="outline" size="sm" aria-label={sprintf(__('Settings for %s', 'wconvert'), destination.label)}
+                        onClick={(event) => {
+                          returnFocus.current = event.currentTarget;
+                          setNotice(null);
+                          setSetup(destination);
+                        }}><Settings2 aria-hidden="true" />{__('Settings', 'wconvert')}</Button>}
+                    </li>
+                  );
+                })}
+              </ul>
+            </RegionBody>
+          )}
 
-      {/*
-        **Under the list, because it is about the choice rather than about any
-        one row.** It names Destination TYPES and the [[Lead]] fields the
-        Playbook needs — never a Destination, which is a thing only this site
-        has and which prefill deliberately does not bind for the merchant.
+        {missing.length > 0 && <RegionBody className="border-t border-border">
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-warning/30 bg-warning/5 p-3">
+            <div>
+              <p className="m-0 font-medium">{sprintf(_n('%d selected destination has been deleted.', '%d selected destinations have been deleted.', missing.length, 'wconvert'), missing.length)}</p>
+              <Description>{__('Remove these references from this Optin’s draft, then choose another destination if needed.', 'wconvert')}</Description>
+            </div>
+            <Button variant="outline" size="sm" onClick={() => onChange(bound.filter((id) => !missing.includes(id)))}>
+              {__('Remove missing destinations', 'wconvert')}
+            </Button>
+          </div>
+        </RegionBody>}
 
-        A {@see RegionFooter} is what "under the content and about all of it"
-        already looks like everywhere else, and it is what gives the sentence
-        the rule above it that a bare margin never did.
-      */}
-      {hint !== null && (
-        <RegionFooter>
-          <Description>{hint}</Description>
-        </RegionFooter>
-      )}
-    </Region>
+        {hint !== null && <RegionFooter><Description>{hint}</Description></RegionFooter>}
+      </Region>
+      {setup !== null && <DestinationSetupDialog destination={setup === 'add' ? undefined : setup}
+        types={types} connections={connections} returnFocusTo={returnFocus} onClose={() => setSetup(null)}
+        onSaved={(destinations) => {
+          onSaved(destinations);
+          setNotice(setup === 'add'
+            ? __('Destination added. Select its checkbox to use it for this Optin.', 'wconvert')
+            : __('Destination updated for every Optin that uses it.', 'wconvert'));
+        }} />}
+    </>
   );
 }

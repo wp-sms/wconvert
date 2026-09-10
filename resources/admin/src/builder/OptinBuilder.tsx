@@ -68,6 +68,7 @@ import { numbersByOptin, readDashboard, type OptinNumbers } from '../stats/api';
 import { formatCount, formatRate } from '../stats/format';
 import { readDestinations, type DestinationsPayload } from '../destinations/api';
 import { adminSettings } from '../settings';
+import { publishOptin } from '../optins/api';
 import type { Template, Tokens as TokenBag } from '@renderer/types';
 
 export interface OptinBuilderProps {
@@ -104,6 +105,8 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
   const [config, setConfig] = useState<Config | null>(null);
   const [goal, setGoal] = useState<string | null>(null);
   const [publishedAt, setPublishedAt] = useState<string | null>(null);
+  const [unpublishedChanges, setUnpublishedChanges] = useState(false);
+  const [publishing, setPublishing] = useState(false);
 
   const [suspended, setSuspended] = useState<string | null>(null);
   const [deletedAt, setDeletedAt] = useState<string | null>(null);
@@ -164,6 +167,9 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
   const [revealSection, setRevealSection] = useState<{ id: string; focus?: string } | null>(null);
   const [leaving, setLeaving] = useState(false);
   const back = useRef<HTMLButtonElement>(null);
+  const destinationsTab = useRef<HTMLButtonElement>(null);
+  const previewButton = useRef<HTMLButtonElement>(null);
+  const layersButton = useRef<HTMLButtonElement>(null);
 
   const coalescing = useRef<string | null>(null);
 
@@ -232,6 +238,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
         setBaseline(JSON.stringify({ name: optin.name, config: optin.config }));
         setGoal(optin.goal);
         setPublishedAt(optin.published_at);
+        setUnpublishedChanges(optin.has_unpublished_changes);
         setSuspended(optin.suspended);
         setDeletedAt(optin.deleted_at);
         setSiblingAct(optin.sibling_act);
@@ -270,11 +277,19 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
       .catch(() => setPlaybook(ready(null)));
   }, [goal, config?.playbook_id]);
 
-  useEffect(() => {
-    readDestinations()
-      .then((payload) => setDestinations(ready(payload)))
-      .catch((cause: unknown) => setDestinations(failed(cause)));
+  const destinationRequest = useRef(0);
+  const refreshDestinations = useCallback(() => {
+    const request = ++destinationRequest.current;
+    setDestinations(LOADING);
+    void readDestinations()
+      .then((payload) => { if (request === destinationRequest.current) setDestinations(ready(payload)); })
+      .catch((cause: unknown) => { if (request === destinationRequest.current) setDestinations(failed(cause)); });
   }, []);
+  useEffect(() => {
+    const requests = destinationRequest;
+    refreshDestinations();
+    return () => { requests.current++; };
+  }, [refreshDestinations]);
 
   useEffect(() => {
     if (template === undefined) {
@@ -355,11 +370,8 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
     setSaved(false);
   }, []);
 
-  const save = (next: Config = config ?? {}, nextGoal?: string) => {
-    setBusy(true);
-    setError(null);
-
-    return saveOptin(
+  const persistDraft = (next: Config = config ?? {}, nextGoal?: string) =>
+    saveOptin(
       id,
       name,
       next,
@@ -370,7 +382,9 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
         // The server's copy wins: it normalises against both vocabularies on
         // the way in, and a screen that kept its own would show a rule or a
         // node that was dropped at the boundary.
+        setName(optin.name);
         setConfig(optin.config);
+        setUnpublishedChanges(optin.has_unpublished_changes);
         const accepted = optin.config.template as Template | undefined;
         if (accepted) {
           // Normalization accepts this edit; it is not a second user action.
@@ -387,10 +401,33 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
         // saying what the Optin still holds rather than what was asked for.
         setGoal(optin.goal);
         setSaved(true);
-        setBaseline(JSON.stringify({ name, config: optin.config }));
-      })
-      .catch(report)
-      .finally(() => setBusy(false));
+        setBaseline(JSON.stringify({ name: optin.name, config: optin.config }));
+      });
+
+  const save = (next: Config = config ?? {}, nextGoal?: string) => {
+    if (busy) return Promise.resolve();
+    setBusy(true);
+    setError(null);
+    return persistDraft(next, nextGoal).catch(report).finally(() => setBusy(false));
+  };
+
+  const publish = async () => {
+    setBusy(true);
+    setPublishing(true);
+    setError(null);
+    try {
+      // A refused save must never promote the previously saved draft.
+      if (dirty) await persistDraft();
+      const accepted = await publishOptin(id);
+      setPublishedAt(accepted.published_at);
+      setUnpublishedChanges(accepted.has_unpublished_changes);
+      setSuspended(accepted.suspended);
+      setDeletedAt(accepted.deleted_at);
+      setSaved(false);
+    } finally {
+      setBusy(false);
+      setPublishing(false);
+    }
   };
 
   const chooseFromPreview = useCallback((key: SlotKey) => {
@@ -433,7 +470,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
         return;
       }
 
-      if (typesInto(event.target)) {
+      if (typesInto(event.target) || (event.target instanceof HTMLElement && event.target.closest('[role="dialog"], [role="alertdialog"]'))) {
         return;
       }
 
@@ -531,6 +568,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
       <header className="wconvert-workspace__header">
         <Button
           ref={back}
+          disabled={busy}
           type="button"
           variant="ghost"
           size="icon-sm"
@@ -561,27 +599,16 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
         >
           <TabsTrigger value="design">{__('Design', 'wconvert')}</TabsTrigger>
           <TabsTrigger value="rules">{__('Display rules', 'wconvert')}</TabsTrigger>
-          <TabsTrigger value="destinations">{__('Destinations', 'wconvert')}</TabsTrigger>
+          <TabsTrigger ref={destinationsTab} value="destinations">{__('Destinations', 'wconvert')}</TabsTrigger>
         </TabsList>
         <div className="wconvert-workspace__actions">
-          <span className="wconvert-workspace__save-state" role="status">
-            {busy
-              ? preparing
-                ? __('Changing template…', 'wconvert')
-                : __('Saving…', 'wconvert')
-              : dirty
-                ? __('Unsaved changes', 'wconvert')
-                : saved
-                  ? __('Saved', 'wconvert')
-                  : publishedAt
-                    ? __('Published', 'wconvert')
-                    : __('Draft', 'wconvert')}
-          </span>
+
           <HistoryControls
             history={{ ...history, canUndo: !busy && history.canUndo, canRedo: !busy && history.canRedo }}
           />
           <Button
             variant="outline"
+            ref={previewButton}
             disabled={entry === null || busy}
             onClick={() => {
               setTab('design');
@@ -592,17 +619,44 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
             {previewing ? <MousePointer2 aria-hidden="true" /> : <Eye aria-hidden="true" />}
             {previewing ? __('Edit', 'wconvert') : __('Preview', 'wconvert')}
           </Button>
-          <Button disabled={busy || !dirty} onClick={() => void save()}>
+          <Button variant="outline" disabled={busy || !dirty} onClick={() => void save()}>
             {busy
               ? preparing
                 ? __('Changing template…', 'wconvert')
-                : __('Saving…', 'wconvert')
+                : publishing ? __('Publishing…', 'wconvert') : __('Saving…', 'wconvert')
               : __('Save draft', 'wconvert')}
           </Button>
+          <ReadinessDialog
+            optinId={id}
+            optin={{ published_at: publishedAt, deleted_at: deletedAt, suspended, has_unpublished_changes: unpublishedChanges }}
+            dirty={dirty}
+            busy={busy}
+            goal={goalEntry}
+            goalId={goal ?? ''}
+            playbook={playbook}
+            playbookId={typeof config.playbook_id === 'string' ? config.playbook_id : ''}
+            rules={displayRules}
+            vocabulary={vocabulary}
+            displayType={displayTypeOf(config, templates)}
+            bound={bound}
+            template={template}
+            growsAList={entryOfGoal?.grows_a_list === true}
+            destinations={read(destinations)?.destinations ?? null}
+            fieldLabels={gallery.labels.fields}
+            onPublish={publish}
+            onPreview={() => { setTab('design'); setPreviewing(true); setSelection(null); previewButton.current?.focus(); }}
+            onEditDesign={() => { setTab('design'); setPreviewing(false); setShowLayers(true); layersButton.current?.focus(); }}
+            onGoToDesign={() => { setTab('design'); setPreviewing(false); setBrowsing(true); }}
+            onGoToDestinations={() => { setTab('destinations'); destinationsTab.current?.focus(); }}
+            onGoToRules={(section) => { setTab('rules'); setRevealSection({ id: section }); }}
+            onGoTo={goTo}
+            onGoToSchedule={goToSchedule}
+          />
           <Button
             variant="ghost"
             size="icon-sm"
             ref={changeGoal}
+            disabled={busy}
             aria-label={__('Optin details', 'wconvert')}
             onClick={() => setDetails(true)}
           >
@@ -632,6 +686,7 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
                   <div>
                     <Button
                       variant="ghost"
+                      ref={layersButton}
                       aria-pressed={showLayers}
                       onClick={() => setShowLayers(!showLayers)}
                       disabled={previewing}
@@ -727,6 +782,13 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
                 destinations.status === 'ready' ? ready(destinations.data.destinations) : destinations
               }
               types={read(destinations)?.types ?? []}
+              connections={read(destinations)?.connections ?? []}
+              onRefresh={refreshDestinations}
+              onSaved={(updated) => {
+                destinationRequest.current++;
+                setDestinations((current) => current.status === 'ready'
+                  ? ready({ ...current.data, destinations: [...updated] }) : current);
+              }}
               hint={
                 bound.length > 0
                   ? null
@@ -747,24 +809,24 @@ export function OptinBuilder({ id, onClose }: OptinBuilderProps) {
         <span>
           {width === 'narrow' && selection !== null
             ? __('Mobile appearance · content is shared across sizes', 'wconvert')
-            : __('Save your draft, then publish from the Optins list', 'wconvert')}
+            : __('Save draft keeps your edits unpublished', 'wconvert')}
         </span>{' '}
-        <ReadinessDialog
-          optin={{ published_at: publishedAt, deleted_at: deletedAt, suspended }}
-          goal={goalEntry}
-          goalId={goal ?? ''}
-          playbook={playbook}
-          playbookId={typeof config.playbook_id === 'string' ? config.playbook_id : ''}
-          rules={displayRules}
-          vocabulary={vocabulary}
-          overlay={overlay}
-          bound={bound}
-          template={template}
-          growsAList={entryOfGoal?.grows_a_list === true}
-          destinations={read(destinations)?.destinations ?? null}
-          onGoTo={goTo}
-          onGoToSchedule={goToSchedule}
-        />
+
+          <span className="wconvert-workspace__save-state" role="status">
+            {busy
+              ? preparing
+                ? __('Changing template…', 'wconvert')
+                : publishing ? __('Publishing…', 'wconvert') : __('Saving…', 'wconvert')
+              : dirty
+                ? __('Unsaved changes', 'wconvert')
+                : unpublishedChanges
+                  ? __('Unpublished changes', 'wconvert')
+                  : saved
+                  ? __('Draft saved', 'wconvert')
+                  : publishedAt
+                    ? __('Published', 'wconvert')
+                    : __('Draft', 'wconvert')}
+          </span>
       </footer>
       <Dialog open={details} onOpenChange={setDetails}>
         <DialogContent>

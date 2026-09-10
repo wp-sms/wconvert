@@ -50,6 +50,8 @@ use WConvert\Rules\RuleVocabulary;
 use WConvert\Stats\StatKind;
 use WConvert\Stats\StatsRepository;
 use WConvert\Storage\WpOptionStore;
+use WConvert\Template\TemplateLibrary;
+use WConvert\Template\TemplateVocabulary;
 
 if (!defined('ABSPATH')) {
     fwrite(STDERR, "Run this through WordPress: wp eval-file bin/verify-ab-test.php\n");
@@ -122,7 +124,7 @@ $entryFor = static function (string $id) use ($set): ?array {
     return null;
 };
 
-$config = [
+$config = TemplateLibrary::fromDirectory(TemplateVocabulary::fromManifest())->snapshotInto(['template_id' => 'centred-card']) + [
     'targeting' => [],
     'display_type' => 'popup',
     'rules' => [['type' => 'page_load']],

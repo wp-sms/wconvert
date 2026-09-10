@@ -19,6 +19,7 @@ use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
 use WConvert\Tests\Unit\Support\FakeConnection;
 use WConvert\Tests\Unit\Support\FakeOptionStore;
+use WConvert\Tests\Unit\Support\OptinDesign;
 use WConvert\Support\Tier;
 use WConvert\Tests\Unit\Support\FakeProPresence;
 use WConvert\Tests\Unit\Support\FakeSitePresence;
@@ -67,7 +68,7 @@ final class SuspendedOnTheListTest extends TestCase
      */
     private function draft(array $rules): string
     {
-        return $this->optins->create('Spring sale', 'grow_email_list', ['rules' => $rules])->id;
+        return $this->optins->create('Spring sale', 'grow_email_list', ['rules' => $rules, 'template' => OptinDesign::template()])->id;
     }
 
     /**
@@ -354,5 +355,20 @@ final class SuspendedOnTheListTest extends TestCase
 
         $this->assertArrayHasKey('suspended', $row);
         $this->assertNull($row['suspended']);
+    }
+
+    public function testPublishingReturnsTheConfirmedSuspensionWithoutAnotherRead(): void
+    {
+        $id = $this->draft([['type' => 'click_element', 'selector' => '#buy']]);
+        $request = new WP_REST_Request();
+        $request->set_param('id', $id);
+        $response = $this->controllerOn(false, true)->publish($request);
+
+        $this->assertInstanceOf(WP_REST_Response::class, $response);
+        $state = $response->get_data();
+        $this->assertNotNull($state['published_at']);
+        $this->assertIsString($state['suspended']);
+        $this->assertFalse($state['has_unpublished_changes']);
+        $this->assertSame($this->shown($id, false)['suspended'], $state['suspended']);
     }
 }

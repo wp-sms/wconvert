@@ -705,3 +705,48 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
     box-shadow: 4px 0 12px #18302114;
   }
 }
+
+/* A bounded review keeps the final action visible while long rules scroll. */
+body .wconvert-launch-review[data-slot='dialog-content'] {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  max-height: min(820px, calc(100dvh - 48px));
+  padding: 0;
+  overflow: hidden;
+}
+.wconvert-launch-review > [data-slot='dialog-header'] { padding: 24px 52px 18px 24px; }
+.wconvert-launch-review__scroll { min-height: 0; overflow: auto; padding: 0 24px 20px; }
+.wconvert-launch-review__status { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: var(--text-note); color: var(--muted-foreground); margin-block-end: 16px; }
+.wconvert-launch-review__section { border-top: 1px solid var(--border); padding-block: 14px; }
+.wconvert-launch-review__section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.wconvert-launch-review__section-head h3 { margin: 0; font-size: var(--text-body); font-weight: 600; }
+.wconvert-launch-review__section-head button { height: auto; padding: 0; }
+.wconvert-launch-review__section p { margin: 8px 0 0; }
+.wconvert-launch-review__rules { display: grid; gap: 12px; margin: 12px 0 0; }
+.wconvert-launch-review__rules > div { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 14px; }
+.wconvert-launch-review__rules dt { color: var(--muted-foreground); }
+.wconvert-launch-review__rules dd { margin: 0; }
+.wconvert-launch-review__rules dd[data-attention] { color: var(--destructive); }
+.wconvert-launch-review__notice { padding: 12px; border-radius: 6px; background: #fff7e7; color: #79500b; margin-block: 12px; }
+.wconvert-launch-review__notice ul, .wconvert-launch-review__warnings { padding-inline-start: 20px; margin-block: 8px 0; list-style: disc; }
+.wconvert-launch-review__notice li + li, .wconvert-launch-review__warnings li + li { margin-block-start: 8px; }
+.wconvert-launch-review__success { display: flex; gap: 10px; align-items: flex-start; color: var(--primary); background: #eff6f0; padding: 14px; border-radius: 6px; margin-bottom: 20px; }
+.wconvert-launch-review__success svg { width: 20px; flex: none; }
+.wconvert-launch-review__footer { padding: 16px 24px; border-top: 1px solid var(--border); background: var(--muted); }
+.wconvert-launch-review__footer p { margin: 0 0 12px; }
+.wconvert-launch-review__buttons { display: flex; justify-content: flex-end; gap: 8px; }
+.wconvert-placement__steps { padding-inline-start: 20px; list-style: decimal; }
+.wconvert-placement__steps li { margin-block: 8px; }
+.wconvert-placement__copy { display: flex; align-items: center; gap: 8px; }
+.wconvert-placement__shortcode { min-width: 0; font-family: monospace; font-size: var(--text-note); }
+@media (max-width: 1350px) {
+  #wconvert-admin .wconvert-workspace__header { flex-wrap: wrap; }
+  #wconvert-admin .wconvert-workspace__navigation { order: 3; flex-basis: 100%; inline-size: 100%; }
+}
+
+body .wconvert-launch-review [data-slot='dialog-title'],
+body .wconvert-launch-review [data-slot='dialog-description'] { margin: 0; }
+.wconvert-placement { border-top: 1px solid var(--border); padding-block-start: 16px; }
+.wconvert-placement__embed { margin-block: 18px; }
+.wconvert-placement__check { margin-block-start: 16px; }

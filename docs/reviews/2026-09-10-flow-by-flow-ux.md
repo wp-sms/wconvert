@@ -1,10 +1,13 @@
 # WConvert flow-by-flow review — 10 September 2026
 
-Baseline: `59a13b7`. Status: source-confirmed findings and product proposals.
-The gallery slice below is implemented, subject to final integration and browser
-QA, with its decision recorded in [ADR 0069](../adr/0069-the-library-helps-merchants-compare-before-applying.md).
-Other changes remain proposed. This review supersedes no ADR and claims no tested
-delivery; final verification belongs in the change record.
+Baseline: `59a13b7`. The findings below describe that baseline unless a delivered
+slice is identified. The gallery slice is complete under
+[ADR 0069](../adr/0069-the-library-helps-merchants-compare-before-applying.md).
+Phase 2 adds editor review/publishing, saved-change visibility, in-editor
+destination setup and placement guidance under
+[ADR 0070](../adr/0070-drafts-are-reviewed-and-explicitly-published-from-the-editor.md).
+Its final integration and WordPress verification are still in progress. Other
+proposals remain separate work. This review claims no tested provider delivery.
 
 ## What a successful experience means
 
@@ -163,7 +166,7 @@ Sources: [rule sections](../../resources/admin/src/builder/rules/DisplayRules.ts
 
 **Merchant question:** “Where will these details go, and is that route suitable?”
 
-**Confirmed:** the editor provides route checkboxes but no Add/configure action
+**Confirmed at baseline:** the editor provides route checkboxes but no Add/configure action
 or return path. Its original response stays loaded after configuration elsewhere.
 Hints describe the Playbook's intended fields, not necessarily the edited form.
 Deleted bindings become plain warnings in Summary and cannot be found among the
@@ -179,6 +182,20 @@ settings, remove a missing binding or view delivery health.
 One compatibility contract should drive editor and adapter checks. A phone-only
 form cannot supply MailPoet an email address; local-only capture remains valid.
 
+**Delivered and checked in Phase 2:** Add/provider selection
+and shared destination Settings open inside the editor. The same settings
+controls are reused; creation updates the route list without selecting it.
+Rows show provider and target. Refresh/retry stays in the draft, and missing
+references can be removed explicitly. Editing a route explains that its settings
+apply immediately to every Optin using it, including published versions.
+
+**Still deferred:** required capture/target compatibility metadata. Current
+schemas do not declare it: MailPoet requires email and a list, lead-magnet email
+requires email and a file link, while WP SMS accepts email or phone and has
+optional tags. An empty generic target must not be treated as universally
+broken. Setup and Review can expose only known availability, missing account
+and route, and recorded health facts; publishing does not test delivery.
+
 Sources: [destination selection](../../resources/admin/src/builder/DestinationsEditor.tsx),
 [summary wording](../../resources/admin/src/builder/destinations.ts),
 [readiness actions](../../resources/admin/src/builder/ReadinessDialog.tsx).
@@ -187,7 +204,7 @@ Sources: [destination selection](../../resources/admin/src/builder/DestinationsE
 
 **Merchant question:** “Is this saved, is it live, and what must I do next?”
 
-**Confirmed, highest priority:** Save draft does not update the live snapshot.
+**Confirmed at baseline, highest priority:** Save draft does not update the live snapshot.
 The editor sends the merchant to Optins to publish, but a published row offers
 only Unpublish, with no Publish changes action. The existing publish endpoint can
 promote a new snapshot directly. No new storage is needed for that action.
@@ -209,6 +226,19 @@ and a copyable shortcode. Overlays need **Check on your site** with a relevant
 page and the existing eligibility inspector. Show draft-versus-live differences
 and use Scheduled/Ended as explanatory state without changing loader behavior.
 
+**Delivered and checked in Phase 2:** the editor's **Review &
+publish** flow separates Save draft from promotion, saves unsaved edits before
+publishing, and retains failures for retry. Both editor and list expose saved
+changes awaiting publication. The flag compares the existing draft and published
+configuration; it adds no storage. An absent design is now refused at promotion.
+Review offers actions into design, rules and destinations, and distinguishes
+essential design checks from warnings. Inline placement includes the existing
+block and shortcode; published site checks explicitly use the current signed-in
+session and published version. They do not promise anonymous-visitor visibility.
+
+Addressable editor URLs, a visual draft/live comparison, richer provider checks,
+Goal-specific promised-outcome checks, and schedule labels remain follow-ups.
+
 Sources: [list actions](../../resources/admin/src/optins/OptinList.tsx),
 [snapshot publishing](../../src/Optin/OptinRepository.php),
 [write validation](../../src/Rest/OptinController.php),
@@ -218,8 +248,9 @@ Sources: [list actions](../../resources/admin/src/optins/OptinList.tsx),
 ## 7. Manage Optins and understand results
 
 **Optins asks:** “What is running, what needs attention, and which one do I edit?”
-Keep search, status filters and intact A/B families. Add saved changes awaiting
-publication and direct paths to results and captures. Published must not imply
+Keep search, status filters and intact A/B families. Phase 2 adds saved changes
+awaiting publication and **Publish changes**. Direct paths to results and captures
+remain proposed. Published must not imply
 that an ended, scheduled or unplaced design is being shown now.
 
 **Analytics asks:** “Did this offer work, and what should I inspect next?”
@@ -294,8 +325,9 @@ separately for explicit sign-off. Keep authoring metadata out of visitor payload
 
 1. **Choose confidently:** complete the gallery slice and test representative
    search/filter/detail-preview journeys in WordPress. Retain draft/Undo safety.
-2. **Finish and update confidently:** add addressable editor routes, Publish
-   changes, actionable review, destination setup return and inline placement.
+2. **Finish and update confidently:** Phase 2 delivers Publish changes,
+   actionable review, in-editor destination setup and inline placement.
+   Addressable editor routes and provider compatibility metadata remain next.
 3. **Understand and recover:** connect reports, captures and route failures;
    expose skipped-delivery recovery; make test recipients and retention explicit.
 4. **Refine the setup language:** simplify creation, regroup display rules,
@@ -306,6 +338,10 @@ separately for explicit sign-off. Keep authoring metadata out of visitor payload
 The gallery decision is recorded in [0069](../adr/0069-the-library-helps-merchants-compare-before-applying.md),
 with [0043](../adr/0043-the-library-is-indexed-and-its-facets-are-derived.md) and
 [0059](../adr/0059-the-converting-act-belongs-to-the-design.md) amended inline.
+Phase 2 is recorded in [0070](../adr/0070-drafts-are-reviewed-and-explicitly-published-from-the-editor.md),
+with publishing in [0067](../adr/0067-the-editor-starts-with-the-preview-and-the-selected-element.md)
+and the narrow editor action-placement exception in
+[0039](../adr/0039-a-screen-is-regions-and-scope-decides-placement.md) amended inline.
 Future implementation must amend affected decisions inline: creation/action
 scope [0039](../adr/0039-a-screen-is-regions-and-scope-decides-placement.md);
 actionable guidance [0042](../adr/0042-the-admin-speaks-only-when-it-changes-what-you-do-next.md);
@@ -326,7 +362,8 @@ available, and moves layouts into More filters. Cards describe their fields or
 link action. A detail view inspects sample content, desktop/mobile layouts and
 actual screens before Apply. Background pictures, explicit preview retry,
 bounded tree requests, inert sample controls and focus restoration are included.
-Other page and handoff recommendations in this review remain future work.
+Other page and handoff recommendations were outside this gallery slice; the
+following Phase 2 record identifies the subset subsequently delivered.
 
 Verified in the local WordPress admin at its normal 1512px viewport and at
 1024px and 782px. Search for email returned 24 popup designs instead of two;
@@ -343,4 +380,49 @@ passed. The facet/library PHP slice passed 271 tests and focused PHPStan.
 Regression coverage includes omitted/failed tree responses, the 24-tree cap,
 localized feature search, field intersections, native-width preview fitting,
 percentage-width layouts, compatibility refusals and successful/failed Apply.
-This pass made no publication, retention, route-setting or provider-send changes.
+The gallery slice made no publication, retention, route-setting or provider-send
+changes.
+
+## Phase 2 delivered slice and verification
+
+Phase 2 implements explicit editor review and publishing, list **Publish changes**,
+saved configuration differences derived from existing snapshots, a no-design
+promotion guard, in-editor shared destination setup, refresh/retry and missing
+binding cleanup, and inline placement guidance. It retains local capture as the
+first write and leaves provider delivery and Contact management outside the
+editor.
+
+The destination component and existing destination page passed 54 focused tests:
+17 cover the editor and 37 cover the existing page. They exercise real schema
+controls with mocked route saves, explicit selection after creation, shared
+settings scope, retained input on error, close focus, refresh and missing-account
+guidance. These checks send no provider data.
+
+Final validation: **1,994 frontend tests** and **1,757 PHP tests / 7,665 assertions**
+pass. TypeScript, ESLint, focused PHPStan and Free/Pro admin builds pass. Publishing
+regressions cover refused saves, failed promotion and retry, keeping draft/live
+snapshots separate, suspended responses, and design-less promotion refusal.
+Dialog tests cover actionable warnings, local-only capture, focus, publication
+busy state, and preventing editor Undo from operating behind a modal.
+
+Verified in real local WordPress at 1512px, 1024px and the 782px editor floor.
+At 782 × 600 the review body scrolls while its final action remains visible;
+there is no horizontal page overflow. Reviewed Add/provider settings, cancelled
+without saving, then checked an existing shared destination's settings notice
+and cancelled. Existing destination bindings and settings were not changed.
+
+A dedicated temporary **inline** Optin, unplaced and bound to no destinations,
+exercised Create → Save & publish → change display limit → Save draft → return
+to list → Publish changes → reopen Review. The actual database/read API changed
+from current to saved-but-unpublished and back to current. Publication offered
+the real block/shortcode instructions. The fixture was then unpublished and
+deleted; the original six visible Optins and their publication states remained.
+No test capture, provider send, re-push or page placement was performed. Browser
+viewport overrides were reset after the responsive checks.
+
+Provider-owned required capture/settings metadata is still deferred. This phase
+cannot prove that a form's fields meet every adapter's requirements, that an
+audience or file is correctly configured, or that a successful promotion produces
+a delivered message. The next handoff slice should establish that metadata and
+then verify one deliberate capture against a named provider and recipient before
+extending the capture-field format.

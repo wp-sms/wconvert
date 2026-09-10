@@ -59,6 +59,8 @@ final class OptinWriteTest extends TestCase
 
     private OptinRepository $optins;
 
+    private FakeConnection $db;
+
     private OptinController $controller;
 
     private SiteFrequency $siteFrequency;
@@ -82,7 +84,7 @@ final class OptinWriteTest extends TestCase
         $this->milestones = new FakeOptionStore();
 
         $this->optins = new OptinRepository(
-            new FakeConnection(),
+            $this->db = new FakeConnection(),
             $published,
             $vocabulary,
             new MilestoneStore($this->milestones)
@@ -646,6 +648,73 @@ final class OptinWriteTest extends TestCase
     public function testADraftWithNoDesignIsNotCaughtByTheConvertingActCheck(): void
     {
         $this->assertIsArray($this->create(Goal::GrowEmailList, ['template' => ['tree' => ['steps' => []]]]));
+    }
+
+    public function testAnIncompleteDraftCanBeSavedButCannotBePublished(): void
+    {
+        foreach ([[], ['template' => ['tree' => ['steps' => []]]]] as $config) {
+            $draft = $this->create(Goal::GrowEmailList, $config);
+            $this->assertIsArray($draft);
+            $request = new WP_REST_Request();
+            $request->set_param('id', $draft['id']);
+            $refused = $this->controller->publish($request);
+
+            $this->assertInstanceOf(WP_Error::class, $refused);
+            $this->assertSame('wconvert_optin_needs_a_design', $refused->get_error_code());
+            $this->assertSame(400, $refused->get_error_data()['status']);
+            $this->assertNull($this->optins->find($draft['id'])?->publishedAt);
+        }
+    }
+
+    public function testSavingAndPublishingReturnTheConfirmedSnapshotState(): void
+    {
+        $draft = $this->create(Goal::PromoteOffer, ['template_id' => 'offer-panel']);
+        $this->assertIsArray($draft);
+        $this->assertFalse($draft['has_unpublished_changes']);
+        $request = new WP_REST_Request();
+        $request->set_param('id', $draft['id']);
+        $first = $this->controller->publish($request);
+        $this->assertNotInstanceOf(WP_Error::class, $first);
+        $live = $first->get_data();
+        $this->assertFalse($live['has_unpublished_changes']);
+        $this->assertNull($live['suspended']);
+
+        $config = $draft['config'];
+        $config['template']['tokens']['bg'] = '#111111';
+        $request->set_param('config', $config);
+        $saved = $this->controller->update($request);
+        $this->assertNotInstanceOf(WP_Error::class, $saved);
+        $this->assertTrue($saved->get_data()['has_unpublished_changes']);
+        $this->assertSame($live['published_config'], $saved->get_data()['published_config']);
+        $read = $this->controller->show($request);
+        $this->assertNotInstanceOf(WP_Error::class, $read);
+        $this->assertTrue($read->get_data()['has_unpublished_changes']);
+
+        $updated = $this->controller->publish($request);
+        $this->assertNotInstanceOf(WP_Error::class, $updated);
+        $this->assertFalse($updated->get_data()['has_unpublished_changes']);
+        $this->assertSame('#111111', $updated->get_data()['published_config']['template']['tokens']['bg']);
+        $this->assertNotNull($updated->get_data()['published_at']);
+    }
+
+    public function testTheListReturnsBooleanChangeFlagsForParentsAndArmsWithoutConfigBlobs(): void
+    {
+        $row = [
+            'id' => 'PARENT', 'name' => 'Offer', 'goal' => 'promote_offer', 'parent_id' => null,
+            'published_at' => '2026-09-10 10:00:00', 'deleted_at' => null, 'has_unpublished_changes' => '0',
+        ];
+        // SQL projections are canned: this fake deliberately does not implement
+        // SQL expressions or duplicate the database's snapshot comparison.
+        $this->db->answers = [[$row], [array_replace($row, [
+            'id' => 'ARM', 'parent_id' => 'PARENT', 'has_unpublished_changes' => '1',
+        ])]];
+        $listed = $this->controller->index(new WP_REST_Request())->get_data();
+
+        $this->assertFalse($listed[0]['has_unpublished_changes']);
+        $this->assertTrue($listed[0]['arms'][0]['has_unpublished_changes']);
+        $this->assertArrayNotHasKey('config', $listed[0]);
+        $this->assertArrayNotHasKey('published_config', $listed[0]);
+        $this->assertArrayNotHasKey('config', $listed[0]['arms'][0]);
     }
 
     /**

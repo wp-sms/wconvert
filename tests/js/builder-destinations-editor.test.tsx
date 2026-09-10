@@ -1,9 +1,14 @@
-import { render, screen, within } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { useState, type ComponentProps } from 'react';
+import { render, screen, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { DestinationsEditor } from '../../resources/admin/src/builder/DestinationsEditor';
 import { LOADING, failed, ready } from '../../resources/admin/src/shell/loadable';
 import type { Loadable } from '../../resources/admin/src/shell/loadable';
 import type { Destination, DestinationType } from '../../resources/admin/src/destinations/api';
+
+const api = vi.hoisted(() => ({ saveDestination: vi.fn() }));
+vi.mock('../../resources/admin/src/destinations/api', () => api);
 
 /**
  * ============================================================================
@@ -60,6 +65,7 @@ const editor = (
   available: Loadable<readonly Destination[]>,
   bound: string[] = [],
   types: DestinationType[] = [],
+  props: Partial<ComponentProps<typeof DestinationsEditor>> = {},
 ) =>
   render(
     <DestinationsEditor
@@ -68,6 +74,10 @@ const editor = (
       types={types}
       hint={null}
       onChange={vi.fn()}
+      connections={[]}
+      onRefresh={vi.fn()}
+      onSaved={vi.fn()}
+      {...props}
     />,
   );
 
@@ -258,5 +268,133 @@ describe('the three states of the destinations read', () => {
 
     expect(screen.getByText('No destinations yet')).toBeInTheDocument();
     expect(screen.queryByText('Loading…')).toBeNull();
+  });
+});
+
+describe('setting up shared destinations without leaving the Optin draft', () => {
+  const provider = type({ id: 'mailpoet', label: 'MailPoet', settings_schema: {
+    lists: { type: 'ids', label: 'Lists to add to', options: [
+      { value: '3', label: 'Newsletter' }, { value: '5', label: 'Product updates' },
+    ] },
+  } });
+  beforeEach(() => { api.saveDestination.mockReset(); });
+
+  it('adds a named route with its real settings and asks the merchant to select it', async () => {
+    const onChange = vi.fn();
+    const saved = destination({ id: 'new', label: 'MailPoet — Newsletter', target: 'Newsletter', settings: { lists: ['3'] } });
+    api.saveDestination.mockResolvedValue({ destinations: [saved] });
+    function Draft() {
+      const [routes, setRoutes] = useState<readonly Destination[]>([]);
+      return <DestinationsEditor bound={[]} available={ready(routes)} types={[provider]} connections={[]}
+        hint={null} onChange={onChange} onRefresh={vi.fn()} onSaved={setRoutes} />;
+    }
+    render(<Draft />);
+    await userEvent.click(screen.getByRole('button', { name: 'Add destination' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Choose MailPoet' }));
+    const dialog = within(screen.getByRole('dialog'));
+    expect(dialog.getByRole('heading', { name: 'Add a MailPoet destination' })).toHaveFocus();
+    await userEvent.click(dialog.getByRole('checkbox', { name: 'Newsletter' }));
+    expect(dialog.getByRole('textbox', { name: 'Name' })).toHaveValue('MailPoet — Newsletter');
+    await userEvent.click(dialog.getByRole('button', { name: 'Add destination' }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(api.saveDestination).toHaveBeenCalledExactlyOnceWith({
+      type: 'mailpoet', label: 'MailPoet — Newsletter', connection: null, settings: { lists: ['3'] },
+    });
+    expect(screen.getByRole('checkbox', { name: saved.label })).not.toBeChecked();
+    expect(screen.getByRole('checkbox', { name: saved.label })).toHaveAccessibleDescription('MailPoet Sending to Newsletter.');
+    expect(screen.getByRole('status')).toHaveTextContent('Select its checkbox');
+    expect(onChange).not.toHaveBeenCalled();
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Add destination' })).toHaveFocus());
+    await userEvent.click(screen.getByRole('checkbox', { name: saved.label }));
+    expect(onChange).toHaveBeenCalledExactlyOnceWith(['new']);
+  });
+
+  it('edits the shared route with an explicit scope warning and preserves settings outside the schema', async () => {
+    const route = destination({ id: 'existing', label: 'Newsletter signups', settings: { lists: ['3'], retained_setting: 'keep' } });
+    const onSaved = vi.fn();
+    const onChange = vi.fn();
+    api.saveDestination.mockResolvedValue({ destinations: [route] });
+    editor(ready([route]), ['existing'], [provider], { onSaved, onChange });
+    // Use the real Settings entry point: selecting a route must not open it.
+    await userEvent.click(screen.getByRole('button', { name: 'Settings for Newsletter signups' }));
+    const dialog = within(screen.getByRole('dialog'));
+    expect(dialog.getByRole('button', { name: 'Save destination' })).toHaveAccessibleDescription(/every Optin.*including published Optins/);
+    await userEvent.click(dialog.getByRole('checkbox', { name: 'Product updates' }));
+    await userEvent.click(dialog.getByRole('button', { name: 'Save destination' }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(api.saveDestination).toHaveBeenCalledExactlyOnceWith({
+      id: 'existing', type: 'mailpoet', label: route.label, connection: null,
+      settings: { lists: ['3', '5'], retained_setting: 'keep' },
+    });
+    expect(screen.getByRole('checkbox', { name: route.label })).toBeChecked();
+    expect(screen.getByRole('status')).toHaveTextContent('Destination updated for every Optin');
+    expect(onChange).not.toHaveBeenCalled();
+    expect(onSaved).toHaveBeenCalledExactlyOnceWith([route]);
+  });
+
+  it('keeps typed settings on a failed save and retries only when asked', async () => {
+    api.saveDestination.mockRejectedValueOnce({ message: 'The site did not save this destination.' })
+      .mockResolvedValueOnce({ destinations: [] });
+    editor(ready([]), [], [provider]);
+    await userEvent.click(screen.getByRole('button', { name: 'Add destination' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Choose MailPoet' }));
+    const dialog = within(screen.getByRole('dialog'));
+    await userEvent.clear(dialog.getByRole('textbox', { name: 'Name' }));
+    await userEvent.type(dialog.getByRole('textbox', { name: 'Name' }), 'Event signups');
+    await userEvent.click(dialog.getByRole('checkbox', { name: 'Newsletter' }));
+    await userEvent.click(dialog.getByRole('button', { name: 'Add destination' }));
+    expect(await screen.findByText('The site did not save this destination.')).toBeVisible();
+    expect(dialog.getByRole('textbox', { name: 'Name' })).toHaveValue('Event signups');
+    expect(dialog.getByRole('checkbox', { name: 'Newsletter' })).toBeChecked();
+    expect(api.saveDestination).toHaveBeenCalledOnce();
+    await userEvent.click(dialog.getByRole('button', { name: 'Add destination' }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(api.saveDestination).toHaveBeenCalledTimes(2);
+  });
+
+  it('cancels without creating or binding anything and restores the entry point', async () => {
+    const onChange = vi.fn();
+    const onSaved = vi.fn();
+    editor(ready([]), [], [provider], { onChange, onSaved });
+    await userEvent.click(screen.getByRole('button', { name: 'Add destination' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Choose MailPoet' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Add destination' })).toHaveFocus());
+    expect(api.saveDestination).not.toHaveBeenCalled();
+    expect(onChange).not.toHaveBeenCalled();
+    expect(onSaved).not.toHaveBeenCalled();
+  });
+
+  it('explains unavailable providers without offering to create a route through them', async () => {
+    editor(ready([]), [], [type({ id: 'paid', tier: 'pro', label: 'Paid service', availability: 'locked' }),
+      type({ id: 'wsms', label: 'WP SMS', availability: 'unavailable', requires_label: 'WP SMS' })]);
+    await userEvent.click(screen.getByRole('button', { name: 'Add destination' }));
+    expect(screen.getByText('Included with WConvert Pro.')).toBeVisible();
+    expect(screen.getByText('Needs WP SMS on this site.')).toBeVisible();
+    expect(screen.queryByRole('button', { name: /Choose / })).not.toBeInTheDocument();
+    expect(api.saveDestination).not.toHaveBeenCalled();
+  });
+
+  it('refreshes a failed read in place and removes only references proven missing', async () => {
+    const onRefresh = vi.fn();
+    const onChange = vi.fn();
+    const view = editor(failed(new Error('Read failed.')), ['keep', 'deleted'], [provider], { onRefresh, onChange });
+    expect(screen.queryByRole('button', { name: 'Remove missing destinations' })).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Refresh' }));
+    expect(onRefresh).toHaveBeenCalledOnce();
+    view.rerender(<DestinationsEditor bound={['keep', 'deleted']} available={ready([destination({ id: 'keep', label: 'Still here' })])}
+      types={[provider]} connections={[]} hint={null} onRefresh={onRefresh} onChange={onChange} onSaved={vi.fn()} />);
+    await userEvent.click(screen.getByRole('button', { name: 'Remove missing destinations' }));
+    expect(onChange).toHaveBeenCalledExactlyOnceWith(['keep']);
+    expect(api.saveDestination).not.toHaveBeenCalled();
+  });
+
+  it('names a missing or mismatched account without dropping the binding', () => {
+    editor(ready([destination({ id: 'route', label: 'Connected route', connection: 'other' })]), ['route'],
+      [{ ...provider, needs_connection: true }], {
+        connections: [{ id: 'other', type: 'different-provider', label: 'Other service', credentials: {} }],
+      });
+    expect(screen.getByRole('checkbox', { name: 'Connected route' })).toBeChecked();
+    expect(screen.getByRole('checkbox', { name: 'Connected route' })).toHaveAccessibleDescription(/needs an account.*Open Settings/);
   });
 });

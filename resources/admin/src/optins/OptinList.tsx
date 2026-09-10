@@ -63,17 +63,13 @@ import {
  * with no door rather than a list with a broken button.
  *
  * Targeting and the rest of an Optin's configuration belong to the builder,
- * which each row opens. Publishing stays HERE rather than moving in there
- * with them: `config` is the working draft and `published_config` is what the
- * site is serving, and the two are separate columns so that editing an Optin
- * is not publishing as you type. A publish button inside the editor would be
- * the same conflation wearing a different hat.
+ * which each row opens. Publishing is an explicit promotion of `config` onto
+ * `published_config`, whether invoked here or after review in the editor.
+ * A saved update can be published directly without first taking the Optin down.
  *
- * **One region, no toolbar** (ADR 0039). There are no filters — see above — and
- * no count, because a count is stated where the set can be large enough to need
- * one and an install has tens of Optins. The screen's one action, *Create an
- * Optin*, is page-scoped and lives in the page header, which is where
- * {@see App} puts it.
+ * Search and status filters keep an A/B family together, with counts over
+ * families rather than individual arms (ADR 0068). *Create an Optin* remains
+ * page-scoped in the header, where {@see App} puts it.
  *
  * ============================================================================
  * IMPRESSIONS AND CONVERSION RATE, BUT DELIBERATELY NOT "CONVERSIONS".
@@ -664,6 +660,11 @@ function Row({
       */}
       <DataTableCell label={__('Status', 'wconvert')}>
         <StatusBadge status={status} />
+        {canUnpublish(status) && optin.has_unpublished_changes && (
+          <Description as="span" className="mt-1 block">
+            {__('Saved changes are not published', 'wconvert')}
+          </Description>
+        )}
         {status === 'suspended' && optin.suspended !== null && (
           /*
             **The reason comes UP a size, and it was the only 12px body text in
@@ -699,9 +700,14 @@ function Row({
 
         {/*
           A suspended Optin is published — the site is holding it back, the
-          merchant did not. So it keeps Unpublish rather than being offered a
-          Publish it never needed, which would read as "this never went live".
+          merchant did not. It keeps Unpublish, and a saved draft can be
+          promoted with Publish changes without changing that distinction.
         */}
+        {canUnpublish(status) && optin.has_unpublished_changes && (
+          <Button variant="outline" size="sm" disabled={busy} onClick={onPublish}>
+            {__('Publish changes', 'wconvert')}
+          </Button>
+        )}
         {canUnpublish(status) ? (
           <Button variant="ghost" size="sm" disabled={busy} onClick={onUnpublish}>
             {__('Unpublish', 'wconvert')}

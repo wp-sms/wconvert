@@ -128,7 +128,7 @@ describe('the playbook’s destination hint', () => {
     const said = hintSaid({ types: ['wsms'], fields: [] }, TYPES, FIELDS, []);
 
     expect(said).toBe(
-      'The playbook this started from works well with a destination like WP SMS. Add one on the Destinations screen.',
+      'The playbook this started from works well with a destination like WP SMS. Add a destination here.',
     );
   });
 
@@ -178,7 +178,7 @@ describe('the playbook’s destination hint', () => {
    */
   it('says where to add one only when nothing at all is configured', () => {
     expect(hintSaid({ types: ['wsms'], fields: ['email'] }, TYPES, FIELDS, [])).toContain(
-      'Add one on the Destinations screen.',
+      'Add a destination here.',
     );
   });
 
