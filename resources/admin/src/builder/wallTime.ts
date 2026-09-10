@@ -11,8 +11,8 @@
  * server. A browser that resolved it would resolve it against the admin's zone,
  * which is not the site's.
  *
- * So what this does is read the string back as the same wall time, and nothing
- * else. No zone is named and none is applied.
+ * Labels preserve those components. Schedule status separately compares them
+ * through the site's explicit zone; it never defaults to the admin's zone.
  *
  * ============================================================================
  * THE PARTS ARE PARSED, BECAUSE `new Date(string)` IS NOT ONE ANSWER.
@@ -23,26 +23,110 @@
  * agree. A stored value one character short of the expected shape therefore
  * shifts the hour, silently, on somebody else's browser.
  *
- * `new Date(y, m, d, h, min)` takes local components and has no string to
- * misread, so the round trip is a round trip on every engine.
+ * `momentOf` retains local Date compatibility for controls that need one.
+ * Labels use a UTC container instead, so even an admin's missing DST hour
+ * cannot alter the components a merchant authored for another timezone.
  */
 export function momentOf(wallTime: string | undefined): Date | null {
-  if (wallTime === undefined || wallTime === '') {
+  const parts = wallParts(wallTime);
+
+  if (parts === null) {
     return null;
   }
 
-  // Space or `T`, because the stored form uses one and a `datetime-local` input
-  // hands back the other.
-  const found = /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/.exec(wallTime.trim());
+  const [year, month, day, hour, minute] = parts;
+  const moment = new Date(0);
+  moment.setFullYear(year, month - 1, day);
+  moment.setHours(hour, minute, 0, 0);
 
-  if (found === null) {
-    return null;
-  }
+  return moment;
+}
+
+type WallParts = readonly [year: number, month: number, day: number, hour: number, minute: number];
+
+/** Validate components without letting a browser timezone normalize a DST gap. */
+function wallParts(wallTime: string | undefined): WallParts | null {
+  const found = wallTime === undefined
+    ? null
+    : /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::[0-5]\d(?:\.\d+)?)?$/.exec(wallTime.trim());
+
+  if (found === null) return null;
 
   const [, year, month, day, hour, minute] = found.map(Number);
-  const moment = new Date(year, month - 1, day, hour, minute);
+  const parts: WallParts = [year, month, day, hour, minute];
+  const checked = new Date(asUtc(parts));
 
-  return Number.isNaN(moment.getTime()) ? null : moment;
+  return checked.getUTCFullYear() === year && checked.getUTCMonth() + 1 === month &&
+    checked.getUTCDate() === day && checked.getUTCHours() === hour && checked.getUTCMinutes() === minute
+    ? parts
+    : null;
+}
+
+/** A numeric container for wall components, not their actual scheduled instant. */
+function asUtc([year, month, day, hour, minute]: WallParts): number {
+  const date = new Date(0);
+  date.setUTCFullYear(year, month - 1, day);
+  date.setUTCHours(hour, minute, 0, 0);
+  return date.getTime();
+}
+
+/**
+ * Is the end definitely past on the site's clock?
+ *
+ * PHP resolves the actual published boundary. At a repeated or skipped local
+ * hour its choice is not portable to Intl, so this advisory waits for the
+ * latest plausible instant. It can remain neutral briefly, but cannot label a
+ * still-running schedule finished. Missing or unreadable zones stay neutral too.
+ */
+export function hasScheduleEnded(
+  ends: string | undefined,
+  timezone: string | undefined,
+  now = Date.now(),
+): boolean {
+  const parts = wallParts(ends);
+  if (parts === null || !timezone || !Number.isFinite(now)) return false;
+
+  const wall = asUtc(parts);
+  const fixed = /^([+-])(\d\d):(\d\d)$/.exec(timezone);
+
+  if (fixed !== null) {
+    const hours = Number(fixed[2]);
+    const minutes = Number(fixed[3]);
+    if (hours > 23 || minutes > 59) return false;
+    const offset = (hours * 60 + minutes) * 60_000 * (fixed[1] === '-' ? -1 : 1);
+    return now >= wall - offset;
+  }
+
+  try {
+    const clock = new Intl.DateTimeFormat('en-US-u-ca-gregory-nu-latn', {
+      timeZone: timezone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hourCycle: 'h23',
+    });
+    const wallAt = (instant: number): number => {
+      const fields = Object.fromEntries(clock.formatToParts(instant).map(({ type, value }) => [type, value]));
+      return asUtc([
+        Number(fields.year), Number(fields.month), Number(fields.day),
+        Number(fields.hour), Number(fields.minute),
+      ]);
+    };
+
+    // Sampling either side includes both offsets when a transition skips or
+    // repeats the requested hour, including zones with half-hour DST changes.
+    const span = 36 * 60 * 60_000;
+    const offsets = new Set([-span, 0, span].map((delta) => wallAt(wall + delta) - wall - delta));
+    const candidates = [...offsets].map((offset) => wall - offset);
+    const exact = candidates.filter((instant) => wallAt(instant) === wall);
+    const latest = Math.max(...(exact.length > 0 ? exact : candidates));
+
+    return now >= latest;
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -62,13 +146,13 @@ export function momentOf(wallTime: string | undefined): Date | null {
  * file knowing either.
  */
 export function readable(wallTime: string | undefined): string | null {
-  const moment = momentOf(wallTime);
+  const parts = wallParts(wallTime);
 
-  return moment === null
+  return parts === null
     ? null
-    : new Intl.DateTimeFormat(documentLocale(), { dateStyle: 'medium', timeStyle: 'short' }).format(
-        moment,
-      );
+    : new Intl.DateTimeFormat(documentLocale(), {
+        dateStyle: 'medium', timeStyle: 'short', timeZone: 'UTC',
+      }).format(asUtc(parts));
 }
 
 /**

@@ -98,9 +98,7 @@ final class PlaybookController implements RestController
      * The creation flow's second step is where a merchant chooses between
      * ready-to-run starts, and it showed them as `ChoiceCard`s — while the
      * product's whole claim is that there are no thumbnails anywhere in this
-     * flow because the REAL thing is cheap to draw (ADR 0010). Step 3 already
-     * renders the real design; step 2 asked the merchant to choose without
-     * seeing one.
+     * flow because the REAL thing is cheap to draw (ADR 0010). The chooser now renders the real design and opens its draft directly.
      *
      * `Playbook::toArray()` carries `template_id`, `display_type` and `copy`
      * and nothing has ever read them, because none of the three is a design:
@@ -108,9 +106,8 @@ final class PlaybookController implements RestController
      * in the browser would be a second implementation of the one thing that
      * must not have two.
      *
-     * **So this is prefill's own composition, called here.** What step 2 draws
-     * is byte-identical to what step 3 draws and to what `POST /optins` would
-     * store — not similar to it, the same call — so a merchant cannot be shown
+     * **So this is prefill's own composition, called here.** What the chooser draws
+     * is byte-identical to what `POST /optins` would store — not similar to it, the same call — so a merchant cannot be shown
      * a card and then handed something else.
      *
      * The cost is one tree per Playbook on a route that returns the handful
@@ -124,7 +121,17 @@ final class PlaybookController implements RestController
     {
         $entry = $playbook->toArray();
         $draft = $this->prefill->fromPlaybook($playbook->id);
-        $template = $draft === null ? null : ($draft['config']['template'] ?? null);
+        $config = $draft['config'] ?? null;
+        $template = $config['template'] ?? null;
+
+        // Summaries must describe the same resolved settings the editor gets,
+        // not the authored rules before installation-specific degradation.
+        // This is a subset of the existing Prefill result, not another prefill.
+        if (is_array($config)) {
+            $entry['setup'] = array_intersect_key($config, array_flip([
+                'display_type', 'rules', 'targeting', 'frequency', 'destination_hint',
+            ]));
+        }
 
         // Absent rather than empty where there is no design behind it: a
         // Playbook naming a Template this install no longer ships still starts

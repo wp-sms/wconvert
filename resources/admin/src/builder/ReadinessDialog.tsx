@@ -89,7 +89,7 @@ export function ReadinessDialog({
   const afterClose = useRef<(() => void) | null>(null);
   const where = destinationsSaid(bound, destinations);
   const overlay = displayType !== 'inline';
-  const summaries = summarise(rules, vocabulary, overlay);
+  const summaries = summarise(rules, vocabulary, overlay, template ? convertingActOf(template.tree)[0] : undefined);
   const hasDesign = template !== undefined && template.tree.steps.length > 0;
   const captures = hasDesign ? capturesTaken(template.tree) : [];
   const problems = hasDesign ? problemsIn(template, growsAList, rules.schedule.ends_at) : [];

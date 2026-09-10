@@ -251,6 +251,7 @@ final class AdminMenu
             // Targeting tickets are about.
             'homeUrl' => (string) home_url('/'),
             'inspectParam' => InspectorEnqueue::PARAM,
+            'timezone' => wp_timezone_string(),
             // **What one design may cost, so the builder can draw a meter.**
             // The same constant `LibraryLintTest` caps a shipped design at, sent
             // over rather than written a second time in TypeScript — a meter

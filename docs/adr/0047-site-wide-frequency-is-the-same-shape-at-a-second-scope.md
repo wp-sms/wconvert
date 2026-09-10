@@ -73,7 +73,8 @@ unvalidated passthrough out of the config blob. Every merchant Optin shipped
 uncapped and unprioritised.*
 
 *The author is `builder/rules/HowOften.tsx`, the fourth of the rules panel's
-four sections; the normaliser is **`src/Optin/Frequency.php`**, and it is the
+four sections, now named **Schedule & frequency** under
+[ADR 0072](0072-setup-choices-state-their-effect-and-scope.md); the normaliser is **`src/Optin/Frequency.php`**, and it is the
 shape this ADR's second scope reuses rather than re-derives. That is why it is a
 file rather than six lines in the REST controller: the site-wide surface is not
 a REST controller, so a normaliser inlined in one would have been rewritten the
@@ -88,6 +89,14 @@ visitor may meet a campaign and the window is when the campaign is on at all.
 Where the two part company is the refusal: `Frequency` drops a nonsensical
 count to null, and `Schedule` THROWS on an end before its start, because
 dropping either boundary publishes a decision the merchant did not make.*
+
+**Extended by [ADR 0072](0072-setup-choices-state-their-effect-and-scope.md):** the
+per-Optin editor reads the saved site-wide allowance beside its repeat-visit
+settings, using the Optins page's same summary. Loading or failure does not mean
+no limit; failure offers Retry. It names the actual limits and their veto, and
+links to their existing management surface. Per-Optin completion wording comes
+from the design's submit/click act. These are disclosures over the existing
+defaults and device state, not a second allowance or an override switch.
 
 *One decision inside it is worth carrying forward. **`true` is never stored.**
 Both switches default on because `frequency.ts` tests `!== false`, so an absent

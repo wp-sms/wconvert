@@ -763,6 +763,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange }: O
         <TabsContent value="rules" className="wconvert-workspace__secondary">
           <div className="wconvert-workspace__settings">
             <DisplayRules
+              act={act}
               vocabulary={vocabulary}
               value={displayRules}
               overlay={overlay}
@@ -805,8 +806,8 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange }: O
       </div>
       <footer className="wconvert-workspace__footer">
         <span>
-          {width === 'narrow' && selection !== null
-            ? __('Mobile appearance · content is shared across sizes', 'wconvert')
+          {width === 'narrow' && tab === 'design' && !previewing
+            ? __('Editing mobile appearance. Text and blocks are shared across sizes.', 'wconvert')
             : __('Save draft keeps your edits unpublished', 'wconvert')}
         </span>{' '}
 
@@ -987,7 +988,7 @@ function HistoryControls({
     readonly redo: () => void;
   };
 }) {
-  const label = { undo: __('Undo', 'wconvert'), redo: __('Redo', 'wconvert') };
+  const label = { undo: __('Undo design change', 'wconvert'), redo: __('Redo design change', 'wconvert') };
 
   return (
     <span className="wconvert-history">

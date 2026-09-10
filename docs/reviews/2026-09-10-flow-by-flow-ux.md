@@ -42,26 +42,27 @@ The [domain boundaries](../../CONTEXT.md) remain useful:
 
 **Merchant question:** “Which of these fits what I want visitors to do?”
 
-**Confirmed:** the creation flow asks for a Goal, shows Playbook previews, then
-repeats the selected preview on a third step before opening the editor. That
-third step edits nothing, including the name. “Step 3 of 3” describes draft
-creation, although setup and publishing still remain. “Ready-to-run” also hides
-work only the merchant can complete: a destination, a download or page placement.
-
-**Recommendation:** keep Goal first, shorten each starting-point description to
-the offer, placement and timing, and use **Customize this starting point** with
-**Creates a draft** beside it. Make the second large preview optional. A direct
-handoff to the editor is more useful than a compulsory confirmation of the same
-picture. Show setup facts from the existing Playbook data, not invented tags.
+**Implemented in Phase 4:** Goal remains first. The second choice shows rendered
+Playbooks, called starting points, with compact facts about their actual resolved
+setup. **Customize this starting point** says it creates a draft and opens the
+editor directly. The former third preview-only step is removed. Longer notes are
+optional, and relevant placement/destination work is stated before choosing.
+Facts come from the existing Prefill result, not invented tags or a second
+interpretation of authored rules before this install resolves them.
 
 The first screen also lacks an obvious answer for a service business collecting
 enquiries. Its available labels concern email/SMS lists, offers, carts and lead
 magnets. Revisit the intended enquiry outcome before adding enquiry templates;
 do not silently make newsletter subscription mean “request a quote.” A broader
-countable capture Goal is a product decision, not a reason to build a CRM.
+countable capture Goal fits the authorized outbound lead-capture direction, but
+its copy, useful qualification field and named destination should be handled
+together in Phase 5. Phase 4 adds no new Goal or CRM workflow.
 
-**Correctness follow-up:** late Goal/Playbook responses can reopen an abandoned
-choice. Add stale-response guards and retry failed reads on the current step.
+**Implemented safeguards:** read failures can be retried at the current choice;
+obsolete Goal/Playbook/name responses cannot replace a newer choice. A same-tick
+guard prevents duplicate customization actions, and an abandoned prefill cannot
+start creation. An uncertain create response tells the merchant to check Optins
+before trying again; it does not claim that no draft was saved.
 
 Sources: [creation flow](../../resources/admin/src/goals/GoalScreen.tsx),
 [Goal wording](../../src/Goal/Goal.php),
@@ -123,18 +124,20 @@ Sources: [picker](../../resources/admin/src/builder/TemplatePicker.tsx),
 
 Keep the large canvas, contextual inspector and optional Layers introduced by
 [ADR 0067](../adr/0067-the-editor-starts-with-the-preview-and-the-selected-element.md).
-The next improvement is clearer scope: inherited values, mobile overrides,
-selected element versus whole design, and content shared between sizes.
+Phase 4 makes the existing scope more explicit; deeper appearance-control work
+should continue to preserve inherited values and mobile overrides.
 
-**Confirmed:** header Undo/Redo covers the design and template id, not rules or
-destination selection. Changing Goal immediately calls the full draft save even
-though its confirmation explains only the reporting change. Editor identity is
-held in React state, so a bookmark or reload cannot reliably reopen that Optin.
+**Implemented:** Phase 3 added addressable editor routes and dirty/busy navigation
+protection. Phase 4 labels header actions **Undo design change** and **Redo design
+change**, matching history's design-and-template-id scope. Name, rules,
+destinations and Goal remain outside that history. Goal correction explicitly
+says that it saves the current name and complete draft without publishing it.
+Mobile editing keeps a reminder that text and blocks are shared across sizes,
+including before an element is selected.
 
-**Recommendation:** add addressable editor routes with unsaved-change protection.
-Prefer draft-wide Undo; until then name its design scope. Explain Goal correction's
-save effect or isolate the write. Improve appearance controls by value kind;
-preserve token semantics and test nested mobile inheritance.
+**Remaining recommendation:** consider draft-wide Undo as a separate behavior
+change. Improve appearance controls by value kind while preserving token semantics
+and nested mobile inheritance; neither requires a new document format.
 
 Sources: [editor state and save](../../resources/admin/src/builder/OptinBuilder.tsx),
 [routing](../../resources/admin/src/App.tsx),
@@ -144,21 +147,25 @@ Sources: [editor state and save](../../resources/admin/src/builder/OptinBuilder.
 
 **Merchant question:** “Where will this appear, to whom, and when does it stop?”
 
-**Confirmed:** the summaries are a useful overview, but “When” holds triggers
-while start/end dates sit under “How often,” beside per-visitor limits and
-overlay priority. Completion copy says “sign up” even for click-through designs.
-The per-Optin view does not explain active site-wide limits. Page/term search
-turns a failed request into an empty result list.
+**Implemented in Phase 4:** the sections are **Pages**, **Audience**, **When it
+appears**, and **Schedule & frequency**. Schedule and repeat visits have distinct
+headings; overlay priority is advanced and absent for inline designs. The view
+changes while the flat rule engine and its AND/OR semantics remain. Form/link
+completion wording follows the design's act, and repeat limits describe one
+browser rather than a person or daily quota.
 
-**Recommendation:** present Pages, Audience, Trigger and Schedule & frequency as
-clear decisions; place priority under an advanced disclosure. This changes the
-view, not the flat rule engine or its AND/OR semantics. Use completion wording
-from the design's converting act. Show the site's actual timezone beside dates
-and relevant global limits beside the per-Optin settings. Distinguish a failed
-page search from “no matching pages.”
+Dates name the actual site timezone. Schedule labels keep the authored time even
+across an admin-browser DST gap; ended-status guidance uses the explicit site
+zone and stays conservative at ambiguous boundaries. The actual saved site-wide
+limits are read beside per-Optin settings, with failure/retry distinct from no
+limits. An Optin cannot override the site veto.
 
-Starting points should show the settings they replace. Keep confirmation until
-draft-wide Undo makes trying a rule bundle reversible.
+Rule starting points compare current and proposed settings before confirmation.
+They replace only supplied sections and preserve campaign dates and priority,
+including when repeat frequency changes. Applying is draft work, without Save or
+Publish. Page/term lookup now separates failed searches, no matches and unavailable
+saved names; the stored identifier survives those states. Pending or stale
+results cannot silently change the selected rule.
 
 Sources: [rule sections](../../resources/admin/src/builder/rules/DisplayRules.tsx),
 [frequency and dates](../../resources/admin/src/builder/rules/HowOften.tsx),
@@ -241,9 +248,9 @@ session and published version. They do not promise anonymous-visitor visibility.
 
 Phase 3 adds addressable editor URLs and preserves the originating report or
 capture filters. Dirty/busy navigation is guarded, including when an open editor
-is narrowed below its working width. A visual draft/live comparison, richer
-provider checks, Goal-specific promised-outcome checks and schedule labels remain
-follow-ups.
+is narrowed below its working width. Phase 4 clarifies schedule timezone and
+ended-status labels. A visual draft/live comparison, richer provider checks and
+Goal-specific promised-outcome checks remain follow-ups.
 
 Sources: [list actions](../../resources/admin/src/optins/OptinList.tsx),
 [snapshot publishing](../../src/Optin/OptinRepository.php),
@@ -360,8 +367,9 @@ separately for explicit sign-off. Keep authoring metadata out of visitor payload
 3. **Understand and recover:** Phase 3 connects reports, captures and route
    failures, exposes skipped-delivery recovery, and makes test recipients and
    retention explicit. Verification is recorded separately below.
-4. **Refine the setup language:** simplify creation, regroup display rules,
-   clarify undo/mobile scope, and decide the enquiry positioning.
+4. **Refine the setup language:** Phase 4 simplifies creation, regroups display
+   rules and clarifies undo/mobile/save scope. The enquiry Goal and field are
+   carried into Phase 5 with the real outbound handoff.
 5. **Extend a proven handoff:** verify one deliberate capture and named provider
    result, then add one useful qualification field through the same path.
 
@@ -381,6 +389,11 @@ retention [0018](../adr/0018-erasure-deletes-rather-than-anonymises.md),
 recovery [0008](../adr/0008-delivery-state-is-destination-health-not-per-lead.md)
 and report interpretation [0020](../adr/0020-conversions-are-interpreted-at-read.md)
 amended inline.
+
+Phase 4 is recorded in
+[0072](../adr/0072-setup-choices-state-their-effect-and-scope.md), with the
+superseded creation, history-scope, frequency and schedule statements amended at
+their original decisions. The closed Goal/rule/storage models remain unchanged.
 Future implementation must amend affected decisions inline: creation/action
 scope [0039](../adr/0039-a-screen-is-regions-and-scope-decides-placement.md);
 actionable guidance [0042](../adr/0042-the-admin-speaks-only-when-it-changes-what-you-do-next.md);
@@ -512,3 +525,59 @@ dates and links, and retry updated them. A terminal-failure capture link resolve
 one exact submission. The fixture also showed no horizontal overflow at 360px.
 Fixture data is not evidence of a real capture, provider push or inbox delivery.
 
+## Phase 4 delivered implementation
+
+Creation now leads from Goal to starting point to the editor, using an explicit
+draft-creation action. Compact facts describe the same effective setup Prefill
+will supply. Async guards, in-place retry and uncertain-create guidance preserve
+the current choice without silently repeating a write.
+
+Display rules use Pages, Audience, When it appears, and Schedule & frequency.
+Section labels sit above their full-width summaries so longer settings remain
+readable without squeezing the explanation into a narrow column.
+Repeat visits use act-aware language, dates name the site zone, saved site-wide
+limits are visible, and priority is advanced. A replacement review compares the
+rule sections before applying, with campaign dates and priority preserved. Name
+lookup failures and stale search results do not change a saved page/term rule.
+
+The editor names design-only Undo, keeps mobile shared-content guidance visible,
+and discloses the whole-draft save when changing Goal. Schedule labels preserve
+authored components and use the site zone for ended-status guidance. No new Goal,
+field type, rule semantics, schema, index or delivery state is introduced.
+
+### Verification
+
+Final local verification passes **2,154 frontend tests across 88 files** and
+**1,788 PHP tests / 7,791 assertions**. TypeScript, ESLint, full PHPStan and
+Free/Pro admin builds pass. PR CI remains a separate check against the pushed
+commit. Creation tests also cover the browser-leave warning while prefill or
+creation is pending, and its removal after success, failure or unmount.
+
+Real WordPress creation selected **Welcome discount** and opened the editor
+directly from the second choice. It created one disposable draft,
+`01M25YQ1JN0BPBAABV1T9R7FXF`, renamed **Phase 4 QA — disposable**. Keyboard entry
+of an end before the start showed the inline schedule error; correcting it cleared
+the invalid window. The valid October 10–November 9, 2099 dates, impression limit
+of 3, and priority of 7 survived applying a timer starting point, Save draft and
+reload. The replacement review showed current/proposed settings; Cancel restored
+focus, and applying changed the timer while retaining the other settings.
+
+The page picker found **Sample Page** (`#2`), and the selection survived Save
+and reload. A no-match search followed by Escape kept that saved identifier.
+The picker fit at 1024px. Creation cards had no horizontal overflow at 390px,
+and opening the editor at that width displayed its explicit wider-screen notice.
+The editor showed the actual site timezone, **+00:00**, and the saved state of
+**no site-wide limits**. The live review also prompted the stacked section-label
+and full-width-summary layout.
+
+Only the disposable draft was created and saved for these checks. Global settings
+and destinations were not changed; nothing was published, captured or sent to a
+provider. The disposable draft was deleted through the Optins list. The original
+six visible Optins retain their names and publication states: one published, five
+drafts, with the existing published Optin’s saved unpublished changes preserved.
+The final page replacement review distinguished **A specific page or post: #2**
+from **Any single item of a type: Post**, followed by cancellation. Mobile
+appearance guidance was visible without selecting an element; Goal correction
+stated its whole-draft save and was closed without saving. No browser console
+errors were recorded. Temporary viewport overrides were reset, and the existing
+Editor UX check draft was left open on Display rules without changes.

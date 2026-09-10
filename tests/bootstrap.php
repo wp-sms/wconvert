@@ -1233,6 +1233,15 @@ if (!function_exists('wp_timezone')) {
     }
 }
 
+// Admin settings serialize the site's timezone label; this configurable value
+// tests that handoff only, not WordPress's timezone or date calculations.
+if (!function_exists('wp_timezone_string')) {
+    function wp_timezone_string(): string
+    {
+        return $GLOBALS['wconvertTestTimezoneString'] ?? 'UTC';
+    }
+}
+
 /*
  * `$wpdb`, as much of it as `WConvert\Database\WpdbConnection` touches.
  *

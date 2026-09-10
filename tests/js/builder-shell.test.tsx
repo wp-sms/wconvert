@@ -504,7 +504,7 @@ describe('the builder shell', () => {
 
     await userEvent.click(await screen.findByRole('tab', { name: 'Display rules' }));
 
-    for (const question of ['Where', 'When', 'Who', 'How often']) {
+    for (const question of ['Pages', 'Audience', 'When it appears', 'Schedule & frequency']) {
       expect(await screen.findByRole('button', { name: new RegExp(`^${question}`) })).toBeInTheDocument();
     }
   });
@@ -750,7 +750,7 @@ describe('the page-header band', () => {
     const save = await screen.findByRole('button', { name: 'Save draft' });
     const header = document.querySelector('.wconvert-workspace__header');
     expect(header).toContainElement(save);
-    expect(header).toContainElement(screen.getByRole('button', { name: 'Undo' }));
+    expect(header).toContainElement(screen.getByRole('button', { name: 'Undo design change' }));
     expect(header).toContainElement(screen.getByRole('button', { name: 'Preview' }));
   });
 });
@@ -1027,10 +1027,10 @@ describe('the summary', () => {
     await summary();
 
     expect(await screen.findByRole('dialog')).toBeInTheDocument();
-    expect(fact('Where')?.textContent).toBe('On every page');
-    expect(fact('When')?.textContent).toContain('8');
-    expect(fact('Who')?.textContent).toBe('Anyone who reaches it');
-    expect(fact('How often')?.textContent).toContain('until they close it');
+    expect(fact('Pages')?.textContent).toBe('On every page');
+    expect(fact('When it appears')?.textContent).toContain('8');
+    expect(fact('Audience')?.textContent).toBe('Anyone who reaches it');
+    expect(fact('Schedule & frequency')?.textContent).toContain('until they close it');
   });
 
   /**
@@ -1159,7 +1159,7 @@ describe('changing templates in the draft', () => {
     await userEvent.type(await screen.findByRole('textbox', { name: 'Name' }), ' renamed');
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
     await screen.findByText('Draft saved');
-    expect(screen.getByRole('button', { name: 'Undo' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Undo design change' })).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
   });
 
@@ -1180,13 +1180,13 @@ describe('changing templates in the draft', () => {
     await userEvent.click(picker.getByRole('button', { name: 'Use this design' }));
     await waitFor(() => expect(templates.prepareTemplate).toHaveBeenCalledWith(ALTERNATE.id, { tree: ENTRY.tree, tokens: ENTRY.tokens }, ENTRY.id));
     expect(builder.saveOptin).not.toHaveBeenCalled();
-    await waitFor(() => expect(screen.getByRole('button', { name: 'Undo' })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Undo design change' })).toBeEnabled());
     await waitFor(() => expect(screen.getByRole('button', { name: 'Change template' })).toHaveFocus());
     expect(screen.getByText(ALTERNATE.name)).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Undo' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Undo design change' }));
     expect(screen.getByText(ENTRY.name)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
-    await userEvent.click(screen.getByRole('button', { name: 'Redo' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Redo design change' }));
     expect(screen.getByText(ALTERNATE.name)).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: /Choose a colour for Background/ }));
     await userEvent.clear(screen.getByLabelText('Background value'));
@@ -1210,7 +1210,7 @@ describe('changing templates in the draft', () => {
     await waitFor(() => expect(screen.getByRole('button', { name: 'Change template' })).toHaveFocus());
     expect(screen.getByText(ENTRY.name)).toBeInTheDocument();
     expect(screen.queryByText(ALTERNATE.name)).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Undo' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Undo design change' })).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
     expect(builder.saveOptin).not.toHaveBeenCalled();
   });

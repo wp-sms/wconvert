@@ -14,6 +14,8 @@
  */
 
 export interface AdminSettings {
+  /** WordPress site timezone, including fixed-offset zones. */
+  readonly timezone?: string;
   /** The nonced `admin-post.php` URL for the CSV export. */
   readonly exportUrl: string;
   /**

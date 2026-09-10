@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { __, _n, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
+import { allowanceSummary } from './allowanceSummary';
 import { Input } from '../components/ui/input';
 import { Skeleton } from '../components/ui/skeleton';
 import { Description } from '../shell/Description';
@@ -251,23 +252,6 @@ export function SiteAllowance() {
       )}
     </SettingsDisclosure>
   );
-}
-
-function allowanceSummary(allowance: Allowance): string {
-  const limits = [
-    allowance.stopAfterDismiss ? __('Stop after a dismissal', 'wconvert') : null,
-    allowance.stopAfterConversion ? __('Stop after a conversion', 'wconvert') : null,
-    allowance.maxImpressions === null ? null : sprintf(
-      _n('At most %d impression', 'At most %d impressions', allowance.maxImpressions, 'wconvert'),
-      allowance.maxImpressions,
-    ),
-    allowance.cooldownDays === null ? null : sprintf(
-      _n('%d day between Optins', '%d days between Optins', allowance.cooldownDays, 'wconvert'),
-      allowance.cooldownDays,
-    ),
-  ].filter(Boolean);
-
-  return limits.length ? limits.join(' · ') : __('No site-wide limits. Each Optin uses its own display rules.', 'wconvert');
 }
 
 const draftsOf = (allowance: Allowance) => ({

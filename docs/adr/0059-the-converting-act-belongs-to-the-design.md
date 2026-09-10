@@ -243,9 +243,9 @@ param edit.
   filing a capture design under the sale Goal is offering a start a merchant can
   legitimately want; refusing it at registration would drop the card with
   nothing in any log.
-- **The Goal is on screen**, as one muted line in the builder's page-header band
-  with a *Change goal* control beside it — height reserved, like the stats strip
-  below it, so the registry answering does not push the tab strip down.
+- **The Goal is on screen**, ~~as one muted line in the builder's page-header band~~
+  **in Optin details** under [ADR 0067](0067-the-editor-starts-with-the-preview-and-the-selected-element.md),
+  with a *Change goal* control beside it.
 - **Changing a Goal confirms**, and that is not the usual confirm-everything
   reflex. The structure editor's amendment to
   [ADR 0039](0039-a-screen-is-regions-and-scope-decides-placement.md) says undo
@@ -254,6 +254,10 @@ param edit.
   entry to walk back to, so the sentence is the only place it can be said:
   *"Everything this Optin has already counted is read against the goal it
   holds, so its whole history moves with it. This cannot be undone."*
+  **Clarified by [ADR 0072](0072-setup-choices-state-their-effect-and-scope.md):**
+  this action also saves the current name and complete draft configuration.
+  The confirmation now names that effect and its button says *Save draft and
+  change goal*. It does not publish; design Undo cannot restore the Goal.
 - **A goal-only `PATCH` is checked against the stored design.** Both refusals
   were guarded on an incoming `config`, so `PATCH {"goal": …}` with none wrote
   any settable Goal onto any design and any binding, unchecked. It was

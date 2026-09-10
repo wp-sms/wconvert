@@ -25,6 +25,11 @@ Same closed names, same closure function, same drop-when-empty. It is
 again, and this ADR is mostly about the two things that made it harder than
 that sentence suggests.
 
+**Scope made explicit by [ADR 0072](0072-setup-choices-state-their-effect-and-scope.md):**
+the editor keeps a mobile-appearance reminder visible even without a selected
+node. Text and blocks are shared across sizes; this second bag changes appearance,
+not content or structure. The reminder changes no inheritance or breakpoint rule.
+
 ## What it is for, and what already worked without it
 
 **Shrinking is not the same as retuning.** A photo pane that is 440px of a

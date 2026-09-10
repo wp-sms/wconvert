@@ -78,15 +78,17 @@ export function BackLink({
   ref,
   className,
   label,
+  disabled = false,
 }: {
   onClose: () => void;
   ref?: Ref<HTMLButtonElement>;
   className?: string;
   label?: string;
+  disabled?: boolean;
 }) {
   return (
     <div className={className}>
-      <Button ref={ref} variant="ghost" size="sm" className="-ms-3" onClick={onClose}>
+      <Button ref={ref} variant="ghost" size="sm" className="-ms-3" onClick={onClose} disabled={disabled}>
         {/* Back is the other way in Persian; see {@see GoalScreen}'s footer. */}
         <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />
         {label ?? __('All Optins', 'wconvert')}

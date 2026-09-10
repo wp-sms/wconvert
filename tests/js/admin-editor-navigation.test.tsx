@@ -122,6 +122,27 @@ describe('App navigation through the real lazy editor', () => {
     expect(screen.queryByRole('alertdialog')).toBeNull();
   });
 
+  it('names design Undo explicitly and keeps name edits outside that history', async () => {
+    const name = await openEditor();
+    const undo = screen.getByRole('button', { name: 'Undo design change' });
+    const redo = screen.getByRole('button', { name: 'Redo design change' });
+    expect(undo).toHaveAttribute('title', 'Undo design change');
+    expect(redo).toHaveAttribute('title', 'Redo design change');
+    await userEvent.type(name, ' revised');
+    expect(undo).toBeDisabled();
+    expect(redo).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Save draft' })).toBeEnabled();
+  });
+
+  it('keeps mobile editing scope visible before a block is selected', async () => {
+    await openEditor();
+    expect(screen.queryByRole('treegrid')).toBeNull();
+    await userEvent.click(screen.getByRole('button', { name: 'Mobile preview' }));
+    expect(screen.getByText('Editing mobile appearance. Text and blocks are shared across sizes.')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Desktop preview' }));
+    expect(screen.queryByText('Editing mobile appearance. Text and blocks are shared across sizes.')).toBeNull();
+  });
+
   it('treats Escape as Keep editing and restores the previous control', async () => {
     const name = await openEditor();
     await userEvent.type(name, ' revised');

@@ -373,8 +373,11 @@ design says nothing at all.** Placing *"This will work"* correctly was solving
 the wrong problem — a green tick on every visit is a permanent line that taxes
 every visit and informs one, which is this ADR's own argument about subtitles
 arriving one component later. The toolbar renders only when there are problems,
-and Undo and Redo left with it: they move the whole DRAFT, the same scope `Save
-changes` has, so they belong in the page-header band. The band those two
+and Undo and Redo left with it: they move the ~~whole DRAFT~~ **design and template
+id**, so they belong in the page-header band. **Scope corrected by
+[ADR 0072](0072-setup-choices-state-their-effect-and-scope.md):** Save draft also
+persists the name, rules and destinations, which design history does not restore.
+The controls now say *Undo design change* and *Redo design change*. The band those two
 controls were costing was the only reason the strip existed._
 
 `Display rules` and `Destinations` do not get it, by the same test: neither

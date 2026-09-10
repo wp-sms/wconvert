@@ -4,6 +4,7 @@ import { BuilderSkeleton } from '../shell/BuilderSkeleton';
 import { ChoiceSkeleton } from '../shell/ChoiceGrid';
 import { Region, RegionBody, RegionHeader } from '../shell/Region';
 import type { OptinBuilderProps } from './OptinBuilder';
+import type { GoalScreenProps } from '../goals/GoalScreen';
 
 /**
  * ============================================================================
@@ -78,10 +79,10 @@ export function OptinBuilder(props: OptinBuilderProps) {
  * length of one fetch, which is a rounding error in a placeholder and not worth
  * a read to fix.
  */
-export function GoalScreen({ onCreated }: { onCreated: (id: string) => void }) {
+export function GoalScreen(props: GoalScreenProps) {
   return (
     <Suspense fallback={<CreationSkeleton />}>
-      <Creation onCreated={onCreated} />
+      <Creation {...props} />
     </Suspense>
   );
 }
@@ -90,8 +91,8 @@ function CreationSkeleton() {
   return (
     <Region>
       <RegionHeader
-        title={__('Create an Optin', 'wconvert')}
-        description={__('What do you want this Optin to do?', 'wconvert')}
+        title={__('What do you want to achieve?', 'wconvert')}
+        description={__('Choose a goal, then a starting point. You can customize the design and decide when to publish in the editor.', 'wconvert')}
       />
       <RegionBody>
         {/* The announcement travels with the skeleton now. */}

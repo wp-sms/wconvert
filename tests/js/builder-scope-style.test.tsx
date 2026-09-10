@@ -357,11 +357,12 @@ describe('the narrow bag, through the width switch', () => {
   it('says which width it is setting, because the controls are identical', async () => {
     await style(/Coloured box/);
 
-    expect(screen.queryByText(/Editing mobile appearance/)).toBeNull();
+    const inspector = within(screen.getByRole('group', { name: 'Coloured box' }));
+    expect(inspector.queryByText(/Editing mobile appearance/)).toBeNull();
 
     await narrow();
 
-    expect(screen.getByText(/Editing mobile appearance/)).toBeInTheDocument();
+    expect(inspector.getByText('Editing mobile appearance. Unchanged values follow desktop.')).toBeInTheDocument();
   });
 
   it('writes into the narrow bag and leaves the full-width one alone', async () => {

@@ -237,8 +237,12 @@ work to 360px.
 - **`TemplateCard` is shared by the picker and the creation flow's step 2**, and
   the facet toolbar is not. A Playbook card renders that Playbook's template
   *with its copy in it* — a different object — composed by `Prefill` on the
-  server so step 2 draws exactly what step 3 draws and exactly what creating it
-  stores ([#79](https://github.com/navidkashani/wconvert/issues/79),
+  server so the chooser draws exactly what creating it stores. **Amended by
+  [ADR 0072](0072-setup-choices-state-their-effect-and-scope.md):** the former
+  repeated preview at step 3 is removed. *Customize this starting point* creates
+  the draft and opens the editor; compact setup facts come from that same Prefill
+  result, rather than raw Playbook rules before installation-specific resolution
+  ([#79](https://github.com/navidkashani/wconvert/issues/79),
   [#68](https://github.com/navidkashani/wconvert/issues/68)).
 - **The admin resolves the site's privacy-policy link at the render**
   ([#77](https://github.com/navidkashani/wconvert/issues/77)). `PolicyLink::into()`

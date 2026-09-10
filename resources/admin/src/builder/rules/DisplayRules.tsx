@@ -1,13 +1,16 @@
+import { __ } from '@wordpress/i18n';
+import type { ConvertingAct } from '../structure/catalogue';
 import { useEffect, useState } from 'react';
 import { entriesOffEveryAxis, entriesOn, visitorWith } from './axis';
 import { HowOften } from './HowOften';
 import { Section } from './Section';
-import { StartingPoints, type BundlePatch } from './StartingPoints';
+import { StartingPoints, patchOf, affectedSections, type BundlePatch } from './StartingPoints';
 import { Unknown } from './Unknown';
 import { When } from './When';
 import { Where } from './Where';
 import { Who } from './Who';
 import { summarise, type DisplayRulesValue } from './summaries';
+import { targetingSummary } from './targetingSummary';
 import type { Rule, RuleVocabulary, Targeting } from '../api';
 
 /**
@@ -41,11 +44,11 @@ import type { Rule, RuleVocabulary, Targeting } from '../api';
  * invariant was a habit rather than a shape.
  *
  * ============================================================================
- * ONE PATCH OUT, SO A STARTING POINT IS ONE HISTORY ENTRY.
+ * ONE PATCH OUT FOR THE SECTIONS A STARTING POINT REPLACES.
  * ============================================================================
  * Applying a bundle can change Triggers, Conditions, Targeting and the
- * allowance at once. Four callbacks would be four saves and four undo steps
- * for one click, so what leaves here is a patch of everything that changed.
+ * allowance at once. One patch keeps that replacement atomic. Design Undo
+ * does not cover rules, so StartingPoints reviews and confirms the replacement.
  */
 /**
  * **The value moved to `summaries.ts`, which is where the four sentences are
@@ -64,6 +67,7 @@ export interface DisplayRulesProps {
    * control decides nothing and is not drawn.
    */
   readonly overlay: boolean;
+  readonly act?: ConvertingAct;
   readonly onChange: (patch: Partial<DisplayRulesValue>) => void;
   /**
    * A section the SCREEN has asked this panel to open, as a fresh object each
@@ -82,7 +86,7 @@ export interface DisplayRulesProps {
   readonly reveal?: { readonly id: string; readonly focus?: string } | null;
 }
 
-export function DisplayRules({ vocabulary, value, overlay, onChange, reveal }: DisplayRulesProps) {
+export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onChange, reveal }: DisplayRulesProps) {
   const { rules, targeting, frequency, schedule, priority } = value;
   const client = [...vocabulary.triggers, ...vocabulary.conditions];
   const all = [...vocabulary.targeting, ...client];
@@ -134,8 +138,8 @@ export function DisplayRules({ vocabulary, value, overlay, onChange, reveal }: D
    * and would have been spelled a second time up there — same axes, same
    * order, and two chances to call one of them something different.
    */
-  const summaries = summarise(value, vocabulary, overlay);
-  const [where, when, who, often] = summaries;
+  const summaries = summarise(value, vocabulary, overlay, act);
+  const [where, who, when, often] = summaries;
 
   /*
    * ==========================================================================
@@ -205,6 +209,7 @@ export function DisplayRules({ vocabulary, value, overlay, onChange, reveal }: D
 
   return (
     <div className="wconvert-sections">
+      <p className="m-0 mb-4 text-note text-muted-foreground">{__('Choose eligible pages and visitors, then the moment it appears. Schedule and frequency limits also apply.', 'wconvert')}</p>
       <Section
         id={where.id}
         eyebrow={where.eyebrow}
@@ -214,24 +219,6 @@ export function DisplayRules({ vocabulary, value, overlay, onChange, reveal }: D
         onOpenChange={opener(where.id)}
       >
         <Where types={vocabulary.targeting} targeting={targeting} onChange={(next) => onChange({ targeting: next })} />
-      </Section>
-
-      <Section
-        id={when.id}
-        eyebrow={when.eyebrow}
-        summary={when.text}
-        attention={when.attention}
-        open={open.has(when.id)}
-        onOpenChange={opener(when.id)}
-      >
-        <When
-          types={vocabulary.triggers}
-          entries={triggers}
-          replace={replace}
-          remove={remove}
-          add={add}
-          all={all}
-        />
       </Section>
 
       <Section
@@ -259,6 +246,24 @@ export function DisplayRules({ vocabulary, value, overlay, onChange, reveal }: D
       </Section>
 
       <Section
+        id={when.id}
+        eyebrow={when.eyebrow}
+        summary={when.text}
+        attention={when.attention}
+        open={open.has(when.id)}
+        onOpenChange={opener(when.id)}
+      >
+        <When
+          types={vocabulary.triggers}
+          entries={triggers}
+          replace={replace}
+          remove={remove}
+          add={add}
+          all={all}
+        />
+      </Section>
+
+      <Section
         id={often.id}
         eyebrow={often.eyebrow}
         summary={often.text}
@@ -267,6 +272,7 @@ export function DisplayRules({ vocabulary, value, overlay, onChange, reveal }: D
         onOpenChange={opener(often.id)}
       >
         <HowOften
+          act={act}
           frequency={frequency}
           schedule={schedule}
           priority={priority}
@@ -279,7 +285,20 @@ export function DisplayRules({ vocabulary, value, overlay, onChange, reveal }: D
 
       <Unknown entries={entriesOffEveryAxis(rules, client)} remove={remove} all={all} />
 
-      <StartingPoints bundles={vocabulary.bundles} onApply={(patch) => onChange(applied(patch, value, vocabulary))} />
+      <StartingPoints
+        bundles={vocabulary.bundles}
+        describe={(bundle) => {
+          const nextValue = { ...value, ...applied(patchOf(bundle), value, vocabulary) };
+          const next = summarise(nextValue, vocabulary, overlay, act);
+          return summaries.filter((axis) => affectedSections(bundle).includes(axis.id)).map((axis) => ({
+            label: axis.eyebrow,
+            before: axis.id === 'where' ? targetingSummary(value.targeting, vocabulary.targeting, 'review') : axis.text,
+            after: axis.id === 'where' ? targetingSummary(nextValue.targeting, vocabulary.targeting, 'review')
+              : next.find((replacement) => replacement.id === axis.id)!.text,
+          }));
+        }}
+        onApply={(patch) => onChange(applied(patch, value, vocabulary))}
+      />
     </div>
   );
 }

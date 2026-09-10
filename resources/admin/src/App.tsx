@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Plus } from 'lucide-react';
 import { GoalScreen, OptinBuilder } from './builder/lazy';
@@ -73,6 +73,7 @@ export function App() {
       {section === 'optins' && (
         <OptinsSection
           creating={creating}
+          onEditingStateChange={navigation.onEditingStateChange}
           onCreate={() => setCreating(true)}
           onCancelCreate={() => setCreating(false)}
           onEdit={(id) => navigate(editorHref(id, navigation.hash || '#optins'))}
@@ -131,38 +132,19 @@ function BuilderScreen({ id, onClose, onNarrowClose, backLabel, onEditingStateCh
  */
 function OptinsSection({
   creating,
+  onEditingStateChange,
   onCreate,
   onCancelCreate,
   onEdit,
 }: {
   creating: boolean;
+  onEditingStateChange: (state: EditingState) => void;
   onCreate: () => void;
   onCancelCreate: () => void;
   onEdit: (id: string) => void;
 }) {
   if (creating) {
-    return (
-      <>
-        {/*
-          Above the region rather than inside it, because the way out of the
-          flow is the PAGE's and not the flow's — it leaves the whole flow, so
-          it cannot sit within the card the flow draws.
-
-          This used to read "outside {@see Legacy}", naming the
-          `.wconvert-legacy` wrapper that put it inside that card. The wrapper
-          left with the last un-converted screen (ADR 0039) and the reference
-          went dead with it; the placement it argued for is still the right
-          one, so the reason is restated rather than deleted.
-        */}
-        <BackLink className="mb-4" onClose={onCancelCreate} />
-        <GoalScreen
-          onCreated={(id) => {
-            onCancelCreate();
-            onEdit(id);
-          }}
-        />
-      </>
-    );
+    return <CreationFlow onCancel={onCancelCreate} onEdit={onEdit} onEditingStateChange={onEditingStateChange} />;
   }
 
   /*
@@ -183,4 +165,40 @@ function OptinsSection({
       <SiteAllowance />
     </div>
   );
+}
+
+/** Owns creation's temporary navigation guard until the editor takes over. */
+function CreationFlow({ onCancel, onEdit, onEditingStateChange }: {
+  onCancel: () => void;
+  onEdit: (id: string) => void;
+  onEditingStateChange: (state: EditingState) => void;
+}) {
+  const [busy, setBusy] = useState(false);
+  const ownsGuard = useRef(true);
+  useEffect(() => {
+    ownsGuard.current = true;
+    return () => { ownsGuard.current = false; };
+  }, []);
+  const onBusyChange = useCallback((next: boolean) => {
+    if (!ownsGuard.current) return;
+    setBusy(next);
+    onEditingStateChange({ dirty: false, busy: next });
+  }, [onEditingStateChange]);
+  const leave = () => {
+    if (busy) return;
+    ownsGuard.current = false;
+    onEditingStateChange({ dirty: false, busy: false });
+    onCancel();
+  };
+  return <>
+    <BackLink className="mb-4" onClose={leave} disabled={busy} />
+    <GoalScreen onBusyChange={onBusyChange} onCheckOptins={leave} onCreated={(id) => {
+      // Release before navigating; a late child cleanup must not overwrite
+      // the newly mounted editor's dirty/busy state.
+      ownsGuard.current = false;
+      onEditingStateChange({ dirty: false, busy: false });
+      onCancel();
+      onEdit(id);
+    }} />
+  </>;
 }

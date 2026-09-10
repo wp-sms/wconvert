@@ -463,12 +463,12 @@ describe('confirming the change', () => {
    * — it is a column. That is the exception the structure editor's amendment to
    * ADR 0039 buys for a design switch and cannot buy here.
    */
-  it('says the whole history moves with it, and that it cannot be undone', async () => {
+  it('says the whole history moves with it, and that design Undo cannot reverse it', async () => {
     open();
     await pick('Promote a sale or offer');
 
     expect(await screen.findByText(/whole history moves with it/)).toBeInTheDocument();
-    expect(screen.getByText(/cannot be undone/)).toBeInTheDocument();
+    expect(screen.getByText(/Design Undo cannot reverse this change/)).toBeInTheDocument();
   });
 
   /**
@@ -480,11 +480,25 @@ describe('confirming the change', () => {
   it('sends the goal beside the config the merchant is looking at', async () => {
     open();
     await pick('Promote a sale or offer');
-    await userEvent.click(screen.getByRole('button', { name: 'Move it' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save draft and change goal' }));
 
     expect(builder.saveOptin).toHaveBeenCalledTimes(1);
     expect(builder.saveOptin.mock.calls[0][3]).toBe('promote_offer');
     expect(builder.saveOptin.mock.calls[0][2]).toMatchObject({ template_id: 'centred-card' });
+  });
+
+  it('discloses that confirmation also saves the current name and draft, then sends that unsaved name', async () => {
+    open();
+    await userEvent.type(await screen.findByRole('textbox', { name: 'Name' }), ' updated');
+    await pick('Promote a sale or offer');
+    const confirm = screen.getByRole('button', { name: 'Save draft and change goal' });
+    expect(confirm).toHaveAccessibleDescription(/current name and all draft edits, including design, display rules and destinations.*does not publish/);
+    expect(builder.saveOptin).not.toHaveBeenCalled();
+    await userEvent.click(confirm);
+    expect(builder.saveOptin).toHaveBeenCalledTimes(1);
+    expect(builder.saveOptin.mock.calls[0][1]).toBe('Welcome discount updated');
+    expect(builder.saveOptin.mock.calls[0][2]).toMatchObject({ template: { tree: ENTRY.tree, tokens: ENTRY.tokens } });
+    expect(builder.saveOptin.mock.calls[0][3]).toBe('promote_offer');
   });
 
   it('writes nothing when the merchant backs out', async () => {

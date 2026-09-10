@@ -87,11 +87,22 @@ day, and `Schedule::resolve()` is pure and takes the zone as an argument for
 `StatDay::of()`'s stated reason: a seam built on the bootstrap's UTC stubs
 proves nothing about timezones.
 
-Two wall times a zone cannot answer cleanly are booked knowingly, both PHP's
-own reading: a time that **never happens** (spring forward) resolves an hour
-later, and a time that **happens twice** (autumn's fall back) takes the first
-occurrence. Once a year, in the harmless direction, on a value the merchant can
-see and change.
+Two wall times a zone cannot answer cleanly use PHP's own resolution. A skipped
+local time advances across the gap; a repeated hour uses the occurrence PHP
+selects for that timezone. **Corrected by
+[ADR 0072](0072-setup-choices-state-their-effect-and-scope.md):** this previously
+claimed the first occurrence always wins. Direct PHP checks show the first in
+New York but the second in London and Berlin. The runtime remains unchanged;
+there is no portable first-occurrence promise.
+
+The admin now names the actual WordPress site zone beside its date controls.
+Readable labels preserve the authored wall components through an admin-local DST
+gap. The ended-status advisory compares in the explicit site zone, not the admin
+browser's zone. At ambiguous or skipped boundaries it waits for the latest
+plausible instant; a missing or unreadable zone stays neutral. PHP's published
+instant remains authoritative, so the advisory may stay neutral briefly after
+the actual end during a repeated hour. This changes neither the stored wall time
+nor the loader's half-open comparison.
 
 ## No new `Standing`, and no new column
 

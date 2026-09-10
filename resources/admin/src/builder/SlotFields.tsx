@@ -3,7 +3,8 @@ import { CalendarClock, ImagePlus } from 'lucide-react';
 import { GLYPHS } from '@renderer/render';
 import { Button } from '../components/ui/button';
 import { ParamChoice } from './ParamChoice';
-import { readable, momentOf } from './wallTime';
+import { readable, hasScheduleEnded } from './wallTime';
+import { adminSettings } from '../settings';
 import { nameOf, type TemplateLabels } from '../templates/api';
 import type { Slot } from './panel';
 
@@ -536,9 +537,8 @@ function Countdown({
   readonly endsAt?: string;
   readonly onSetEndDate?: () => void;
 }) {
-  const moment = momentOf(endsAt);
   const spelled = readable(endsAt);
-  const finished = moment !== null && moment.getTime() < Date.now();
+  const finished = hasScheduleEnded(endsAt, adminSettings()?.timezone);
 
   return (
     <div className="wconvert-slot__note">

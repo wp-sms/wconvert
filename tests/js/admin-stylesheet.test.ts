@@ -265,7 +265,6 @@ describe('the rules panel against the editor’s blanket rules', () => {
     // asked for `margin: 0` and rendered 12px; `.wconvert-locked__list` asked
     // for no marker indent and rendered 21px of one.
     '.wconvert-rules',
-    '.wconvert-picker__empty',
     '.wconvert-allowance',
   ];
 

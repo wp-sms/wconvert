@@ -7,7 +7,8 @@ reference editor. The production editor adopts that flow.
 ## Workspace
 
 The builder owns its viewport, while the other admin screens retain Shell.
-The header holds the name, Design / Display rules / Destinations, Undo / Redo,
+The header holds the name, Design / Display rules / Destinations, Undo design
+change / Redo design change,
 Preview, Save draft, Review & publish and Optin details. Draft/publication status
 stays visible in the footer at every supported editor width. WordPress navigation stays
 visible by default; Full width remains optional and remembered per browser.
@@ -23,6 +24,13 @@ selected. Breadcrumbs expose its ancestors, and Design settings returns to the
 whole design. A leaf has Content and Style; a container offers its appearance
 and arrangement controls directly. Image controls show the current image and a
 visible replacement action using WordPress's media library.
+
+**Extended by [ADR 0072](0072-setup-choices-state-their-effect-and-scope.md):**
+creation hands off here directly after Goal and starting-point choices. The
+explicit customization action creates a draft; a separate repeated-preview
+confirmation no longer precedes this editor. Undo restores the design and
+template id only. Goal correction explains that it also saves the current name
+and all draft edits, without publishing them.
 
 The form preview accepts local input and advances to the success screen without
 sending a capture or following a destination link. The canvas is an editing and
@@ -55,6 +63,8 @@ mobile overrides when materializing a child's narrow bag. Overriding a child's
 size therefore does not reset its parent's mobile color or font.
 Global design settings apply to all sizes and say so in mobile view. Fonts remain
 site-provided under ADR 0055; the prototype's bundled reference fonts do not ship.
+Mobile editing also keeps a visible reminder that text and blocks are shared
+across sizes, including before any node is selected (ADR 0072).
 
 ## Template selection is draft work
 

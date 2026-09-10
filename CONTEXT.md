@@ -385,6 +385,14 @@ means different things in different browsers is not a schedule.
 wall time is what is stored, **correcting the site's timezone corrects every
 schedule with it** on the next rebuild of the published set.
 
+**Admin scope clarified by [ADR 0072](docs/adr/0072-setup-choices-state-their-effect-and-scope.md):**
+date controls name the actual site zone, and labels preserve the authored wall
+components rather than normalizing through the admin browser's DST rules. Ended
+status is an advisory in the explicit site zone; unknown zones stay neutral,
+and repeated/skipped hours wait for the latest plausible end. PHP's published
+instant remains authoritative. A repeated hour is not guaranteed to resolve to
+its first occurrence in every timezone.
+
 A scheduled Optin is **in the published set on both sides of its window**. That
 is the counter-intuitive half: the set is rebuilt on write and never on a timer,
 so an Optin held back from it would never reach a cached page at the moment its
@@ -629,6 +637,10 @@ off the Optin, but it can be corrected.
 > own refusal had the words *"or change the Goal"* deleted from it. Correcting
 > one is purely editorial: it moves which card reports the Optin and what its
 > headline number is called, and touches the design not at all.
+> **The editor's action also saves the whole current draft**, including name,
+> design, rules and destinations, without publishing it. Its confirmation now
+> says so and names *Save draft and change goal*; Goal is outside design Undo
+> ([ADR 0072](docs/adr/0072-setup-choices-state-their-effect-and-scope.md)).
 
 > **The test a Goal must pass:** it names an outcome WConvert can *count*.
 > "Grow my email list" is countable. "Increase brand awareness" is not, and a
@@ -766,7 +778,7 @@ inferred the manifest enumerates it
 
 A named set of display rules a merchant can begin from — *"Once they have read a
 while"*, *"Only on blog posts"*, *"Rescue an abandoned cart"* — offered in the
-rules panel and applied with one click.
+rules panel and applied after reviewing and confirming the replacement.
 
 **It is not a preset, and the word is the decision.** *Preset* already means a
 per-type shortcut over one rule's general form: `time_on_page {seconds: 5}` is
@@ -776,12 +788,19 @@ name. Both would be on this screen at once, since a Starting point that lands
 word on one screen is what this glossary exists to prevent.
 
 A Starting point **names sections and replaces only the ones it names**. The
-rules panel is four sections — Where, When, Who, How often — and one carrying
+rules panel is four sections — **Pages, Audience, When it appears, Schedule &
+frequency** under [ADR 0072](docs/adr/0072-setup-choices-state-their-effect-and-scope.md) — and one carrying
 Conditions leaves the merchant's [[Trigger]]s alone: an [[Optin]] with no Trigger
 can never fire and the save route refuses one, so a button that wiped them would
 break the Optin it was offered to improve. Which sections it names is readable
 off what it carries, and applying one **confirms first**, because the builder's
 history watches the design and rules are not undoable.
+
+The review compares current and proposed values for the sections supplied.
+Replacing frequency does not replace campaign dates or overlay priority; those
+fields are absent from a rule bundle. Applying changes the working draft and
+does not save or publish it. This does not add nested groups or change the flat
+Trigger/Condition/Targeting semantics.
 
 > *That reason has a second case: changing an Optin's [[Goal]] confirms too, and
 > for exactly this — a Goal is a column rather than part of `config`, so there
@@ -813,6 +832,13 @@ Picking a Playbook **prefills a new Optin by snapshot**: its values are copied
 into the Optin and the two never speak again. Improving a Playbook never rewrites
 the words on a running Optin, and deleting one leaves every Optin it started
 untouched — so `playbook_id` is *provenance*, exactly as `template_id` is.
+
+In creation the merchant-facing term is **starting point**. Goal is the first
+choice, and the Playbook is the second; *Customize this starting point* creates a
+draft and opens the editor directly. A card's compact setup facts come from the
+same resolved Prefill result the draft receives. Browsing does not create or
+publish an Optin. This creation bundle includes design and copy, unlike the
+rule-only Starting point above (ADR 0072).
 
 > **Provenance is not performance.** Two Optins from one Playbook may have been
 > edited into unrecognisably different things, so rolling their [[Conversion]]s up

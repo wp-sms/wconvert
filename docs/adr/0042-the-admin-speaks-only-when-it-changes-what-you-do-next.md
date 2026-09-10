@@ -241,7 +241,11 @@ what found them.
 
 - **A control that acts on the whole draft sits with the draft's title.** Undo
   and Redo moved out of a region toolbar into the page-header band beside `Save
-  changes`, which has the same scope. They were costing a full-width bordered
+  changes`, ~~which has the same scope~~ **but their history has the smaller
+  design-and-template-id scope**. [ADR 0072](0072-setup-choices-state-their-effect-and-scope.md)
+  makes that scope explicit in *Undo design change* / *Redo design change*;
+  name, rules, destinations and Goal remain outside design history.
+  They were costing a full-width bordered
   strip at the top of two tabs for two controls reached occasionally — and that
   strip existed *only* because they were in the wrong place. It is gone.
 

@@ -122,7 +122,7 @@ export function When({ types, entries, replace, remove, add, all }: WhenProps) {
           not looking at the screen.
         */}
         <legend className="wconvert-wait__legend text-micro uppercase text-muted-foreground">
-          {__('Does it wait?', 'wconvert')}
+          {__('Choose the moment', 'wconvert')}
         </legend>
 
         <div className="wconvert-wait__options">
@@ -146,20 +146,20 @@ export function When({ types, entries, replace, remove, add, all }: WhenProps) {
               // clear-and-start-again.
               onChange={() => immediate !== undefined && remove(immediate[1])}
             />{' '}
-            {__('Waits for one of these', 'wconvert')}
+            {__('Wait for one of these actions', 'wconvert')}
           </label>
         </div>
       </fieldset>
 
       {immediate === undefined && (
-        <Description className="mb-1">{__('Any one of them fires it.', 'wconvert')}</Description>
+        <Description className="mb-1">{__('Any one of these can show the Optin, when the page, audience and limits allow.', 'wconvert')}</Description>
       )}
 
       <RuleRows
         rows={rows}
         empty={
           immediate === undefined
-            ? __('Nothing yet, so it can never show. Add a trigger.', 'wconvert')
+            ? __('Choose an action below so this Optin has a moment to appear.', 'wconvert')
             : ''
         }
       />
