@@ -402,3 +402,33 @@ describe('a step holding a submit button', () => {
     expect(render(clicking, TOKENS).tagName).toBe('DIV');
   });
 });
+
+
+describe('element appearance and mobile inheritance', () => {
+  it('styles one leaf without restyling its sibling', () => {
+    const tree = oneStep({ type: 'stack', children: [
+      { type: 'heading', text: 'Changed', tokens: { fg: '#123456', 'heading-size': '3rem' } },
+      { type: 'heading', text: 'Unchanged' },
+    ] });
+    const [changed, sibling] = render(tree, TOKENS).querySelectorAll<HTMLElement>('.wc-heading');
+    expect(changed.style.getPropertyValue('--wc-fg')).toBe('#123456');
+    expect(changed.style.getPropertyValue('--wc-heading-size')).toBe('3rem');
+    expect(sibling.style.getPropertyValue('--wc-fg')).toBe('');
+  });
+
+  it('retains ancestor mobile values when a child overrides another setting', () => {
+    const tree = oneStep({ type: 'stack', narrow: { fg: '#123456', 'heading-font': 'Georgia' }, children: [
+      { type: 'panel', narrow: { pad: '1rem' }, children: [
+        { type: 'heading', text: 'Nested', tokens: { 'heading-size': '3rem' }, narrow: { 'heading-size': '2rem' } },
+        { type: 'heading', text: 'Own color', tokens: { fg: '#abcdef' }, narrow: { 'heading-size': '1rem' } },
+      ] },
+    ] });
+    const [nested, own] = render(tree, TOKENS).querySelectorAll<HTMLElement>('.wc-heading');
+    expect(nested.dataset.narrow).toBe('');
+    expect(nested.style.getPropertyValue('--wc-n-fg')).toBe('#123456');
+    expect(nested.style.getPropertyValue('--wc-n-heading-font')).toBe('Georgia');
+    expect(nested.style.getPropertyValue('--wc-heading-size')).toBe('3rem');
+    expect(nested.style.getPropertyValue('--wc-n-heading-size')).toBe('2rem');
+    expect(own.style.getPropertyValue('--wc-n-fg')).toBe('#abcdef');
+  });
+});

@@ -222,23 +222,7 @@ describe('a container in the preview', () => {
     expect(chosen).toHaveBeenCalledWith(keyOfElement(panel as HTMLElement));
   });
 
-  /**
-   * ==========================================================================
-   * A PRESS TAKES THE OUTER BOX, AND THE NEXT ONE GOES A LEVEL DEEPER.
-   * ==========================================================================
-   * This was *"answers with the innermost box under the pointer"* — `closest()`
-   * from the press — which is the right answer to *what did I point at* and the
-   * wrong one to *what am I working on*. On any real design the innermost thing
-   * under a pointer is a leaf, a leaf carries no `tokens` bag, and the Style
-   * panel's whole subject is boxes: so pressing a box reported the headline
-   * inside it and the panel said *"this block takes its look from Column"*,
-   * every time, for every box.
-   *
-   * Measured on `split-hero` before the change: of 168 points across the
-   * preview, 21 selected the Column and NONE reached the design at all — its
-   * children cover every pixel of it. The chain is walked now, one link per
-   * press, and the design is the last link rather than the first.
-   */
+  // Direct selection is stable; parents remain selectable on their own ground.
   const chainFrom = (role: string) => {
     const leaf = slots().find((slot) => slot.dataset.role === role) as HTMLElement;
     const box = leaf.parentElement?.closest<HTMLElement>('[data-path]') as HTMLElement;
@@ -247,20 +231,20 @@ describe('a container in the preview', () => {
     return { leaf, box, design };
   };
 
-  it('takes the outer box first, so a box is what a press on one selects', async () => {
+  it('selects the element under the pointer on the first click', async () => {
     const chosen = vi.fn();
 
     render(<Preview template={FIELDWORK} onSelect={chosen} />);
 
-    const { leaf, box } = chainFrom('headline');
+    const { leaf } = chainFrom('headline');
 
     await userEvent.click(leaf);
 
     expect(chosen).toHaveBeenCalledTimes(1);
-    expect(chosen).toHaveBeenCalledWith(keyOfElement(box));
+    expect(chosen).toHaveBeenCalledWith(keyOfElement(leaf));
   });
 
-  it('goes one level deeper when the same point is pressed again', async () => {
+  it('selects the element even when its parent was selected', async () => {
     const chosen = vi.fn();
     const { rerender } = render(<Preview template={FIELDWORK} onSelect={chosen} />);
 
@@ -281,33 +265,33 @@ describe('a container in the preview', () => {
    * first because it is in every press's chain: leading with it would put a
    * step between the merchant and every box on the screen.
    */
-  it('takes the design itself on the press after the innermost', async () => {
+  it('keeps the same element selected on repeated clicks', async () => {
     const chosen = vi.fn();
     const { rerender } = render(<Preview template={FIELDWORK} onSelect={chosen} />);
 
-    const { leaf, design } = chainFrom('headline');
+    const { leaf } = chainFrom('headline');
 
     rerender(<Preview template={FIELDWORK} selected={keyOfElement(leaf)} onSelect={chosen} />);
     await userEvent.click(leaf);
 
-    expect(chosen).toHaveBeenLastCalledWith(keyOfElement(design));
+    expect(chosen).toHaveBeenLastCalledWith(keyOfElement(leaf));
   });
 
   /**
    * A selection that is not on the way to the point pressed says nothing about
    * how deep that press should go, so it starts again at the top.
    */
-  it('starts again at the outer box when the press lands somewhere else', async () => {
+  it('selects the clicked element after editing another part', async () => {
     const chosen = vi.fn();
     const { rerender } = render(<Preview template={FIELDWORK} onSelect={chosen} />);
 
-    const { leaf, box } = chainFrom('headline');
+    const { leaf } = chainFrom('headline');
     const elsewhere = slots().find((slot) => slot.dataset.role !== 'headline') as HTMLElement;
 
     rerender(<Preview template={FIELDWORK} selected={keyOfElement(elsewhere)} onSelect={chosen} />);
     await userEvent.click(leaf);
 
-    expect(chosen).toHaveBeenLastCalledWith(keyOfElement(box));
+    expect(chosen).toHaveBeenLastCalledWith(keyOfElement(leaf));
   });
 
   /**
@@ -324,8 +308,8 @@ describe('a container in the preview', () => {
 
     await userEvent.hover(leaf);
 
-    expect(box.style.outline).toContain('dashed');
-    expect(leaf.style.outline).toBe('');
+    expect(leaf.style.outline).toContain('dashed');
+    expect(box.style.outline).toBe('');
   });
 
   it('lets the selection win where the hint would land on it too', async () => {
@@ -512,5 +496,17 @@ describe('the consent link the admin draws', () => {
     render(<Preview template={template} />);
 
     expect(drawn().querySelector<HTMLAnchorElement>('a')?.getAttribute('href')).toBe(own);
+  });
+});
+
+
+describe('visitor preview', () => {
+  it('advances locally on submit without sending a request', () => {
+    const next = vi.fn();
+    render(<Preview template={ENTRY} interactive onAdvance={next}/>);
+    const submit = new Event('submit', { bubbles: true, cancelable: true });
+    drawn().dispatchEvent(submit);
+    expect(submit.defaultPrevented).toBe(true);
+    expect(next).toHaveBeenCalledTimes(1);
   });
 });

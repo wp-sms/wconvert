@@ -59,8 +59,7 @@ the private `tokens()` that already validated the design's bag.
 
 **The merchant's model does not grow.** The Style controls are the ones the
 Design tab already had; what changed is that they are now addressed at a scope
-rather than only at the root. Selecting the step gives you the design's own
-tokens, the way the Design tab always did.
+rather than only at the root. Selecting the step originally opened the design tokens. **Amended by [ADR 0067](0067-the-editor-starts-with-the-preview-and-the-selected-element.md):** the step edits its own scope; Design settings opens the global tokens.
 
 ## What it deliberately does not buy
 
@@ -97,9 +96,7 @@ purchase rather than the strength of the demand:
 
 1. **0061 priced rung 3 as "every node grows a style bag" and a settings panel
    that "stops being 22 controls and becomes a per-node inspector."** Neither is
-   what landed. Only **layouts** carry a bag — a leaf has no inside for a scope
-   to apply to — and the panel is the same 22 controls bound to a selection. The
-   cost 0061 refused is not the cost that was paid.
+   what initially landed. **Amended by [ADR 0067](0067-the-editor-starts-with-the-preview-and-the-selected-element.md):** leaves now carry the same closed bags to style the selected element directly. Manifest reader metadata limits the inspector to relevant controls.
 2. **0061's own canonical example is this one.** *"The split with a navy pane
    beside a white form"* is named there as the design whose absence is about
    ground rather than placement. It is now expressible, in exactly the terms

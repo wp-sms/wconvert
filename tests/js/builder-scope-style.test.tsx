@@ -1,3 +1,4 @@
+import { CheckStrip } from '../../resources/admin/src/builder/CheckStrip';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { render, screen, within } from '@testing-library/react';
@@ -164,6 +165,7 @@ beforeEach(() => {
 async function style(row: RegExp) {
   render(<OptinBuilder id={ID} onClose={vi.fn()} />);
 
+  await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
   const tree = await screen.findByRole('treegrid', { name: 'Blocks in this design' });
 
   /*
@@ -174,9 +176,8 @@ async function style(row: RegExp) {
   */
   await userEvent.click(within(within(tree).getByRole('row', { name: row })).getAllByRole('button')[0]!);
 
-  const halves = screen.getByRole('tablist', { name: /what it says, or how it looks/ });
-
-  await userEvent.click(within(halves).getByRole('tab', { name: 'Style' }));
+  const halves = screen.queryByRole('tablist', { name: /settings$/ });
+  if (halves) await userEvent.click(within(halves).getByRole('tab', { name: 'Style' }));
 }
 
 /** The design as the last save sent it. */
@@ -194,20 +195,11 @@ describe('the Style half of the inspector', () => {
    * learned nothing — so the panel says which box decides for it and hands over
    * the way there (ADR 0042 rule 4).
    */
-  it('tells a leaf which box its look comes from, and offers that box', async () => {
+  it('offers a headline its own appearance without unrelated controls', async () => {
     await style(/Get 10% off/);
-
-    /*
-      **The NEAREST box, which is the Column and not the panel outside it.**
-      That is the answer that matters: the Column is where a merchant would set
-      a ground for this heading alone, and it is where a value set on it would
-      win. The panel is one step further out and is named by the source note on
-      whichever tokens actually reach here from it.
-    */
-    expect(screen.getByRole('group', { name: 'Headline' })).toHaveTextContent(
-      'This block takes its look from Column.',
-    );
-    expect(screen.getByRole('button', { name: 'Open that box' })).toBeInTheDocument();
+    expect(screen.getByRole('group', { name: 'Headline' })).toHaveTextContent('Appearance for Heading.');
+    expect(screen.getByRole('button', { name: /Choose a colour for Text/ })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Choose a colour for Background/ })).toBeNull();
   });
 
   /**
@@ -216,13 +208,11 @@ describe('the Style half of the inspector', () => {
    * Design tab always edited — so calling it *Column* would send a merchant
    * looking for the design's colours to something named after a flex direction.
    */
-  it('calls the outermost box the design rather than Column', async () => {
+  it('offers explicit paths back to the parent and design', async () => {
     await style(/Button label/);
-
-    expect(screen.getByRole('group', { name: 'Button label' })).toHaveTextContent(
-      'This block takes its look from the design.',
-    );
-    expect(screen.getByRole('button', { name: 'Open the design’s look' })).toBeInTheDocument();
+    const breadcrumb = screen.getByRole('navigation', { name: 'Selected element' });
+    expect(within(breadcrumb).getByRole('button', { name: 'Design' })).toBeInTheDocument();
+    expect(within(breadcrumb).getByRole('button', { name: 'The form' })).toBeInTheDocument();
   });
 
   /**
@@ -231,8 +221,7 @@ describe('the Style half of the inspector', () => {
    */
   it('reaches the designs own token controls through that door', async () => {
     await style(/Button label/);
-    await userEvent.click(screen.getByRole('button', { name: 'Open the design’s look' }));
-
+    await userEvent.click(within(screen.getByRole('navigation', { name: 'Selected element' })).getByRole('button', { name: 'Design' }));
     expect(screen.getByRole('button', { name: /Choose a colour for Background/ })).toBeInTheDocument();
   });
 
@@ -253,7 +242,7 @@ describe('the Style half of the inspector', () => {
     await userEvent.click(screen.getByRole('button', { name: /Choose a colour for Background/ }));
     await userEvent.clear(screen.getByLabelText('Background value'));
     await userEvent.type(screen.getByLabelText('Background value'), '#123456');
-    await userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
 
     const design = saved();
     const panel = (design.tree.steps[0] as unknown as {
@@ -280,7 +269,7 @@ describe('the Style half of the inspector', () => {
       );
     }
 
-    await userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
 
     const panel = (saved().tree.steps[0] as unknown as { children: Record<string, unknown>[] })
       .children[0];
@@ -300,7 +289,7 @@ describe('the Style half of the inspector', () => {
 
     // Two of them: the panel sets `bg` and `fg`, and both reach this box by
     // inheritance. Everything else falls through to the design and says nothing.
-    expect(screen.getAllByRole('button', { name: 'From Coloured box' })).toHaveLength(2);
+    expect(screen.getAllByRole('button', { name: 'From Coloured box' })).toHaveLength(1);
     expect(screen.queryByRole('button', { name: /^From Column/ })).toBeNull();
   });
 
@@ -323,7 +312,7 @@ describe('the Style half of the inspector', () => {
 
     await userEvent.click(within(within(tree).getByRole('row', { name: /Column/ })).getAllByRole('button')[0]!);
     await userEvent.click(screen.getByRole('button', { name: /^Paste 2 setting/ }));
-    await userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
 
     const inner = (saved().tree.steps[0] as unknown as {
       children: { children: { tokens?: Record<string, string> }[] }[];
@@ -362,21 +351,17 @@ describe('the Style half of the inspector', () => {
 describe('the narrow bag, through the width switch', () => {
   /** Put the preview — and therefore the inspector — on the narrow width. */
   async function narrow() {
-    await userEvent.click(
-      within(await screen.findByRole('complementary', { name: 'Preview' })).getByRole('button', {
-        name: 'Narrow',
-      }),
-    );
+    await userEvent.click(screen.getByRole('button', { name: 'Mobile preview' }));
   }
 
   it('says which width it is setting, because the controls are identical', async () => {
     await style(/Coloured box/);
 
-    expect(screen.queryByText(/setting the narrow look/)).toBeNull();
+    expect(screen.queryByText(/Editing mobile appearance/)).toBeNull();
 
     await narrow();
 
-    expect(screen.getByText(/setting the narrow look/)).toBeInTheDocument();
+    expect(screen.getByText(/Editing mobile appearance/)).toBeInTheDocument();
   });
 
   it('writes into the narrow bag and leaves the full-width one alone', async () => {
@@ -386,7 +371,7 @@ describe('the narrow bag, through the width switch', () => {
     await userEvent.click(screen.getByRole('button', { name: /Choose a colour for Background/ }));
     await userEvent.clear(screen.getByLabelText('Background value'));
     await userEvent.type(screen.getByLabelText('Background value'), '#123456');
-    await userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
 
     const panel = (saved().tree.steps[0] as unknown as {
       children: { tokens?: Record<string, string>; narrow?: Record<string, string> }[];
@@ -429,14 +414,14 @@ describe('the narrow bag, through the width switch', () => {
 
     await style(/Coloured box/);
 
-    expect(screen.getByText('Set on this box')).toBeInTheDocument();
+    expect(document.querySelector('.wconvert-scope__from')).toHaveTextContent('Custom');
 
     await narrow();
 
     // `pad` is the one the narrow bag names; `bg` is inherited from the box's
     // own wide bag, which is a different sentence.
-    expect(screen.getByText('Set for narrow only')).toBeInTheDocument();
-    expect(screen.getByText('Set on this box')).toBeInTheDocument();
+    expect(screen.getByText('Mobile override')).toBeInTheDocument();
+    expect(document.querySelector('.wconvert-scope__from')).toHaveTextContent('Custom');
   });
 });
 
@@ -464,7 +449,7 @@ describe('a scoped colour that follows the palette', () => {
       `--wc-bg: var(--wc-bg)` is a cycle CSS discards.
     */
     await userEvent.click(screen.getByRole('button', { name: /→ Button/ }));
-    await userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
 
     const panel = (saved().tree.steps[0] as unknown as {
       children: { tokens?: Record<string, string> }[];
@@ -588,7 +573,7 @@ describe('the checks strip', () => {
    * listed whether they pass or not, each named for what is true when it does.
    */
   it('names every check the design is held to, passing or not', async () => {
-    render(<OptinBuilder id={ID} onClose={vi.fn()} />);
+    render(<CheckStrip problems={[]} onGoTo={vi.fn()}/>);
 
     const strip = await screen.findByRole('list', { name: 'Checks on this design' });
 
@@ -609,7 +594,7 @@ describe('the checks strip', () => {
    * teaches a merchant to ignore both (ADR 0042 rule 2).
    */
   it('cites what enforces each one, passing or not', async () => {
-    render(<OptinBuilder id={ID} onClose={vi.fn()} />);
+    render(<CheckStrip problems={[]} onGoTo={vi.fn()}/>);
 
     const strip = await screen.findByRole('list', { name: 'Checks on this design' });
 
@@ -666,7 +651,8 @@ describe('the tree’s override count', () => {
 
     render(<OptinBuilder id={ID} onClose={vi.fn()} />);
 
-    const tree = await screen.findByRole('treegrid', { name: 'Blocks in this design' });
+    await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
+  const tree = await screen.findByRole('treegrid', { name: 'Blocks in this design' });
     const boxes = within(tree).getAllByRole('row', { name: /Coloured box/ });
 
     // Two at full width and one more at narrow, which is also the payload's

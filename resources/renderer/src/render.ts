@@ -196,6 +196,16 @@ function appendNode(parent: HTMLElement, node: TemplateNode, scoped: Tokens, at:
     return;
   }
 
+  // Layouts apply their bags while descending. Leaves can scope their own appearance too.
+  if (!['stack', 'row', 'grid', 'split', 'panel', 'media'].includes(node.type)) {
+    const styled = node as { tokens?: Tokens; narrow?: Tokens };
+    if (styled.tokens !== undefined || styled.narrow !== undefined) {
+      element.classList.add('wc-leaf');
+      scope(element, styled.tokens);
+      retune(element, inScope(scoped, {}, styled.tokens), styled.narrow);
+    }
+  }
+
   const role = (node as { role?: string }).role;
 
   // The Role reaches the DOM because two things downstream need it: the
@@ -343,8 +353,9 @@ function layout(
   scope(element, node.tokens);
 
   /*
-   * **What every token resolves to HERE**, which is what a retuned box needs
-   * and what nothing else in this module has ever had to know. See
+   * **What every token resolves to HERE at mobile width**, including ancestor
+   * mobile overrides. Full-width CSS still inherits the separately applied
+   * `node.tokens`. This bag is only for retuning and descending. See
    * {@link retune}: the mirror it writes has to be complete, because a name
    * the remap finds unset is not inherited — it is guaranteed-invalid, and
    * falls to whatever literal the stylesheet spells beside it.
@@ -352,7 +363,7 @@ function layout(
    * Built only where a bag says something, so a design with no bags threads
    * one object all the way down and allocates nothing.
    */
-  const here = inScope(scoped, reset, node.tokens);
+  const here = inScope(inScope(scoped, reset, node.tokens), {}, node.narrow);
 
   retune(element, here, node.narrow);
 
@@ -441,7 +452,7 @@ function split(node: SplitNode, scoped: Tokens, at: string | null): HTMLElement 
 
   scope(element, node.tokens);
 
-  const here = inScope(scoped, {}, node.tokens);
+  const here = inScope(inScope(scoped, {}, node.tokens), {}, node.narrow);
 
   retune(element, here, node.narrow);
 

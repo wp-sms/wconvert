@@ -335,10 +335,9 @@ final class TemplateVocabularyTest extends TestCase
     }
 
     /**
-     * Every layout carries one, and a LEAF carries none — a bag re-declares
-     * tokens for what is INSIDE a box, and a leaf has no inside.
+     * Layouts and leaves share the same closed token vocabulary.
      */
-    public function testEveryLayoutMayCarryABagAndNoLeafMay(): void
+    public function testLayoutsAndLeavesMayCarryClosedBags(): void
     {
         $normalized = self::normalize([
             'tree' => ['steps' => [[
@@ -348,7 +347,7 @@ final class TemplateVocabularyTest extends TestCase
                     ['type' => 'row', 'tokens' => ['bg' => '#222'], 'children' => []],
                     ['type' => 'grid', 'tokens' => ['bg' => '#333'], 'children' => []],
                     ['type' => 'split', 'tokens' => ['bg' => '#444'], 'start' => [], 'end' => []],
-                    ['type' => 'heading', 'text' => 'Join', 'tokens' => ['bg' => '#555']],
+                    ['type' => 'heading', 'text' => 'Join', 'tokens' => ['fg' => '#555', 'wobble' => '3deg'], 'narrow' => ['heading-size' => '2rem', 'unknown' => 'yes']],
                 ],
             ]]],
         ]);
@@ -361,7 +360,8 @@ final class TemplateVocabularyTest extends TestCase
             $this->assertArrayHasKey('tokens', $node, sprintf('%s may carry a bag', $node['type']));
         }
 
-        $this->assertArrayNotHasKey('tokens', $step['children'][3]);
+        $this->assertSame(['fg' => '#555'], $step['children'][3]['tokens']);
+        $this->assertSame(['heading-size' => '2rem'], $step['children'][3]['narrow']);
     }
 
     /**

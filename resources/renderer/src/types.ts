@@ -86,6 +86,9 @@ export interface SlotLink {
 export type SlotEmphasis = string;
 
 interface BaseNode {
+  /** Local styles use the same closed token names as layout scopes. */
+  readonly tokens?: Tokens;
+  readonly narrow?: Tokens;
   readonly type: string;
   readonly role?: SlotRole;
   /**

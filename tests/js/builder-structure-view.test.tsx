@@ -191,7 +191,7 @@ beforeEach(() => {
 async function structure() {
   render(<OptinBuilder id={ID} onClose={vi.fn()} />);
 
-  await screen.findByRole('tab', { name: 'Design' });
+  await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
 }
 
 /**
@@ -204,11 +204,7 @@ async function structure() {
  */
 async function designLook() {
   render(<OptinBuilder id={ID} onClose={vi.fn()} />);
-
-  const halves = await screen.findByRole('tablist', { name: /what it says, or how it looks/ });
-
-  await userEvent.click(within(halves).getByRole('tab', { name: 'Style' }));
-  await userEvent.click(await screen.findByRole('button', { name: 'Open the design’s look' }));
+  await screen.findByRole('button', { name: 'Change template' });
 }
 
 /**
@@ -316,7 +312,7 @@ describe('moving a block', () => {
 
     await userEvent.click(within(row('Headline')).getByRole('button', { name: 'Move Headline down' }));
 
-    expect(screen.getByRole('status')).toHaveTextContent(
+    expect(screen.getByRole('status', { name: 'Layer changes' })).toHaveTextContent(
       'Headline, “Get 10% off your first order”, moved down, 2 of 5',
     );
   });
@@ -373,7 +369,7 @@ describe('moving a block', () => {
     await structure();
 
     await userEvent.click(within(row('Headline')).getByRole('button', { name: 'Move Headline down' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
 
     expect(typesIn(formChildren(savedTree())).slice(0, 2)).toEqual(['text', 'heading']);
   });
@@ -585,7 +581,7 @@ describe('deleting a block', () => {
     await userEvent.click(screen.getByRole('menuitem', { name: /Delete/ }));
 
     expect(rowNames()).not.toContain('Fine print');
-    expect(screen.getByRole('status')).toHaveTextContent('Undo brings it back');
+    expect(screen.getByRole('status', { name: 'Layer changes' })).toHaveTextContent('Undo brings it back');
     expect(screen.queryByRole('alertdialog')).toBeNull();
   });
 
@@ -638,7 +634,7 @@ describe('duplicating a block', () => {
     );
     await userEvent.click(screen.getByRole('menuitem', { name: /Duplicate/ }));
 
-    expect(screen.getByRole('status')).toHaveTextContent('no name of its own');
+    expect(screen.getByRole('status', { name: 'Layer changes' })).toHaveTextContent('no name of its own');
     // The original still fills `fine_print`; the copy has no Role, so it is
     // listed by its kind — which is exactly what the sentence above warned.
     expect(rowNames().filter((name) => name === 'Fine print')).toHaveLength(1);
@@ -722,7 +718,7 @@ describe('adding a block', () => {
     await userEvent.click(await screen.findByRole('menuitem', { name: 'Image' }));
 
     expect(rowNames().slice(0, 3)).toEqual(['The form', 'Headline', 'Image']);
-    expect(screen.getByRole('status')).toHaveTextContent('Image added.');
+    expect(screen.getByRole('status', { name: 'Layer changes' })).toHaveTextContent('Image added.');
   });
 
   /**
@@ -745,8 +741,8 @@ describe('adding a block', () => {
     await userEvent.click(screen.getByRole('menuitem', { name: 'Add a block after this' }));
     await userEvent.click(await screen.findByRole('menuitem', { name: 'Heading' }));
 
-    expect(screen.getByRole('status')).toHaveTextContent('Heading added.');
-    expect(screen.getByRole('status')).not.toHaveTextContent('not linked to the preview');
+    expect(screen.getByRole('status', { name: 'Layer changes' })).toHaveTextContent('Heading added.');
+    expect(screen.getByRole('status', { name: 'Layer changes' })).not.toHaveTextContent('not linked to the preview');
   });
 
   /**
@@ -755,6 +751,7 @@ describe('adding a block', () => {
    */
   it('refuses a field on the step that is not the form', async () => {
     await structure();
+    await userEvent.click(screen.getByRole('button', { name: 'After they submit' }));
 
     await userEvent.click(
       within(row('Headline after they submit')).getByRole('button', {
@@ -808,14 +805,16 @@ describe('the inspector', () => {
     await structure();
     await select('Row');
 
-    expect(inspector('Row').getByText(/holds blocks rather than words/)).toBeInTheDocument();
+    expect(inspector('Row').getByText(/Appearance for Row/)).toBeInTheDocument();
+    expect(inspector('Row').queryByLabelText('Text')).toBeNull();
   });
 
   it('says what a step is rather than offering it a text box', async () => {
     await structure();
     await select('The form');
 
-    expect(inspector('The form').getByText(/A step is what the blocks are in/)).toBeInTheDocument();
+    expect(inspector('The form').queryByLabelText('Text')).toBeNull();
+    expect(inspector('The form').getByText(/Appearance for Column/)).toBeInTheDocument();
   });
 
   it('writes what is typed into the tree, and the Save sends it', async () => {
@@ -826,7 +825,7 @@ describe('the inspector', () => {
 
     await userEvent.clear(text);
     await userEvent.type(text, 'Half price today');
-    await userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
 
     expect((formChildren(savedTree())[0] as unknown as { text: string }).text).toBe('Half price today');
   });
@@ -927,7 +926,7 @@ describe('the inspector', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Capture something else' }));
     await userEvent.click(await screen.findByRole('menuitem', { name: /Phone number/ }));
 
-    expect(screen.getByRole('status')).toHaveTextContent('Changed to Phone number');
+    expect(screen.getByRole('status', { name: 'Layer changes' })).toHaveTextContent('Changed to Phone number');
     // The Slot Roles derived from the kind moved with it, so the row renamed
     // itself — and the merchant's own label came along.
     expect(inspector('Phone number').getByLabelText('Label')).toHaveValue('Where do we send it?');
@@ -976,7 +975,7 @@ describe('the inspector', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Capture something else' }));
     await userEvent.click(await screen.findByRole('menuitem', { name: /Phone number/ }));
-    await userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
 
     const row = (formChildren(savedTree())[2] as unknown as { children: TemplateNode[] }).children[0];
 
@@ -1038,11 +1037,12 @@ describe('the inspector', () => {
    */
   it('takes the preview to the step the selected block lives on', async () => {
     await structure();
+    await userEvent.click(screen.getByRole('button', { name: 'After they submit' }));
     await select('Headline after they submit');
 
-    const preview = screen.getByRole('complementary', { name: 'Preview' });
+    expect(screen.getByRole('region', { name: 'Design canvas' })).toHaveTextContent('After they submit');
 
-    expect(within(preview).getByRole('button', { name: 'After they submit' })).toHaveAttribute(
+    expect(within(screen.getByLabelText('Optin screen')).getByRole('button', { name: 'After they submit' })).toHaveAttribute(
       'aria-pressed',
       'true',
     );
@@ -1219,14 +1219,14 @@ describe('undo and redo', () => {
     await structure();
 
     await userEvent.click(within(row('Headline')).getByRole('button', { name: 'Move Headline down' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
 
-    expect(await screen.findByText(/Saved\./)).toBeInTheDocument();
+    expect(await screen.findByText(/^Saved$/)).toBeInTheDocument();
 
     await userEvent.click(screen.getByRole('button', { name: 'Undo' }));
 
     expect(rowNames().slice(0, 3)).toEqual(['The form', 'Headline', 'Body text']);
-    expect(screen.queryByText(/Saved\./)).toBeNull();
+    expect(screen.queryByText(/^Saved$/)).toBeNull();
   });
 });
 
@@ -1289,9 +1289,11 @@ describe('undo and redo, where they act on the whole draft', () => {
     await userEvent.click(await screen.findByRole('button', { name: /Midnight/ }));
 
     await userEvent.click(screen.getByRole('button', { name: 'Undo' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
-
-    expect(savedTokens()).toEqual(ENTRY.tokens);
+    expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
+    expect(builder.saveOptin).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole('button', { name: 'Redo' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
+    expect(savedTokens()).not.toEqual(ENTRY.tokens);
   });
 });
 
@@ -1517,7 +1519,7 @@ describe('a layout’s own settings', () => {
     await withSplit();
 
     await userEvent.click(screen.getByRole('radio', { name: 'Narrow left' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
 
     const split = formChildren(savedTree()).find((node) => node.type === 'split') as
       | { ratio?: unknown }
@@ -1559,13 +1561,17 @@ describe('a leaf’s own settings', () => {
   async function selecting(name: string) {
     await structure();
     await userEvent.click(within(row(name)).getAllByRole('button')[0]);
+    if (name === 'Headline' || name === 'Image') {
+      await userEvent.click(screen.getByRole('tab', { name: 'Style' }));
+      await userEvent.click(screen.getByText('Element options'));
+    }
   }
 
   /** The leaf at the top of the form step, whatever the test put there. */
   const firstLeaf = (): Record<string, unknown> =>
     formChildren(savedTree())[0] as unknown as Record<string, unknown>;
 
-  const save = () => userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+  const save = () => userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
 
   it('offers a heading the rank the renderer has always read', async () => {
     await selecting('Headline');
@@ -1677,7 +1683,10 @@ describe('a leaf’s own settings', () => {
   it('is a separate step from the typing before it', async () => {
     await selecting('Headline');
 
+    await userEvent.click(screen.getByRole('tab', { name: 'Content' }));
     await userEvent.type(screen.getByRole('textbox', { name: 'Text' }), '!');
+    await userEvent.click(screen.getByRole('tab', { name: 'Style' }));
+    await userEvent.click(screen.getByText('Element options'));
     await userEvent.click(screen.getByRole('radio', { name: 'Sub-heading' }));
     await userEvent.click(screen.getByRole('button', { name: 'Undo' }));
     await save();
@@ -1862,6 +1871,8 @@ describe('the icon picker', () => {
     await structure();
     await userEvent.click(within(row('Headline')).getAllByRole('button')[0]);
 
+    await userEvent.click(screen.getByRole('tab', { name: 'Style' }));
+    await userEvent.click(screen.getByText('Element options'));
     const group = screen.getByRole('group', { name: 'Heading rank' });
 
     expect(group.querySelectorAll('.wconvert-choice__glyph')).toHaveLength(0);

@@ -340,11 +340,16 @@ export const saveOptin = (
   name: string,
   config: Record<string, unknown>,
   goal?: string,
+  templateSource?: string,
 ) =>
   apiFetch<OptinDraft>({
     path: `/wconvert/v1/optins/${id}`,
     method: 'PATCH',
-    data: goal === undefined ? { name, config } : { name, config, goal },
+    data: {
+      name, config,
+      ...(goal === undefined ? {} : { goal }),
+      ...(templateSource === undefined ? {} : { template_source: templateSource }),
+    },
   });
 
 /**

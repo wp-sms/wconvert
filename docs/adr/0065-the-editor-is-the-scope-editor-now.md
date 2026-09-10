@@ -43,6 +43,8 @@ stop.
 
 ## 2. The preview was a stage, not a page
 
+**Amended by [ADR 0067](0067-the-editor-starts-with-the-preview-and-the-selected-element.md):** the approved workspace uses a fit-to-space editing canvas and a local form preview. The mock-page treatment below is superseded; actual site placement remains the display runtime’s responsibility.
+
 `Preview` mounts `inline` whatever the Optin is. That is right for a gallery
 card — a card is a picture — and wrong here: **two of the four
 [[Display Type]]s are about where they sit.** A floating bar pinned to the
@@ -77,6 +79,8 @@ which width is on screen now also decides **which of the two bags the inspector
 writes to**, so a merchant sets the narrow values while looking at the narrow
 render. That is what makes it a mode rather than a second panel of twenty-four
 more controls.
+
+**Amended by [ADR 0067](0067-the-editor-starts-with-the-preview-and-the-selected-element.md):** controls are labelled Desktop and Mobile for merchants. The stored bags remain `tokens` and `narrow`, and responsiveness still follows the container. The historical naming rationale follows.
 
 **It was called `desktop` | `mobile` and is called `own` | `narrow`.** The
 narrow bag is measured against the design's own container, so an `inline` Optin
@@ -278,9 +282,7 @@ own and needs verifying across all four [[Display Type]]s.
 - The width switch's accessible name is *The design's own width* and not
   *Full width*, because the Fullscreen toggle three controls along already
   answers to that.
-- `Block` carries `sets` and `setsNarrow`. Zero for a leaf, always: a leaf's
-  `tokens` is dropped on the way in, so a count on one would be about a key the
-  vocabulary does not keep.
+- `Block` carries `sets` and `setsNarrow`. **Amended by [ADR 0067](0067-the-editor-starts-with-the-preview-and-the-selected-element.md):** leaves can now retain both bags and report their override counts.
 - Not in this editor: **the author/merchant mode toggle.** The reference tool
   offers one and it was declined — Sarah gets one editor. A mode that hides the
   tree and the scopes from a merchant is a product decision that would be

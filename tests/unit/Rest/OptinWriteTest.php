@@ -525,6 +525,36 @@ final class OptinWriteTest extends TestCase
         $this->assertNotInstanceOf(WP_Error::class, $this->controller->update($request));
     }
 
+    public function testSavingAPreparedTemplateKeepsTheEditsMadeAfterChoosingIt(): void
+    {
+        $created = $this->create(Goal::PromoteOffer, ['template_id' => 'stacked-signup']);
+        $this->assertIsArray($created);
+
+        $request = new WP_REST_Request();
+        $request->set_param('id', $created['id']);
+        $request->set_param('template_source', 'centred-card');
+        $request->set_param('config', [
+            'template_id' => 'centred-card',
+            'rules' => [['type' => 'page_load']],
+            'template' => [
+                'tokens' => ['bg' => '#abcdef'],
+                'tree' => ['steps' => [['type' => 'stack', 'children' => [
+                    ['type' => 'heading', 'text' => 'Edited after choosing', 'tokens' => ['fg' => '#123456'], 'narrow' => ['heading-size' => '2rem']],
+                    ['type' => 'button', 'label' => 'Visit', 'action' => 'link', 'href' => 'https://example.test/offer'],
+                ]]]],
+            ],
+        ]);
+
+        $response = $this->controller->update($request);
+        $this->assertInstanceOf(\WP_REST_Response::class, $response);
+        $config = $response->get_data()['config'];
+        $this->assertSame('#abcdef', $config['template']['tokens']['bg']);
+        $this->assertSame('Edited after choosing', $config['template']['tree']['steps'][0]['children'][0]['text']);
+        $this->assertSame(['fg' => '#123456'], $config['template']['tree']['steps'][0]['children'][0]['tokens']);
+        $this->assertSame(['heading-size' => '2rem'], $config['template']['tree']['steps'][0]['children'][0]['narrow']);
+        $this->assertArrayNotHasKey('template_source', $config);
+    }
+
     /** An Optin that is not part of a test is never asked the question. */
     public function testAnOptinWithNoArmsMayChangeItsActFreely(): void
     {
@@ -896,4 +926,3 @@ final class OptinWriteTest extends TestCase
         $this->assertFalse($saved['stopAfterDismiss']);
     }
 }
-

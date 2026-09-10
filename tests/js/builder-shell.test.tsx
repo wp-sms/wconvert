@@ -35,7 +35,7 @@ const builder = vi.hoisted(() => ({
   getThemeTokens: vi.fn(),
 }));
 
-const templates = vi.hoisted(() => ({ listTemplates: vi.fn(), getTemplateTrees: vi.fn() }));
+const templates = vi.hoisted(() => ({ listTemplates: vi.fn(), getTemplateTrees: vi.fn(), prepareTemplate: vi.fn() }));
 const stats = vi.hoisted(() => ({ readDashboard: vi.fn() }));
 const destinations = vi.hoisted(() => ({ readDestinations: vi.fn() }));
 const goals = vi.hoisted(() => ({ listGoals: vi.fn(), listPlaybooks: vi.fn() }));
@@ -209,7 +209,7 @@ beforeEach(() => {
   builder.getRules.mockResolvedValue(vocabulary);
   builder.saveOptin.mockImplementation(
     (_id: string, _name: string, config: Record<string, unknown>, goal?: string) =>
-      Promise.resolve({ ...optin(), config, ...(goal === undefined ? {} : { goal }) }),
+      Promise.resolve({ ...optin(), config: structuredClone(config), ...(goal === undefined ? {} : { goal }) }),
   );
   templates.listTemplates.mockResolvedValue({
     templates: [CARD],
@@ -292,7 +292,7 @@ describe('the builder shell', () => {
   it('lists every block of the design, layouts included, as a treegrid', async () => {
     open();
 
-    await screen.findByRole('tab', { name: 'Design' });
+    await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
 
     const tree = screen.getByRole('treegrid', { name: 'Blocks in this design' });
 
@@ -309,7 +309,7 @@ describe('the builder shell', () => {
   it('names a row by the words the block is showing, and states its place separately', async () => {
     open();
 
-    await screen.findByRole('tab', { name: 'Design' });
+    await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
 
     const headline = screen.getByRole('row', { name: /Headline/ });
 
@@ -326,7 +326,7 @@ describe('the builder shell', () => {
   it('marks a block selected when its row is clicked', async () => {
     open();
 
-    await screen.findByRole('tab', { name: 'Design' });
+    await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
     await userEvent.click(labelOf(/Headline/));
 
     expect(screen.getByRole('row', { name: /Headline/ })).toHaveAttribute('aria-selected', 'true');
@@ -340,7 +340,7 @@ describe('the builder shell', () => {
   it('keeps one tab stop across the whole tree', async () => {
     open();
 
-    await screen.findByRole('tab', { name: 'Design' });
+    await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
 
     const tree = screen.getByRole('treegrid', { name: 'Blocks in this design' });
     const tabbable = within(tree).getAllByRole('button').filter((button) => button.tabIndex === 0);
@@ -357,13 +357,12 @@ describe('the builder shell', () => {
    * (ADR 0025) — but the first thing inside it, which is what someone reading
    * the design top to bottom would have clicked.
    */
-  it('has the first block selected on arrival, so the inspector is never empty', async () => {
+  it('opens with design settings and keeps Layers optional', async () => {
     open();
-
-    await screen.findByRole('tab', { name: 'Design' });
-
-    expect(screen.getByRole('row', { name: /Headline/ })).toHaveAttribute('aria-selected', 'true');
-    expect(screen.getByRole('group', { name: 'Headline' })).toBeInTheDocument();
+    await screen.findByRole('button', { name: 'Change template' });
+    expect(screen.queryByRole('treegrid')).toBeNull();
+    expect(screen.getByRole('heading', { name: 'Design', level: 4 })).toBeInTheDocument();
+    expect(screen.queryByRole('group', { name: 'Headline' })).toBeNull();
   });
 
   /**
@@ -375,10 +374,10 @@ describe('the builder shell', () => {
   it('keeps the selected block while the merchant goes to the look and back', async () => {
     open();
 
-    await screen.findByRole('tab', { name: 'Design' });
+    await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
     await userEvent.click(labelOf(/Body text/));
 
-    const halves = screen.getByRole('tablist', { name: /what it says, or how it looks/ });
+    const halves = screen.getByRole('tablist', { name: /settings$/ });
 
     await userEvent.click(within(halves).getByRole('tab', { name: 'Style' }));
     await userEvent.click(within(halves).getByRole('tab', { name: 'Content' }));
@@ -406,7 +405,7 @@ describe('the builder shell', () => {
   it('keeps the block open while the merchant is away editing the rules', async () => {
     open();
 
-    await screen.findByRole('tab', { name: 'Design' });
+    await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
     await userEvent.click(labelOf(/Body text/));
 
     const strip = screen.getByRole('tablist', { name: 'What you are editing' });
@@ -436,7 +435,7 @@ describe('the builder shell', () => {
     await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
 
     expect(await screen.findByText('Centred card')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Browse designs' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Change template' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Use this design/ })).toBeNull();
   });
 
@@ -452,12 +451,12 @@ describe('the builder shell', () => {
     open();
 
     await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Browse designs' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Change template' }));
 
     const picker = within(await screen.findByRole('dialog'));
 
     expect(picker.getByText('Browse designs')).toBeInTheDocument();
-    expect(picker.getByText(/Blocks you added, moved or deleted do not/)).toBeInTheDocument();
+    expect(picker.getByText(/Some text may be empty/)).toBeInTheDocument();
     expect(picker.getByRole('button', { name: /In use/ })).toBeInTheDocument();
   });
 
@@ -508,22 +507,10 @@ describe('the builder shell', () => {
    */
   it('keeps the preview on screen while the rules are being edited', async () => {
     open();
-
-    const strip = await screen.findByRole('tablist', { name: 'What you are editing' });
-
-    await userEvent.click(
-      within(await screen.findByRole('complementary', { name: 'Preview' })).getByRole('button', {
-        name: 'Narrow',
-      }),
-    );
-    await userEvent.click(within(strip).getByRole('tab', { name: 'Display rules' }));
-
-    const preview = await screen.findByRole('complementary', { name: 'Preview' });
-
-    expect(within(preview).getByRole('button', { name: 'Narrow' })).toHaveAttribute(
-      'aria-pressed',
-      'true',
-    );
+    await userEvent.click(await screen.findByRole('button', { name: 'Mobile preview' }));
+    await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
+    const canvas = screen.getByRole('region', { name: 'Design canvas' });
+    expect(canvas).toHaveAttribute('data-width', 'narrow');
   });
 
   /**
@@ -535,12 +522,8 @@ describe('the builder shell', () => {
    */
   it('constrains the preview when the merchant asks for the narrow width', async () => {
     open();
-
-    const preview = await screen.findByRole('complementary', { name: 'Preview' });
-
-    await userEvent.click(within(preview).getByRole('button', { name: 'Narrow' }));
-
-    expect(preview.querySelector('[data-width]')).toHaveAttribute('data-width', 'narrow');
+    await userEvent.click(await screen.findByRole('button', { name: 'Mobile preview' }));
+    expect(screen.getByRole('region', { name: 'Design canvas' })).toHaveAttribute('data-width', 'narrow');
   });
 
   /**
@@ -550,7 +533,7 @@ describe('the builder shell', () => {
   it('says nothing about numbers for an Optin that was never published', async () => {
     open();
 
-    await screen.findByRole('tab', { name: 'Design' });
+    await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
 
     expect(screen.queryByText('Impressions')).toBeNull();
     expect(stats.readDashboard).not.toHaveBeenCalled();
@@ -579,6 +562,7 @@ describe('the builder shell', () => {
     });
 
     open();
+    await userEvent.click(await screen.findByRole('button', { name: 'Optin details' }));
 
     expect(await screen.findByText('Submissions')).toBeInTheDocument();
     expect(screen.getByText('1,000')).toBeInTheDocument();
@@ -607,6 +591,7 @@ describe('the builder shell', () => {
     });
 
     open();
+    await userEvent.click(await screen.findByRole('button', { name: 'Optin details' }));
 
     const headline = await screen.findByText('42');
 
@@ -638,6 +623,7 @@ describe('the builder shell', () => {
     });
 
     open();
+    await userEvent.click(await screen.findByRole('button', { name: 'Optin details' }));
 
     expect(await screen.findByText('The last 7 days')).toBeInTheDocument();
   });
@@ -652,10 +638,11 @@ describe('the builder shell', () => {
     stats.readDashboard.mockReturnValue(new Promise(() => undefined));
 
     open();
+    await userEvent.click(await screen.findByRole('button', { name: 'Optin details' }));
 
     // Past the whole-builder skeleton first, whose own "Loading…" is a
     // different state and would otherwise be what this matched.
-    await screen.findByRole('tab', { name: 'Design' });
+
 
     expect(screen.getByText('Loading…')).toBeInTheDocument();
     // Three stats' worth of placeholders — a label and a figure each — plus the
@@ -673,7 +660,7 @@ describe('the builder shell', () => {
 
     open();
 
-    await screen.findByRole('tab', { name: 'Design' });
+    await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
 
     /*
      * **Waited for rather than asserted outright, and the tab is why it had to
@@ -706,7 +693,7 @@ describe('the builder shell', () => {
 
     open();
 
-    expect(await screen.findByRole('button', { name: 'Save changes' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: 'Save draft' })).toBeInTheDocument();
     expect(screen.queryByText('nope')).toBeNull();
   });
 });
@@ -740,17 +727,13 @@ describe('the builder shell', () => {
  * effect here is a height that never lands.
  */
 describe('the page-header band', () => {
-  it('holds no control asking for a height the band overrules', async () => {
+  it('keeps draft actions together in the editor header', async () => {
     open();
-
-    await screen.findByRole('tab', { name: 'Design' });
-
-    const band = document.querySelector('.wconvert-page-actions');
-
-    expect(band, 'the builder draws no page-actions band').not.toBeNull();
-    expect([...band!.querySelectorAll('[data-size="sm"]')].map((node) => node.textContent)).toEqual(
-      [],
-    );
+    const save = await screen.findByRole('button', { name: 'Save draft' });
+    const header = document.querySelector('.wconvert-workspace__header');
+    expect(header).toContainElement(save);
+    expect(header).toContainElement(screen.getByRole('button', { name: 'Undo' }));
+    expect(header).toContainElement(screen.getByRole('button', { name: 'Preview' }));
   });
 });
 
@@ -769,8 +752,8 @@ describe('the way out of the builder', () => {
 
     render(<OptinBuilder id={ID} onClose={closed} />);
 
-    await screen.findByRole('tab', { name: 'Design' });
-    await userEvent.click(screen.getByRole('button', { name: 'All Optins' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Back to Optins' }));
 
     expect(closed).toHaveBeenCalled();
   });
@@ -781,7 +764,7 @@ describe('the way out of the builder', () => {
     render(<OptinBuilder id={ID} onClose={closed} />);
 
     await userEvent.type(await screen.findByLabelText('Name'), '!');
-    await userEvent.click(screen.getByRole('button', { name: 'All Optins' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Back to Optins' }));
 
     expect(await screen.findByRole('alertdialog')).toBeInTheDocument();
     expect(closed).not.toHaveBeenCalled();
@@ -797,7 +780,7 @@ describe('the way out of the builder', () => {
     render(<OptinBuilder id={ID} onClose={closed} />);
 
     await userEvent.type(await screen.findByLabelText('Name'), '!');
-    await userEvent.click(screen.getByRole('button', { name: 'All Optins' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Back to Optins' }));
     await userEvent.click(await screen.findByRole('button', { name: 'Discard changes' }));
 
     expect(closed).toHaveBeenCalled();
@@ -817,8 +800,8 @@ describe('the way out of the builder', () => {
     render(<OptinBuilder id={ID} onClose={vi.fn()} />);
 
     await userEvent.type(await screen.findByLabelText('Name'), '!');
-    await userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
-    await screen.findByText(/Saved\./);
+    await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
+    await screen.findByText(/^Saved$/);
 
     expect(builder.saveOptin).toHaveBeenCalledTimes(1);
     expect(builder.saveOptin.mock.calls[0][3]).toBeUndefined();
@@ -831,9 +814,9 @@ describe('the way out of the builder', () => {
     render(<OptinBuilder id={ID} onClose={closed} />);
 
     await userEvent.type(await screen.findByLabelText('Name'), '!');
-    await userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
-    await screen.findByText(/Saved\./);
-    await userEvent.click(screen.getByRole('button', { name: 'All Optins' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
+    await screen.findByText(/^Saved$/);
+    await userEvent.click(screen.getByRole('button', { name: 'Back to Optins' }));
 
     expect(closed).toHaveBeenCalled();
   });
@@ -980,7 +963,7 @@ describe('the summary', () => {
     open();
     await summary();
 
-    expect(await screen.findByText('Draft')).toBeInTheDocument();
+    expect(await within(screen.getByRole('dialog')).findByText('Draft')).toBeInTheDocument();
   });
 
   /**
@@ -996,11 +979,11 @@ describe('the summary', () => {
 
     // Asserted before the dialog opens: it is modal, so everything outside it
     // is `aria-hidden` and a role query would find no Save button by design.
-    expect(await screen.findByRole('button', { name: 'Save changes' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: 'Save draft' })).toBeInTheDocument();
 
     await summary();
 
-    expect(await screen.findByText('Draft')).toBeInTheDocument();
+    expect(await within(screen.getByRole('dialog')).findByText('Draft')).toBeInTheDocument();
     expect(screen.getByText('On every page')).toBeInTheDocument();
     expect(screen.queryByText(/counts Submissions/)).toBeNull();
   });
@@ -1136,5 +1119,43 @@ describe('the summary', () => {
 
     expect(await screen.findByRole('checkbox', { name: /WP SMS contacts/ })).toBeChecked();
     expect(screen.queryByText(/The playbook this started from/)).toBeNull();
+  });
+});
+
+
+describe('changing templates in the draft', () => {
+  it('does not add an Undo action just because the server returns a fresh object on Save', async () => {
+    open();
+    await userEvent.type(await screen.findByRole('textbox', { name: 'Name' }), ' renamed');
+    await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
+    await screen.findByText('Saved');
+    expect(screen.getByRole('button', { name: 'Undo' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
+  });
+
+  it('is undoable before Save and includes later edits when saved', async () => {
+    const prepared = { tree: ENTRY.tree, tokens: { ...ENTRY.tokens, bg: '#abcdef' } };
+    templates.listTemplates.mockResolvedValue({
+      templates: [CARD, { ...CARD, id: 'alternate', name: 'Alternate' }], labels: LABELS,
+    });
+    templates.getTemplateTrees.mockResolvedValue({ templates: [
+      { id: ENTRY.id, tree: ENTRY.tree, tokens: ENTRY.tokens }, { id: 'alternate', ...prepared },
+    ] });
+    templates.prepareTemplate.mockResolvedValue(prepared);
+    open();
+    await userEvent.click(await screen.findByRole('button', { name: 'Change template' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Use this design' }));
+    await waitFor(() => expect(templates.prepareTemplate).toHaveBeenCalledWith('alternate', { tree: ENTRY.tree, tokens: ENTRY.tokens }, 'centred-card'));
+    expect(builder.saveOptin).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole('button', { name: 'Undo' }));
+    expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
+    await userEvent.click(screen.getByRole('button', { name: 'Redo' }));
+    await userEvent.click(screen.getByRole('button', { name: /Choose a colour for Background/ }));
+    await userEvent.clear(screen.getByLabelText('Background value'));
+    await userEvent.type(screen.getByLabelText('Background value'), '#123456');
+    await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
+    expect(builder.saveOptin).toHaveBeenCalledWith(ID, 'Welcome discount', expect.objectContaining({
+      template_id: 'alternate', template: { tree: ENTRY.tree, tokens: { ...ENTRY.tokens, bg: '#123456' } },
+    }), undefined, 'alternate');
   });
 });

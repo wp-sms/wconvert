@@ -134,43 +134,9 @@ function chainAt(root: HTMLElement, target: Element): SlotKey[] {
   return chain;
 }
 
-/**
- * What a press at this point selects, given what is selected already.
- *
- * ============================================================================
- * THE OUTER BOX FIRST, THEN ONE LEVEL DEEPER PER PRESS.
- * ============================================================================
- * It used to be `closest()` — the innermost box under the pointer, always. That
- * is the right answer to *"what did I point at"* and the wrong one to *"what am
- * I working on"*: on any real design the innermost thing under a pointer is a
- * leaf, a leaf carries no `tokens` bag, and the Style panel's whole subject is
- * boxes. A box was reachable only through the few-pixel gaps BETWEEN the
- * leaves, and the design's own look was not reachable at all — its children
- * cover every pixel of it.
- *
- * So a press walks the chain instead. The first lands on the outermost box
- * inside the design; each further press in the same place goes one level
- * deeper; and the press after the innermost takes the design itself, which is
- * how the outermost scope became pointer-reachable at all. Pressing somewhere
- * else starts again at the top, because the selection is no longer on the way.
- *
- * **The design is last rather than first**, and that is the whole ordering
- * argument: it is one scope out of every press's chain, so leading with it
- * would put a step between the merchant and every box on the screen. It is
- * also the one scope with two other routes to it — the tree's top row and the
- * Style panel's own link — so it is the cheapest one to put at the end.
- */
-function nextInChain(chain: readonly SlotKey[], selected: SlotKey | null): SlotKey | null {
-  const [design, ...inside] = chain;
-
-  if (design === undefined) {
-    return null;
-  }
-
-  const cycle = inside.length === 0 ? [design] : [...inside, design];
-  const at = selected === null ? -1 : cycle.indexOf(selected);
-
-  return cycle[(at + 1) % cycle.length] ?? null;
+/** Select the element under the pointer. Ancestors are reached by breadcrumbs or Layers. */
+function nextInChain(chain: readonly SlotKey[]): SlotKey | null {
+  return chain[chain.length - 1] ?? null;
 }
 
 /**
@@ -199,6 +165,8 @@ const A_PREVIEW_DEADLINE = Date.now() + 2 * 60 * 60 * 1000;
 export interface PreviewProps {
   readonly template: Template;
   readonly step?: number;
+  readonly interactive?: boolean;
+  readonly onAdvance?: () => void;
   /** The block drawn as selected, addressed the way `slots.ts` addresses one. */
   readonly selected?: SlotKey | null;
   /**
@@ -213,7 +181,7 @@ export interface PreviewProps {
   readonly onSelect?: (key: SlotKey) => void;
 }
 
-export function Preview({ template, step = 0, selected = null, onSelect }: PreviewProps) {
+export function Preview({ template, step = 0, selected = null, onSelect, interactive = false, onAdvance }: PreviewProps) {
   const anchor = useRef<HTMLDivElement>(null);
   /*
    * State rather than a ref, because the two effects below have to run again
@@ -256,6 +224,17 @@ export function Preview({ template, step = 0, selected = null, onSelect }: Previ
    * below remounts on, and an unresolved tree comes back unchanged by identity
    * — so a site with no policy configured pays nothing at all.
    */
+  useEffect(() => {
+    if (!interactive || root === null) return;
+    const submit = (event: Event) => { event.preventDefault(); onAdvance?.(); };
+    const links = (event: Event) => {
+      if ((event.target as Element | null)?.closest('a')) event.preventDefault();
+    };
+    root.addEventListener('submit', submit);
+    root.addEventListener('click', links);
+    return () => { root.removeEventListener('submit', submit); root.removeEventListener('click', links); };
+  }, [interactive, root, onAdvance]);
+
   const url = policyUrl();
   const drawn = useMemo(
     (): Template => {
@@ -286,6 +265,7 @@ export function Preview({ template, step = 0, selected = null, onSelect }: Previ
 
     // Read AFTER the swap: `root` is a getter over whichever step is currently
     // rendered, because `showStep` replaces the element rather than editing it.
+    if (mounted.root) mounted.root.style.maxBlockSize = 'none';
     setRoot(mounted.root);
 
     return () => {
@@ -310,9 +290,8 @@ export function Preview({ template, step = 0, selected = null, onSelect }: Previ
      * **Whether a focus arrived on the end of a press.**
      *
      * The events are `pointerdown`, then `focus`, then `click` — so a press on
-     * the capture field settles the selection on the field before the press
-     * itself has been handled, and the drill below would then step one level
-     * PAST where it should. A press decides for itself; a Tab still does not.
+     * a capture field must not select twice through focus and click. A press
+     * selects through the delegated click; a Tab selects through focus.
      */
     let pressing = false;
 
@@ -337,7 +316,7 @@ export function Preview({ template, step = 0, selected = null, onSelect }: Previ
     on(root, 'click', (event) => {
       const target = event.target;
       const chain = target instanceof Element ? chainAt(root, target) : [];
-      const key = nextInChain(chain, selectedAt.current);
+      const key = nextInChain(chain);
 
       pressing = false;
 
@@ -353,20 +332,15 @@ export function Preview({ template, step = 0, selected = null, onSelect }: Previ
        */
       event.preventDefault();
       onSelect(key);
-      /*
-       * The hint keeps pointing one press ahead rather than going stale under a
-       * pointer that has not moved: the merchant sees where a second press
-       * lands before making it, which is the whole of what makes a drill
-       * legible rather than a thing that happens to them.
-       */
-      setHint(nextInChain(chain, key));
+      // The solid selection replaces the dashed hover hint.
+      setHint(null);
     });
 
     on(root, 'pointerover', (event) => {
       const target = event.target;
 
       setHint(
-        target instanceof Element ? nextInChain(chainAt(root, target), selectedAt.current) : null,
+        target instanceof Element ? nextInChain(chainAt(root, target)) : null,
       );
     });
 
@@ -411,21 +385,19 @@ export function Preview({ template, step = 0, selected = null, onSelect }: Previ
        * here on purpose, and so is anything else this cannot NAME: an `image`
        * has no words, and *"Edit “”"* is worse than no tab stop.
        */
+      if (slot.querySelector(SLOT_SELECTOR) !== null) continue;
+
       const focusable = slot.matches(FOCUSABLE) ? slot : slot.querySelector<HTMLElement>(FOCUSABLE);
 
       if (focusable !== null) {
         on(focusable, 'focus', () => {
-          // A press settles its own selection below, one chain link at a time.
+          // A press settles its own selection through the delegated click.
           // A Tab has no press to defer to and selects the control it landed on.
           if (!pressing) {
             onSelect(key);
           }
         });
 
-        continue;
-      }
-
-      if (slot.querySelector(SLOT_SELECTOR) !== null) {
         continue;
       }
 

@@ -46,6 +46,7 @@ import type { TemplateTree } from '@renderer/types';
 
 export interface BlockTreeProps {
   readonly tree: TemplateTree;
+  readonly step?: number;
   readonly labels: TemplateLabels;
   /**
    * The block drawn as selected, as its {@link Path}.
@@ -107,6 +108,7 @@ export interface BlockTreeProps {
 
 export function BlockTree({
   tree,
+  step,
   labels,
   selected,
   onSelect,
@@ -133,7 +135,7 @@ export function BlockTree({
   const [taking, setTaking] = useState(false);
 
   const blocks = useMemo(() => nodesOf(tree), [tree]);
-  const rows = useMemo(() => shown(blocks, collapsed), [blocks, collapsed]);
+  const rows = useMemo(() => shown(step === undefined ? blocks : blocks.filter(block => block.path[0] === step), collapsed), [blocks, collapsed, step]);
 
   const current = Math.max(
     0,

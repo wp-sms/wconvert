@@ -4,7 +4,7 @@ import { HexColorInput, HexColorPicker, RgbaStringColorPicker } from 'react-colo
 import { Button } from '../components/ui/button';
 import { ChevronDown, RotateCcw } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
-import { CHOICES, groupsOf, resolvedToken, withToken, type TokenGroupId } from './panel';
+import { CHOICES, TOKENS, groupsOf, resolvedToken, withToken, type TokenGroupId } from './panel';
 import { getThemeTokens, type SiteFont } from './api';
 import { MediaControl } from './SlotFields';
 import {
@@ -12,7 +12,6 @@ import {
   axesOf,
   isApplied,
   isColour,
-  isCssImage,
   isFontStack,
   isTranslucent,
   themePresets,
@@ -535,34 +534,10 @@ export function TokenField({
     );
   }
 
-  /*
-    **A picture is an address, not a CSS function a merchant types.** This token
-    holds a background layer — `none`, a `url()`, or a gradient — and without a
-    control of its own the panel's answer was a text box expecting
-    `url(https://…)`, which is exactly the *"type `center` into this box"*
-    defect the whole panel exists to remove.
-
-    It comes BEFORE the choice branch and after the colour one, which is the
-    dispatch order the shapes deserve: a colour is the most specific test, an
-    image is the next, and `choices` is what a token declares when its value
-    says nothing about itself.
-  */
-  /*
-    **`none` is a keyword two shapes share, and the token's own list breaks the
-    tie.** `shadow` declares `none` among its choices and `isCssImage` answers
-    yes to it, so the moment `shadow` got a `choices` entry (ADR 0054 rule 2)
-    every design shipping `shadow: none` — `inline-cart-nudge` does — was handed
-    a media picker asking for the address of a picture.
-
-    A shape test is a GUESS about a value; `choices` is the token's own
-    declaration about itself, so where the manifest offers exactly this value
-    for exactly this token, the manifest wins. That is rule 1 read literally
-    rather than a special case for `shadow`, and it leaves `bg-image` — which
-    declares no choices — exactly where it was.
-  */
-  if (isCssImage(shown) && !(offered ?? []).includes(shown)) {
+  // Image controls are declared in the manifest; gradients on overlays remain editable values.
+  if (TOKENS.find(declaration => declaration.name === token)?.control === 'image') {
     return (
-      <ImageField id={field} label={label} value={value} reset={reset} onChange={onChange} />
+      <ImageField id={field} label={label} value={shown} reset={reset} onChange={onChange} />
     );
   }
 
@@ -727,9 +702,10 @@ function ImageField({
           // What the box SHOWS is the address; what it stores is the whole
           // layer. A value this cannot read as an address — a gradient — is
           // shown and stored verbatim, which is the escape hatch.
-          value={address ?? (value === '' ? '' : value)}
+          value={address ?? (value === 'none' ? '' : value)}
+          preview={address ?? undefined}
           onChange={(next) =>
-            onChange(address === null && value !== '' ? next : asBackgroundLayer(next))
+            onChange(asBackgroundLayer(next))
           }
         />
         {reset}

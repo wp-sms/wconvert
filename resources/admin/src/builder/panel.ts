@@ -39,6 +39,7 @@ import type { TemplateNode, TemplateTree, Tokens } from '@renderer/types';
 
 export interface LeafDeclaration {
   readonly content: readonly string[];
+  readonly style_tokens?: readonly string[];
   readonly copy: readonly string[];
   readonly params: readonly string[];
   /**
@@ -117,6 +118,7 @@ export const LAYOUTS = vocabulary.layouts as Readonly<
     string,
     {
       readonly children: string;
+      readonly style_tokens?: readonly string[];
       /** Its own settings — `split`'s `ratio` is the one the vocabulary declares. */
       readonly params?: readonly string[];
       /**
@@ -240,11 +242,12 @@ export const IDENTITY = vocabulary.identity as string;
 export interface TokenDeclaration {
   readonly name: string;
   readonly fallback: string;
+  readonly control?: string;
 }
 
 export const TOKENS: readonly TokenDeclaration[] = Object.entries(
   vocabulary.tokens as Readonly<Record<string, string>>,
-).map(([name, fallback]) => ({ name, fallback }));
+).map(([name, fallback]) => ({ name, fallback, control: (vocabulary.token_controls as Record<string, string>)[name] }));
 
 /**
  * The two tokens whose absence resolves to ANOTHER token rather than to a
@@ -352,6 +355,9 @@ export type TokenGroupId = (typeof TOKEN_GROUPS)[number];
  * Every arm is a shape rather than a name, so this file names no token.
  */
 export function groupOf(token: TokenDeclaration): TokenGroupId {
+  const declared = Object.entries(vocabulary.token_groups).find(([, names]) => (names as readonly string[]).includes(token.name));
+  if (declared !== undefined) return declared[0] as TokenGroupId;
+
   if (isColour(token.fallback)) {
     return 'colour';
   }
@@ -716,7 +722,7 @@ export function scopeChainOf(tree: TemplateTree, path: Path): Scope[] {
     const here = path.slice(0, at);
     const node = nodeOf(tree, here);
 
-    if (node !== null && LAYOUTS[node.type] !== undefined) {
+    if (node !== null && (LAYOUTS[node.type] !== undefined || LEAVES[node.type] !== undefined)) {
       chain.push({
         path: here,
         type: node.type,

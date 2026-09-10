@@ -69,20 +69,53 @@ final class TemplateRoutesTest extends TestCase
         return $cards;
     }
 
-    public function testBothAreReadsUnderOneNamespaceAndOneCapability(): void
+    public function testReadsAndDraftPreparationShareTheManageCapability(): void
     {
         self::controller()->registerRoutes();
 
         /** @var list<array{namespace: string, route: string, args: array<mixed>}> $routes */
         $routes = $GLOBALS['wconvertTestRoutes'];
 
-        $this->assertSame(['/templates', '/templates/trees'], array_column($routes, 'route'));
+        $this->assertSame(['/templates/snapshot', '/templates', '/templates/trees'], array_column($routes, 'route'));
 
         foreach ($routes as $registered) {
             $this->assertSame(Routes::NAMESPACE, $registered['namespace']);
-            $this->assertSame('GET', $registered['args'][0]['methods'], $registered['route'] . ' is not a read');
-            $this->assertSame([Routes::class, 'canManage'], $registered['args'][0]['permission_callback']);
+            $handler = $registered['args'][0] ?? $registered['args'];
+            $this->assertSame($registered['route'] === '/templates/snapshot' ? 'POST' : 'GET', $handler['methods']);
+            $this->assertSame([Routes::class, 'canManage'], $handler['permission_callback']);
         }
+    }
+
+    public function testPreparingATemplateCarriesCopyWithoutWritingAnOptin(): void
+    {
+        $request = new WP_REST_Request();
+        $request->set_param('id', 'fieldwork');
+        $request->set_param('source', 'centred-card');
+        $request->set_param('template', [
+            'tokens' => ['bg' => '#abcdef'],
+            'tree' => ['steps' => [['type' => 'stack', 'children' => [
+                ['type' => 'heading', 'role' => 'headline', 'text' => 'My own headline'],
+            ]]]],
+        ]);
+
+        $prepared = self::controller()->snapshot($request);
+
+        $this->assertInstanceOf(\WP_REST_Response::class, $prepared);
+        $data = $prepared->get_data();
+        $this->assertStringContainsString('My own headline', json_encode($data, JSON_THROW_ON_ERROR));
+        $this->assertNotSame('#abcdef', $data['tokens']['bg']);
+        $this->assertSame('split', $data['tree']['steps'][0]['type']);
+        $this->assertArrayNotHasKey('id', $data);
+    }
+
+    public function testAnUnavailableTemplateCannotBePrepared(): void
+    {
+        $request = new WP_REST_Request();
+        $request->set_param('id', 'not-a-template');
+        $result = self::controller()->snapshot($request);
+
+        $this->assertInstanceOf(\WP_Error::class, $result);
+        $this->assertSame('wconvert_template_unavailable', $result->get_error_code());
     }
 
     /**

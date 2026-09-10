@@ -379,6 +379,7 @@ export function MediaControl({
   label,
   value,
   type = 'url',
+  preview,
   onChange,
 }: {
   /**
@@ -397,12 +398,15 @@ export function MediaControl({
    * storing it, which is a red outline over a value that works.
    */
   type?: 'url' | 'text';
+  preview?: string;
   onChange: (value: string) => void;
 }) {
   const media = mediaLibrary();
+  const image = preview ?? (type === 'url' ? value : '');
 
   return (
     <span className="wconvert-slot__media">
+      {image && <img className="wconvert-media-preview" src={image} alt="" loading="lazy" />}
       <input
         id={id}
         type={type}
@@ -434,6 +438,7 @@ export function MediaControl({
           }}
         >
           <ImagePlus aria-hidden="true" />
+          <span aria-hidden="true">{image ? __('Replace image', 'wconvert') : __('Choose image', 'wconvert')}</span>
           <span className="sr-only">
             {sprintf(
               /* translators: %s: what the address is for, e.g. “Image address”. */

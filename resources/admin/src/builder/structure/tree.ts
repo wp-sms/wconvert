@@ -169,8 +169,7 @@ export interface Block {
    * every panel in turn and read the reset buttons. The tree lists what a
    * design is MADE of; a scope is now part of that (ADR 0062, ADR 0064).
    *
-   * Zero for a leaf, always: a leaf's `tokens` is dropped on the way in, so a
-   * count on one would be a number about a key the vocabulary does not keep.
+   * Leaves and layouts both retain closed token bags (ADR 0067).
    */
   readonly sets: number;
   /** The same, for the narrow bag. Zero where the box carries none. */

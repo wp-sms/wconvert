@@ -632,10 +632,9 @@ placeholder text a Template carries exists so the gallery has something to show,
 is never copied into an Optin.
 
 > **"How it is styled" has a scope.** The design sets its tokens for the
-> whole of itself, and **any layout node may re-declare the same names for what
-> is inside it** by carrying a `tokens` bag of its own — which is how one design
+> whole of itself, and **layouts and leaves may re-declare the same names for their own appearance** by carrying a `tokens` bag of its own — which is how one design
 > holds a cream panel beside a dark one, or gives the form a different ground
-> from the headline. The names are the closed 22 at both scopes and the
+> from the headline. The names remain the closed manifest vocabulary at every scope and the
 > validation is one function, so a scoped bag is still configuration with
 > nothing to sanitise. What no bag can do is **move a box**: a merchant may
 > change anything about a box and not where the boxes are, and a design that
@@ -643,7 +642,7 @@ is never copied into an Optin.
 > [ADR 0062](docs/adr/0062-a-token-bag-is-scoped-to-the-box-that-carries-it.md).
 >
 > **A bag may be carried TWICE**, and the second one is the width. `narrow`
-> holds the same names again and applies below 360px of *container* — so an
+> holds the same names again and applies below 24rem (384px) of *container* — so an
 > `inline` Optin in a 280px sidebar retunes on a desktop, which is the case a
 > viewport query gets wrong. It is what lets a photo pane that is 440px of a
 > split be the whole width on a phone with less padding and smaller display
@@ -728,35 +727,20 @@ is off by default and one click from on ([ADR 0032](docs/adr/0032-consent-captur
 > token has a SCOPE now and *which box* is a selection
 > ([ADR 0062](docs/adr/0062-a-token-bag-is-scoped-to-the-box-that-carries-it.md)).
 >
-> **And every box in the render is selectable, which it was not.** Selection was
-> addressed by [[Slot Role]] and no container carries one, so a press on a
-> coloured box reached the nearest leaf inside it — the primary gesture of a
-> scope editor, missing. The renderer stamps the address when the admin asks
-> for it, off for every visitor. The render is also drawn inside a mock page
-> now, because a floating bar centred in an empty pane is not a floating bar.
-> See [ADR 0065](docs/adr/0065-the-editor-is-the-scope-editor-now.md).
+> **Every element in the render is directly selectable.** A click selects the
+> element under the pointer; breadcrumbs and optional Layers select parents.
+> The canvas fits the available space without changing template dimensions,
+> and local form preview advances without sending data. See
+> [ADR 0067](docs/adr/0067-the-editor-starts-with-the-preview-and-the-selected-element.md).
 > Everything the note below says about the vocabulary being the ceiling is
 > unchanged.
 >
-> **The three panes are one card now, not three.** They sit inside the
-> region's own border with a rule between each, each named by a head band —
-> *STRUCTURE · 12 blocks*, *PREVIEW*, and the selected block's own name over
-> *Content* / *Style*. The check strip moved from the top of the tab to a band
-> at its foot, and what a box stores joined it there. Two type roles were added
-> for it, `label` (11px) and `meta` (9px), and they are the Design tab's only.
-> See [ADR 0066](docs/adr/0066-the-editors-chrome-is-one-card-with-three-named-panes.md).
->
-> **Corrected.** This paragraph opened *"The settings panel edits tokens, slot
-> content and slot visibility and never* arrangement*"*, and both halves of that
-> stopped being true at the Content/Structure merge: `SettingsPanel` no longer
-> exists, and one surface — the **Content** tab, a block tree with an inspector
-> beside it — now edits words **and** arrangement, with an ↑, a ↓ and a Delete
-> on every row. Four ADRs were amended in that work and the glossary was not.
->
-> What is corrected is only the clause naming a component and a limit that both
-> went. **The vocabulary is still the ceiling** — a merchant may only add what
-> `manifest.json` declares, and [ADR 0010](docs/adr/0010-templates-are-configuration-not-documents.md)
-> is untouched on that. Every other sentence above stands as written.
+> **The builder is a viewport workspace.** It opens with the canvas and Design
+> settings; Layers is optional. Selected leaves have Content and Style controls
+> limited to their token readers. Readiness is in the footer, Goal/performance
+> in Optin details. Template changes remain drafts and one Undo restores the
+> preceding template and id. See
+> [ADR 0067](docs/adr/0067-the-editor-starts-with-the-preview-and-the-selected-element.md).
 
 **And the manifest is the ceiling on how well a value can be *edited*, not only
 on what may exist** — a token declaring no `choices` whose value no shape test

@@ -99,6 +99,8 @@ already in the component, with zero call sites.
 
 ## The chrome: one card, three named panes, diagnostics at the bottom
 
+**Superseded by [ADR 0067](0067-the-editor-starts-with-the-preview-and-the-selected-element.md):** the builder is a viewport workspace with optional Layers, a large canvas and a contextual inspector. Readiness stays in the footer; the technical strip and stored JSON are removed from the normal editing flow. The card anatomy below records the previous implementation.
+
 `Region` has always been `overflow-hidden rounded-md border border-border
 bg-card` — it *is* the artifact's `.tool`. Two things kept the panes from being
 that card's contents, and neither was about the panes: `RegionBody`'s `px-4

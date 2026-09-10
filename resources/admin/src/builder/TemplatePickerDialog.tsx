@@ -78,7 +78,7 @@ export function TemplatePickerDialog({ open, onOpenChange, ...picker }: Template
           */}
           <DialogDescription>
             {__(
-              'Your words come with you. Blocks you added, moved or deleted do not — Undo brings them back.',
+              'Some text may be empty, moved or hidden after changing templates. Check the form and success screens afterwards. This changes your draft; Undo brings the previous design back.',
               'wconvert',
             )}
             {/*

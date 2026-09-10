@@ -129,6 +129,7 @@ final class OptinController implements RestController
                     'name' => ['type' => 'string', 'sanitize_callback' => 'sanitize_text_field'],
                     'goal' => ['type' => 'string', 'sanitize_callback' => 'sanitize_key'],
                     'config' => ['type' => 'object'],
+                    'template_source' => ['type' => 'string'],
                 ],
             ],
             [
@@ -388,6 +389,15 @@ final class OptinController implements RestController
         // row; on a create it is whatever the incoming config asserts, because
         // there is no stored row yet ({@see self::store()}).
         $pickedBefore = self::optionalString($stored?->config['template_id'] ?? null);
+
+        // An editor may prepare a snapshot before Save, then edit it. The
+        // source assertion preserves that draft; normal vocabulary, goal,
+        // conversion and destination checks below still apply to every value.
+        // This request metadata is never stored in the Optin's config.
+        $source = self::optionalString($request->get_param('template_source'));
+        if ($source !== null && is_array($config) && $source === ($config['template_id'] ?? null)) {
+            $pickedBefore = $source;
+        }
 
         try {
             $normalized = is_array($config) ? $this->normalizeConfig($config, $pickedBefore) : null;

@@ -211,16 +211,19 @@ beforeEach(() => {
 const open = () => render(<OptinBuilder id={ID} onClose={vi.fn()} />);
 
 /** Open the picker from the band. */
-const changeGoal = async () =>
-  userEvent.click(await screen.findByRole('button', { name: 'Change goal' }));
+const changeGoal = async () => {
+  await userEvent.click(await screen.findByRole('button', { name: 'Optin details' }));
+  await userEvent.click(await screen.findByRole('button', { name: 'Change goal' }));
+};
 
 // =============================================================================
 // THE LINE IN THE BAND.
 // =============================================================================
 
-describe('the goal in the page-header band', () => {
+describe('the goal in Optin details', () => {
   it('says what this Optin is for, and what its number is called', async () => {
     open();
+    await userEvent.click(await screen.findByRole('button', { name: 'Optin details' }));
 
     expect(await screen.findByText('Grow my email list · counts Conversions')).toBeInTheDocument();
   });
@@ -235,8 +238,9 @@ describe('the goal in the page-header band', () => {
     goals.listGoals.mockReturnValue(new Promise(() => undefined));
 
     open();
+    await userEvent.click(await screen.findByRole('button', { name: 'Optin details' }));
 
-    await screen.findByRole('tab', { name: 'Design' });
+
 
     const line = document.querySelector('.min-h-\\[1lh\\]');
 
@@ -254,6 +258,7 @@ describe('the goal in the page-header band', () => {
     goals.listGoals.mockRejectedValue(new Error('nope'));
 
     open();
+    await userEvent.click(await screen.findByRole('button', { name: 'Optin details' }));
 
     expect(await screen.findByText('grow_email_list')).toBeInTheDocument();
   });
@@ -267,6 +272,7 @@ describe('the goal in the page-header band', () => {
     goals.listGoals.mockResolvedValue([GOALS[0]]);
 
     open();
+    await userEvent.click(await screen.findByRole('button', { name: 'Optin details' }));
 
     await screen.findByText('Grow my email list · counts Conversions');
 

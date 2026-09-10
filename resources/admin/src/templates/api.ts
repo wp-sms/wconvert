@@ -2,6 +2,14 @@ import apiFetch from '@wordpress/api-fetch';
 import type { Template } from '@renderer/types';
 import type { Availability } from '../goals/availability';
 
+/** A read-only preparation step using the server's existing copy carry rules. */
+export const prepareTemplate = (id: string, template: Template, source?: string) =>
+  apiFetch<Template>({
+    path: '/wconvert/v1/templates/snapshot',
+    method: 'POST',
+    data: { id, template, source },
+  });
+
 /**
  * What a Template IS, derived from its own tree on the server.
  *

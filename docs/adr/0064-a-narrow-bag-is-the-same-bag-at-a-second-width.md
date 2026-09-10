@@ -1,6 +1,6 @@
 # A narrow bag is the same bag at a second width
 
-A layout node may carry a second token bag beside `tokens`, applying only where
+**Amended by [ADR 0067](0067-the-editor-starts-with-the-preview-and-the-selected-element.md):** both layouts and leaves may carry a second token bag beside `tokens`, applying only where
 the design is narrower than `manifest.narrow` — **24rem (384px)**, which is
 where a `split` stops being side by side: a pane's `flex-basis` is `12rem` and
 there are exactly two of them. Retuning at the width the layout gives up at
@@ -98,6 +98,8 @@ scope** down its walk — the design's tokens, overridden by each ancestor's bag
 overridden by the box's own, including the picture reset a `panel` or a `media`
 makes — and a retuned box mirrors all 24 names with its narrow bag written over
 the top. The remap then always finds a value and needs no fallback.
+
+**Corrected by [ADR 0067](0067-the-editor-starts-with-the-preview-and-the-selected-element.md):** the threaded bag includes each ancestor’s narrow values. A child overriding a different mobile property must retain its ancestor’s mobile colors and typography.
 
 **That threading is the only genuinely new thing this module has had to know.**
 The renderer has been a pure function of `(tree, tokens)` with no ambient

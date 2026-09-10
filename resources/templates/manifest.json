@@ -5,6 +5,10 @@
       "params": [
         "tokens",
         "narrow"
+      ],
+      "style_tokens": [
+        "gap",
+        "align"
       ]
     },
     "row": {
@@ -12,6 +16,10 @@
       "params": [
         "tokens",
         "narrow"
+      ],
+      "style_tokens": [
+        "gap",
+        "align"
       ]
     },
     "split": {
@@ -30,13 +38,21 @@
       },
       "defaults": {
         "ratio": "0.5"
-      }
+      },
+      "style_tokens": [
+        "gap",
+        "align"
+      ]
     },
     "grid": {
       "children": "list",
       "params": [
         "tokens",
         "narrow"
+      ],
+      "style_tokens": [
+        "gap",
+        "align"
       ]
     },
     "panel": {
@@ -69,7 +85,17 @@
         "edges": "none",
         "min": "0",
         "notch": "false"
-      }
+      },
+      "style_tokens": [
+        "gap",
+        "align",
+        "bg",
+        "fg",
+        "pad",
+        "radius",
+        "bg-image",
+        "overlay"
+      ]
     },
     "media": {
       "children": "list",
@@ -88,7 +114,17 @@
       },
       "defaults": {
         "min": "0"
-      }
+      },
+      "style_tokens": [
+        "gap",
+        "align",
+        "bg",
+        "fg",
+        "pad",
+        "radius",
+        "bg-image",
+        "overlay"
+      ]
     }
   },
   "nodes": {
@@ -102,7 +138,9 @@
       "params": [
         "level",
         "size",
-        "hidden"
+        "hidden",
+        "tokens",
+        "narrow"
       ],
       "roles": [
         "headline",
@@ -126,7 +164,15 @@
       "defaults": {
         "level": "1",
         "size": "m"
-      }
+      },
+      "style_tokens": [
+        "heading-font",
+        "heading-size",
+        "heading-weight",
+        "tracking",
+        "fg",
+        "align"
+      ]
     },
     "eyebrow": {
       "content": [
@@ -136,11 +182,19 @@
         "text"
       ],
       "params": [
-        "hidden"
+        "hidden",
+        "tokens",
+        "narrow"
       ],
       "roles": [
         "eyebrow",
         "wordmark"
+      ],
+      "style_tokens": [
+        "font",
+        "text-size",
+        "muted",
+        "align"
       ]
     },
     "text": {
@@ -156,7 +210,9 @@
       ],
       "params": [
         "size",
-        "hidden"
+        "hidden",
+        "tokens",
+        "narrow"
       ],
       "roles": [
         "body",
@@ -175,7 +231,15 @@
       },
       "defaults": {
         "size": "m"
-      }
+      },
+      "style_tokens": [
+        "font",
+        "text-size",
+        "leading",
+        "fg",
+        "muted",
+        "align"
+      ]
     },
     "badge": {
       "content": [
@@ -186,7 +250,9 @@
       ],
       "params": [
         "place",
-        "hidden"
+        "hidden",
+        "tokens",
+        "narrow"
       ],
       "roles": [
         "badge"
@@ -199,7 +265,14 @@
       },
       "defaults": {
         "place": "inline"
-      }
+      },
+      "style_tokens": [
+        "font",
+        "text-size",
+        "accent",
+        "accent-fg",
+        "radius"
+      ]
     },
     "rating": {
       "content": [
@@ -210,7 +283,9 @@
       ],
       "params": [
         "value",
-        "hidden"
+        "hidden",
+        "tokens",
+        "narrow"
       ],
       "roles": [
         "rating_text"
@@ -224,7 +299,14 @@
       },
       "defaults": {
         "value": "5"
-      }
+      },
+      "style_tokens": [
+        "font",
+        "text-size",
+        "accent",
+        "muted",
+        "border"
+      ]
     },
     "image": {
       "content": [
@@ -235,7 +317,9 @@
       "params": [
         "fit",
         "shape",
-        "hidden"
+        "hidden",
+        "tokens",
+        "narrow"
       ],
       "roles": [],
       "choices": {
@@ -251,14 +335,19 @@
       "defaults": {
         "fit": "cover",
         "shape": "rect"
-      }
+      },
+      "style_tokens": [
+        "radius"
+      ]
     },
     "icon": {
       "content": [],
       "copy": [],
       "params": [
         "name",
-        "hidden"
+        "hidden",
+        "tokens",
+        "narrow"
       ],
       "roles": [],
       "choices": {
@@ -273,23 +362,42 @@
       },
       "defaults": {
         "name": "check"
-      }
+      },
+      "style_tokens": [
+        "accent",
+        "text-size",
+        "align"
+      ]
     },
     "divider": {
       "content": [],
       "copy": [],
       "params": [
-        "hidden"
+        "hidden",
+        "tokens",
+        "narrow"
       ],
-      "roles": []
+      "roles": [],
+      "style_tokens": [
+        "border"
+      ]
     },
     "countdown": {
       "content": [],
       "copy": [],
       "params": [
-        "hidden"
+        "hidden",
+        "tokens",
+        "narrow"
       ],
-      "roles": []
+      "roles": [],
+      "style_tokens": [
+        "font",
+        "text-size",
+        "fg",
+        "heading-weight",
+        "tracking"
+      ]
     },
     "code": {
       "content": [
@@ -299,10 +407,18 @@
         "text"
       ],
       "params": [
-        "hidden"
+        "hidden",
+        "tokens",
+        "narrow"
       ],
       "roles": [
         "code_value"
+      ],
+      "style_tokens": [
+        "text-size",
+        "fg",
+        "border",
+        "radius"
       ]
     },
     "field": {
@@ -316,7 +432,9 @@
       ],
       "params": [
         "name",
-        "required"
+        "required",
+        "tokens",
+        "narrow"
       ],
       "roles": [],
       "choices": {
@@ -327,7 +445,16 @@
       },
       "defaults": {
         "required": "false"
-      }
+      },
+      "style_tokens": [
+        "font",
+        "text-size",
+        "fg",
+        "muted",
+        "input-bg",
+        "border",
+        "radius"
+      ]
     },
     "button": {
       "content": [
@@ -338,10 +465,20 @@
         "label"
       ],
       "params": [
-        "action"
+        "action",
+        "tokens",
+        "narrow"
       ],
       "roles": [
         "cta_label"
+      ],
+      "style_tokens": [
+        "font",
+        "text-size",
+        "accent",
+        "accent-fg",
+        "radius",
+        "align"
       ]
     },
     "consent": {
@@ -356,10 +493,19 @@
         "emphasis"
       ],
       "params": [
-        "hidden"
+        "hidden",
+        "tokens",
+        "narrow"
       ],
       "roles": [
         "consent_text"
+      ],
+      "style_tokens": [
+        "font",
+        "text-size",
+        "muted",
+        "accent",
+        "leading"
       ]
     }
   },
@@ -500,5 +646,42 @@
     "has_image": [
       "true"
     ]
+  },
+  "token_groups": {
+    "colour": [
+      "bg",
+      "fg",
+      "muted",
+      "accent",
+      "accent-fg",
+      "border",
+      "input-bg",
+      "backdrop"
+    ],
+    "type": [
+      "font",
+      "heading-font",
+      "heading-size",
+      "heading-weight",
+      "tracking",
+      "text-size",
+      "leading"
+    ],
+    "space": [
+      "pad",
+      "gap",
+      "width",
+      "radius",
+      "align"
+    ],
+    "other": [
+      "bg-image",
+      "overlay",
+      "shadow",
+      "motion"
+    ]
+  },
+  "token_controls": {
+    "bg-image": "image"
   }
 }

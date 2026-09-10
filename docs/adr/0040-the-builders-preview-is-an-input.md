@@ -206,6 +206,13 @@ design's first block — rather than cleared.*
 > **Completed: addressing every box was necessary and not sufficient. A press
 > takes the OUTER box first and goes one level deeper per press.**
 >
+> **Superseded by [ADR 0067](0067-the-editor-starts-with-the-preview-and-the-selected-element.md):**
+> *leaves now carry appearance bags and have useful Content and Style controls.
+> A press selects the deepest element immediately; repeated presses keep that
+> selection. Breadcrumbs, Design settings and the optional Layers panel expose
+> its ancestors. The dashed hover outline previews that same direct selection.
+> The measurements and cycling behavior below describe the earlier editor.*
+>
 > *The amendment above made containers addressable and then answered with
 > `closest()` — the innermost box under the pointer. That is the right answer to*
 > what did I point at *and the wrong one to* what am I working on*: on any real

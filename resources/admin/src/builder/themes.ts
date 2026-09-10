@@ -379,9 +379,9 @@ export function isCssImage(value: string): boolean {
  * text box, which is the escape hatch every control in this panel keeps.
  */
 export function urlIn(value: string): string | null {
-  const found = /^url\(\s*(['"]?)([^'")]*)\1\s*\)$/.exec(value.trim());
+  const found = /^url\(\s*(?:"([^"]*)"|'([^']*)'|([^'"()\s]+))\s*\)$/i.exec(value.trim());
 
-  return found === null ? null : found[2];
+  return found === null ? null : (found[1] ?? found[2] ?? found[3]);
 }
 
 /**
