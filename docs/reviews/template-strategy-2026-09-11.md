@@ -2,20 +2,23 @@
 
 Recommendation: build a curated collection of complete, useful campaigns, supported by a flexible editor and a downloadable catalog. Start with twelve flagship designs across stores, publishers, and service businesses, while improving or consolidating the existing collection. Count a design when its composition or purpose changes meaningfully; color variants are options within a design.
 
-This records the collection direction and the initial audit. The resumed three-template implementation and its verification are recorded below; the larger collection and catalog remain later phases.
+This records the collection direction and the initial audit. The implementation sections below are historical snapshots; the current status is recorded here.
 
 The subsequent [full-library curation](template-library-curation-2026-09-11.md)
 is complete: 47 existing designs improved, ten retired and two premade guide
-designs added. The current collection has 49 designs. Inventory figures below
-describe the earlier audit; the downloadable catalog remains a later phase.
+designs added. The subsequent [twelve flagship starting points](flagship-starting-points-2026-09-11.md)
+are now implemented in creation, reusing eleven designs and adding Reading slip.
+The current library has 50 designs (37 Free, 13 Basic). Inventory figures below
+describe the earlier audits. **Next: review and merge the flagship collection,
+then build catalog installation and compatibility handling.**
 
 **Agreed direction**
 
 - Balanced coverage of stores, publishers, and service businesses.
 - WConvert is before launch, so the bundled collection can be reshaped.
 - Quality comes first, with further collections added over time.
-- Updated direction after the interrupted session: use placeholders and do not generate images for the first three examples. Keep headlines, offers, fields, and buttons as editable elements. Any production artwork is a later review.
-- Retain the current branch, `codex/editor-controls-audit`.
+- Updated direction after the interrupted session: use placeholders and do not generate images throughout this collection. Keep headlines, offers, fields, and buttons as editable elements. Any production artwork is a later review.
+- The resumed editor work retained `codex/editor-controls-audit`; the subsequent flagship collection is on `codex/flagship-starting-points`.
 
 **What was inspected**
 
@@ -68,7 +71,7 @@ WConvert should keep one primary counted conversion. Download, copy-code, close,
 
 **The first twelve flagship designs**
 
-These are proposed coverage targets, not claims of measured customer demand. Include both additions and substantial upgrades of existing designs.
+These coverage targets are now implemented as twelve Playbooks; see the [completed mapping and setup requirements](flagship-starting-points-2026-09-11.md). They are recommendations, not claims of measured customer demand.
 
 | Audience | Four starting designs | Essential outcome |
 |---|---|---|
@@ -172,7 +175,7 @@ Recommended order: finish the reference browser review; agree on a curation shee
 | Publishers | Refined Sunday marginalia: editorial hierarchy, italic excerpt, fluid display type, visible email label and complete acknowledgement. | Free popup |
 | Services | Added Callback notes: phone capture, optional name and topic, purpose-specific consent and a callback acknowledgement that does not claim a booked appointment. | Free inline |
 
-The library now has 57 designs: 39 Free and 18 Pro. Existing Fieldwork and
+At the end of that initial batch the library had 57 designs: 39 Free and 18 Pro. Existing Fieldwork and
 Sunday marginalia leaf IDs were retained where those leaves remain. Templates
 supply sample content; actual codes, policies, destinations and fulfilment still
 belong to campaign setup. No images were generated and no remote fonts are
@@ -214,8 +217,9 @@ This pass did not submit leads to external destinations, verify coupon validity,
 or perform a complete accessibility audit. The editor's contrast helper displays
 “No reading” for a color alias such as `input-bg: bg`, although the renderer
 resolves that alias correctly; improving the helper remains an editor follow-up.
-The twelve-design collection, broader curation, non-converting success actions
-and remote catalog are not implemented by this batch.
+That initial batch did not implement the twelve-design collection, broader
+curation, non-converting success actions or remote catalog. The first three
+of those are now implemented in the subsequent passes; catalog work remains.
 
 **Resumed implementation — editor controls and success actions**
 
@@ -254,6 +258,7 @@ Automated tests cover successful clipboard writes and distinguish counted links
 from both kinds of follow-up action. No external lead or fulfilment service was
 exercised.
 
-Next remains the twelve-design flagship collection and curation. General movement
-between arbitrary containers, colour-alias contrast readings and the remote catalog
-remain separate work; this pass does not claim them complete.
+The subsequent curation and [twelve-start collection](flagship-starting-points-2026-09-11.md)
+complete the next two collection milestones. The next collection phase is catalog
+installation and compatibility handling. General movement between arbitrary
+containers and colour-alias contrast readings remain separate editor work.

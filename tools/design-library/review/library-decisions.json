@@ -53,7 +53,7 @@
   },
   "inline-cta": {
     "decision": "improve",
-    "reason": "Keep the compact inline click card; use timeless offer copy and clear terms."
+    "reason": "Restrained horizontal invitation with a wrapping text column and action column; used by the quiet cart return."
   },
   "inline-one-line": {
     "decision": "retire",
@@ -234,5 +234,9 @@
   "launch-checklist": {
     "decision": "add",
     "reason": "Premade Signal checklist: blue/lime split, twelve-point promise and a protected form column. Optional resource link uses the new success-action structure."
+  },
+  "reading-slip": {
+    "decision": "add",
+    "reason": "Compact editorial reading recommendation adapted from the reference receipt; one direct link, with no email-basket promise."
   }
 }

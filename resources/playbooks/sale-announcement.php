@@ -1,33 +1,27 @@
 <?php
 
-/**
- * "Promote a sale or offer" — click-metered, so it captures nothing.
- *
- * No form, no [[Lead]], no [[Consent Record]] and no [[Destination]]: its
- * whole product is a message on the page and a link through to the offer. The
- * Conversion is the click, and the Template it names has ONE step, because the
- * click navigates the visitor away and there is no success state left to
- * render (ADR 0025).
- *
- * The link's destination is the merchant's, set in the builder. A Playbook can
- * express nothing site-local, and every sale is somewhere different.
- */
+/** A curated starting point; site-specific details are completed by the merchant. */
 
 defined('ABSPATH') || exit;
 
 return [
     'id' => 'sale-announcement',
-    'name' => __('Sale announcement', 'wconvert'),
+    'name' => __('The summer archive sale', 'wconvert'),
     'goal' => 'promote_offer',
-    'template_id' => 'offer-panel',
-    'notes' => __('Put the deadline in the body copy — an offer with no end date reads as a permanent price. This Optin is measured by clicks through to the offer, so there is nothing to submit and nobody is added to a list.', 'wconvert'),
+    'template_id' => 'summer-archive',
+    'notes' => __('A sale poster leading to one collection. Add your brand and set the button to your sale page. Match the 30% offer and exclusions to your prices. Set the actual start and end in Schedule and include the date and time zone in the copy; no deadline is invented for you.', 'wconvert'),
     'copy' => [
-        'headline' => __('Midseason sale', 'wconvert'),
-        'body' => __('Everything reduced for the next three days.', 'wconvert'),
-        'cta_label' => __('Shop the sale', 'wconvert'),
-        'fine_print' => __('Discount applied at the checkout.', 'wconvert'),
+        'eyebrow' => __('The summer edit', 'wconvert'),
+        'headline' => __('Good days.
+30% off.', 'wconvert'),
+        'body' => __('Linen shirts. Easy shorts. Selected summer pieces, for less.', 'wconvert'),
+        'cta_label' => __('Shop the summer sale', 'wconvert'),
+        'fine_print' => __('Selected summer styles only. Prices as marked. No code needed.', 'wconvert'),
     ],
     'rules' => [
-        ['type' => 'page_load'],
+        [
+            'type' => 'time_on_page',
+            'seconds' => 8,
+        ],
     ],
 ];

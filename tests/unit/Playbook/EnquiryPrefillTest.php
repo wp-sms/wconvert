@@ -98,7 +98,7 @@ final class EnquiryPrefillTest extends TestCase
         $this->assertTrue($fields['email']['required']);
         $this->assertFalse($fields['interest']['required']);
         $this->assertCount(3, $fields);
-        $this->assertSame('Which service do you need?', $fields['interest']['label']);
+        $this->assertSame('Which service do you need? (optional)', $fields['interest']['label']);
         $this->assertSame('Choose a service', $fields['interest']['placeholder']);
         $this->assertSame([
             ['value' => 'installation', 'label' => 'Installation'],
@@ -179,7 +179,7 @@ final class EnquiryPrefillTest extends TestCase
         $fields = self::fieldsIn($switched['template']['tree']);
 
         $this->assertSame(self::editedOptions(), $fields['interest']['options']);
-        $this->assertSame('Which service do you need?', $fields['interest']['label']);
+        $this->assertSame('Which service do you need? (optional)', $fields['interest']['label']);
         $this->assertSame('Choose a service', $fields['interest']['placeholder']);
         $this->assertSame('#ffffff', $switched['template']['tokens']['bg']);
         $this->assertSame('fine_print', $switched['template']['tree']['steps'][0]['children'][0]['role']);

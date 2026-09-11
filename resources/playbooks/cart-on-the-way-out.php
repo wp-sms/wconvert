@@ -1,7 +1,7 @@
 <?php
 
 /**
- * "Bring shoppers back to their cart" — the least intrusive of the three.
+ * "Bring shoppers back to their cart" — an invitation when a shopper appears to be leaving.
  *
  * It waits for the visitor to signal that they are leaving, so it interrupts
  * nothing they were doing: the popup is the last thing between them and the
@@ -29,12 +29,12 @@ return [
     'name' => __('On the way out', 'wconvert'),
     'goal' => 'recover_cart',
     'template_id' => 'offer-panel',
-    'notes' => __('The gentlest of the three: it waits until the visitor looks like they are leaving, so it interrupts nothing. Start here — a shopper who has already put something in the cart rarely needs reminding twice. This Optin is measured by clicks back to the cart, so there is nothing to submit and nobody is added to a list.', 'wconvert'),
+    'notes' => __('Waits for exit intent before showing a popup to shoppers with items in their cart. Consider the inline cart return for a quieter option. This counts clicks back to the cart, captures no details and adds nobody to a list. Check the mobile fallback and frequency before publishing.', 'wconvert'),
     'copy' => [
         'headline' => __('Leaving something behind?', 'wconvert'),
-        'body' => __('Your cart is still here, exactly as you left it.', 'wconvert'),
+        'body' => __('Open your cart when you are ready to take another look.', 'wconvert'),
         'cta_label' => __('Back to my cart', 'wconvert'),
-        'fine_print' => __('We keep your cart for a couple of days.', 'wconvert'),
+        'fine_print' => __('Items are not reserved. Prices and availability can change.', 'wconvert'),
     ],
     'rules' => [
         ['type' => 'exit_intent'],

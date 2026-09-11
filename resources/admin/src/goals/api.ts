@@ -100,6 +100,8 @@ export interface PlaybookEntry {
   destination_hint: Record<string, unknown>;
   /** Why it works, in the merchant's language. */
   notes: string;
+  /** Optional editorial recommendation; never a Goal or design restriction. */
+  recommendation?: string;
   /**
    * **The design this Playbook would prefill, with its words already in it.**
    *

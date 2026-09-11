@@ -4,6 +4,7 @@ namespace WConvert\Rest;
 
 use WConvert\Goal\Goal;
 use WConvert\Goal\GoalRegistry;
+use WConvert\Playbook\FlagshipCollection;
 use WConvert\Playbook\Playbook;
 use WConvert\Playbook\PlaybookLibrary;
 use WConvert\Playbook\Prefill;
@@ -85,7 +86,7 @@ final class PlaybookController implements RestController
 
         return new WP_REST_Response(array_map(
             fn (Playbook $playbook): array => $this->withItsDesign($playbook),
-            $this->playbooks->servicing($goal)
+            FlagshipCollection::prioritize($this->playbooks->servicing($goal))
         ));
     }
 
@@ -120,6 +121,10 @@ final class PlaybookController implements RestController
     private function withItsDesign(Playbook $playbook): array
     {
         $entry = $playbook->toArray();
+        $recommendation = FlagshipCollection::recommendation($playbook->id);
+        if ($recommendation !== null) {
+            $entry['recommendation'] = $recommendation;
+        }
         $draft = $this->prefill->fromPlaybook($playbook->id);
         $config = $draft['config'] ?? null;
         $template = $config['template'] ?? null;

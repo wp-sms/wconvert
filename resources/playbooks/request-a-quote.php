@@ -20,11 +20,11 @@ return [
     'copy' => [
         'headline' => __('Let us help with your next project', 'wconvert'),
         'body' => __('Leave your email so we can discuss what you need and prepare a quote.', 'wconvert'),
-        'name_label' => __('Your name', 'wconvert'),
+        'name_label' => __('Your name (optional)', 'wconvert'),
         'name_placeholder' => __('Alex Morgan', 'wconvert'),
         'email_label' => __('Email address', 'wconvert'),
         'email_placeholder' => __('you@example.com', 'wconvert'),
-        'interest_label' => __('Which service do you need?', 'wconvert'),
+        'interest_label' => __('Which service do you need? (optional)', 'wconvert'),
         'interest_placeholder' => __('Choose a service', 'wconvert'),
         // A structured list is one Role's value, not a list of repeated Roles.
         'interest_options' => [

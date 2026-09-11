@@ -1,12 +1,6 @@
 <?php
 
-/**
- * "Grow my email list" — the discount-for-an-address trade.
- *
- * Words only. Everything here is snapshotted into the Optin at prefill and the
- * two never speak again, so improving this file never rewrites a running
- * Optin (CONTEXT.md, Playbook).
- */
+/** A curated starting point; site-specific details are completed by the merchant. */
 
 defined('ABSPATH') || exit;
 
@@ -14,38 +8,51 @@ return [
     'id' => 'welcome-discount',
     'name' => __('Welcome discount', 'wconvert'),
     'goal' => 'grow_email_list',
-    'template_id' => 'centred-card',
-    'notes' => __('A first-order discount gives visitors a reason to share an address. Create the code and configure the connected service to send it before publishing.', 'wconvert'),
+    'template_id' => 'fieldwork',
+    'notes' => __('A photo-led welcome offer with an on-screen code. Add your brand and photograph, create a valid 10% code, and enter it on the success screen. Match the exclusions to your offer and connect your email service for the monthly newsletter. Set targeting and frequency before publishing.', 'wconvert'),
     'copy' => [
-        'headline' => __('Get 10% off your first order', 'wconvert'),
-        'body' => __('Join the list and request your first-order code.', 'wconvert'),
+        'headline' => __('10% off.
+Room to grow.', 'wconvert'),
+        'eyebrow' => __('A welcome from us', 'wconvert'),
+        'body' => __('Get 10% off your first order and a monthly note with plant care and shop news.', 'wconvert'),
         'email_label' => __('Email address', 'wconvert'),
         'email_placeholder' => __('you@example.com', 'wconvert'),
-        'cta_label' => __('Send my code', 'wconvert'),
-        /*
-         * The link carries a LABEL and no destination, which is the one shape
-         * only the site can complete: the renderer fills the href from
-         * `get_privacy_policy_url()` at render time, so this entry is correct
-         * on every install without knowing which install it is on (ADR 0032).
-         */
-        'fine_print' => [
+        'consent_text' => [
             /* translators: %s: the label of a link to the site's privacy policy. */
-            'text' => __('No spam, and you can unsubscribe at any time. See our %s.', 'wconvert'),
-            'link' => ['label' => __('Privacy Policy', 'wconvert')],
+            'text' => __('Email me the monthly plant note and shop news. I can unsubscribe at any time. %s', 'wconvert'),
+            'link' => [
+                'label' => __('Privacy Policy', 'wconvert'),
+            ],
         ],
-        'success_headline' => __('Thank you', 'wconvert'),
-        'success_body' => __('We have received your request for the welcome offer.', 'wconvert'),
+        'cta_label' => __('Join and reveal my code', 'wconvert'),
+        'fine_print' => [
+            [
+                /* translators: %s: the label of a link to the site's privacy policy. */
+                'text' => __('One email a month. Unsubscribe at any time. First order only; gift cards excluded. %s', 'wconvert'),
+                'link' => [
+                    'label' => __('Privacy Policy', 'wconvert'),
+                ],
+            ],
+            __('Apply at checkout. First order only; gift cards excluded.', 'wconvert'),
+        ],
+        'success_headline' => __('A little more
+green, for less.', 'wconvert'),
+        'badge' => __('Request received', 'wconvert'),
+        'success_body' => __('Your request is received. Use the code below for 10% off your first order.', 'wconvert'),
     ],
-    // Eight seconds is long enough to have read something and short enough to
-    // still be on the page. One Trigger and not `page_load` beside it: an
-    // Optin fires when ANY of its Triggers fires (CONTEXT.md, Trigger), so
-    // adding `page_load` would show the popup immediately and delete the
-    // timer rather than backing it up.
     'rules' => [
-        ['type' => 'time_on_page', 'seconds' => 8],
+        [
+            'type' => 'time_on_page',
+            'seconds' => 8,
+        ],
     ],
     'destination_hint' => [
-        'types' => ['wsms', 'email_service_provider'],
-        'fields' => ['email'],
+        'types' => [
+            'wsms',
+            'email_service_provider',
+        ],
+        'fields' => [
+            'email',
+        ],
     ],
 ];

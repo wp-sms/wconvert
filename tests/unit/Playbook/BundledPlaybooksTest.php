@@ -70,16 +70,8 @@ final class BundledPlaybooksTest extends TestCase
         }
     }
 
-    /**
-     * **Three cart Playbooks, split by INTRUSION and by nothing else.**
-     *
-     * They ride one Template, because what the cart [[Goal]] needs is *one
-     * step, click-metered, CTA-bearing* — a shape it shares with the other
-     * click Goal rather than a WooCommerce design (ADR 0025). So the only
-     * axis worth three cards is how loudly the Optin asks, which is the
-     * [[Trigger]]: on the way out, after a while, straight away.
-     */
-    public function testTheCartGoalShipsThreePlaybooksThatDifferOnlyInHowLoudlyTheyAsk(): void
+    /** A quiet inline return and two delayed overlays share the same click outcome. */
+    public function testTheCartGoalOffersAnInlineReturnAlongsideTwoDelayedPopups(): void
     {
         $cart = self::library()->servicing(Goal::RecoverCart);
         $vocabulary = RuleVocabulary::fromManifest(self::PLUGIN_DIR);
@@ -90,9 +82,8 @@ final class BundledPlaybooksTest extends TestCase
 
         foreach ($cart as $playbook) {
             $this->assertSame(
-                'offer-panel',
-                $playbook->templateId,
-                'a cart Playbook named a Template of its own, and there are no WooCommerce designs (ADR 0025)'
+                $playbook->id === 'cart-straight-away' ? 'inline' : 'popup',
+                $playbook->displayType
             );
 
             foreach ($vocabulary->partition($playbook->rules)['triggers'] as $trigger) {

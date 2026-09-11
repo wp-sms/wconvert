@@ -1,74 +1,74 @@
 <?php
 
-/**
- * "Grow my email list" — the ask a reader has already earned, over the page.
- *
- * ============================================================================
- * IT WAS AN EXIT-INTENT ENTRY FOR ABOUT AN HOUR, AND IT MAY NOT BE ONE.
- * ============================================================================
- * The obvious design for *"catch them as they leave"* is `exit_intent`, and it
- * is unavailable here for a reason worth writing down rather than rediscovering:
- * a bundled [[Playbook]] may name a premium rule only where its [[Goal]]
- * already demands the same tier ({@see \WConvert\Tests\Unit\Playbook\BundledPlaybooksTest}).
- * `cart-on-the-way-out` may, because the cart Goal is `tier: pro`; this Goal is
- * free, so an entry naming it would be prefilled onto free installs.
- *
- * **The rule manifest's `substitute` is not a way round that.** It declares
- * `{time_on_page, 15}` for `exit_intent`, so the Optin would fire — which is
- * exactly the problem. A card advertising *"waits until they are leaving"* that
- * silently becomes a fifteen-second timer is a card that quietly turned into a
- * different card, and the merchant is never told. Substitution exists so an
- * Optin a merchant BUILT keeps working when a licence lapses, not so a bundled
- * card can promise a feature the install does not have.
- *
- * So this entry is named for the moment it can actually detect. Ninety per cent
- * is a reader who reached the end, which is a stronger signal of interest than
- * a timer anyway — a timer counts a tab left open.
- *
- * It differs from the other three under this Goal on every axis that matters:
- * `welcome-discount` trades a discount after eight seconds, `one-line-invite`
- * asks for nothing at sixty per cent, and `article-end-newsletter` sits in the
- * page rather than over it.
- */
+/** A curated starting point; site-specific details are completed by the merchant. */
 
 defined('ABSPATH') || exit;
 
 return [
     'id' => 'read-to-the-end',
-    'name' => __('When they have read it all', 'wconvert'),
+    'name' => __('The Sunday letter', 'wconvert'),
     'goal' => 'grow_email_list',
-    'template_id' => 'split-hero',
-    'notes' => __('Waits until a reader has reached the bottom of the page before offering a first-order discount. Create the code and configure the connected service to send it before publishing.', 'wconvert'),
+    'template_id' => 'sunday-marginalia',
+    'notes' => __('Offer a weekly editorial letter after a reader reaches 90% of a page. Add your publication name, replace the sample excerpt with your own writing and set a cadence you can keep in every line. Connect your email service, then choose which articles should show the invitation.', 'wconvert'),
     'copy' => [
-        'headline' => __('Liked this? There is more.', 'wconvert'),
-        'body' => __('Join the list and take 10% off your first order while you are here.', 'wconvert'),
+        'body' => [
+            __('An essay to keep', 'wconvert'),
+            __('Every Sunday', 'wconvert'),
+            __('One essay on books, places and the things we nearly miss, every Sunday.', 'wconvert'),
+            __('The best bookshops leave a little room for getting lost.', 'wconvert'),
+        ],
+        'headline' => __('One good essay.
+A slower Sunday.', 'wconvert'),
+        'eyebrow' => [
+            __('A taste of the letter', 'wconvert'),
+            __('Made for reading', 'wconvert'),
+        ],
         'email_label' => __('Email address', 'wconvert'),
         'email_placeholder' => __('you@example.com', 'wconvert'),
-        'cta_label' => __('Send my code', 'wconvert'),
-        'fine_print' => [
+        'consent_text' => [
             /* translators: %s: the label of a link to the site's privacy policy. */
-            'text' => __('One email a week at most. See our %s.', 'wconvert'),
-            'link' => ['label' => __('Privacy Policy', 'wconvert')],
+            'text' => __('Send me the weekly Sunday letter. I can unsubscribe at any time. %s', 'wconvert'),
+            'link' => [
+                'label' => __('Privacy Policy', 'wconvert'),
+            ],
         ],
-        'success_headline' => __('Thank you', 'wconvert'),
-        'success_body' => __('We have received your request for the first-order offer.', 'wconvert'),
+        'cta_label' => __('Send me the Sunday letter', 'wconvert'),
+        'fine_print' => [
+            [
+                /* translators: %s: the label of a link to the site's privacy policy. */
+                'text' => __('One letter every Sunday. Unsubscribe at any time. %s', 'wconvert'),
+                'link' => [
+                    'label' => __('Privacy Policy', 'wconvert'),
+                ],
+            ],
+            [
+                /* translators: %s: the label of a link to the site's privacy policy. */
+                'text' => __('One letter every Sunday. Unsubscribe at any time. %s', 'wconvert'),
+                'link' => [
+                    'label' => __('Privacy Policy', 'wconvert'),
+                ],
+            ],
+        ],
+        'success_headline' => __('Your request
+is in.', 'wconvert'),
+        'success_body' => [
+            __('We have received your request for the Sunday letter.', 'wconvert'),
+            __('Thank you for making a little room for reading.', 'wconvert'),
+        ],
     ],
     'rules' => [
-        ['type' => 'scroll_depth', 'percent' => 90],
-    ],
-    /*
-     * Signed-in visitors are excluded because on most sites they are already
-     * customers, and a first-order discount shown to somebody who has already
-     * ordered is the offer working against itself. `logged_in` is a boolean and
-     * names nothing site-local, unlike `role`, which would.
-     */
-    'targeting' => [
-        'exclude' => [
-            ['type' => 'logged_in', 'value' => true],
+        [
+            'type' => 'scroll_depth',
+            'percent' => 90,
         ],
     ],
     'destination_hint' => [
-        'types' => ['wsms', 'email_service_provider'],
-        'fields' => ['email'],
+        'types' => [
+            'wsms',
+            'email_service_provider',
+        ],
+        'fields' => [
+            'email',
+        ],
     ],
 ];
