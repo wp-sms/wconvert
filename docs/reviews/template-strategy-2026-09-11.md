@@ -9,8 +9,10 @@ is complete: 47 existing designs improved, ten retired and two premade guide
 designs added. The subsequent [twelve flagship starting points](flagship-starting-points-2026-09-11.md)
 are now implemented in creation, reusing eleven designs and adding Reading slip.
 The current library has 50 designs (37 Free, 13 Basic). Inventory figures below
-describe the earlier audits. **Next: review and merge the flagship collection,
-then build catalog installation and compatibility handling.**
+describe the earlier audits. **The flagship collection is merged in PR #152.** The first local catalog
+installation slice is implemented under ADR 0082: explicit browse/preview/install,
+strict compatibility/import checks and offline copies. Production catalog hosting,
+downloaded Playbooks, paid fetching and media installation remain subsequent work.
 
 **Agreed direction**
 

@@ -126,6 +126,7 @@ final class TemplateController implements RestController
         $entries = [];
 
         foreach ($this->templates->all() as $entry) {
+            if (($entry['catalog_current'] ?? true) === false) continue;
             $entries[] = $this->indexEntry($entry, $this->availabilityOf((string) $entry['tier']));
         }
 

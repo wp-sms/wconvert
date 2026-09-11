@@ -146,6 +146,7 @@ final class ProServiceProvider implements ServiceProvider
                 new BundledTemplates(WCONVERT_DIR),
                 new ProTemplates(WCONVERT_PRO_DIR),
                 new LockedTemplates(WCONVERT_DIR),
+                $c->resolve(\WConvert\Template\Catalog\InstalledPacks::class),
             )
         );
     }

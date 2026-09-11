@@ -827,6 +827,16 @@ reads arrives in the panel wearing a raw text box, so where a shape cannot be
 inferred the manifest enumerates it
 ([ADR 0054](docs/adr/0054-every-control-has-the-shape-of-its-value.md)).
 
+### Template pack
+
+A versioned collection of downloadable designs, installed explicitly from a
+configured catalog. The first format supports Free popup/inline designs with
+placeholders. It supplies no renderer code or site-local destinations. Installed
+versions remain local and retain source baselines; updates affect the library
+for future choices, never existing Optin snapshots. Browsing and installation
+live in the design picker; Playbooks and their Goal-first creation flow remain
+separate. See [ADR 0082](docs/adr/0082-template-packs-install-as-validated-local-data.md).
+
 ### Starting point
 
 A named set of display rules a merchant can begin from — *"Once they have read a
