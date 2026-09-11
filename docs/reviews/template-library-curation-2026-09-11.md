@@ -109,8 +109,12 @@ Extra High review informed this small ordering change.
 Final validation: **2,303 JavaScript tests in 94 files**, **1,831 PHP tests with
 8,091 assertions**, TypeScript, ESLint, PHPStan, template registration and source
 contracts passed. Both admin bundles and all four loader tiers built. Gzipped
-loaders measured 10,411 / 11,145 / 12,100 / 12,288 bytes (Free / Basic / Pro /
-Elite), within the unchanged 12,288-byte limit; Elite has no remaining headroom.
+loaders measured 10,402 / 11,133 / 12,099 / 12,285 bytes (Free / Basic / Pro /
+Elite) under CI's Node 22.23.2, within the unchanged 12,288-byte limit. Elite
+has only three bytes of headroom. The first CI run exposed a gzip difference
+from local Node 24; merging scoped token bags once, reusing existing DOM
+helpers, fully removing unused editor metadata reads, and two additional
+compression passes brought the same behavior within budget on CI's runtime.
 The review pages were rebuilt after the newsletter consent copy was aligned
 with its Friday-reads purpose.
 

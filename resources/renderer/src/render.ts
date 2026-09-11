@@ -176,7 +176,7 @@ function submits(node: TemplateNode): boolean {
     return branch.action !== 'link';
   }
 
-  return [...(branch.children ?? []), ...(branch.start ?? []), ...(branch.end ?? [])].some(submits);
+  return [branch.children, branch.start, branch.end].some(children => children?.some(submits));
 }
 
 /**
@@ -209,7 +209,7 @@ function appendNode(parent: HTMLElement, node: TemplateNode, scoped: Tokens, at:
     if (styled.tokens !== undefined || styled.narrow !== undefined) {
       element.classList.add('wc-leaf');
       scope(element, styled.tokens);
-      retune(element, inScope(scoped, {}, styled.tokens), styled.narrow);
+      retune(element, { ...scoped, ...styled.tokens }, styled.narrow);
     }
   }
 
@@ -227,10 +227,11 @@ function appendNode(parent: HTMLElement, node: TemplateNode, scoped: Tokens, at:
   // captures (CONTEXT.md, Slot Role) — so the key the panel heads it with is
   // the capture kind, and that is what has to reach the DOM for the builder's
   // preview to be clickable back to it (ADR 0040). The loader never reads it.
-  const captures = (node as { name?: string }).name;
-
-  if (EDITABLE && node.type === 'field' && typeof captures === 'string' && captures !== '') {
-    element.dataset.captures = captures;
+  if (EDITABLE) {
+    const captures = (node as { name?: string }).name;
+    if (node.type === 'field' && typeof captures === 'string' && captures !== '') {
+      element.dataset.captures = captures;
+    }
   }
 
   // Where this node sits in the tree, for a caller that holds one. Written
@@ -366,10 +367,11 @@ function layout(
    * the remap finds unset is not inherited — it is guaranteed-invalid, and
    * falls to whatever literal the stylesheet spells beside it.
    *
-   * Built only where a bag says something, so a design with no bags threads
-   * one object all the way down and allocates nothing.
+   * Build one merged bag per layout, preserving inherited mobile overrides
+   * without repeatedly merging or enumerating empty bags.
    */
-  const here = inScope(inScope(scoped, reset, node.tokens), {}, node.narrow);
+  // Merge the inherited, reset, wide and narrow bags once, in precedence order.
+  const here = { ...scoped, ...reset, ...node.tokens, ...node.narrow };
 
   retune(element, here, node.narrow);
 
@@ -389,13 +391,6 @@ function layout(
  */
 function into(at: string | null, key: string, index: number): string | null {
   return !EDITABLE || at === null ? null : `${at}.${key}.${index}`;
-}
-
-/** The bag in scope at this box: what it inherited, its own reset, its own bag. */
-function inScope(scoped: Tokens, reset: Tokens, own: Tokens | undefined): Tokens {
-  return own || Object.keys(reset).length
-    ? { ...scoped, ...reset, ...own }
-    : scoped;
 }
 
 /**
@@ -458,7 +453,7 @@ function split(node: SplitNode, scoped: Tokens, at: string | null): HTMLElement 
 
   scope(element, node.tokens);
 
-  const here = inScope(inScope(scoped, {}, node.tokens), {}, node.narrow);
+  const here = { ...scoped, ...node.tokens, ...node.narrow };
 
   retune(element, here, node.narrow);
 
@@ -627,17 +622,12 @@ function icon(node: IconNode): HTMLElement | null {
  */
 function rating(node: RatingNode): HTMLElement {
   const filled = node.value === 3 || node.value === 4 ? node.value : 5;
-  const stars = document.createElement('span');
-  const element = document.createElement('div');
-
-  stars.className = 'wc-stars';
+  const stars = words('span', 'wc-stars', '');
+  const element = wrap('div', 'wc-rating', stars);
 
   for (let at = 0; at < 5; at += 1) {
     stars.appendChild(glyph('star', at < filled ? 'wc-glyph wc-star' : 'wc-glyph'));
   }
-
-  element.className = 'wc-rating';
-  element.append(stars);
 
   if (typeof node.text === 'string' && node.text !== '') {
     element.appendChild(words('span', 'wc-rating-text', node.text));
@@ -654,11 +644,7 @@ function rating(node: RatingNode): HTMLElement {
  * leaf here with no words at all, so semantics is the only thing it has.
  */
 function divider(): HTMLElement {
-  const element = document.createElement('hr');
-
-  element.className = 'wc-divider';
-
-  return element;
+  return words('hr', 'wc-divider', '');
 }
 
 /**
@@ -738,12 +724,7 @@ function sized(className: string, size: string | undefined): string {
 }
 
 function heading(node: HeadingNode): HTMLElement {
-  const element = document.createElement(node.level === 2 ? 'h3' : 'h2');
-
-  element.className = sized('wc-heading', node.size);
-  lines(element, node.text ?? '');
-
-  return element;
+  return words(node.level === 2 ? 'h3' : 'h2', sized('wc-heading', node.size), node.text);
 }
 
 /**
