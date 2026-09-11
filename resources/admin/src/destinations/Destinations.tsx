@@ -1,13 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
+import { DestinationUsageNotice } from './DestinationUsageNotice';
+import { settingsProblems } from './requirements';
 import {
   CircleAlert,
   CircleCheck,
+  ChevronDown,
   Info,
   Lock,
   Plug,
+  Plus,
+  RefreshCw,
   RotateCcw,
-  Target,
   Trash2,
   TriangleAlert,
   Zap,
@@ -20,6 +24,8 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { AddDestinationDialog } from './AddDestinationDialog';
+import { SendTestDialog } from './SendTestDialog';
+import { destinationHref, leadsHref } from '../nav';
 import { Code } from '../shell/Code';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import {
@@ -42,6 +48,7 @@ import {
   RegionHeader,
 } from '../shell/Region';
 import { RegionSkeleton } from '../shell/RegionSkeleton';
+import { PageAction } from '../shell/PageActions';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
 import {
   deleteDestination,
@@ -49,7 +56,6 @@ import {
   rePush,
   saveDestination,
   testConnection,
-  testSend,
   type Connection,
   type Destination,
   type DestinationType,
@@ -103,7 +109,7 @@ import { renderingFor, tierName, tierProductName } from '../goals/availability';
  * and Remove is behind a confirm rather than beside the button that repairs
  * things.
  */
-export function Destinations() {
+export function Destinations({ destinationId }: { readonly destinationId?: string } = {}) {
   const [payload, setPayload] = useState<Loadable<DestinationsPayload>>(LOADING);
   /*
    * **The read's own failure, and the only screen-wide one left.** A refresh
@@ -142,6 +148,7 @@ export function Destinations() {
    */
   const [tests, setTests] = useState<Record<string, TestReport>>({});
   const [confirming, setConfirming] = useState<Destination | null>(null);
+  const [sending, setSending] = useState<{ destination: Destination; settingsDirty: boolean } | null>(null);
   /**
    * The type being added, which is also whether the Add dialog is open.
    *
@@ -153,11 +160,19 @@ export function Destinations() {
    * by the type's id.
    */
   const [adding, setAdding] = useState<DestinationType | null>(null);
+  const [showTypes, setShowTypes] = useState(false);
+  const typesRegion = useRef<HTMLDivElement>(null);
   const returnFocus = useRef<HTMLElement | null>(null);
+  const fetchRequest = useRef(0);
+  const [refreshing, setRefreshing] = useState(false);
 
   const refresh = useCallback(async () => {
+    const request = ++fetchRequest.current;
+    setRefreshing(true);
     try {
-      setPayload(ready(await readDestinations()));
+      const next = await readDestinations();
+      if (request !== fetchRequest.current) return;
+      setPayload(ready(next));
       setFetchError(null);
       /*
        * **A report does not outlive the read that makes it stale.** It says
@@ -170,13 +185,18 @@ export function Destinations() {
       setReports({});
       setTests({});
     } catch (cause) {
+      if (request !== fetchRequest.current) return;
       setPayload((current) => (current.status === 'ready' ? current : failed(cause)));
       setFetchError(messageOf(cause));
+    } finally {
+      if (request === fetchRequest.current) setRefreshing(false);
     }
   }, []);
 
   useEffect(() => {
+    const requests = fetchRequest;
     void refresh();
+    return () => { requests.current++; };
   }, [refresh]);
 
   // Cleared on the retry that works, and only for the thing that was retried:
@@ -288,7 +308,9 @@ export function Destinations() {
       <Region label={__('Destinations', 'wconvert')}>
         <RegionErrorState
           message={payload.message}
+          hint={__('Use Refresh to try again.', 'wconvert')}
         />
+        <RegionFooter><Button variant="outline" disabled={refreshing} onClick={() => void refresh()}>{__('Refresh', 'wconvert')}</Button></RegionFooter>
       </Region>
     );
   }
@@ -297,6 +319,20 @@ export function Destinations() {
 
   return (
     <div className="flex flex-col gap-5">
+      <PageAction>
+        <Button variant="outline" disabled={refreshing} onClick={() => void refresh()}>
+          <RefreshCw aria-hidden="true" />{refreshing ? __('Refreshing…', 'wconvert') : __('Refresh', 'wconvert')}
+        </Button>
+        <Button disabled={data === null} onClick={() => {
+          setShowTypes(true);
+          requestAnimationFrame(() => {
+            typesRegion.current?.scrollIntoView?.({ block: 'nearest' });
+            typesRegion.current?.querySelector<HTMLElement>('button')?.focus();
+          });
+        }}>
+          <Plus aria-hidden="true" />{__('Add a destination', 'wconvert')}
+        </Button>
+      </PageAction>
       {/*
         **One read draws every region below**, so a refresh that fails is the
         screen's failure rather than any one route's. It was a `RegionError`
@@ -304,6 +340,12 @@ export function Destinations() {
         a band with a bottom border, drawing a rule above nothing.
       */}
       {fetchError !== null && <PageError message={fetchError} />}
+      {data !== null && destinationId !== undefined && !data.destinations.some((destination) => destination.id === destinationId) && (
+        <Region><RegionHeader title={__('This destination is no longer available', 'wconvert')}
+          description={__('It may have been removed. Other configured destinations are listed below.', 'wconvert')} />
+          <RegionFooter><Button asChild variant="outline"><a href={destinationHref()}>{__('Show all destinations', 'wconvert')}</a></Button></RegionFooter>
+        </Region>
+      )}
 
       {/*
         **A settings card's shape, and it used to be a table's.** What is
@@ -329,7 +371,7 @@ export function Destinations() {
                 what is still true while there is nothing here, so an empty
                 Destinations screen does not read as leads going nowhere.
               */}
-              <EmptyState icon={Plug} title={__('Nothing is being pushed on', 'wconvert')}>
+              <EmptyState icon={Plug} title={__('Leads are saved in WConvert only', 'wconvert')}>
                 {__(
                   'Every capture is written to the lead log first and always. Add a destination to send it on as well.',
                   'wconvert',
@@ -341,6 +383,7 @@ export function Destinations() {
               <Configured
                 key={destination.id}
                 destination={destination}
+                focusRequested={destinationId === destination.id}
                 type={data.types.find((type) => type.id === destination.type)}
                 connections={data.connections.filter(
                   (connection) => connection.type === destination.type,
@@ -356,11 +399,15 @@ export function Destinations() {
                 }}
                 onRePush={replay}
                 onTestConnection={(target) => probe(target, testConnection)}
-                onTestSend={(target) => probe(target, testSend)}
+                onTestSend={(target, trigger, settingsDirty) => {
+                  returnFocus.current = trigger;
+                  setSending({ destination: target, settingsDirty });
+                }}
               />
             ))
           )}
 
+          <div ref={typesRegion} hidden={!showTypes && data.destinations.length > 0}>
           <Types
             types={data.types}
             errors={errors}
@@ -371,7 +418,8 @@ export function Destinations() {
             }}
           />
 
-          <Failures failures={data.failures} />
+          </div>
+          <Failures failures={data.failures} destinations={data.destinations} />
         </>
       )}
 
@@ -397,6 +445,14 @@ export function Destinations() {
           }
         }}
       />
+
+      {sending !== null && <SendTestDialog destination={sending.destination}
+        type={data?.types.find((type) => type.id === sending.destination.type)}
+        initialEmail={data?.test_sample?.email ?? null} settingsDirty={sending.settingsDirty}
+        returnFocusTo={returnFocus} onClose={() => setSending(null)}
+        onSent={(report) => {
+          setTests((current) => ({ ...current, [sending.destination.id]: report }));
+        }} />}
 
       <ConfirmDialog
         open={confirming !== null}
@@ -446,6 +502,7 @@ export function Destinations() {
  */
 function Configured({
   destination,
+  focusRequested,
   type,
   connections,
   report,
@@ -459,6 +516,7 @@ function Configured({
   onTestSend,
 }: {
   destination: Destination;
+  focusRequested: boolean;
   /**
    * The TYPE this route runs over, or undefined where this build no longer
    * ships it.
@@ -486,7 +544,7 @@ function Configured({
   onRemove: (trigger: HTMLElement | null) => void;
   onRePush: (destination: Destination) => void;
   onTestConnection: (destination: Destination) => void;
-  onTestSend: (destination: Destination) => void;
+  onTestSend: (destination: Destination, trigger: HTMLElement, settingsDirty: boolean) => void;
 }) {
   // Seeded once from what is stored. Keyed by field rather than held as one
   // string, because a type declares as many fields as it likes — the WSMS push
@@ -510,6 +568,18 @@ function Configured({
   const [label, setLabel] = useState(destination.label);
   const [connection, setConnection] = useState(destination.connection);
   const removeTrigger = useRef<HTMLButtonElement>(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const settingsTrigger = useRef<HTMLButtonElement>(null);
+  const region = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!focusRequested) return;
+    setSettingsOpen(true);
+    const heading = region.current?.querySelector<HTMLElement>('h2');
+    heading?.setAttribute('tabindex', '-1');
+    heading?.focus();
+    region.current?.scrollIntoView?.({ block: 'start' });
+  }, [focusRequested]);
+  const TypeIcon = iconFor(type?.icon ?? 'plug');
   const failing = destination.health.consecutive_failures > 0;
   /*
    * Whether the two *Test* buttons can do anything. The region above already
@@ -519,6 +589,9 @@ function Configured({
    */
   const runnable = destination.availability === 'ready';
   const fields = Object.entries(schema);
+  const originalDraft = toDraft(schema, destination.settings);
+  const settingsDirty = label !== destination.label || connection !== destination.connection
+    || Object.entries(draft).some(([key, value]) => value !== originalDraft[key]);
   const lands = targetSaid(destination.target);
   const pushed = destination.health.last_success_at;
   /*
@@ -528,7 +601,6 @@ function Configured({
    * otherwise draw an empty padded block under its own header.
    */
   const reporting =
-    lands !== null ||
     failing ||
     pushed !== null ||
     destination.health.skipped_captures > 0 ||
@@ -536,7 +608,7 @@ function Configured({
     test !== null;
 
   return (
-    <Region>
+    <div ref={region} data-destination-id={destination.id}><Region>
       {/*
         **The failure sits in the region that failed**, above the health it
         contradicts and under the label saying which Destination this is. A
@@ -545,6 +617,9 @@ function Configured({
       */}
       {error !== null && <RegionError message={error} />}
 
+      <div className="wconvert-route-heading">
+      <span className="wconvert-route-icon"><TypeIcon aria-hidden="true" /></span>
+      <div className="wconvert-route-heading__body">
       <RegionHeader
         title={destination.label}
         /*
@@ -569,7 +644,7 @@ function Configured({
                   __('Needs %s on this site, so captures are not being sent.', 'wconvert'),
                   type?.requires_label ?? __('something this site does not have', 'wconvert'),
                 )
-              : undefined
+              : lands ?? type?.label
         }
         /*
           **Amber is the site holding this back, and a price is not that**
@@ -595,26 +670,10 @@ function Configured({
         }
       />
 
+      </div>
+      </div>
       {reporting && (
         <RegionBody className="flex flex-col gap-3">
-          {/*
-            **Where this route lands, first, because it is what makes one route
-            different from another.**
-
-            Three states and not two — {@see targetSaid} owns the wording and
-            `ConfiguredTarget` owns the rule. `null` draws nothing: a lead-magnet
-            email selects nothing and is perfectly configured, and a provider we
-            could not reach is a question we could not ask. Saying *"not pointed
-            at anything yet"* for either reports a fault against something that
-            works (ADR 0042).
-          */}
-          {lands !== null && (
-            <p className="m-0 flex items-center gap-2 text-muted-foreground">
-              <Target aria-hidden="true" className="size-4 shrink-0" />
-              {lands}
-            </p>
-          )}
-
           {failing ? (
             <Alert variant="destructive" className="border-destructive/30 bg-destructive/5">
               <CircleAlert />
@@ -668,6 +727,14 @@ function Configured({
                   destination.health.last_skipped_at ?? '',
                 )}
               </AlertTitle>
+              <AlertDescription>
+                <p id={`wconvert-recovery-${destination.id}`}>{__('Re-push replays stored leads from Optins whose published configuration uses this destination, since its last success. It can send an email again.', 'wconvert')}</p>
+                {!runnable && <p>{__('Restore the required plugin or plan before re-pushing.', 'wconvert')}</p>}
+                <div className="mt-3"><Button variant="outline" size="sm" disabled={busy || !runnable}
+                  aria-describedby={`wconvert-recovery-${destination.id}`} onClick={() => onRePush(destination)}>
+                  <RotateCcw aria-hidden="true" />{__('Re-push leads since the last success', 'wconvert')}
+                </Button></div>
+              </AlertDescription>
             </Alert>
           )}
 
@@ -739,7 +806,14 @@ function Configured({
         renameable, and so is a Destination whose type this install cannot see
         and whose schema therefore arrives empty.
       */}
+      <div hidden={!settingsOpen} className="wconvert-route-settings" id={`wconvert-settings-${destination.id}`}>
+        <DestinationUsageNotice usage={destination.usage} />
+        {settingsProblems(type?.requirements, fromDraft(schema, draft), schema).map((problem) =>
+          <p key={problem} className="m-0 text-note text-warning">{problem}</p>)}
       <RegionBody className="flex flex-col gap-4 border-t border-border">
+        <Description id={`wconvert-shared-${destination.id}`}>
+          {__('This destination is shared across the site. Saving changes affects every Optin using it, including published Optins.', 'wconvert')}
+        </Description>
         <div className="flex max-w-xl flex-col gap-1.5">
           <Label htmlFor={`wconvert-${destination.id}-label`}>{__('Name', 'wconvert')}</Label>
           <Input
@@ -783,7 +857,7 @@ function Configured({
               id={`wconvert-${destination.id}-${key}-label`}
               htmlFor={isGroup(field) ? undefined : `wconvert-${destination.id}-${key}`}
             >
-              {field.label}
+              {field.label}{type?.requirements?.settings[key] ? __(' (required to send)', 'wconvert') : ''}
             </Label>
             <SettingsControl
               id={`wconvert-${destination.id}-${key}`}
@@ -797,10 +871,11 @@ function Configured({
           </div>
         ))}
 
-        <div>
+        <div className="flex items-center gap-2">
           <Button
             variant="outline"
             disabled={busy}
+            aria-describedby={`wconvert-shared-${destination.id}`}
             onClick={() =>
               onSave(destination, {
                 label,
@@ -811,17 +886,28 @@ function Configured({
           >
             {__('Save', 'wconvert')}
           </Button>
+          <Button variant="ghost" disabled={busy} onClick={() => {
+            setDraft(toDraft(schema, destination.settings));
+            setLabel(destination.label);
+            setConnection(destination.connection);
+            setSettingsOpen(false);
+            settingsTrigger.current?.focus();
+          }}>{__('Cancel', 'wconvert')}</Button>
         </div>
       </RegionBody>
 
+      </div>
       {/*
         **Re-push repairs and Remove destroys, and they are not the same
-        weight.** They were two `.button`s side by side; now the recovery
-        action is the visible one and Remove is a quiet destructive control at
-        the far edge, behind a confirm (ADR 0039).
+        weight.** Recovery stays visible for a failing route; otherwise it is
+        available with Settings. Remove remains a quiet destructive control
+        behind Settings and a confirm (ADR 0068).
       */}
       <RegionFooter className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
         <div className="flex flex-wrap items-center gap-2">
+          <Button ref={settingsTrigger} variant="outline" size="sm" aria-expanded={settingsOpen} aria-controls={`wconvert-settings-${destination.id}`} onClick={() => setSettingsOpen(!settingsOpen)}>
+            {__('Settings', 'wconvert')}<ChevronDown aria-hidden="true" className={settingsOpen ? 'rotate-180' : ''} />
+          </Button>
           {/*
             **Two verbs, and the order is the order a merchant needs them in.**
 
@@ -856,17 +942,17 @@ function Configured({
             variant="outline"
             size="sm"
             disabled={busy || !runnable}
-            onClick={() => onTestSend(destination)}
+            onClick={(event) => onTestSend(destination, event.currentTarget, settingsDirty)}
           >
             <Zap aria-hidden="true" />
             {__('Send a test', 'wconvert')}
           </Button>
-          <Button variant="outline" size="sm" disabled={busy} onClick={() => onRePush(destination)}>
+          {(settingsOpen || failing) && destination.health.skipped_captures === 0 && <Button variant="outline" size="sm" disabled={busy || !runnable} onClick={() => onRePush(destination)}>
             <RotateCcw aria-hidden="true" />
             {__('Re-push leads since the last success', 'wconvert')}
-          </Button>
+          </Button>}
         </div>
-        <Button
+        {settingsOpen && <Button
           ref={removeTrigger}
           variant="ghost"
           size="sm"
@@ -876,9 +962,9 @@ function Configured({
         >
           <Trash2 aria-hidden="true" />
           {__('Remove', 'wconvert')}
-        </Button>
+        </Button>}
       </RegionFooter>
-    </Region>
+    </Region></div>
   );
 }
 
@@ -1041,7 +1127,7 @@ const TEST_RENDERING: Record<TestReport['outcome'], { className: string; icon: L
  * zero. Without this list there would be nothing anywhere naming them
  * (ADR 0008).
  */
-function Failures({ failures }: { failures: DestinationsPayload['failures'] }) {
+function Failures({ failures, destinations }: { failures: DestinationsPayload['failures']; destinations: readonly Destination[] }) {
   if (failures.length === 0) {
     return null;
   }
@@ -1051,28 +1137,36 @@ function Failures({ failures }: { failures: DestinationsPayload['failures'] }) {
       <RegionHeader
         title={__('Leads that could not be delivered', 'wconvert')}
         description={__(
-          'These failed for their own reasons, not an outage. Last 200 kept.',
+          'Individual rejected pushes, separate from destination outages. The latest 200 are kept; this is not a delivery history for every lead.',
           'wconvert',
         )}
       />
       <DataTable>
         <DataTableHead>
           <DataTableColumn>{__('When', 'wconvert')}</DataTableColumn>
+          <DataTableColumn>{__('Destination', 'wconvert')}</DataTableColumn>
           <DataTableColumn>{__('Lead', 'wconvert')}</DataTableColumn>
           <DataTableColumn>{__('Why', 'wconvert')}</DataTableColumn>
         </DataTableHead>
         <DataTableBody>
-          {failures.map((failure) => (
-            <DataTableRow key={`${failure.lead}-${failure.at}`}>
+          {failures.map((failure) => {
+            const destination = destinations.find((route) => route.id === failure.destination);
+            return <DataTableRow key={`${failure.destination}-${failure.lead}-${failure.at}`}>
               <DataTableCell label={__('When', 'wconvert')}>{failure.at}</DataTableCell>
+              <DataTableCell label={__('Destination', 'wconvert')}>
+                {destination ? <a className="font-medium underline underline-offset-2" href={destinationHref(destination.id)}>{destination.label}</a>
+                  : <span>{__('Removed destination', 'wconvert')}<Code className="mt-1 block text-muted-foreground">{failure.destination}</Code></span>}
+              </DataTableCell>
               <DataTableCell label={__('Lead', 'wconvert')}>
-                <Code className="text-muted-foreground">{failure.lead}</Code>
+                <a className="font-medium underline underline-offset-2" href={leadsHref({ leadId: failure.lead })}
+                  aria-label={sprintf(__('View capture %s', 'wconvert'), failure.lead)}>{__('View capture', 'wconvert')}</a>
+                <Code className="mt-1 block text-muted-foreground">{failure.lead}</Code>
               </DataTableCell>
               <DataTableCell label={__('Why', 'wconvert')}>
                 {failure.error}
               </DataTableCell>
-            </DataTableRow>
-          ))}
+            </DataTableRow>;
+          })}
         </DataTableBody>
       </DataTable>
     </Region>

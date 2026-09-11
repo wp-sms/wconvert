@@ -124,6 +124,14 @@ enum Goal: string
     case DeliverLeadMagnet = 'deliver_lead_magnet';
 
     /**
+     * Capture an enquiry for the plugin or service that handles the response.
+     * The counted outcome is still a Conversion, never a sale, reply or
+     * completed job. Like other contact Goals, a non-capturing design earns
+     * an advisory note rather than a new Goal/design restriction (ADR 0059).
+     */
+    case CollectEnquiries = 'collect_enquiries';
+
+    /**
      * Whether this Goal's product is a captured contact.
      *
      * ========================================================================
@@ -181,7 +189,7 @@ enum Goal: string
      * (ADR 0059), and it is deliberately not a filter: pre-pressing a captures
      * chip in the gallery would be a Goal facet in a captures chip's clothes,
      * which ADR 0043 forbids. It is derived rather than listed per case, so a
-     * sixth Goal reading the delivery kind arrives already answered.
+     * later Goal reading the delivery kind arrives already answered.
      *
      * **It is the strict half of {@see self::growsAList()} above**, and the
      * two are ordered rather than parallel: everything that needs a capture
@@ -295,6 +303,7 @@ enum Goal: string
             self::RecoverCart => __('Bring shoppers back to their cart', 'wconvert'),
             self::PromoteOffer => __('Promote a sale or offer', 'wconvert'),
             self::DeliverLeadMagnet => __('Deliver a lead magnet', 'wconvert'),
+            self::CollectEnquiries => __('Collect enquiries', 'wconvert'),
         };
     }
 
@@ -310,6 +319,7 @@ enum Goal: string
             self::RecoverCart => __('Show shoppers with a full cart the way back to it, and count the clicks.', 'wconvert'),
             self::PromoteOffer => __('Send visitors to an offer, and count the clicks through to it.', 'wconvert'),
             self::DeliverLeadMagnet => __('Send a file in exchange for an address, and count the deliveries.', 'wconvert'),
+            self::CollectEnquiries => __('Capture contact details and what visitors need, then pass them to your connected service.', 'wconvert'),
         };
     }
 }

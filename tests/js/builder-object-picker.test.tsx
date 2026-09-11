@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 /**
@@ -33,6 +33,13 @@ const { ObjectPicker } = await import('../../resources/admin/src/builder/rules/O
 
 const PRICING = { id: '42', title: 'Pricing' };
 const PRICES = { id: '77', title: 'Prices' };
+
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  let reject!: (cause: Error) => void;
+  const promise = new Promise<T>((yes, no) => { resolve = yes; reject = no; });
+  return { promise, resolve, reject };
+}
 
 function picker(value = '', onChange = vi.fn()) {
   render(
@@ -108,6 +115,103 @@ describe('finding a page', () => {
     await type('draft');
 
     await waitFor(() => expect(screen.getByText(/Only published items can be found by name/)).toBeInTheDocument());
+  });
+
+  it('shows loading during the debounce instead of claiming no matches before WordPress answers', async () => {
+    picker();
+    await userEvent.type(box(), 'pri');
+    expect(screen.getByRole('status')).toHaveTextContent('Searching…');
+    expect(box()).toHaveAttribute('aria-busy', 'true');
+    expect(screen.queryByText(/No matching pages/)).toBeNull();
+    expect(objects.searchObjects).not.toHaveBeenCalled();
+    await act250();
+    expect(await screen.findAllByRole('option')).toHaveLength(2);
+  });
+
+  it('does not select a previous query’s match while a new search is waiting', async () => {
+    const changed = picker();
+    await type('pri');
+    await screen.findAllByRole('option');
+    await userEvent.keyboard('c');
+    expect(screen.queryByRole('option')).toBeNull();
+    expect(box()).not.toHaveAttribute('aria-activedescendant');
+    await userEvent.keyboard('{Enter}');
+    expect(changed).not.toHaveBeenCalled();
+    await act250();
+  });
+
+  it('explains a failed search and retries from the input with Enter without changing the saved rule', async () => {
+    objects.resolveObjects.mockResolvedValue([PRICING]);
+    objects.searchObjects.mockRejectedValueOnce(new Error('WordPress unavailable'));
+    const changed = picker('42');
+    await waitFor(() => expect(box()).toHaveValue('Pricing (#42)'));
+    await type('new page');
+    const retry = await screen.findByRole('button', { name: 'Retry search' });
+    expect(screen.getByRole('status')).toHaveTextContent('Search couldn’t be completed');
+    expect(retry).toHaveAccessibleDescription(/press Enter/);
+    expect(within(screen.getByRole('listbox')).queryByRole('button')).toBeNull();
+    expect(screen.queryByText(/No matching pages/)).toBeNull();
+    expect(box()).toHaveFocus();
+    await userEvent.keyboard('{Enter}');
+    expect(screen.getByRole('status')).toHaveTextContent('Searching…');
+    await act250();
+    expect(await screen.findAllByRole('option')).toHaveLength(2);
+    expect(objects.searchObjects).toHaveBeenCalledTimes(2);
+    await userEvent.keyboard('{Escape}');
+    expect(box()).toHaveValue('Pricing (#42)');
+    expect(changed).not.toHaveBeenCalled();
+  });
+
+  it('retries a failed search by pointer and retains input focus and the same query', async () => {
+    objects.searchObjects.mockRejectedValueOnce(new Error('offline'));
+    picker();
+    await type('pri');
+    await userEvent.click(await screen.findByRole('button', { name: 'Retry search' }));
+    expect(box()).toHaveFocus();
+    expect(box()).toHaveValue('pri');
+    await act250();
+    expect(await screen.findAllByRole('option')).toHaveLength(2);
+    expect(objects.searchObjects.mock.calls.map((call) => call[1])).toEqual(['pri', 'pri']);
+  });
+
+  it('does not call categories and tags unpublished when a successful search has no matches', async () => {
+    objects.searchObjects.mockResolvedValue([]);
+    render(<><label htmlFor="term">Category or tag</label><ObjectPicker id="term" kind="term" value="" onChange={vi.fn()} /></>);
+    const field = screen.getByRole('combobox', { name: 'Category or tag' });
+    await userEvent.type(field, 'news');
+    await act250();
+    expect(await screen.findByText('No matching categories or tags. Try another name.')).toBeInTheDocument();
+    expect(screen.queryByText(/published/)).toBeNull();
+    expect(objects.searchObjects).toHaveBeenCalledWith('term', 'news', expect.anything());
+  });
+
+  it('ignores an older successful response after a newer query has completed', async () => {
+    const old = deferred<{ id: string; title: string }[]>();
+    objects.searchObjects.mockReturnValueOnce(old.promise).mockResolvedValueOnce([{ id: '80', title: 'Contact' }]);
+    picker();
+    await type('pri');
+    await userEvent.clear(box());
+    await type('contact');
+    expect(await screen.findByRole('option')).toHaveTextContent('Contact #80');
+    await act(async () => { old.resolve([PRICING]); });
+    expect(screen.getByRole('option')).toHaveTextContent('Contact #80');
+    expect(screen.getByRole('status')).toHaveTextContent('1 result');
+  });
+
+  it('ignores an aborted query’s late rejection while the current request is still loading', async () => {
+    const old = deferred<{ id: string; title: string }[]>();
+    const current = deferred<{ id: string; title: string }[]>();
+    objects.searchObjects.mockReturnValueOnce(old.promise).mockReturnValueOnce(current.promise);
+    picker();
+    await type('pri');
+    await userEvent.clear(box());
+    await type('contact');
+    expect((objects.searchObjects.mock.calls[0][2] as AbortSignal).aborted).toBe(true);
+    await act(async () => { old.reject(new Error('aborted')); });
+    expect(screen.getByRole('status')).toHaveTextContent('Searching…');
+    expect(screen.queryByRole('button', { name: 'Retry search' })).toBeNull();
+    await act(async () => { current.resolve([{ id: '80', title: 'Contact' }]); });
+    expect(screen.getByRole('option')).toHaveTextContent('Contact #80');
   });
 });
 
@@ -190,6 +294,34 @@ describe('the keyboard', () => {
 
     expect(changed).not.toHaveBeenCalled();
   });
+
+  it('keeps the saved name on focus and opens a fresh search with ArrowDown', async () => {
+    objects.resolveObjects.mockResolvedValue([PRICING]);
+    picker('42');
+    await waitFor(() => expect(box()).toHaveValue('Pricing (#42)'));
+    await userEvent.tab();
+    expect(box()).toHaveFocus();
+    expect(box()).toHaveValue('Pricing (#42)');
+    expect(box()).toHaveAttribute('aria-expanded', 'false');
+    await userEvent.keyboard('{ArrowDown}');
+    expect(box()).toHaveAttribute('aria-expanded', 'true');
+    await act250();
+    expect(objects.searchObjects).toHaveBeenCalledWith('post', '', expect.anything());
+    await userEvent.keyboard('{Escape}');
+    expect(box()).toHaveValue('Pricing (#42)');
+  });
+
+  it('replaces the selected display name when beginning a new search instead of appending to it', async () => {
+    objects.resolveObjects.mockResolvedValue([PRICING]);
+    picker('42');
+    await waitFor(() => expect(box()).toHaveValue('Pricing (#42)'));
+    await userEvent.click(box());
+    await userEvent.keyboard('contact');
+    await act250();
+    expect(objects.searchObjects).toHaveBeenCalledWith('post', 'contact', expect.anything());
+    await userEvent.keyboard('{Escape}');
+    expect(box()).toHaveValue('Pricing (#42)');
+  });
 });
 
 describe('a value already stored', () => {
@@ -219,13 +351,52 @@ describe('a value already stored', () => {
     await waitFor(() => expect(box()).toHaveValue('#42'));
   });
 
-  /** A lookup that fails outright is the same case, and reads the same way. */
+  /** A failed name lookup preserves the id and offers recovery. */
   it('falls back to the raw id when the lookup fails', async () => {
     objects.resolveObjects.mockRejectedValue(new Error('500'));
 
     picker('42');
 
     await waitFor(() => expect(box()).toHaveValue('#42'));
+    expect(await screen.findByRole('button', { name: 'Retry name lookup' })).toBeInTheDocument();
+    expect(box()).toHaveAccessibleDescription(/Couldn’t load.*still uses #42/);
+  });
+
+  it('retries a saved name lookup by keyboard, retaining its id and restoring input focus', async () => {
+    objects.resolveObjects.mockRejectedValueOnce(new Error('offline')).mockResolvedValueOnce([PRICING]);
+    const changed = picker('42');
+    await screen.findByRole('button', { name: 'Retry name lookup' });
+    await userEvent.tab();
+    await userEvent.tab();
+    expect(screen.getByRole('button', { name: 'Retry name lookup' })).toHaveFocus();
+    await userEvent.keyboard('{Enter}');
+    await waitFor(() => expect(box()).toHaveValue('Pricing (#42)'));
+    expect(box()).toHaveFocus();
+    expect(changed).not.toHaveBeenCalled();
+    expect(objects.resolveObjects).toHaveBeenCalledTimes(2);
+  });
+
+  it.each(['success', 'failure'] as const)('ignores a previous selected id’s late %s after resolving the new selection', async (outcome) => {
+    const old = deferred<{ id: string; title: string }[]>();
+    objects.resolveObjects.mockReturnValueOnce(old.promise).mockResolvedValueOnce([PRICES]);
+    const changed = vi.fn();
+    const field = (value: string) => <><label htmlFor="pick">Page or post</label><ObjectPicker id="pick" kind="post" value={value} onChange={changed} /></>;
+    const view = render(field('42'));
+    view.rerender(field('77'));
+    await waitFor(() => expect(box()).toHaveValue('Prices (#77)'));
+    expect((objects.resolveObjects.mock.calls[0][2] as AbortSignal).aborted).toBe(true);
+    await act(async () => { if (outcome === 'success') old.resolve([PRICING]); else old.reject(new Error('aborted')); });
+    expect(box()).toHaveValue('Prices (#77)');
+    expect(screen.queryByRole('button', { name: 'Retry name lookup' })).toBeNull();
+    expect(changed).not.toHaveBeenCalled();
+  });
+
+  it('explains a missing saved item without calling it a network error or clearing it', async () => {
+    const changed = picker('42');
+    await waitFor(() => expect(box()).toHaveAccessibleDescription(/may be unpublished, deleted.*still uses it/));
+    expect(box()).toHaveValue('#42');
+    expect(screen.queryByRole('button', { name: 'Retry name lookup' })).toBeNull();
+    expect(changed).not.toHaveBeenCalled();
   });
 
   it('shows nothing at all when nothing is stored', () => {

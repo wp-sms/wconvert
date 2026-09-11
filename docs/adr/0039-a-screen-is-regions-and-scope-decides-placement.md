@@ -76,10 +76,17 @@ being asked *what does this act on?*
 
 | An action acts on… | It lives… | As |
 |---|---|---|
-| the screen | the page header, beside the title | primary solid / secondary outline, **max two** |
+| the screen | the page header, trailing edge of the title row (ADR 0068) | primary solid / secondary outline, **max two** |
 | a region's data set | that region's toolbar, trailing edge | secondary, `sm` |
 | one row | the row's trailing Actions cell | ghost, `sm`; more than two collapse to an overflow menu |
 | a selection | replacing the toolbar's filter side while a selection exists | — |
+
+*Editor exception in [ADR 0070](0070-drafts-are-reviewed-and-explicitly-published-from-the-editor.md):
+the destination-selection region places its compact **Add destination** and
+**Refresh** actions at the trailing edge of its heading. Both act on that
+region; a separate otherwise-empty toolbar would repeat the same section
+boundary. Per-destination Settings stays on its row. This does not move other
+region actions or change the reading screens' page-action cap.*
 
 That table answers the open questions directly rather than by taste. Leads'
 Export CSV acts on the screen's whole log, so it is page-scoped and belongs
@@ -98,6 +105,10 @@ because the table's other rule still holds: a filter is not an action, and the
 position beside the title is what pairs an action with the thing it acts on.
 Recorded here rather than only in the commit that moved it, because this
 paragraph is what a reader reaches for.*
+
+*Placement amended by [ADR 0068](0068-reading-pages-put-results-and-routes-before-occasional-settings.md): page actions also occupy the trailing
+edge of the title row, wrapping at narrow widths. Scope and the two-action cap
+are unchanged; position alone does not distinguish a filter from an action.*
 
 **Two is the cap on page-header actions, and it is a cap on the header rather
 than on the screen.** A third page-scoped action is the signal that one of them
@@ -204,7 +215,11 @@ screen a nicer word for a Goal and must not cost the merchant the buttons beside
 it. A page-level error banner turns that deliberate degradation into a screen
 that announces it is broken.
 
-## The table breakpoint is 640px, and it is neither number ADR 0038 owns
+## The table breakpoint is 900px, and it is neither floor ADR 0038 owns
+
+*Amended by [ADR 0068](0068-reading-pages-put-results-and-routes-before-occasional-settings.md): the original 640px threshold left the Optin
+name and Goal squeezed and its actions clipped at 641px in WordPress. Card rows
+now apply at 900px and below.*
 
 [ADR 0038](0038-the-admin-holds-different-floors-to-the-loader.md) already owns
 two widths, and **a table may reuse neither**:
@@ -217,7 +232,7 @@ two widths, and **a table may reuse neither**:
 
 Reusing either would make one number mean two things, and the next person to
 move one would move the other by accident. So the table gets its own: **below
-640px a table becomes a stacked list of row-cards**, one card per row,
+901px a table becomes a stacked list of row-cards**, one card per row,
 label-and-value pairs inside.
 
 The two alternatives were both refused on what they cost the reader. **Horizontal
@@ -358,13 +373,16 @@ design says nothing at all.** Placing *"This will work"* correctly was solving
 the wrong problem — a green tick on every visit is a permanent line that taxes
 every visit and informs one, which is this ADR's own argument about subtitles
 arriving one component later. The toolbar renders only when there are problems,
-and Undo and Redo left with it: they move the whole DRAFT, the same scope `Save
-changes` has, so they belong in the page-header band. The band those two
-controls were costing was the only reason the strip existed._
+and Undo and Redo left with it: under [ADR 0075](0075-draft-history-and-template-content-choices-stay-predictable.md), they move the **name and complete
+working draft**, so they belong in the page-header band. The controls say *Undo
+draft edit* and *Redo draft edit*. Ordinary Save preserves that local history;
+saving a new Goal starts a new history, and shared destination settings and
+publication remain outside Undo. The band those two controls were costing was
+the only reason the strip existed._
 
-`Display rules` and `Destinations` do not get it, by the same test: neither
-edits the design, so neither can produce an entry to step or a problem to
-report.
+`Display rules` and `Destinations` now contribute draft history entries, while
+Undo and Redo remain shared header actions. Selected destination ids belong to
+this draft; independently saved site destination settings do not.
 
 _Amended again, and this one deletes the component. **The design was the
 SMALLER scope all along, and the verdict's is the Optin.** *"Nothing on this
@@ -460,6 +478,31 @@ the selection rather than clearing it.
   bound now — a preset and a size slider are controls a merchant came to the tab
   to use, so both take `--control-height`. A height that is written down and not
   applied is worse than one that was never written down: it reads as decided._
+
+  _Amended again by [ADR 0066](0066-the-editors-chrome-is-one-card-with-three-named-panes.md):
+  **there are three.** `--control-height-xs` (1.5rem) is this consequence's own
+  scope test applied one level further in than it had a level for — 2rem
+  qualifies the SCREEN, 1.5rem sits inside the WORK SURFACE: a tree row's three
+  action cells, a token's reset, a box's clipboard buttons, the theme presets and
+  the swatches. Three 32px cells were 96px of a 254px pane. The preset and the
+  slider named in the amendment above move with it, and the test that placed them
+  is unchanged — a preset inside a popover inside a pane is not a control a
+  merchant came to the SCREEN to press. 24px is WCAG 2.2 SC 2.5.8's bar exactly
+  and is a floor, not a step. The vendored `Button` had shipped `size="icon-xs"`
+  at `size-6` since the first vendor commit with zero call sites._
+
+  _Completed for the inside of a pane: **within the work surface the three
+  become two, and the taller of the two is 2rem rather than 2.25.** The scope
+  test above is about the SCREEN, and it hands a pane the wrong answer — the
+  inspector's fields stood at `--control-height` beside chips, swatches, sliders
+  and resets at `--control-height-xs`, which is a 254px column reading as two
+  unrelated scales stacked. Inside a pane a control is one of two things: a
+  field you TYPE INTO (2rem) or a chip or action you PRESS (1.5rem). `index.css`
+  states the first as `#wconvert-admin .wconvert-inspector :is(select, input…)`
+  at (1,2,0), which beats the screen's (1,1,0) rule on the cascade without an
+  `!important`. `.wconvert-token__exact` is the one exception and proves the
+  distinction: it is the numeric readout of a 1.5rem slider it shares a row
+  with, not a field for prose, so it takes the slider's height._
 - **Status is a `Badge`, never plain text**, and the words are translated. The
   badge is the only thing in a Status column, so an id with no registry entry
   stays a `<code>` in the Goal column and never becomes a badge that would read

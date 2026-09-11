@@ -131,7 +131,11 @@ be paid on every beacon for a read one admin takes on demand.*
   *Narrowed by [ADR 0059](0059-the-converting-act-belongs-to-the-design.md): a
   Goal decides which KIND the headline is read from, and no longer which act
   produces it — that was a second declaration of a fact the design already
-  carried. The closure argument is untouched and the set is the same five.*
+  carried. The closure argument is untouched.*
+  *Extended by [ADR 0076](0076-an-enquiry-captures-one-optional-choice-before-handoff.md)
+  with a sixth member, Collect enquiries. Its headline reads `conversion`,
+  not replies, sales or completed services. Qualification answers stay in the
+  existing Lead JSON; they add no stat kind, dimension, table or index.*
   *Completed by [#26](https://github.com/navidkashani/wconvert/issues/26) as a
   PHP `enum` ([`StatKind`](../../src/Stats/StatKind.php)) over a `VARCHAR(32)`
   column rather than a database `ENUM`: adding a case should be a code change a

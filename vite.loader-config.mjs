@@ -63,6 +63,8 @@ export function loaderConfig({ entry, outDir, name, fileName = 'loader.js' }) {
         fileName: () => fileName,
       },
       minify: 'terser',
+      // Keep shared helpers compact in the gzipped visitor payload.
+      terserOptions: { compress: { passes: 3, hoist_funs: true, inline: 1 } },
       // The loader is subject to a hard 8KB gzipped budget, per build
       // (ADR 0014, ADR 0029). Nothing asserts that here: the assertion is
       // `npm run check:loader`, and it lands with the rule manifest whose

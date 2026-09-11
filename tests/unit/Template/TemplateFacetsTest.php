@@ -139,10 +139,44 @@ final class TemplateFacetsTest extends TestCase
     public function testAPictureChipMeansAPictureInTheTree(string $id, array $entry): void
     {
         $this->assertSame(
-            self::hasNode($entry['tree'], 'image'),
+            // Fieldwork is the bundled picture implemented as a background;
+            // Ink split and Inline tinted have decorative gradients instead.
+            self::hasNode($entry['tree'], 'image') || $id === 'fieldwork',
             $entry['facets']['has_image'],
             $id . ' disagrees with its own tree about whether it has a picture'
         );
+    }
+
+    public function testAVisibleBackgroundPictureDoesNotNeedAnImageNode(): void
+    {
+        $picture = 'url("https://example.org/picture.jpg")';
+        $tree = ['steps' => [[
+            'type' => 'split',
+            'start' => [['type' => 'heading', 'text' => 'Hello']],
+            'end' => [['type' => 'media', 'tokens' => ['bg-image' => $picture], 'children' => []]],
+        ]]];
+
+        $this->assertTrue(TemplateFacets::of($tree, [])['has_image']);
+        $this->assertTrue(TemplateFacets::of(['steps' => []], [], ['bg-image' => $picture])['has_image']);
+        $this->assertTrue(TemplateFacets::of(['steps' => [[
+            'type' => 'panel', 'narrow' => ['bg-image' => $picture], 'children' => [],
+        ]]], [])['has_image']);
+    }
+
+    public function testAnUnusedBackgroundTokenOrColourWashIsNotAPicture(): void
+    {
+        foreach (['none', 'linear-gradient(#fff,#000)', ''] as $background) {
+            $this->assertFalse(TemplateFacets::of(['steps' => [[
+                'type' => 'panel', 'tokens' => ['bg-image' => $background], 'children' => [],
+            ]]], [], ['bg-image' => $background])['has_image']);
+        }
+
+        // Rows do not paint this token, and panels reset an ancestor's image.
+        $this->assertFalse(TemplateFacets::of(['steps' => [[
+            'type' => 'row',
+            'tokens' => ['bg-image' => 'url("https://example.org/picture.jpg")'],
+            'children' => [['type' => 'panel', 'children' => []]],
+        ]]], [])['has_image']);
     }
 
     /**
@@ -293,7 +327,7 @@ final class TemplateFacetsTest extends TestCase
             }
         });
 
-        return array_values(array_filter(['email', 'name', 'phone'], static fn (string $f): bool => isset($found[$f])));
+        return array_values(array_filter(self::vocabulary()->fields(), static fn (string $f): bool => isset($found[$f])));
     }
 
     /**

@@ -173,6 +173,26 @@ final class WpMailPoetSubscribers implements MailPoetSubscribers
         return $named;
     }
 
+    public function textFields(): array
+    {
+        if (!self::isAvailable()) return [];
+        try {
+            $found = $this->call($this->api(), 'getSubscriberFields');
+        } catch (\Throwable $unreachable) {
+            return [];
+        }
+        $fields = [];
+        foreach (is_array($found) ? $found : [] as $field) {
+            if (!is_array($field) || ($field['type'] ?? '') !== 'text') continue;
+            $id = (string) ($field['id'] ?? '');
+            $name = (string) ($field['name'] ?? '');
+            if (preg_match('/^cf_[1-9][0-9]*$/', $id) === 1 && $name !== '') {
+                $fields[] = ['id' => $id, 'name' => $name];
+            }
+        }
+        return $fields;
+    }
+
     public function add(array $subscriber, array $listIds): string
     {
         try {

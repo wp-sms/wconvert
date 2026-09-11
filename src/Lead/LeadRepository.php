@@ -146,8 +146,14 @@ final class LeadRepository
      * it has — and a headline that drifts with a presentation toggle is the
      * second metric ADR 0021 exists to prevent.
      */
-    public function submissions(?string $optinId): int
+    public function submissions(?string $optinId, ?LeadQuery $query = null): int
     {
+        if ($query !== null) {
+            $filter = $query->constraints();
+            $row = $this->db->row(Connection::TABLE_LEADS,
+                'SELECT COUNT(*) AS total FROM %i WHERE ' . $filter['sql'], ...$filter['params']);
+            return (int) ($row['total'] ?? 0);
+        }
         $row = $optinId === null
             ? $this->db->row(Connection::TABLE_LEADS, 'SELECT COUNT(*) AS total FROM %i')
             : $this->db->row(
@@ -170,8 +176,16 @@ final class LeadRepository
      *
      * @return list<Lead>
      */
-    public function page(?string $optinId, int $limit): array
+    public function page(?string $optinId, int $limit, ?LeadQuery $query = null): array
     {
+        if ($query !== null) {
+            $filter = $query->constraints();
+            if ($query->before !== null) { $filter['sql'] .= ' AND id < %s'; $filter['params'][] = $query->before; }
+            $rows = $this->db->results(Connection::TABLE_LEADS,
+                'SELECT ' . self::FULL_COLUMNS . ' FROM %i WHERE ' . $filter['sql'] . ' ORDER BY id DESC LIMIT %d',
+                ...[...$filter['params'], $limit]);
+            return array_map(static fn (array $row): Lead => Lead::fromRow($row), $rows);
+        }
         $rows = $optinId === null
             ? $this->db->results(
                 Connection::TABLE_LEADS,
@@ -193,8 +207,22 @@ final class LeadRepository
      *
      * @return list<LeadGroup>
      */
-    public function groups(?string $optinId, int $limit): array
+    public function groups(?string $optinId, int $limit, ?LeadQuery $query = null): array
     {
+        if ($query !== null) {
+            $filter = $query->constraints();
+            // HAVING pages whole groups. A WHERE cursor would split a group's
+            // events, repeat it on later pages, and change its submission count.
+            $having = $query->before === null ? '' : ' HAVING MAX(id) < %s';
+            $params = [...$filter['params'], ...($query->before === null ? [] : [$query->before])];
+            $rows = $this->db->results(Connection::TABLE_LEADS,
+                'SELECT email AS identifier, COUNT(*) AS submissions, MAX(id) AS latest_id FROM %i WHERE '
+                . $filter['sql'] . ' AND email IS NOT NULL GROUP BY email' . $having . ' UNION ALL '
+                . 'SELECT phone AS identifier, COUNT(*) AS submissions, MAX(id) AS latest_id FROM %i WHERE '
+                . $filter['sql'] . ' AND email IS NULL AND phone IS NOT NULL GROUP BY phone' . $having
+                . ' ORDER BY latest_id DESC LIMIT %d', ...[...$params, ...$params, $limit]);
+            return array_map(static fn (array $row): LeadGroup => LeadGroup::fromRow($row), $rows);
+        }
         $rows = $optinId === null
             ? $this->db->results(Connection::TABLE_LEADS, self::GROUPED, $limit)
             : $this->db->results(Connection::TABLE_LEADS, self::GROUPED_FOR_OPTIN, $optinId, $optinId, $limit);
@@ -238,8 +266,15 @@ final class LeadRepository
      *
      * @return list<Lead>
      */
-    public function since(?string $optinId, string $afterId, int $limit): array
+    public function since(?string $optinId, string $afterId, int $limit, ?LeadQuery $query = null): array
     {
+        if ($query !== null) {
+            $filter = $query->constraints();
+            $rows = $this->db->results(Connection::TABLE_LEADS,
+                'SELECT ' . self::FULL_COLUMNS . ' FROM %i WHERE ' . $filter['sql'] . ' AND id > %s ORDER BY id ASC LIMIT %d',
+                ...[...$filter['params'], $afterId, $limit]);
+            return array_map(static fn (array $row): Lead => Lead::fromRow($row), $rows);
+        }
         $rows = $optinId === null
             ? $this->db->results(
                 Connection::TABLE_LEADS,

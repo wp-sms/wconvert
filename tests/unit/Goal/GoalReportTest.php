@@ -51,6 +51,15 @@ final class GoalReportTest extends TestCase
         $this->assertSame(100, GoalReport::headline(Goal::GrowEmailList, self::history()));
     }
 
+    public function testAnEnquiryGoalCountsConversionsWithoutClaimingRepliesOrCompletedWork(): void
+    {
+        $this->assertSame(100, GoalReport::headline(Goal::CollectEnquiries, self::history()));
+        $this->assertSame(
+            ['2026-08-23' => 40, '2026-08-24' => 50, '2026-08-25' => 10],
+            GoalReport::byDay(Goal::CollectEnquiries, self::history())
+        );
+    }
+
     /**
      * The one Goal whose headline is not `conversion`. The delivery happens
      * *after* the Conversion, from a different process, and can fail on its

@@ -15,10 +15,10 @@ return [
     'name' => __('Welcome discount', 'wconvert'),
     'goal' => 'grow_email_list',
     'template_id' => 'centred-card',
-    'notes' => __('A first-order discount is the highest-converting trade there is, because the visitor gets something back in the same session. Keep the discount in the headline where it is read first.', 'wconvert'),
+    'notes' => __('A first-order discount gives visitors a reason to share an address. Create the code and configure the connected service to send it before publishing.', 'wconvert'),
     'copy' => [
         'headline' => __('Get 10% off your first order', 'wconvert'),
-        'body' => __('Join the list and we will send the code straight over.', 'wconvert'),
+        'body' => __('Join the list and request your first-order code.', 'wconvert'),
         'email_label' => __('Email address', 'wconvert'),
         'email_placeholder' => __('you@example.com', 'wconvert'),
         'cta_label' => __('Send my code', 'wconvert'),
@@ -33,8 +33,8 @@ return [
             'text' => __('No spam, and you can unsubscribe at any time. See our %s.', 'wconvert'),
             'link' => ['label' => __('Privacy Policy', 'wconvert')],
         ],
-        'success_headline' => __('You are on the list', 'wconvert'),
-        'success_body' => __('Your code is on its way to your inbox.', 'wconvert'),
+        'success_headline' => __('Thank you', 'wconvert'),
+        'success_body' => __('We have received your request for the welcome offer.', 'wconvert'),
     ],
     // Eight seconds is long enough to have read something and short enough to
     // still be on the page. One Trigger and not `page_load` beside it: an

@@ -82,13 +82,13 @@
             "type": "heading",
             "id": "n7",
             "role": "success_headline",
-            "text": "You are signed up"
+            "text": "Request received"
           },
           {
             "type": "text",
             "id": "n8",
             "role": "success_body",
-            "text": "Watch out for a message when the next drop lands."
+            "text": "Thank you for asking to hear about the next drop."
           }
         ]
       }

@@ -1,5 +1,5 @@
 /**
- * Undo and redo over whole {@link Template} snapshots.
+ * Undo and redo over whole working-draft snapshots.
  *
  * ============================================================================
  * UNDO IS WHAT MAKES DELETE SAFE WITHOUT A CONFIRM DIALOG.
@@ -31,7 +31,7 @@
  * tree the server has since rearranged, and it would land on the wrong node
  * silently.
  *
- * A snapshot cannot be wrong that way: it either is the previous design or it
+ * A snapshot cannot be wrong that way: it either is the previous draft or it
  * is not. Templates are small — the payload budget is measured in hundreds of
  * bytes per Optin (ADR 0010) — so {@link DEPTH} snapshots is a rounding error
  * against a screen that is already holding the whole gallery.

@@ -28,9 +28,9 @@ import { cn } from '../lib/utils';
  * because Tailwind's utilities are `!important` (ADR 0035) and a `py-3` on a
  * cell would beat every padding the row-card treatment needs to change.
  */
-export function DataTable({ className, children }: { className?: string; children: ReactNode }) {
+export function DataTable({ className, label, children }: { className?: string; label?: string; children: ReactNode }) {
   return (
-    <table role="table" className={cn('wconvert-table', className)}>
+    <table role="table" aria-label={label} className={cn('wconvert-table', className)}>
       {children}
     </table>
   );

@@ -14,6 +14,14 @@ fine print — expresses it as **structure rather than markup**:
 The renderer splits on the placeholder and constructs the `<a>` itself. The href
 is scheme-validated to `http`, `https` or `mailto` in PHP at write.
 
+*Extended by [ADR 0076](0076-an-enquiry-captures-one-optional-choice-before-handoff.md):
+choice content is structured too. `interest_options` holds
+`{options: [{value, label}]}`, never `<select>` markup. Labels are words;
+values are stable answer identifiers and are not translated. The named wrapper
+keeps one options list distinct from repeated Slot Role values under
+[ADR 0051](0051-a-slot-role-repeats-and-binds-in-order.md). Both parts travel
+through the same snapshot and copy-binding boundary.*
+
 *Completed by [#24](https://github.com/navidkashani/wconvert/issues/24): the
 placeholder is not decoration, it is **the link's only place**. A sentence
 carrying no `%s` renders no anchor at all, exactly as a link with no resolved
@@ -105,7 +113,7 @@ the same move ADR 0010 made on templates, applied one layer up.
   sanitise. The scheme validation is unchanged and still applies at write, to
   the href a MERCHANT types.*
 - **Bundled Playbooks ship as PHP files returning arrays; remote ones as JSON.**
-  A Playbook is nothing but words and `wp i18n make-pot` cannot see a JSON string,
+  A Playbook's visible copy is words and `wp i18n make-pot` cannot see a JSON string,
   so a JSON bundled registry ships an English-only library. Remote entries stay
   JSON and untranslated because remote PHP is Guideline 8 remote code execution
   with no argument available. Both normalise to one in-memory shape.
@@ -118,6 +126,11 @@ the same move ADR 0010 made on templates, applied one layer up.
   `tests/unit/Playbook/BundledPlaybooksTest.php` asserts every shipped word is
   reachable by `make-pot`, which is the claim this bullet rests on and had
   nothing holding it.*
+
+  *Amended by ADR 0076: the translation audit includes every option label and
+  excludes only the stable `value` in an options entry. Translating that key
+  would change the answer sent to a destination when the site's language
+  changes; translating the label leaves it stable.*
 
   *Completed by [#52](https://github.com/navidkashani/wconvert/issues/52), with
   the cost this shape carries and where it is paid. **A PHP entry translates

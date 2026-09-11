@@ -41,9 +41,7 @@ import type { Connection, Destination, DestinationType, SettingsField } from './
  * WSMS's `tags` is a list — the shape that shipped, and it round-trips
  * unchanged.
  *
- * There is no `select`: nothing in the Destination schemas offers a closed set
- * of options yet, and inventing the control before a field needs it would be
- * guessing at whether the options travel in the schema or come off the wire.
+ * A `select` names one provider field; its stable id stays independent of its label.
  */
 export function SettingsControl({
   id,
@@ -57,6 +55,14 @@ export function SettingsControl({
   onChange: (value: string) => void;
 }) {
   switch (field.type) {
+    case 'select':
+      return <select id={id} value={value} onChange={(event) => onChange(event.target.value)}
+        className="h-(--control-height) max-w-full rounded-md border border-input bg-transparent ps-3 pe-9 text-body">
+        <option value="">{__('Do not send this answer', 'wconvert')}</option>
+        {value !== '' && !field.options?.some((option) => option.value === value)
+          && <option value={value}>{sprintf(__('Unavailable field (%s)', 'wconvert'), value)}</option>}
+        {(field.options ?? []).map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+      </select>;
     /**
      * A list. **Checkboxes where the server could enumerate the choices, and a
      * comma-separated text input where it could not** — the same stored

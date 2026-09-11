@@ -29,11 +29,11 @@ import { RegionSkeleton } from './RegionSkeleton';
  * sentence carries the whole of what a screen reader needs from a placeholder,
  * and a grid of announced boxes is a spinner read aloud.
  */
-export function BuilderSkeleton({ onClose }: { onClose: () => void }) {
+export function BuilderSkeleton({ onClose, backLabel }: { onClose: () => void; backLabel?: string }) {
   return (
     <div className="flex flex-col gap-5">
       <PageAction>
-        <BackLink onClose={onClose} />
+        <BackLink onClose={onClose} label={backLabel} />
         <Skeleton aria-hidden="true" className="mt-3 h-9 w-72 max-w-full" />
       </PageAction>
       <RegionSkeleton label={__('Optin builder', 'wconvert')}>
@@ -47,9 +47,8 @@ export function BuilderSkeleton({ onClose }: { onClose: () => void }) {
 /**
  * The way out of the builder.
  *
- * A `<button>` rather than an `<a>`: the list is a state this bundle holds and
- * the builder has no URL of its own, so an `href="#"` a handler cancels would
- * be a link that lies about being one.
+ * It is a button because leaving an unsaved editor needs a decision before
+ * accepting the destination route. The route itself remains bookmarkable.
  *
  * **It lives out here so the skeleton can carry it.** A merchant who opened the
  * builder on a slow connection must be able to leave again before the chunk
@@ -78,17 +77,21 @@ export function BackLink({
   onClose,
   ref,
   className,
+  label,
+  disabled = false,
 }: {
   onClose: () => void;
   ref?: Ref<HTMLButtonElement>;
   className?: string;
+  label?: string;
+  disabled?: boolean;
 }) {
   return (
     <div className={className}>
-      <Button ref={ref} variant="ghost" size="sm" className="-ms-3" onClick={onClose}>
+      <Button ref={ref} variant="ghost" size="sm" className="-ms-3" onClick={onClose} disabled={disabled}>
         {/* Back is the other way in Persian; see {@see GoalScreen}'s footer. */}
         <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />
-        {__('All Optins', 'wconvert')}
+        {label ?? __('All Optins', 'wconvert')}
       </Button>
     </div>
   );

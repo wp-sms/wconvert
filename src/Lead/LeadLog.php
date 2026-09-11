@@ -38,30 +38,28 @@ final class LeadLog
     }
 
     /**
-     * @return array{submissions: int, grouped: bool, leads: list<array<string, mixed>>, groups: list<array<string, mixed>>}
+     * @return array{submissions: int, grouped: bool, leads: list<array<string, mixed>>, groups: list<array<string, mixed>>, next_cursor: string|null, snapshot: string}
      */
-    public function read(?string $optinId, bool $grouped, int $limit): array
+    public function read(?string $optinId, bool $grouped, int $limit, ?LeadQuery $query = null): array
     {
         // FIRST, and unconditionally. The headline is not a function of the
         // toggle, so it is not computed in a branch the toggle chooses.
-        $submissions = $this->leads->submissions($optinId);
+        $query ??= new LeadQuery(optinId: $optinId, snapshot: LeadQuery::snapshotNow());
+        $submissions = $this->leads->submissions($optinId, $query);
         $limit = max(1, min($limit, self::MAX_ROWS));
+        $rows = $grouped ? $this->leads->groups($optinId, $limit + 1, $query)
+            : $this->leads->page($optinId, $limit + 1, $query);
+        $more = count($rows) > $limit;
+        $rows = array_slice($rows, 0, $limit);
+        $last = $rows === [] ? null : $rows[count($rows) - 1];
 
         return [
             'submissions' => $submissions,
             'grouped' => $grouped,
-            'leads' => $grouped
-                ? []
-                : array_map(
-                    static fn (Lead $lead): array => $lead->toArray(),
-                    $this->leads->page($optinId, $limit)
-                ),
-            'groups' => $grouped
-                ? array_map(
-                    static fn (LeadGroup $group): array => $group->toArray(),
-                    $this->leads->groups($optinId, $limit)
-                )
-                : [],
+            'leads' => $grouped ? [] : array_map(static fn ($lead): array => $lead->toArray(), $rows),
+            'groups' => $grouped ? array_map(static fn ($group): array => $group->toArray(), $rows) : [],
+            'next_cursor' => $more && $last !== null ? $query->nextCursor($last instanceof Lead ? $last->id : $last->latestId) : null,
+            'snapshot' => $query->snapshot,
         ];
     }
 }

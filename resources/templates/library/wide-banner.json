@@ -88,13 +88,13 @@
             "type": "heading",
             "id": "n7",
             "role": "success_headline",
-            "text": "You are signed up"
+            "text": "Thank you"
           },
           {
             "type": "text",
             "id": "n8",
             "role": "success_body",
-            "text": "Thursday is the next one."
+            "text": "We have received your request for the weekly round-up."
           }
         ]
       }

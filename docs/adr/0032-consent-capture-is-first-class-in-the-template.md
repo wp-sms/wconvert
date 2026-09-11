@@ -7,6 +7,12 @@ hand-adds. It is **off by default, required once present, and enforced
 server-side**, and the evidence it produces is the [[Consent Record]] snapshotted
 into the [[Lead]]'s existing `fields` JSON.
 
+*Clarified by [ADR 0076](0076-an-enquiry-captures-one-optional-choice-before-handoff.md):
+an optional service choice is a `field`, not this checkbox. Selecting a service
+does not assert consent or a marketing subscription. The enquiry Playbook uses
+request-specific privacy and consent wording; its consent node still ships
+hidden and becomes required when enabled, with the existing evidence contract.*
+
 Records a decision from
 [#11](https://github.com/navidkashani/wconvert/issues/11) that had no ADR of its
 own. Its three refusals became
@@ -34,9 +40,13 @@ captures Leads whose consent was explicitly *refused*, which is worse than never
 asking — the row then asserts a consent that the visitor declined on the same
 screen.
 
-The capture endpoint is public, so client-side validation is decoration: the
-REST handler rejects a submission whose Optin declares a `consent` node and whose
-payload lacks it.
+The capture endpoint is public, so client-side validation cannot authorise a
+capture: the REST handler rejects a submission whose Optin declares a `consent`
+node and whose payload lacks it. **Completed by
+[ADR 0073](0073-capture-acknowledgement-is-not-provider-confirmation.md):** native
+validation is useful visitor feedback, with an inline message and focus on the
+first invalid field or checkbox. Server refusals use the same correction path,
+preserving entered values. Neither replaces the endpoint's enforcement.
 
 *Completed by [#24](https://github.com/navidkashani/wconvert/issues/24) on the
 two questions building it raised.*
@@ -66,6 +76,10 @@ Same reasoning that keeps [[Destination]] ids out of Playbooks — a Playbook ca
 express nothing site-local — and it makes the link correct on every site without
 any entry knowing which site it is on. **No policy set means the link node
 renders nothing**, never a dead `#`.
+
+*The enquiry examples in ADR 0076 therefore keep the surrounding sentence
+complete without the link: `We use these details to respond to your request.
+%s`. Removing an unresolved link must not leave a fragment such as `See our.`.*
 
 *Completed by [#24](https://github.com/navidkashani/wconvert/issues/24) on how
 the renderer knows WHICH link to resolve: **a link that declares a label and

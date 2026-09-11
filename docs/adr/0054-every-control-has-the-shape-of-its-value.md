@@ -116,6 +116,14 @@ Two consequences worth pinning:
   reading a computed value off the document would be the admin's answer to a
   question about the merchant's design.
 
+**Extended by [ADR 0075](0075-draft-history-and-template-content-choices-stay-predictable.md):** Parseable one-/two-value lengths also offer amount and
+unit inputs outside slider ranges. Changing a unit preserves the number and
+never performs an inferred conversion. Custom CSS remains available; incomplete
+number/CSS text commits on Enter or blur and Escape cancels unapplied text.
+Colour text now accepts CSS strings without hex-only filtering. Opening controls
+writes nothing; clearing an override and explicit `0`/`none` remain different.
+This does not add value validation, token names or new mobile semantics.
+
 ## 3. A closed set of pictures is picked as pictures
 
 `icon.name` offers six glyphs — a tick, a star, a lightning bolt, a gift, a

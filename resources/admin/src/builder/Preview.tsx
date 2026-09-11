@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { mount } from '@renderer/mount';
+import { A_DESIGNS_OWN_WIDTH } from '@renderer/css';
 import { SLOT_SELECTOR, keyOfElement, type SlotKey } from './slots';
 import { policyUrl, withPolicyLink } from './policy';
 import type { Template } from '@renderer/types';
@@ -84,6 +85,26 @@ import type { Template } from '@renderer/types';
 const OUTLINE = '2px solid var(--ring, #0f6e79)';
 
 /**
+ * What the NEXT press would take, drawn under the pointer.
+ *
+ * ============================================================================
+ * WITHOUT IT THE DRILL IS A GUESS, AND THAT IS WHAT MADE BOXES FEEL BROKEN.
+ * ============================================================================
+ * Every addressable element already gets `cursor: pointer`, so the whole
+ * preview says "clickable" — and nothing said WHAT. A merchant aiming at a
+ * coloured box hit the headline inside it, got *"this block takes its look
+ * from Column"* and pressed again in the same place expecting a different
+ * answer. Measured on `split-hero` before this: of 168 points across the
+ * preview, 21 selected the Column and none at all reached the design.
+ *
+ * Dashed rather than a second colour, because the difference being drawn is
+ * *chosen* against *would be chosen* — a state and its preview, which is the
+ * one distinction a merchant with a colour-vision deficiency must still get
+ * (ADR 0038). The selected outline always wins where both would land.
+ */
+const HINT = '2px dashed var(--ring, #0f6e79)';
+
+/**
  * What is already a control, because the preview is the real render.
  *
  * A design's capture field is an `<input>` and its CTA is a `<button>` or an
@@ -91,6 +112,33 @@ const OUTLINE = '2px solid var(--ring, #0f6e79)';
  * wrapping them in a `role="button"` would announce an input as a button.
  */
 const FOCUSABLE = 'a[href],button,input,select,textarea';
+
+/**
+ * The addressable boxes under a point, outermost first, ending with the
+ * element actually pressed.
+ *
+ * `.wc-pane` is the one thing the renderer draws that is not a node and carries
+ * no `data-path`, so it drops out by construction rather than by name — the
+ * same reason {@see SLOT_SELECTOR} can be one attribute.
+ */
+function chainAt(root: HTMLElement, target: Element): SlotKey[] {
+  const chain: SlotKey[] = [];
+
+  for (let el: Element | null = target; el !== null && el !== root; el = el.parentElement) {
+    const key = el instanceof HTMLElement && el.matches(SLOT_SELECTOR) ? keyOfElement(el) : null;
+
+    if (key !== null) {
+      chain.unshift(key);
+    }
+  }
+
+  return chain;
+}
+
+/** Select the element under the pointer. Ancestors are reached by breadcrumbs or Layers. */
+function nextInChain(chain: readonly SlotKey[]): SlotKey | null {
+  return chain[chain.length - 1] ?? null;
+}
 
 /**
  * What a countdown counts to on THIS side of the boundary.
@@ -118,16 +166,23 @@ const A_PREVIEW_DEADLINE = Date.now() + 2 * 60 * 60 * 1000;
 export interface PreviewProps {
   readonly template: Template;
   readonly step?: number;
-  /** The slot drawn as selected, named the way `slots.ts` names it. */
+  readonly interactive?: boolean;
+  readonly onAdvance?: () => void;
+  /** The block drawn as selected, addressed the way `slots.ts` addresses one. */
   readonly selected?: SlotKey | null;
   /**
-   * A slot was clicked. Omitted in the gallery, where a card is a picture and
+   * A block was clicked. Omitted in the gallery, where a card is a picture and
    * every pointer event is turned off in the stylesheet anyway.
+   *
+   * **Its presence is what asks the renderer for addresses.** A card that
+   * cannot be clicked has nothing to name, so it mounts without them and pays
+   * no bytes for the attribute — the same line ADR 0040 draws for a visitor's
+   * page, drawn once here rather than at every call site.
    */
   readonly onSelect?: (key: SlotKey) => void;
 }
 
-export function Preview({ template, step = 0, selected = null, onSelect }: PreviewProps) {
+export function Preview({ template, step = 0, selected = null, onSelect, interactive = false, onAdvance }: PreviewProps) {
   const anchor = useRef<HTMLDivElement>(null);
   /*
    * State rather than a ref, because the two effects below have to run again
@@ -136,6 +191,27 @@ export function Preview({ template, step = 0, selected = null, onSelect }: Previ
    * screen.
    */
   const [root, setRoot] = useState<HTMLElement | null>(null);
+  /*
+   * Read as a boolean so a caller passing a fresh arrow function on every
+   * render does not remount the tree — `onSelect` is in the effects that BIND
+   * to it, where a rebind is cheap, and out of the one that builds it.
+   */
+  const selectable = onSelect !== undefined;
+  /** What the next press would take, drawn dashed under the pointer. */
+  const [hint, setHint] = useState<SlotKey | null>(null);
+  /*
+   * **The selection, readable from a listener that must not be rebound.**
+   *
+   * The press handler is delegated precisely so it survives a tree that is
+   * rebuilt on every keystroke; putting `selected` in its dependencies would
+   * rebind it on every selection instead, which is the cost the delegation was
+   * paying to avoid. A ref is the selection at press time and nothing else.
+   */
+  const selectedAt = useRef<SlotKey | null>(selected);
+
+  useEffect(() => {
+    selectedAt.current = selected;
+  }, [selected]);
 
   /*
    * **The site's own privacy policy, filled in at the render** (#77).
@@ -149,6 +225,17 @@ export function Preview({ template, step = 0, selected = null, onSelect }: Previ
    * below remounts on, and an unresolved tree comes back unchanged by identity
    * — so a site with no policy configured pays nothing at all.
    */
+  useEffect(() => {
+    if (!interactive || root === null) return;
+    const submit = (event: Event) => { event.preventDefault(); onAdvance?.(); };
+    const links = (event: Event) => {
+      if ((event.target as Element | null)?.closest('a')) event.preventDefault();
+    };
+    root.addEventListener('submit', submit);
+    root.addEventListener('click', links);
+    return () => { root.removeEventListener('submit', submit); root.removeEventListener('click', links); };
+  }, [interactive, root, onAdvance]);
+
   const url = policyUrl();
   const drawn = useMemo(
     (): Template => {
@@ -165,6 +252,7 @@ export function Preview({ template, step = 0, selected = null, onSelect }: Previ
       template: drawn,
       anchor: anchor.current,
       endsAt: A_PREVIEW_DEADLINE,
+      paths: selectable,
     });
 
     mounted.show();
@@ -178,13 +266,14 @@ export function Preview({ template, step = 0, selected = null, onSelect }: Previ
 
     // Read AFTER the swap: `root` is a getter over whichever step is currently
     // rendered, because `showStep` replaces the element rather than editing it.
+    if (mounted.root) mounted.root.style.maxBlockSize = 'none';
     setRoot(mounted.root);
 
     return () => {
       mounted.close();
       setRoot(null);
     };
-  }, [drawn, step]);
+  }, [drawn, step, selectable]);
 
   useEffect(() => {
     if (root === null || onSelect === undefined) {
@@ -198,6 +287,68 @@ export function Preview({ template, step = 0, selected = null, onSelect }: Previ
       bound.push(() => target.removeEventListener(type, handle));
     };
 
+    /*
+     * **Whether a focus arrived on the end of a press.**
+     *
+     * The events are `pointerdown`, then `focus`, then `click` — so a press on
+     * a capture field must not select twice through focus and click. A press
+     * selects through the delegated click; a Tab selects through focus.
+     */
+    let pressing = false;
+
+    on(root, 'pointerdown', () => {
+      pressing = true;
+    });
+
+    /*
+     * ========================================================================
+     * ONE DELEGATED LISTENER, BECAUSE EVERY BOX IS SELECTABLE AND BOXES NEST.
+     * ========================================================================
+     * A handler per element was right while only LEAVES were addressable —
+     * nothing was inside anything else, so nothing bubbled into a second
+     * handler. Every node carries an address now (`slots.ts`), and a headline
+     * inside a coloured box inside a split is three of them: three handlers
+     * would fire on one press and the last to run would win, which is the
+     * OUTERMOST box.
+     *
+     * One listener over the whole chain answers on purpose instead — see
+     * {@see nextInChain} for which link in it a press takes.
+     */
+    on(root, 'click', (event) => {
+      const target = event.target;
+      const chain = target instanceof Element ? chainAt(root, target) : [];
+      const key = nextInChain(chain);
+
+      pressing = false;
+
+      if (key === null) {
+        return;
+      }
+
+      /*
+       * The converting act is a real `<a>` or a real submit button, because
+       * the preview is the real render. Neither may act: a navigation would
+       * take the merchant off the builder mid-edit. `shell()` already guards
+       * the submit; this is the other half.
+       */
+      event.preventDefault();
+      onSelect(key);
+      // The solid selection replaces the dashed hover hint.
+      setHint(null);
+    });
+
+    on(root, 'pointerover', (event) => {
+      const target = event.target;
+
+      setHint(
+        target instanceof Element ? nextInChain(chainAt(root, target)) : null,
+      );
+    });
+
+    // `pointerleave` does not bubble, which is exactly why it is bound here:
+    // the pointer has left the whole render, not merely one box inside it.
+    on(root, 'pointerleave', () => setHint(null));
+
     for (const slot of root.querySelectorAll<HTMLElement>(SLOT_SELECTOR)) {
       const key = keyOfElement(slot);
 
@@ -207,20 +358,9 @@ export function Preview({ template, step = 0, selected = null, onSelect }: Previ
 
       slot.style.cursor = 'pointer';
 
-      on(slot, 'click', (event) => {
-        /*
-         * The converting act is a real `<a>` or a real submit button, because
-         * the preview is the real render. Neither may act: a navigation would
-         * take the merchant off the builder mid-edit. `shell()` already guards
-         * the submit; this is the other half.
-         */
-        event.preventDefault();
-        onSelect(key);
-      });
-
       /*
        * ====================================================================
-       * IT IS REACHABLE WITHOUT A MOUSE, AND IN TWO DIFFERENT WAYS.
+       * IT IS REACHABLE WITHOUT A MOUSE, AND THE THIRD WAY IS THE BLOCK TREE.
        * ====================================================================
        * A click handler on a heading is a pointer-only affordance, and this is
        * an editing surface rather than a picture — so WCAG 2.1 AA's first
@@ -236,12 +376,35 @@ export function Preview({ template, step = 0, selected = null, onSelect }: Previ
        * A heading or a line of fine print is focusable by nothing, so it is
        * made so — one tab stop, named for what it says, activated by Enter or
        * Space the way its `role` promises.
+       *
+       * **A BOX is neither, and its route is the tree.** A `panel` announced
+       * as a button would be named by every word inside it, and six nested
+       * boxes are six tab stops between one headline and the next. The block
+       * tree is a treegrid over the same nodes, in the same region, before the
+       * preview in the DOM — a keyboard route to every box that already
+       * exists and is already asserted at length. So a box is pointer-only
+       * here on purpose, and so is anything else this cannot NAME: an `image`
+       * has no words, and *"Edit “”"* is worse than no tab stop.
        */
+      if (slot.querySelector(SLOT_SELECTOR) !== null) continue;
+
       const focusable = slot.matches(FOCUSABLE) ? slot : slot.querySelector<HTMLElement>(FOCUSABLE);
 
       if (focusable !== null) {
-        on(focusable, 'focus', () => onSelect(key));
+        on(focusable, 'focus', () => {
+          // A press settles its own selection through the delegated click.
+          // A Tab has no press to defer to and selects the control it landed on.
+          if (!pressing) {
+            onSelect(key);
+          }
+        });
 
+        continue;
+      }
+
+      const said = (slot.textContent ?? '').trim();
+
+      if (said === '') {
         continue;
       }
 
@@ -252,7 +415,7 @@ export function Preview({ template, step = 0, selected = null, onSelect }: Previ
         sprintf(
           /* translators: %s: what a slot in the preview currently says. */
           __('Edit “%s”', 'wconvert'),
-          (slot.textContent ?? '').trim(),
+          said,
         ),
       );
 
@@ -272,6 +435,8 @@ export function Preview({ template, step = 0, selected = null, onSelect }: Previ
       for (const off of bound) {
         off();
       }
+
+      setHint(null);
     };
   }, [root, onSelect]);
 
@@ -281,12 +446,33 @@ export function Preview({ template, step = 0, selected = null, onSelect }: Previ
     }
 
     for (const slot of root.querySelectorAll<HTMLElement>(SLOT_SELECTOR)) {
-      const chosen = keyOfElement(slot) === selected;
+      const key = keyOfElement(slot);
+      const chosen = key === selected;
+      // The selection wins where both would land, so the hint never draws over
+      // the answer to "what am I working on" with "what would you get next".
+      const hinted = !chosen && key !== null && key === hint;
 
-      slot.style.outline = chosen ? OUTLINE : '';
-      slot.style.outlineOffset = chosen ? '2px' : '';
+      slot.style.outline = chosen ? OUTLINE : hinted ? HINT : '';
+      /*
+       * **Inside for a box, outside for a leaf.** A `panel` is often
+       * full-bleed against the design's own edge, so an outline offset outward
+       * is drawn beyond the popup and clipped by `.wc-root`'s `overflow` — the
+       * selected box then reads as unselected on the two sides that matter.
+       */
+      slot.style.outlineOffset =
+        chosen || hinted ? (slot.querySelector(SLOT_SELECTOR) === null ? '2px' : '-2px') : '';
     }
-  }, [root, selected]);
+  }, [root, selected, hint]);
 
-  return <div ref={anchor} className="wconvert-preview" />;
+  // The protected shadow host resets all outer styles. Give its containing
+  // block a width: intrinsic flex sizing otherwise sees only the padding of
+  // the size-contained .wc-root and collapses gallery/creation previews.
+  return (
+    <div className="wconvert-preview">
+      <div
+        ref={anchor}
+        style={{ inlineSize: template.tokens.width ?? A_DESIGNS_OWN_WIDTH, maxInlineSize: '100%' }}
+      />
+    </div>
+  );
 }

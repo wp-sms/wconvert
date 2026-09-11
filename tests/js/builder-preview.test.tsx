@@ -3,7 +3,7 @@ import { resolve } from 'node:path';
 import { fireEvent, render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { capturesKey, roleKey } from '../../resources/admin/src/builder/slots';
+import { keyOfElement } from '../../resources/admin/src/builder/slots';
 import type { Mounted } from '../../resources/renderer/src/mount';
 import type { TemplateEntry } from '../../resources/admin/src/templates/api';
 
@@ -56,6 +56,13 @@ const drawn = () => mounts.at(-1)?.root as HTMLElement;
 
 const slots = () => [...drawn().querySelectorAll<HTMLElement>('[data-role],[data-captures]')];
 
+/** Every addressable element, which is every node the renderer drew. */
+const boxes = () => [...drawn().querySelectorAll<HTMLElement>('[data-path]')];
+
+/** Where a Role sits, as the address both sides now speak in. */
+const at = (role: string): string =>
+  keyOfElement(slots().find((slot) => slot.dataset.role === role) as HTMLElement) as string;
+
 beforeEach(() => {
   mounts.length = 0;
 });
@@ -94,7 +101,7 @@ describe('a slot in the preview', () => {
     headline.focus();
 
     fireEvent.keyDown(headline, { key: 'Enter' });
-    expect(chosen).toHaveBeenCalledWith(roleKey('headline'));
+    expect(chosen).toHaveBeenCalledWith(at('headline'));
 
     chosen.mockClear();
 
@@ -102,7 +109,7 @@ describe('a slot in the preview', () => {
     // thing the merchant was aiming at.
     const space = fireEvent.keyDown(headline, { key: ' ', cancelable: true });
 
-    expect(chosen).toHaveBeenCalledWith(roleKey('headline'));
+    expect(chosen).toHaveBeenCalledWith(at('headline'));
     expect(space).toBe(false);
   });
 
@@ -122,7 +129,7 @@ describe('a slot in the preview', () => {
 
     field?.querySelector('input')?.focus();
 
-    expect(chosen).toHaveBeenCalledWith(capturesKey('email'));
+    expect(chosen).toHaveBeenCalledWith(keyOfElement(field as HTMLElement));
   });
 
   /**
@@ -138,7 +145,7 @@ describe('a slot in the preview', () => {
 
     await userEvent.click(within(drawn()).getByRole('button', { name: /No spam/ }));
 
-    expect(chosen).toHaveBeenCalledWith(roleKey('fine_print'));
+    expect(chosen).toHaveBeenCalledWith(at('fine_print'));
     expect(JSON.stringify(ENTRY.tree)).toBe(before);
   });
 
@@ -165,6 +172,9 @@ describe('a slot in the preview', () => {
   it('binds nothing when nobody is listening', () => {
     render(<Preview template={ENTRY} />);
 
+    // And asks the renderer for no addresses either, which is the same line
+    // ADR 0040 draws for a visitor's page: a picture has nothing to select.
+    expect(boxes()).toHaveLength(0);
     expect(within(drawn()).queryByRole('button', { name: /^Edit/ })).toBeNull();
     // The CTA is a real `<button>` and is focusable whatever this file does, so
     // what is asserted is that nothing here MADE anything focusable or renamed
@@ -173,12 +183,183 @@ describe('a slot in the preview', () => {
   });
 
   /** The outline is the admin's, painted over a tree it does not own. */
-  it('outlines the selected slot and only that one', () => {
-    render(<Preview template={ENTRY} selected={roleKey('headline')} onSelect={vi.fn()} />);
+  it('outlines the selected block and only that one', () => {
+    const { rerender } = render(<Preview template={ENTRY} onSelect={vi.fn()} />);
 
-    const outlined = slots().filter((slot) => slot.style.outline !== '');
+    rerender(<Preview template={ENTRY} selected={at('headline')} onSelect={vi.fn()} />);
+
+    const outlined = boxes().filter((slot) => slot.style.outline !== '');
 
     expect(outlined.map((slot) => slot.dataset.role)).toEqual(['headline']);
+  });
+});
+
+/**
+ * ============================================================================
+ * A BOX IS THE PRIMARY GESTURE OF A SCOPE EDITOR, AND IT WAS UNCLICKABLE.
+ * ============================================================================
+ * Selection was addressed by [[Slot Role]] and a container carries none, so
+ * `SLOT_SELECTOR` did not match one: a press on a coloured box reached the
+ * nearest leaf inside it. The renderer stamps the address now (ADR 0040,
+ * amended) and these are the four things that makes true.
+ */
+describe('a container in the preview', () => {
+  const FIELDWORK = JSON.parse(
+    readFileSync(resolve(import.meta.dirname, '../../resources/templates/library/fieldwork.json'), 'utf8'),
+  ) as TemplateEntry;
+
+  it('is selectable, which is what the whole change is for', async () => {
+    const chosen = vi.fn();
+
+    render(<Preview template={FIELDWORK} onSelect={chosen} />);
+
+    const panel = boxes().find((box) => box.className === 'wc-panel');
+
+    expect(panel, 'fieldwork has no panel to press').toBeDefined();
+
+    await userEvent.click(panel as HTMLElement);
+
+    expect(chosen).toHaveBeenCalledWith(keyOfElement(panel as HTMLElement));
+  });
+
+  // Direct selection is stable; parents remain selectable on their own ground.
+  const chainFrom = (role: string) => {
+    const leaf = slots().find((slot) => slot.dataset.role === role) as HTMLElement;
+    const box = leaf.parentElement?.closest<HTMLElement>('[data-path]') as HTMLElement;
+    const design = boxes()[0] as HTMLElement;
+
+    return { leaf, box, design };
+  };
+
+  it('selects the element under the pointer on the first click', async () => {
+    const chosen = vi.fn();
+
+    render(<Preview template={FIELDWORK} onSelect={chosen} />);
+
+    const { leaf } = chainFrom('headline');
+
+    await userEvent.click(leaf);
+
+    expect(chosen).toHaveBeenCalledTimes(1);
+    expect(chosen).toHaveBeenCalledWith(keyOfElement(leaf));
+  });
+
+  it('selects the element even when its parent was selected', async () => {
+    const chosen = vi.fn();
+    const { rerender } = render(<Preview template={FIELDWORK} onSelect={chosen} />);
+
+    const { leaf, box } = chainFrom('headline');
+
+    // The selection the first press produced, handed back the way the builder
+    // hands it back — which is what the second press steps on from.
+    rerender(<Preview template={FIELDWORK} selected={keyOfElement(box)} onSelect={chosen} />);
+    await userEvent.click(leaf);
+
+    expect(chosen).toHaveBeenLastCalledWith(keyOfElement(leaf));
+  });
+
+  /**
+   * **The design is the last link, and before this it was reachable from no
+   * point in the preview at all** — every pixel of it is covered by a child, so
+   * an innermost-wins press could never land on it. It is last rather than
+   * first because it is in every press's chain: leading with it would put a
+   * step between the merchant and every box on the screen.
+   */
+  it('keeps the same element selected on repeated clicks', async () => {
+    const chosen = vi.fn();
+    const { rerender } = render(<Preview template={FIELDWORK} onSelect={chosen} />);
+
+    const { leaf } = chainFrom('headline');
+
+    rerender(<Preview template={FIELDWORK} selected={keyOfElement(leaf)} onSelect={chosen} />);
+    await userEvent.click(leaf);
+
+    expect(chosen).toHaveBeenLastCalledWith(keyOfElement(leaf));
+  });
+
+  /**
+   * A selection that is not on the way to the point pressed says nothing about
+   * how deep that press should go, so it starts again at the top.
+   */
+  it('selects the clicked element after editing another part', async () => {
+    const chosen = vi.fn();
+    const { rerender } = render(<Preview template={FIELDWORK} onSelect={chosen} />);
+
+    const { leaf } = chainFrom('headline');
+    const elsewhere = slots().find((slot) => slot.dataset.role !== 'headline') as HTMLElement;
+
+    rerender(<Preview template={FIELDWORK} selected={keyOfElement(elsewhere)} onSelect={chosen} />);
+    await userEvent.click(leaf);
+
+    expect(chosen).toHaveBeenLastCalledWith(keyOfElement(leaf));
+  });
+
+  /**
+   * **Without this the drill is a guess.** Every addressable element already
+   * carries `cursor: pointer`, so the whole preview says "clickable" and
+   * nothing said what — which is what made a merchant press the same spot twice
+   * expecting a different answer. Dashed against the selection's solid, because
+   * what is being drawn is *chosen* against *would be chosen*.
+   */
+  it('shows what the next press would take, under the pointer', async () => {
+    render(<Preview template={FIELDWORK} onSelect={vi.fn()} />);
+
+    const { leaf, box } = chainFrom('headline');
+
+    await userEvent.hover(leaf);
+
+    expect(leaf.style.outline).toContain('dashed');
+    expect(box.style.outline).toBe('');
+  });
+
+  it('lets the selection win where the hint would land on it too', async () => {
+    const { rerender } = render(<Preview template={FIELDWORK} onSelect={vi.fn()} />);
+
+    const { leaf, box } = chainFrom('headline');
+
+    rerender(<Preview template={FIELDWORK} selected={keyOfElement(box)} onSelect={vi.fn()} />);
+    // Over the LEAF: the chain there is design → box → leaf, and the box is
+    // already selected, so one link on is the leaf. Hovering the box's own
+    // ground instead is a two-link chain and hints the design, which is the
+    // press that would actually happen there.
+    await userEvent.hover(leaf);
+
+    expect(box.style.outline).toContain('solid');
+    expect(leaf.style.outline).toContain('dashed');
+  });
+
+  /**
+   * **A box is pointer-only here, and its keyboard route is the block tree.**
+   * A `panel` announced as a button would be named by every word inside it, and
+   * six nested boxes are six tab stops between one headline and the next. The
+   * tree is a treegrid over the same nodes, in the same region, before the
+   * preview in the DOM.
+   */
+  it('is not a tab stop, because naming it would name everything inside it', () => {
+    render(<Preview template={FIELDWORK} onSelect={vi.fn()} />);
+
+    const panel = boxes().find((box) => box.className === 'wc-panel') as HTMLElement;
+
+    expect(panel.hasAttribute('tabindex')).toBe(false);
+    expect(panel.hasAttribute('aria-label')).toBe(false);
+  });
+
+  /**
+   * A full-bleed panel outlined OUTWARD is drawn beyond the popup and clipped
+   * by `.wc-root`'s own overflow, so the selected box reads as unselected on
+   * the two sides that matter.
+   */
+  it('draws its outline inside itself, where a leaf draws one outside', () => {
+    const { rerender } = render(<Preview template={FIELDWORK} onSelect={vi.fn()} />);
+    const panel = boxes().find((box) => box.className === 'wc-panel') as HTMLElement;
+
+    rerender(<Preview template={FIELDWORK} selected={keyOfElement(panel)} onSelect={vi.fn()} />);
+    expect(panel.style.outlineOffset).toBe('-2px');
+
+    rerender(<Preview template={FIELDWORK} selected={at('headline')} onSelect={vi.fn()} />);
+    expect(
+      (slots().find((slot) => slot.dataset.role === 'headline') as HTMLElement).style.outlineOffset,
+    ).toBe('2px');
   });
 });
 
@@ -315,5 +496,17 @@ describe('the consent link the admin draws', () => {
     render(<Preview template={template} />);
 
     expect(drawn().querySelector<HTMLAnchorElement>('a')?.getAttribute('href')).toBe(own);
+  });
+});
+
+
+describe('visitor preview', () => {
+  it('advances locally on submit without sending a request', () => {
+    const next = vi.fn();
+    render(<Preview template={ENTRY} interactive onAdvance={next}/>);
+    const submit = new Event('submit', { bubbles: true, cancelable: true });
+    drawn().dispatchEvent(submit);
+    expect(submit.defaultPrevented).toBe(true);
+    expect(next).toHaveBeenCalledTimes(1);
   });
 });

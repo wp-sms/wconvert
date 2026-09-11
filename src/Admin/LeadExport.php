@@ -4,8 +4,9 @@ namespace WConvert\Admin;
 
 use WConvert\Lead\LeadCsv;
 use WConvert\Lead\LeadRepository;
+use WConvert\Lead\LeadQuery;
+use InvalidArgumentException;
 use WConvert\Optin\OptinRepository;
-use WConvert\Support\Ulid;
 
 defined('ABSPATH') || exit;
 
@@ -71,16 +72,14 @@ final class LeadExport
             wp_die(esc_html__('You are not allowed to export leads.', 'wconvert'), '', ['response' => 403]);
         }
 
-        $optinId = isset($_GET['optin_id']) ? sanitize_text_field(wp_unslash((string) $_GET['optin_id'])) : '';
-
-        // Checked against the shape rather than merely sanitised. The value
-        // goes into a prepared statement either way, so this is not about
-        // injection — it is that a filter which is not an id matches no rows,
-        // and a merchant would download an empty file believing they had
-        // exported an Optin. The REST log route holds the same line at its
-        // `optin_id` argument.
-        if ($optinId !== '' && !Ulid::isOne($optinId)) {
-            wp_die(esc_html__('That is not an Optin.', 'wconvert'), '', ['response' => 400]);
+        try {
+            $input = [];
+            foreach (['optin_id', 'identifier', 'lead_id', 'from', 'to', 'snapshot', 'group_identifier'] as $key) {
+                if (isset($_GET[$key])) $input[$key] = is_string($_GET[$key]) ? wp_unslash($_GET[$key]) : $_GET[$key];
+            }
+            $query = LeadQuery::fromInput($input);
+        } catch (InvalidArgumentException $invalid) {
+            wp_die(esc_html($invalid->getMessage()), '', ['response' => 400]);
         }
 
         nocache_headers();
@@ -104,7 +103,7 @@ final class LeadExport
         $handle = fopen('php://output', 'w');
 
         if ($handle !== false) {
-            $this->stream($handle, $optinId === '' ? null : $optinId);
+            $this->stream($handle, $query->optinId, $query);
             // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- closes the php://output handle opened above, which the same sniff exempts.
             fclose($handle);
         }
@@ -117,7 +116,7 @@ final class LeadExport
      *
      * @param resource $handle
      */
-    public function stream($handle, ?string $optinId): void
+    public function stream($handle, ?string $optinId, ?LeadQuery $query = null): void
     {
         // Read once, before the walk. Every batch labels its Leads from this,
         // and it includes soft-deleted Optins because their names are exactly
@@ -129,9 +128,10 @@ final class LeadExport
         // The empty string sorts below every ULID, so the first batch starts at
         // the beginning without a branch for it.
         $cursor = '';
+        $query ??= new LeadQuery(optinId: $optinId, snapshot: LeadQuery::snapshotNow());
 
         while (true) {
-            $batch = $this->leads->since($optinId, $cursor, self::BATCH);
+            $batch = $this->leads->since($optinId, $cursor, self::BATCH, $query);
 
             if ($batch === []) {
                 return;

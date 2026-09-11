@@ -1,6 +1,9 @@
+import { adminSettings } from '../../settings';
+import type { ConvertingAct } from '../structure/catalogue';
+import { hasScheduleEnded } from '../wallTime';
 import { __, _n, _x, sprintf } from '@wordpress/i18n';
 import { fromRule } from '../presets';
-import { momentOf, readable, readableHours } from '../wallTime';
+import { readable, readableHours } from '../wallTime';
 import { visitorWith, type Entry } from './axis';
 import type { Frequency, Rule, RuleParam, RuleType, Schedule, Targeting } from '../api';
 
@@ -97,12 +100,12 @@ export function whereSummary(targeting: Targeting): Summary {
         : excluded === 0
           ? sprintf(
               /* translators: %s: a count of page rules, e.g. “3 pages”. */
-              __('On %s', 'wconvert'),
+              __('Matches %s', 'wconvert'),
               countOfPages(included),
             )
           : sprintf(
               /* translators: 1: a count of page rules it shows on. 2: a count it is kept off. */
-              __('On %1$s, except %2$s', 'wconvert'),
+              __('Matches %1$s, except %2$s', 'wconvert'),
               countOfPages(included),
               countOfPages(excluded),
             );
@@ -113,7 +116,7 @@ export function whereSummary(targeting: Targeting): Summary {
 const countOfPages = (count: number): string =>
   sprintf(
     /* translators: %d: a number of page rules. */
-    _n('%d page', '%d pages', count, 'wconvert'),
+    _n('%d page rule', '%d page rules', count, 'wconvert'),
     count,
   );
 
@@ -561,7 +564,7 @@ function windowClause(schedule: Schedule): string | null {
  * **The default is not "every time".** `stopAfterDismiss` and
  * `stopAfterConversion` are both ON when absent — `frequency.ts` tests
  * `!== false` — so an untouched Optin already stops when the visitor closes it
- * or signs up, and a summary reading "Every time" would be a lie on the
+ * or completes its action, and a summary reading "Every time" would be a lie on the
  * commonest Optin there is.
  *
  * `priority` is appended only where it decides something. `arbitrate()` sorts
@@ -574,6 +577,7 @@ export function howOftenSummary(
   schedule: Schedule,
   priority: number,
   overlay: boolean,
+  act: ConvertingAct = 'submit',
 ): Summary {
   const caps: string[] = [];
 
@@ -610,7 +614,7 @@ export function howOftenSummary(
     // and the subject carries across the conjunction. Its own string rather
     // than a fragment of the first, because a language that does not carry it
     // has to be able to repeat it.
-    stoppers.push(__('sign up', 'wconvert'));
+    stoppers.push(act === 'click' ? __('click the main button', 'wconvert') : __('submit the form', 'wconvert'));
   }
 
   const and = _x('and', 'joins two limits on how often an Optin shows', 'wconvert');
@@ -674,16 +678,11 @@ export function howOftenSummary(
 /**
  * Is this Optin's window already behind it?
  *
- * Read at RENDER rather than held, because the answer changes with the clock
- * and nothing writes to the config when it does. The comparison is between two
- * local instants — the stored wall time read back as one, and now — which is
- * the merchant's own reading of their own schedule. The SITE's timezone decides
- * the real instant and is the server's business (ADR 0050).
+ * Read at render in the site's timezone, never the administrator's clock.
+ * Without a known zone, retain the authored dates without claiming it ended.
  */
 function hasFinished(schedule: Schedule): boolean {
-  const ends = momentOf(schedule.ends_at);
-
-  return ends !== null && ends.getTime() < Date.now();
+  return hasScheduleEnded(schedule.ends_at, adminSettings()?.timezone);
 }
 
 // ============================================================================

@@ -57,6 +57,31 @@ export const DOCUMENT_CSS = `dialog.wconvert-dialog::backdrop{background:var(--w
  */
 export const A_DESIGNS_OWN_WIDTH = '28rem';
 
+/**
+ * The width below which a design's `narrow` bags take over.
+ *
+ * Named rather than written into the rule below for {@link A_DESIGNS_OWN_WIDTH}'s
+ * reason: the ADMIN has to draw a width switch at exactly this number, and the
+ * merchant is told where it fires. It is declared in
+ * `resources/templates/manifest.json` as well, and
+ * `renderer-manifest-parity` asserts the two agree — the renderer imports no
+ * manifest.
+ *
+ * **24rem is derived rather than chosen: it is where a `split` stops being side
+ * by side.** A pane's `flex-basis` is `12rem` and there are exactly two of
+ * them, so below 24rem the panes have already wrapped into a column. Retuning
+ * at the same width as the layout gives up means the two mechanisms cannot
+ * disagree — a design does not retune while still side by side, or stay tuned
+ * for two columns after it has one.
+ *
+ * A phone measure would have been the obvious number and is the wrong one. The
+ * common ones straddle it — 360, 375, 390, 412 — so half the phones in
+ * circulation would have wrapped without retuning or retuned without wrapping,
+ * and the switch in the builder would have been drawn at a width the query did
+ * not fire at.
+ */
+export const A_NARROW_DESIGN = '24rem';
+
 export const SHADOW_CSS = [
   `:host{all:initial!important;display:block!important}`,
   `*,::before,::after{box-sizing:border-box}`,
@@ -81,7 +106,10 @@ export const SHADOW_CSS = [
    *
    * `none` is a legal layer in the list, so the default costs no branch.
    */
-  `.wc-root{font-family:var(--wc-font,system-ui,sans-serif);font-size:var(--wc-text-size,1rem);line-height:var(--wc-leading,1.5);color:var(--wc-fg,#111827);background:var(--wc-bg,#fff);background-image:linear-gradient(var(--wc-overlay,#0000),var(--wc-overlay,#0000)),var(--wc-bg-image,none);background-size:cover;background-position:center;border-radius:var(--wc-radius,.5rem);padding:var(--wc-pad,1.5rem);text-align:var(--wc-align,start);inline-size:min(var(--wc-width,${A_DESIGNS_OWN_WIDTH}),100%);max-block-size:85vh;overflow:auto;position:relative;box-shadow:var(--wc-shadow,0 10px 40px rgba(0,0,0,.18))}`,
+  `.wc-root{font-family:var(--wc-font,system-ui,sans-serif);font-size:var(--wc-text-size,1rem);line-height:var(--wc-leading,1.5);color:var(--wc-fg,#111827);background:var(--wc-bg,#fff);background-image:linear-gradient(var(--wc-overlay,#0000),var(--wc-overlay,#0000)),var(--wc-bg-image,none);background-size:cover;background-position:center;border-radius:var(--wc-radius,.5rem);padding:var(--wc-pad,1.5rem);container:wc/inline-size;text-align:var(--wc-align,start);inline-size:min(var(--wc-width,${A_DESIGNS_OWN_WIDTH}),100%);max-block-size:85vh;overflow:auto;position:relative;box-shadow:var(--wc-shadow,0 10px 40px rgba(0,0,0,.18))}`,
+
+  // Resolve inherited typography at each scope, so a local bag changes its own text.
+  `.wc-stack,.wc-row,.wc-grid,.wc-split,.wc-panel,.wc-media,.wc-leaf{font-family:var(--wc-font,system-ui,sans-serif);font-size:var(--wc-text-size,1rem);line-height:var(--wc-leading,1.5);color:var(--wc-fg,#111827);text-align:var(--wc-align,start)}`,
 
   `.wc-stack{display:flex;flex-direction:column;gap:var(--wc-gap,.75rem)}`,
   `.wc-row{display:flex;flex-wrap:wrap;align-items:center;gap:var(--wc-gap,.75rem)}`,
@@ -138,6 +166,65 @@ export const SHADOW_CSS = [
    */
   `.wc-panel[data-edges=block-start]{border-block-start:.5rem solid var(--wc-border,#e5e7eb)}`,
   `.wc-panel[data-edges=all]{border:1px solid var(--wc-border,#e5e7eb)}`,
+
+  /*
+   * ==========================================================================
+   * THE ONE ORNAMENT SCOPING CANNOT REACH, AND THE ONLY `mask` IN THE PRODUCT.
+   * ==========================================================================
+   * Of the eighteen decorations in the reference set, seventeen are a token in
+   * disguise: a photo scrim is `overlay`, a tick bullet is an `icon`, a ring is
+   * the data URI nine designs already use for `image`. A perforation is the
+   * one that is not, because it has to REMOVE the panel — the ground behind a
+   * punched notch is the merchant's own page, and no background layer can name
+   * that.
+   *
+   * Two circles, at the top corners, which is where a ticket tears. It pairs
+   * with `edges: block-start`: the rule is the perforation line and the holes
+   * are its ends.
+   *
+   * **`intersect` is what makes two layers one shape.** Each gradient is
+   * transparent inside its own circle and opaque everywhere else, so composing
+   * them keeps only what both agree is opaque — everything but the two holes.
+   * The DEFAULT composite is `add`, so an engine that does not understand this
+   * property draws a panel with no notches rather than a panel with no
+   * corners: it degrades to the design without the ornament, which is the only
+   * degradation worth having.
+   *
+   * The `-webkit-` pair is Safari before 15.4, and it costs almost nothing
+   * compressed because it is the same string twice.
+   */
+  `.wc-panel[data-notch=true]{-webkit-mask-image:radial-gradient(circle 10px at 0 0,#0000 10px,#000 10.5px),radial-gradient(circle 10px at 100% 0,#0000 10px,#000 10.5px);mask-image:radial-gradient(circle 10px at 0 0,#0000 10px,#000 10.5px),radial-gradient(circle 10px at 100% 0,#0000 10px,#000 10.5px);-webkit-mask-composite:source-in;mask-composite:intersect}`,
+
+  /*
+   * ==========================================================================
+   * A PICTURE THAT HOLDS THINGS. `panel` PAINTS A BOX; THIS IS TYPE ON ART.
+   * ==========================================================================
+   * `justify-content:space-between` is the whole difference and it is not a
+   * nicety: thirteen of the sixteen reference designs put a wordmark at the
+   * top of one photograph and a display line at the bottom of the SAME one, so
+   * spreading the children to the far edges is what putting type on a picture
+   * IS. A `panel` stacks them at the top and leaves the room underneath.
+   *
+   * `min` is load-bearing here rather than a nicety, for the reason the spread
+   * makes obvious: two short lines with nothing to spread across are two short
+   * lines.
+   *
+   * **The overlay is a LAYER of its own and not the second background layer.**
+   * On `.wc-root` and `.wc-panel` the wash is painted into `background-image`
+   * above the picture, which is right where the box's own text is the thing
+   * being made legible. Here the children sit ON the picture, so a wash in the
+   * background would darken the photograph and the words equally. A
+   * pseudo-element sits between the two — no extra markup, and the children
+   * take `position:relative` to clear it.
+   */
+  `.wc-media{position:relative;display:flex;flex-direction:column;justify-content:space-between;gap:var(--wc-gap,.75rem);min-block-size:var(--wc-min,0);padding:var(--wc-pad,1.5rem);border-radius:var(--wc-radius,.5rem);overflow:hidden;color:var(--wc-fg,#111827);background:var(--wc-bg,#fff);background-image:var(--wc-bg-image,none);background-size:cover;background-position:center}`,
+  `.wc-media::before{content:"";position:absolute;inset:0;background:var(--wc-overlay,#0000);pointer-events:none}`,
+  `.wc-media>*{position:relative}`,
+  /*
+   * A media alone in a pane fills it, exactly as an image alone in one does —
+   * the rule below this one, for the same design and the same reason.
+   */
+  `.wc-pane>.wc-media{block-size:100%}`,
 
   // `flex-basis` plus `wrap` is what stacks the two panes on a narrow screen,
   // with no media query and no container query to keep in step.
@@ -372,6 +459,21 @@ export const SHADOW_CSS = [
   `.wc-stack>.wc-icon,.wc-stack>.wc-image-circle{align-self:var(--wc-align,start)}`,
   `.wc-glyph{inline-size:1.25em;block-size:1.25em}`,
   `.wc-link{color:inherit}`,
+
+  /*
+   * ==========================================================================
+   * EMPHASIS IS WEIGHT, AND NOTHING ELSE, ON PURPOSE.
+   * ==========================================================================
+   * *"Take **10% off** your first order"* is 71 sentences across the reference
+   * set, and every one of them lifts the run by WEIGHT. A colour would be the
+   * obvious second declaration and is the wrong one: the same `%b` sits in
+   * fine print — which is already `--wc-muted` — so tinting it `--wc-accent`
+   * would put the loudest colour in the design on the quietest line in it.
+   *
+   * `inherit` on colour is therefore the feature rather than an omission: an
+   * emphasised run is the sentence around it, said harder.
+   */
+  `.wc-strong{font-weight:700}`,
   `.wc-image{display:block;inline-size:100%;block-size:auto;object-fit:cover;border-radius:var(--wc-radius,.5rem)}`,
   /*
    * A picture that IS one side of a split fills that side.
@@ -442,9 +544,10 @@ export const SHADOW_CSS = [
    */
   `.wc-row{justify-content:var(--wc-align,start)}`,
   `.wc-label{font-size:.8125em;font-weight:500;color:var(--wc-muted,#6b7280)}`,
+  `.wc-field>select{appearance:auto}`,
   /*
    * ==========================================================================
-   * A LABEL INSIDE A ROW IS READ, NOT SEEN.
+   * A compact field-and-button row can use its placeholder as the visible cue.
    * ==========================================================================
    * `.wc-field` stacks its label above its input, which is right in a column
    * and wrong in a `row`: a floating bar is one strip of page furniture, and
@@ -452,12 +555,12 @@ export const SHADOW_CSS = [
    * competing line of text next to the offer. Every bar in the library looked
    * like a form that had fallen into a strip.
    *
-   * **Hidden from the eye and not from the accessibility tree.** The label
-   * still names its input for a screen reader and still takes the click; the
-   * placeholder is what a sighted visitor reads, which is what this genre does
-   * in a horizontal form and only there.
+   * Grouped fields retain their labels. So does a compact field with no
+   * placeholder, and every narrow form where the controls wrap into a column.
+   * The compact desktop label remains in the accessibility tree.
    */
-  `.wc-row>.wc-field>.wc-label{position:absolute;inline-size:1px;block-size:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}`,
+  `.wc-row:has(>.wc-button)>.wc-field:has(>input:not([placeholder=""]))>.wc-label{position:absolute;inline-size:1px;block-size:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}`,
+  `@container wc (max-width:24rem){.wc-row:has(>.wc-button)>.wc-field:has(>input:not([placeholder=""]))>.wc-label{position:static;inline-size:auto;block-size:auto;overflow:visible;clip-path:none;white-space:normal}.wc-row:has(>.wc-field)>.wc-button{align-self:flex-end}}`,
   /*
    * ==========================================================================
    * AN INSET RING RATHER THAN A BORDER, AND IT IS NOT A STYLISTIC PREFERENCE.
@@ -516,16 +619,21 @@ export const SHADOW_CSS = [
    * `var()` still animates.
    */
   `.wc-button:hover{opacity:.88}`,
+  `.wc-button[aria-busy=true]{position:relative;cursor:wait;opacity:.7}`,
+  `.wc-button[aria-busy=true]::after{content:"";position:absolute;inset-inline-end:.25em;inset-block-start:calc(50% - .375em);inline-size:.75em;block-size:.75em;border:2px solid currentColor;border-inline-end-color:transparent;border-radius:50%;animation:wc-sending .8s linear infinite}`,
+  `@keyframes wc-sending{to{transform:rotate(360deg)}}`,
+  `@media (prefers-reduced-motion:reduce){.wc-button[aria-busy=true]::after{animation:none}}`,
 
-  `.wc-consent{display:flex;align-items:start;gap:.5rem;text-align:start}`,
-  `.wc-consent-text{font-size:.8125em;color:var(--wc-muted,#6b7280)}`,
+  `.wc-consent{display:flex;flex-wrap:wrap;align-items:start;gap:.5rem;text-align:start}`,
+  `.wc-consent-text{flex:1;min-inline-size:0;font-size:.8125em;color:var(--wc-muted,#6b7280)}`,
+  `.wc-consent>.wc-error{flex-basis:100%}`,
   `.wc-checkbox{margin-block-start:.25em;accent-color:var(--wc-accent,#2563eb)}`,
 
   // A refused capture, drawn by the loader rather than by the vocabulary — for
   // the same reason the close button is: a template must not be able to omit
   // the way out, and it must not be able to make the reason its form was
   // refused invisible. So the colour is a literal and not a token.
-  `.wc-error{margin:0;color:#b91c1c;font-size:.875em;font-weight:600}`,
+  `.wc-error{margin:0;color:#991b1b;background:#fef2f2;border-radius:.25rem;padding:.375rem .5rem;font-size:.875em;font-weight:600;text-align:start}`,
   // Follows the ring above. `border-color` styled a border this no longer
   // draws, so the invalid state was silently invisible the moment the field
   // changed shape — which is the one state that must not be.
@@ -572,4 +680,41 @@ export const SHADOW_CSS = [
    * press Close on an overlay that never finishes closing.
    */
   `@media (prefers-reduced-motion:reduce){*{transition-duration:.01ms!important;animation-duration:.01ms!important}}`,
+
+  /* ------------------------------------------------------------------------
+   * A SECOND BAG PER BOX, AND ONE RULE IS THE WHOLE RUNTIME OF IT.
+   *
+   * ========================================================================
+   * INLINE STYLE HAS NO CONDITIONAL FORM, SO THE SWITCH LIVES HERE.
+   * ========================================================================
+   * A token bag is written with `setProperty` and there is no `@media` form of
+   * that; a stylesheet, conversely, cannot name one node in a tree it has
+   * never seen. The bridge is a MIRROR: `render.ts` writes a retuned box's
+   * values under `--wc-n-*`, and this remaps every one of them onto the name
+   * the rest of the stylesheet already reads.
+   *
+   * **`!important`, because it has to beat an inline declaration.** The wide
+   * bag is on the element's own `style`, which outranks every stylesheet rule
+   * that is not important. Inside a shadow root the only thing this can
+   * outrank is the design's own inline properties, which is precisely what it
+   * is for.
+   *
+   * **`[data-narrow]` is the correctness argument, not an optimisation.**
+   * `--wc-n-bg` inherits, so an ungated remap would fire on every descendant:
+   * a child of a retuned box that sets its OWN `bg` and no narrow bag would be
+   * repainted with its ancestor's narrow ground. Gated, a box with no narrow
+   * bag is untouched at every width and inherits its ancestor's already-remapped
+   * value the ordinary way — which is what a scope means.
+   *
+   * **A name in neither bag resolves to nothing, and that is the fallback.**
+   * `var(--wc-n-fg)` with `--wc-n-fg` unset is invalid at computed-value time,
+   * which for a custom property means *inherit* — so the remap needs no
+   * fallback and cannot accidentally pin a value the box never set.
+   *
+   * A CONTAINER query and not a media query, for the reason ADR 0062's own
+   * inspector query gives: an `inline` Optin in a sidebar is narrow on a
+   * desktop, and the viewport would call it wide. `.wc-root` is the container,
+   * declared above.
+   * --------------------------------------------------------------------- */
+  `@container wc (max-width:24rem){.wc-stack[data-narrow],.wc-row[data-narrow],.wc-split[data-narrow],.wc-grid[data-narrow],.wc-panel[data-narrow],.wc-media[data-narrow],.wc-leaf[data-narrow]{--wc-bg:var(--wc-n-bg)!important;--wc-fg:var(--wc-n-fg)!important;--wc-muted:var(--wc-n-muted)!important;--wc-accent:var(--wc-n-accent)!important;--wc-accent-fg:var(--wc-n-accent-fg)!important;--wc-border:var(--wc-n-border)!important;--wc-input-bg:var(--wc-n-input-bg)!important;--wc-font:var(--wc-n-font)!important;--wc-heading-font:var(--wc-n-heading-font)!important;--wc-heading-size:var(--wc-n-heading-size)!important;--wc-heading-weight:var(--wc-n-heading-weight)!important;--wc-tracking:var(--wc-n-tracking)!important;--wc-text-size:var(--wc-n-text-size)!important;--wc-leading:var(--wc-n-leading)!important;--wc-radius:var(--wc-n-radius)!important;--wc-pad:var(--wc-n-pad)!important;--wc-gap:var(--wc-n-gap)!important;--wc-width:var(--wc-n-width)!important;--wc-align:var(--wc-n-align)!important;--wc-bg-image:var(--wc-n-bg-image)!important;--wc-overlay:var(--wc-n-overlay)!important;--wc-shadow:var(--wc-n-shadow)!important;--wc-motion:var(--wc-n-motion)!important;--wc-backdrop:var(--wc-n-backdrop)!important}}`,
 ].join('');

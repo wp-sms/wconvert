@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DOCUMENT_STYLE_ID } from '@renderer/mount';
+import { ruleTypes } from './support/rule-types';
 
 /**
  * The goal-first creation flow, and the decisions in it that are not layout.
@@ -11,14 +12,15 @@ import { DOCUMENT_STYLE_ID } from '@renderer/mount';
  * would not supply. **The gallery filters on Goal only** — Display Type is
  * prefilled by the chosen [[Playbook]] and is never the first question
  * (CONTEXT.md, Display Type). **"Start from scratch" skips the Playbook, never
- * the Goal.** And **nothing is created until the last step**: prefill is a
- * read.
+ * the Goal.** Browsing reads only. Customize creates a draft and opens the editor directly.
  */
 const goals = vi.hoisted(() => ({ listGoals: vi.fn(), listPlaybooks: vi.fn(), prefill: vi.fn() }));
 const optins = vi.hoisted(() => ({ createOptin: vi.fn() }));
+const rules = vi.hoisted(() => ({ getRules: vi.fn() }));
 
 vi.mock('../../resources/admin/src/goals/api', () => goals);
 vi.mock('../../resources/admin/src/optins/api', () => optins);
+vi.mock('../../resources/admin/src/builder/api', async (original) => ({ ...(await original<typeof import('../../resources/admin/src/builder/api')>()), ...rules }));
 
 const { GoalScreen } = await import('../../resources/admin/src/goals/GoalScreen');
 
@@ -70,14 +72,14 @@ const PLAYBOOK = {
   rules: [],
   targeting: {},
   destination_hint: {},
+  setup: { display_type: 'popup', rules: [{ type: 'time_on_page', seconds: 8 }], targeting: {} },
   notes: 'A first-order discount is the highest-converting trade there is.',
   /**
    * **The design this Playbook would prefill, with its words already in it.**
    *
    * Composed by `Prefill` on the server, which is the whole reason it travels:
    * binding `copy` to [[Slot Role]]s is the one thing that must not have two
-   * implementations, so step 2 draws exactly what step 3 draws and exactly what
-   * creating it would store (#79).
+   * implementations, so the chooser draws exactly what creating the draft would store.
    */
   template: {
     tokens: { bg: '#ffffff' },
@@ -123,295 +125,258 @@ beforeEach(() => {
   goals.listGoals.mockResolvedValue(GOALS);
   goals.listPlaybooks.mockResolvedValue([PLAYBOOK]);
   goals.prefill.mockResolvedValue(DRAFT);
+  rules.getRules.mockResolvedValue(ruleTypes());
   optins.createOptin.mockResolvedValue({ id: '01JQZK8N3M4P5Q6R7S8T9V0W1X' });
 });
 
-/**
- * ============================================================================
- * THREE OF THE FOUR CHOICE-LOADING STATES SAID NOTHING TO A SCREEN READER.
- * ============================================================================
- * `ChoiceSkeleton` was one CARD, so every call site drew four of them inside a
- * `ChoiceGrid` and owed the `sr-only` "Loading…" beside it. One of the four
- * remembered. `GallerySkeleton` had none of its own either, and its grid is
- * `aria-hidden`, so two of its three callers announced a silent wait.
- *
- * Both skeletons own the announcement now, which is what makes there be
- * exactly one of it — the reason `TableSkeleton` puts its `role="status"` on
- * the first cell of the first row rather than on every placeholder.
- */
-describe('waiting on the goal screen', () => {
-  it('says it is loading while the Goals are arriving', async () => {
-    let land: (goals: unknown) => void = () => undefined;
-    goals.listGoals.mockReturnValue(new Promise((resolve) => (land = resolve)));
+const pickGoal = async () => userEvent.click(await screen.findByRole('button', { name: 'Choose' }));
+const customize = async () => userEvent.click(await screen.findByRole('button', { name: 'Customize this starting point' }));
+const unloadPrevented = () => {
+  const event = new Event('beforeunload', { cancelable: true });
+  window.dispatchEvent(event);
+  return event.defaultPrevented;
+};
 
-    render(<GoalScreen onCreated={() => undefined} />);
-
-    expect(await screen.findByRole('status')).toHaveTextContent('Loading…');
-
-    land(GOALS);
-
-    expect(await screen.findByText('Grow my email list')).toBeInTheDocument();
-  });
-
-  it('renders a failed Goal read as the region’s whole content', async () => {
-    goals.listGoals.mockRejectedValue(new Error('Sorry, you are not allowed to do that.'));
-
-    render(<GoalScreen onCreated={() => undefined} />);
-
-    expect(await screen.findByText('Sorry, you are not allowed to do that.')).toBeInTheDocument();
-    // The component's default door. This was the one `RegionErrorState` in the
-    // admin passing no hint, so it named no way out of itself.
-    expect(screen.getByText('Reload the page to try again.')).toBeInTheDocument();
-  });
-
-  /**
-   * **A prefill is a round trip and nothing said so**, so both ways forward
-   * stayed live and a second press started a second prefill. Real `disabled`
-   * rather than `aria-disabled`: this is transient, and a busy control wants to
-   * be out of the way rather than to keep focus for a reason it does not have.
-   */
-  it('takes both ways forward out of reach while a prefill is in flight', async () => {
-    goals.prefill.mockReturnValue(new Promise(() => undefined));
-
-    render(<GoalScreen onCreated={() => undefined} />);
-
-    await userEvent.click(await screen.findByRole('button', { name: 'Choose' }));
-    await userEvent.click(await screen.findByRole('button', { name: 'Use this Playbook' }));
-
-    expect(screen.getByRole('button', { name: 'Use this Playbook' })).toBeDisabled();
-    expect(screen.getByRole('button', { name: 'Start from scratch' })).toBeDisabled();
-  });
-
-  it('says it is loading while the Playbooks are arriving', async () => {
-    let land: (playbooks: unknown) => void = () => undefined;
-    goals.listPlaybooks.mockReturnValue(new Promise((resolve) => (land = resolve)));
-
-    render(<GoalScreen onCreated={() => undefined} />);
-
-    await userEvent.click(await screen.findByRole('button', { name: 'Choose' }));
-
-    expect(await screen.findByRole('status')).toHaveTextContent('Loading…');
-
-    land([PLAYBOOK]);
-
-    expect(await screen.findByText('Welcome discount')).toBeInTheDocument();
-  });
-});
-
-describe('the goal screen', () => {
-  /**
-   * Absent, not greyed out and not explained. A food blogger with no store
-   * reading "requires WooCommerce" learns nothing they can act on (ADR 0026).
-   */
-  it('hides a Goal this site cannot serve', async () => {
-    render(<GoalScreen onCreated={() => undefined} />);
-
+describe('a goal then a draft', () => {
+  it('preserves ready, locked and unavailable Goal semantics', async () => {
+    render(<GoalScreen onCreated={vi.fn()} />);
     await screen.findByText('Grow my email list');
-
-    expect(screen.queryByText('Bring shoppers back to their cart')).toBeNull();
+    expect(screen.getByText('Promote a sale or offer')).toBeInTheDocument();
+    expect(screen.getByText(/Available with/)).toBeInTheDocument();
+    expect(screen.queryByText('Bring shoppers back to their cart')).not.toBeInTheDocument();
+    expect(screen.getByText('Choice 1 of 2')).toBeInTheDocument();
   });
 
-  /**
-   * **The precedence, on screen.** The cart Goal is `tier: pro` too, so a
-   * screen that read `tier` rather than the resolved state would sell Pro to a
-   * merchant Pro cannot help. The upsell that IS shown belongs to the Goal
-   * whose only missing piece is buyable from us.
-   */
-  it('offers a locked Goal as an upsell and offers no upsell for an unavailable one', async () => {
-    render(<GoalScreen onCreated={() => undefined} />);
-
-    await screen.findByText('Promote a sale or offer');
-
-    expect(screen.getAllByText('Available with WConvert Pro.')).toHaveLength(1);
-    expect(screen.queryByText('Bring shoppers back to their cart')).toBeNull();
+  it('keeps loading separate from an empty Goal registry and offers retry on failure', async () => {
+    goals.listGoals.mockRejectedValueOnce(new Error('Goals unavailable.'));
+    render(<GoalScreen onCreated={vi.fn()} />);
+    await screen.findByText('Goals unavailable.');
+    await userEvent.click(screen.getByRole('button', { name: 'Retry loading goals' }));
+    expect(await screen.findByText('Grow my email list')).toBeInTheDocument();
+    expect(screen.queryByText('Goals unavailable.')).not.toBeInTheDocument();
   });
 
-  it('cannot be chosen while it is an upsell', async () => {
-    render(<GoalScreen onCreated={() => undefined} />);
-
-    await screen.findByText('Promote a sale or offer');
-
-    // One Goal is choosable, and it is the ready one.
-    expect(screen.getAllByRole('button', { name: 'Choose' })).toHaveLength(1);
+  it('explains a successfully read empty Goal registry', async () => {
+    goals.listGoals.mockResolvedValue([]);
+    render(<GoalScreen onCreated={vi.fn()} />);
+    expect(await screen.findByText('No goals available')).toBeInTheDocument();
   });
 
-  /**
-   * The gallery is asked for one thing: the Goal. There is no Display Type
-   * argument to pass, because there is no Display Type control to pass it
-   * from.
-   */
-  it('asks the gallery for the chosen Goal and nothing else', async () => {
-    render(<GoalScreen onCreated={() => undefined} />);
-
-    await userEvent.click(await screen.findByRole('button', { name: 'Choose' }));
-
-    await waitFor(() => expect(goals.listPlaybooks).toHaveBeenCalledWith('grow_email_list'));
-    expect(goals.listPlaybooks).toHaveBeenCalledTimes(1);
-  });
-
-  it('shows the Playbooks under it, with the notes that say why they work', async () => {
-    render(<GoalScreen onCreated={() => undefined} />);
-
-    await userEvent.click(await screen.findByRole('button', { name: 'Choose' }));
-
-    expect(await screen.findByText('Welcome discount')).toBeInTheDocument();
-    expect(screen.getByText(PLAYBOOK.notes)).toBeInTheDocument();
-  });
-
-  /**
-   * ==========================================================================
-   * STEP 2 DREW A HEADING, A PARAGRAPH AND A BUTTON (#68, #79).
-   * ==========================================================================
-   * This is where a merchant chooses between ready-to-run starts, and it showed
-   * them as three lines of text apiece — while step 3, one click later, draws
-   * the real design. The product's whole claim is that there are no thumbnails
-   * anywhere in this flow because the REAL thing is cheap to draw (ADR 0010),
-   * and this was the one screen in the flow not making it.
-   *
-   * Asserted through the shadow HOST rather than its contents: the render lives
-   * in a closed shadow root and that is not loosened for a test (ADR 0009).
-   */
-  it('draws each Playbook’s real design rather than a paragraph about it', async () => {
-    const { container } = render(<GoalScreen onCreated={() => undefined} />);
-
-    await userEvent.click(await screen.findByRole('button', { name: 'Choose' }));
+  it('filters starting points on the selected Goal and writes nothing while browsing', async () => {
+    render(<GoalScreen onCreated={vi.fn()} />);
+    await pickGoal();
     await screen.findByText('Welcome discount');
-
-    await waitFor(() =>
-      expect(container.querySelectorAll('.wconvert-gallery__card .wconvert-preview')).toHaveLength(1),
-    );
+    expect(goals.listPlaybooks).toHaveBeenCalledWith(GOALS[0].id);
+    expect(screen.getByText('Choice 2 of 2')).toBeInTheDocument();
+    expect(optins.createOptin).not.toHaveBeenCalled();
+    expect(goals.prefill).not.toHaveBeenCalled();
+    expect(screen.getByText('Creates a draft. You publish when it is ready.')).toBeInTheDocument();
   });
 
-  /**
-   * A Playbook naming a Template this install no longer ships still starts a
-   * perfectly good Optin, so the card falls back to the words it always had
-   * rather than becoming a card that loads forever.
-   */
-  it('still offers a Playbook whose design this install no longer ships', async () => {
-    goals.listPlaybooks.mockResolvedValue([{ ...PLAYBOOK, template: undefined }]);
-
-    render(<GoalScreen onCreated={() => undefined} />);
-
-    await userEvent.click(await screen.findByRole('button', { name: 'Choose' }));
-
-    expect(await screen.findByText('Welcome discount')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Use this Playbook/ })).toBeEnabled();
+  it('keeps the real design preview and makes the long rationale optional', async () => {
+    const { container } = render(<GoalScreen onCreated={vi.fn()} />);
+    await pickGoal();
+    await screen.findByText('Welcome discount');
+    await waitFor(() => expect(container.querySelectorAll('.wconvert-gallery__card .wconvert-preview')).toHaveLength(1));
+    expect(screen.getByText(PLAYBOOK.notes)).not.toBeVisible();
+    await userEvent.click(screen.getByText('About this starting point'));
+    expect(screen.getByText(PLAYBOOK.notes)).toBeVisible();
   });
 
-  /**
-   * A Goal with no Playbook under it is a real state rather than a broken one:
-   * the cart Goal is reachable on a Pro install with a store and ships none,
-   * because its Playbooks need the [[Condition]]s that define it. An empty
-   * list with nothing said reads as a load that failed.
-   */
-  it('says so when a Goal has nothing to start from yet', async () => {
+  it('creates exactly the prefilled draft and hands it straight to the editor', async () => {
+    const created = vi.fn();
+    render(<GoalScreen onCreated={created} />);
+    await pickGoal();
+    await customize();
+    await waitFor(() => expect(created).toHaveBeenCalledWith('01JQZK8N3M4P5Q6R7S8T9V0W1X'));
+    expect(goals.prefill).toHaveBeenCalledWith(GOALS[0].id, PLAYBOOK.id);
+    expect(optins.createOptin).toHaveBeenCalledExactlyOnceWith(DRAFT.name, DRAFT.goal, DRAFT.config);
+    expect(screen.queryByRole('button', { name: 'Create this Optin' })).not.toBeInTheDocument();
+    expect(screen.queryByText('Step 3 of 3')).not.toBeInTheDocument();
+  });
+
+  it('creates a blank draft under the Goal already chosen', async () => {
+    const draft = { name: GOALS[0].label, goal: GOALS[0].id, config: { rules: [] } };
+    goals.prefill.mockResolvedValue(draft);
+    const created = vi.fn();
+    render(<GoalScreen onCreated={created} />);
+    await pickGoal();
+    await userEvent.click(screen.getByRole('button', { name: 'Start with a blank draft' }));
+    await waitFor(() => expect(created).toHaveBeenCalled());
+    expect(goals.prefill).toHaveBeenCalledWith(GOALS[0].id, undefined);
+    expect(optins.createOptin).toHaveBeenCalledWith(draft.name, draft.goal, draft.config);
+  });
+
+  it('offers a blank draft when this Goal has no starting points', async () => {
     goals.listPlaybooks.mockResolvedValue([]);
-
-    render(<GoalScreen onCreated={() => undefined} />);
-
-    await userEvent.click(await screen.findByRole('button', { name: 'Choose' }));
-
-    expect(await screen.findByText(/No ready-to-run starts for this Goal yet/)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Start from scratch' })).toBeInTheDocument();
+    render(<GoalScreen onCreated={vi.fn()} />);
+    await pickGoal();
+    expect(await screen.findByText('No starting points available')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Start with a blank draft' })).toBeEnabled();
   });
 
-  /**
-   * **"Start from scratch" skips the Playbook, never the Goal.** The Goal
-   * still travels; only the Playbook is absent.
-   */
-  it('starts from scratch under the Goal already chosen', async () => {
-    goals.prefill.mockResolvedValue({ name: 'Grow my email list', goal: 'grow_email_list', config: { rules: [] } });
-
-    render(<GoalScreen onCreated={() => undefined} />);
-
-    await userEvent.click(await screen.findByRole('button', { name: 'Choose' }));
-    await userEvent.click(await screen.findByRole('button', { name: 'Start from scratch' }));
-
-    expect(goals.prefill).toHaveBeenCalledWith('grow_email_list', undefined);
+  it('identifies a missing design instead of leaving an endless preview skeleton', async () => {
+    goals.listPlaybooks.mockResolvedValue([{ ...PLAYBOOK, template: undefined }]);
+    render(<GoalScreen onCreated={vi.fn()} />);
+    await pickGoal();
+    expect(await screen.findByText(/This design is not available on this site/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Customize this starting point' })).toBeEnabled();
   });
 
-  /**
-   * **Prefill persists nothing until the merchant saves.** Walking the whole
-   * flow and stopping at the preview writes nothing.
-   */
-  it('creates nothing until the merchant says so', async () => {
-    render(<GoalScreen onCreated={() => undefined} />);
+  it('guards creation paths, Back, and leaving the page throughout prefill and POST', async () => {
+    let finishPrefill!: (draft: unknown) => void, finishCreate!: (draft: unknown) => void;
+    goals.prefill.mockReturnValue(new Promise(resolve => { finishPrefill = resolve; }));
+    optins.createOptin.mockReturnValue(new Promise(resolve => { finishCreate = resolve; }));
+    const busy = vi.fn();
+    render(<GoalScreen onCreated={vi.fn()} onBusyChange={busy} />);
+    expect(unloadPrevented()).toBe(false);
+    await pickGoal(); await customize();
+    expect(screen.getByRole('button', { name: 'Creating draft…' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Start with a blank draft' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Choose a different goal' })).toBeDisabled();
+    expect(busy).toHaveBeenLastCalledWith(true);
+    expect(unloadPrevented()).toBe(true);
+    await act(async () => finishPrefill(DRAFT));
+    expect(screen.getByRole('button', { name: 'Creating draft…' })).toBeDisabled();
+    expect(unloadPrevented()).toBe(true);
+    await act(async () => finishCreate({ id: 'created' }));
+    expect(busy).toHaveBeenLastCalledWith(false);
+    expect(unloadPrevented()).toBe(false);
+  });
 
-    await userEvent.click(await screen.findByRole('button', { name: 'Choose' }));
-    await userEvent.click(await screen.findByRole('button', { name: 'Use this Playbook' }));
+  it('suppresses duplicate same-tick start events', async () => {
+    goals.prefill.mockReturnValue(new Promise(() => undefined));
+    render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
+    const button = await screen.findByRole('button', { name: 'Customize this starting point' });
+    act(() => { fireEvent.click(button); fireEvent.click(button); });
+    expect(goals.prefill).toHaveBeenCalledTimes(1);
+  });
 
-    await screen.findByRole('button', { name: 'Create this Optin' });
+  it('retries a failed prefill without claiming an Optin was created', async () => {
+    goals.prefill.mockRejectedValueOnce(new Error('Starting point unavailable.'));
+    render(<GoalScreen onCreated={vi.fn()} />); await pickGoal(); await customize();
+    await screen.findByText('Starting point unavailable.');
+    expect(optins.createOptin).not.toHaveBeenCalled();
+    expect(screen.queryByText(/Draft creation could not be confirmed/)).not.toBeInTheDocument();
+    await customize();
+    await waitFor(() => expect(optins.createOptin).toHaveBeenCalledTimes(1));
+  });
 
-    expect(goals.prefill).toHaveBeenCalledWith('grow_email_list', 'welcome-discount');
+  it('does not automatically retry a possibly committed POST', async () => {
+    optins.createOptin.mockRejectedValueOnce(new Error('Network interrupted.'));
+    const created = vi.fn(), check = vi.fn();
+    render(<GoalScreen onCreated={created} onCheckOptins={check} />); await pickGoal(); await customize();
+    await screen.findByText(/Draft creation could not be confirmed/);
+    expect(unloadPrevented()).toBe(false);
+    await userEvent.click(screen.getByRole('button', { name: 'Check Optins' }));
+    expect(check).toHaveBeenCalledOnce();
+    expect(optins.createOptin).toHaveBeenCalledTimes(1);
+    expect(created).not.toHaveBeenCalled();
+  });
+
+  it('discards prefill after the flow closes, before issuing any POST', async () => {
+    let finish!: (draft: unknown) => void;
+    goals.prefill.mockReturnValue(new Promise(resolve => { finish = resolve; }));
+    const { unmount } = render(<GoalScreen onCreated={vi.fn()} />);
+    await pickGoal(); await customize();
+    expect(unloadPrevented()).toBe(true);
+    unmount();
+    expect(unloadPrevented()).toBe(false);
+    await act(async () => finish(DRAFT));
     expect(optins.createOptin).not.toHaveBeenCalled();
   });
 
-  /**
-   * The preview is the REAL design with the REAL words, drawn by the same
-   * dependency-free renderer the loader imports — so what the merchant
-   * approves is what a visitor sees, and there is no static thumbnail to
-   * produce or to let go stale (ADR 0010).
-   *
-   * Asserted by the document-level `<style>` the renderer installs, because
-   * the rendered tree lives inside a **closed** shadow root and this test is
-   * not the thing that mounted it. That closure is the point of it
-   * (ADR 0009), so reaching in to check would be asserting it was open. What
-   * the copy renders AS is proven where it can be — `tests/js/playbook-copy.test.ts`.
-   */
-  it('previews the prefilled Optin through the renderer the loader uses', async () => {
-    render(<GoalScreen onCreated={() => undefined} />);
-
-    await userEvent.click(await screen.findByRole('button', { name: 'Choose' }));
-    await userEvent.click(await screen.findByRole('button', { name: 'Use this Playbook' }));
-
-    await screen.findByRole('button', { name: 'Create this Optin' });
-
-    await waitFor(() => expect(document.getElementById(DOCUMENT_STYLE_ID)).not.toBeNull());
+  it('does not reopen the editor after the creation flow has unmounted', async () => {
+    let finish!: (draft: unknown) => void;
+    optins.createOptin.mockReturnValue(new Promise(resolve => { finish = resolve; }));
+    const created = vi.fn(), { unmount } = render(<GoalScreen onCreated={created} />);
+    await pickGoal(); await customize();
+    await waitFor(() => expect(optins.createOptin).toHaveBeenCalledTimes(1));
+    unmount(); await act(async () => finish({ id: 'created' }));
+    expect(created).not.toHaveBeenCalled();
   });
 
-  /**
-   * A draft with no Template — "start from scratch" — has nothing to preview,
-   * and says so rather than showing an empty frame that reads as a render
-   * that failed.
-   */
-  it('says so when there is no design to preview yet', async () => {
-    goals.prefill.mockResolvedValue({ name: 'Grow my email list', goal: 'grow_email_list', config: { rules: [] } });
-
-    render(<GoalScreen onCreated={() => undefined} />);
-
-    await userEvent.click(await screen.findByRole('button', { name: 'Choose' }));
-    await userEvent.click(await screen.findByRole('button', { name: 'Start from scratch' }));
-
-    expect(await screen.findByText(/Choose a Template in the builder/)).toBeInTheDocument();
+  it('discards an abandoned Goal’s late starting points', async () => {
+    let old!: (entries: unknown) => void;
+    goals.listPlaybooks.mockReturnValueOnce(new Promise(resolve => { old = resolve; }));
+    render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
+    expect(await screen.findByRole('status')).toHaveTextContent('Loading');
+    await userEvent.click(screen.getByRole('button', { name: 'Choose a different goal' }));
+    await pickGoal(); await screen.findByText('Welcome discount');
+    await act(async () => old([{ ...PLAYBOOK, name: 'Abandoned result' }]));
+    expect(screen.queryByText('Abandoned result')).not.toBeInTheDocument();
   });
 
-  it('saves the draft exactly as prefill handed it over', async () => {
-    render(<GoalScreen onCreated={() => undefined} />);
-
-    await userEvent.click(await screen.findByRole('button', { name: 'Choose' }));
-    await userEvent.click(await screen.findByRole('button', { name: 'Use this Playbook' }));
-    await userEvent.click(await screen.findByRole('button', { name: 'Create this Optin' }));
-
-    await waitFor(() =>
-      expect(optins.createOptin).toHaveBeenCalledWith(DRAFT.name, DRAFT.goal, DRAFT.config),
-    );
+  it('retries a failed starting-point read on the same selected Goal', async () => {
+    goals.listPlaybooks.mockRejectedValueOnce(new Error('Starting points unavailable.'));
+    render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
+    await screen.findByText('Starting points unavailable.');
+    await userEvent.click(screen.getByRole('button', { name: 'Retry loading starting points' }));
+    await screen.findByText('Welcome discount');
+    expect(goals.listPlaybooks).toHaveBeenLastCalledWith(GOALS[0].id);
   });
 
-  /**
-   * **And it lands in the builder**, which is where this flow has always said
-   * it ends: pick a [[Goal]], pick a [[Playbook]] under it, land in an editor
-   * holding a prefilled Optin. The created Optin is addressed by id, so the
-   * create has to hand one back rather than discard the response.
-   */
-  it('hands the created Optin to the builder', async () => {
-    const created = vi.fn();
+  it('uses resolved setup rules instead of raw authored rules for timing', async () => {
+    goals.listPlaybooks.mockResolvedValue([{ ...PLAYBOOK, rules: [{ type: 'exit_intent' }],
+      setup: { ...PLAYBOOK.setup, rules: [{ type: 'time_on_page', seconds: 15, degraded_from: 'exit_intent' }] } }]);
+    render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
+    expect(await screen.findByText(/after_a_read/)).toBeInTheDocument();
+    expect(screen.queryByText(/exit_intent/)).not.toBeInTheDocument();
+  });
 
-    render(<GoalScreen onCreated={created} />);
+  it('describes repeat display using the actual design action and orders audience before timing', async () => {
+    goals.listPlaybooks.mockResolvedValue([{ ...PLAYBOOK,
+      template: { ...PLAYBOOK.template, tree: { steps: [{ type: 'stack', children: [
+        { type: 'button', label: 'View the offer', action: 'link', href: '/offer' },
+      ] }] } },
+      setup: { ...PLAYBOOK.setup, targeting: { logged_in: false }, frequency: { cooldownDays: 2 } },
+    }]);
+    render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
+    expect(await screen.findByText(/click the main button/)).toBeInTheDocument();
+    expect(screen.queryByText(/submit the form/)).not.toBeInTheDocument();
+    expect(screen.getAllByRole('term').map((term) => term.textContent)).toEqual([
+      'Format', 'Pages', 'Audience', 'When it appears', 'Schedule & frequency',
+    ]);
+  });
 
-    await userEvent.click(await screen.findByRole('button', { name: 'Choose' }));
-    await userEvent.click(await screen.findByRole('button', { name: 'Use this Playbook' }));
-    await userEvent.click(await screen.findByRole('button', { name: 'Create this Optin' }));
+  it('names known page sets from the site vocabulary without claiming a count of pages', async () => {
+    const vocabulary = ruleTypes();
+    const contentType = vocabulary.targeting.find((entry) => entry.type === 'singular')!;
+    contentType.label = 'Any single item of a type';
+    contentType.params.value.options = [{ value: 'post', label: 'Blog posts' }];
+    const path = vocabulary.targeting.find((entry) => entry.type === 'url')!;
+    path.label = 'A URL path';
+    rules.getRules.mockResolvedValue(vocabulary);
+    goals.listPlaybooks.mockResolvedValue([{ ...PLAYBOOK, setup: { ...PLAYBOOK.setup,
+      targeting: { include: [{ type: 'singular', value: 'post' }], exclude: [{ type: 'url', value: '/private/*' }] },
+    } }]);
+    render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
+    expect(await screen.findByText('Any single item of a type: Blog posts, except A URL path: /private/*')).toBeInTheDocument();
+    expect(screen.queryByText(/Matches 1 page rule/)).not.toBeInTheDocument();
+  });
 
-    await waitFor(() => expect(created).toHaveBeenCalledWith('01JQZK8N3M4P5Q6R7S8T9V0W1X'));
+  it('keeps a page-rule count when a stored object ID needs a separate lookup', async () => {
+    goals.listPlaybooks.mockResolvedValue([{ ...PLAYBOOK, setup: { ...PLAYBOOK.setup,
+      targeting: { include: [{ type: 'post', value: '42' }] },
+    } }]);
+    render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
+    expect(await screen.findByText('Matches 1 page rule')).toBeInTheDocument();
+    expect(screen.queryByText(/42/)).not.toBeInTheDocument();
+  });
+
+  it('allows creation and retry when optional setup descriptions cannot load', async () => {
+    rules.getRules.mockRejectedValueOnce(new Error('Rules unavailable.'));
+    render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
+    await screen.findByText(/Setup details could not be loaded/);
+    expect(screen.getByRole('button', { name: 'Customize this starting point' })).toBeEnabled();
+    await userEvent.click(screen.getByRole('button', { name: 'Retry setup details' }));
+    expect(await screen.findByText(/time_on_page 8/)).toBeInTheDocument();
+  });
+
+  it('makes inline placement work visible before creating the draft', async () => {
+    goals.listPlaybooks.mockResolvedValue([{ ...PLAYBOOK, display_type: 'inline', setup: { ...PLAYBOOK.setup, display_type: 'inline' } }]);
+    render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
+    expect(await screen.findByText('Inside the page')).toBeInTheDocument();
+    expect(screen.getByText('Add its block or shortcode to the page where it should appear.')).toBeInTheDocument();
   });
 });

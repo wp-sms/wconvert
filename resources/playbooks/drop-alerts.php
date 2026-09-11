@@ -16,7 +16,7 @@ return [
     'name' => __('Drop alerts', 'wconvert'),
     'goal' => 'grow_sms_list',
     'template_id' => 'stacked-signup',
-    'notes' => __('SMS is read within minutes, which is exactly why the promise has to be narrow. Say how often you will message and keep to it — the unsubscribe rate on a broken promise is immediate.', 'wconvert'),
+    'notes' => __('Use text updates for time-sensitive news. Say how often you will message, configure the connected service and keep the promise narrow.', 'wconvert'),
     'copy' => [
         'headline' => __('Text me when it drops', 'wconvert'),
         'body' => __('One message when something new lands. Nothing else, ever.', 'wconvert'),
@@ -28,8 +28,8 @@ return [
             'text' => __('Message rates may apply, and you can stop at any time. See our %s.', 'wconvert'),
             'link' => ['label' => __('Privacy Policy', 'wconvert')],
         ],
-        'success_headline' => __('You are signed up', 'wconvert'),
-        'success_body' => __('Watch out for a message when the next drop lands.', 'wconvert'),
+        'success_headline' => __('Request received', 'wconvert'),
+        'success_body' => __('Thank you for asking to hear about the next drop.', 'wconvert'),
     ],
     'rules' => [
         ['type' => 'time_on_page', 'seconds' => 12],

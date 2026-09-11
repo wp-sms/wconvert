@@ -4,6 +4,7 @@ namespace WConvert\Destination\LeadMagnet;
 
 use WConvert\Destination\CanonicalFields;
 use WConvert\Destination\DestinationType;
+use WConvert\Destination\DestinationRequirements;
 use WConvert\Destination\PushContext;
 use WConvert\Destination\PushResult;
 use WConvert\Destination\PushSubject;
@@ -233,15 +234,15 @@ final class LeadMagnetDestinationType implements DestinationType
      */
     public function push(PushSubject $subject, PushContext $context): PushResult
     {
-        $email = $subject->values[CanonicalFields::EMAIL] ?? null;
+        $email = $subject->values[CanonicalFields::EMAIL] ?? '';
 
-        if ($email === null) {
+        if (!$this->requirements()->acceptsCapture($subject->values)) {
             return PushResult::skipped('The Lead carries no email address, and the lead magnet goes out by email.');
         }
 
         $link = $this->setting($context, self::FILE_URL);
 
-        if ($link === '') {
+        if ($this->requirements()->missingSettings($context->settings) !== []) {
             return PushResult::retryable('No lead magnet file is configured on this Destination.');
         }
 
@@ -261,6 +262,11 @@ final class LeadMagnetDestinationType implements DestinationType
         return $sent
             ? PushResult::success()
             : PushResult::retryable('The site’s mail transport refused the message.');
+    }
+
+    public function requirements(): DestinationRequirements
+    {
+        return new DestinationRequirements(['email'], [self::FILE_URL => ['label' => __('File URL', 'wconvert'), 'type' => 'text']], ['email']);
     }
 
     /**

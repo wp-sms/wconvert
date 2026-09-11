@@ -38,29 +38,26 @@ So a facet is a question the tree can answer:
 | `display_type` | the entry | `popup` `floating_bar` `slide_in` `inline` |
 | `act` | `ConvertingAct::offeredIn()` | `submit` `click` |
 | `captures` | `field` node kinds | `email` `name` `phone` |
-| `shape` | step 0's root layout | `stack` `row` `split` |
-| `has_image` | any `image` node | bool |
+| `shape` | step 0's root layout | the manifest's layout vocabulary |
+| `has_image` | an image node or an image URL in a painted background | bool |
 | `asks_consent` | a `consent` node | bool |
 
-**Six are derived; three are offered as filters.** `shape`, `captures` and
-`has_image` are the three someone comparing designs actually uses. `act` is not
-a filter — it is the refusal marking, said on the card with the reason
-([ADR 0025](0025-cart-recovery-captures-nothing.md)). `asks_consent` is not
-something a merchant browses by. `display_type` is the Optin's, and the picker
-is already filtered on it. That is
-[ADR 0042](0042-the-admin-speaks-only-when-it-changes-what-you-do-next.md) rule 2
-applied to a toolbar: *does knowing this change what they do next?*
+**Six are derived; the merchant can narrow by behavior and capabilities.**
+As amended by
+[ADR 0069](0069-the-library-helps-merchants-compare-before-applying.md), the
+picker offers an optional **Fill in a form / Follow a link** choice alongside
+`captures`, `has_image` and secondary `shape` filters. `asks_consent` is a fact
+in the detail preview, not a filter. `display_type` remains the Optin's fixed
+scope and is identified in the library; browsing does not change that format.
+Image backgrounds count where the renderer paints them; decorative gradients
+do not become pictures merely because they use `bg-image`.
 
-> *Amended by
-> [ADR 0059](0059-the-converting-act-belongs-to-the-design.md): **`act` is no
-> longer the refusal marking**, because no [[Goal]] refuses a design for its
-> act. It is still not a filter and still travels, for two smaller jobs — the
-> picker says, before the click, that a design converting the other way changes
-> what this Optin counts including what it has already counted; and an A/B
-> arm's card is marked where its siblings convert the other way. Both are
-> statements about a DESIGN and an Optin, never about a Goal. `captures` picked
-> up refusal duty instead: a design that captures nothing is refused under a
-> Goal read from deliveries, and on an Optin holding a [[Destination]].*
+[ADR 0059](0059-the-converting-act-belongs-to-the-design.md) still owns the
+compatibility boundary: no [[Goal]] refuses a design for its act. Changing that
+act warns that the Optin's reporting, including its history, is reinterpreted;
+an A/B arm must still agree with its siblings. `captures` carries the refusal
+for a Goal read from deliveries or an Optin holding a [[Destination]]. Explicit
+merchant filters do not replace these checks or select themselves from a Goal.
 
 **There is no Goal facet, and there will not be.** `Gallery.tsx` was right the
 first time: asserting a Goal pairing that does not exist is what this boundary
@@ -173,16 +170,17 @@ work to 360px.
 
 ## Consequences
 
-- **The filters appear only when the set is large enough to need them** — nine
-  designs of one Display Type. Directly mirroring `Toolbar`'s own rule for the
-  count: *a count is stated only where the set can be large enough to need one.*
-  A chip strip over eight designs is a line that taxes every visit and informs
-  none. A fresh install gets the gallery it always had, better.
-- **The facet chips are the fifth one-of-N strip**, and they take the existing
-  declaration rather than inventing a treatment: white card, real edge,
-  foreground text, with every button `ghost` and the group deciding
-  (ADR 0042 rule 5). Multi-select within a facet, `aria-pressed`, no "All" chip
-  — nothing pressed is no constraint.
+- **Filtering does not disappear in a smaller library** (amended by ADR 0069).
+  Search and relevant capability controls remain available for every nonempty
+  Display Type. Search uses names and localized derived features. Choices absent
+  from that format are omitted; impossible combinations remain visible with
+  counts, while selected choices remain removable even at zero results.
+- **Field selections mean “Must include.”** Email + Phone requires both fields.
+  Layout selections are alternatives; different groups combine with AND. Counts
+  preserve search and the other constraints; a field count also retains the
+  other required fields, while a layout count measures that alternative. The
+  optional act choice has All, and unselected capability groups impose no
+  constraint. Active filters and Clear filters make the current scope explicit.
 - **Forty live previews, with no virtualization library.** `TemplateCard` mounts
   its `Preview` only while near the viewport and takes it down again;
   `content-visibility: auto` plus `contain-intrinsic-size` stops an off-screen
@@ -191,18 +189,32 @@ work to 360px.
   network, no layout measurement — so a card that comes back draws the same
   pixels. The alternative was a dependency inside a bundle whose halves are
   reported at every build (ADR 0038).
+- **A preview needs a definite containing width outside its shadow host.**
+  The renderer uses inline-size containment for mobile layout, so intrinsic
+  flex sizing cannot use its contents to size the host. In gallery and creation
+  cards this collapsed some previews to a strip. `Preview` now gives its mount
+  wrapper the design's width (or the renderer's default), capped at the available
+  width. The wrapper sits outside the host's `all: initial !important` reset;
+  the visitor renderer and its protection from page styles are unchanged.
+  Real WordPress checks cover gallery cards at 1024px, creation previews, and
+  the editor's 600px desktop and 352px mobile canvases.
 - **Picking a design after editing the structure is destructive, and the
   affordance says so.** `snapshotInto()` carries copy by [[Slot Role]] and
   `MerchantsOwn` carries image `src`/`alt` and button `href` — but **blocks the
   merchant added, moved or deleted are lost.** ADR 0039 says destructive actions
   confirm; the structure editor's amendment says undo buys the exception, and
-  picking a design is already one undo entry. So there is no dialog in front of
-  the dialog: the picker's own header states what it takes, exactly as the block
-  delete states *"Delete, and the 2 inside it"*.
-- **A remote fetch that fails degrades in silence.** The region is `ready` with
+  picking a design is already one undo entry. As amended by ADR 0069, a card
+  opens a detail preview before applying. Its sample-content label and warning
+  beside **Use this design** explain replacement, carried text that may move or
+  leave empty slots, and Undo. There is no second confirmation dialog. The
+  sample-import choice remains deferred; the snapshot contract is unchanged.
+- **An optional remote catalogue fetch that fails degrades in silence.** The region is `ready` with
   what it has — bundled designs are always there — and the failure is logged,
   not announced. An error banner on every visit of a picker that is working is
-  the sentence ADR 0042 rule 2 forbids.
+  the sentence ADR 0042 rule 2 forbids. This does not describe the installed
+  library's tree requests: a failed or omitted requested preview gets a local
+  error and Retry. The client splits requests into at most 24 ids and never
+  retries endlessly as a card re-enters the viewport (ADR 0069).
 - **A Pro licence that expired keeps every feature** (ADR 0015: *a licence buys
   updates and support, never the features*). What stops is the fetch of *new*
   premium designs; the cache keeps serving and no locked cards appear.
@@ -225,8 +237,12 @@ work to 360px.
 - **`TemplateCard` is shared by the picker and the creation flow's step 2**, and
   the facet toolbar is not. A Playbook card renders that Playbook's template
   *with its copy in it* — a different object — composed by `Prefill` on the
-  server so step 2 draws exactly what step 3 draws and exactly what creating it
-  stores ([#79](https://github.com/navidkashani/wconvert/issues/79),
+  server so the chooser draws exactly what creating it stores. **Amended by
+  [ADR 0072](0072-setup-choices-state-their-effect-and-scope.md):** the former
+  repeated preview at step 3 is removed. *Customize this starting point* creates
+  the draft and opens the editor; compact setup facts come from that same Prefill
+  result, rather than raw Playbook rules before installation-specific resolution
+  ([#79](https://github.com/navidkashani/wconvert/issues/79),
   [#68](https://github.com/navidkashani/wconvert/issues/68)).
 - **The admin resolves the site's privacy-policy link at the render**
   ([#77](https://github.com/navidkashani/wconvert/issues/77)). `PolicyLink::into()`
@@ -239,10 +255,11 @@ work to 360px.
   prevent. So `builder/policy.ts` mirrors `PolicyLink::resolve()` and runs
   immediately before `mount()`, and `Preview` is the admin's one call site for
   the renderer so there is one place that has to remember.
-- **What the picker does not say.** No sentence above the gallery. No `Free`
-  badge — only `Pro` on a locked card is news. No "showing 40 of 120" beyond the
-  count. That is ADR 0042 rule 2, and it is why the toolbar is three chip strips,
-  a search box and a number.
+- **What the picker needs to say** is amended by ADR 0069: the current format,
+  matching designs out of that format's total, active constraints, and how to
+  inspect before applying. The detail view identifies sample content and the
+  replacement consequence beside the action. A `Free` badge remains unnecessary;
+  premium availability belongs on the card it changes.
 - **A rule anchored on `#wconvert-admin` stops at the portal boundary.** A Radix
   dialog renders into `document.body`, so the picker found that the control
   height, the segmented group's *selected* treatment and the hand cursor were all

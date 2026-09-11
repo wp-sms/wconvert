@@ -2,8 +2,8 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import manifest from '../../resources/templates/manifest.json';
-import { DOCUMENT_CSS, SHADOW_CSS } from '@renderer/css';
-import { SAFE_SCHEMES, render } from '@renderer/render';
+import { A_NARROW_DESIGN, DOCUMENT_CSS, SHADOW_CSS } from '@renderer/css';
+import { REFERABLE, SAFE_SCHEMES, render } from '@renderer/render';
 import type { TemplateTree } from '@renderer/types';
 
 /**
@@ -62,7 +62,7 @@ describe('every member the manifest declares', () => {
   });
 
   it.each(manifest.fields)('has a field kind the renderer draws: %s', (name) => {
-    expect(renderStep({ type: 'stack', children: [{ type: 'field', name }] })?.querySelector('input')).not.toBeNull();
+    expect(renderStep({ type: 'stack', children: [{ type: 'field', name }] })?.querySelector('input,select')).not.toBeNull();
   });
 
   /**
@@ -392,6 +392,271 @@ describe('the panel', () => {
 });
 
 /**
+ * ============================================================================
+ * THE SECOND LAYOUT THAT PAINTS, AND THE SPREAD IS THE WHOLE OF IT.
+ * ============================================================================
+ * A `panel` and a `media` draw the same two background layers; what tells them
+ * apart is what each does with room it has more of than its contents need. A
+ * panel stacks at the top and a media pushes to both edges, which is what a
+ * wordmark above a headline on one photograph is — thirteen of the sixteen
+ * reference designs.
+ *
+ * jsdom computes no layout, so the spread itself is a source-text assertion.
+ * What IS behavioural here is everything that reaches the markup.
+ */
+describe('the media', () => {
+  const media = (extra: object): HTMLElement =>
+    render({ steps: [{ type: 'media', children: [], ...extra }] } as TemplateTree, {})
+      .firstElementChild as HTMLElement;
+
+  /** The same reset a `panel` takes, for the same reason and in the same place. */
+  it('starts from the designs colours and not its picture', () => {
+    const root = render(
+      { steps: [{ type: 'media', children: [] }] } as TemplateTree,
+      { bg: '#0f172a', 'bg-image': 'url(/hero.jpg)', overlay: 'rgba(0,0,0,.5)' },
+    );
+    const element = root.firstElementChild as HTMLElement;
+
+    expect(element.style.getPropertyValue('--wc-bg-image')).toBe('none');
+    expect(element.style.getPropertyValue('--wc-overlay')).toBe('#0000');
+    expect(element.style.getPropertyValue('--wc-bg')).toBe('');
+  });
+
+  it('lets its own bag win over that reset, which is what putting type on art is', () => {
+    const element = media({ tokens: { 'bg-image': 'url(/plant.jpg)', overlay: 'linear-gradient(#0008,#000c)' } });
+
+    expect(element.style.getPropertyValue('--wc-bg-image')).toBe('url(/plant.jpg)');
+    expect(element.style.getPropertyValue('--wc-overlay')).toBe('linear-gradient(#0008,#000c)');
+  });
+
+  it('writes min as the custom property the stylesheet reads', () => {
+    expect(media({ min: '26rem' }).style.getPropertyValue('--wc-min')).toBe('26rem');
+  });
+
+  /**
+   * **The overlay is a LAYER and not the second background layer**, which is
+   * the one thing about this rule that is not the panel's. On a panel the wash
+   * is painted into `background-image` above the picture, which is right where
+   * the box's own text is what is being made legible; here the children sit ON
+   * the picture, so a wash in the background would darken the photograph and
+   * the words on it equally.
+   */
+  it('washes the picture from a layer the children sit above', () => {
+    expect(CSS).toContain('.wc-media::before{');
+    expect(CSS).toMatch(/\.wc-media::before\{[^}]*background:var\(--wc-overlay/);
+    expect(CSS).toContain('.wc-media>*{position:relative}');
+    // And the wash is NOT in its own background-image, or it would be under
+    // the picture rather than over it.
+    expect(/\.wc-media\{([^}]*)\}/.exec(CSS)?.[1] ?? '').not.toContain('--wc-overlay');
+  });
+
+  it('spreads its children to both edges, which is the whole difference from a panel', () => {
+    const rule = /\.wc-media\{([^}]*)\}/.exec(CSS)?.[1] ?? '';
+
+    expect(rule).toContain('justify-content:space-between');
+    expect(rule).toContain('min-block-size:var(--wc-min,0)');
+  });
+});
+
+/**
+ * ============================================================================
+ * THE ONE ORNAMENT SCOPING CANNOT REACH.
+ * ============================================================================
+ * A punched notch has to REMOVE the panel so the merchant's own page shows
+ * through, and no background layer can name that ground. It is the only `mask`
+ * in the product and the only new CSS property the whole scoping proposal
+ * added.
+ */
+describe('the notch', () => {
+  const panel = (extra: object): HTMLElement =>
+    render({ steps: [{ type: 'panel', children: [], ...extra }] } as TemplateTree, {})
+      .firstElementChild as HTMLElement;
+
+  it('writes it as a modifier attribute, and nothing at all for the default', () => {
+    expect(panel({ notch: true }).dataset.notch).toBe('true');
+    expect(panel({ notch: false }).outerHTML).toBe(panel({}).outerHTML);
+  });
+
+  /**
+   * **`intersect` is what makes two layers one shape**, and the DEFAULT
+   * composite is `add` — so an engine that does not understand the property
+   * draws a panel with no notches rather than a panel with no corners. That is
+   * the only degradation worth having, and it is what makes the prefixed pair
+   * optional rather than load-bearing.
+   */
+  it('composes the two circles by intersection, in both spellings', () => {
+    const rule = /\.wc-panel\[data-notch=true\]\{([^}]*)\}/.exec(CSS)?.[1] ?? '';
+
+    expect(rule).toContain('mask-composite:intersect');
+    expect(rule).toContain('-webkit-mask-composite:source-in');
+    expect([...rule.matchAll(/radial-gradient/g)]).toHaveLength(4);
+  });
+});
+
+/**
+ * ============================================================================
+ * EVERY HEADLINE IN THE REFERENCE SET BREAKS ITS OWN LINE.
+ * ============================================================================
+ * `SlotFields` has handed the merchant a `<textarea>` for body copy since it
+ * was written, so a newline was always typeable; `textContent` collapsed every
+ * one of them to a space and nothing said so.
+ *
+ * **Structure and never markup**, which is the same rule the link has: each
+ * line is a text node and each break is a real `<br>`, so this is one more
+ * place that does not reach `innerHTML` (ADR 0013).
+ */
+describe('a line break in authored copy', () => {
+  const drawn = (node: object): Element =>
+    renderStep({ type: 'stack', children: [node] })?.firstElementChild as Element;
+
+  it.each([
+    ['heading', { type: 'heading', text: 'Room\nto grow.' }],
+    ['text', { type: 'text', text: 'Room\nto grow.' }],
+    ['eyebrow', { type: 'eyebrow', text: 'Room\nto grow.' }],
+    ['badge', { type: 'badge', text: 'Room\nto grow.' }],
+    ['code', { type: 'code', text: 'Room\nto grow.' }],
+  ])('is a <br> on a %s, and the text either side of it survives', (_type, node) => {
+    const element = drawn(node);
+
+    expect(element.querySelectorAll('br')).toHaveLength(1);
+    expect(element.textContent).toBe('Roomto grow.');
+    expect(element.innerHTML).toBe('Room<br>to grow.');
+  });
+
+  it('writes a break with no text node for a deliberate blank line', () => {
+    expect(drawn({ type: 'text', text: 'one\n\ntwo' }).innerHTML).toBe('one<br><br>two');
+  });
+
+  it('leaves copy with no newline in it exactly as it was', () => {
+    expect(drawn({ type: 'heading', text: 'Room to grow.' }).innerHTML).toBe('Room to grow.');
+  });
+
+  /** A sentence breaks its own line too, on both sides of a placeholder. */
+  it('breaks a sentence either side of its link', () => {
+    const element = drawn({
+      type: 'text',
+      text: 'Read our %s\nbefore you sign up.',
+      link: { label: 'privacy policy', href: 'https://example.test/p/' },
+    });
+
+    expect(element.querySelectorAll('br')).toHaveLength(1);
+    expect(element.querySelector('a')?.textContent).toBe('privacy policy');
+  });
+});
+
+/**
+ * ============================================================================
+ * THE SECOND PLACEHOLDER, AND IT IS THE SAME MACHINERY AS THE FIRST.
+ * ============================================================================
+ * 71 sentences across the sixteen reference designs lift a run of words —
+ * *"Take **10% off** your first order"* — and until now the vocabulary could
+ * express it as two paragraphs or not at all.
+ *
+ * The record of what a `consent` sentence SAYS is asserted from both languages
+ * by `tests/fixtures/consent-sentences.json`; this is the markup half, which
+ * only the renderer has.
+ */
+describe('inline emphasis', () => {
+  const drawn = (node: object): Element =>
+    renderStep({ type: 'stack', children: [node] })?.firstElementChild as Element;
+
+  it('builds a <strong> and never markup', () => {
+    const element = drawn({ type: 'text', text: 'Take %b your first order.', emphasis: '10% off' });
+
+    expect(element.innerHTML).toBe('Take <strong class="wc-strong">10% off</strong> your first order.');
+  });
+
+  it('carries a link and an emphasis in one sentence, told apart by the mark', () => {
+    const element = drawn({
+      type: 'text',
+      text: 'Take %b, and read our %s.',
+      emphasis: '10% off',
+      link: { label: 'privacy policy', href: 'https://example.test/p/' },
+    });
+
+    expect(element.querySelector('strong')?.textContent).toBe('10% off');
+    expect(element.querySelector('a')?.textContent).toBe('privacy policy');
+    expect(element.textContent).toBe('Take 10% off, and read our privacy policy.');
+  });
+
+  /** Emphasis breaks its own line, because it is words like any other. */
+  it('breaks a line inside the emphasised run', () => {
+    expect(drawn({ type: 'text', text: '%b now.', emphasis: 'Two\nlines' }).innerHTML).toBe(
+      '<strong class="wc-strong">Two<br>lines</strong> now.',
+    );
+  });
+
+  /**
+   * Weight and nothing else. The same `%b` sits in fine print, which is
+   * already `--wc-muted`, so tinting it `--wc-accent` would put the loudest
+   * colour in the design on the quietest line in it.
+   */
+  it('is weight, and inherits its colour', () => {
+    expect(CSS).toContain('.wc-strong{font-weight:700}');
+  });
+});
+
+/**
+ * ============================================================================
+ * A VALUE THAT NAMES A TOKEN, SO A SCOPE CAN FOLLOW A THEME.
+ * ============================================================================
+ * Written verbatim, `{"bg":"#263f2c"}` on a panel survives every theme the
+ * merchant tries — so the deeper a design is styled, the less a theme does.
+ *
+ * It resolves in CSS rather than in the renderer, which is what makes it free:
+ * `var(--wc-accent)` is answered at the element by whatever is in scope, and a
+ * theme applied after the render moves it too.
+ */
+describe('a token used as a value', () => {
+  const scoped = (tokens: Record<string, string>, design: Record<string, string> = {}): HTMLElement =>
+    render({ steps: [{ type: 'panel', children: [], tokens }] } as TemplateTree, design)
+      .firstElementChild as HTMLElement;
+
+  it('is the same list the manifest declares', () => {
+    expect([...REFERABLE].sort()).toEqual([...manifest.referable].sort());
+  });
+
+  it('is every colour token and nothing else', () => {
+    // The colours are what a palette is made of; a `pad` that follows `gap` is
+    // a coincidence rather than an intent.
+    expect(REFERABLE.every((name) => name in manifest.tokens)).toBe(true);
+    expect(REFERABLE).not.toContain('pad');
+  });
+
+  it.each(REFERABLE)('becomes a reference to it: %s', (name) => {
+    // Written onto a DIFFERENT token, because a name referring to itself is
+    // the one case that stays verbatim — asserted on its own below.
+    const on = name === 'bg' ? 'fg' : 'bg';
+
+    expect(scoped({ [on]: name }).style.getPropertyValue(`--wc-${on}`)).toBe(`var(--wc-${name})`);
+  });
+
+  it('writes every other value exactly as it was', () => {
+    expect(scoped({ bg: '#fff4df' }).style.getPropertyValue('--wc-bg')).toBe('#fff4df');
+    expect(scoped({ pad: 'gap' }).style.getPropertyValue('--wc-pad')).toBe('gap');
+    expect(scoped({ bg: 'wobble' }).style.getPropertyValue('--wc-bg')).toBe('wobble');
+  });
+
+  /**
+   * `var(--wc-bg)` on `--wc-bg` is a cycle CSS discards, so honouring it would
+   * silently unset the one property the author was trying to set.
+   */
+  it('writes a name referring to itself verbatim', () => {
+    expect(scoped({ bg: 'bg' }).style.getPropertyValue('--wc-bg')).toBe('bg');
+  });
+
+  it('leaves the designs own value on the root, so the reference has something to find', () => {
+    const root = render(
+      { steps: [{ type: 'panel', children: [], tokens: { bg: 'accent' } }] } as TemplateTree,
+      { accent: '#263f2c' },
+    );
+
+    expect(root.style.getPropertyValue('--wc-accent')).toBe('#263f2c');
+    expect((root.firstElementChild as HTMLElement).style.getPropertyValue('--wc-bg')).toBe('var(--wc-accent)');
+  });
+});
+
+/**
  * Tokens are the other half of the vocabulary, and an unconsumed one is worse
  * than a missing one: it rides the payload on every page view, is offered in
  * the settings panel, and changes nothing on screen.
@@ -403,10 +668,165 @@ describe('every token the manifest declares', () => {
 
   it('is the only custom property the stylesheet reads, beside the declared layout params', () => {
     const params = Object.values(manifest.layouts).flatMap((layout) => layout.params);
-    const declared = new Set([...Object.keys(manifest.tokens), ...params]);
+    /*
+      **`n-` is the narrow spelling of a declared token and nothing else.** The
+      rule is unchanged — the stylesheet may read no `--wc-*` name outside the
+      declared tokens and the declared layout params — and `--wc-n-bg` is
+      `--wc-bg` at a second width, mirrored by `render.ts`'s `retune` so one
+      container query can remap it. Enumerated rather than pattern-matched, so
+      a `--wc-n-wobble` still fails.
+    */
+    const declared = new Set([
+      ...Object.keys(manifest.tokens),
+      ...Object.keys(manifest.tokens).map((token) => `n-${token}`),
+      ...params,
+    ]);
     const read = [...CSS.matchAll(/var\(--wc-([a-z-]+)/g)].map((match) => match[1]);
 
     expect([...new Set(read)].filter((name) => !declared.has(name))).toEqual([]);
+  });
+});
+
+/**
+ * ============================================================================
+ * A SECOND BAG PER BOX, AND THE MIRROR IS WHAT MAKES IT EXPRESSIBLE AT ALL.
+ * ============================================================================
+ * A token bag is written with `setProperty` and inline style has no
+ * conditional form; a stylesheet cannot name one node in a tree it has never
+ * seen. So `render.ts` writes a retuned box's values under `--wc-n-*` and one
+ * `@container` rule remaps them.
+ *
+ * **The completeness of the mirror is the load-bearing half**, and it is what
+ * a browser found wrong the first time: an unset `var(--wc-n-heading-font)` is
+ * guaranteed-invalid rather than inherited, so a remap that found nothing
+ * wiped the property and the stylesheet fell to its own literal fallback.
+ */
+describe('the narrow bag', () => {
+  const retuned = (node: object, design: Record<string, string> = {}): HTMLElement =>
+    render({ steps: [node] } as TemplateTree, design).firstElementChild as HTMLElement;
+
+  it('fires at the width the manifest declares', () => {
+    expect(A_NARROW_DESIGN).toBe(manifest.narrow);
+    expect(CSS).toContain(`@container wc (max-width:${manifest.narrow})`);
+  });
+
+  it('is measured against the design rather than the viewport', () => {
+    // An `inline` Optin in a sidebar is narrow on a desktop, and a media query
+    // would call it wide.
+    expect(CSS).toMatch(/\.wc-root\{[^}]*container:wc\/inline-size/);
+  });
+
+  it('costs a box that sets none nothing at all', () => {
+    const plain = retuned({ type: 'panel', children: [], tokens: { bg: '#fff4df' } });
+
+    expect(plain.dataset.narrow).toBeUndefined();
+    expect(plain.getAttribute('style')).not.toContain('--wc-n-');
+  });
+
+  it('is an empty bag away from being absent, so a cleared one leaves no attribute', () => {
+    expect(retuned({ type: 'panel', children: [], narrow: {} }).outerHTML).toBe(
+      retuned({ type: 'panel', children: [] }).outerHTML,
+    );
+  });
+
+  it('marks the box, so the remap reaches it and reaches nothing inside it', () => {
+    const outer = retuned({
+      type: 'panel',
+      tokens: { bg: '#fff4df' },
+      narrow: { pad: '1rem' },
+      children: [{ type: 'panel', children: [], tokens: { bg: '#0f172a' } }],
+    });
+
+    expect(outer.dataset.narrow).toBe('');
+    // The child sets its OWN ground and no narrow bag. An ungated remap would
+    // repaint it with the ancestor's narrow value, because `--wc-n-bg`
+    // inherits; gated, it is untouched at every width.
+    expect((outer.firstElementChild as HTMLElement).dataset.narrow).toBeUndefined();
+  });
+
+  it('mirrors every token in scope and not only the ones the box set', () => {
+    const box = retuned(
+      {
+        type: 'panel',
+        children: [],
+        tokens: { bg: '#fff4df' },
+        narrow: { pad: '1rem' },
+      },
+      { 'heading-font': 'Georgia, serif', accent: '#263f2c' },
+    );
+
+    // The narrow value, the box's own, and the DESIGN's — all three, or the
+    // remap finds an unset property and the stylesheet falls to its literal.
+    expect(box.style.getPropertyValue('--wc-n-pad')).toBe('1rem');
+    expect(box.style.getPropertyValue('--wc-n-bg')).toBe('#fff4df');
+    expect(box.style.getPropertyValue('--wc-n-heading-font')).toBe('Georgia, serif');
+    expect(box.style.getPropertyValue('--wc-n-accent')).toBe('#263f2c');
+  });
+
+  it('mirrors what an ancestor set, through a box that set nothing', () => {
+    const root = render(
+      {
+        steps: [
+          {
+            type: 'panel',
+            tokens: { bg: '#fff4df' },
+            children: [
+              { type: 'stack', children: [{ type: 'panel', children: [], narrow: { pad: '1rem' } }] },
+            ],
+          },
+        ],
+      } as TemplateTree,
+      { fg: '#253c2b' },
+    );
+    const inner = root.querySelector('.wc-stack > .wc-panel') as HTMLElement;
+
+    expect(inner.style.getPropertyValue('--wc-n-bg')).toBe('#fff4df');
+    expect(inner.style.getPropertyValue('--wc-n-fg')).toBe('#253c2b');
+  });
+
+  /**
+   * A `panel` and a `media` reset the design's picture before their own bag
+   * applies, and the mirror has to carry the reset or a retuned photo pane
+   * repaints the design's art below 360px.
+   */
+  it('mirrors the picture reset a painting box makes', () => {
+    const box = retuned(
+      { type: 'media', children: [], narrow: { pad: '1rem' } },
+      { 'bg-image': 'url(/hero.jpg)' },
+    );
+
+    expect(box.style.getPropertyValue('--wc-n-bg-image')).toBe('none');
+  });
+
+  it('remaps every declared token, so none of them is stranded at narrow', () => {
+    const rule = /@container wc \(max-width:[^)]+\)\{[^{]*\[data-narrow\][^{]*\{([^}]*)\}/.exec(CSS)?.[1] ?? '';
+
+    for (const token of Object.keys(manifest.tokens)) {
+      expect(rule, token).toContain(`--wc-${token}:var(--wc-n-${token})!important`);
+    }
+  });
+
+  /**
+   * **`!important`, and it is not decoration.** The wide bag is on the
+   * element's own `style`, which outranks every stylesheet rule that is not
+   * important — so without it the remap loses to the thing it exists to
+   * override.
+   */
+  it('states the remap with enough force to beat the inline bag it overrides', () => {
+    const rule = /@container wc \(max-width:[^)]+\)\{[^{]*\[data-narrow\][^{]*\{([^}]*)\}/.exec(CSS)?.[1] ?? '';
+
+    expect([...rule.matchAll(/!important/g)]).toHaveLength(Object.keys(manifest.tokens).length);
+  });
+
+  /**
+   * A reference always points at the WIDE name, at both prefixes:
+   * `--wc-n-accent` exists only on a box that carries a narrow bag, so a
+   * mirror pointing at itself would resolve to nothing on most of them.
+   */
+  it('keeps a token-as-value pointing at the wide name', () => {
+    const box = retuned({ type: 'panel', children: [], narrow: { bg: 'accent' } });
+
+    expect(box.style.getPropertyValue('--wc-n-bg')).toBe('var(--wc-accent)');
   });
 });
 

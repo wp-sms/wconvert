@@ -7,19 +7,22 @@ description: Author a new WConvert design (a [[Template]]) — a node tree plus 
 
 A [[Template]] is **configuration, not a document** (ADR 0010): a JSON node
 tree over a closed vocabulary plus a closed set of CSS custom properties — set
-for the whole design, and re-declared on any layout node for what is inside it
-(ADR 0062). It
-carries no HTML, no CSS and — this is the part that catches everyone — **no
-words a visitor reads**. Copy lives on the [[Playbook]]; a design's own text is
-placeholder that exists so the gallery has something to show.
+for the whole design, and re-declared on layouts and leaves for their own
+appearance (ADRs 0062 and 0067). It
+carries no HTML or CSS. Copy usually comes from the [[Playbook]] or merchant;
+a design's own text supplies gallery examples. **Use this design's sample
+content** can explicitly copy those examples into the draft (ADR 0075), so
+every sample still needs honest visitor-facing wording. **Keep my content**
+remains the default and shows the actual prepared candidate before Apply.
 
 That boundary is what keeps the library small. With copy held elsewhere a
 design is Goal-agnostic, so the gallery is *N designs per [[Display Type]]*
 rather than a design for every pairing of Display Type and [[Goal]].
 
-**The builder has no canvas** ([#15](https://github.com/navidkashani/wconvert/issues/15)),
-so this library is the entire design surface of the product. There is nowhere
-for a merchant to escape to.
+**The builder starts with a preview and a contextual inspector** (ADR 0067).
+Merchants can edit selected elements and use the optional Layers panel for
+structure. A library design should still be a complete starting point: getting
+a usable Optin must not require rebuilding its layout.
 
 ## The loop
 
@@ -32,6 +35,10 @@ for a merchant to escape to.
    `resources/templates/library/`, Pro ones in
    `pro/modules/display-types/templates/`. The `id` must be unique across
    **both**.
+   Give each shipped leaf a stable `n1`…`n9999` id, unique within its tree, and
+   preserve that id when reordering it. Do not author `v` or derived facets.
+   PHP mints missing ids on newly added draft leaves; that fallback is not a
+   reason to renumber shipped leaves and lose translation identity (ADR 0010).
 3. **`composer verify:templates`.** Not optional — see below.
 4. **Render it.** `./tools/design-library/build.sh renderer designs sheet` and
    read `out/contact-sheet-320-ltr.png` first.
@@ -82,9 +89,42 @@ all, so it is missing from the gallery entirely.
 - **Exactly one converting act.** One `button`, with `action` either `submit`
   or `link`. Two is refused, none is refused.
 - **The step count follows from the act.** `submit` → **2 steps** (the second
-  is the terminal success state). `link` → **1 step**, because the click
+  is the terminal capture acknowledgement). `link` → **1 step**, because the click
   navigates the visitor away and an interstitial is worse than the navigation
   it delays (ADR 0025).
+
+**Success wording describes capture, not delivery.** Use *Request received* or
+thank the visitor for the specific request. A form response does not prove
+provider subscription, confirmation or inbox delivery, so never use *You are
+subscribed* or *Your code is on its way* as library success copy. *Here is the
+code* is appropriate only when a `code` node actually displays it. The merchant
+still configures the offer and any delivery route. See `GUIDELINES.md` §1.5 and
+ADR 0073. Library-copy changes affect examples and new drafts; do not rewrite
+saved merchant copy.
+
+**Author a label as well as an example for every field.** Field-only rows keep
+their labels. Only a compact field-and-button row with non-empty examples may
+visually hide its direct field labels on wide containers, and those labels
+return at 24rem and below. The renderer supplies a fallback for missing labels
+and an asterisk for required fields. Do not duplicate the asterisk or rely on
+the fallback instead of clear words. Phone examples include a country code.
+
+**One optional choice question is available as `name: "interest"`.** It renders
+a native single-choice select. Supply a question label, an empty-option prompt
+in `placeholder`, and a nonempty `options` list of `{value, label}` pairs. The
+manifest's `field_options` is the authority: up to 12 choices, labels up to 120
+Unicode characters, and unique stable values matching
+`^[a-z][a-z0-9_-]{0,47}$`. Do not invent another field name, accept arbitrary
+text, or use a choice as an identity. Every submit form still needs email or
+phone. Default the choice to optional unless the visitor's request needs it.
+
+`options` is content and travels through the derived `interest_options` Role
+as `{options: [...]}`; labels and values survive compatible design changes.
+The question and prompt use `interest_label` and `interest_placeholder`.
+A Playbook localizes labels, not stable sent values. Include a concrete optional
+choice only when it helps the receiving business respond; a catalogue of
+unnecessary questions is not a better capture form. See ADR 0076 and
+`resources/templates/library/inline-choice.json`.
 
 **A design's act is no longer coupled to any Goal.** ADR 0059 deleted every
 design↔Goal pairing: a Template offering exactly one converting act **is** the
@@ -117,8 +157,8 @@ written anywhere.
 HTML from anywhere — a competitor, a canvas, a generator — **cannot cross**.
 Positioned badges, decorative shapes and second CTAs have no home in the
 vocabulary and `TemplateVocabulary::normalize()` drops them **silently**.
-Per-node colours DO have a home — a layout's `tokens` bag — but only in the
-declared token names, and only on a layout.
+Per-node colours DO have a home — a layout or leaf's `tokens` bag — using the
+declared token names. A value affects the elements that read that token.
 
 An HTML→JSON mapper is easy to write and unsafe to trust, which is exactly why
 there is not one ([#18](https://github.com/navidkashani/wconvert/issues/18)).
@@ -127,28 +167,66 @@ Author against `VOCABULARY.md` instead.
 ## The ceiling, stated plainly
 
 The token **names** are closed and that is the ceiling. Where each one APPLIES
-is not: since ADR 0062 any layout node carries its own `tokens` bag,
-re-declaring the same names for itself and everything inside it. Custom
+is not: ADR 0062 added layout `tokens` bags and ADR 0067 extended them to leaves,
+re-declaring the same names for the element and everything inside it. Custom
 properties inherit, so a `split` can hold a cream pane beside a dark one and the
 form can have a different ground from the headline. Bags nest.
 
-**A bag is only visible where something draws it, and `panel` is that
-something.** Every other layout arranges and paints nothing, so a `stack` with
-`{"bg":"…"}` tints only what inside it happens to read `--wc-bg`. A `panel`
-holds its children in a column exactly as `stack` does *and* draws the box —
-ground, picture, wash, padding, corner, edge. A photo pane is a `panel` carrying
-`bg-image`, `overlay` and `min`; there is no `media` node and there will not be
-one. A panel resets `bg-image` and `overlay` before its own bag applies, so the
-design's picture is not repainted inside every panel in it.
+**A bag is only visible where something draws it, and two layouts are that
+something.** `stack`, `row`, `split` and `grid` arrange and paint nothing, so a
+`stack` with `{"bg":"…"}` tints only what inside it happens to read `--wc-bg`.
+
+- A **`panel`** holds its children in a column exactly as `stack` does *and*
+  draws the box — ground, picture, wash, padding, corner, edge. A photo pane
+  with nothing written on it is a `panel` carrying `bg-image`, `overlay` and
+  `min`. `notch: true` punches two circles out of its top corners so the page
+  shows through — the one ornament a token cannot reach, and only visible where
+  the halves paint and the design's own ground does not.
+- A **`media`** is the picture box: the same two background layers, and its
+  children pushed to its top and bottom edges rather than stacked. That is a
+  wordmark above a display line on one photograph, which thirteen of the
+  sixteen reference designs are. Give it `min`, or the spread has nothing to
+  spread across, and `fg`, because the design's ink was chosen against the
+  design's ground and not against your picture.
+
+Both reset `bg-image` and `overlay` before their own bag applies, so the
+design's picture is not repainted inside every box in it (ADR 0063).
+
+**Text copy supports line breaks, links and emphasis.** A newline is a real line break
+on every text leaf — write where a display headline breaks rather than hoping
+for the wrap. `%s` plus a `link` object is an anchor, and `%b` plus an
+`emphasis` string is a `<strong>`; one of each per sentence, a second mark is
+literal, and a mark with nothing to fill it renders nothing.
+Keep privacy wording grammatical when the site has no policy URL; a complete
+sentence followed by `%s` works without leaving a fragment such as `See our.`.
+
+**A colour token's value may name another colour token** — `{"bg": "accent"}` —
+and it then follows the theme. Reach for a literal hex only where the box is
+deliberately outside the palette.
+
+**A layout or leaf may carry the bag twice.** `narrow` is the same names again,
+applying below 24rem (384px) of *container* — so an inline Optin in a sidebar
+retunes on a desktop (ADRs 0064 and 0067). Reach for it where shrinking is not
+the same as retuning: a
+photo pane that is 440px of a split and the whole width on a phone wants less
+padding and smaller display type, not the same values in a narrower box.
+Everything that merely needs to be smaller already is — a `split` stacks, a
+`grid` drops to one column. It is the one thing that **doubles what a scope
+stores**, so set the two or three tokens that retune and not the bag again.
+
+**A floor is only needed where the picture is the taller thing.** `.wc-split`
+is `align-items: stretch`, so a `media` beside a form is already the form's
+height and `min` adds nothing — and once the split wraps, `min` is what leaves
+a 384px picture above the fold on a phone.
 
 ADR 0061 declined per-node styling as "rung 3" and named the evidence that would
 reopen it; ADR 0062 records the reopening, and that the evidence was a different
 kind than the one asked for.
 
-What is still out of reach: **arrangement**. There is no per-node `class`, no
-`style`, no positioning, and nothing that moves a box somewhere the layout did
-not put it. A design that wants the photo on the other side is a different
-design.
+**Arrangement stays within the tree's layout vocabulary.** The editor offers
+guarded move, copy, delete and layout controls. There is no per-node `class`,
+arbitrary `style`, or absolute positioning; the layout still decides where its
+children go.
 
 Beyond the bag, **token values are unvalidated** — only the names are checked —
 so `clamp()` widths, asymmetric `pad`, arbitrary radii, gradients through

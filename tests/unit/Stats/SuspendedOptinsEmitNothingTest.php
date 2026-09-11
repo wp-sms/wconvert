@@ -14,6 +14,7 @@ use WConvert\Rules\RuleVocabulary;
 use WConvert\Stats\StatsRepository;
 use WConvert\Tests\Unit\Support\FakeConnection;
 use WConvert\Tests\Unit\Support\FakeOptionStore;
+use WConvert\Tests\Unit\Support\OptinDesign;
 use WConvert\Tests\Unit\Support\FakeTransientStore;
 use WConvert\Tests\Unit\Support\InstalledRules;
 use WP_REST_Request;
@@ -79,7 +80,7 @@ final class SuspendedOptinsEmitNothingTest extends TestCase
      */
     private function publish(array $rules): string
     {
-        $optin = $this->optins->create('Spring sale', 'grow_email_list', ['rules' => $rules]);
+        $optin = $this->optins->create('Spring sale', 'grow_email_list', ['rules' => $rules, 'template' => OptinDesign::template()]);
         $this->optins->publish($optin->id);
 
         return $optin->id;

@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNod
 import { __ } from '@wordpress/i18n';
 import { BlockRow, controlsOf, type Control } from './BlockRow';
 import { nodesOf, samePath, type Block } from './structure/tree';
-import { keyOfSlot, type SlotKey } from './slots';
 import type { Path } from './panel';
 import type { TemplateLabels } from '../templates/api';
 import type { BlockDrag } from './useBlockDrag';
@@ -47,18 +46,19 @@ import type { TemplateTree } from '@renderer/types';
 
 export interface BlockTreeProps {
   readonly tree: TemplateTree;
+  readonly step?: number;
   readonly labels: TemplateLabels;
   /**
    * The block drawn as selected, as its {@link Path}.
    *
-   * **A path and not a `SlotKey`**, because a key cannot name every row: a
-   * block with no [[Slot Role]] has none at all, and two role-less blocks of
-   * one type share the absence. Selecting either would have drawn both — or
-   * neither — as selected. The key still travels beside it for the preview's
-   * benefit, which is where `slots.ts` says it belongs.
+   * **A path and only a path.** A Role could not name every row — a block with
+   * no [[Slot Role]] has none at all, and two role-less blocks of one type
+   * share the absence — so a key used to travel beside this for the preview's
+   * benefit. The preview speaks in paths now (`slots.ts`), so there is one
+   * address rather than two that have to agree.
    */
   readonly selected: Path | null;
-  readonly onSelect: (key: SlotKey | null, path: Path) => void;
+  readonly onSelect: (path: Path) => void;
   /**
    * Move the row that has focus, by `Alt+↑` and `Alt+↓`.
    *
@@ -108,6 +108,7 @@ export interface BlockTreeProps {
 
 export function BlockTree({
   tree,
+  step,
   labels,
   selected,
   onSelect,
@@ -134,7 +135,7 @@ export function BlockTree({
   const [taking, setTaking] = useState(false);
 
   const blocks = useMemo(() => nodesOf(tree), [tree]);
-  const rows = useMemo(() => shown(blocks, collapsed), [blocks, collapsed]);
+  const rows = useMemo(() => shown(step === undefined ? blocks : blocks.filter(block => block.path[0] === step), collapsed), [blocks, collapsed, step]);
 
   const current = Math.max(
     0,
@@ -297,10 +298,7 @@ export function BlockTree({
         event.currentTarget.contains(event.relatedTarget) ? undefined : setTaking(false)
       }
     >
-      {rows.map((block, row) => {
-        const key = keyOfSlot(block);
-
-        return (
+      {rows.map((block, row) => (
           <BlockRow
             key={keyFor(block.path)}
             block={block}
@@ -312,14 +310,13 @@ export function BlockTree({
             onExpand={(open) => expand(block, open)}
             onSelect={() => {
               setAt({ path: keyFor(block.path), control: 0 });
-              onSelect(key, block.path);
+              onSelect(block.path);
             }}
             onFocusControl={(control) => setAt({ path: keyFor(block.path), control })}
             actions={actions === undefined ? undefined : (props) => actions(block, props)}
             drag={drag}
           />
-        );
-      })}
+      ))}
     </div>
   );
 }

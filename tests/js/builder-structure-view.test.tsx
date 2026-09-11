@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ruleTypes } from './support/rule-types';
 import type { TemplateEntry } from '../../resources/admin/src/templates/api';
 import type { TemplateNode, TemplateTree } from '@renderer/types';
@@ -17,11 +17,9 @@ import type { TemplateNode, TemplateTree } from '@renderer/types';
  * assembled screen can answer: **does pressing the button reach them, and does
  * what comes back get sent to the server?**
  *
- * It deliberately does NOT test the keyboard model. jsdom models neither focus
- * nor roving tabindex nor the top layer (`tests/js/setup.ts`), so an assertion
- * about ← → here would be an assertion about jsdom. That gap is recorded rather
- * than papered over: Vitest 4's Browser Mode is what closes it, in a pull
- * request of its own.
+ * Shortcut ownership is asserted from dispatched events. Native roving focus,
+ * layout and top-layer behavior still need a real browser pass; these event
+ * tests do not stand in for those interactions.
  */
 
 const builder = vi.hoisted(() => ({
@@ -92,6 +90,7 @@ const LABELS = {
     split: 'Side by side',
     grid: 'Equal columns',
     panel: 'Coloured box',
+    media: 'Picture box',
   },
   // The menu shows what a layout DOES, because *Row* and *Side by side* are two
   // words a merchant cannot tell apart from their names alone.
@@ -101,6 +100,7 @@ const LABELS = {
     split: 'Two panes, each holding its own blocks.',
     grid: 'Three across, one per line on a phone.',
     panel: 'A box with its own colours, holding other blocks.',
+    media: 'A picture, with the first block at its top and the last at its bottom.',
   },
   layoutParams: { 'split.ratio': 'How the space is divided' },
   layoutParamValues: {
@@ -159,6 +159,9 @@ function optin(over: Record<string, unknown> = {}) {
     name: 'Welcome discount',
     goal: 'grow_email_list',
     published_at: null,
+    deleted_at: null,
+    suspended: null,
+    has_unpublished_changes: false,
     config: { template_id: 'centred-card', template: { tree: ENTRY.tree, tokens: ENTRY.tokens } },
     ...over,
   };
@@ -189,7 +192,7 @@ beforeEach(() => {
 async function structure() {
   render(<OptinBuilder id={ID} onClose={vi.fn()} />);
 
-  await screen.findByRole('tab', { name: 'Design' });
+  await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
 }
 
 /**
@@ -202,11 +205,7 @@ async function structure() {
  */
 async function designLook() {
   render(<OptinBuilder id={ID} onClose={vi.fn()} />);
-
-  const halves = await screen.findByRole('tablist', { name: /what it says, or how it looks/ });
-
-  await userEvent.click(within(halves).getByRole('tab', { name: 'Style' }));
-  await userEvent.click(await screen.findByRole('button', { name: 'Open the design’s look' }));
+  await screen.findByRole('button', { name: 'Change template' });
 }
 
 /**
@@ -314,7 +313,7 @@ describe('moving a block', () => {
 
     await userEvent.click(within(row('Headline')).getByRole('button', { name: 'Move Headline down' }));
 
-    expect(screen.getByRole('status')).toHaveTextContent(
+    expect(screen.getByRole('status', { name: 'Layer changes' })).toHaveTextContent(
       'Headline, “Get 10% off your first order”, moved down, 2 of 5',
     );
   });
@@ -371,7 +370,7 @@ describe('moving a block', () => {
     await structure();
 
     await userEvent.click(within(row('Headline')).getByRole('button', { name: 'Move Headline down' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
 
     expect(typesIn(formChildren(savedTree())).slice(0, 2)).toEqual(['text', 'heading']);
   });
@@ -583,7 +582,7 @@ describe('deleting a block', () => {
     await userEvent.click(screen.getByRole('menuitem', { name: /Delete/ }));
 
     expect(rowNames()).not.toContain('Fine print');
-    expect(screen.getByRole('status')).toHaveTextContent('Undo brings it back');
+    expect(screen.getByRole('status', { name: 'Layer changes' })).toHaveTextContent('Undo brings it back');
     expect(screen.queryByRole('alertdialog')).toBeNull();
   });
 
@@ -636,7 +635,7 @@ describe('duplicating a block', () => {
     );
     await userEvent.click(screen.getByRole('menuitem', { name: /Duplicate/ }));
 
-    expect(screen.getByRole('status')).toHaveTextContent('no name of its own');
+    expect(screen.getByRole('status', { name: 'Layer changes' })).toHaveTextContent('no name of its own');
     // The original still fills `fine_print`; the copy has no Role, so it is
     // listed by its kind — which is exactly what the sentence above warned.
     expect(rowNames().filter((name) => name === 'Fine print')).toHaveLength(1);
@@ -720,7 +719,7 @@ describe('adding a block', () => {
     await userEvent.click(await screen.findByRole('menuitem', { name: 'Image' }));
 
     expect(rowNames().slice(0, 3)).toEqual(['The form', 'Headline', 'Image']);
-    expect(screen.getByRole('status')).toHaveTextContent('Image added.');
+    expect(screen.getByRole('status', { name: 'Layer changes' })).toHaveTextContent('Image added.');
   });
 
   /**
@@ -743,8 +742,8 @@ describe('adding a block', () => {
     await userEvent.click(screen.getByRole('menuitem', { name: 'Add a block after this' }));
     await userEvent.click(await screen.findByRole('menuitem', { name: 'Heading' }));
 
-    expect(screen.getByRole('status')).toHaveTextContent('Heading added.');
-    expect(screen.getByRole('status')).not.toHaveTextContent('not linked to the preview');
+    expect(screen.getByRole('status', { name: 'Layer changes' })).toHaveTextContent('Heading added.');
+    expect(screen.getByRole('status', { name: 'Layer changes' })).not.toHaveTextContent('not linked to the preview');
   });
 
   /**
@@ -753,6 +752,7 @@ describe('adding a block', () => {
    */
   it('refuses a field on the step that is not the form', async () => {
     await structure();
+    await userEvent.click(screen.getByRole('button', { name: 'After they submit' }));
 
     await userEvent.click(
       within(row('Headline after they submit')).getByRole('button', {
@@ -806,14 +806,16 @@ describe('the inspector', () => {
     await structure();
     await select('Row');
 
-    expect(inspector('Row').getByText(/holds blocks rather than words/)).toBeInTheDocument();
+    expect(inspector('Row').getByText(/Appearance for Row/)).toBeInTheDocument();
+    expect(inspector('Row').queryByLabelText('Text')).toBeNull();
   });
 
   it('says what a step is rather than offering it a text box', async () => {
     await structure();
     await select('The form');
 
-    expect(inspector('The form').getByText(/A step is what the blocks are in/)).toBeInTheDocument();
+    expect(inspector('The form').queryByLabelText('Text')).toBeNull();
+    expect(inspector('The form').getByText(/Appearance for Column/)).toBeInTheDocument();
   });
 
   it('writes what is typed into the tree, and the Save sends it', async () => {
@@ -824,7 +826,7 @@ describe('the inspector', () => {
 
     await userEvent.clear(text);
     await userEvent.type(text, 'Half price today');
-    await userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
 
     expect((formChildren(savedTree())[0] as unknown as { text: string }).text).toBe('Half price today');
   });
@@ -842,17 +844,26 @@ describe('the inspector', () => {
 
     await userEvent.clear(text);
     await userEvent.type(text, 'Half price');
-    await userEvent.click(screen.getByRole('button', { name: 'Undo' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
 
     expect(inspector('Headline').getByLabelText('Text')).toHaveValue('Get 10% off your first order');
   });
 
   /**
-   * **A body paragraph is not a headline.** A single-line box for a sentence
-   * that wraps is a control hiding most of what it holds; a heading is one line
-   * by construction and keeps the box it had.
+   * ==========================================================================
+   * A HEADLINE IS NO LONGER ONE LINE BY CONSTRUCTION.
+   * ==========================================================================
+   * This asserted the opposite: a body paragraph got a `<textarea>` and a
+   * headline kept its single-line box, *"because a heading is one line by
+   * construction"*. That was true for exactly as long as the renderer ate a
+   * newline — and every headline in the reference set breaks its own, so where
+   * the break falls is now the most design-bearing thing a merchant types into
+   * this box. A single-line input cannot show them where it is.
+   *
+   * A `label` and a `placeholder` still keep theirs: three words in a bigger
+   * target is a bigger target for three words.
    */
-  it('gives a wrapping sentence room and a headline a single line', async () => {
+  it('gives every sentence room, including a headline that breaks its own line', async () => {
     await structure();
     await select('Body text');
 
@@ -860,7 +871,7 @@ describe('the inspector', () => {
 
     await select('Headline');
 
-    expect(inspector('Headline').getByLabelText('Text')).toHaveAttribute('type', 'text');
+    expect(inspector('Headline').getByLabelText('Text').tagName).toBe('TEXTAREA');
   });
 
   /**
@@ -908,7 +919,7 @@ describe('the inspector', () => {
     await structure();
     await select('Email address');
 
-    const label = inspector('Email address').getByLabelText('Label');
+    const label = inspector('Email address').getByLabelText('Field label');
 
     await userEvent.clear(label);
     await userEvent.type(label, 'Where do we send it?');
@@ -916,12 +927,12 @@ describe('the inspector', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Capture something else' }));
     await userEvent.click(await screen.findByRole('menuitem', { name: /Phone number/ }));
 
-    expect(screen.getByRole('status')).toHaveTextContent('Changed to Phone number');
+    expect(screen.getByRole('status', { name: 'Layer changes' })).toHaveTextContent('Changed to Phone number');
     // The Slot Roles derived from the kind moved with it, so the row renamed
     // itself — and the merchant's own label came along.
-    expect(inspector('Phone number').getByLabelText('Label')).toHaveValue('Where do we send it?');
+    expect(inspector('Phone number').getByLabelText('Field label')).toHaveValue('Where do we send it?');
     // The placeholder was the design's, so it became the new kind's.
-    expect(inspector('Phone number').getByLabelText('Placeholder')).toHaveValue('+44 7700 900000');
+    expect(inspector('Phone number').getByLabelText('Example inside the field')).toHaveValue('+44 7700 900000');
   });
 
   /**
@@ -965,7 +976,7 @@ describe('the inspector', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Capture something else' }));
     await userEvent.click(await screen.findByRole('menuitem', { name: /Phone number/ }));
-    await userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
 
     const row = (formChildren(savedTree())[2] as unknown as { children: TemplateNode[] }).children[0];
 
@@ -1027,11 +1038,12 @@ describe('the inspector', () => {
    */
   it('takes the preview to the step the selected block lives on', async () => {
     await structure();
+    await userEvent.click(screen.getByRole('button', { name: 'After they submit' }));
     await select('Headline after they submit');
 
-    const preview = screen.getByRole('complementary', { name: 'Preview' });
+    expect(screen.getByRole('region', { name: 'Design canvas' })).toHaveTextContent('After they submit');
 
-    expect(within(preview).getByRole('button', { name: 'After they submit' })).toHaveAttribute(
+    expect(within(screen.getByLabelText('Optin screen')).getByRole('button', { name: 'After they submit' })).toHaveAttribute(
       'aria-pressed',
       'true',
     );
@@ -1094,8 +1106,8 @@ describe('the verdict', () => {
    * exactly — a permanent line that taxes every visit and informs one — and it
    * applies to a status chip as squarely as to a sentence.
    *
-   * That still holds where the verdict now lives. The readiness panel is
-   * permanent; its **To fix** block is not, and a sound design draws none of it.
+     * The launch review remains available without making an unconditional
+     * promise about what will happen on a visitor's actual page.
    */
   it('says nothing at all when nothing is wrong with the design', async () => {
     await structure();
@@ -1127,20 +1139,20 @@ describe('the verdict', () => {
     await userEvent.type(screen.getByLabelText('muted value'), '#f4f4f5');
 
     /*
-      **On the collapsed row**, which is what a merchant sees on every visit:
-      the panel opens closed, so the count is the part that has to reach them
-      without a press. The sentence itself is one click away, and readable from
-      whichever tab they are on rather than from the two that edit the design.
+      The launch review is available from every editor tab. Opening it exposes
+      the advisory warning without turning a colour choice into a publish block.
     */
-    expect(await screen.findByText('1 thing to fix')).toBeInTheDocument();
+    await userEvent.click(await screen.findByRole('button', { name: 'Review & publish' }));
+    expect(screen.getByRole('heading', { name: '1 thing to review' })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Keep editing' }));
 
     await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
 
-    expect(screen.getByText('1 thing to fix')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Review & publish' }));
 
-    await userEvent.click(screen.getByRole('button', { name: /thing to fix/ }));
-
+    expect(screen.getByRole('heading', { name: '1 thing to review' })).toBeInTheDocument();
     expect(screen.getByText(/too close to the background/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Save & publish' })).toBeEnabled();
   });
 
   /**
@@ -1158,7 +1170,7 @@ describe('the verdict', () => {
     await structure();
     await menu('Fine print');
     await userEvent.click(screen.getByRole('menuitem', { name: /Duplicate/ }));
-    await userEvent.click(screen.getByRole('button', { name: /thing to fix/ }));
+    await userEvent.click(screen.getByRole('button', { name: 'Review & publish' }));
 
     const problem = screen.getByRole('button', { name: /no name of its own/ });
 
@@ -1174,8 +1186,8 @@ describe('undo and redo', () => {
   it('has nothing to undo before anything has changed', async () => {
     await structure();
 
-    expect(screen.getByRole('button', { name: 'Undo' })).toBeDisabled();
-    expect(screen.getByRole('button', { name: 'Redo' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Undo draft edit' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Redo draft edit' })).toBeDisabled();
   });
 
   it('takes a delete back, and then puts it forward again', async () => {
@@ -1188,13 +1200,37 @@ describe('undo and redo', () => {
 
     expect(rowNames()).not.toContain('Fine print');
 
-    await userEvent.click(screen.getByRole('button', { name: 'Undo' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
 
     expect(rowNames()).toContain('Fine print');
 
-    await userEvent.click(screen.getByRole('button', { name: 'Redo' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Redo draft edit' }));
 
     expect(rowNames()).not.toContain('Fine print');
+  });
+
+  it('keeps the design unchanged when an undo shortcut is pressed inside launch review', async () => {
+    await structure();
+    await userEvent.click(within(row('Headline')).getByRole('button', { name: 'Move Headline down' }));
+    expect(rowNames().slice(0, 3)).toEqual(['The form', 'Body text', 'Headline']);
+    expect(screen.getByRole('button', { name: 'Undo draft edit' })).toBeEnabled();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Review & publish' }));
+    // Focus a non-text control: text inputs already have their own undo guard.
+    const keepEditing = screen.getByRole('button', { name: 'Keep editing' });
+    keepEditing.focus();
+    expect(keepEditing).toHaveFocus();
+    await userEvent.keyboard('{Meta>}z{/Meta}');
+    await userEvent.keyboard('{Control>}z{/Control}');
+    expect(screen.getByRole('dialog', { name: 'Review & publish' })).toBeInTheDocument();
+    await userEvent.click(keepEditing);
+
+    expect(rowNames().slice(0, 3)).toEqual(['The form', 'Body text', 'Headline']);
+    expect(screen.getByRole('button', { name: 'Undo draft edit' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Redo draft edit' })).toBeDisabled();
+    // The history still works once the merchant has deliberately returned to editing.
+    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
+    expect(rowNames().slice(0, 3)).toEqual(['The form', 'Headline', 'Body text']);
   });
 
   /**
@@ -1208,14 +1244,14 @@ describe('undo and redo', () => {
     await structure();
 
     await userEvent.click(within(row('Headline')).getByRole('button', { name: 'Move Headline down' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
 
-    expect(await screen.findByText(/Saved\./)).toBeInTheDocument();
+    expect(await screen.findByText(/^Draft saved$/)).toBeInTheDocument();
 
-    await userEvent.click(screen.getByRole('button', { name: 'Undo' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
 
     expect(rowNames().slice(0, 3)).toEqual(['The form', 'Headline', 'Body text']);
-    expect(screen.queryByText(/Saved\./)).toBeNull();
+    expect(screen.queryByText(/^Draft saved$/)).toBeNull();
   });
 });
 
@@ -1252,9 +1288,9 @@ describe('undo and redo, where they act on the whole draft', () => {
   it('puts Undo and Redo in the page header, beside the action with the same scope', async () => {
     await design();
 
-    expect(screen.getByRole('button', { name: 'Undo' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Redo' })).toBeInTheDocument();
-    expect(within(panel()).queryByRole('button', { name: 'Undo' })).toBeNull();
+    expect(screen.getByRole('button', { name: 'Undo draft edit' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Redo draft edit' })).toBeInTheDocument();
+    expect(within(panel()).queryByRole('button', { name: 'Undo draft edit' })).toBeNull();
   });
 
   /**
@@ -1266,17 +1302,23 @@ describe('undo and redo, where they act on the whole draft', () => {
   it('takes a preset back, from the tab the preset was applied on', async () => {
     await design();
 
-    await userEvent.click(screen.getByRole('button', { name: /Midnight/ }));
+    /*
+      **The picker is in the header row now**, over all three panes rather than
+      inside the inspector — a theme sets the design's tokens whatever is
+      selected, and inside the inspector it disappeared the moment a merchant
+      selected a headline. So it is opened before it is used, and that is the
+      only thing about this case that changed: it is still one history entry
+      and still undone from the tab it was applied on.
+    */
+    await userEvent.click(screen.getByRole('button', { name: /Custom look|Classic/ }));
+    await userEvent.click(await screen.findByRole('button', { name: /Midnight/ }));
 
-    expect(screen.getByRole('button', { name: /Midnight/ })).toHaveAttribute(
-      'aria-pressed',
-      'true',
-    );
-
-    await userEvent.click(screen.getByRole('button', { name: 'Undo' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
-
-    expect(savedTokens()).toEqual(ENTRY.tokens);
+    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
+    expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
+    expect(builder.saveOptin).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole('button', { name: 'Redo draft edit' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
+    expect(savedTokens()).not.toEqual(ENTRY.tokens);
   });
 });
 
@@ -1351,8 +1393,8 @@ describe('what a row shows about itself', () => {
       ships, which is the same pair the ⇄ control writes when a field CHANGES
       kind. Neither is empty, which is the whole point.
     */
-    expect((screen.getByRole('textbox', { name: 'Label' }) as HTMLInputElement).value).toBe('Name');
-    expect((screen.getByRole('textbox', { name: 'Placeholder' }) as HTMLInputElement).value).toBe(
+    expect((screen.getByRole('textbox', { name: 'Field label' }) as HTMLInputElement).value).toBe('Name');
+    expect((screen.getByRole('textbox', { name: 'Example inside the field' }) as HTMLInputElement).value).toBe(
       'Your name',
     );
   });
@@ -1502,7 +1544,7 @@ describe('a layout’s own settings', () => {
     await withSplit();
 
     await userEvent.click(screen.getByRole('radio', { name: 'Narrow left' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
 
     const split = formChildren(savedTree()).find((node) => node.type === 'split') as
       | { ratio?: unknown }
@@ -1544,13 +1586,17 @@ describe('a leaf’s own settings', () => {
   async function selecting(name: string) {
     await structure();
     await userEvent.click(within(row(name)).getAllByRole('button')[0]);
+    if (name === 'Headline' || name === 'Image') {
+      await userEvent.click(screen.getByRole('tab', { name: 'Style' }));
+      await userEvent.click(screen.getByText('Element options'));
+    }
   }
 
   /** The leaf at the top of the form step, whatever the test put there. */
   const firstLeaf = (): Record<string, unknown> =>
     formChildren(savedTree())[0] as unknown as Record<string, unknown>;
 
-  const save = () => userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+  const save = () => userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
 
   it('offers a heading the rank the renderer has always read', async () => {
     await selecting('Headline');
@@ -1662,9 +1708,12 @@ describe('a leaf’s own settings', () => {
   it('is a separate step from the typing before it', async () => {
     await selecting('Headline');
 
+    await userEvent.click(screen.getByRole('tab', { name: 'Content' }));
     await userEvent.type(screen.getByRole('textbox', { name: 'Text' }), '!');
+    await userEvent.click(screen.getByRole('tab', { name: 'Style' }));
+    await userEvent.click(screen.getByText('Element options'));
     await userEvent.click(screen.getByRole('radio', { name: 'Sub-heading' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Undo' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
     await save();
 
     const heading = firstLeaf();
@@ -1685,6 +1734,16 @@ describe('a leaf’s own settings', () => {
  * that could change it, and nothing saying where the deadline lives.
  */
 describe('a countdown’s inspector', () => {
+  let settings: Window['wconvertAdmin'];
+  beforeEach(() => {
+    settings = window.wconvertAdmin;
+    window.wconvertAdmin = { exportUrl: '', ...settings, timezone: 'UTC' };
+  });
+  afterEach(() => {
+    if (settings === undefined) delete window.wconvertAdmin;
+    else window.wconvertAdmin = settings;
+  });
+
   /**
    * The same design with a clock at the top of its form step.
    *
@@ -1847,6 +1906,8 @@ describe('the icon picker', () => {
     await structure();
     await userEvent.click(within(row('Headline')).getAllByRole('button')[0]);
 
+    await userEvent.click(screen.getByRole('tab', { name: 'Style' }));
+    await userEvent.click(screen.getByText('Element options'));
     const group = screen.getByRole('group', { name: 'Heading rank' });
 
     expect(group.querySelectorAll('.wconvert-choice__glyph')).toHaveLength(0);

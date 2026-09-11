@@ -199,8 +199,32 @@ describe('the leaf vocabulary', () => {
     expect(input?.name).toBe('email');
     expect(input?.placeholder).toBe('you@example.com');
     expect(input?.required).toBe(true);
-    expect(element.querySelector('label')?.textContent).toBe('Email');
+    expect(element.querySelector('label')?.textContent).toBe('Email *');
     expect(element.querySelector('label')?.htmlFor).toBe(input?.id);
+  });
+
+  it('keeps every capture kind autofillable and gives an old blank label an accessible fallback', () => {
+    const cases = [
+      { name: 'email', type: 'email', autocomplete: 'email', inputMode: 'email', label: 'Email address' },
+      { name: 'name', type: 'text', autocomplete: 'name', inputMode: 'text', label: 'Name' },
+      { name: 'phone', type: 'tel', autocomplete: 'tel', inputMode: 'tel', label: 'Phone number' },
+    ] as const;
+
+    for (const expected of cases) {
+      const element = leaf({ type: 'field', name: expected.name, label: '   ', required: true });
+      const input = element.querySelector<HTMLInputElement>('input');
+      const label = element.querySelector('label');
+
+      expect(input?.type).toBe(expected.type);
+      expect(input?.autocomplete).toBe(expected.autocomplete);
+      expect(input?.inputMode).toBe(expected.inputMode);
+      expect(input?.required).toBe(true);
+      expect(label?.textContent).toBe(`${expected.label} *`);
+      expect(label?.htmlFor).toBe(input?.id);
+      expect(input?.labels).toHaveLength(1);
+      expect(input).toHaveAccessibleName(expected.label);
+      expect(label?.querySelector('[aria-hidden="true"]')).toHaveTextContent('*');
+    }
   });
 
   it('renders a submit button as a submit button', () => {
@@ -400,5 +424,35 @@ describe('a step holding a submit button', () => {
     } as TemplateTree['steps'][number]);
 
     expect(render(clicking, TOKENS).tagName).toBe('DIV');
+  });
+});
+
+
+describe('element appearance and mobile inheritance', () => {
+  it('styles one leaf without restyling its sibling', () => {
+    const tree = oneStep({ type: 'stack', children: [
+      { type: 'heading', text: 'Changed', tokens: { fg: '#123456', 'heading-size': '3rem' } },
+      { type: 'heading', text: 'Unchanged' },
+    ] });
+    const [changed, sibling] = render(tree, TOKENS).querySelectorAll<HTMLElement>('.wc-heading');
+    expect(changed.style.getPropertyValue('--wc-fg')).toBe('#123456');
+    expect(changed.style.getPropertyValue('--wc-heading-size')).toBe('3rem');
+    expect(sibling.style.getPropertyValue('--wc-fg')).toBe('');
+  });
+
+  it('retains ancestor mobile values when a child overrides another setting', () => {
+    const tree = oneStep({ type: 'stack', narrow: { fg: '#123456', 'heading-font': 'Georgia' }, children: [
+      { type: 'panel', narrow: { pad: '1rem' }, children: [
+        { type: 'heading', text: 'Nested', tokens: { 'heading-size': '3rem' }, narrow: { 'heading-size': '2rem' } },
+        { type: 'heading', text: 'Own color', tokens: { fg: '#abcdef' }, narrow: { 'heading-size': '1rem' } },
+      ] },
+    ] });
+    const [nested, own] = render(tree, TOKENS).querySelectorAll<HTMLElement>('.wc-heading');
+    expect(nested.dataset.narrow).toBe('');
+    expect(nested.style.getPropertyValue('--wc-n-fg')).toBe('#123456');
+    expect(nested.style.getPropertyValue('--wc-n-heading-font')).toBe('Georgia');
+    expect(nested.style.getPropertyValue('--wc-heading-size')).toBe('3rem');
+    expect(nested.style.getPropertyValue('--wc-n-heading-size')).toBe('2rem');
+    expect(own.style.getPropertyValue('--wc-n-fg')).toBe('#abcdef');
   });
 });

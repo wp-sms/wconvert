@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { Sparkles } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -53,9 +53,10 @@ import type { Loadable } from '../shell/loadable';
  * The structure editor's amendment to ADR 0039 is that undo buys a
  * destructive action its exception — a design switch is one undo entry, so it
  * states what it takes and asks nothing. **That exception does not reach
- * here.** The builder's history watches the `template`, and a Goal is not in
- * `config` at all: it is a column. There is no entry for Undo to walk back to,
- * so the confirm is the only place this is said.
+ * here.** A Goal is a saved column, outside the working draft's `config`.
+ * Saving a new Goal deliberately starts a new Undo history, so the confirm
+ * explains that boundary before the immediate write. The merchant may change the
+ * Goal again later; draft Undo does not reverse this saved change.
  *
  * And what it takes is not small. Counters carry no `goal` — everything is
  * interpreted at read against the Goal the Optin holds NOW (ADR 0020) — so a
@@ -99,6 +100,7 @@ export function ChangeGoalDialog({
    * sentence.
    */
   const [picked, setPicked] = useState<GoalEntry | null>(null);
+  const saveNoteId = useId();
 
   const close = (next: boolean) => {
     if (!next) {
@@ -191,23 +193,31 @@ export function ChangeGoalDialog({
                 **The whole history, and it says so.** `wconvert_stats` carries
                 no `goal`: every count is read against the Goal the Optin holds
                 now (ADR 0020), so this restates the past rather than starting a
-                new chapter. And the builder's Undo watches the design, which a
-                Goal is not part of — so *"this cannot be undone"* is a fact
-                about this screen rather than a warning shape.
+                new chapter. And saving a Goal starts a new local draft history,
+                so Undo cannot silently rewrite this saved Goal —
+                rather than claiming the merchant can never change goals again.
               */}
               <DialogDescription>
                 {__(
-                  'Everything this Optin has already counted is read against the goal it holds, so its whole history moves with it. This cannot be undone.',
+                  'Everything this Optin has already counted is read against the goal it holds, so its whole history moves with it. Undo cannot reverse this saved change.',
                   'wconvert',
                 )}
               </DialogDescription>
             </DialogHeader>
+
+            <p id={saveNoteId} className="text-note text-muted-foreground">
+              {__(
+                'This also saves the current name and all draft edits, including design, display rules and destinations. It does not publish the draft. Saving a new goal clears the current Undo and Redo history.',
+                'wconvert',
+              )}
+            </p>
 
             <DialogFooter>
               <Button variant="ghost" onClick={() => setPicked(null)}>
                 {__('Pick a different goal', 'wconvert')}
               </Button>
               <Button
+                aria-describedby={saveNoteId}
                 onClick={() => {
                   const chosen = picked.id;
 
@@ -216,7 +226,7 @@ export function ChangeGoalDialog({
                   onChange(chosen);
                 }}
               >
-                {__('Move it', 'wconvert')}
+                {__('Save draft and change goal', 'wconvert')}
               </Button>
             </DialogFooter>
           </>

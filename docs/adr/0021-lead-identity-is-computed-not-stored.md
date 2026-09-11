@@ -9,6 +9,14 @@ For that grouping to mean anything, `email` and `phone` are stored in
 **canonical form**: email lowercased, phone in E.164. An identifier that cannot be
 canonicalised is **rejected at submit**, synchronously.
 
+*Extended by [ADR 0076](0076-an-enquiry-captures-one-optional-choice-before-handoff.md):
+an `interest` answer is qualification content, never an identifier. Its stable
+value and the label from the published choice definition are stored in the
+existing immutable Lead JSON and exported together. Email or phone remains
+necessary for capture; neither interest nor name creates another grouping key
+or a person entity. Option validation happens synchronously against that
+published form, on the same side of the queue as canonicalisation.*
+
 ## The need is real; the entity is not
 
 A [[Lead]] is an event, so two submissions being two rows is correct and not a

@@ -44,6 +44,15 @@ Every field costs conversions. Two is a lot; three needs a reason a visitor can
 see. A `name` field is worth it when the words that follow are personal and not
 otherwise.
 
+For an enquiry, email supplies the reply address and one optional service
+choice can help the business understand the request. Keep name optional unless
+the use needs it. The one supported qualification question is `interest`, a
+native single-choice select, not a general questionnaire. Every submit design
+still needs email or phone. Use the manifest's bounded `{value, label}` options,
+keep the sent value stable when changing a label, and provide a clear empty
+prompt such as *Choose a service*. See
+[ADR 0076](../../docs/adr/0076-an-enquiry-captures-one-optional-choice-before-handoff.md).
+
 `phone` is a different question from `email`, not a bigger one: it carries its
 own consent obligations, so a design that asks for a phone number puts the
 consent line **where it is read**, not under the fold.
@@ -64,15 +73,33 @@ Competitor teardowns put this exact failure on the avoid list:
 ### 1.5 The success step is a screen
 
 A submit-metered design has two steps and **the second one is a real thing a
-real visitor looks at**. It has to say what happens next — *check your inbox*,
-*here is the code* — and it has to look like it belongs to the first step.
+real visitor looks at**. It acknowledges the captured request and has to look
+like it belongs to the first step. Write *Request received* or *Thank you for
+requesting the guide*. The form's completion does not prove that a connected
+service has subscribed the visitor, confirmed their address or delivered an
+email. Do not write *You are subscribed*, *Your code is on its way*, or promise
+an inbox-arrival time. See [ADR 0073](../../docs/adr/0073-capture-acknowledgement-is-not-provider-confirmation.md).
 
 The commonest defect in the library is a success step that is two lines of
 unstyled text under a heading, which is why the contact sheet gives every step
 its own cell.
 
 Where the payout is a discount code, it goes in a `code` node. There is nowhere
-else for it that a visitor can read off a phone.
+else for it that a visitor can read off a phone. *Here is the code* is appropriate
+when the step actually displays one; the merchant still has to create a valid
+code. A guide or emailed offer needs its delivery destination configured, and
+the Playbook's setup notes should say so. A success screen is not evidence that
+this setup has been completed.
+
+For a quote request, *Request received* acknowledges what happened. It cannot
+promise that a quote is ready, that someone has replied, or that a job is booked.
+The Playbook's notes name the remaining placement and service setup. MailPoet's
+optional interest mapping applies only to new subscribers; do not imply that
+every destination forwards the answer or updates an existing Contact.
+
+Library examples teach the wording for new drafts. Updating them does not
+rewrite saved merchant copy or published snapshots; the editor explains the
+acknowledgement boundary when merchants edit their success text.
 
 ### 1.6 320px is the design width
 
@@ -106,16 +133,19 @@ where the consent wording lives.
 
 ### 1.9 The fine print is load-bearing
 
-*No spam, unsubscribe at any time* is not decoration; it measurably raises
-completion. The privacy link is a **label with no destination** — the site
-resolves it — so write the label and never an `href`.
+Explain the use of the details in terms of the actual request. Subscription
+wording can discuss unsubscribing; an enquiry should say the details are used
+to respond, without implying marketing consent. The privacy link is a **label
+with no destination** — the site resolves it — so write the label and never an
+`href`. Keep the surrounding sentence complete if no policy URL is configured:
+*We use these details to respond to your request. %s*.
 
 A `consent` node ships `hidden: true`. That is deliberate: it is present for
 the merchant who needs it and off for the merchant who does not.
 
 ### 1.10 Design a shape, never a campaign
 
-A design carries no words. *"A Black Friday popup"* is a Playbook; what the
+A design supplies a reusable shape and sample content. *"A Black Friday popup"* is a Playbook; what the
 library needs is a popup a Black Friday Playbook can fill and a book-launch
 Playbook can also fill.
 
@@ -130,6 +160,18 @@ design. There is no rescue for a role-less paragraph.
 
 Roles repeat: three `body` nodes are three benefit lines and a Playbook fills
 them in tree order.
+
+Fields derive their Roles from `name`; do not author a `role` on a field.
+`interest` derives its question and prompt plus `interest_options`. That last
+Role binds `{options: [{value, label}]}` as one structured value. A Playbook
+translates labels while stable values remain unchanged. A design without the
+Role has nowhere to carry those choices; review the actual Keep/Sample candidate.
+
+Give every shipped leaf a stable `n1`…`n9999` id, unique in its tree, and keep
+the id when moving the leaf. Slot Roles may repeat; node ids may not. This is
+how translation follows content rather than a changing array position. Do not
+author tree `v` or derived facets, and do not rely on PHP's new-node fallback
+to renumber a library file on every edit.
 
 ---
 
@@ -172,10 +214,15 @@ Pick a `border` clearly lighter than the ground or the input is invisible — a
 bar asking for an address with nothing that looks like a box to type in. Aim
 for 2:1 against the ground; it is a boundary, not text, so AA does not apply.
 
-**A `row` hides its fields' labels, so write the placeholder.** Stacking a
-label above an input doubles a bar's height and puts a second competing line of
-text beside the offer. The label is still there for a screen reader — but a
-sighted visitor reads the placeholder, so it has to say what the field is.
+**Write both a field label and a useful example.** Field-only rows keep visible
+labels. In a compact row with a direct button, direct fields with a non-empty
+placeholder can have their labels visually hidden above 24rem of container
+width; the labels remain accessible. Fields without examples keep their labels,
+and all of these compact labels become visible at 24rem and below. Check both
+sizes. A missing authored label gets a field-kind fallback, but that fallback
+is not a reason to leave the design's wording unfinished. Examples disappear
+while typing; include the country code in a phone example. Required fields
+receive their asterisk from the renderer, so do not author a second one.
 
 **A three-up label is two or three words.** Three benefits across a 32rem panel
 is ~9rem each; anything longer wraps to two lines and the icon wraps with it.
@@ -185,11 +232,39 @@ and each centres its own contents against the other; a pane holding nothing but
 a picture is filled by it. All three are in the renderer, so no design has to
 ask.
 
-**`pad` is global, so `pad: 0` is never "let the picture bleed".** It is also
-"put the button hard against the opposite edge", because the same zero reaches
-every side of every node. Until per-node padding exists (ADR 0061), a `split`
-with a picture is a **framed** picture — set a real `pad` and let the pane fill
-do the work.
+**~~`pad` is global, so `pad: 0` is never "let the picture bleed".~~** It was,
+and the sentence has inverted: `pad` is scoped now (ADR 0062), so `pad: 0` on
+the DESIGN plus a real `pad` on each box is exactly how a full-bleed split is
+written — that is what `fieldwork` does. What survives is the warning that made
+it: a zero reaches every side of every node **inside** the box that sets it, so
+set it on the design and never on a container holding a form.
+
+**A `media` needs three things or it is not a picture.** `bg-image` in its own
+bag, because it resets the design's; `min`, because the spread has nothing to
+spread across otherwise and the box collapses to the two lines on it; and `fg`,
+because the design's ink was chosen against the design's ground and not against
+your photograph. The `overlay` is a layer under the words rather than a
+background wash, so a scrim can be as dark as the type needs.
+
+**A `narrow` bag is for retuning, not for shrinking.** Everything that merely
+needs to be smaller already is: a `split` stacks, a `grid` drops to one column,
+`.wc-root` is `min(width, 100%)`. Reach for `narrow` where the values
+themselves are wrong at 360px — a photo pane that is 440px of a split and the
+whole width on a phone wants less padding and smaller display type. Two or
+three tokens, never the bag again: it is the one thing that doubles what a
+design stores (ADR 0064).
+
+**A `min` is only needed where the picture is the taller thing.** `.wc-split`
+is `align-items: stretch`, so a `media` beside a form is already the form's
+height. Set one anyway and the phone gets a 384px picture above the fold, with
+no way to retune it — `narrow` carries tokens and `min` is a param.
+
+**A `notch` is only visible where the halves paint and the design does not.**
+Punch a hole in a blue panel sitting on a blue `.wc-root` and the hole shows
+blue — the mask removes the panel and the design's ground is still behind it.
+So a ticket sets `bg: "#0000"` on the design and paints each half, and the
+perforation shows the merchant's page. Pair it with `edges: "block-start"`: the
+rule is the tear line and the holes are its ends.
 
 ## 2. What makes two designs different
 

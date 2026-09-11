@@ -1,124 +1,89 @@
-import { slotsOf } from './panel';
-import type { Path, Slot } from './panel';
-import type { TemplateTree } from '@renderer/types';
+import type { Path } from './panel';
 
 /**
- * The one name a slot answers to on both sides of the preview boundary.
+ * The one address a block answers to on both sides of the preview boundary.
  *
- * The editor holds a {@link Slot} — a path into the tree, a Role, a capture
- * kind. The preview holds DOM the renderer stamped. Neither can see the
- * other's handle: a `Path` is meaningless to an element, and an element is not
- * something the panel may hold a reference to across a remount, because the
- * preview is re-rendered on every keystroke.
+ * ============================================================================
+ * IT WAS A [[Slot Role]] AND AN ORDINAL. IT IS THE PATH NOW, AND THAT IS ONE
+ * SCHEME INSTEAD OF TWO.
+ * ============================================================================
+ * The editor holds a {@link Path} — where a node sits in the tree. The preview
+ * holds DOM. Neither can hold the other's handle across a remount, because the
+ * preview is re-rendered on every keystroke, so the two have to agree on
+ * something derived independently on both sides.
  *
- * So the two agree on a STRING, derived on both sides from the same facts.
- * That is also what keeps ADR 0010's boundary intact — a key names a slot and
- * carries no way to reach one, so selection can travel in both directions
- * without anything gaining the ability to write.
+ * That used to be `role:headline`, `captures:email`, plus an ordinal where a
+ * Role repeated — and it **could not name a container at all.** A `panel`, a
+ * `split`, a `stack`, a `media` carry no Role and capture nothing, so
+ * `SLOT_SELECTOR` did not match one and a click on a coloured box reached the
+ * nearest leaf inside it. For a SCOPE editor whose primary gesture is *select
+ * that box* that is not a gap, it is the feature missing. `image`, `icon`,
+ * `divider` and `countdown` were unclickable for the same reason.
  *
- * A [[Slot Role]] where the slot declares one, and what it captures where it
- * does not: a `field`'s Roles are DERIVED from the capture kind rather than
- * declared (CONTEXT.md, Slot Role), so it carries no `role` to be found by.
- * Prefixed, so a Role and a capture kind that happened to share a word could
- * never collide.
+ * So the renderer stamps the address itself, on every element, when the admin
+ * asks for it — `render()`'s `paths` option, off for every visitor on every
+ * page (ADR 0040, amended). Both sides then read the same string off the same
+ * fact, and there is one scheme rather than a naming convention beside a
+ * fallback.
+ *
+ * **What is given up is that a key survived a MOVE.** `role:headline` named the
+ * headline wherever it went; `0.children.2` names the third child. Selection is
+ * re-derived from the path the editor is already holding after every edit
+ * ({@see StructureView}'s `onMove`), so the cost is that the PREVIEW's
+ * selection follows the position rather than the block — and the editor's does
+ * not, because the editor never spoke in keys.
+ *
+ * **ADR 0010's boundary is untouched.** This module edits nothing and the
+ * preview edits nothing: a press reports where it landed and stops there. What
+ * changed is only how precisely it can say where.
  */
 export type SlotKey = string;
 
-/**
- * The ordinal, appended only where there is one to append.
- *
- * ============================================================================
- * A NAME STOPPED IDENTIFYING A SLOT WHEN ROLES BECAME REPEATABLE.
- * ============================================================================
- * A design may claim `body` three times (ADR 0051). Without an ordinal, a click
- * on the third benefit line reaches the first, and selecting any of them
- * outlines all three — silently, because nothing throws when two sides agree on
- * the wrong slot.
- *
- * **The first occurrence keeps the bare key**, which is not cosmetic: every key
- * in the product today is a first occurrence, and a suffix on all of them would
- * be a second spelling of a name that has one.
- */
-const nth = (key: SlotKey, at: number): SlotKey => (at === 0 ? key : `${key}#${at}`);
-
-export const roleKey = (role: string, at = 0): SlotKey => nth(`role:${role}`, at);
-export const capturesKey = (captures: string, at = 0): SlotKey => nth(`captures:${captures}`, at);
+/** The address a path spells, which is what the renderer stamps. */
+export const keyOf = (path: Path): SlotKey => path.join('.');
 
 /**
- * What the panel calls a slot, or null for one neither side can name.
+ * What the PREVIEW calls the same block, read off what the renderer stamped.
  *
- * A layout node with no Role and no capture kind is unaddressable and that is
- * correct rather than a gap: it says nothing the merchant edits, so there is no
- * block in the panel for a click to travel to.
- *
- * **A HIDDEN slot is unaddressable too, and for the same reason.** The renderer
- * skips it, so there is no element in the preview to click or to outline — and
- * a key for it would collide with the next drawn slot of the same name, which
- * is the one way this could go wrong quietly. The block is still selectable in
- * the tree, by path; it simply has nothing in the preview to travel to.
- */
-export function keyOfSlot(slot: Pick<Slot, 'role' | 'captures' | 'hidden' | 'at'>): SlotKey | null {
-  if (slot.hidden) {
-    return null;
-  }
-
-  if (slot.role !== null) {
-    return roleKey(slot.role, slot.at);
-  }
-
-  return slot.captures !== null ? capturesKey(slot.captures, slot.at) : null;
-}
-
-/**
- * What the PREVIEW calls the same slot, read off what the renderer stamped.
- *
- * The ordinal is counted in DOCUMENT ORDER within the rendered step, which is
- * the same order {@link slotsOf} walks the tree in — that is what makes the two
- * sides agree without sharing a line of code. Hidden slots are absent from both
- * counts by construction here: they are not in the DOM at all.
- *
- * The scope is `getRootNode()` rather than a class name, so it is the shadow
- * root in the real preview and the detached step root in a test that renders
- * one directly. Neither case needs this file to know what the renderer calls
- * its own elements.
+ * Null where nothing stamped one, which is the gallery: a card is a picture and
+ * mounts without `paths`, so there is nothing to select and nobody asking.
  */
 export function keyOfElement(element: HTMLElement): SlotKey | null {
-  const named = nameOf(element);
+  const at = element.dataset.path;
 
-  if (named === null) {
-    return null;
-  }
-
-  const root = element.getRootNode();
-  const scope = 'querySelectorAll' in root ? (root as ParentNode) : null;
-
-  if (scope === null) {
-    return named;
-  }
-
-  const sharing = Array.from(scope.querySelectorAll<HTMLElement>(SLOT_SELECTOR)).filter(
-    (other) => nameOf(other) === named,
-  );
-
-  // `indexOf` is -1 for an element the scope does not contain, which is a
-  // detached node rather than a first occurrence — `Math.max` reads it as the
-  // only one, which is what it is.
-  return nth(named, Math.max(sharing.indexOf(element), 0));
+  return typeof at === 'string' && at !== '' ? at : null;
 }
 
-/** The un-numbered half of a rendered slot's key. */
-function nameOf(element: HTMLElement): SlotKey | null {
-  const { role, captures } = element.dataset;
-
-  if (typeof role === 'string' && role !== '') {
-    return `role:${role}`;
-  }
-
-  return typeof captures === 'string' && captures !== '' ? `captures:${captures}` : null;
+/**
+ * The path a key spells, back again.
+ *
+ * ============================================================================
+ * A SEGMENT IS A NUMBER OR A KEY NAME, AND WHICH IT IS DECIDES INDEXING.
+ * ============================================================================
+ * `0.children.2` is `[0, 'children', 2]`: the step index, the child key the
+ * layout keeps its children under, the position. A `'2'` where a `2` belongs
+ * would index nothing on an array, so the two are told apart here rather than
+ * at every reader.
+ *
+ * It is a parse and not a lookup, which is the other half of collapsing the
+ * two schemes: the old key had to be searched for in the tree, so a stale one
+ * resolved to whatever now occupied a remembered Role. A path is either a real
+ * position in the tree the caller holds or it is not, and every reader of one
+ * already checks ({@see nodeAt}).
+ */
+export function pathOfKey(key: SlotKey): Path {
+  return key.split('.').map((segment) => (/^\d+$/.test(segment) ? Number(segment) : segment));
 }
 
-/** Everything in a rendered step that the panel has a block for. */
-export const SLOT_SELECTOR = '[data-role],[data-captures]';
+/**
+ * Everything in a rendered step a press may land on.
+ *
+ * Every element, because every element is a block the editor has a row for —
+ * which is the whole change. A `.wc-pane` is the one thing the renderer draws
+ * that is NOT a node, and it carries no `data-path`, so it is excluded by
+ * construction rather than by name.
+ */
+export const SLOT_SELECTOR = '[data-path]';
 
 /**
  * Where a selection came from, which decides who moves.
@@ -129,49 +94,13 @@ export const SLOT_SELECTOR = '[data-role],[data-captures]';
  * Same block, opposite obligations, so the origin travels with it rather than
  * being guessed from timing.
  *
- * Two arms rather than three, because there are two surfaces now. `panel` and
- * `structure` were the two halves of one editor split across two tabs, and
- * both meant *the merchant is already here*.
+ * **One address, and it used to be two.** This carried a `path` for the editor
+ * and a `key` for the preview, because a key could not name every block; the
+ * key IS the path now, so there is one field and {@link keyOf} spells it where
+ * the DOM needs a string.
  */
 export interface Selection {
-  /**
-   * **The authoritative address of the selected block**, and what the editor
-   * writes through.
-   *
-   * ==========================================================================
-   * A KEY NAMES A SLOT. IT CANNOT NAME EVERY BLOCK.
-   * ==========================================================================
-   * Selection was a {@link SlotKey} alone, and ADR 0040 chose that
-   * deliberately: it names a slot and carries no way to REACH one, so nothing
-   * receiving a selection could write. That held while the only thing being
-   * selected was a slot the old settings panel had a control for.
-   *
-   * It cannot hold for an editor that edits a block where it is selected. A
-   * block with no [[Slot Role]] has no key at all ({@link keyOfSlot} answers
-   * null), and two role-less blocks of the same type are indistinguishable by
-   * one — and those are precisely the blocks that most need editing, because
-   * they are the ones the structure editor's own warning is about.
-   *
-   * **ADR 0040's boundary is untouched in the direction it was written for.**
-   * The PREVIEW still receives a key, and a key still carries no way to reach a
-   * node. What changed is the panel, which was always the thing that writes and
-   * which has addressed nodes by `Path` since `panel.ts` was written.
-   */
+  /** Where the selected block sits, and what the editor writes through. */
   readonly path: Path;
-  /** What the preview outlines, or null for a block the preview cannot name. */
-  readonly key: SlotKey | null;
   readonly from: 'preview' | 'tree';
-}
-
-/**
- * Where the slot a key names actually sits, or null where nothing carries it.
- *
- * The one direction a key cannot be derived in — {@link keyOfSlot} goes the
- * other way — and it exists because the PREVIEW still speaks in keys while the
- * editor now addresses by path. The lookup is the tree's, so a stale key from
- * before a save resolves to nothing rather than to whatever now occupies a
- * remembered position.
- */
-export function pathOfKey(tree: TemplateTree, key: SlotKey): Path | null {
-  return slotsOf(tree).find((slot) => keyOfSlot(slot) === key)?.path ?? null;
 }

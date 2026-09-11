@@ -107,6 +107,14 @@ final class FakeMailPoetSubscribers implements MailPoetSubscribers
         return $pairs;
     }
 
+    /** @var list<array{id: string, name: string}> */
+    public array $textFields = [['id' => 'cf_7', 'name' => 'Service interest']];
+
+    public function textFields(): array
+    {
+        return $this->textFields;
+    }
+
     public function add(array $subscriber, array $listIds): string
     {
         $this->raiseNextFailure();

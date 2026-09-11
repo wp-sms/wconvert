@@ -86,13 +86,13 @@
             "type": "heading",
             "id": "n7",
             "role": "success_headline",
-            "text": "You are on the list"
+            "text": "Thanks for the interest"
           },
           {
             "type": "text",
             "id": "n8",
             "role": "success_body",
-            "text": "You will see it before anyone else does."
+            "text": "We have received your request for first access."
           }
         ]
       }

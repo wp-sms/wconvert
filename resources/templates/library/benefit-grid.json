@@ -135,13 +135,13 @@
             "type": "heading",
             "id": "n13",
             "role": "success_headline",
-            "text": "You are in"
+            "text": "Thank you"
           },
           {
             "type": "text",
             "id": "n14",
             "role": "success_body",
-            "text": "Thursday is the next one."
+            "text": "We have received your request for the weekly round-up."
           }
         ]
       }

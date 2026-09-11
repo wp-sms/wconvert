@@ -1,0 +1,193 @@
+{
+  "id": "punched-ticket",
+  "name": "Punched ticket",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#0000",
+    "fg": "#fffdf3",
+    "muted": "#d6ddff",
+    "accent": "#e8ff8a",
+    "accent-fg": "#16307c",
+    "border": "#7d93f5",
+    "input-bg": "#fffdf3",
+    "heading-font": "'Helvetica Neue', Helvetica, Arial, sans-serif",
+    "heading-size": "1.5rem",
+    "heading-weight": "700",
+    "tracking": "-0.03em",
+    "text-size": "0.875rem",
+    "leading": "1.5",
+    "radius": "0.75rem",
+    "pad": "0",
+    "gap": "0",
+    "width": "26rem",
+    "shadow": "0 32px 80px -16px rgba(16, 32, 110, 0.55)",
+    "backdrop": "rgba(16, 32, 110, 0.6)"
+  },
+  "tree": {
+    "steps": [
+      {
+        "type": "stack",
+        "children": [
+          {
+            "type": "panel",
+            "tokens": {
+              "pad": "1.75rem 2rem 1.25rem",
+              "gap": "0.9rem",
+              "bg": "#2348ec"
+            },
+            "children": [
+              {
+                "type": "eyebrow",
+                "id": "n1",
+                "role": "wordmark",
+                "text": "Good Thing"
+              },
+              {
+                "type": "row",
+                "tokens": {
+                  "gap": "1rem"
+                },
+                "children": [
+                  {
+                    "type": "heading",
+                    "id": "n2",
+                    "size": "3xl",
+                    "role": "headline",
+                    "text": "15%"
+                  },
+                  {
+                    "type": "text",
+                    "id": "n3",
+                    "role": "body",
+                    "text": "off your\nfirst order"
+                  }
+                ]
+              },
+              {
+                "type": "text",
+                "id": "n4",
+                "size": "s",
+                "role": "body",
+                "text": "For the things you will use every day.\nA small hello from Good Thing."
+              }
+            ]
+          },
+          {
+            "type": "panel",
+            "edges": "block-start",
+            "notch": true,
+            "tokens": {
+              "pad": "1.5rem 2rem 1.625rem",
+              "gap": "0.7rem",
+              "border": "accent",
+              "bg": "#2348ec"
+            },
+            "children": [
+              {
+                "type": "field",
+                "id": "n5",
+                "name": "email",
+                "label": "Email address",
+                "placeholder": "you@example.com",
+                "required": true
+              },
+              {
+                "type": "consent",
+                "id": "n6",
+                "role": "consent_text",
+                "hidden": true,
+                "text": "Send me offers and news. See our %s.",
+                "link": {
+                  "label": "Privacy Policy"
+                }
+              },
+              {
+                "type": "button",
+                "id": "n7",
+                "role": "cta_label",
+                "label": "Email me 15% off",
+                "action": "submit"
+              },
+              {
+                "type": "text",
+                "id": "n8",
+                "size": "xs",
+                "role": "fine_print",
+                "text": "One email with your code. %b.\nFull-price items only; excludes bundles.",
+                "emphasis": "No marketing subscription"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "stack",
+        "children": [
+          {
+            "type": "panel",
+            "tokens": {
+              "pad": "1.75rem 2rem 1.25rem",
+              "gap": "0.9rem",
+              "bg": "#2348ec"
+            },
+            "children": [
+              {
+                "type": "eyebrow",
+                "id": "n10",
+                "role": "wordmark",
+                "text": "Good Thing"
+              },
+              {
+                "type": "heading",
+                "id": "n11",
+                "size": "xl",
+                "role": "success_headline",
+                "text": "Good things\nstart here."
+              },
+              {
+                "type": "text",
+                "id": "n12",
+                "size": "s",
+                "role": "success_body",
+                "text": "We have received your details.\nYour first-order code is below."
+              }
+            ]
+          },
+          {
+            "type": "panel",
+            "edges": "block-start",
+            "notch": true,
+            "tokens": {
+              "pad": "1.5rem 2rem 1.625rem",
+              "gap": "0.7rem",
+              "border": "accent",
+              "bg": "#2348ec"
+            },
+            "children": [
+              {
+                "type": "eyebrow",
+                "id": "n13",
+                "role": "eyebrow",
+                "text": "Your ticket to 15% off"
+              },
+              {
+                "type": "code",
+                "id": "n14",
+                "role": "code_value",
+                "text": "FIRST15"
+              },
+              {
+                "type": "text",
+                "id": "n15",
+                "size": "xs",
+                "role": "fine_print",
+                "text": "Use at checkout on full-price items. Excludes bundles."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

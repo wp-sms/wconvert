@@ -39,15 +39,25 @@ the visitor is in a position to wait for.
 So work out what a visitor-facing error could actually mean here:
 
 - **The ESP push failed?** The Lead is in `wconvert_leads`. The job is queued and
-  will be retried five times with backoff. The visitor is on the list. Telling
-  them "something went wrong" is false, and it invites them to submit again —
+  will be retried five times with backoff. The capture is safely recorded;
+  this does not establish a Contact's subscription status in the ESP. Telling
+  them the capture failed is false, and it invites them to submit again —
   producing a second Lead, because Leads are never deduplicated
   (`CONTEXT.md`, Lead).
 - **The local write failed?** Then the database is down, or the plugin is broken,
   or the REST route is 500ing. That is not a state in the visitor's journey; it
-  is an **outage**. The design that reports it is a `fetch` that rejected and a
-  message beside the button — which is error *handling*, and belongs to capture,
-  not a third step in the merchant's design.
+  is an **outage**. Capture error *handling* reports it in the existing form,
+  not a third step in the merchant's design. **Completed by
+  [ADR 0073](0073-capture-acknowledgement-is-not-provider-confirmation.md):** a
+  known field refusal appears beside that field; other failures appear at form
+  level. A rejected or timed-out browser request is an unconfirmed result, not
+  proof that no local write occurred. The form preserves values for correction
+  or an explicit retry and never invents success from a malformed response.
+  *Extended by [ADR 0076](0076-an-enquiry-captures-one-optional-choice-before-handoff.md):
+  a missing required service choice or a value outside the published options
+  is another field refusal. It remains beside the native select on the form;
+  qualification does not create a third design screen or expose a later
+  destination failure to the visitor.*
 
 A step is a thing the merchant lays out, styles with tokens, writes copy for,
 and previews in the builder. Giving them one for a state that only exists when
@@ -96,14 +106,18 @@ against is **the payload budget measured at that point**, not a guess made now.
 ## Consequences
 
 - **No `error` key, ever, and the refusal is the record.** A request for one is
-  answered here rather than re-argued. Where a capture genuinely fails, the
-  visitor sees an error *beside the button* from the capture path — the browser
-  telling them the submission did not go through — and never a step of the
-  merchant's design.
+  answered here rather than re-argued. Invalid fields and capture failures use
+  inline form feedback, with field association where possible. An unknown
+  response says the submission could not be confirmed rather than claiming it
+  was never written. **Amended by
+  [ADR 0073](0073-capture-acknowledgement-is-not-provider-confirmation.md)**;
+  none of this is a step of the merchant's design.
 - **A Destination failing is invisible to the visitor by construction**, which
   is ADR 0007's clause followed all the way through. It is visible to the
   *merchant*, on Destination health and in the failure ring, which is where an
-  outage is actionable. ADR 0007 carries the inline note.
+  outage is actionable. ADR 0007 carries the inline note. The corresponding
+  success screen acknowledges local capture; it cannot claim provider
+  subscription, confirmation or delivery (ADR 0073).
 - **The teaser question is reopened by
   [#34](https://github.com/navidkashani/wconvert/issues/34)**, scoped to `popup`
   and `slide_in`, and measured against the payload budget as #34 leaves it.

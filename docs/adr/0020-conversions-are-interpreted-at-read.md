@@ -101,8 +101,9 @@ see its own inline correction.*
   > the builder a **Change goal** control — a Goal was chosen in a wizard that
   > could not be re-entered, so "changing an Optin's Goal" was a scripted call
   > until then. The dialog says this sentence in the merchant's own words
-  > before the click, because the builder's Undo watches the design and a Goal
-  > is a column: there is no history entry to walk back to.*
+  > before the click. Under [ADR 0075](0075-draft-history-and-template-content-choices-stay-predictable.md), a Goal remains an immediately saved
+  > column: success starts a new local draft history, so Undo cannot silently
+  > restate reporting through another Goal save.*
   >
   > ***And the same restatement now arrives through a second door.*** *Switching
   > an Optin to a design that converts the other way is no longer refused, so
@@ -206,9 +207,13 @@ see its own inline correction.*
   per-Optin rows live INSIDE their Goal's card, which is also what makes the
   leaderboard this ADR's screen refuses unexpressible rather than merely
   absent.*
-- **`conversions − lead_magnet_delivered` is the delivery failure count**, with
-  no second metric — the analytical half of the operational/analytical split
+- **`conversions − lead_magnet_delivered` is a same-period event comparison** —
+  the analytical half of the operational/analytical split
   [ADR 0008](0008-delivery-state-is-destination-health-not-per-lead.md) drew.
+  **Corrected by [0071](0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md):
+  the original "delivery failure count" and later "Conversions with no delivery
+  yet" wording both overstated what aggregate counters establish.** They count
+  events on their own dates, not a cohort of captured Leads awaiting delivery.
   *Qualified by [#28](https://github.com/navidkashani/wconvert/issues/28), which
   drew the card that would report it. **It is withheld while nothing writes the
   kind**, because the arithmetic against an unwritten counter reports every
@@ -268,6 +273,16 @@ see its own inline correction.*
   > negative number most mornings without it. It also absorbs the two replay
   > seams [ADR 0008](0008-delivery-state-is-destination-health-not-per-lead.md)
   > accepts.
+
+  > **The wording is completed by
+  > [0071](0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md).**
+  > A clamped same-period difference cannot identify pending Leads: today's one
+  > queued capture and a delivery from yesterday produce zero, even though that
+  > capture remains queued. The report now names the excess of submissions over
+  > recorded deliveries in the period and links to Destinations for delays or
+  > errors. The formula, stored counters and replay behavior are unchanged.
+  > Focused Optin reports do not inherit a whole Goal's gap. Editor/capture links
+  > retain the accepted report period even when a requested refresh fails.
 - **Never join `wconvert_leads` to produce a count.** That is the derivation
   #11 asked not to be built, and ADR 0018 depends on it not existing.
   *Enforced by [ADR 0034](0034-the-dashboard-joins-in-php.md) from both ends,

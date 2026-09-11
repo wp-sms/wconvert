@@ -41,6 +41,7 @@ const OPTIN = {
   goal: 'grow_email_list',
   parent_id: null,
   published_at: null,
+  has_unpublished_changes: false,
   deleted_at: null,
   suspended: null,
   // Present on every row including as an empty list, exactly as the route
@@ -273,7 +274,38 @@ describe('a suspended row', () => {
 
     render(<OptinList onEdit={() => undefined} />);
 
-    expect(await screen.findByText('Published')).toBeInTheDocument();
+    expect((await screen.findAllByText('Published')).some((node) => node.getAttribute('data-slot') === 'badge')).toBe(true);
+  });
+});
+
+describe('saved changes awaiting publication', () => {
+  it.each([
+    ['published', null],
+    ['suspended', 'Suspended — this rule needs a plugin that is not active'],
+  ])('publishes changes on a %s row without unpublishing first', async (_, suspended) => {
+    const row = { ...OPTIN, published_at: '2026-09-10 10:00:00', has_unpublished_changes: true, suspended };
+    optins.listOptins.mockResolvedValueOnce([row]).mockResolvedValue([{ ...row, has_unpublished_changes: false }]);
+    optins.publishOptin.mockResolvedValue({ ...row, has_unpublished_changes: false });
+
+    render(<OptinList onEdit={() => undefined} />);
+
+    expect(await screen.findByText('Saved changes are not published')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Unpublish' })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Publish changes' }));
+
+    expect(optins.publishOptin).toHaveBeenCalledWith(OPTIN.id);
+    expect(optins.unpublishOptin).not.toHaveBeenCalled();
+    expect(await screen.findByRole('button', { name: 'Unpublish' })).toBeEnabled();
+    expect(screen.queryByRole('button', { name: 'Publish changes' })).toBeNull();
+    expect(screen.queryByText('Saved changes are not published')).toBeNull();
+  });
+
+  it('offers no update action when the saved and live snapshots match', async () => {
+    optins.listOptins.mockResolvedValue([{ ...OPTIN, published_at: '2026-09-10 10:00:00' }]);
+    render(<OptinList onEdit={() => undefined} />);
+
+    expect(await screen.findByRole('button', { name: 'Unpublish' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Publish changes' })).toBeNull();
   });
 });
 
@@ -356,6 +388,21 @@ describe('an A/B test on the list', () => {
   };
 
   const A_TEST = [{ ...OPTIN, arms: [ARM_B] }];
+
+  it('keeps an A/B family together when searching for an arm and can clear unmatched filters', async () => {
+    optins.listOptins.mockResolvedValue(A_TEST);
+    render(<OptinList onEdit={() => undefined} />);
+    await screen.findByRole('button', { name: OPTIN.name });
+    await userEvent.type(screen.getByRole('searchbox', { name: 'Search Optins' }), '(B)');
+    expect(screen.getByRole('button', { name: OPTIN.name })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: ARM_B.name })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Published 0' }));
+    expect(screen.getByText('No Optins match these filters')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Clear filters' }));
+    expect(screen.getByRole('searchbox')).toHaveValue('');
+    expect(screen.getByRole('button', { name: OPTIN.name })).toBeInTheDocument();
+    expect(optins.listOptins).toHaveBeenCalledTimes(1);
+  });
 
   const openTheMenuOn = async (name: RegExp) =>
     userEvent.click(await screen.findByRole('button', { name }));

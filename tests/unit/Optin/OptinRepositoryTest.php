@@ -11,6 +11,7 @@ use WConvert\Optin\PublishedSet;
 use WConvert\Rules\RuleVocabulary;
 use WConvert\Tests\Unit\Support\FakeConnection;
 use WConvert\Tests\Unit\Support\FakeOptionStore;
+use WConvert\Tests\Unit\Support\OptinDesign;
 
 /**
  * The three writes that move an Optin between states, and the one derived
@@ -46,7 +47,7 @@ final class OptinRepositoryTest extends TestCase
      */
     private function anOptin(array $config = ['targeting' => ['include' => [['type' => 'post', 'value' => 12]]]]): Optin
     {
-        return $this->repository->create('Spring sale', 'grow_email_list', $config);
+        return $this->repository->create('Spring sale', 'grow_email_list', $config + ['template' => OptinDesign::template()]);
     }
 
     public function testPublishPromotesTheDraftAndRebuildsTheSetInOneCall(): void
@@ -75,6 +76,121 @@ final class OptinRepositoryTest extends TestCase
         $this->repository->saveDraft($optin->id, null, null, ['targeting' => [], 'headline' => 'unpublished words']);
 
         $this->assertStringNotContainsString('unpublished words', json_encode($this->publishedSet->all()) ?: '');
+    }
+
+    public function testSavedChangesCanBePromotedWithoutUnpublishing(): void
+    {
+        $optin = $this->anOptin();
+        $this->assertFalse($optin->toArray()['has_unpublished_changes']);
+        $live = $this->repository->publish($optin->id);
+        $this->assertNotNull($live);
+        $this->assertFalse($live->toArray()['has_unpublished_changes']);
+
+        $config = $live->config;
+        $config['template']['tree']['steps'][0]['children'][0]['text'] = 'VIEW OFFER';
+        $saved = $this->repository->saveDraft($optin->id, null, null, $config);
+        $this->assertNotNull($saved);
+        $this->assertTrue($saved->toArray()['has_unpublished_changes'], 'case-only edits are saved changes');
+        $this->assertSame($live->publishedConfig, $saved->publishedConfig);
+        $this->assertSame($live->publishedAt, $saved->publishedAt);
+        $this->assertStringNotContainsString('VIEW OFFER', json_encode($this->publishedSet->all()) ?: '');
+
+        $updated = $this->repository->publish($optin->id);
+        $this->assertNotNull($updated);
+        $this->assertSame($config, $updated->publishedConfig);
+        $this->assertFalse($updated->toArray()['has_unpublished_changes']);
+        $this->assertSame([$optin->id], array_column($this->publishedSet->all(), 'id'));
+        $this->assertStringContainsString('VIEW OFFER', json_encode($this->publishedSet->all()) ?: '');
+    }
+
+    public function testRestoringTheLiveConfigClearsThePendingChangeWithoutPublishing(): void
+    {
+        $optin = $this->anOptin();
+        $this->repository->publish($optin->id);
+        $this->repository->saveDraft($optin->id, null, null, $optin->config + ['headline' => 'A change']);
+        $restored = $this->repository->saveDraft($optin->id, 'A new admin name', null, $optin->config);
+
+        $this->assertNotNull($restored);
+        $this->assertFalse($restored->hasUnpublishedChanges(), 'the name is not part of the live design snapshot');
+    }
+
+    public function testIncompleteFormDraftsCannotReplaceTheLiveVersion(): void
+    {
+        $optin = $this->anOptin();
+        $live = $this->repository->publish($optin->id);
+        $set = $this->publishedSet->all();
+        foreach ([
+            [['type' => 'field', 'name' => 'name']],
+            [['type' => 'field', 'name' => 'email'], ['type' => 'field', 'name' => 'interest', 'options' => []]],
+        ] as $fields) {
+            $config = ['template' => ['tree' => ['steps' => [[
+                'type' => 'stack', 'children' => [...$fields, ['type' => 'button', 'action' => 'submit']],
+            ]]]]];
+            $saved = $this->repository->saveDraft($optin->id, null, null, $config);
+            self::assertNotNull($saved, 'the merchant can keep an unfinished draft');
+            self::assertNull($this->repository->publish($optin->id));
+            self::assertSame($live?->publishedConfig, $this->repository->find($optin->id)?->publishedConfig);
+            self::assertSame($set, $this->publishedSet->all());
+        }
+    }
+
+    public function testMissingDesignCannotBePromotedAndDoesNotStampActivation(): void
+    {
+        foreach ([[], ['template' => ['tree' => ['steps' => []]]]] as $config) {
+            $draft = $this->repository->create('Incomplete', 'grow_email_list', $config);
+            $this->assertNull($this->repository->publish($draft->id));
+            $this->assertNull($this->repository->find($draft->id)?->publishedAt);
+        }
+
+        $this->assertSame([], $this->publishedSet->all());
+        $this->assertNull((new MilestoneStore($this->options))->firstPublish());
+    }
+
+    public function testAnIncompleteSavedUpdateCannotReplaceTheCurrentLiveSnapshot(): void
+    {
+        $optin = $this->anOptin();
+        $live = $this->repository->publish($optin->id);
+        $set = $this->publishedSet->all();
+        $saved = $this->repository->saveDraft($optin->id, null, null, []);
+
+        $this->assertNotNull($saved, 'incomplete drafts remain saveable');
+        $this->assertTrue($saved->hasUnpublishedChanges());
+        $this->assertNull($this->repository->publish($optin->id));
+        $this->assertSame($live?->publishedConfig, $this->repository->find($optin->id)?->publishedConfig);
+        $this->assertSame($set, $this->publishedSet->all());
+    }
+
+    public function testDetailComparisonUsesTheSameStoredRepresentationAsTheList(): void
+    {
+        $row = [
+            'id' => '01TEST', 'name' => 'Test', 'goal' => 'promote_offer',
+            'config' => '{"a":1,"b":2}', 'published_config' => '{ "a": 1, "b": 2 }',
+            'published_at' => '2026-09-10 10:00:00', 'deleted_at' => null,
+        ];
+        $this->assertTrue(Optin::fromRow($row)->hasUnpublishedChanges());
+        $row['published_config'] = '{"b":2,"a":1}';
+        $this->assertTrue(Optin::fromRow($row)->hasUnpublishedChanges());
+        $row['published_config'] = $row['config'];
+        $this->assertFalse(Optin::fromRow($row)->hasUnpublishedChanges());
+        $row['config'] = '{}';
+        $row['published_at'] = null;
+        $this->assertFalse(Optin::fromRow($row)->hasUnpublishedChanges());
+        $row['published_at'] = '2026-09-10 10:00:00';
+        $row['deleted_at'] = '2026-09-10 11:00:00';
+        $this->assertFalse(Optin::fromRow($row)->hasUnpublishedChanges());
+    }
+
+    public function testListAndArmProjectionsCompareSnapshotsWithoutReturningTheBlobs(): void
+    {
+        $this->repository->summaries();
+        $this->repository->armsByParent();
+
+        foreach ($this->db->statements as $sql) {
+            $this->assertStringContainsString('NOT (BINARY config <=> BINARY published_config)', $sql);
+            $this->assertStringContainsString('AS has_unpublished_changes', $sql);
+            $this->assertStringNotContainsString(', config,', $sql);
+            $this->assertStringNotContainsString(', published_config,', $sql);
+        }
     }
 
     public function testUnpublishDropsItFromTheSetAndKeepsTheLastLiveVersion(): void
@@ -382,7 +498,8 @@ final class OptinRepositoryTest extends TestCase
     {
         $parent = $this->anOptin();
         $winner = $this->repository->createVariant($parent->id);
-        $this->repository->saveDraft((string) $winner?->id, null, null, ['headline' => 'the winning words']);
+        $winningConfig = $parent->config + ['headline' => 'the winning words'];
+        $this->repository->saveDraft((string) $winner?->id, null, null, $winningConfig);
         $this->repository->publish($parent->id);
         $this->repository->publish((string) $winner?->id);
 
@@ -396,11 +513,11 @@ final class OptinRepositoryTest extends TestCase
 
         $this->assertNull($promoted->parentId);
         $this->assertSame('Spring sale', $promoted->name);
-        $this->assertSame(['headline' => 'the winning words'], $promoted->config);
+        $this->assertSame($winningConfig, $promoted->config);
 
         $this->assertNotNull($retired->deletedAt, 'the arm that lost is tidied away, never removed');
         $this->assertSame(
-            ['targeting' => ['include' => [['type' => 'post', 'value' => 12]]]],
+            $parent->config,
             $retired->config,
             "and it keeps its own design, so its own counters stay readable against it"
         );

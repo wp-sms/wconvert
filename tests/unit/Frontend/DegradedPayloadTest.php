@@ -14,6 +14,7 @@ use WConvert\Rules\RuleVocabulary;
 use WConvert\Targeting\RequestContext;
 use WConvert\Tests\Unit\Support\FakeConnection;
 use WConvert\Tests\Unit\Support\FakeOptionStore;
+use WConvert\Tests\Unit\Support\OptinDesign;
 use WConvert\Tests\Unit\Support\InstalledRules;
 
 /**
@@ -61,7 +62,7 @@ final class DegradedPayloadTest extends TestCase
      */
     private function publish(array $rules): string
     {
-        $optin = $this->repository->create('Spring sale', 'grow_email_list', ['rules' => $rules]);
+        $optin = $this->repository->create('Spring sale', 'grow_email_list', ['rules' => $rules, 'template' => OptinDesign::template()]);
         $this->repository->publish($optin->id);
 
         return $optin->id;

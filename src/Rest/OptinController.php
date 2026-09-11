@@ -26,6 +26,7 @@ use WConvert\Template\ConvertingAct;
 use WConvert\Template\TemplateFacets;
 use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
+use WConvert\Template\TemplateTree;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -129,6 +130,7 @@ final class OptinController implements RestController
                     'name' => ['type' => 'string', 'sanitize_callback' => 'sanitize_text_field'],
                     'goal' => ['type' => 'string', 'sanitize_callback' => 'sanitize_key'],
                     'config' => ['type' => 'object'],
+                    'template_source' => ['type' => 'string'],
                 ],
             ],
             [
@@ -197,8 +199,10 @@ final class OptinController implements RestController
         // performs for the same reason (ADR 0034).
         $arms = $this->optins->armsByParent($includeDeleted);
 
-        $describe = static fn (array $row): array => $row
-            + ['suspended' => $suspended[$row['id'] ?? ''] ?? null];
+        $describe = static fn (array $row): array => array_replace($row, [
+            'suspended' => $suspended[$row['id'] ?? ''] ?? null,
+            'has_unpublished_changes' => (bool) ($row['has_unpublished_changes'] ?? false),
+        ]);
 
         return new WP_REST_Response(array_map(
             // Present on every row, including as null and as an empty list. A
@@ -321,6 +325,10 @@ final class OptinController implements RestController
         }
 
         $config = (array) $request->get_param('config');
+        $choiceRefusal = $this->refuseMalformedChoices($config['template'] ?? null);
+        if ($choiceRefusal !== null) {
+            return $choiceRefusal;
+        }
 
         // A create has no stored row to compare against, so the config that
         // arrived IS the prior state: one carrying a design beside the id it
@@ -360,6 +368,10 @@ final class OptinController implements RestController
     public function update(WP_REST_Request $request)
     {
         $config = $request->get_param('config');
+        $choiceRefusal = $this->refuseMalformedChoices(is_array($config) ? ($config['template'] ?? null) : null);
+        if ($choiceRefusal !== null) {
+            return $choiceRefusal;
+        }
         $id = (string) $request->get_param('id');
         $goal = self::optionalString($request->get_param('goal'));
 
@@ -388,6 +400,15 @@ final class OptinController implements RestController
         // row; on a create it is whatever the incoming config asserts, because
         // there is no stored row yet ({@see self::store()}).
         $pickedBefore = self::optionalString($stored?->config['template_id'] ?? null);
+
+        // An editor may prepare a snapshot before Save, then edit it. The
+        // source assertion preserves that draft; normal vocabulary, goal,
+        // conversion and destination checks below still apply to every value.
+        // This request metadata is never stored in the Optin's config.
+        $source = self::optionalString($request->get_param('template_source'));
+        if ($source !== null && is_array($config) && $source === ($config['template_id'] ?? null)) {
+            $pickedBefore = $source;
+        }
 
         try {
             $normalized = is_array($config) ? $this->normalizeConfig($config, $pickedBefore) : null;
@@ -526,7 +547,40 @@ final class OptinController implements RestController
      */
     public function publish(WP_REST_Request $request)
     {
-        return self::respond($this->optins->publish((string) $request->get_param('id')));
+        $id = (string) $request->get_param('id');
+        $optin = $this->optins->find($id);
+
+        if ($optin === null || $optin->isDeleted()) {
+            return self::notFound();
+        }
+
+        if (!$optin->hasDesign()) {
+            return new WP_Error(
+                'wconvert_optin_needs_a_design',
+                __('Choose a design before publishing. You can keep saving this Optin as a draft.', 'wconvert'),
+                ['status' => 400]
+            );
+        }
+
+        $issue = \WConvert\Template\TemplateForm::issue($optin->config['template'] ?? null);
+        if ($issue !== null) {
+            return new WP_Error('wconvert_optin_form_incomplete', $issue === 'choices'
+                ? __('Add at least one choice to the interest field before publishing. You can keep saving this Optin as a draft.', 'wconvert')
+                : __('Add an email or phone field before publishing this form. You can keep saving this Optin as a draft.', 'wconvert'), ['status' => 400]);
+        }
+
+        $published = $this->optins->publish($id);
+
+        if ($published === null) {
+            return self::notFound();
+        }
+
+        // A successful promotion is not necessarily showing on this install.
+        // Return the confirmed state so the editor needs no second request to
+        // distinguish a published snapshot from a suspended one.
+        $suspended = Suspension::reasonsIn($this->publishedSet->all(), $this->degradation, $this->rules);
+
+        return new WP_REST_Response($published->toArray() + ['suspended' => $suspended[$id] ?? null]);
     }
 
     /**
@@ -582,6 +636,37 @@ final class OptinController implements RestController
         $this->siteFrequency->set($request->get_params());
 
         return new WP_REST_Response($this->siteFrequency->authored());
+    }
+
+    /** Refuse entered choices before normalization could silently discard them.
+     * @param mixed $template
+     */
+    private function refuseMalformedChoices($template): ?WP_Error
+    {
+        $steps = is_array($template) && is_array($template['tree']['steps'] ?? null) ? $template['tree']['steps'] : [];
+        $invalid = function (array $node) use (&$invalid): bool {
+            if (($node['type'] ?? null) === 'field' && ($node['name'] ?? null) === 'interest' && array_key_exists('options', $node)) {
+                $options = $node['options'];
+                if (!is_array($options) || $options !== array_values($options)
+                    || count($this->templates->choiceOptions($options)) !== count($options)) {
+                    return true;
+                }
+            }
+            foreach (TemplateTree::childrenOf($node) as $child) {
+                if (is_array($child) && $invalid($child)) {
+                    return true;
+                }
+            }
+            return false;
+        };
+        foreach ($steps as $step) {
+            if (is_array($step) && $invalid($step)) {
+                return new WP_Error('wconvert_optin_choices_invalid',
+                    __('Fix the interest choices before saving: each entered choice needs a label and a unique valid sent value. Your changes are still here.', 'wconvert'),
+                    ['status' => 400]);
+            }
+        }
+        return null;
     }
 
     /**

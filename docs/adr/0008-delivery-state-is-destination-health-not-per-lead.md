@@ -34,6 +34,14 @@ for Optins bound to this Destination since `last_success_at`". That answers the
 real support case (an expired API key silently dropping three days of leads)
 with no new table.
 
+*Clarified at the recovery controls by
+[0071](0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md):
+the binding is read from each Optin's **published configuration**. With no last
+success, recovery considers the whole retained matching history. It is not a
+retry of only the failure row or skipped count being displayed. Skipped-capture
+recovery is now beside its explanation; terminal failures link to the named
+Destination and exact capture without adding a delivery ledger.*
+
 > **Amended by [#30](https://github.com/navidkashani/wconvert/issues/30): two
 > more fields, `skipped_captures` and `last_skipped_at`.** The four above cover
 > a Destination that was *tried*. They cannot describe the third thing that
@@ -138,8 +146,12 @@ refuse.*
   [ADR 0020](0020-conversions-are-interpreted-at-read.md): it becomes its own
   `kind` — `lead_magnet_delivered` — in `wconvert_stats`, written by the Action
   Scheduler job once per Lead on first successful delivery.
-  `conversions − lead_magnet_delivered` is then the delivery failure count, and
-  it is the analytical half of the operational/analytical split this ADR draws.*
+  `conversions − lead_magnet_delivered` supplies the analytical comparison.*
+  **Corrected by [0071](0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md):
+  this was called a delivery failure count. It is a same-period difference of
+  event totals, clamped at zero, and identifies neither failures nor particular
+  Leads still waiting. The operational health/ring remains the place to inspect
+  recorded failures.**
 - If a per-Lead record is ever genuinely needed, it arrives as a table with its
   own sign-off. It is not a column added to `wconvert_leads` — that would give a
   Lead a lifecycle, which ADR-0002 exists to prevent.
@@ -167,11 +179,20 @@ refuse.*
   *That payload field was called `delivery_failures` when #31 landed it, and
   was renamed before the first release: it is **not** this ADR's
   [`DeliveryFailures`](../../src/Destination/DeliveryFailures.php) ring, which
-  holds terminal failures only. A Conversion still queued or backing off is in
-  the dashboard figure and is in none of the ring. One name for two opposite
-  populations, three files apart, is the collision the glossary exists to
-  stop.*
-  *No warning is shown on the re-push button for this type. It would need
-  either a Goal or type id spelled in TypeScript — `GoalParityTest` forbids the
-  first — or a capability method on `DestinationType`, whose docblock refuses
-  the `Supports*` split outright. The seam is recorded here instead.*
+  holds terminal failures only. **[0071](0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md)
+  corrects the further claim that a queued Conversion is necessarily "in" the
+  dashboard figure.** A delivery from an earlier capture can offset it within
+  the selected period. There is no per-Lead pending population to read from
+  these counters, and the dashboard now describes their same-period difference.*
+  *The earlier claim that no resend warning appears in the UI is narrowed by
+  [0071](0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md):
+  skipped-capture recovery now explains its broad published-binding scope and
+  says it can send an email again. That warning is generic; it requires neither
+  a Goal/type branch in TypeScript nor a capability method on `DestinationType`.*
+
+*Test sends are also made explicit by
+[0071](0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md):
+the merchant reviews the saved route and chooses a sample email before the
+real push. The WordPress profile is a displayed suggestion only. The endpoint
+requires that email explicitly, creates no Lead and updates no health, queue or
+report counter. This does not make a test send a stored delivery event.*

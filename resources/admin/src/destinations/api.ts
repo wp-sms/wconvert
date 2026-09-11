@@ -20,7 +20,7 @@ export type { Availability } from '../goals/availability';
  * invisible one.
  *
  * The kinds in use: `ids` (a list, held as `string[]`), `url`, `text` and
- * `multiline`. It is a `string` rather than a union because the server is the
+ * `multiline` and `select`. It is a `string` rather than a union because the server is the
  * authority — a Pro type shipping a kind free has never heard of must render
  * as something, and a union here would make it a type error instead.
  *
@@ -43,7 +43,21 @@ export interface SettingsField {
   options?: { value: string; label: string }[];
 }
 
-/** A kind of [[Destination]] this install can reach — WSMS, and Pro's ESPs. */
+export interface DestinationRequirements {
+  capture_any_of: readonly string[];
+  settings: Readonly<Record<string, { label: string; type: string }>>;
+  fields: readonly string[];
+  mapped_fields: Readonly<Record<string, { setting: string; label: string; scope: string }>>;
+}
+
+export interface DestinationUsage {
+  id: string;
+  name: string;
+  draft: boolean;
+  live: boolean;
+}
+
+/** A kind of [[Destination]] this install can reach — WSMS, MailPoet or lead-magnet email. */
 export interface DestinationType {
   id: string;
   label: string;
@@ -56,6 +70,7 @@ export interface DestinationType {
   availability: Availability;
   needs_connection: boolean;
   settings_schema: Record<string, SettingsField>;
+  requirements?: DestinationRequirements;
 }
 
 /**
@@ -120,6 +135,9 @@ export interface Destination {
   target: string | null;
   availability: Availability;
   health: DestinationHealth;
+  requirements?: DestinationRequirements | null;
+  usage?: readonly DestinationUsage[] | null;
+  mapping_issues?: readonly string[];
 }
 
 /** Credentials come back masked and never as values (#4). */
@@ -147,6 +165,8 @@ export interface DestinationsPayload {
   destinations: Destination[];
   connections: Connection[];
   failures: DeliveryFailure[];
+  /** Suggested visible sample only. Sending always requires an explicit address. */
+  test_sample?: { email: string | null; fields: readonly ['email'] };
 }
 
 export interface RePushReport {
@@ -213,5 +233,5 @@ export const testConnection = (id: string) =>
  * appears. It writes no Lead, queues nothing and moves no counter (ADR 0008,
  * ADR 0031).
  */
-export const testSend = (id: string) =>
-  apiFetch<TestReport>({ path: path(`/${id}/test-send`), method: 'POST' });
+export const testSend = (id: string, email: string, interest?: string) =>
+  apiFetch<TestReport>({ path: path(`/${id}/test-send`), method: 'POST', data: { email, ...(interest === undefined ? {} : { interest }) } });

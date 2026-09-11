@@ -1,400 +1,207 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { ChartColumn, Megaphone } from 'lucide-react';
+import { ArrowLeft, ChartColumn, Megaphone } from 'lucide-react';
 import { Button } from '../components/ui/button';
-import {
-  DataTable,
-  DataTableBody,
-  DataTableCell,
-  DataTableColumn,
-  DataTableHead,
-  DataTableRow,
-} from '../shell/DataTable';
+import { DataTable, DataTableActions, DataTableActionsColumn, DataTableBody, DataTableCell, DataTableColumn, DataTableHead, DataTableRow } from '../shell/DataTable';
 import { EmptyState } from '../shell/EmptyState';
 import { PageAction } from '../shell/PageActions';
-import { PageError, Region, RegionBody, RegionErrorState, RegionHeader } from '../shell/Region';
+import { PageError, Region, RegionBody, RegionErrorState, RegionFooter, RegionHeader } from '../shell/Region';
 import { Skeleton } from '../components/ui/skeleton';
 import { RegionSkeleton } from '../shell/RegionSkeleton';
 import { Stat, StatRow, StatRowSkeleton } from '../shell/Stat';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
 import { Milestones } from '../milestones/Milestones';
+import { destinationHref, editorHref, leadsHref, reportHref, type ReportQuery } from '../nav';
 import { readDashboard, type DashboardPayload, type GoalReport, type OptinReport } from './api';
-// Spelled once, because the Optin list and the builder's header read the same
-// two numbers and "—" must not become "0%" on one screen and not another.
 import { formatCount, formatRate } from './format';
+import { ActivityChart } from './ActivityChart';
 
-/**
- * The windows the merchant can ask for, in days.
- *
- * **Days, never dates.** `1` is today alone, which is what "Today" means to
- * somebody looking at a dashboard, and the far end of every one of these is
- * resolved on the SERVER against the site's timezone. A date picker here would
- * be a picker over the browser's calendar, which belongs to whoever is sitting
- * at the keyboard rather than to the site.
- *
- * Which of them is selected on arrival is **not decided here**: the first read
- * sends no `days` at all and the server's own default answers, so
- * `StatRange::DEFAULT_DAYS` is spelled once and this bundle never has to keep
- * a copy of it in step.
- */
-const WINDOWS = [1, 7, 30, 90] as const;
+const WINDOWS: readonly number[] = [1, 7, 30, 90];
+const periodLabel = (days: number) => days === 1 ? __('Today', 'wconvert')
+  : sprintf(_n('The last %s day', 'The last %s days', days, 'wconvert'), String(days));
 
-/**
- * The analytics screen.
- *
- * ============================================================================
- * PER-GOAL CARDS, NEVER A LEADERBOARD.
- * ============================================================================
- * There is no site-wide conversion rate on this screen and no ranking between
- * Goals, because "click-throughs to the offer" and "conversions on Optins that
- * capture an email" are different acts and ranking them against each other
- * means nothing. Comparison is offered *within* a Goal — its Optins sit inside
- * its card — and *within* an Optin over time, by changing the window.
- *
- * That is a property of the payload rather than of this file: an Optin's
- * numbers arrive inside its Goal's card, so there is no flat list here to
- * sort. This screen could not build a leaderboard if it wanted to.
- *
- * **Every word naming a Goal or its metric comes from the server.** The five
- * Goals live in one PHP enum, their labels are translatable strings
- * `wp i18n make-pot` can only see there, and a Goal id spelled in this bundle
- * is what `tests/unit/Goal/GoalParityTest.php` fails on.
- *
- * **One region per Goal** (ADR 0039), because a Goal's performance is one
- * concern and two Goals are two. What each region holds stopped being a
- * bulleted list of numbers: a merchant scanning a card is comparing
- * magnitudes, and magnitudes are compared as figures with their names under
- * them ({@see Stat}), never as *"Impressions 0"* prose.
- *
- * **The window is in the page header, and that amends ADR 0039's own
- * sentence.** It governs every region on the screen at once, so a copy in each
- * region's toolbar would be four controls that must be kept in agreement — the
- * ADR's placement table is about ACTIONS, and this is a filter over the whole
- * screen.
- */
-export function Dashboard() {
+/** The URL records requested filters; every result and cross-link uses the accepted report's dates. */
+export function Dashboard({ query, onQueryChange }: {
+  query?: ReportQuery;
+  onQueryChange?: (query: ReportQuery) => void;
+} = {}) {
+  const [localQuery, setLocalQuery] = useState<ReportQuery>({});
+  const selection = query ?? localQuery;
+  const change = (next: ReportQuery) => onQueryChange ? onQueryChange(next) : setLocalQuery(next);
+  const days = selection.days ?? null;
   const [report, setReport] = useState<Loadable<DashboardPayload>>(LOADING);
   const [refreshError, setRefreshError] = useState<string | null>(null);
-  // `null` is "whatever the server opens on", and only the first read is ever
-  // in that state.
-  const [days, setDays] = useState<number | null>(null);
-
-  const refresh = useCallback(async () => {
-    try {
-      setReport(ready(await readDashboard(days)));
-      setRefreshError(null);
-    } catch (cause) {
-      /*
-       * **A window change that fails must not take the cards with it.** This
-       * set `failed(cause)` unconditionally, so moving from 30 days to 7 over
-       * a flaky connection destroyed every Goal card on screen — the numbers
-       * the merchant already had, thrown away because the request for
-       * DIFFERENT numbers did not arrive.
-       *
-       * Only a FIRST failure has nothing to keep, and that is the arm that
-       * renders the error as the screen's whole content. The other three
-       * multi-fetch screens have guarded this since they were written
-       * ({@see OptinList}, {@see LeadLog}, {@see Destinations}); this was the
-       * one that never did.
-       */
-      setReport((current) => (current.status === 'ready' ? current : failed(cause)));
-      setRefreshError(messageOf(cause));
-    }
-  }, [days]);
+  const [updating, setUpdating] = useState(false);
+  const [retry, setRetry] = useState(0);
 
   useEffect(() => {
-    void refresh();
-  }, [refresh]);
+    let active = true;
+    setUpdating(true);
+    readDashboard(days).then((data) => {
+      if (!active) return;
+      setReport(ready(data));
+      setRefreshError(null);
+    }).catch((cause: unknown) => {
+      if (!active) return;
+      setReport((current) => current.status === 'ready' ? current : failed(cause));
+      setRefreshError(messageOf(cause));
+    }).finally(() => { if (active) setUpdating(false); });
+    return () => { active = false; };
+  }, [days, retry]);
 
   const payload = report.status === 'ready' ? report.data : null;
+  const selectedGoal = payload?.goals.some((card) => card.goal === selection.goal) ? selection.goal : undefined;
+  const periods = days !== null && !WINDOWS.includes(days) ? [...WINDOWS, days].sort((a, b) => a - b) : WINDOWS;
+  const selectedCard = selection.optinId ? payload?.goals.find((card) => card.optins.some((optin) => optin.id === selection.optinId)) : undefined;
+  const selectedOptin = selectedCard?.optins.find((optin) => optin.id === selection.optinId);
+  const cards = selection.optinId ? (selectedCard ? [selectedCard] : []) : payload?.goals.filter((card) => !selectedGoal || card.goal === selectedGoal);
+  const shownQuery = { ...selection, days: payload?.days ?? selection.days };
 
   return (
     <div className="flex flex-col gap-5">
-      {/*
-        **A native `<select>`, and it stays one.** The vendored Radix select is
-        the right control for a filter inside a region's toolbar, where it sits
-        beside other controls we drew; here it is one control in the page
-        header, it is read by `dashboard.test.tsx` as a `combobox` with a
-        VALUE, and a four-item window picker gains nothing from a portal.
-      */}
       <PageAction>
-        {/*
-          **`ms-auto`, because this is a filter and not an action.** ADR 0039
-          pairs an ACTION with the title — the eye reads "Optins + Create an
-          Optin" as one object — and a window picker sitting in that position
-          reads as part of the screen's name. Pushed to the trailing edge it
-          reads as what it is: a control over everything below it. It still
-          wraps under the title on a narrow viewport, where there is no trailing
-          edge to go to.
-
-          `pe-9` clears the arrow the browser draws. Preflight does not strip a
-          select's appearance, so at `px-2` the chevron sat on top of the last
-          letter of "The last 30 days".
-        */}
         <label className="ms-auto flex items-center gap-2 text-muted-foreground">
-          {__('Showing', 'wconvert')}
-          <select
+          {updating || refreshError ? __('Requested period', 'wconvert') : __('Period', 'wconvert')}
+          <select aria-label={__('Report period', 'wconvert')}
             className="h-(--control-height) rounded-md border border-input bg-card ps-3 pe-9 text-body text-foreground"
-            value={payload === null || payload.days === 0 ? '' : payload.days}
-            onChange={(event) => setDays(Number(event.target.value))}
-          >
-            {WINDOWS.map((window) => (
-              <option key={window} value={window}>
-                {window === 1
-                  ? __('Today', 'wconvert')
-                  : sprintf(
-                      /* translators: %s: a number of days. */
-                      _n('The last %s day', 'The last %s days', window, 'wconvert'),
-                      String(window),
-                    )}
-              </option>
-            ))}
+            value={days ?? payload?.days ?? ''}
+            onChange={(event) => change({ ...selection, days: Number(event.target.value) })}>
+            {periods.map((period) => <option key={period} value={period}>{periodLabel(period)}</option>)}
           </select>
         </label>
       </PageAction>
-
-      {/*
-        **Above the numbers, because it explains them.** A wall of zeros on
-        four Goal cards is the same screen whether an Optin was never published
-        or a caching plugin removed the loader, and the merchant cannot tell
-        the two apart from anything below this. It renders nothing once the
-        site is converting (ADR 0042).
-      */}
-      <Milestones />
-
-      {/*
-        **Above the cards, because one read draws all of them.** The window
-        governs every region on this screen at once, so a refresh that fails
-        belongs to no Goal in particular and putting it on one would claim it
-        was about that Goal. {@see PageError} is that case — `RegionError`'s
-        rule against a page-top banner is scoped to regions that fail
-        INDEPENDENTLY, which these do not.
-
-        **Only where there is something to keep.** A FIRST failure has no cards
-        under it, so the region below renders the error as its whole content —
-        and this would then say the same sentence twice on one screen.
-      */}
-      {refreshError !== null && payload !== null && <PageError message={refreshError} />}
-
-      {report.status === 'failed' && (
-        <Region label={__('Analytics', 'wconvert')}>
-          <RegionErrorState message={report.message} />
-        </Region>
+      {selection.optinId && <a className="inline-flex items-center gap-2 self-start text-note text-primary hover:underline"
+        href={reportHref({ days: payload?.days ?? selection.days, goal: selectedGoal })}>
+        <ArrowLeft aria-hidden="true" className="size-4" />{__('All Optin results', 'wconvert')}
+      </a>}
+      {!selection.optinId && payload !== null && payload.goals.length > 1 && (
+        <div className="wconvert-panel-filters" role="group" aria-label={__('Filter reports by goal', 'wconvert')}>
+          <button type="button" aria-pressed={!selectedGoal} onClick={() => change({ ...selection, goal: undefined })}>{__('All goals', 'wconvert')}</button>
+          {payload.goals.map((card) => <button type="button" key={card.goal} aria-pressed={selectedGoal === card.goal}
+            onClick={() => change({ ...selection, goal: card.goal })}>{card.label}</button>)}
+        </div>
       )}
-
-      {/*
-        **A Goal card's shape, and it used to be a table's.** This drew a
-        headless `DataTable` of four columns while what was coming is a heading,
-        a row of four figures and a sparkline — so every column moved when the
-        data landed, which is the one thing a skeleton exists not to do.
-        `StatRowSkeleton` was already in the file's own sibling and the builder
-        was already using it for this exact strip.
-      */}
-      {report.status === 'loading' && (
-        <RegionSkeleton label={__('Analytics', 'wconvert')}>
-          <StatRowSkeleton stats={4} />
-          <Skeleton aria-hidden="true" className="h-16 w-full" />
-        </RegionSkeleton>
+      {payload !== null && payload.from !== '' && (
+        <div className="flex flex-wrap items-center justify-between gap-2 text-note text-muted-foreground">
+          <span>{sprintf(__('Showing %1$s to %2$s, in your site’s timezone.', 'wconvert'), payload.from, payload.to)}</span>
+          {updating && <span role="status">{__('Updating report…', 'wconvert')}</span>}
+        </div>
       )}
-
-      {payload !== null && payload.goals.length === 0 && (
-        <Region label={__('Analytics', 'wconvert')}>
-          <EmptyState
-            icon={ChartColumn}
-            title={__('Nothing to report yet', 'wconvert')}
-            action={
-              <Button asChild variant="outline">
-                <a href="#optins">{__('Go to Optins', 'wconvert')}</a>
-              </Button>
-            }
-          >
-            {__('Publish an Optin and its numbers appear here.', 'wconvert')}
-          </EmptyState>
-        </Region>
-      )}
-
-      {/*
-        The window is stated ONCE, on the first card. It is the same window for
-        every region on the screen, so repeating it under each would be one
-        fact printed four times — and `dashboard.test.tsx` reads it with
-        `findByText`, which fails on a second match rather than passing.
-      */}
-      {payload?.goals.map((card, index) => (
-        <GoalRegion key={card.goal} card={card} window={index === 0 ? payload : null} />
-      ))}
+      {refreshError !== null && payload !== null && <PageError message={sprintf(__('Could not load the requested period. Showing the previous report and its dates. %s', 'wconvert'), refreshError)} />}
+      {report.status === 'failed' && <Region label={__('Analytics', 'wconvert')}><RegionErrorState message={report.message} /></Region>}
+      {refreshError !== null && <Button variant="outline" className="self-start" onClick={() => setRetry((value) => value + 1)}>{__('Retry loading report', 'wconvert')}</Button>}
+      {report.status === 'loading' && <RegionSkeleton label={__('Analytics', 'wconvert')}>
+        <StatRowSkeleton stats={4} /><Skeleton aria-hidden="true" className="h-36 w-full" />
+      </RegionSkeleton>}
+      {payload !== null && selection.optinId && !selectedOptin && <Region label={__('Optin report', 'wconvert')}>
+        <EmptyState icon={ChartColumn} title={__('This Optin is not available in the report', 'wconvert')}
+          action={<Button asChild variant="outline"><a href={reportHref({ days: payload.days })}>{__('View all results', 'wconvert')}</a></Button>}>
+          {__('A deleted Optin keeps its historical counts in its Goal’s totals, but no longer has an individual report.', 'wconvert')}
+        </EmptyState>
+      </Region>}
+      {payload !== null && !selection.optinId && payload.goals.length === 0 && <Region label={__('Analytics', 'wconvert')}>
+        <EmptyState icon={ChartColumn} title={__('Nothing to report yet', 'wconvert')}
+          action={<Button asChild variant="outline"><a href="#optins">{__('Go to Optins', 'wconvert')}</a></Button>}>
+          {__('Publish an Optin and its numbers appear here.', 'wconvert')}
+        </EmptyState>
+      </Region>}
+      {payload && cards?.map((card) => <GoalRegion key={card.goal} card={card} optin={selectedOptin}
+        period={payload} query={shownQuery} />)}
+      {payload !== null && payload.goals.length > 0 && <details className="wconvert-report-help">
+        <summary>{__('How these numbers work', 'wconvert')}</summary>
+        <ul>
+          <li>{__('Impressions count times an Optin was seen. For an inline form, this starts when it enters the visitor’s view.', 'wconvert')}</li>
+          <li>{__('Conversion rate is visitor actions divided by impressions. The action is a form submission or a button click, depending on the design. A dash means there were no impressions.', 'wconvert')}</li>
+          <li>{__('For a lead magnet, Deliveries counts recorded sends; conversion rate still measures visitor submissions. Delivery totals do not prove inbox arrival.', 'wconvert')}</li>
+          <li>{__('Goal totals include deleted Optins. The table lists existing Optins, so its rows may add up to less. Changing an Optin’s Goal moves its historical counts to that Goal.', 'wconvert')}</li>
+          <li>{__('Reports use daily counters. Deleting captured leads through retention does not remove those historical counts.', 'wconvert')}</li>
+        </ul>
+      </details>}
+      {!selection.optinId && <Milestones />}
     </div>
   );
 }
 
-/**
- * One Goal's region.
- *
- * The headline is named by the server, because two of the five Goals convert
- * on a CLICK — a card headed "Submissions" over a click-metered Goal reports
- * zero forever and looks broken while being right.
- *
- * The heading is an `<h3>` rather than a region's usual `<h2>`: these are a
- * repeating SET under the page's own subject rather than a list of unrelated
- * concerns, and `dashboard.test.tsx` pins the level from the other side.
- *
- * **The window sits on the first region's title line and nowhere else.** It is
- * the same window for every card, so repeating it under each would be the same
- * fact stated four times.
- */
-function GoalRegion({ card, window }: { card: GoalReport; window: DashboardPayload | null }) {
+function GoalRegion({ card, optin, period, query }: {
+  card: GoalReport;
+  optin?: OptinReport;
+  period: DashboardPayload;
+  query: ReportQuery;
+}) {
+  const numbers = optin ?? card;
+  const back = reportHref(query);
   return (
     <Region>
-      <RegionHeader
-        title={card.label}
-        level={3}
-        trailing={
-          window === null || window.from === '' ? undefined : (
-            <span className="text-muted-foreground tabular-nums">
-              {window.from === window.to
-                ? window.from
-                : sprintf(
-                    /* translators: 1: the first day of the window. 2: the last day. */
-                    __('%1$s to %2$s, in your site’s timezone.', 'wconvert'),
-                    window.from,
-                    window.to,
-                  )}
-            </span>
-          )
-        }
-      />
-
-      <RegionBody className="flex flex-col gap-4">
+      <RegionHeader title={optin?.name ?? card.label} level={3} />
+      <RegionBody className="flex flex-col gap-5">
+        {optin && <p className="m-0 text-note text-muted-foreground">{card.label}</p>}
         <StatRow>
-          <Stat label={card.headline_label} value={formatCount(card.headline)} emphasis />
-          <Stat label={__('Impressions', 'wconvert')} value={formatCount(card.impressions)} />
-          <Stat
-            label={__('Conversion rate', 'wconvert')}
-            value={formatRate(card.conversion_rate)}
-          />
-          <Stat label={__('Dismissals', 'wconvert')} value={formatCount(card.dismissals)} />
-          {/*
-            **`conversions − deliveries`, and only the server knows whether there
-            is one.** This bundle spells no Goal id — `GoalParityTest` fails on
-            any of the five appearing here — so a card cannot ask which Goal it
-            is drawing. `null` is the server saying there is nothing to report,
-            and the stat is absent rather than zero.
-
-            The copy is "no delivery yet" rather than "failed" on purpose: a
-            Conversion whose push is still queued or backing off is counted here
-            too, and calling that a failure would be a stronger claim than the
-            subtraction supports. The field is named `undelivered_conversions`
-            for the same reason — it shipped as `delivery_failures`, which said
-            the opposite of the copy directly beneath it.
-          */}
-          {card.undelivered_conversions !== null && (
-            <Stat
-              label={_n(
-                'Conversion with no delivery yet',
-                'Conversions with no delivery yet',
-                card.undelivered_conversions,
-                'wconvert',
-              )}
-              value={formatCount(card.undelivered_conversions)}
-            />
-          )}
+          <Stat label={card.headline_label} value={formatCount(numbers.headline)} emphasis />
+          <Stat label={__('Impressions', 'wconvert')} value={formatCount(numbers.impressions)} />
+          <Stat label={__('Conversion rate', 'wconvert')} value={formatRate(numbers.conversion_rate)} />
+          <Stat label={__('Dismissals', 'wconvert')} value={formatCount(numbers.dismissals)} />
         </StatRow>
-
-        <Sparkline label={card.headline_label} byDay={card.by_day} />
+        {numbers.impressions === 0 && <p className="m-0 text-note text-muted-foreground">
+          {__('No impressions were recorded in this period. Check the date range and where the Optin is set to appear.', 'wconvert')}
+        </p>}
+        <ActivityChart label={card.headline_label} byDay={numbers.by_day} />
+        {!optin && (card.undelivered_conversions ?? 0) > 0 && <div className="wconvert-report-attention">
+          <p>{sprintf(_n('%d more submission than lead-magnet deliveries was recorded in this period.', '%d more submissions than lead-magnet deliveries were recorded in this period.', card.undelivered_conversions ?? 0, 'wconvert'), card.undelivered_conversions ?? 0)}</p>
+          <p>{__('These totals count events on the day they happen. Check Destinations for forwarding delays or errors.', 'wconvert')}</p>
+          <a href={destinationHref()}>{__('Review forwarding', 'wconvert')}</a>
+        </div>}
       </RegionBody>
-
-      <OptinTable card={card} />
+      {optin ? <RegionFooter>
+        <div className="flex flex-wrap gap-2">
+          <Button asChild variant="outline"><a href={editorHref(optin.id, back)}>{__('Edit this Optin', 'wconvert')}</a></Button>
+          <Button asChild variant="outline"><a href={leadsHref({ optinId: optin.id, from: period.from, to: period.to })}>{__('View captured leads', 'wconvert')}</a></Button>
+        </div>
+      </RegionFooter> : <details className="wconvert-panel-details border-t border-border">
+        <summary>{sprintf(_n('View %d Optin', 'View %d Optins', card.optins.length, 'wconvert'), card.optins.length)}</summary>
+        <OptinTable card={card} period={period} query={query} />
+      </details>}
     </Region>
   );
 }
 
-/**
- * The Optins under one Goal.
- *
- * **Soft-deleted Optins are absent here and their counts are still in the card
- * above.** A merchant tidying up in March must not watch February's goal total
- * fall, and this list is what they are running rather than what they have ever
- * run.
- */
-function OptinTable({ card }: { card: GoalReport }) {
+function OptinTable({ card, period, query }: { card: GoalReport; period: DashboardPayload; query: ReportQuery }) {
   if (card.optins.length === 0) {
-    return (
-      /*
-        **{@see EmptyState} and not a muted paragraph**, which is what this
-        was: a sentence in a `RegionBody`, in a screen whose every other
-        nothing-here goes through the primitive. It carries no action, and
-        that is the honest answer rather than an omission — the card above is
-        reporting numbers, so *"go make an Optin"* is not what a merchant
-        reading it came for, and the Optins section is one click away in the
-        page nav either way.
-      */
-      <div className="border-t border-border">
-        <EmptyState icon={Megaphone} title={__('Nothing is running under this Goal', 'wconvert')}>
-          {__('Its numbers are what earlier ones counted.', 'wconvert')}
-        </EmptyState>
-      </div>
-    );
+    return <EmptyState icon={Megaphone} title={__('No existing Optins under this Goal', 'wconvert')}>
+      {__('These totals include results from deleted Optins.', 'wconvert')}
+    </EmptyState>;
   }
-
+  const back = reportHref(query);
   return (
     <div className="border-t border-border">
-      <DataTable>
+      <DataTable label={sprintf(__('Optins for %s', 'wconvert'), card.label)}>
         <DataTableHead>
           <DataTableColumn>{__('Optin', 'wconvert')}</DataTableColumn>
           <DataTableColumn numeric>{card.headline_label}</DataTableColumn>
           <DataTableColumn numeric>{__('Impressions', 'wconvert')}</DataTableColumn>
           <DataTableColumn numeric>{__('Conversion rate', 'wconvert')}</DataTableColumn>
-          <DataTableColumn numeric>{__('Dismissals', 'wconvert')}</DataTableColumn>
           <DataTableColumn>{__('Over time', 'wconvert')}</DataTableColumn>
+          <DataTableActionsColumn>{__('Actions', 'wconvert')}</DataTableActionsColumn>
         </DataTableHead>
         <DataTableBody>
-          {card.optins.map((optin: OptinReport) => (
-            <DataTableRow key={optin.id}>
-              <DataTableCell label={__('Optin', 'wconvert')}>{optin.name}</DataTableCell>
-              <DataTableCell label={card.headline_label} numeric>
-                {formatCount(optin.headline)}
-              </DataTableCell>
-              <DataTableCell label={__('Impressions', 'wconvert')} numeric>
-                {formatCount(optin.impressions)}
-              </DataTableCell>
-              <DataTableCell label={__('Conversion rate', 'wconvert')} numeric>
-                {formatRate(optin.conversion_rate)}
-              </DataTableCell>
-              <DataTableCell label={__('Dismissals', 'wconvert')} numeric>
-                {formatCount(optin.dismissals)}
-              </DataTableCell>
-              {/*
-                Comparison within an Optin over time, which the merchant would
-                otherwise only get by moving the whole screen's window and
-                remembering the last number.
-              */}
-              <DataTableCell label={__('Over time', 'wconvert')}>
-                <Sparkline label={card.headline_label} byDay={optin.by_day} />
-              </DataTableCell>
-            </DataTableRow>
-          ))}
+          {card.optins.map((optin) => <DataTableRow key={optin.id}>
+            <DataTableCell label={__('Optin', 'wconvert')}>
+              <a className="font-medium text-primary hover:underline" href={reportHref({ days: period.days, goal: card.goal, optinId: optin.id })}>{optin.name}</a>
+            </DataTableCell>
+            <DataTableCell label={card.headline_label} numeric>{formatCount(optin.headline)}</DataTableCell>
+            <DataTableCell label={__('Impressions', 'wconvert')} numeric>{formatCount(optin.impressions)}</DataTableCell>
+            <DataTableCell label={__('Conversion rate', 'wconvert')} numeric>{formatRate(optin.conversion_rate)}</DataTableCell>
+            <DataTableCell label={__('Over time', 'wconvert')}><Sparkline label={card.headline_label} byDay={optin.by_day} /></DataTableCell>
+            <DataTableActions>
+              <Button asChild variant="ghost" size="sm"><a aria-label={sprintf(__('Edit %s', 'wconvert'), optin.name)} href={editorHref(optin.id, back)}>{__('Edit', 'wconvert')}</a></Button>
+              <Button asChild variant="ghost" size="sm"><a aria-label={sprintf(__('View captures for %s', 'wconvert'), optin.name)} href={leadsHref({ optinId: optin.id, from: period.from, to: period.to })}>{__('Captures', 'wconvert')}</a></Button>
+            </DataTableActions>
+          </DataTableRow>)}
         </DataTableBody>
       </DataTable>
     </div>
   );
 }
 
-/**
- * The headline number per day, as bars.
- *
- * Inline SVG and no charting library: the admin bundle is shipped to every
- * merchant and this is one series of small integers. Every day in the window
- * is present — the server seeds them — so a quiet day is a zero-height bar
- * rather than a gap, and a gap would read as missing data.
- *
- * `aria-hidden`, with the same series offered as text beside it. A bar chart
- * is decoration to a screen reader, and the numbers are already on the card.
- *
- * **It had no CSS at all until now**, which is why it rendered as a row of
- * black dashes across the top of the table: `.wconvert-sparkline` was one of
- * fourteen class names in this admin with no rule anywhere, so the `<svg>` took
- * the browser's default `fill` and no size. The bars are `--chart-1`, which is
- * the token ADR 0037 reserved for impressions and the series this draws.
- */
 function Sparkline({ label, byDay }: { label: string; byDay: Record<string, number> }) {
   const days = Object.entries(byDay);
 

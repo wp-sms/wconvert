@@ -38,7 +38,11 @@ final class OptinRepository
     private const FULL_COLUMNS = 'id, name, goal, parent_id, config, published_config, published_at, deleted_at';
 
     /**
-     * The list view's projection — no LONGTEXT.
+     * The list view's projection — no LONGTEXT returned to PHP.
+     *
+     * The database compares the existing snapshots and returns one boolean.
+     * BINARY matters: a case-only copy edit must not disappear under the site's
+     * case-insensitive collation. Drafts and deleted rows have no live update.
      *
      * **`parent_id` is here, and it is the reason it is a column at all.**
      * ADR 0045 says the Optins list shows parentless Optins only and nests
@@ -48,7 +52,8 @@ final class OptinRepository
      * into this list — which is the read ADR 0001 measured exhausting PHP's
      * memory at a few hundred rows, and the whole reason this constant exists.
      */
-    private const SUMMARY_COLUMNS = 'id, name, goal, parent_id, published_at, deleted_at';
+    private const SUMMARY_COLUMNS = 'id, name, goal, parent_id, published_at, deleted_at, '
+        . '(published_at IS NOT NULL AND deleted_at IS NULL AND NOT (BINARY config <=> BINARY published_config)) AS has_unpublished_changes';
 
     /**
      * What the published set is built from.
@@ -711,6 +716,13 @@ final class OptinRepository
         // A deleted Optin cannot be published back into existence. Undeleting
         // is its own act, and this is not it.
         if ($optin === null || $optin->isDeleted()) {
+            return null;
+        }
+
+        // Keep this at the promotion boundary as well as in REST: a CLI or
+        // future bulk action must not publish a draft with no design. Saving
+        // that incomplete draft remains valid and never changes the live set.
+        if (!$optin->hasDesign() || \WConvert\Template\TemplateForm::issue($optin->config['template'] ?? null) !== null) {
             return null;
         }
 

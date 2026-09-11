@@ -275,9 +275,9 @@ admin"*. Read down a column to find a gap.
 | **Leads — retention** | placeholders in its own layout | n/a | `RegionErrorState`, independently of the log | radios + a period |
 | **Destinations — routes** | `RegionSkeleton` | `EmptyState`, no action (the region below is the door) | `RegionErrorState`; refresh keeps cards under `PageError` | a region per route |
 | **Destinations — types** | with the payload | `EmptyState`, no action (no door this admin owns) | with the payload | a list of types |
-| **Creation — step 1** | `ChoiceSkeleton` | `EmptyState` | `RegionErrorState` | `ChoiceGrid` of Goals |
-| **Creation — step 2** | `GallerySkeleton` | `EmptyState` + *Start from scratch* | `RegionErrorState` | rendered Playbooks |
-| **Creation — step 3** | n/a — the draft is in hand | n/a | `RegionError` over the preview | a rendered draft |
+| **Creation — Goal** | `ChoiceSkeleton` | `EmptyState` | `RegionErrorState` + Retry | `ChoiceGrid` of Goals |
+| **Creation — starting point** | `GallerySkeleton` | `EmptyState` + *Start with a blank draft* | `RegionErrorState` + Retry; creation failure stays on the choice | rendered Playbooks and effective setup facts |
+| **Creation — customize** | in-flight status on the chosen starting point | n/a | uncertain create asks to check Optins | created draft opens the editor |
 | **Builder — frame** | `BuilderSkeleton` (immediate; it holds the way out) | n/a | `RegionErrorState` | tabs |
 | **Builder — Design** | none of its own — the index arrives behind `BuilderSkeleton` | `EmptyState` + the other Display Types | `PageError` above the tabs | the design in use + tokens |
 | **Builder — Content** | with the design | `EmptyState` + *Pick a design* | with the frame | tree + inspector |
@@ -288,6 +288,17 @@ Two columns are deliberately thin. *Empty* is `n/a` wherever the region holds a
 SETTING rather than a collection: a retention period has no empty state, it has
 a default. And the builder's frame has no empty state because an Optin that does
 not exist is not reachable from it.
+
+**Creation rows amended by [ADR 0072](0072-setup-choices-state-their-effect-and-scope.md):**
+there are two choices, followed directly by the editor, rather than a third
+preview-only step. Failed setup-detail reads do not remove the starting-point
+cards; they offer Retry and say that the rules can be reviewed in the editor.
+
+*Extended by [ADR 0068](0068-reading-pages-put-results-and-routes-before-occasional-settings.md): Analytics and Leads retain the last successful
+response during a refresh and expose retry on failure. A later request owns the
+result; a stale response cannot overwrite it. Dates and Lead row/export state
+continue to describe the response actually shown. Occasional settings may start
+closed with a saved-state summary, but a new error opens the disclosure.*
 
 **Milestones is the one row that answers a situation with nothing, and it is
 right.** A region that reserves height for something it will usually not draw

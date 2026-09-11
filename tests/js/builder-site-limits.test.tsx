@@ -1,0 +1,94 @@
+import { StrictMode } from 'react';
+import { act, render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { SiteAllowance } from '../../resources/admin/src/optins/api';
+
+const request = vi.hoisted(() => vi.fn());
+vi.mock('@wordpress/api-fetch', () => ({ default: request }));
+const { SiteLimitsNote } = await import('../../resources/admin/src/builder/rules/SiteLimitsNote');
+
+const OFF: SiteAllowance = { maxImpressions: null, cooldownDays: null, stopAfterDismiss: false, stopAfterConversion: false };
+const SAVED: SiteAllowance = { maxImpressions: 3, cooldownDays: 2, stopAfterDismiss: true, stopAfterConversion: true };
+
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  let reject!: (cause: Error) => void;
+  const promise = new Promise<T>((yes, no) => { resolve = yes; reject = no; });
+  return { promise, resolve, reject };
+}
+
+beforeEach(() => { request.mockReset().mockResolvedValue(OFF); });
+
+afterEach(() => {
+  // Exercise the real API helper, and refuse a write regardless of the path
+  // through loading, retry or effect cleanup that the case took.
+  for (const [options] of request.mock.calls) {
+    expect(options).toEqual({ path: '/wconvert/v1/optins/frequency' });
+  }
+});
+
+describe('saved site-wide limits beside an Optin draft', () => {
+  it('waits for saved values instead of briefly claiming there are no limits', async () => {
+    const pending = deferred<SiteAllowance>();
+    request.mockReturnValue(pending.promise);
+    render(<SiteLimitsNote />);
+    expect(screen.getByRole('status')).toHaveTextContent('Checking saved site-wide limits…');
+    expect(screen.queryByText(/No site-wide limits/)).toBeNull();
+    expect(screen.queryByText(/At most/)).toBeNull();
+    await act(async () => { pending.resolve(SAVED); });
+    const note = screen.getByRole('complementary', { name: 'Site-wide limits' });
+    expect(note).toHaveTextContent('Stop after a dismissal · Stop after a conversion · At most 3 impressions · 2 days between Optins');
+    expect(note).toHaveTextContent('An Optin cannot override these limits.');
+    expect(screen.getByRole('link', { name: 'Manage them on the Optins page' })).toHaveAttribute('href', '#optins');
+    expect(screen.queryByRole('status')).toBeNull();
+    expect(screen.queryByRole('checkbox')).toBeNull();
+    expect(screen.queryByRole('spinbutton')).toBeNull();
+  });
+
+  it('states the saved absence of site limits without inventing the Optin’s own defaults', async () => {
+    render(<SiteLimitsNote />);
+    expect(await screen.findByText('No site-wide limits. Each Optin uses its own display rules.')).toBeInTheDocument();
+    expect(screen.queryByText(/Stop after a dismissal/)).toBeNull();
+    expect(request).toHaveBeenCalledTimes(1);
+  });
+
+  it('shows a failed read distinctly and lets Retry replace it with saved values', async () => {
+    const retry = deferred<SiteAllowance>();
+    request.mockRejectedValueOnce(new Error('The server is unavailable.')).mockReturnValueOnce(retry.promise);
+    render(<SiteLimitsNote />);
+    expect(await screen.findByRole('alert')).toHaveTextContent('Could not check the site-wide limits. The server is unavailable.');
+    expect(screen.queryByText(/No site-wide limits/)).toBeNull();
+    await userEvent.click(screen.getByRole('button', { name: 'Retry checking limits' }));
+    expect(screen.queryByRole('alert')).toBeNull();
+    expect(screen.getByRole('status')).toHaveTextContent('Checking saved site-wide limits…');
+    expect(request).toHaveBeenCalledTimes(2);
+    await act(async () => { retry.resolve(SAVED); });
+    expect(screen.getByRole('complementary')).toHaveTextContent('At most 3 impressions');
+    expect(screen.queryByRole('button', { name: 'Retry checking limits' })).toBeNull();
+  });
+
+  it.each(['success', 'failure'] as const)('ignores late %s from an effect cleaned up before the current read', async (outcome) => {
+    const stale = deferred<SiteAllowance>();
+    request.mockReturnValueOnce(stale.promise).mockResolvedValueOnce(SAVED);
+    // StrictMode re-runs an effect after cleanup while keeping the component
+    // instance. Without the active guard, its first read overwrites the second.
+    render(<StrictMode><SiteLimitsNote /></StrictMode>);
+    await waitFor(() => expect(screen.getByRole('complementary')).toHaveTextContent('At most 3 impressions'));
+    await act(async () => { if (outcome === 'success') stale.resolve(OFF); else stale.reject(new Error('old request')); });
+    expect(screen.getByRole('complementary')).toHaveTextContent('At most 3 impressions');
+    expect(screen.queryByRole('alert')).toBeNull();
+    expect(screen.queryByText(/No site-wide limits/)).toBeNull();
+    expect(request).toHaveBeenCalledTimes(2);
+  });
+
+  it('settles a request after unmount without creating another read or changing settings', async () => {
+    const pending = deferred<SiteAllowance>();
+    request.mockReturnValueOnce(pending.promise);
+    const view = render(<SiteLimitsNote />);
+    view.unmount();
+    await act(async () => { pending.resolve(SAVED); });
+    expect(screen.queryByRole('complementary')).toBeNull();
+    expect(request).toHaveBeenCalledTimes(1);
+  });
+});

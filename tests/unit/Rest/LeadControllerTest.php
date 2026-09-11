@@ -5,6 +5,8 @@ namespace WConvert\Tests\Unit\Rest;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use WConvert\Lead\LeadLog;
+use WP_Error;
+use WP_REST_Request;
 use WConvert\Lead\LeadRepository;
 use WConvert\Rest\LeadController;
 use WConvert\Rest\Routes;
@@ -154,4 +156,30 @@ final class LeadControllerTest extends TestCase
             }
         }
     }
+    public function testAnInvalidCalendarDateReturnsAnActionableBadRequest(): void
+    {
+        $db = new FakeConnection();
+        $controller = new LeadController(new LeadLog(new LeadRepository($db)), new RetentionPeriod(new FakeOptionStore()));
+        $request = new WP_REST_Request('GET', '/wconvert/v1/leads');
+        $request->set_param('from', '2026-02-29');
+        $response = $controller->index($request);
+        $this->assertInstanceOf(WP_Error::class, $response);
+        $this->assertSame('wconvert_invalid_lead_query', $response->get_error_code());
+        $this->assertSame(['status' => 400], $response->get_error_data());
+        $this->assertSame([], $db->reads, 'Invalid filters must never fall through to a broader query.');
+    }
+
+    public function testDefaultReadIsBoundedAndCarriesItsPagingSnapshot(): void
+    {
+        $db = new FakeConnection();
+        $db->answers = [[], []];
+        $controller = new LeadController(new LeadLog(new LeadRepository($db)), new RetentionPeriod(new FakeOptionStore()));
+        $response = $controller->index(new WP_REST_Request('GET', '/wconvert/v1/leads'));
+        $this->assertNotInstanceOf(WP_Error::class, $response);
+        $payload = $response->get_data();
+        $this->assertNull($payload['next_cursor']);
+        $this->assertIsString($payload['snapshot']);
+        $this->assertSame(51, $db->reads[1]['params'][1], '50 visible rows and one lookahead.');
+    }
+
 }

@@ -12,6 +12,11 @@ That is the whole change. It is not a style attribute, not a class, not a
 per-node CSS bag: it is the object a design already carries at the root,
 written one level in.
 
+> *Completed by [ADR 0064](0064-a-narrow-bag-is-the-same-bag-at-a-second-width.md):
+> a node may carry the bag **twice**, the second one applying below 360px of
+> container. Same names, same closure; what it needed was a mirror of property
+> names and one container query, because inline style has no conditional form.*
+
 ## It was found rather than invented
 
 A 16-design reference set was commissioned to show what the library is missing,
@@ -54,8 +59,7 @@ the private `tokens()` that already validated the design's bag.
 
 **The merchant's model does not grow.** The Style controls are the ones the
 Design tab already had; what changed is that they are now addressed at a scope
-rather than only at the root. Selecting the step gives you the design's own
-tokens, the way the Design tab always did.
+rather than only at the root. Selecting the step originally opened the design tokens. **Amended by [ADR 0067](0067-the-editor-starts-with-the-preview-and-the-selected-element.md):** the step edits its own scope; Design settings opens the global tokens.
 
 ## What it deliberately does not buy
 
@@ -92,9 +96,7 @@ purchase rather than the strength of the demand:
 
 1. **0061 priced rung 3 as "every node grows a style bag" and a settings panel
    that "stops being 22 controls and becomes a per-node inspector."** Neither is
-   what landed. Only **layouts** carry a bag — a leaf has no inside for a scope
-   to apply to — and the panel is the same 22 controls bound to a selection. The
-   cost 0061 refused is not the cost that was paid.
+   what initially landed. **Amended by [ADR 0067](0067-the-editor-starts-with-the-preview-and-the-selected-element.md):** leaves now carry the same closed bags to style the selected element directly. Manifest reader metadata limits the inspector to relevant controls.
 2. **0061's own canonical example is this one.** *"The split with a navy pane
    beside a white form"* is named there as the design whose absence is about
    ground rather than placement. It is now expressible, in exactly the terms
@@ -118,11 +120,22 @@ designs expressible.
 
 Two things about it are worth stating because neither is obvious:
 
-- **A photo pane is a `panel`, and there is no `media` node.** `bg-image` +
+- ~~**A photo pane is a `panel`, and there is no `media` node.**~~ `bg-image` +
   `overlay` + `min`, in a `split` pane. A second child-key shape would have cost
   four files an edit and a hardcoded test a branch, to buy content spread
   top-and-bottom rather than stacked. A `spread` param buys that back if a design
   needs it.
+
+  > *Amended by [ADR 0063](0063-the-five-things-the-reference-designs-still-could-not-say.md):
+  > this originally read* "a photo pane is a `panel`, and there is no `media`
+  > node" *— and `media` is the sixth layout now. Every clause above is true and
+  > the conclusion was wrong: the cost estimate was right, and the benefit was
+  > described as one design's preference when* **thirteen of the sixteen
+  > reference designs put a wordmark at the top of one photograph and a display
+  > line at the bottom of the same one.** *The spread is not something a design
+  > might want on top of a photo pane; it is what putting type on a picture is.
+  > A `panel` is still the right answer for a photo pane with nothing written on
+  > it.*
 - **A panel inherits the design's colours and not its picture.** It paints the
   same two background layers `.wc-root` does, so one `bg-image` on the design
   would be painted again — cover, centred — inside every panel in it. `render.ts`
@@ -316,10 +329,22 @@ admission test ADR 0061 set for a vocabulary member.
   plainest design is how it would have gone on passing while the designs a
   merchant actually picks moved the number.
 
+  > *Corrected by the port of six reference designs.* Deriving was right and
+  > **both halves of how were wrong.** Ten is not a page — at most one overlay
+  > wins a page view — and it is now five, at which the costliest design
+  > measures 1,854 B of 2,048. And *richest* was measured as one snapshot
+  > gzipped ALONE, which does not order designs the way a page does: on a page
+  > the art dedupes across the copies and the diverged copy does not, so the
+  > cost follows text-node count rather than solo bytes. The picker measured
+  > `fieldwork` at 913 B and missed designs costing 60–80 B more per page — the
+  > shape of failure this bullet was written to prevent, one level in. It now
+  > measures the page. **The budget still stands and the measuring still does
+  > the moving.**
+
   `LibraryLintTest` gains a **per-design cap**, `DesignBudget::PER_DESIGN`,
   which is `PER_PAGE / 2`: a design costing more than half a page measured alone
   is one design eating a page two Optins are meant to share. The richest design
-  shipped is 677 B, so the line is generous — it is not a target, and a cap that
+  shipped is 677 B (1,004 B once the reference designs landed), so the line is generous — it is not a target, and a cap that
   argues with ordinary authoring is one people route around. What it catches is
   the realistic failure, an embedded raster image, which the per-page test would
   report two commits later naming a page rather than a design.

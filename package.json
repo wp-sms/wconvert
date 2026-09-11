@@ -24,7 +24,8 @@
     "test:watch": "vitest",
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --fix",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prototype:editor": "vite --config tools/design-system/editor-prototype/vite.config.mjs"
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "^3.0.0",

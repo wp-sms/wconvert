@@ -165,9 +165,10 @@ ${table(
   Object.entries(DISPLAY_TYPES).map(([type, note]) => [`\`${type}\``, note]),
 )}
 
-**Never author \`facets\`, \`v\` or \`id\` on a node.** Facets are derived from the
-tree, \`v\` is stamped by PHP, and node ids are minted on the way in. Writing one
-by hand is a fact that can disagree with the design.
+**Do not author \`facets\` or \`v\`.** Facets are derived from the tree and
+\`v\` is stamped by PHP. Shipped leaf nodes carry unique stable ids (\`n1\`,
+\`n2\`, …), which keep their translation names stable. PHP mints any missing
+ids when a draft is saved; layouts do not carry ids.
 
 ## 2. The tree, and how many steps it has
 
@@ -204,16 +205,38 @@ ${table(['Layout', 'Children go in', 'Params', 'Values (**default**)'], layouts)
   exactly as \`stack\` does, and it draws the tokens in scope as a box: ground,
   picture, wash, padding, corner, edge. That is what makes a scoped bag
   *visible* — a cream box beside a dark one is two panels with different bags.
-  A photo pane is a \`panel\` carrying \`bg-image\`, \`overlay\` and \`min\`.
+  A photo pane with nothing written on it is a \`panel\` carrying \`bg-image\`,
+  \`overlay\` and \`min\`.
 
   **It inherits the design's colours and not its picture.** A panel resets
   \`bg-image\` and \`overlay\` before its own bag is applied, so one \`bg-image\` on
   the design is not painted again inside every panel in it. A panel that wants
   a picture says so in its own bag.
 
-**Every layout takes a \`tokens\` bag**, which is why the param appears on all of
-them. It is not a value from a list — it is the same token object the design
-carries, re-declared for this box and everything inside it. See §6.
+  \`notch: true\` punches two circles out of its top corners so the page shows
+  through — the torn-ticket perforation, and the one ornament a token cannot
+  reach. Pair it with \`edges: "block-start"\`: the rule is the tear line and the
+  holes are its ends.
+- \`media\` — the **second** layout that paints, and the difference from
+  \`panel\` is what it does with spare room. A panel stacks its children at the
+  top; a media pushes the first to its top edge and the last to its bottom.
+  That is a wordmark above a display line on one photograph, which is the
+  commonest shape in the reference set.
+
+  It takes the same picture reset a panel does, so a media with no \`bg-image\`
+  in its own bag is an empty box waiting for one. Give it \`min\` — the spread
+  has nothing to spread across otherwise — and \`fg\`, because the design's own
+  ink is chosen against the design's own ground and not against your
+  photograph.
+
+  The \`overlay\` on a media is a **layer between the picture and the words**
+  rather than the background wash a panel paints, so it darkens the photograph
+  and never the type on it.
+
+**Every layout takes a \`tokens\` bag and a \`narrow\` one**, which is why both
+params appear on all of them. Neither is a value from a list — each is the same
+token object the design carries, re-declared for this box and everything inside
+it, the second applying only below ${manifest.narrow}. See §6.
 
 ## 4. The ${Object.keys(manifest.nodes).length} leaves
 
@@ -232,6 +255,21 @@ Notes that the table cannot carry:
   splits on \`%s\` and builds the \`<a>\` itself. **Omit \`href\` for the privacy
   policy** — the site fills it in at render, and with no policy configured the
   link renders nothing rather than a dead \`#\`.
+- **They can hold one run of emphasis too, the same way.** Write \`%b\` and a
+  sibling \`emphasis\` string:
+  \`"text": "Take %b your first order.", "emphasis": "10% off"\`. It renders as a
+  \`<strong>\` and is **weight only** — it inherits the colour of the sentence
+  around it, so the same mark is safe in fine print.
+
+  One link and one emphasis per sentence. A second \`%s\` or \`%b\` is literal
+  text, and a mark with nothing to fill it renders nothing — along with the
+  space in front of it.
+- **A newline in any authored text is a line break.** \`"Room\\nto grow."\`
+  renders as two lines with a real \`<br>\` between them, on a \`heading\`, a
+  \`text\`, an \`eyebrow\`, a \`badge\` and a \`code\` alike. Where a display
+  headline breaks is most of what it IS, so write the break rather than hoping
+  for the wrap — and two \`heading\` nodes with a gap between them is a
+  different thing that only looks similar at one width.
 - **\`icon\` is a closed set of six glyphs** the renderer owns. There is no
   \`src\`: a remote SVG is an off-site asset and an inline one is markup.
 - **\`image\` needs a \`src\`, or it renders nothing at all.** Use a \`data:\` URI so
@@ -330,12 +368,73 @@ Two background layers, and the order is the feature: \`overlay\` paints **on top
 of** \`bg-image\`, which is the only reason light text over a photograph is
 legible.
 
+### A token as a VALUE, so a scope follows the theme
+
+A colour token's value may be the **name of another colour token**, and it then
+resolves to whatever that one is in scope:
+
+\`\`\`json
+{ "type": "panel", "tokens": { "bg": "accent", "fg": "accent-fg" } }
+\`\`\`
+
+Only these names may be used this way: ${list(manifest.referable)}. Anything
+else is written verbatim, as every value always was — including a name
+referring to itself, which is a cycle CSS would discard.
+
+**This is what makes a scope survive a theme.** A theme moves the design's
+colours; a bag that spelled a hex does not move with it, so the box a merchant
+most wants to follow the palette is the one that never would. Reach for a
+literal colour where the box is deliberately outside the palette — a
+photographic ground, a brand black — and for a name everywhere else.
+
+### \`narrow\`: the same bag again, below ${manifest.narrow}
+
+A layout may carry a second bag beside \`tokens\`, and it applies **only where
+the design is narrower than ${manifest.narrow}** — a phone, or an \`inline\`
+Optin in a sidebar:
+
+\`\`\`json
+{ "type": "media",
+  "tokens": { "pad": "1.75rem 1.375rem", "heading-size": "1.625rem" },
+  "narrow": { "pad": "1.25rem 1.125rem", "heading-size": "1.25rem" } }
+\`\`\`
+
+Same names, same closure, same drop-when-empty. A box that sets none costs
+nothing at all.
+
+**It is a CONTAINER width and not the viewport's**, so an inline Optin in a
+280px sidebar retunes on a desktop — which is the case a media query gets
+wrong.
+
+**Reach for it where shrinking is not the same as retuning.** A photo pane that
+is 440px of a split and the whole width on a phone wants *less* padding and
+*smaller* display type, not the same values in a narrower box. Anything that
+merely needs to be smaller already is: the panes of a \`split\` stack, a
+\`grid\` drops to one column, and \`.wc-root\` is \`min(width, 100%)\`.
+
+**It is the most expensive thing a design can carry**, because it is the one
+that doubles what a scope stores. \`wconvert_optins.config\` rides the page
+payload on every matching view against a budget
+(\`tests/unit/Frontend/PayloadBudgetTest.php\`), so set the two or three tokens
+that actually retune and not the whole bag again.
+
 **Only set the tokens a design actually decides.** Anything omitted falls back
 to the default above.
 
 ## 7. Field kinds and link schemes
 
 - A \`field\` captures one of ${list(manifest.fields)}. One field per kind, at most.
+- \`interest\` renders a native select. Supply \`options\` as a list of
+  \`{ "value": "repair", "label": "Repair" }\` objects. Values stay stable
+  when labels change. The manifest permits at most ${manifest.field_options.max_items}
+  choices, values matching \`${manifest.field_options.value_pattern}\`, and
+  labels of at most ${manifest.field_options.label_max_length} characters.
+  A submitting form also needs an email or phone field. An unfinished choice
+  list can be saved as a draft but cannot be published.
+- The choice list is one copy value. A Playbook supplies
+  \`interest_options: { "options": [...] }\`, keeping the wrapper so a list
+  of choices is not mistaken for repeated role instances. Keep-content design
+  changes carry the values and labels together; sample mode replaces them.
 - An \`href\` may use one of ${list(manifest.schemes)}. Anything else renders no
   anchor at all.
 

@@ -53,6 +53,7 @@ final class TemplateVocabulary
      * @param list<string> $fields
      * @param array<string, list<string>> $facets
      * @param string $identity The key a leaf carries to name itself, or '' where the manifest declares none.
+     * @param array<string, mixed> $fieldOptions Constraints on the interest field's stable values and labels.
      */
     private function __construct(
         private readonly array $layouts,
@@ -64,6 +65,7 @@ final class TemplateVocabulary
         private readonly array $fields,
         private readonly array $facets = [],
         private readonly string $identity = '',
+        private readonly array $fieldOptions = [],
     ) {
     }
 
@@ -96,6 +98,14 @@ final class TemplateVocabulary
     public function fields(): array
     {
         return $this->fields;
+    }
+
+    /** @param mixed $options
+     * @return list<array{value: string, label: string}>
+     */
+    public function choiceOptions($options): array
+    {
+        return ChoiceOptions::normalize($options, $this->fieldOptions);
     }
 
     /**
@@ -237,6 +247,7 @@ final class TemplateVocabulary
                 array_filter(self::section($manifest, 'facets'), 'is_array')
             ),
             is_string($manifest['identity'] ?? null) ? $manifest['identity'] : '',
+            self::section($manifest, 'field_options'),
         );
     }
 
@@ -383,6 +394,13 @@ final class TemplateVocabulary
                 continue;
             }
 
+            if ($key === 'options') {
+                if ($type === 'field' && ($node['name'] ?? null) === 'interest') {
+                    $kept[$key] = $this->choiceOptions($node[$key]);
+                }
+                continue;
+            }
+
             if ($key === 'link') {
                 $kept[$key] = $this->link($node[$key]);
 
@@ -406,7 +424,7 @@ final class TemplateVocabulary
 
             /*
              * ================================================================
-             * THE ONE NESTED STRUCTURE A PARAM MAY BE, AND THE ONLY ONE.
+             * THE ONLY NESTED STRUCTURE A PARAM MAY BE, AND THERE ARE TWO.
              * ================================================================
              * Every other param is a scalar, so `$kept[$key] = $node[$key]`
              * below is safe by the shape of what it copies. A token bag is not
@@ -418,7 +436,15 @@ final class TemplateVocabulary
              * an undeclared name is dropped, and a value that is not a scalar
              * has no spelling as a custom property at all.
              */
-            if ($key === 'tokens') {
+            /*
+             * **`narrow` is the same bag at a second width**, so it takes the
+             * same closure and the same drop-when-empty. Two keys rather than
+             * one nested `{wide, narrow}` object, because the wide bag is what
+             * every design already carries and every design already stored —
+             * wrapping it would be a migration over every saved Optin to
+             * express a key most designs never set.
+             */
+            if ($key === 'tokens' || $key === 'narrow') {
                 $tokens = $this->tokens($node[$key]);
 
                 if ($tokens !== []) {

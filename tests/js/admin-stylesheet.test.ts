@@ -1,5 +1,5 @@
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { readdirSync, readFileSync } from 'node:fs';
+import { join, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 /**
@@ -26,7 +26,7 @@ import { describe, expect, it } from 'vitest';
  * Vitest 4's Browser Mode is what closes the gap properly, in a pull request of
  * its own.
  */
-const CSS = readFileSync(resolve(import.meta.dirname, '../../resources/admin/src/index.css'), 'utf8');
+const CSS = ['index.css', 'builder/editor.css'].map(file => readFileSync(resolve(import.meta.dirname, '../../resources/admin/src', file), 'utf8')).join('\n');
 
 describe('the token row', () => {
   /**
@@ -265,7 +265,6 @@ describe('the rules panel against the editor’s blanket rules', () => {
     // asked for `margin: 0` and rendered 12px; `.wconvert-locked__list` asked
     // for no marker indent and rendered 21px of one.
     '.wconvert-rules',
-    '.wconvert-picker__empty',
     '.wconvert-allowance',
   ];
 
@@ -386,18 +385,44 @@ describe('the direction convention', () => {
 });
 
 describe('the type scale', () => {
-  /** The six, and the modifiers Tailwind pairs with each. */
-  const ROLES = ['micro', 'note', 'body', 'heading', 'title', 'figure'];
+  /**
+   * The eight, and the modifiers Tailwind pairs with each.
+   *
+   * ==========================================================================
+   * THIS ARRAY IS WHERE A NEW ROLE IS DECIDED, WHICH IS WHY IT IS A LIST.
+   * ==========================================================================
+   * ADR 0037 says a role past the original six is *"a decision rather than a
+   * class"*. Nothing about this test inspects a VALUE — it asserts only that
+   * every size in the stylesheet is spelled as one of the names below — so the
+   * cost of a seventh is exactly one line here, and that is deliberate: the
+   * line is the decision, taken once, in the open, instead of a `0.6875rem`
+   * appearing at a call site and never being seen again.
+   *
+   * `label` (11) and `meta` (9) were that decision, taken for the Design tab's
+   * three panes: a block's kind, a token's name and a check's word are
+   * furniture on a work surface rather than copy, and at `micro` the tree ran
+   * five block names under their own row menu. They are NOT a floor being
+   * lowered — ADR 0038 sets contrast ratios, pointer targets and viewports, and
+   * has never set a minimum font size.
+   */
+  const ROLES = ['meta', 'label', 'micro', 'note', 'body', 'heading', 'title', 'figure'];
 
   /** Declarations only — a comment naming a size is prose about one. */
   const DECLARATIONS = CSS.replace(/\/\*[\s\S]*?\*\//g, '');
 
   /**
-   * `inherit` is the seventh legal value and is not a size: the rule forcing it
+   * `inherit` is the ninth legal value and is not a size: the rule forcing it
    * over wp-admin's `<p>` and `<td>` exists precisely so a role stated as a
    * utility elsewhere is the one that wins.
+   *
+   * **`!important` is allowed after the value and is not part of it.** A size
+   * that has to beat a vendored utility takes the flag — Tailwind's are
+   * `!important` and for important declarations the cascade runs layers in
+   * reverse, so `text-sm` on `TabsTrigger` cannot be overridden without one
+   * (ADR 0042 rule 6). What this test is about is which ROLE was spelled, and
+   * the flag says nothing about that.
    */
-  it('states every font-size as one of the six roles, or as inherit', () => {
+  it('states every font-size as one of the eight roles, or as inherit', () => {
     const sizes = [...DECLARATIONS.matchAll(/font-size:\s*([^;}]+)/g)].map(([, value]) =>
       value.trim(),
     );
@@ -406,13 +431,13 @@ describe('the type scale', () => {
 
     for (const size of sizes) {
       expect(size, 'a size off the scale').toMatch(
-        new RegExp(`^(inherit|var\\(--text-(${ROLES.join('|')})\\))$`),
+        new RegExp(`^(inherit|var\\(--text-(${ROLES.join('|')})\\))( !important)?$`),
       );
     }
   });
 
   /**
-   * The names this admin owns are the six. `--text-sm` and its siblings resolve
+   * The names this admin owns are the eight. `--text-sm` and its siblings resolve
    * — to Tailwind's scale, silently — so a fallback beside one never fires and
    * the mistake looks like a careful line.
    */
@@ -426,3 +451,199 @@ describe('the type scale', () => {
     }
   });
 });
+
+/**
+ * ============================================================================
+ * A CLASS WITH NO RULE IS A COMPONENT THAT RENDERS AND LOOKS LIKE A MISTAKE.
+ * ============================================================================
+ * ADR 0062's work wrote `.wconvert-structure__head`, `.wconvert-checks`,
+ * `.wconvert-meter`, `.wconvert-linkish` and three `.wconvert-scope__*` rows,
+ * and a later rewrite of that region of `index.css` deleted every one of them
+ * before they were ever committed. The Design tab's own header shipped as a
+ * bulleted `<ul>` of check chips with no pass/fail colour beside an unstyled
+ * meter, and nothing anywhere failed.
+ *
+ * **The sharpest one did not even render unstyled.** The chip was
+ * `.wconvert-check`, which is `#wconvert-admin .wconvert-check` — the LeadLog
+ * checkbox row, written for something else entirely — so it took a rule that
+ * fit badly and looked deliberate.
+ *
+ * So the set is DERIVED rather than listed. A list is the thing that was lost:
+ * whoever deletes the next region will not come here to remove its name.
+ *
+ * **A class beside a utility is exempt, and that is the file's own
+ * convention** — `.wconvert-starter__name text-body font-semibold` states its
+ * type as a utility because Tailwind's are `!important` (ADR 0035) and a
+ * stylesheet rule for it could not win. What this catches is the other case:
+ * a `wconvert-` class carrying the whole of a component's look, alone in its
+ * `className`, with nothing in the stylesheet behind it.
+ */
+describe('every class the builder renders', () => {
+  const BUILDER = resolve(import.meta.dirname, '../../resources/admin/src/builder');
+
+  /** Every class name that is the WHOLE of what a `className` states. */
+  const RENDERED = new Set<string>();
+
+  for (const file of sources(BUILDER)) {
+    const source = readFileSync(file, 'utf8');
+
+    /*
+      Both shapes: the bare attribute, and an expression — which covers
+      `cn('a', flag && 'b')` and a template literal with one hole in it. The
+      `id`, `htmlFor` and `name` attributes are deliberately NOT read: half the
+      `wconvert-` strings in the rules panel are element ids, and an id needs no
+      rule.
+    */
+    for (const [, quoted, braced] of source.matchAll(
+      /className=(?:"([^"]*)"|\{((?:[^{}]|\{[^{}]*\})*)\})/g,
+    )) {
+      const literals =
+        quoted !== undefined
+          ? [quoted]
+          : [...(braced ?? '').matchAll(/(['"`])([^'"`\n]*)\1/g)].map(([, , text]) => text);
+
+      for (const literal of literals) {
+        const names = literal.split(/\s+/).filter((name) => name !== '');
+
+        // A utility beside it means the look is stated there, not here.
+        if (names.some((name) => !name.startsWith('wconvert-'))) {
+          continue;
+        }
+
+        for (const name of names) {
+          // `wconvert-rule-${id}` leaves a prefix, which is not a class.
+          if (!name.endsWith('-')) {
+            RENDERED.add(name);
+          }
+        }
+      }
+    }
+  }
+
+  const STYLED = new Set([...CSS.matchAll(/\.(wconvert-[\w-]+)/g)].map(([, name]) => name));
+
+  it('reads a set worth asserting over', () => {
+    expect(RENDERED.size).toBeGreaterThan(40);
+  });
+
+  it.each([...RENDERED].sort())('has a rule for .%s', (name) => {
+    expect(STYLED.has(name), `.${name} is rendered by the builder and styled nowhere`).toBe(true);
+  });
+});
+
+describe('the builder card’s one inset', () => {
+  /**
+   * **The card's left edge stepped in and out five times on the way down** —
+   * 16 → 12 → 12 → 10 → 8 → 12 → 12, plus `.wconvert-scope__clipboard` hanging
+   * 4px OUTSIDE its pane on a `calc(var(--spacing) * -3)` whose variable this
+   * file never declared. `.wconvert-pane__body` states no padding on purpose
+   * (*"each pane's contents own their own padding"*), which is right, and is
+   * what let three children each pick their own number.
+   *
+   * **Derived from the selector rather than from a list**, because a list is
+   * the thing that rots: a band added next year is caught without anybody
+   * remembering to add it here. `\b` is what keeps the family names out —
+   * `_` is a word character, so `.wconvert-checks__chip` and
+   * `.wconvert-block__label` do not match while `.wconvert-checks` and
+   * `.wconvert-block[data-hidden]` do.
+   *
+   * `padding-block` is deliberately not checked. The gutter is an INSET; how
+   * much air a band has above and below it is a question about that band.
+   *
+   * **The band has to be the selector's SUBJECT**, not merely somewhere in it.
+   * `.wconvert-block[data-step='true'] .wconvert-block__name` states a
+   * `padding-inline-start` that stands in for the grip a step's row does not
+   * draw — that is a fact about the NAME, and a rule about the row's inset has
+   * no business claiming it.
+   */
+  const BAND =
+    String.raw`\.wconvert-(?:hint|said|stored|checks|pane__head|inspector__head|inspector__body|block)\b`;
+  const SUBJECT = new RegExp(String.raw`${BAND}[^\s>+~]*$`);
+
+  const RULES = [
+    ...CSS.replace(/\/\*[\s\S]*?\*\//g, '').matchAll(
+      new RegExp(String.raw`(?:^|[{};])([^{};]*${BAND}[^{};]*)\{([^{}]*)\}`, 'g'),
+    ),
+  ]
+    .map(([, selector, body]) => ({ selector: selector.trim(), body }))
+    .filter(({ selector }) =>
+      selector.split(',').some((one) => SUBJECT.test(one.trim().replace(/\s*([>+~])\s*/g, '$1'))),
+    );
+
+  it('reads a set worth asserting over', () => {
+    expect(RULES.length).toBeGreaterThan(5);
+  });
+
+  it.each(RULES.map(({ selector, body }) => [selector, body]))(
+    'spends the gutter rather than a number of its own: %s',
+    (selector, body) => {
+      const insets = [
+        ...body.matchAll(/(?:^|[\s;])(padding(?:-inline(?:-start|-end)?)?)\s*:\s*([^;}]*)/g),
+      ];
+
+      for (const [, property, value] of insets) {
+        // `padding: 0` states no inset at all — a list reset, not a competing
+        // number — and the gutter is what a band spends when it spends one.
+        if (/^0$/.test(value.trim())) {
+          continue;
+        }
+
+        expect(
+          value.includes('var(--wconvert-gutter)'),
+          `${selector} declares ${property}: ${value.trim()} — a band of the builder card spells its inset var(--wconvert-gutter)`,
+        ).toBe(true);
+      }
+    },
+  );
+
+  /**
+   * The one that was not a step but a bug: `--spacing` is declared nowhere in
+   * this file, so it resolved to Tailwind's default `0.25rem` and the copy and
+   * paste buttons hung 4px outside the pane they belong to.
+   */
+  it('states no length against a variable it never declares', () => {
+    expect(CSS).not.toContain('var(--spacing)');
+  });
+});
+
+describe('the preview’s three out-of-flow containers', () => {
+  /**
+   * **Two translucent bands lay across the rendered design, and they were the
+   * mock page's own ghosts.** `.wconvert-site__ghost` carries `opacity: 0.55`,
+   * and an element with `opacity < 1` paints as if it were `position:
+   * relative; z-index: 0` — the same stacking level as a `position: absolute`
+   * slot with `z-index: auto`. Ties there break by tree order, and `MockPage`
+   * renders two ghosts AFTER the slot on purpose, so an `inline` Optin has page
+   * content below it as well as above.
+   *
+   * On a real page the container is a `<dialog>` in the top layer and none of
+   * this can happen. The preview mounts `inline` and the admin draws the
+   * container itself, so the admin has to say the one thing the top layer was
+   * saying for it. Deleting the `z-index` brings the bands straight back, and
+   * nothing else in this project would notice.
+   */
+  it.each(['popup', 'floating_bar', 'slide_in'])(
+    'lifts the %s slot above the page it is drawn over',
+    (type) => {
+      const rule = new RegExp(
+        String.raw`\.wconvert-site\[data-display-type='${type}'\] \.wconvert-site__slot\s*\{([^}]*)\}`,
+      ).exec(CSS)?.[1];
+
+      expect(rule).toBeDefined();
+      expect(rule).toMatch(/z-index:\s*[1-9]/);
+    },
+  );
+});
+
+/** Every `.ts`/`.tsx` under a directory, depth first. */
+function sources(directory: string): string[] {
+  return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+    const path = join(directory, entry.name);
+
+    if (entry.isDirectory()) {
+      return sources(path);
+    }
+
+    return /\.tsx?$/.test(entry.name) ? [path] : [];
+  });
+}

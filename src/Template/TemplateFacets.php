@@ -36,26 +36,22 @@ defined('ABSPATH') || exit;
  * cannot see a string inside JSON.
  *
  * ============================================================================
- * SIX ARE DERIVED. THREE ARE OFFERED AS FILTERS.
+ * THE INDEX DESCRIBES THE DESIGN WITHOUT DOWNLOADING ITS TREE.
  * ============================================================================
- * `shape`, `captures` and `has_image` are the three someone comparing designs
- * actually uses. The other three are derived and travel, and none of them is a
- * chip:
+ * `shape`, `captures` and `has_image` have vocabulary-backed filter choices.
+ * The other facts retain their own jobs:
  *
- * - `act` is not a filter and **is no longer the refusal marking either**. It
- *   said *"a design converting on a click cannot serve a Goal that counts
- *   submissions"*, and no Goal counts an act any more (ADR 0059) — the design
- *   declares it, alone. It still travels, because the picker says *"this
- *   design counts click-throughs instead of submissions, including the ones
- *   this Optin has already counted"* before the switch, and because an A/B
- *   arm's card is marked where its siblings convert the other way. Both are
- *   statements about the DESIGN in hand rather than about a Goal.
+ * - `act` lets the picker distinguish forms from links. It also warns when a
+ *   switch changes what existing conversions mean, and refuses an A/B arm
+ *   whose siblings convert the other way. None of these declares a Goal's
+ *   converting act: the design owns that fact (ADR 0059).
  * - `asks_consent` is not something a merchant browses by.
  * - `display_type` is the Optin's, and the gallery is already filtered on it —
  *   a question asked twice.
  *
- * That is ADR 0042 rule 2 applied to a toolbar: *does knowing this change what
- * they do next?*
+ * Pictures include image nodes and URL backgrounds on boxes that paint them.
+ * A gradient is decoration rather than a photograph; a background token on a
+ * layout that does not paint backgrounds is not a visible picture either.
  *
  * @since 0.1.0
  */
@@ -82,9 +78,10 @@ final class TemplateFacets
      *
      * @param array{steps: list<mixed>}|array<string, mixed> $tree A validated template tree.
      * @param list<string> $fields What a `field` node may capture, from the manifest.
+     * @param array<string, string> $tokens The design's tokens, painted on the renderer root.
      * @return array{act: string|null, captures: list<string>, shape: string|null, has_image: bool, asks_consent: bool}
      */
-    public static function of(array $tree, array $fields): array
+    public static function of(array $tree, array $fields, array $tokens = []): array
     {
         $acts = ConvertingAct::offeredIn($tree);
         $found = self::walk($tree);
@@ -119,7 +116,7 @@ final class TemplateFacets
              * that a design with no shape.
              */
             'shape' => $found['shape'],
-            'has_image' => $found['has_image'],
+            'has_image' => $found['has_image'] || self::hasBackgroundPicture($tokens),
             'asks_consent' => $found['asks_consent'],
         ];
     }
@@ -220,7 +217,13 @@ final class TemplateFacets
             $found['fields'][] = $node['name'];
         }
 
-        if ($type === 'image') {
+        // The renderer paints background pictures on its root and on panel
+        // and media boxes. A bag on a row or text node alone paints no image;
+        // treating every bg-image token as visible would invent a feature.
+        if ($type === 'image' || (
+            in_array($type, ['panel', 'media'], true)
+            && (self::hasBackgroundPicture($node['tokens'] ?? []) || self::hasBackgroundPicture($node['narrow'] ?? []))
+        )) {
             $found['has_image'] = true;
         }
 
@@ -231,5 +234,13 @@ final class TemplateFacets
         foreach (TemplateTree::childrenOf($node) as $child) {
             self::collect($child, $found);
         }
+    }
+
+    /** A colour wash or `none` is not a picture. Tokens have already been validated. */
+    private static function hasBackgroundPicture(mixed $tokens): bool
+    {
+        $image = is_array($tokens) ? ($tokens['bg-image'] ?? null) : null;
+
+        return is_string($image) && preg_match('/^url\s*\(/i', trim($image)) === 1;
     }
 }

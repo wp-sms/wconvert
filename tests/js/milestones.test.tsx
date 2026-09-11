@@ -254,4 +254,18 @@ describe('what was recorded', () => {
       screen.getByText('A label from the server, from “welcome-discount”, on 2026-03-06'),
     ).toBeInTheDocument();
   });
+  it('does not claim nothing was published when impressions are recorded', async () => {
+    api.readMilestones.mockResolvedValue({ ...NOTHING, first_impression: '2026-03-05' });
+    render(<Milestones />);
+    expect(await screen.findByText('Shown, and nobody has converted yet')).toBeInTheDocument();
+    expect(screen.queryByText('Nothing is live yet')).not.toBeInTheDocument();
+  });
+
+  it('uses a recorded conversion without inventing missing earlier dates', () => {
+    const partial = { ...WORKING, first_publish: null, first_impression: null };
+    expect(real.stuckAt(partial)).toBeNull();
+    expect(partial.first_publish).toBeNull();
+    expect(partial.first_impression).toBeNull();
+  });
+
 });

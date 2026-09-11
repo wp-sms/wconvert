@@ -127,13 +127,13 @@
             "type": "heading",
             "id": "n11",
             "role": "success_headline",
-            "text": "Your code is on its way"
+            "text": "Request received"
           },
           {
             "type": "text",
             "id": "n12",
             "role": "success_body",
-            "text": "Check your inbox — it works on everything, once."
+            "text": "Thank you for requesting the welcome offer."
           }
         ]
       }

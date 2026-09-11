@@ -125,23 +125,6 @@ final class TestReport
     }
 
     /**
-     * **Nowhere to send it**, which is a question rather than a fault.
-     *
-     * The address defaults to the pressing merchant's own, and a WordPress
-     * account is allowed to have none — a CLI or cron context has no user at
-     * all. Left unguarded the merchant would read a type's own *"the Lead
-     * carries no email address"*, which is true, internal, and says nothing
-     * about the button they just pressed (ADR 0042).
-     */
-    public static function noAddress(): self
-    {
-        return new self(PushOutcome::Skipped, __(
-            'There is no address to send the test to. Add one to your WordPress profile, or give one here.',
-            'wconvert'
-        ));
-    }
-
-    /**
      * **A type this install cannot run**, which is the third state and not a
      * failure.
      *

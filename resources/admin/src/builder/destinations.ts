@@ -1,6 +1,7 @@
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { listWithAnd } from './rules/sentence';
 import type { Destination, DestinationType } from '../destinations/api';
+import { compatibilityProblems, type CapturedField } from '../destinations/requirements';
 
 /**
  * What the builder says about this [[Optin]]'s [[Destination]]s: where the
@@ -148,7 +149,7 @@ export function hintSaid(
       ? sprintf(
           /* translators: %s: one or more destination types, e.g. “WP SMS”. */
           __(
-            'The playbook this started from works well with a destination like %s. Add one on the Destinations screen.',
+            'The playbook this started from works well with a destination like %s. Add a destination here.',
             'wconvert',
           ),
           listWithAnd(named),
@@ -164,7 +165,7 @@ export function hintSaid(
     ? sprintf(
         /* translators: 1: what it captures, e.g. “Email address”. 2: destination types, e.g. “WP SMS”. */
         __(
-          'The playbook this started from captures %1$s, and works well with a destination like %2$s. Add one on the Destinations screen.',
+          'The playbook this started from captures %1$s, and works well with a destination like %2$s. Add a destination here.',
           'wconvert',
         ),
         listWithAnd(captured),
@@ -209,6 +210,7 @@ export interface DestinationsSaid {
 export function destinationsSaid(
   bound: readonly string[],
   destinations: readonly Destination[] | null,
+  captures?: readonly CapturedField[],
 ): DestinationsSaid {
   if (bound.length === 0) {
     return {
@@ -233,6 +235,7 @@ export function destinationsSaid(
   const problems: string[] = [];
 
   for (const destination of found) {
+    if (captures !== undefined) problems.push(...compatibilityProblems(destination, captures));
     if (destination.availability !== 'ready') {
       problems.push(
         sprintf(

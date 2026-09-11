@@ -1,5 +1,5 @@
 import type { Template } from './types';
-import { DOCUMENT_CSS, SHADOW_CSS } from './css';
+import { A_DESIGNS_OWN_WIDTH, DOCUMENT_CSS, SHADOW_CSS } from './css';
 import { COUNTDOWN_SLOT, render } from './render';
 
 export { render, SHADOW_CSS };
@@ -62,9 +62,9 @@ export const DOCUMENT_STYLE_ID = 'wconvert-style';
 const DIALOG_ARMOUR: Readonly<Record<string, string>> = {
   position: 'fixed',
   inset: '0',
-  'inline-size': 'auto',
-  'max-inline-size': 'none',
-  'block-size': 'auto',
+  'inline-size': `var(--wc-width,${A_DESIGNS_OWN_WIDTH})`,
+  'max-inline-size': 'calc(100% - 2rem)',
+  'block-size': 'fit-content',
   'max-block-size': 'none',
   margin: 'auto',
   padding: '0',
@@ -107,6 +107,15 @@ export interface MountOptions {
    * which the container cannot know (ADR 0025).
    */
   readonly onConvert?: () => void;
+  /**
+   * Stamp every element with its own address in the tree.
+   *
+   * The BUILDER's, and nobody else's: it is what makes the preview an editing
+   * surface for a box that carries no [[Slot Role]] — a `panel`, a `split` —
+   * and it is bytes on every element of every design on a page that has nothing
+   * to select. {@see \@renderer/render's RenderOptions}.
+   */
+  readonly paths?: boolean;
 }
 
 export interface Mounted {
@@ -200,7 +209,7 @@ export function shell(template: Template, chrome: HTMLElement | null, options: M
   style.textContent = SHADOW_CSS;
   shadow.appendChild(style);
 
-  let root = render(template.tree, template.tokens);
+  let root = render(template.tree, template.tokens, 0, { paths: options.paths });
 
   bind(root);
   shadow.appendChild(root);
@@ -275,7 +284,7 @@ export function shell(template: Template, chrome: HTMLElement | null, options: M
       return root;
     },
     step(index: number): HTMLElement {
-      const next = render(template.tree, template.tokens, index);
+      const next = render(template.tree, template.tokens, index, { paths: options.paths });
 
       bind(next);
       root.replaceWith(next);
@@ -326,7 +335,15 @@ function popup(options: MountOptions): Mounted {
     return NOTHING;
   }
   const chrome = closeButton(() => dialog.close());
-  const parts = shell(options.template, chrome, options);
+  // The dialog resolves the design width against the viewport. Its inner root
+  // fills that box; resolving a percentage there again would shrink it twice.
+  // This render-only copy also applies to later screens without changing any
+  // authored node scope, narrow override, or stored template token.
+  const parts = shell(
+    { ...options.template, tokens: { ...options.template.tokens, width: '100%' } },
+    chrome,
+    options,
+  );
 
   dialog.className = 'wconvert-dialog';
   dialog.appendChild(parts.host);
@@ -335,9 +352,14 @@ function popup(options: MountOptions): Mounted {
     dialog.style.setProperty(property, value, 'important');
   }
 
-  // The backdrop cannot see the tokens, which live one element inside a shadow
-  // root it is not part of, so its colour is handed to it here.
+  // The backdrop cannot see tokens inside the shadow boundary.
   const backdrop = options.template.tokens.backdrop;
+
+  // Container-size containment makes the inner root's intrinsic width zero.
+  // The dialog owns the explicit design width; the form inside fills it.
+  if (options.template.tokens.width !== undefined) {
+    dialog.style.setProperty('--wc-width', options.template.tokens.width);
+  }
 
   if (backdrop !== undefined) {
     dialog.style.setProperty('--wc-backdrop', backdrop);

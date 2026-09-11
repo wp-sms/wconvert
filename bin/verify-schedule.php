@@ -54,6 +54,8 @@ use WConvert\Optin\PublishedSet;
 use WConvert\Optin\Schedule;
 use WConvert\Rules\RuleVocabulary;
 use WConvert\Storage\WpOptionStore;
+use WConvert\Template\TemplateLibrary;
+use WConvert\Template\TemplateVocabulary;
 
 if (!defined('ABSPATH')) {
     fwrite(STDERR, "Run this through WordPress: wp eval-file bin/verify-schedule.php\n");
@@ -100,6 +102,7 @@ global $wpdb;
 $options = new WpOptionStore();
 $db = new WpdbConnection($wpdb);
 $optins = new OptinRepository($db, new PublishedSet($options), RuleVocabulary::fromManifest(), new MilestoneStore($options));
+$design = TemplateLibrary::fromDirectory(TemplateVocabulary::fromManifest())->snapshotInto(['template_id' => 'offer-panel']);
 
 (new Installer($options, $optins))->install();
 
@@ -150,6 +153,7 @@ echo "\nThe site's own timezone, read at every rebuild\n";
 $retimezone('Asia/Kolkata');
 
 $sale = $optins->create('Black Friday', 'promote_offer', [
+    'template' => $design['template'],
     'rules' => [['type' => 'page_load']],
     'display_type' => 'popup',
     // Far enough ahead that "not started" is not a race with the clock.
@@ -208,6 +212,7 @@ $verify->check(
 echo "\nA window that has closed\n";
 
 $over = $optins->create('Last summer', 'promote_offer', [
+    'template' => $design['template'],
     'rules' => [['type' => 'page_load']],
     'display_type' => 'popup',
     'starts_at' => '2020-06-01 00:00',

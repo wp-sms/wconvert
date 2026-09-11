@@ -32,8 +32,8 @@ return [
         'email_label' => __('Email address', 'wconvert'),
         'email_placeholder' => __('you@example.com', 'wconvert'),
         'cta_label' => __('Subscribe', 'wconvert'),
-        'success_headline' => __('Subscribed', 'wconvert'),
-        'success_body' => __('The next issue will be with you on Friday.', 'wconvert'),
+        'success_headline' => __('Request received', 'wconvert'),
+        'success_body' => __('Thank you for asking to receive the next issue.', 'wconvert'),
     ],
     // Sixty per cent, rather than the fifty `guide-download` uses: this offers
     // nothing in exchange, so it waits until a visitor is further in.

@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ruleTypes } from './support/rule-types';
@@ -185,7 +185,7 @@ beforeEach(() => {
   builder.getRules.mockResolvedValue(ruleTypes());
   builder.saveOptin.mockImplementation(
     (_id: string, _name: string, config: Record<string, unknown>, goal?: string) =>
-      Promise.resolve({ ...optin(), config, ...(goal === undefined ? {} : { goal }) }),
+      Promise.resolve({ ...optin(), name: _name, config, ...(goal === undefined ? {} : { goal }) }),
   );
   templates.listTemplates.mockResolvedValue({
     templates: [CARD],
@@ -211,16 +211,19 @@ beforeEach(() => {
 const open = () => render(<OptinBuilder id={ID} onClose={vi.fn()} />);
 
 /** Open the picker from the band. */
-const changeGoal = async () =>
-  userEvent.click(await screen.findByRole('button', { name: 'Change goal' }));
+const changeGoal = async () => {
+  await userEvent.click(await screen.findByRole('button', { name: 'Optin details' }));
+  await userEvent.click(await screen.findByRole('button', { name: 'Change goal' }));
+};
 
 // =============================================================================
 // THE LINE IN THE BAND.
 // =============================================================================
 
-describe('the goal in the page-header band', () => {
+describe('the goal in Optin details', () => {
   it('says what this Optin is for, and what its number is called', async () => {
     open();
+    await userEvent.click(await screen.findByRole('button', { name: 'Optin details' }));
 
     expect(await screen.findByText('Grow my email list · counts Conversions')).toBeInTheDocument();
   });
@@ -235,8 +238,9 @@ describe('the goal in the page-header band', () => {
     goals.listGoals.mockReturnValue(new Promise(() => undefined));
 
     open();
+    await userEvent.click(await screen.findByRole('button', { name: 'Optin details' }));
 
-    await screen.findByRole('tab', { name: 'Design' });
+
 
     const line = document.querySelector('.min-h-\\[1lh\\]');
 
@@ -254,6 +258,7 @@ describe('the goal in the page-header band', () => {
     goals.listGoals.mockRejectedValue(new Error('nope'));
 
     open();
+    await userEvent.click(await screen.findByRole('button', { name: 'Optin details' }));
 
     expect(await screen.findByText('grow_email_list')).toBeInTheDocument();
   });
@@ -267,6 +272,7 @@ describe('the goal in the page-header band', () => {
     goals.listGoals.mockResolvedValue([GOALS[0]]);
 
     open();
+    await userEvent.click(await screen.findByRole('button', { name: 'Optin details' }));
 
     await screen.findByText('Grow my email list · counts Conversions');
 
@@ -403,10 +409,10 @@ describe('a goal that collects contacts, over a design that asks for nothing', (
    * now, and honestly counts click-throughs; what it will never do is collect
    * an address, and no other surface in the product would mention it.
    *
-   * A sentence in the Summary rather than a refusal: the Optin is not broken,
+   * A sentence in the launch review rather than a refusal: the Optin is not broken,
    * it is measuring something other than what the merchant asked for.
    */
-  it('is flagged in the Summary, and still saves', async () => {
+  it('is flagged in the launch review and remains publishable', async () => {
     builder.getOptin.mockResolvedValue(
       optin({
         config: { template_id: 'offer-panel', template: { tree: OFFER.tree, tokens: OFFER.tokens } },
@@ -415,10 +421,11 @@ describe('a goal that collects contacts, over a design that asks for nothing', (
 
     open();
 
-    await userEvent.click(await screen.findByRole('button', { name: /thing to fix/ }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Review & publish' }));
 
     expect(await screen.findByText(/will never collect any/)).toBeInTheDocument();
     expect(screen.getByText(/collects contacts/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Publish Optin' })).toBeEnabled();
   });
 
   /** And a goal whose product IS the click-through says nothing at all. */
@@ -432,8 +439,9 @@ describe('a goal that collects contacts, over a design that asks for nothing', (
 
     open();
 
-    expect(await screen.findByRole('button', { name: 'Summary' })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /thing to fix/ })).toBeNull();
+    await userEvent.click(await screen.findByRole('button', { name: 'Review & publish' }));
+    expect(screen.queryByText(/will never collect any/)).toBeNull();
+    expect(screen.getByRole('button', { name: 'Publish Optin' })).toBeEnabled();
   });
 });
 
@@ -455,12 +463,12 @@ describe('confirming the change', () => {
    * — it is a column. That is the exception the structure editor's amendment to
    * ADR 0039 buys for a design switch and cannot buy here.
    */
-  it('says the whole history moves with it, and that it cannot be undone', async () => {
+  it('says the whole history moves with it, and that Undo cannot reverse the saved change', async () => {
     open();
     await pick('Promote a sale or offer');
 
     expect(await screen.findByText(/whole history moves with it/)).toBeInTheDocument();
-    expect(screen.getByText(/cannot be undone/)).toBeInTheDocument();
+    expect(screen.getByText(/Undo cannot reverse this saved change/)).toBeInTheDocument();
   });
 
   /**
@@ -472,11 +480,54 @@ describe('confirming the change', () => {
   it('sends the goal beside the config the merchant is looking at', async () => {
     open();
     await pick('Promote a sale or offer');
-    await userEvent.click(screen.getByRole('button', { name: 'Move it' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save draft and change goal' }));
 
     expect(builder.saveOptin).toHaveBeenCalledTimes(1);
     expect(builder.saveOptin.mock.calls[0][3]).toBe('promote_offer');
     expect(builder.saveOptin.mock.calls[0][2]).toMatchObject({ template_id: 'centred-card' });
+  });
+
+  it('discloses that confirmation also saves the current name and draft, then sends that unsaved name', async () => {
+    open();
+    await userEvent.type(await screen.findByRole('textbox', { name: 'Name' }), ' updated');
+    await pick('Promote a sale or offer');
+    const confirm = screen.getByRole('button', { name: 'Save draft and change goal' });
+    expect(confirm).toHaveAccessibleDescription(/current name and all draft edits, including design, display rules and destinations.*does not publish/);
+    expect(builder.saveOptin).not.toHaveBeenCalled();
+    await userEvent.click(confirm);
+    expect(builder.saveOptin).toHaveBeenCalledTimes(1);
+    expect(builder.saveOptin.mock.calls[0][1]).toBe('Welcome discount updated');
+    expect(builder.saveOptin.mock.calls[0][2]).toMatchObject({ template: { tree: ENTRY.tree, tokens: ENTRY.tokens } });
+    expect(builder.saveOptin.mock.calls[0][3]).toBe('promote_offer');
+  });
+
+  it('starts a fresh Undo history only after a successful Goal save', async () => {
+    open();
+    await userEvent.type(await screen.findByRole('textbox', { name: 'Name' }), ' revised');
+    expect(screen.getByRole('button', { name: 'Undo draft edit' })).toBeEnabled();
+    await pick('Promote a sale or offer');
+    const confirm = screen.getByRole('button', { name: 'Save draft and change goal' });
+    expect(confirm).toHaveAccessibleDescription(/clears the current Undo and Redo history/);
+    await userEvent.click(confirm);
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Undo draft edit' })).toBeDisabled());
+    expect(screen.getByRole('button', { name: 'Redo draft edit' })).toBeDisabled();
+    expect(builder.saveOptin).toHaveBeenCalledTimes(1);
+    await userEvent.type(screen.getByRole('textbox', { name: 'Name' }), ' again');
+    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
+    expect(screen.getByRole('textbox', { name: 'Name' })).toHaveValue('Welcome discount revised');
+    expect(builder.saveOptin).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps Undo available after a refused Goal save', async () => {
+    builder.saveOptin.mockRejectedValue(new Error('The goal change was refused.'));
+    open();
+    await userEvent.type(await screen.findByRole('textbox', { name: 'Name' }), ' revised');
+    await pick('Promote a sale or offer');
+    await userEvent.click(screen.getByRole('button', { name: 'Save draft and change goal' }));
+    await screen.findByText('The goal change was refused.');
+    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
+    expect(screen.getByRole('textbox', { name: 'Name' })).toHaveValue('Welcome discount');
+    expect(builder.saveOptin).toHaveBeenCalledTimes(1);
   });
 
   it('writes nothing when the merchant backs out', async () => {

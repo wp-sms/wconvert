@@ -14,13 +14,13 @@ so if the two ever disagree, the code is right and this is out of date.
 
 Three bands, and they are the whole page:
 
-1. **Brand band** — petrol, carries the wordmark and, on a section screen, the
+1. **Brand band** — white with petrol accents, carries the wordmark and, on a section screen, the
    four-item nav.
-2. **Title band** — white, carries the `h1`, one line of description, and the
+2. **Title band** — pale, carries the `h1`, one line of description, and the
    page actions. Present on a section screen; absent inside the builder.
 3. **`main`** — the regions.
 
-All three read one width token: `--wconvert-measure`, **72rem** by default and
+All three read one width token: `--wconvert-measure`, **80rem** on reading screens and
 **90rem** under `data-measure="wide"`. It is set once on the app root. A screen
 that wants to be wide asks once; a region never asks.
 
@@ -138,7 +138,7 @@ it (`tests/js/admin-overlay-motion.test.ts`).
 
 `shell/DataTable` is what list screens render — semantic roles, a `data-label`
 on every cell, `micro` uppercase headers, tabular end-aligned numbers. Below
-**639px** the whole table restacks into cards and those labels are what each
+**900px and below** the whole table restacks into cards and those labels are what each
 value is read against. (782px is the *builder's* floor and a different number.)
 
 Row actions are ghost `icon-sm` buttons in a `1%` column. Past two, use a
@@ -393,7 +393,7 @@ over `index.css`. That pair is the guard.
 ## 16. Responsive
 
 **Every table goes through `shell/DataTable`**, whose `data-label` is enforced
-by the prop type — so the below-639px restack into row-cards cannot be
+by the prop type — so the 900px-and-below restack into row-cards cannot be
 forgotten.
 
 **A control strip wraps and a control's label wraps with it.** The height in the

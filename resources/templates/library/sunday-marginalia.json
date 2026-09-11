@@ -1,0 +1,258 @@
+{
+  "id": "sunday-marginalia",
+  "name": "Sunday marginalia",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#fbf7ed",
+    "fg": "#392c2b",
+    "muted": "#70605b",
+    "accent": "#632e36",
+    "accent-fg": "#fffcf6",
+    "border": "#d6c7b9",
+    "input-bg": "#fffcf6",
+    "font": "'DM Sans', system-ui, sans-serif",
+    "heading-font": "'Instrument Serif', Georgia, serif",
+    "heading-size": "1.94rem",
+    "heading-weight": "400",
+    "tracking": "-0.025em",
+    "text-size": "0.81rem",
+    "leading": "1.6",
+    "radius": "0.06rem",
+    "pad": "0",
+    "gap": "0",
+    "width": "28.38rem",
+    "align": "center",
+    "shadow": "0 25px 50px -30px rgba(79, 45, 45, 0.46), 0 5px 13px -10px rgba(79, 45, 45, 0.2)",
+    "backdrop": "rgba(57, 44, 43, 0.5)"
+  },
+  "tree": {
+    "steps": [
+      {
+        "type": "panel",
+        "tokens": {
+          "pad": "2.25rem 2.38rem 1.75rem",
+          "gap": "0.9rem"
+        },
+        "narrow": {
+          "pad": "1.88rem 1.5rem 1.5rem",
+          "heading-size": "1.78rem"
+        },
+        "children": [
+          {
+            "type": "heading",
+            "id": "n1",
+            "level": 2,
+            "role": "wordmark",
+            "text": "The Sunday Margin"
+          },
+          {
+            "type": "divider",
+            "id": "n2"
+          },
+          {
+            "type": "row",
+            "tokens": {
+              "gap": "1.25rem"
+            },
+            "children": [
+              {
+                "type": "text",
+                "id": "n3",
+                "size": "xs",
+                "role": "body",
+                "text": "A letter, not a feed"
+              },
+              {
+                "type": "text",
+                "id": "n4",
+                "size": "xs",
+                "role": "body",
+                "text": "Every other Sunday"
+              }
+            ]
+          },
+          {
+            "type": "divider",
+            "id": "n5"
+          },
+          {
+            "type": "heading",
+            "id": "n6",
+            "size": "xl",
+            "role": "headline",
+            "text": "Something worth\nslowing down for."
+          },
+          {
+            "type": "text",
+            "id": "n7",
+            "role": "body",
+            "text": "One essay on books, places and the things we nearly miss. Written by a person. Read with a cup of something."
+          },
+          {
+            "type": "panel",
+            "edges": "all",
+            "tokens": {
+              "bg": "#f7f0e1",
+              "border": "#e3d3bf",
+              "pad": "0.94rem 1rem",
+              "gap": "0.4rem",
+              "radius": "0.12rem"
+            },
+            "children": [
+              {
+                "type": "eyebrow",
+                "id": "n8",
+                "role": "eyebrow",
+                "text": "From the latest letter"
+              },
+              {
+                "type": "text",
+                "id": "n9",
+                "role": "body",
+                "text": "“The best bookshops leave a little room for getting lost.”"
+              }
+            ]
+          },
+          {
+            "type": "field",
+            "id": "n10",
+            "name": "email",
+            "label": "Email address",
+            "placeholder": "you@example.com",
+            "required": true
+          },
+          {
+            "type": "consent",
+            "id": "n11",
+            "role": "consent_text",
+            "hidden": true,
+            "text": "Send me the letter and the occasional note about it. See our %s.",
+            "link": {
+              "label": "Privacy Policy"
+            }
+          },
+          {
+            "type": "button",
+            "id": "n12",
+            "role": "cta_label",
+            "label": "Send me the next letter",
+            "action": "submit"
+          },
+          {
+            "type": "text",
+            "id": "n13",
+            "size": "s",
+            "role": "fine_print",
+            "text": "One letter every fortnight. Unsubscribe at any time."
+          }
+        ]
+      },
+      {
+        "type": "panel",
+        "tokens": {
+          "pad": "2.25rem 2.38rem 1.75rem",
+          "gap": "0.9rem"
+        },
+        "narrow": {
+          "pad": "1.88rem 1.5rem 1.5rem",
+          "heading-size": "1.78rem"
+        },
+        "children": [
+          {
+            "type": "heading",
+            "id": "n20",
+            "level": 2,
+            "role": "wordmark",
+            "text": "The Sunday Margin"
+          },
+          {
+            "type": "divider",
+            "id": "n21"
+          },
+          {
+            "type": "row",
+            "tokens": {
+              "gap": "1.25rem"
+            },
+            "children": [
+              {
+                "type": "text",
+                "id": "n22",
+                "size": "xs",
+                "role": "success_body",
+                "text": "A little room in your inbox"
+              },
+              {
+                "type": "text",
+                "id": "n23",
+                "size": "xs",
+                "role": "success_body",
+                "text": "Made for reading"
+              }
+            ]
+          },
+          {
+            "type": "divider",
+            "id": "n24"
+          },
+          {
+            "type": "image",
+            "id": "n25",
+            "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 2' fill='none'%3E%3Ccircle cx='10' cy='1' r='.95' stroke='%23c3a7a2' stroke-width='.05'/%3E%3Cpath d='m9.55 1.05.3.35.6-.7' stroke='%23632e36' stroke-width='.11'/%3E%3C/svg%3E",
+            "alt": "A tick"
+          },
+          {
+            "type": "heading",
+            "id": "n26",
+            "size": "xl",
+            "role": "success_headline",
+            "text": "There is a place\nfor you here."
+          },
+          {
+            "type": "text",
+            "id": "n27",
+            "role": "success_body",
+            "text": "We have received your request for %b. Keep a little time for yourself.",
+            "emphasis": "the Sunday letter"
+          },
+          {
+            "type": "divider",
+            "id": "n28"
+          },
+          {
+            "type": "eyebrow",
+            "id": "n29",
+            "role": "eyebrow",
+            "text": "Coming in the next letter"
+          },
+          {
+            "type": "text",
+            "id": "n30",
+            "size": "xl",
+            "role": "success_body",
+            "text": "The art of taking the long way home"
+          },
+          {
+            "type": "divider",
+            "id": "n31"
+          },
+          {
+            "type": "text",
+            "id": "n32",
+            "size": "xl",
+            "role": "success_body",
+            "text": "Thanks for the interest,\nClara"
+          },
+          {
+            "type": "text",
+            "id": "n33",
+            "size": "s",
+            "role": "fine_print",
+            "text": "A letter every fortnight. Unsubscribe at any time."
+          }
+        ]
+      }
+    ]
+  }
+}

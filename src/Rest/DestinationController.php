@@ -8,11 +8,13 @@ use WConvert\Destination\DeliveryFailures;
 use WConvert\Destination\DestinationRegistry;
 use WConvert\Destination\DestinationStore;
 use WConvert\Destination\DestinationType;
+use WConvert\Destination\DestinationUsage;
 use WConvert\Destination\HealthStore;
 use WConvert\Destination\ConfiguredTarget;
 use WConvert\Destination\PushDispatcher;
 use WConvert\Destination\PushOutcome;
 use WConvert\Destination\TestReport;
+use WConvert\Lead\Identifier;
 use WConvert\Support\Ulid;
 use WP_Error;
 use WP_REST_Request;
@@ -56,6 +58,7 @@ final class DestinationController implements RestController
         private readonly DeliveryFailures $failures,
         private readonly BulkRePush $rePush,
         private readonly PushDispatcher $dispatcher,
+        private readonly ?DestinationUsage $usage = null,
     ) {
     }
 
@@ -125,25 +128,11 @@ final class DestinationController implements RestController
                 'callback' => [$this, 'testSend'],
                 'permission_callback' => [Routes::class, 'canManage'],
                 'args' => [
-                    // **One argument, and it is an override rather than the
-                    // way in.** The address defaults to the pressing
-                    // merchant's own, which is what the button sends with; this
-                    // is how a colleague's inbox or a seed address is reached,
-                    // and it is what lets `bin/verify-destinations.php` prove a
-                    // real send on a request that has no user at all.
-                    //
-                    // There is no `phone`. A test proves the integration and
-                    // an email does that for every type WConvert has; a second
-                    // identifier nothing on the screen can supply would be a
-                    // parameter with no caller and no test.
-                    //
-                    // Sanitised on the way in, as every string arg in this REST
-                    // layer is. `format => email` is deliberately NOT declared:
-                    // it would make WordPress reject the request outright, and
-                    // what a merchant needs from a typo is the screen's own
-                    // sentence rather than a 400 with a schema error in it
-                    // (ADR 0042).
-                    'email' => ['type' => 'string', 'sanitize_callback' => 'sanitize_email'],
+                    // Explicit, never silently taken from the WordPress profile.
+                    // Identifier::email validates the same value a capture uses;
+                    // sanitizing first could turn a typo into another address.
+                    'email' => ['type' => 'string'],
+                    'interest' => ['type' => 'string'],
                 ],
             ],
         ]);
@@ -152,6 +141,13 @@ final class DestinationController implements RestController
     public function index(): WP_REST_Response
     {
         return new WP_REST_Response([
+            // A suggestion displayed before Send, not permission to send it.
+            // The suggested sample contains email only. An interest value must
+            // be entered explicitly; no answer, name or phone is fabricated.
+            'test_sample' => [
+                'email' => Identifier::email(wp_get_current_user()->user_email),
+                'fields' => ['email'],
+            ],
             'types' => array_values(array_map(
                 fn (DestinationType $type): array => [
                     'id' => $type->id(),
@@ -161,6 +157,7 @@ final class DestinationController implements RestController
                     'requires' => $type->requires()?->value,
                     'availability' => $this->registry->availabilityOf($type->id())->value,
                     'needs_connection' => $type->connectionSchema() !== null,
+                    'requirements' => $type->requirements()->toArray(),
                     // What a merchant is missing, in words. The enum's value
                     // is a slug — interpolating `wsms` into "Needs %s on this
                     // site" produces copy no merchant can act on, and a
@@ -314,12 +311,10 @@ final class DestinationController implements RestController
      * integration ({@see \WConvert\Destination\PushSubject}). What differs is
      * where the values came from, and nothing else.
      *
-     * The address defaults to the logged-in administrator's own, because the
-     * merchant pressing this is the person who should receive whatever it
-     * sends — the lead-magnet email really does deliver — and asking them to
-     * type it is a step with one correct answer. Where there is no address to
-     * default to, this says so in its own words rather than passing a type's
-     * internal reason up to somebody who pressed a button.
+     * The merchant reviews the sample address and saved route before sending.
+     * The profile is a visible suggestion on the read payload, never an implicit
+     * recipient here. The same identifier normalizer as capture validates it;
+     * the existing provider still decides whether the push can succeed.
      *
      * It writes no [[Lead]], queues nothing, and moves no counter:
      * {@see PushDispatcher::test()} is where that is guaranteed, and this
@@ -343,17 +338,23 @@ final class DestinationController implements RestController
             return $this->reported(TestReport::unavailable());
         }
 
-        $email = self::optionalString($request->get_param('email'))
-            ?? self::optionalString(wp_get_current_user()->user_email);
+        $email = Identifier::email(self::optionalString($request->get_param('email')) ?? '');
 
         if ($email === null) {
-            // Asked and answered HERE rather than left to the type, which
-            // would say *"the Lead carries no email address"* — true, internal,
-            // and no help to somebody who pressed a button (ADR 0042).
-            return $this->reported(TestReport::noAddress());
+            return $this->reported(TestReport::failed(
+                __('Enter a valid email address for this test. Nothing has been sent.', 'wconvert')
+            ));
         }
 
-        $result = $this->dispatcher->test($destination->id, ['email' => $email]);
+        $sample = ['email' => $email];
+        $interest = $request->get_param('interest');
+        if ($interest !== null) {
+            if (!is_string($interest) || trim($interest) === '') {
+                return $this->reported(TestReport::failed(__('Enter an interest value or leave it out of the test. Nothing has been sent.', 'wconvert')));
+            }
+            $sample['interest'] = trim($interest);
+        }
+        $result = $this->dispatcher->test($destination->id, $sample);
 
         // **Only where it landed.** Naming a target is what a SUCCESS sentence
         // is for, and resolving one costs a schema read that may reach the
@@ -509,6 +510,7 @@ final class DestinationController implements RestController
     private function configured(): array
     {
         $health = $this->health->all();
+        $usage = $this->usage?->all();
         $rows = [];
 
         foreach ($this->destinations->all() as $destination) {
@@ -523,10 +525,35 @@ final class DestinationController implements RestController
                 // from the first Connection of that type, which names the
                 // wrong audience for the second account (#35).
                 'target' => $this->targetOf($destination),
+                'requirements' => $this->registry->find($destination->type)?->requirements()->toArray(),
+                'mapping_issues' => $this->mappingIssues($destination),
+                'usage' => $usage === null ? null : ($usage[$destination->id] ?? []),
             ];
         }
 
         return $rows;
+    }
+
+    /** @return list<string> */
+    private function mappingIssues(\WConvert\Destination\Destination $destination): array
+    {
+        $type = $this->registry->find($destination->type);
+        if ($type === null) return [];
+        $issues = [];
+        foreach ($type->requirements()->mappedFields as $field) {
+            $selected = \WConvert\Destination\DestinationRequirements::text($destination->settings[$field['setting']] ?? null);
+            if ($selected === '') continue;
+            try {
+                $schema = $this->schemaFor($type, $destination->connectionId === null ? null : $this->connections->find($destination->connectionId));
+                $options = $schema[$field['setting']]['options'] ?? [];
+                if (!is_array($options) || !in_array($selected, array_column($options, 'value'), true)) {
+                    $issues[] = sprintf(__('The selected field for %s is unavailable. Review this destination’s mapping.', 'wconvert'), $field['label']);
+                }
+            } catch (\Throwable $failure) {
+                $issues[] = __('The provider fields could not be checked. Refresh before relying on the answer mapping.', 'wconvert');
+            }
+        }
+        return $issues;
     }
 
     /**

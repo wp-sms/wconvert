@@ -24,6 +24,9 @@ enum RefusalCode: string
     /** A field the form declared `required` arrived empty. */
     case FieldRequired = 'wconvert_field_required';
 
+    /** The answer is not an option in the published form. */
+    case ChoiceInvalid = 'wconvert_choice_invalid';
+
     /** An identifier that cannot be put in canonical form (ADR 0021). */
     case NotCanonical = 'wconvert_uncanonicalisable_identifier';
 

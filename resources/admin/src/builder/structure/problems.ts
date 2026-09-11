@@ -3,7 +3,9 @@ import { AA_NORMAL, READABLE_PAIRS, contrastOf, pairKey } from '../contrast';
 import { resolvedToken, type Path } from '../panel';
 import { formStep, losesWordsOnSwitch } from './catalogue';
 import { convertingActOf } from './guards';
-import { capturesTaken, nodesOf } from './tree';
+import { capturesTaken, nodesOf, nodeAt } from './tree';
+import { validInterestOptions } from '../InterestOptions';
+import type { FieldNode } from '@renderer/types';
 import type { Template } from '@renderer/types';
 
 /**
@@ -95,6 +97,7 @@ export interface Problem {
    * no chip.
    */
   readonly check?: CheckId;
+  readonly blocksPublish?: boolean;
 }
 
 /**
@@ -115,6 +118,49 @@ export const CHECKS = [
 ] as const;
 
 export type CheckId = (typeof CHECKS)[number];
+
+/**
+ * What ENFORCES each check, named where the merchant can see it.
+ *
+ * ============================================================================
+ * A WARNING NOBODY CAN TRACE IS A WARNING PEOPLE LEARN TO DISMISS.
+ * ============================================================================
+ * The strip draws six chips and the failing one carries a sentence. What it
+ * could not say is *who says so* — and the six are not one kind of thing: two
+ * are refusals the server makes at the write, two are rules the vocabulary or
+ * the renderer imposes, and two are nothing but this file's own opinion about
+ * what will cost the merchant later.
+ *
+ * That difference is exactly what a merchant needs in order to decide whether
+ * to act. *The save will refuse this* and *nothing will ever mention this
+ * again* are the two ends of it, and a chip that looks identical for both
+ * teaches them to ignore both (ADR 0042 rule 2).
+ *
+ * **Per CHECK and not per problem**, which is the shape the plan asked for the
+ * other way round. A passing chip has a source too — *six checks pass* is only
+ * legible if a reader can see what was doing the checking — and a field on
+ * `Problem` could cite one only while something was wrong. It would also be the
+ * same string repeated by every producer of the same check.
+ *
+ * **Two strings, because the chip and the tooltip want different lengths.**
+ * `at` is one short token — six chips fit one line at 1680 and two at 1280 —
+ * and `how` is the sentence a merchant reads once while deciding. Spelling only
+ * the long form put `OptinController::refuseADesignThatCapturesNothing()` on
+ * screen six times across two lines in a monospace register, which reads as
+ * debug output rather than as *six checks pass*.
+ *
+ * Not translated, and that is deliberate: these are file names and ADR
+ * numbers. A translator has nothing to do with `OptinController` and a
+ * localised class name is a class name nobody can grep for.
+ */
+export const CHECK_SOURCES: Readonly<Record<CheckId, { at: string; how: string }>> = {
+  converts: { at: 'OptinController', how: 'refuseADesignThatCannotConvert() refuses the write' },
+  collects: { at: 'OptinController', how: 'refuseADesignThatCapturesNothing() refuses the write' },
+  captures: { at: 'render.ts', how: 'the step that holds the submit button IS the form' },
+  countdown: { at: 'ADR 0052', how: 'a countdown counts to the Optin’s own end date and nothing else' },
+  words: { at: 'SlotRoles', how: 'bind() writes a Playbook’s words back only where a Role binds' },
+  readable: { at: 'ADR 0038', how: 'AA on small text' },
+};
 
 /**
  * Everything wrong with this design, worst first.
@@ -155,10 +201,27 @@ export function problemsIn(
     ...whatCannotConvert(template),
     ...whatCollectsNothing(template, growsAList),
     ...whatCapturesNothing(template),
+    ...whatHasIncompleteFields(template),
     ...whatCountsDownToNothing(template, endsAt),
     ...whatLosesWords(template),
     ...whatCannotBeRead(template),
   ];
+}
+
+function whatHasIncompleteFields(template: Template): Problem[] {
+  const step = formStep(template.tree);
+  if (step === null) return [];
+  const fields = nodesOf(template.tree).filter((node) => node.type === 'field' && node.path[0] === step);
+  const issues: Problem[] = [];
+  if (!fields.some((field) => field.captures === 'email' || field.captures === 'phone')) {
+    issues.push({ said: __('Add an email or phone field so this form can capture a lead.', 'wconvert'), path: null, check: 'captures', blocksPublish: true });
+  }
+  for (const field of fields.filter((field) => field.captures === 'interest')) {
+    if (!validInterestOptions((nodeAt(template.tree, field.path) as FieldNode | null)?.options)) {
+      issues.push({ said: __('Set up the interest choices: every choice needs a label and a unique valid sent value.', 'wconvert'), path: field.path, check: 'captures', blocksPublish: true });
+    }
+  }
+  return issues;
 }
 
 /**

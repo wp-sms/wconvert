@@ -1,0 +1,200 @@
+{
+  "id": "fieldwork",
+  "name": "Fieldwork",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#f5f5e9",
+    "fg": "#253c2b",
+    "muted": "#56634e",
+    "accent": "#263f2c",
+    "accent-fg": "#f7f7ec",
+    "border": "#b9c4a9",
+    "input-bg": "#fffff7",
+    "heading-font": "Georgia, 'Times New Roman', Times, serif",
+    "heading-size": "1.625rem",
+    "heading-weight": "400",
+    "tracking": "-0.02em",
+    "text-size": "0.875rem",
+    "leading": "1.55",
+    "radius": "0.3125rem",
+    "pad": "0",
+    "gap": "0",
+    "width": "37.5rem",
+    "shadow": "0 32px 80px -16px rgba(23, 46, 42, 0.5)",
+    "backdrop": "rgba(23, 46, 42, 0.55)"
+  },
+  "tree": {
+    "steps": [
+      {
+        "type": "split",
+        "ratio": 0.35,
+        "start": [
+          {
+            "type": "media",
+            "tokens": {
+              "bg": "#546c49",
+              "fg": "#ffffff",
+              "bg-image": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 6 9'%3E%3Cpath fill='%23546c49' d='M0 0h6v9H0z'/%3E%3Ccircle cx='1.6' cy='2.4' r='1.9' fill='%236b8459'/%3E%3Ccircle cx='4.4' cy='4.6' r='2.6' fill='%233f5638'/%3E%3Ccircle cx='2.2' cy='7' r='2.2' fill='%237c9663'/%3E%3Cpath stroke='%23223324' stroke-width='.24' d='M3 9V3.6'/%3E%3C/svg%3E\")",
+              "overlay": "linear-gradient(#172e2a80,#172e2a05 45%,#172e2ac7)",
+              "pad": "1.75rem 1.375rem",
+              "gap": "0.75rem"
+            },
+            "children": [
+              {
+                "type": "heading",
+                "id": "n1",
+                "level": 2,
+                "size": "xs",
+                "role": "wordmark",
+                "text": "Fern & Form"
+              },
+              {
+                "type": "heading",
+                "id": "n2",
+                "size": "xl",
+                "role": "headline",
+                "text": "Room\nto grow."
+              }
+            ],
+            "narrow": {
+              "pad": "1.25rem 1.125rem",
+              "heading-size": "1.25rem"
+            }
+          }
+        ],
+        "end": [
+          {
+            "type": "panel",
+            "tokens": {
+              "pad": "2.25rem 1.5rem 1.5rem",
+              "gap": "0.8rem"
+            },
+            "children": [
+              {
+                "type": "eyebrow",
+                "id": "n3",
+                "role": "eyebrow",
+                "text": "A welcome from us"
+              },
+              {
+                "type": "text",
+                "id": "n4",
+                "role": "body",
+                "text": "Take %b your first order of plants, pots and small joys for your home.",
+                "emphasis": "10% off"
+              },
+              {
+                "type": "field",
+                "id": "n5",
+                "name": "email",
+                "label": "Email address",
+                "placeholder": "you@example.com",
+                "required": true
+              },
+              {
+                "type": "consent",
+                "id": "n6",
+                "role": "consent_text",
+                "hidden": true,
+                "text": "Send me monthly plant notes and offers. See our %s.",
+                "link": {
+                  "label": "Privacy Policy"
+                }
+              },
+              {
+                "type": "button",
+                "id": "n7",
+                "role": "cta_label",
+                "label": "Send my code",
+                "action": "submit"
+              },
+              {
+                "type": "text",
+                "id": "n8",
+                "role": "fine_print",
+                "size": "s",
+                "text": "Your code is shown after you submit.\nFirst order only. Excludes gift cards."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "split",
+        "ratio": 0.35,
+        "start": [
+          {
+            "type": "media",
+            "tokens": {
+              "bg": "#546c49",
+              "fg": "#ffffff",
+              "bg-image": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 6 9'%3E%3Cpath fill='%23546c49' d='M0 0h6v9H0z'/%3E%3Ccircle cx='1.6' cy='2.4' r='1.9' fill='%236b8459'/%3E%3Ccircle cx='4.4' cy='4.6' r='2.6' fill='%233f5638'/%3E%3Ccircle cx='2.2' cy='7' r='2.2' fill='%237c9663'/%3E%3Cpath stroke='%23223324' stroke-width='.24' d='M3 9V3.6'/%3E%3C/svg%3E\")",
+              "overlay": "linear-gradient(#172e2a80,#172e2a05 45%,#172e2ac7)",
+              "pad": "1.75rem 1.375rem",
+              "gap": "0.75rem"
+            },
+            "children": [
+              {
+                "type": "heading",
+                "id": "n10",
+                "level": 2,
+                "size": "xs",
+                "role": "wordmark",
+                "text": "Fern & Form"
+              },
+              {
+                "type": "heading",
+                "id": "n11",
+                "size": "xl",
+                "role": "success_headline",
+                "text": "Make\nyourself\nat home."
+              }
+            ],
+            "narrow": {
+              "pad": "1.25rem 1.125rem",
+              "heading-size": "1.25rem"
+            }
+          }
+        ],
+        "end": [
+          {
+            "type": "panel",
+            "tokens": {
+              "pad": "2.25rem 1.5rem 1.5rem",
+              "gap": "0.8rem"
+            },
+            "children": [
+              {
+                "type": "badge",
+                "id": "n12",
+                "role": "badge",
+                "text": "Your code is ready"
+              },
+              {
+                "type": "text",
+                "id": "n13",
+                "role": "success_body",
+                "text": "We have received your details. Take %b your first order with the code below.",
+                "emphasis": "10% off"
+              },
+              {
+                "type": "code",
+                "id": "n14",
+                "role": "code_value",
+                "text": "HELLO10"
+              },
+              {
+                "type": "text",
+                "id": "n15",
+                "role": "fine_print",
+                "size": "s",
+                "text": "Apply at checkout. First order only; gift cards excluded."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

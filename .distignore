@@ -87,3 +87,5 @@
 
 # Editor and OS litter, at any depth
 .DS_Store
+
+/.superdesign

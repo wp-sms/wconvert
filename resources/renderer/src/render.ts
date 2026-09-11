@@ -32,6 +32,12 @@ import type {
 const TOKEN_PREFIX = '--wc-';
 
 /**
+ * The same names again, for the narrow bag. {@see retune} for why there is a
+ * second set rather than a conditional first one.
+ */
+const NARROW_PREFIX = '--wc-n-';
+
+/**
  * Render one step of a template.
  *
  * The returned element is **the first element inside the shadow host**, and
@@ -40,7 +46,7 @@ const TOKEN_PREFIX = '--wc-';
  * the outer tree beats a normal `:host` rule — OceanWP's reset names `div` and
  * pushed its body font across the boundary that way (ADR 0009).
  */
-export function render(tree: TemplateTree, tokens: Tokens, step = 0): HTMLElement {
+export function render(tree: TemplateTree, tokens: Tokens, step = 0, options: RenderOptions = {}): HTMLElement {
   const node = tree.steps[step];
 
   // A submit button outside a form submits nothing, so the step that holds one
@@ -53,11 +59,67 @@ export function render(tree: TemplateTree, tokens: Tokens, step = 0): HTMLElemen
   scope(root, tokens);
 
   if (node !== undefined) {
-    appendNode(root, node);
+    appendNode(root, node, tokens, options.paths === true ? String(step) : null);
   }
 
   return root;
 }
+
+/**
+ * What the caller wants beyond the design itself.
+ *
+ * ============================================================================
+ * ONE OPTION, AND IT IS OFF FOR EVERY VISITOR ON EVERY PAGE.
+ * ============================================================================
+ * `paths` stamps every element with its own address in the tree, which is what
+ * makes the builder's preview an editing surface rather than a picture: a
+ * `panel` and a `split` carry no [[Slot Role]] and no capture kind, so before
+ * this there was nothing on them for a click to name — and a scope editor whose
+ * primary gesture is *select that box* could not select a box.
+ *
+ * **An option rather than always on**, because an address is bytes on every
+ * element of every design on every page an Optin matches. ADR 0010's payload
+ * budget is what that would spend, and a visitor has nothing to select. The
+ * builder asks; `mount()`'s default is silence.
+ *
+ * **It is not a capability**, which is the half ADR 0040 cared about: an
+ * address in the DOM of a closed shadow root inside wp-admin lets nothing
+ * write that could not already. The admin holds the tree and PATCHes it; the
+ * preview reports where a press landed and stops there, exactly as it did when
+ * it reported a Role.
+ */
+export interface RenderOptions {
+  /**
+   * Stamp `data-path` on every element, so a caller holding the tree can name
+   * what was clicked. Off by default — see above.
+   */
+  readonly paths?: boolean;
+}
+
+/**
+ * Colour names a token's VALUE may be, so a scope can follow the theme.
+ *
+ * ============================================================================
+ * WITHOUT IT, EVERY SCOPE IS A HEX AND A THEME MOVES NOTHING INSIDE ONE.
+ * ============================================================================
+ * A theme sets the design's colours; a scoped bag re-declares them further in
+ * (ADR 0062). Written verbatim, `{"bg":"#263f2c"}` on a panel is a colour that
+ * survives every theme the merchant tries — so the deeper a design is styled,
+ * the less a theme does, and the box they most want to follow the palette is
+ * the one that never will.
+ *
+ * `{"bg":"accent"}` follows it. And it follows it **in CSS rather than here**:
+ * the value becomes `var(--wc-accent)`, which resolves at the element against
+ * whatever is in scope, at no cost to this module and with no resolution order
+ * to get wrong. A theme applied after the render moves it too.
+ *
+ * **Closed to the six colours**, because those are the ones a palette is made
+ * of and a `pad` that follows `gap` is a coincidence rather than an intent. It
+ * is asserted against the manifest's own `referable` section by
+ * `renderer-manifest-parity`, exactly as {@link SAFE_SCHEMES} is — the renderer
+ * still imports no manifest.
+ */
+export const REFERABLE = ['bg', 'fg', 'muted', 'accent', 'accent-fg', 'border', 'input-bg'];
 
 /**
  * Write a token bag onto one element, as the custom properties it names.
@@ -76,10 +138,26 @@ export function render(tree: TemplateTree, tokens: Tokens, step = 0): HTMLElemen
  * scopes, through one private `tokens()`. This module is handed a bag that has
  * already been through it — the same bargain the whole renderer takes with the
  * tree it draws.
+ *
+ * The VALUES are unvalidated too, and that is what makes {@link REFERABLE} the
+ * renderer's call rather than the boundary's: a value naming a colour token
+ * becomes a reference to it, and every other value is written exactly as it
+ * was. A name referring to itself is written verbatim as well — `var(--wc-bg)`
+ * on `--wc-bg` is a cycle CSS discards, which would silently unset the one
+ * property the author was trying to set.
  */
-function scope(element: HTMLElement, tokens: Tokens | undefined): void {
+function scope(element: HTMLElement, tokens: Tokens | undefined, prefix = TOKEN_PREFIX): void {
   for (const [name, value] of Object.entries(tokens ?? {})) {
-    element.style.setProperty(TOKEN_PREFIX + name, value);
+    element.style.setProperty(
+      prefix + name,
+      /*
+        **A reference always points at the WIDE name**, at both prefixes. A
+        narrow bag saying `{"bg":"accent"}` means *follow the accent* — and
+        `--wc-n-accent` exists only on a box that carries a narrow bag, so
+        pointing the mirror at itself would resolve to nothing on most of them.
+      */
+      value !== name && REFERABLE.includes(value) ? `var(${TOKEN_PREFIX}${value})` : value,
+    );
   }
 }
 
@@ -103,7 +181,7 @@ function submits(node: TemplateNode): boolean {
  * would take the whole Optin off the page for one unrecognised leaf
  * (ADR 0010).
  */
-function appendNode(parent: HTMLElement, node: TemplateNode): void {
+function appendNode(parent: HTMLElement, node: TemplateNode, scoped: Tokens, at: string | null): void {
   // A slot the merchant switched off in the settings panel. Skipped rather
   // than removed from the tree, because the panel edits content and visibility
   // and never arrangement — so switching it back on is one click and not a
@@ -112,10 +190,20 @@ function appendNode(parent: HTMLElement, node: TemplateNode): void {
     return;
   }
 
-  const element = elementFor(node);
+  const element = elementFor(node, scoped, at);
 
   if (element === null) {
     return;
+  }
+
+  // Layouts apply their bags while descending. Leaves can scope their own appearance too.
+  if (!['stack', 'row', 'grid', 'split', 'panel', 'media'].includes(node.type)) {
+    const styled = node as { tokens?: Tokens; narrow?: Tokens };
+    if (styled.tokens !== undefined || styled.narrow !== undefined) {
+      element.classList.add('wc-leaf');
+      scope(element, styled.tokens);
+      retune(element, inScope(scoped, {}, styled.tokens), styled.narrow);
+    }
   }
 
   const role = (node as { role?: string }).role;
@@ -139,18 +227,26 @@ function appendNode(parent: HTMLElement, node: TemplateNode): void {
     element.dataset.captures = captures;
   }
 
+  // Where this node sits in the tree, for a caller that holds one. Written
+  // only where {@link RenderOptions.paths} asked, so a visitor's page carries
+  // none of it.
+  if (at !== null) {
+    element.dataset.path = at;
+  }
+
   parent.appendChild(element);
 }
 
-function elementFor(node: TemplateNode): HTMLElement | null {
+function elementFor(node: TemplateNode, scoped: Tokens, at: string | null): HTMLElement | null {
   switch (node.type) {
     case 'stack':
     case 'row':
     case 'grid':
     case 'panel':
-      return layout(node);
+    case 'media':
+      return layout(node, scoped, at);
     case 'split':
-      return split(node as SplitNode);
+      return split(node as SplitNode, scoped, at);
     case 'heading':
       return heading(node as HeadingNode);
     case 'text':
@@ -186,32 +282,55 @@ function layout(
   node: TemplateNode & {
     children?: readonly TemplateNode[];
     tokens?: Tokens;
+    narrow?: Tokens;
     edges?: string;
     min?: string | number;
+    notch?: boolean;
   },
+  scoped: Tokens,
+  at: string | null,
 ): HTMLElement {
   const element = document.createElement('div');
 
   element.className = `wc-${node.type}`;
 
-  if (node.type === 'panel') {
-    /*
-     * ========================================================================
-     * A PANEL INHERITS THE DESIGN'S COLOURS AND NOT ITS PHOTOGRAPH.
-     * ========================================================================
-     * Every other token is wanted further in: a panel with no bag should read
-     * as the design it is inside. `bg-image` is the exception, and it is not a
-     * taste call — `.wc-panel` paints the same two background layers
-     * `.wc-root` does, so a design with one picture would paint it AGAIN,
-     * cover and centred, inside every panel in it. Reset before the bag rather
-     * than after, so a photo pane's own `bg-image` still wins.
-     *
-     * `overlay` goes with it because an overlay is a wash over that picture; a
-     * panel that wants one over its own ground says so in its bag.
-     */
-    element.style.setProperty(TOKEN_PREFIX + 'bg-image', 'none');
-    element.style.setProperty(TOKEN_PREFIX + 'overlay', '#0000');
+  /*
+   * **The floor under a box that draws a picture**, and it is declared by the
+   * two layouts that can. `min` IS on a scale, so it is a custom property —
+   * the same shape `split.ratio` has — and the manifest is what says which
+   * layouts offer it, so a third one arrives here for free.
+   */
+  if (node.min !== undefined) {
+    element.style.setProperty(TOKEN_PREFIX + 'min', String(node.min));
+  }
 
+  /*
+   * ==========================================================================
+   * A BOX THAT PAINTS INHERITS THE DESIGN'S COLOURS AND NOT ITS PHOTOGRAPH.
+   * ==========================================================================
+   * Every other token is wanted further in: a panel with no bag should read as
+   * the design it is inside. `bg-image` is the exception, and it is not a
+   * taste call — `.wc-panel` paints the same two background layers `.wc-root`
+   * does, so a design with one picture would paint it AGAIN, cover and
+   * centred, inside every panel in it. Reset before the bag rather than after,
+   * so a photo pane's own `bg-image` still wins.
+   *
+   * `overlay` goes with it because an overlay is a wash over that picture; a
+   * box that wants one over its own ground says so in its bag.
+   *
+   * **`media` takes the same reset for the same reason**, and it is the case
+   * that makes the rule read oddly: a media with no picture in its bag draws
+   * the design's ground rather than its photograph, which is an empty box
+   * waiting for one instead of the design's own art repeated at a second size.
+   */
+  const reset: Tokens =
+    node.type === 'panel' || node.type === 'media' ? { 'bg-image': 'none', overlay: '#0000' } : {};
+
+  if (Object.keys(reset).length > 0) {
+    scope(element, reset);
+  }
+
+  if (node.type === 'panel') {
     // A modifier ATTRIBUTE and not a custom property, for the reason
     // `badge.place` is a modifier class: the parity test asserts the
     // stylesheet reads no `--wc-*` name outside the tokens and the declared
@@ -222,20 +341,100 @@ function layout(
       element.dataset.edges = node.edges;
     }
 
-    // `min` IS on a scale, so it is a custom property — the same shape
-    // `split.ratio` has, and declared as a layout param for the same reason.
-    if (node.min !== undefined) {
-      element.style.setProperty(TOKEN_PREFIX + 'min', String(node.min));
+    // Two circles punched out of the corners, so the merchant's own page shows
+    // through them. A modifier attribute for `edges`'s reason, and `false`
+    // writes nothing — a design that never heard of the param renders
+    // byte-identically to one that spells the default.
+    if (node.notch === true) {
+      element.dataset.notch = 'true';
     }
   }
 
   scope(element, node.tokens);
 
-  for (const child of node.children ?? []) {
-    appendNode(element, child);
+  /*
+   * **What every token resolves to HERE at mobile width**, including ancestor
+   * mobile overrides. Full-width CSS still inherits the separately applied
+   * `node.tokens`. This bag is only for retuning and descending. See
+   * {@link retune}: the mirror it writes has to be complete, because a name
+   * the remap finds unset is not inherited — it is guaranteed-invalid, and
+   * falls to whatever literal the stylesheet spells beside it.
+   *
+   * Built only where a bag says something, so a design with no bags threads
+   * one object all the way down and allocates nothing.
+   */
+  const here = inScope(inScope(scoped, reset, node.tokens), {}, node.narrow);
+
+  retune(element, here, node.narrow);
+
+  for (const [index, child] of (node.children ?? []).entries()) {
+    appendNode(element, child, here, into(at, 'children', index));
   }
 
   return element;
+}
+
+/**
+ * One step down the address, or null where nobody asked for one.
+ *
+ * The spelling is the ADMIN's `Path` joined on a dot — `0.children.2` — because
+ * the admin is the only caller that reads it and a second spelling would be a
+ * string two programs have to agree about. `slots.ts` parses it back.
+ */
+function into(at: string | null, key: string, index: number): string | null {
+  return at === null ? null : `${at}.${key}.${index}`;
+}
+
+/** The bag in scope at this box: what it inherited, its own reset, its own bag. */
+function inScope(scoped: Tokens, reset: Tokens, own: Tokens | undefined): Tokens {
+  return own === undefined && Object.keys(reset).length === 0
+    ? scoped
+    : { ...scoped, ...reset, ...own };
+}
+
+/**
+ * The same bag again, for the width below which the design retunes.
+ *
+ * ============================================================================
+ * ONE ATTRIBUTE AND A MIRRORED SET OF NAMES, BECAUSE INLINE STYLE HAS NO IF.
+ * ============================================================================
+ * A bag is written with `setProperty`, and there is no conditional form of
+ * that — so the switch has to be in the stylesheet, and the stylesheet cannot
+ * name one node. The mirror is what bridges the two: this writes the narrow
+ * values under `--wc-n-*`, and one `@container` rule in `css.ts` remaps every
+ * `--wc-n-x` onto `--wc-x` for the boxes that carry one.
+ *
+ * **`data-narrow` gates it, and the gate is the whole correctness argument.**
+ * Without it the remap would fire on every box: `--wc-n-bg` inherits, so a
+ * child of a retuned box that sets its OWN `bg` and no narrow bag would be
+ * repainted with its ancestor's narrow ground. Gated, a box with no narrow bag
+ * is untouched at every width and inherits its ancestor's remapped value the
+ * ordinary way — which is exactly what a scope means.
+ *
+ * **The mirror is EVERY token in scope, not the narrow bag and not the box's
+ * own.** This is the part that was wrong first time and was found in a
+ * browser: an unset `var(--wc-n-heading-font)` is not *inherited*, it is
+ * **guaranteed-invalid** — so the remap wiped the property and
+ * `.wc-heading{font-family:var(--wc-heading-font,var(--wc-font,…))}` fell to
+ * its own literal fallback. Fieldwork's serif display line came out in the
+ * body face below 360px, and only there.
+ *
+ * So a retuned box is handed what every one of the 24 names resolves to where
+ * it sits — threaded down the walk, which is the only new thing this module
+ * has had to know — with the narrow bag written over the top. The remap then
+ * always finds a value and needs no fallback.
+ *
+ * It costs 24 `setProperty` calls on a retuned box and nothing at all on every
+ * other box, and it costs the PAYLOAD nothing: what is stored is the narrow
+ * bag the author wrote.
+ */
+function retune(element: HTMLElement, here: Tokens, narrow: Tokens | undefined): void {
+  if (narrow === undefined || Object.keys(narrow).length === 0) {
+    return;
+  }
+
+  element.dataset.narrow = '';
+  scope(element, { ...here, ...narrow }, NARROW_PREFIX);
 }
 
 /**
@@ -246,24 +445,28 @@ function layout(
  * direction crosses every boundary, so RTL correctness is a matter of the
  * vocabulary never naming a physical side (ADR 0009).
  */
-function split(node: SplitNode): HTMLElement {
+function split(node: SplitNode, scoped: Tokens, at: string | null): HTMLElement {
   const element = document.createElement('div');
 
   element.className = 'wc-split';
 
   scope(element, node.tokens);
 
+  const here = inScope(inScope(scoped, {}, node.tokens), {}, node.narrow);
+
+  retune(element, here, node.narrow);
+
   if (typeof node.ratio === 'number') {
     element.style.setProperty(TOKEN_PREFIX + 'ratio', String(node.ratio));
   }
 
-  for (const children of [node.start ?? [], node.end ?? []]) {
+  for (const key of ['start', 'end'] as const) {
     const pane = document.createElement('div');
 
     pane.className = 'wc-pane';
 
-    for (const child of children) {
-      appendNode(pane, child);
+    for (const [index, child] of (node[key] ?? []).entries()) {
+      appendNode(pane, child, here, into(at, key, index));
     }
 
     element.appendChild(pane);
@@ -300,9 +503,42 @@ function words(tag: string, className: string, text: string | undefined): HTMLEl
   const element = document.createElement(tag);
 
   element.className = className;
-  element.textContent = text ?? '';
+  lines(element, text ?? '');
 
   return element;
+}
+
+/**
+ * Authored text, with the line breaks in it.
+ *
+ * ============================================================================
+ * EVERY HEADLINE IN THE REFERENCE SET BREAKS ITS OWN LINE, AND `textContent`
+ * ATE ALL OF THEM.
+ * ============================================================================
+ * *"Room⏎to grow."* is one heading and two lines, and where the break falls is
+ * most of what a display headline IS — the alternative is two `heading` nodes
+ * with a gap between them, which is a different thing that happens to look
+ * similar at one width.
+ *
+ * `SlotFields` has given the merchant a `<textarea>` for this text since it
+ * was written, so they could already type a newline; what happened to it was
+ * that `textContent` collapsed it to a space and nothing said so.
+ *
+ * **Structure and never markup.** Each line is a text node and each break is a
+ * real `<br>`, so this is one more place that does not reach `innerHTML`
+ * (ADR 0013). An empty line writes the `<br>` and no text node, which is what
+ * makes a deliberate blank line survive.
+ */
+function lines(element: HTMLElement, text: string): void {
+  text.split('\n').forEach((line, at) => {
+    if (at > 0) {
+      element.appendChild(document.createElement('br'));
+    }
+
+    if (line !== '') {
+      element.appendChild(document.createTextNode(line));
+    }
+  });
 }
 
 /**
@@ -497,22 +733,43 @@ function heading(node: HeadingNode): HTMLElement {
   const element = document.createElement(node.level === 2 ? 'h3' : 'h2');
 
   element.className = sized('wc-heading', node.size);
-  element.textContent = node.text ?? '';
+  lines(element, node.text ?? '');
 
   return element;
 }
 
 /**
- * The two leaves that are a sentence which may hold one link. Named for the
- * shape rather than for either node, because the rule is the same for both.
+ * The two leaves that are a sentence which may hold one link and one run of
+ * emphasis. Named for the shape rather than for either node, because the rule
+ * is the same for both.
  */
-type Sentence = Pick<TextNode | ConsentNode, 'text' | 'link'>;
+type Sentence = Pick<TextNode | ConsentNode, 'text' | 'link' | 'emphasis'>;
 
 /**
- * The one placeholder a sentence may carry, and the only reason a leaf holds
+ * The two placeholders a sentence may carry, and the only reason a leaf holds
  * more than a string (ADR 0013).
+ *
+ * ============================================================================
+ * TWO MARKS RATHER THAN ONE FILLER FOR ONE MARK, AND THAT IS WHAT REMOVES THE
+ * AMBIGUITY.
+ * ============================================================================
+ * `%s` was alone while a link was the only structure a sentence could hold.
+ * Emphasis is the second, and giving it the same mark would mean a sentence
+ * carrying both had one slot and two claimants — a rule about which wins,
+ * decided in this file, that nothing on the merchant's screen could explain.
+ *
+ * So *"Take %b off, and read our %s."* is one sentence with both, and the
+ * split does the telling apart. `%b` for bold, beside `%s` for string, which
+ * is the spelling the merchant already meets in `SlotFields`.
  */
 const PLACEHOLDER = '%s';
+const EMPHASIS = '%b';
+
+/** Both marks, kept by the split so each piece is either text or a mark. */
+const MARKS = /(%s|%b)/;
+
+/** Both marks with the space in front, for the pass that removes an unfilled one. */
+const UNFILLED = / ?(%s|%b)/g;
 
 /**
  * Schemes an `<a>` may carry.
@@ -530,46 +787,85 @@ const PLACEHOLDER = '%s';
 export const SAFE_SCHEMES = ['http:', 'https:', 'mailto:'];
 
 /**
- * A sentence that may hold one link, built as STRUCTURE and never as markup.
+ * A sentence that may hold one link and one run of emphasis, built as
+ * STRUCTURE and never as markup.
  *
- * The text is split on the placeholder and the `<a>` is constructed here, so
- * no code path in the renderer reaches `innerHTML` — which is what keeps an
- * XSS sink out of the loader's hot path (ADR 0013).
+ * The text is split on the placeholders and both elements are constructed
+ * here, so no code path in the renderer reaches `innerHTML` — which is what
+ * keeps an XSS sink out of the loader's hot path (ADR 0013).
  *
- * With no href the link renders NOTHING, and the placeholder goes with it
+ * With no href the link renders NOTHING, and its placeholder goes with it
  * along with the space in front of it. Never a dead `#`: a site with no
  * privacy policy configured has no link to offer, and offering a broken one is
- * worse than offering none (ADR 0032).
+ * worse than offering none (ADR 0032). An absent emphasis is treated
+ * identically — one rule for both marks rather than two that could drift.
  */
 function sentence(tag: string, className: string, node: Sentence): HTMLElement {
   const element = document.createElement(tag);
-  const text = node.text ?? '';
   const href = safeHref(node.link?.href);
 
   element.className = className;
 
-  // No link, no destination for one, or NOWHERE TO PUT ONE: all three render
-  // the sentence and no anchor. The placeholder goes with it, and the space in
-  // front of it goes too. A sentence carrying no `%s` has no place for a link,
-  // and appending the label to the end of it produces a word glued to the last
-  // one — evidence of a sentence nobody wrote.
-  if (node.link === undefined || href === null || !text.includes(PLACEHOLDER)) {
-    element.textContent = text.replace(/ ?%s/g, '');
+  // No link, no destination for one, or no emphasis to lift: the mark renders
+  // nothing and the space in front of it goes too. A word appended to the end
+  // of a sentence that had no place for it is evidence of a sentence nobody
+  // wrote.
+  const anchor =
+    node.link === undefined || href === null ? null : link(node.link.label, href);
+  const strong =
+    node.emphasis === undefined || node.emphasis === '' ? null : words('strong', 'wc-strong', node.emphasis);
 
-    return element;
-  }
+  fill(element, node.text ?? '', anchor, strong);
 
-  const [before, ...after] = text.split(PLACEHOLDER);
+  return element;
+}
+
+function link(label: string, href: string): HTMLElement {
   const anchor = document.createElement('a');
 
   anchor.className = 'wc-link';
   anchor.href = href;
-  anchor.textContent = node.link.label;
+  anchor.textContent = label;
   anchor.rel = 'noopener';
 
-  element.append(before ?? '', anchor, after.join(PLACEHOLDER));
+  return anchor;
+}
 
-  return element;
+/**
+ * One sentence's text, its line breaks, and whatever fills its marks.
+ *
+ * Two passes over the string and no branch per mark: the first removes a mark
+ * nothing fills, the second splits on what is left. A piece that is a mark is
+ * the element for it; every other piece is text, and goes through
+ * {@link lines} so a sentence breaks its own line exactly as a heading does.
+ */
+function fill(element: HTMLElement, text: string, anchor: Node | null, strong: Node | null): void {
+  const parts: Record<string, Node | null> = { [PLACEHOLDER]: anchor, [EMPHASIS]: strong };
+  const stripped = text.replace(UNFILLED, (whole, mark: string) => (parts[mark] === null ? '' : whole));
+
+  for (const piece of stripped.split(MARKS)) {
+    // The guard is what makes the lookup safe: `piece` is arbitrary authored
+    // copy otherwise, and a sentence containing the word `constructor` would
+    // otherwise reach a prototype property and try to append a function.
+    const part = piece === PLACEHOLDER || piece === EMPHASIS ? parts[piece] : null;
+
+    if (part !== null) {
+      /*
+       * **One link and one emphasis per sentence, and a second mark of the
+       * same kind is literal text.** The rule predates emphasis — it is what
+       * `[before, ...after].join(PLACEHOLDER)` did — and it is asserted from
+       * both sides by `tests/fixtures/consent-sentences.json`, because
+       * `WConvert\Lead\ConsentRecord` composes the same sentence in PHP for
+       * the Consent Record and evidence that disagrees with what was shown is
+       * evidence of nothing.
+       */
+      parts[piece] = null;
+      element.appendChild(part);
+      continue;
+    }
+
+    lines(element, piece);
+  }
 }
 
 function safeHref(href: SlotLink['href']): string | null {
@@ -619,10 +915,11 @@ function image(node: ImageNode): HTMLElement | null {
  * What each field kind captures: the input type that gets the right keyboard,
  * and the autofill token that lets a browser fill it.
  */
-const FIELD_KINDS: Readonly<Record<string, { type: string; autocomplete: AutoFill }>> = {
-  email: { type: 'email', autocomplete: 'email' },
-  phone: { type: 'tel', autocomplete: 'tel' },
-  name: { type: 'text', autocomplete: 'name' },
+const FIELD_KINDS: Readonly<Record<string, { type: string; autocomplete: AutoFill; label: string }>> = {
+  email: { type: 'email', autocomplete: 'email', label: 'Email address' },
+  phone: { type: 'tel', autocomplete: 'tel', label: 'Phone number' },
+  name: { type: 'text', autocomplete: 'name', label: 'Name' },
+  interest: { type: 'select', autocomplete: 'off', label: 'Interested in' },
 };
 
 /**
@@ -649,19 +946,40 @@ function field(node: FieldNode): HTMLElement | null {
 
   const wrapper = document.createElement('div');
   const label = document.createElement('label');
-  const input = document.createElement('input');
+  const input = document.createElement(kind.type === 'select' ? 'select' : 'input');
 
   input.id = `wc-${name}`;
   input.className = 'wc-input';
-  input.type = kind.type;
   input.name = name;
-  input.placeholder = node.placeholder ?? '';
   input.required = node.required === true;
   input.autocomplete = kind.autocomplete;
+  if (input instanceof HTMLSelectElement) {
+    input.add(new Option(node.placeholder || 'Choose an option', ''));
+    for (const choice of Array.isArray(node.options) ? node.options : []) {
+      if (choice && typeof choice.label === 'string' && typeof choice.value === 'string') input.add(new Option(choice.label, choice.value));
+    }
+  } else {
+    input.type = kind.type;
+    input.placeholder = node.placeholder?.trim() ? node.placeholder : '';
+    input.inputMode = kind.type;
+    if (name !== 'name') {
+      input.setAttribute('autocapitalize', 'none');
+      input.spellcheck = false;
+    }
+  }
 
   label.className = 'wc-label';
   label.htmlFor = input.id;
-  label.textContent = node.label ?? '';
+  label.textContent = node.label?.trim() ? node.label : kind.label;
+
+  if (input.required) {
+    const required = document.createElement('span');
+
+    // The native required attribute already announces this to assistive tech.
+    required.setAttribute('aria-hidden', 'true');
+    required.textContent = ' *';
+    label.appendChild(required);
+  }
 
   wrapper.className = 'wc-field';
   wrapper.append(label, input);

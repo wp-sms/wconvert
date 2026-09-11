@@ -59,7 +59,7 @@ describe('what a block may become', () => {
   it('offers every capture kind for a field, and marks the one it already is', () => {
     const swaps = swapsFor(ENTRY.tree, FIELD, 'submit');
 
-    expect(swaps.map((swap) => swap.to)).toEqual(['email', 'name', 'phone']);
+    expect(swaps.map((swap) => swap.to)).toEqual(['email', 'name', 'phone', 'interest']);
     expect(swaps.find((swap) => swap.current)?.to).toBe('email');
   });
 

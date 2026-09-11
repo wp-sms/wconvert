@@ -100,13 +100,13 @@
             "type": "heading",
             "id": "n8",
             "role": "success_headline",
-            "text": "Lovely — you are in"
+            "text": "Lovely, thank you"
           },
           {
             "type": "text",
             "id": "n9",
             "role": "success_body",
-            "text": "The next note goes out on Friday."
+            "text": "We have received your request for the next note."
           }
         ]
       }

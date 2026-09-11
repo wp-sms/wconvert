@@ -1,4 +1,5 @@
 import { __ } from '@wordpress/i18n';
+import type { ConvertingAct } from '../structure/catalogue';
 import { entriesOn } from './axis';
 import { howOftenSummary, whenSummary, whereSummary, whoSummary, type Summary } from './sentence';
 import type { Frequency, Rule, RuleVocabulary, Schedule, Targeting } from '../api';
@@ -34,7 +35,7 @@ export interface DisplayRulesValue {
   /**
    * *When it runs*, on the same axis as the allowance.
    *
-   * It sits inside "How often" rather than becoming a fifth section because it
+   * It sits inside "Schedule & frequency" rather than becoming a fifth section because it
    * answers the same question at a coarser grain — the allowance is how often
    * ONE VISITOR may meet it, and this is when the campaign is on at all — and
    * because a merchant reading one row wants both facts in the same sentence:
@@ -53,7 +54,7 @@ export interface AxisSummary extends Summary {
 }
 
 /**
- * Where, When, Who and How often, in the order a merchant is asked them.
+ * Pages, Audience, When it appears, and Schedule & frequency, in screen order.
  *
  * A fixed-length tuple rather than a bare array, so a caller may take the four
  * apart positionally and a fifth axis is a type error at every call site rather
@@ -65,6 +66,7 @@ export function summarise(
   value: DisplayRulesValue,
   vocabulary: RuleVocabulary,
   overlay: boolean,
+  act: ConvertingAct = 'submit',
 ): AxisSummaries {
   const { rules, targeting, frequency, schedule, priority } = value;
   /*
@@ -76,15 +78,10 @@ export function summarise(
   const all = [...vocabulary.targeting, ...vocabulary.triggers, ...vocabulary.conditions];
 
   return [
-    { id: 'where', eyebrow: __('Where', 'wconvert'), ...whereSummary(targeting) },
-    {
-      id: 'when',
-      eyebrow: __('When', 'wconvert'),
-      ...whenSummary(entriesOn(rules, vocabulary.triggers), all),
-    },
+    { id: 'where', eyebrow: __('Pages', 'wconvert'), ...whereSummary(targeting) },
     {
       id: 'who',
-      eyebrow: __('Who', 'wconvert'),
+      eyebrow: __('Audience', 'wconvert'),
       // Both visitor predicates are stored on the TARGETING axis and answered
       // here, which is the one place those two differ ({@see Who}): they are
       // fields rather than list members because an include list unions page
@@ -98,9 +95,14 @@ export function summarise(
       ),
     },
     {
+      id: 'when',
+      eyebrow: __('When it appears', 'wconvert'),
+      ...whenSummary(entriesOn(rules, vocabulary.triggers), all),
+    },
+    {
       id: 'how-often',
-      eyebrow: __('How often', 'wconvert'),
-      ...howOftenSummary(frequency, schedule, priority, overlay),
+      eyebrow: __('Schedule & frequency', 'wconvert'),
+      ...howOftenSummary(frequency, schedule, priority, overlay, act),
     },
   ];
 }

@@ -1,12 +1,13 @@
 import apiFetch from '@wordpress/api-fetch';
 import type { Template } from '@renderer/types';
 import type { Availability } from './availability';
+import type { Frequency, Rule, Targeting } from '../builder/api';
 
 /**
  * The creation flow's three reads.
  *
  * **All three are `GET`, and prefill is one of them.** Prefill persists
- * nothing until the merchant saves: what comes back is the body
+ * nothing until the merchant chooses to customize: what comes back is the body
  * `POST /wconvert/v1/optins` takes, and a merchant who browses the gallery and
  * closes the tab has created nothing.
  *
@@ -104,14 +105,23 @@ export interface PlaybookEntry {
    *
    * Composed by `Prefill` on the server and not here, which is the whole point:
    * binding `copy` to [[Slot Role]]s is the one thing that must not have two
-   * implementations, and this is prefill's own call. So step 2 draws exactly
-   * what step 3 draws and exactly what creating it would store.
+   * implementations, and this is prefill's own call. The chooser draws exactly what creating the draft would store.
    *
    * Absent where the Playbook names a Template this install no longer ships —
    * which still starts a perfectly good Optin, so the card falls back to the
    * words it always had (#79).
    */
   template?: Template;
+  /** Effective Prefill settings for this install, including rule degradation.
+   * Kept compact: no copy, full template, bindings, or extra config snapshot.
+   * Omitted only where the source could not be resolved. */
+  setup?: {
+    display_type: string;
+    rules: Rule[];
+    targeting?: Targeting;
+    frequency?: Frequency;
+    destination_hint?: Record<string, unknown>;
+  };
 }
 
 /** What prefill hands back: an Optin nobody has saved. */

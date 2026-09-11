@@ -97,7 +97,7 @@ final class LeadLogTest extends TestCase
 
         $read = $this->log->read(null, true, 50);
 
-        $this->assertSame(['submissions', 'grouped', 'leads', 'groups'], array_keys($read));
+        $this->assertSame(['submissions', 'grouped', 'leads', 'groups', 'next_cursor', 'snapshot'], array_keys($read));
         $this->assertIsInt($read['submissions']);
 
         foreach (array_keys($read) as $key) {

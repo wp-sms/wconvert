@@ -259,28 +259,21 @@ describe('the scope chain', () => {
 
   /** The heading, at the bottom of both boxes. */
   const LEAF = [0, 'children', 0, 'children', 0, 'children', 0];
-  /** The inner stack. */
-  const INNER = [0, 'children', 0, 'children', 0];
 
   it('is every box a block sits inside, outermost first', () => {
-    expect(scopeChainOf(NESTED, LEAF).map((scope) => scope.type)).toEqual(['stack', 'panel', 'stack']);
+    expect(scopeChainOf(NESTED, LEAF).map((scope) => scope.type)).toEqual(['stack', 'panel', 'stack', 'heading']);
   });
 
-  /**
-   * **A leaf is not in it.** A bag applies to a box and everything inside it, so
-   * a leaf has nothing to apply to and the vocabulary drops `tokens` on one — a
-   * leaf in the chain would be a scope nothing can ever be written to.
-   */
-  it('stops at the last box, never at the block itself', () => {
-    expect(scopeChainOf(NESTED, LEAF)).toHaveLength(3);
-    expect(scopeChainOf(NESTED, LEAF).at(-1)?.path).toEqual(INNER);
+  it('ends at the selected element, which can carry its own style', () => {
+    expect(scopeChainOf(NESTED, LEAF)).toHaveLength(4);
+    expect(scopeChainOf(NESTED, LEAF).at(-1)?.path).toEqual(LEAF);
   });
 
   it('reads a value from the nearest box that names it', () => {
     const chain = scopeChainOf(NESTED, LEAF);
 
     // `fg` is set twice; the inner one wins, and it is this box's own.
-    expect(sourceOfToken(chain, {}, 'fg')).toMatchObject({ from: 'here', value: '#000000' });
+    expect(sourceOfToken(chain, {}, 'fg')).toMatchObject({ from: 'scope', value: '#000000' });
     // `bg` is only on the panel, one step out.
     expect(sourceOfToken(chain, {}, 'bg')).toMatchObject({ from: 'scope', value: '#fff4df' });
   });

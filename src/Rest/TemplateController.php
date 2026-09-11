@@ -10,6 +10,7 @@ use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
 use WP_REST_Request;
 use WP_REST_Response;
+use WP_Error;
 
 defined('ABSPATH') || exit;
 
@@ -69,6 +70,17 @@ final class TemplateController implements RestController
 
     public function registerRoutes(): void
     {
+        register_rest_route(Routes::NAMESPACE, '/templates/snapshot', [
+            'methods' => 'POST',
+            'callback' => [$this, 'snapshot'],
+            'permission_callback' => [Routes::class, 'canManage'],
+            'args' => [
+                'id' => ['type' => 'string', 'required' => true],
+                'source' => ['type' => 'string'],
+                'template' => ['type' => 'object', 'default' => []],
+            ],
+        ]);
+
         register_rest_route(Routes::NAMESPACE, '/templates', [
             [
                 'methods' => 'GET',
@@ -166,6 +178,25 @@ final class TemplateController implements RestController
         }
 
         return new WP_REST_Response(['templates' => $trees]);
+    }
+
+    /** Prepare a draft with the existing copy-carrying rules; write nothing. */
+    public function snapshot(WP_REST_Request $request): WP_REST_Response|WP_Error
+    {
+        $id = (string) $request->get_param('id');
+        $entry = $this->templates->find($id);
+
+        if ($entry === null || $this->availabilityOf((string) $entry['tier']) !== Availability::Ready) {
+            return new WP_Error('wconvert_template_unavailable', __('This template is not available.', 'wconvert'), ['status' => 404]);
+        }
+
+        $source = $request->get_param('source');
+        $config = $this->templates->snapshotInto([
+            'template_id' => $id,
+            'template' => $this->vocabulary->normalize($request->get_param('template')),
+        ], is_string($source) ? $source : null);
+
+        return new WP_REST_Response($config['template']);
     }
 
     /**

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   howOftenSummary,
   phraseOf,
@@ -9,6 +9,8 @@ import {
 import { allRuleTypes, ruleTypes } from './support/rule-types';
 import type { Entry } from '../../resources/admin/src/builder/rules/axis';
 import type { Rule } from '../../resources/admin/src/builder/api';
+
+afterEach(() => vi.unstubAllGlobals());
 
 /**
  * The four section summaries — pure, so they are tested without a DOM.
@@ -43,8 +45,8 @@ describe('where it shows', () => {
    */
   it('counts the rules on each list', () => {
     expect(whereSummary({}).text).toBe('On every page');
-    expect(whereSummary({ include: [{ type: 'url', value: '/a' }] }).text).toBe('On 1 page');
-    expect(whereSummary({ exclude: [{ type: 'url', value: '/a' }] }).text).toBe('Everywhere except 1 page');
+    expect(whereSummary({ include: [{ type: 'url', value: '/a' }] }).text).toBe('Matches 1 page rule');
+    expect(whereSummary({ exclude: [{ type: 'url', value: '/a' }] }).text).toBe('Everywhere except 1 page rule');
     expect(
       whereSummary({
         include: [
@@ -53,7 +55,7 @@ describe('where it shows', () => {
         ],
         exclude: [{ type: 'url', value: '/c' }],
       }).text,
-    ).toBe('On 2 pages, except 1 page');
+    ).toBe('Matches 2 page rules, except 1 page rule');
   });
 
   /**
@@ -534,7 +536,16 @@ describe('how often', () => {
    * would be a lie on the commonest Optin there is.
    */
   it('reads an untouched allowance as stopping, not as unlimited', () => {
-    expect(howOftenSummary({}, {}, 0, true).text).toBe('Every time, until they close it or sign up');
+    expect(howOftenSummary({}, {}, 0, true).text).toBe('Every time, until they close it or submit the form');
+  });
+
+  it('describes the actual completion action and waits for a known site timezone', () => {
+    expect(howOftenSummary({}, {}, 0, true, 'click').text).toContain('click the main button');
+    expect(howOftenSummary({}, { ends_at: '2020-08-03 12:00' }, 0, true).text).not.toContain('Stopped');
+    vi.stubGlobal('wconvertAdmin', { timezone: 'Pacific/Honolulu', exportUrl: '' });
+    vi.spyOn(Date, 'now').mockReturnValue(Date.parse('2026-09-10T18:00:00Z'));
+    expect(howOftenSummary({}, { ends_at: '2026-09-10 09:00' }, 0, true).attention).toBe(false);
+    vi.restoreAllMocks();
   });
 
   it('reads both switches off as genuinely every time', () => {
@@ -558,6 +569,7 @@ describe('how often', () => {
    * knowing. Under the rules panel's own rule it also opens the section.
    */
   it('reads a finished window in the past tense, and asks to be looked at', () => {
+    vi.stubGlobal('wconvertAdmin', { timezone: 'UTC', exportUrl: '' });
     const done = howOftenSummary({}, { starts_at: '2020-07-01 09:00', ends_at: '2020-08-03 12:00' }, 0, true);
 
     expect(done.text).toMatch(/^Stopped running on .*2020/);
@@ -585,7 +597,7 @@ describe('how often', () => {
 
   it('reads both counts and both switches together', () => {
     expect(howOftenSummary({ maxImpressions: 3, cooldownDays: 7 }, {}, 0, true).text).toBe(
-      'Shows at most 3 times and at most once every 7 days, and stops once they close it or sign up',
+      'Shows at most 3 times and at most once every 7 days, and stops once they close it or submit the form',
     );
   });
 

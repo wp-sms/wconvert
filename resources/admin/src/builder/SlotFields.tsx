@@ -3,7 +3,9 @@ import { CalendarClock, ImagePlus } from 'lucide-react';
 import { GLYPHS } from '@renderer/render';
 import { Button } from '../components/ui/button';
 import { ParamChoice } from './ParamChoice';
-import { readable, momentOf } from './wallTime';
+import { InterestOptions } from './InterestOptions';
+import { readable, hasScheduleEnded } from './wallTime';
+import { adminSettings } from '../settings';
 import { nameOf, type TemplateLabels } from '../templates/api';
 import type { Slot } from './panel';
 
@@ -76,7 +78,15 @@ export function SlotFields({
   return (
     <>
       {slot.keys.map((key) => {
-        const label = nameOf(labels.keys, key);
+        if (key === 'options') {
+          return slot.captures === 'interest' ? <InterestOptions key={key} value={slot.values.options}
+            onEdit={(options) => onValue('options', options)} onChange={(options) => onParam('options', options)} /> : null;
+        }
+        const label = slot.type === 'field' && key === 'label'
+          ? __('Field label', 'wconvert')
+          : slot.type === 'field' && key === 'placeholder'
+            ? slot.captures === 'interest' ? __('Prompt before choosing', 'wconvert') : __('Example inside the field', 'wconvert')
+            : nameOf(labels.keys, key);
         const held = typeof slot.values[key] === 'string' ? (slot.values[key] as string) : '';
 
         if (key === 'link') {
@@ -99,9 +109,29 @@ export function SlotFields({
               value={held}
               onChange={(value) => onValue(key, value)}
             />
+            {/*
+              **The mark is where the words go, and it has to be said in the
+              same breath as the box that holds them.** `emphasis` is the
+              second placeholder a sentence carries and the only key whose
+              value renders NOWHERE unless the sentence has a place for it —
+              which is a control that silently does nothing, and the one thing
+              ADR 0054 rule 3 says a control may not be. `link` says the same
+              sentence about `%s` inside {@see LinkControl}.
+            */}
+            {key === 'emphasis' && (
+              <span className="description">
+                {__('Put %b in the text above where the bold words should sit.', 'wconvert')}
+              </span>
+            )}
           </label>
         );
       })}
+
+      {slot.type === 'field' && slot.captures !== 'interest' && (
+        <p className="description">
+          {__('Example text disappears when visitors type. Use the label to say what to enter. A blank label uses the field’s default name.', 'wconvert')}
+        </p>
+      )}
 
       {/*
         ======================================================================
@@ -162,6 +192,14 @@ export function SlotFields({
         saying where the deadline lives.
       */}
       {slot.type === 'countdown' && <Countdown endsAt={endsAt} onSetEndDate={onSetEndDate} />}
+
+      {slot.type === 'field' && slot.captures === 'phone' && (
+        <p className="description">{__('Phone numbers need a country code, for example +44 7700 900000. Include one in your example.', 'wconvert')}</p>
+      )}
+
+      {(slot.role === 'success_headline' || slot.role === 'success_body') && (
+        <p className="description">{__('This appears after the form is submitted. Thank visitors for their request; your connected service handles emails and subscription confirmation.', 'wconvert')}</p>
+      )}
 
       {/*
         **Under the fields, not over them.** The thing a merchant opened this
@@ -278,9 +316,12 @@ export function LinkControl({
  * - **`src` on an image** is an address a merchant should not have to type.
  *   The media library is WordPress's own picker, and it degrades to the URL
  *   field where the script is absent.
- * - **`text` on anything but a heading** wraps. A headline is one line by
- *   construction; a body paragraph and a consent sentence are not, and a
- *   single-line box for them is a control that hides most of what it holds.
+ * - **`text`** wraps, on everything including a heading. It used to say *"on
+ *   anything but a heading. A headline is one line by construction"*, and that
+ *   stopped being true the day a newline became a `<br>`: every headline in
+ *   the reference set breaks its own line, so where the break falls is now the
+ *   most design-bearing thing a merchant types into this box. A single-line
+ *   input cannot show them where it is.
  * - **Everything else** keeps the box it had. `label`, `placeholder` and `alt`
  *   are short by nature and a bigger control would be a bigger target for the
  *   same three words.
@@ -296,7 +337,7 @@ export function controlFor(key: string, slot: Pick<Slot, 'type'>): KeyControlKin
     return slot.type === 'image' ? 'media' : 'url';
   }
 
-  return key === 'text' && slot.type !== 'heading' ? 'multiline' : 'text';
+  return key === 'text' ? 'multiline' : 'text';
 }
 
 function KeyControl({
@@ -362,6 +403,7 @@ export function MediaControl({
   label,
   value,
   type = 'url',
+  preview,
   onChange,
 }: {
   /**
@@ -380,12 +422,15 @@ export function MediaControl({
    * storing it, which is a red outline over a value that works.
    */
   type?: 'url' | 'text';
+  preview?: string;
   onChange: (value: string) => void;
 }) {
   const media = mediaLibrary();
+  const image = preview ?? (type === 'url' ? value : '');
 
   return (
     <span className="wconvert-slot__media">
+      {image && <img className="wconvert-media-preview" src={image} alt="" loading="lazy" />}
       <input
         id={id}
         type={type}
@@ -417,6 +462,7 @@ export function MediaControl({
           }}
         >
           <ImagePlus aria-hidden="true" />
+          <span aria-hidden="true">{image ? __('Replace image', 'wconvert') : __('Choose image', 'wconvert')}</span>
           <span className="sr-only">
             {sprintf(
               /* translators: %s: what the address is for, e.g. “Image address”. */
@@ -514,9 +560,8 @@ function Countdown({
   readonly endsAt?: string;
   readonly onSetEndDate?: () => void;
 }) {
-  const moment = momentOf(endsAt);
   const spelled = readable(endsAt);
-  const finished = moment !== null && moment.getTime() < Date.now();
+  const finished = hasScheduleEnded(endsAt, adminSettings()?.timezone);
 
   return (
     <div className="wconvert-slot__note">
@@ -536,8 +581,10 @@ function Countdown({
               )}
       </p>
 
+      {/* The same 24px tier: this repairs the group it sits in rather than
+          acting on the Optin. */}
       {onSetEndDate !== undefined && (
-        <Button type="button" variant="secondary" size="sm" onClick={onSetEndDate}>
+        <Button type="button" variant="secondary" size="xs" onClick={onSetEndDate}>
           <CalendarClock aria-hidden="true" />
           {/*
             Two labels, because one of them would be wrong half the time: *Set

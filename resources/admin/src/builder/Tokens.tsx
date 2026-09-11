@@ -1,20 +1,22 @@
 import { useId, useState, type CSSProperties, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
-import { HexColorInput, HexColorPicker, RgbaStringColorPicker } from 'react-colorful';
+import { HexColorPicker, RgbaStringColorPicker } from 'react-colorful';
 import { Button } from '../components/ui/button';
 import { ChevronDown, RotateCcw } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
-import { CHOICES, groupsOf, resolvedToken, withToken, type TokenGroupId } from './panel';
+import { CHOICES, TOKENS, groupsOf, resolvedToken, withToken, type TokenGroupId } from './panel';
 import { getThemeTokens, type SiteFont } from './api';
 import { MediaControl } from './SlotFields';
+import { MeasurementValue } from './MeasurementValue';
+import { StyleValueInput } from './StyleValueInput';
 import {
   asBackgroundLayer,
   axesOf,
   isApplied,
   isColour,
-  isCssImage,
   isFontStack,
   isTranslucent,
+  measuresOf,
   themePresets,
   urlIn,
   type Axis,
@@ -84,6 +86,101 @@ import type { Template, Tokens as TokenMap } from '@renderer/types';
  * never WConvert's own admin palette, which are different things that both
  * answer to the word "theme".
  */
+/**
+ * The ready-made looks, as one control over the DESIGN's own tokens.
+ *
+ * ============================================================================
+ * IT WAS THE FIRST GROUP IN THIS PANEL, WHICH IS THE ONE PLACE IT COULD NOT BE.
+ * ============================================================================
+ * The inspector draws {@see Tokens} only while nothing or a whole step is
+ * selected — anything else is that box's own bag (ADR 0062). So selecting a
+ * headline hid the theme picker, and a merchant restyling a box had to
+ * deselect to change the palette they were restyling *against*. A theme sets
+ * the design's tokens whatever is selected, so it belongs over all three panes
+ * rather than inside the pane that is about one box.
+ *
+ * **A popover and not a `Select`**, because the swatches are the whole
+ * affordance: ADR 0054 rule 3 is that a control shows the shape of its value,
+ * and a list of names would be six words for six palettes a merchant would
+ * choose between by looking. It is a popover and not the grid itself because a
+ * toolbar has one line.
+ *
+ * **Moved rather than repeated.** Two theme pickers is the same defect two
+ * controls for one token is (#71): a merchant can watch them disagree.
+ */
+export function Themes({
+  template,
+  onChange,
+}: {
+  template: Template;
+  onChange: (template: Template) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const presets = themePresets();
+  const current = presets.find((preset) => isApplied(preset, template.tokens));
+
+  const write = (tokens: Readonly<Record<string, string>>) =>
+    onChange({
+      ...template,
+      tokens: Object.entries(tokens).reduce(
+        (carried, [name, value]) => withToken(carried, name, value),
+        template.tokens,
+      ),
+    });
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button type="button" variant="outline" size="sm">
+          <span aria-hidden="true" className="wconvert-theme__swatches" data-shape="row">
+            {['bg', 'fg', 'accent'].map((token) => (
+              <span
+                key={token}
+                className="wconvert-theme__swatch"
+                style={{ background: template.tokens[token] }}
+              />
+            ))}
+          </span>
+          {/*
+            **The name where there is one, and the word for "none of these"
+            where there is not.** A design the merchant has since edited matches
+            no preset, and a picker showing the first one would be claiming a
+            palette they are not on.
+          */}
+          {current?.label ?? __('Custom look', 'wconvert')}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent align="end" className="w-auto">
+        <div className="wconvert-themes" role="group" aria-label={__('Ready-made looks', 'wconvert')}>
+          {presets.map((preset) => (
+            <button
+              key={preset.id}
+              type="button"
+              className="wconvert-theme"
+              aria-pressed={isApplied(preset, template.tokens)}
+              onClick={() => {
+                write(preset.tokens);
+                setOpen(false);
+              }}
+            >
+              <span aria-hidden="true" className="wconvert-theme__swatches">
+                {['bg', 'fg', 'accent'].map((token) => (
+                  <span
+                    key={token}
+                    className="wconvert-theme__swatch"
+                    style={{ background: preset.tokens[token] }}
+                  />
+                ))}
+              </span>
+              {preset.label}
+            </button>
+          ))}
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 export function Tokens({
   template,
   labels,
@@ -146,7 +243,6 @@ export function Tokens({
   onError: (cause: unknown) => void;
 }) {
   const [copied, setCopied] = useState<number | null>(null);
-  const presets = themePresets();
   const groups = groupsOf();
 
   const write = (tokens: Readonly<Record<string, string>>) =>
@@ -176,35 +272,8 @@ export function Tokens({
         docblock describes for the tabs that had a `RegionHeader`. The groups
         below are the structure, in one register, and this is the first of them.
       */}
-      <section className="wconvert-group" aria-label={__('Ready-made looks', 'wconvert')}>
-        <h5 className="wconvert-group__name">{__('Ready-made looks', 'wconvert')}</h5>
-
-        <div className="wconvert-themes">
-        {presets.map((preset) => {
-          const current = isApplied(preset, template.tokens);
-
-          return (
-            <button
-              key={preset.id}
-              type="button"
-              className="wconvert-theme"
-              aria-pressed={current}
-              onClick={() => write(preset.tokens)}
-            >
-              <span aria-hidden="true" className="wconvert-theme__swatches">
-                {['bg', 'fg', 'accent'].map((token) => (
-                  <span
-                    key={token}
-                    className="wconvert-theme__swatch"
-                    style={{ background: preset.tokens[token] }}
-                  />
-                ))}
-              </span>
-              {preset.label}
-            </button>
-          );
-        })}
-        </div>
+      <section className="wconvert-group" aria-label={__('Your theme’s own palette', 'wconvert')}>
+        <h5 className="wconvert-group__name">{__('Your theme’s own palette', 'wconvert')}</h5>
 
         <p className="wconvert-themes__theme">
         {/*
@@ -219,7 +288,10 @@ export function Tokens({
           It stays here with the presets rather than inside either group,
           because what it writes spans two of them.
         */}
-          <Button type="button" variant="outline" size="sm" onClick={copyTheme}>
+          {/* An action inside the work surface, not one a merchant came to the
+              screen to press — the 24px tier, like the resets and swatches
+              around it. */}
+          <Button type="button" variant="outline" size="xs" onClick={copyTheme}>
             {__('Copy my theme’s palette and font', 'wconvert')}
           </Button>
           {copied !== null && (
@@ -369,9 +441,8 @@ function Palette({
 /**
  * One token, drawn as what it holds.
  *
- * A colour gets a picker. A **plain number and unit** gets a slider with the
- * value beside it, because `26rem` is a thing a merchant drags to rather than a
- * thing they know. A token the manifest **offers choices for** gets those
+ * A colour gets a picker. A plain length gets amount/unit inputs and a slider
+ * wherever the design's scale can represent it. A token the manifest offers choices for gets those
  * choices as a segmented control. Anything else — `clamp(20rem, 50vw, 30rem)`,
  * an asymmetric radius, a token this bundle has never heard of — gets the text
  * box it always had.
@@ -465,34 +536,10 @@ export function TokenField({
     );
   }
 
-  /*
-    **A picture is an address, not a CSS function a merchant types.** This token
-    holds a background layer — `none`, a `url()`, or a gradient — and without a
-    control of its own the panel's answer was a text box expecting
-    `url(https://…)`, which is exactly the *"type `center` into this box"*
-    defect the whole panel exists to remove.
-
-    It comes BEFORE the choice branch and after the colour one, which is the
-    dispatch order the shapes deserve: a colour is the most specific test, an
-    image is the next, and `choices` is what a token declares when its value
-    says nothing about itself.
-  */
-  /*
-    **`none` is a keyword two shapes share, and the token's own list breaks the
-    tie.** `shadow` declares `none` among its choices and `isCssImage` answers
-    yes to it, so the moment `shadow` got a `choices` entry (ADR 0054 rule 2)
-    every design shipping `shadow: none` — `inline-cart-nudge` does — was handed
-    a media picker asking for the address of a picture.
-
-    A shape test is a GUESS about a value; `choices` is the token's own
-    declaration about itself, so where the manifest offers exactly this value
-    for exactly this token, the manifest wins. That is rule 1 read literally
-    rather than a special case for `shadow`, and it leaves `bg-image` — which
-    declares no choices — exactly where it was.
-  */
-  if (isCssImage(shown) && !(offered ?? []).includes(shown)) {
+  // Image controls are declared in the manifest; gradients on overlays remain editable values.
+  if (TOKENS.find(declaration => declaration.name === token)?.control === 'image') {
     return (
-      <ImageField id={field} label={label} value={value} reset={reset} onChange={onChange} />
+      <ImageField id={field} label={label} value={shown} reset={reset} onChange={onChange} />
     );
   }
 
@@ -555,11 +602,9 @@ export function TokenField({
     drag right, the maximum grows, the thumb slides back. What the design
     shipped does not move while the panel is open.
 
-    So the sliders appear only where they can honestly say the stored value:
-    same unit as the design's, and inside the range that value produces.
-    Everything else — a `clamp()`, a px value against a rem design, a width the
-    merchant pushed past twice the design's — keeps the text box alone, which is
-    the same refusal the panel has always made rather than a new one.
+    Sliders appear only where they can say the stored value: the design's
+    unit, inside its range. Other plain lengths still have amount/unit controls;
+    expressions such as clamp() keep their full CSS text.
 
     **One slider per axis, and `axesOf` decides how many** — a two-value
     shorthand like `0.75rem 1.25rem` is two, and it is four designs' inner
@@ -567,6 +612,7 @@ export function TokenField({
     stayed one call and this file still names no token (ADR 0054).
   */
   const axes = axesOf(fallback, standard, shown);
+  const measured = measuresOf(shown) !== null;
 
   return (
     /*
@@ -577,23 +623,20 @@ export function TokenField({
     */
     <div className="wconvert-token">
       <label htmlFor={field}>{label}</label>
-      {/*
-        The modifier is what gives the exact box room for a two-value shorthand:
-        7rem holds `1.375rem` and truncates `1rem 1.375rem`, which is a control
-        showing a value that is not the one it holds.
-      */}
-      <span className={`wconvert-token__row${axes !== null && axes.length > 1 ? ' wconvert-token__row--split' : ''}`}>
-        {axes !== null ? (
+      {/* Multiple axes stack their numeric controls; reset stays beside the group. */}
+      <span className={`wconvert-token__row${measured ? ' items-start' : ''}`}>
+        {measured ? (
           <MeasureField
             id={field}
             label={label}
             fallback={fallback}
+            standard={standard}
             value={value}
             axes={axes}
             onChange={onChange}
           />
         ) : (
-          <input
+          <StyleValueInput
             id={field}
             type="text"
             className="regular-text"
@@ -601,7 +644,7 @@ export function TokenField({
             // so an empty control means "whatever the design says".
             placeholder={fallback}
             value={value}
-            onChange={(event) => onChange(event.target.value)}
+            onCommit={onChange}
           />
         )}
         {reset}
@@ -657,9 +700,10 @@ function ImageField({
           // What the box SHOWS is the address; what it stores is the whole
           // layer. A value this cannot read as an address — a gradient — is
           // shown and stored verbatim, which is the escape hatch.
-          value={address ?? (value === '' ? '' : value)}
+          value={address ?? (value === 'none' ? '' : value)}
+          preview={address ?? undefined}
           onChange={(next) =>
-            onChange(address === null && value !== '' ? next : asBackgroundLayer(next))
+            onChange(asBackgroundLayer(next))
           }
         />
         {reset}
@@ -695,116 +739,40 @@ function axisName(index: number): string {
 }
 
 /**
- * A length, dragged — with the exact value still typeable beside it.
- *
- * **Both controls, and they cannot disagree**, because both write the one
- * token. That is what makes the slider strictly additive: a merchant on `28rem`
- * can still type a `clamp()` and watch the slider step aside, which is the
- * escape hatch a slider on its own would have quietly closed.
- *
- * **It was 0px wide until #75**, and what a merchant saw was the thumb: the box
- * beside it took 100% with `flex: none` and starved it. So the only way to set
- * a size in this panel was to type `1.625rem` into a text field, which is
- * exactly the defect the slider was added to remove. See
- * `.wconvert-token__slider` in `index.css` for the cascade that did it.
- *
- * ============================================================================
- * TWO AXES GET TWO SLIDERS AND **ONE** BOX, WHICH IS NOT AN INCONSISTENCY.
- * ============================================================================
- * The sliders edit a component each; the box holds the whole token value, the
- * way it always has. A second box would be a second place for the escape hatch
- * to live, and typing `clamp()` into half a shorthand is not a thing anybody
- * wants to do.
- *
- * Every drag rewrites both components from the axes, so the untouched one is
- * re-emitted rather than preserved verbatim. That is deliberate and it is the
- * only place this control normalises anything: a design's bare `0` comes back
- * as `0rem` once its sibling moves, because a shorthand written half in one
- * shape and half in another is worse to read than either.
+ * Sliders keep their design-based scale. Amount/unit fields can go beyond that
+ * scale or use another unit, while Custom CSS preserves the unparsed tail.
+ * Typing is committed when finished so partial values cannot replace this UI.
  */
 function MeasureField({
-  id,
-  label,
-  fallback,
-  value,
-  axes,
-  onChange,
+  id, label, fallback, standard, value, axes, onChange,
 }: {
   id: string;
   label: string;
   fallback: string;
+  standard: string;
   value: string;
-  axes: readonly Axis[];
+  axes: readonly Axis[] | null;
   onChange: (value: string) => void;
 }) {
-  const write = (index: number, amount: string) =>
-    onChange(
-      axes.map((axis, at) => `${at === index ? amount : axis.amount}${axis.unit}`).join(' '),
-    );
-
-  const slider = (axis: Axis, index: number, name?: string) => (
-    <input
-      // The token's own `<label for>` points at the first slider, so clicking
-      // *Inner spacing* lands somewhere. Where there are two, each carries a
-      // name of its own and that name wins.
-      id={index === 0 ? id : undefined}
-      type="range"
-      className="wconvert-token__slider"
-      aria-label={name}
-      min={axis.range.min}
-      max={axis.range.max}
-      step={axis.range.step}
-      value={axis.amount}
-      onChange={(event) => write(index, event.target.value)}
-    />
+  const write = (index: number, amount: string) => onChange(
+    axes!.map((axis, at) => `${at === index ? amount : axis.amount}${axis.unit}`).join(' '),
   );
+  const slider = (axis: Axis, index: number, name?: string) => <input
+    id={index === 0 ? id : undefined} type="range" className="wconvert-token__slider"
+    aria-label={name} min={axis.range.min} max={axis.range.max} step={axis.range.step}
+    value={axis.amount} onChange={(event) => write(index, event.target.value)} />;
 
-  return (
-    <>
-      {axes.length === 1 ? (
-        slider(axes[0], 0)
-      ) : (
-        <span className="wconvert-token__axes">
-          {axes.map((axis, index) => (
-            <label key={index} className="wconvert-token__axis">
-              <span className="wconvert-token__axis-name">{axisName(index)}</span>
-              {/*
-                The visible caption is short enough to sit over a slider; the
-                accessible name is the whole question, because "Sides" read out
-                on its own does not say sides of what.
-              */}
-              {slider(
-                axis,
-                index,
-                sprintf(
-                  /* translators: 1: what the setting is for, e.g. “Inner spacing”. 2: which half of it, e.g. “Sides”. */
-                  __('%1$s, %2$s', 'wconvert'),
-                  label,
-                  axisName(index).toLocaleLowerCase(),
-                ),
-              )}
-            </label>
-          ))}
-        </span>
-      )}
-      {/*
-        Named for the TOKEN, because two controls sharing one label is a screen
-        reader announcing "Width" twice with no way to tell which is which.
-      */}
-      <input
-        type="text"
-        className="wconvert-token__exact"
-        aria-label={sprintf(
-          /* translators: %s: what the setting is for, e.g. “Width”. */
-          __('%s value', 'wconvert'),
-          label,
-        )}
-        placeholder={fallback}
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-      />
-    </>
-  );
+  return <div className="flex min-w-0 w-full flex-col gap-2">
+    {axes !== null && (axes.length === 1 ? slider(axes[0], 0) : <span className="wconvert-token__axes">
+      {axes.map((axis, index) => <label key={index} className="wconvert-token__axis">
+        <span className="wconvert-token__axis-name">{axisName(index)}</span>
+        {slider(axis, index, sprintf(__('%1$s, %2$s', 'wconvert'), label, axisName(index).toLocaleLowerCase()))}
+      </label>)}
+    </span>)}
+    <MeasurementValue id={axes === null ? id : undefined} label={label}
+      rawLabel={sprintf(__('%s value', 'wconvert'), label)}
+      fallback={fallback} standard={standard} value={value} onChange={onChange} />
+  </div>;
 }
 
 /**
@@ -1230,7 +1198,13 @@ function Reset({
     <Button
       type="button"
       variant="ghost"
-      size="icon-sm"
+      /*
+        24px — `--control-height-xs`, the height of a control INSIDE the work
+        surface. A reset appears beside a swatch in a 9.5rem grid cell, so at
+        32px it was a third of the cell for a control that is absent whenever
+        nothing has been changed.
+      */
+      size="icon-xs"
       className="wconvert-token__reset"
       /*
         **It writes the design's value back rather than clearing**, because
@@ -1404,7 +1378,7 @@ const SAMPLE: Readonly<Record<string, string>> = {
 };
 
 /**
- * A colour, chosen rather than typed — with the hex still typeable.
+ * A colour picker with unrestricted CSS entry, committed when typing ends.
  *
  * `react-colorful` is ~2.8KB and has no dependencies, which is the whole reason
  * it is here rather than a picker with a colour library behind it: the admin
@@ -1491,7 +1465,10 @@ function ColourField({
           </span>
         </button>
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-auto">
+      <PopoverContent align="start" className="w-auto" onEscapeKeyDown={(event) => {
+        // Radix handles Escape during capture, before the input can cancel its draft.
+        if (event.target instanceof HTMLInputElement && event.target.dataset.styleValuePending === 'true') event.preventDefault();
+      }}>
         <div className="wconvert-picker">
           {translucent ? (
             <RgbaStringColorPicker color={shown} onChange={onChange} />
@@ -1510,18 +1487,10 @@ function ColourField({
               __('%s value', 'wconvert'),
               label,
             )}
-            {translucent ? (
-              <input
-                type="text"
-                className="regular-text"
-                placeholder={fallback}
-                value={value}
-                onChange={(event) => onChange(event.target.value)}
-              />
-            ) : (
-              <HexColorInput className="regular-text" prefixed color={shown} onChange={onChange} />
-            )}
+            <StyleValueInput type="text" className="regular-text" placeholder={fallback}
+              value={value} onCommit={onChange} />
           </label>
+          <p className="m-0 text-note text-muted-foreground">{__('Hex, RGB or another CSS colour. Press Enter or leave the field to apply.', 'wconvert')}</p>
 
           {/*
             The way back to the design's own colour is {@see Reset}, in the

@@ -22,7 +22,7 @@ return [
     'name' => __('The named download', 'wconvert'),
     'goal' => 'deliver_lead_magnet',
     'template_id' => 'name-and-email',
-    'notes' => __('Asks for a first name as well as an address. Every extra field costs you sign-ups, so only pick this if the name is going to be used — in the delivery email, or in whatever you send afterwards. If it is not, start from "The guide" instead.', 'wconvert'),
+    'notes' => __('Asks for a first name as well as an address. Only pick this if you will use the name in the delivery email or follow-ups. Configure a delivery destination and add the guide before publishing.', 'wconvert'),
     'copy' => [
         'headline' => __('The forty-page guide, free', 'wconvert'),
         'body' => __('Everything we know about getting started, in one PDF.', 'wconvert'),
@@ -36,8 +36,8 @@ return [
             'text' => __('We will send the guide and occasional follow-ups. See our %s.', 'wconvert'),
             'link' => ['label' => __('Privacy Policy', 'wconvert')],
         ],
-        'success_headline' => __('Check your inbox', 'wconvert'),
-        'success_body' => __('The guide is on its way to you now.', 'wconvert'),
+        'success_headline' => __('Request received', 'wconvert'),
+        'success_body' => __('Thank you. We have received your request for the guide.', 'wconvert'),
     ],
     'rules' => [
         ['type' => 'time_on_page', 'seconds' => 20],

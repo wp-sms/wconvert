@@ -3,7 +3,7 @@
     "The Consent Record is the consent wording EXACTLY AS IT WAS SHOWN, and two",
     "different programs decide what that is: resources/renderer/src/render.ts draws",
     "the sentence in the browser, and src/Lead/ConsentRecord.php composes the",
-    "evidence on the server. Neither can defer to the other — the renderer is a",
+    "evidence on the server. Neither can defer to the other \u2014 the renderer is a",
     "pure function with no server, and the server cannot trust a wording a public",
     "endpoint's client supplied.",
     "So they are two spellings of one rule, and this file is what stops them",
@@ -11,7 +11,8 @@
     "its text; tests/unit/Lead/ConsentSentenceParityTest.php composes each node and",
     "compares the string. Both assert against `shown`.",
     "The same arrangement the rule and template manifests have (ADR 0005, ADR 0010).",
-    "Each case also declares `anchor`: the href the rendered <a> must carry, or null where no anchor renders at all. That is the renderer's half of the same rule — no dead `#`, ever (ADR 0032)."
+    "Each case also declares `anchor`: the href the rendered <a> must carry, or null where no anchor renders at all. That is the renderer's half of the same rule \u2014 no dead `#`, ever (ADR 0032).",
+    "A sentence may also carry %b, filled by `emphasis` and drawn as a <strong>. It takes every rule %s already has \u2014 one per sentence, a second is literal, an absent one goes along with the space in front of it \u2014 so the cases below are the same cases at a second mark, plus the two where both appear at once."
   ],
   "cases": [
     {
@@ -75,7 +76,7 @@
       "anchor": "https://example.test/privacy/"
     },
     {
-      "why": "a consent node whose wording nobody has filled in yet — it still enforces, and the evidence says what it says",
+      "why": "a consent node whose wording nobody has filled in yet \u2014 it still enforces, and the evidence says what it says",
       "node": {
         "type": "consent",
         "role": "consent_text"
@@ -108,6 +109,69 @@
       },
       "shown": "I agree and accept the .",
       "anchor": "https://example.test/privacy/"
+    },
+    {
+      "why": "emphasis alone: %b is the words, in bold, and the record says them in plain text because that is what was read",
+      "node": {
+        "type": "consent",
+        "text": "I agree to %b about new arrivals.",
+        "emphasis": "one email a month"
+      },
+      "shown": "I agree to one email a month about new arrivals.",
+      "anchor": null
+    },
+    {
+      "why": "both marks, in one sentence: this is why there are two of them rather than one slot with two claimants",
+      "node": {
+        "type": "consent",
+        "text": "I agree to %b about new arrivals, and accept the %s.",
+        "emphasis": "one email a month",
+        "link": {
+          "label": "privacy policy",
+          "href": "https://example.test/privacy/"
+        }
+      },
+      "shown": "I agree to one email a month about new arrivals, and accept the privacy policy.",
+      "anchor": "https://example.test/privacy/"
+    },
+    {
+      "why": "no emphasis supplied: %b renders nothing and the space in front of it goes too, exactly as an unfilled %s does",
+      "node": {
+        "type": "consent",
+        "text": "I agree to %b about new arrivals."
+      },
+      "shown": "I agree to about new arrivals.",
+      "anchor": null
+    },
+    {
+      "why": "an empty emphasis is an absent one: there is nothing to set in bold, so no element is built and the mark strips",
+      "node": {
+        "type": "consent",
+        "text": "I agree to %b about new arrivals.",
+        "emphasis": ""
+      },
+      "shown": "I agree to about new arrivals.",
+      "anchor": null
+    },
+    {
+      "why": "only the FIRST %b is emphasis; a second is literal text, because a sentence carries one run of it",
+      "node": {
+        "type": "consent",
+        "text": "I agree to %b, and to %b again.",
+        "emphasis": "one email"
+      },
+      "shown": "I agree to one email, and to %b again.",
+      "anchor": null
+    },
+    {
+      "why": "emphasis with no place to go: no %b means no place, so the words render nowhere rather than glued to the end",
+      "node": {
+        "type": "consent",
+        "text": "I agree to receive emails.",
+        "emphasis": "one email a month"
+      },
+      "shown": "I agree to receive emails.",
+      "anchor": null
     }
   ]
 }

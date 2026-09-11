@@ -97,13 +97,13 @@
             "type": "heading",
             "id": "n8",
             "role": "success_headline",
-            "text": "You are on the list"
+            "text": "Thank you"
           },
           {
             "type": "text",
             "id": "n9",
             "role": "success_body",
-            "text": "Your code is on its way to your inbox."
+            "text": "We have received your request for the welcome offer."
           }
         ]
       }

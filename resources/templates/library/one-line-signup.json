@@ -70,13 +70,13 @@
             "type": "heading",
             "id": "n5",
             "role": "success_headline",
-            "text": "Subscribed"
+            "text": "Request received"
           },
           {
             "type": "text",
             "id": "n6",
             "role": "success_body",
-            "text": "The next issue will be with you on Friday."
+            "text": "Thank you for asking to receive the next issue."
           }
         ]
       }

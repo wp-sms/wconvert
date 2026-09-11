@@ -1,0 +1,555 @@
+# Page dependency trees
+
+## Optins
+Entry: resources/admin/src/optins/OptinList.tsx
+
+- resources/admin/src/optins/OptinList.tsx
+  - resources/admin/src/goals/api.ts
+    - resources/renderer/src/types.ts
+    - resources/admin/src/goals/availability.ts
+      - resources/admin/src/settings.ts
+  - resources/admin/src/components/ui/button.tsx
+  - resources/admin/src/components/ui/dropdown-menu.tsx
+  - resources/admin/src/components/ui/badge.tsx
+  - resources/admin/src/goals/availability.ts (see earlier dependency)
+  - resources/admin/src/settings.ts (see earlier dependency)
+  - resources/admin/src/shell/DataTable.tsx
+    - resources/admin/src/lib/utils.ts
+  - resources/admin/src/shell/Code.tsx
+    - resources/admin/src/lib/utils.ts (see earlier dependency)
+  - resources/admin/src/shell/ConfirmDialog.tsx
+    - resources/admin/src/components/ui/alert-dialog.tsx
+  - resources/admin/src/optins/InspectDialog.tsx
+    - resources/admin/src/components/ui/dialog.tsx
+    - resources/admin/src/components/ui/button.tsx (see earlier dependency)
+    - resources/admin/src/components/ui/input.tsx
+    - resources/admin/src/components/ui/label.tsx
+    - resources/admin/src/settings.ts (see earlier dependency)
+  - resources/admin/src/optins/StatusBadge.tsx
+    - resources/admin/src/components/ui/badge.tsx (see earlier dependency)
+    - resources/admin/src/optins/api.ts
+  - resources/admin/src/shell/Description.tsx
+    - resources/admin/src/lib/utils.ts (see earlier dependency)
+  - resources/admin/src/shell/EmptyState.tsx
+    - resources/admin/src/shell/Description.tsx (see earlier dependency)
+  - resources/admin/src/shell/Region.tsx
+    - resources/admin/src/components/ui/alert.tsx
+    - resources/admin/src/shell/Description.tsx (see earlier dependency)
+    - resources/admin/src/lib/utils.ts (see earlier dependency)
+  - resources/admin/src/shell/TableSkeleton.tsx
+    - resources/admin/src/components/ui/skeleton.tsx
+    - resources/admin/src/shell/DataTable.tsx (see earlier dependency)
+    - resources/admin/src/shell/skeletonDelay.ts
+  - resources/admin/src/shell/loadable.ts
+  - resources/admin/src/stats/api.ts
+  - resources/admin/src/stats/format.ts
+  - resources/admin/src/optins/api.ts (see earlier dependency)
+
+## Create an Optin
+Entry: resources/admin/src/goals/GoalScreen.tsx
+
+- resources/admin/src/goals/GoalScreen.tsx
+  - resources/renderer/src/types.ts
+  - resources/admin/src/components/ui/button.tsx
+  - resources/admin/src/shell/ChoiceGrid.tsx
+    - resources/admin/src/components/ui/skeleton.tsx
+    - resources/admin/src/shell/Description.tsx
+      - resources/admin/src/lib/utils.ts
+    - resources/admin/src/shell/skeletonDelay.ts
+  - resources/admin/src/builder/Gallery.tsx
+    - resources/admin/src/components/ui/badge.tsx
+    - resources/admin/src/components/ui/button.tsx (see earlier dependency)
+    - resources/admin/src/components/ui/skeleton.tsx (see earlier dependency)
+    - resources/admin/src/shell/skeletonDelay.ts (see earlier dependency)
+    - resources/admin/src/goals/availability.ts
+      - resources/admin/src/settings.ts
+    - resources/admin/src/builder/TemplateCard.tsx
+      - resources/admin/src/components/ui/skeleton.tsx (see earlier dependency)
+      - resources/admin/src/shell/Description.tsx (see earlier dependency)
+      - resources/admin/src/builder/Preview.tsx
+        - resources/renderer/src/mount.ts
+          - resources/renderer/src/types.ts (see earlier dependency)
+          - resources/renderer/src/css.ts
+          - resources/renderer/src/render.ts
+            - resources/renderer/src/types.ts (see earlier dependency)
+        - resources/admin/src/builder/slots.ts
+          - resources/admin/src/builder/panel.ts
+            - resources/templates/manifest.json
+            - resources/admin/src/builder/themes.ts
+              - resources/renderer/src/types.ts (see earlier dependency)
+            - resources/renderer/src/types.ts (see earlier dependency)
+        - resources/admin/src/builder/policy.ts
+          - resources/admin/src/settings.ts (see earlier dependency)
+          - resources/renderer/src/types.ts (see earlier dependency)
+        - resources/renderer/src/types.ts (see earlier dependency)
+      - resources/renderer/src/types.ts (see earlier dependency)
+    - resources/admin/src/templates/api.ts
+      - resources/renderer/src/types.ts (see earlier dependency)
+      - resources/admin/src/goals/availability.ts (see earlier dependency)
+    - resources/admin/src/builder/structure/catalogue.ts
+      - resources/admin/src/builder/panel.ts (see earlier dependency)
+      - resources/admin/src/builder/structure/tree.ts
+        - resources/admin/src/builder/panel.ts (see earlier dependency)
+        - resources/renderer/src/types.ts (see earlier dependency)
+      - resources/renderer/src/types.ts (see earlier dependency)
+    - resources/renderer/src/types.ts (see earlier dependency)
+  - resources/admin/src/builder/Preview.tsx (see earlier dependency)
+  - resources/admin/src/builder/TemplateCard.tsx (see earlier dependency)
+  - resources/admin/src/shell/EmptyState.tsx
+    - resources/admin/src/shell/Description.tsx (see earlier dependency)
+  - resources/admin/src/shell/Region.tsx
+    - resources/admin/src/components/ui/alert.tsx
+    - resources/admin/src/shell/Description.tsx (see earlier dependency)
+    - resources/admin/src/lib/utils.ts (see earlier dependency)
+  - resources/admin/src/shell/loadable.ts
+  - resources/admin/src/optins/api.ts
+  - resources/admin/src/goals/GoalCard.tsx
+    - resources/admin/src/components/ui/badge.tsx (see earlier dependency)
+    - resources/admin/src/components/ui/button.tsx (see earlier dependency)
+    - resources/admin/src/shell/ChoiceGrid.tsx (see earlier dependency)
+    - resources/admin/src/goals/availability.ts (see earlier dependency)
+    - resources/admin/src/goals/api.ts
+      - resources/renderer/src/types.ts (see earlier dependency)
+      - resources/admin/src/goals/availability.ts (see earlier dependency)
+  - resources/admin/src/goals/api.ts (see earlier dependency)
+
+## Optin editor
+Entry: resources/admin/src/builder/OptinBuilder.tsx
+
+- resources/admin/src/builder/OptinBuilder.tsx
+  - resources/admin/src/components/ui/button.tsx
+  - resources/admin/src/components/ui/tabs.tsx
+  - resources/admin/src/shell/BuilderSkeleton.tsx
+    - resources/admin/src/components/ui/button.tsx (see earlier dependency)
+    - resources/admin/src/components/ui/skeleton.tsx
+    - resources/admin/src/shell/PageActions.tsx
+    - resources/admin/src/shell/RegionSkeleton.tsx
+      - resources/admin/src/components/ui/skeleton.tsx (see earlier dependency)
+      - resources/admin/src/shell/Region.tsx
+        - resources/admin/src/components/ui/alert.tsx
+        - resources/admin/src/shell/Description.tsx
+          - resources/admin/src/lib/utils.ts
+        - resources/admin/src/lib/utils.ts (see earlier dependency)
+  - resources/admin/src/shell/ConfirmDialog.tsx
+    - resources/admin/src/components/ui/alert-dialog.tsx
+  - resources/admin/src/shell/EmptyState.tsx
+    - resources/admin/src/shell/Description.tsx (see earlier dependency)
+  - resources/admin/src/shell/PageActions.tsx (see earlier dependency)
+  - resources/admin/src/shell/Region.tsx (see earlier dependency)
+  - resources/admin/src/components/ui/skeleton.tsx (see earlier dependency)
+  - resources/admin/src/shell/Stat.tsx
+    - resources/admin/src/components/ui/skeleton.tsx (see earlier dependency)
+    - resources/admin/src/lib/utils.ts (see earlier dependency)
+  - resources/admin/src/shell/Toolbar.tsx
+  - resources/admin/src/shell/loadable.ts
+  - resources/admin/src/builder/TemplatePickerDialog.tsx
+    - resources/admin/src/components/ui/dialog.tsx
+    - resources/admin/src/builder/TemplatePicker.tsx
+      - resources/admin/src/components/ui/button.tsx (see earlier dependency)
+      - resources/admin/src/components/ui/input.tsx
+      - resources/admin/src/shell/EmptyState.tsx (see earlier dependency)
+      - resources/admin/src/shell/Toolbar.tsx (see earlier dependency)
+      - resources/admin/src/builder/Gallery.tsx
+        - resources/admin/src/components/ui/badge.tsx
+        - resources/admin/src/components/ui/button.tsx (see earlier dependency)
+        - resources/admin/src/components/ui/skeleton.tsx (see earlier dependency)
+        - resources/admin/src/shell/skeletonDelay.ts
+        - resources/admin/src/goals/availability.ts
+          - resources/admin/src/settings.ts
+        - resources/admin/src/builder/TemplateCard.tsx
+          - resources/admin/src/components/ui/skeleton.tsx (see earlier dependency)
+          - resources/admin/src/shell/Description.tsx (see earlier dependency)
+          - resources/admin/src/builder/Preview.tsx
+            - resources/renderer/src/mount.ts
+              - resources/renderer/src/types.ts
+              - resources/renderer/src/css.ts
+              - resources/renderer/src/render.ts
+                - resources/renderer/src/types.ts (see earlier dependency)
+            - resources/admin/src/builder/slots.ts
+              - resources/admin/src/builder/panel.ts
+                - resources/templates/manifest.json
+                - resources/admin/src/builder/themes.ts
+                  - resources/renderer/src/types.ts (see earlier dependency)
+                - resources/renderer/src/types.ts (see earlier dependency)
+            - resources/admin/src/builder/policy.ts
+              - resources/admin/src/settings.ts (see earlier dependency)
+              - resources/renderer/src/types.ts (see earlier dependency)
+            - resources/renderer/src/types.ts (see earlier dependency)
+          - resources/renderer/src/types.ts (see earlier dependency)
+        - resources/admin/src/templates/api.ts
+          - resources/renderer/src/types.ts (see earlier dependency)
+          - resources/admin/src/goals/availability.ts (see earlier dependency)
+        - resources/admin/src/builder/structure/catalogue.ts
+          - resources/admin/src/builder/panel.ts (see earlier dependency)
+          - resources/admin/src/builder/structure/tree.ts
+            - resources/admin/src/builder/panel.ts (see earlier dependency)
+            - resources/renderer/src/types.ts (see earlier dependency)
+          - resources/renderer/src/types.ts (see earlier dependency)
+        - resources/renderer/src/types.ts (see earlier dependency)
+      - resources/admin/src/builder/facets.ts
+        - resources/admin/src/templates/api.ts (see earlier dependency)
+      - resources/admin/src/templates/api.ts (see earlier dependency)
+      - resources/renderer/src/types.ts (see earlier dependency)
+  - resources/admin/src/builder/TemplatePicker.tsx (see earlier dependency)
+  - resources/admin/src/builder/DestinationsEditor.tsx
+    - resources/admin/src/shell/Description.tsx (see earlier dependency)
+    - resources/admin/src/shell/EmptyState.tsx (see earlier dependency)
+    - resources/admin/src/shell/Region.tsx (see earlier dependency)
+    - resources/admin/src/shell/RowsSkeleton.tsx
+      - resources/admin/src/components/ui/skeleton.tsx (see earlier dependency)
+      - resources/admin/src/shell/Region.tsx (see earlier dependency)
+    - resources/admin/src/goals/availability.ts (see earlier dependency)
+    - resources/admin/src/destinations/settings.tsx
+      - resources/admin/src/components/ui/checkbox.tsx
+      - resources/admin/src/components/ui/input.tsx (see earlier dependency)
+      - resources/admin/src/components/ui/label.tsx
+      - resources/admin/src/shell/Description.tsx (see earlier dependency)
+      - resources/admin/src/destinations/api.ts
+        - resources/admin/src/goals/availability.ts (see earlier dependency)
+        - resources/admin/src/goals/availability.ts (see earlier dependency)
+    - resources/admin/src/shell/loadable.ts (see earlier dependency)
+    - resources/admin/src/destinations/api.ts (see earlier dependency)
+  - resources/admin/src/builder/ReadinessDialog.tsx
+    - resources/admin/src/components/ui/button.tsx (see earlier dependency)
+    - resources/admin/src/components/ui/dialog.tsx (see earlier dependency)
+    - resources/admin/src/optins/StatusBadge.tsx
+      - resources/admin/src/components/ui/badge.tsx (see earlier dependency)
+      - resources/admin/src/optins/api.ts
+    - resources/admin/src/optins/api.ts (see earlier dependency)
+    - resources/admin/src/shell/Code.tsx
+      - resources/admin/src/lib/utils.ts (see earlier dependency)
+    - resources/admin/src/shell/loadable.ts (see earlier dependency)
+    - resources/admin/src/builder/destinations.ts
+      - resources/admin/src/builder/rules/sentence.ts
+        - resources/admin/src/builder/presets.ts
+          - resources/admin/src/builder/api.ts
+            - resources/renderer/src/types.ts (see earlier dependency)
+            - resources/admin/src/goals/availability.ts (see earlier dependency)
+            - resources/admin/src/optins/api.ts (see earlier dependency)
+        - resources/admin/src/builder/wallTime.ts
+        - resources/admin/src/builder/rules/axis.ts
+          - resources/admin/src/builder/api.ts (see earlier dependency)
+        - resources/admin/src/builder/api.ts (see earlier dependency)
+      - resources/admin/src/destinations/api.ts (see earlier dependency)
+    - resources/admin/src/builder/structure/problems.ts
+      - resources/admin/src/builder/contrast.ts
+      - resources/admin/src/builder/panel.ts (see earlier dependency)
+      - resources/admin/src/builder/structure/catalogue.ts (see earlier dependency)
+      - resources/admin/src/builder/structure/guards.ts
+        - resources/admin/src/builder/panel.ts (see earlier dependency)
+        - resources/admin/src/builder/structure/tree.ts (see earlier dependency)
+        - resources/admin/src/builder/structure/catalogue.ts (see earlier dependency)
+        - resources/admin/src/builder/panel.ts (see earlier dependency)
+        - resources/renderer/src/types.ts (see earlier dependency)
+      - resources/admin/src/builder/structure/tree.ts (see earlier dependency)
+      - resources/renderer/src/types.ts (see earlier dependency)
+    - resources/admin/src/builder/rules/summaries.ts
+      - resources/admin/src/builder/rules/axis.ts (see earlier dependency)
+      - resources/admin/src/builder/rules/sentence.ts (see earlier dependency)
+      - resources/admin/src/builder/api.ts (see earlier dependency)
+    - resources/admin/src/builder/panel.ts (see earlier dependency)
+    - resources/admin/src/builder/api.ts (see earlier dependency)
+    - resources/admin/src/builder/rules/summaries.ts (see earlier dependency)
+    - resources/admin/src/destinations/api.ts (see earlier dependency)
+    - resources/admin/src/goals/said.ts
+      - resources/admin/src/shell/loadable.ts (see earlier dependency)
+      - resources/admin/src/goals/api.ts
+        - resources/renderer/src/types.ts (see earlier dependency)
+        - resources/admin/src/goals/availability.ts (see earlier dependency)
+    - resources/admin/src/goals/api.ts (see earlier dependency)
+    - resources/renderer/src/types.ts (see earlier dependency)
+  - resources/admin/src/builder/destinations.ts (see earlier dependency)
+  - resources/admin/src/builder/Preview.tsx (see earlier dependency)
+  - resources/admin/src/builder/rules/DisplayRules.tsx
+    - resources/admin/src/builder/rules/axis.ts (see earlier dependency)
+    - resources/admin/src/builder/rules/HowOften.tsx
+      - resources/admin/src/shell/Description.tsx (see earlier dependency)
+      - resources/admin/src/builder/api.ts (see earlier dependency)
+    - resources/admin/src/builder/rules/Section.tsx
+    - resources/admin/src/builder/rules/StartingPoints.tsx
+      - resources/admin/src/components/ui/badge.tsx (see earlier dependency)
+      - resources/admin/src/goals/availability.ts (see earlier dependency)
+      - resources/admin/src/shell/ConfirmDialog.tsx (see earlier dependency)
+      - resources/admin/src/shell/Description.tsx (see earlier dependency)
+      - resources/admin/src/builder/rules/sentence.ts (see earlier dependency)
+      - resources/admin/src/builder/api.ts (see earlier dependency)
+    - resources/admin/src/builder/rules/Unknown.tsx
+      - resources/admin/src/shell/Description.tsx (see earlier dependency)
+      - resources/admin/src/builder/RuleRows.tsx
+      - resources/admin/src/builder/rules/RuleRow.tsx
+        - resources/admin/src/builder/controls.tsx
+          - resources/admin/src/builder/rules/ObjectPicker.tsx
+            - resources/admin/src/components/ui/popover.tsx
+            - resources/admin/src/builder/rules/objects.ts
+          - resources/admin/src/builder/api.ts (see earlier dependency)
+        - resources/admin/src/builder/presets.ts (see earlier dependency)
+        - resources/admin/src/builder/api.ts (see earlier dependency)
+        - resources/admin/src/goals/availability.ts (see earlier dependency)
+      - resources/admin/src/builder/rules/axis.ts (see earlier dependency)
+      - resources/admin/src/builder/api.ts (see earlier dependency)
+    - resources/admin/src/builder/rules/When.tsx
+      - resources/admin/src/shell/Description.tsx (see earlier dependency)
+      - resources/admin/src/builder/RuleRows.tsx (see earlier dependency)
+      - resources/admin/src/builder/rules/AddRule.tsx
+        - resources/admin/src/goals/availability.ts (see earlier dependency)
+        - resources/admin/src/builder/presets.ts (see earlier dependency)
+        - resources/admin/src/builder/api.ts (see earlier dependency)
+      - resources/admin/src/builder/rules/RuleRow.tsx (see earlier dependency)
+      - resources/admin/src/builder/rules/sentence.ts (see earlier dependency)
+      - resources/admin/src/builder/rules/axis.ts (see earlier dependency)
+      - resources/admin/src/builder/api.ts (see earlier dependency)
+    - resources/admin/src/builder/rules/Where.tsx
+      - resources/admin/src/shell/Description.tsx (see earlier dependency)
+      - resources/admin/src/builder/controls.tsx (see earlier dependency)
+      - resources/admin/src/builder/RuleRows.tsx (see earlier dependency)
+      - resources/admin/src/builder/rules/AddRule.tsx (see earlier dependency)
+      - resources/admin/src/builder/api.ts (see earlier dependency)
+    - resources/admin/src/builder/rules/Who.tsx
+      - resources/admin/src/builder/controls.tsx (see earlier dependency)
+      - resources/admin/src/shell/Description.tsx (see earlier dependency)
+      - resources/admin/src/builder/RuleRows.tsx (see earlier dependency)
+      - resources/admin/src/builder/rules/AddRule.tsx (see earlier dependency)
+      - resources/admin/src/builder/rules/RuleRow.tsx (see earlier dependency)
+      - resources/admin/src/builder/rules/sentence.ts (see earlier dependency)
+      - resources/admin/src/builder/rules/axis.ts (see earlier dependency)
+      - resources/admin/src/builder/api.ts (see earlier dependency)
+    - resources/admin/src/builder/rules/summaries.ts (see earlier dependency)
+    - resources/admin/src/builder/api.ts (see earlier dependency)
+    - resources/admin/src/builder/rules/summaries.ts (see earlier dependency)
+  - resources/admin/src/builder/DevExport.tsx
+    - resources/admin/src/builder/entry.ts
+      - resources/admin/src/templates/api.ts (see earlier dependency)
+    - resources/admin/src/templates/api.ts (see earlier dependency)
+    - resources/renderer/src/types.ts (see earlier dependency)
+  - resources/admin/src/builder/CheckStrip.tsx
+    - resources/admin/src/builder/structure/problems.ts (see earlier dependency)
+    - resources/admin/src/builder/panel.ts (see earlier dependency)
+  - resources/admin/src/builder/Fullscreen.tsx
+    - resources/admin/src/components/ui/button.tsx (see earlier dependency)
+  - resources/admin/src/builder/PayloadMeter.tsx
+    - resources/admin/src/settings.ts (see earlier dependency)
+    - resources/renderer/src/types.ts (see earlier dependency)
+  - resources/admin/src/builder/ScopeStyle.tsx
+    - resources/admin/src/components/ui/button.tsx (see earlier dependency)
+    - resources/admin/src/builder/contrast.ts (see earlier dependency)
+    - resources/admin/src/builder/structure/tree.ts (see earlier dependency)
+    - resources/admin/src/builder/Tokens.tsx
+      - resources/admin/src/components/ui/button.tsx (see earlier dependency)
+      - resources/admin/src/components/ui/popover.tsx (see earlier dependency)
+      - resources/admin/src/builder/panel.ts (see earlier dependency)
+      - resources/admin/src/builder/api.ts (see earlier dependency)
+      - resources/admin/src/builder/SlotFields.tsx
+        - resources/renderer/src/render.ts (see earlier dependency)
+        - resources/admin/src/components/ui/button.tsx (see earlier dependency)
+        - resources/admin/src/builder/ParamChoice.tsx
+          - resources/admin/src/builder/panel.ts (see earlier dependency)
+        - resources/admin/src/builder/wallTime.ts (see earlier dependency)
+        - resources/admin/src/templates/api.ts (see earlier dependency)
+        - resources/admin/src/builder/panel.ts (see earlier dependency)
+      - resources/admin/src/builder/themes.ts (see earlier dependency)
+      - resources/admin/src/builder/contrast.ts (see earlier dependency)
+      - resources/admin/src/templates/api.ts (see earlier dependency)
+      - resources/renderer/src/types.ts (see earlier dependency)
+    - resources/admin/src/builder/panel.ts (see earlier dependency)
+    - resources/renderer/src/css.ts (see earlier dependency)
+    - resources/renderer/src/render.ts (see earlier dependency)
+    - resources/admin/src/builder/themes.ts (see earlier dependency)
+    - resources/admin/src/shell/Description.tsx (see earlier dependency)
+    - resources/admin/src/templates/api.ts (see earlier dependency)
+    - resources/renderer/src/types.ts (see earlier dependency)
+  - resources/admin/src/builder/StructureView.tsx
+    - resources/admin/src/components/ui/button.tsx (see earlier dependency)
+    - resources/admin/src/components/ui/dropdown-menu.tsx
+    - resources/admin/src/shell/EmptyState.tsx (see earlier dependency)
+    - resources/admin/src/shell/Region.tsx (see earlier dependency)
+    - resources/admin/src/builder/BlockInspector.tsx
+      - resources/admin/src/components/ui/button.tsx (see earlier dependency)
+      - resources/admin/src/components/ui/dropdown-menu.tsx (see earlier dependency)
+      - resources/admin/src/components/ui/tabs.tsx (see earlier dependency)
+      - resources/admin/src/builder/ParamChoice.tsx (see earlier dependency)
+      - resources/admin/src/builder/SlotFields.tsx (see earlier dependency)
+      - resources/admin/src/builder/BlockRow.tsx
+        - resources/admin/src/builder/structure/catalogue.ts (see earlier dependency)
+        - resources/admin/src/builder/structure/guards.ts (see earlier dependency)
+        - resources/admin/src/templates/api.ts (see earlier dependency)
+        - resources/admin/src/builder/structure/tree.ts (see earlier dependency)
+        - resources/admin/src/builder/useBlockDrag.ts
+          - resources/admin/src/builder/structure/tree.ts (see earlier dependency)
+      - resources/admin/src/builder/panel.ts (see earlier dependency)
+      - resources/admin/src/builder/structure/tree.ts (see earlier dependency)
+      - resources/admin/src/builder/structure/swap.ts
+        - resources/admin/src/builder/panel.ts (see earlier dependency)
+        - resources/admin/src/templates/api.ts (see earlier dependency)
+        - resources/admin/src/builder/structure/catalogue.ts (see earlier dependency)
+        - resources/admin/src/builder/structure/tree.ts (see earlier dependency)
+        - resources/renderer/src/types.ts (see earlier dependency)
+      - resources/admin/src/builder/structure/catalogue.ts (see earlier dependency)
+      - resources/admin/src/shell/Description.tsx (see earlier dependency)
+      - resources/admin/src/templates/api.ts (see earlier dependency)
+      - resources/renderer/src/types.ts (see earlier dependency)
+    - resources/admin/src/builder/ScopeStyle.tsx (see earlier dependency)
+    - resources/admin/src/builder/BlockTree.tsx
+      - resources/admin/src/builder/BlockRow.tsx (see earlier dependency)
+      - resources/admin/src/builder/structure/tree.ts (see earlier dependency)
+      - resources/admin/src/builder/panel.ts (see earlier dependency)
+      - resources/admin/src/templates/api.ts (see earlier dependency)
+      - resources/admin/src/builder/useBlockDrag.ts (see earlier dependency)
+      - resources/renderer/src/types.ts (see earlier dependency)
+    - resources/admin/src/builder/useBlockDrag.ts (see earlier dependency)
+    - resources/admin/src/builder/BlockRow.tsx (see earlier dependency)
+    - resources/admin/src/builder/structure/catalogue.ts (see earlier dependency)
+    - resources/admin/src/builder/structure/guards.ts (see earlier dependency)
+    - resources/admin/src/builder/structure/tree.ts (see earlier dependency)
+    - resources/admin/src/builder/panel.ts (see earlier dependency)
+    - resources/admin/src/templates/api.ts (see earlier dependency)
+    - resources/renderer/src/types.ts (see earlier dependency)
+  - resources/admin/src/builder/Tokens.tsx (see earlier dependency)
+  - resources/admin/src/builder/structure/history.ts
+  - resources/admin/src/builder/structure/problems.ts (see earlier dependency)
+  - resources/admin/src/builder/structure/tree.ts (see earlier dependency)
+  - resources/admin/src/builder/structure/guards.ts (see earlier dependency)
+  - resources/admin/src/builder/structure/catalogue.ts (see earlier dependency)
+  - resources/admin/src/goals/api.ts (see earlier dependency)
+  - resources/admin/src/goals/GoalCard.tsx
+    - resources/admin/src/components/ui/badge.tsx (see earlier dependency)
+    - resources/admin/src/components/ui/button.tsx (see earlier dependency)
+    - resources/admin/src/shell/ChoiceGrid.tsx
+      - resources/admin/src/components/ui/skeleton.tsx (see earlier dependency)
+      - resources/admin/src/shell/Description.tsx (see earlier dependency)
+      - resources/admin/src/shell/skeletonDelay.ts (see earlier dependency)
+    - resources/admin/src/goals/availability.ts (see earlier dependency)
+    - resources/admin/src/goals/api.ts (see earlier dependency)
+  - resources/admin/src/goals/said.ts (see earlier dependency)
+  - resources/admin/src/builder/ChangeGoalDialog.tsx
+    - resources/admin/src/components/ui/button.tsx (see earlier dependency)
+    - resources/admin/src/components/ui/dialog.tsx (see earlier dependency)
+    - resources/admin/src/shell/ChoiceGrid.tsx (see earlier dependency)
+    - resources/admin/src/shell/EmptyState.tsx (see earlier dependency)
+    - resources/admin/src/goals/GoalCard.tsx (see earlier dependency)
+    - resources/admin/src/goals/api.ts (see earlier dependency)
+    - resources/admin/src/shell/loadable.ts (see earlier dependency)
+  - resources/admin/src/builder/BlockRow.tsx (see earlier dependency)
+  - resources/admin/src/builder/panel.ts (see earlier dependency)
+  - resources/admin/src/builder/api.ts (see earlier dependency)
+  - resources/admin/src/builder/slots.ts (see earlier dependency)
+  - resources/admin/src/templates/api.ts (see earlier dependency)
+  - resources/admin/src/stats/api.ts
+  - resources/admin/src/stats/format.ts
+  - resources/admin/src/destinations/api.ts (see earlier dependency)
+  - resources/admin/src/settings.ts (see earlier dependency)
+  - resources/renderer/src/types.ts (see earlier dependency)
+
+## Analytics
+Entry: resources/admin/src/stats/Dashboard.tsx
+
+- resources/admin/src/stats/Dashboard.tsx
+  - resources/admin/src/components/ui/button.tsx
+  - resources/admin/src/shell/DataTable.tsx
+    - resources/admin/src/lib/utils.ts
+  - resources/admin/src/shell/EmptyState.tsx
+    - resources/admin/src/shell/Description.tsx
+      - resources/admin/src/lib/utils.ts (see earlier dependency)
+  - resources/admin/src/shell/PageActions.tsx
+  - resources/admin/src/shell/Region.tsx
+    - resources/admin/src/components/ui/alert.tsx
+    - resources/admin/src/shell/Description.tsx (see earlier dependency)
+    - resources/admin/src/lib/utils.ts (see earlier dependency)
+  - resources/admin/src/components/ui/skeleton.tsx
+  - resources/admin/src/shell/RegionSkeleton.tsx
+    - resources/admin/src/components/ui/skeleton.tsx (see earlier dependency)
+    - resources/admin/src/shell/Region.tsx (see earlier dependency)
+  - resources/admin/src/shell/Stat.tsx
+    - resources/admin/src/components/ui/skeleton.tsx (see earlier dependency)
+    - resources/admin/src/lib/utils.ts (see earlier dependency)
+  - resources/admin/src/shell/loadable.ts
+  - resources/admin/src/milestones/Milestones.tsx
+    - resources/admin/src/components/ui/button.tsx (see earlier dependency)
+    - resources/admin/src/shell/Description.tsx (see earlier dependency)
+    - resources/admin/src/shell/Region.tsx (see earlier dependency)
+    - resources/admin/src/shell/loadable.ts (see earlier dependency)
+    - resources/admin/src/milestones/api.ts
+  - resources/admin/src/stats/api.ts
+  - resources/admin/src/stats/format.ts
+
+## Leads
+Entry: resources/admin/src/leads/LeadLog.tsx
+
+- resources/admin/src/leads/LeadLog.tsx
+  - resources/admin/src/components/ui/button.tsx
+  - resources/admin/src/components/ui/checkbox.tsx
+  - resources/admin/src/components/ui/input.tsx
+  - resources/admin/src/components/ui/label.tsx
+  - resources/admin/src/components/ui/select.tsx
+  - resources/admin/src/shell/Code.tsx
+    - resources/admin/src/lib/utils.ts
+  - resources/admin/src/shell/ConfirmDialog.tsx
+    - resources/admin/src/components/ui/alert-dialog.tsx
+  - resources/admin/src/shell/DataTable.tsx
+    - resources/admin/src/lib/utils.ts (see earlier dependency)
+  - resources/admin/src/shell/EmptyState.tsx
+    - resources/admin/src/shell/Description.tsx
+      - resources/admin/src/lib/utils.ts (see earlier dependency)
+  - resources/admin/src/shell/PageActions.tsx
+  - resources/admin/src/shell/Region.tsx
+    - resources/admin/src/components/ui/alert.tsx
+    - resources/admin/src/shell/Description.tsx (see earlier dependency)
+    - resources/admin/src/lib/utils.ts (see earlier dependency)
+  - resources/admin/src/components/ui/skeleton.tsx
+  - resources/admin/src/shell/TableSkeleton.tsx
+    - resources/admin/src/components/ui/skeleton.tsx (see earlier dependency)
+    - resources/admin/src/shell/DataTable.tsx (see earlier dependency)
+    - resources/admin/src/shell/skeletonDelay.ts
+  - resources/admin/src/shell/Toolbar.tsx
+  - resources/admin/src/shell/loadable.ts
+  - resources/admin/src/leads/api.ts
+    - resources/admin/src/settings.ts
+  - resources/admin/src/optins/api.ts
+
+## Destinations
+Entry: resources/admin/src/destinations/Destinations.tsx
+
+- resources/admin/src/destinations/Destinations.tsx
+  - resources/admin/src/icons.ts
+  - resources/admin/src/components/ui/alert.tsx
+  - resources/admin/src/components/ui/badge.tsx
+  - resources/admin/src/components/ui/button.tsx
+  - resources/admin/src/components/ui/input.tsx
+  - resources/admin/src/components/ui/label.tsx
+  - resources/admin/src/destinations/AddDestinationDialog.tsx
+    - resources/admin/src/components/ui/button.tsx (see earlier dependency)
+    - resources/admin/src/components/ui/dialog.tsx
+    - resources/admin/src/components/ui/input.tsx (see earlier dependency)
+    - resources/admin/src/components/ui/label.tsx (see earlier dependency)
+    - resources/admin/src/shell/Description.tsx
+      - resources/admin/src/lib/utils.ts
+    - resources/admin/src/shell/Region.tsx
+      - resources/admin/src/components/ui/alert.tsx (see earlier dependency)
+      - resources/admin/src/shell/Description.tsx (see earlier dependency)
+      - resources/admin/src/lib/utils.ts (see earlier dependency)
+    - resources/admin/src/destinations/settings.tsx
+      - resources/admin/src/components/ui/checkbox.tsx
+      - resources/admin/src/components/ui/input.tsx (see earlier dependency)
+      - resources/admin/src/components/ui/label.tsx (see earlier dependency)
+      - resources/admin/src/shell/Description.tsx (see earlier dependency)
+      - resources/admin/src/destinations/api.ts
+        - resources/admin/src/goals/availability.ts
+          - resources/admin/src/settings.ts
+        - resources/admin/src/goals/availability.ts (see earlier dependency)
+    - resources/admin/src/destinations/api.ts (see earlier dependency)
+  - resources/admin/src/shell/Code.tsx
+    - resources/admin/src/lib/utils.ts (see earlier dependency)
+  - resources/admin/src/shell/ConfirmDialog.tsx
+    - resources/admin/src/components/ui/alert-dialog.tsx
+  - resources/admin/src/shell/DataTable.tsx
+    - resources/admin/src/lib/utils.ts (see earlier dependency)
+  - resources/admin/src/shell/Description.tsx (see earlier dependency)
+  - resources/admin/src/shell/EmptyState.tsx
+    - resources/admin/src/shell/Description.tsx (see earlier dependency)
+  - resources/admin/src/shell/Region.tsx (see earlier dependency)
+  - resources/admin/src/shell/RegionSkeleton.tsx
+    - resources/admin/src/components/ui/skeleton.tsx
+    - resources/admin/src/shell/Region.tsx (see earlier dependency)
+  - resources/admin/src/shell/loadable.ts
+  - resources/admin/src/destinations/api.ts (see earlier dependency)
+  - resources/admin/src/destinations/settings.tsx (see earlier dependency)
+  - resources/admin/src/goals/availability.ts (see earlier dependency)

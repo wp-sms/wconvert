@@ -114,7 +114,9 @@ final class SlotRoles
                     // Playbook writes for every slot but the one that needs a
                     // link inside a sentence. Two spellings of the same words
                     // would make a round trip through this pair change shape.
-                    $found[$role][] = count($keys) === 1 ? reset($words) : $words;
+                    // An options list is one structured value, not repeated
+                    // instances of a Role. Keep its named wrapper for bind().
+                    $found[$role][] = count($keys) === 1 && $keys[0] !== 'options' ? reset($words) : $words;
                 }
             }
 

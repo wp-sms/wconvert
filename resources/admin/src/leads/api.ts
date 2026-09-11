@@ -39,6 +39,24 @@ export interface LeadLog {
   grouped: boolean;
   leads: Lead[];
   groups: LeadGroup[];
+  next_cursor: string | null;
+  snapshot: string;
+}
+
+/** Shareable filters. Grouping and paging change the view, not this search scope. */
+export interface LeadQuery {
+  optinId?: string;
+  identifier?: string;
+  leadId?: string;
+  from?: string;
+  to?: string;
+}
+
+export interface LeadPage extends LeadQuery {
+  grouped?: boolean;
+  cursor?: string;
+  snapshot?: string;
+  groupIdentifier?: string;
 }
 
 export interface Retention {
@@ -48,11 +66,17 @@ export interface Retention {
 
 const query = (params: Record<string, string>) => new URLSearchParams(params).toString();
 
-export const readLog = (optinId: string, grouped: boolean) =>
+export const leadParams = (filter: LeadPage): Record<string, string> => Object.fromEntries(
+  Object.entries({ optin_id: filter.optinId, identifier: filter.identifier, lead_id: filter.leadId,
+    from: filter.from, to: filter.to, cursor: filter.cursor, snapshot: filter.snapshot,
+    group_identifier: filter.groupIdentifier }).filter((entry): entry is [string, string] => typeof entry[1] === 'string' && entry[1] !== ''),
+);
+
+export const readLog = (filter: LeadPage = {}) =>
   apiFetch<LeadLog>({
     path: `/wconvert/v1/leads?${query({
-      ...(optinId === '' ? {} : { optin_id: optinId }),
-      grouped: grouped ? '1' : '0',
+      ...leadParams(filter),
+      grouped: filter.grouped ? '1' : '0',
     })}`,
   });
 
@@ -69,12 +93,13 @@ export const saveRetention = (days: number | null) =>
  * to turn it back into one. The nonce is bound to the action, so appending a
  * filter here does not invalidate it.
  */
-export const exportUrl = (optinId: string): string | null => {
+export const exportUrl = (filter: LeadPage = {}): string | null => {
   const base = adminSettings()?.exportUrl;
 
   if (base === undefined) {
     return null;
   }
 
-  return optinId === '' ? base : `${base}&optin_id=${encodeURIComponent(optinId)}`;
+  const params = leadParams({ ...filter, cursor: undefined });
+  return Object.keys(params).length === 0 ? base : `${base}&${query(params)}`;
 };

@@ -1,4 +1,5 @@
 import { __ } from '@wordpress/i18n';
+import type { LeadQuery } from './leads/api';
 
 /**
  * The admin's sections, and the translation between one and a URL hash.
@@ -67,7 +68,7 @@ const IDS: ReadonlySet<string> = new Set(SECTIONS.map((section) => section.id));
  * one and a hand-written link may not.
  */
 export function sectionFrom(hash: string): SectionId {
-  const id = hash.replace(/^#/, '');
+  const id = hash.replace(/^#/, '').split('?')[0];
 
   return IDS.has(id) ? (id as SectionId) : DEFAULT_SECTION;
 }
@@ -81,4 +82,62 @@ export function sectionFrom(hash: string): SectionId {
  */
 export function hashFor(id: SectionId): string {
   return `#${id}`;
+}
+
+/** Read-state links stay inside WordPress's existing admin page. */
+export interface ReportQuery {
+  days?: number;
+  goal?: string;
+  optinId?: string;
+}
+
+export interface AdminRoute {
+  section: SectionId;
+  editId?: string;
+  returnTo: string;
+  report: ReportQuery;
+  leads: LeadQuery;
+  destinationId?: string;
+}
+
+function withQuery(section: SectionId, values: Record<string, string | number | undefined>): string {
+  const query = new URLSearchParams();
+  for (const [key, value] of Object.entries(values)) {
+    if (value !== undefined && value !== '') query.set(key, String(value));
+  }
+  return hashFor(section) + (query.size > 0 ? `?${query.toString()}` : '');
+}
+
+function returnHref(value: string | null): string {
+  if (!value?.startsWith('#') || value.length > 2048) return hashFor('optins');
+  const [section, ...query] = value.slice(1).split('?');
+  // Returning to another editor can form an endless nested back-link chain.
+  return IDS.has(section) && !new URLSearchParams(query.join('?')).has('edit') ? value : hashFor('optins');
+}
+
+export const editorHref = (id: string, returnTo?: string): string =>
+  withQuery('optins', { edit: id, back: returnTo ? returnHref(returnTo) : undefined });
+export const reportHref = (query: ReportQuery = {}): string =>
+  withQuery('analytics', { days: query.days, goal: query.goal, optin: query.optinId });
+export const leadsHref = (query: LeadQuery = {}): string =>
+  withQuery('leads', { optin: query.optinId, identifier: query.identifier, lead: query.leadId, from: query.from, to: query.to });
+export const destinationHref = (id?: string): string => withQuery('destinations', { destination: id });
+
+export function routeFrom(hash: string): AdminRoute {
+  const section = sectionFrom(hash);
+  const params = new URLSearchParams(hash.split('?').slice(1).join('?'));
+  const value = (key: string) => params.get(key) || undefined;
+  const days = Number(params.get('days'));
+  return {
+    section,
+    editId: section === 'optins' ? value('edit') : undefined,
+    returnTo: returnHref(params.get('back')),
+    report: {
+      days: Number.isInteger(days) && days >= 1 && days <= 366 ? days : undefined,
+      goal: value('goal'),
+      optinId: value('optin'),
+    },
+    leads: { optinId: value('optin'), identifier: value('identifier'), leadId: value('lead'), from: value('from'), to: value('to') },
+    destinationId: value('destination'),
+  };
 }

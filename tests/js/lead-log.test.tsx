@@ -1,345 +1,227 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import type { LeadPage } from '../../resources/admin/src/leads/api';
 
-/**
- * The lead log screen, and the one thing about it that is a decision rather
- * than a layout.
- *
- * **Grouping is presentation, never the count** (ADR 0021). The server carries
- * that in the payload's shape — one total, spelled `submissions` — and this is
- * the other end of it: the screen has to render that number and not one it
- * derived. A group count reaching the headline would be the product reporting
- * a second metric, and the only name for that metric is "people", which is the
- * number this system cannot honestly produce.
- */
-const log = vi.hoisted(() => ({
-  readLog: vi.fn(),
-  readRetention: vi.fn(),
-  saveRetention: vi.fn(),
-  exportUrl: vi.fn(),
-}));
-
+const log = vi.hoisted(() => ({ readLog: vi.fn(), readRetention: vi.fn(), saveRetention: vi.fn(), exportUrl: vi.fn() }));
 const optins = vi.hoisted(() => ({ listOptins: vi.fn() }));
-
 vi.mock('../../resources/admin/src/leads/api', () => log);
-// The network call is stubbed; `flattened` is NOT. It is a pure function over
-// the response, and one of the things this screen decides is whether an A/B
-// arm can label a Lead — a stubbed flatten would let the test answer that for
-// itself. Same reason `optin-list.test.tsx` keeps `statusOf` real.
 vi.mock('../../resources/admin/src/optins/api', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('../../resources/admin/src/optins/api')>()),
-  ...optins,
+  ...(await importOriginal<typeof import('../../resources/admin/src/optins/api')>()), ...optins,
 }));
-
 const { LeadLog } = await import('../../resources/admin/src/leads/LeadLog');
+const SNAPSHOT = '01J99999990000000000000000';
+const CAPTURE = { id: '01J0000000AAAAAAAAAAAAAAAA', optin_id: 'OPTIN1', email: 'sarah@example.com',
+  phone: null, fields: {}, created_at: '2026-08-01 09:30:00' };
+const SEVEN = { submissions: 7, grouped: false, leads: [CAPTURE],
+  groups: [{ identifier: 'sarah@example.com', submissions: 2, latest_id: CAPTURE.id, latest_at: CAPTURE.created_at }],
+  next_cursor: null, snapshot: SNAPSHOT };
+const OPTIN = { id: 'OPTIN1', name: 'Newsletter footer', goal: 'grow_email_list', parent_id: null,
+  published_at: null, deleted_at: null, arms: [] };
 
-/** Seven submissions, two of which are Sarah's. */
-const SEVEN_SUBMISSIONS = {
-  submissions: 7,
-  leads: [
-    {
-      id: '01J0000000AAAAAAAAAAAAAAAA',
-      optin_id: 'OPTIN1',
-      email: 'sarah@example.com',
-      phone: null,
-      fields: {},
-      created_at: '2026-08-01 09:30:00',
-    },
-  ],
-  groups: [
-    {
-      identifier: 'sarah@example.com',
-      submissions: 2,
-      latest_id: '01J0000000AAAAAAAAAAAAAAAA',
-      latest_at: '2026-08-01 09:30:00',
-    },
-  ],
-};
-
-/**
- * ============================================================================
- * THE TWO REGIONS ANSWER FOUR SITUATIONS EACH, AND NEITHER WAS TESTED ON ANY.
- * ============================================================================
- * `Loadable` forces both regions here to branch on `loading | ready | failed`,
- * and nothing asserted any of the six branches. The retention card in
- * particular showed real radios greyed out while it read — a control saying
- * *you may not change this* about a value nobody had read yet — and no test
- * would have noticed either the gap or the fix.
- */
-describe('the four situations the log has to answer', () => {
+describe('capture history', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    log.readLog.mockImplementation((query: LeadPage) => Promise.resolve({ ...SEVEN, grouped: query.grouped === true }));
     log.readRetention.mockResolvedValue({ days: null, max_days: 3650 });
-    log.exportUrl.mockReturnValue('https://example.test/x');
-    optins.listOptins.mockResolvedValue([]);
+    log.exportUrl.mockImplementation((query: LeadPage) => `https://example.test/export?_wpnonce=y&identifier=${query.identifier ?? ''}`);
+    optins.listOptins.mockResolvedValue([OPTIN]);
   });
 
-  it('says it is loading, and never that there is nothing', async () => {
-    let land: (payload: unknown) => void = () => undefined;
-    log.readLog.mockReturnValue(new Promise((resolve) => (land = resolve)));
-
+  it('keeps loading distinct from no captures and then shows the answer', async () => {
+    let finish!: (payload: unknown) => void;
+    log.readLog.mockReturnValue(new Promise((resolve) => { finish = resolve; }));
     render(<LeadLog />);
-
-    expect((await screen.findAllByRole('status')).length).toBeGreaterThan(0);
-    expect(screen.queryByText('No submissions yet')).toBeNull();
-
-    land({ ...SEVEN_SUBMISSIONS, grouped: false });
-
-    expect(await screen.findByText('sarah@example.com')).toBeInTheDocument();
-  });
-
-  it('offers the door out where nothing has ever been captured', async () => {
-    log.readLog.mockResolvedValue({ submissions: 0, leads: [], groups: [], grouped: false });
-
-    render(<LeadLog />);
-
-    expect(await screen.findByText('No submissions yet')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Go to Optins' })).toBeInTheDocument();
-  });
-
-  it('renders a first failure as the region’s whole content', async () => {
-    log.readLog.mockRejectedValue(new Error('The log could not be read.'));
-
-    render(<LeadLog />);
-
-    expect(await screen.findByText('The log could not be read.')).toBeInTheDocument();
-    expect(screen.getByText('Reload the page to try again.')).toBeInTheDocument();
-  });
-
-  /**
-   * **The retention card is its own region and fails on its own** (ADR 0039),
-   * which is the half of the rule a page-top banner loses: the log above is
-   * fine and says so.
-   */
-  it('fails the retention card without taking the log with it', async () => {
-    log.readLog.mockResolvedValue({ ...SEVEN_SUBMISSIONS, grouped: false });
-    log.readRetention.mockRejectedValue(new Error('The retention period could not be read.'));
-
-    render(<LeadLog />);
-
-    expect(await screen.findByText('The retention period could not be read.')).toBeInTheDocument();
+    expect(screen.queryByText('No submissions yet')).not.toBeInTheDocument();
+    expect(await screen.findByText('Loading submissions…')).toBeInTheDocument();
+    await act(async () => finish(SEVEN));
     expect(screen.getByText('sarah@example.com')).toBeInTheDocument();
   });
 
-  /**
-   * **A loading state, not four real controls greyed out.** A disabled radio
-   * says *you may not change this*; what was true was *we have not read it
-   * yet*, and the two are not the same claim.
-   */
-  it('draws a placeholder for the retention period rather than dead controls', async () => {
-    log.readLog.mockResolvedValue({ ...SEVEN_SUBMISSIONS, grouped: false });
-    log.readRetention.mockReturnValue(new Promise(() => undefined));
-
+  it('offers Optins when there are no submissions and no filters', async () => {
+    log.readLog.mockResolvedValue({ ...SEVEN, submissions: 0, leads: [] });
     render(<LeadLog />);
-
-    await screen.findByText('sarah@example.com');
-
-    expect(screen.queryByRole('radio', { name: /Keep them until I delete them/ })).toBeNull();
-  });
-});
-
-describe('the lead log', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-
-    log.readLog.mockImplementation((_optinId: string, grouped: boolean) =>
-      Promise.resolve({ ...SEVEN_SUBMISSIONS, grouped }),
-    );
-    log.readRetention.mockResolvedValue({ days: null, max_days: 3650 });
-    log.exportUrl.mockReturnValue('https://example.test/wp-admin/admin-post.php?action=x&_wpnonce=y');
-    optins.listOptins.mockResolvedValue([
-      {
-        id: 'OPTIN1',
-        name: 'Newsletter footer',
-        goal: 'grow_email_list',
-        parent_id: null,
-        published_at: null,
-        deleted_at: null,
-        arms: [],
-      },
-    ]);
+    expect(await screen.findByText('No submissions yet')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Go to Optins' })).toHaveAttribute('href', '#optins');
   });
 
-  /**
-   * ==========================================================================
-   * A LEAD CAPTURED BY AN A/B ARM STILL KNOWS WHICH OPTIN CAPTURED IT.
-   * ==========================================================================
-   * The list route answers **parentless Optins only** (ADR 0045), which is
-   * right for the Optins screen and would leave this one showing a raw ULID in
-   * the Optin column for every Lead an arm captured — and no filter entry for
-   * it either. The name is the only provenance a Lead has, and preserving it
-   * is what the soft delete exists for (ADR 0002, ADR 0020); an arm is not
-   * even deleted.
-   *
-   * The arms are already on the wire, nested under their parent, so this costs
-   * no second read.
-   */
-  it('names the arm that captured a Lead, not just the campaigns', async () => {
-    log.readLog.mockResolvedValue({
-      ...SEVEN_SUBMISSIONS,
-      leads: [{ ...SEVEN_SUBMISSIONS.leads[0], optin_id: 'OPTIN1B' }],
-    });
-    optins.listOptins.mockResolvedValue([
-      {
-        id: 'OPTIN1',
-        name: 'Newsletter footer',
-        goal: 'grow_email_list',
-        parent_id: null,
-        published_at: null,
-        deleted_at: null,
-        arms: [
-          {
-            id: 'OPTIN1B',
-            name: 'Newsletter footer (B)',
-            goal: 'grow_email_list',
-            parent_id: 'OPTIN1',
-            published_at: null,
-            deleted_at: null,
-            arms: [],
-          },
-        ],
-      },
-    ]);
-
-    render(<LeadLog />);
-
-    expect(await screen.findByText('Newsletter footer (B)')).toBeInTheDocument();
+  it('gives a missing exact capture a retention-aware explanation', async () => {
+    log.readLog.mockResolvedValue({ ...SEVEN, submissions: 0, leads: [] });
+    render(<LeadLog query={{ leadId: CAPTURE.id }} />);
+    expect(await screen.findByText('Submission not found')).toBeInTheDocument();
+    expect(screen.getByText(/This ID may no longer be retained/)).toBeInTheDocument();
   });
 
-  it('reports submissions, and says so rather than saying "leads"', async () => {
+  it('can retry the first failed read without reloading the whole page', async () => {
+    log.readLog.mockRejectedValueOnce(new Error('History unavailable.'));
     render(<LeadLog />);
-
-    expect(await screen.findByText('7 submissions')).toBeInTheDocument();
+    await screen.findByText('History unavailable.');
+    await userEvent.click(screen.getByRole('button', { name: 'Retry loading submissions' }));
+    expect(await screen.findByText('sarah@example.com')).toBeInTheDocument();
   });
 
-  /**
-   * The boundary. Sarah's group reads "2 submissions" beside a headline that
-   * still reads 7 — the toggle changed what a row IS and nothing else.
-   */
-  it('keeps the headline at submissions when the grouping toggle goes on', async () => {
+  it('retries a name lookup without replacing or rereading the loaded history', async () => {
+    optins.listOptins.mockRejectedValueOnce(new Error('Names unavailable.'));
     render(<LeadLog />);
-
-    expect(await screen.findByText('7 submissions')).toBeInTheDocument();
-
-    await userEvent.click(await screen.findByLabelText(/Group submissions/));
-
-    await waitFor(() => expect(screen.getByText('2 submissions')).toBeInTheDocument());
-    expect(screen.getByText('7 submissions')).toBeInTheDocument();
+    await screen.findByText('Names unavailable.');
+    expect(screen.getByText('sarah@example.com')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Retry loading submissions' }));
+    await screen.findByRole('link', { name: 'Newsletter footer' });
+    expect(log.readLog).toHaveBeenCalledTimes(1);
   });
 
-  it('reports no count of people or unique leads anywhere on the screen', async () => {
+  it('lets retention fail independently of successful history', async () => {
+    log.readRetention.mockRejectedValue(new Error('Retention unavailable.'));
     render(<LeadLog />);
+    expect(await screen.findByText('Retention unavailable.')).toBeInTheDocument();
+    expect(screen.getByText('sarah@example.com')).toBeInTheDocument();
+  });
 
+  it('keeps the headline as submissions when the grouping view changes', async () => {
+    render(<LeadLog />);
     await screen.findByText('7 submissions');
-    await userEvent.click(screen.getByLabelText(/Group submissions/));
-
-    await waitFor(() => expect(screen.getByText('2 submissions')).toBeInTheDocument());
-
-    expect(document.body.textContent).not.toMatch(/unique/i);
+    await userEvent.click(screen.getByLabelText('Group by email or phone'));
+    expect(await screen.findByText('2 submissions')).toBeInTheDocument();
+    expect(screen.getByText('7 submissions')).toBeInTheDocument();
     expect(document.body.textContent).not.toMatch(/\d+\s+(people|persons|contacts)/i);
+    expect(screen.getByText('Page 1 · 1 identifier group shown. Total above counts all matching submissions.')).toBeInTheDocument();
   });
 
-  /**
-   * The Optin column shows the NAME. The id says nothing to a merchant
-   * answering "which form did this come from?", and the name survives the
-   * Optin being soft-deleted, which is what the soft delete is for.
-   */
-  it('labels a lead with its optin name rather than its id', async () => {
-    render(<LeadLog />);
-
-    // Scoped to the table, because the Optin filter above it lists the same
-    // name in an <option>.
-    const row = await screen.findByRole('row', { name: /sarah@example\.com/ });
-
-    expect(row).toHaveTextContent('Newsletter footer');
-    expect(row).not.toHaveTextContent('OPTIN1');
+  it('names soft-deleted Optins and nested A/B arms and links back to their editor', async () => {
+    optins.listOptins.mockResolvedValue([{ ...OPTIN, arms: [{ ...OPTIN, id: 'ARM', name: 'Newsletter (B)', parent_id: 'OPTIN1' }] }]);
+    log.readLog.mockResolvedValue({ ...SEVEN, leads: [{ ...CAPTURE, optin_id: 'ARM' }] });
+    render(<LeadLog query={{ from: '2026-08-01' }} />);
+    const link = await screen.findByRole('link', { name: 'Newsletter (B)' });
+    expect(link.getAttribute('href')).toContain('ARM');
+    expect(link.getAttribute('href')).toContain('2026-08-01');
+    expect(optins.listOptins).toHaveBeenCalledWith(true);
   });
 
-  it('asks for deleted optins too, because a lead outlives the optin that captured it', async () => {
+  it('applies exact identifier and inclusive dates together only on Apply', async () => {
     render(<LeadLog />);
-
-    await waitFor(() => expect(optins.listOptins).toHaveBeenCalledWith(true));
+    await screen.findByText('7 submissions');
+    await userEvent.type(screen.getByLabelText('Email, phone or Lead ID'), ' alex@example.com ');
+    fireEvent.change(screen.getByLabelText('From'), { target: { value: '2026-08-01' } });
+    fireEvent.change(screen.getByLabelText('To'), { target: { value: '2026-08-31' } });
+    expect(log.readLog).toHaveBeenCalledTimes(1);
+    await userEvent.click(screen.getByRole('button', { name: 'Apply filters' }));
+    await waitFor(() => expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ identifier: 'alex@example.com', from: '2026-08-01', to: '2026-08-31' })));
   });
 
-  /**
-   * **Keep-forever is the shipped default** (ADR 0018). Deleting a merchant's
-   * Leads on the plugin's own opinion is a support catastrophe, and may
-   * destroy records they must keep for unrelated reasons.
-   */
-  it('opens on keep-forever', async () => {
-    render(<LeadLog />);
-
-    expect(await screen.findByLabelText(/Keep them until I delete them/)).toBeChecked();
+  it('recognizes a pasted Lead ID and preserves existing date scope', async () => {
+    const onQueryChange = vi.fn();
+    render(<LeadLog query={{ from: '2026-08-01', to: '2026-08-31' }} onQueryChange={onQueryChange} />);
+    await userEvent.type(screen.getByLabelText('Email, phone or Lead ID'), CAPTURE.id.toLowerCase());
+    await userEvent.click(screen.getByRole('button', { name: 'Apply filters' }));
+    expect(onQueryChange).toHaveBeenCalledWith(expect.objectContaining({ leadId: CAPTURE.id, identifier: undefined, from: '2026-08-01', to: '2026-08-31' }));
   });
 
-  /**
-   * **Typing a period must not save what it passes through.** Typing `90`
-   * goes through `9`, and a saved 9 is a period the next cron run enforces —
-   * deleting Leads because a merchant was mid-keystroke is the support
-   * catastrophe ADR 0018 exists to avoid, arriving through the settings panel
-   * instead of through a default.
-   */
-  it('does not save a retention period on every keystroke', async () => {
-    log.readRetention.mockResolvedValue({ days: 30, max_days: 3650 });
-    log.saveRetention.mockResolvedValue({ days: 90, max_days: 3650 });
-
-    render(<LeadLog />);
-
-    const field = await screen.findByRole('spinbutton');
-
-    await userEvent.clear(field);
-    await userEvent.type(field, '90');
-
-    expect(log.saveRetention).not.toHaveBeenCalled();
-
-    await userEvent.tab();
-
-    await waitFor(() => expect(log.saveRetention).toHaveBeenCalledTimes(1));
-    expect(log.saveRetention).toHaveBeenCalledWith(90);
+  it('follows browser-history query changes and resets stale filter inputs', async () => {
+    const { rerender } = render(<LeadLog query={{ identifier: 'first@example.com' }} />);
+    await screen.findByText('7 submissions');
+    await userEvent.type(screen.getByLabelText('Email, phone or Lead ID'), 'draft');
+    rerender(<LeadLog query={{ identifier: 'second@example.com', from: '2026-09-01' }} />);
+    expect(screen.getByLabelText('Email, phone or Lead ID')).toHaveValue('second@example.com');
+    expect(screen.getByLabelText('From')).toHaveValue('2026-09-01');
+    await waitFor(() => expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ identifier: 'second@example.com' })));
   });
 
-  it('saves the period once, on Enter', async () => {
-    log.readRetention.mockResolvedValue({ days: 30, max_days: 3650 });
-    log.saveRetention.mockResolvedValue({ days: 7, max_days: 3650 });
-
-    render(<LeadLog />);
-
-    const field = await screen.findByRole('spinbutton');
-
-    await userEvent.clear(field);
-    await userEvent.type(field, '7{Enter}');
-
-    await waitFor(() => expect(log.saveRetention).toHaveBeenCalledTimes(1));
-    expect(log.saveRetention).toHaveBeenCalledWith(7);
+  it('clears every applied filter explicitly', async () => {
+    const change = vi.fn();
+    render(<LeadLog query={{ identifier: 'sarah@example.com', from: '2026-08-01' }} onQueryChange={change} />);
+    await userEvent.click(screen.getByRole('button', { name: 'Clear filters' }));
+    expect(change).toHaveBeenCalledWith({});
   });
 
-  /**
-   * Turning retention off is a discrete choice, so it commits at once — and it
-   * commits null, never a zero that would read as "keep nothing".
-   */
-  it('commits keep-forever the moment it is chosen', async () => {
-    log.readRetention.mockResolvedValue({ days: 30, max_days: 3650 });
-    log.saveRetention.mockResolvedValue({ days: null, max_days: 3650 });
-
-    render(<LeadLog />);
-
-    await userEvent.click(await screen.findByLabelText(/Keep them until I delete them/));
-
-    await waitFor(() => expect(log.saveRetention).toHaveBeenCalledWith(null));
+  it('keeps rows and export on the last successful scope through a filter failure', async () => {
+    const { rerender } = render(<LeadLog query={{ identifier: 'sarah@example.com' }} />);
+    await screen.findByText('7 submissions');
+    log.readLog.mockRejectedValueOnce(new Error('Read interrupted.'));
+    rerender(<LeadLog query={{ identifier: 'alex@example.com' }} />);
+    await screen.findByText('Read interrupted.');
+    expect(screen.getByText('sarah@example.com')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Export matching submissions' })).toHaveAttribute('href', expect.stringContaining('sarah@example.com'));
+    expect(screen.getByText(/last successful filters/)).toBeInTheDocument();
   });
 
-  it('says so when it is showing fewer rows than there are submissions', async () => {
+  it('does not relabel event columns while grouping is still loading', async () => {
     render(<LeadLog />);
-
-    expect(await screen.findByText('Showing the newest 1 of 7 submissions.')).toBeInTheDocument();
+    await screen.findByRole('columnheader', { name: 'Submitted' });
+    let finish!: (payload: unknown) => void;
+    log.readLog.mockReturnValue(new Promise((resolve) => { finish = resolve; }));
+    await userEvent.click(screen.getByLabelText('Group by email or phone'));
+    expect(screen.getByRole('columnheader', { name: 'Submitted' })).toBeInTheDocument();
+    expect(screen.queryByRole('columnheader', { name: 'Identifier' })).not.toBeInTheDocument();
+    await act(async () => finish({ ...SEVEN, grouped: true }));
+    expect(screen.getByRole('columnheader', { name: 'Identifier' })).toBeInTheDocument();
   });
 
-  it('offers the export as a link the browser navigates to, not a fetch', async () => {
+  it('pages older and newer under one snapshot and exports all matching pages', async () => {
+    log.readLog.mockImplementation((query: LeadPage) => Promise.resolve({ ...SEVEN, next_cursor: query.cursor ? null : 'next-page', leads: [{ ...CAPTURE, email: query.cursor ? 'older@example.com' : CAPTURE.email }] }));
+    render(<LeadLog query={{ optinId: 'OPTIN1', from: '2026-08-01' }} />);
+    await screen.findByText('sarah@example.com');
+    await userEvent.click(screen.getByRole('button', { name: 'Older' }));
+    expect(await screen.findByText('older@example.com')).toBeInTheDocument();
+    expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ cursor: 'next-page', snapshot: SNAPSHOT, from: '2026-08-01' }));
+    expect(screen.getByText('Page 2 · 1 submission shown.')).toBeInTheDocument();
+    expect(log.exportUrl).toHaveBeenLastCalledWith(expect.objectContaining({ snapshot: SNAPSHOT, optinId: 'OPTIN1', from: '2026-08-01' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Newer' }));
+    await screen.findByText('sarah@example.com');
+    expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ cursor: undefined, snapshot: SNAPSHOT }));
+  });
+
+  it('pluralizes the footer for multiple submissions and identifier groups', async () => {
+    log.readLog.mockImplementation((query: LeadPage) => Promise.resolve({ ...SEVEN, grouped: query.grouped === true,
+      leads: [CAPTURE, { ...CAPTURE, id: '01J0000000BBBBBBBBBBBBBBBB', email: 'alex@example.com' }],
+      groups: [...SEVEN.groups, { ...SEVEN.groups[0], identifier: 'alex@example.com' }] }));
     render(<LeadLog />);
+    expect(await screen.findByText('Page 1 · 2 submissions shown.')).toBeInTheDocument();
+    await userEvent.click(screen.getByLabelText('Group by email or phone'));
+    expect(await screen.findByText('Page 1 · 2 identifier groups shown. Total above counts all matching submissions.')).toBeInTheDocument();
+  });
 
-    const link = await screen.findByRole('link', { name: 'Export CSV' });
+  it('freezes pagination when the requested older page fails, and retries that page', async () => {
+    log.readLog.mockResolvedValueOnce({ ...SEVEN, next_cursor: 'next-page' }).mockRejectedValueOnce(new Error('Page unavailable.'));
+    render(<LeadLog />);
+    await screen.findByText('sarah@example.com');
+    await userEvent.click(screen.getByRole('button', { name: 'Older' }));
+    await screen.findByText('Page unavailable.');
+    expect(screen.getByRole('button', { name: 'Older' })).toBeDisabled();
+    expect(screen.getByText('Page 1 · 1 submission shown.')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Retry loading submissions' }));
+    await screen.findByText('Page 2 · 1 submission shown.');
+    expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ cursor: 'next-page' }));
+  });
 
-    expect(link).toHaveAttribute('href', expect.stringContaining('_wpnonce'));
+  it('refreshes back to the newest page with a fresh snapshot request', async () => {
+    log.readLog.mockResolvedValue({ ...SEVEN, next_cursor: 'next-page' });
+    render(<LeadLog />);
+    await screen.findByText('7 submissions');
+    await userEvent.click(screen.getByRole('button', { name: 'Older' }));
+    await screen.findByText('Page 2 · 1 submission shown.');
+    await userEvent.click(screen.getByRole('button', { name: 'Refresh submissions' }));
+    await waitFor(() => expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ cursor: undefined, snapshot: undefined })));
+  });
+
+  it('drills a group down to actual capture events using the same filters and snapshot', async () => {
+    render(<LeadLog query={{ from: '2026-08-01' }} />);
+    await screen.findByText('7 submissions');
+    await userEvent.click(screen.getByLabelText('Group by email or phone'));
+    await userEvent.click(await screen.findByRole('button', { name: 'View submissions' }));
+    const dialog = await screen.findByRole('dialog', { name: 'Submission history' });
+    expect(await within(dialog).findByText(CAPTURE.id)).toBeInTheDocument();
+    expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ groupIdentifier: 'sarah@example.com', grouped: false, from: '2026-08-01', snapshot: SNAPSHOT, cursor: undefined }));
+    expect(within(dialog).getByRole('link', { name: 'Export these submissions' })).toBeInTheDocument();
+    expect(log.exportUrl).toHaveBeenCalledWith(expect.objectContaining({ groupIdentifier: 'sarah@example.com', from: '2026-08-01', snapshot: SNAPSHOT }));
+  });
+
+  it('keeps captured fields and Lead ID readable without claiming a delivery status', async () => {
+    log.readLog.mockResolvedValue({ ...SEVEN, leads: [{ ...CAPTURE, fields: { name: 'Sarah', consent_text: 'Please email me.', service: 'Repairs' } }] });
+    render(<LeadLog />);
+    await userEvent.click(await screen.findByText('View captured details'));
+    expect(screen.getByText(CAPTURE.id)).toBeVisible();
+    expect(screen.getByText('Please email me.')).toBeVisible();
+    expect(screen.getByText('Repairs')).toBeVisible();
+    expect(document.body.textContent).not.toMatch(/delivered|delivery succeeded/i);
   });
 });

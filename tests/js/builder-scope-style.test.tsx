@@ -1,3 +1,4 @@
+import { CheckStrip } from '../../resources/admin/src/builder/CheckStrip';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { render, screen, within } from '@testing-library/react';
@@ -88,7 +89,14 @@ const NESTED: TemplateTree = {
 const LABELS = {
   roles: { headline: 'Headline', cta_label: 'Button label', success_headline: 'Headline after they submit' },
   nodes: { heading: 'Heading', button: 'Button' },
-  layouts: { stack: 'Column', row: 'Row', split: 'Side by side', grid: 'Equal columns', panel: 'Coloured box' },
+  layouts: {
+    stack: 'Column',
+    row: 'Row',
+    split: 'Side by side',
+    grid: 'Equal columns',
+    panel: 'Coloured box',
+    media: 'Picture box',
+  },
   layoutNotes: {
     stack: 'Blocks stacked top to bottom.',
     row: 'Blocks along one line.',
@@ -157,6 +165,7 @@ beforeEach(() => {
 async function style(row: RegExp) {
   render(<OptinBuilder id={ID} onClose={vi.fn()} />);
 
+  await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
   const tree = await screen.findByRole('treegrid', { name: 'Blocks in this design' });
 
   /*
@@ -167,9 +176,8 @@ async function style(row: RegExp) {
   */
   await userEvent.click(within(within(tree).getByRole('row', { name: row })).getAllByRole('button')[0]!);
 
-  const halves = screen.getByRole('tablist', { name: /what it says, or how it looks/ });
-
-  await userEvent.click(within(halves).getByRole('tab', { name: 'Style' }));
+  const halves = screen.queryByRole('tablist', { name: /settings$/ });
+  if (halves) await userEvent.click(within(halves).getByRole('tab', { name: 'Style' }));
 }
 
 /** The design as the last save sent it. */
@@ -187,20 +195,11 @@ describe('the Style half of the inspector', () => {
    * learned nothing — so the panel says which box decides for it and hands over
    * the way there (ADR 0042 rule 4).
    */
-  it('tells a leaf which box its look comes from, and offers that box', async () => {
+  it('offers a headline its own appearance without unrelated controls', async () => {
     await style(/Get 10% off/);
-
-    /*
-      **The NEAREST box, which is the Column and not the panel outside it.**
-      That is the answer that matters: the Column is where a merchant would set
-      a ground for this heading alone, and it is where a value set on it would
-      win. The panel is one step further out and is named by the source note on
-      whichever tokens actually reach here from it.
-    */
-    expect(screen.getByRole('group', { name: 'Headline' })).toHaveTextContent(
-      'This block takes its look from Column.',
-    );
-    expect(screen.getByRole('button', { name: 'Open that box' })).toBeInTheDocument();
+    expect(screen.getByRole('group', { name: 'Headline' })).toHaveTextContent('Appearance for Heading.');
+    expect(screen.getByRole('button', { name: /Choose a colour for Text/ })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Choose a colour for Background/ })).toBeNull();
   });
 
   /**
@@ -209,13 +208,11 @@ describe('the Style half of the inspector', () => {
    * Design tab always edited — so calling it *Column* would send a merchant
    * looking for the design's colours to something named after a flex direction.
    */
-  it('calls the outermost box the design rather than Column', async () => {
+  it('offers explicit paths back to the parent and design', async () => {
     await style(/Button label/);
-
-    expect(screen.getByRole('group', { name: 'Button label' })).toHaveTextContent(
-      'This block takes its look from the design.',
-    );
-    expect(screen.getByRole('button', { name: 'Open the design’s look' })).toBeInTheDocument();
+    const breadcrumb = screen.getByRole('navigation', { name: 'Selected element' });
+    expect(within(breadcrumb).getByRole('button', { name: 'Design' })).toBeInTheDocument();
+    expect(within(breadcrumb).getByRole('button', { name: 'The form' })).toBeInTheDocument();
   });
 
   /**
@@ -224,8 +221,7 @@ describe('the Style half of the inspector', () => {
    */
   it('reaches the designs own token controls through that door', async () => {
     await style(/Button label/);
-    await userEvent.click(screen.getByRole('button', { name: 'Open the design’s look' }));
-
+    await userEvent.click(within(screen.getByRole('navigation', { name: 'Selected element' })).getByRole('button', { name: 'Design' }));
     expect(screen.getByRole('button', { name: /Choose a colour for Background/ })).toBeInTheDocument();
   });
 
@@ -246,7 +242,7 @@ describe('the Style half of the inspector', () => {
     await userEvent.click(screen.getByRole('button', { name: /Choose a colour for Background/ }));
     await userEvent.clear(screen.getByLabelText('Background value'));
     await userEvent.type(screen.getByLabelText('Background value'), '#123456');
-    await userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
 
     const design = saved();
     const panel = (design.tree.steps[0] as unknown as {
@@ -273,7 +269,7 @@ describe('the Style half of the inspector', () => {
       );
     }
 
-    await userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
 
     const panel = (saved().tree.steps[0] as unknown as { children: Record<string, unknown>[] })
       .children[0];
@@ -293,7 +289,7 @@ describe('the Style half of the inspector', () => {
 
     // Two of them: the panel sets `bg` and `fg`, and both reach this box by
     // inheritance. Everything else falls through to the design and says nothing.
-    expect(screen.getAllByRole('button', { name: 'From Coloured box' })).toHaveLength(2);
+    expect(screen.getAllByRole('button', { name: 'From Coloured box' })).toHaveLength(1);
     expect(screen.queryByRole('button', { name: /^From Column/ })).toBeNull();
   });
 
@@ -316,7 +312,7 @@ describe('the Style half of the inspector', () => {
 
     await userEvent.click(within(within(tree).getByRole('row', { name: /Column/ })).getAllByRole('button')[0]!);
     await userEvent.click(screen.getByRole('button', { name: /^Paste 2 setting/ }));
-    await userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
 
     const inner = (saved().tree.steps[0] as unknown as {
       children: { children: { tokens?: Record<string, string> }[] }[];
@@ -341,6 +337,232 @@ describe('the Style half of the inspector', () => {
   });
 });
 
+/**
+ * ============================================================================
+ * THE WIDTH SWITCH USED TO MOVE THE PREVIEW AND CHANGE NOTHING ABOUT WHAT WAS
+ * EDITED.
+ * ============================================================================
+ * A box carries its tokens twice now (ADR 0064), and the same twenty-four
+ * controls edit either bag — so the switch that decides which width is on
+ * screen also decides which one they write to. That is what makes it a mode
+ * rather than a second panel: the merchant sets the narrow values while looking
+ * at the narrow render.
+ */
+describe('the narrow bag, through the width switch', () => {
+  /** Put the preview — and therefore the inspector — on the narrow width. */
+  async function narrow() {
+    await userEvent.click(screen.getByRole('button', { name: 'Mobile preview' }));
+  }
+
+  it('says which width it is setting, because the controls are identical', async () => {
+    await style(/Coloured box/);
+
+    const inspector = within(screen.getByRole('group', { name: 'Coloured box' }));
+    expect(inspector.queryByText(/Editing mobile appearance/)).toBeNull();
+
+    await narrow();
+
+    expect(inspector.getByText('Editing mobile appearance. Unchanged values follow desktop.')).toBeInTheDocument();
+  });
+
+  it('writes into the narrow bag and leaves the full-width one alone', async () => {
+    await style(/Coloured box/);
+    await narrow();
+
+    await userEvent.click(screen.getByRole('button', { name: /Choose a colour for Background/ }));
+    await userEvent.clear(screen.getByLabelText('Background value'));
+    await userEvent.type(screen.getByLabelText('Background value'), '#123456');
+    await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
+
+    const panel = (saved().tree.steps[0] as unknown as {
+      children: { tokens?: Record<string, string>; narrow?: Record<string, string> }[];
+    }).children[0];
+
+    expect(panel?.narrow?.bg).toBe('#123456');
+    // The fixture's own full-width value, untouched — which is the whole point
+    // of the second bag rather than a second set of controls.
+    expect(panel?.tokens?.bg).toBe('#fff4df');
+  });
+
+  /**
+   * **A value set on the box's own WIDE bag is still *set here* at narrow**,
+   * and the two sentences are what a reset button alone could not tell apart:
+   * it appears whenever a value is set at either width, so a merchant editing
+   * at narrow could not see which of the two they were looking at.
+   */
+  it('tells set-here and set-for-narrow apart', async () => {
+    builder.getOptin.mockResolvedValue(
+      optin(
+        {
+          steps: [
+            {
+              type: 'stack',
+              children: [
+                {
+                  type: 'panel',
+                  tokens: { bg: '#fff4df' },
+                  narrow: { pad: '1rem' },
+                  children: [{ type: 'button', role: 'cta_label', label: 'Go', action: 'submit' }],
+                },
+              ],
+            },
+            { type: 'stack', children: [{ type: 'text', role: 'success_body', text: 'Done' }] },
+          ],
+        } as unknown as TemplateTree,
+        { bg: '#ffffff' },
+      ),
+    );
+
+    await style(/Coloured box/);
+
+    expect(document.querySelector('.wconvert-scope__from')).toHaveTextContent('Custom');
+
+    await narrow();
+
+    // `pad` is the one the narrow bag names; `bg` is inherited from the box's
+    // own wide bag, which is a different sentence.
+    expect(screen.getByText('Mobile override')).toBeInTheDocument();
+    expect(document.querySelector('.wconvert-scope__from')).toHaveTextContent('Custom');
+  });
+});
+
+/**
+ * ============================================================================
+ * A HEX SURVIVES EVERY THEME THE MERCHANT TRIES, AND THAT IS THE PROBLEM.
+ * ============================================================================
+ * A theme moves the design's colours; a scoped bag that spelled one does not
+ * move with it — so the deeper a design is styled, the less a theme does
+ * (ADR 0063). A value that NAMES a colour token follows it.
+ */
+describe('a scoped colour that follows the palette', () => {
+  it('offers the conversion where the value is a literal the merchant set', async () => {
+    await style(/Coloured box/);
+
+    await userEvent.click(screen.getByRole('button', { name: /Choose a colour for Background/ }));
+    await userEvent.clear(screen.getByLabelText('Background value'));
+    await userEvent.type(screen.getByLabelText('Background value'), '#123456');
+    await userEvent.keyboard('{Escape}');
+
+    /*
+      Named for the token it will FOLLOW rather than for the one being set, in
+      the label stub's own words — `bg` follows `accent`, which the stub calls
+      *Button*. The identity is the one mapping that cannot be written:
+      `--wc-bg: var(--wc-bg)` is a cycle CSS discards.
+    */
+    await userEvent.click(screen.getByRole('button', { name: /→ Button/ }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
+
+    const panel = (saved().tree.steps[0] as unknown as {
+      children: { tokens?: Record<string, string> }[];
+    }).children[0];
+
+    expect(panel?.tokens?.bg).toBe('accent');
+  });
+
+  /**
+   * **A control that changes nothing is the one thing ADR 0054 rule 3
+   * forbids.** A press on `→ Highlight` where the value already reads `accent`
+   * would rewrite it to itself.
+   */
+  it('stops offering it once the value already names a token', async () => {
+    builder.getOptin.mockResolvedValue(
+      optin(
+        {
+          steps: [
+            {
+              type: 'stack',
+              children: [
+                {
+                  type: 'panel',
+                  tokens: { bg: 'accent' },
+                  children: [{ type: 'button', role: 'cta_label', label: 'Go', action: 'submit' }],
+                },
+              ],
+            },
+            { type: 'stack', children: [{ type: 'text', role: 'success_body', text: 'Done' }] },
+          ],
+        } as unknown as TemplateTree,
+        { bg: '#ffffff', accent: '#263f2c' },
+      ),
+    );
+
+    await style(/Coloured box/);
+
+    expect(screen.queryByRole('button', { name: /→ / })).toBeNull();
+  });
+});
+
+/**
+ * ============================================================================
+ * A WARNING ABOUT A COLOUR THE BOX DOES NOT DRAW IS THE ONE THAT TEACHES A
+ * MERCHANT TO READ PAST THE REST.
+ * ============================================================================
+ * At the design every pair is somewhere in the tree. At a scope it is
+ * different: `fieldwork`'s photo pane holds two headings and nothing else, and
+ * measuring all four pairs on it reported *"Quiet text on Background is 1.1 to
+ * 1"* about a colour with no text in that box to draw it — beside a second
+ * warning about a field ground with no field (ADR 0042 rule 2).
+ */
+describe('the readability readout at a scope', () => {
+  /** A box with a failing `muted` and nothing in it that reads `muted`. */
+  const HEADINGS_ONLY = {
+    steps: [
+      {
+        type: 'stack',
+        children: [
+          {
+            type: 'panel',
+            tokens: { bg: '#546c49', fg: '#ffffff', muted: '#56634e' },
+            children: [{ type: 'heading', role: 'headline', text: 'Room to grow.' }],
+          },
+          { type: 'button', role: 'cta_label', label: 'Go', action: 'submit' },
+        ],
+      },
+      { type: 'stack', children: [{ type: 'text', role: 'success_body', text: 'Done' }] },
+    ],
+  } as unknown as TemplateTree;
+
+  it('says nothing about a pair no leaf in the box reads', async () => {
+    builder.getOptin.mockResolvedValue(optin(HEADINGS_ONLY, { bg: '#ffffff', fg: '#111827' }));
+
+    await style(/Coloured box/);
+
+    // `muted` on this box's ground is 1.1:1 and would have been reported.
+    expect(screen.queryByText(/Quiet text on Background/)).toBeNull();
+  });
+
+  it('still says it where the box holds something that reads it', async () => {
+    builder.getOptin.mockResolvedValue(
+      optin(
+        {
+          steps: [
+            {
+              type: 'stack',
+              children: [
+                {
+                  type: 'panel',
+                  tokens: { bg: '#546c49', fg: '#ffffff', muted: '#56634e' },
+                  children: [
+                    { type: 'heading', role: 'headline', text: 'Room to grow.' },
+                    { type: 'text', role: 'fine_print', size: 's', text: 'Terms apply.' },
+                  ],
+                },
+                { type: 'button', role: 'cta_label', label: 'Go', action: 'submit' },
+              ],
+            },
+            { type: 'stack', children: [{ type: 'text', role: 'success_body', text: 'Done' }] },
+          ],
+        } as unknown as TemplateTree,
+        { bg: '#ffffff', fg: '#111827' },
+      ),
+    );
+
+    await style(/Coloured box/);
+
+    expect(screen.getByText(/Quiet text on Background/)).toBeInTheDocument();
+  });
+});
+
 describe('the checks strip', () => {
   /**
    * ==========================================================================
@@ -352,13 +574,97 @@ describe('the checks strip', () => {
    * listed whether they pass or not, each named for what is true when it does.
    */
   it('names every check the design is held to, passing or not', async () => {
-    render(<OptinBuilder id={ID} onClose={vi.fn()} />);
+    render(<CheckStrip problems={[]} onGoTo={vi.fn()}/>);
 
     const strip = await screen.findByRole('list', { name: 'Checks on this design' });
 
     expect(within(strip).getAllByRole('listitem')).toHaveLength(6);
     expect(within(strip).getByText('Readable')).toBeInTheDocument();
     expect(within(strip).getByText('Counts something')).toBeInTheDocument();
+  });
+
+  /**
+   * ==========================================================================
+   * A WARNING NOBODY CAN TRACE IS A WARNING PEOPLE LEARN TO DISMISS.
+   * ==========================================================================
+   * The six are not one kind of thing: two are refusals the server makes at the
+   * write, two are rules the vocabulary or the renderer imposes, and two are
+   * nothing but this file's own opinion about what will cost the merchant
+   * later. *The save will refuse this* and *nothing will ever mention this
+   * again* are the two ends of that, and a chip that looks identical for both
+   * teaches a merchant to ignore both (ADR 0042 rule 2).
+   */
+  it('cites what enforces each one, passing or not', async () => {
+    render(<CheckStrip problems={[]} onGoTo={vi.fn()}/>);
+
+    const strip = await screen.findByRole('list', { name: 'Checks on this design' });
+
+    /*
+      **A NAME on the chip and the sentence in the tooltip**, which is where
+      the two lengths come apart: spelling only the long form put
+      `OptinController::refuseADesignThatCapturesNothing()` on screen six times
+      across two lines in a monospace register, and it read as debug output
+      rather than as *six checks pass*.
+    */
+    expect(within(strip).getAllByText('OptinController')).toHaveLength(2);
+    expect(within(strip).getByText('ADR 0052')).toBeInTheDocument();
+    expect(within(strip).getByTitle(/counts to the Optin/)).toBeInTheDocument();
+    // Every chip, not only the failing ones: *six checks pass* is legible only
+    // if a reader can see what was doing the checking.
+    expect(within(strip).getAllByRole('listitem')).toHaveLength(6);
+    expect(within(strip).getAllByText(/^(ADR \d+|OptinController|render\.ts|SlotRoles)$/)).toHaveLength(6);
+  });
+});
+
+/**
+ * ============================================================================
+ * A RESTYLED BOX LOOKED EXACTLY LIKE AN UNTOUCHED ONE IN A LIST OF ROWS.
+ * ============================================================================
+ * A bag applies to a box and everything inside it, and nothing about the row
+ * said which boxes carried one — so after restyling a design box by box the
+ * only way to find the nine tokens set on the second panel was to select every
+ * panel in turn and read the reset buttons.
+ */
+describe('the tree’s override count', () => {
+  it('counts what a box sets, and says nothing for one that sets nothing', async () => {
+    builder.getOptin.mockResolvedValue(
+      optin(
+        {
+          steps: [
+            {
+              type: 'stack',
+              children: [
+                {
+                  type: 'panel',
+                  tokens: { bg: '#fff4df', pad: '2rem' },
+                  narrow: { pad: '1rem' },
+                  children: [{ type: 'button', role: 'cta_label', label: 'Go', action: 'submit' }],
+                },
+                { type: 'panel', children: [{ type: 'text', role: 'body', text: 'Plain' }] },
+              ],
+            },
+            { type: 'stack', children: [{ type: 'text', role: 'success_body', text: 'Done' }] },
+          ],
+        } as unknown as TemplateTree,
+        { bg: '#ffffff' },
+      ),
+    );
+
+    render(<OptinBuilder id={ID} onClose={vi.fn()} />);
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
+  const tree = await screen.findByRole('treegrid', { name: 'Blocks in this design' });
+    const boxes = within(tree).getAllByRole('row', { name: /Coloured box/ });
+
+    // Two at full width and one more at narrow, which is also the payload's
+    // shape.
+    expect(boxes[0]).toHaveTextContent('2+1');
+    expect(
+      within(boxes[0] as HTMLElement).getByTitle(/sets 2 thing/),
+      'the count carries its own sentence, because a bare number is a number',
+    ).toBeInTheDocument();
+    // And a box that sets nothing draws no chip at all, rather than a zero.
+    expect(within(boxes[1] as HTMLElement).queryByTitle(/sets \d/)).toBeNull();
   });
 });
 

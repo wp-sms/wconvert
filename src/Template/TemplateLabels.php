@@ -73,6 +73,9 @@ final class TemplateLabels
             'name_placeholder' => __('Name placeholder', 'wconvert'),
             'phone_label' => __('Phone label', 'wconvert'),
             'phone_placeholder' => __('Phone placeholder', 'wconvert'),
+            'interest_label' => __('Interest question', 'wconvert'),
+            'interest_placeholder' => __('Interest prompt', 'wconvert'),
+            'interest_options' => __('Interest choices', 'wconvert'),
         ];
     }
 
@@ -141,6 +144,20 @@ final class TemplateLabels
              */
             /* translators: a layout — a box with its own background colour, holding other blocks. */
             'panel' => __('Coloured box', 'wconvert'),
+            /*
+             * **Named for the picture and not for the spread**, which is the
+             * same call `panel` made one line up: a merchant is going to point
+             * at the photograph, and *"Spread box"* names the mechanism they
+             * would have to be taught before the word meant anything.
+             *
+             * **Two words, parallel with *Coloured box*.** It was *"Picture
+             * with text on it"*, which is what it DOES and belongs in the note
+             * below — measured in a browser, twenty-three characters ran under
+             * the ⋯ menu on every row of an 11rem tree, on a design that has
+             * two of them.
+             */
+            /* translators: a layout — a picture with blocks on it, the first at its top edge and the last at its bottom. */
+            'media' => __('Picture box', 'wconvert'),
         ];
     }
 
@@ -206,6 +223,17 @@ final class TemplateLabels
              */
             /* translators: what the Coloured box layout does. */
             'panel' => __('A box with its own colours, holding other blocks.', 'wconvert'),
+            /*
+             * **The note has to say what makes it different from a Coloured
+             * box**, for the reason the line above has to say what makes that
+             * one different from a Column: both draw a background picture, and
+             * a merchant reading two menu items has one question. The answer is
+             * where the blocks go — pushed to the far edges rather than
+             * stacked at the top, which is what a masthead above a headline on
+             * one photograph is.
+             */
+            /* translators: what the Picture with text on it layout does. */
+            'media' => __('A picture, with the first block at its top and the last at its bottom.', 'wconvert'),
         ];
     }
 
@@ -257,6 +285,41 @@ final class TemplateLabels
             'panel.edges' => __('Border', 'wconvert'),
             /* translators: the least tall the coloured box may be, so a box holding only a picture does not collapse. */
             'panel.min' => __('Least height', 'wconvert'),
+            /* translators: whether two circles are punched out of the box's top corners, like a torn ticket, so the page shows through. */
+            'panel.notch' => __('Punched corners', 'wconvert'),
+            /* translators: the colours, spacing and type this box sets for itself and everything inside it. */
+            'media.tokens' => __('Style for this box', 'wconvert'),
+            /* translators: the least tall the picture may be, so it does not collapse to the two lines written on it. */
+            'media.min' => __('Least height', 'wconvert'),
+
+            /*
+             * ================================================================
+             * THE SAME WORDS AT EVERY LAYOUT, AND THE SIXTH SPELLING OF THE
+             * SAME LIST.
+             * ================================================================
+             * Exactly the bargain `*.tokens` one section up makes and for the
+             * same reason: a param name means nothing on its own, the parity
+             * test walks every layout's `params` with no opt-out, and a shared
+             * entry would be another spelling of *which layouts exist*.
+             *
+             * **The width is not in the words**, and that is deliberate. It is
+             * `manifest.narrow` — one number, read by the renderer's container
+             * query — and putting it here would be a second place it is
+             * written, in a string a translator can edit. The panel that draws
+             * this control says the number, from the manifest.
+             */
+            /* translators: a second set of colours, spacing and type for when the design is narrow — on a phone, or in a sidebar. */
+            'stack.narrow' => __('Style when it is narrow', 'wconvert'),
+            /* translators: a second set of colours, spacing and type for when the design is narrow — on a phone, or in a sidebar. */
+            'row.narrow' => __('Style when it is narrow', 'wconvert'),
+            /* translators: a second set of colours, spacing and type for when the design is narrow — on a phone, or in a sidebar. */
+            'split.narrow' => __('Style when it is narrow', 'wconvert'),
+            /* translators: a second set of colours, spacing and type for when the design is narrow — on a phone, or in a sidebar. */
+            'grid.narrow' => __('Style when it is narrow', 'wconvert'),
+            /* translators: a second set of colours, spacing and type for when the design is narrow — on a phone, or in a sidebar. */
+            'panel.narrow' => __('Style when it is narrow', 'wconvert'),
+            /* translators: a second set of colours, spacing and type for when the design is narrow — on a phone, or in a sidebar. */
+            'media.narrow' => __('Style when it is narrow', 'wconvert'),
         ];
     }
 
@@ -323,6 +386,28 @@ final class TemplateLabels
             'panel.min.16rem' => __('Medium', 'wconvert'),
             /* translators: a minimum height for a box holding a picture. */
             'panel.min.24rem' => __('Tall', 'wconvert'),
+
+            /*
+             * **Two words rather than a tick box**, because the param is on
+             * the same panel as `edges` and `min` and a lone checkbox among
+             * three radio groups reads as a different KIND of setting. The
+             * words say what is drawn, not what the key is called: a merchant
+             * choosing between *Square* and *Punched* is choosing a shape they
+             * can see in the preview.
+             */
+            /* translators: the coloured box has ordinary square corners. */
+            'panel.notch.false' => __('Square', 'wconvert'),
+            /* translators: two circles are punched out of the box's top corners, like a torn ticket, so the page shows through. */
+            'panel.notch.true' => __('Punched, like a ticket', 'wconvert'),
+
+            /* translators: a minimum height — none, so the picture is as tall as what is written on it. */
+            'media.min.0' => __('As tall as its contents', 'wconvert'),
+            /* translators: a minimum height for a picture. */
+            'media.min.10rem' => __('Short', 'wconvert'),
+            /* translators: a minimum height for a picture. */
+            'media.min.16rem' => __('Medium', 'wconvert'),
+            /* translators: a minimum height for a picture. */
+            'media.min.24rem' => __('Tall', 'wconvert'),
         ];
     }
 
@@ -518,6 +603,7 @@ final class TemplateLabels
             'email' => __('Email address', 'wconvert'),
             'name' => __('Name', 'wconvert'),
             'phone' => __('Phone number', 'wconvert'),
+            'interest' => __('Interest (choice)', 'wconvert'),
         ];
     }
 
@@ -552,6 +638,7 @@ final class TemplateLabels
             'email' => __('you@example.com', 'wconvert'),
             'name' => __('Your name', 'wconvert'),
             'phone' => __('+44 7700 900000', 'wconvert'),
+            'interest' => __('Choose an option', 'wconvert'),
         ];
     }
 
@@ -569,11 +656,14 @@ final class TemplateLabels
         return [
             'text' => __('Text', 'wconvert'),
             'link' => __('Link', 'wconvert'),
+            /* translators: the words inside a sentence that are set in bold, where the sentence carries %b. */
+            'emphasis' => __('Words in bold', 'wconvert'),
             'label' => __('Label', 'wconvert'),
             'placeholder' => __('Placeholder', 'wconvert'),
             'src' => __('Image address', 'wconvert'),
             'alt' => __('Alt text', 'wconvert'),
             'href' => __('Where the button goes', 'wconvert'),
+            'options' => __('Choices', 'wconvert'),
         ];
     }
 

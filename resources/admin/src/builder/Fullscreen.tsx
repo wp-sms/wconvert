@@ -90,15 +90,16 @@ export function Fullscreen() {
     <Button
       type="button"
       variant="ghost"
-      size="sm"
+      size="icon-sm"
       aria-pressed={on}
+      title={on ? __('Show the menu', 'wconvert') : __('Full width', 'wconvert')}
+      aria-label={on ? __('Show the menu', 'wconvert') : __('Full width', 'wconvert')}
       onClick={() => {
         setOn(!on);
         remember(!on);
       }}
     >
       <Icon aria-hidden="true" />
-      {on ? __('Show the menu', 'wconvert') : __('Full width', 'wconvert')}
     </Button>
   );
 }

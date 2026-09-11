@@ -60,6 +60,11 @@ interface MailPoetSubscribers
      */
     public function lists(): array;
 
+    /** Active custom text fields, read at admin time or to validate a configured mapping.
+     * @return list<array{id: string, name: string}>
+     */
+    public function textFields(): array;
+
     /**
      * A subscriber MailPoet has never heard of, on `$listIds`.
      *

@@ -3,6 +3,7 @@
 namespace WConvert\Tests\Unit\Rest;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use WConvert\Goal\Goal;
 use WConvert\Goal\GoalRegistry;
@@ -59,6 +60,8 @@ final class OptinWriteTest extends TestCase
 
     private OptinRepository $optins;
 
+    private FakeConnection $db;
+
     private OptinController $controller;
 
     private SiteFrequency $siteFrequency;
@@ -82,7 +85,7 @@ final class OptinWriteTest extends TestCase
         $this->milestones = new FakeOptionStore();
 
         $this->optins = new OptinRepository(
-            new FakeConnection(),
+            $this->db = new FakeConnection(),
             $published,
             $vocabulary,
             new MilestoneStore($this->milestones)
@@ -123,6 +126,84 @@ final class OptinWriteTest extends TestCase
         $data = $response->get_data();
 
         return $data;
+    }
+
+    /** @param mixed $options
+     * @return array<string, mixed>
+     */
+    private static function choiceDraft($options): array
+    {
+        return ['template' => ['tokens' => [], 'tree' => ['steps' => [
+            ['type' => 'stack', 'children' => [
+                ['type' => 'field', 'name' => 'email', 'required' => true],
+                ['type' => 'field', 'name' => 'interest', 'options' => $options],
+                ['type' => 'button', 'action' => 'submit', 'label' => 'Send'],
+            ]],
+            ['type' => 'stack', 'children' => [['type' => 'heading', 'text' => 'Thanks']]],
+        ]]]];
+    }
+
+    /** @return array<string, array{mixed}> */
+    public static function malformedChoices(): array
+    {
+        $valid = ['value' => 'repair', 'label' => 'Repair'];
+        return [
+            'not a list' => ['repair'],
+            'null' => [null],
+            'malformed row beside valid' => [[$valid, null]],
+            'blank label' => [[['value' => 'repair', 'label' => ' ']]],
+            'duplicate sent value' => [[$valid, ['value' => 'repair', 'label' => 'Installation']]],
+            'newline sent value' => [[['value' => "repair\n", 'label' => 'Repair']]],
+            'keyed map' => [['answer' => $valid]],
+            'too many choices' => [array_map(static fn (int $at): array => ['value' => 'option-' . $at, 'label' => 'Answer ' . $at], range(1, 13))],
+        ];
+    }
+
+    /** @param mixed $options */
+    #[DataProvider('malformedChoices')]
+    public function testCreateRefusesChoicesThatNormalizationWouldDiscard($options): void
+    {
+        $refusal = $this->create(Goal::GrowEmailList, self::choiceDraft($options));
+        self::assertInstanceOf(WP_Error::class, $refusal);
+        self::assertSame('wconvert_optin_choices_invalid', $refusal->get_error_code());
+        self::assertSame([], $this->db->writes);
+    }
+
+    public function testRefusedChoiceEditPreservesTheSavedNameGoalAndAllAnswers(): void
+    {
+        $options = [['value' => 'repair', 'label' => 'Repair'], ['value' => 'installation', 'label' => 'Installation']];
+        $created = $this->create(Goal::GrowEmailList, self::choiceDraft($options));
+        self::assertIsArray($created);
+        $this->db->writes = [];
+        $options[1]['value'] = 'repair';
+        $request = new WP_REST_Request();
+        $request->set_param('id', $created['id']);
+        $request->set_param('name', 'A name that must not be saved');
+        $request->set_param('goal', Goal::PromoteOffer->value);
+        $request->set_param('config', self::choiceDraft($options) + ['rules' => [['type' => 'page_load']]]);
+        $refusal = $this->controller->update($request);
+        self::assertInstanceOf(WP_Error::class, $refusal);
+        self::assertSame('wconvert_optin_choices_invalid', $refusal->get_error_code());
+        self::assertSame([], $this->db->writes);
+        $saved = $this->optins->find($created['id']);
+        self::assertNotNull($saved);
+        self::assertSame($created['config'], $saved->config);
+        self::assertSame('Under test', $saved->name);
+        self::assertSame(Goal::GrowEmailList->value, $saved->goal);
+    }
+
+    public function testAnIntentionallyEmptyChoiceListCanBeCreatedAndSavedAsADraft(): void
+    {
+        $created = $this->create(Goal::GrowEmailList, self::choiceDraft([]));
+        self::assertIsArray($created);
+        self::assertSame([], $created['config']['template']['tree']['steps'][0]['children'][1]['options']);
+        $request = new WP_REST_Request();
+        $request->set_param('id', $created['id']);
+        $request->set_param('name', 'Still unfinished');
+        $request->set_param('config', $created['config']);
+        $saved = $this->controller->update($request);
+        self::assertNotInstanceOf(WP_Error::class, $saved);
+        self::assertSame([], $this->optins->find($created['id'])?->config['template']['tree']['steps'][0]['children'][1]['options']);
     }
 
     // ========================================================================
@@ -525,6 +606,36 @@ final class OptinWriteTest extends TestCase
         $this->assertNotInstanceOf(WP_Error::class, $this->controller->update($request));
     }
 
+    public function testSavingAPreparedTemplateKeepsTheEditsMadeAfterChoosingIt(): void
+    {
+        $created = $this->create(Goal::PromoteOffer, ['template_id' => 'stacked-signup']);
+        $this->assertIsArray($created);
+
+        $request = new WP_REST_Request();
+        $request->set_param('id', $created['id']);
+        $request->set_param('template_source', 'centred-card');
+        $request->set_param('config', [
+            'template_id' => 'centred-card',
+            'rules' => [['type' => 'page_load']],
+            'template' => [
+                'tokens' => ['bg' => '#abcdef'],
+                'tree' => ['steps' => [['type' => 'stack', 'children' => [
+                    ['type' => 'heading', 'text' => 'Edited after choosing', 'tokens' => ['fg' => '#123456'], 'narrow' => ['heading-size' => '2rem']],
+                    ['type' => 'button', 'label' => 'Visit', 'action' => 'link', 'href' => 'https://example.test/offer'],
+                ]]]],
+            ],
+        ]);
+
+        $response = $this->controller->update($request);
+        $this->assertInstanceOf(\WP_REST_Response::class, $response);
+        $config = $response->get_data()['config'];
+        $this->assertSame('#abcdef', $config['template']['tokens']['bg']);
+        $this->assertSame('Edited after choosing', $config['template']['tree']['steps'][0]['children'][0]['text']);
+        $this->assertSame(['fg' => '#123456'], $config['template']['tree']['steps'][0]['children'][0]['tokens']);
+        $this->assertSame(['heading-size' => '2rem'], $config['template']['tree']['steps'][0]['children'][0]['narrow']);
+        $this->assertArrayNotHasKey('template_source', $config);
+    }
+
     /** An Optin that is not part of a test is never asked the question. */
     public function testAnOptinWithNoArmsMayChangeItsActFreely(): void
     {
@@ -616,6 +727,73 @@ final class OptinWriteTest extends TestCase
     public function testADraftWithNoDesignIsNotCaughtByTheConvertingActCheck(): void
     {
         $this->assertIsArray($this->create(Goal::GrowEmailList, ['template' => ['tree' => ['steps' => []]]]));
+    }
+
+    public function testAnIncompleteDraftCanBeSavedButCannotBePublished(): void
+    {
+        foreach ([[], ['template' => ['tree' => ['steps' => []]]]] as $config) {
+            $draft = $this->create(Goal::GrowEmailList, $config);
+            $this->assertIsArray($draft);
+            $request = new WP_REST_Request();
+            $request->set_param('id', $draft['id']);
+            $refused = $this->controller->publish($request);
+
+            $this->assertInstanceOf(WP_Error::class, $refused);
+            $this->assertSame('wconvert_optin_needs_a_design', $refused->get_error_code());
+            $this->assertSame(400, $refused->get_error_data()['status']);
+            $this->assertNull($this->optins->find($draft['id'])?->publishedAt);
+        }
+    }
+
+    public function testSavingAndPublishingReturnTheConfirmedSnapshotState(): void
+    {
+        $draft = $this->create(Goal::PromoteOffer, ['template_id' => 'offer-panel']);
+        $this->assertIsArray($draft);
+        $this->assertFalse($draft['has_unpublished_changes']);
+        $request = new WP_REST_Request();
+        $request->set_param('id', $draft['id']);
+        $first = $this->controller->publish($request);
+        $this->assertNotInstanceOf(WP_Error::class, $first);
+        $live = $first->get_data();
+        $this->assertFalse($live['has_unpublished_changes']);
+        $this->assertNull($live['suspended']);
+
+        $config = $draft['config'];
+        $config['template']['tokens']['bg'] = '#111111';
+        $request->set_param('config', $config);
+        $saved = $this->controller->update($request);
+        $this->assertNotInstanceOf(WP_Error::class, $saved);
+        $this->assertTrue($saved->get_data()['has_unpublished_changes']);
+        $this->assertSame($live['published_config'], $saved->get_data()['published_config']);
+        $read = $this->controller->show($request);
+        $this->assertNotInstanceOf(WP_Error::class, $read);
+        $this->assertTrue($read->get_data()['has_unpublished_changes']);
+
+        $updated = $this->controller->publish($request);
+        $this->assertNotInstanceOf(WP_Error::class, $updated);
+        $this->assertFalse($updated->get_data()['has_unpublished_changes']);
+        $this->assertSame('#111111', $updated->get_data()['published_config']['template']['tokens']['bg']);
+        $this->assertNotNull($updated->get_data()['published_at']);
+    }
+
+    public function testTheListReturnsBooleanChangeFlagsForParentsAndArmsWithoutConfigBlobs(): void
+    {
+        $row = [
+            'id' => 'PARENT', 'name' => 'Offer', 'goal' => 'promote_offer', 'parent_id' => null,
+            'published_at' => '2026-09-10 10:00:00', 'deleted_at' => null, 'has_unpublished_changes' => '0',
+        ];
+        // SQL projections are canned: this fake deliberately does not implement
+        // SQL expressions or duplicate the database's snapshot comparison.
+        $this->db->answers = [[$row], [array_replace($row, [
+            'id' => 'ARM', 'parent_id' => 'PARENT', 'has_unpublished_changes' => '1',
+        ])]];
+        $listed = $this->controller->index(new WP_REST_Request())->get_data();
+
+        $this->assertFalse($listed[0]['has_unpublished_changes']);
+        $this->assertTrue($listed[0]['arms'][0]['has_unpublished_changes']);
+        $this->assertArrayNotHasKey('config', $listed[0]);
+        $this->assertArrayNotHasKey('published_config', $listed[0]);
+        $this->assertArrayNotHasKey('config', $listed[0]['arms'][0]);
     }
 
     /**
@@ -896,4 +1074,3 @@ final class OptinWriteTest extends TestCase
         $this->assertFalse($saved['stopAfterDismiss']);
     }
 }
-

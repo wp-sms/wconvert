@@ -353,7 +353,7 @@ final class TemplateLibrary
             // something the merchant picks afterwards.
             'display_type' => is_string($decoded['display_type'] ?? null) ? $decoded['display_type'] : 'popup',
             'tier' => self::tierOf($decoded, Tier::Free),
-            'facets' => TemplateFacets::of($normalized['tree'], $vocabulary->fields()),
+            'facets' => TemplateFacets::of($normalized['tree'], $vocabulary->fields(), $normalized['tokens']),
             'tree' => $normalized['tree'],
             'tokens' => $normalized['tokens'],
         ];

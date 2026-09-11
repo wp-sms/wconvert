@@ -1,4 +1,4 @@
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { ExternalLink, Lock } from 'lucide-react';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
@@ -93,6 +93,10 @@ export interface GalleryProps {
   readonly busy: boolean;
   readonly onChoose: (id: string) => void;
   readonly onNear: (id: string) => void;
+  /** Inspect before applying; omitted by callers whose cards still choose directly. */
+  readonly onPreview?: (id: string) => void;
+  readonly failed?: ReadonlySet<string>;
+  readonly onRetry?: (id: string) => void;
 }
 
 /**
@@ -201,7 +205,7 @@ export function refusalFor(entry: TemplateIndexEntry, fit: Fit): string | null {
  * What taking THIS design would change about what the Optin counts, or null.
  *
  * ============================================================================
- * A NOTE ON THE CARD, NOT A SENTENCE ON THE DIALOG.
+ * A NOTE BESIDE THE APPLY ACTION, NOT ABOVE THE WHOLE LIBRARY.
  * ============================================================================
  * **Not a refusal, and it disables nothing.** Switching is allowed and is the
  * whole point of the change; what it does is reinterpret the Optin's history,
@@ -210,16 +214,16 @@ export function refusalFor(entry: TemplateIndexEntry, fit: Fit): string | null {
  * Optin switched to a click design read as a hundred click-throughs.
  *
  * That was impossible before, because the swap was refused outright. It is now
- * something a merchant does casually, so it is said before the click
- * (ADR 0042 rule 3) — and **on the card that would do it**. It shipped for a
+ * something a merchant does casually, so it is said before the apply click
+ * (ADR 0042 rule 3). The preview-first library puts it in the design detail;
+ * a direct-choice caller keeps it on the card that applies it. It shipped for a
  * day as one clause appended to the dialog's header, which was wrong three
  * ways: it showed before anything was picked, it stayed up while the merchant
  * hovered a design that changes nothing, and it could not say which direction
  * because it was not about any particular card.
  *
- * It rides {@see TemplateCard}'s `notes` rather than its `reason`, and the two
- * are held apart precisely for this: a reason dims the render and tells a
- * screen reader the button cannot be pressed. This one can.
+ * It is distinct from a refusal: a reason dims the render and says the design
+ * cannot be applied. A change in what it counts still permits the switch.
  */
 export function actChangeOf(entry: TemplateIndexEntry, fit: Fit): string | null {
   if (entry.availability !== 'ready' || entry.facets.act === null || entry.facets.act === fit.act) {
@@ -272,9 +276,12 @@ export function Gallery({
   busy,
   onChoose,
   onNear,
+  onPreview,
+  failed,
+  onRetry,
 }: GalleryProps) {
   return (
-    <ul className="wconvert-gallery">
+    <ul className="wconvert-gallery" data-preview-first={onPreview !== undefined || undefined}>
       {entries.map((entry) => {
         const locked = renderingFor(entry.availability, 'settings_list') === 'upsell';
         const inUse = entry.id === chosen;
@@ -286,6 +293,17 @@ export function Gallery({
           about one card is what ADR 0042 rule 2 forbids.
         */
         const changes = locked || refused !== null ? null : actChangeOf(entry, fit);
+        const fields = entry.facets.captures.map((field) =>
+          labels.fields?.[field] ?? nameOf(labels.facetValues, `captures.${field}`),
+        );
+        const summary = fields.length > 0
+          ? sprintf(
+              /* translators: %s: field names, such as Email address and Phone number. */
+              __('Collects %s', 'wconvert'), fields.join(', '),
+            )
+          : entry.facets.act === 'click'
+            ? __('Follows a link', 'wconvert')
+            : __('No form fields', 'wconvert');
 
         return (
           <TemplateCard
@@ -295,8 +313,13 @@ export function Gallery({
             template={trees.get(entry.id)}
             current={inUse}
             reason={refused}
-            notes={changes ?? undefined}
+            // Browse cards describe their fields; the detail explains the
+            // effect of applying one. Direct-choice callers keep that warning
+            // here, immediately beside their apply action.
+            notes={onPreview !== undefined && !locked ? summary : changes ?? undefined}
             onNear={locked ? undefined : onNear}
+            loadError={!locked && failed?.has(entry.id)}
+            onRetry={onRetry === undefined ? undefined : () => onRetry(entry.id)}
             /*
               **Grey and a lock, never amber** (ADR 0037). Amber is the
               reserved meaning that the SITE is holding something back, and
@@ -345,6 +368,16 @@ export function Gallery({
                     {__('See this design', 'wconvert')}
                     <ExternalLink aria-hidden="true" />
                   </a>
+                </Button>
+              ) : onPreview !== undefined ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  aria-describedby={describedBy}
+                  disabled={busy}
+                  onClick={() => onPreview(entry.id)}
+                >
+                  {__('Preview design', 'wconvert')}
                 </Button>
               ) : (
                 /*

@@ -108,15 +108,19 @@ export const readMilestones = () =>
 export type StuckAt = 'publish' | 'impression' | 'conversion' | 'delivery';
 
 export function stuckAt(milestones: MilestonePayload): StuckAt | null {
-  if (milestones.first_publish === null) {
+  // Later evidence proves earlier steps happened, even if their historical
+  // record is absent. Never manufacture a date or regress a working site.
+  const converted = milestones.first_conversion !== null;
+  const shown = converted || milestones.first_impression !== null;
+  if (milestones.first_publish === null && !shown) {
     return 'publish';
   }
 
-  if (milestones.first_impression === null) {
+  if (!shown) {
     return 'impression';
   }
 
-  if (milestones.first_conversion === null) {
+  if (!converted) {
     return 'conversion';
   }
 

@@ -47,8 +47,8 @@ return [
             'text' => __('About one message a month. Reply STOP to leave. See our %s.', 'wconvert'),
             'link' => ['label' => __('Privacy Policy', 'wconvert')],
         ],
-        'success_headline' => __('You are on the list', 'wconvert'),
-        'success_body' => __('We will text you the morning the next run goes up.', 'wconvert'),
+        'success_headline' => __('Request received', 'wconvert'),
+        'success_body' => __('Thank you for asking about first access to the next run.', 'wconvert'),
     ],
     'rules' => [
         ['type' => 'page_load'],

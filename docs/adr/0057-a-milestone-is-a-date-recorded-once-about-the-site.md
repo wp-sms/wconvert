@@ -193,9 +193,11 @@ the list says published, and a caching or optimisation plugin has quietly
 removed the loader
 ([ADR 0004](0004-the-loader-survives-optimizers-not-just-caches.md)).
 
-So the region draws **at most one step**, sits above the Goal cards on Analytics
-because it explains a wall of zeros the cards cannot, and renders nothing at all
-once every step is met.
+So the region draws **at most one step**. Amended by [ADR 0068](0068-reading-pages-put-results-and-routes-before-occasional-settings.md): it follows
+the Goal reports so routine results come first. Once every step is met, the
+recorded-dates disclosure remains (corrected by ADR 0060). Later impressions or
+conversions rule out an earlier unmet step even when its recorded date is
+missing; missing dates are never invented.
 
 **A failing Destination is not one of the steps**, though it is on the payload.
 It is the one state on this funnel that already has a screen of its own, with

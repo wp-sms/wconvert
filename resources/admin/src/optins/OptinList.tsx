@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { CornerDownRight, Megaphone, MoreHorizontal, Plus, Split, Stethoscope, Trash2, Trophy } from 'lucide-react';
+import { CornerDownRight, Megaphone, MoreHorizontal, Plus, Search, Split, Stethoscope, Trash2, Trophy } from 'lucide-react';
+import { Input } from '../components/ui/input';
+import { Toolbar } from '../shell/Toolbar';
 import { listGoals } from '../goals/api';
 import { Button } from '../components/ui/button';
 import {
@@ -33,6 +35,7 @@ import { EmptyState } from '../shell/EmptyState';
 import { Region, RegionError, RegionErrorState, RegionFooter } from '../shell/Region';
 import { TableSkeleton } from '../shell/TableSkeleton';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
+import { leadsHref, reportHref } from '../nav';
 import { numbersByOptin, readDashboard, type OptinNumbers } from '../stats/api';
 import { formatCount, formatRate } from '../stats/format';
 import {
@@ -45,6 +48,7 @@ import {
   statusOf,
   unpublishOptin,
   type OptinSummary,
+  type OptinStatus,
 } from './api';
 
 /**
@@ -60,17 +64,13 @@ import {
  * with no door rather than a list with a broken button.
  *
  * Targeting and the rest of an Optin's configuration belong to the builder,
- * which each row opens. Publishing stays HERE rather than moving in there
- * with them: `config` is the working draft and `published_config` is what the
- * site is serving, and the two are separate columns so that editing an Optin
- * is not publishing as you type. A publish button inside the editor would be
- * the same conflation wearing a different hat.
+ * which each row opens. Publishing is an explicit promotion of `config` onto
+ * `published_config`, whether invoked here or after review in the editor.
+ * A saved update can be published directly without first taking the Optin down.
  *
- * **One region, no toolbar** (ADR 0039). There are no filters — see above — and
- * no count, because a count is stated where the set can be large enough to need
- * one and an install has tens of Optins. The screen's one action, *Create an
- * Optin*, is page-scoped and lives in the page header, which is where
- * {@see App} puts it.
+ * Search and status filters keep an A/B family together, with counts over
+ * families rather than individual arms (ADR 0068). *Create an Optin* remains
+ * page-scoped in the header, where {@see App} puts it.
  *
  * ============================================================================
  * IMPRESSIONS AND CONVERSION RATE, BUT DELIBERATELY NOT "CONVERSIONS".
@@ -147,6 +147,10 @@ export function OptinList({
    * the request.
    */
   const [inspecting, setInspecting] = useState(false);
+  const [query, setQuery] = useState('');
+  const [filter, setFilter] = useState<'all' | OptinStatus>('all');
+  const [reportDays, setReportDays] = useState<number | null>(null);
+  const [reportRange, setReportRange] = useState<{ from: string; to: string }>();
   /*
    * **Whether this install can start a test — resolved once for the screen.**
    * `settings.ts` calls it *"a fact about the SCREEN and not about a row"*, and
@@ -212,7 +216,11 @@ export function OptinList({
   // the reason stated above the component: a row without its numbers is a row
   // that still publishes.
   useEffect(() => {
-    readDashboard(null).then((payload) => setNumbers(numbersByOptin(payload))).catch(() => undefined);
+    readDashboard(null).then((payload) => {
+      setNumbers(numbersByOptin(payload));
+      setReportDays(payload.days);
+      setReportRange({ from: payload.from, to: payload.to });
+    }).catch(() => undefined);
   }, []);
 
   const run = async (id: string, action: () => Promise<unknown>) => {
@@ -239,10 +247,39 @@ export function OptinList({
   }
 
   const rows = list.status === 'ready' ? list.data : [];
+  // An A/B test stays together when either its parent or an arm matches.
+  const matchesStatus = (optin: OptinSummary) =>
+    filter === 'all' || [optin, ...optin.arms].some((row) => statusOf(row) === filter);
+  const visible = rows.filter((optin) => matchesStatus(optin) &&
+    [optin, ...optin.arms].some((row) => row.name.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase())));
+  const filters = [
+    { id: 'all', label: __('All', 'wconvert') },
+    { id: 'published', label: __('Published', 'wconvert') },
+    { id: 'draft', label: __('Drafts', 'wconvert') },
+    { id: 'suspended', label: __('Needs attention', 'wconvert') },
+  ] as const;
 
   return (
-    <Region label={__('Optins', 'wconvert')}>
+    <Region label={__('Optins', 'wconvert')} className="wconvert-optin-list">
       {error !== null && <RegionError message={error} />}
+      {rows.length > 0 && (
+        <Toolbar trailing={
+          <label className="wconvert-panel-search">
+            <Search aria-hidden="true" />
+            <span className="sr-only">{__('Search Optins', 'wconvert')}</span>
+            <Input type="search" value={query} placeholder={__('Search Optins…', 'wconvert')} onChange={(event) => setQuery(event.target.value)} />
+          </label>
+        }>
+          <div className="wconvert-panel-filters" role="group" aria-label={__('Filter Optins by status', 'wconvert')}>
+            {filters.map((item) => (
+              <button type="button" key={item.id} aria-pressed={filter === item.id} onClick={() => setFilter(item.id)}>
+                {item.label}
+                <span>{rows.filter((optin) => item.id === 'all' || [optin, ...optin.arms].some((row) => statusOf(row) === item.id)).length}</span>
+              </button>
+            ))}
+          </div>
+        </Toolbar>
+      )}
 
       {list.status === 'ready' && rows.length === 0 ? (
         <EmptyState
@@ -259,6 +296,11 @@ export function OptinList({
         >
           {__('Pick a goal and we’ll start you with a design built for it.', 'wconvert')}
         </EmptyState>
+      ) : list.status === 'ready' && visible.length === 0 ? (
+        <EmptyState icon={Search} title={__('No Optins match these filters', 'wconvert')}
+          action={<Button variant="outline" onClick={() => { setQuery(''); setFilter('all'); }}>{__('Clear filters', 'wconvert')}</Button>}>
+          {__('Try another name or choose a different status.', 'wconvert')}
+        </EmptyState>
       ) : (
         <DataTable>
           <DataTableHead>
@@ -274,7 +316,7 @@ export function OptinList({
             <TableSkeleton columns={6} />
           ) : (
             <DataTableBody>
-              {rows.flatMap((optin) => {
+              {visible.flatMap((optin) => {
                 const labelFor = (row: OptinSummary) =>
                   labels.status === 'ready' ? labels.data[row.goal] ?? null : undefined;
 
@@ -297,6 +339,8 @@ export function OptinList({
                     testableTier={testableTier}
                     goal={labelFor(row)}
                     numbers={numbers[row.id]}
+                    reportDays={reportDays}
+                    reportRange={reportRange}
                     busy={busyId === row.id}
                     onEdit={() => onEdit(row.id)}
                     onPublish={() => void run(row.id, () => publishOptin(row.id))}
@@ -319,6 +363,12 @@ export function OptinList({
             </DataTableBody>
           )}
         </DataTable>
+      )}
+      {rows.length > 0 && reportDays !== null && (
+        <RegionFooter className="flex flex-wrap items-center justify-between gap-2">
+          <span>{reportDays === 1 ? __('Figures for today', 'wconvert') : sprintf(__('Figures for the last %d days', 'wconvert'), reportDays)}</span>
+          <a className="font-medium text-primary hover:underline" href={reportHref({ days: reportDays })}>{__('View reports', 'wconvert')}</a>
+        </RegionFooter>
       )}
 
       {/*
@@ -468,6 +518,8 @@ function Row({
   testableTier,
   goal,
   numbers,
+  reportDays,
+  reportRange,
   busy,
   onEdit,
   onPublish,
@@ -498,6 +550,8 @@ function Row({
    */
   goal: string | null | undefined;
   numbers: OptinNumbers | undefined;
+  reportDays: number | null;
+  reportRange: { from: string; to: string } | undefined;
   busy: boolean;
   onEdit: () => void;
   onPublish: () => void;
@@ -615,6 +669,11 @@ function Row({
       */}
       <DataTableCell label={__('Status', 'wconvert')}>
         <StatusBadge status={status} />
+        {canUnpublish(status) && optin.has_unpublished_changes && (
+          <Description as="span" className="mt-1 block">
+            {__('Saved changes are not published', 'wconvert')}
+          </Description>
+        )}
         {status === 'suspended' && optin.suspended !== null && (
           /*
             **The reason comes UP a size, and it was the only 12px body text in
@@ -650,9 +709,14 @@ function Row({
 
         {/*
           A suspended Optin is published — the site is holding it back, the
-          merchant did not. So it keeps Unpublish rather than being offered a
-          Publish it never needed, which would read as "this never went live".
+          merchant did not. It keeps Unpublish, and a saved draft can be
+          promoted with Publish changes without changing that distinction.
         */}
+        {canUnpublish(status) && optin.has_unpublished_changes && (
+          <Button variant="outline" size="sm" disabled={busy} onClick={onPublish}>
+            {__('Publish changes', 'wconvert')}
+          </Button>
+        )}
         {canUnpublish(status) ? (
           <Button variant="ghost" size="sm" disabled={busy} onClick={onUnpublish}>
             {__('Unpublish', 'wconvert')}
@@ -683,6 +747,13 @@ function Row({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
+            <DropdownMenuItem asChild>
+              <a href={reportHref({ optinId: optin.id, days: reportDays ?? undefined })}>{__('View results', 'wconvert')}</a>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <a href={leadsHref({ optinId: optin.id, ...reportRange })}>{__('View captured leads', 'wconvert')}</a>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
             {/*
               ============================================================
               STARTING A TEST IS THE CAMPAIGN'S ACTION, NOT AN ARM'S.

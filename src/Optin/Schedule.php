@@ -322,12 +322,11 @@ final class Schedule
      * Two wall times a zone cannot answer cleanly, both booked knowingly and
      * both PHP's own reading:
      *
-     * - **A time that never happens.** Spring forward skips an hour, so 02:30
-     *   on that date does not exist and resolves to 03:30. A campaign starting
-     *   an hour later than typed, once a year, is the harmless direction.
-     * - **A time that happens twice.** Autumn's fall back repeats an hour, and
-     *   the FIRST occurrence wins. A campaign that starts an hour earlier than
-     *   the other reading, once a year.
+     * - **A time that never happens.** PHP advances it across the gap; for a
+     *   one-hour spring-forward gap, 02:30 resolves to 03:30.
+     * - **A time that happens twice.** PHP selects an occurrence according to
+     *   the zone's resolution. It is not always the first: New York's repeated
+     *   hour and Berlin's repeated hour resolve differently (ADR 0072).
      *
      * Null only for a wall time this cannot read, which {@see self::wallTime()}
      * has already excluded — kept because {@see self::windowIn()} must be

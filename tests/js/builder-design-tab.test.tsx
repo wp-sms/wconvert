@@ -36,7 +36,7 @@ const api = vi.hoisted(() => ({ getThemeTokens: vi.fn() }));
 
 vi.mock('../../resources/admin/src/builder/api', () => api);
 
-const { Tokens } = await import('../../resources/admin/src/builder/Tokens');
+const { Themes, Tokens } = await import('../../resources/admin/src/builder/Tokens');
 const { DevExport } = await import('../../resources/admin/src/builder/DevExport');
 
 const ENTRY = JSON.parse(
@@ -148,11 +148,22 @@ describe('the look', () => {
    * survived the merge intact.
    */
   it('applies a preset as token values, and touches nothing else', async () => {
-    const changed = look();
+    /*
+      **The picker moved out of this panel and the assertion followed it.** It
+      was the first group in here, which the inspector draws only while nothing
+      or a whole step is selected — so selecting a headline hid the theme
+      picker, and a merchant restyling a box had to deselect to change the
+      palette they were restyling against. It is over all three panes now
+      ({@see Themes}), and it is the same write.
+    */
+    const onChange = vi.fn();
 
-    await userEvent.click(screen.getByRole('button', { name: /Midnight/ }));
+    render(<Themes template={ENTRY} onChange={onChange} />);
 
-    const [next] = changed.mock.calls[0] as [{ tokens: Record<string, string>; tree: unknown }];
+    await userEvent.click(screen.getByRole('button', { name: /Custom look|Classic/ }));
+    await userEvent.click(await screen.findByRole('button', { name: /Midnight/ }));
+
+    const [next] = onChange.mock.calls[0] as [{ tokens: Record<string, string>; tree: unknown }];
 
     expect(next.tokens.bg).toBe('#0f172a');
     expect(next.tokens.accent).toBe('#38bdf8');
@@ -640,7 +651,8 @@ describe('the size slider', () => {
     );
 
     expect(screen.queryByRole('slider', { name: 'Width' })).toBeNull();
-    expect(screen.getByLabelText('Width')).toHaveValue('80rem');
+    expect(screen.getByRole('spinbutton', { name: 'Width amount' })).toHaveValue(80);
+    expect(screen.getByRole('combobox', { name: 'Width unit' })).toHaveValue('rem');
   });
 
   /** And for a length in a unit the design's scale is not written in. */
@@ -656,7 +668,8 @@ describe('the size slider', () => {
     );
 
     expect(screen.queryByRole('slider', { name: 'Width' })).toBeNull();
-    expect(screen.getByLabelText('Width')).toHaveValue('400px');
+    expect(screen.getByRole('spinbutton', { name: 'Width amount' })).toHaveValue(400);
+    expect(screen.getByRole('combobox', { name: 'Width unit' })).toHaveValue('px');
   });
 });
 

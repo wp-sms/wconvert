@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { Check, TriangleAlert } from 'lucide-react';
-import { CHECKS, type CheckId, type Problem } from './structure/problems';
+import { CHECKS, CHECK_SOURCES, type CheckId, type Problem } from './structure/problems';
 import type { Path } from './panel';
 
 /**
@@ -51,20 +51,26 @@ export function CheckStrip({
                 whole of what either can offer, so `title` carries the sentence
                 and the chip stays a chip (ADR 0054 rule 1).
               */
-              <span className="wconvert-check" data-state={failed === undefined ? 'pass' : 'fail'} title={failed?.said}>
+              <span
+                className="wconvert-checks__chip"
+                data-state={failed === undefined ? 'pass' : 'fail'}
+                title={said(check, failed?.said)}
+              >
                 <Icon aria-hidden="true" />
                 {name}
+                <span className="wconvert-checks__source">{CHECK_SOURCES[check].at}</span>
               </span>
             ) : (
               <button
                 type="button"
-                className="wconvert-check"
+                className="wconvert-checks__chip"
                 data-state="fail"
-                title={failed.said}
+                title={said(check, failed.said)}
                 onClick={() => onGoTo(failed.path as Path)}
               >
                 <Icon aria-hidden="true" />
                 {name}
+                <span className="wconvert-checks__source">{CHECK_SOURCES[check].at}</span>
               </button>
             )}
           </li>
@@ -72,6 +78,21 @@ export function CheckStrip({
       })}
     </ul>
   );
+}
+
+/**
+ * The tooltip: what is wrong where something is, and what enforces it always.
+ *
+ * **The source is in the `title` as well as on the chip**, because the chip
+ * shows it small and a merchant reading a failing check wants both sentences in
+ * one place. It is the only text on this strip a translator does not touch —
+ * see {@link CHECK_SOURCES}.
+ */
+function said(check: CheckId, wrong: string | undefined): string {
+  const { at, how } = CHECK_SOURCES[check];
+  const source = `${at} — ${how}`;
+
+  return wrong === undefined ? source : `${wrong}\n\n${source}`;
 }
 
 /**

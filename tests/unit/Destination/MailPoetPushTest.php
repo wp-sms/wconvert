@@ -298,4 +298,45 @@ final class MailPoetPushTest extends TestCase
         self::assertTrue($result->retryable);
         self::assertSame('MailPoet is not loaded on this site.', $result->reason);
     }
+    public function testMappedInterestUsesTheStableValueOnlyForANewSubscriber(): void
+    {
+        $subscribers = new FakeMailPoetSubscribers();
+        $type = new MailPoetDestinationType($subscribers);
+        $context = new PushContext('Enquiry', ['lists' => ['3'], 'interest_field' => 'cf_7']);
+        $first = $type->push($this->subject('new@example.com', ['interest' => 'installation', 'interest_label' => 'Installation service']), $context);
+        self::assertSame(PushOutcome::Success, $first->outcome);
+        self::assertSame('installation', $subscribers->added[0]['subscriber']['cf_7']);
+        self::assertArrayNotHasKey('interest_label', $subscribers->added[0]['subscriber']);
+        $type->push($this->subject('new@example.com', ['interest' => 'repairs']), $context);
+        self::assertCount(1, $subscribers->added);
+        self::assertSame('installation', $subscribers->subscribers[$first->providerRef]['cf_7']);
+    }
+
+    public function testInterestStaysLocalWithoutAMappingAndAnUnavailableMappingCannotWrite(): void
+    {
+        $subscribers = new FakeMailPoetSubscribers();
+        $type = new MailPoetDestinationType($subscribers);
+        $type->push($this->subject('unmapped@example.com', ['interest' => 'installation']), $this->context());
+        self::assertSame(['email' => 'unmapped@example.com'], $subscribers->added[0]['subscriber']);
+        $result = $type->push($this->subject('mapped@example.com', ['interest' => 'installation']),
+            new PushContext('Enquiry', ['lists' => ['3'], 'interest_field' => 'cf_999']));
+        self::assertSame(PushOutcome::Failed, $result->outcome);
+        self::assertTrue($result->retryable);
+        self::assertCount(1, $subscribers->added);
+    }
+
+    public function testRequirementsMatchThePushForEmptyOrMalformedListSettings(): void
+    {
+        $type = new MailPoetDestinationType(new FakeMailPoetSubscribers());
+        foreach ([[], ['  '], [3], '3'] as $lists) {
+            self::assertSame(['lists'], $type->requirements()->missingSettings(['lists' => $lists]));
+            $result = $type->push($this->subject('new@example.com'), new PushContext('Enquiry', ['lists' => $lists]));
+            self::assertSame(PushOutcome::Failed, $result->outcome);
+            self::assertTrue($result->retryable);
+        }
+        self::assertTrue($type->requirements()->acceptsCapture(['email' => 'new@example.com']));
+        self::assertFalse($type->requirements()->acceptsCapture(['phone' => '+447700900000']));
+        self::assertSame(['email', 'name'], $type->requirements()->fields);
+    }
+
 }

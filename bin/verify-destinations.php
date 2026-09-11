@@ -36,6 +36,8 @@ use WConvert\Lead\LeadCapture;
 use WConvert\Lead\Submission;
 use WConvert\Optin\OptinRepository;
 use WConvert\Queue\ActionSchedulerQueue;
+use WConvert\Template\TemplateLibrary;
+use WConvert\Template\TemplateVocabulary;
 
 if (!defined('ABSPATH')) {
     fwrite(STDERR, "Run this through WordPress: wp eval-file bin/verify-destinations.php\n");
@@ -180,6 +182,11 @@ $registry->register(new class () implements \WConvert\Destination\DestinationTyp
         return [];
     }
 
+    public function requirements(): \WConvert\Destination\DestinationRequirements
+    {
+        return new \WConvert\Destination\DestinationRequirements();
+    }
+
     /**
      * @param array<string, mixed> $credentials
      */
@@ -204,9 +211,10 @@ $registry->register(new class () implements \WConvert\Destination\DestinationTyp
 });
 
 $destination = $destinations->save(null, 'verify', 'Verification', null, []);
+$design = TemplateLibrary::fromDirectory(TemplateVocabulary::fromManifest())->snapshotInto(['template_id' => 'centred-card']);
 
 $optin = $optins->create('Verification optin', 'grow_list', [
-    'template' => ['tree' => ['steps' => []]],
+    'template' => $design['template'],
     OptinBinding::KEY => [$destination->id],
 ]);
 $optins->publish($optin->id);
@@ -310,7 +318,7 @@ $verify->check(
 );
 
 $magnetOptin = $optins->create('Guide download', Goal::DeliverLeadMagnet->value, [
-    'template' => ['tree' => ['steps' => []]],
+    'template' => $design['template'],
     OptinBinding::KEY => [$delivery->id],
 ]);
 $optins->publish($magnetOptin->id);
@@ -575,7 +583,7 @@ if ($mailPoetAvailability !== 'ready') {
     };
 
     $mailPoetOptin = $optins->create('MailPoet optin', 'grow_list', [
-        'template' => ['tree' => ['steps' => []]],
+        'template' => $design['template'],
         OptinBinding::KEY => [$mailPoetDestination->id],
     ]);
     $optins->publish($mailPoetOptin->id);

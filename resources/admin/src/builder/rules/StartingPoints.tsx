@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { Lock } from 'lucide-react';
 import { Badge } from '../../components/ui/badge';
@@ -41,6 +41,7 @@ import type { Frequency, RuleBundle, Targeting } from '../api';
 export interface StartingPointsProps {
   readonly bundles: readonly RuleBundle[];
   readonly onApply: (patch: BundlePatch) => void;
+  readonly describe: (bundle: RuleBundle) => readonly { label: string; before: string; after: string }[];
 }
 
 /** What applying one bundle changes — only the sections it named. */
@@ -51,8 +52,9 @@ export interface BundlePatch {
   readonly frequency?: Frequency;
 }
 
-export function StartingPoints({ bundles, onApply }: StartingPointsProps) {
+export function StartingPoints({ bundles, onApply, describe }: StartingPointsProps) {
   const [pending, setPending] = useState<RuleBundle | null>(null);
+  const returnFocusTo = useRef<HTMLButtonElement | null>(null);
 
   if (bundles.length === 0) {
     return null;
@@ -85,7 +87,10 @@ export function StartingPoints({ bundles, onApply }: StartingPointsProps) {
           if (rendering === 'offer') {
             return (
               <li key={bundle.id}>
-                <button type="button" className="wconvert-starter" onClick={() => setPending(bundle)}>
+                <button type="button" className="wconvert-starter" onClick={(event) => {
+                  returnFocusTo.current = event.currentTarget;
+                  setPending(bundle);
+                }}>
                   <span className="wconvert-starter__head">
                     <span className="wconvert-starter__name text-body font-semibold">{bundle.label}</span>
                   {/*
@@ -94,7 +99,7 @@ export function StartingPoints({ bundles, onApply }: StartingPointsProps) {
                     of its own in the small-caps label register, which gave a
                     piece of metadata the same weight as the pitch above it.
                   */}
-                    <Badge variant="secondary" className="wconvert-starter__tag">
+                    <Badge variant="secondary">
                       {sectionsIn(bundle)}
                     </Badge>
                   </span>
@@ -124,7 +129,7 @@ export function StartingPoints({ bundles, onApply }: StartingPointsProps) {
                 <span className="wconvert-starter__head">
                   <span className="wconvert-starter__name text-body font-semibold">{bundle.label}</span>
                   {rendering === 'upsell' ? (
-                    <Badge variant="secondary" className="wconvert-starter__tag">
+                    <Badge variant="secondary">
                       <Lock aria-hidden="true" />
                       {/*
                         A Starting point is a GROUP of rules and carries no
@@ -139,7 +144,7 @@ export function StartingPoints({ bundles, onApply }: StartingPointsProps) {
                   ) : (
                     // Amber is the reserved meaning it already carries on the
                     // Optin list: the SITE is holding this back (ADR 0037).
-                    <Badge variant="warning" className="wconvert-starter__tag">
+                    <Badge variant="warning">
                       {sprintf(
                         /* translators: %s: the plugin the site needs, e.g. “WooCommerce”. */
                         __('Needs %s', 'wconvert'),
@@ -164,12 +169,19 @@ export function StartingPoints({ bundles, onApply }: StartingPointsProps) {
         description={
           pending === null
             ? ''
-            : sprintf(
-                /* translators: %s: the sections it replaces, e.g. “When and Who”. */
-                __('This replaces what you have under %s. It cannot be undone.', 'wconvert'),
-                sectionsIn(pending)
-              )
+            : <span className="wconvert-rule-comparison">
+                <span>{__('Review the settings this starting point will replace.', 'wconvert')}</span>
+                {describe(pending).map((section) => (
+                  <span key={section.label} className="wconvert-rule-comparison__section">
+                    <strong>{section.label}</strong>
+                    <span><strong>{__('Current:', 'wconvert')}</strong> {section.before}</span>
+                    <span><strong>{__('After applying:', 'wconvert')}</strong> {section.after}</span>
+                  </span>
+                ))}
+                <span>{__('Your start and end dates, priority and settings outside these sections stay the same. Undo can restore these draft settings.', 'wconvert')}</span>
+              </span>
         }
+        returnFocusTo={returnFocusTo}
         confirmLabel={__('Replace these rules', 'wconvert')}
         onConfirm={() => {
           if (pending !== null) {
@@ -189,30 +201,41 @@ export function StartingPoints({ bundles, onApply }: StartingPointsProps) {
  * it, so the words and the effect cannot disagree: what the confirmation names
  * is what {@link patchOf} sends.
  */
-function sectionsIn(bundle: RuleBundle): string {
+export function affectedSections(bundle: RuleBundle): string[] {
   const named: string[] = [];
 
   if (bundle.targeting !== undefined) {
-    named.push(__('Where', 'wconvert'));
+    named.push('where');
+  }
+
+  // A targeting replacement also replaces its logged-in and role restrictions.
+  if (bundle.conditions !== undefined || bundle.targeting !== undefined) {
+    named.push('who');
   }
 
   if (bundle.triggers !== undefined) {
-    named.push(__('When', 'wconvert'));
-  }
-
-  if (bundle.conditions !== undefined) {
-    named.push(__('Who', 'wconvert'));
+    named.push('when');
   }
 
   if (bundle.frequency !== undefined) {
-    named.push(__('How often', 'wconvert'));
+    named.push('how-often');
   }
 
-  return listWithAnd(named);
+  return named;
+}
+
+function sectionsIn(bundle: RuleBundle): string {
+  const labels: Record<string, string> = {
+    where: __('Pages', 'wconvert'),
+    who: __('Audience', 'wconvert'),
+    when: __('When it appears', 'wconvert'),
+    'how-often': __('Frequency', 'wconvert'),
+  };
+  return listWithAnd(affectedSections(bundle).map((id) => labels[id]));
 }
 
 /** The bundle as a patch — exactly the sections it carries, and no others. */
-function patchOf(bundle: RuleBundle): BundlePatch {
+export function patchOf(bundle: RuleBundle): BundlePatch {
   const patch: BundlePatch = {};
 
   return {

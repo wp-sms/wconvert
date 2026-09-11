@@ -99,12 +99,18 @@ onto the capture, it holds under every Goal including one this install can no
 longer resolve, which is the lapse a Goal-keyed check would have had
 ([ADR 0026](0026-a-goal-the-site-cannot-serve-is-hidden.md)).
 
-**Not a filter.** Pre-pressing a captures chip in the gallery for a Goal would
+**Never a Goal-imposed filter.** Pre-pressing a captures chip in the gallery for a Goal would
 be a Goal facet in a captures chip's clothes, which
 [ADR 0043](0043-the-library-is-indexed-and-its-facets-are-derived.md) forbids
 outright — and on today's library the SMS Goal would open showing **one**
 design. Which detail to ask a visitor for stays silent altogether: email against
 phone is the merchant's judgement, and nothing enforces it.
+
+As amended by
+[ADR 0069](0069-the-library-helps-merchants-compare-before-applying.md), the
+merchant may explicitly narrow designs by **Fill in a form / Follow a link**
+or the details a form must include. These are optional capability choices; a
+Goal does not preselect them, and they do not alter the compatibility checks.
 
 ### 2. An A/B arm's design converts the same way as its siblings'
 
@@ -160,8 +166,9 @@ contradicting each other:
 | **Why** | the headline number is literally unreachable | the number is fine and measures something else |
 
 It is a note and never a refusal, because refusing would put back the wall this
-document removed, one predicate over. And never a gallery filter, for
-ADR 0043's reason above.
+document removed, one predicate over. Nor does this Goal note automatically
+filter the gallery, for ADR 0043's reason above. The merchant's explicit
+capability filters follow ADR 0069; they do not derive from `growsAList()`.
 
 ## Two consequences accepted rather than fixed
 
@@ -236,17 +243,22 @@ param edit.
   filing a capture design under the sale Goal is offering a start a merchant can
   legitimately want; refusing it at registration would drop the card with
   nothing in any log.
-- **The Goal is on screen**, as one muted line in the builder's page-header band
-  with a *Change goal* control beside it — height reserved, like the stats strip
-  below it, so the registry answering does not push the tab strip down.
+- **The Goal is on screen**, ~~as one muted line in the builder's page-header band~~
+  **in Optin details** under [ADR 0067](0067-the-editor-starts-with-the-preview-and-the-selected-element.md),
+  with a *Change goal* control beside it.
 - **Changing a Goal confirms**, and that is not the usual confirm-everything
   reflex. The structure editor's amendment to
   [ADR 0039](0039-a-screen-is-regions-and-scope-decides-placement.md) says undo
-  buys a destructive action its exception — and the builder's history watches
-  the design, while a Goal is a column and not part of `config`. There is no
-  entry to walk back to, so the sentence is the only place it can be said:
+  buys a destructive action its exception. Under [ADR 0075](0075-draft-history-and-template-content-choices-stay-predictable.md),
+  draft history includes the name and configuration, while a Goal is a saved
+  column. A successful correction resets local history, so the confirmation
+  names both the reporting change and that history boundary:
   *"Everything this Optin has already counted is read against the goal it
   holds, so its whole history moves with it. This cannot be undone."*
+  **Clarified by [ADR 0072](0072-setup-choices-state-their-effect-and-scope.md):**
+  this action also saves the current name and complete draft configuration.
+  The confirmation now names that effect and its button says *Save draft and
+  change goal*. It does not publish; draft Undo cannot restore the saved Goal.
 - **A goal-only `PATCH` is checked against the stored design.** Both refusals
   were guarded on an incoming `config`, so `PATCH {"goal": …}` with none wrote
   any settable Goal onto any design and any binding, unchecked. It was

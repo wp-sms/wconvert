@@ -19,7 +19,7 @@ use WConvert\Template\TemplateVocabulary;
  * The assertion that matters is not "the files parse" — it is that a **shipped
  * entry gets no exemption**. Every one goes through exactly the registration
  * a third party's entry goes through, so the day a bundled Playbook names a
- * Slot Role its Template dropped, or pairs a click Goal with a submit design,
+ * Slot Role its Template dropped, or names an unregistered design,
  * the build fails rather than the gallery quietly losing a card. It is the
  * same posture `TemplateLibraryTest` takes for the Template gallery
  * (ADR 0010).
@@ -55,7 +55,7 @@ final class BundledPlaybooksTest extends TestCase
      * Goal reachable on the goal screen with no Playbook under it lands the
      * merchant on an empty gallery.
      *
-     * **All five, as of #36.** Four were covered from the start and the cart
+     * **Every Goal, including enquiries.** Four were covered from the start and the cart
      * Goal was skipped here, because its Playbooks could not exist before the
      * [[Condition]]s that define it — nothing is written before its subject
      * (ADR 0029). They arrived with those Conditions, so the exemption goes
@@ -345,14 +345,28 @@ final class BundledPlaybooksTest extends TestCase
 
     /**
      * Every word inside a copy entry, whichever shape it takes — a plain
-     * string, or the structured `{text, link: {label}}` a sentence with a link
-     * inside it uses (ADR 0013).
+     * string, the structured `{text, link: {label}}` a sentence with a link
+     * inside it uses (ADR 0013), or a choice's visible label. Stable choice
+     * values are identifiers sent to destinations, so translating one would
+     * change the captured answer when the site's language changes.
      *
      * @param array<string, mixed> $copy
      * @return list<string>
      */
     private static function wordsIn(array $copy): array
     {
+        foreach ($copy as $role => $words) {
+            if (!is_array($words) || !is_array($words['options'] ?? null)) {
+                continue;
+            }
+
+            foreach ($words['options'] as $index => $option) {
+                if (is_array($option)) {
+                    unset($copy[$role]['options'][$index]['value']);
+                }
+            }
+        }
+
         $words = [];
 
         array_walk_recursive($copy, static function ($value) use (&$words): void {
@@ -362,6 +376,17 @@ final class BundledPlaybooksTest extends TestCase
         });
 
         return $words;
+    }
+
+    public function testTheTranslationAuditIncludesChoiceLabelsButNotStableAnswerValues(): void
+    {
+        $this->assertSame(['Which service?', 'Installation', 'Repair'], self::wordsIn([
+            'interest_label' => 'Which service?',
+            'interest_options' => ['options' => [
+                ['value' => 'installation', 'label' => 'Installation'],
+                ['value' => 'repair', 'label' => 'Repair'],
+            ]],
+        ]));
     }
 
     /**

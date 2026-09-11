@@ -78,6 +78,18 @@ product wins.
 > because the names stay closed and the bag goes through the same validation the
 > design's tokens do.
 >
+> *Corrected by the port of six reference designs — see
+> `tests/unit/Frontend/PayloadBudgetTest.php`.* **The fixture measured ten, and
+> ten was never a page.** Six ported designs came to 2,192–2,293 B there, and
+> stripping every SVG and gradient out of them still measured 2,087–2,108 B —
+> so no design change bought the pass and the bytes were the fixture's own copy
+> divergence rather than the art. The fixture now measures **five**, which is
+> still past anything the rule engine will show, and the costliest design
+> measures 1,854 B of 2,048 at it. **The budget did not move.** The picker
+> changed too: it chose by one snapshot gzipped ALONE, which is not the design
+> that costs the most on a page, so a shipped design could sit over the budget
+> with the guard green.
+>
 > **The Depicter verdict is not overturned and is the reason the line sits where
 > it does.** What 0062 bought is *ground*, which is what this ADR's own
 > reopening clause named; what it refused is *placement*, which is where a

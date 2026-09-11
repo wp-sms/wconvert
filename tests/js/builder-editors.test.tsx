@@ -130,7 +130,7 @@ describe('the four sections', () => {
     // here rather than passing four times.
     expect(
       [...document.querySelectorAll('.wconvert-section__eyebrow')].map((span) => span.textContent),
-    ).toEqual(['Where', 'When', 'Who', 'How often']);
+    ).toEqual(['Pages', 'Audience', 'When it appears', 'Schedule & frequency']);
   });
 
   it('starts collapsed and opens on click', async () => {
@@ -138,7 +138,7 @@ describe('the four sections', () => {
 
     expect(screen.queryByLabelText('Add a trigger')).toBeNull();
 
-    await open('When');
+    await open('When it appears');
 
     expect(screen.getByLabelText('Add a trigger')).toBeInTheDocument();
   });
@@ -161,7 +161,7 @@ describe('the four sections', () => {
       screen
         .getAllByRole('button', { expanded: true })
         .map((button) => button.querySelector('.wconvert-section__eyebrow')?.textContent),
-    ).toEqual(['When']);
+    ).toEqual(['When it appears']);
   });
 
   /** And an Optin whose rules are all fine opens nothing at all. */
@@ -182,7 +182,7 @@ describe('what each section says about itself', () => {
   it('says an Optin with no trigger will never fire, before the click', () => {
     panel();
 
-    expect(screen.getByRole('button', { name: /^When/ })).toHaveTextContent('Never — it has no trigger yet');
+    expect(screen.getByRole('button', { name: /^When it appears/ })).toHaveTextContent('Never — it has no trigger yet');
   });
 
   /**
@@ -194,8 +194,8 @@ describe('what each section says about itself', () => {
   it('reads the default allowance as stopping, not as unlimited', () => {
     panel();
 
-    expect(screen.getByRole('button', { name: /^How often/ })).toHaveTextContent(
-      'Every time, until they close it or sign up',
+    expect(screen.getByRole('button', { name: /^Schedule & frequency/ })).toHaveTextContent(
+      'Every time, until they close it or submit the form',
     );
   });
 
@@ -211,7 +211,7 @@ describe('what each section says about itself', () => {
       },
     });
 
-    expect(screen.getByRole('button', { name: /^Where/ })).toHaveTextContent('On 2 pages, except 1 page');
+    expect(screen.getByRole('button', { name: /^Pages/ })).toHaveTextContent('Matches 2 page rules, except 1 page rule');
   });
 
   /**
@@ -224,14 +224,14 @@ describe('what each section says about itself', () => {
   it('says a trigger is missing what it needs rather than reading past it', () => {
     panel({ rules: [{ type: 'click_element' }] });
 
-    expect(screen.getByRole('button', { name: /^When/ })).toHaveTextContent('needs selector');
+    expect(screen.getByRole('button', { name: /^When it appears/ })).toHaveTextContent('needs selector');
   });
 
   /** And a rule with everything it needs reads as its phrase, with its own values in it. */
   it('reads a complete rule as its phrase, with the merchant’s value in it', () => {
     panel({ rules: [{ type: 'time_on_page', seconds: 20 }] });
 
-    expect(screen.getByRole('button', { name: /^When/ })).toHaveTextContent('time_on_page 20');
+    expect(screen.getByRole('button', { name: /^When it appears/ })).toHaveTextContent('time_on_page 20');
   });
 });
 
@@ -245,8 +245,8 @@ describe('when it shows and who sees it', () => {
   it('draws them as two sections with their own add controls', async () => {
     panel({ rules: [{ type: 'time_on_page', seconds: 20 }] });
 
-    await open('When');
-    await open('Who');
+    await open('When it appears');
+    await open('Audience');
 
     expect(screen.getByLabelText('Add a trigger')).toBeInTheDocument();
     expect(screen.getByLabelText('Add a condition')).toBeInTheDocument();
@@ -268,7 +268,7 @@ describe('when it shows and who sees it', () => {
   it('asks whether it waits, and writes page_load for the answer that does not', async () => {
     const changed = panel({ rules: [{ type: 'time_on_page', seconds: 8 }] });
 
-    await open('When');
+    await open('When it appears');
     await userEvent.click(screen.getByRole('radio', { name: 'page_load' }));
 
     expect(changed).toHaveBeenCalledWith({
@@ -286,8 +286,8 @@ describe('when it shows and who sees it', () => {
       rules: [{ type: 'device', in: ['mobile'] }, { type: 'page_load' }, { type: 'scroll_up' }],
     });
 
-    await open('When');
-    await userEvent.click(screen.getByRole('radio', { name: 'Waits for one of these' }));
+    await open('When it appears');
+    await userEvent.click(screen.getByRole('radio', { name: 'Wait for one of these actions' }));
 
     expect(changed).toHaveBeenCalledWith({
       rules: [{ type: 'device', in: ['mobile'] }, { type: 'scroll_up' }],
@@ -304,7 +304,7 @@ describe('when it shows and who sees it', () => {
   it('lists a trigger that page_load has made unreachable, and says so', async () => {
     panel({ rules: [{ type: 'page_load' }, { type: 'time_on_page', seconds: 8 }] });
 
-    await open('When');
+    await open('When it appears');
 
     expect(screen.getByText(/This never runs/)).toBeInTheDocument();
     // And nothing offers to add another, because anything added would be one
@@ -329,7 +329,7 @@ describe('when it shows and who sees it', () => {
   it.each([['scroll_up'], ['exit_intent']])('stops offering %s once the Optin has it', async (type) => {
     panel({ rules: [{ type }] });
 
-    await open('When');
+    await open('When it appears');
 
     expect(offered('Add a trigger')).not.toContain(type);
   });
@@ -343,7 +343,7 @@ describe('when it shows and who sees it', () => {
   it('stops offering a threshold trigger once the Optin has one', async () => {
     panel({ rules: [{ type: 'time_on_page', seconds: 8 }] });
 
-    await open('When');
+    await open('When it appears');
 
     expect(offered('Add a trigger')).not.toContain('time_on_page');
     // ...and the ones that ARE two different things stay on offer.
@@ -353,7 +353,7 @@ describe('when it shows and who sees it', () => {
   it('keeps offering a trigger whose params say WHICH thing', async () => {
     panel({ rules: [{ type: 'click_element', selector: '.a' }] });
 
-    await open('When');
+    await open('When it appears');
 
     expect(offered('Add a trigger')).toContain('click_element');
   });
@@ -370,7 +370,7 @@ describe('when it shows and who sees it', () => {
   it('offers a condition once, and a second of the ones that differ', async () => {
     panel({ rules: [{ type: 'device', in: ['mobile'] }, { type: 'query_param', key: 'utm_source', value: ['a'] }] });
 
-    await open('Who');
+    await open('Audience');
 
     expect(offered('Add a condition')).not.toContain('device');
     expect(offered('Add a condition')).toContain('query_param');
@@ -380,7 +380,7 @@ describe('when it shows and who sees it', () => {
   it('explains a stored second condition of a kind that may only be set once', async () => {
     panel({ rules: [{ type: 'device', in: ['mobile'] }, { type: 'device', in: ['desktop'] }] });
 
-    await open('Who');
+    await open('Audience');
 
     const notes = screen.getAllByText(/narrows the one above it/);
 
@@ -401,11 +401,11 @@ describe('when it shows and who sees it', () => {
       ],
     });
 
-    expect(screen.getByRole('button', { name: /^When/ })).toHaveTextContent(
+    expect(screen.getByRole('button', { name: /^When it appears/ })).toHaveTextContent(
       '1 other trigger never runs',
     );
 
-    await open('When');
+    await open('When it appears');
 
     const notes = screen.getAllByText(/This never runs/);
 
@@ -417,7 +417,7 @@ describe('when it shows and who sees it', () => {
   it('keeps page_load out of the list it is not a member of', async () => {
     panel({ rules: [{ type: 'time_on_page', seconds: 8 }] });
 
-    await open('When');
+    await open('When it appears');
 
     const add = screen.getByLabelText('Add a trigger');
 
@@ -432,7 +432,7 @@ describe('when it shows and who sees it', () => {
   it('will not remove the only trigger', async () => {
     panel({ rules: [{ type: 'time_on_page', seconds: 20 }] });
 
-    await open('When');
+    await open('When it appears');
 
     expect(screen.queryByRole('button', { name: 'Remove' })).toBeNull();
   });
@@ -445,7 +445,7 @@ describe('when it shows and who sees it', () => {
   it('lets the last unreachable trigger go, because it was never the one firing', async () => {
     panel({ rules: [{ type: 'page_load' }, { type: 'time_on_page', seconds: 20 }] });
 
-    await open('When');
+    await open('When it appears');
 
     expect(screen.getAllByRole('button', { name: 'Remove' }).length).toBeGreaterThan(0);
   });
@@ -469,7 +469,7 @@ describe('when it shows and who sees it', () => {
       ],
     });
 
-    await open('When');
+    await open('When it appears');
 
     // The first Remove inside the When section belongs to the first TRIGGER,
     // which sits at index 1 of the flat list — the condition was written first.
@@ -514,7 +514,7 @@ describe('when it shows and who sees it', () => {
       { types: ruleTypes({ free: 'ready', pro: 'locked' }) },
     );
 
-    await open('When');
+    await open('When it appears');
 
     expect(screen.getByText(/Standing in for/)).toHaveTextContent('exit_intent');
     expect(screen.queryByRole('button', { name: /Dismiss|Got it|Hide/ })).toBeNull();
@@ -538,7 +538,7 @@ describe('when it shows and who sees it', () => {
   it('drops to the general form and stays there, with the preset’s values to edit', async () => {
     const changed = panel({ rules: [{ type: 'device', in: ['desktop'] }] });
 
-    await open('Who');
+    await open('Audience');
 
     // It reads back as the preset that matches it.
     const select = screen.getByLabelText('device');
@@ -563,7 +563,7 @@ describe('when it shows and who sees it', () => {
   it('lets the merchant set a combination no preset offers', async () => {
     const changed = panel({ rules: [{ type: 'device', in: ['desktop'] }] });
 
-    await open('Who');
+    await open('Audience');
     await userEvent.selectOptions(screen.getByLabelText('device'), '');
     await userEvent.click(screen.getByRole('checkbox', { name: 'mobile' }));
 
@@ -576,7 +576,7 @@ describe('when it shows and who sees it', () => {
   it('goes back to a preset when one is chosen', async () => {
     livePanel({ rules: [{ type: 'device', in: ['desktop'] }] });
 
-    await open('Who');
+    await open('Audience');
 
     const select = screen.getByLabelText('device');
 
@@ -605,7 +605,7 @@ describe('when it shows and who sees it', () => {
   it('keeps the controls in place while the merchant is using them', async () => {
     livePanel({ rules: [{ type: 'device', in: ['mobile', 'tablet', 'desktop'] }] });
 
-    await open('Who');
+    await open('Audience');
 
     await userEvent.click(screen.getByRole('checkbox', { name: 'mobile' }));
 
@@ -623,7 +623,7 @@ describe('when it shows and who sees it', () => {
   it('says nothing of the sort about an ordinary rule', async () => {
     panel({ rules: [{ type: 'time_on_page', seconds: 15 }] });
 
-    await open('When');
+    await open('When it appears');
 
     expect(screen.queryByText(/Standing in for/)).toBeNull();
   });
@@ -637,7 +637,7 @@ describe('when it shows and who sees it', () => {
   it('carries the marker through an edit of the substituted rule', async () => {
     const changed = panel({ rules: [{ type: 'time_on_page', seconds: 15, degraded_from: 'exit_intent' }] });
 
-    await open('When');
+    await open('When it appears');
     await userEvent.selectOptions(screen.getByLabelText('time_on_page'), 'after_a_moment');
 
     expect(changed).toHaveBeenCalledWith({
@@ -663,7 +663,7 @@ describe('a rule type this install cannot run', () => {
       { types: ruleTypes({ free: 'ready', pro: 'locked' }) },
     );
 
-    await open('When');
+    await open('When it appears');
 
     expect(offered('Add a trigger')).not.toContain('click_element');
     // ==========================================================================
@@ -706,7 +706,7 @@ describe('a rule type this install cannot run', () => {
       { types: ruleTypes({ elite: 'unavailable' }) },
     );
 
-    await open('Who');
+    await open('Audience');
 
     // ==========================================================================
     // ONE GROUP LABEL CARRYING THE REASON, AND A CHIP PER CAPABILITY.
@@ -731,7 +731,7 @@ describe('a rule type this install cannot run', () => {
   it('draws no disabled group at all where the install can run everything', async () => {
     panel({ rules: [{ type: 'page_load' }] }, { types: ruleTypes() });
 
-    await open('Who');
+    await open('Audience');
 
     expect(absent('Add a condition')).toEqual([]);
   });
@@ -743,7 +743,7 @@ describe('a rule type this install cannot run', () => {
       { types: ruleTypes({ elite: 'unavailable' }) },
     );
 
-    await open('Who');
+    await open('Audience');
 
     expect(screen.getByText(/Needs WooCommerce on this site, which is not active/)).toBeInTheDocument();
   });
@@ -758,7 +758,7 @@ describe('where it shows', () => {
   it('covers all five page prefixes in both lists', async () => {
     panel();
 
-    await open('Where');
+    await open('Pages');
 
     for (const list of screen.getAllByLabelText('Add')) {
       expect(within(list).getAllByRole('option').map((option) => option.textContent)).toEqual([
@@ -795,7 +795,7 @@ describe('where it shows', () => {
       },
     );
 
-    await open('Where');
+    await open('Pages');
 
     for (const list of screen.getAllByLabelText('Add')) {
       // Named, and unreachable — the same rendering the other three axes give
@@ -817,7 +817,7 @@ describe('where it shows', () => {
   it('keeps the visitor predicate out of the page lists, and out of this section', async () => {
     panel();
 
-    await open('Where');
+    await open('Pages');
 
     for (const list of screen.getAllByLabelText('Add')) {
       expect(within(list).queryByRole('option', { name: 'logged_in' })).toBeNull();
@@ -825,7 +825,7 @@ describe('where it shows', () => {
 
     expect(screen.queryByLabelText('logged_in')).toBeNull();
 
-    await open('Who');
+    await open('Audience');
 
     expect(screen.getByLabelText('logged_in')).toBeInTheDocument();
   });
@@ -840,7 +840,7 @@ describe('where it shows', () => {
   it('says what an empty list means by being the empty state', async () => {
     panel();
 
-    await open('Where');
+    await open('Pages');
 
     expect(screen.getByText('Shown everywhere on the site.')).toBeInTheDocument();
     expect(screen.queryByText(/exclusions always win/i)).toBeNull();
@@ -854,7 +854,7 @@ describe('where it shows', () => {
       },
     });
 
-    await open('Where');
+    await open('Pages');
 
     expect(screen.getByText(/exclusions always win/i)).toBeInTheDocument();
   });
@@ -867,7 +867,7 @@ describe('where it shows', () => {
   it('offers three answers for the visitor predicate, and clears rather than storing false', async () => {
     const changed = panel({ targeting: { logged_in: true } });
 
-    await open('Who');
+    await open('Audience');
     await userEvent.selectOptions(screen.getByLabelText('logged_in'), '');
 
     expect(changed).toHaveBeenCalledWith({ targeting: {} });
@@ -900,7 +900,7 @@ describe('when it runs', () => {
   it('writes what the merchant typed, as a wall time with no zone on it', async () => {
     const onChange = panel();
 
-    await open('How often');
+    await open('Schedule & frequency');
     await userEvent.type(screen.getByLabelText('Start showing it on'), '2026-11-27T09:00');
 
     expect(onChange).toHaveBeenLastCalledWith({ schedule: { starts_at: '2026-11-27 09:00' } });
@@ -910,7 +910,7 @@ describe('when it runs', () => {
   it('drops the key when the merchant clears the box', async () => {
     const onChange = panel({ schedule: { starts_at: '2026-11-27 09:00' } });
 
-    await open('How often');
+    await open('Schedule & frequency');
     await userEvent.clear(screen.getByLabelText('Start showing it on'));
 
     expect(onChange).toHaveBeenLastCalledWith({ schedule: {} });
@@ -923,7 +923,7 @@ describe('when it runs', () => {
   it('takes an end with no start', async () => {
     const onChange = panel();
 
-    await open('How often');
+    await open('Schedule & frequency');
     await userEvent.type(screen.getByLabelText('Stop showing it on'), '2026-11-30T23:59');
 
     expect(onChange).toHaveBeenLastCalledWith({ schedule: { ends_at: '2026-11-30 23:59' } });
@@ -941,7 +941,7 @@ describe('when it runs', () => {
   it('says the window on the section the merchant has not opened', () => {
     panel({ schedule: { starts_at: '2026-11-27 09:00', ends_at: '2026-11-30 23:59' } });
 
-    const row = screen.getByRole('button', { name: /^How often/ });
+    const row = screen.getByRole('button', { name: /^Schedule & frequency/ });
 
     expect(row).toHaveTextContent(/Runs .*27.*2026.*to .*30.*2026/);
     expect(row).toHaveTextContent(/9:00/);
@@ -951,7 +951,7 @@ describe('when it runs', () => {
   it('says a one-sided window as the open-ended thing it is', () => {
     panel({ schedule: { starts_at: '2026-11-27 09:00' } });
 
-    expect(screen.getByRole('button', { name: /^How often/ })).toHaveTextContent(/Runs from .*27.*2026/);
+    expect(screen.getByRole('button', { name: /^Schedule & frequency/ })).toHaveTextContent(/Runs from .*27.*2026/);
   });
 });
 
