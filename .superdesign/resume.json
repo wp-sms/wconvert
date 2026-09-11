@@ -10,22 +10,28 @@
         ".superdesign/design-system.md",
         "tools/design-system/editor-prototype/App.jsx",
         "tools/design-system/editor-prototype/style.css",
-        "tools/design-system/editor-prototype/fonts.css"
+        "tools/design-system/editor-prototype/fonts.css",
+        "resources/admin/src/builder/StructureView.tsx",
+        "resources/admin/src/builder/ColorField.tsx",
+        "resources/admin/src/builder/ShadowField.tsx"
       ],
       "fingerprints": {
         ".superdesign/design-system.md": "78869276089780d1450f4f67bb0d2a678dde0a5066afd8811cc5a1d40b226cb3",
         "tools/design-system/editor-prototype/App.jsx": "b856193688b8164e3f7a29fbef2b07faef453a6a5e1b86c226397202d14976d6",
         "tools/design-system/editor-prototype/style.css": "67a9edf3f85681ce22c2aceb6f85cd6ba1d872da1999c4984f339ee9c5460c9e",
-        "tools/design-system/editor-prototype/fonts.css": "5d015bdcef855f221fb8806e35c5e4103b6910e84aac4a897ed62afed0074bf9"
+        "tools/design-system/editor-prototype/fonts.css": "5d015bdcef855f221fb8806e35c5e4103b6910e84aac4a897ed62afed0074bf9",
+        "resources/admin/src/builder/StructureView.tsx": "8ba8cc743d694df9369ea0f209da016e2303fd6fe28a5cc05d974c744abb0f93",
+        "resources/admin/src/builder/ColorField.tsx": "8604e7e1625473691ffd9d8a3bb3b475ee198a078074c88c760d7d6076ea0356",
+        "resources/admin/src/builder/ShadowField.tsx": "cba725da34302c0ac638ef9973e09e542dced31892c5d77a71c6f42397260ddc"
       },
       "drafts": {
         "0ae34da8-41a5-4650-8c22-b4dfb8ae9ef2": {
-          "title": "Fieldwork \u2014 preview-first editor",
-          "visualDirection": "One approved preview-first Fieldwork editor prototype",
-          "currentVersion": 2
+          "title": "Refined WConvert Editor Prototype",
+          "visualDirection": "Approved Fieldwork editor refined with explicit insertion, compact appearance controls and a small text toolbar",
+          "currentVersion": 3
         }
       },
-      "updatedAt": "2026-09-10T08:58:04.689361+00:00"
+      "updatedAt": "2026-09-11T07:02:54.948096+00:00"
     }
   }
 }

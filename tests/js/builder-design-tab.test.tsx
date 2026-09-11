@@ -215,14 +215,14 @@ describe('the look', () => {
   it('keeps every token the manifest declares, once', () => {
     look();
 
-    // A colour is a picker rather than a text box, and it is not behind
+    // A color is a picker rather than a text box, and it is not behind
     // anything: no disclosure has to be opened first.
-    expect(screen.getByRole('button', { name: /Choose a colour for Background/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Choose a color for Background/ })).toBeInTheDocument();
     // The stub names only two tokens, so the rest fall back to their raw key —
     // which is what `nameOf` does on a real install missing a label too.
     expect(screen.getByRole('button', { name: 'font' })).toBeInTheDocument();
     // Once, and not once per group.
-    expect(screen.getAllByRole('button', { name: /Choose a colour for Background/ })).toHaveLength(1);
+    expect(screen.getAllByRole('button', { name: /Choose a color for Background/ })).toHaveLength(1);
   });
 });
 
@@ -306,8 +306,8 @@ describe('a length', () => {
     // 26rem, the design's own, on a range twice as wide.
     expect(widthSlider()).toHaveValue('26');
     expect(widthSlider()).toHaveAttribute('max', '52');
-    // The escape hatch, which is what keeps a `clamp()` reachable from here.
-    expect(screen.getByLabelText('Width value')).toBeInTheDocument();
+    expect(screen.getByRole('spinbutton', { name: 'Width amount' })).toHaveValue(26);
+    expect(screen.queryByLabelText('Width value')).toBeNull();
   });
 
   it('keeps the text box and drops the slider for a value it cannot say', () => {
@@ -333,6 +333,16 @@ describe('a length', () => {
     look({ design: ENTRY.tokens });
 
     expect(screen.queryByRole('button', { name: /Put Width back to the design/ })).toBeNull();
+  });
+
+  it('keeps a retired design editable without claiming a reset to its unavailable original', () => {
+    const snapshot = { ...ENTRY, tokens: { ...ENTRY.tokens, bg: '#314159', width: '32rem' } };
+    const changed = look({ template: snapshot, design: {} });
+
+    expect(screen.queryAllByRole('button', { name: /back to the design’s own/ })).toHaveLength(0);
+    fireEvent.change(screen.getByRole('spinbutton', { name: 'Width amount' }), { target: { value: '34' } });
+    fireEvent.blur(screen.getByRole('spinbutton', { name: 'Width amount' }));
+    expect(changed).toHaveBeenCalledWith({ ...snapshot, tokens: { ...snapshot.tokens, width: '34rem' } });
   });
 
   /**
@@ -677,12 +687,12 @@ describe('the size slider', () => {
  * ============================================================================
  * A COLOUR CONTROL MUST NOT BE OFFERED OVER A VALUE IT WOULD DESTROY.
  * ============================================================================
- * `isColour` was asked about the FALLBACK, so a merchant who typed
+ * `isColor` was asked about the FALLBACK, so a merchant who typed
  * `var(--brand)` into `accent` kept a hex picker sitting over it — one drag
  * from overwriting a working reference with `#3f8ea3`. It branches on what is
  * actually stored now, the same way the length side already did.
  */
-describe('a colour the panel cannot parse', () => {
+describe('a color the panel cannot parse', () => {
   it('keeps the text box rather than offering a picker that would clobber it', () => {
     render(
       <Panel
@@ -694,7 +704,7 @@ describe('a colour the panel cannot parse', () => {
       />,
     );
 
-    expect(screen.queryByRole('button', { name: /Choose a colour for Button$/ })).toBeNull();
+    expect(screen.queryByRole('button', { name: /Choose a color for Button$/ })).toBeNull();
     expect(screen.getByLabelText('Button')).toHaveValue('var(--brand)');
   });
 });
@@ -747,7 +757,7 @@ describe('a shadow', () => {
    * open on Custom wearing their own value — the library is not renormalised to
    * match the chips.
    */
-  it('opens on Custom, value intact, for a design casting its own', () => {
+  it('keeps a custom shadow intact and opens CSS only on request', async () => {
     const upward = '0 -6px 24px rgba(69, 10, 10, 0.35)';
 
     render(
@@ -764,6 +774,8 @@ describe('a shadow', () => {
     const shadow = screen.getByText('Shadow').closest('.wconvert-token') as HTMLElement;
 
     expect(within(shadow).getByRole('radio', { name: 'Custom' })).toBeChecked();
+    expect(screen.queryByLabelText('Shadow value')).toBeNull();
+    await userEvent.click(within(shadow).getByRole('radio', { name: 'Custom' }));
     expect(screen.getByLabelText('Shadow value')).toHaveValue(upward);
   });
 });

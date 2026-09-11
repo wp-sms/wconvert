@@ -67,6 +67,8 @@ writeFileSync(i18nShim, 'export const __ = (text) => text;\n');
 const result = await build({
   root: resolve(HERE, '..'),
   logLevel: 'warn',
+  // Review the visitor renderer, including its stripped editing metadata.
+  define: { __WCONVERT_VISITOR__: 'true' },
   resolve: {
     alias: {
       '@renderer': resolve(PLUGIN, 'resources/renderer/src'),

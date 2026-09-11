@@ -20,7 +20,8 @@
     "align": "start",
     "bg-image": "linear-gradient(135deg, #4c1d95 0%, #7c3aed 55%, #c026d3 100%)",
     "shadow": "0 32px 80px -16px rgba(15, 23, 42, 0.5)",
-    "backdrop": "rgba(30, 10, 60, 0.7)"
+    "backdrop": "rgba(30, 10, 60, 0.7)",
+    "text-size": "1rem"
   },
   "tree": {
     "steps": [
@@ -31,26 +32,31 @@
             "type": "badge",
             "id": "n1",
             "role": "badge",
-            "place": "corner",
-            "text": "50% OFF"
+            "text": "50% OFF",
+            "tokens": {
+              "text-size": "1.0834rem"
+            }
           },
           {
             "type": "eyebrow",
             "id": "n2",
             "role": "eyebrow",
-            "text": "Three days only"
+            "text": "The archive edit",
+            "tokens": {
+              "text-size": "1.0834rem"
+            }
           },
           {
             "type": "heading",
             "id": "n3",
             "role": "headline",
-            "text": "Half price on everything"
+            "text": "Half price. Fresh possibilities."
           },
           {
             "type": "text",
             "id": "n4",
             "role": "body",
-            "text": "The whole range, including the things that never go on sale."
+            "text": "Selected pieces from the archive, ready for a new home."
           },
           {
             "type": "button",
@@ -63,7 +69,11 @@
             "type": "text",
             "id": "n6",
             "role": "fine_print",
-            "text": "Discount applied at the checkout."
+            "text": "Selected items only. Prices as marked.",
+            "size": "s",
+            "tokens": {
+              "text-size": "1.167rem"
+            }
           }
         ]
       }

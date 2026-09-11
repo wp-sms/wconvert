@@ -26,10 +26,16 @@
       "children": "panes",
       "params": [
         "ratio",
+        "basis",
         "tokens",
         "narrow"
       ],
       "choices": {
+        "basis": [
+          "12rem",
+          "16rem",
+          "20rem"
+        ],
         "ratio": [
           "0.35",
           "0.5",
@@ -37,6 +43,7 @@
         ]
       },
       "defaults": {
+        "basis": "12rem",
         "ratio": "0.5"
       },
       "style_tokens": [
@@ -94,7 +101,8 @@
         "pad",
         "radius",
         "bg-image",
-        "overlay"
+        "overlay",
+        "image-position"
       ]
     },
     "media": {
@@ -123,7 +131,8 @@
         "pad",
         "radius",
         "bg-image",
-        "overlay"
+        "overlay",
+        "image-position"
       ]
     }
   },
@@ -201,12 +210,14 @@
       "content": [
         "text",
         "link",
-        "emphasis"
+        "emphasis",
+        "italic"
       ],
       "copy": [
         "text",
         "link",
-        "emphasis"
+        "emphasis",
+        "italic"
       ],
       "params": [
         "size",
@@ -337,7 +348,8 @@
         "shape": "rect"
       },
       "style_tokens": [
-        "radius"
+        "radius",
+        "image-position"
       ]
     },
     "icon": {
@@ -401,15 +413,22 @@
     },
     "code": {
       "content": [
-        "text"
+        "text",
+        "copy_label",
+        "copied_label",
+        "copy_failed_label"
       ],
       "copy": [
-        "text"
+        "text",
+        "copy_label",
+        "copied_label",
+        "copy_failed_label"
       ],
       "params": [
         "hidden",
         "tokens",
-        "narrow"
+        "narrow",
+        "copy"
       ],
       "roles": [
         "code_value"
@@ -418,8 +437,20 @@
         "text-size",
         "fg",
         "border",
-        "radius"
-      ]
+        "radius",
+        "accent",
+        "accent-fg",
+        "gap"
+      ],
+      "choices": {
+        "copy": [
+          "false",
+          "true"
+        ]
+      },
+      "defaults": {
+        "copy": "false"
+      }
     },
     "field": {
       "content": [
@@ -487,12 +518,14 @@
       "content": [
         "text",
         "link",
-        "emphasis"
+        "emphasis",
+        "italic"
       ],
       "copy": [
         "text",
         "link",
-        "emphasis"
+        "emphasis",
+        "italic"
       ],
       "params": [
         "hidden",
@@ -508,6 +541,32 @@
         "muted",
         "accent",
         "leading"
+      ]
+    },
+    "followup": {
+      "content": [
+        "label",
+        "href"
+      ],
+      "copy": [
+        "label",
+        "href"
+      ],
+      "params": [
+        "hidden",
+        "tokens",
+        "narrow"
+      ],
+      "roles": [
+        "success_action"
+      ],
+      "style_tokens": [
+        "font",
+        "text-size",
+        "accent",
+        "accent-fg",
+        "radius",
+        "align"
       ]
     }
   },
@@ -533,6 +592,7 @@
     "width": "28rem",
     "align": "start",
     "bg-image": "none",
+    "image-position": "center",
     "overlay": "rgba(0, 0, 0, 0)",
     "shadow": "0 18px 50px -12px rgba(15, 23, 42, 0.35)",
     "motion": "200ms",
@@ -559,7 +619,8 @@
     "phone_placeholder",
     "interest_label",
     "interest_placeholder",
-    "interest_options"
+    "interest_options",
+    "success_action"
   ],
   "authored_roles": [
     "code_value",
@@ -633,6 +694,17 @@
       "'Helvetica Neue', Helvetica, Arial, sans-serif",
       "Georgia, 'Times New Roman', Times, serif",
       "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+    ],
+    "image-position": [
+      "left top",
+      "center top",
+      "right top",
+      "left center",
+      "center",
+      "right center",
+      "left bottom",
+      "center bottom",
+      "right bottom"
     ]
   },
   "facets": {
@@ -655,7 +727,7 @@
     ]
   },
   "token_groups": {
-    "colour": [
+    "color": [
       "bg",
       "fg",
       "muted",
@@ -683,13 +755,16 @@
     ],
     "other": [
       "bg-image",
+      "image-position",
       "overlay",
       "shadow",
       "motion"
     ]
   },
   "token_controls": {
-    "bg-image": "image"
+    "bg-image": "image",
+    "shadow": "shadow",
+    "image-position": "position"
   },
   "field_options": {
     "max_items": 12,

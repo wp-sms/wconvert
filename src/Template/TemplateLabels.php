@@ -46,6 +46,7 @@ final class TemplateLabels
             'consent_text' => __('Consent wording', 'wconvert'),
             'success_headline' => __('Headline after they submit', 'wconvert'),
             'success_body' => __('Body text after they submit', 'wconvert'),
+            'success_action' => __('Action after they submit', 'wconvert'),
             /* translators: the discount code shown after a visitor submits, e.g. “WELCOME10”. */
             'code_value' => __('Discount code', 'wconvert'),
             /*
@@ -106,6 +107,7 @@ final class TemplateLabels
             'code' => __('Discount code', 'wconvert'),
             'field' => __('Field', 'wconvert'),
             'button' => __('Button', 'wconvert'),
+            'followup' => __('Resource link', 'wconvert'),
             'consent' => __('Consent checkbox', 'wconvert'),
         ];
     }
@@ -143,7 +145,7 @@ final class TemplateLabels
              * merchant is going to point at it.
              */
             /* translators: a layout — a box with its own background colour, holding other blocks. */
-            'panel' => __('Coloured box', 'wconvert'),
+            'panel' => __('Colored box', 'wconvert'),
             /*
              * **Named for the picture and not for the spread**, which is the
              * same call `panel` made one line up: a merchant is going to point
@@ -222,7 +224,7 @@ final class TemplateLabels
              * colour, and everything inside it inherits.
              */
             /* translators: what the Coloured box layout does. */
-            'panel' => __('A box with its own colours, holding other blocks.', 'wconvert'),
+            'panel' => __('A box with its own colors, holding other blocks.', 'wconvert'),
             /*
              * **The note has to say what makes it different from a Coloured
              * box**, for the reason the line above has to say what makes that
@@ -255,6 +257,7 @@ final class TemplateLabels
     {
         return [
             'split.ratio' => __('How the space is divided', 'wconvert'),
+            'split.basis' => __('Minimum column width', 'wconvert'),
             /*
              * ================================================================
              * FOUR ENTRIES FOR ONE CONTROL, BECAUSE THE KEY IS PER LAYOUT.
@@ -349,6 +352,9 @@ final class TemplateLabels
             'split.ratio.0.5' => __('Even', 'wconvert'),
             /* translators: a side-by-side split. The LOGICAL second pane is narrower — it reads “left” in a right-to-left locale. */
             'split.ratio.0.65' => __('Narrow right', 'wconvert'),
+            'split.basis.12rem' => __('Compact (12rem)', 'wconvert'),
+            'split.basis.16rem' => __('Roomy (16rem)', 'wconvert'),
+            'split.basis.20rem' => __('Wide (20rem)', 'wconvert'),
 
             /*
              * ================================================================
@@ -458,6 +464,7 @@ final class TemplateLabels
             'text.size' => __('Text size', 'wconvert'),
             /* translators: how a picture fills the space it is given. */
             'image.fit' => __('How the picture fills its space', 'wconvert'),
+            'code.copy' => __('Copy button', 'wconvert'),
             /* translators: whether a visitor must fill a form field in before they can submit. */
             'field.required' => __('Must they fill this in?', 'wconvert'),
             /* translators: how many of the five stars are filled in. */
@@ -490,6 +497,8 @@ final class TemplateLabels
     {
         return [
             /* translators: a heading rank. This heading is the Optin's own main heading. */
+            'code.copy.false' => __('Code only', 'wconvert'),
+            'code.copy.true' => __('Code and copy button', 'wconvert'),
             'heading.level.1' => __('Main heading', 'wconvert'),
             /* translators: a heading rank. This heading sits under the main one. */
             'heading.level.2' => __('Sub-heading', 'wconvert'),
@@ -654,10 +663,15 @@ final class TemplateLabels
     public static function keys(): array
     {
         return [
+            'copy_label' => __('Copy button label', 'wconvert'),
+            'copied_label' => __('Message when copied', 'wconvert'),
+            'copy_failed_label' => __('Message when copying is unavailable', 'wconvert'),
             'text' => __('Text', 'wconvert'),
             'link' => __('Link', 'wconvert'),
             /* translators: the words inside a sentence that are set in bold, where the sentence carries %b. */
             'emphasis' => __('Words in bold', 'wconvert'),
+            /* translators: plain words filling %i in a sentence. */
+            'italic' => __('Words in italic', 'wconvert'),
             'label' => __('Label', 'wconvert'),
             'placeholder' => __('Placeholder', 'wconvert'),
             'src' => __('Image address', 'wconvert'),
@@ -731,6 +745,7 @@ final class TemplateLabels
             'align' => __('Alignment', 'wconvert'),
             /* translators: a picture behind the whole design. The merchant gives its web address. */
             'bg-image' => __('Background picture', 'wconvert'),
+            'image-position' => __('Picture focus', 'wconvert'),
             /* translators: a translucent colour laid over the background picture, so text on top of it stays readable. */
             'overlay' => __('Wash over the picture', 'wconvert'),
             /* translators: the soft shadow under the whole design, which lifts it off the page behind it. */
@@ -771,6 +786,15 @@ final class TemplateLabels
     public static function tokenValues(): array
     {
         return [
+            'image-position.left top' => __('Top left', 'wconvert'),
+            'image-position.center top' => __('Top centre', 'wconvert'),
+            'image-position.right top' => __('Top right', 'wconvert'),
+            'image-position.left center' => __('Centre left', 'wconvert'),
+            'image-position.center' => __('Centre', 'wconvert'),
+            'image-position.right center' => __('Centre right', 'wconvert'),
+            'image-position.left bottom' => __('Bottom left', 'wconvert'),
+            'image-position.center bottom' => __('Bottom centre', 'wconvert'),
+            'image-position.right bottom' => __('Bottom right', 'wconvert'),
             /*
              * ====================================================================
              * THESE THREE ARE LOGICAL, AND THE ENGLISH WORDS ARE DIRECTIONAL.

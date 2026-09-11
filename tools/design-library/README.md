@@ -42,6 +42,29 @@ a second copy of both.
 | `sheet` | Tiles them into six `contact-sheet-{320,768,1440}-{ltr,rtl}.png` |
 | `bench` | Inlines all of the above into `out/bench.html` |
 | `gallery` | Inlines every entry into `out/gallery.html` — the whole library, one page |
+| `review` | Builds `out/flagships.html` for Fieldwork, Sunday marginalia and Callback notes; needs `renderer` |
+| `library-review` | Builds `out/library-review.html` for every Free and Pro design, both screens, four widths and automated browser measurements; needs `renderer` |
+
+For a complete library review, run `./tools/design-library/build.sh renderer library-review`
+and open `out/library-review.html` through the local site's HTTP URL. The page
+draws each design at its available container width before scaling its preview.
+Choose one design to inspect it at a larger size. **Check all sizes** measures
+320, 390, 768 and 1440px in both directions, with sample and longer copy plus
+consent. It checks horizontal overflow, 44px controls, 16px input text and solid
+text/placeholder contrast. Gradients, composition and vertical scrolling still
+need visual review. The measurement details are available as JSON on the page.
+
+`review/library-decisions.json` records each improvement, retirement and addition.
+Set `WCONVERT_REVIEW_BASELINE` to a JSON array of earlier entries while building
+to enable the Before view. Without that optional file, the current library and
+all checks still work. See `docs/reviews/template-library-curation-2026-09-11.md`
+for the completed review and its limits. All preview submissions stay local.
+
+For the current three-template review, run `./tools/design-library/build.sh renderer designs review`
+from the plugin root. Open the generated `out/flagships.html` through the local
+site's HTTP URL. It compares exact design widths, themes, longer text, consent,
+RTL and form/success states with the real renderer. Forms on that page are local
+demonstrations and do not write leads or contact a destination.
 
 ## `VOCABULARY.md` is the point of this directory
 
@@ -168,3 +191,9 @@ shows one design at a time.
 CI never runs this, and adding it would make every `npm ci` download a browser
 driver for a script no workflow calls. `npm install --no-save playwright` when
 you need it. Only the `sheet` step uses it — everything else is plain Node.
+
+The flagship review also offers **Swap panes**, **Picture focus**, and **Try resource
+link**. On the success screen, Fieldwork’s copy button is live. The resource example
+opens a local placeholder. The HTTP WordPress preview may lack clipboard access;
+it then shows the configured manual-copy message. Set your own resource URL in the
+editor’s Resource link block. No extra conversion is recorded by either action.

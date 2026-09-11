@@ -23,7 +23,7 @@
       "tier": "basic",
       "preview_url": "https://wconvert.com/designs/bar-with-a-field/",
       "facets": {
-        "shape": "row",
+        "shape": "stack",
         "captures": [
           "email"
         ],
@@ -43,20 +43,6 @@
       }
     },
     {
-      "id": "slide-in-card",
-      "name": "Corner card",
-      "display_type": "slide_in",
-      "tier": "basic",
-      "preview_url": "https://wconvert.com/designs/corner-card/",
-      "facets": {
-        "shape": "stack",
-        "captures": [
-          "email"
-        ],
-        "has_image": false
-      }
-    },
-    {
       "id": "slide-in-photo",
       "name": "Corner card with a picture",
       "display_type": "slide_in",
@@ -67,18 +53,6 @@
         "captures": [
           "email"
         ],
-        "has_image": true
-      }
-    },
-    {
-      "id": "slide-in-review",
-      "name": "Corner testimonial",
-      "display_type": "slide_in",
-      "tier": "basic",
-      "preview_url": "https://wconvert.com/designs/corner-testimonial/",
-      "facets": {
-        "shape": "split",
-        "captures": [],
         "has_image": true
       }
     },
@@ -116,36 +90,9 @@
       "tier": "basic",
       "preview_url": "https://wconvert.com/designs/bar-that-hands-over-a-code/",
       "facets": {
-        "shape": "row",
+        "shape": "stack",
         "captures": [
           "email"
-        ],
-        "has_image": false
-      }
-    },
-    {
-      "id": "bar-review",
-      "name": "Bar with the stars",
-      "display_type": "floating_bar",
-      "tier": "basic",
-      "preview_url": "https://wconvert.com/designs/bar-with-the-stars/",
-      "facets": {
-        "shape": "row",
-        "captures": [],
-        "has_image": false
-      }
-    },
-    {
-      "id": "bar-two-field",
-      "name": "Bar that asks twice",
-      "display_type": "floating_bar",
-      "tier": "basic",
-      "preview_url": "https://wconvert.com/designs/bar-that-asks-twice/",
-      "facets": {
-        "shape": "row",
-        "captures": [
-          "email",
-          "name"
         ],
         "has_image": false
       }
@@ -186,21 +133,6 @@
         "shape": "stack",
         "captures": [
           "email"
-        ],
-        "has_image": false
-      }
-    },
-    {
-      "id": "popup-two-channel",
-      "name": "Email and phone",
-      "display_type": "popup",
-      "tier": "basic",
-      "preview_url": "https://wconvert.com/designs/email-and-phone/",
-      "facets": {
-        "shape": "stack",
-        "captures": [
-          "email",
-          "phone"
         ],
         "has_image": false
       }

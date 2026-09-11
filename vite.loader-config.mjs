@@ -39,6 +39,8 @@ export function loaderConfig({ entry, outDir, name, fileName = 'loader.js' }) {
     // There is no static asset directory to copy; without this Vite treats the
     // plugin's public/ build root as one and warns that it overlaps outDir.
     publicDir: false,
+    // DOM addresses belong to the editor, across all tiers; no capability is gated here.
+    define: { __WCONVERT_VISITOR__: 'true' },
     resolve: {
       alias: {
         // Free's loader tree, so Pro's entry can name it readably. There is
@@ -64,7 +66,7 @@ export function loaderConfig({ entry, outDir, name, fileName = 'loader.js' }) {
       },
       minify: 'terser',
       // Keep shared helpers compact in the gzipped visitor payload.
-      terserOptions: { compress: { passes: 3, hoist_funs: true, inline: 1 } },
+      terserOptions: { compress: { passes: 5, hoist_funs: true, inline: 1 } },
       // The loader is subject to a hard 8KB gzipped budget, per build
       // (ADR 0014, ADR 0029). Nothing asserts that here: the assertion is
       // `npm run check:loader`, and it lands with the rule manifest whose

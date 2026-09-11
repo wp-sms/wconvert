@@ -10,6 +10,14 @@ import { facetOptions, narrow, toggled, type Chosen } from './facets';
 import { nameOf, type TemplateIndex } from '../templates/api';
 import type { Template } from '@renderer/types';
 
+/** Reviewed starting points; extension designs retain their index order after these. */
+const RECOMMENDED: Readonly<Record<string, readonly string[]>> = {
+  popup: ['fieldwork', 'sunday-marginalia', 'useful-guide', 'launch-checklist', 'punched-ticket', 'summer-archive'],
+  inline: ['callback-notes', 'inline-rule', 'inline-choice', 'inline-split'],
+  floating_bar: ['bar-code', 'bar-email-capture', 'bar-countdown', 'bar-announcement'],
+  slide_in: ['slide-in-code', 'slide-in-photo', 'slide-in-benefits', 'slide-in-nudge'],
+};
+
 export interface TemplatePickerProps {
   readonly index: TemplateIndex;
   readonly trees: ReadonlyMap<string, Template>;
@@ -38,7 +46,15 @@ export function TemplatePicker({
   const filterId = useId();
 
   const forType = useMemo(
-    () => index.templates.filter((entry) => entry.display_type === displayType),
+    () => {
+      const recommended = RECOMMENDED[displayType] ?? [];
+      const rank = (id: string) => {
+        const position = recommended.indexOf(id);
+        return position < 0 ? recommended.length : position;
+      };
+      return index.templates.filter((entry) => entry.display_type === displayType)
+        .sort((a, b) => rank(a.id) - rank(b.id));
+    },
     [index.templates, displayType],
   );
   const available = useMemo(
@@ -166,7 +182,7 @@ export function TemplatePicker({
                 </button>}
                 <Button variant="link" size="sm" onClick={clear}>{__('Clear filters', 'wconvert')}</Button>
               </div>
-            ) : <span className="wconvert-picker__hint">{__('Preview a design to check every screen.', 'wconvert')}</span>}
+            ) : <span className="wconvert-picker__hint">{__('Recommended designs first. Preview to check every screen.', 'wconvert')}</span>}
           </div>
         </div>
         <div className="wconvert-picker__body">

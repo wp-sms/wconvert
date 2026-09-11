@@ -264,6 +264,26 @@ describe('the leaf vocabulary', () => {
 });
 
 describe('the layout vocabulary', () => {
+  it('lets a split stack before its form becomes cramped, without changing nested defaults', () => {
+    const tree = oneStep({
+      type: 'split',
+      basis: '16rem',
+      start: [{ type: 'heading', text: 'Request a callback' }],
+      end: [{ type: 'split', start: [], end: [] }],
+    } as TemplateTree['steps'][number]);
+    const [outer, nested] = [...render(tree, TOKENS).querySelectorAll<HTMLElement>('.wc-split')];
+
+    for (const pane of outer.children) {
+      expect((pane as HTMLElement).style.flexBasis).toBe('16rem');
+    }
+    for (const pane of nested.children) {
+      expect((pane as HTMLElement).style.flexBasis).toBe('12rem');
+    }
+    // jsdom cannot measure wrapping. The browser review checks the resulting
+    // pane positions at 390px and at the design's natural desktop width.
+    expect(SHADOW_CSS).toContain('.wc-pane{min-inline-size:0;');
+  });
+
   it('renders split as two panes, each with its own children', () => {
     const tree = oneStep({
       type: 'split',

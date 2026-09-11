@@ -38,6 +38,7 @@ const MINIMAL: Readonly<Record<string, object>> = {
   code: { text: 'x' },
   field: { name: 'email' },
   button: { label: 'x' },
+  followup: { label: 'Open resource', href: '/guide' },
   consent: { text: 'x' },
 };
 
@@ -358,7 +359,7 @@ describe('the panel', () => {
    * it again — cover and centred — inside every panel in it. A panel inherits
    * the design's COLOURS and not its photograph.
    */
-  it('starts from the designs colours and not its picture', () => {
+  it('starts from the designs colors and not its picture', () => {
     const root = render(
       { steps: [{ type: 'panel', children: [] }] } as TemplateTree,
       { bg: '#0f172a', 'bg-image': 'url(/hero.jpg)', overlay: 'rgba(0,0,0,.5)' },
@@ -410,7 +411,7 @@ describe('the media', () => {
       .firstElementChild as HTMLElement;
 
   /** The same reset a `panel` takes, for the same reason and in the same place. */
-  it('starts from the designs colours and not its picture', () => {
+  it('starts from the designs colors and not its picture', () => {
     const root = render(
       { steps: [{ type: 'media', children: [] }] } as TemplateTree,
       { bg: '#0f172a', 'bg-image': 'url(/hero.jpg)', overlay: 'rgba(0,0,0,.5)' },
@@ -557,6 +558,12 @@ describe('a line break in authored copy', () => {
  * only the renderer has.
  */
 describe('inline emphasis', () => {
+  it('renders italic words as a safe semantic element', () => {
+    const element = drawn({ type: 'text', text: 'Only %i.', italic: '<script>today</script>' });
+    expect(element.querySelector('em')).toHaveTextContent('<script>today</script>');
+    expect(element.querySelector('script')).toBeNull();
+  });
+
   const drawn = (node: object): Element =>
     renderStep({ type: 'stack', children: [node] })?.firstElementChild as Element;
 
@@ -591,7 +598,7 @@ describe('inline emphasis', () => {
    * already `--wc-muted`, so tinting it `--wc-accent` would put the loudest
    * colour in the design on the quietest line in it.
    */
-  it('is weight, and inherits its colour', () => {
+  it('is weight, and inherits its color', () => {
     expect(CSS).toContain('.wc-strong{font-weight:700}');
   });
 });
@@ -616,8 +623,8 @@ describe('a token used as a value', () => {
     expect([...REFERABLE].sort()).toEqual([...manifest.referable].sort());
   });
 
-  it('is every colour token and nothing else', () => {
-    // The colours are what a palette is made of; a `pad` that follows `gap` is
+  it('is every color token and nothing else', () => {
+    // The colors are what a palette is made of; a `pad` that follows `gap` is
     // a coincidence rather than an intent.
     expect(REFERABLE.every((name) => name in manifest.tokens)).toBe(true);
     expect(REFERABLE).not.toContain('pad');

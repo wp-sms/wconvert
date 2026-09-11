@@ -3910,7 +3910,7 @@
  * absent until the value differs from the design's, so a cell with nothing
  * changed is the swatch at full width.
  */
-.wconvert-palette > .wconvert-token--colour {
+.wconvert-palette > .wconvert-token--color {
   display: flex;
   align-items: center;
   gap: 0.25rem;
@@ -3918,7 +3918,7 @@
 }
 
 /* Outside the grid — the translucent one, at full width under it. */
-.wconvert-token--colour {
+.wconvert-token--color {
   display: flex;
   align-items: center;
   gap: 0.25rem;
@@ -4005,13 +4005,13 @@
   line-height: var(--text-label--line-height);
 }
 
-.wconvert-picker {
+.wconvert-color-picker {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
 }
 
-.wconvert-picker .react-colorful {
+.wconvert-color-picker .react-colorful {
   inline-size: 100%;
 }
 
@@ -4023,7 +4023,7 @@
  * as plain text where a field should be. Found in a browser, which is the only
  * place this class of fault is visible at all (see THE PORTAL ROOTS above).
  */
-.wconvert-picker input[type="text"] {
+.wconvert-color-picker input[type="text"] {
   inline-size: 100%;
   block-size: var(--control-height-xs);
   margin: 0;
@@ -4036,13 +4036,13 @@
   font-size: var(--text-micro);
 }
 
-.wconvert-picker input[type="text"]:focus {
+.wconvert-color-picker input[type="text"]:focus {
   border-color: var(--ring);
   box-shadow: 0 0 0 1px var(--ring);
   outline: none;
 }
 
-.wconvert-picker label {
+.wconvert-color-picker label {
   display: grid;
   gap: 0.25rem;
   color: var(--muted-foreground);
@@ -5405,100 +5405,6 @@
   margin-block-start: 1.25rem;
   padding-block-start: 1rem;
   border-block-start: 1px solid var(--border);
-}
-
-/* ---------------------------------------------------------------------------
- * STARTING POINTS — NOT "PRESETS", WHICH ALREADY MEANS THE PER-TYPE SHORTCUT
- * INSIDE EVERY ONE OF THESE SECTIONS.
- * ------------------------------------------------------------------------- */
-/*
- * A grid of cards, and NOT a prose list — `.wconvert-editor :is(ul, ol):not(…)`
- * gives every other list in an editor a marker and a 1.5em indent, and this one
- * inherited both. Measured: a 21px left indent that pushed the whole grid off
- * the heading above it.
- */
-#wconvert-admin .wconvert-starters__list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
-  gap: 0.5rem;
-  margin: 0.75rem 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-/* ---------------------------------------------------------------------------
- * ONE STARTING POINT: TWO ROWS, AND THE CARD IS THE BUTTON.
- *
- * It was four stacked rows — name, pitch, a small-caps line naming the
- * sections, and a `Use this` button — 155px of card for about 45px of content,
- * with seven copies of one word down a grid where the card is obviously the
- * thing you press.
- *
- * The button went (the card was already the affordance) and the sections
- * became a badge on the name's own line, which is what a classification looks
- * like. Two rows, ~80px, and the pitch is what the eye lands on.
- * ------------------------------------------------------------------------- */
-/*
- * Equal heights across a row: the grid stretches the `<li>` and the card fills
- * it, so a row of choices reads as a row rather than as boxes that happened to
- * end where their text did.
- */
-#wconvert-admin .wconvert-starters__list > li {
-  display: grid;
-  margin: 0;
-}
-
-#wconvert-admin .wconvert-starter {
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-  gap: 0.125rem;
-  inline-size: 100%;
-  padding: 0.625rem 0.75rem;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  color: inherit;
-  font: inherit;
-  text-align: start;
-  cursor: pointer;
-}
-
-#wconvert-admin .wconvert-starter:hover {
-  border-color: var(--primary);
-}
-
-#wconvert-admin .wconvert-starter:focus-visible {
-  outline: 2px solid var(--ring);
-  outline-offset: 1px;
-}
-
-/*
- * Nothing to press: the premium code is not in this bundle and the missing
- * plugin is not ours to install. Quiet, and no pointer — a card that looked
- * pressable and was not would be the disabled control wp.org Guideline 9 is
- * about, one step removed.
- */
-#wconvert-admin .wconvert-starter--absent {
-  background: var(--surface);
-  border-style: dashed;
-  cursor: default;
-}
-
-/*
- * The name and its badge share a line and WRAP rather than compete. A grid
- * column gave the badge its natural width whatever happened, so a long one —
- * *Needs WooCommerce* — squeezed the name into breaking mid-phrase: "Rescue an
- * abandoned / cart". Wrapping puts the badge on its own line instead, which
- * costs a row on one card rather than a bad line break on it.
- */
-#wconvert-admin .wconvert-starter__head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.25rem 0.5rem;
-  inline-size: 100%;
 }
 
 /* ---------------------------------------------------------------------------

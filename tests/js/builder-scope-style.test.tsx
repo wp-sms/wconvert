@@ -94,7 +94,7 @@ const LABELS = {
     row: 'Row',
     split: 'Side by side',
     grid: 'Equal columns',
-    panel: 'Coloured box',
+    panel: 'Colored box',
     media: 'Picture box',
   },
   layoutNotes: {
@@ -102,7 +102,7 @@ const LABELS = {
     row: 'Blocks along one line.',
     split: 'Two panes, each holding its own blocks.',
     grid: 'Three across, one per line on a phone.',
-    panel: 'A box with its own colours, holding other blocks.',
+    panel: 'A box with its own colors, holding other blocks.',
   },
   layoutParams: {},
   layoutParamValues: {},
@@ -198,8 +198,8 @@ describe('the Style half of the inspector', () => {
   it('offers a headline its own appearance without unrelated controls', async () => {
     await style(/Get 10% off/);
     expect(screen.getByRole('group', { name: 'Headline' })).toHaveTextContent('Appearance for Heading.');
-    expect(screen.getByRole('button', { name: /Choose a colour for Text/ })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /Choose a colour for Background/ })).toBeNull();
+    expect(screen.getByRole('button', { name: /Choose a color for Text/ })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Choose a color for Background/ })).toBeNull();
   });
 
   /**
@@ -222,7 +222,7 @@ describe('the Style half of the inspector', () => {
   it('reaches the designs own token controls through that door', async () => {
     await style(/Button label/);
     await userEvent.click(within(screen.getByRole('navigation', { name: 'Selected element' })).getByRole('button', { name: 'Design' }));
-    expect(screen.getByRole('button', { name: /Choose a colour for Background/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Choose a color for Background/ })).toBeInTheDocument();
   });
 
   /**
@@ -233,13 +233,13 @@ describe('the Style half of the inspector', () => {
    * tokens are untouched, and the tree carries the value on the node that was
    * selected.
    */
-  it('writes a colour into the selected boxs own bag, leaving the design alone', async () => {
-    await style(/Coloured box/);
+  it('writes a color into the selected boxs own bag, leaving the design alone', async () => {
+    await style(/Colored box/);
 
     // The typed hex lives inside the picker's popover, so it has to be opened
     // first — the swatch is the control, and the box is the escape hatch under
     // it (ADR 0042).
-    await userEvent.click(screen.getByRole('button', { name: /Choose a colour for Background/ }));
+    await userEvent.click(screen.getByRole('button', { name: /Choose a color for Background/ }));
     await userEvent.clear(screen.getByLabelText('Background value'));
     await userEvent.type(screen.getByLabelText('Background value'), '#123456');
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
@@ -261,7 +261,7 @@ describe('the Style half of the inspector', () => {
    * undoing every scoped edit produce the tree the merchant started with.
    */
   it('clears the key rather than writing a default, and drops an emptied bag', async () => {
-    await style(/Coloured box/);
+    await style(/Colored box/);
 
     for (const token of ['Background', 'Text']) {
       await userEvent.click(
@@ -289,7 +289,7 @@ describe('the Style half of the inspector', () => {
 
     // Two of them: the panel sets `bg` and `fg`, and both reach this box by
     // inheritance. Everything else falls through to the design and says nothing.
-    expect(screen.getAllByRole('button', { name: 'From Coloured box' })).toHaveLength(1);
+    expect(screen.getAllByRole('button', { name: 'From Colored box' })).toHaveLength(1);
     expect(screen.queryByRole('button', { name: /^From Column/ })).toBeNull();
   });
 
@@ -304,7 +304,7 @@ describe('the Style half of the inspector', () => {
    * what was there, and undo pays for the bluntness.
    */
   it('copies one boxs look and pastes it onto another, replacing what was there', async () => {
-    await style(/Coloured box/);
+    await style(/Colored box/);
     await userEvent.click(screen.getByRole('button', { name: 'Copy this look' }));
 
     // The inner Column, which sets nothing of its own.
@@ -331,9 +331,9 @@ describe('the Style half of the inspector', () => {
   /** And following it selects that box, so the next press changes the value. */
   it('opens the box a value came from', async () => {
     await style(/Column/);
-    await userEvent.click(screen.getAllByRole('button', { name: 'From Coloured box' })[0]!);
+    await userEvent.click(screen.getAllByRole('button', { name: 'From Colored box' })[0]!);
 
-    expect(screen.getByRole('group', { name: 'Coloured box' })).toBeInTheDocument();
+    expect(screen.getByRole('group', { name: 'Colored box' })).toBeInTheDocument();
   });
 });
 
@@ -355,9 +355,9 @@ describe('the narrow bag, through the width switch', () => {
   }
 
   it('says which width it is setting, because the controls are identical', async () => {
-    await style(/Coloured box/);
+    await style(/Colored box/);
 
-    const inspector = within(screen.getByRole('group', { name: 'Coloured box' }));
+    const inspector = within(screen.getByRole('group', { name: 'Colored box' }));
     expect(inspector.queryByText(/Editing mobile appearance/)).toBeNull();
 
     await narrow();
@@ -366,10 +366,10 @@ describe('the narrow bag, through the width switch', () => {
   });
 
   it('writes into the narrow bag and leaves the full-width one alone', async () => {
-    await style(/Coloured box/);
+    await style(/Colored box/);
     await narrow();
 
-    await userEvent.click(screen.getByRole('button', { name: /Choose a colour for Background/ }));
+    await userEvent.click(screen.getByRole('button', { name: /Choose a color for Background/ }));
     await userEvent.clear(screen.getByLabelText('Background value'));
     await userEvent.type(screen.getByLabelText('Background value'), '#123456');
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
@@ -413,7 +413,7 @@ describe('the narrow bag, through the width switch', () => {
       ),
     );
 
-    await style(/Coloured box/);
+    await style(/Colored box/);
 
     expect(document.querySelector('.wconvert-scope__from')).toHaveTextContent('Custom');
 
@@ -434,11 +434,11 @@ describe('the narrow bag, through the width switch', () => {
  * move with it — so the deeper a design is styled, the less a theme does
  * (ADR 0063). A value that NAMES a colour token follows it.
  */
-describe('a scoped colour that follows the palette', () => {
+describe('a scoped color that follows the palette', () => {
   it('offers the conversion where the value is a literal the merchant set', async () => {
-    await style(/Coloured box/);
+    await style(/Colored box/);
 
-    await userEvent.click(screen.getByRole('button', { name: /Choose a colour for Background/ }));
+    await userEvent.click(screen.getByRole('button', { name: /Choose a color for Background/ }));
     await userEvent.clear(screen.getByLabelText('Background value'));
     await userEvent.type(screen.getByLabelText('Background value'), '#123456');
     await userEvent.keyboard('{Escape}');
@@ -486,7 +486,7 @@ describe('a scoped colour that follows the palette', () => {
       ),
     );
 
-    await style(/Coloured box/);
+    await style(/Colored box/);
 
     expect(screen.queryByRole('button', { name: /→ / })).toBeNull();
   });
@@ -525,7 +525,7 @@ describe('the readability readout at a scope', () => {
   it('says nothing about a pair no leaf in the box reads', async () => {
     builder.getOptin.mockResolvedValue(optin(HEADINGS_ONLY, { bg: '#ffffff', fg: '#111827' }));
 
-    await style(/Coloured box/);
+    await style(/Colored box/);
 
     // `muted` on this box's ground is 1.1:1 and would have been reported.
     expect(screen.queryByText(/Quiet text on Background/)).toBeNull();
@@ -557,7 +557,7 @@ describe('the readability readout at a scope', () => {
       ),
     );
 
-    await style(/Coloured box/);
+    await style(/Colored box/);
 
     expect(screen.getByText(/Quiet text on Background/)).toBeInTheDocument();
   });
@@ -654,7 +654,7 @@ describe('the tree’s override count', () => {
 
     await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
   const tree = await screen.findByRole('treegrid', { name: 'Blocks in this design' });
-    const boxes = within(tree).getAllByRole('row', { name: /Coloured box/ });
+    const boxes = within(tree).getAllByRole('row', { name: /Colored box/ });
 
     // Two at full width and one more at narrow, which is also the payload's
     // shape.

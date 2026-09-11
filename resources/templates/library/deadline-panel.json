@@ -14,12 +14,13 @@
     "heading-weight": "800",
     "tracking": "0.04em",
     "radius": "0rem",
-    "pad": "2.5rem",
+    "pad": "clamp(1.25rem, 5%, 2rem)",
     "gap": "1.25rem",
     "width": "30rem",
     "align": "center",
     "shadow": "0 32px 80px -16px rgba(15, 23, 42, 0.5)",
-    "backdrop": "rgba(0, 0, 0, 0.72)"
+    "backdrop": "rgba(0, 0, 0, 0.72)",
+    "text-size": "1rem"
   },
   "tree": {
     "steps": [
@@ -30,13 +31,16 @@
             "type": "eyebrow",
             "id": "n1",
             "role": "eyebrow",
-            "text": "Ends soon"
+            "text": "Ends soon",
+            "tokens": {
+              "text-size": "1.0834rem"
+            }
           },
           {
             "type": "heading",
             "id": "n2",
             "role": "headline",
-            "text": "The sale closes in"
+            "text": "The final edit"
           },
           {
             "type": "countdown",
@@ -50,20 +54,24 @@
             "type": "text",
             "id": "n5",
             "role": "body",
-            "text": "Everything reduced until the clock runs out."
+            "text": "Selected styles, reduced while the sale is open."
           },
           {
             "type": "button",
             "id": "n6",
             "role": "cta_label",
-            "label": "Shop before it goes",
+            "label": "Shop the sale",
             "action": "link"
           },
           {
             "type": "text",
             "id": "n7",
             "role": "fine_print",
-            "text": "Set an end date on the Rules tab and the clock counts to it."
+            "text": "Selected items only. Prices as marked.",
+            "size": "s",
+            "tokens": {
+              "text-size": "1.167rem"
+            }
           }
         ]
       }

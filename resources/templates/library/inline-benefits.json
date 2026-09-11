@@ -7,7 +7,7 @@
     "bg": "#f0fdfa",
     "fg": "#134e4a",
     "muted": "#3f7c76",
-    "accent": "#0d9488",
+    "accent": "#0f766e",
     "accent-fg": "#ffffff",
     "border": "#ccfbf1",
     "heading-size": "1.5rem",
@@ -17,7 +17,8 @@
     "width": "100%",
     "align": "center",
     "shadow": "none",
-    "tracking": "-0.02em"
+    "tracking": "-0.02em",
+    "text-size": "1rem"
   },
   "tree": {
     "steps": [
@@ -61,7 +62,7 @@
                     "type": "text",
                     "id": "n5",
                     "role": "body",
-                    "text": "Dispatched same day"
+                    "text": "Dispatch details upfront"
                   }
                 ]
               },
@@ -94,7 +95,11 @@
             "type": "text",
             "id": "n9",
             "role": "fine_print",
-            "text": "Delivery times are for UK mainland."
+            "text": "UK mainland orders. See delivery and returns terms.",
+            "size": "s",
+            "tokens": {
+              "text-size": "1.167rem"
+            }
           }
         ]
       }

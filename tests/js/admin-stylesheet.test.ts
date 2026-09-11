@@ -253,8 +253,7 @@ describe('the rules panel against the editor’s blanket rules', () => {
   const BOXED = [
     '.wconvert-rules__label',
     '.wconvert-rules__group + .wconvert-rules__group',
-    '.wconvert-starters__list',
-    '.wconvert-starter',
+    // Starting-point cards now live in a dialog portal outside the editor.
     '.wconvert-rule__note',
     // The card gap, which was zero: `.wconvert-rule` at (0,1,0) lost to
     // `#wconvert-admin :not(.wconvert-editor) > ul > li` at (1,1,2), and two

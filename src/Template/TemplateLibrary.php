@@ -13,9 +13,10 @@ defined('ABSPATH') || exit;
  *
  * A Template is the DESIGN of an Optin, with no words in it: it declares which
  * slots exist, how they are arranged and how they are styled, and the copy
- * comes from the Playbook that prefilled the Optin. Whatever placeholder text
- * an entry carries exists so the gallery has something to show, and is never
- * copied into an Optin (CONTEXT.md, Template).
+ * comes from the Playbook that prefilled the Optin. Sample text supplies the
+ * gallery examples and can be copied explicitly with "Use this design’s sample
+ * content" (ADR 0075). Keeping
+ * existing content remains the default.
  *
  * **An Optin takes a COPY.** This registry is not consulted at render time and
  * never appears in the payload: `template_id` is provenance, exactly as
@@ -26,8 +27,8 @@ defined('ABSPATH') || exit;
  * Entries are JSON rather than PHP arrays, which is the opposite of the choice
  * ADR 0013 makes for Playbooks — and for the reason that decision gives: a
  * Playbook is nothing but words, so `wp i18n make-pot` not seeing a JSON
- * string ships an English-only library. A Template is structure, and its only
- * words are placeholders no visitor ever reads.
+ * string ships an English-only library. A Template is structure with editable
+ * sample copy; merchants may explicitly use it in a draft (ADR 0075).
  *
  * @since 0.1.0
  */

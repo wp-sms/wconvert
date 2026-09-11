@@ -18,7 +18,9 @@
     "width": "100%",
     "align": "center",
     "shadow": "none",
-    "tracking": "-0.02em"
+    "tracking": "-0.02em",
+    "text-size": "1rem",
+    "input-bg": "#ffffff"
   },
   "tree": {
     "steps": [
@@ -29,7 +31,7 @@
             "type": "heading",
             "id": "n1",
             "role": "headline",
-            "text": "Ten percent off, on this page only"
+            "text": "A little welcome. 10% off."
           },
           {
             "type": "row",
@@ -56,16 +58,23 @@
             "id": "n4",
             "role": "consent_text",
             "hidden": true,
-            "text": "Email me offers and news. See our %s.",
+            "text": "Email me offers and news. %s",
             "link": {
               "label": "Privacy Policy"
+            },
+            "tokens": {
+              "text-size": "1.125rem"
             }
           },
           {
             "type": "text",
             "id": "n5",
             "role": "fine_print",
-            "text": "One use per customer."
+            "text": "First order only. One use per customer.",
+            "size": "s",
+            "tokens": {
+              "text-size": "1.167rem"
+            }
           }
         ]
       },
@@ -82,7 +91,8 @@
             "type": "code",
             "id": "n7",
             "role": "code_value",
-            "text": "PAGE10"
+            "text": "PAGE10",
+            "copy": true
           },
           {
             "type": "text",

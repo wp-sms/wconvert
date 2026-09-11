@@ -1,3 +1,5 @@
+import { SentenceEditor } from './SentenceEditor';
+import type { SentenceValue } from './sentence';
 import { __, sprintf } from '@wordpress/i18n';
 import { CalendarClock, ImagePlus } from 'lucide-react';
 import { GLYPHS } from '@renderer/render';
@@ -49,6 +51,7 @@ export interface SlotFieldsProps {
    * the merchant had been writing a moment earlier, and one ⌘Z would take both
    * back. `onHidden` is spelled separately for exactly the same reason.
    */
+  readonly onSentence?: (value: SentenceValue, typing: boolean) => void;
   readonly onParam: (param: string, value: unknown) => void;
   /** Switch the slot off, or back on. Never called for a slot that cannot hide. */
   readonly onHidden: (hidden: boolean) => void;
@@ -70,14 +73,21 @@ export function SlotFields({
   slot,
   labels,
   onValue,
+  onSentence,
   onParam,
   onHidden,
   endsAt,
   onSetEndDate,
 }: SlotFieldsProps) {
+  const text = String(slot.values.text ?? '');
+  const simple = onSentence && slot.keys.includes('text') && (slot.keys.includes('emphasis') || slot.keys.includes('link'))
+    && (text.match(/%b/g) ?? []).length <= 1 && (text.match(/%s/g) ?? []).length <= 1 && (text.match(/%i/g) ?? []).length <= 1;
   return (
     <>
+      {simple && <SentenceEditor label={nameOf(labels.keys, 'text')} value={{ text, emphasis: slot.values.emphasis as string | undefined, italic: slot.values.italic as string | undefined, link: slot.values.link as SentenceValue['link'] }} bold={slot.keys.includes('emphasis')} italic={slot.keys.includes('italic')} link={slot.keys.includes('link')} onChange={onSentence} />}
       {slot.keys.map((key) => {
+        if (slot.type === 'code' && key !== 'text' && slot.settings.find(setting => setting.param === 'copy')?.held !== true) return null;
+        if (simple && ['text', 'emphasis', 'italic', 'link'].includes(key)) return null;
         if (key === 'options') {
           return slot.captures === 'interest' ? <InterestOptions key={key} value={slot.values.options}
             onEdit={(options) => onValue('options', options)} onChange={(options) => onParam('options', options)} /> : null;
@@ -126,6 +136,9 @@ export function SlotFields({
           </label>
         );
       })}
+
+      {slot.type === 'followup' && <p className="description">{__('Opens your resource after submission, without counting another conversion. Use a file or page address; this does not send an email.', 'wconvert')}</p>}
+      {slot.type === 'code' && <p className="description">{__('Enable the copy button to let visitors copy this code. Empty messages use English defaults. If copying fails, the code stays visible for manual copying.', 'wconvert')}</p>}
 
       {slot.type === 'field' && slot.captures !== 'interest' && (
         <p className="description">

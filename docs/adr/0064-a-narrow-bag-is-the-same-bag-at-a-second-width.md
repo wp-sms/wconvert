@@ -1,10 +1,11 @@
 # A narrow bag is the same bag at a second width
 
 **Amended by [ADR 0067](0067-the-editor-starts-with-the-preview-and-the-selected-element.md):** both layouts and leaves may carry a second token bag beside `tokens`, applying only where
-the design is narrower than `manifest.narrow` — **24rem (384px)**, which is
-where a `split` stops being side by side: a pane's `flex-basis` is `12rem` and
-there are exactly two of them. Retuning at the width the layout gives up at
-means the two mechanisms cannot disagree about when a design is narrow.
+the design is narrower than `manifest.narrow` — **24rem (384px)**. This was
+derived from a split's two default 12rem panes. **Amended by
+[ADR 0079](0079-a-split-can-reserve-room-for-its-form.md):** a split may now
+choose a larger minimum column width and stack earlier. The narrow appearance
+breakpoint remains 24rem; it no longer promises to coincide with wrapping.
 
 A phone measure would have been the obvious number and is the wrong one. The
 common ones straddle it — 360, 375, 390, 412 — so half the phones in
@@ -170,5 +171,5 @@ that the merchant cannot move a box.
 - The width switch in the builder stops being preview-only: it selects which
   bag the inspector edits. See
   [ADR 0065](0065-the-editor-is-the-scope-editor-now.md), which also moves this
-  breakpoint from 22.5rem to **24rem** — where a `split` stops being side by
-  side — so the two mechanisms cannot disagree about when a design is narrow.
+  breakpoint from 22.5rem to **24rem**, derived from the default split. A larger
+  minimum column width may now cause earlier wrapping (ADR 0079).

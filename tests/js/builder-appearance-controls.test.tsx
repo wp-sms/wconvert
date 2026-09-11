@@ -26,7 +26,7 @@ describe('appearance values without CSS syntax for ordinary edits', () => {
     render(<Control initial="" changed={changed} />);
     expect(amount()).toHaveValue(28);
     expect(unit()).toHaveValue('rem');
-    await userEvent.click(screen.getByText('Custom CSS value'));
+    await userEvent.selectOptions(unit(), 'custom');
     expect(changed).not.toHaveBeenCalled();
     expect(screen.getByTestId('stored')).toHaveTextContent('');
   });
@@ -68,7 +68,7 @@ describe('appearance values without CSS syntax for ordinary edits', () => {
     await userEvent.clear(amount());
     await userEvent.type(amount(), '0{Enter}');
     expect(changed).toHaveBeenLastCalledWith('0rem');
-    await userEvent.click(screen.getByText('Custom CSS value'));
+    await userEvent.selectOptions(unit(), 'custom');
     await userEvent.clear(screen.getByLabelText('Setting value'));
     await userEvent.keyboard('{Enter}');
     expect(changed).toHaveBeenLastCalledWith('');
@@ -87,7 +87,7 @@ describe('appearance values without CSS syntax for ordinary edits', () => {
   it('keeps CSS expression typing focused and stores its exact text on completion', async () => {
     const changed = vi.fn();
     render(<Control changed={changed} />);
-    await userEvent.click(screen.getByText('Custom CSS value'));
+    await userEvent.selectOptions(unit(), 'custom');
     const input = screen.getByLabelText('Setting value');
     await userEvent.clear(input);
     await userEvent.type(input, 'clamp(20rem, 50vw, 30rem)');
@@ -112,10 +112,10 @@ describe('appearance values without CSS syntax for ordinary edits', () => {
     expect(changed).not.toHaveBeenCalled();
   });
 
-  it('allows custom colour syntax instead of filtering it into a hex value', async () => {
+  it('allows custom color syntax instead of filtering it into a hex value', async () => {
     const changed = vi.fn();
     render(<Control token="bg" initial="#123456" fallback="#ffffff" changed={changed} />);
-    await userEvent.click(screen.getByRole('button', { name: /Choose a colour/ }));
+    await userEvent.click(screen.getByRole('button', { name: /Choose a color/ }));
     const input = screen.getByLabelText('Setting value');
     await userEvent.clear(input);
     await userEvent.type(input, 'var(--brand, #abc)');
@@ -124,22 +124,22 @@ describe('appearance values without CSS syntax for ordinary edits', () => {
     await userEvent.keyboard('{Enter}');
     expect(changed).toHaveBeenCalledExactlyOnceWith('var(--brand, #abc)');
     expect(screen.getByLabelText('Setting')).toHaveValue('var(--brand, #abc)');
-    expect(screen.queryByRole('button', { name: /Choose a colour/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Choose a color/ })).not.toBeInTheDocument();
   });
 
-  it('keeps Escape local to the colour text without closing the picker', async () => {
+  it('keeps Escape local to the color text without closing the picker', async () => {
     const changed = vi.fn();
     render(<Control token="bg" initial="#123456" fallback="#ffffff" changed={changed} />);
-    await userEvent.click(screen.getByRole('button', { name: /Choose a colour/ }));
+    await userEvent.click(screen.getByRole('button', { name: /Choose a color/ }));
     const input = screen.getByLabelText('Setting value');
     await userEvent.clear(input);
     await userEvent.type(input, '#');
     await userEvent.keyboard('{Escape}');
     expect(input).toHaveValue('#123456');
     expect(input).toHaveFocus();
-    expect(screen.getByRole('button', { name: /Choose a colour/ })).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByRole('button', { name: /Choose a color/ })).toHaveAttribute('aria-expanded', 'true');
     expect(changed).not.toHaveBeenCalled();
     await userEvent.keyboard('{Escape}');
-    expect(screen.getByRole('button', { name: /Choose a colour/ })).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.getByRole('button', { name: /Choose a color/ })).toHaveAttribute('aria-expanded', 'false');
   });
 });

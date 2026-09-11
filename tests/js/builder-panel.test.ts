@@ -177,7 +177,7 @@ describe('grouping the Design panel', () => {
       declared('rhythm', '1.25rem'),
     ]);
 
-    expect(grouped.map((group) => group.id)).toEqual(['colour', 'type', 'space']);
+    expect(grouped.map((group) => group.id)).toEqual(['color', 'type', 'space']);
     expect(grouped[0].tokens.map((token) => token.name)).toEqual(['brand-tint', 'veil']);
     expect(grouped[1].tokens.map((token) => token.name)).toEqual(['display-face']);
     expect(grouped[2].tokens.map((token) => token.name)).toEqual(['rhythm']);

@@ -179,7 +179,7 @@ describe('words a design switch would throw away', () => {
   });
 });
 
-describe('colours a visitor cannot read', () => {
+describe('colors a visitor cannot read', () => {
   it('names the pair that fails, and only the ones that do', () => {
     const problems = said(withTokens({ muted: '#d4d4d8' }));
 
@@ -275,5 +275,25 @@ describe('the order they are reported in', () => {
 
     expect(problems[0]).toMatch(/report zero forever/);
     expect(problems.at(-1)).toMatch(/quiet text/i);
+  });
+});
+
+
+describe('resource link readiness', () => {
+  it('requires a reachable success screen, a label and a safe address', () => {
+    const link = { type: 'followup' as const, label: 'Read guide', href: '/guide.pdf' };
+    const check = (node: typeof link & { hidden?: boolean }, step = 1) => {
+      const tree: TemplateTree = { steps: [
+        { type: 'stack', children: [{ type: 'field', name: 'email' }, { type: 'button', label: 'Send' }, ...(step === 0 ? [node] : [])] },
+        { type: 'stack', children: step === 1 ? [node] : [] },
+      ] };
+      return problemsIn({ tree, tokens: ENTRY.tokens }, false, undefined).filter(problem => problem.said.includes('resource link'));
+    };
+    expect(check(link)).toEqual([]);
+    expect(check({ ...link, href: '' })[0]?.blocksPublish).toBe(true);
+    expect(check({ ...link, href: 'javascript:alert(1)' })[0]?.blocksPublish).toBe(true);
+    expect(check({ ...link, label: '' })[0]?.blocksPublish).toBe(true);
+    expect(check(link, 0)[0]?.blocksPublish).toBe(true);
+    expect(check({ ...link, href: '', hidden: true })).toEqual([]);
   });
 });

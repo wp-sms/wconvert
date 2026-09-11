@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import vocabulary from '../../resources/templates/manifest.json';
 import { AA_NORMAL, contrastOf } from '../../resources/admin/src/builder/contrast';
-import { isApplied, isColour, isTranslucent, themePresets } from '../../resources/admin/src/builder/themes';
+import { isApplied, isColor, isTranslucent, themePresets } from '../../resources/admin/src/builder/themes';
 
 /**
  * The theme presets, against the two claims they have to keep.
@@ -78,7 +78,7 @@ describe('a theme preset', () => {
       for (const [name, ink, ground] of pairs) {
         const ratio = contrastOf(ink, ground);
 
-        expect(ratio, `${preset.id}: ${name} (${ink}) on ${ground} could not be read as two opaque colours`).not.toBeNull();
+        expect(ratio, `${preset.id}: ${name} (${ink}) on ${ground} could not be read as two opaque colors`).not.toBeNull();
         expect(
           ratio ?? 0,
           `${preset.id}: ${name} (${ink}) on ${ground} is ${(ratio ?? 0).toFixed(2)}:1, under AA`,
@@ -124,15 +124,15 @@ describe('a theme preset', () => {
  * arrives wearing the right control with nothing edited.
  */
 describe('what a token holds', () => {
-  it('recognises the shipped colours as colours', () => {
+  it('recognises the shipped colors as colors', () => {
     for (const name of ['bg', 'fg', 'muted', 'accent', 'accent-fg', 'border', 'backdrop']) {
-      expect(isColour(TOKENS[name] ?? '')).toBe(true);
+      expect(isColor(TOKENS[name] ?? '')).toBe(true);
     }
   });
 
   it('leaves type, measures and alignment as typed values', () => {
     for (const name of ['font', 'heading-size', 'text-size', 'radius', 'pad', 'gap', 'width', 'align']) {
-      expect(isColour(TOKENS[name] ?? '')).toBe(false);
+      expect(isColor(TOKENS[name] ?? '')).toBe(false);
     }
   });
 

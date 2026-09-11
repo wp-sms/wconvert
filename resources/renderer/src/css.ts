@@ -67,18 +67,10 @@ export const A_DESIGNS_OWN_WIDTH = '28rem';
  * `renderer-manifest-parity` asserts the two agree — the renderer imports no
  * manifest.
  *
- * **24rem is derived rather than chosen: it is where a `split` stops being side
- * by side.** A pane's `flex-basis` is `12rem` and there are exactly two of
- * them, so below 24rem the panes have already wrapped into a column. Retuning
- * at the same width as the layout gives up means the two mechanisms cannot
- * disagree — a design does not retune while still side by side, or stay tuned
- * for two columns after it has one.
- *
- * A phone measure would have been the obvious number and is the wrong one. The
- * common ones straddle it — 360, 375, 390, 412 — so half the phones in
- * circulation would have wrapped without retuning or retuned without wrapping,
- * and the switch in the builder would have been drawn at a width the query did
- * not fire at.
+ * 24rem comes from the default split's two 12rem panes. A split can now choose
+ * a wider `basis` to protect a form from cramped columns (ADR 0079). That makes
+ * it wrap earlier, independently of this appearance breakpoint. The editor's
+ * narrow preview still needs to be inside 24rem to edit the values it shows.
  */
 export const A_NARROW_DESIGN = '24rem';
 
@@ -106,7 +98,7 @@ export const SHADOW_CSS = [
    *
    * `none` is a legal layer in the list, so the default costs no branch.
    */
-  `.wc-root{font-family:var(--wc-font,system-ui,sans-serif);font-size:var(--wc-text-size,1rem);line-height:var(--wc-leading,1.5);color:var(--wc-fg,#111827);background:var(--wc-bg,#fff);background-image:linear-gradient(var(--wc-overlay,#0000),var(--wc-overlay,#0000)),var(--wc-bg-image,none);background-size:cover;background-position:center;border-radius:var(--wc-radius,.5rem);padding:var(--wc-pad,1.5rem);container:wc/inline-size;text-align:var(--wc-align,start);inline-size:min(var(--wc-width,${A_DESIGNS_OWN_WIDTH}),100%);max-block-size:85vh;overflow:auto;position:relative;box-shadow:var(--wc-shadow,0 10px 40px rgba(0,0,0,.18))}`,
+  `.wc-root{font-family:var(--wc-font,system-ui,sans-serif);font-size:var(--wc-text-size,1rem);line-height:var(--wc-leading,1.5);color:var(--wc-fg,#111827);background:var(--wc-bg,#fff);background-image:linear-gradient(var(--wc-overlay,#0000),var(--wc-overlay,#0000)),var(--wc-bg-image,none);background-size:cover;background-position:var(--wc-image-position,center);border-radius:var(--wc-radius,.5rem);padding:var(--wc-pad,1.5rem);container:wc/inline-size;text-align:var(--wc-align,start);inline-size:min(var(--wc-width,${A_DESIGNS_OWN_WIDTH}),100%);max-block-size:85vh;overflow:auto;position:relative;box-shadow:var(--wc-shadow,0 10px 40px rgba(0,0,0,.18))}`,
 
   // Resolve inherited typography at each scope, so a local bag changes its own text.
   `.wc-stack,.wc-row,.wc-grid,.wc-split,.wc-panel,.wc-media,.wc-leaf{font-family:var(--wc-font,system-ui,sans-serif);font-size:var(--wc-text-size,1rem);line-height:var(--wc-leading,1.5);color:var(--wc-fg,#111827);text-align:var(--wc-align,start)}`,
@@ -151,7 +143,7 @@ export const SHADOW_CSS = [
    * Without that, one `bg-image` on the design would be painted again, cover
    * and centred, inside every panel in it.
    */
-  `.wc-panel{display:flex;flex-direction:column;gap:var(--wc-gap,.75rem);min-block-size:var(--wc-min,0);padding:var(--wc-pad,1.5rem);border-radius:var(--wc-radius,.5rem);color:var(--wc-fg,#111827);background:var(--wc-bg,#fff);background-image:linear-gradient(var(--wc-overlay,#0000),var(--wc-overlay,#0000)),var(--wc-bg-image,none);background-size:cover;background-position:center}`,
+  `.wc-panel{display:flex;flex-direction:column;gap:var(--wc-gap,.75rem);min-block-size:var(--wc-min,0);padding:var(--wc-pad,1.5rem);border-radius:var(--wc-radius,.5rem);color:var(--wc-fg,#111827);background:var(--wc-bg,#fff);background-image:linear-gradient(var(--wc-overlay,#0000),var(--wc-overlay,#0000)),var(--wc-bg-image,none);background-size:cover;background-position:var(--wc-image-position,center)}`,
   /*
    * Two edge treatments, and the widths are different because the jobs are.
    * `block-start` is a GRAPHIC — the accent rule over a result panel, which is
@@ -217,7 +209,7 @@ export const SHADOW_CSS = [
    * pseudo-element sits between the two — no extra markup, and the children
    * take `position:relative` to clear it.
    */
-  `.wc-media{position:relative;display:flex;flex-direction:column;justify-content:space-between;gap:var(--wc-gap,.75rem);min-block-size:var(--wc-min,0);padding:var(--wc-pad,1.5rem);border-radius:var(--wc-radius,.5rem);overflow:hidden;color:var(--wc-fg,#111827);background:var(--wc-bg,#fff);background-image:var(--wc-bg-image,none);background-size:cover;background-position:center}`,
+  `.wc-media{position:relative;display:flex;flex-direction:column;justify-content:space-between;gap:var(--wc-gap,.75rem);min-block-size:var(--wc-min,0);padding:var(--wc-pad,1.5rem);border-radius:var(--wc-radius,.5rem);overflow:hidden;color:var(--wc-fg,#111827);background:var(--wc-bg,#fff);background-image:var(--wc-bg-image,none);background-size:cover;background-position:var(--wc-image-position,center)}`,
   `.wc-media::before{content:"";position:absolute;inset:0;background:var(--wc-overlay,#0000);pointer-events:none}`,
   `.wc-media>*{position:relative}`,
   /*
@@ -256,7 +248,8 @@ export const SHADOW_CSS = [
    * lengths, and it is what every specimen of this genre does. A pane holding
    * nothing but a picture is unaffected: the picture already fills it.
    */
-  `.wc-pane{flex:1 1 12rem;min-inline-size:0;display:flex;flex-direction:column;justify-content:center}`,
+  // Basis is set by the renderer; the two growth rules below fill each line.
+  `.wc-pane{min-inline-size:0;display:flex;flex-direction:column;justify-content:center}`,
   /*
    * ==========================================================================
    * THE GROWS ARE SCALED BY TEN, AND THAT IS A BUG FIX RATHER THAN A STYLE.
@@ -423,6 +416,7 @@ export const SHADOW_CSS = [
    * centring inside the box is what makes it sit right under both a
    * start-aligned and a centre-aligned design.
    */
+  `[role=status]:empty{display:none}`,
   `.wc-code{display:block;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:1.125em;font-weight:700;letter-spacing:.12em;text-align:center;-webkit-user-select:all;user-select:all;padding-block:.625rem;padding-inline:1rem;border:1px dashed var(--wc-border,#e5e7eb);border-radius:calc(var(--wc-radius,.5rem)/2)}`,
 
   `.wc-rating{display:flex;flex-wrap:wrap;align-items:center;gap:.375rem}`,
@@ -474,7 +468,8 @@ export const SHADOW_CSS = [
    * emphasised run is the sentence around it, said harder.
    */
   `.wc-strong{font-weight:700}`,
-  `.wc-image{display:block;inline-size:100%;block-size:auto;object-fit:cover;border-radius:var(--wc-radius,.5rem)}`,
+  `.wc-italic{font-style:italic}`,
+  `.wc-image{display:block;inline-size:100%;block-size:auto;object-fit:cover;object-position:var(--wc-image-position,center);border-radius:var(--wc-radius,.5rem)}`,
   /*
    * A picture that IS one side of a split fills that side.
    *
@@ -716,5 +711,5 @@ export const SHADOW_CSS = [
    * desktop, and the viewport would call it wide. `.wc-root` is the container,
    * declared above.
    * --------------------------------------------------------------------- */
-  `@container wc (max-width:24rem){.wc-stack[data-narrow],.wc-row[data-narrow],.wc-split[data-narrow],.wc-grid[data-narrow],.wc-panel[data-narrow],.wc-media[data-narrow],.wc-leaf[data-narrow]{--wc-bg:var(--wc-n-bg)!important;--wc-fg:var(--wc-n-fg)!important;--wc-muted:var(--wc-n-muted)!important;--wc-accent:var(--wc-n-accent)!important;--wc-accent-fg:var(--wc-n-accent-fg)!important;--wc-border:var(--wc-n-border)!important;--wc-input-bg:var(--wc-n-input-bg)!important;--wc-font:var(--wc-n-font)!important;--wc-heading-font:var(--wc-n-heading-font)!important;--wc-heading-size:var(--wc-n-heading-size)!important;--wc-heading-weight:var(--wc-n-heading-weight)!important;--wc-tracking:var(--wc-n-tracking)!important;--wc-text-size:var(--wc-n-text-size)!important;--wc-leading:var(--wc-n-leading)!important;--wc-radius:var(--wc-n-radius)!important;--wc-pad:var(--wc-n-pad)!important;--wc-gap:var(--wc-n-gap)!important;--wc-width:var(--wc-n-width)!important;--wc-align:var(--wc-n-align)!important;--wc-bg-image:var(--wc-n-bg-image)!important;--wc-overlay:var(--wc-n-overlay)!important;--wc-shadow:var(--wc-n-shadow)!important;--wc-motion:var(--wc-n-motion)!important;--wc-backdrop:var(--wc-n-backdrop)!important}}`,
+  `@container wc (max-width:24rem){[data-narrow]{${'bg fg muted accent accent-fg border input-bg font heading-font heading-size heading-weight tracking text-size leading radius pad gap width align bg-image image-position overlay shadow motion backdrop'.split(' ').map(name => `--wc-${name}:var(--wc-n-${name})!important`).join(';')}}}`,
 ].join('');

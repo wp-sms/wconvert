@@ -7,7 +7,7 @@
     "bg": "#f8fdff",
     "fg": "#0f172a",
     "muted": "#64748b",
-    "accent": "#0284c7",
+    "accent": "#08638a",
     "accent-fg": "#ffffff",
     "border": "#cfeaf7",
     "heading-size": "1.75rem",
@@ -18,7 +18,9 @@
     "align": "start",
     "backdrop": "rgba(15, 23, 42, 0.45)",
     "shadow": "0 18px 50px -12px rgba(15, 23, 42, 0.35)",
-    "tracking": "-0.02em"
+    "tracking": "-0.02em",
+    "text-size": "1rem",
+    "input-bg": "#ffffff"
   },
   "tree": {
     "steps": [
@@ -49,7 +51,7 @@
             "type": "button",
             "id": "n4",
             "role": "cta_label",
-            "label": "Sign me up",
+            "label": "Request text updates",
             "action": "submit"
           },
           {
@@ -57,16 +59,23 @@
             "id": "n5",
             "role": "consent_text",
             "hidden": true,
-            "text": "Email me offers and news. See our %s.",
+            "text": "Send me text updates about new releases. %s",
             "link": {
               "label": "Privacy Policy"
+            },
+            "tokens": {
+              "text-size": "1.125rem"
             }
           },
           {
             "type": "text",
             "id": "n6",
             "role": "fine_print",
-            "text": "Message rates may apply. Stop at any time."
+            "text": "Occasional text updates. Message rates may apply. You can opt out.",
+            "size": "s",
+            "tokens": {
+              "text-size": "1.167rem"
+            }
           }
         ]
       },

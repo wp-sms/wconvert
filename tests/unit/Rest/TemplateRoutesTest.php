@@ -273,7 +273,7 @@ final class TemplateRoutesTest extends TestCase
     public function testAnIdWithNoDesignBehindItIsSimplyAbsent(): void
     {
         /** @var array{templates: list<array<string, mixed>>} $data */
-        $data = self::controller()->trees(self::trees('slide-in-card,nothing-at-all,centred-card'))->get_data();
+        $data = self::controller()->trees(self::trees('slide-in-benefits,nothing-at-all,centred-card'))->get_data();
 
         $this->assertSame(['centred-card'], array_column($data['templates'], 'id'));
     }

@@ -139,9 +139,10 @@ final class TemplateFacetsTest extends TestCase
     public function testAPictureChipMeansAPictureInTheTree(string $id, array $entry): void
     {
         $this->assertSame(
-            // Fieldwork is the bundled picture implemented as a background;
-            // Ink split and Inline tinted have decorative gradients instead.
-            self::hasNode($entry['tree'], 'image') || $id === 'fieldwork',
+            // Bundled pictures use image nodes. Fieldwork now has a gradient
+            // placeholder, which must not claim a picture in the gallery.
+            // URL backgrounds are exercised independently below.
+            self::hasNode($entry['tree'], 'image'),
             $entry['facets']['has_image'],
             $id . ' disagrees with its own tree about whether it has a picture'
         );
@@ -163,7 +164,7 @@ final class TemplateFacetsTest extends TestCase
         ]]], [])['has_image']);
     }
 
-    public function testAnUnusedBackgroundTokenOrColourWashIsNotAPicture(): void
+    public function testAnUnusedBackgroundTokenOrColorWashIsNotAPicture(): void
     {
         foreach (['none', 'linear-gradient(#fff,#000)', ''] as $background) {
             $this->assertFalse(TemplateFacets::of(['steps' => [[

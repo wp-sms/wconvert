@@ -64,9 +64,9 @@ describe('contrast', () => {
     '#ffffff80',
     '',
     'nonsense',
-  ])('refuses to measure %s', (colour) => {
-    expect(luminanceOf(colour)).toBeNull();
-    expect(contrastOf(colour, '#ffffff')).toBeNull();
+  ])('refuses to measure %s', (color) => {
+    expect(luminanceOf(color)).toBeNull();
+    expect(contrastOf(color, '#ffffff')).toBeNull();
   });
 
   /** Full alpha is opaque, so it is readable and must not be refused. */

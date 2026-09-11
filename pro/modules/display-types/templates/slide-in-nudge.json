@@ -15,7 +15,7 @@
     "border": "#1e293b",
     "heading-size": "1.0625rem",
     "heading-weight": "600",
-    "text-size": "0.9375rem",
+    "text-size": "1rem",
     "radius": "0.75rem",
     "pad": "1rem 1.125rem",
     "gap": "0.625rem",
@@ -37,13 +37,13 @@
             "id": "n2",
             "role": "headline",
             "level": 2,
-            "text": "Delivery is free this week"
+            "text": "Free UK delivery over £40"
           },
           {
             "type": "button",
             "id": "n3",
             "role": "cta_label",
-            "label": "Shop",
+            "label": "Explore the shop",
             "action": "link"
           }
         ]

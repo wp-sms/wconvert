@@ -17,7 +17,8 @@
     "width": "34rem",
     "align": "center",
     "shadow": "none",
-    "tracking": "-0.02em"
+    "tracking": "-0.02em",
+    "text-size": "1rem"
   },
   "tree": {
     "steps": [
@@ -28,13 +29,13 @@
             "type": "heading",
             "id": "n1",
             "role": "headline",
-            "text": "The sale ends on Sunday"
+            "text": "Find your next favourite"
           },
           {
             "type": "text",
             "id": "n2",
             "role": "body",
-            "text": "Everything reduced, while it lasts."
+            "text": "Selected pieces from the latest collection, for less."
           },
           {
             "type": "button",
@@ -47,7 +48,11 @@
             "type": "text",
             "id": "n4",
             "role": "fine_print",
-            "text": "Discount applied at the checkout."
+            "text": "Discount applied at the checkout.",
+            "size": "s",
+            "tokens": {
+              "text-size": "1.167rem"
+            }
           }
         ]
       }

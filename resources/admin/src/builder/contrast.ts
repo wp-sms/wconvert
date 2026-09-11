@@ -135,8 +135,8 @@ export const meetsAA = (ratio: number | null): boolean | null =>
  * 2.4 exponent — it is not sRGB gamma and rounding it would move a pair across
  * the floor.
  */
-export function luminanceOf(colour: string): number | null {
-  const channels = rgbOf(colour);
+export function luminanceOf(color: string): number | null {
+  const channels = rgbOf(color);
 
   if (channels === null) {
     return null;
@@ -161,8 +161,8 @@ function linear(channel: number): number {
  * full** — a colour that is partly transparent has no ratio of its own, and
  * silently ignoring the alpha would report the ratio of a colour nobody sees.
  */
-function rgbOf(colour: string): [number, number, number] | null {
-  const hex = colour.trim();
+function rgbOf(color: string): [number, number, number] | null {
+  const hex = color.trim();
 
   if (!/^#(?:[0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(hex)) {
     return null;

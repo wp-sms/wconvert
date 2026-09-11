@@ -20,7 +20,8 @@
     "width": "100%",
     "align": "start",
     "shadow": "none",
-    "tracking": "-0.02em"
+    "tracking": "-0.02em",
+    "text-size": "1rem"
   },
   "tree": {
     "steps": [
@@ -36,13 +37,13 @@
             "id": "n2",
             "role": "headline",
             "level": 2,
-            "text": "Enjoying this?"
+            "text": "A good read, once a week."
           },
           {
             "type": "text",
             "id": "n3",
             "role": "body",
-            "text": "There is one of these every week, and nothing else."
+            "text": "One thoughtful story to carry into the weekend."
           },
           {
             "type": "row",
@@ -59,7 +60,7 @@
                 "type": "button",
                 "id": "n5",
                 "role": "cta_label",
-                "label": "Send it to me",
+                "label": "Send me the weekly story",
                 "action": "submit"
               }
             ]
@@ -69,9 +70,12 @@
             "id": "n6",
             "role": "consent_text",
             "hidden": true,
-            "text": "Email me offers and news. See our %s.",
+            "text": "Email me offers and news. %s",
             "link": {
               "label": "Privacy Policy"
+            },
+            "tokens": {
+              "text-size": "1.125rem"
             }
           },
           {

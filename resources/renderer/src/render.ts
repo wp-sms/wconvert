@@ -5,6 +5,7 @@ import type {
   ConsentNode,
   EyebrowNode,
   FieldNode,
+  FollowupNode,
   HeadingNode,
   IconNode,
   ImageNode,
@@ -20,7 +21,8 @@ import type {
 /**
  * The renderer: (tree, tokens) in, DOM out.
  *
- * Pure in the sense that matters — same inputs, same output, no ambient reads.
+ * Same inputs, same DOM. Clipboard access happens only in the visitor’s click
+ * handler; rendering itself performs no ambient reads.
  * It asks nothing of the document it will be attached to, nothing of the site
  * it is running on, and nothing of the Optin it came from. That is what lets
  * the admin import this exact module and render the real template into a
@@ -36,6 +38,11 @@ const TOKEN_PREFIX = '--wc-';
  * second set rather than a conditional first one.
  */
 const NARROW_PREFIX = '--wc-n-';
+
+// Only the visitor build removes editor addresses; admin and tests keep them.
+// This changes bookkeeping, never the template vocabulary or its appearance.
+declare const __WCONVERT_VISITOR__: boolean;
+const EDITABLE = typeof __WCONVERT_VISITOR__ === 'undefined' || !__WCONVERT_VISITOR__;
 
 /**
  * Render one step of a template.
@@ -59,7 +66,7 @@ export function render(tree: TemplateTree, tokens: Tokens, step = 0, options: Re
   scope(root, tokens);
 
   if (node !== undefined) {
-    appendNode(root, node, tokens, options.paths === true ? String(step) : null);
+    appendNode(root, node, tokens, EDITABLE && options.paths === true ? String(step) : null);
   }
 
   return root;
@@ -169,7 +176,7 @@ function submits(node: TemplateNode): boolean {
     return branch.action !== 'link';
   }
 
-  return [...(branch.children ?? []), ...(branch.start ?? []), ...(branch.end ?? [])].some(submits);
+  return [branch.children, branch.start, branch.end].some(children => children?.some(submits));
 }
 
 /**
@@ -202,7 +209,7 @@ function appendNode(parent: HTMLElement, node: TemplateNode, scoped: Tokens, at:
     if (styled.tokens !== undefined || styled.narrow !== undefined) {
       element.classList.add('wc-leaf');
       scope(element, styled.tokens);
-      retune(element, inScope(scoped, {}, styled.tokens), styled.narrow);
+      retune(element, { ...scoped, ...styled.tokens }, styled.narrow);
     }
   }
 
@@ -211,26 +218,26 @@ function appendNode(parent: HTMLElement, node: TemplateNode, scoped: Tokens, at:
   // The Role reaches the DOM because two things downstream need it: the
   // stylesheet, which makes fine print smaller and muted without a class per
   // slot, and the settings panel, which edits slot content BY Role.
-  if (typeof role === 'string' && role !== '') {
+  if (role === 'fine_print' || (EDITABLE && typeof role === 'string' && role !== '')) {
     element.dataset.role = role;
   }
 
-  // A `field` has no Role of its own — its Roles are DERIVED from what it
+  // Editor metadata is compiled out of the visitor build. A field has no Role
+  // of its own — its Roles are DERIVED from what it
   // captures (CONTEXT.md, Slot Role) — so the key the panel heads it with is
   // the capture kind, and that is what has to reach the DOM for the builder's
-  // preview to be clickable back to it (ADR 0040). The loader never reads it;
-  // it costs the free bundle a few bytes of the budget `check-loader.mjs`
-  // measures, and it is the only way a field is addressable at all.
-  const captures = (node as { name?: string }).name;
-
-  if (node.type === 'field' && typeof captures === 'string' && captures !== '') {
-    element.dataset.captures = captures;
+  // preview to be clickable back to it (ADR 0040). The loader never reads it.
+  if (EDITABLE) {
+    const captures = (node as { name?: string }).name;
+    if (node.type === 'field' && typeof captures === 'string' && captures !== '') {
+      element.dataset.captures = captures;
+    }
   }
 
   // Where this node sits in the tree, for a caller that holds one. Written
   // only where {@link RenderOptions.paths} asked, so a visitor's page carries
   // none of it.
-  if (at !== null) {
+  if (EDITABLE && at !== null) {
     element.dataset.path = at;
   }
 
@@ -260,7 +267,7 @@ function elementFor(node: TemplateNode, scoped: Tokens, at: string | null): HTML
     case 'countdown':
       return countdown();
     case 'code':
-      return words('span', 'wc-code', (node as CodeNode).text);
+      return code(node as CodeNode, at);
     case 'rating':
       return rating(node as RatingNode);
     case 'icon':
@@ -270,7 +277,8 @@ function elementFor(node: TemplateNode, scoped: Tokens, at: string | null): HTML
     case 'field':
       return field(node as FieldNode);
     case 'button':
-      return button(node as ButtonNode);
+    case 'followup':
+      return button(node as ButtonNode | FollowupNode);
     case 'consent':
       return consent(node as ConsentNode);
     default:
@@ -326,9 +334,8 @@ function layout(
   const reset: Tokens =
     node.type === 'panel' || node.type === 'media' ? { 'bg-image': 'none', overlay: '#0000' } : {};
 
-  if (Object.keys(reset).length > 0) {
-    scope(element, reset);
-  }
+  // scope already skips an empty bag; avoid enumerating the same reset twice.
+  scope(element, reset);
 
   if (node.type === 'panel') {
     // A modifier ATTRIBUTE and not a custom property, for the reason
@@ -360,10 +367,11 @@ function layout(
    * the remap finds unset is not inherited — it is guaranteed-invalid, and
    * falls to whatever literal the stylesheet spells beside it.
    *
-   * Built only where a bag says something, so a design with no bags threads
-   * one object all the way down and allocates nothing.
+   * Build one merged bag per layout, preserving inherited mobile overrides
+   * without repeatedly merging or enumerating empty bags.
    */
-  const here = inScope(inScope(scoped, reset, node.tokens), {}, node.narrow);
+  // Merge the inherited, reset, wide and narrow bags once, in precedence order.
+  const here = { ...scoped, ...reset, ...node.tokens, ...node.narrow };
 
   retune(element, here, node.narrow);
 
@@ -382,14 +390,7 @@ function layout(
  * string two programs have to agree about. `slots.ts` parses it back.
  */
 function into(at: string | null, key: string, index: number): string | null {
-  return at === null ? null : `${at}.${key}.${index}`;
-}
-
-/** The bag in scope at this box: what it inherited, its own reset, its own bag. */
-function inScope(scoped: Tokens, reset: Tokens, own: Tokens | undefined): Tokens {
-  return own === undefined && Object.keys(reset).length === 0
-    ? scoped
-    : { ...scoped, ...reset, ...own };
+  return !EDITABLE || at === null ? null : `${at}.${key}.${index}`;
 }
 
 /**
@@ -452,7 +453,7 @@ function split(node: SplitNode, scoped: Tokens, at: string | null): HTMLElement 
 
   scope(element, node.tokens);
 
-  const here = inScope(inScope(scoped, {}, node.tokens), {}, node.narrow);
+  const here = { ...scoped, ...node.tokens, ...node.narrow };
 
   retune(element, here, node.narrow);
 
@@ -464,6 +465,8 @@ function split(node: SplitNode, scoped: Tokens, at: string | null): HTMLElement 
     const pane = document.createElement('div');
 
     pane.className = 'wc-pane';
+    // A pane's own basis cannot inherit from an outer split.
+    pane.style.flexBasis = node.basis ?? '12rem';
 
     for (const [index, child] of (node[key] ?? []).entries()) {
       appendNode(pane, child, here, into(at, key, index));
@@ -536,7 +539,7 @@ function lines(element: HTMLElement, text: string): void {
     }
 
     if (line !== '') {
-      element.appendChild(document.createTextNode(line));
+      element.append(line);
     }
   });
 }
@@ -619,17 +622,12 @@ function icon(node: IconNode): HTMLElement | null {
  */
 function rating(node: RatingNode): HTMLElement {
   const filled = node.value === 3 || node.value === 4 ? node.value : 5;
-  const stars = document.createElement('span');
-  const element = document.createElement('div');
-
-  stars.className = 'wc-stars';
+  const stars = words('span', 'wc-stars', '');
+  const element = wrap('div', 'wc-rating', stars);
 
   for (let at = 0; at < 5; at += 1) {
     stars.appendChild(glyph('star', at < filled ? 'wc-glyph wc-star' : 'wc-glyph'));
   }
-
-  element.className = 'wc-rating';
-  element.append(stars);
 
   if (typeof node.text === 'string' && node.text !== '') {
     element.appendChild(words('span', 'wc-rating-text', node.text));
@@ -646,11 +644,7 @@ function rating(node: RatingNode): HTMLElement {
  * leaf here with no words at all, so semantics is the only thing it has.
  */
 function divider(): HTMLElement {
-  const element = document.createElement('hr');
-
-  element.className = 'wc-divider';
-
-  return element;
+  return words('hr', 'wc-divider', '');
 }
 
 /**
@@ -730,23 +724,17 @@ function sized(className: string, size: string | undefined): string {
 }
 
 function heading(node: HeadingNode): HTMLElement {
-  const element = document.createElement(node.level === 2 ? 'h3' : 'h2');
-
-  element.className = sized('wc-heading', node.size);
-  lines(element, node.text ?? '');
-
-  return element;
+  return words(node.level === 2 ? 'h3' : 'h2', sized('wc-heading', node.size), node.text);
 }
 
 /**
- * The two leaves that are a sentence which may hold one link and one run of
- * emphasis. Named for the shape rather than for either node, because the rule
- * is the same for both.
+ * Text and consent may hold one link, one bold phrase and one italic phrase.
+ * Named for the sentence shape because the rule is the same for both.
  */
-type Sentence = Pick<TextNode | ConsentNode, 'text' | 'link' | 'emphasis'>;
+type Sentence = Pick<TextNode | ConsentNode, 'text' | 'link' | 'emphasis' | 'italic'>;
 
 /**
- * The two placeholders a sentence may carry, and the only reason a leaf holds
+ * The placeholders a sentence may carry, and the only reason a leaf holds
  * more than a string (ADR 0013).
  *
  * ============================================================================
@@ -764,12 +752,13 @@ type Sentence = Pick<TextNode | ConsentNode, 'text' | 'link' | 'emphasis'>;
  */
 const PLACEHOLDER = '%s';
 const EMPHASIS = '%b';
+const ITALIC = '%i';
 
-/** Both marks, kept by the split so each piece is either text or a mark. */
-const MARKS = /(%s|%b)/;
+/** All marks, kept by the split so each piece is either text or a mark. */
+const MARKS = /(%s|%b|%i)/;
 
-/** Both marks with the space in front, for the pass that removes an unfilled one. */
-const UNFILLED = / ?(%s|%b)/g;
+/** All marks with the space in front, for the pass that removes an unfilled one. */
+const UNFILLED = / ?(%s|%b|%i)/g;
 
 /**
  * Schemes an `<a>` may carry.
@@ -787,10 +776,10 @@ const UNFILLED = / ?(%s|%b)/g;
 export const SAFE_SCHEMES = ['http:', 'https:', 'mailto:'];
 
 /**
- * A sentence that may hold one link and one run of emphasis, built as
+ * A sentence that may hold a link, bold and italic phrases, built as
  * STRUCTURE and never as markup.
  *
- * The text is split on the placeholders and both elements are constructed
+ * The text is split on the placeholders and its elements are constructed
  * here, so no code path in the renderer reaches `innerHTML` — which is what
  * keeps an XSS sink out of the loader's hot path (ADR 0013).
  *
@@ -813,9 +802,11 @@ function sentence(tag: string, className: string, node: Sentence): HTMLElement {
   const anchor =
     node.link === undefined || href === null ? null : link(node.link.label, href);
   const strong =
-    node.emphasis === undefined || node.emphasis === '' ? null : words('strong', 'wc-strong', node.emphasis);
+    node.emphasis ? words('strong', 'wc-strong', node.emphasis) : null;
 
-  fill(element, node.text ?? '', anchor, strong);
+  const italic = node.italic ? words('em', 'wc-italic', node.italic) : null;
+
+  fill(element, node.text ?? '', anchor, strong, italic);
 
   return element;
 }
@@ -839,19 +830,17 @@ function link(label: string, href: string): HTMLElement {
  * the element for it; every other piece is text, and goes through
  * {@link lines} so a sentence breaks its own line exactly as a heading does.
  */
-function fill(element: HTMLElement, text: string, anchor: Node | null, strong: Node | null): void {
-  const parts: Record<string, Node | null> = { [PLACEHOLDER]: anchor, [EMPHASIS]: strong };
-  const stripped = text.replace(UNFILLED, (whole, mark: string) => (parts[mark] === null ? '' : whole));
+function fill(element: HTMLElement, text: string, anchor: Node | null, strong: Node | null, italic: Node | null): void {
+  const parts = new Map<string, Node | null>([[PLACEHOLDER, anchor], [EMPHASIS, strong], [ITALIC, italic]]);
+  const stripped = text.replace(UNFILLED, (whole, mark: string) => (parts.get(mark) === null ? '' : whole));
 
   for (const piece of stripped.split(MARKS)) {
-    // The guard is what makes the lookup safe: `piece` is arbitrary authored
-    // copy otherwise, and a sentence containing the word `constructor` would
-    // otherwise reach a prototype property and try to append a function.
-    const part = piece === PLACEHOLDER || piece === EMPHASIS ? parts[piece] : null;
+    // Map has no prototype keys: authored words such as "constructor" stay text.
+    const part = parts.get(piece) ?? null;
 
     if (part !== null) {
       /*
-       * **One link and one emphasis per sentence, and a second mark of the
+       * **One link, bold and italic phrase per sentence, and a second mark of the
        * same kind is literal text.** The rule predates emphasis — it is what
        * `[before, ...after].join(PLACEHOLDER)` did — and it is asserted from
        * both sides by `tests/fixtures/consent-sentences.json`, because
@@ -859,7 +848,7 @@ function fill(element: HTMLElement, text: string, anchor: Node | null, strong: N
        * the Consent Record and evidence that disagrees with what was shown is
        * evidence of nothing.
        */
-      parts[piece] = null;
+      parts.set(piece, null);
       element.appendChild(part);
       continue;
     }
@@ -868,7 +857,7 @@ function fill(element: HTMLElement, text: string, anchor: Node | null, strong: N
   }
 }
 
-function safeHref(href: SlotLink['href']): string | null {
+export function safeHref(href: SlotLink['href']): string | null {
   if (typeof href !== 'string' || href === '') {
     return null;
   }
@@ -987,6 +976,31 @@ function field(node: FieldNode): HTMLElement | null {
   return wrapper;
 }
 
+/** Copying is optional; the readable code remains available when clipboard access fails. */
+function code(node: CodeNode, at: string | null): HTMLElement {
+  const value = words('span', 'wc-code', node.text);
+  if (!node.copy) return value;
+  const wrapper = wrap('div', 'wc-stack', value);
+  const copy = words('button', 'wc-button', node.copy_label || 'Copy code') as HTMLButtonElement;
+  copy.type = 'button';
+  const status = words('span', 'wc-text', '');
+  status.setAttribute('role', 'status');
+  wrapper.append(copy, status);
+  // A selectable preview has addresses and edits the block instead of copying.
+  if (!EDITABLE || at === null) copy.addEventListener('click', async () => {
+    copy.disabled = true;
+    try {
+      await navigator.clipboard.writeText(node.text ?? '');
+      status.textContent = node.copied_label || 'Copied';
+    } catch {
+      status.textContent = node.copy_failed_label || 'Copy failed. Select the code.';
+    } finally {
+      copy.disabled = false;
+    }
+  });
+  return wrapper;
+}
+
 /**
  * The converting act, in one of its two spellings.
  *
@@ -994,16 +1008,17 @@ function field(node: FieldNode): HTMLElement | null {
  * exactly one converting act — a Template offering both is rejected when it is
  * registered rather than disambiguated here (CONTEXT.md, Conversion).
  */
-function button(node: ButtonNode): HTMLElement {
+function button(node: ButtonNode | FollowupNode): HTMLElement {
   const label = node.label ?? '';
 
-  if (node.action === 'link') {
+  if (node.type === 'followup' || node.action === 'link') {
     const anchor = document.createElement('a');
     const href = safeHref(node.href);
 
     anchor.className = 'wc-button';
     anchor.textContent = label;
     anchor.rel = 'noopener';
+    if (node.type === 'button') anchor.dataset.convert = '';
 
     if (href !== null) {
       anchor.href = href;

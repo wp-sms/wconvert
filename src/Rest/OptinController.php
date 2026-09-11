@@ -564,9 +564,12 @@ final class OptinController implements RestController
 
         $issue = \WConvert\Template\TemplateForm::issue($optin->config['template'] ?? null);
         if ($issue !== null) {
-            return new WP_Error('wconvert_optin_form_incomplete', $issue === 'choices'
-                ? __('Add at least one choice to the interest field before publishing. You can keep saving this Optin as a draft.', 'wconvert')
-                : __('Add an email or phone field before publishing this form. You can keep saving this Optin as a draft.', 'wconvert'), ['status' => 400]);
+            $message = match ($issue) {
+                'choices' => __('Add at least one choice to the interest field before publishing. You can keep saving this Optin as a draft.', 'wconvert'),
+                'followup' => __('Give each resource link a label and address, and place it after the form. You can keep saving this Optin as a draft.', 'wconvert'),
+                default => __('Add an email or phone field before publishing this form. You can keep saving this Optin as a draft.', 'wconvert'),
+            };
+            return new WP_Error('wconvert_optin_form_incomplete', $message, ['status' => 400]);
         }
 
         $published = $this->optins->publish($id);

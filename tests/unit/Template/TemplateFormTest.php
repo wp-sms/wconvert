@@ -52,4 +52,25 @@ final class TemplateFormTest extends TestCase
             'type' => 'panel', 'children' => [['type' => 'button', 'action' => 'link', 'href' => '/offer']],
         ]]]]));
     }
+    public function testResourceLinksNeedWordsAndADestinationAfterTheForm(): void
+    {
+        $template = $this->form([['type' => 'field', 'name' => 'email']]);
+        $link = ['type' => 'followup', 'label' => 'Open guide', 'href' => '/guide.pdf'];
+        $template['tree']['steps'][] = ['type' => 'stack', 'children' => [$link]];
+        self::assertNull(TemplateForm::issue($template));
+        self::assertCount(1, \WConvert\Template\ConvertingAct::offeredIn($template['tree']));
+        foreach (['', '   ', 'javascript:alert(1)'] as $href) {
+            $template['tree']['steps'][1]['children'][0]['href'] = $href;
+            $normalized = TemplateVocabulary::fromManifest(dirname(__DIR__, 3))->normalize($template);
+            self::assertSame('followup', TemplateForm::issue($normalized));
+        }
+        $template['tree']['steps'][1]['children'][0] = $link;
+        $template['tree']['steps'][1]['children'][0]['label'] = '';
+        self::assertSame('followup', TemplateForm::issue($template));
+        $template['tree']['steps'][1]['children'][0]['hidden'] = true;
+        self::assertNull(TemplateForm::issue($template));
+        $template['tree']['steps'][0]['children'][] = $link;
+        self::assertSame('followup', TemplateForm::issue($template));
+    }
+
 }

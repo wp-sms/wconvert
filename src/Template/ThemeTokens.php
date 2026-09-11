@@ -82,9 +82,9 @@ final class ThemeTokens
         }
 
         // The one derived value. A theme declares no "text on the accent
-        // colour", and it has to be one or the other of the two we already
+        // color", and it has to be one or the other of the two we already
         // have — an accent button whose label cannot be read is worse than a
-        // button in the wrong colour, because the merchant can see the second
+        // button in the wrong color, because the merchant can see the second
         // one.
         $accentFg = self::readableOn($tokens['accent'] ?? null, $tokens);
 
@@ -158,7 +158,7 @@ final class ThemeTokens
      */
     private static function palette(array $settings): array
     {
-        $colours = [];
+        $colors = [];
         $palettes = is_array($settings['color']['palette'] ?? null) ? $settings['color']['palette'] : [];
 
         // Read in increasing order of deliberateness, so the later write
@@ -168,12 +168,12 @@ final class ThemeTokens
         foreach (['default', 'theme', 'custom'] as $origin) {
             foreach (is_array($palettes[$origin] ?? null) ? $palettes[$origin] : [] as $entry) {
                 if (is_array($entry) && is_string($entry['slug'] ?? null) && is_string($entry['color'] ?? null)) {
-                    $colours[$entry['slug']] = $entry['color'];
+                    $colors[$entry['slug']] = $entry['color'];
                 }
             }
         }
 
-        return $colours;
+        return $colors;
     }
 
     /**
@@ -284,9 +284,9 @@ final class ThemeTokens
      * a CSS engine. The caller offers no `accent-fg` in that case, which
      * leaves the [[Template]]'s own — a value someone chose.
      */
-    private static function luminance(string $colour): ?float
+    private static function luminance(string $color): ?float
     {
-        $hex = ltrim(trim($colour), '#');
+        $hex = ltrim(trim($color), '#');
 
         if (strlen($hex) === 3) {
             $hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];

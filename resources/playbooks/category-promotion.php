@@ -29,7 +29,7 @@ return [
     'notes' => __('Runs on your shop pages rather than the whole site, so it never lands on a blog post about delivery times. Narrow it further to the category the offer is actually for — the picture is where the range goes. Measured by click-throughs, so nobody is added to a list.', 'wconvert'),
     'copy' => [
         'headline' => __('The new season has landed', 'wconvert'),
-        'body' => __('Everything in the range is in stock today, and half of it will not be tomorrow.', 'wconvert'),
+        'body' => __('Explore the newest pieces in the collection and find your favourite.', 'wconvert'),
         'cta_label' => __('See what is new', 'wconvert'),
         'fine_print' => __('Free returns within thirty days.', 'wconvert'),
     ],

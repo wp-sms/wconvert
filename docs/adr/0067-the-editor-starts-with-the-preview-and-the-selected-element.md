@@ -41,6 +41,8 @@ Goal and performance move to Optin details; payload/export tools remain
 developer-only. The technical check strip is no longer permanent merchant-facing
 chrome.
 
+> Extended by [ADR 0077](0077-editor-controls-make-placement-and-formatting-explicit.md): Layers gets explicit placement and capture-kind choices; color and shadow controls are bounded and visual; a small selection toolbar edits existing sentence formatting atomically.
+
 ## Appearance remains a closed vocabulary
 
 Every leaf may carry `tokens` and `narrow`, using the same normalizer and existing

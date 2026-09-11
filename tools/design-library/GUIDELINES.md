@@ -110,11 +110,20 @@ More than half of this traffic arrives on a phone, and everything wraps at 320
 Check the 320 sheet first. A design that only works at 1440 is a design that
 mostly does not work.
 
+Review every screen at 320, 390, 768 and 1440px, with longer words, visible
+consent and both directions. Inputs use at least 16px text and text fields,
+selects and CTAs are at least 44px tall. Keep secondary body copy and fine print
+around 14px. Short phones may need vertical scrolling; horizontal overflow or
+clipped words are defects. `build.sh renderer library-review` provides the full
+collection and repeatable browser measurements for this pass.
+
 ### 1.7 A bar is not a narrow popup, and a slide-in is not a small one
 
 A `floating_bar` spans the whole inline axis at the block-end edge, over a page
-the visitor is still reading. It gets **one line**: an offer and a CTA, with
-`row` and not `stack`, and it does not ask for two fields.
+the visitor is still reading. Its main content is **one compact row**: an offer,
+at most one field and a CTA. A surrounding `stack` can put optional consent
+below that row. Let the row wrap at phone widths; do not squeeze in two fields
+or force consent into the same line.
 
 A `slide_in` is capped at 26rem in a corner and may be ignored — so it can be
 quieter and longer than a bar, and it must never behave like a modal.
@@ -130,6 +139,10 @@ merchant will swap in later.
 
 `muted` has to stay legible against `bg`. It carries the fine print, which is
 where the consent wording lives.
+
+Check field labels, typed text and browser placeholder text separately. A label
+may sit on a dark panel while its input has a light background. Solid-colour
+measurements do not establish contrast over a later photograph or gradient.
 
 ### 1.9 The fine print is load-bearing
 
@@ -196,10 +209,12 @@ most reliable sign that nobody set the type.
 to grow with it: 1.75rem of heading in 1.5rem of padding is a headline in a box
 that does not fit it. Move `pad` and `heading-size` together.
 
-**Placeholder art is artwork, not a grey camera icon.** A layered SVG gradient
-— two or three soft blobs over a diagonal ramp — reads as a picture at any size,
-needs no photograph, costs about 400 bytes, and does not look like a missing
-asset. That is what an `image` slot should ship with; the merchant swaps it.
+**Placeholders preserve the composition.** Use a small neutral gradient or an
+existing placeholder while production imagery is unavailable. Keep it editable,
+review the layout with it absent, and describe it honestly in authoring notes.
+Do not generate artwork when the user has requested placeholders. A placeholder
+review does not establish that a later photograph has an appropriate crop or
+sufficient contrast.
 
 **The success step is a design, not a receipt.** Two lines of text centred in a
 panel sized for a form is the commonest defect in this library. Give it an
@@ -299,8 +314,8 @@ two extremes.
 
 ## 4. Placeholder copy
 
-It is read by merchants and never by visitors, and it is the house style by
-default.
+It is shown to merchants and can reach visitors through **Use this design's
+sample content** (ADR 0075), so it teaches the house style and must be truthful.
 
 - **British English.** *Personalise*, *colour*, *organise*.
 - **Sentence case** in headings and buttons. Never Title Case, never SHOUTING.
@@ -309,7 +324,9 @@ default.
   my basket* — not *Submit*, and not *Click here*.
 - **No em-dashes in placeholder copy.** They read as authored voice and
   merchants keep them.
-- **Nothing site-specific.** No brand names, no prices in currency, no dates.
+- **Make sample requirements explicit in authoring guidance.** Fictional brands
+  can establish a voice, but do not invent real customer evidence. Codes, offers,
+  dates and destinations must be configured by the merchant before publishing.
 
 ## 5. Where a design lives
 

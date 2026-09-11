@@ -1,3 +1,6 @@
+import { useState } from 'react';
+import { ArrowLeft } from 'lucide-react';
+import { Button } from '../components/ui/button';
 import { __, sprintf } from '@wordpress/i18n';
 import { measuresOf } from './themes';
 import { StyleValueInput } from './StyleValueInput';
@@ -14,6 +17,7 @@ export function MeasurementValue({ id, label, rawLabel, value, fallback, standar
   standard: string;
   onChange: (value: string) => void;
 }) {
+  const [custom, setCustom] = useState(false);
   const shown = value === '' ? fallback : value;
   const parts = measuresOf(shown);
   if (parts === null) return null;
@@ -24,6 +28,11 @@ export function MeasurementValue({ id, label, rawLabel, value, fallback, standar
     if (amount.trim() === '' || !Number.isFinite(Number(amount))) return;
     onChange(original.map((part, at) => at === index ? `${amount}${unit}` : part).join(' '));
   };
+  if (custom) return <div className="flex min-w-0 items-center gap-2">
+    <StyleValueInput type="text" className="regular-text min-w-0 flex-1" aria-label={rawLabel}
+      placeholder={fallback} value={shown} onCommit={next => { if (next === '') setCustom(false); onChange(next); }} />
+    <Button variant="ghost" size="icon-xs" aria-label={__('Use number and unit', 'wconvert')} onClick={() => setCustom(false)}><ArrowLeft aria-hidden="true" /></Button>
+  </div>;
   return <div className="flex min-w-0 w-full flex-col gap-2">
     {parts.map((part, index) => {
       const axis = parts.length === 1 ? label : sprintf(
@@ -39,17 +48,12 @@ export function MeasurementValue({ id, label, rawLabel, value, fallback, standar
           aria-label={sprintf(__('%s amount', 'wconvert'), axis)} value={String(part.amount)}
           onCommit={(amount) => write(index, amount, unit)} />
         <select className="w-auto h-6 min-h-6 py-0 text-xs" aria-label={sprintf(__('%s unit', 'wconvert'), axis)} value={unit}
-          onChange={(event) => write(index, String(part.amount), event.target.value)}>
+          onChange={(event) => event.target.value === 'custom' ? setCustom(true) : write(index, String(part.amount), event.target.value)}>
           {unit === '' && <option value="">{__('No unit', 'wconvert')}</option>}
           {UNITS.map((option) => <option key={option} value={option}>{option}</option>)}
+          <option value="custom">{__('Custom…', 'wconvert')}</option>
         </select>
       </div>;
     })}
-    <details className="text-note">
-      <summary>{__('Custom CSS value', 'wconvert')}</summary>
-      <StyleValueInput type="text" className="regular-text w-full" aria-label={rawLabel}
-        placeholder={fallback} value={value} onCommit={onChange} />
-      <p className="m-0 mt-1 text-muted-foreground">{__('Press Enter or leave the field to apply. Empty removes this override.', 'wconvert')}</p>
-    </details>
   </div>;
 }

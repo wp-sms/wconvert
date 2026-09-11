@@ -18,7 +18,7 @@ import {
 import { styleTokens, inheritedStyle } from './styleTokens';
 import { LEAVES } from './panel';
 import { REFERABLE } from '@renderer/render';
-import { isColour } from './themes';
+import { isColor } from './themes';
 import { Description } from '../shell/Description';
 import { nameOf, type TemplateLabels } from '../templates/api';
 import type { Template, Tokens } from '@renderer/types';
@@ -125,7 +125,7 @@ export function ScopeStyle({
           <section key={group.id} className="wconvert-group" aria-label={groupName(group.id)}>
             <h5 className="wconvert-group__name">{groupName(group.id)}</h5>
 
-            <div className={group.id === 'colour' ? 'wconvert-palette' : undefined}>
+            <div className={group.id === 'color' ? 'wconvert-palette' : undefined}>
               {group.tokens.map((token) => {
                 const from = source(token.name);
                 const label = nameOf(labels.tokens, token.name);
@@ -200,7 +200,7 @@ function SourceNote({
 
   const literal =
     (from.from === 'here' || from.from === 'narrow') &&
-    isColour(from.value) &&
+    isColor(from.value) &&
     !REFERABLE.includes(from.value) &&
     REFERABLE.includes(token) &&
     follows(token) !== null;
@@ -227,7 +227,7 @@ function SourceNote({
           className="wconvert-linkish"
           onClick={onRefer}
           title={__(
-            'Follow the palette instead of this exact colour, so a ready-made look moves it.',
+            'Follow the palette instead of this exact color, so a ready-made look moves it.',
             'wconvert',
           )}
         >

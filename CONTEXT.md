@@ -96,6 +96,10 @@ whose button links away converts on the click. A [[Template]] offering both is
 rejected when it is registered, not disambiguated at runtime — an Optin with two
 candidate Conversions has no honest number to report.
 
+A `followup` resource link and a code’s optional copy button do not count. The
+resource link belongs on the capture acknowledgement; it opens a configured file
+or page without another conversion. See [ADR 0080](docs/adr/0080-success-actions-do-not-count-again.md).
+
 > **Amended: it said *"its Goal decides which"*, and the Goal was the second
 > answer.** The registration refusal above is what always made the act
 > singular, so a registered design already declared it; a Goal declared it as
@@ -679,6 +683,8 @@ off the Optin, but it can be corrected.
 The reusable structure and look of an [[Optin]], with sample content for the
 gallery that a merchant can explicitly adopt.
 
+Text and consent copy can carry one separate bold phrase, italic phrase and link, stored as structured values rather than HTML. The renderer and Consent Record share the same expansion semantics ([ADR 0078](docs/adr/0078-editor-choices-stay-compact-and-scrollable.md)).
+
 A Template declares which slots exist (a heading, an image, fields, a button), how
 they are arranged, and how they are styled. That reusable structure is independent
 of campaign copy. The words normally come from the [[Playbook]] that prefilled
@@ -697,8 +703,9 @@ need review. A new Playbook draft continues to use its own copy, not those sampl
 > from the headline. The names remain the closed manifest vocabulary at every scope and the
 > validation is one function, so a scoped bag is still configuration with
 > nothing to sanitise. What no bag can do is **move a box**: a merchant may
-> change anything about a box and not where the boxes are, and a design that
-> wants the picture on the other side is a different design. See
+> change a box’s appearance through its bag. The structure editor can swap a
+> split’s two panes, including their mobile order, without changing their
+> contents or stable leaf identities. See ADR 0080 for this later addition. See
 > [ADR 0062](docs/adr/0062-a-token-bag-is-scoped-to-the-box-that-carries-it.md).
 >
 > **A bag may be carried TWICE**, and the second one is the width. `narrow`
@@ -710,6 +717,14 @@ need review. A new Playbook draft continues to use its own copy, not those sampl
 > in the vocabulary that **doubles what a scope stores**, and the payload is
 > inlined into every matching page. See
 > [ADR 0064](docs/adr/0064-a-narrow-bag-is-the-same-bag-at-a-second-width.md).
+> A split's minimum column width (`basis`) can make its panes stack earlier,
+> independently of that appearance breakpoint. It defaults to 12rem; forms
+> needing more room can use 16rem or 20rem. See
+> [ADR 0079](docs/adr/0079-a-split-can-reserve-room-for-its-form.md).
+>
+> **Picture focus** uses the `image-position` token on backgrounds and image
+> leaves. It can be overridden in the same `narrow` bag, so a phone crop can
+> focus on a different part of the picture. The default remains centred.
 >
 > **A scoped colour may name another colour rather than spell one**, and that
 > is what makes a scope survive a theme. `{"bg": "accent"}` follows whatever
@@ -967,6 +982,11 @@ An options list is one Role's structured content. Its `{options: [...]}`
 wrapper survives both `copyFrom()` and `bind()`, preserving stable answer values
 with the visible labels. A compatible design can carry them; a design without
 that Role cannot. See [ADR 0076](docs/adr/0076-an-enquiry-captures-one-optional-choice-before-handoff.md).
+
+`success_action` carries a resource link’s label and destination together.
+`code_value` also carries optional copy-button and outcome messages, while old
+string bindings still fill the code itself. These words use the existing stable
+leaf identity and translation path.
 
 > **~~One Role exists~~ Two Roles exist that a [[Playbook]] can never fill.**
 > `code_value` holds the static shared discount code, and a coupon code names a

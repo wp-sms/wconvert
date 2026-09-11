@@ -1,6 +1,7 @@
 import { useId, useState, type CSSProperties, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
-import { HexColorPicker, RgbaStringColorPicker } from 'react-colorful';
+import { ColorField } from './ColorField';
+import { ShadowField } from './ShadowField';
 import { Button } from '../components/ui/button';
 import { ChevronDown, RotateCcw } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
@@ -13,7 +14,7 @@ import {
   asBackgroundLayer,
   axesOf,
   isApplied,
-  isColour,
+  isColor,
   isFontStack,
   isTranslucent,
   measuresOf,
@@ -244,6 +245,7 @@ export function Tokens({
 }) {
   const [copied, setCopied] = useState<number | null>(null);
   const groups = groupsOf();
+  const hasDesign = Object.keys(design).length > 0;
 
   const write = (tokens: Readonly<Record<string, string>>) =>
     onChange({
@@ -308,7 +310,7 @@ export function Tokens({
         <section key={group.id} className="wconvert-group" aria-label={groupName(group.id)}>
           <h5 className="wconvert-group__name">{groupName(group.id)}</h5>
 
-          {group.id === 'colour' ? (
+          {group.id === 'color' ? (
             <Palette
               template={template}
               labels={labels}
@@ -327,7 +329,7 @@ export function Tokens({
                 labels={labels}
                 fallback={design[token.name] ?? token.fallback}
                 standard={token.fallback}
-                design={design[token.name] ?? ''}
+                design={hasDesign ? (design[token.name] ?? '') : undefined}
                 value={template.tokens[token.name] ?? ''}
                 open={openToken === token.name}
                 onOpenChange={(open) => onOpenToken(open ? token.name : null)}
@@ -355,8 +357,8 @@ export function Tokens({
  */
 export function groupName(id: TokenGroupId): string {
   switch (id) {
-    case 'colour':
-      return __('Colour', 'wconvert');
+    case 'color':
+      return __('Color', 'wconvert');
     case 'type':
       return __('Type', 'wconvert');
     case 'space':
@@ -404,6 +406,7 @@ function Palette({
   onOpenChange: (token: string | null) => void;
   onChange: (template: Template) => void;
 }) {
+  const hasDesign = Object.keys(design).length > 0;
   const write = (name: string) => (value: string) =>
     onChange({ ...template, tokens: withToken(template.tokens, name, value) });
 
@@ -415,7 +418,7 @@ function Palette({
       labels={labels}
       fallback={design[token.name] ?? token.fallback}
       standard={token.fallback}
-      design={design[token.name] ?? ''}
+      design={hasDesign ? (design[token.name] ?? '') : undefined}
       value={template.tokens[token.name] ?? ''}
       open={openToken === token.name}
       onOpenChange={(open) => onOpenChange(open ? token.name : null)}
@@ -441,7 +444,7 @@ function Palette({
 /**
  * One token, drawn as what it holds.
  *
- * A colour gets a picker. A plain length gets amount/unit inputs and a slider
+ * A color gets a picker. A plain length gets amount/unit inputs and a slider
  * wherever the design's scale can represent it. A token the manifest offers choices for gets those
  * choices as a segmented control. Anything else — `clamp(20rem, 50vw, 30rem)`,
  * an asymmetric radius, a token this bundle has never heard of — gets the text
@@ -455,13 +458,13 @@ function Palette({
  * control with nothing here edited, and one that declares no choices still gets
  * whatever its value earns it.
  *
- * **The value it reads is the RESOLVED one, and that is a fix.** `isColour` was
+ * **The value it reads is the RESOLVED one, and that is a fix.** `isColor` was
  * asked about the FALLBACK — so a merchant who typed `var(--brand)` into
  * `accent` kept a hex picker sitting over it, ready to overwrite a working
  * reference on the first drag. It branches on what is actually stored now, the
- * same way `measureOf` already did on the length side, and a colour it cannot
+ * same way `measureOf` already did on the length side, and a color it cannot
  * parse gets a text box with a decorative chip beside it: `var()` resolves in
- * the browser, so the merchant still sees the colour without a control offering
+ * the browser, so the merchant still sees the color without a control offering
  * to destroy it.
  */
 export function TokenField({
@@ -492,8 +495,8 @@ export function TokenField({
    * write something, and `1.5rem` is the vocabulary's own answer ({@see axesOf}).
    */
   standard: string;
-  /** What the design itself declared, or empty where it declared nothing. */
-  design: string;
+  /** The original value; empty means unset, undefined means the original is unavailable. */
+  design: string | undefined;
   value: string;
   /** Whether THIS token's picker is the one the panel has open. */
   open: boolean;
@@ -520,10 +523,14 @@ export function TokenField({
   );
   const offered = CHOICES[token];
 
-  if (isColour(shown)) {
+  if (TOKENS.find(declaration => declaration.name === token)?.control === 'shadow') {
+    return <ShadowField label={label} shown={shown} value={value} fallback={fallback} offered={offered ?? []} labels={labels} token={token} reset={reset} open={open} onOpenChange={onOpenChange} onChange={onChange} />;
+  }
+
+  if (isColor(shown)) {
     return (
-      <div className="wconvert-token wconvert-token--colour">
-        <ColourField
+      <div className="wconvert-token wconvert-token--color">
+        <ColorField
           label={label}
           fallback={fallback}
           value={value}
@@ -860,7 +867,7 @@ function ChoiceField({
     <div className="wconvert-token">
       <span id={named}>{label}</span>
       <span className="wconvert-token__row">
-        <span role="group" aria-labelledby={named} className="wconvert-choice-set">
+        <span role="group" aria-labelledby={named} className={TOKENS.find(item => item.name === token)?.control === 'position' ? 'wconvert-choice-set grid grid-cols-3 w-full' : 'wconvert-choice-set'}>
           {offered.map((choice) => (
             <label key={choice} className="wconvert-choice">
               <input
@@ -881,7 +888,7 @@ function ChoiceField({
                 stops this control needing to know which way the admin reads.
               */}
               <span
-                className="wconvert-choice__label"
+                className={TOKENS.find(item => item.name === token)?.control === 'position' ? 'wconvert-choice__label whitespace-normal text-center' : 'wconvert-choice__label'}
                 style={isFontStack(choice) ? { fontFamily: choice } : undefined}
               >
                 {nameOf(labels.tokenValues, `${token}.${choice}`)}
@@ -996,19 +1003,16 @@ function FontField({
 }) {
   const named = `${id}-name`;
   const [site, setSite] = useState<readonly SiteFont[] | null>(null);
+  const [search, setSearch] = useState('');
+  const [libraryUrl, setLibraryUrl] = useState<string | null>(null);
+  const [fontError, setFontError] = useState(false);
 
   const read = () => {
-    if (site !== null) {
-      return;
-    }
-
+    setFontError(false);
     getThemeTokens()
-      .then(({ fonts }) => setSite(fonts ?? []))
-      // **Swallowed.** The four system stacks are still there and still work,
-      // so a failed read costs the merchant a longer list rather than a
-      // control — and an error banner over a working picker would be the
-      // louder wrong answer.
-      .catch(() => setSite([]));
+      .then(({ fonts, font_library_url }) => { setSite(fonts ?? []); setLibraryUrl(font_library_url ?? null); })
+      // Keep system stacks available and offer a local retry for site fonts.
+      .catch(() => { setSite([]); setFontError(true); });
   };
 
   /*
@@ -1039,6 +1043,7 @@ function FontField({
           open={open}
           onOpenChange={(next) => {
             if (next) {
+              setSearch('');
               read();
             }
 
@@ -1058,14 +1063,17 @@ function FontField({
             </button>
           </PopoverTrigger>
 
-          <PopoverContent align="start" className="w-auto">
+          <PopoverContent align="end" side="left" collisionPadding={12} className="wconvert-font-popover">
+            <label className="wconvert-font-search">{__('Find a font', 'wconvert')}<input type="search" value={search} onChange={e => setSearch(e.target.value)} placeholder={__('Search site and system fonts…', 'wconvert')} /></label>
+            {site === null && <p role="status">{__('Loading site fonts…', 'wconvert')}</p>}
+            {fontError && <p role="status">{__('Site fonts could not load.', 'wconvert')} <button type="button" onClick={read}>{__('Retry', 'wconvert')}</button></p>}
             <div className="wconvert-fonts" role="group" aria-labelledby={named}>
               {theirs.length > 0 && (
                 <>
                   <p className="wconvert-fonts__group text-micro uppercase text-muted-foreground">
-                    {__('From your theme', 'wconvert')}
+                    {__('Site fonts', 'wconvert')}
                   </p>
-                  {theirs.map((font) => (
+                  {theirs.filter(font => font.label.toLowerCase().includes(search.toLowerCase())).map((font) => (
                     <FontRow
                       key={font.stack}
                       name={id}
@@ -1081,7 +1089,7 @@ function FontField({
               <p className="wconvert-fonts__group text-micro uppercase text-muted-foreground">
                 {__('On every device', 'wconvert')}
               </p>
-              {offered.map((stack) => (
+              {offered.filter(stack => nameOfStack(stack).toLowerCase().includes(search.toLowerCase())).map((stack) => (
                 <FontRow
                   key={stack}
                   name={id}
@@ -1094,6 +1102,12 @@ function FontField({
 
             </div>
 
+            {search && ![...theirs.map(font => font.label), ...offered.map(nameOfStack)].some(name => name.toLowerCase().includes(search.toLowerCase())) && <p role="status">{__('No matching fonts.', 'wconvert')}</p>}
+            <div className="wconvert-font-library">
+              <strong>{__('Want a Google Font?', 'wconvert')}</strong>
+              <p>{__('Install it in the WordPress Font Library. Save your draft and reload the editor to refresh font previews. WordPress hosts the font on your site.', 'wconvert')}</p>
+              <a href={libraryUrl ?? 'https://wordpress.org/documentation/article/the-font-library/'} target="_blank" rel="noreferrer">{libraryUrl ? __('Open Font Library ↗', 'wconvert') : __('Font Library instructions ↗', 'wconvert')}</a>
+            </div>
             {/*
               **The escape hatch, inside the thing you opened — and OUTSIDE the
               scroller.** `choices` is what the panel offers and never what is
@@ -1186,11 +1200,11 @@ function Reset({
   /** {@see TokenField.resetSaid} — the design panel's own sentence where absent. */
   said?: string;
   value: string;
-  /** What the design declared, or empty where it declared nothing. */
-  design: string;
+  /** The original value; empty means unset, undefined means the original is unavailable. */
+  design: string | undefined;
   onChange: (value: string) => void;
 }) {
-  if (value === '' || value === design) {
+  if (design === undefined || value === '' || value === design) {
     return null;
   }
 
@@ -1376,130 +1390,3 @@ const SAMPLE: Readonly<Record<string, string>> = {
   'accent-fg/accent': 'Go',
   'fg/input-bg': 'Aa',
 };
-
-/**
- * A colour picker with unrestricted CSS entry, committed when typing ends.
- *
- * `react-colorful` is ~2.8KB and has no dependencies, which is the whole reason
- * it is here rather than a picker with a colour library behind it: the admin
- * bundle is shipped to every merchant, and ADR 0038 reports its size at every
- * build rather than gating it, so a dependency has to be worth reading about.
- *
- * `<input type="color">` would let us delete it — it has gained `alpha` and
- * `colorspace` attributes — and it is **not ready**: Safari ships it, Firefox
- * honours the attributes for output but not in its picker, Chromium has not
- * shipped, and the fallback is sRGB with no opacity, silently. That is the
- * worst failure mode available for the one control whose whole job is opacity.
- * Revisit when it is Baseline.
- *
- * ============================================================================
- * SIX OF THESE HAVE NO ALPHA, AND THAT IS A REFUSAL RATHER THAN AN OMISSION.
- * ============================================================================
- * {@see contrastOf} returns null for any colour below full opacity, because a
- * translucent one composites over whatever is behind it and a ratio would be a
- * green tick over a design that fails. So a translucent `bg` or `accent` would
- * turn the readout beside these swatches into three *"no reading"* lines and
- * silently delete the only AA check a merchant ever gets on the design they are
- * about to show a stranger. `backdrop` keeps its alpha precisely because it is
- * excluded from that set — it goes behind the popup rather than behind words.
- *
- * That is why the picker is chosen by {@see isTranslucent} on the value rather
- * than offered as an option, and it is written here so it is not re-proposed as
- * an obvious improvement.
- *
- * The trigger carries the token's NAME as well as its value, which is what lets
- * the palette be a grid: a swatch that only showed a colour would be a row of
- * coloured boxes nobody could name.
- */
-function ColourField({
-  label,
-  fallback,
-  value,
-  open,
-  onOpenChange,
-  onChange,
-}: {
-  label: string;
-  fallback: string;
-  value: string;
-  /**
-   * **Controlled, and the panel is what holds it** — so the effect in
-   * {@see Tokens} can close it when `<Activity>` hides the tab. An uncontrolled
-   * Radix popover portals to `document.body` and survives its own tab being
-   * hidden, which is how a colour picker came to sit over the Content tab.
-   */
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onChange: (value: string) => void;
-}) {
-  // Empty means "whatever the design says", so the swatch and the picker both
-  // open on the design's own value while the STORED value stays empty.
-  const shown = value === '' ? fallback : value;
-  const translucent = isTranslucent(shown);
-
-  return (
-    <Popover open={open} onOpenChange={onOpenChange}>
-      <PopoverTrigger asChild>
-        <button type="button" className="wconvert-swatch">
-          {/*
-            The colour arrives as a custom property rather than as
-            `background`, because the chip paints a chequerboard underneath —
-            a translucent backdrop has to READ as translucent, and the
-            shorthand would wipe the pattern it shows through.
-          */}
-          <span
-            aria-hidden="true"
-            className="wconvert-swatch__chip"
-            style={{ '--wconvert-chip': shown } as CSSProperties}
-          />
-          <span className="wconvert-swatch__text">
-            <span className="wconvert-swatch__name">{label}</span>
-            <span className="wconvert-swatch__value">{shown}</span>
-          </span>
-          <span className="sr-only">
-            {sprintf(
-              /* translators: %s: what the colour is for, e.g. “Background”. */
-              __('Choose a colour for %s', 'wconvert'),
-              label,
-            )}
-          </span>
-        </button>
-      </PopoverTrigger>
-      <PopoverContent align="start" className="w-auto" onEscapeKeyDown={(event) => {
-        // Radix handles Escape during capture, before the input can cancel its draft.
-        if (event.target instanceof HTMLInputElement && event.target.dataset.styleValuePending === 'true') event.preventDefault();
-      }}>
-        <div className="wconvert-picker">
-          {translucent ? (
-            <RgbaStringColorPicker color={shown} onChange={onChange} />
-          ) : (
-            <HexColorPicker color={shown} onChange={onChange} />
-          )}
-
-          {/*
-            Named for the TOKEN rather than "Value", because a popover
-            announcing "Value, edit text" tells a screen-reader user the
-            value of what.
-          */}
-          <label className="wconvert-slot__key">
-            {sprintf(
-              /* translators: %s: what the colour is for, e.g. “Background”. */
-              __('%s value', 'wconvert'),
-              label,
-            )}
-            <StyleValueInput type="text" className="regular-text" placeholder={fallback}
-              value={value} onCommit={onChange} />
-          </label>
-          <p className="m-0 text-note text-muted-foreground">{__('Hex, RGB or another CSS colour. Press Enter or leave the field to apply.', 'wconvert')}</p>
-
-          {/*
-            The way back to the design's own colour is {@see Reset}, in the
-            row beside the swatch rather than a click deep inside the picker
-            — which is what makes "what have I actually changed?" answerable
-            by looking rather than by opening fifteen popovers.
-          */}
-        </div>
-      </PopoverContent>
-    </Popover>
-  );
-}

@@ -15,7 +15,7 @@
     "heading-size": "1.5rem",
     "heading-weight": "700",
     "tracking": "-0.03em",
-    "text-size": "0.875rem",
+    "text-size": "1rem",
     "leading": "1.5",
     "radius": "0.75rem",
     "pad": "0",
@@ -41,10 +41,13 @@
                 "type": "eyebrow",
                 "id": "n1",
                 "role": "wordmark",
-                "text": "Good Thing"
+                "text": "Good Thing",
+                "tokens": {
+                  "text-size": "1.0834rem"
+                }
               },
               {
-                "type": "row",
+                "type": "stack",
                 "tokens": {
                   "gap": "1rem"
                 },
@@ -54,7 +57,10 @@
                     "id": "n2",
                     "size": "3xl",
                     "role": "headline",
-                    "text": "15%"
+                    "text": "15%",
+                    "tokens": {
+                      "heading-size": "clamp(1.1rem, 4.5cqi, 1.5rem)"
+                    }
                   },
                   {
                     "type": "text",
@@ -69,9 +75,16 @@
                 "id": "n4",
                 "size": "s",
                 "role": "body",
-                "text": "For the things you will use every day.\nA small hello from Good Thing."
+                "text": "For the things you will use every day.\nA small hello from Good Thing.",
+                "tokens": {
+                  "text-size": "1.167rem"
+                }
               }
-            ]
+            ],
+            "narrow": {
+              "pad": "1.25rem",
+              "gap": "0.875rem"
+            }
           },
           {
             "type": "panel",
@@ -97,27 +110,36 @@
                 "id": "n6",
                 "role": "consent_text",
                 "hidden": true,
-                "text": "Send me offers and news. See our %s.",
+                "text": "Send me offers and news. %s",
                 "link": {
                   "label": "Privacy Policy"
+                },
+                "tokens": {
+                  "text-size": "1.125rem"
                 }
               },
               {
                 "type": "button",
                 "id": "n7",
                 "role": "cta_label",
-                "label": "Email me 15% off",
+                "label": "Reveal my 15% code",
                 "action": "submit"
               },
               {
                 "type": "text",
                 "id": "n8",
-                "size": "xs",
+                "size": "s",
                 "role": "fine_print",
-                "text": "One email with your code. %b.\nFull-price items only; excludes bundles.",
-                "emphasis": "No marketing subscription"
+                "text": "First order only. Full-price items; excludes bundles.",
+                "tokens": {
+                  "text-size": "1.167rem"
+                }
               }
-            ]
+            ],
+            "narrow": {
+              "pad": "1.25rem",
+              "gap": "0.875rem"
+            }
           }
         ]
       },
@@ -136,23 +158,36 @@
                 "type": "eyebrow",
                 "id": "n10",
                 "role": "wordmark",
-                "text": "Good Thing"
+                "text": "Good Thing",
+                "tokens": {
+                  "text-size": "1.0834rem"
+                }
               },
               {
                 "type": "heading",
                 "id": "n11",
                 "size": "xl",
                 "role": "success_headline",
-                "text": "Good things\nstart here."
+                "text": "Good things\nstart here.",
+                "tokens": {
+                  "heading-size": "clamp(1.1rem, 4.5cqi, 1.5rem)"
+                }
               },
               {
                 "type": "text",
                 "id": "n12",
                 "size": "s",
                 "role": "success_body",
-                "text": "We have received your details.\nYour first-order code is below."
+                "text": "We have received your details.\nYour first-order code is below.",
+                "tokens": {
+                  "text-size": "1.167rem"
+                }
               }
-            ]
+            ],
+            "narrow": {
+              "pad": "1.25rem",
+              "gap": "0.875rem"
+            }
           },
           {
             "type": "panel",
@@ -169,22 +204,33 @@
                 "type": "eyebrow",
                 "id": "n13",
                 "role": "eyebrow",
-                "text": "Your ticket to 15% off"
+                "text": "Your ticket to 15% off",
+                "tokens": {
+                  "text-size": "1.0834rem"
+                }
               },
               {
                 "type": "code",
                 "id": "n14",
                 "role": "code_value",
-                "text": "FIRST15"
+                "text": "FIRST15",
+                "copy": true
               },
               {
                 "type": "text",
                 "id": "n15",
-                "size": "xs",
+                "size": "s",
                 "role": "fine_print",
-                "text": "Use at checkout on full-price items. Excludes bundles."
+                "text": "Use at checkout on full-price items. Excludes bundles.",
+                "tokens": {
+                  "text-size": "1.167rem"
+                }
               }
-            ]
+            ],
+            "narrow": {
+              "pad": "1.25rem",
+              "gap": "0.875rem"
+            }
           }
         ]
       }

@@ -36,7 +36,7 @@
 # in either ZIP. The script is here because the last one like it lived in a
 # session scratchpad, the scratchpad went, and rebuilding it cost a day.
 #
-# `designs`, `bench` and `gallery` need `renderer`; `sheet` needs `designs`.
+# `designs`, `bench`, `gallery` and both reviews need `renderer`; `sheet` needs `designs`.
 # Nothing else depends on anything.
 
 set -euo pipefail
@@ -53,7 +53,7 @@ fi
 STEPS=("$@")
 
 if [[ ${#STEPS[@]} -eq 0 ]]; then
-  STEPS=(vocabulary prose renderer designs sheet bench gallery)
+  STEPS=(vocabulary prose renderer designs sheet bench gallery review library-review)
 fi
 
 mkdir -p "$HERE/out/previews"
@@ -113,8 +113,18 @@ for step in "${STEPS[@]}"; do
       node "$HERE/build/gallery.mjs"
       ;;
 
+    review)
+      ran "Building the flagship review"
+      node "$HERE/build/flagship-review.mjs"
+      ;;
+
+    library-review)
+      ran "Building the full-library review"
+      node "$HERE/build/library-review.mjs"
+      ;;
+
     *)
-      echo "unknown step: $step (vocabulary prose renderer designs sheet bench gallery)" >&2
+      echo "unknown step: $step (vocabulary prose renderer designs sheet bench gallery review library-review)" >&2
       exit 2
       ;;
   esac

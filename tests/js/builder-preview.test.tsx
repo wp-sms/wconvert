@@ -48,7 +48,7 @@ vi.mock('@renderer/mount', async (importOriginal) => {
 const { Preview } = await import('../../resources/admin/src/builder/Preview');
 
 const ENTRY = JSON.parse(
-  readFileSync(resolve(import.meta.dirname, '../../resources/templates/library/centred-card.json'), 'utf8'),
+  readFileSync(resolve(import.meta.dirname, '../fixtures/templates/editor-card.json'), 'utf8'),
 ) as TemplateEntry;
 
 /** The step currently on screen — a getter, because `showStep` replaces it. */
