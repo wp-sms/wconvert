@@ -43,10 +43,13 @@ export type SlotRole =
   | 'name_label'
   | 'name_placeholder'
   | 'phone_label'
-  | 'phone_placeholder';
+  | 'phone_placeholder'
+  | 'interest_label'
+  | 'interest_placeholder'
+  | 'interest_options';
 
 /** What a `field` captures. Closed, because the capture path canonicalises per kind. */
-export type FieldName = 'email' | 'name' | 'phone';
+export type FieldName = 'email' | 'name' | 'phone' | 'interest';
 
 /**
  * A link inside a sentence, expressed as STRUCTURE rather than markup
@@ -414,6 +417,7 @@ export interface FieldNode extends BaseNode {
   readonly label?: string;
   readonly placeholder?: string;
   readonly required?: boolean;
+  readonly options?: readonly { readonly value: string; readonly label: string }[];
 }
 
 export interface ButtonNode extends BaseNode {

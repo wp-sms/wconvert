@@ -400,6 +400,7 @@ describe('what the catalogue offers', () => {
             ...full,
             { type: 'field', name: 'name' },
             { type: 'field', name: 'phone' },
+            { type: 'field', name: 'interest', options: [{ value: 'repair', label: 'Repair' }] },
           ],
         },
         TREE.steps[1],

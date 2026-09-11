@@ -55,8 +55,9 @@ is added.
 
 A ready design card opens a detail view in the same library dialog. It shows
 Desktop/Mobile previews, every actual screen in the design, collected fields and
-the converting act. The preview uses the design's tree and renderer. Sample
-forms and links are inert to both pointer and keyboard interaction.
+the converting act. The preview uses the existing renderer. Under [ADR 0075](0075-draft-history-and-template-content-choices-stay-predictable.md),
+it shows the normalized result of Keep my content or Use this design's sample
+content. Forms and links are inert to both pointer and keyboard interaction.
 
 The detail preview preserves the chosen layout width and fits it visually into
 the available stage without changing the responsive layout to match a narrow
@@ -65,12 +66,13 @@ comparison preview, not a claim to reproduce every site's final placement.
 Tall designs remain scrollable. Mobile preview is a mobile layout, not a shrunken
 desktop screenshot.
 
-Mark preview wording as sample content. Beside **Use this design**, explain that
-the layout is replaced, existing text can move or leave empty slots, and added
-blocks can be removed. Apply remains one draft Undo entry using the existing
-Slot Role/content-carry snapshot. Choosing between importing sample content and
-keeping the merchant's content remains deferred; no additional confirmation
-dialog or snapshot/schema change is introduced.
+Mark preview wording with the selected content mode. **Keep my content** remains
+the default; **Use this design's sample content** is now available under [ADR 0075](0075-draft-history-and-template-content-choices-stay-predictable.md).
+Beside **Use this design**, explain the replacement scope. Prepare the normalized
+candidate through the existing snapshot endpoint before enabling Apply, then
+apply that exact preview in one draft Undo entry. A mode change hides an obsolete
+candidate; failure and Retry remain local, and Back/Close write nothing. No extra
+confirmation dialog, database schema or migration is introduced.
 
 Compatibility reasons and an act-change warning remain visible before applying.
 Inspection does not waive a refusal. Locked metadata cards keep their existing

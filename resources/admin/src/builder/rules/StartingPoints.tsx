@@ -178,7 +178,7 @@ export function StartingPoints({ bundles, onApply, describe }: StartingPointsPro
                     <span><strong>{__('After applying:', 'wconvert')}</strong> {section.after}</span>
                   </span>
                 ))}
-                <span>{__('Your start and end dates, priority and settings outside these sections stay the same. Design Undo cannot reverse this replacement.', 'wconvert')}</span>
+                <span>{__('Your start and end dates, priority and settings outside these sections stay the same. Undo can restore these draft settings.', 'wconvert')}</span>
               </span>
         }
         returnFocusTo={returnFocusTo}

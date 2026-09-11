@@ -101,8 +101,9 @@ see its own inline correction.*
   > the builder a **Change goal** control — a Goal was chosen in a wizard that
   > could not be re-entered, so "changing an Optin's Goal" was a scripted call
   > until then. The dialog says this sentence in the merchant's own words
-  > before the click, because the builder's Undo watches the design and a Goal
-  > is a column: there is no history entry to walk back to.*
+  > before the click. Under [ADR 0075](0075-draft-history-and-template-content-choices-stay-predictable.md), a Goal remains an immediately saved
+  > column: success starts a new local draft history, so Undo cannot silently
+  > restate reporting through another Goal save.*
   >
   > ***And the same restatement now arrives through a second door.*** *Switching
   > an Optin to a design that converts the other way is no longer refused, so

@@ -5,7 +5,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { EmptyState } from '../shell/EmptyState';
 import { Gallery, type Fit } from './Gallery';
-import { TemplateDesignDetail } from './TemplateDesignDetail';
+import { TemplateDesignDetail, type PrepareDesign } from './TemplateDesignDetail';
 import { facetOptions, narrow, toggled, type Chosen } from './facets';
 import { nameOf, type TemplateIndex } from '../templates/api';
 import type { Template } from '@renderer/types';
@@ -17,7 +17,9 @@ export interface TemplatePickerProps {
   readonly chosen: string | undefined;
   readonly fit: Fit;
   readonly busy: boolean;
-  readonly onChoose: (id: string) => void;
+  readonly active?: boolean;
+  readonly onChoose: (id: string, prepared?: Template) => void;
+  readonly onPrepare?: PrepareDesign;
   readonly onNear: (id: string) => void;
   readonly failed?: ReadonlySet<string>;
   readonly onRetry?: (id: string) => void;
@@ -25,7 +27,7 @@ export interface TemplatePickerProps {
 
 /** Browse by what the design does, inspect it, then apply it to the draft. */
 export function TemplatePicker({
-  index, trees, displayType, chosen, fit, busy, onChoose, onNear, failed, onRetry,
+  index, trees, displayType, chosen, fit, busy, onChoose, onPrepare, onNear, failed, onRetry, active = true,
 }: TemplatePickerProps) {
   const [chosenFacets, setChosenFacets] = useState<Chosen>({});
   const [query, setQuery] = useState('');
@@ -186,9 +188,9 @@ export function TemplatePicker({
       </div>
       {inspected !== undefined && (
         <TemplateDesignDetail key={inspected.id} entry={inspected} template={trees.get(inspected.id)}
-          labels={index.labels} current={inspected.id === chosen} fit={fit} busy={busy}
+          labels={index.labels} current={inspected.id === chosen} active={active} fit={fit} busy={busy}
           loadError={failed?.has(inspected.id)} onRetry={onRetry ? () => onRetry(inspected.id) : undefined}
-          onChoose={onChoose} onBack={() => {
+          onChoose={onChoose} onPrepare={onPrepare} onBack={() => {
             setInspectedId(null);
             requestAnimationFrame(() => returnFocus.current?.focus({ preventScroll: true }));
           }} />

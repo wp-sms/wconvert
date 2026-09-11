@@ -3,6 +3,7 @@ import { CalendarClock, ImagePlus } from 'lucide-react';
 import { GLYPHS } from '@renderer/render';
 import { Button } from '../components/ui/button';
 import { ParamChoice } from './ParamChoice';
+import { InterestOptions } from './InterestOptions';
 import { readable, hasScheduleEnded } from './wallTime';
 import { adminSettings } from '../settings';
 import { nameOf, type TemplateLabels } from '../templates/api';
@@ -77,10 +78,14 @@ export function SlotFields({
   return (
     <>
       {slot.keys.map((key) => {
+        if (key === 'options') {
+          return slot.captures === 'interest' ? <InterestOptions key={key} value={slot.values.options}
+            onEdit={(options) => onValue('options', options)} onChange={(options) => onParam('options', options)} /> : null;
+        }
         const label = slot.type === 'field' && key === 'label'
           ? __('Field label', 'wconvert')
           : slot.type === 'field' && key === 'placeholder'
-            ? __('Example inside the field', 'wconvert')
+            ? slot.captures === 'interest' ? __('Prompt before choosing', 'wconvert') : __('Example inside the field', 'wconvert')
             : nameOf(labels.keys, key);
         const held = typeof slot.values[key] === 'string' ? (slot.values[key] as string) : '';
 
@@ -122,7 +127,7 @@ export function SlotFields({
         );
       })}
 
-      {slot.type === 'field' && (
+      {slot.type === 'field' && slot.captures !== 'interest' && (
         <p className="description">
           {__('Example text disappears when visitors type. Use the label to say what to enter. A blank label uses the field’s default name.', 'wconvert')}
         </p>

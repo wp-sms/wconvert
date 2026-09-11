@@ -23,6 +23,10 @@ export function SendTestDialog({
 }) {
   const id = useId();
   const [email, setEmail] = useState(initialEmail ?? '');
+  const [interest, setInterest] = useState('');
+  const interestMapping = destination.requirements?.mapped_fields.interest;
+  const sendsInterest = interestMapping !== undefined && typeof destination.settings[interestMapping.setting] === 'string'
+    && String(destination.settings[interestMapping.setting]).trim() !== '';
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<TestReport | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -36,7 +40,9 @@ export function SendTestDialog({
     setError(null);
     setResult(null);
     try {
-      const answer = await testSend(destination.id, email.trim());
+      const answer = sendsInterest && interest.trim() !== ''
+        ? await testSend(destination.id, email.trim(), interest.trim())
+        : await testSend(destination.id, email.trim());
       setResult(answer);
       onSent(answer);
     } catch (cause) {
@@ -68,8 +74,16 @@ export function SendTestDialog({
             <Input ref={sample} id={`${id}-email`} type="email" required autoComplete="email" disabled={busy || result?.outcome === 'success'}
               value={email} onChange={(event) => { setEmail(event.target.value); setResult(null); setError(null); }}
               aria-describedby={`${id}-sample ${id}-effect`} />
-            <Description id={`${id}-sample`}>{__('Only this email address is sent. No name or phone is included in the sample.', 'wconvert')}</Description>
+            <Description id={`${id}-sample`}>{sendsInterest
+              ? __('The email address and any interest value you enter are sent. No name or phone is included.', 'wconvert')
+              : __('Only this email address is sent. No name or phone is included in the sample.', 'wconvert')}</Description>
           </div>
+          {sendsInterest && <div className="flex flex-col gap-1.5">
+            <Label htmlFor={`${id}-interest`}>{__('Test interest value (optional)', 'wconvert')}</Label>
+            <Input id={`${id}-interest`} value={interest} disabled={busy || result?.outcome === 'success'}
+              onChange={(event) => { setInterest(event.target.value); setResult(null); setError(null); }} aria-describedby={`${id}-interest-help`} />
+            <Description id={`${id}-interest-help`}>{__('Enter one of your form’s stable option values. It is written to the mapped field for new subscribers only; existing subscriber fields stay unchanged.', 'wconvert')}</Description>
+          </div>}
           <div id={`${id}-effect`} className="text-note text-muted-foreground">
             <p className="mt-0">{__('Use an address you own. Depending on this destination, the test can create or update a contact, add it to selected lists or tags, or send an email.', 'wconvert')}</p>
             <p>{__('It creates no lead and changes no reports in WConvert. A successful handoff does not confirm subscription or inbox delivery.', 'wconvert')}</p>

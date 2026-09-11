@@ -218,7 +218,7 @@ function EventTable({ leads, nameOf, returnTo }: { leads: Lead[]; nameOf: (id: s
         {lead.fields.name && <span className="block font-medium">{lead.fields.name}</span>}
         <details className="wconvert-capture-details"><summary>{__('View captured details', 'wconvert')}</summary><dl>
           <div><dt>{__('Lead ID', 'wconvert')}</dt><dd className="m-0 break-all"><bdi dir="ltr">{lead.id}</bdi></dd></div>
-          {Object.entries(lead.fields).filter(([name]) => name !== 'name').map(([name, value]) => <div key={name}><dt className="text-note text-muted-foreground">{name === 'consent_text' ? __('Consent text', 'wconvert') : name.replaceAll('_', ' ')}</dt><dd className="m-0 break-words whitespace-pre-wrap">{value}</dd></div>)}
+          {Object.entries(lead.fields).filter(([name]) => name !== 'name' && name !== 'interest_label').map(([name, value]) => <div key={name}><dt className="text-note text-muted-foreground">{name === 'consent_text' ? __('Consent text', 'wconvert') : name === 'interest' ? __('Interest', 'wconvert') : name.replaceAll('_', ' ')}</dt><dd className="m-0 break-words whitespace-pre-wrap">{name === 'interest' && lead.fields.interest_label ? <>{lead.fields.interest_label}<span className="block text-note text-muted-foreground">{sprintf(__('Sent value: %s', 'wconvert'), value)}</span></> : value}</dd></div>)}
         </dl></details>
       </DataTableCell>
     </DataTableRow>)}</DataTableBody>

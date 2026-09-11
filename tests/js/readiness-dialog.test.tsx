@@ -87,6 +87,31 @@ describe('reviewing before publishing', () => {
     expect(screen.getByRole('button', { name: 'Publish Optin' })).toBeDisabled();
   });
 
+  it('blocks an unfinished interest choice and opens the exact field for correction', async () => {
+    const template: Template = { tokens: FORM.tokens, tree: { steps: [{ type: 'stack', children: [
+      { type: 'field', name: 'email', required: true },
+      { type: 'field', name: 'interest', options: [] },
+      { type: 'button', action: 'submit', label: 'Send' },
+    ] }] } };
+    const { supplied } = await open({ template });
+    expect(screen.getByRole('button', { name: 'Publish Optin' })).toBeDisabled();
+    await userEvent.click(screen.getByRole('button', { name: /Set up the interest choices/ }));
+    expect(supplied.onGoTo).toHaveBeenCalledExactlyOnceWith([0, 'children', 1]);
+    expect(supplied.onEditDesign).not.toHaveBeenCalled();
+    expect(supplied.onPublish).not.toHaveBeenCalled();
+  });
+
+  it('blocks a submitting form without an identifier and opens the design editor', async () => {
+    const template: Template = { tokens: FORM.tokens, tree: { steps: [{ type: 'stack', children: [
+      { type: 'field', name: 'name' }, { type: 'button', action: 'submit', label: 'Send' },
+    ] }] } };
+    const { supplied } = await open({ template });
+    expect(screen.getByRole('button', { name: 'Publish Optin' })).toBeDisabled();
+    await userEvent.click(screen.getByRole('button', { name: /Add an email or phone field/ }));
+    expect(supplied.onEditDesign).toHaveBeenCalledOnce();
+    expect(supplied.onPublish).not.toHaveBeenCalled();
+  });
+
   it('keeps list-growth advice publishable when the design legitimately tracks clicks', async () => {
     await open({ template: LINK });
     expect(screen.getByText(/will never collect any/)).toBeInTheDocument();

@@ -389,7 +389,7 @@ describe('a submission that is refused', () => {
       await Promise.resolve();
       await Promise.resolve();
 
-      expect(root.querySelector(`.${CAPTURE_ERROR_CLASS}`)).toHaveTextContent('We couldn’t confirm your submission. Please try again.');
+      expect(root.querySelector(`.${CAPTURE_ERROR_CLASS}`)).toHaveTextContent('Submission not confirmed. Please try again.');
       expect(button).not.toBeDisabled();
       expect(signal).not.toHaveAttribute('readonly');
       expect(inputOf(root, 'consent')).not.toBeDisabled();

@@ -651,7 +651,8 @@ describe('the size slider', () => {
     );
 
     expect(screen.queryByRole('slider', { name: 'Width' })).toBeNull();
-    expect(screen.getByLabelText('Width')).toHaveValue('80rem');
+    expect(screen.getByRole('spinbutton', { name: 'Width amount' })).toHaveValue(80);
+    expect(screen.getByRole('combobox', { name: 'Width unit' })).toHaveValue('rem');
   });
 
   /** And for a length in a unit the design's scale is not written in. */
@@ -667,7 +668,8 @@ describe('the size slider', () => {
     );
 
     expect(screen.queryByRole('slider', { name: 'Width' })).toBeNull();
-    expect(screen.getByLabelText('Width')).toHaveValue('400px');
+    expect(screen.getByRole('spinbutton', { name: 'Width amount' })).toHaveValue(400);
+    expect(screen.getByRole('combobox', { name: 'Width unit' })).toHaveValue('px');
   });
 });
 

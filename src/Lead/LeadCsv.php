@@ -72,6 +72,9 @@ final class LeadCsv
         // The identity keys are already leading columns of their own: they are
         // real columns on the table rather than entries in `fields`.
         $captured = array_values(array_diff($this->vocabulary->fields(), ['email', 'phone']));
+        if (in_array('interest', $captured, true)) {
+            $captured[] = 'interest_label';
+        }
 
         return $this->columns ??= array_merge(self::LEADING_COLUMNS, $captured, [self::CONSENT_COLUMN]);
     }

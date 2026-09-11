@@ -66,6 +66,62 @@ describe('a popup', () => {
     expect(dialog()?.style.getPropertyPriority('position')).toBe('important');
   });
 
+  it.each([undefined, '80%', '32rem', 'calc(100vw - 6rem)', 'clamp(18rem, 80vw, 40rem)'])(
+    'resolves the popup width once on the dialog, including %s',
+    (width) => {
+      const template: Template = {
+        ...TEMPLATE,
+        tokens: { ...TEMPLATE.tokens, ...(width === undefined ? {} : { width }) },
+      };
+      const mounted = mount({ displayType: 'popup', template });
+
+      mounted.show();
+
+      expect(dialog()?.style.getPropertyValue('--wc-width')).toBe(width ?? '');
+      expect(dialog()?.style.getPropertyValue('inline-size')).toBe('var(--wc-width,28rem)');
+      expect(dialog()?.style.getPropertyPriority('inline-size')).toBe('important');
+      expect(dialog()?.style.getPropertyValue('max-inline-size')).toBe('calc(100% - 2rem)');
+      expect(mounted.root?.style.getPropertyValue('--wc-width')).toBe('100%');
+      mounted.close();
+    },
+  );
+
+  it('keeps every popup screen full-width without changing authored or narrow scopes', () => {
+    const template: Template = {
+      tree: {
+        steps: ['Leave your details', 'Details received'].map((text) => ({
+          type: 'stack',
+          tokens: { width: '70%', pad: '2rem' },
+          narrow: { width: '90%', pad: '1rem' },
+          children: [{ type: 'heading', text }],
+        })),
+      },
+      tokens: Object.freeze({ width: '80%', bg: '#fff' }),
+    };
+    const authored = JSON.stringify(template);
+    const mounted = mount({ displayType: 'popup', template });
+
+    mounted.show();
+
+    for (const [step, text] of ['Leave your details', 'Details received'].entries()) {
+      if (step > 0) mounted.showStep(step);
+
+      const root = mounted.root;
+      const scope = root?.querySelector<HTMLElement>('.wc-stack');
+
+      expect(root?.textContent).toContain(text);
+      expect(root?.style.getPropertyValue('--wc-width')).toBe('100%');
+      expect(root?.style.getPropertyValue('--wc-bg')).toBe('#fff');
+      expect(scope?.style.getPropertyValue('--wc-width')).toBe('70%');
+      expect(scope?.style.getPropertyValue('--wc-n-width')).toBe('90%');
+      expect(scope?.style.getPropertyValue('--wc-n-pad')).toBe('1rem');
+      expect(dialog()?.style.getPropertyValue('--wc-width')).toBe('80%');
+    }
+
+    expect(JSON.stringify(template)).toBe(authored);
+    mounted.close();
+  });
+
   it('reports a dismissal when the visitor closes it, and not when we do', () => {
     const onDismiss = vi.fn();
     const mounted = mount({ displayType: 'popup', template: TEMPLATE, onDismiss });
@@ -106,6 +162,19 @@ describe('a popup', () => {
 });
 
 describe('an inline Optin', () => {
+  it('keeps its authored percentage width relative to its placement', () => {
+    const anchor = document.createElement('div');
+    const template: Template = { ...TEMPLATE, tokens: { ...TEMPLATE.tokens, width: '80%' } };
+    const mounted = mount({ displayType: 'inline', template, anchor });
+
+    document.body.appendChild(anchor);
+    mounted.show();
+
+    expect(mounted.root?.style.getPropertyValue('--wc-width')).toBe('80%');
+    expect(dialog()).toBeNull();
+    mounted.close();
+  });
+
   it('renders in flow inside its anchor, with no dialog and no backdrop', () => {
     const anchor = document.createElement('div');
 

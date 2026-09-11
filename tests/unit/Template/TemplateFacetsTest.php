@@ -327,7 +327,7 @@ final class TemplateFacetsTest extends TestCase
             }
         });
 
-        return array_values(array_filter(['email', 'name', 'phone'], static fn (string $f): bool => isset($found[$f])));
+        return array_values(array_filter(self::vocabulary()->fields(), static fn (string $f): bool => isset($found[$f])));
     }
 
     /**

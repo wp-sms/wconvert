@@ -37,7 +37,7 @@ describe('reviewing a display-rule starting point', () => {
     expect(within(dialog).getByText('URL path: /offers')).toBeInTheDocument();
     expect(within(dialog).getByText(/On every page/)).toBeInTheDocument();
     expect(within(dialog).getByText(/signed in/)).toBeInTheDocument();
-    expect(within(dialog).getByText(/Design Undo cannot reverse/)).toBeInTheDocument();
+    expect(within(dialog).getByText(/Undo can restore/)).toBeInTheDocument();
     expect(onChange).not.toHaveBeenCalled();
     await userEvent.click(within(dialog).getByRole('button', { name: 'Cancel' }));
     expect(trigger).toHaveFocus();

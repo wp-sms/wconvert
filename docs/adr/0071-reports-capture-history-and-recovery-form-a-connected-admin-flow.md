@@ -97,7 +97,11 @@ replaying a lead-magnet send can email the recipient again.
 **Send a test** first shows the saved named route, sample email and possible
 external effect. `test_sample.email` is a visible profile-address suggestion;
 the POST requires the email explicitly and never substitutes the profile when
-it is missing. The sample contains email only, not fabricated name or phone.
+it is missing. The suggested sample contains email only, not fabricated name or
+phone. **Extended by [0074](0074-destinations-declare-requirements-and-show-shared-usage.md):**
+a saved MailPoet interest mapping exposes an optional, initially empty interest
+sample. The merchant must enter its stable value explicitly and sees that it
+applies to new subscribers only; no answer is invented by the endpoint.
 Unsaved destination settings are identified because the test uses saved settings.
 It runs the real provider push, creates no Lead, queues nothing and changes no
 health or report counter. A successful handoff does not prove subscription or

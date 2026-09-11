@@ -202,7 +202,9 @@ export function withSwapped(
   }
 
   const was = capturesOf(node);
-  const carried = withValue(tree, path, 'name', to);
+  let carried = withValue(tree, path, 'name', to);
+  carried = withValue(carried, path, 'options', to === 'interest' ? [] : undefined);
+  if (to === 'interest') carried = withValue(carried, path, 'required', false);
 
   return ['label', 'placeholder'].reduce(
     (design, key) =>

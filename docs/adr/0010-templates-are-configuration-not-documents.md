@@ -80,6 +80,13 @@ third-party ones. Under configuration they are properties of the one renderer.
   [[Slot Role]] — `TemplateLibrary::snapshotInto()` now rebinds rather than
   stripping, which is what finally makes CONTEXT.md's "the words survive
   switching Template" true of the one screen where a merchant switches one.*
+  *Amended by [ADR 0075](0075-draft-history-and-template-content-choices-stay-predictable.md):
+  applying changes the working draft, not storage or the published snapshot.
+  **Keep my content** is the default; **Use this design's sample content** is
+  an explicit alternative. Both prepare a normalized candidate before Apply,
+  which uses exactly that candidate. One draft Undo restores the previous
+  content and template id. Library samples can therefore become visitor copy
+  through that deliberate choice or the merchant's own edits.*
   *Amended by [ADR 0043](0043-the-library-is-indexed-and-its-facets-are-derived.md):
   **the gallery is still the design surface, and it is no longer part of the
   Design tab.** At three entries a gallery and fifteen token controls in one
@@ -244,6 +251,13 @@ third-party ones. Under configuration they are properties of the one renderer.
   `split` layout are in v1 rather than deferred: the differentiator that is not
   colour has to exist in the vocabulary, or the gallery is thin no matter how many
   entries it has.
+  *Extended by [ADR 0076](0076-an-enquiry-captures-one-optional-choice-before-handoff.md):
+  one named `interest` field renders a native single-choice select. `options`
+  is content: stable values and editable labels, bounded by the manifest's
+  `field_options`. Its `interest_options` Slot Role holds a named
+  `{options: [...]}` wrapper. This adds a qualification answer, not arbitrary
+  field names or HTML. A publishable submit screen still offers email or phone
+  and cannot contain an empty choice list. An incomplete draft may.*
 - **The renderer is a pure function of (tree, tokens)**, so the admin imports the
   same module the loader does. Gallery cards and the live settings preview render the
   real template; there are no static thumbnails to produce or to let go stale.
@@ -270,6 +284,9 @@ third-party ones. Under configuration they are properties of the one renderer.
   [`PublishedProjection`](../../src/Optin/PublishedProjection.php) now strips it
   and `playbook_id` beside it — [[Playbook]] provenance works the same way and
   arrived the same way, and neither is read by anything that renders.*
+  *The same snapshot now includes the interest question and option values and
+  labels (ADR 0076). Editing the library or Playbook cannot change an existing
+  form's choices or previously captured answer evidence.*
 - **The renderer skips unknown nodes rather than throwing**, so a snapshot outlives a
   vocabulary change. Same failure posture #4 set for an unavailable Destination.
   ***Completed: a stored tree now says which vocabulary wrote it.*** *Skipping
@@ -391,6 +408,13 @@ third-party ones. Under configuration they are properties of the one renderer.
   stays one node's own name because it is what a TRANSLATION is attached to.
   Everything else in this entry stands: `id` is still the one key validation
   adds rather than drops.*
+
+  *The bundled authoring rule is explicit: ship each leaf with its stable
+  `n1`…`n9999` id, unique in that tree, and keep it with the leaf when moving
+  it. Server minting remains the fallback for newly added unnamed nodes; it
+  must not rename every later leaf when a library file is reordered.
+  `NodeIdentityTest` enforces this for shipped JSON, and the authoring guides
+  now agree (ADR 0076).*
 
   *The reason is translation, and it is a consequence of "configuration, not
   documents" rather than a departure from it. Merchant copy lives inside

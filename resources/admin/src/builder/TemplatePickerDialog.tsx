@@ -31,7 +31,7 @@ export function TemplatePickerDialog({ open, onOpenChange, onClosed, ...picker }
           </DialogDescription>
         </DialogHeader>
         <div className="wconvert-picker__scroll">
-          <TemplatePicker key={picker.displayType} {...picker} />
+          <TemplatePicker key={picker.displayType} {...picker} active={open} />
         </div>
       </DialogContent>
     </Dialog>

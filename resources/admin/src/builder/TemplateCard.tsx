@@ -83,6 +83,8 @@ export interface TemplateCardProps {
   readonly template?: Template;
   /** Drawn as the one in use, and said as `aria-current` rather than by colour. */
   readonly current?: boolean;
+  /** One starting point can use the full region, with its setup beside the preview. */
+  readonly featured?: boolean;
   /**
    * Why this design cannot be used, in the merchant's words.
    *
@@ -139,6 +141,7 @@ export function TemplateCard({
   name,
   template,
   current = false,
+  featured = false,
   reason = null,
   notes,
   marks,
@@ -220,7 +223,7 @@ export function TemplateCard({
       */
       aria-current={current ? 'true' : undefined}
       data-refused={reason !== null ? 'true' : undefined}
-      className={`wconvert-gallery__card${current ? ' is-chosen' : ''}`}
+      className={`wconvert-gallery__card${current ? ' is-chosen' : ''}${featured ? ' wconvert-gallery__card--featured' : ''}`}
       style={!near && held.current !== null ? { minBlockSize: held.current } : undefined}
     >
       {/*
@@ -252,15 +255,18 @@ export function TemplateCard({
 
       {/*
         **The name is on its own line and the action under it**, which is the
-        only arrangement that is the same on every card. Side by side, a name
+        arrangement that is the same on every comparison card. A single starting
+        point gives this whole group the space beside its preview. Side by side, a name
         one word longer either wrapped the button onto a second line — leaving
         that card taller than the one beside it — or, once wrapping was off,
         truncated a name as short as "Stacked signup". A gallery is read by
         comparing designs, and cards that are not the same shape compare badly.
       */}
-      <div className="flex flex-col items-start gap-2 border-t border-border px-3 py-2.5">
+      <div className={featured
+        ? 'wconvert-gallery__body flex min-w-0 flex-col items-start gap-4 p-5'
+        : 'flex flex-col items-start gap-2 border-t border-border px-3 py-2.5'}>
         <div className="flex w-full flex-wrap items-center justify-between gap-x-2 gap-y-1">
-          <span id={nameId} className="font-medium text-foreground">
+          <span id={nameId} className={featured ? 'text-heading font-semibold text-foreground' : 'font-medium text-foreground'}>
             {name}
           </span>
           {marks}

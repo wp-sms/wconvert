@@ -53,6 +53,11 @@ So work out what a visitor-facing error could actually mean here:
   level. A rejected or timed-out browser request is an unconfirmed result, not
   proof that no local write occurred. The form preserves values for correction
   or an explicit retry and never invents success from a malformed response.
+  *Extended by [ADR 0076](0076-an-enquiry-captures-one-optional-choice-before-handoff.md):
+  a missing required service choice or a value outside the published options
+  is another field refusal. It remains beside the native select on the form;
+  qualification does not create a third design screen or expose a later
+  destination failure to the visitor.*
 
 A step is a thing the merchant lays out, styles with tokens, writes copy for,
 and previews in the builder. Giving them one for a state that only exists when

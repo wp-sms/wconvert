@@ -424,11 +424,13 @@
     "field": {
       "content": [
         "label",
-        "placeholder"
+        "placeholder",
+        "options"
       ],
       "copy": [
         "label",
-        "placeholder"
+        "placeholder",
+        "options"
       ],
       "params": [
         "name",
@@ -554,7 +556,10 @@
     "name_label",
     "name_placeholder",
     "phone_label",
-    "phone_placeholder"
+    "phone_placeholder",
+    "interest_label",
+    "interest_placeholder",
+    "interest_options"
   ],
   "authored_roles": [
     "code_value",
@@ -563,7 +568,8 @@
   "fields": [
     "email",
     "name",
-    "phone"
+    "phone",
+    "interest"
   ],
   "schemes": [
     "http",
@@ -641,7 +647,8 @@
     "captures": [
       "email",
       "name",
-      "phone"
+      "phone",
+      "interest"
     ],
     "has_image": [
       "true"
@@ -683,5 +690,10 @@
   },
   "token_controls": {
     "bg-image": "image"
+  },
+  "field_options": {
+    "max_items": 12,
+    "value_pattern": "^[a-z][a-z0-9_-]{0,47}$",
+    "label_max_length": 120
   }
 }

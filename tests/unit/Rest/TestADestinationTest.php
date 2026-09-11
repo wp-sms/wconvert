@@ -426,6 +426,33 @@ final class TestADestinationTest extends TestCase
         self::assertNull($this->controller->index()->get_data()['test_sample']['email']);
     }
 
+    public function testAnExplicitInterestValueReachesTheSampleWithoutCreatingALeadOrInventingDefaults(): void
+    {
+        $before = $this->options->all();
+        $request = $this->request($this->destination->id);
+        $request->set_param('email', 'seed@example.com');
+        $request->set_param('interest', 'installation');
+        $this->controller->testSend($request);
+        self::assertSame(['email' => 'seed@example.com', 'interest' => 'installation'], $this->type->pushed[0]->values);
+        self::assertTrue($this->type->pushed[0]->isTest);
+        self::assertSame($before, $this->options->all());
+        self::assertSame([], $this->db->writes);
+        self::assertSame([], $this->queue->jobs);
+    }
+
+    public function testMalformedOptionalInterestIsRejectedBeforeAnyProviderCall(): void
+    {
+        foreach (['  ', ['installation'], false] as $interest) {
+            $request = $this->request($this->destination->id);
+            $request->set_param('email', 'seed@example.com');
+            $request->set_param('interest', $interest);
+            /** @var \WP_REST_Response $response */
+            $response = $this->controller->testSend($request);
+            self::assertSame('failed', $response->get_data()['outcome']);
+        }
+        self::assertSame([], $this->type->pushed);
+    }
+
     /**
      * **The unavailable answer comes before the address**, because a type this
      * install cannot run has nothing to send wherever the address came from —

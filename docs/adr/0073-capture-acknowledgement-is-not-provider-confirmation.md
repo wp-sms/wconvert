@@ -11,6 +11,12 @@ It retains the existing email, phone and name fields, native form constraints,
 server canonicalisation, two-step submit design and outbound Destination model.
 It adds no field kind, schema, storage, confirmation flow or provider-status read.
 
+**Extended by [ADR 0076](0076-an-enquiry-captures-one-optional-choice-before-handoff.md):**
+the later qualification slice adds one named `interest` select with bounded
+stable values and editable labels. It shares this feedback and acknowledgement
+contract, stores its answer in existing Lead JSON, and does not add a Contact
+lifecycle or a provider-confirmation claim.
+
 ## Acknowledge the request that was captured
 
 Shipped success copy says what is known: **Request received**, **Thank you**, or
@@ -42,6 +48,10 @@ Email address, Phone number or Name. Required fields keep the native `required`
 attribute and gain a visible asterisk; the asterisk is hidden from assistive
 technology because the native constraint already conveys the requirement.
 
+The interest field's fallback is **Interested in** (ADR 0076), with a named
+empty-option prompt rather than a text-input example. It has a visible label
+and a native single-choice select; option labels are rendered as text.
+
 Input types, input modes and autofill tokens follow the existing field kind.
 Email and phone turn off autocapitalisation and spellcheck. Phone guidance asks
 for a country code and gives an example; the browser does not guess a country
@@ -71,8 +81,8 @@ identifiers; browser checks improve correction in place and cannot authorise a
 capture. A refused submission keeps the visitor's entered values.
 
 While a request is pending, the form announces busy state, the submitting
-controls are disabled, text fields are read-only and consent checkboxes are
-temporarily disabled. Values are gathered before those changes. A sending
+controls are disabled, text fields are read-only and consent checkboxes and
+choice selects are temporarily disabled (ADR 0076). Values are gathered before those changes. A sending
 indicator accompanies the button and respects reduced motion. Resolution
 restores the controls that this request changed; a failure leaves the form
 available for correction or an explicit retry. There is no automatic retry.

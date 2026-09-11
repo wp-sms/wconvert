@@ -3,6 +3,7 @@
 namespace WConvert\Tests\Unit\Support;
 
 use WConvert\Destination\DestinationType;
+use WConvert\Destination\DestinationRequirements;
 use WConvert\Destination\PushContext;
 use WConvert\Destination\PushResult;
 use WConvert\Destination\PushSubject;
@@ -124,6 +125,11 @@ final class FakeDestinationType implements DestinationType
         $this->contexts[] = $context;
 
         return count($this->answers) > 1 ? array_shift($this->answers) : ($this->answers[0] ?? PushResult::success('ref'));
+    }
+
+    public function requirements(): DestinationRequirements
+    {
+        return new DestinationRequirements();
     }
 
     public function throughput(): int

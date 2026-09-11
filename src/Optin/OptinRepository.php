@@ -722,7 +722,7 @@ final class OptinRepository
         // Keep this at the promotion boundary as well as in REST: a CLI or
         // future bulk action must not publish a draft with no design. Saving
         // that incomplete draft remains valid and never changes the live set.
-        if (!$optin->hasDesign()) {
+        if (!$optin->hasDesign() || \WConvert\Template\TemplateForm::issue($optin->config['template'] ?? null) !== null) {
             return null;
         }
 

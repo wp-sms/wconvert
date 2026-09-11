@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { act, render, screen, within } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import type { ComponentProps } from 'react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -45,6 +45,70 @@ describe('inspecting a design before replacing the draft', () => {
     return { ...view, onChoose, onBack };
   };
 
+  it('defaults to carried content and applies the exact normalized preview', async () => {
+    const carried = JSON.parse(JSON.stringify(TEMPLATE).replace('Get 10% off your first order', 'My own invitation')) as Template;
+    const onPrepare = vi.fn().mockResolvedValue(carried);
+    const { onChoose } = detail({ onPrepare });
+    expect(screen.getByRole('radio', { name: /Keep my content/ })).toBeChecked();
+    expect(screen.getByRole('button', { name: 'Use this design' })).toHaveAttribute('aria-disabled', 'true');
+    await waitFor(() => expect(within(drawn()).getByText('My own invitation')).toBeInTheDocument());
+    expect(onPrepare).toHaveBeenCalledExactlyOnceWith(ENTRY.id, 'keep', TEMPLATE);
+    expect(onChoose).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole('button', { name: 'Use this design' }));
+    expect(onChoose).toHaveBeenCalledExactlyOnceWith(ENTRY.id, carried);
+  });
+
+  it('ignores a late carry response after choosing samples and applies only the displayed content', async () => {
+    let resolveKeep!: (value: Template) => void;
+    const onPrepare = vi.fn().mockImplementation((_id, mode) => mode === 'keep'
+      ? new Promise<Template>((resolve) => { resolveKeep = resolve; }) : Promise.resolve(TEMPLATE));
+    const { onChoose } = detail({ onPrepare });
+    await userEvent.click(screen.getByRole('radio', { name: /Use this design's sample content/ }));
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Use this design' })).toHaveAttribute('aria-disabled', 'false'));
+    const stale = JSON.parse(JSON.stringify(TEMPLATE).replace('Get 10% off your first order', 'Late content')) as Template;
+    await act(async () => resolveKeep(stale));
+    expect(within(drawn()).queryByText('Late content')).toBeNull();
+    expect(screen.getByText('Preview with sample content')).toBeVisible();
+    await userEvent.click(screen.getByRole('button', { name: 'Use this design' }));
+    expect(onChoose).toHaveBeenCalledExactlyOnceWith(ENTRY.id, TEMPLATE);
+  });
+
+  it('retries a failed chosen content preview without changing the mode or applying the draft', async () => {
+    const onPrepare = vi.fn().mockResolvedValueOnce(TEMPLATE)
+      .mockRejectedValueOnce(new Error('Preview service is unavailable.')).mockResolvedValueOnce(TEMPLATE);
+    const { onChoose } = detail({ onPrepare });
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Use this design' })).toHaveAttribute('aria-disabled', 'false'));
+    await userEvent.click(screen.getByRole('radio', { name: /Use this design's sample content/ }));
+    expect(await screen.findByRole('alert')).toHaveTextContent('Preview service is unavailable.');
+    expect(screen.getByRole('button', { name: 'Use this design' })).toHaveAttribute('aria-disabled', 'true');
+    await userEvent.click(screen.getByRole('button', { name: 'Retry preview' }));
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Use this design' })).toHaveAttribute('aria-disabled', 'false'));
+    expect(screen.getByRole('radio', { name: /Use this design's sample content/ })).toBeChecked();
+    expect(onPrepare.mock.calls.map((call) => call[1])).toEqual(['keep', 'sample', 'sample']);
+    expect(onChoose).not.toHaveBeenCalled();
+  });
+
+  it('can reset the current design to its samples while keeping its identity', async () => {
+    const onPrepare = vi.fn().mockResolvedValue(TEMPLATE);
+    const { onChoose } = detail({ current: true, onPrepare });
+    await waitFor(() => expect(onPrepare).toHaveBeenCalled());
+    expect(screen.getByRole('button', { name: 'Current design' })).toHaveAttribute('aria-disabled', 'true');
+    await userEvent.click(screen.getByRole('radio', { name: /Use this design's sample content/ }));
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Use this design' })).toHaveAttribute('aria-disabled', 'false'));
+    await userEvent.click(screen.getByRole('button', { name: 'Use this design' }));
+    expect(onChoose).toHaveBeenCalledExactlyOnceWith(ENTRY.id, TEMPLATE);
+  });
+
+  it('allows Back during preparation and never applies a response after leaving', async () => {
+    let resolvePreview!: (value: Template) => void;
+    const { onChoose, onBack, unmount } = detail({ onPrepare: () => new Promise((resolve) => { resolvePreview = resolve; }) });
+    await userEvent.click(screen.getByRole('button', { name: 'Back to designs' }));
+    expect(onBack).toHaveBeenCalledOnce();
+    unmount();
+    await act(async () => resolvePreview(TEMPLATE));
+    expect(onChoose).not.toHaveBeenCalled();
+  });
+
   it('shows actual fields and real screens without applying anything while inspected', async () => {
     const user = userEvent.setup();
     const { onChoose, container } = detail();
@@ -69,7 +133,7 @@ describe('inspecting a design before replacing the draft', () => {
     expect(preview).toHaveAttribute('inert');
     expect(preview).toHaveAttribute('aria-hidden', 'true');
     const apply = screen.getByRole('button', { name: 'Use this design' });
-    expect(apply).toHaveAccessibleDescription(/Replaces your draft’s layout.*Undo restores your previous design/);
+    expect(apply).toHaveAccessibleDescription(/Replaces your draft’s layout.*Undo restores your previous draft/);
     await user.click(apply);
     expect(onChoose).toHaveBeenCalledExactlyOnceWith('centred-card');
   });

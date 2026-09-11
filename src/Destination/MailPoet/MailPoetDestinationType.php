@@ -4,6 +4,7 @@ namespace WConvert\Destination\MailPoet;
 
 use WConvert\Destination\CanonicalFields;
 use WConvert\Destination\DestinationType;
+use WConvert\Destination\DestinationRequirements;
 use WConvert\Destination\PushContext;
 use WConvert\Destination\PushResult;
 use WConvert\Destination\PushSubject;
@@ -74,6 +75,8 @@ final class MailPoetDestinationType implements DestinationType
 
     /** The lists a captured [[Lead]] is added to. */
     public const LISTS = 'lists';
+
+    public const INTEREST_FIELD = 'interest_field';
 
     /**
      * Canonical key => MailPoet column. The whole field map, once, for every
@@ -178,7 +181,12 @@ final class MailPoetDestinationType implements DestinationType
             );
         }
 
-        return [self::LISTS => $field];
+        return [self::LISTS => $field, self::INTEREST_FIELD => [
+            'type' => 'select',
+            'label' => __('Save interest in MailPoet', 'wconvert'),
+            'description' => __('Optional. Choose an existing custom text field. WConvert sends the stable answer value for new subscribers only; existing subscriber fields stay unchanged. Without a mapping, the answer stays in WConvert.', 'wconvert'),
+            'options' => array_map(static fn (array $field): array => ['value' => $field['id'], 'label' => $field['name']], $this->subscribers->textFields()),
+        ]];
     }
 
     /**
@@ -208,15 +216,15 @@ final class MailPoetDestinationType implements DestinationType
      */
     public function push(PushSubject $subject, PushContext $context): PushResult
     {
-        $email = $subject->values[CanonicalFields::EMAIL] ?? null;
+        $email = $subject->values[CanonicalFields::EMAIL] ?? '';
 
-        if ($email === null) {
+        if (!$this->requirements()->acceptsCapture($subject->values)) {
             return PushResult::skipped('MailPoet keys a subscriber on their email address, and this Lead carries none.');
         }
 
         $lists = $this->configuredLists($context);
 
-        if ($lists === []) {
+        if ($this->requirements()->missingSettings($context->settings) !== []) {
             return PushResult::retryable('No MailPoet list is configured on this Destination.');
         }
 
@@ -225,12 +233,26 @@ final class MailPoetDestinationType implements DestinationType
 
             return PushResult::success(
                 $subscriber === null
-                    ? $this->create($subject->values, $email, $lists)
+                    ? $this->create($subject->values, $email, $lists, $context)
                     : $this->join($subscriber, $lists)
             );
         } catch (\Throwable $failure) {
             return PushResult::retryable($failure->getMessage());
         }
+    }
+
+    public function requirements(): DestinationRequirements
+    {
+        return new DestinationRequirements(
+            ['email'],
+            [self::LISTS => ['label' => __('Lists to add to', 'wconvert'), 'type' => 'ids']],
+            ['email', 'name'],
+            ['interest' => [
+                'setting' => self::INTEREST_FIELD,
+                'label' => __('Interest', 'wconvert'),
+                'scope' => __('New subscribers only; existing subscriber fields stay unchanged.', 'wconvert'),
+            ]],
+        );
     }
 
     /**
@@ -267,10 +289,19 @@ final class MailPoetDestinationType implements DestinationType
      * @param array<string, string> $values
      * @param list<string> $lists
      */
-    private function create(array $values, string $email, array $lists): string
+    private function create(array $values, string $email, array $lists, PushContext $context): string
     {
         try {
-            return $this->subscribers->add($this->newSubscriber($values), $lists);
+            $subscriber = $this->newSubscriber($values);
+            $mapping = DestinationRequirements::text($context->settings[self::INTEREST_FIELD] ?? null);
+            if ($mapping !== '' && isset($values['interest'])) {
+                $valid = array_column($this->subscribers->textFields(), 'id');
+                if (!in_array($mapping, $valid, true)) {
+                    throw new \RuntimeException('The configured MailPoet interest text field is unavailable. Review this Destination’s settings.');
+                }
+                $subscriber[$mapping] = $values['interest'];
+            }
+            return $this->subscribers->add($subscriber, $lists);
         } catch (SubscriberExists $raced) {
             $existing = $this->subscribers->find($email);
 
@@ -335,15 +366,6 @@ final class MailPoetDestinationType implements DestinationType
      */
     private function configuredLists(PushContext $context): array
     {
-        $lists = $context->settings[self::LISTS] ?? [];
-
-        if (!is_array($lists)) {
-            return [];
-        }
-
-        return array_values(array_unique(array_filter(
-            array_map(static fn ($id): string => is_string($id) ? trim($id) : '', $lists),
-            static fn (string $id): bool => $id !== ''
-        )));
+        return DestinationRequirements::ids($context->settings[self::LISTS] ?? null);
     }
 }

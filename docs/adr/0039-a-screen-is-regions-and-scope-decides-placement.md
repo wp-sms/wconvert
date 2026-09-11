@@ -373,16 +373,16 @@ design says nothing at all.** Placing *"This will work"* correctly was solving
 the wrong problem — a green tick on every visit is a permanent line that taxes
 every visit and informs one, which is this ADR's own argument about subtitles
 arriving one component later. The toolbar renders only when there are problems,
-and Undo and Redo left with it: they move the ~~whole DRAFT~~ **design and template
-id**, so they belong in the page-header band. **Scope corrected by
-[ADR 0072](0072-setup-choices-state-their-effect-and-scope.md):** Save draft also
-persists the name, rules and destinations, which design history does not restore.
-The controls now say *Undo design change* and *Redo design change*. The band those two
-controls were costing was the only reason the strip existed._
+and Undo and Redo left with it: under [ADR 0075](0075-draft-history-and-template-content-choices-stay-predictable.md), they move the **name and complete
+working draft**, so they belong in the page-header band. The controls say *Undo
+draft edit* and *Redo draft edit*. Ordinary Save preserves that local history;
+saving a new Goal starts a new history, and shared destination settings and
+publication remain outside Undo. The band those two controls were costing was
+the only reason the strip existed._
 
-`Display rules` and `Destinations` do not get it, by the same test: neither
-edits the design, so neither can produce an entry to step or a problem to
-report.
+`Display rules` and `Destinations` now contribute draft history entries, while
+Undo and Redo remain shared header actions. Selected destination ids belong to
+this draft; independently saved site destination settings do not.
 
 _Amended again, and this one deletes the component. **The design was the
 SMALLER scope all along, and the verdict's is the Optin.** *"Nothing on this

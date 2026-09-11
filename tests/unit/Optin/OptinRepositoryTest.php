@@ -114,6 +114,26 @@ final class OptinRepositoryTest extends TestCase
         $this->assertFalse($restored->hasUnpublishedChanges(), 'the name is not part of the live design snapshot');
     }
 
+    public function testIncompleteFormDraftsCannotReplaceTheLiveVersion(): void
+    {
+        $optin = $this->anOptin();
+        $live = $this->repository->publish($optin->id);
+        $set = $this->publishedSet->all();
+        foreach ([
+            [['type' => 'field', 'name' => 'name']],
+            [['type' => 'field', 'name' => 'email'], ['type' => 'field', 'name' => 'interest', 'options' => []]],
+        ] as $fields) {
+            $config = ['template' => ['tree' => ['steps' => [[
+                'type' => 'stack', 'children' => [...$fields, ['type' => 'button', 'action' => 'submit']],
+            ]]]]];
+            $saved = $this->repository->saveDraft($optin->id, null, null, $config);
+            self::assertNotNull($saved, 'the merchant can keep an unfinished draft');
+            self::assertNull($this->repository->publish($optin->id));
+            self::assertSame($live?->publishedConfig, $this->repository->find($optin->id)?->publishedConfig);
+            self::assertSame($set, $this->publishedSet->all());
+        }
+    }
+
     public function testMissingDesignCannotBePromotedAndDoesNotStampActivation(): void
     {
         foreach ([[], ['template' => ['tree' => ['steps' => []]]]] as $config) {

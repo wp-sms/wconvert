@@ -3,7 +3,9 @@ import { AA_NORMAL, READABLE_PAIRS, contrastOf, pairKey } from '../contrast';
 import { resolvedToken, type Path } from '../panel';
 import { formStep, losesWordsOnSwitch } from './catalogue';
 import { convertingActOf } from './guards';
-import { capturesTaken, nodesOf } from './tree';
+import { capturesTaken, nodesOf, nodeAt } from './tree';
+import { validInterestOptions } from '../InterestOptions';
+import type { FieldNode } from '@renderer/types';
 import type { Template } from '@renderer/types';
 
 /**
@@ -95,6 +97,7 @@ export interface Problem {
    * no chip.
    */
   readonly check?: CheckId;
+  readonly blocksPublish?: boolean;
 }
 
 /**
@@ -198,10 +201,27 @@ export function problemsIn(
     ...whatCannotConvert(template),
     ...whatCollectsNothing(template, growsAList),
     ...whatCapturesNothing(template),
+    ...whatHasIncompleteFields(template),
     ...whatCountsDownToNothing(template, endsAt),
     ...whatLosesWords(template),
     ...whatCannotBeRead(template),
   ];
+}
+
+function whatHasIncompleteFields(template: Template): Problem[] {
+  const step = formStep(template.tree);
+  if (step === null) return [];
+  const fields = nodesOf(template.tree).filter((node) => node.type === 'field' && node.path[0] === step);
+  const issues: Problem[] = [];
+  if (!fields.some((field) => field.captures === 'email' || field.captures === 'phone')) {
+    issues.push({ said: __('Add an email or phone field so this form can capture a lead.', 'wconvert'), path: null, check: 'captures', blocksPublish: true });
+  }
+  for (const field of fields.filter((field) => field.captures === 'interest')) {
+    if (!validInterestOptions((nodeAt(template.tree, field.path) as FieldNode | null)?.options)) {
+      issues.push({ said: __('Set up the interest choices: every choice needs a label and a unique valid sent value.', 'wconvert'), path: field.path, check: 'captures', blocksPublish: true });
+    }
+  }
+  return issues;
 }
 
 /**

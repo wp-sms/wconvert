@@ -12,9 +12,8 @@ words are the Playbook's.
 
 **This is the higher-leverage half of the library.** The goal-first creation
 flow's second step shows **Playbooks, not designs**, so a merchant coming
-through the front door meets these cards and not the gallery. Seven Playbooks
-today point at three distinct designs, which is four cards that are one design
-wearing different words.
+through the front door meets these cards and not the gallery. Several useful
+starting points may share one design while offering different words and rules.
 
 It is also where the market gap is. 16 of 16 competitors ship a big template
 gallery; only about 5 ship **templates with purpose-matched rules**, which the
@@ -25,16 +24,16 @@ research marks P0. A Playbook is that.
 One PHP file per entry in `resources/playbooks/`, each `return`ing an array.
 
 **PHP and not JSON**, which is the whole reason this directory is not
-`*.json` beside `resources/templates/library/*.json`: a Playbook is nothing but
-words, and `wp i18n make-pot` cannot see a string inside JSON — so a JSON
-bundled registry ships an English-only library (ADR 0013). Every string is
-wrapped in `__()`.
+`*.json` beside `resources/templates/library/*.json`: `wp i18n make-pot` cannot
+see a string inside JSON, so a JSON bundled registry ships an English-only
+library (ADR 0013). Wrap every visible name, note and copy string in `__()`.
+Stable ids and choice `value` keys are identifiers, not translated words.
 
 ```php
 return [
     'id' => 'kebab-case',
     'name' => __('Sentence case', 'wconvert'),
-    'goal' => 'grow_email_list',   // one of the five, below
+    'goal' => 'grow_email_list',   // one of the six, below
     'template_id' => 'centred-card',
     'notes' => __('Why a merchant would pick this, and what to expect.', 'wconvert'),
     'copy' => [ /* Slot Role => words */ ],
@@ -44,12 +43,14 @@ return [
 ];
 ```
 
-**The Goal is a closed enum of five**: `grow_email_list`, `grow_sms_list`,
-`deliver_lead_magnet`, `promote_offer`, `recover_cart`. Adding a case is a code
-change a reviewer reads. If a Playbook does not fit one of the five, it is
+**The Goal is a closed enum of six**: `grow_email_list`, `grow_sms_list`,
+`deliver_lead_magnet`, `promote_offer`, `recover_cart`, `collect_enquiries`.
+The enquiry Goal is free and standalone; it counts Conversions, not replies,
+sales or completed jobs. It adds no Goal/design coupling (ADR 0076).
+Adding a case is a code change a reviewer reads. If a Playbook does not fit one, it is
 parked, not squeezed in.
 
-## Everything is validated at registration, and nowhere else
+## The Playbook declaration is validated at registration
 
 `WConvert\Playbook\PlaybookLibrary` is the **only** place the guarantee lives —
 there is no runtime check behind it. Registration is the last moment an author
@@ -67,6 +68,26 @@ array fills them **in tree order** (ADR 0051) — three `body` values are three
 benefit lines. A single value fills the first slot only.
 
 ### No markup, ever. A link is structure.
+
+For the one `interest` choice field, labels and sent values travel together.
+Its three derived Roles are `interest_label`, `interest_placeholder` and
+`interest_options`. Bind the last as a **named wrapper**, not a bare list that
+would mean repeated Role occurrences:
+
+```php
+'interest_label' => __('Which service do you need?', 'wconvert'),
+'interest_placeholder' => __('Choose a service', 'wconvert'),
+'interest_options' => ['options' => [
+    ['value' => 'installation', 'label' => __('Installation', 'wconvert')],
+    ['value' => 'repair', 'label' => __('Repair', 'wconvert')],
+]],
+```
+
+Translate the labels, never `installation` or `repair`. A label can change
+without changing the answer sent to another service. Stay within the generated
+vocabulary's `field_options` bounds; a shipped choice list must be nonempty.
+Do not invent field names or provider-specific custom-field ids. Inspect
+`resources/playbooks/request-a-quote.php` and ADR 0076 for the complete slice.
 
 A sentence needing a link carries a `%s` and a `{label}`:
 
@@ -163,6 +184,18 @@ For a guide or emailed offer, name the remaining setup in plain words:
 imply that selecting the Playbook already does this. Updating shipped copy
 changes the examples and future drafts, never the saved copy in existing
 Optins. The success-text inspector explains this boundary for merchant edits.
+
+For an enquiry, explain where the inline block or shortcode belongs and which
+service the merchant must configure to follow up. The native service question
+is optional in **Request a quote**, alongside optional name and required email.
+It records a request; it does not manage quotes, replies or jobs.
+
+Destination notes must describe shipped support, not planned integrations.
+MailPoet can send the stable interest value to an existing custom text field
+chosen under **Save interest in MailPoet**, for **new subscribers only**.
+Existing subscriber fields remain unchanged. WSMS and lead-magnet email do not
+forward the choice; the answer remains in WConvert capture history and export.
+Never suggest that selecting a Playbook already picks a shared route or mapping.
 
 ## Before opening a PR
 

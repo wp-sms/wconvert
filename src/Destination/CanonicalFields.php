@@ -46,6 +46,9 @@ final class CanonicalFields
      */
     public const NAME = 'name';
 
+    /** Stable qualification answer, independent of its editable displayed label. */
+    public const INTEREST = 'interest';
+
     /** Reserved, and written by nothing. See the class docblock. */
     public const CONSENT = 'consent';
 
@@ -65,6 +68,7 @@ final class CanonicalFields
             self::EMAIL => $lead->email,
             self::PHONE => $lead->phone,
             self::NAME => $lead->fields[self::NAME] ?? null,
+            self::INTEREST => $lead->fields[self::INTEREST] ?? null,
         ]);
     }
 
@@ -90,7 +94,7 @@ final class CanonicalFields
     {
         $kept = [];
 
-        foreach ([self::EMAIL, self::PHONE, self::NAME] as $key) {
+        foreach ([self::EMAIL, self::PHONE, self::NAME, self::INTEREST] as $key) {
             $value = $values[$key] ?? null;
 
             if (is_string($value) && trim($value) !== '') {

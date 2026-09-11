@@ -844,7 +844,7 @@ describe('the inspector', () => {
 
     await userEvent.clear(text);
     await userEvent.type(text, 'Half price');
-    await userEvent.click(screen.getByRole('button', { name: 'Undo design change' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
 
     expect(inspector('Headline').getByLabelText('Text')).toHaveValue('Get 10% off your first order');
   });
@@ -1186,8 +1186,8 @@ describe('undo and redo', () => {
   it('has nothing to undo before anything has changed', async () => {
     await structure();
 
-    expect(screen.getByRole('button', { name: 'Undo design change' })).toBeDisabled();
-    expect(screen.getByRole('button', { name: 'Redo design change' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Undo draft edit' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Redo draft edit' })).toBeDisabled();
   });
 
   it('takes a delete back, and then puts it forward again', async () => {
@@ -1200,11 +1200,11 @@ describe('undo and redo', () => {
 
     expect(rowNames()).not.toContain('Fine print');
 
-    await userEvent.click(screen.getByRole('button', { name: 'Undo design change' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
 
     expect(rowNames()).toContain('Fine print');
 
-    await userEvent.click(screen.getByRole('button', { name: 'Redo design change' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Redo draft edit' }));
 
     expect(rowNames()).not.toContain('Fine print');
   });
@@ -1213,7 +1213,7 @@ describe('undo and redo', () => {
     await structure();
     await userEvent.click(within(row('Headline')).getByRole('button', { name: 'Move Headline down' }));
     expect(rowNames().slice(0, 3)).toEqual(['The form', 'Body text', 'Headline']);
-    expect(screen.getByRole('button', { name: 'Undo design change' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Undo draft edit' })).toBeEnabled();
 
     await userEvent.click(screen.getByRole('button', { name: 'Review & publish' }));
     // Focus a non-text control: text inputs already have their own undo guard.
@@ -1226,10 +1226,10 @@ describe('undo and redo', () => {
     await userEvent.click(keepEditing);
 
     expect(rowNames().slice(0, 3)).toEqual(['The form', 'Body text', 'Headline']);
-    expect(screen.getByRole('button', { name: 'Undo design change' })).toBeEnabled();
-    expect(screen.getByRole('button', { name: 'Redo design change' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Undo draft edit' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Redo draft edit' })).toBeDisabled();
     // The history still works once the merchant has deliberately returned to editing.
-    await userEvent.click(screen.getByRole('button', { name: 'Undo design change' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
     expect(rowNames().slice(0, 3)).toEqual(['The form', 'Headline', 'Body text']);
   });
 
@@ -1248,7 +1248,7 @@ describe('undo and redo', () => {
 
     expect(await screen.findByText(/^Draft saved$/)).toBeInTheDocument();
 
-    await userEvent.click(screen.getByRole('button', { name: 'Undo design change' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
 
     expect(rowNames().slice(0, 3)).toEqual(['The form', 'Headline', 'Body text']);
     expect(screen.queryByText(/^Draft saved$/)).toBeNull();
@@ -1288,9 +1288,9 @@ describe('undo and redo, where they act on the whole draft', () => {
   it('puts Undo and Redo in the page header, beside the action with the same scope', async () => {
     await design();
 
-    expect(screen.getByRole('button', { name: 'Undo design change' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Redo design change' })).toBeInTheDocument();
-    expect(within(panel()).queryByRole('button', { name: 'Undo design change' })).toBeNull();
+    expect(screen.getByRole('button', { name: 'Undo draft edit' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Redo draft edit' })).toBeInTheDocument();
+    expect(within(panel()).queryByRole('button', { name: 'Undo draft edit' })).toBeNull();
   });
 
   /**
@@ -1313,10 +1313,10 @@ describe('undo and redo, where they act on the whole draft', () => {
     await userEvent.click(screen.getByRole('button', { name: /Custom look|Classic/ }));
     await userEvent.click(await screen.findByRole('button', { name: /Midnight/ }));
 
-    await userEvent.click(screen.getByRole('button', { name: 'Undo design change' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
     expect(builder.saveOptin).not.toHaveBeenCalled();
-    await userEvent.click(screen.getByRole('button', { name: 'Redo design change' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Redo draft edit' }));
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
     expect(savedTokens()).not.toEqual(ENTRY.tokens);
   });
@@ -1713,7 +1713,7 @@ describe('a leaf’s own settings', () => {
     await userEvent.click(screen.getByRole('tab', { name: 'Style' }));
     await userEvent.click(screen.getByText('Element options'));
     await userEvent.click(screen.getByRole('radio', { name: 'Sub-heading' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Undo design change' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
     await save();
 
     const heading = firstLeaf();

@@ -8,6 +8,7 @@ use WConvert\Destination\DeliveryFailures;
 use WConvert\Destination\DestinationRegistry;
 use WConvert\Destination\DestinationStore;
 use WConvert\Destination\DestinationType;
+use WConvert\Destination\DestinationUsage;
 use WConvert\Destination\HealthStore;
 use WConvert\Destination\ConfiguredTarget;
 use WConvert\Destination\PushDispatcher;
@@ -57,6 +58,7 @@ final class DestinationController implements RestController
         private readonly DeliveryFailures $failures,
         private readonly BulkRePush $rePush,
         private readonly PushDispatcher $dispatcher,
+        private readonly ?DestinationUsage $usage = null,
     ) {
     }
 
@@ -130,6 +132,7 @@ final class DestinationController implements RestController
                     // Identifier::email validates the same value a capture uses;
                     // sanitizing first could turn a typo into another address.
                     'email' => ['type' => 'string'],
+                    'interest' => ['type' => 'string'],
                 ],
             ],
         ]);
@@ -139,7 +142,8 @@ final class DestinationController implements RestController
     {
         return new WP_REST_Response([
             // A suggestion displayed before Send, not permission to send it.
-            // The endpoint's sample contains email only, never name or phone.
+            // The suggested sample contains email only. An interest value must
+            // be entered explicitly; no answer, name or phone is fabricated.
             'test_sample' => [
                 'email' => Identifier::email(wp_get_current_user()->user_email),
                 'fields' => ['email'],
@@ -153,6 +157,7 @@ final class DestinationController implements RestController
                     'requires' => $type->requires()?->value,
                     'availability' => $this->registry->availabilityOf($type->id())->value,
                     'needs_connection' => $type->connectionSchema() !== null,
+                    'requirements' => $type->requirements()->toArray(),
                     // What a merchant is missing, in words. The enum's value
                     // is a slug — interpolating `wsms` into "Needs %s on this
                     // site" produces copy no merchant can act on, and a
@@ -341,7 +346,15 @@ final class DestinationController implements RestController
             ));
         }
 
-        $result = $this->dispatcher->test($destination->id, ['email' => $email]);
+        $sample = ['email' => $email];
+        $interest = $request->get_param('interest');
+        if ($interest !== null) {
+            if (!is_string($interest) || trim($interest) === '') {
+                return $this->reported(TestReport::failed(__('Enter an interest value or leave it out of the test. Nothing has been sent.', 'wconvert')));
+            }
+            $sample['interest'] = trim($interest);
+        }
+        $result = $this->dispatcher->test($destination->id, $sample);
 
         // **Only where it landed.** Naming a target is what a SUCCESS sentence
         // is for, and resolving one costs a schema read that may reach the
@@ -497,6 +510,7 @@ final class DestinationController implements RestController
     private function configured(): array
     {
         $health = $this->health->all();
+        $usage = $this->usage?->all();
         $rows = [];
 
         foreach ($this->destinations->all() as $destination) {
@@ -511,10 +525,35 @@ final class DestinationController implements RestController
                 // from the first Connection of that type, which names the
                 // wrong audience for the second account (#35).
                 'target' => $this->targetOf($destination),
+                'requirements' => $this->registry->find($destination->type)?->requirements()->toArray(),
+                'mapping_issues' => $this->mappingIssues($destination),
+                'usage' => $usage === null ? null : ($usage[$destination->id] ?? []),
             ];
         }
 
         return $rows;
+    }
+
+    /** @return list<string> */
+    private function mappingIssues(\WConvert\Destination\Destination $destination): array
+    {
+        $type = $this->registry->find($destination->type);
+        if ($type === null) return [];
+        $issues = [];
+        foreach ($type->requirements()->mappedFields as $field) {
+            $selected = \WConvert\Destination\DestinationRequirements::text($destination->settings[$field['setting']] ?? null);
+            if ($selected === '') continue;
+            try {
+                $schema = $this->schemaFor($type, $destination->connectionId === null ? null : $this->connections->find($destination->connectionId));
+                $options = $schema[$field['setting']]['options'] ?? [];
+                if (!is_array($options) || !in_array($selected, array_column($options, 'value'), true)) {
+                    $issues[] = sprintf(__('The selected field for %s is unavailable. Review this destination’s mapping.', 'wconvert'), $field['label']);
+                }
+            } catch (\Throwable $failure) {
+                $issues[] = __('The provider fields could not be checked. Refresh before relying on the answer mapping.', 'wconvert');
+            }
+        }
+        return $issues;
     }
 
     /**

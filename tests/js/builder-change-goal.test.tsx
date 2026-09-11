@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ruleTypes } from './support/rule-types';
@@ -185,7 +185,7 @@ beforeEach(() => {
   builder.getRules.mockResolvedValue(ruleTypes());
   builder.saveOptin.mockImplementation(
     (_id: string, _name: string, config: Record<string, unknown>, goal?: string) =>
-      Promise.resolve({ ...optin(), config, ...(goal === undefined ? {} : { goal }) }),
+      Promise.resolve({ ...optin(), name: _name, config, ...(goal === undefined ? {} : { goal }) }),
   );
   templates.listTemplates.mockResolvedValue({
     templates: [CARD],
@@ -463,12 +463,12 @@ describe('confirming the change', () => {
    * — it is a column. That is the exception the structure editor's amendment to
    * ADR 0039 buys for a design switch and cannot buy here.
    */
-  it('says the whole history moves with it, and that design Undo cannot reverse it', async () => {
+  it('says the whole history moves with it, and that Undo cannot reverse the saved change', async () => {
     open();
     await pick('Promote a sale or offer');
 
     expect(await screen.findByText(/whole history moves with it/)).toBeInTheDocument();
-    expect(screen.getByText(/Design Undo cannot reverse this change/)).toBeInTheDocument();
+    expect(screen.getByText(/Undo cannot reverse this saved change/)).toBeInTheDocument();
   });
 
   /**
@@ -499,6 +499,35 @@ describe('confirming the change', () => {
     expect(builder.saveOptin.mock.calls[0][1]).toBe('Welcome discount updated');
     expect(builder.saveOptin.mock.calls[0][2]).toMatchObject({ template: { tree: ENTRY.tree, tokens: ENTRY.tokens } });
     expect(builder.saveOptin.mock.calls[0][3]).toBe('promote_offer');
+  });
+
+  it('starts a fresh Undo history only after a successful Goal save', async () => {
+    open();
+    await userEvent.type(await screen.findByRole('textbox', { name: 'Name' }), ' revised');
+    expect(screen.getByRole('button', { name: 'Undo draft edit' })).toBeEnabled();
+    await pick('Promote a sale or offer');
+    const confirm = screen.getByRole('button', { name: 'Save draft and change goal' });
+    expect(confirm).toHaveAccessibleDescription(/clears the current Undo and Redo history/);
+    await userEvent.click(confirm);
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Undo draft edit' })).toBeDisabled());
+    expect(screen.getByRole('button', { name: 'Redo draft edit' })).toBeDisabled();
+    expect(builder.saveOptin).toHaveBeenCalledTimes(1);
+    await userEvent.type(screen.getByRole('textbox', { name: 'Name' }), ' again');
+    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
+    expect(screen.getByRole('textbox', { name: 'Name' })).toHaveValue('Welcome discount revised');
+    expect(builder.saveOptin).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps Undo available after a refused Goal save', async () => {
+    builder.saveOptin.mockRejectedValue(new Error('The goal change was refused.'));
+    open();
+    await userEvent.type(await screen.findByRole('textbox', { name: 'Name' }), ' revised');
+    await pick('Promote a sale or offer');
+    await userEvent.click(screen.getByRole('button', { name: 'Save draft and change goal' }));
+    await screen.findByText('The goal change was refused.');
+    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
+    expect(screen.getByRole('textbox', { name: 'Name' })).toHaveValue('Welcome discount');
+    expect(builder.saveOptin).toHaveBeenCalledTimes(1);
   });
 
   it('writes nothing when the merchant backs out', async () => {

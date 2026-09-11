@@ -95,7 +95,16 @@ top layer does not enter the auction.
   it. Any check that only asks `elementFromPoint` reports a false pass.
 - **`<dialog>` cannot host a shadow root**, hence the inner `<div>`. The dialog is
   armoured with inline `!important` styles, which is the only protection available to
-  an element with no shadow root of its own.
+  an element with no shadow root of its own. It resolves the design's global width
+  against the viewport, capped at the viewport minus `2rem`, and its inner
+  `.wc-root` fills that box at `100%`. Applying the original width to both would
+  resolve a percentage twice: an `80%` design would occupy only `64%` of the
+  viewport inside the centred dialog. Giving the dialog an explicit width also
+  avoids intrinsic sizing collapsing around the size-contained inner root.
+  Popup mounting passes a temporary token copy to the shared shell, so this
+  contract holds on every screen. The stored template and authored descendant
+  token and narrow bags remain unchanged. Inline and non-modal containers retain
+  their own sizing contracts.
 - **`inline` Optins are outside this decision.** They render where they were
   embedded, so a clipping ancestor clips them whatever the container — measured
   identically across all eleven modes. That is a placement question, not a rendering

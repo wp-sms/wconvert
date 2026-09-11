@@ -10,14 +10,19 @@ import { actChangeOf, refusalFor, type Fit } from './Gallery';
 import type { TemplateIndexEntry, TemplateLabelsWithFacets } from '../templates/api';
 import type { Template } from '@renderer/types';
 
+export type TemplateContentMode = 'keep' | 'sample';
+export type PrepareDesign = (id: string, mode: TemplateContentMode, sample: Template) => Promise<Template>;
+
 export interface TemplateDesignDetailProps {
   readonly entry: TemplateIndexEntry;
   readonly template?: Template;
   readonly labels: TemplateLabelsWithFacets;
   readonly current: boolean;
+  readonly active?: boolean;
   readonly fit: Fit;
   readonly busy: boolean;
-  readonly onChoose: (id: string) => void;
+  readonly onChoose: (id: string, prepared?: Template) => void;
+  readonly onPrepare?: PrepareDesign;
   readonly onBack: () => void;
   readonly loadError?: boolean;
   readonly onRetry?: () => void;
@@ -26,10 +31,40 @@ export interface TemplateDesignDetailProps {
 /** Percentage widths need a stable desktop containing block before visual scaling. */
 const DESKTOP_CONTENT_WIDTH = '64rem';
 
-/** Inspect the library's sample, then deliberately replace the working draft. */
+/** Inspect the exact normalized candidate before replacing the working draft. */
 export function TemplateDesignDetail({
-  entry, template, labels, current, fit, busy, onChoose, onBack, loadError = false, onRetry,
+  entry, template: sample, labels, current, fit, busy, onChoose, onPrepare, onBack, loadError = false, onRetry, active = true,
 }: TemplateDesignDetailProps) {
+  const [mode, setMode] = useState<TemplateContentMode>('keep');
+  const [attempt, setAttempt] = useState(0);
+  const [prepared, setPrepared] = useState<{
+    sample: Template;
+    mode: TemplateContentMode;
+    prepare: PrepareDesign;
+    value?: Template;
+    error?: string;
+  } | null>(null);
+  const prepares = onPrepare !== undefined && entry.availability === 'ready';
+  useEffect(() => {
+    if (!active || !prepares || onPrepare === undefined || sample === undefined) return;
+    let alive = true;
+    setPrepared(null);
+    void onPrepare(entry.id, mode, sample)
+      .then((value) => {
+        if (alive) setPrepared({ sample, mode, prepare: onPrepare, value });
+      })
+      .catch((cause: unknown) => {
+        if (alive) setPrepared({ sample, mode, prepare: onPrepare,
+          error: cause instanceof Error ? cause.message : __('This content preview could not be prepared.', 'wconvert') });
+      });
+    return () => { alive = false; };
+  }, [entry.id, sample, mode, onPrepare, prepares, attempt, active]);
+  // A changed choice hides the previous result immediately, including the
+  // render before the next request effect runs. Late responses are ignored.
+  const candidate = prepared?.sample === sample && prepared?.mode === mode
+    && prepared?.prepare === onPrepare ? prepared : null;
+  const template = prepares ? candidate?.value : sample;
+  const preparationError = candidate?.error;
   const [device, setDevice] = useState<'desktop' | 'mobile'>('desktop');
   const [step, setStep] = useState(0);
   const heading = useRef<HTMLHeadingElement>(null);
@@ -72,13 +107,14 @@ export function TemplateDesignDetail({
   }, [template, measure, shown]);
   const scale = size === null ? 1 : Math.min(1, size.availableWidth / size.width);
   const unavailable = entry.availability !== 'ready';
-  const cannotApply = current || refused !== null || unavailable || template === undefined;
+  const isCurrent = current && !(prepares && mode === 'sample');
+  const cannotApply = !active || isCurrent || refused !== null || unavailable || template === undefined;
   const fieldNames = entry.facets.captures.map((field) =>
     labels.fields?.[field] ?? labels.facetValues[`captures.${field}`] ?? field,
   );
   const describedBy = [
     `${id}-title`, `${id}-replacement`,
-    current ? `${id}-current` : null,
+    isCurrent ? `${id}-current` : null,
     refused !== null ? `${id}-refusal` : null,
     changed !== null ? `${id}-change` : null,
     template === undefined ? `${id}-load` : null,
@@ -95,6 +131,26 @@ export function TemplateDesignDetail({
         <h3 ref={heading} tabIndex={-1} id={`${id}-title`}>{entry.name}</h3>
         {current && <Badge id={`${id}-current`} variant="secondary">{__('Current design', 'wconvert')}</Badge>}
       </div>
+
+      {prepares && (
+        <fieldset className="wconvert-design-detail__content-choice" disabled={busy}>
+          <legend className="text-sm font-medium">{__('Content for this design', 'wconvert')}</legend>
+          <div className="mt-2 grid gap-2 sm:grid-cols-2">
+            <label className="grid cursor-pointer grid-cols-[auto_1fr] items-start gap-x-2 rounded-md border p-3 text-sm">
+              <input type="radio" name={`${id}-content`} value="keep" checked={mode === 'keep'}
+                onChange={() => setMode('keep')} className="row-span-2 mt-1" />
+              <strong>{__('Keep my content', 'wconvert')}</strong>
+              <span className="text-note text-muted-foreground">{__('Fit your current words and images into this layout. Some content may move or have no matching place.', 'wconvert')}</span>
+            </label>
+            <label className="grid cursor-pointer grid-cols-[auto_1fr] items-start gap-x-2 rounded-md border p-3 text-sm">
+              <input type="radio" name={`${id}-content`} value="sample" checked={mode === 'sample'}
+                onChange={() => setMode('sample')} className="row-span-2 mt-1" />
+              <strong>{__("Use this design's sample content", 'wconvert')}</strong>
+              <span className="text-note text-muted-foreground">{__('Start with its example words, images, links and form settings. Review offers and links before publishing.', 'wconvert')}</span>
+            </label>
+          </div>
+        </fieldset>
+      )}
 
       <div className="wconvert-design-detail__controls">
         <div role="group" aria-label={__('Preview size', 'wconvert')} className="wconvert-segmented">
@@ -115,7 +171,8 @@ export function TemplateDesignDetail({
           </div>
         )}
         <span className="text-note text-muted-foreground">
-          <span>{__('Preview with sample content', 'wconvert')}</span>
+          <span>{prepares && mode === 'keep'
+            ? __('Preview with your content', 'wconvert') : __('Preview with sample content', 'wconvert')}</span>
           {relativeWidth && device === 'desktop' && <span className="block">{__('Full-width layout in a sample desktop area', 'wconvert')}</span>}
           {scale < 1 && <span className="block" aria-label={__('Preview scale', 'wconvert')}>{sprintf(__('Fit · %d%%', 'wconvert'), Math.round(scale * 100))}</span>}
         </span>
@@ -131,10 +188,14 @@ export function TemplateDesignDetail({
                 <Preview template={template} step={shown} />
               </div>
             </div>
-          ) : loadError ? (
+          ) : loadError || preparationError !== undefined ? (
             <div className="wconvert-design-detail__error">
-              <p id={`${id}-load`} role="alert">{__('This design preview could not be loaded.', 'wconvert')}</p>
-              {onRetry !== undefined && <Button variant="outline" onClick={onRetry}>{__('Retry preview', 'wconvert')}</Button>}
+              <p id={`${id}-load`} role="alert">{preparationError ?? __('This design preview could not be loaded.', 'wconvert')}</p>
+              {(preparationError !== undefined || onRetry !== undefined) && (
+                <Button variant="outline" onClick={preparationError !== undefined ? () => setAttempt((held) => held + 1) : onRetry}>
+                  {__('Retry preview', 'wconvert')}
+                </Button>
+              )}
             </div>
           ) : (
             <div className="wconvert-design-detail__loading">
@@ -152,14 +213,16 @@ export function TemplateDesignDetail({
           </dl>
           <div className="wconvert-design-detail__actions">
             <p id={`${id}-replacement`} className="text-note text-muted-foreground">
-              {__('Replaces your draft’s layout. Some text may move, be hidden or left empty; added blocks may be removed. Check each screen afterwards. Undo restores your previous design.', 'wconvert')}
+              {prepares && mode === 'sample'
+                ? __('Replaces the layout and content in your draft with the preview shown here. Undo restores your previous draft.', 'wconvert')
+                : __('Replaces your draft’s layout. Some text may move, be hidden or left empty; added blocks may be removed. Check each screen afterwards. Undo restores your previous draft.', 'wconvert')}
             </p>
             {refused !== null && <p id={`${id}-refusal`} className="text-note text-warning">{refused}</p>}
             {changed !== null && <p id={`${id}-change`} className="text-note text-warning">{changed}</p>}
             {unavailable && <p id={`${id}-unavailable`} className="text-note text-muted-foreground">{__('This design is not installed here.', 'wconvert')}</p>}
             <Button disabled={busy} aria-disabled={cannotApply} aria-describedby={describedBy}
-              onClick={cannotApply || busy ? undefined : () => onChoose(entry.id)}>
-              {busy ? __('Applying design…', 'wconvert') : current ? __('Current design', 'wconvert') : __('Use this design', 'wconvert')}
+              onClick={cannotApply || busy ? undefined : () => prepares ? onChoose(entry.id, template) : onChoose(entry.id)}>
+              {busy ? __('Applying design…', 'wconvert') : isCurrent ? __('Current design', 'wconvert') : __('Use this design', 'wconvert')}
             </Button>
           </div>
         </div>

@@ -7,8 +7,7 @@ reference editor. The production editor adopts that flow.
 ## Workspace
 
 The builder owns its viewport, while the other admin screens retain Shell.
-The header holds the name, Design / Display rules / Destinations, Undo design
-change / Redo design change,
+The header holds the name, Design / Display rules / Destinations, Undo draft edit / Redo draft edit,
 Preview, Save draft, Review & publish and Optin details. Draft/publication status
 stays visible in the footer at every supported editor width. WordPress navigation stays
 visible by default; Full width remains optional and remembered per browser.
@@ -28,9 +27,9 @@ visible replacement action using WordPress's media library.
 **Extended by [ADR 0072](0072-setup-choices-state-their-effect-and-scope.md):**
 creation hands off here directly after Goal and starting-point choices. The
 explicit customization action creates a draft; a separate repeated-preview
-confirmation no longer precedes this editor. Undo restores the design and
-template id only. Goal correction explains that it also saves the current name
-and all draft edits, without publishing them.
+confirmation no longer precedes this editor. Under [ADR 0075](0075-draft-history-and-template-content-choices-stay-predictable.md), Undo restores the name and complete
+draft configuration. Goal correction explains that it saves the current name
+and all draft edits without publishing, and starts a new local Undo history.
 
 The form preview accepts local input and advances to the success screen without
 sending a capture or following a destination link. The canvas is an editing and
@@ -52,7 +51,9 @@ The manifest declares `style_tokens` for each node, named `token_groups`, and
 `token_controls` for the background image picker. An overlay gradient stays a
 style value rather than being mistaken for an image address.
 The inspector shows the selected node's readers; a layout also includes readers
-used by descendants. Global design settings still offer the full vocabulary.
+used by descendants. Global design settings still offer the full vocabulary. [ADR 0075](0075-draft-history-and-template-content-choices-stay-predictable.md) adds
+amount/unit inputs and local-draft CSS/colour text entry by existing value kind,
+without changing token names, inheritance or validation semantics.
 Typography is reapplied at styled elements so inherited computed CSS does not
 prevent a local font or text-size token from taking effect.
 
@@ -79,9 +80,10 @@ id. That avoids resnapshotting over edits made after selection. Vocabulary,
 trigger, goal, conversion, destination and payload checks still apply on Save.
 The metadata is not persisted. No database schema or storage is added.
 
-The picker warns that content may be empty, moved or hidden and asks the merchant
-to inspect both screens. Choosing between sample content and carried content is
-deferred, as the user requested. Publishing remains separate from Save draft,
+The picker defaults to Keep my content and offers Use this design's sample
+content under [ADR 0075](0075-draft-history-and-template-content-choices-stay-predictable.md). It previews the exact normalized candidate before
+Apply. Carrying can leave content empty, moved or hidden; sample mode replaces
+words, images, links and form settings. Both remain one draft Undo entry. Publishing remains separate from Save draft,
 but no longer requires returning to the list: **Review & publish** offers an
 explicit promotion in the editor. A dirty draft is saved first and is promoted
 only if that save succeeds. The list also offers **Publish changes** when saved

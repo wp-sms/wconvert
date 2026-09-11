@@ -1970,6 +1970,9 @@
 .wconvert-design-detail__header { display: flex; align-items: center; gap: 1rem; padding: 0.875rem 1.25rem; }
 .wconvert-design-detail__header h3 { margin: 0; font-size: var(--text-heading); font-weight: 600; color: var(--foreground); }
 .wconvert-design-detail__header h3:focus { outline: none; }
+.wconvert-design-detail__content-choice { flex: none; min-inline-size: 0; margin: 0; padding: 0 1.25rem 0.875rem; border: 0; }
+.wconvert-design-detail__content-choice label:has(input:checked) { border-color: var(--primary); background: color-mix(in srgb, var(--primary) 5%, var(--background)); }
+.wconvert-design-detail__content-choice label:has(input:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }
 .wconvert-design-detail__controls { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; padding: 0 1.25rem 0.875rem; border-block-end: 1px solid var(--border); }
 .wconvert-design-detail__controls > span { margin-inline-start: auto; }
 .wconvert-design-detail__layout { display: grid; grid-template-columns: minmax(0, 1fr) 16rem; flex: 1; min-block-size: 0; }
@@ -2137,6 +2140,52 @@
  */
 .wconvert-gallery > .wconvert-gallery__card {
   align-self: stretch;
+}
+
+/* A sole starting point is a setup to inspect, not one quarter of a gallery. */
+.wconvert-gallery--single-start {
+  grid-template-columns: minmax(0, 1fr);
+  container: wconvert-starting-point / inline-size;
+}
+
+.wconvert-gallery__card--featured {
+  min-inline-size: 0;
+}
+
+.wconvert-gallery__card--featured .wconvert-gallery__body {
+  border-block-start: 1px solid var(--border);
+  overflow-wrap: anywhere;
+}
+
+.wconvert-gallery__card--featured .wconvert-gallery__preview {
+  padding: 1.25rem;
+}
+
+.wconvert-gallery--single-start .wconvert-preview {
+  zoom: 0.7;
+  max-block-size: none;
+}
+
+@container wconvert-starting-point (min-width: 48rem) {
+  .wconvert-gallery__card--featured {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  }
+
+  .wconvert-gallery__card--featured .wconvert-gallery__body {
+    justify-content: center;
+    border-block-start: 0;
+    border-inline-start: 1px solid var(--border);
+  }
+
+  .wconvert-gallery__card--featured .wconvert-gallery__preview {
+    min-block-size: 22rem;
+    padding: 2rem;
+  }
+
+  .wconvert-gallery--single-start .wconvert-preview {
+    zoom: 0.85;
+  }
 }
 
 /* ---------------------------------------------------------------------------

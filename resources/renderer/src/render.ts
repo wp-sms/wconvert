@@ -919,6 +919,7 @@ const FIELD_KINDS: Readonly<Record<string, { type: string; autocomplete: AutoFil
   email: { type: 'email', autocomplete: 'email', label: 'Email address' },
   phone: { type: 'tel', autocomplete: 'tel', label: 'Phone number' },
   name: { type: 'text', autocomplete: 'name', label: 'Name' },
+  interest: { type: 'select', autocomplete: 'off', label: 'Interested in' },
 };
 
 /**
@@ -945,20 +946,26 @@ function field(node: FieldNode): HTMLElement | null {
 
   const wrapper = document.createElement('div');
   const label = document.createElement('label');
-  const input = document.createElement('input');
+  const input = document.createElement(kind.type === 'select' ? 'select' : 'input');
 
   input.id = `wc-${name}`;
   input.className = 'wc-input';
-  input.type = kind.type;
   input.name = name;
-  input.placeholder = node.placeholder?.trim() ? node.placeholder : '';
   input.required = node.required === true;
   input.autocomplete = kind.autocomplete;
-  input.inputMode = kind.type;
-
-  if (name !== 'name') {
-    input.setAttribute('autocapitalize', 'none');
-    input.spellcheck = false;
+  if (input instanceof HTMLSelectElement) {
+    input.add(new Option(node.placeholder || 'Choose an option', ''));
+    for (const choice of Array.isArray(node.options) ? node.options : []) {
+      if (choice && typeof choice.label === 'string' && typeof choice.value === 'string') input.add(new Option(choice.label, choice.value));
+    }
+  } else {
+    input.type = kind.type;
+    input.placeholder = node.placeholder?.trim() ? node.placeholder : '';
+    input.inputMode = kind.type;
+    if (name !== 'name') {
+      input.setAttribute('autocapitalize', 'none');
+      input.spellcheck = false;
+    }
   }
 
   label.className = 'wc-label';

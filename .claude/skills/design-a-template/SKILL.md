@@ -9,9 +9,11 @@ A [[Template]] is **configuration, not a document** (ADR 0010): a JSON node
 tree over a closed vocabulary plus a closed set of CSS custom properties — set
 for the whole design, and re-declared on layouts and leaves for their own
 appearance (ADRs 0062 and 0067). It
-carries no HTML, no CSS and — this is the part that catches everyone — **no
-words a visitor reads**. Copy lives on the [[Playbook]]; a design's own text is
-placeholder that exists so the gallery has something to show.
+carries no HTML or CSS. Copy usually comes from the [[Playbook]] or merchant;
+a design's own text supplies gallery examples. **Use this design's sample
+content** can explicitly copy those examples into the draft (ADR 0075), so
+every sample still needs honest visitor-facing wording. **Keep my content**
+remains the default and shows the actual prepared candidate before Apply.
 
 That boundary is what keeps the library small. With copy held elsewhere a
 design is Goal-agnostic, so the gallery is *N designs per [[Display Type]]*
@@ -33,6 +35,10 @@ a usable Optin must not require rebuilding its layout.
    `resources/templates/library/`, Pro ones in
    `pro/modules/display-types/templates/`. The `id` must be unique across
    **both**.
+   Give each shipped leaf a stable `n1`…`n9999` id, unique within its tree, and
+   preserve that id when reordering it. Do not author `v` or derived facets.
+   PHP mints missing ids on newly added draft leaves; that fallback is not a
+   reason to renumber shipped leaves and lose translation identity (ADR 0010).
 3. **`composer verify:templates`.** Not optional — see below.
 4. **Render it.** `./tools/design-library/build.sh renderer designs sheet` and
    read `out/contact-sheet-320-ltr.png` first.
@@ -103,6 +109,23 @@ return at 24rem and below. The renderer supplies a fallback for missing labels
 and an asterisk for required fields. Do not duplicate the asterisk or rely on
 the fallback instead of clear words. Phone examples include a country code.
 
+**One optional choice question is available as `name: "interest"`.** It renders
+a native single-choice select. Supply a question label, an empty-option prompt
+in `placeholder`, and a nonempty `options` list of `{value, label}` pairs. The
+manifest's `field_options` is the authority: up to 12 choices, labels up to 120
+Unicode characters, and unique stable values matching
+`^[a-z][a-z0-9_-]{0,47}$`. Do not invent another field name, accept arbitrary
+text, or use a choice as an identity. Every submit form still needs email or
+phone. Default the choice to optional unless the visitor's request needs it.
+
+`options` is content and travels through the derived `interest_options` Role
+as `{options: [...]}`; labels and values survive compatible design changes.
+The question and prompt use `interest_label` and `interest_placeholder`.
+A Playbook localizes labels, not stable sent values. Include a concrete optional
+choice only when it helps the receiving business respond; a catalogue of
+unnecessary questions is not a better capture form. See ADR 0076 and
+`resources/templates/library/inline-choice.json`.
+
 **A design's act is no longer coupled to any Goal.** ADR 0059 deleted every
 design↔Goal pairing: a Template offering exactly one converting act **is** the
 declaration. Do not add a check for it, and do not file a design under a Goal.
@@ -169,11 +192,13 @@ something.** `stack`, `row`, `split` and `grid` arrange and paint nothing, so a
 Both reset `bg-image` and `overlay` before their own bag applies, so the
 design's picture is not repainted inside every box in it (ADR 0063).
 
-**Copy carries three things beyond the words.** A newline is a real line break
+**Text copy supports line breaks, links and emphasis.** A newline is a real line break
 on every text leaf — write where a display headline breaks rather than hoping
 for the wrap. `%s` plus a `link` object is an anchor, and `%b` plus an
 `emphasis` string is a `<strong>`; one of each per sentence, a second mark is
 literal, and a mark with nothing to fill it renders nothing.
+Keep privacy wording grammatical when the site has no policy URL; a complete
+sentence followed by `%s` works without leaving a fragment such as `See our.`.
 
 **A colour token's value may name another colour token** — `{"bg": "accent"}` —
 and it then follows the theme. Reach for a literal hex only where the box is

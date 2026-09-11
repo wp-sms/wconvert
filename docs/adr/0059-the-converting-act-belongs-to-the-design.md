@@ -249,15 +249,16 @@ param edit.
 - **Changing a Goal confirms**, and that is not the usual confirm-everything
   reflex. The structure editor's amendment to
   [ADR 0039](0039-a-screen-is-regions-and-scope-decides-placement.md) says undo
-  buys a destructive action its exception — and the builder's history watches
-  the design, while a Goal is a column and not part of `config`. There is no
-  entry to walk back to, so the sentence is the only place it can be said:
+  buys a destructive action its exception. Under [ADR 0075](0075-draft-history-and-template-content-choices-stay-predictable.md),
+  draft history includes the name and configuration, while a Goal is a saved
+  column. A successful correction resets local history, so the confirmation
+  names both the reporting change and that history boundary:
   *"Everything this Optin has already counted is read against the goal it
   holds, so its whole history moves with it. This cannot be undone."*
   **Clarified by [ADR 0072](0072-setup-choices-state-their-effect-and-scope.md):**
   this action also saves the current name and complete draft configuration.
   The confirmation now names that effect and its button says *Save draft and
-  change goal*. It does not publish; design Undo cannot restore the Goal.
+  change goal*. It does not publish; draft Undo cannot restore the saved Goal.
 - **A goal-only `PATCH` is checked against the stored design.** Both refusals
   were guarded on an incoming `config`, so `PATCH {"goal": …}` with none wrote
   any settable Goal onto any design and any binding, unchecked. It was

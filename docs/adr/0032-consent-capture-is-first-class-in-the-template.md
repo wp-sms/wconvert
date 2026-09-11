@@ -7,6 +7,12 @@ hand-adds. It is **off by default, required once present, and enforced
 server-side**, and the evidence it produces is the [[Consent Record]] snapshotted
 into the [[Lead]]'s existing `fields` JSON.
 
+*Clarified by [ADR 0076](0076-an-enquiry-captures-one-optional-choice-before-handoff.md):
+an optional service choice is a `field`, not this checkbox. Selecting a service
+does not assert consent or a marketing subscription. The enquiry Playbook uses
+request-specific privacy and consent wording; its consent node still ships
+hidden and becomes required when enabled, with the existing evidence contract.*
+
 Records a decision from
 [#11](https://github.com/navidkashani/wconvert/issues/11) that had no ADR of its
 own. Its three refusals became
@@ -70,6 +76,10 @@ Same reasoning that keeps [[Destination]] ids out of Playbooks — a Playbook ca
 express nothing site-local — and it makes the link correct on every site without
 any entry knowing which site it is on. **No policy set means the link node
 renders nothing**, never a dead `#`.
+
+*The enquiry examples in ADR 0076 therefore keep the surrounding sentence
+complete without the link: `We use these details to respond to your request.
+%s`. Removing an unresolved link must not leave a fragment such as `See our.`.*
 
 *Completed by [#24](https://github.com/navidkashani/wconvert/issues/24) on how
 the renderer knows WHICH link to resolve: **a link that declares a label and

@@ -8,6 +8,8 @@ import { Description } from '../shell/Description';
 import { RegionError } from '../shell/Region';
 import { ConnectionPicker, SettingsControl, fromDraft, isGroup, suggestedName, toDraft } from './settings';
 import type { Connection, Destination, DestinationType } from './api';
+import { DestinationUsageNotice } from './DestinationUsageNotice';
+import { settingsProblems } from './requirements';
 
 /**
  * The three questions, and the state behind them.
@@ -67,6 +69,9 @@ export function DestinationSettingsForm({
   return (
     <>
       {error !== null && <RegionError message={error} />}
+      {destination && <DestinationUsageNotice usage={destination.usage} />}
+      {settingsProblems(type.requirements, fromDraft(type.settings_schema, draft), type.settings_schema).map((problem) =>
+        <p key={problem} className="m-0 text-note text-warning">{problem}</p>)}
 
       <fieldset disabled={busy} className="m-0 flex min-w-0 flex-col gap-4 border-0 p-0">
         <div className="flex flex-col gap-1.5">
@@ -99,7 +104,7 @@ export function DestinationSettingsForm({
               `div[role=group]` is inert, so the group points back here.
             */}
             <Label id={`${id(key)}-label`} htmlFor={isGroup(field) ? undefined : id(key)}>
-              {field.label}
+              {field.label}{type.requirements?.settings[key] ? __(' (required to send)', 'wconvert') : ''}
             </Label>
             <SettingsControl
               id={id(key)}

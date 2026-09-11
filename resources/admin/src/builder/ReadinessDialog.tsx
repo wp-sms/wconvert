@@ -14,6 +14,7 @@ import { statusOf, type OptinState } from '../optins/api';
 import { Code } from '../shell/Code';
 import { messageOf, type Loadable } from '../shell/loadable';
 import { destinationsSaid } from './destinations';
+import { capturedFields } from '../destinations/requirements';
 import { problemsIn, type Problem } from './structure/problems';
 import { capturesTaken } from './structure/tree';
 import { convertingActOf } from './structure/guards';
@@ -87,7 +88,7 @@ export function ReadinessDialog({
   const [error, setError] = useState<string | null>(null);
   const trigger = useRef<HTMLButtonElement>(null);
   const afterClose = useRef<(() => void) | null>(null);
-  const where = destinationsSaid(bound, destinations);
+  const where = destinationsSaid(bound, destinations, capturedFields(template));
   const overlay = displayType !== 'inline';
   const summaries = summarise(rules, vocabulary, overlay, template ? convertingActOf(template.tree)[0] : undefined);
   const hasDesign = template !== undefined && template.tree.steps.length > 0;
@@ -96,12 +97,15 @@ export function ReadinessDialog({
   const needsCapture = bound.length > 0 || (goal.status === 'ready' && goal.data?.needs_a_capture === true);
   const blocking: { said: string; fix: () => void }[] = [
     ...(!hasDesign ? [{ said: __('Choose a design before publishing.', 'wconvert'), fix: onGoToDesign }] : []),
-    ...problems.filter((problem) => problem.check === 'converts').map((problem) => ({ said: problem.said, fix: onEditDesign })),
+    ...problems.filter((problem) => problem.check === 'converts' || problem.blocksPublish).map((problem) => ({
+      said: problem.said,
+      fix: problem.path !== null ? () => onGoTo(problem.path as Path) : onEditDesign,
+    })),
     ...(hasDesign && needsCapture && captures.length === 0
       ? [{ said: __('This Optin needs a form field to collect leads. Choose a design with a form.', 'wconvert'), fix: onGoToDesign }]
       : []),
   ];
-  const warnings = problems.filter((problem) => problem.check !== 'converts');
+  const warnings = problems.filter((problem) => problem.check !== 'converts' && !problem.blocksPublish);
   const reviewCount = blocking.length + warnings.length + where.problems.length;
   const isPublished = optin.published_at !== null;
   const current = isPublished && !dirty && !optin.has_unpublished_changes;

@@ -83,10 +83,7 @@ export function createBeacon(endpoint: string | null): Beacon {
   const prerendering = (): boolean => (document as { prerendering?: boolean }).prerendering === true;
 
   function send(events: readonly BeaconEvent[]): void {
-    if (events.length === 0) {
-      return;
-    }
-
+    // The only caller, flush(), already excludes an empty queue.
     const body = JSON.stringify({ events });
 
     // `sendBeacon` is the only send that survives the page going away: the
@@ -145,12 +142,9 @@ export function createBeacon(endpoint: string | null): Beacon {
   // `pagehide` rather than `unload`: `unload` makes a page ineligible for the
   // bfcache in every browser that has one, so listening for it would slow down
   // every back-navigation on the site to collect a number.
-  const onPageHide = (): void => flush();
   // And on activation, for the events held through a prerender.
-  const onActivated = (): void => flush();
-
-  window.addEventListener('pagehide', onPageHide);
-  document.addEventListener('prerenderingchange', onActivated, { once: true });
+  window.addEventListener('pagehide', flush);
+  document.addEventListener('prerenderingchange', flush, { once: true });
 
   return {
     report,
@@ -158,8 +152,8 @@ export function createBeacon(endpoint: string | null): Beacon {
     stop() {
       stopped = true;
       queued = [];
-      window.removeEventListener('pagehide', onPageHide);
-      document.removeEventListener('prerenderingchange', onActivated);
+      window.removeEventListener('pagehide', flush);
+      document.removeEventListener('prerenderingchange', flush);
     },
   };
 }

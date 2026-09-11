@@ -40,7 +40,8 @@ Creating a destination updates the site's list and asks the merchant to select
 its checkbox. It never binds the route silently. Binding and removing a missing
 reference change this Optin's draft. Saving destination settings changes the
 shared site destination immediately, including for published Optins using it;
-the dialog and Save action explain that scope. It is not part of design Undo.
+the dialog and Save action explain that scope. It is not part of draft Undo. Selected ids are undoable draft edits under
+[ADR 0075](0075-draft-history-and-template-content-choices-stay-predictable.md); shared destination settings and published configuration are not.
 
 A failed settings save preserves typed values and offers another attempt.
 Closing returns focus to Add or the route's Settings control. Refresh does not
@@ -56,12 +57,14 @@ warnings. Local-only capture remains valid. Known missing routes, unavailable
 providers and observed health failures are actionable without claiming that
 publication proves delivery. The destination tab also identifies missing accounts.
 
-The provider contract does not yet declare required capture fields or required
-settings. A phone-only form cannot satisfy MailPoet's email requirement, but
-that fact must come from provider-owned metadata before generic readiness can
-enforce it. An empty target string is not sufficient: WP SMS tags are optional,
-whereas MailPoet needs a list. This phase adds neither guessed mappings nor a
-parallel validation schema. Those requirements remain follow-up work.
+**Completed by [0074](0074-destinations-declare-requirements-and-show-shared-usage.md):**
+providers now declare identifier alternatives, required settings and fields they
+use. Review distinguishes a missing required-by-route field from an optional
+one, and shares the provider's setting presence rules. WSMS accepts email or
+phone and its tags remain optional; MailPoet needs email and a list; lead-magnet
+email needs email and a file URL. These are advisory compatibility checks, not
+evidence of delivery. Shared-settings setup also names saved draft and live
+Optins affected by its independently saved changes.
 
 ## Publishing hands off to placement
 
@@ -87,5 +90,6 @@ evidence are recorded in the review after they run; this decision claims no
 verified provider delivery. Addressable editor URLs and connected capture/recovery
 flows are now covered by
 [0071](0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md),
-including guarded dirty/busy navigation and exact test recipients. Richer provider
-metadata and capture-field expansion remain separate work.
+including guarded dirty/busy navigation and exact test recipients. Provider
+requirements and the bounded MailPoet interest mapping are covered by
+[0074](0074-destinations-declare-requirements-and-show-shared-usage.md).

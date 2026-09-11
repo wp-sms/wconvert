@@ -45,7 +45,8 @@ import { listGoals, listPlaybooks, type GoalEntry } from '../goals/api';
 import { offerableGoals } from '../goals/GoalCard';
 import { goalSaid } from '../goals/said';
 import { ChangeGoalDialog } from './ChangeGoalDialog';
-import type { Path } from './panel';
+import { slotsOf, type Path } from './panel';
+import { validDraftInterestOptions } from './InterestOptions';
 import {
   getOptin,
   getRules,
@@ -80,9 +81,9 @@ export interface OptinBuilderProps {
 }
 
 type Config = Record<string, unknown>;
-interface DesignDraft {
-  template: Template;
-  templateId?: string;
+interface DraftSnapshot {
+  name: string;
+  config: Config;
 }
 
 type TabId = 'design' | 'rules' | 'destinations';
@@ -130,13 +131,12 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange }: O
   useEffect(() => { onEditingStateChange?.({ dirty, busy }); }, [dirty, busy, onEditingStateChange]);
   const [showLayers, setShowLayers] = useState(false);
   const [previewing, setPreviewing] = useState(false);
-  const [preparing, setPreparing] = useState(false);
   useEffect(() => {
-    if (!browsing && !busy && !preparing && restoreBrowseFocus.current) {
+    if (!browsing && !busy && restoreBrowseFocus.current) {
       restoreBrowseFocus.current = false;
       browse.current?.focus();
     }
-  }, [browsing, busy, preparing]);
+  }, [browsing, busy]);
   const [details, setDetails] = useState(false);
   useEffect(() => {
     document.body.classList.add('wconvert-editing');
@@ -153,7 +153,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange }: O
 
   const [stats, setStats] = useState<Loadable<OptinNumbers | null>>(LOADING);
 
-  const [past, setPast] = useState<History<DesignDraft> | null>(null);
+  const [past, setPast] = useState<History<DraftSnapshot> | null>(null);
 
   const [goals, setGoals] = useState<Loadable<GoalEntry[]>>(LOADING);
 
@@ -296,9 +296,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange }: O
   }, [refreshDestinations]);
 
   useEffect(() => {
-    if (template === undefined) {
-      return;
-    }
+    if (config === null) return;
 
     const key = coalescing.current;
 
@@ -307,12 +305,12 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange }: O
     const into = key === null ? null : { key, at: Date.now() };
 
     setPast((current) => {
-      const snapshot = { template, templateId };
+      const snapshot = { name, config };
       if (current === null) return historyOf(snapshot);
-      if (current.present.template === template && current.present.templateId === templateId) return current;
+      if (current.present.name === name && current.present.config === config) return current;
       return remember(current, snapshot, into);
     });
-  }, [template, templateId]);
+  }, [name, config]);
 
   useEffect(() => {
     if (template === undefined) {
@@ -374,8 +372,13 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange }: O
     setSaved(false);
   }, []);
 
-  const persistDraft = (next: Config = config ?? {}, nextGoal?: string) =>
-    saveOptin(
+  const persistDraft = (next: Config = config ?? {}, nextGoal?: string) => {
+    const design = next.template as Template | undefined;
+    if (design && slotsOf(design.tree).some((slot) => slot.captures === 'interest'
+      && !validDraftInterestOptions(slot.values.options))) {
+      return Promise.reject(new Error(__('Fix the interest choices before saving: each entered choice needs a label and a unique valid sent value. Your changes are still here.', 'wconvert')));
+    }
+    return saveOptin(
       id,
       name,
       next,
@@ -389,17 +392,14 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange }: O
         setName(optin.name);
         setConfig(optin.config);
         setUnpublishedChanges(optin.has_unpublished_changes);
-        const accepted = optin.config.template as Template | undefined;
-        if (accepted) {
-          // Normalization accepts this edit; it is not a second user action.
-          const present = {
-            template: accepted,
-            templateId: typeof optin.config.template_id === 'string' ? optin.config.template_id : undefined,
-          };
-          setPast((current) =>
-            current === null ? historyOf(present) : { ...current, present, merged: null },
-          );
-        }
+        // Normalization accepts this edit; it is not another user action.
+        // Changing Goal saves immediately and moves historical reporting, so
+        // that explicit save starts a new local history rather than offering
+        // an Undo that would silently need another server write.
+        const present = { name: optin.name, config: optin.config };
+        coalescing.current = null;
+        setPast((current) => current === null || nextGoal !== undefined
+          ? historyOf(present) : { ...current, present, merged: null });
         // And its copy of the Goal wins for the same reason. It is the column
         // the save actually wrote, so a refused correction leaves the band
         // saying what the Optin still holds rather than what was asked for.
@@ -407,6 +407,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange }: O
         setSaved(true);
         setBaseline(JSON.stringify({ name: optin.name, config: optin.config }));
       });
+  };
 
   const save = (next: Config = config ?? {}, nextGoal?: string) => {
     if (busy) return Promise.resolve();
@@ -450,8 +451,14 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange }: O
     }
   }, []);
 
+  const prepareDesign = useCallback((picked: string, mode: 'keep' | 'sample', sample: Template) =>
+    mode === 'sample'
+      ? prepareTemplate(picked, { tree: sample.tree, tokens: sample.tokens }, picked)
+      : prepareTemplate(picked, template ?? { tree: { steps: [] }, tokens: {} }, templateId),
+  [template, templateId]);
+
   const stepping = useCallback(
-    (move: (held: History<DesignDraft>) => History<DesignDraft>) => () => {
+    (move: (held: History<DraftSnapshot>) => History<DraftSnapshot>) => () => {
       if (past === null || busy) {
         return;
       }
@@ -463,9 +470,12 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange }: O
       }
 
       setPast(next);
-      edit({ template: next.present.template, template_id: next.present.templateId });
+      coalescing.current = null;
+      setName(next.present.name);
+      setConfig(next.present.config);
+      setSaved(false);
     },
-    [past, edit, busy],
+    [past, busy],
   );
 
   useEffect(() => {
@@ -587,6 +597,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange }: O
           placeholder={__('Untitled Optin', 'wconvert')}
           disabled={busy}
           onChange={(event) => {
+            coalescing.current = 'name';
             setName(event.target.value);
             setSaved(false);
           }}
@@ -619,9 +630,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange }: O
           </Button>
           <Button variant="outline" disabled={busy || !dirty} onClick={() => void save()}>
             {busy
-              ? preparing
-                ? __('Changing template…', 'wconvert')
-                : publishing ? __('Publishing…', 'wconvert') : __('Saving…', 'wconvert')
+              ? publishing ? __('Publishing…', 'wconvert') : __('Saving…', 'wconvert')
               : __('Save draft', 'wconvert')}
           </Button>
           <ReadinessDialog
@@ -776,6 +785,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange }: O
         <TabsContent value="destinations" className="wconvert-workspace__secondary">
           <div className="wconvert-workspace__settings">
             <DestinationsEditor
+              template={template}
               bound={bound}
               available={
                 destinations.status === 'ready' ? ready(destinations.data.destinations) : destinations
@@ -813,9 +823,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange }: O
 
           <span className="wconvert-workspace__save-state" role="status">
             {busy
-              ? preparing
-                ? __('Changing template…', 'wconvert')
-                : publishing ? __('Publishing…', 'wconvert') : __('Saving…', 'wconvert')
+              ? publishing ? __('Publishing…', 'wconvert') : __('Saving…', 'wconvert')
               : dirty
                 ? __('Unsaved changes', 'wconvert')
                 : unpublishedChanges
@@ -834,7 +842,10 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange }: O
             <DialogDescription>
               {__('Goal, performance and design tools for this Optin.', 'wconvert')}
             </DialogDescription>
-          </DialogHeader>{' '}
+          </DialogHeader>
+          <p className="text-note text-muted-foreground">
+            {__('Undo and Redo cover this session’s draft edits: name, design, display rules and destination selections. They do not change the published version or shared destination settings. Saving a new goal starts a new Undo history.', 'wconvert')}
+          </p>
           <div className="mt-1 flex min-h-[1lh] flex-wrap items-center gap-x-2 text-note text-muted-foreground">
             <span>{goalSaid(goalEntry, goal ?? '')}</span>
 
@@ -937,23 +948,14 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange }: O
         onNear={want}
         failed={failedTrees}
         onRetry={retryTree}
-        onChoose={(picked) => {
+        onPrepare={prepareDesign}
+        onChoose={(picked, prepared) => {
+          if (prepared === undefined) return;
           restoreBrowseFocus.current = true;
+          edit({ template: prepared, template_id: picked });
+          setSelection(null);
+          setStep(0);
           setBrowsing(false);
-          setPreparing(true);
-          setBusy(true);
-          setError(null);
-          prepareTemplate(picked, template ?? { tree: { steps: [] }, tokens: {} }, templateId)
-            .then((next) => {
-              edit({ template: next, template_id: picked });
-              setSelection(null);
-              setStep(0);
-            })
-            .catch(report)
-            .finally(() => {
-              setBusy(false);
-              setPreparing(false);
-            });
         }}
       />
 
@@ -988,7 +990,7 @@ function HistoryControls({
     readonly redo: () => void;
   };
 }) {
-  const label = { undo: __('Undo design change', 'wconvert'), redo: __('Redo design change', 'wconvert') };
+  const label = { undo: __('Undo draft edit', 'wconvert'), redo: __('Redo draft edit', 'wconvert') };
 
   return (
     <span className="wconvert-history">

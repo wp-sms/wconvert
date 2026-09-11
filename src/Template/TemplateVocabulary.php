@@ -53,6 +53,7 @@ final class TemplateVocabulary
      * @param list<string> $fields
      * @param array<string, list<string>> $facets
      * @param string $identity The key a leaf carries to name itself, or '' where the manifest declares none.
+     * @param array<string, mixed> $fieldOptions Constraints on the interest field's stable values and labels.
      */
     private function __construct(
         private readonly array $layouts,
@@ -64,6 +65,7 @@ final class TemplateVocabulary
         private readonly array $fields,
         private readonly array $facets = [],
         private readonly string $identity = '',
+        private readonly array $fieldOptions = [],
     ) {
     }
 
@@ -96,6 +98,14 @@ final class TemplateVocabulary
     public function fields(): array
     {
         return $this->fields;
+    }
+
+    /** @param mixed $options
+     * @return list<array{value: string, label: string}>
+     */
+    public function choiceOptions($options): array
+    {
+        return ChoiceOptions::normalize($options, $this->fieldOptions);
     }
 
     /**
@@ -237,6 +247,7 @@ final class TemplateVocabulary
                 array_filter(self::section($manifest, 'facets'), 'is_array')
             ),
             is_string($manifest['identity'] ?? null) ? $manifest['identity'] : '',
+            self::section($manifest, 'field_options'),
         );
     }
 
@@ -380,6 +391,13 @@ final class TemplateVocabulary
 
         foreach ($allowed as $key) {
             if (!array_key_exists($key, $node)) {
+                continue;
+            }
+
+            if ($key === 'options') {
+                if ($type === 'field' && ($node['name'] ?? null) === 'interest') {
+                    $kept[$key] = $this->choiceOptions($node[$key]);
+                }
                 continue;
             }
 

@@ -544,6 +544,7 @@ export const SHADOW_CSS = [
    */
   `.wc-row{justify-content:var(--wc-align,start)}`,
   `.wc-label{font-size:.8125em;font-weight:500;color:var(--wc-muted,#6b7280)}`,
+  `.wc-field>select{appearance:auto}`,
   /*
    * ==========================================================================
    * A compact field-and-button row can use its placeholder as the visible cue.

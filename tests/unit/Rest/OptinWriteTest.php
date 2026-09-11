@@ -3,6 +3,7 @@
 namespace WConvert\Tests\Unit\Rest;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use WConvert\Goal\Goal;
 use WConvert\Goal\GoalRegistry;
@@ -125,6 +126,84 @@ final class OptinWriteTest extends TestCase
         $data = $response->get_data();
 
         return $data;
+    }
+
+    /** @param mixed $options
+     * @return array<string, mixed>
+     */
+    private static function choiceDraft($options): array
+    {
+        return ['template' => ['tokens' => [], 'tree' => ['steps' => [
+            ['type' => 'stack', 'children' => [
+                ['type' => 'field', 'name' => 'email', 'required' => true],
+                ['type' => 'field', 'name' => 'interest', 'options' => $options],
+                ['type' => 'button', 'action' => 'submit', 'label' => 'Send'],
+            ]],
+            ['type' => 'stack', 'children' => [['type' => 'heading', 'text' => 'Thanks']]],
+        ]]]];
+    }
+
+    /** @return array<string, array{mixed}> */
+    public static function malformedChoices(): array
+    {
+        $valid = ['value' => 'repair', 'label' => 'Repair'];
+        return [
+            'not a list' => ['repair'],
+            'null' => [null],
+            'malformed row beside valid' => [[$valid, null]],
+            'blank label' => [[['value' => 'repair', 'label' => ' ']]],
+            'duplicate sent value' => [[$valid, ['value' => 'repair', 'label' => 'Installation']]],
+            'newline sent value' => [[['value' => "repair\n", 'label' => 'Repair']]],
+            'keyed map' => [['answer' => $valid]],
+            'too many choices' => [array_map(static fn (int $at): array => ['value' => 'option-' . $at, 'label' => 'Answer ' . $at], range(1, 13))],
+        ];
+    }
+
+    /** @param mixed $options */
+    #[DataProvider('malformedChoices')]
+    public function testCreateRefusesChoicesThatNormalizationWouldDiscard($options): void
+    {
+        $refusal = $this->create(Goal::GrowEmailList, self::choiceDraft($options));
+        self::assertInstanceOf(WP_Error::class, $refusal);
+        self::assertSame('wconvert_optin_choices_invalid', $refusal->get_error_code());
+        self::assertSame([], $this->db->writes);
+    }
+
+    public function testRefusedChoiceEditPreservesTheSavedNameGoalAndAllAnswers(): void
+    {
+        $options = [['value' => 'repair', 'label' => 'Repair'], ['value' => 'installation', 'label' => 'Installation']];
+        $created = $this->create(Goal::GrowEmailList, self::choiceDraft($options));
+        self::assertIsArray($created);
+        $this->db->writes = [];
+        $options[1]['value'] = 'repair';
+        $request = new WP_REST_Request();
+        $request->set_param('id', $created['id']);
+        $request->set_param('name', 'A name that must not be saved');
+        $request->set_param('goal', Goal::PromoteOffer->value);
+        $request->set_param('config', self::choiceDraft($options) + ['rules' => [['type' => 'page_load']]]);
+        $refusal = $this->controller->update($request);
+        self::assertInstanceOf(WP_Error::class, $refusal);
+        self::assertSame('wconvert_optin_choices_invalid', $refusal->get_error_code());
+        self::assertSame([], $this->db->writes);
+        $saved = $this->optins->find($created['id']);
+        self::assertNotNull($saved);
+        self::assertSame($created['config'], $saved->config);
+        self::assertSame('Under test', $saved->name);
+        self::assertSame(Goal::GrowEmailList->value, $saved->goal);
+    }
+
+    public function testAnIntentionallyEmptyChoiceListCanBeCreatedAndSavedAsADraft(): void
+    {
+        $created = $this->create(Goal::GrowEmailList, self::choiceDraft([]));
+        self::assertIsArray($created);
+        self::assertSame([], $created['config']['template']['tree']['steps'][0]['children'][1]['options']);
+        $request = new WP_REST_Request();
+        $request->set_param('id', $created['id']);
+        $request->set_param('name', 'Still unfinished');
+        $request->set_param('config', $created['config']);
+        $saved = $this->controller->update($request);
+        self::assertNotInstanceOf(WP_Error::class, $saved);
+        self::assertSame([], $this->optins->find($created['id'])?->config['template']['tree']['steps'][0]['children'][1]['options']);
     }
 
     // ========================================================================

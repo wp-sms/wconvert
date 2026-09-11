@@ -4,6 +4,7 @@ namespace WConvert\Destination\Wsms;
 
 use WConvert\Destination\CanonicalFields;
 use WConvert\Destination\DestinationType;
+use WConvert\Destination\DestinationRequirements;
 use WConvert\Destination\PushContext;
 use WConvert\Destination\PushResult;
 use WConvert\Destination\PushSubject;
@@ -121,7 +122,7 @@ final class WsmsDestinationType implements DestinationType
         // it is a routine outcome and it must stay out of the health count
         // (ADR 0008). The capture path refuses such a Lead while the visitor
         // is still on the page, so nothing a form can do reaches this.
-        if (!isset($values[CanonicalFields::EMAIL]) && !isset($values[CanonicalFields::PHONE])) {
+        if (!$this->requirements()->acceptsCapture($values)) {
             return PushResult::skipped('The Lead carries neither an email nor a phone.');
         }
 
@@ -146,6 +147,11 @@ final class WsmsDestinationType implements DestinationType
         }
 
         return PushResult::success($contactId);
+    }
+
+    public function requirements(): DestinationRequirements
+    {
+        return new DestinationRequirements(['email', 'phone'], [], ['email', 'phone', 'name']);
     }
 
     public function throughput(): int

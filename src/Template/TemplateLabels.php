@@ -73,6 +73,9 @@ final class TemplateLabels
             'name_placeholder' => __('Name placeholder', 'wconvert'),
             'phone_label' => __('Phone label', 'wconvert'),
             'phone_placeholder' => __('Phone placeholder', 'wconvert'),
+            'interest_label' => __('Interest question', 'wconvert'),
+            'interest_placeholder' => __('Interest prompt', 'wconvert'),
+            'interest_options' => __('Interest choices', 'wconvert'),
         ];
     }
 
@@ -600,6 +603,7 @@ final class TemplateLabels
             'email' => __('Email address', 'wconvert'),
             'name' => __('Name', 'wconvert'),
             'phone' => __('Phone number', 'wconvert'),
+            'interest' => __('Interest (choice)', 'wconvert'),
         ];
     }
 
@@ -634,6 +638,7 @@ final class TemplateLabels
             'email' => __('you@example.com', 'wconvert'),
             'name' => __('Your name', 'wconvert'),
             'phone' => __('+44 7700 900000', 'wconvert'),
+            'interest' => __('Choose an option', 'wconvert'),
         ];
     }
 
@@ -658,6 +663,7 @@ final class TemplateLabels
             'src' => __('Image address', 'wconvert'),
             'alt' => __('Alt text', 'wconvert'),
             'href' => __('Where the button goes', 'wconvert'),
+            'options' => __('Choices', 'wconvert'),
         ];
     }
 

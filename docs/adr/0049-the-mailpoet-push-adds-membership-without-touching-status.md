@@ -145,6 +145,14 @@ happened to run the queue.
 The captured name lands where it is evidence of something: on a subscriber this
 site has never seen. On one it has, the owning system's record stands.
 
+**Completed by [0074](0074-destinations-declare-requirements-and-show-shared-usage.md):**
+the optional `interest_field` setting selects an existing MailPoet custom text
+field. A captured stable `interest` value is added only when creating a new
+subscriber, alongside the captured name. A match or create race still leaves
+all subscriber fields untouched. Settings and readiness explicitly say that
+existing subscribers keep their saved details; this mapping does not introduce
+an update path.
+
 ## Consequences
 
 - **A new `SiteDependency` case**, and the enum stays closed. Adding a member is
@@ -165,6 +173,10 @@ site has never seen. On one it has, the owning system's record stands.
   stored `string[]` is identical either way. A provider that cannot be reached
   sends no options and the control degrades to the text input `ids` has always
   had.
+  [0074](0074-destinations-declare-requirements-and-show-shared-usage.md) also
+  reads custom text-field metadata for the optional interest mapping. That
+  single-select control preserves an unavailable selected field and asks for
+  correction, rather than accepting an invented field or silently clearing it.
 - **FluentCRM is the same shape and should follow cheaply.** It is deliberately
   not built here; a second implementation is what would tell us which parts of
   this are general.

@@ -87,6 +87,9 @@ interface DestinationType
      */
     public function settingsSchema(array $credentials): array;
 
+    /** Static prerequisites and field use; no Contact state or provider read. */
+    public function requirements(): DestinationRequirements;
+
     /**
      * Prove the credentials work, or throw.
      *

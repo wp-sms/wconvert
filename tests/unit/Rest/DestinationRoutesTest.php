@@ -119,6 +119,16 @@ final class DestinationRoutesTest extends TestCase
         }
     }
 
+    public function testProviderRequirementsTravelWithTypesAndConfiguredRoutes(): void
+    {
+        (new DestinationStore($this->options))->save(null, 'wsms', 'WP SMS', null, []);
+        $payload = $this->controller->index()->get_data();
+        $expected = (new WsmsDestinationType(new FakeWsmsContacts()))->requirements()->toArray();
+        self::assertSame(['email', 'phone'], $expected['capture_any_of']);
+        self::assertSame($expected, $payload['types'][0]['requirements']);
+        self::assertSame($expected, $payload['destinations'][0]['requirements']);
+    }
+
     public function testCredentialsAreReturnedMaskedAndNeverAsValues(): void
     {
         (new ConnectionStore($this->options))->save(null, 'mailchimp', 'Main account', [

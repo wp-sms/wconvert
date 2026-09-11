@@ -62,7 +62,7 @@ describe('every member the manifest declares', () => {
   });
 
   it.each(manifest.fields)('has a field kind the renderer draws: %s', (name) => {
-    expect(renderStep({ type: 'stack', children: [{ type: 'field', name }] })?.querySelector('input')).not.toBeNull();
+    expect(renderStep({ type: 'stack', children: [{ type: 'field', name }] })?.querySelector('input,select')).not.toBeNull();
   });
 
   /**

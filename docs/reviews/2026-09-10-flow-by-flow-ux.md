@@ -18,9 +18,12 @@ Phase 5 steps 1–2 are implemented under
 [ADR 0073](../adr/0073-capture-acknowledgement-is-not-provider-confirmation.md):
 truthful capture acknowledgement and clearer existing-field feedback. Completed
 checks, WordPress findings and test fixture cleanup are recorded below. These
-two steps are complete; the broader qualification and internal-format review
-remains future work.
-Other proposals remain separate work. This review claims no tested provider delivery.
+two steps are complete. The remaining editor, qualification and destination
+contract work is implemented under
+[ADR 0074](../adr/0074-destinations-declare-requirements-and-show-shared-usage.md),
+[ADR 0075](../adr/0075-draft-history-and-template-content-choices-stay-predictable.md)
+and [ADR 0076](../adr/0076-an-enquiry-captures-one-optional-choice-before-handoff.md).
+The final section distinguishes its verification from the earlier phase records.
 
 ## What a successful experience means
 
@@ -68,6 +71,11 @@ countable capture Goal fits the authorized outbound lead-capture direction, but
 its copy, useful qualification field and named destination should be handled
 together in Phase 5. Phase 4 adds no new Goal or CRM workflow.
 
+**Completed in Phase 5:** **Collect enquiries**, **Request a quote**, and the
+**Choice card** design now supply that starting point. Email is required; name
+and one service choice are optional. Capturing a request counts a Conversion;
+replying, quoting and managing the relationship remain with the receiving service.
+
 **Implemented safeguards:** read failures can be retried at the current choice;
 obsolete Goal/Playbook/name responses cannot replace a newer choice. A same-tick
 guard prevents duplicate customization actions, and an abandoned prefill cannot
@@ -112,7 +120,9 @@ gradients are correctly excluded from the picture filter.
   results should preserve search, filters and the merchant's place.
 - Label sample content. Preserve the accepted draft/Undo behavior and warning
   that carried content may move, disappear or leave empty slots. The user's
-  deferred “keep mine versus use sample content” choice remains deferred.
+  “keep mine versus use sample content” choice was deferred in Phase 1 and is now
+  implemented under ADR 0075. The detail preview prepares and displays the exact
+  content that Apply will use.
 - Make preview examples inert to keyboard as well as pointer interaction.
   A failed thumbnail fetch must have a visible retry, not an endless skeleton.
 
@@ -145,9 +155,13 @@ says that it saves the current name and complete draft without publishing it.
 Mobile editing keeps a reminder that text and blocks are shared across sizes,
 including before an element is selected.
 
-**Remaining recommendation:** consider draft-wide Undo as a separate behavior
-change. Improve appearance controls by value kind while preserving token semantics
-and nested mobile inheritance; neither requires a new document format.
+**Completed in Phase 5, superseding the Phase 4 scope above:** header actions
+are **Undo draft edit** and **Redo draft edit**, covering the name and complete
+working configuration. Ordinary Save retains this history; immediate Goal
+correction explicitly starts a new history. Publication and shared destination
+settings remain separate writes. Appearance controls support amount/unit entry
+and exact custom CSS values while preserving inheritance and mobile overrides.
+Neither change introduces server-side history or a new document version.
 
 Sources: [editor state and save](../../resources/admin/src/builder/OptinBuilder.tsx),
 [routing](../../resources/admin/src/App.tsx),
@@ -209,12 +223,15 @@ Rows show provider and target. Refresh/retry stays in the draft, and missing
 references can be removed explicitly. Editing a route explains that its settings
 apply immediately to every Optin using it, including published versions.
 
-**Still deferred:** required capture/target compatibility metadata. Current
-schemas do not declare it: MailPoet requires email and a list, lead-magnet email
+**Completed in Phase 5:** adapters now declare required capture alternatives,
+required saved settings and forwarded fields through one contract. The gap
+identified in the original review was: MailPoet requires email and a list, lead-magnet email
 requires email and a file link, while WP SMS accepts email or phone and has
 optional tags. An empty generic target must not be treated as universally
-broken. Setup and Review can expose only known availability, missing account
-and route, and recorded health facts; publishing does not test delivery.
+broken. Setup and Review now expose these declared requirements alongside
+availability, missing bindings and recorded health. Shared settings list the
+saved/live Optins affected by a change. Interest mapping names its limitations;
+publishing still does not test delivery.
 
 Sources: [destination selection](../../resources/admin/src/builder/DestinationsEditor.tsx),
 [summary wording](../../resources/admin/src/builder/destinations.ts),
@@ -657,8 +674,108 @@ has **6 visible Optins: 1 published and 5 drafts**, **0 Leads**, and **0
 `wconvert_push_lead` actions**. This run changed no Destination, provider or
 email configuration and sent no email.
 
-**Phase 5 steps 1–2 are complete.** The broader qualification and dependable
-internal-format review remains future work; this record does not mark all of
-Phase 5 complete. The separate `2026-09-11-lead-journey-qa.md` remains unchanged:
-it describes an earlier, distinct run and is not evidence for these subsequent
-changes.
+**Phase 5 steps 1–2 are complete.** This historical subsection records only
+that slice. The qualification, internal-format and editor remainder is recorded
+below; the separate lead-journey report labels its later run independently.
+
+
+## Phase 5 remainder — editor, qualification and destination contracts
+
+The final slice completes the outstanding work from this review:
+
+- **Browse designs:** Keep my content and Use this design’s sample content
+  prepare the actual normalized candidate before Apply. Desktop/mobile and all
+  design screens show that candidate. Failed preparation stays open with Retry;
+  Undo restores the previous draft.
+- **Draft editing:** name, design, rules and destination bindings share local
+  Undo/Redo. Save keeps that history; explicit Goal correction explains its
+  reset. Measurement inputs accept an amount/unit or custom CSS. Pending text
+  applies on Enter or leaving the control and cancels with Escape.
+- **Destination setup:** provider-owned requirements drive adapter checks and
+  admin guidance. Shared settings show which saved/live Optins use the route.
+  MailPoet optionally maps interest to a real custom text field when creating a
+  new subscriber; existing subscriber fields and status stay unchanged.
+- **Enquiries:** Collect enquiries, Request a quote and Choice card ask for a
+  reply email with optional name and service. There is one closed qualification
+  key, `interest`, with at most 12 labelled choices. This introduces no message
+  inbox, CRM lifecycle, arbitrary custom-field builder or new database schema.
+- **Format and capture:** the existing v1 document carries `{value,label}` choices.
+  The visitor submits the stable value; the server validates it against the
+  published options and stores that value with the published display label.
+  Capture history and CSV retain both; supported forwarding sends the stable
+  value. Structured Slot Role copy keeps the list under an `options` wrapper.
+- **Incomplete edits:** malformed nonempty choice lists are refused before Save
+  can discard rows. An empty list can remain an unfinished draft, but publication
+  requires useful choices and an email or phone field on the submitting screen.
+  Keyboard focus follows moved/removed choices and malformed imported rows cannot
+  crash the renderer.
+- **Visitor layout:** the modal dialog uses the design width and centers its
+  actual content. Its inner form fills that width, preventing percentages from
+  resolving twice. Mobile gutters and internal scrolling keep long forms usable.
+
+### Automated verification
+
+The final complete frontend suite passes **2,239 tests across 92 files**; the
+PHP suite passes **1,839 tests / 8,205 assertions**. Full TypeScript, ESLint and
+PHPStan pass. All **56 templates** validate, the source contract passes, and
+all admin, block, loader and inspector builds succeed.
+
+The loader contract passes on **Node 22.23.2**, matching CI's Node 22 runtime:
+Free **10,395 B**, Basic **11,130 B**, Pro **12,094 B** and Elite **12,280 B**
+gzipped, within the unchanged **12,288 B** ceiling. Shared pending/rejection
+handling, redundant beacon guards and equivalent JSON serialization were
+simplified; the fallback remains explicit about an unconfirmed submission.
+Native invalid-field traversal remains explicit, with regressions for barred
+controls and event ordering. No feature or accessibility behavior was removed
+and the size limit was not increased.
+
+
+### Real WordPress journey and cleanup
+
+The new enquiry starting point was created through WordPress, customized,
+saved and published using one disposable Optin. Draft Undo/Redo restored its
+name, display rule and destination binding. Both content-choice previews were
+checked on desktop/mobile and Form/Success screens. Custom CSS applied both on
+Enter and when clicking Save from an active control; the temporary override was
+removed before publication.
+
+One visitor submitted **Repair** with a synthetic email and name. The server
+stored `interest=repair` and the published `interest_label=Repair`; the visible
+Lead detail and production CSV matched. The normal background job completed in
+one attempt, creating the intended MailPoet list membership and custom-field
+value. Its confirmation email reached local Mailpit. No confirmation link was
+followed and no external inbox delivery is claimed.
+
+The destination page showed successful delivery and named the test Optin as
+**Live and saved draft**. Percentage-width and tall popup fixtures passed
+desktop/mobile geometry checks, internal scrolling, Close, Escape and backdrop
+dismissal. The visitor page's normal close flushed its one conversion beacon.
+
+Guarded cleanup removed the exact test Lead, subscriber, action/logs, page,
+destination/health entry, list, custom field and Mailpit message. Original Optin,
+destination and provider row hashes matched the baseline. The site has six
+visible Optins, two original destinations, zero Leads and zero forwarding
+actions; Mailpit retains its one original message. The disposable Optin is
+soft-deleted and retains five impressions and one conversion as required.
+
+Exact identifiers, times and evidence are in the separately labelled enquiry run
+in [the lead-journey QA report](2026-09-11-lead-journey-qa.md).
+
+
+### Final creation layout
+
+When a Goal has one starting point, it now gets a larger preview beside the
+setup and action on wide containers. The existing comparison layout remains
+for multiple starting points. A real WordPress check at **1512 × 862** showed
+the complete enquiry form and primary action together; at **390 × 844** the
+preview, facts and action stacked cleanly. Document scroll width was exactly
+390 pixels and the action remained readable. This inspection created no draft
+or other record; viewport overrides were reset and the dedicated tab closed.
+
+
+The final isolated browser validation check used the actual renderer and capture
+handler with a null endpoint, so it could create no Lead or email. Blank submit
+focused Email address with its inline browser message. After entering only a
+valid synthetic email, submit focused the required interest select and kept the
+email. Choosing Repair cleared the inline error. The fixture tab closed and
+the viewport reset; no extra visitor submission or WordPress record was created.

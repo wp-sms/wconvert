@@ -145,6 +145,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
   }
 
   const entries = playbooks.status === 'ready' ? playbooks.data : [];
+  const singleStartingPoint = entries.length === 1;
   return <Region>
     <RegionHeader title={__('Choose a starting point', 'wconvert')}
       description={sprintf(__('For “%s”. Choose the offer and setup that fit, then make it yours in the editor.', 'wconvert'), goal.label)}
@@ -169,14 +170,16 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
           <span>{__('Setup details could not be loaded. You can still choose a starting point and review its rules in the editor.', 'wconvert')}</span>
           <Button variant="outline" size="sm" onClick={() => setRulesRetry((value) => value + 1)}>{__('Retry setup details', 'wconvert')}</Button>
         </div>}
-        <ul className="wconvert-gallery">{entries.map((playbook) => <TemplateCard
+        <ul className={`wconvert-gallery${singleStartingPoint ? ' wconvert-gallery--single-start' : ''}`}>{entries.map((playbook) => <TemplateCard
           key={playbook.id} id={playbook.id} name={playbook.name} template={playbook.template}
+          featured={singleStartingPoint}
           absent={playbook.template === undefined ? <p>{__('This design is not available on this site. Choose a design after opening the draft.', 'wconvert')}</p> : undefined}
           action={(describedBy) => <div className="flex w-full flex-col items-start gap-3">
             <StartingPointFacts playbook={playbook} goal={goal} vocabulary={vocabulary.status === 'ready' ? vocabulary.data : null} />
             {playbook.notes && <details className="text-note text-muted-foreground"><summary>{__('About this starting point', 'wconvert')}</summary><p className="mb-0">{playbook.notes}</p></details>}
             <div className="flex flex-col items-start gap-1">
               <Button aria-describedby={`${describedBy} ${playbook.id}-draft-note`} disabled={starting !== null}
+                className={singleStartingPoint ? 'h-auto min-h-9 max-w-full whitespace-normal text-start' : undefined}
                 onClick={() => { void start(playbook.id); }}>{starting === playbook.id ? __('Creating draft…', 'wconvert') : __('Customize this starting point', 'wconvert')}</Button>
               <span id={`${playbook.id}-draft-note`} className="text-note text-muted-foreground">{__('Creates a draft. You publish when it is ready.', 'wconvert')}</span>
             </div>

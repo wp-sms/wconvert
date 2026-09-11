@@ -240,7 +240,8 @@ export function nodeFor(
     // `render.ts` skips it the way it skips an unknown node type — so a new
     // field arrives with a kind or does not arrive.
     node.name = captures;
-    node.required = true;
+    node.required = captures !== 'interest';
+    if (captures === 'interest') node.options = [];
   }
 
   if (type === 'button') {

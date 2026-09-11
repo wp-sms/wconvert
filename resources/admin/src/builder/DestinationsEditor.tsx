@@ -17,6 +17,8 @@ import { tierProductName } from '../goals/availability';
 import { targetSaid } from '../destinations/settings';
 import type { Loadable } from '../shell/loadable';
 import type { Connection, Destination, DestinationType } from '../destinations/api';
+import { capturedFields, compatibilityProblems } from '../destinations/requirements';
+import type { Template } from '@renderer/types';
 
 /**
  * Which [[Destination]]s this [[Optin]] pushes to.
@@ -44,6 +46,7 @@ import type { Connection, Destination, DestinationType } from '../destinations/a
  * which one of them is holding a stale answer.
  */
 export interface DestinationsEditorProps {
+  readonly template?: Template;
   readonly bound: readonly string[];
   /**
    * The site's Destinations, in the three states a read has.
@@ -93,7 +96,7 @@ export interface DestinationsEditorProps {
 
 /** Choices edit this Optin's draft; setup edits a shared site destination. */
 export function DestinationsEditor({
-  bound, available, types, hint, connections, onChange, onRefresh, onSaved,
+  bound, available, types, hint, connections, onChange, onRefresh, onSaved, template,
 }: DestinationsEditorProps) {
   const [setup, setSetup] = useState<'add' | Destination | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
@@ -130,13 +133,15 @@ export function DestinationsEditor({
               <ul className="wconvert-choices">
                 {available.data.map((destination) => {
                   const said = targetSaid(destination.target);
+                  const compatibility = template ? compatibilityProblems(destination, capturedFields(template)) : [];
                   const control = `wconvert-bind-${destination.id}`;
                   const type = types.find((candidate) => candidate.id === destination.type);
                   const missingConnection = type?.needs_connection === true
                     && !connections.some((connection) => connection.id === destination.connection && connection.type === destination.type);
                   const description = [type ? `${control}-provider` : null, said === null ? null : `${control}-target`,
                     destination.availability === 'ready' ? null : `${control}-availability`,
-                    missingConnection ? `${control}-connection` : null].filter(Boolean).join(' ');
+                    missingConnection ? `${control}-connection` : null,
+                    compatibility.length ? `${control}-compatibility` : null].filter(Boolean).join(' ');
                   return (
                     <li key={destination.id} className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-3">
                       <input id={control} type="checkbox" className="mt-1" aria-describedby={description || undefined}
@@ -146,6 +151,9 @@ export function DestinationsEditor({
                         <label htmlFor={control} className="font-medium">{destination.label}</label>
                         {type !== undefined && <Description as="span" id={`${control}-provider`} className="block">{type.label}</Description>}
                         {said !== null && <Description as="span" id={`${control}-target`} className="block">{said}</Description>}
+                        {compatibility.length > 0 && <ul id={`${control}-compatibility`} className="mb-0 mt-2 ps-4 text-note text-warning">
+                          {compatibility.map((problem) => <li key={problem}>{problem}</li>)}
+                        </ul>}
                         {missingConnection && <Description as="span" id={`${control}-connection`} className="block text-warning">
                           {__('This destination needs an account. Open Settings to review its connection.', 'wconvert')}
                         </Description>}

@@ -5,6 +5,10 @@ WConvert is a WordPress lead-capture plugin: it displays conversion campaigns
 pushes captured leads onward. It runs standalone and integrates with WP SMS
 (WSMS) when present.
 
+It serves subscriber collection and enquiries. A quote request is a captured
+Lead that another plugin or service can act on, not an inbox thread, contact
+profile or job managed by WConvert.
+
 ## Glossary
 
 ### Lead
@@ -60,6 +64,15 @@ here, and would carry no [[Consent Record]], which is the half that cannot be
 invented.
 
 WConvert owns Leads.
+
+A form can also ask one choice question under the canonical key `interest`.
+Its stable selected value and the label from the published choice definition
+at capture are stored as `interest` and `interest_label` in the Lead's existing
+`fields` JSON. The endpoint validates the value against that published form;
+neither a browser-supplied label nor an arbitrary extra field is trusted. These
+answers do not identify a person, imply marketing consent, or acquire a
+lifecycle. Capture history and CSV show both values; email or phone remains
+necessary for a Lead. See [ADR 0076](docs/adr/0076-an-enquiry-captures-one-optional-choice-before-handoff.md).
 
 The capture-history read can locate a complete canonical email/phone or exact
 Lead ID, narrow by Optin and site-calendar dates, and page the matching events.
@@ -606,6 +619,14 @@ A Goal is first-class, not a setup-wizard answer that evaporates: it sets the
 Optin's headline success metric, decides what the analytics screen reports, and
 is the seam where later versions can recommend improvements.
 
+The closed enum includes **Collect enquiries**, a free standalone outcome beside
+the original five Goals. It counts Conversions, not replies, sales or completed
+work. Like the other captured-details Goals, it advises when a design captures
+nothing, without restricting the design's act or filtering the gallery. Its
+**Request a quote** starting point uses an inline form with required email,
+optional name and an optional service choice; the merchant places the block or
+shortcode and chooses the receiving service (ADR 0076).
+
 Each Goal **declares the metric that counts it** — which [[Conversion]] is the
 one that matters, and whether that Conversion is a [[Lead]] or not. That
 declaration is what makes a Goal more than a filter at creation time.
@@ -643,9 +664,10 @@ off the Optin, but it can be corrected.
 > one is purely editorial: it moves which card reports the Optin and what its
 > headline number is called, and touches the design not at all.
 > **The editor's action also saves the whole current draft**, including name,
-> design, rules and destinations, without publishing it. Its confirmation now
-> says so and names *Save draft and change goal*; Goal is outside design Undo
-> ([ADR 0072](docs/adr/0072-setup-choices-state-their-effect-and-scope.md)).
+> design, rules and destinations, without publishing it. Its confirmation names
+> *Save draft and change goal* and explains that success starts a new local
+> Undo/Redo history. A failed save preserves history. Goal remains outside draft
+> Undo ([ADR 0075](docs/adr/0075-draft-history-and-template-content-choices-stay-predictable.md)).
 
 > **The test a Goal must pass:** it names an outcome WConvert can *count*.
 > "Grow my email list" is countable. "Increase brand awareness" is not, and a
@@ -654,13 +676,20 @@ off the Optin, but it can be corrected.
 
 ### Template
 
-The design of an [[Optin]] — its structure and its look, with no words in it.
+The reusable structure and look of an [[Optin]], with sample content for the
+gallery that a merchant can explicitly adopt.
 
 A Template declares which slots exist (a heading, an image, fields, a button), how
-they are arranged, and how they are styled. It does **not** carry copy: the words
-come from the [[Playbook]] that prefilled the Optin, or from the user. Whatever
-placeholder text a Template carries exists so the gallery has something to show, and
-is never copied into an Optin.
+they are arranged, and how they are styled. That reusable structure is independent
+of campaign copy. The words normally come from the [[Playbook]] that prefilled
+the Optin, or from the user. Placeholder text supplies the gallery's examples. The default
+**Keep my content** carries the merchant's content by Slot Role and prepares the
+actual candidate before Apply. **Use this design's sample content** explicitly
+copies the selected design's sample words, assets, links and form settings.
+Both use the same normalized snapshot endpoint; Apply uses exactly the reviewed
+candidate, changes only the draft, and is undoable. Sample offers and links still
+need review. A new Playbook draft continues to use its own copy, not those samples
+([ADR 0075](docs/adr/0075-draft-history-and-template-content-choices-stay-predictable.md)).
 
 > **"How it is styled" has a scope.** The design sets its tokens for the
 > whole of itself, and **layouts and leaves may re-declare the same names for their own appearance** by carrying a `tokens` bag of its own — which is how one design
@@ -704,14 +733,13 @@ is never copied into an Optin.
 > something about the particular Optin in front of it.
 
 > **Amended: the library is no longer small, and the boundary is what stops the
-> matrix coming back.** It is twelve designs and growing, and what keeps that
-> from becoming Display Type × Goal is that a Template still carries no words —
-> so every facet the picker filters by describes the **design** (how it is
-> arranged, what it captures, whether it has a picture) and never the Goal. That
-> is also why there is no Industry or Season facet: those work for a library
-> whose entries contain a photograph of a bakery, and these contain no words at
-> all. See
-> [ADR 0043](docs/adr/0043-the-library-is-indexed-and-its-facets-are-derived.md).
+> matrix coming back.** Every facet describes the **design's capabilities**
+> (how it is arranged, what it captures, whether it has a picture), never its
+> Goal or sample campaign. A sample bakery photograph or seasonal headline
+> does not make the reusable structure belong to that industry or season.
+> Explicitly choosing sample content does not change those derived facets. See
+> [ADR 0043](docs/adr/0043-the-library-is-indexed-and-its-facets-are-derived.md)
+> and [ADR 0075](docs/adr/0075-draft-history-and-template-content-choices-stay-predictable.md).
 
 A design a free install did not get is still advertised — a card with a name,
 its facets and a link to a live preview, and no tree
@@ -769,9 +797,14 @@ is off by default and one click from on ([ADR 0032](docs/adr/0032-consent-captur
 > **The builder is a viewport workspace.** It opens with the canvas and Design
 > settings; Layers is optional. Selected leaves have Content and Style controls
 > limited to their token readers. Readiness is in the footer, Goal/performance
-> in Optin details. Template changes remain drafts and one Undo restores the
-> preceding template and id. See
-> [ADR 0067](docs/adr/0067-the-editor-starts-with-the-preview-and-the-selected-element.md).
+> in Optin details. Local Undo covers the name and complete draft configuration:
+> design, content, rules, targeting, schedule, frequency, priority and selected
+> destination ids. It keeps up to 50 snapshots and coalesces a typing burst.
+> Ordinary Save preserves earlier history and accepts the normalized response
+> as the present state. Undo after Save makes a draft change; it does not change
+> published visitor behavior. Shared destination settings and delivery actions
+> are outside this history. See
+> [ADR 0075](docs/adr/0075-draft-history-and-template-content-choices-stay-predictable.md).
 
 **And the manifest is the ceiling on how well a value can be *edited*, not only
 on what may exist** — a token declaring no `choices` whose value no shape test
@@ -798,8 +831,9 @@ frequency** under [ADR 0072](docs/adr/0072-setup-choices-state-their-effect-and-
 Conditions leaves the merchant's [[Trigger]]s alone: an [[Optin]] with no Trigger
 can never fire and the save route refuses one, so a button that wiped them would
 break the Optin it was offered to improve. Which sections it names is readable
-off what it carries, and applying one **confirms first**, because the builder's
-history watches the design and rules are not undoable.
+off what it carries, and applying one **confirms first** so replacement scope is
+reviewable. Rule changes now participate in draft Undo, including a whole
+starting-point replacement (ADR 0075).
 
 The review compares current and proposed values for the sections supplied.
 Replacing frequency does not replace campaign dates or overlay priority; those
@@ -853,6 +887,12 @@ rule-only Starting point above (ADR 0072).
 Because copy is snapshotted separately from design, a Playbook keys its words to
 [[Slot Role]]s rather than to one Template's structure — so the words survive
 switching Template, and a Playbook is not married to a single design.
+
+Choice content follows the same seam: `interest_options` holds a named
+`{options: [{value, label}]}` wrapper. The labels are translated words; the
+values are stable answer keys. This is one structured Role value, not an array
+of repeated Role occurrences. `interest_label` and `interest_placeholder` supply
+the question and empty-option prompt (ADR 0076).
 
 The words are the Playbook's mechanism and not the whole of what survives. Two
 things a *merchant* supplies are content without being words — an `image`'s
@@ -923,6 +963,11 @@ and ~~unique across the Template's whole tree~~ **claimable by more than one nod
 > switching Template. See
 > [ADR 0051](docs/adr/0051-a-slot-role-repeats-and-binds-in-order.md).
 
+An options list is one Role's structured content. Its `{options: [...]}`
+wrapper survives both `copyFrom()` and `bind()`, preserving stable answer values
+with the visible labels. A compatible design can carry them; a design without
+that Role cannot. See [ADR 0076](docs/adr/0076-an-enquiry-captures-one-optional-choice-before-handoff.md).
+
 > **~~One Role exists~~ Two Roles exist that a [[Playbook]] can never fill.**
 > `code_value` holds the static shared discount code, and a coupon code names a
 > row on one particular site — so it arrives the way the cart URL and the privacy
@@ -955,8 +1000,9 @@ same-named slots the renderer actually draws, per step.
 A field's Roles are **derived rather than declared**: they are named for what it
 captures, so a `field` capturing an email offers `email_label` and
 `email_placeholder` and cannot offer the phone's. That is why a field node carries
-no Role of its own while six of the vocabulary's Roles are named for fields, and
-it is what makes the field kind part of the *design*.
+no Role of its own while field Roles are derived from the vocabulary. Interest
+adds a question label, empty-option prompt and structured options list. The
+field kind remains part of the *design*; its labels and options are content.
 
 > **Corrected: this ended *"— a Template capturing an email cannot serve the SMS
 > [[Goal]] however its words read"*, and nothing ever enforced that.** It was
@@ -996,6 +1042,23 @@ owning system made and WConvert has no standing to revise. An
 audience reference one Destination. Where several Destinations share credentials,
 those live on a [[Connection]] underneath them.
 
+Editing a shared Destination shows its saved users: **Saved draft only**,
+**Live only**, or **Live and saved draft**. Those facts are read from existing
+Optin snapshots, exclude unsaved editor bindings, and do not count deleted or
+paused snapshots as live. Saving shared settings affects live uses immediately,
+independently of saving or undoing one Optin. Unknown usage is not presented as
+an unused route (ADR 0074).
+
+Each shipped adapter declares its identifiers, required settings and values it
+uses. WSMS accepts email or phone; MailPoet and lead-magnet email need email.
+MailPoet additionally needs a list and can map `interest` to an existing custom
+text field using **Save interest in MailPoet**, for new subscribers only.
+Existing subscriber fields remain unchanged. Neither WSMS nor lead-magnet email
+forwards that answer; without a compatible mapping it remains local. The editor
+distinguishes an absent required identifier from an optional one and explains
+unsupported answers without claiming provider delivery. See
+[ADR 0074](docs/adr/0074-destinations-declare-requirements-and-show-shared-usage.md).
+
 Data flow through a Destination is **one-way at capture time**: WConvert →
 Destination. WConvert never reads [[Contact]] state back — not subscription
 status, list membership, or suppression — so it never has an opinion about who is
@@ -1020,12 +1083,15 @@ is where it can be acted on.
 A **test send** pushes an explicitly chosen sample email to the Destination's
 saved route. The merchant sees the recipient and possible external effect
 before sending; the WordPress profile supplies a visible suggestion, never an
-implicit endpoint default. The sample contains email only. It writes no Lead —
+implicit endpoint default. The sample contains email unless the merchant
+explicitly enters an optional stable interest value for the saved route's
+configured mapping. No name, phone or interest is invented. It writes no Lead —
 a Lead has exactly one origin and carries a
 [[Consent Record]] that cannot be invented — it is answered immediately rather
 than queued, and it moves no counter at all: a failed test is a question
 answered, not an outage. Success establishes a handoff, not subscription or
-inbox receipt ([ADR 0071](docs/adr/0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md)).
+inbox receipt ([ADR 0071](docs/adr/0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md),
+[ADR 0074](docs/adr/0074-destinations-declare-requirements-and-show-shared-usage.md)).
 
 Its sibling is a **connection test**, and the two are kept apart because they
 answer different questions. A connection test asks whether the stored
@@ -1209,9 +1275,9 @@ already recorded per Destination, and restated nowhere.
 screens, and reading them is what a merchant does; sending them anywhere would be a
 separate decision with a separate consent conversation.
 
-> **The first edit is the one that reads the catalogue.** The five [[Goal]]s and
-> their Playbooks were derived by classifying market listings and reviews, and
-> nothing has challenged that guess. *Which* part of a Playbook's suggestion a
+> **The first edit is the one that reads the catalogue.** The original five [[Goal]]s
+> and their Playbooks were derived by classifying market listings and reviews;
+> enquiry capture adds a sixth explicit outcome under ADR 0076. *Which* part of a Playbook's suggestion a
 > merchant overrode first — its Goal, its design, its words, its rules or its
 > targeting — is the sharpest available evidence that a Goal's defaults are wrong.
 > A part is one of the things prefill actually writes, because an override is only

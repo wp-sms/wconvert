@@ -540,7 +540,8 @@ final class CoreServiceProvider implements ServiceProvider
                 // The *Test* buttons run through the same dispatcher a capture
                 // does, so a test exercises the real `push()` rather than a
                 // second path that would prove itself and nothing else (#88).
-                $c->resolve(PushDispatcher::class)
+                $c->resolve(PushDispatcher::class),
+                new \WConvert\Destination\DestinationUsage($c->resolve(\WConvert\Database\Connection::class))
             )
         );
 

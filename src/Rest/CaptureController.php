@@ -194,9 +194,11 @@ final class CaptureController implements RestController
                 'email' => __('Please enter your email address.', 'wconvert'),
                 'phone' => __('Please enter your phone number, including the country code.', 'wconvert'),
                 'name' => __('Please enter your name.', 'wconvert'),
+                'interest' => __('Please choose an option.', 'wconvert'),
                 default => __('Please fill in this field.', 'wconvert'),
             },
             RefusalCode::NoIdentifier => __('Please enter an email address or a phone number.', 'wconvert'),
+            RefusalCode::ChoiceInvalid => __('Please choose one of the available options.', 'wconvert'),
             RefusalCode::NothingToCapture => __('This form is not accepting submissions.', 'wconvert'),
         };
     }

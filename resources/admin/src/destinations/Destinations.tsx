@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
+import { DestinationUsageNotice } from './DestinationUsageNotice';
+import { settingsProblems } from './requirements';
 import {
   CircleAlert,
   CircleCheck,
@@ -805,6 +807,9 @@ function Configured({
         and whose schema therefore arrives empty.
       */}
       <div hidden={!settingsOpen} className="wconvert-route-settings" id={`wconvert-settings-${destination.id}`}>
+        <DestinationUsageNotice usage={destination.usage} />
+        {settingsProblems(type?.requirements, fromDraft(schema, draft), schema).map((problem) =>
+          <p key={problem} className="m-0 text-note text-warning">{problem}</p>)}
       <RegionBody className="flex flex-col gap-4 border-t border-border">
         <Description id={`wconvert-shared-${destination.id}`}>
           {__('This destination is shared across the site. Saving changes affects every Optin using it, including published Optins.', 'wconvert')}
@@ -852,7 +857,7 @@ function Configured({
               id={`wconvert-${destination.id}-${key}-label`}
               htmlFor={isGroup(field) ? undefined : `wconvert-${destination.id}-${key}`}
             >
-              {field.label}
+              {field.label}{type?.requirements?.settings[key] ? __(' (required to send)', 'wconvert') : ''}
             </Label>
             <SettingsControl
               id={`wconvert-${destination.id}-${key}`}

@@ -44,6 +44,15 @@ Every field costs conversions. Two is a lot; three needs a reason a visitor can
 see. A `name` field is worth it when the words that follow are personal and not
 otherwise.
 
+For an enquiry, email supplies the reply address and one optional service
+choice can help the business understand the request. Keep name optional unless
+the use needs it. The one supported qualification question is `interest`, a
+native single-choice select, not a general questionnaire. Every submit design
+still needs email or phone. Use the manifest's bounded `{value, label}` options,
+keep the sent value stable when changing a label, and provide a clear empty
+prompt such as *Choose a service*. See
+[ADR 0076](../../docs/adr/0076-an-enquiry-captures-one-optional-choice-before-handoff.md).
+
 `phone` is a different question from `email`, not a bigger one: it carries its
 own consent obligations, so a design that asks for a phone number puts the
 consent line **where it is read**, not under the fold.
@@ -82,6 +91,12 @@ code. A guide or emailed offer needs its delivery destination configured, and
 the Playbook's setup notes should say so. A success screen is not evidence that
 this setup has been completed.
 
+For a quote request, *Request received* acknowledges what happened. It cannot
+promise that a quote is ready, that someone has replied, or that a job is booked.
+The Playbook's notes name the remaining placement and service setup. MailPoet's
+optional interest mapping applies only to new subscribers; do not imply that
+every destination forwards the answer or updates an existing Contact.
+
 Library examples teach the wording for new drafts. Updating them does not
 rewrite saved merchant copy or published snapshots; the editor explains the
 acknowledgement boundary when merchants edit their success text.
@@ -118,16 +133,19 @@ where the consent wording lives.
 
 ### 1.9 The fine print is load-bearing
 
-*No spam, unsubscribe at any time* is not decoration; it measurably raises
-completion. The privacy link is a **label with no destination** — the site
-resolves it — so write the label and never an `href`.
+Explain the use of the details in terms of the actual request. Subscription
+wording can discuss unsubscribing; an enquiry should say the details are used
+to respond, without implying marketing consent. The privacy link is a **label
+with no destination** — the site resolves it — so write the label and never an
+`href`. Keep the surrounding sentence complete if no policy URL is configured:
+*We use these details to respond to your request. %s*.
 
 A `consent` node ships `hidden: true`. That is deliberate: it is present for
 the merchant who needs it and off for the merchant who does not.
 
 ### 1.10 Design a shape, never a campaign
 
-A design carries no words. *"A Black Friday popup"* is a Playbook; what the
+A design supplies a reusable shape and sample content. *"A Black Friday popup"* is a Playbook; what the
 library needs is a popup a Black Friday Playbook can fill and a book-launch
 Playbook can also fill.
 
@@ -142,6 +160,18 @@ design. There is no rescue for a role-less paragraph.
 
 Roles repeat: three `body` nodes are three benefit lines and a Playbook fills
 them in tree order.
+
+Fields derive their Roles from `name`; do not author a `role` on a field.
+`interest` derives its question and prompt plus `interest_options`. That last
+Role binds `{options: [{value, label}]}` as one structured value. A Playbook
+translates labels while stable values remain unchanged. A design without the
+Role has nowhere to carry those choices; review the actual Keep/Sample candidate.
+
+Give every shipped leaf a stable `n1`…`n9999` id, unique in its tree, and keep
+the id when moving the leaf. Slot Roles may repeat; node ids may not. This is
+how translation follows content rather than a changing array position. Do not
+author tree `v` or derived facets, and do not rely on PHP's new-node fallback
+to renumber a library file on every edit.
 
 ---
 

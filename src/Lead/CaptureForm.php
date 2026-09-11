@@ -30,7 +30,7 @@ final class CaptureForm
     private const IDENTITY_KEYS = ['email', 'phone'];
 
     /**
-     * @param array<string, bool> $fields Field name => whether it is required.
+     * @param array<string, array{required: bool, options: list<array{value: string, label: string}>}> $fields
      * @param array<string, mixed>|null $consent The `consent` node, or null where the Optin declares none.
      * @param list<string> $schemes The schemes an `<a>` may carry, for composing the Consent Record.
      */
@@ -69,11 +69,11 @@ final class CaptureForm
         $steps = is_array($tree['steps'] ?? null) ? $tree['steps'] : [];
 
         foreach ($steps as $step) {
-            if (is_array($step) && self::submits($step)) {
+            if (is_array($step) && \WConvert\Template\TemplateForm::submits($step)) {
                 $fields = [];
                 $consent = null;
 
-                self::read($step, $fields, $consent, $vocabulary->fields());
+                self::read($step, $fields, $consent, $vocabulary);
 
                 return new self($fields, $consent, $vocabulary->schemes());
             }
@@ -112,14 +112,28 @@ final class CaptureForm
         // for a field the form never offered is a mistake rather than an
         // extension — the same posture the template vocabulary takes on the
         // way in (ADR 0010).
-        foreach ($this->fields as $name => $required) {
+        foreach ($this->fields as $name => $definition) {
             $raw = is_scalar($posted[$name] ?? null) ? trim((string) $posted[$name]) : '';
 
+            if ($name === 'interest' && isset($posted[$name]) && !is_string($posted[$name])) {
+                return new Refusal(RefusalCode::ChoiceInvalid, $name);
+            }
+
             if ($raw === '') {
-                if ($required) {
+                if ($definition['required']) {
                     return new Refusal(RefusalCode::FieldRequired, $name);
                 }
 
+                continue;
+            }
+
+            if ($name === 'interest') {
+                $labels = array_column($definition['options'], 'label', 'value');
+                if (!array_key_exists($raw, $labels)) {
+                    return new Refusal(RefusalCode::ChoiceInvalid, $name);
+                }
+                $rest['interest'] = $raw;
+                $rest['interest_label'] = $labels[$raw];
                 continue;
             }
 
@@ -196,39 +210,13 @@ final class CaptureForm
     }
 
     /**
-     * Does this subtree hold the converting act that is a submission?
-     *
-     * The PHP spelling of `submits()` in `resources/renderer/src/render.ts`.
-     * Both answer the same question about the same tree, and they have to
-     * agree: this one decides what is enforced, that one decides what is
-     * rendered.
-     *
-     * @param array<string, mixed> $node
-     */
-    private static function submits(array $node): bool
-    {
-        if (($node['type'] ?? null) === 'button') {
-            return ($node['action'] ?? null) !== 'link';
-        }
-
-        foreach (TemplateTree::childrenOf($node) as $child) {
-            if (is_array($child) && self::submits($child)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * Collect what the form step declares: its fields, and its consent node.
      *
      * @param array<string, mixed> $node
-     * @param array<string, bool> $fields
+     * @param array<string, array{required: bool, options: list<array{value: string, label: string}>}> $fields
      * @param array<string, mixed>|null $consent
-     * @param list<string> $known What a `field` may capture, from the manifest.
      */
-    private static function read(array $node, array &$fields, ?array &$consent, array $known): void
+    private static function read(array $node, array &$fields, ?array &$consent, TemplateVocabulary $vocabulary): void
     {
         // A slot the merchant switched off. The renderer skips it, so the
         // browser never drew it — and a server enforcing a consent checkbox no
@@ -249,8 +237,11 @@ final class CaptureForm
         // rather than from a copy here, which is what stops the two answering
         // differently; `tests/js/renderer-manifest-parity.test.ts` holds the
         // renderer to the same file from its side (ADR 0010).
-        if ($type === 'field' && is_string($name) && in_array($name, $known, true)) {
-            $fields[$name] = ($node['required'] ?? null) === true;
+        if ($type === 'field' && is_string($name) && in_array($name, $vocabulary->fields(), true)) {
+            $fields[$name] = [
+                'required' => ($node['required'] ?? null) === true,
+                'options' => $name === 'interest' ? $vocabulary->choiceOptions($node['options'] ?? []) : [],
+            ];
         }
 
         // The FIRST consent node wins. A Slot Role is unique across a
@@ -263,7 +254,7 @@ final class CaptureForm
 
         foreach (TemplateTree::childrenOf($node) as $child) {
             if (is_array($child)) {
-                self::read($child, $fields, $consent, $known);
+                self::read($child, $fields, $consent, $vocabulary);
             }
         }
     }

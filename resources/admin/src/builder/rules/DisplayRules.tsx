@@ -47,8 +47,8 @@ import type { Rule, RuleVocabulary, Targeting } from '../api';
  * ONE PATCH OUT FOR THE SECTIONS A STARTING POINT REPLACES.
  * ============================================================================
  * Applying a bundle can change Triggers, Conditions, Targeting and the
- * allowance at once. One patch keeps that replacement atomic. Design Undo
- * does not cover rules, so StartingPoints reviews and confirms the replacement.
+ * allowance at once. One patch keeps that replacement atomic. Draft Undo
+ * restores the whole replacement; StartingPoints first reviews its scope.
  */
 /**
  * **The value moved to `summaries.ts`, which is where the four sentences are

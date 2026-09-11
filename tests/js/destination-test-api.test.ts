@@ -12,4 +12,11 @@ describe('the explicit destination test request', () => {
       path: '/wconvert/v1/destinations/route-id/test-send', method: 'POST', data: { email: 'seed@example.com' },
     });
   });
+  it('includes an interest value only when explicitly supplied', async () => {
+    fetch.mockClear();
+    await testSend('route-id', 'seed@example.com', 'installation');
+    expect(fetch).toHaveBeenCalledExactlyOnceWith({
+      path: '/wconvert/v1/destinations/route-id/test-send', method: 'POST', data: { email: 'seed@example.com', interest: 'installation' },
+    });
+  });
 });

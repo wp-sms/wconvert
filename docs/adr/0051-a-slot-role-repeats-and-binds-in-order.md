@@ -78,6 +78,16 @@ why nothing in `SlotRoles` has to know which node type is which. A Role claimed
 once still comes back in the shape it always did, so nothing that was already
 correct changes shape on a round trip.
 
+**Extended by [ADR 0076](0076-an-enquiry-captures-one-optional-choice-before-handoff.md):
+one Role may itself hold a list.** `interest_options` is the content of one
+choice field, so both Playbook copy and `copyFrom()` preserve it as
+`{options: [{value, label}]}`. An unwrapped list would look like repeated Role
+occurrences and bind the wrong shape. The wrapper is keyed by the content name;
+the existing map/list distinction then continues to work. Option labels are
+translatable; stable values stay unchanged when labels or their language change.
+Binding a design that has no matching Role still drops that content rather than
+inventing a place for it.
+
 ## What it costs elsewhere
 
 **A name no longer identifies a slot.** The builder's preview and its block

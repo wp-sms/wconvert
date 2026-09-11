@@ -21,6 +21,8 @@
 export const CAPTURE_ERROR_CLASS = 'wc-error';
 
 const ERROR_ID = 'wc-capture-error';
+type CaptureInput = HTMLInputElement | HTMLSelectElement;
+const isControl = (value: EventTarget | null): value is CaptureInput => value instanceof HTMLInputElement || value instanceof HTMLSelectElement;
 
 /**
  * The one sentence the loader carries itself.
@@ -33,7 +35,7 @@ const ERROR_ID = 'wc-capture-error';
  * nothing about whether the server saved the Lead. Same reasoning as the
  * close button's label, and the same English.
  */
-const NO_RESPONSE = 'We couldn’t confirm your submission. Please try again.';
+const NO_RESPONSE = 'Submission not confirmed. Please try again.';
 
 export interface CaptureOptions {
   readonly optinId: string;
@@ -61,13 +63,13 @@ export function bindCapture(root: HTMLElement, options: CaptureOptions): void {
   root.addEventListener('invalid', (event) => {
     const input = event.target;
 
-    if (!(input instanceof HTMLInputElement)) return;
+    if (!isControl(input)) return;
 
     event.preventDefault();
 
     // Chrome can drain microtasks between invalid events. Read native
     // validity in DOM order instead of relying on a timing-based pass guard.
-    const first = [...root.querySelectorAll<HTMLInputElement>('input')]
+    const first = [...root.querySelectorAll<CaptureInput>('input,select')]
       .find((candidate) => candidate.willValidate && !candidate.validity.valid);
     if (input !== first) return;
 
@@ -77,7 +79,7 @@ export function bindCapture(root: HTMLElement, options: CaptureOptions): void {
   root.addEventListener('input', (event) => {
     const input = event.target;
 
-    if (input instanceof HTMLInputElement && input.getAttribute('aria-describedby')?.split(/\s+/).includes(ERROR_ID)) {
+    if (isControl(input) && input.matches(`[aria-describedby~="${ERROR_ID}"]`)) {
       clear(root);
     }
   });
@@ -109,6 +111,9 @@ export function bindCapture(root: HTMLElement, options: CaptureOptions): void {
     const release = pending(root);
 
     void send(options.endpoint, payload)
+      // A lost response says nothing about whether the Lead was saved. Use
+      // the same refusal path, retaining the form and allowing another try.
+      .catch((): RefusalBody => ({}))
       .then((refusal) => {
         inFlight = false;
         release();
@@ -121,12 +126,6 @@ export function bindCapture(root: HTMLElement, options: CaptureOptions): void {
         }
 
         refuse(root, text(refusal.message) ?? NO_RESPONSE, text(refusal.data?.field));
-      }, () => {
-        // A lost response cannot tell us whether the server saved the Lead.
-        // Keep the form and its values, explain the uncertainty, and allow retry.
-        inFlight = false;
-        release();
-        refuse(root, NO_RESPONSE, null);
       });
   });
 }
@@ -149,10 +148,12 @@ async function send(endpoint: string, payload: string): Promise<RefusalBody | nu
       body: payload,
       signal: controller.signal,
     });
-    const result: unknown = await response.json().catch(() => null);
+    // Parse failures use the caller's unconfirmed-response path too; finally
+    // still clears the timeout before that rejection is handled.
+    const result: unknown = await response.json();
 
     if (typeof result !== 'object' || result === null || Array.isArray(result)) return {};
-    if (response.ok) return 'id' in result && text(result.id) !== null ? null : {};
+    if (response.ok) return text((result as { readonly id?: unknown }).id) !== null ? null : {};
 
     return result as RefusalBody;
   } finally {
@@ -164,25 +165,21 @@ async function send(endpoint: string, payload: string): Promise<RefusalBody | nu
 function pending(root: HTMLElement): () => void {
   const buttons = [...root.querySelectorAll<HTMLButtonElement>('button[type="submit"]')].filter((button) => !button.disabled);
   const fields = [...root.querySelectorAll<HTMLInputElement>('input.wc-input')].filter((input) => !input.readOnly);
-  const checkboxes = [...root.querySelectorAll<HTMLInputElement>('input.wc-checkbox')].filter((input) => !input.disabled);
+  const checkboxes = [...root.querySelectorAll<CaptureInput>('input.wc-checkbox,select.wc-input')].filter((input) => !input.disabled);
 
-  root.setAttribute('aria-busy', 'true');
-  for (const button of buttons) {
-    button.disabled = true;
-    button.setAttribute('aria-busy', 'true');
-  }
-  for (const input of fields) input.readOnly = true;
-  for (const input of checkboxes) input.disabled = true;
-
-  return () => {
-    root.removeAttribute('aria-busy');
+  const set = (busy: boolean) => {
+    if (busy) root.setAttribute('aria-busy', 'true');
+    else root.removeAttribute('aria-busy');
     for (const button of buttons) {
-      button.disabled = false;
-      button.removeAttribute('aria-busy');
+      button.disabled = busy;
+      if (busy) button.setAttribute('aria-busy', 'true');
+      else button.removeAttribute('aria-busy');
     }
-    for (const input of fields) input.readOnly = false;
-    for (const input of checkboxes) input.disabled = false;
+    for (const input of fields) input.readOnly = busy;
+    for (const input of checkboxes) input.disabled = busy;
   };
+  set(true);
+  return () => set(false);
 }
 
 /**
@@ -197,7 +194,7 @@ function pending(root: HTMLElement): () => void {
 function body(root: HTMLElement, optinId: string): string {
   const fields: Record<string, string> = {};
 
-  for (const input of root.querySelectorAll<HTMLInputElement>('input.wc-input')) {
+  for (const input of root.querySelectorAll<CaptureInput>('.wc-input')) {
     if (input.name !== '' && input.value.trim() !== '') {
       fields[input.name] = input.value;
     }
@@ -208,7 +205,8 @@ function body(root: HTMLElement, optinId: string): string {
   return JSON.stringify({
     optin_id: optinId,
     fields,
-    ...(consent === null ? {} : { consent: consent.checked }),
+    // JSON omits undefined; an absent checkbox does not assert consent.
+    consent: consent?.checked,
   });
 }
 
@@ -231,7 +229,7 @@ function refuse(root: HTMLElement, message: string, field: string | null): void 
   error.setAttribute('role', 'alert');
   error.textContent = message;
 
-  const input = field === null ? null : root.querySelector<HTMLInputElement>(`[name="${CSS.escape(field)}"]`);
+  const input = field === null ? null : root.querySelector<CaptureInput>(`[name="${CSS.escape(field)}"]`);
   const container = input?.closest('.wc-field,.wc-consent');
 
   (container ?? root).appendChild(error);

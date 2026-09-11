@@ -30,6 +30,12 @@ Inline placement and an outstanding destination are explained when relevant.
 If setup metadata or its vocabulary cannot be read, the card says to review the
 rules in the editor; it does not invent an immediate or site-wide default.
 
+When the selected Goal has exactly one available Playbook, its card uses the full
+region: a larger readable preview sits beside the compact setup facts and action
+on wide containers, and stacks above them on mobile. It reuses the same real
+preview and explicit draft-creation action. Multiple starting points retain the
+comparison gallery.
+
 Browsing and choosing a Goal only read. Prefill and draft creation run after an
 explicit customization action, with a synchronous in-flight guard against double
 activation. Responses belong to their current choice and mounted flow; late
@@ -85,8 +91,8 @@ Sources: [DisplayRules](../../resources/admin/src/builder/rules/DisplayRules.tsx
 
 The rule panel's Starting points are rule bundles, not creation Playbooks. The
 replacement review compares current and proposed values for the sections the
-bundle supplies. Confirmation remains necessary because these edits have no
-design-history entry. Cancel writes nothing. Applying changes the current draft;
+bundle supplies. The review remains the explicit apply boundary. Under [ADR 0075](0075-draft-history-and-template-content-choices-stay-predictable.md),
+the complete replacement now has one draft Undo entry. Cancel writes nothing. Applying changes the current draft;
 it does not save or publish it.
 
 The replacement keeps the existing patch boundary: supplied triggers,
@@ -109,16 +115,16 @@ Sources: [StartingPoints](../../resources/admin/src/builder/rules/StartingPoints
 
 ## Scope remains visible in the editor
 
-Header actions say **Undo design change** and **Redo design change**. History
-still contains the design and template id, not name, display rules, destination
-bindings or Goal. Mobile editing keeps a visible reminder that appearance can
-vary while text and blocks are shared across sizes, including when no node is
-selected. Existing narrow-token inheritance and container breakpoints remain.
+Header actions now say **Undo draft edit** and **Redo draft edit** under [ADR 0075](0075-draft-history-and-template-content-choices-stay-predictable.md).
+History contains the name and complete draft configuration, including the design,
+template id, rules and selected destination ids. Mobile editing keeps a visible
+reminder that appearance can vary while text and blocks are shared across sizes,
+including when no node is selected. Narrow-token inheritance remains unchanged.
 
 Goal correction explicitly says **Save draft and change goal**. It saves the
-current name and all draft configuration, and restates existing history under
-the new Goal. It does not publish the draft. The disclosure describes the existing
-full-draft save; it does not introduce a Goal-only write or draft-wide Undo.
+current name and all draft configuration, restates reporting under the new Goal,
+and starts a new local Undo history only after success. It does not publish the
+draft. Undo never silently performs a Goal save or reverses shared settings.
 
 Schedule labels preserve authored components even if that hour does not exist
 in the admin browser's own timezone. The ended-status advisory uses the site's
@@ -135,7 +141,10 @@ Sources: [OptinBuilder](../../resources/admin/src/builder/OptinBuilder.tsx),
 
 ## Product boundary and verification
 
-The existing Goals remain unchanged. A service business's enquiry is a suitable
+**Completed by [0076](0076-an-enquiry-captures-one-optional-choice-before-handoff.md):**
+Collect enquiries, its quote starting point and the stable interest choice now
+implement the capture/handoff slice identified below; they add no inbox or CRM.
+The original Phase 4 boundary was: existing Goals remain unchanged. A service business's enquiry is a suitable
 next capture use case for WConvert's outbound position, but newsletter
 subscription must not silently become a request for a reply. A neutral enquiry
 Goal, qualification field and named downstream destination belong to the next

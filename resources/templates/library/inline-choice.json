@@ -1,0 +1,121 @@
+{
+  "id": "inline-choice",
+  "name": "Choice card",
+  "display_type": "inline",
+  "tier": "free",
+  "tokens": {
+    "bg": "#f5f7f4",
+    "fg": "#1c3027",
+    "muted": "#526459",
+    "accent": "#285b43",
+    "accent-fg": "#ffffff",
+    "border": "#cdd9cf",
+    "input-bg": "#ffffff",
+    "heading-size": "1.75rem",
+    "heading-weight": "700",
+    "tracking": "-0.02em",
+    "radius": "0.75rem",
+    "pad": "2rem",
+    "gap": "1rem",
+    "width": "36rem",
+    "align": "start",
+    "shadow": "none"
+  },
+  "tree": {
+    "steps": [
+      {
+        "type": "stack",
+        "narrow": { "heading-size": "1.5rem" },
+        "children": [
+          {
+            "type": "heading",
+            "id": "n1",
+            "role": "headline",
+            "text": "Tell us what you have in mind"
+          },
+          {
+            "type": "text",
+            "id": "n2",
+            "role": "body",
+            "text": "Share your details so we can respond to your request."
+          },
+          {
+            "type": "row",
+            "children": [
+              {
+                "type": "field",
+                "id": "n3",
+                "name": "name",
+                "label": "Your name",
+                "placeholder": "Alex Morgan",
+                "required": false
+              },
+              {
+                "type": "field",
+                "id": "n4",
+                "name": "email",
+                "label": "Email address",
+                "placeholder": "you@example.com",
+                "required": true
+              }
+            ]
+          },
+          {
+            "type": "field",
+            "id": "n5",
+            "name": "interest",
+            "label": "What are you interested in?",
+            "placeholder": "Choose an option",
+            "required": false,
+            "options": [
+              { "value": "installation", "label": "Installation" },
+              { "value": "repair", "label": "Repair" }
+            ]
+          },
+          {
+            "type": "button",
+            "id": "n6",
+            "role": "cta_label",
+            "label": "Send my request",
+            "action": "submit"
+          },
+          {
+            "type": "consent",
+            "id": "n7",
+            "role": "consent_text",
+            "hidden": true,
+            "text": "I agree to be contacted about my request. %s",
+            "link": { "label": "Privacy Policy" }
+          },
+          {
+            "type": "text",
+            "id": "n8",
+            "role": "fine_print",
+            "text": "We use these details to respond to your request. %s",
+            "link": { "label": "Privacy Policy" },
+            "size": "s"
+          }
+        ]
+      },
+      {
+        "type": "stack",
+        "narrow": { "heading-size": "1.5rem" },
+        "children": [
+          { "type": "icon", "id": "n9", "name": "check" },
+          {
+            "type": "heading",
+            "id": "n10",
+            "role": "success_headline",
+            "text": "Request received"
+          },
+          {
+            "type": "text",
+            "id": "n11",
+            "role": "success_body",
+            "text": "Thank you for sharing your details. We have received your request."
+          }
+        ]
+      }
+    ]
+  }
+}

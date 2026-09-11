@@ -1,12 +1,14 @@
 import { useId, useState, type CSSProperties, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
-import { HexColorInput, HexColorPicker, RgbaStringColorPicker } from 'react-colorful';
+import { HexColorPicker, RgbaStringColorPicker } from 'react-colorful';
 import { Button } from '../components/ui/button';
 import { ChevronDown, RotateCcw } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
 import { CHOICES, TOKENS, groupsOf, resolvedToken, withToken, type TokenGroupId } from './panel';
 import { getThemeTokens, type SiteFont } from './api';
 import { MediaControl } from './SlotFields';
+import { MeasurementValue } from './MeasurementValue';
+import { StyleValueInput } from './StyleValueInput';
 import {
   asBackgroundLayer,
   axesOf,
@@ -14,6 +16,7 @@ import {
   isColour,
   isFontStack,
   isTranslucent,
+  measuresOf,
   themePresets,
   urlIn,
   type Axis,
@@ -438,9 +441,8 @@ function Palette({
 /**
  * One token, drawn as what it holds.
  *
- * A colour gets a picker. A **plain number and unit** gets a slider with the
- * value beside it, because `26rem` is a thing a merchant drags to rather than a
- * thing they know. A token the manifest **offers choices for** gets those
+ * A colour gets a picker. A plain length gets amount/unit inputs and a slider
+ * wherever the design's scale can represent it. A token the manifest offers choices for gets those
  * choices as a segmented control. Anything else — `clamp(20rem, 50vw, 30rem)`,
  * an asymmetric radius, a token this bundle has never heard of — gets the text
  * box it always had.
@@ -600,11 +602,9 @@ export function TokenField({
     drag right, the maximum grows, the thumb slides back. What the design
     shipped does not move while the panel is open.
 
-    So the sliders appear only where they can honestly say the stored value:
-    same unit as the design's, and inside the range that value produces.
-    Everything else — a `clamp()`, a px value against a rem design, a width the
-    merchant pushed past twice the design's — keeps the text box alone, which is
-    the same refusal the panel has always made rather than a new one.
+    Sliders appear only where they can say the stored value: the design's
+    unit, inside its range. Other plain lengths still have amount/unit controls;
+    expressions such as clamp() keep their full CSS text.
 
     **One slider per axis, and `axesOf` decides how many** — a two-value
     shorthand like `0.75rem 1.25rem` is two, and it is four designs' inner
@@ -612,6 +612,7 @@ export function TokenField({
     stayed one call and this file still names no token (ADR 0054).
   */
   const axes = axesOf(fallback, standard, shown);
+  const measured = measuresOf(shown) !== null;
 
   return (
     /*
@@ -622,23 +623,20 @@ export function TokenField({
     */
     <div className="wconvert-token">
       <label htmlFor={field}>{label}</label>
-      {/*
-        The modifier is what gives the exact box room for a two-value shorthand:
-        7rem holds `1.375rem` and truncates `1rem 1.375rem`, which is a control
-        showing a value that is not the one it holds.
-      */}
-      <span className={`wconvert-token__row${axes !== null && axes.length > 1 ? ' wconvert-token__row--split' : ''}`}>
-        {axes !== null ? (
+      {/* Multiple axes stack their numeric controls; reset stays beside the group. */}
+      <span className={`wconvert-token__row${measured ? ' items-start' : ''}`}>
+        {measured ? (
           <MeasureField
             id={field}
             label={label}
             fallback={fallback}
+            standard={standard}
             value={value}
             axes={axes}
             onChange={onChange}
           />
         ) : (
-          <input
+          <StyleValueInput
             id={field}
             type="text"
             className="regular-text"
@@ -646,7 +644,7 @@ export function TokenField({
             // so an empty control means "whatever the design says".
             placeholder={fallback}
             value={value}
-            onChange={(event) => onChange(event.target.value)}
+            onCommit={onChange}
           />
         )}
         {reset}
@@ -741,116 +739,40 @@ function axisName(index: number): string {
 }
 
 /**
- * A length, dragged — with the exact value still typeable beside it.
- *
- * **Both controls, and they cannot disagree**, because both write the one
- * token. That is what makes the slider strictly additive: a merchant on `28rem`
- * can still type a `clamp()` and watch the slider step aside, which is the
- * escape hatch a slider on its own would have quietly closed.
- *
- * **It was 0px wide until #75**, and what a merchant saw was the thumb: the box
- * beside it took 100% with `flex: none` and starved it. So the only way to set
- * a size in this panel was to type `1.625rem` into a text field, which is
- * exactly the defect the slider was added to remove. See
- * `.wconvert-token__slider` in `index.css` for the cascade that did it.
- *
- * ============================================================================
- * TWO AXES GET TWO SLIDERS AND **ONE** BOX, WHICH IS NOT AN INCONSISTENCY.
- * ============================================================================
- * The sliders edit a component each; the box holds the whole token value, the
- * way it always has. A second box would be a second place for the escape hatch
- * to live, and typing `clamp()` into half a shorthand is not a thing anybody
- * wants to do.
- *
- * Every drag rewrites both components from the axes, so the untouched one is
- * re-emitted rather than preserved verbatim. That is deliberate and it is the
- * only place this control normalises anything: a design's bare `0` comes back
- * as `0rem` once its sibling moves, because a shorthand written half in one
- * shape and half in another is worse to read than either.
+ * Sliders keep their design-based scale. Amount/unit fields can go beyond that
+ * scale or use another unit, while Custom CSS preserves the unparsed tail.
+ * Typing is committed when finished so partial values cannot replace this UI.
  */
 function MeasureField({
-  id,
-  label,
-  fallback,
-  value,
-  axes,
-  onChange,
+  id, label, fallback, standard, value, axes, onChange,
 }: {
   id: string;
   label: string;
   fallback: string;
+  standard: string;
   value: string;
-  axes: readonly Axis[];
+  axes: readonly Axis[] | null;
   onChange: (value: string) => void;
 }) {
-  const write = (index: number, amount: string) =>
-    onChange(
-      axes.map((axis, at) => `${at === index ? amount : axis.amount}${axis.unit}`).join(' '),
-    );
-
-  const slider = (axis: Axis, index: number, name?: string) => (
-    <input
-      // The token's own `<label for>` points at the first slider, so clicking
-      // *Inner spacing* lands somewhere. Where there are two, each carries a
-      // name of its own and that name wins.
-      id={index === 0 ? id : undefined}
-      type="range"
-      className="wconvert-token__slider"
-      aria-label={name}
-      min={axis.range.min}
-      max={axis.range.max}
-      step={axis.range.step}
-      value={axis.amount}
-      onChange={(event) => write(index, event.target.value)}
-    />
+  const write = (index: number, amount: string) => onChange(
+    axes!.map((axis, at) => `${at === index ? amount : axis.amount}${axis.unit}`).join(' '),
   );
+  const slider = (axis: Axis, index: number, name?: string) => <input
+    id={index === 0 ? id : undefined} type="range" className="wconvert-token__slider"
+    aria-label={name} min={axis.range.min} max={axis.range.max} step={axis.range.step}
+    value={axis.amount} onChange={(event) => write(index, event.target.value)} />;
 
-  return (
-    <>
-      {axes.length === 1 ? (
-        slider(axes[0], 0)
-      ) : (
-        <span className="wconvert-token__axes">
-          {axes.map((axis, index) => (
-            <label key={index} className="wconvert-token__axis">
-              <span className="wconvert-token__axis-name">{axisName(index)}</span>
-              {/*
-                The visible caption is short enough to sit over a slider; the
-                accessible name is the whole question, because "Sides" read out
-                on its own does not say sides of what.
-              */}
-              {slider(
-                axis,
-                index,
-                sprintf(
-                  /* translators: 1: what the setting is for, e.g. “Inner spacing”. 2: which half of it, e.g. “Sides”. */
-                  __('%1$s, %2$s', 'wconvert'),
-                  label,
-                  axisName(index).toLocaleLowerCase(),
-                ),
-              )}
-            </label>
-          ))}
-        </span>
-      )}
-      {/*
-        Named for the TOKEN, because two controls sharing one label is a screen
-        reader announcing "Width" twice with no way to tell which is which.
-      */}
-      <input
-        type="text"
-        className="wconvert-token__exact"
-        aria-label={sprintf(
-          /* translators: %s: what the setting is for, e.g. “Width”. */
-          __('%s value', 'wconvert'),
-          label,
-        )}
-        placeholder={fallback}
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-      />
-    </>
-  );
+  return <div className="flex min-w-0 w-full flex-col gap-2">
+    {axes !== null && (axes.length === 1 ? slider(axes[0], 0) : <span className="wconvert-token__axes">
+      {axes.map((axis, index) => <label key={index} className="wconvert-token__axis">
+        <span className="wconvert-token__axis-name">{axisName(index)}</span>
+        {slider(axis, index, sprintf(__('%1$s, %2$s', 'wconvert'), label, axisName(index).toLocaleLowerCase()))}
+      </label>)}
+    </span>)}
+    <MeasurementValue id={axes === null ? id : undefined} label={label}
+      rawLabel={sprintf(__('%s value', 'wconvert'), label)}
+      fallback={fallback} standard={standard} value={value} onChange={onChange} />
+  </div>;
 }
 
 /**
@@ -1456,7 +1378,7 @@ const SAMPLE: Readonly<Record<string, string>> = {
 };
 
 /**
- * A colour, chosen rather than typed — with the hex still typeable.
+ * A colour picker with unrestricted CSS entry, committed when typing ends.
  *
  * `react-colorful` is ~2.8KB and has no dependencies, which is the whole reason
  * it is here rather than a picker with a colour library behind it: the admin
@@ -1543,7 +1465,10 @@ function ColourField({
           </span>
         </button>
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-auto">
+      <PopoverContent align="start" className="w-auto" onEscapeKeyDown={(event) => {
+        // Radix handles Escape during capture, before the input can cancel its draft.
+        if (event.target instanceof HTMLInputElement && event.target.dataset.styleValuePending === 'true') event.preventDefault();
+      }}>
         <div className="wconvert-picker">
           {translucent ? (
             <RgbaStringColorPicker color={shown} onChange={onChange} />
@@ -1562,18 +1487,10 @@ function ColourField({
               __('%s value', 'wconvert'),
               label,
             )}
-            {translucent ? (
-              <input
-                type="text"
-                className="regular-text"
-                placeholder={fallback}
-                value={value}
-                onChange={(event) => onChange(event.target.value)}
-              />
-            ) : (
-              <HexColorInput className="regular-text" prefixed color={shown} onChange={onChange} />
-            )}
+            <StyleValueInput type="text" className="regular-text" placeholder={fallback}
+              value={value} onCommit={onChange} />
           </label>
+          <p className="m-0 text-note text-muted-foreground">{__('Hex, RGB or another CSS colour. Press Enter or leave the field to apply.', 'wconvert')}</p>
 
           {/*
             The way back to the design's own colour is {@see Reset}, in the

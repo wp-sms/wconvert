@@ -25,7 +25,7 @@ use WConvert\Support\Availability;
  *   hidden, upsold or explained. There is no manifest between them to be the
  *   single source, since there is nothing else about a state to declare. Held
  *   to parity below.
- * - **A Goal is NOT.** The five live in one enum, their labels are
+ * - **A Goal is NOT.** All members live in one enum, their labels are
  *   translatable strings `wp i18n make-pot` can only see in PHP, and their
  *   Availability is resolved against the install on the server. The admin
  *   renders whatever `GET /wconvert/v1/goals` hands it and branches on none of

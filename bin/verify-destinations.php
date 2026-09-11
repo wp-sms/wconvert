@@ -182,6 +182,11 @@ $registry->register(new class () implements \WConvert\Destination\DestinationTyp
         return [];
     }
 
+    public function requirements(): \WConvert\Destination\DestinationRequirements
+    {
+        return new \WConvert\Destination\DestinationRequirements();
+    }
+
     /**
      * @param array<string, mixed> $credentials
      */

@@ -165,9 +165,10 @@ ${table(
   Object.entries(DISPLAY_TYPES).map(([type, note]) => [`\`${type}\``, note]),
 )}
 
-**Never author \`facets\`, \`v\` or \`id\` on a node.** Facets are derived from the
-tree, \`v\` is stamped by PHP, and node ids are minted on the way in. Writing one
-by hand is a fact that can disagree with the design.
+**Do not author \`facets\` or \`v\`.** Facets are derived from the tree and
+\`v\` is stamped by PHP. Shipped leaf nodes carry unique stable ids (\`n1\`,
+\`n2\`, …), which keep their translation names stable. PHP mints any missing
+ids when a draft is saved; layouts do not carry ids.
 
 ## 2. The tree, and how many steps it has
 
@@ -423,6 +424,17 @@ to the default above.
 ## 7. Field kinds and link schemes
 
 - A \`field\` captures one of ${list(manifest.fields)}. One field per kind, at most.
+- \`interest\` renders a native select. Supply \`options\` as a list of
+  \`{ "value": "repair", "label": "Repair" }\` objects. Values stay stable
+  when labels change. The manifest permits at most ${manifest.field_options.max_items}
+  choices, values matching \`${manifest.field_options.value_pattern}\`, and
+  labels of at most ${manifest.field_options.label_max_length} characters.
+  A submitting form also needs an email or phone field. An unfinished choice
+  list can be saved as a draft but cannot be published.
+- The choice list is one copy value. A Playbook supplies
+  \`interest_options: { "options": [...] }\`, keeping the wrapper so a list
+  of choices is not mistaken for repeated role instances. Keep-content design
+  changes carry the values and labels together; sample mode replaces them.
 - An \`href\` may use one of ${list(manifest.schemes)}. Anything else renders no
   anchor at all.
 
