@@ -1209,7 +1209,8 @@ describe('destination recovery entry points', () => {
     api.readDestinations.mockResolvedValue(TWO_DESTINATIONS);
     render(<Destinations destinationId={LEAD_MAGNET_BOUND.id} />);
     const heading = await screen.findByRole('heading', { name: 'Lead magnet email' });
-    expect(heading).toHaveFocus();
+    // Finding the rendered heading can precede the effect that moves focus.
+    await waitFor(() => expect(heading).toHaveFocus());
     const region = within(regionFor(heading));
     await waitFor(() => expect(region.getByRole('button', { name: 'Settings' })).toHaveAttribute('aria-expanded', 'true'));
     expect(region.getByRole('textbox', { name: 'Link to the file' })).toHaveValue('https://example.com/guide.pdf');

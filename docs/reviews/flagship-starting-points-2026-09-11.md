@@ -69,11 +69,14 @@ original appearance with Save draft disabled, and that temporary draft was
 removed too. No campaign was published and no leads or external delivery
 messages were sent.
 
-Validation: 1,846 PHP tests / 8,516 assertions; 2,308 JavaScript tests across
+Validation: 1,846 PHP tests; 2,308 JavaScript tests across
 94 files; TypeScript, ESLint, PHPStan, template registration, source contract and
 both Free and Pro admin builds passed. Tests cover complete copy, merchant-owned blanks,
 distinct collection membership, recommendation order, extension retention and
-preview-to-draft identity. Visitor renderer and loader code were not changed.
+preview-to-draft identity. An existing destination-focus test now waits for the asynchronous focus effect
+instead of assuming that finding the heading means the effect has run. The
+47-test destination suite also passed under CI’s Node 22 runtime. Visitor
+renderer and loader code were not changed.
 
 ## Next
 
