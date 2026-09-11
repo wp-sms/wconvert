@@ -45,7 +45,7 @@ export function ShadowField({ label, shown, value, fallback, offered, labels, to
           <input type="radio" className="sr-only" name={id} checked={!custom && shown === choice} onChange={() => { setCustom(false); onChange(choice); }} />
           <span><span className="wconvert-shadow-sample" aria-hidden="true"><span style={{ boxShadow: choice }} /></span>{nameOf(labels.tokenValues, `${token}.${choice}`)}</span>
         </label>)}
-        <label className="wconvert-shadow-preset"><input type="radio" className="sr-only" name={id} checked={custom || !offered.includes(shown)} onChange={() => setCustom(true)} /><span>{__('Custom', 'wconvert')}</span></label>
+        <label className="wconvert-shadow-preset"><input type="radio" className="sr-only" name={id} checked={custom || !offered.includes(shown)} onChange={() => setCustom(true)} onClick={() => setCustom(true)} /><span>{__('Custom', 'wconvert')}</span></label>
       </div>{reset}
     </div>
     {shadow && <details className="wconvert-shadow-adjust"><summary>{__('Adjust shadow', 'wconvert')}</summary>
@@ -59,8 +59,8 @@ export function ShadowField({ label, shown, value, fallback, offered, labels, to
       <ColorField label={__('Shadow color', 'wconvert')} value={shadow.color} fallback={shadow.color} open={open} onOpenChange={onOpenChange} onChange={color => edit({ color })} />
       <label className="wconvert-shadow-inset"><input type="checkbox" checked={shadow.inset} onChange={e => edit({ inset: e.target.checked })} />{__('Inner shadow', 'wconvert')}</label>
     </details>}
-    <details open={(!shadow && shown !== 'none') || custom ? true : undefined} className="wconvert-shadow-css"><summary>{__('Custom CSS value', 'wconvert')}</summary>
+    {((!shadow && shown !== 'none') || custom) && <div className="wconvert-shadow-css">
       <StyleValueInput aria-label={sprintf(__('%s value', 'wconvert'), label)} className="wconvert-token__typed" value={value} placeholder={fallback} onCommit={onChange} />
-    </details>
+    </div>}
   </div>;
 }

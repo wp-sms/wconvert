@@ -1,6 +1,6 @@
 # Editor controls make placement and formatting explicit
 
-This extends [ADR 0067](0067-the-editor-starts-with-the-preview-and-the-selected-element.md), [ADR 0054](0054-every-control-has-the-shape-of-its-value.md), and the site-font workflow in [ADR 0055](0055-the-font-list-is-the-sites.md). It adds no database storage or visitor-facing rendering vocabulary.
+This extends [ADR 0067](0067-the-editor-starts-with-the-preview-and-the-selected-element.md), [ADR 0054](0054-every-control-has-the-shape-of-its-value.md), and the site-font workflow in [ADR 0055](0055-the-font-list-is-the-sites.md). It adds no database storage or visitor-facing rendering vocabulary. The follow-up in [ADR 0078](0078-editor-choices-stay-compact-and-scrollable.md) adds the structured italic phrase.
 
 ## Placement
 
@@ -14,9 +14,13 @@ Color pickers use their own CSS namespace, bounded portal size, and an alpha-cap
 
 The manifest declares the shadow control alongside the image control. Shadow presets have visual samples. A single pixel shadow exposes horizontal/vertical offset, blur, spread, color and inset. Other units, layered shadows and expressions stay verbatim behind Custom CSS. Opening controls never renormalizes a shipped shadow.
 
+> Refined by [ADR 0078](0078-editor-choices-stay-compact-and-scrollable.md): repeated CSS disclosures are removed; custom entry is an explicit choice. All submenu levels are portaled and scrollable.
+
 The editor owns its viewport. Hidden accessibility controls use containing blocks within the scroll panes; they cannot extend the outer document. Zoom controls define both their height and line height. Footer spacing is removed only while editing.
 
 ## Text
+
+> Extended by [ADR 0078](0078-editor-choices-stay-compact-and-scrollable.md): italic and Clear formatting join the toolbar; text and consent add an italic string at %i, with matching renderer and consent-record behavior.
 
 Text and consent elements get a selection toolbar for the existing bold phrase and link. A textarea contains the words, and a readout shows the formatting. One formatting action updates text, emphasis and link atomically, as one draft-history entry. Typing preserves marks outside the edited range and those edited internally; crossing a mark boundary removes that mark.
 
@@ -27,3 +31,5 @@ The stored model is still `text` with `%b`/`%s`, `emphasis`, and `link`. No HTML
 The font list becomes searchable and names both site and system fonts. The theme response provides a Font Library URL only for users who can edit theme options, with a version/theme-aware route and documentation fallback. Google Fonts are installed through WordPress and hosted by WordPress. Saving and reloading the editor refreshes font-face declarations; WConvert still loads no remote font stylesheet.
 
 Starting points retain their before/after confirmation and draft Undo semantics, with an icon, readable title, affected-section metadata and explicit review affordance. Optin details groups publication/draft status, goal and performance; draft-history explanation moves into a disclosure. Developer tools remain developer-only.
+
+> Refined by [ADR 0078](0078-editor-choices-stay-compact-and-scrollable.md): Starting points now opens a searchable chooser and review step in one dialog, leaving a compact button in Display rules.

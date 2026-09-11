@@ -122,3 +122,7 @@ Appearance tests cover amount/unit editing, custom CSS, colour focus, reset and
 mobile inheritance. Final integrated checks and real WordPress verification are
 recorded by the parent task in the flow-by-flow review; this decision does not
 claim a provider send, live publication or completed CI run.
+
+## Follow-up
+
+[ADR 0078](0078-editor-choices-stay-compact-and-scrollable.md) moves measurement CSS entry into an explicit Custom… unit choice and shadow CSS into its Custom choice, removing the repeated disclosure rows while keeping authored values editable.

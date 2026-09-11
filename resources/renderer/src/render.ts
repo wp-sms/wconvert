@@ -739,14 +739,13 @@ function heading(node: HeadingNode): HTMLElement {
 }
 
 /**
- * The two leaves that are a sentence which may hold one link and one run of
- * emphasis. Named for the shape rather than for either node, because the rule
- * is the same for both.
+ * Text and consent may hold one link, one bold phrase and one italic phrase.
+ * Named for the sentence shape because the rule is the same for both.
  */
-type Sentence = Pick<TextNode | ConsentNode, 'text' | 'link' | 'emphasis'>;
+type Sentence = Pick<TextNode | ConsentNode, 'text' | 'link' | 'emphasis' | 'italic'>;
 
 /**
- * The two placeholders a sentence may carry, and the only reason a leaf holds
+ * The placeholders a sentence may carry, and the only reason a leaf holds
  * more than a string (ADR 0013).
  *
  * ============================================================================
@@ -764,12 +763,13 @@ type Sentence = Pick<TextNode | ConsentNode, 'text' | 'link' | 'emphasis'>;
  */
 const PLACEHOLDER = '%s';
 const EMPHASIS = '%b';
+const ITALIC = '%i';
 
-/** Both marks, kept by the split so each piece is either text or a mark. */
-const MARKS = /(%s|%b)/;
+/** All marks, kept by the split so each piece is either text or a mark. */
+const MARKS = /(%s|%b|%i)/;
 
-/** Both marks with the space in front, for the pass that removes an unfilled one. */
-const UNFILLED = / ?(%s|%b)/g;
+/** All marks with the space in front, for the pass that removes an unfilled one. */
+const UNFILLED = / ?(%s|%b|%i)/g;
 
 /**
  * Schemes an `<a>` may carry.
@@ -787,10 +787,10 @@ const UNFILLED = / ?(%s|%b)/g;
 export const SAFE_SCHEMES = ['http:', 'https:', 'mailto:'];
 
 /**
- * A sentence that may hold one link and one run of emphasis, built as
+ * A sentence that may hold a link, bold and italic phrases, built as
  * STRUCTURE and never as markup.
  *
- * The text is split on the placeholders and both elements are constructed
+ * The text is split on the placeholders and its elements are constructed
  * here, so no code path in the renderer reaches `innerHTML` — which is what
  * keeps an XSS sink out of the loader's hot path (ADR 0013).
  *
@@ -813,9 +813,11 @@ function sentence(tag: string, className: string, node: Sentence): HTMLElement {
   const anchor =
     node.link === undefined || href === null ? null : link(node.link.label, href);
   const strong =
-    node.emphasis === undefined || node.emphasis === '' ? null : words('strong', 'wc-strong', node.emphasis);
+    node.emphasis ? words('strong', 'wc-strong', node.emphasis) : null;
 
-  fill(element, node.text ?? '', anchor, strong);
+  const italic = node.italic ? words('em', 'wc-italic', node.italic) : null;
+
+  fill(element, node.text ?? '', anchor, strong, italic);
 
   return element;
 }
@@ -839,19 +841,17 @@ function link(label: string, href: string): HTMLElement {
  * the element for it; every other piece is text, and goes through
  * {@link lines} so a sentence breaks its own line exactly as a heading does.
  */
-function fill(element: HTMLElement, text: string, anchor: Node | null, strong: Node | null): void {
-  const parts: Record<string, Node | null> = { [PLACEHOLDER]: anchor, [EMPHASIS]: strong };
-  const stripped = text.replace(UNFILLED, (whole, mark: string) => (parts[mark] === null ? '' : whole));
+function fill(element: HTMLElement, text: string, anchor: Node | null, strong: Node | null, italic: Node | null): void {
+  const parts = new Map<string, Node | null>([[PLACEHOLDER, anchor], [EMPHASIS, strong], [ITALIC, italic]]);
+  const stripped = text.replace(UNFILLED, (whole, mark: string) => (parts.get(mark) === null ? '' : whole));
 
   for (const piece of stripped.split(MARKS)) {
-    // The guard is what makes the lookup safe: `piece` is arbitrary authored
-    // copy otherwise, and a sentence containing the word `constructor` would
-    // otherwise reach a prototype property and try to append a function.
-    const part = piece === PLACEHOLDER || piece === EMPHASIS ? parts[piece] : null;
+    // Map has no prototype keys: authored words such as "constructor" stay text.
+    const part = parts.get(piece) ?? null;
 
     if (part !== null) {
       /*
-       * **One link and one emphasis per sentence, and a second mark of the
+       * **One link, bold and italic phrase per sentence, and a second mark of the
        * same kind is literal text.** The rule predates emphasis — it is what
        * `[before, ...after].join(PLACEHOLDER)` did — and it is asserted from
        * both sides by `tests/fixtures/consent-sentences.json`, because
@@ -859,7 +859,7 @@ function fill(element: HTMLElement, text: string, anchor: Node | null, strong: N
        * the Consent Record and evidence that disagrees with what was shown is
        * evidence of nothing.
        */
-      parts[piece] = null;
+      parts.set(piece, null);
       element.appendChild(part);
       continue;
     }

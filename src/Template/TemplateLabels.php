@@ -658,6 +658,8 @@ final class TemplateLabels
             'link' => __('Link', 'wconvert'),
             /* translators: the words inside a sentence that are set in bold, where the sentence carries %b. */
             'emphasis' => __('Words in bold', 'wconvert'),
+            /* translators: plain words filling %i in a sentence. */
+            'italic' => __('Words in italic', 'wconvert'),
             'label' => __('Label', 'wconvert'),
             'placeholder' => __('Placeholder', 'wconvert'),
             'src' => __('Image address', 'wconvert'),

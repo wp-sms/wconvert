@@ -474,6 +474,7 @@ export const SHADOW_CSS = [
    * emphasised run is the sentence around it, said harder.
    */
   `.wc-strong{font-weight:700}`,
+  `.wc-italic{font-style:italic}`,
   `.wc-image{display:block;inline-size:100%;block-size:auto;object-fit:cover;border-radius:var(--wc-radius,.5rem)}`,
   /*
    * A picture that IS one side of a split fills that side.

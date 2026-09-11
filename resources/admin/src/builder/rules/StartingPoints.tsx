@@ -1,43 +1,13 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
-import { ArrowUpRight, Clock3, Lock, MapPin, Repeat2, Users } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, Clock3, LayoutGrid, Lock, MapPin, Repeat2, Users } from 'lucide-react';
 import { Badge } from '../../components/ui/badge';
+import { Button } from '../../components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../../components/ui/dialog';
 import { renderingFor, tierName } from '../../goals/availability';
-import { ConfirmDialog } from '../../shell/ConfirmDialog';
-import { Description } from '../../shell/Description';
 import { listWithAnd } from './sentence';
 import type { Frequency, RuleBundle, Targeting } from '../api';
 
-/**
- * [[Starting point]]s: a named set of rules to begin from.
- *
- * ============================================================================
- * THEY ARE NOT CALLED PRESETS, AND THE NAME IS THE DECISION.
- * ============================================================================
- * `preset` already means a per-type shortcut on this very screen — `presets.ts`,
- * `RulePreset`, `RuleLabels::presets()` — and both would have been on the
- * screen at once, since a Starting point that lands *"after a few seconds"* is
- * a bundle whose content is a preset. Two meanings of one word is exactly what
- * CONTEXT.md's glossary exists to prevent.
- *
- * ============================================================================
- * APPLYING REPLACES THE SECTIONS IT NAMES, AND CONFIRMS FIRST.
- * ============================================================================
- * A bundle carries only the sections it fills, so one holding Conditions
- * leaves the merchant's Triggers alone — an Optin with no Trigger can never
- * fire and the save route refuses one outright, so a button that wiped them
- * would break the Optin it was offered to improve.
- *
- * **And it asks.** ADR 0039's exception to confirming — that an action which
- * is trivially undoable does not need one — is bought with undo, and the
- * builder's history watches `template` only. Rules are not undoable, so
- * replacing a merchant's Triggers with one click is a change they cannot walk
- * back.
- *
- * **A bundle this install cannot run is explained rather than hidden**, through
- * the same cascade every other absence uses: this is a settings list, so it
- * explains the gap (ADR 0026). `unavailable` never renders as an upsell.
- */
 export interface StartingPointsProps {
   readonly bundles: readonly RuleBundle[];
   readonly onApply: (patch: BundlePatch) => void;
@@ -52,150 +22,87 @@ export interface BundlePatch {
   readonly frequency?: Frequency;
 }
 
+/** Browse and review in one dialog. Only the final apply writes draft rules. */
 export function StartingPoints({ bundles, onApply, describe }: StartingPointsProps) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
   const [pending, setPending] = useState<RuleBundle | null>(null);
   const returnFocusTo = useRef<HTMLButtonElement | null>(null);
+  const reviewHeading = useRef<HTMLHeadingElement | null>(null);
 
-  if (bundles.length === 0) {
-    return null;
-  }
+  useEffect(() => {
+    if (pending) reviewHeading.current?.focus();
+    else if (open) returnFocusTo.current?.focus();
+  }, [pending, open]);
 
-  return (
-    <div className="wconvert-starters">
-      <h3>{__('Starting points', 'wconvert')}</h3>
-      <Description>
-        {__('A ready-made set of rules. Applying one replaces only the sections it names.', 'wconvert')}
-      </Description>
+  if (bundles.length === 0) return null;
+  const shown = bundles.filter(bundle => [bundle.label, bundle.description, sectionsIn(bundle)]
+    .some(text => text.toLocaleLowerCase().includes(search.trim().toLocaleLowerCase())));
 
-      <ul className="wconvert-starters__list">
-        {bundles.map((bundle) => {
-          const rendering = renderingFor(bundle.availability, 'settings_list');
-          const Icon = bundle.triggers !== undefined ? Clock3 : bundle.targeting !== undefined ? MapPin : bundle.frequency !== undefined ? Repeat2 : Users;
-
-          /*
-            ==================================================================
-            THE CARD IS THE CONTROL, SO THERE IS NO BUTTON ON IT.
-            ==================================================================
-            Every card carried a `Use this` — seven copies of one word under
-            seven descriptions, in a grid where the card is obviously the thing
-            you press. Removing it takes a row out of every card and takes
-            nothing away: the card was already the affordance.
-
-            **A `<button>` may hold only phrasing content**, so the lines are
-            `<span>`s. A `<p>` in here is invalid markup that browsers silently
-            reflow — the same trap `Section`'s summary has.
-          */
-          if (rendering === 'offer') {
-            return (
-              <li key={bundle.id}>
-                <button type="button" className="wconvert-starter" onClick={(event) => {
-                  returnFocusTo.current = event.currentTarget;
-                  setPending(bundle);
-                }}>
+  return <div className="wconvert-starters wconvert-starters--compact">
+    <div><h3>{__('Starting points', 'wconvert')}</h3>
+      <p>{__('Start with a ready-made set of display rules.', 'wconvert')}</p>
+    </div>
+    <Dialog open={open} onOpenChange={next => {
+      setOpen(next);
+      if (next) { setSearch(''); setPending(null); returnFocusTo.current = null; }
+    }}>
+      <DialogTrigger asChild><Button variant="outline" size="sm"><LayoutGrid aria-hidden="true" />{__('Browse starting points', 'wconvert')}</Button></DialogTrigger>
+      <DialogContent className="wconvert-starting-picker sm:max-w-3xl">
+        <DialogHeader>
+          <DialogTitle>{__('Choose a starting point', 'wconvert')}</DialogTitle>
+          <DialogDescription>{__('Browse ready-made rules, then review what will change before applying.', 'wconvert')}</DialogDescription>
+        </DialogHeader>
+        <div className="wconvert-starters-body">
+          <div hidden={pending !== null}>
+            <label className="wconvert-starters-search">{__('Find a starting point', 'wconvert')}
+              <input type="search" value={search} onChange={event => setSearch(event.target.value)} placeholder={__('Search by name or rule…', 'wconvert')} />
+            </label>
+            <ul className="wconvert-starters__list">
+              {shown.map(bundle => {
+                const rendering = renderingFor(bundle.availability, 'settings_list');
+                const Icon = bundle.triggers !== undefined ? Clock3 : bundle.targeting !== undefined ? MapPin : bundle.frequency !== undefined ? Repeat2 : Users;
+                const content = <>
                   <span className="wconvert-starter__icon" aria-hidden="true"><Icon /></span>
                   <span className="wconvert-starter__head">
-                    <span className="wconvert-starter__name text-body font-semibold">{bundle.label}</span>
-                  {/*
-                    Which sections applying it replaces — a CLASSIFICATION, and
-                    a badge is what a classification looks like. It had a line
-                    of its own in the small-caps label register, which gave a
-                    piece of metadata the same weight as the pitch above it.
-                  */}
-                    <Badge variant="secondary">
-                      {sectionsIn(bundle)}
-                    </Badge>
+                    <span className="wconvert-starter__name text-note font-semibold">{bundle.label}</span>
+                    {rendering === 'offer' ? <Badge variant="secondary">{sectionsIn(bundle)}</Badge>
+                      : rendering === 'upsell' ? <Badge variant="secondary"><Lock aria-hidden="true" />{tierName(undefined)}</Badge>
+                        : <Badge variant="warning">{sprintf(__('Needs %s', 'wconvert'), bundle.requires_label ?? __('another plugin', 'wconvert'))}</Badge>}
                   </span>
-                  <span className="wconvert-starter__what text-note text-muted-foreground">
-                    {bundle.description}
-                  </span>
-                  <span className="wconvert-starter__action">{__('Review starting point', 'wconvert')}<ArrowUpRight aria-hidden="true" /></span>
-                </button>
-              </li>
-            );
-          }
-
-          /*
-            Not a disabled button — there is nothing here to press, and wp.org
-            Guideline 9 is about showing a real control a merchant cannot use.
-            The badge slot carries the REASON instead of the sections, because
-            "you cannot use this" outranks "this is a When rule" for somebody
-            who cannot use it.
-
-            The cascade is `renderingFor`'s rather than one written out again:
-            `locked` and `unavailable` must never collapse into a single "not
-            available", because that is how a merchant with no store gets sold
-            Pro for a feature Pro would not give them either (ADR 0026).
-          */
-          return (
-            <li key={bundle.id}>
-              <div className="wconvert-starter wconvert-starter--absent">
-                <span className="wconvert-starter__icon" aria-hidden="true"><Icon /></span>
-                  <span className="wconvert-starter__head">
-                  <span className="wconvert-starter__name text-body font-semibold">{bundle.label}</span>
-                  {rendering === 'upsell' ? (
-                    <Badge variant="secondary">
-                      <Lock aria-hidden="true" />
-                      {/*
-                        A Starting point is a GROUP of rules and carries no
-                        `tier` of its own — it is locked when any rule in it is
-                        (`RuleCatalogue`). So this names no rung, and takes the
-                        word the product has always used (ADR 0056). If a
-                        bundle ever declares a tier, this is the one call site
-                        that should be handed it.
-                      */}
-                      {tierName(undefined)}
-                    </Badge>
-                  ) : (
-                    // Amber is the reserved meaning it already carries on the
-                    // Optin list: the SITE is holding this back (ADR 0037).
-                    <Badge variant="warning">
-                      {sprintf(
-                        /* translators: %s: the plugin the site needs, e.g. “WooCommerce”. */
-                        __('Needs %s', 'wconvert'),
-                        bundle.requires_label ?? __('another plugin', 'wconvert')
-                      )}
-                    </Badge>
-                  )}
-                </span>
-                <span className="wconvert-starter__what text-note text-muted-foreground">
-                  {bundle.description}
-                </span>
-              </div>
-            </li>
-          );
-        })}
-      </ul>
-
-      <ConfirmDialog
-        open={pending !== null}
-        onOpenChange={(open) => !open && setPending(null)}
-        title={pending?.label ?? ''}
-        description={
-          pending === null
-            ? ''
-            : <span className="wconvert-rule-comparison">
-                <span>{__('Review the settings this starting point will replace.', 'wconvert')}</span>
-                {describe(pending).map((section) => (
-                  <span key={section.label} className="wconvert-rule-comparison__section">
-                    <strong>{section.label}</strong>
-                    <span><strong>{__('Current:', 'wconvert')}</strong> {section.before}</span>
-                    <span><strong>{__('After applying:', 'wconvert')}</strong> {section.after}</span>
-                  </span>
-                ))}
-                <span>{__('Your start and end dates, priority and settings outside these sections stay the same. Undo can restore these draft settings.', 'wconvert')}</span>
-              </span>
-        }
-        returnFocusTo={returnFocusTo}
-        confirmLabel={__('Replace these rules', 'wconvert')}
-        onConfirm={() => {
-          if (pending !== null) {
-            onApply(patchOf(pending));
-            setPending(null);
-          }
-        }}
-      />
-    </div>
-  );
+                  <span className="wconvert-starter__what text-note text-muted-foreground">{bundle.description}</span>
+                  {rendering === 'offer' && <span className="wconvert-starter__action">{__('Review rules', 'wconvert')}<ArrowUpRight aria-hidden="true" /></span>}
+                </>;
+                return <li key={bundle.id}>{rendering === 'offer'
+                  ? <button type="button" className="wconvert-starter" onClick={event => { returnFocusTo.current = event.currentTarget; setPending(bundle); }}>{content}</button>
+                  : <div className="wconvert-starter wconvert-starter--absent">{content}</div>}
+                </li>;
+              })}
+            </ul>
+            {shown.length === 0 && <p role="status">{__('No matching starting points.', 'wconvert')}</p>}
+          </div>
+          {pending && <div className="wconvert-starters-review">
+            <Button variant="ghost" size="sm" onClick={() => setPending(null)}><ArrowLeft aria-hidden="true" />{__('Back to choices', 'wconvert')}</Button>
+            <h3 ref={reviewHeading} tabIndex={-1}>{pending.label}</h3>
+            <p>{pending.description}</p>
+            <div className="wconvert-rule-comparison">
+              <p>{__('Review the settings this starting point will replace.', 'wconvert')}</p>
+              {describe(pending).map(section => <div key={section.label} className="wconvert-rule-comparison__section">
+                <strong>{section.label}</strong>
+                <span><strong>{__('Current:', 'wconvert')}</strong> {section.before}</span>
+                <span><strong>{__('After applying:', 'wconvert')}</strong> {section.after}</span>
+              </div>)}
+              <p>{__('Your start and end dates, priority and settings outside these sections stay the same. Undo can restore these draft settings.', 'wconvert')}</p>
+            </div>
+          </div>}
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setOpen(false)}>{__('Cancel', 'wconvert')}</Button>
+          {pending && <Button onClick={() => { onApply(patchOf(pending)); setOpen(false); }}>{__('Replace these rules', 'wconvert')}</Button>}
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  </div>;
 }
 
 /**

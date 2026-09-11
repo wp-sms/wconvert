@@ -19,8 +19,8 @@ defined('ABSPATH') || exit;
  * payload was projected from.
  *
  * That makes this the PHP spelling of one rule the renderer also has:
- * `resources/renderer/src/render.ts` splits a sentence on `%s` and `%b` and
- * constructs the `<a>` and the `<strong>` itself, and with nothing to fill a
+ * `resources/renderer/src/render.ts` splits a sentence on `%s`, `%b` and `%i` and
+ * constructs the anchor, strong and em elements itself, and with nothing to fill a
  * mark it drops it along with the space in front of it. Two spellings of one rule is a real cost, paid here
  * because the alternative is evidence the browser wrote.
  * `tests/unit/Lead/ConsentSentenceParityTest.php` and
@@ -37,6 +37,8 @@ final class ConsentRecord
     /** Where the emphasis goes. {@see \WConvert\Template\TemplateVocabulary} declares both as content. */
     private const EMPHASIS = '%b';
 
+    private const ITALIC = '%i';
+
     /**
      * @param array<string, mixed> $node The `consent` node, as the Optin published it.
      * @param list<string> $schemes The schemes an `<a>` may carry, from the template manifest.
@@ -47,6 +49,7 @@ final class ConsentRecord
         $link = is_array($node['link'] ?? null) ? $node['link'] : [];
         $href = self::safeHref($link['href'] ?? null, $schemes);
         $emphasis = $node['emphasis'] ?? null;
+        $italic = $node['italic'] ?? null;
 
         /*
          * What each mark is replaced by, or null where nothing fills it.
@@ -71,29 +74,25 @@ final class ConsentRecord
                 ? null
                 : (is_string($link['label'] ?? null) ? $link['label'] : ''),
             self::EMPHASIS => is_string($emphasis) && $emphasis !== '' ? $emphasis : null,
+            self::ITALIC => is_string($italic) && $italic !== '' ? $italic : null,
         ];
 
-        foreach ($fills as $mark => $fill) {
-            // Nothing to fill it with, or NOWHERE TO PUT ONE. The second is
-            // what `split()` gives the renderer for free — a text with no mark
-            // in it has no piece that is one — and it has to be said out loud
-            // here, or a sentence with no `%s` acquires the link label glued
-            // to its last word.
-            if ($fill === null || !str_contains($text, $mark)) {
-                $text = (string) preg_replace('/ ?' . preg_quote($mark, '/') . '/', '', $text);
-
-                continue;
+        // Remove empty marks first, then expand each kind once. Replacement
+        // words are never re-parsed as placeholders, matching the DOM renderer.
+        $stripped = (string) preg_replace_callback('/ ?(%s|%b|%i)/', static fn (array $match): string =>
+            $fills[$match[1]] === null ? '' : $match[0], $text);
+        $pieces = preg_split('/(%s|%b|%i)/', $stripped, -1, PREG_SPLIT_DELIM_CAPTURE);
+        $shown = '';
+        foreach ($pieces === false ? [] : $pieces as $piece) {
+            if (array_key_exists($piece, $fills) && $fills[$piece] !== null) {
+                $shown .= $fills[$piece];
+                $fills[$piece] = null;
+            } else {
+                $shown .= $piece;
             }
-
-            // Only the FIRST mark of a kind is filled. A sentence carries one
-            // link and one run of emphasis, so a second `%s` or `%b` stays
-            // literal text — which is what the renderer does when it meets a
-            // mark it has already spent, and this has to be the same sentence.
-            [$before, $after] = array_pad(explode($mark, $text, 2), 2, '');
-            $text = $before . $fill . $after;
         }
 
-        return $text;
+        return $shown;
     }
 
     /**

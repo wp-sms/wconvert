@@ -185,6 +185,9 @@ export function BlockTree({
     );
 
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    // React events from portaled menus still bubble through this component.
+    // Their navigation belongs to the menu, not the underlying layer tree.
+    if (!event.currentTarget.contains(event.target as Node)) return;
     const block = rows[current];
 
     if (block === undefined) {

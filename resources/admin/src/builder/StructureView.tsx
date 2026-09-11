@@ -365,7 +365,7 @@ function RowAction({
           <span className="sr-only">{sprintf(__('Add, copy or delete %s', 'wconvert'), name)}</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="max-w-xs">
+      <DropdownMenuContent className="wconvert-layer-menu max-w-xs" align="end">
         {block.level > 1 && (
           <>
             <DropdownMenuItem disabled={block.position === 1} onSelect={() => onMove(block, -1, 0)}>
@@ -466,7 +466,7 @@ function InsertionMenus({ block, tree, act, labels, onAdd }: {
       <DropdownMenuSubTrigger><Plus aria-hidden="true" />{childKeysOf(block.type).length > 1
         ? sprintf(__('Add to the %s', 'wconvert'), key === 'start' ? __('first pane', 'wconvert') : __('second pane', 'wconvert'))
         : __('Add a block inside', 'wconvert')}</DropdownMenuSubTrigger>
-      <DropdownMenuSubContent>
+      <DropdownMenuSubContent className="wconvert-layer-menu">
         <AddMenu tree={tree} act={act} labels={labels} at={{ parent: block.path, key, index: 0 }} label={__('At the beginning', 'wconvert')} onAdd={onAdd} />
         <AddMenu tree={tree} act={act} labels={labels} at={{ parent: block.path, key, index: countAt(tree, block.path, key) }} label={__('At the end', 'wconvert')} onAdd={onAdd} />
       </DropdownMenuSubContent>
@@ -528,10 +528,10 @@ function AddMenu({
         {label}
       </DropdownMenuSubTrigger>
 
-      <DropdownMenuSubContent className="wconvert-add-elements">
+      <DropdownMenuSubContent className="wconvert-layer-menu wconvert-add-elements max-h-[min(440px,var(--radix-dropdown-menu-content-available-height))]">
         {additionsIn(tree, at, act).map((addition) => addition.type === 'field' && addition.refused === null ? (
           <DropdownMenuSub key="field"><DropdownMenuSubTrigger>{nameOf(labels.nodes, 'field')}</DropdownMenuSubTrigger>
-            <DropdownMenuSubContent>{FIELDS.map(capture => <Refusable key={capture} reason={capturesTaken(tree).includes(capture) ? __('Already on this form', 'wconvert') : null} onSelect={() => onAdd(at, 'field', capture)}>{nameOf(labels.fields, capture)}</Refusable>)}</DropdownMenuSubContent>
+            <DropdownMenuSubContent className="wconvert-layer-menu">{FIELDS.map(capture => <Refusable key={capture} reason={capturesTaken(tree).includes(capture) ? __('Already on this form', 'wconvert') : null} onSelect={() => onAdd(at, 'field', capture)}>{nameOf(labels.fields, capture)}</Refusable>)}</DropdownMenuSubContent>
           </DropdownMenuSub>
         ) : (
           <Refusable

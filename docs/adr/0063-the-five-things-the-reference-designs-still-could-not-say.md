@@ -96,6 +96,8 @@ with two claimants would need a rule about which wins, decided inside
 means *"Take %b, and read our %s."* is one sentence with both and the split
 does the telling apart.
 
+> Extended by [ADR 0078](0078-editor-choices-stay-compact-and-scrollable.md): text and consent also carry an italic phrase at %i, under the same plain-text and one-phrase rules.
+
 Every rule `%s` has, `%b` takes: one per sentence, a second is literal text, and
 a mark with nothing to fill it renders nothing along with the space in front of
 it. That is one rule for both rather than two that could drift — and it is

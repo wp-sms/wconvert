@@ -81,12 +81,12 @@ export function SlotFields({
 }: SlotFieldsProps) {
   const text = String(slot.values.text ?? '');
   const simple = onSentence && slot.keys.includes('text') && (slot.keys.includes('emphasis') || slot.keys.includes('link'))
-    && (text.match(/%b/g) ?? []).length <= 1 && (text.match(/%s/g) ?? []).length <= 1;
+    && (text.match(/%b/g) ?? []).length <= 1 && (text.match(/%s/g) ?? []).length <= 1 && (text.match(/%i/g) ?? []).length <= 1;
   return (
     <>
-      {simple && <SentenceEditor label={nameOf(labels.keys, 'text')} value={{ text, emphasis: slot.values.emphasis as string | undefined, link: slot.values.link as SentenceValue['link'] }} bold={slot.keys.includes('emphasis')} link={slot.keys.includes('link')} onChange={onSentence} />}
+      {simple && <SentenceEditor label={nameOf(labels.keys, 'text')} value={{ text, emphasis: slot.values.emphasis as string | undefined, italic: slot.values.italic as string | undefined, link: slot.values.link as SentenceValue['link'] }} bold={slot.keys.includes('emphasis')} italic={slot.keys.includes('italic')} link={slot.keys.includes('link')} onChange={onSentence} />}
       {slot.keys.map((key) => {
-        if (simple && ['text', 'emphasis', 'link'].includes(key)) return null;
+        if (simple && ['text', 'emphasis', 'italic', 'link'].includes(key)) return null;
         if (key === 'options') {
           return slot.captures === 'interest' ? <InterestOptions key={key} value={slot.values.options}
             onEdit={(options) => onValue('options', options)} onChange={(options) => onParam('options', options)} /> : null;

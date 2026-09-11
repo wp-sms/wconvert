@@ -306,8 +306,8 @@ describe('a length', () => {
     // 26rem, the design's own, on a range twice as wide.
     expect(widthSlider()).toHaveValue('26');
     expect(widthSlider()).toHaveAttribute('max', '52');
-    // The escape hatch, which is what keeps a `clamp()` reachable from here.
-    expect(screen.getByLabelText('Width value')).toBeInTheDocument();
+    expect(screen.getByRole('spinbutton', { name: 'Width amount' })).toHaveValue(26);
+    expect(screen.queryByLabelText('Width value')).toBeNull();
   });
 
   it('keeps the text box and drops the slider for a value it cannot say', () => {
@@ -747,7 +747,7 @@ describe('a shadow', () => {
    * open on Custom wearing their own value — the library is not renormalised to
    * match the chips.
    */
-  it('opens on Custom, value intact, for a design casting its own', () => {
+  it('keeps a custom shadow intact and opens CSS only on request', async () => {
     const upward = '0 -6px 24px rgba(69, 10, 10, 0.35)';
 
     render(
@@ -764,6 +764,8 @@ describe('a shadow', () => {
     const shadow = screen.getByText('Shadow').closest('.wconvert-token') as HTMLElement;
 
     expect(within(shadow).getByRole('radio', { name: 'Custom' })).toBeChecked();
+    expect(screen.queryByLabelText('Shadow value')).toBeNull();
+    await userEvent.click(within(shadow).getByRole('radio', { name: 'Custom' }));
     expect(screen.getByLabelText('Shadow value')).toHaveValue(upward);
   });
 });

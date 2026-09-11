@@ -201,12 +201,14 @@
       "content": [
         "text",
         "link",
-        "emphasis"
+        "emphasis",
+        "italic"
       ],
       "copy": [
         "text",
         "link",
-        "emphasis"
+        "emphasis",
+        "italic"
       ],
       "params": [
         "size",
@@ -487,12 +489,14 @@
       "content": [
         "text",
         "link",
-        "emphasis"
+        "emphasis",
+        "italic"
       ],
       "copy": [
         "text",
         "link",
-        "emphasis"
+        "emphasis",
+        "italic"
       ],
       "params": [
         "hidden",

@@ -172,6 +172,64 @@
       },
       "shown": "I agree to receive emails.",
       "anchor": null
+    },
+    {
+      "why": "italic, bold and link agree between the renderer and consent evidence",
+      "node": {
+        "type": "consent",
+        "text": "%i: %b. Read %s.",
+        "italic": "Please note",
+        "emphasis": "Email updates",
+        "link": {
+          "label": "our policy",
+          "href": "/privacy"
+        }
+      },
+      "shown": "Please note: Email updates. Read our policy.",
+      "anchor": "/privacy"
+    },
+    {
+      "why": "missing italic is removed, including its preceding space",
+      "node": {
+        "type": "consent",
+        "text": "Updates %i only."
+      },
+      "shown": "Updates only.",
+      "anchor": null
+    },
+    {
+      "why": "italic words are literal text even when they resemble placeholders or markup",
+      "node": {
+        "type": "consent",
+        "text": "Read %i.",
+        "italic": "<em>%b</em> today"
+      },
+      "shown": "Read <em>%b</em> today.",
+      "anchor": null
+    },
+    {
+      "why": "only the first italic placeholder is filled",
+      "node": {
+        "type": "consent",
+        "text": "Read %i and %i.",
+        "italic": "this"
+      },
+      "shown": "Read this and %i.",
+      "anchor": null
+    },
+    {
+      "why": "a link label containing another format placeholder stays literal",
+      "node": {
+        "type": "consent",
+        "text": "Read %s and %i.",
+        "italic": "agree",
+        "link": {
+          "label": "%i policy",
+          "href": "/policy"
+        }
+      },
+      "shown": "Read %i policy and agree.",
+      "anchor": "/policy"
     }
   ]
 }

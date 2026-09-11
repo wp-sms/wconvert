@@ -2,6 +2,8 @@
 
 The layer foundation is worth keeping. It already has structural guards, direct selection, keyboard navigation, sibling dragging, duplication and draft Undo. The weaknesses were discoverability, placement clarity and the control surfaces carried over from the earlier editor. This pass improves those surfaces without turning the Optin editor into a page builder.
 
+> Current follow-up: [compact menus, Starting points and italic](editor-followup-2026-09-11.md) refines the initial implementation below.
+
 ## Findings and changes
 
 | Area | Finding | Result |

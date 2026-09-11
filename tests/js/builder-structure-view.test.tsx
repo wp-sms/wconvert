@@ -654,6 +654,18 @@ describe('duplicating a block', () => {
 });
 
 describe('adding a block', () => {
+  it('keeps End and arrow keys inside a portaled insertion menu', async () => {
+    await structure();
+    await userEvent.click(within(row('Headline')).getByRole('button', { name: 'Add, copy or delete Headline' }));
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Add a block after this' }));
+    const first = screen.getByRole('menuitem', { name: 'Heading' });
+    first.focus();
+    await userEvent.keyboard('{End}');
+    expect(screen.getByRole('menuitem', { name: /^Picture box/ })).toHaveFocus();
+    await userEvent.keyboard('{Home}{ArrowDown}');
+    expect(screen.getByRole('menuitem', { name: 'Overline' })).toHaveFocus();
+  });
+
   /**
    * The list is the manifest's, so a node type added to
    * `resources/templates/manifest.json` appears here with nothing edited.

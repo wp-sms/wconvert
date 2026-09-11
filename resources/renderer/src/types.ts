@@ -192,6 +192,8 @@ export interface TextNode extends HideableNode {
   readonly link?: SlotLink;
   /** What `%b` in the text is filled with. {@see SlotEmphasis}. */
   readonly emphasis?: SlotEmphasis;
+  /** Plain words filling the italic phrase (%i). */
+  readonly italic?: string;
   /**
    * A step on the type scale — a MULTIPLE of this element's own size token.
    *
@@ -444,6 +446,8 @@ export interface ConsentNode extends HideableNode {
   readonly link?: SlotLink;
   /** What `%b` in the text is filled with. {@see SlotEmphasis}. */
   readonly emphasis?: SlotEmphasis;
+  /** Plain words filling the italic phrase (%i). */
+  readonly italic?: string;
 }
 
 export type LeafNode =

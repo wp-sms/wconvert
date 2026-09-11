@@ -679,6 +679,8 @@ off the Optin, but it can be corrected.
 The reusable structure and look of an [[Optin]], with sample content for the
 gallery that a merchant can explicitly adopt.
 
+Text and consent copy can carry one separate bold phrase, italic phrase and link, stored as structured values rather than HTML. The renderer and Consent Record share the same expansion semantics ([ADR 0078](docs/adr/0078-editor-choices-stay-compact-and-scrollable.md)).
+
 A Template declares which slots exist (a heading, an image, fields, a button), how
 they are arranged, and how they are styled. That reusable structure is independent
 of campaign copy. The words normally come from the [[Playbook]] that prefilled

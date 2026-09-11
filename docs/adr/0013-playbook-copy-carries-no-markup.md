@@ -78,6 +78,8 @@ sanitiser is a thing that can have a bug where a `textContent` renderer cannot.
 Expressing the link as structure gets the capability with none of the exposure —
 the same move ADR 0010 made on templates, applied one layer up.
 
+> Extended by [ADR 0078](0078-editor-choices-stay-compact-and-scrollable.md): text and consent now carry a structured italic phrase (%i), alongside bold (%b) and links (%s). The renderer still constructs elements and never interprets copy as HTML. Headline behavior is unchanged.
+
 ## Consequences
 
 - **No bolding a word inside a headline.** This is a real loss and the honest

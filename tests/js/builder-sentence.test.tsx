@@ -9,6 +9,11 @@ import { rgbaForPicker } from '../../resources/admin/src/builder/ColorField';
 
 describe('structured sentence editing', () => {
   const value = { text: 'Get %b off. Read %s.', emphasis: '20%', link: { label: 'our policy', href: '/privacy' } };
+  it('round trips italic alongside bold and links without treating markup as HTML', () => {
+    const formatted = { text: '%b, %i and %s.', emphasis: 'Save', italic: '<em>today</em>', link: { label: 'details', href: '/details' } };
+    expect(writeSentence(readSentence(formatted))).toEqual(formatted);
+    expect(readSentence(formatted).text).toBe('Save, <em>today</em> and details.');
+  });
   it('round trips bold and a link without markup', () => {
     expect(writeSentence(readSentence(value))).toEqual(value);
   });
@@ -39,6 +44,22 @@ describe('structured sentence editing', () => {
     expect(input).toHaveValue('Hello world <script>');
     expect(screen.getByRole('region', { name: 'Formatted text preview' }).querySelector('strong')).toHaveTextContent('world');
     expect(screen.getByRole('region').querySelector('script')).toBeNull();
+  });
+  it('supports italic keyboard formatting, toggling and clearing without changing the words', async () => {
+    const changed = vi.fn();
+    function Editor() {
+      const [value, setValue] = useState<SentenceValue>({ text: 'Only today' });
+      return <SentenceEditor value={value} label="Text" bold italic link onChange={(next, typing) => { setValue(next); changed(next, typing); }} />;
+    }
+    render(<Editor />);
+    const input = screen.getByLabelText('Text') as HTMLTextAreaElement;
+    input.focus(); input.setSelectionRange(5, 10); fireEvent.select(input);
+    await userEvent.keyboard('{Control>}i{/Control}');
+    expect(changed).toHaveBeenLastCalledWith({ text: 'Only %i', italic: 'today' }, false);
+    expect(screen.getByRole('region').querySelector('em')).toHaveTextContent('today');
+    await userEvent.click(screen.getByRole('button', { name: 'Clear formatting' }));
+    expect(changed).toHaveBeenLastCalledWith({ text: 'Only today' }, false);
+    expect(input).toHaveValue('Only today');
   });
   it('does not write until a selected link is applied', async () => {
     const changed = vi.fn();

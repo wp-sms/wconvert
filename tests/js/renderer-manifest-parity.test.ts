@@ -557,6 +557,12 @@ describe('a line break in authored copy', () => {
  * only the renderer has.
  */
 describe('inline emphasis', () => {
+  it('renders italic words as a safe semantic element', () => {
+    const element = drawn({ type: 'text', text: 'Only %i.', italic: '<script>today</script>' });
+    expect(element.querySelector('em')).toHaveTextContent('<script>today</script>');
+    expect(element.querySelector('script')).toBeNull();
+  });
+
   const drawn = (node: object): Element =>
     renderStep({ type: 'stack', children: [node] })?.firstElementChild as Element;
 

@@ -238,7 +238,7 @@ function contentBody({
           labels={labels}
           onSentence={(value, typing) => {
             let tree = template.tree;
-            for (const key of ['text', 'emphasis', 'link'] as const) {
+            for (const key of ['text', 'emphasis', 'italic', 'link'] as const) {
               if (slot.keys.includes(key)) tree = withValue(tree, slot.path, key, value[key]);
             }
             onChange({ ...template, tree }, typing ? typingKey(slot.path, 'sentence') : undefined);
