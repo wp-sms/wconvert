@@ -77,7 +77,7 @@
                 "id": "n4",
                 "size": "s",
                 "role": "body",
-                "text": "Every other Sunday",
+                "text": "Every Sunday",
                 "tokens": {
                   "text-size": "1.167rem"
                 }
@@ -250,7 +250,7 @@
             "id": "n33",
             "size": "s",
             "role": "fine_print",
-            "text": "Every other Sunday. Always time to unsubscribe.",
+            "text": "Every Sunday. Always time to unsubscribe.",
             "tokens": {
               "text-size": "1.167rem"
             }

@@ -8,6 +8,7 @@ use WConvert\Milestone\EditedPart;
 use WConvert\Playbook\PlaybookLibrary;
 use WConvert\Playbook\Prefill;
 use WConvert\Rules\RuleVocabulary;
+use WConvert\Template\SlotRoles;
 use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
 use WConvert\Tests\Unit\Support\InstalledRules;
@@ -101,7 +102,7 @@ final class WhichSuggestionWentFirstTest extends TestCase
     public function testRewritingAWordIsACopyChange(): void
     {
         $edited = $this->suggested;
-        $edited['template']['tree']['steps'][0]['children'][0]['text'] = 'Ten percent off, today only';
+        $edited['template']['tree'] = SlotRoles::bind($edited['template']['tree'], ['headline' => 'Ten percent off, today only'], $this->templates);
 
         $this->assertSame(EditedPart::Copy, $this->change($edited));
     }
@@ -156,7 +157,7 @@ final class WhichSuggestionWentFirstTest extends TestCase
     public function testWhenOneSaveChangesSeveralTheSharpestOneIsRecorded(): void
     {
         $withCopy = $this->suggested;
-        $withCopy['template']['tree']['steps'][0]['children'][0]['text'] = 'Ten percent off';
+        $withCopy['template']['tree'] = SlotRoles::bind($withCopy['template']['tree'], ['headline' => 'Ten percent off'], $this->templates);
 
         $andRules = $withCopy;
         $andRules['rules'] = [['type' => 'exit_intent']];
@@ -230,7 +231,7 @@ final class WhichSuggestionWentFirstTest extends TestCase
         $goal = $this->suggested;
 
         $copy = $this->suggested;
-        $copy['template']['tree']['steps'][0]['children'][0]['text'] = 'Ten percent off';
+        $copy['template']['tree'] = SlotRoles::bind($copy['template']['tree'], ['headline' => 'Ten percent off'], $this->templates);
 
         $design = $this->suggested;
         $design['template']['tokens']['color.accent'] = '#ff0055';

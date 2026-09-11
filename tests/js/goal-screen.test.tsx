@@ -183,6 +183,15 @@ describe('a goal then a draft', () => {
     expect(screen.getByText(PLAYBOOK.notes)).toBeVisible();
   });
 
+  it('shows the server recommendation without adding another choice step', async () => {
+    goals.listPlaybooks.mockResolvedValue([{ ...PLAYBOOK, recommendation: 'Recommended for stores' }]);
+    render(<GoalScreen onCreated={vi.fn()} />);
+    await pickGoal();
+    expect(await screen.findByText('Recommended for stores')).toBeVisible();
+    await customize();
+    await waitFor(() => expect(optins.createOptin).toHaveBeenCalledExactlyOnceWith(DRAFT.name, DRAFT.goal, DRAFT.config));
+  });
+
   it('creates exactly the prefilled draft and hands it straight to the editor', async () => {
     const created = vi.fn();
     render(<GoalScreen onCreated={created} />);

@@ -44,6 +44,7 @@ a second copy of both.
 | `gallery` | Inlines every entry into `out/gallery.html` — the whole library, one page |
 | `review` | Builds `out/flagships.html` for Fieldwork, Sunday marginalia and Callback notes; needs `renderer` |
 | `library-review` | Builds `out/library-review.html` for every Free and Pro design, both screens, four widths and automated browser measurements; needs `renderer` |
+| `starting-points` | Builds `out/starting-points.html` from the twelve flagship Playbooks through the shipping PHP Prefill, with setup notes and the same size checks; needs `renderer` and Composer dependencies |
 
 For a complete library review, run `./tools/design-library/build.sh renderer library-review`
 and open `out/library-review.html` through the local site's HTTP URL. The page

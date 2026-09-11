@@ -894,6 +894,13 @@ same resolved Prefill result the draft receives. Browsing does not create or
 publish an Optin. This creation bundle includes design and copy, unlike the
 rule-only Starting point above (ADR 0072).
 
+The twelve flagship Playbooks are editorial recommendations, four for each of
+stores, publishers and services. They appear first within the chosen Goal and
+carry an audience label; neither that label nor the collection restricts the
+Template library. `FlagshipCollection` owns the membership and ordering. Their
+review renders actual Prefill results, including repeated copy roles, rather
+than the Template's sample content (ADR 0081).
+
 > **Provenance is not performance.** Two Optins from one Playbook may have been
 > edited into unrecognisably different things, so rolling their [[Conversion]]s up
 > measures the edits, not the Playbook. The metric is "Optins started from this

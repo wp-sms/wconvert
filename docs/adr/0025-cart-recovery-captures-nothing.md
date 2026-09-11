@@ -264,11 +264,12 @@ somebody ADDS, which no assertion about output can see.*
   click-metered, CTA-bearing* — a shape shared with the other click Goal, not a
   WooCommerce design.
   *Held literally by [#36](https://github.com/navidkashani/wconvert/issues/36):
-  all three cart Playbooks name `offer-panel`, the design the sale Playbook
-  already used, and the Template library gained nothing. **So the three differ on
-  one axis and it is INTRUSION** — exit intent, then fifteen seconds, then page
-  load. That is the only axis worth three cards once the design is shared, and it
-  is the axis a merchant can actually reason about: how loudly to ask.*
+  all three cart Playbooks originally named `offer-panel`, the design the sale
+  Playbook already used, and differed by trigger. **Amended by
+  [ADR 0081](0081-flagships-are-complete-starting-points.md):** the immediate
+  return now uses the generic `inline-cta` where the merchant places a block;
+  the two delayed entries retain their popup. All remain one-step click designs
+  with no WooCommerce-specific template or new capture behaviour.*
 
   ***They name [[Pro]]'s own Triggers, and that is safe only here.*** *Two of the
   three prefill `exit_intent` and a premium Condition, which no other bundled

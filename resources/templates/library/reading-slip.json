@@ -1,0 +1,77 @@
+{
+  "id": "reading-slip",
+  "name": "Reading slip",
+  "display_type": "inline",
+  "tier": "free",
+  "tokens": {
+    "bg": "#fbf7ed",
+    "fg": "#392c2b",
+    "muted": "#725c58",
+    "accent": "#632e36",
+    "accent-fg": "#ffffff",
+    "border": "#d3c3bb",
+    "heading-font": "Georgia, 'Times New Roman', serif",
+    "heading-size": "1.875rem",
+    "heading-weight": "400",
+    "tracking": "-0.03em",
+    "text-size": "1rem",
+    "leading": "1.55",
+    "radius": "0",
+    "pad": "1.5rem",
+    "gap": "1rem",
+    "width": "25rem",
+    "align": "start",
+    "shadow": "none"
+  },
+  "tree": {
+    "steps": [
+      {
+        "type": "stack",
+        "children": [
+          {
+            "type": "eyebrow",
+            "id": "n1",
+            "role": "eyebrow",
+            "text": "Your next read",
+            "tokens": {
+              "text-size": "1.0834rem"
+            }
+          },
+          {
+            "type": "divider",
+            "id": "n2"
+          },
+          {
+            "type": "heading",
+            "id": "n3",
+            "role": "headline",
+            "text": "Make room for a slower morning"
+          },
+          {
+            "type": "text",
+            "id": "n4",
+            "role": "body",
+            "text": "A practical essay on finding a little quiet before the day begins."
+          },
+          {
+            "type": "text",
+            "id": "n5",
+            "role": "fine_print",
+            "text": "An essay to read at your own pace.",
+            "size": "s",
+            "tokens": {
+              "text-size": "1.167rem"
+            }
+          },
+          {
+            "type": "button",
+            "id": "n6",
+            "role": "cta_label",
+            "label": "Read the essay",
+            "action": "link"
+          }
+        ]
+      }
+    ]
+  }
+}

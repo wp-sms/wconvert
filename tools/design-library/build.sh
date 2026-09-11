@@ -123,8 +123,13 @@ for step in "${STEPS[@]}"; do
       node "$HERE/build/library-review.mjs"
       ;;
 
+    starting-points)
+      ran "Building the twelve starting points"
+      node "$HERE/build/starting-points.mjs"
+      ;;
+
     *)
-      echo "unknown step: $step (vocabulary prose renderer designs sheet bench gallery review library-review)" >&2
+      echo "unknown step: $step (vocabulary prose renderer designs sheet bench gallery review library-review starting-points)" >&2
       exit 2
       ;;
   esac

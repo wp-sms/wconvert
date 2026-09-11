@@ -175,6 +175,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
           featured={singleStartingPoint}
           absent={playbook.template === undefined ? <p>{__('This design is not available on this site. Choose a design after opening the draft.', 'wconvert')}</p> : undefined}
           action={(describedBy) => <div className="flex w-full flex-col items-start gap-3">
+            {playbook.recommendation ? <p className="text-xs font-medium text-foreground">{playbook.recommendation}</p> : null}
             <StartingPointFacts playbook={playbook} goal={goal} vocabulary={vocabulary.status === 'ready' ? vocabulary.data : null} />
             {playbook.notes && <details className="text-note text-muted-foreground"><summary>{__('About this starting point', 'wconvert')}</summary><p className="mb-0">{playbook.notes}</p></details>}
             <div className="flex flex-col items-start gap-1">

@@ -2,7 +2,7 @@
 
 The review started with 57 designs, including the three recently updated
 flagships. We improved 47, retired 10 and added two adaptations from the supplied
-static collection. The library now contains 49 designs: 36 Free and 13 Basic,
+static collection. At the end of this curation pass the library contained 49 designs: 36 Free and 13 Basic,
 with 29 popups, 12 inline designs, four floating bars and four slide-ins.
 
 “One-line signup” is retired. Its rounded pill constrained a complete popup
@@ -10,6 +10,10 @@ form; **Bold ask** is the compact single-field replacement. The creation flow
 “One idea, one field” now selects it. The article-ending flow uses **Inline rule**.
 The existing inline phone design now asks for a callback with one field; its SMS
 playbook supplies its own text-update wording and consent purpose.
+
+The subsequent [flagship starting-point pass](flagship-starting-points-2026-09-11.md)
+adds Reading slip and brings the library to 50 designs (37 Free, 13 Basic).
+The counts and measurements below describe this completed 49-design pass.
 
 ## What changed
 
