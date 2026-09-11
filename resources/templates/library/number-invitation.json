@@ -11,12 +11,12 @@
     "accent-fg": "#f2ffff",
     "border": "#adc4c5",
     "input-bg": "#ffffff",
-    "font": "'DM Sans', system-ui, sans-serif",
-    "heading-font": "'Space Grotesk', system-ui, sans-serif",
+    "font": "system-ui, sans-serif",
+    "heading-font": "system-ui, sans-serif",
     "heading-size": "1.94rem",
     "heading-weight": "500",
     "tracking": "-0.05em",
-    "text-size": "0.81rem",
+    "text-size": "1rem",
     "leading": "1.6",
     "radius": "0.25rem",
     "pad": "0",
@@ -49,7 +49,8 @@
                   "radius": "0"
                 },
                 "narrow": {
-                  "pad": "1.56rem 1.38rem"
+                  "pad": "1.25rem",
+                  "gap": "0.75rem"
                 },
                 "children": [
                   {
@@ -71,26 +72,34 @@
                         "id": "n2",
                         "size": "2xl",
                         "role": "headline",
-                        "text": "4,208"
+                        "text": "01",
+                        "narrow": {
+                          "heading-size": "1.25rem"
+                        }
                       },
                       {
                         "type": "text",
                         "id": "n3",
                         "size": "s",
                         "role": "body",
-                        "text": "readers making a little\nmore room for\nfocused work."
+                        "text": "useful idea\nevery Monday.",
+                        "tokens": {
+                          "text-size": "1.167rem"
+                        }
                       }
                     ]
                   },
                   {
                     "type": "text",
                     "id": "n5",
-                    "size": "xs",
+                    "size": "s",
                     "role": "fine_print",
-                    "text": "Illustrative subscriber count.\nReplace with verified data."
+                    "text": "A five-minute read.",
+                    "tokens": {
+                      "text-size": "1.167rem"
+                    }
                   }
-                ],
-                "min": "10rem"
+                ]
               }
             ],
             "end": [
@@ -101,26 +110,33 @@
                   "gap": "0.85rem"
                 },
                 "narrow": {
-                  "pad": "1.81rem 1.38rem 1.5rem"
+                  "pad": "1.25rem",
+                  "gap": "0.875rem"
                 },
                 "children": [
                   {
                     "type": "eyebrow",
                     "id": "n6",
                     "role": "eyebrow",
-                    "text": "A practical Monday read"
+                    "text": "A practical Monday read",
+                    "tokens": {
+                      "text-size": "1.0834rem"
+                    }
                   },
                   {
                     "type": "heading",
                     "id": "n7",
                     "role": "headline",
-                    "text": "One useful idea.\nA better working week."
+                    "text": "Make room\nfor better work.",
+                    "narrow": {
+                      "heading-size": "1.625rem"
+                    }
                   },
                   {
                     "type": "text",
                     "id": "n8",
                     "role": "body",
-                    "text": "Short notes on focus, thoughtful systems and doing less busywork."
+                    "text": "Notes on focus and doing less busywork. One idea you can use each week."
                   },
                   {
                     "type": "field",
@@ -135,9 +151,12 @@
                     "id": "n10",
                     "role": "consent_text",
                     "hidden": true,
-                    "text": "Send me the Monday note. See our %s.",
+                    "text": "Send me the Monday note. %s",
                     "link": {
                       "label": "Privacy Policy"
+                    },
+                    "tokens": {
+                      "text-size": "1.125rem"
                     }
                   },
                   {
@@ -152,11 +171,15 @@
                     "id": "n12",
                     "size": "s",
                     "role": "fine_print",
-                    "text": "One email a week from work / notes. Unsubscribe at any time."
+                    "text": "One email a week from work / notes. Unsubscribe at any time.",
+                    "tokens": {
+                      "text-size": "1.167rem"
+                    }
                   }
                 ]
               }
-            ]
+            ],
+            "basis": "16rem"
           }
         ]
       },
@@ -182,7 +205,8 @@
                   "radius": "0"
                 },
                 "narrow": {
-                  "pad": "1.56rem 1.38rem"
+                  "pad": "1.25rem",
+                  "gap": "0.75rem"
                 },
                 "children": [
                   {
@@ -197,17 +221,21 @@
                     "type": "image",
                     "id": "n21",
                     "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 10' fill='none' stroke='%23a8dfd0' stroke-width='.5'%3E%3Ccircle cx='10' cy='5' r='4.6' stroke-width='.14'/%3E%3Cpath d='m7.6 5.1 1.8 1.8 3.2-3.6'/%3E%3C/svg%3E",
-                    "alt": "A tick"
+                    "alt": "A tick",
+                    "shape": "circle",
+                    "fit": "contain"
                   },
                   {
                     "type": "text",
                     "id": "n22",
-                    "size": "xs",
+                    "size": "s",
                     "role": "success_body",
-                    "text": "A useful start\nto your working week."
+                    "text": "A useful start\nto your working week.",
+                    "tokens": {
+                      "text-size": "1.167rem"
+                    }
                   }
-                ],
-                "min": "10rem"
+                ]
               }
             ],
             "end": [
@@ -218,20 +246,27 @@
                   "gap": "0.85rem"
                 },
                 "narrow": {
-                  "pad": "1.81rem 1.38rem 1.5rem"
+                  "pad": "1.25rem",
+                  "gap": "0.875rem"
                 },
                 "children": [
                   {
                     "type": "badge",
                     "id": "n23",
                     "role": "badge",
-                    "text": "Request received"
+                    "text": "Request received",
+                    "tokens": {
+                      "text-size": "1.0834rem"
+                    }
                   },
                   {
                     "type": "heading",
                     "id": "n24",
                     "role": "success_headline",
-                    "text": "Make a little\nroom for Monday."
+                    "text": "Make a little\nroom for Monday.",
+                    "narrow": {
+                      "heading-size": "1.625rem"
+                    }
                   },
                   {
                     "type": "text",
@@ -254,7 +289,10 @@
                         "type": "eyebrow",
                         "id": "n27",
                         "role": "eyebrow",
-                        "text": "Coming up"
+                        "text": "Coming up",
+                        "tokens": {
+                          "text-size": "1.0834rem"
+                        }
                       },
                       {
                         "type": "text",
@@ -274,11 +312,15 @@
                     "id": "n30",
                     "size": "s",
                     "role": "fine_print",
-                    "text": "One email each Monday. Unsubscribe at any time."
+                    "text": "One email each Monday. Unsubscribe at any time.",
+                    "tokens": {
+                      "text-size": "1.167rem"
+                    }
                   }
                 ]
               }
-            ]
+            ],
+            "basis": "16rem"
           }
         ]
       }

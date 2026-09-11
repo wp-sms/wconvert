@@ -23,15 +23,15 @@ defined('ABSPATH') || exit;
 
 return [
     'id' => 'one-line-invite',
-    'name' => __('One line, one field', 'wconvert'),
+    'name' => __('One idea, one field', 'wconvert'),
     'goal' => 'grow_email_list',
-    'template_id' => 'one-line-signup',
+    'template_id' => 'bold-ask',
     'notes' => __('The smallest thing that still asks. No discount, no promise beyond the one in the headline — useful when you have nothing to give away and do not want to invent something. Shows once a visitor is most of the way down the page.', 'wconvert'),
     'copy' => [
-        'headline' => __('One email a week. That is all.', 'wconvert'),
+        'headline' => __('One useful idea, every week.', 'wconvert'),
         'email_label' => __('Email address', 'wconvert'),
         'email_placeholder' => __('you@example.com', 'wconvert'),
-        'cta_label' => __('Subscribe', 'wconvert'),
+        'cta_label' => __('Send me the weekly idea', 'wconvert'),
         'success_headline' => __('Request received', 'wconvert'),
         'success_body' => __('Thank you for asking to receive the next issue.', 'wconvert'),
     ],

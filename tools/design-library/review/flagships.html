@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WConvert · First three templates</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #edece7; color: #253b33; font: 14px/1.5 system-ui, sans-serif; }
+  header { padding: 28px 36px 20px; background: #faf9f5; border-bottom: 1px solid #d8d9cf; }
+  .eyebrow { color: #647067; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }
+  h1 { margin: 5px 0 6px; font: 36px/1.2 Georgia, serif; letter-spacing: -.03em; }
+  p { margin: 0; max-width: 850px; }
+  .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 24px; padding: 20px 36px; }
+  label { display: flex; gap: 7px; align-items: center; }
+  select, button { font: inherit; border: 1px solid #bcc4ba; border-radius: 5px; padding: 8px 12px; background: #fff; color: #253b33; }
+  button { cursor: pointer; }
+  input { accent-color: #304d3a; }
+  main { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 24px; padding: 8px 36px 36px; }
+  article { background: #f8f7f2; border: 1px solid #d5d8cd; border-radius: 8px; overflow: auto; max-width: 100%; }
+  h2 { margin: 0; font-size: 15px; font-weight: 600; }
+  .caption { padding: 15px 18px; border-bottom: 1px solid #d5d8cd; display: flex; justify-content: space-between; gap: 20px; }
+  .caption span { color: #647067; font-size: 12px; }
+  .frame { margin: 20px; }
+  .status { display: block; color: #576256; font-size: 12px; padding: 0 18px 16px; max-width: 360px; }
+  footer { padding: 0 36px 24px; color: #647067; }
+  @media (max-width: 600px) { header, .controls, main { padding-inline: 16px; } .frame { margin: 12px; } }
+</style>
+<header>
+  <div class="eyebrow">WConvert / Collection review / Free</div>
+  <h1>Three useful starting points.</h1>
+  <p>A welcome offer, a Sunday letter and a callback request. Fieldwork uses a gradient placeholder you can replace with a photograph in the editor. Try swapping panes or the success screen’s copy button. Picture focus takes effect after replacing the gradient with a photograph. All text and form fields remain editable.</p>
+</header>
+<div class="controls">
+  <label>Design width <select id="width"><option value="320">320px</option><option value="288">288px · 320px popup</option><option value="390">390px</option><option value="768">768px</option><option value="0">Natural desktop width</option></select></label>
+  <label>Screen <select id="step"><option value="0">Form</option><option value="1">Success</option></select></label>
+  <label>Palette <select id="theme"><option value="">Original</option><option value="midnight">Midnight</option><option value="minimal">Minimal</option></select></label>
+  <label><input type="checkbox" id="rtl">Right to left</label>
+  <label><input type="checkbox" id="consent">Show consent</label>
+  <label><input type="checkbox" id="long">Longer copy</label>
+  <label><input type="checkbox" id="art">Remove placeholder</label>
+  <label><input type="checkbox" id="swap">Swap panes</label>
+  <label>Picture focus <select id="focus"><option value="center">Centre</option><option value="left top">Top left</option><option value="right bottom">Bottom right</option></select></label>
+  <label><input type="checkbox" id="resource">Try resource link</label>
+  <button id="reset" type="button">Reset review</button>
+</div>
+<main id="designs"></main>
+<section id="review-resource" hidden tabindex="-1" style="margin:0 36px 24px;padding:24px;background:#fff;border:1px dashed #87978a"><h2>Your resource goes here.</h2><p>This is a local placeholder. In WordPress, set the Resource link to your own file or page. Opening this example does not count another conversion.</p></section>
+<footer>Local visual preview. Forms demonstrate their success screen here without saving or sending details. Coupon validity, email delivery and callback handling are configured separately in WordPress.</footer>
+<script>/*__RENDERER__*/</script>
+<script>
+const entries = /*__ENTRIES__*/;
+const controls = ['width', 'step', 'theme', 'rtl', 'consent', 'long', 'art', 'swap', 'focus', 'resource'];
+const control = (id) => document.getElementById(id);
+function walk(node, visit) {
+  visit(node);
+  for (const key of ['steps', 'children', 'start', 'end']) for (const child of node[key] || []) walk(child, visit);
+}
+function draw() {
+  const list = control('designs');
+  list.replaceChildren();
+  entries.forEach((original, index) => {
+    const entry = structuredClone(original);
+    const theme = WConvertRenderer.themePresets().find((item) => item.id === control('theme').value);
+    const tokens = { ...entry.tokens, ...theme?.tokens, 'image-position': control('focus').value };
+    if (index === 1 && control('resource').checked) entry.tree.steps[1].children.push({ type: 'followup', label: 'Open sample resource', href: '#review-resource', role: 'success_action' });
+    walk(entry.tree, (node) => {
+      if (control('swap').checked && node.type === 'split') { [node.start, node.end] = [node.end, node.start]; if (typeof node.ratio === 'number') node.ratio = 1 - node.ratio; }
+      if (node.type === 'consent' && control('consent').checked) node.hidden = false;
+      if (control('art').checked && node.tokens) {
+        node.tokens['bg-image'] = 'none';
+      }
+      if (control('long').checked) {
+        if (node.role === 'headline') node.text = ['A little welcome to your home, with ten percent off your first order.', 'Thoughtful essays about the books, places and everyday things worth noticing.', 'Request a conversation about your next project, from the first idea to the finishing touches.'][index];
+        if (node.role === 'body' || node.role === 'success_body') node.text += ' Take a moment to explore the details and decide whether this is right for you.';
+        if (node.type === 'button') node.label = ['Reveal my welcome discount code', 'Send me the next thoughtful Sunday letter', 'Request a callback about my project'][index];
+      }
+    });
+    const article = document.createElement('article');
+    article.dataset.design = entry.id;
+    const caption = document.createElement('div');
+    caption.className = 'caption';
+    const title = document.createElement('h2'); title.textContent = entry.name;
+    const detail = document.createElement('span'); detail.textContent = ['Store · Popup', 'Publisher · Popup', 'Service · Inline'][index];
+    caption.append(title, detail);
+    const frame = document.createElement('div');
+    frame.className = 'frame';
+    frame.style.width = Number(control('width').value) ? control('width').value + 'px' : tokens.width;
+    frame.dir = control('rtl').checked ? 'rtl' : 'ltr';
+    // The shipping host reset must not erase the review's width and spacing.
+    const host = document.createElement('div');
+    frame.append(host);
+    const shadow = host.attachShadow({ mode: 'open' });
+    const css = document.createElement('style'); css.textContent = WConvertRenderer.SHADOW_CSS;
+    shadow.append(css);
+    let step = Number(control('step').value);
+    const status = document.createElement('output'); status.className = 'status';
+    function mount() {
+      shadow.querySelector('.wc-root')?.remove();
+      const root = WConvertRenderer.render(entry.tree, tokens, step);
+      shadow.append(root);
+      root.addEventListener('click', event => { if (event.target.closest('a[href="#review-resource"]')) { control('review-resource').hidden = false; control('review-resource').focus(); } });
+      root.addEventListener('submit', (event) => {
+        event.preventDefault(); step = 1; mount();
+      });
+      requestAnimationFrame(() => {
+        const overflow = root.scrollWidth > root.clientWidth + 1;
+        const fields = [...root.querySelectorAll('input, select, button, a.wc-button')];
+        const minimum = fields.length ? Math.round(Math.min(...fields.filter((el) => el.type !== 'checkbox').map((el) => el.getBoundingClientRect().height))) : null;
+        const panes = root.querySelector('.wc-split')?.children;
+        const arrangement = panes?.length === 2 ? (Math.abs(panes[0].getBoundingClientRect().top - panes[1].getBoundingClientRect().top) > 1 ? ' · Stacked panes' : ' · Side by side') : '';
+        status.textContent = Math.round(root.getBoundingClientRect().width) + 'px rendered · ' + (overflow ? 'Horizontal overflow: review needed' : 'No horizontal overflow') + arrangement + (minimum ? ' · Smallest control: ' + minimum + 'px' : '') + (root.scrollHeight > root.clientHeight + 1 ? ' · Scroll vertically to see all content' : '');
+      });
+    }
+    article.append(caption, frame, status); list.append(article); mount();
+  });
+}
+controls.forEach((id) => control(id).addEventListener('change', draw));
+control('reset').addEventListener('click', () => {
+  control('width').value = '320'; control('step').value = '0'; control('theme').value = ''; control('focus').value = 'center'; control('review-resource').hidden = true;
+  ['rtl','consent','long','art','swap','resource'].forEach((id) => control(id).checked = false); draw();
+});
+draw();
+</script>
+</html>

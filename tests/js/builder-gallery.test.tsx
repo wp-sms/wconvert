@@ -590,6 +590,44 @@ const shown = () =>
     (each) => each.querySelector('[id^="wconvert-design-"]')?.textContent,
   );
 
+describe('recommended designs', () => {
+  it('puts reviewed starting points first without losing extension designs or mutating the index', () => {
+    const entries = [
+      card({ id: 'extension-z', name: 'Extension Z' }),
+      card({ id: 'useful-guide', name: 'Useful guide' }),
+      card({ id: 'extension-a', name: 'Extension A' }),
+      card({ id: 'fieldwork', name: 'Fieldwork' }),
+      card({ id: 'callback-notes', name: 'Callback', display_type: 'inline' }),
+    ];
+    const original = entries.map((entry) => entry.id);
+    picker(entries);
+
+    expect(shown()).toEqual(['Fieldwork', 'Useful guide', 'Extension Z', 'Extension A']);
+    expect(screen.getByRole('status')).toHaveTextContent('4 of 4 designs');
+    expect(entries.map((entry) => entry.id)).toEqual(original);
+  });
+
+  it('keeps the recommendation order through search, field, layout, and availability filters', async () => {
+    picker([
+      card({ id: 'extension', name: 'Email extension', shape: 'split' }),
+      card({ id: 'launch-checklist', name: 'Email checklist', shape: 'split', locked: true }),
+      card({ id: 'useful-guide', name: 'Email guide', shape: 'split' }),
+      card({ id: 'fieldwork', name: 'Email Fieldwork', captures: ['phone'] }),
+      card({ id: 'other', name: 'Something else', captures: ['phone'] }),
+    ]);
+    await userEvent.type(screen.getByRole('searchbox'), 'Email');
+    expect(shown()).toEqual(['Email Fieldwork', 'Email guide', 'Email checklist', 'Email extension']);
+    await userEvent.click(screen.getByRole('button', { name: 'Email address' }));
+    await userEvent.click(screen.getByRole('button', { name: 'More filters' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Side by side' }));
+    expect(shown()).toEqual(['Email guide', 'Email checklist', 'Email extension']);
+    expect(screen.getByRole('status')).toHaveTextContent('3 of 5 designs');
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Available on this site' }));
+    expect(shown()).toEqual(['Email guide', 'Email extension']);
+    expect(screen.getByRole('status')).toHaveTextContent('2 of 5 designs');
+  });
+});
+
 describe('the toolbar', () => {
   it('keeps search and field requirements available on a small library', () => {
     picker(LIBRARY.slice(0, 5));

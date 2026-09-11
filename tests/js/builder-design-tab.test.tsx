@@ -335,6 +335,16 @@ describe('a length', () => {
     expect(screen.queryByRole('button', { name: /Put Width back to the design/ })).toBeNull();
   });
 
+  it('keeps a retired design editable without claiming a reset to its unavailable original', () => {
+    const snapshot = { ...ENTRY, tokens: { ...ENTRY.tokens, bg: '#314159', width: '32rem' } };
+    const changed = look({ template: snapshot, design: {} });
+
+    expect(screen.queryAllByRole('button', { name: /back to the design’s own/ })).toHaveLength(0);
+    fireEvent.change(screen.getByRole('spinbutton', { name: 'Width amount' }), { target: { value: '34' } });
+    fireEvent.blur(screen.getByRole('spinbutton', { name: 'Width amount' }));
+    expect(changed).toHaveBeenCalledWith({ ...snapshot, tokens: { ...snapshot.tokens, width: '34rem' } });
+  });
+
   /**
    * **It writes the design's value back rather than clearing it.** Clearing
    * means "whatever the manifest declares", and this design ships `26rem`

@@ -38,6 +38,7 @@ const MINIMAL: Readonly<Record<string, object>> = {
   code: { text: 'x' },
   field: { name: 'email' },
   button: { label: 'x' },
+  followup: { label: 'Open resource', href: '/guide' },
   consent: { text: 'x' },
 };
 

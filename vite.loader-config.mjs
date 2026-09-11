@@ -39,6 +39,8 @@ export function loaderConfig({ entry, outDir, name, fileName = 'loader.js' }) {
     // There is no static asset directory to copy; without this Vite treats the
     // plugin's public/ build root as one and warns that it overlaps outDir.
     publicDir: false,
+    // DOM addresses belong to the editor, across all tiers; no capability is gated here.
+    define: { __WCONVERT_VISITOR__: 'true' },
     resolve: {
       alias: {
         // Free's loader tree, so Pro's entry can name it readably. There is

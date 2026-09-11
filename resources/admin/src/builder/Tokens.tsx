@@ -245,6 +245,7 @@ export function Tokens({
 }) {
   const [copied, setCopied] = useState<number | null>(null);
   const groups = groupsOf();
+  const hasDesign = Object.keys(design).length > 0;
 
   const write = (tokens: Readonly<Record<string, string>>) =>
     onChange({
@@ -328,7 +329,7 @@ export function Tokens({
                 labels={labels}
                 fallback={design[token.name] ?? token.fallback}
                 standard={token.fallback}
-                design={design[token.name] ?? ''}
+                design={hasDesign ? (design[token.name] ?? '') : undefined}
                 value={template.tokens[token.name] ?? ''}
                 open={openToken === token.name}
                 onOpenChange={(open) => onOpenToken(open ? token.name : null)}
@@ -405,6 +406,7 @@ function Palette({
   onOpenChange: (token: string | null) => void;
   onChange: (template: Template) => void;
 }) {
+  const hasDesign = Object.keys(design).length > 0;
   const write = (name: string) => (value: string) =>
     onChange({ ...template, tokens: withToken(template.tokens, name, value) });
 
@@ -416,7 +418,7 @@ function Palette({
       labels={labels}
       fallback={design[token.name] ?? token.fallback}
       standard={token.fallback}
-      design={design[token.name] ?? ''}
+      design={hasDesign ? (design[token.name] ?? '') : undefined}
       value={template.tokens[token.name] ?? ''}
       open={openToken === token.name}
       onOpenChange={(open) => onOpenChange(open ? token.name : null)}
@@ -493,8 +495,8 @@ export function TokenField({
    * write something, and `1.5rem` is the vocabulary's own answer ({@see axesOf}).
    */
   standard: string;
-  /** What the design itself declared, or empty where it declared nothing. */
-  design: string;
+  /** The original value; empty means unset, undefined means the original is unavailable. */
+  design: string | undefined;
   value: string;
   /** Whether THIS token's picker is the one the panel has open. */
   open: boolean;
@@ -865,7 +867,7 @@ function ChoiceField({
     <div className="wconvert-token">
       <span id={named}>{label}</span>
       <span className="wconvert-token__row">
-        <span role="group" aria-labelledby={named} className="wconvert-choice-set">
+        <span role="group" aria-labelledby={named} className={TOKENS.find(item => item.name === token)?.control === 'position' ? 'wconvert-choice-set grid grid-cols-3 w-full' : 'wconvert-choice-set'}>
           {offered.map((choice) => (
             <label key={choice} className="wconvert-choice">
               <input
@@ -886,7 +888,7 @@ function ChoiceField({
                 stops this control needing to know which way the admin reads.
               */}
               <span
-                className="wconvert-choice__label"
+                className={TOKENS.find(item => item.name === token)?.control === 'position' ? 'wconvert-choice__label whitespace-normal text-center' : 'wconvert-choice__label'}
                 style={isFontStack(choice) ? { fontFamily: choice } : undefined}
               >
                 {nameOf(labels.tokenValues, `${token}.${choice}`)}
@@ -1198,11 +1200,11 @@ function Reset({
   /** {@see TokenField.resetSaid} — the design panel's own sentence where absent. */
   said?: string;
   value: string;
-  /** What the design declared, or empty where it declared nothing. */
-  design: string;
+  /** The original value; empty means unset, undefined means the original is unavailable. */
+  design: string | undefined;
   onChange: (value: string) => void;
 }) {
-  if (value === '' || value === design) {
+  if (design === undefined || value === '' || value === design) {
     return null;
   }
 

@@ -22,7 +22,8 @@ vi.mock('@renderer/mount', async (importOriginal) => {
 const { TemplateDesignDetail } = await import('../../resources/admin/src/builder/TemplateDesignDetail');
 const { Gallery } = await import('../../resources/admin/src/builder/Gallery');
 
-const TEMPLATE = JSON.parse(readFileSync(resolve(import.meta.dirname, '../../resources/templates/library/centred-card.json'), 'utf8')) as Template;
+// Stable editor fixture: its nested row is intentional; library curation can change independently.
+const TEMPLATE = JSON.parse(readFileSync(resolve(import.meta.dirname, '../fixtures/templates/editor-card.json'), 'utf8')) as Template;
 const LABELS = {
   fields: { email: 'Email address', phone: 'Phone number', name: 'Name' },
   facetValues: {}, facets: {},

@@ -86,6 +86,7 @@ export function SlotFields({
     <>
       {simple && <SentenceEditor label={nameOf(labels.keys, 'text')} value={{ text, emphasis: slot.values.emphasis as string | undefined, italic: slot.values.italic as string | undefined, link: slot.values.link as SentenceValue['link'] }} bold={slot.keys.includes('emphasis')} italic={slot.keys.includes('italic')} link={slot.keys.includes('link')} onChange={onSentence} />}
       {slot.keys.map((key) => {
+        if (slot.type === 'code' && key !== 'text' && slot.settings.find(setting => setting.param === 'copy')?.held !== true) return null;
         if (simple && ['text', 'emphasis', 'italic', 'link'].includes(key)) return null;
         if (key === 'options') {
           return slot.captures === 'interest' ? <InterestOptions key={key} value={slot.values.options}
@@ -135,6 +136,9 @@ export function SlotFields({
           </label>
         );
       })}
+
+      {slot.type === 'followup' && <p className="description">{__('Opens your resource after submission, without counting another conversion. Use a file or page address; this does not send an email.', 'wconvert')}</p>}
+      {slot.type === 'code' && <p className="description">{__('Enable the copy button to let visitors copy this code. Empty messages use English defaults. If copying fails, the code stays visible for manual copying.', 'wconvert')}</p>}
 
       {slot.type === 'field' && slot.captures !== 'interest' && (
         <p className="description">

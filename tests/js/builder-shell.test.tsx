@@ -326,7 +326,7 @@ describe('the builder shell', () => {
 
     const headline = screen.getByRole('row', { name: /Headline/ });
 
-    expect(headline).toHaveAccessibleName(expect.stringContaining('Get 10% off your first order'));
+    expect(headline).toHaveAccessibleName(expect.stringContaining('Five good reads. Every Friday.'));
     expect(headline).toHaveAttribute('aria-level', '2');
     expect(headline).toHaveAttribute('aria-posinset', '1');
   });

@@ -19,13 +19,16 @@
     "gap": "1rem",
     "width": "36rem",
     "align": "start",
-    "shadow": "none"
+    "shadow": "none",
+    "text-size": "1rem"
   },
   "tree": {
     "steps": [
       {
         "type": "stack",
-        "narrow": { "heading-size": "1.5rem" },
+        "narrow": {
+          "heading-size": "1.5rem"
+        },
         "children": [
           {
             "type": "heading",
@@ -46,7 +49,7 @@
                 "type": "field",
                 "id": "n3",
                 "name": "name",
-                "label": "Your name",
+                "label": "Your name (optional)",
                 "placeholder": "Alex Morgan",
                 "required": false
               },
@@ -64,12 +67,18 @@
             "type": "field",
             "id": "n5",
             "name": "interest",
-            "label": "What are you interested in?",
+            "label": "What are you interested in? (optional)",
             "placeholder": "Choose an option",
             "required": false,
             "options": [
-              { "value": "installation", "label": "Installation" },
-              { "value": "repair", "label": "Repair" }
+              {
+                "value": "installation",
+                "label": "Installation"
+              },
+              {
+                "value": "repair",
+                "label": "Repair"
+              }
             ]
           },
           {
@@ -85,23 +94,39 @@
             "role": "consent_text",
             "hidden": true,
             "text": "I agree to be contacted about my request. %s",
-            "link": { "label": "Privacy Policy" }
+            "link": {
+              "label": "Privacy Policy"
+            },
+            "tokens": {
+              "text-size": "1.125rem"
+            }
           },
           {
             "type": "text",
             "id": "n8",
             "role": "fine_print",
             "text": "We use these details to respond to your request. %s",
-            "link": { "label": "Privacy Policy" },
-            "size": "s"
+            "link": {
+              "label": "Privacy Policy"
+            },
+            "size": "s",
+            "tokens": {
+              "text-size": "1.167rem"
+            }
           }
         ]
       },
       {
         "type": "stack",
-        "narrow": { "heading-size": "1.5rem" },
+        "narrow": {
+          "heading-size": "1.5rem"
+        },
         "children": [
-          { "type": "icon", "id": "n9", "name": "check" },
+          {
+            "type": "icon",
+            "id": "n9",
+            "name": "check"
+          },
           {
             "type": "heading",
             "id": "n10",

@@ -12,14 +12,15 @@
     "border": "#2b3b5c",
     "heading-size": "2.125rem",
     "radius": "1rem",
-    "pad": "2.5rem",
+    "pad": "clamp(1.25rem, 5%, 2rem)",
     "gap": "1rem",
     "width": "30rem",
     "align": "center",
     "backdrop": "rgba(2, 6, 23, 0.7)",
     "shadow": "0 32px 80px -16px rgba(15, 23, 42, 0.5)",
     "tracking": "-0.025em",
-    "bg-image": "linear-gradient(160deg, #0b1220 0%, #16233d 60%, #1e3a5f 100%)"
+    "bg-image": "linear-gradient(160deg, #0b1220 0%, #16233d 60%, #1e3a5f 100%)",
+    "text-size": "1rem"
   },
   "tree": {
     "steps": [
@@ -36,7 +37,7 @@
             "type": "text",
             "id": "n2",
             "role": "body",
-            "text": "Everything reduced for the next three days."
+            "text": "Selected favourites from the collection, for less."
           },
           {
             "type": "button",
@@ -49,7 +50,11 @@
             "type": "text",
             "id": "n4",
             "role": "fine_print",
-            "text": "Discount applied at the checkout."
+            "text": "Selected items only. Prices as marked.",
+            "size": "s",
+            "tokens": {
+              "text-size": "1.167rem"
+            }
           }
         ]
       }

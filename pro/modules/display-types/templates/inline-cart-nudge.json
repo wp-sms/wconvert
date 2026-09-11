@@ -13,7 +13,7 @@
     "heading-size": "1.1875rem",
     "heading-weight": "600",
     "tracking": "-0.01em",
-    "text-size": "0.9375rem",
+    "text-size": "1rem",
     "leading": "1.4",
     "radius": "0.5rem",
     "pad": "1rem 1.25rem",
@@ -40,13 +40,13 @@
                 "type": "heading",
                 "id": "n2",
                 "role": "headline",
-                "text": "Your basket is still here"
+                "text": "Ready for another look?"
               },
               {
                 "type": "text",
                 "id": "n3",
                 "role": "body",
-                "text": "Everything you added is saved."
+                "text": "Review the items in your basket."
               }
             ]
           },
@@ -54,7 +54,7 @@
             "type": "button",
             "id": "n4",
             "role": "cta_label",
-            "label": "Back to my basket",
+            "label": "Open my basket",
             "action": "link"
           }
         ]

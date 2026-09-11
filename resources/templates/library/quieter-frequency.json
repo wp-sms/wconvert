@@ -10,19 +10,19 @@
     "accent": "#e5d4ff",
     "accent-fg": "#2b2040",
     "border": "#6f627f",
-    "input-bg": "#2b243f",
-    "font": "'DM Sans', system-ui, sans-serif",
-    "heading-font": "'DM Sans', system-ui, sans-serif",
+    "input-bg": "#ffffff",
+    "font": "system-ui, sans-serif",
+    "heading-font": "system-ui, sans-serif",
     "heading-size": "1.44rem",
     "heading-weight": "500",
     "tracking": "-0.05em",
-    "text-size": "0.81rem",
+    "text-size": "1rem",
     "leading": "1.6",
     "radius": "1.12rem",
     "pad": "0",
     "gap": "0",
-    "width": "23.12rem",
-    "shadow": "0 25px 50px -30px rgba(35, 22, 60, 0.6), 0 5px 13px -10px rgba(35, 22, 60, 0.35)",
+    "width": "26rem",
+    "shadow": "0 25px 50px -30px rgba(35, 22, 60, 0.6)",
     "backdrop": "rgba(24, 25, 41, 0.62)"
   },
   "tree": {
@@ -35,8 +35,9 @@
           "gap": "1.38rem"
         },
         "narrow": {
-          "pad": "1.75rem 1.5rem 1.5rem",
-          "heading-size": "1.31rem"
+          "pad": "1.25rem",
+          "heading-size": "1.31rem",
+          "gap": "0.875rem"
         },
         "children": [
           {
@@ -70,14 +71,20 @@
                 "type": "eyebrow",
                 "id": "n3",
                 "role": "eyebrow",
-                "text": "For curious minds, off the clock"
+                "text": "Good finds, off the clock",
+                "tokens": {
+                  "text-size": "1.0834rem"
+                }
               },
               {
                 "type": "heading",
                 "id": "n4",
                 "size": "xl",
                 "role": "headline",
-                "text": "The internet\ncan wait."
+                "text": "The internet\ncan wait.",
+                "narrow": {
+                  "heading-size": "1.25rem"
+                }
               },
               {
                 "type": "text",
@@ -107,7 +114,10 @@
                 "id": "n8",
                 "size": "s",
                 "role": "body",
-                "text": "Every Sunday. A three minute read."
+                "text": "Every Sunday. A three minute read.",
+                "tokens": {
+                  "text-size": "1.167rem"
+                }
               }
             ]
           },
@@ -124,16 +134,23 @@
                 "name": "email",
                 "label": "Email address",
                 "placeholder": "you@example.com",
-                "required": true
+                "required": true,
+                "tokens": {
+                  "fg": "#30243e",
+                  "muted": "#e7def0"
+                }
               },
               {
                 "type": "consent",
                 "id": "n10",
                 "role": "consent_text",
                 "hidden": true,
-                "text": "Send me the Sunday letter. See our %s.",
+                "text": "Send me the Sunday letter. %s",
                 "link": {
                   "label": "Privacy Policy"
+                },
+                "tokens": {
+                  "text-size": "1.125rem"
                 }
               },
               {
@@ -148,7 +165,10 @@
                 "id": "n12",
                 "size": "s",
                 "role": "fine_print",
-                "text": "One email a week from after hours.\nUnsubscribe whenever you like."
+                "text": "One email a week from after hours.\nUnsubscribe whenever you like.",
+                "tokens": {
+                  "text-size": "1.167rem"
+                }
               }
             ]
           }
@@ -162,8 +182,9 @@
           "gap": "1.38rem"
         },
         "narrow": {
-          "pad": "1.75rem 1.5rem 1.5rem",
-          "heading-size": "1.31rem"
+          "pad": "1.25rem",
+          "heading-size": "1.31rem",
+          "gap": "0.875rem"
         },
         "children": [
           {
@@ -204,7 +225,10 @@
                 "id": "n23",
                 "size": "xl",
                 "role": "success_headline",
-                "text": "You are on\nour wavelength."
+                "text": "You are on\nour wavelength.",
+                "narrow": {
+                  "heading-size": "1.25rem"
+                }
               },
               {
                 "type": "text",
@@ -229,7 +253,10 @@
                 "type": "eyebrow",
                 "id": "n25",
                 "role": "eyebrow",
-                "text": "Next on the dial"
+                "text": "Next on the dial",
+                "tokens": {
+                  "text-size": "1.0834rem"
+                }
               },
               {
                 "type": "text",
@@ -238,14 +265,21 @@
                 "role": "success_body",
                 "text": "A record for a rainy evening.\nA room worth staying in."
               }
-            ]
+            ],
+            "narrow": {
+              "pad": "1.25rem",
+              "gap": "0.875rem"
+            }
           },
           {
             "type": "text",
             "id": "n27",
             "size": "s",
             "role": "fine_print",
-            "text": "One email each Sunday. Unsubscribe at any time."
+            "text": "One email each Sunday. Unsubscribe at any time.",
+            "tokens": {
+              "text-size": "1.167rem"
+            }
           }
         ]
       }

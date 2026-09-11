@@ -1,5 +1,5 @@
-import { IDENTITY, LEAVES, childKeysOf, numbered, type Path } from '../panel';
-import type { TemplateNode, TemplateTree } from '@renderer/types';
+import { IDENTITY, LEAVES, childKeysOf, numbered, withValue, type Path } from '../panel';
+import type { SplitNode, TemplateNode, TemplateTree } from '@renderer/types';
 
 /**
  * The tree, as something that can be RESHAPED — and the five ways it may be.
@@ -465,6 +465,16 @@ export function nearestTo(tree: TemplateTree, path: Path): Path | null {
 
 /** Whether two paths address the same node. */
 export const samePath = (a: Path, b: Path): boolean => a.length === b.length && a.join('.') === b.join('.');
+
+/** Move both panes together, retaining their content, identities and widths. */
+export function withSwappedPanes(tree: TemplateTree, path: Path): TemplateTree {
+  const node = nodeAt(tree, path);
+  if (node?.type !== 'split') return tree;
+  const split = node as SplitNode;
+  let next = withValue(tree, path, 'start', split.end ?? []);
+  next = withValue(next, path, 'end', split.start ?? []);
+  return typeof split.ratio === 'number' ? withValue(next, path, 'ratio', 1 - split.ratio) : next;
+}
 
 /** Every Slot Role the tree is already using, so a new block can be given a free one. */
 export function rolesTaken(tree: TemplateTree): string[] {

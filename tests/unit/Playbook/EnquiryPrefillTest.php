@@ -188,7 +188,7 @@ final class EnquiryPrefillTest extends TestCase
     public function testChoosingADesignWithoutAChoiceDropsThatRoleWithoutChangingTheReplyAddress(): void
     {
         $config = $this->draft()['config'];
-        $config['template_id'] = 'inline-signup';
+        $config['template_id'] = 'inline-rule';
 
         $switched = $this->templates->snapshotInto($config, 'inline-choice');
         $fields = self::fieldsIn($switched['template']['tree']);

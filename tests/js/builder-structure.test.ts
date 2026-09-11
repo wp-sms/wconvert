@@ -9,7 +9,9 @@ import {
   withInserted,
   withMoved,
   withRemoved,
+  withSwappedPanes,
 } from '../../resources/admin/src/builder/structure/tree';
+
 import {
   additionsIn,
   freeCapture,
@@ -33,7 +35,7 @@ import {
   undo,
 } from '../../resources/admin/src/builder/structure/history';
 import { AUTHORED_ROLES, LEAVES } from '../../resources/admin/src/builder/panel';
-import type { TemplateNode, TemplateTree } from '@renderer/types';
+import type { SplitNode, TemplateNode, TemplateTree } from '@renderer/types';
 
 /**
  * ============================================================================
@@ -334,6 +336,7 @@ describe('what the catalogue offers', () => {
       'field',
       'button',
       'consent',
+      'followup',
       'stack',
       'row',
       'split',
@@ -751,5 +754,35 @@ describe('reaching a node by path', () => {
     expect(nodeAt(TREE, [9])).toBeNull();
     expect(nodeAt(TREE, [0, 'children', 99])).toBeNull();
     expect(nodeAt(TREE, [0, 'nope', 0])).toBeNull();
+  });
+});
+
+describe('swapping split panes', () => {
+  it('moves content and stable identities together, preserving each pane’s width', () => {
+    const tree = { steps: [{ type: 'split', ratio: 0.35, basis: '16rem',
+      start: [{ type: 'heading', id: 'art-title', text: 'Welcome', role: 'headline' }],
+      end: [{ type: 'field', id: 'email-field', name: 'email' }],
+    }] } as TemplateTree;
+    const before = JSON.stringify(tree);
+    const changed = withSwappedPanes(tree, [0]);
+    const split = changed.steps[0] as SplitNode;
+    expect(split.start).toEqual((tree.steps[0] as SplitNode).end);
+    expect(split.end).toEqual((tree.steps[0] as SplitNode).start);
+    expect(split.ratio).toBeCloseTo(0.65);
+    expect(split.basis).toBe('16rem');
+    expect(JSON.stringify(tree)).toBe(before);
+    expect(withSwappedPanes(tree, [0, 'start', 0])).toBe(tree);
+  });
+});
+
+describe('resource links after the form', () => {
+  it('offers one only on the success screen, without introducing a counted act', () => {
+    const success = { parent: [1], key: 'children', index: 1 };
+    const form = { parent: [0], key: 'children', index: 0 };
+    expect(nodeFor(TREE, 'followup', form, 'submit')).toBeNull();
+    const link = nodeFor(TREE, 'followup', success, 'submit')!;
+    expect(link).toMatchObject({ type: 'followup', label: 'Open resource', role: 'success_action' });
+    expect(convertingActOf(withInserted(TREE, success, link))).toEqual(['submit']);
+    expect(nodeFor(TREE, 'followup', success, 'click')).toBeNull();
   });
 });

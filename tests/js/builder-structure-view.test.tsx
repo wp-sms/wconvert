@@ -52,7 +52,7 @@ vi.mock('../../resources/admin/src/goals/api', async (importOriginal) => ({
 const { OptinBuilder } = await import('../../resources/admin/src/builder/OptinBuilder');
 
 const ENTRY = JSON.parse(
-  readFileSync(resolve(import.meta.dirname, '../../resources/templates/library/centred-card.json'), 'utf8'),
+  readFileSync(resolve(import.meta.dirname, '../fixtures/templates/editor-card.json'), 'utf8'),
 ) as TemplateEntry;
 
 const ID = '01JQ00000000000000000000AA';

@@ -1,6 +1,6 @@
 {
   "id": "inline-phone",
-  "name": "Inline text alerts",
+  "name": "Inline callback",
   "display_type": "inline",
   "tier": "free",
   "tokens": {
@@ -17,7 +17,9 @@
     "width": "34rem",
     "align": "start",
     "shadow": "none",
-    "tracking": "-0.02em"
+    "tracking": "-0.02em",
+    "text-size": "1rem",
+    "input-bg": "#ffffff"
   },
   "tree": {
     "steps": [
@@ -28,25 +30,17 @@
             "type": "heading",
             "id": "n1",
             "role": "headline",
-            "text": "Text me when it is back"
+            "text": "Talk it through with us"
           },
           {
             "type": "text",
             "id": "n2",
             "role": "body",
-            "text": "One message the moment it is in stock. Nothing else, ever."
+            "text": "Leave your number and a request for a call about your project."
           },
           {
             "type": "row",
             "children": [
-              {
-                "type": "field",
-                "id": "n3",
-                "name": "name",
-                "label": "First name",
-                "placeholder": "Your name",
-                "required": false
-              },
               {
                 "type": "field",
                 "id": "n4",
@@ -61,7 +55,7 @@
             "type": "button",
             "id": "n5",
             "role": "cta_label",
-            "label": "Alert me",
+            "label": "Request a callback",
             "action": "submit"
           },
           {
@@ -69,16 +63,23 @@
             "id": "n6",
             "role": "consent_text",
             "hidden": true,
-            "text": "Email me offers and news. See our %s.",
+            "text": "I agree to a call about my request. %s",
             "link": {
               "label": "Privacy Policy"
+            },
+            "tokens": {
+              "text-size": "1.125rem"
             }
           },
           {
             "type": "text",
             "id": "n7",
             "role": "fine_print",
-            "text": "Message rates may apply. Stop at any time."
+            "text": "We use your number to respond to this enquiry.",
+            "size": "s",
+            "tokens": {
+              "text-size": "1.167rem"
+            }
           }
         ]
       },
@@ -94,13 +95,13 @@
             "type": "heading",
             "id": "n8",
             "role": "success_headline",
-            "text": "Thanks for the interest"
+            "text": "Callback request received"
           },
           {
             "type": "text",
             "id": "n9",
             "role": "success_body",
-            "text": "We have received your request for updates."
+            "text": "Thank you. We have received your number and your request for a call."
           }
         ]
       }

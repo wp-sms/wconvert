@@ -90,13 +90,11 @@ own breakpoint — a stage at a phone measure of 375px with the breakpoint at
 384px would have drawn the full-width design under a control that says *Narrow*
 and edited values nothing on screen was using.
 
-**And the breakpoint moved to 24rem**, which is derived rather than chosen: it
-is where a `split` stops being side by side, since a pane's `flex-basis` is
-`12rem` and there are two of them. Retuning at the width the layout gives up at
-means the two cannot disagree. A phone measure would have been the obvious
-number and is the wrong one — the common ones straddle it (360, 375, 390, 412),
-so half the phones in circulation would have wrapped without retuning or
-retuned without wrapping.
+**And the breakpoint moved to 24rem**, derived from a split's two default
+12rem panes. **Amended by [ADR 0079](0079-a-split-can-reserve-room-for-its-form.md):**
+minimum column width is now configurable, so a split can stack earlier to give
+its fields enough room. The 24rem appearance breakpoint and the editor's
+narrow preview remain unchanged.
 
 ## 4. The theme picker was inside the panel that hides
 

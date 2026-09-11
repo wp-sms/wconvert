@@ -5,7 +5,8 @@ import { formStep, losesWordsOnSwitch } from './catalogue';
 import { convertingActOf } from './guards';
 import { capturesTaken, nodesOf, nodeAt } from './tree';
 import { validInterestOptions } from '../InterestOptions';
-import type { FieldNode } from '@renderer/types';
+import { safeHref } from '@renderer/render';
+import type { FollowupNode, FieldNode } from '@renderer/types';
 import type { Template } from '@renderer/types';
 
 /**
@@ -202,10 +203,20 @@ export function problemsIn(
     ...whatCollectsNothing(template, growsAList),
     ...whatCapturesNothing(template),
     ...whatHasIncompleteFields(template),
+    ...whatHasIncompleteFollowups(template),
     ...whatCountsDownToNothing(template, endsAt),
     ...whatLosesWords(template),
     ...whatCannotBeRead(template),
   ];
+}
+
+function whatHasIncompleteFollowups(template: Template): Problem[] {
+  const afterForm = formStep(template.tree) === 0;
+  return nodesOf(template.tree).filter(node => node.type === 'followup' && !node.hidden).flatMap(node => {
+    const link = nodeAt(template.tree, node.path) as FollowupNode;
+    if (afterForm && node.path[0] === 1 && link.label?.trim() && safeHref(link.href?.trim()) !== null) return [];
+    return [{ said: __('Give this resource link a label and address, and place it after the form.', 'wconvert'), path: node.path, check: 'words' as const, blocksPublish: true }];
+  });
 }
 
 function whatHasIncompleteFields(template: Template): Problem[] {

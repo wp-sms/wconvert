@@ -16,6 +16,12 @@ final class TemplateForm
     {
         $tree = is_array($template) && is_array($template['tree'] ?? null) ? $template['tree'] : [];
         $steps = is_array($tree['steps'] ?? null) ? $tree['steps'] : [];
+        $formFirst = isset($steps[0]) && is_array($steps[0]) && self::submits($steps[0]);
+        foreach ($steps as $index => $step) {
+            if (is_array($step) && self::invalidFollowup($step, $formFirst && $index === 1)) {
+                return 'followup';
+            }
+        }
         foreach ($steps as $step) {
             if (!is_array($step) || !self::submits($step)) {
                 continue;
@@ -44,6 +50,23 @@ final class TemplateForm
             }
         }
         return null;
+    }
+
+    /** @param array<string, mixed> $node */
+    private static function invalidFollowup(array $node, bool $afterForm): bool
+    {
+        if (($node['hidden'] ?? false) === true) {
+            return false;
+        }
+        if (($node['type'] ?? null) === 'followup') {
+            return !$afterForm || trim((string) ($node['href'] ?? '')) === '' || trim((string) ($node['label'] ?? '')) === '';
+        }
+        foreach (TemplateTree::childrenOf($node) as $child) {
+            if (is_array($child) && self::invalidFollowup($child, $afterForm)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** @param array<string, mixed> $node */

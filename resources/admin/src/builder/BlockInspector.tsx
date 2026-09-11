@@ -13,7 +13,7 @@ import { ParamChoice } from './ParamChoice';
 import { SlotFields } from './SlotFields';
 import { nameOfBlock, stepName } from './BlockRow';
 import { LAYOUTS, slotsOf, withHidden, withValue, type Path, type Slot } from './panel';
-import { nodeAt, nodesOf, samePath } from './structure/tree';
+import { nodeAt, nodesOf, samePath, withSwappedPanes } from './structure/tree';
 import { swapLabel, swapNameOf, swapSaid, swapsFor, withSwapped } from './structure/swap';
 import type { ConvertingAct } from './structure/catalogue';
 import { nameOf, type TemplateLabels } from '../templates/api';
@@ -135,8 +135,8 @@ export function BlockInspector({
       <div role="group" aria-labelledby={heading} className="wconvert-inspector">
         {head}
         <div className="wconvert-inspector__body">
-          {look}
           {body}
+          {look}
         </div>
       </div>
     );
@@ -218,6 +218,17 @@ function contentBody({
       {slot === null ? (
         <>
           <div className="wconvert-layout-params">
+            {block.type === 'split' && (
+              <>
+                <Button type="button" variant="outline" size="sm" onClick={() =>
+                  onChange({ ...template, tree: withSwappedPanes(template.tree, path) })
+                }>
+                  <ArrowLeftRight aria-hidden="true" />
+                  {__('Swap sides', 'wconvert')}
+                </Button>
+                <p className="description">{__('Swaps this screen’s two panes, including their order when stacked on mobile.', 'wconvert')}</p>
+              </>
+            )}
             <LayoutParams
               type={block.type}
               labels={labels}

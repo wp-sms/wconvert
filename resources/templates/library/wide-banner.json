@@ -13,13 +13,15 @@
     "heading-size": "1.75rem",
     "heading-weight": "700",
     "radius": "0.25rem",
-    "pad": "1.75rem 2.25rem",
+    "pad": "clamp(1.25rem, 5%, 2rem)",
     "gap": "0.875rem",
     "width": "40rem",
     "align": "start",
     "shadow": "0 4px 12px -2px rgba(15, 23, 42, 0.12), 0 12px 32px -8px rgba(15, 23, 42, 0.18)",
     "backdrop": "rgba(15, 23, 42, 0.45)",
-    "tracking": "-0.02em"
+    "tracking": "-0.02em",
+    "text-size": "1rem",
+    "input-bg": "#ffffff"
   },
   "tree": {
     "steps": [
@@ -36,7 +38,7 @@
             "type": "text",
             "id": "n2",
             "role": "body",
-            "text": "Five links every Thursday. Nothing else, ever."
+            "text": "Five worthwhile links, every Thursday."
           },
           {
             "type": "row",
@@ -53,7 +55,7 @@
                 "type": "button",
                 "id": "n4",
                 "role": "cta_label",
-                "label": "Sign up",
+                "label": "Send me the round-up",
                 "action": "submit"
               }
             ]
@@ -63,16 +65,23 @@
             "id": "n5",
             "role": "consent_text",
             "hidden": true,
-            "text": "Email me offers and news. See our %s.",
+            "text": "Email me offers and news. %s",
             "link": {
               "label": "Privacy Policy"
+            },
+            "tokens": {
+              "text-size": "1.125rem"
             }
           },
           {
             "type": "text",
             "id": "n6",
             "role": "fine_print",
-            "text": "Unsubscribe in one click, any time."
+            "text": "Unsubscribe in one click, any time.",
+            "size": "s",
+            "tokens": {
+              "text-size": "1.167rem"
+            }
           }
         ]
       },

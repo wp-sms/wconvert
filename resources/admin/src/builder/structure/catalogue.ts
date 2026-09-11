@@ -146,6 +146,10 @@ function whyRefused(
       : null;
   }
 
+  if (type === 'followup' && (act !== 'submit' || at.parent[0] !== 1 || formStep(tree) !== 0)) {
+    return __('A resource link belongs on the screen after the form is submitted.', 'wconvert');
+  }
+
   if (type === 'field' || type === 'consent') {
     const form = formStep(tree);
 
@@ -224,6 +228,7 @@ export function nodeFor(
   }
 
   const node: Record<string, unknown> = { type };
+  if (type === 'followup') node.label = __('Open resource', 'wconvert');
   const role = freeRoleFor(tree, type);
 
   if (role !== null) {
@@ -272,6 +277,7 @@ export function nodeFor(
 /** A layout with its child arrays present and empty, so the walk finds them. */
 function blankLayout(type: string): TemplateNode {
   const node: Record<string, unknown> = { type };
+  if (type === 'followup') node.label = __('Open resource', 'wconvert');
 
   for (const key of childKeysOf(type)) {
     node[key] = [];

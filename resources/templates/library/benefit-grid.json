@@ -12,13 +12,14 @@
     "border": "#e2e8f0",
     "heading-size": "1.875rem",
     "radius": "0.75rem",
-    "pad": "2.25rem",
+    "pad": "clamp(1.25rem, 5%, 2rem)",
     "gap": "1.125rem",
     "width": "34rem",
     "align": "center",
     "backdrop": "rgba(15, 23, 42, 0.6)",
     "shadow": "0 18px 50px -12px rgba(15, 23, 42, 0.35)",
-    "tracking": "-0.025em"
+    "tracking": "-0.025em",
+    "text-size": "1rem"
   },
   "tree": {
     "steps": [
@@ -29,13 +30,13 @@
             "type": "heading",
             "id": "n1",
             "role": "headline",
-            "text": "Join 4,000 other readers"
+            "text": "Three good things. Every Thursday."
           },
           {
             "type": "text",
             "id": "n2",
             "role": "body",
-            "text": "One email a week, and here is what is in it."
+            "text": "A short weekly note to make something of your next idea."
           },
           {
             "type": "grid",
@@ -84,7 +85,7 @@
                     "type": "text",
                     "id": "n8",
                     "role": "body",
-                    "text": "Something free"
+                    "text": "One practical resource"
                   }
                 ]
               }
@@ -102,7 +103,7 @@
             "type": "button",
             "id": "n10",
             "role": "cta_label",
-            "label": "Join the list",
+            "label": "Send me the weekly note",
             "action": "submit"
           },
           {
@@ -110,16 +111,23 @@
             "id": "n11",
             "role": "consent_text",
             "hidden": true,
-            "text": "Email me offers and news. See our %s.",
+            "text": "Email me offers and news. %s",
             "link": {
               "label": "Privacy Policy"
+            },
+            "tokens": {
+              "text-size": "1.125rem"
             }
           },
           {
             "type": "text",
             "id": "n12",
             "role": "fine_print",
-            "text": "Unsubscribe in one click, any time."
+            "text": "Unsubscribe in one click, any time.",
+            "size": "s",
+            "tokens": {
+              "text-size": "1.167rem"
+            }
           }
         ]
       },

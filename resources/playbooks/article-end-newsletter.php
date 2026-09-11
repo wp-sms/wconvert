@@ -21,7 +21,7 @@ return [
     'id' => 'article-end-newsletter',
     'name' => __('At the end of the article', 'wconvert'),
     'goal' => 'grow_email_list',
-    'template_id' => 'inline-signup',
+    'template_id' => 'inline-rule',
     'notes' => __('Sits in the page rather than over it, so nobody has to close anything. Place the block at the foot of your posts: a reader who got that far has already told you they are interested, which is why this asks for nothing but an address.', 'wconvert'),
     'copy' => [
         'headline' => __('More like this, every Thursday', 'wconvert'),
@@ -31,7 +31,7 @@ return [
         'cta_label' => __('Send it to me', 'wconvert'),
         'fine_print' => [
             /* translators: %s: the label of a link to the site's privacy policy. */
-            'text' => __('Unsubscribe in one click, any time. See our %s.', 'wconvert'),
+            'text' => __('Unsubscribe in one click, any time. %s', 'wconvert'),
             'link' => ['label' => __('Privacy Policy', 'wconvert')],
         ],
         'success_headline' => __('Thanks for reading', 'wconvert'),

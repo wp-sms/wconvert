@@ -231,7 +231,7 @@ export function shell(template: Template, chrome: HTMLElement | null, options: M
 
     element.addEventListener('submit', (event) => event.preventDefault());
 
-    for (const cta of element.querySelectorAll('a.wc-button')) {
+    for (const cta of element.querySelectorAll('a[data-convert]')) {
       cta.addEventListener('click', () => options.onConvert?.());
     }
 

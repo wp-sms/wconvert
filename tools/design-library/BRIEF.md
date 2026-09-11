@@ -1,94 +1,114 @@
-# WConvert designs — brief
+# WConvert designs — collection brief
 
-WConvert is a WordPress lead-capture plugin: popups, floating bars, slide-ins
-and inline forms, created goal-first.
+WConvert captures leads through popups, inline forms, floating bars and slide-ins.
+The collection must serve stores, publishers and service businesses equally well.
+Quality and a useful visitor outcome determine whether a design earns a place.
 
-**The builder has no canvas.** Issue #15 settled that, and named the
-consequence this brief exists to answer:
+## The current editor
 
-> the design library is the entire design surface of the product — if the
-> library is thin or ugly, the product is thin or ugly, with no canvas for
-> users to escape into.
+The builder has a selectable preview, contextual controls and optional Layers.
+Merchants can edit text, fields, images, fonts, layout parameters and scoped
+styles; insert, duplicate, remove and reorder blocks; edit both form and success
+screens; and use mobile style overrides and undo. A template must be useful
+before any of those controls are touched. See ADRs 0067, 0075 and 0076.
 
-## What the design work is
+The initial task is three representative designs, including substantial
+improvements of existing entries. A larger twelve-design collection follows
+after these examples establish the standard. Do not count palette changes as
+additional designs or remove existing entries before reviewing their dependants.
 
-Take the library from **20 designs to about 42**, and make the ones that exist
-worth choosing between.
+## First three examples
 
-Everything in `out/` is generated from the shipping code. The cards are the
-real library rendered by the real renderer, in the real containers, at three
-viewports in both directions — not mock-ups of an intention. If a card looks
-wrong, the design is wrong.
+| Audience | Design | Starting point | Placement |
+|---|---|---|---|
+| Stores | Fieldwork | Refined split offer, gradient placeholder, visible code reveal | Free popup |
+| Publishers | Sunday marginalia | Refined editorial letter, readable type, complete acknowledgement | Free popup |
+| Services | Callback notes | New callback request, phone plus optional name and topic | Free inline |
 
-**`VOCABULARY.md` is the whole specification**, and it is deliberately
-self-contained: it can be pasted into a system that has never seen this
-repository and is enough to emit a valid design. Read it before drawing
-anything. What it describes is narrow, and the narrowness is the medium rather
-than an obstacle to work around.
+All three belong in Free to establish strong examples for each audience.
+Pro follows the same quality standard and adds compositions, coordinated
+collections and its additional display types. The later curation target is
+roughly 12–16 Free and 24–32 Pro designs, not a quota for this batch.
 
-## Verified inventory
+The library after this batch contains 57 designs: 39 Free and 18 Pro. Treat
+that as a dated inventory, not a constant to encode in tests. Regenerate the
+gallery to inspect the actual collection.
 
-Counted from the shipping libraries.
+## Content and behaviour
 
-| | Now | Target |
-|---|---|---|
-| **Playbooks** (words + rules, no design) | 7 | ~16 |
-| **Themes** (token bundles) | 4 | ~12 |
-| **Free designs** (`popup`, `inline`) | 12 | ~24 |
-| **Pro designs** (`floating_bar`, `slide_in`, + Pro `popup`/`inline`) | 8 | ~18 |
+A design supplies structure, appearance and sample content. A Playbook supplies
+purpose, words, display rules and setup guidance. **Keep my content** is the
+editor default; **Use this design's sample content** can copy the examples into
+a real draft. Sample words can therefore reach visitors and must be honest.
 
-The seven Playbooks point at **three distinct designs** — `offer-panel` ×4,
-`centred-card` ×2, `stacked-signup` ×1. The goal-first flow's second step shows
-**Playbooks, not designs**, so a merchant coming through the front door sees
-seven cards, four of which are one design wearing different words. That is the
-sharpest single problem here.
+Every form has one primary conversion and a terminal acknowledgement. Say
+what was captured, without claiming provider subscription, message delivery,
+a confirmed appointment or an automatic restock notification. A shared code
+may be displayed when a code node holds it; the merchant must create a valid
+offer separately. Do not label a reveal action as an email delivery action.
 
-## Constraints — settled, not open
+Give fields visible labels and useful examples, with a country code for phone.
+Ask for one contact method. Name and the supported `interest` choice default
+to optional for enquiries. Explain how the business will use the details near
+the form. Hidden consent wording must still match the contact method and ask.
+Write privacy sentences that remain complete without a configured policy URL.
 
-**A design carries no words.** Copy lives on the Playbook, and a design's own
-text is placeholder a visitor never reads. This is what keeps the library
-small: with copy held elsewhere a design is goal-agnostic, so the gallery is *N
-designs per Display Type* rather than a design for every pairing of Display
-Type and Goal. **Do not design "a Black Friday popup".** Design a popup that a
-Black Friday Playbook can fill.
+## Artwork and fonts
 
-**Nothing can be imported.** A design is a node tree over a closed vocabulary —
-the layouts, the leaves and the CSS custom properties `VOCABULARY.md` lists —
-and anything unrecognised is dropped **silently**. So HTML from anywhere else
-cannot cross: positioned badges, decorative shapes and second CTAs have no home
-and vanish without a word. There is no HTML→JSON mapper and there will not be
-one.
+For this phase, **use placeholders; do not generate images**. Fieldwork uses
+a small CSS gradient in its editable media background. Do not disguise a
+placeholder as a real photograph or manufacture a testimonial. Replacing it
+with production artwork is a later visual review, not a blocker to this batch.
 
-**Tokens have a SCOPE, and that is the ceiling lift.** The design sets them for
-the whole of itself, and **any layout node re-declares the same names for what
-is inside it** by carrying a `tokens` bag of its own — so a pane can be tinted
-and the form can have a different ground from the headline (ADR 0062). The names
-are the same closed set at every scope; bags nest.
+Keep offers, headings and buttons as editable text. Prefer reliable system
+font stacks for these foundations; no remote font or image service is needed
+to render them. A photograph added later needs a deliberate crop, fallback
+surface and sufficient text contrast in both wide and narrow layouts.
 
-**What no bag reaches is ARRANGEMENT.** No per-node `class`, no `style`, no
-positioning, nothing that moves a box somewhere the layout did not put it. A
-design that wants the picture on the other side is a different design. That is
-the real ceiling and it is deliberate (ADR 0061, ADR 0062).
+## Authoring and review
 
-**Token values are unvalidated.** Only the names are checked. `clamp()` widths,
-asymmetric `pad`, gradients and arbitrary radii all work — the "suggested
-values" in `VOCABULARY.md` are what the settings panel offers as chips, *an
-offer, not a limit*. This is where most of the available variety actually
-lives.
+Generate and read `out/VOCABULARY.md` before authoring. Designs are validated
+JSON trees, not imported HTML. The vocabulary governs layouts, leaves, Slot
+Roles and token names. Use stable leaf IDs. Scope token overrides to the
+elements they affect, and limit `narrow` bags to values that actually retune.
+Use a split's minimum column width (`basis`) to keep fields usable before
+wrapping. Fieldwork and Callback notes use 16rem; the 24rem narrow appearance
+breakpoint remains independent (ADR 0079).
 
-**Count is not the target.** Claspo ships 1000+ templates, OptinMonster 700+,
-Depicter 600+, and 16 of 16 competitors ship a big gallery. The research
-verdict was explicit:
+Use the shipping renderer for all visual decisions. The new comparison page
+is regenerated with:
 
-> WConvert should not set "hundreds of templates" as a launch KPI. The useful
-> unit is a complete, trustworthy playbook with a small set of strong visual
-> variants.
+```bash
+./tools/design-library/build.sh renderer designs review
+```
 
-What only ~5 of 16 ship is **templates with purpose-matched rules**. That is
-where the effort goes: Playbooks first, then themes, then designs.
+Open `out/flagships.html` through the existing local site's HTTP URL. Compare
+the form and success states at 288px (the available width of a 320px popup),
+320px, 390px, 768px and natural desktop width. Check longer text, visible
+consent, missing imagery, RTL, Midnight and Minimal. The page's form submission
+only demonstrates a screen transition; use WordPress to verify actual capture.
 
-## What to ask for
+Also inspect the designs in the real WordPress picker and editor. Verify sample
+application, content retention, element selection and edits, mobile previews,
+success copy and the available phone/choice controls. Run the template validator,
+PHP and JavaScript suites and source contract checks. Record failures and the
+limits of visual review rather than calling structural validation visual approval.
 
-**Whole sheets, not single designs.** The question worth answering is whether
-forty designs read as forty designs — which is visible in a contact sheet and
-in nothing else. Bring 3–4 directions for a *family*, judged together.
+## Editor controls now available
+
+Split layouts have **Swap sides**, in one undoable edit, alongside Minimum column
+width. Backgrounds and image leaves have **Picture focus**, with a separate mobile
+override. Code blocks can expose an editable copy button with truthful outcome
+messages. **Resource link** can open a configured file or page after a submission
+without counting another conversion; incomplete links block publication.
+
+The comparison includes pane swapping, picture focus and an optional resource-link
+example. That example opens a local placeholder, never an invented customer asset.
+See ADR 0080 for the rendering and counting boundaries.
+
+## Later phases
+
+Curate the twelve-design flagship collection next, then complete remote catalog
+installation and compatibility handling. Installed designs must continue to work
+locally without a live catalog connection. Movement between arbitrary containers
+and the contrast helper’s handling of colour aliases remain editor follow-ups.

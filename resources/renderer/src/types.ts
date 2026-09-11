@@ -37,6 +37,7 @@ export type SlotRole =
   | 'consent_text'
   | 'success_headline'
   | 'success_body'
+  | 'success_action'
   | 'code_value'
   | 'email_label'
   | 'email_placeholder'
@@ -361,6 +362,10 @@ export interface CountdownNode extends HideableNode {
 export interface CodeNode extends HideableNode {
   readonly type: 'code';
   readonly text?: string;
+  readonly copy?: boolean;
+  readonly copy_label?: string;
+  readonly copied_label?: string;
+  readonly copy_failed_label?: string;
 }
 
 /**
@@ -422,6 +427,12 @@ export interface FieldNode extends BaseNode {
   readonly options?: readonly { readonly value: string; readonly label: string }[];
 }
 
+export interface FollowupNode extends HideableNode {
+  readonly type: 'followup';
+  readonly label?: string;
+  readonly href?: string | null;
+}
+
 export interface ButtonNode extends BaseNode {
   readonly type: 'button';
   readonly label?: string;
@@ -463,6 +474,7 @@ export type LeafNode =
   | ImageNode
   | FieldNode
   | ButtonNode
+  | FollowupNode
   | ConsentNode;
 
 export interface StackNode {
@@ -537,6 +549,8 @@ export interface SplitNode {
   readonly end?: readonly TemplateNode[];
   /** How much of the inline axis the first pane takes, as a fraction. */
   readonly ratio?: number;
+  /** Minimum width of either pane before wrapping; defaults to 12rem. */
+  readonly basis?: string;
   /**
    * Tokens re-declared for this box and everything inside it.
    *

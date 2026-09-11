@@ -6,8 +6,8 @@
   "tokens": {
     "bg": "#fffaf2",
     "fg": "#331e17",
-    "muted": "#8a6d5c",
-    "accent": "#f45a31",
+    "muted": "#705341",
+    "accent": "#a83d22",
     "accent-fg": "#fff8f2",
     "border": "#e6cfb9",
     "input-bg": "#ffffff",
@@ -22,8 +22,9 @@
     "gap": "0",
     "width": "25rem",
     "align": "center",
-    "shadow": "0 24px 64px rgba(51, 30, 23, 0.28)",
-    "backdrop": "rgba(51, 30, 23, 0.5)"
+    "shadow": "0 24px 64px -18px rgba(51,30,23,.28)",
+    "backdrop": "rgba(51, 30, 23, 0.5)",
+    "text-size": "1rem"
   },
   "tree": {
     "steps": [
@@ -32,18 +33,42 @@
         "children": [
           {
             "type": "panel",
-            "tokens": { "pad": "2.5rem 2rem 2rem", "gap": "0.5rem" },
+            "tokens": {
+              "pad": "2.5rem 2rem 2rem",
+              "gap": "0.5rem"
+            },
             "children": [
-              { "type": "eyebrow", "id": "n1", "role": "eyebrow", "text": "First order only" },
-              { "type": "heading", "id": "n2", "role": "headline", "size": "3xl", "text": "15%" },
+              {
+                "type": "eyebrow",
+                "id": "n1",
+                "role": "eyebrow",
+                "text": "First order only",
+                "tokens": {
+                  "text-size": "1.0834rem"
+                }
+              },
+              {
+                "type": "heading",
+                "id": "n2",
+                "role": "headline",
+                "size": "3xl",
+                "text": "15%",
+                "tokens": {
+                  "heading-size": "clamp(1.1rem, 4.5cqi, 1.5rem)"
+                }
+              },
               {
                 "type": "text",
                 "id": "n3",
                 "role": "body",
                 "size": "xl",
-                "text": "off everything in the shop, for your first order."
+                "text": "off your first order."
               }
-            ]
+            ],
+            "narrow": {
+              "pad": "1.25rem",
+              "gap": "0.875rem"
+            }
           },
           {
             "type": "panel",
@@ -63,23 +88,41 @@
                 "placeholder": "you@example.com",
                 "required": true
               },
-              { "type": "button", "id": "n5", "role": "cta_label", "label": "Send my 15%", "action": "submit" },
+              {
+                "type": "button",
+                "id": "n5",
+                "role": "cta_label",
+                "label": "Reveal my 15% code",
+                "action": "submit"
+              },
               {
                 "type": "consent",
                 "id": "n6",
                 "role": "consent_text",
                 "hidden": true,
-                "text": "Email me offers and news. See our %s.",
-                "link": { "label": "Privacy Policy" }
+                "text": "Email me offers and news. %s",
+                "link": {
+                  "label": "Privacy Policy"
+                },
+                "tokens": {
+                  "text-size": "1.125rem"
+                }
               },
               {
                 "type": "text",
                 "id": "n7",
                 "role": "fine_print",
                 "size": "s",
-                "text": "One code per customer. Unsubscribe whenever you like."
+                "text": "First order only. One use per customer. Unsubscribe any time.",
+                "tokens": {
+                  "text-size": "1.167rem"
+                }
               }
-            ]
+            ],
+            "narrow": {
+              "pad": "1.25rem",
+              "gap": "0.875rem"
+            }
           }
         ]
       },
@@ -88,16 +131,32 @@
         "children": [
           {
             "type": "panel",
-            "tokens": { "pad": "2.5rem 2rem 1.5rem", "gap": "0.5rem" },
+            "tokens": {
+              "pad": "2.5rem 2rem 1.5rem",
+              "gap": "0.5rem"
+            },
             "children": [
-              { "type": "heading", "id": "n8", "role": "success_headline", "size": "xl", "text": "Here is your code" },
+              {
+                "type": "heading",
+                "id": "n8",
+                "role": "success_headline",
+                "size": "xl",
+                "text": "Here is your code",
+                "tokens": {
+                  "heading-size": "clamp(1.1rem, 4.5cqi, 1.5rem)"
+                }
+              },
               {
                 "type": "text",
                 "id": "n9",
                 "role": "success_body",
                 "text": "We have received your details. Use this code at checkout."
               }
-            ]
+            ],
+            "narrow": {
+              "pad": "1.25rem",
+              "gap": "0.875rem"
+            }
           },
           {
             "type": "panel",
@@ -108,8 +167,18 @@
               "pad": "1.5rem 2rem 2rem"
             },
             "children": [
-              { "type": "code", "id": "n10", "role": "code_value", "text": "WELCOME15" }
-            ]
+              {
+                "type": "code",
+                "id": "n10",
+                "role": "code_value",
+                "text": "WELCOME15",
+                "copy": true
+              }
+            ],
+            "narrow": {
+              "pad": "1.25rem",
+              "gap": "0.875rem"
+            }
           }
         ]
       }
