@@ -37,8 +37,8 @@ export function TemplatePickerDialog({ open, onOpenChange, onClosed, onCatalogIn
           </DialogDescription>
         </DialogHeader>
         {onCatalogInstalled && <div className="flex gap-2 border-b px-6 py-2" role="group" aria-label={__('Library source', 'wconvert')}>
-          <Button variant="ghost" aria-pressed={!packs} onClick={() => setPacks(false)}>{__('Your designs', 'wconvert')}</Button>
-          <Button variant="ghost" aria-pressed={packs} onClick={() => setPacks(true)}>{__('Template packs', 'wconvert')}</Button>
+          <Button variant={packs ? "ghost" : "secondary"} aria-pressed={!packs} onClick={() => setPacks(false)}>{__('Your designs', 'wconvert')}</Button>
+          <Button variant={packs ? "secondary" : "ghost"} aria-pressed={packs} onClick={() => setPacks(true)}>{__('Template packs', 'wconvert')}</Button>
         </div>}
         <div className="wconvert-picker__scroll">
           {packs && onCatalogInstalled ? <TemplatePacks displayType={picker.displayType} onInstalled={onCatalogInstalled}

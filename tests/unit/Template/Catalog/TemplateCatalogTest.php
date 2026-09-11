@@ -29,7 +29,7 @@ final class TemplateCatalogTest extends TestCase
         $this->options = new FakeOptionStore();
         $this->http = new FakeCatalogTransport();
         $this->catalog = new TemplateCatalog($this->options, $this->http, $this->validator, $this->installed);
-        $this->options->set(TemplateCatalog::SOURCE, 'https://catalog.example/index.json');
+        $this->options->set(TemplateCatalog::SOURCE_OPTION, 'https://catalog.example/index.json');
     }
 
     protected function tearDown(): void
@@ -107,8 +107,8 @@ final class TemplateCatalogTest extends TestCase
     {
         $changes = [
             ['schema', 2], ['assets', [['url' => 'https://tracker.example/pixel.png']]],
-            ['requires.capabilities', ['execute-php']], ['requires.plugin', '999.0.0'],
-            ['templates.0.tree.steps.0.type', 'script'], ['templates.0.tokens.bg', 'red; } body {display:none'],
+            ['requires.capabilities', ['execute-php']], ['requires.capabilities', []], ['requires.tree', null], ['requires.plugin', '999.0.0'],
+            ['templates.0.tree.steps.0.type', 'script'], ['templates.0.tree.steps.0.id', 'n1'], ['templates.0.tokens.bg', 'red; } body {display:none'],
             ['templates.0.tokens.bg-image', 'url(https://tracker.example/pixel)'],
             ['templates.0.tokens.bg-image', 'u\\72l(https://tracker.example/pixel)'],
             ['templates.0.tokens.bg', ['red']], ['templates.0.tree.steps.0.children.0.text', ['bad']],
@@ -146,6 +146,30 @@ final class TemplateCatalogTest extends TestCase
         $changed = $this->pack(); $changed['name'] = 'Changed';
         try { $this->installed->install(json_encode($changed, JSON_THROW_ON_ERROR)); $this->fail(); } catch (RuntimeException $e) { $this->assertStringContainsString('already installed', $e->getMessage()); }
         $this->assertCount(1, $this->installed->packs());
+    }
+
+    public function testEveryUsedFeatureMustBeDeclaredAndFieldOptionsMustBelongToAChoice(): void
+    {
+        foreach (['callback-notes', 'useful-guide'] as $id) {
+            $pack = $this->pack();
+            $pack['templates'] = [json_decode((string) file_get_contents(WCONVERT_DIR . '/resources/templates/library/' . $id . '.json'), true, 512, JSON_THROW_ON_ERROR)];
+            try { $this->validator->decode(json_encode($pack, JSON_THROW_ON_ERROR)); $this->fail('Undeclared feature accepted'); }
+            catch (RuntimeException $error) { $this->assertStringContainsString('declare every capability', $error->getMessage()); }
+        }
+        $pack = $this->pack();
+        $pack['templates'][0]['tree']['steps'][0]['children'][] = ['type' => 'field', 'id' => 'extra', 'name' => 'email', 'label' => 'Email', 'options' => [['value' => 'one', 'label' => 'One']]];
+        $this->expectException(RuntimeException::class);
+        $this->validator->decode(json_encode($pack, JSON_THROW_ON_ERROR));
+    }
+
+    public function testReinstallRepairsACorruptCopyInsteadOfReportingFalseSuccess(): void
+    {
+        $json = json_encode($this->pack(), JSON_THROW_ON_ERROR);
+        $pack = $this->installed->install($json);
+        file_put_contents($this->directory . '/' . $pack['digest'] . '.json', 'broken');
+        $this->assertCount(0, $this->installed->entries());
+        $this->installed->install($json);
+        $this->assertCount(1, $this->installed->entries());
     }
 
     public function testCatalogCannotSendPackRequestsToAnotherOrigin(): void

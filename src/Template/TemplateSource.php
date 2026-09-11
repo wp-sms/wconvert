@@ -18,10 +18,12 @@ defined('ABSPATH') || exit;
  * and cached.
  *
  * So the glob became one implementation of this, and everything else composes
- * beside it. A source produces **decoded candidate entries** and validates
- * nothing: {@see TemplateLibrary} normalises every one against the vocabulary
+ * beside it. A source produces **decoded candidate entries**: {@see TemplateLibrary} normalises every one against the vocabulary
  * and refuses the ones that cannot convert, whatever produced them. That is
- * the property the fetched source will need most — *content, never
+ * the structural property the fetched source needs. Remote packages first pass
+ * Catalog\PackValidator for value, shape, media and size checks (ADR 0082);
+ * normalization alone is not a remote-data security policy. Originally this was
+ * the property the fetched source would need most — *content, never
  * capability*, structurally rather than by intention, which is the constraint
  * issue #7 recorded about a free ZIP that ships premium code and declines to
  * run it.

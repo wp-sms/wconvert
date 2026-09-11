@@ -12,21 +12,27 @@ export function TemplatePacks({ displayType, onInstalled, onInspect }: {
 }) {
   const [status, setStatus] = useState<CatalogStatus | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
+  const [busy, setBusy] = useState(true);
   const [selected, setSelected] = useState<CatalogPack | null>(null);
   const [preview, setPreview] = useState<PackPreview | null>(null);
   const [design, setDesign] = useState(0);
   const [step, setStep] = useState(0);
   const [mobile, setMobile] = useState(false);
   const alive = useRef(false);
-  const pending = useRef(false);
+  const pending = useRef(true);
+  const loadSequence = useRef(0);
   const heading = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
     alive.current = true;
-    void catalogStatus().then((result) => { if (alive.current) setStatus(result); })
-      .catch((cause: unknown) => { if (alive.current) setError(messageOf(cause)); });
-    return () => { alive.current = false; };
+    const sequence = ++loadSequence.current;
+    pending.current = true;
+    setBusy(true);
+    const current = () => alive.current && sequence === loadSequence.current;
+    void catalogStatus().then((result) => { if (current()) setStatus(result); })
+      .catch((cause: unknown) => { if (current()) setError(messageOf(cause)); })
+      .finally(() => { if (current()) { pending.current = false; setBusy(false); } });
+    return () => { alive.current = false; loadSequence.current += 1; };
   }, []);
   useEffect(() => { heading.current?.focus(); }, [preview?.id]);
 
@@ -64,12 +70,12 @@ export function TemplatePacks({ displayType, onInstalled, onInspect }: {
       <h2 ref={heading} tabIndex={-1} className="text-lg font-semibold">{preview.name}</h2>
       <p className="text-sm text-muted-foreground">{__('Sample content. Installing adds designs to your library; it does not change or publish your draft.', 'wconvert')}</p>
       <div className="mb-4 flex flex-wrap gap-2" role="group" aria-label={__('Designs in this pack', 'wconvert')}>
-        {preview.templates.map((entry, index) => <Button key={entry.id} variant="outline" aria-pressed={design === index}
+        {preview.templates.map((entry, index) => <Button key={entry.id} variant={design === index ? "secondary" : "outline"} aria-pressed={design === index}
           onClick={() => { setDesign(index); setStep(0); }}>{entry.name}</Button>)}
       </div>
       <div className="mb-4 flex flex-wrap gap-2">
         <Button variant="outline" aria-pressed={mobile} onClick={() => setMobile(!mobile)}>{mobile ? __('Show desktop preview', 'wconvert') : __('Show 320px preview', 'wconvert')}</Button>
-        {template.tree.steps.map((_, index) => <Button key={index} variant="outline" aria-pressed={step === index} onClick={() => setStep(index)}>
+        {template.tree.steps.map((_, index) => <Button key={index} variant={step === index ? "secondary" : "outline"} aria-pressed={step === index} onClick={() => setStep(index)}>
           {index === 0 ? __('First screen', 'wconvert') : __('Success screen', 'wconvert')}
         </Button>)}
       </div>
@@ -88,13 +94,13 @@ export function TemplatePacks({ displayType, onInstalled, onInspect }: {
         <span className="text-sm text-muted-foreground">{sprintf(__('Version %s', 'wconvert'), preview.version)}</span>
       </div>
     </> : <>
-      <h2 className="text-lg font-semibold">{__('Add a template pack', 'wconvert')}</h2>
+      <h2 ref={heading} tabIndex={-1} className="text-lg font-semibold">{__('Add a template pack', 'wconvert')}</h2>
       <p className="max-w-2xl text-sm text-muted-foreground">{__('Preview a collection, install it on this site, then use its designs in the editor. Existing campaigns keep their own design and content.', 'wconvert')}</p>
       {status === null ? <Button disabled={busy} variant="outline" onClick={() => { void run(async () => {
         const result = await catalogStatus(); if (alive.current) setStatus(result);
       }); }}>{error ? __('Retry loading packs', 'wconvert') : __('Loading packs…', 'wconvert')}</Button> : <>
         {status.configured ? <div className="mb-5 rounded-md border p-4">
-          <p className="mt-0 text-sm">{__('Checking the catalog or previewing a new pack contacts the configured template service. No campaigns, leads or licence details are sent. Installed previews work offline.', 'wconvert')}</p>
+          <p className="mt-0 text-sm">{__('Checking the catalog, previewing a new pack or installing a pack contacts the configured template service. No campaigns, leads or licence details are sent. Installed previews work offline.', 'wconvert')}</p>
           <p className="break-all text-xs text-muted-foreground">{status.source}</p>
           <Button disabled={busy} variant="outline" onClick={() => { void run(async () => {
             const result = await refreshCatalog(); if (alive.current) setStatus(result);

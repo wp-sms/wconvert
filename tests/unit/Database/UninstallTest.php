@@ -57,9 +57,8 @@ final class UninstallTest extends TestCase
      * listed here — so a store added to either tree reaches this test without
      * anybody adding a line to it.
      *
-     * `public const OPTION` is the house spelling for "the option this class
-     * owns", used by all eight stores; the schema version is the one that is
-     * not a store and is named directly.
+     * `OPTION` and `*_OPTION` name owned options, including the two catalog
+     * options. The schema version is also named directly.
      *
      * @return list<string>
      */
@@ -77,7 +76,7 @@ final class UninstallTest extends TestCase
                 }
 
                 preg_match_all(
-                    "/public const OPTION = '([a-z0-9_]+)'/",
+                    "/public const (?:[A-Z_]+_)?OPTION = '([a-z0-9_]+)'/",
                     (string) file_get_contents($file->getPathname()),
                     $matches
                 );
@@ -109,14 +108,14 @@ final class UninstallTest extends TestCase
      *
      * The count is asserted too, so that a `const OPTION` deleted from the
      * source without its line being removed from `uninstall.php` is visible as
-     * well — the nine are the nine, not "at least the ones we thought of".
+     * well, not just "at least the ones we thought of".
      */
     public function testEveryOptionWConvertStoresIsDeleted(): void
     {
         $options = self::everyOptionInTheSource();
         $contents = self::contents();
 
-        $this->assertCount(9, $options, 'nine options; a tenth is a line uninstall.php needs');
+        $this->assertCount(11, $options, 'every new option needs an uninstall entry');
 
         foreach ($options as $option) {
             $this->assertStringContainsString(
@@ -179,6 +178,32 @@ final class UninstallTest extends TestCase
     public function testAnotherPluginsQueueIsNeverDropped(): void
     {
         $this->assertStringNotContainsString("'actionscheduler", self::contents());
+    }
+
+    public function testPackCleanupRemovesOnlyOwnedFilesAndNeverFollowsDirectories(): void
+    {
+        $uploads = sys_get_temp_dir() . '/wconvert-uninstall-' . bin2hex(random_bytes(8));
+        $archive = $uploads . '/wconvert-template-packs';
+        mkdir($archive, 0755, true);
+        $owned = $archive . '/' . str_repeat('a', 64) . '.json';
+        file_put_contents($owned, '{}');
+        file_put_contents($archive . '/.pack-test123', '{}');
+        file_put_contents($uploads . '/keep.txt', 'other uploads');
+        file_put_contents($archive . '/keep.txt', 'site owner file');
+        symlink($uploads . '/keep.txt', $archive . '/' . str_repeat('b', 64) . '.json');
+        try {
+            $script = self::root() . '/tests/fixtures/uninstall-packs.php';
+            exec(escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($script) . ' ' . escapeshellarg($uploads), $output, $code);
+            $this->assertSame(0, $code, implode("\n", $output));
+            $this->assertFileDoesNotExist($owned);
+            $this->assertFileDoesNotExist($archive . '/.pack-test123');
+            $this->assertFileExists($uploads . '/keep.txt');
+            $this->assertFileExists($archive . '/keep.txt');
+        } finally {
+            foreach (glob($archive . '/*') ?: [] as $file) unlink($file);
+            foreach (glob($archive . '/.pack-*') ?: [] as $file) unlink($file);
+            rmdir($archive); unlink($uploads . '/keep.txt'); rmdir($uploads);
+        }
     }
 
     /**

@@ -80,8 +80,9 @@ renderer and loader code were not changed.
 
 ## Next
 
-After reviewing and merging this collection, implement the bounded catalog
-installation path: versioned template data, capability checks, asset validation,
+This collection was merged in PR #152. The first
+[catalog installation slice](template-catalog-installation-2026-09-11.md) now
+implements the bounded path for Free placeholder designs: versioned template data, capability checks, asset validation,
 local installed copies, offline fallback and useful update/error states. Keep
 existing campaigns independent of catalog refreshes. Restock binding, emailed
 baskets, optional SMS after email and richer enquiry fields remain separate

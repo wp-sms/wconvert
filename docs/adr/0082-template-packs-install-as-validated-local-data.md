@@ -24,7 +24,12 @@ subsequent slices; unsupported packs explain their limitation.
 An operator configures `wconvert_template_catalog_url` as a WordPress option.
 There is no default production endpoint or background contact. The optional
 service's index and packs are JSON schema 1. Each pack declares its version,
-minimum plugin version, tree version and capabilities. An index pins its exact
+minimum plugin version, tree version and capabilities. Required capabilities are
+derived from the actual nodes and must be declared. `requires.tree` is mandatory
+for the pack; individual bundled-style trees may omit `v`, in which case this
+explicit pack version supplies it. Any supplied `v` must agree, and every
+normalized preview/installed library tree carries the current `v`. Layouts carry
+no IDs; leaf IDs must be unique. An index pins its exact
 bytes with SHA-256; install rechecks the digest the merchant previewed.
 
 WordPress safe HTTP handles requests, with a 15-second timeout, 256 KiB response
@@ -64,3 +69,9 @@ changes or disappears. Corrupt local files are skipped so the bundled library
 remains usable. A release requiring unsupported capabilities is rejected before
 it can alter the local library. Paid pack fetching is not implemented, and no
 licence expiry check is added to installed functionality.
+
+
+Deleting WConvert also removes both catalog options and its owned flat archive
+files. Deactivation keeps them. Cleanup never follows a directory symlink or
+removes unrelated uploads; the recovery regression runs against disposable files
+and fake WordPress/database functions.

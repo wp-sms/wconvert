@@ -9,8 +9,8 @@ defined('ABSPATH') || exit;
 /** Explicit admin requests fetch data; normal library reads use local copies only. */
 final class TemplateCatalog
 {
-    public const CACHE = 'wconvert_template_catalog_cache';
-    public const SOURCE = 'wconvert_template_catalog_url';
+    public const CACHE_OPTION = 'wconvert_template_catalog_cache';
+    public const SOURCE_OPTION = 'wconvert_template_catalog_url';
 
     public function __construct(
         private readonly OptionStore $options,
@@ -24,7 +24,7 @@ final class TemplateCatalog
     public function status(): array
     {
         $source = $this->source();
-        $cache = $this->options->get(self::CACHE, []);
+        $cache = $this->options->get(self::CACHE_OPTION, []);
         if (!is_array($cache) || ($cache['source'] ?? '') !== $source) $cache = [];
         $installed = $this->installed->packs();
         $latest = [];
@@ -65,7 +65,7 @@ final class TemplateCatalog
             $target = parse_url($entry['url']);
             PackValidator::check(is_array($origin) && is_array($target) && !isset($target['user']) && !isset($target['pass']) && !isset($target['fragment']) && ($origin['scheme'] ?? '') === ($target['scheme'] ?? '') && ($origin['host'] ?? '') === ($target['host'] ?? '') && ($origin['port'] ?? null) === ($target['port'] ?? null), __('A pack address does not belong to this catalog service.', 'wconvert'));
         }
-        $this->options->set(self::CACHE, ['source' => $source, 'checked_at' => gmdate('c'), 'packs' => $index['packs']]);
+        $this->options->set(self::CACHE_OPTION, ['source' => $source, 'checked_at' => gmdate('c'), 'packs' => $index['packs']]);
         return $this->status();
     }
 
@@ -107,7 +107,7 @@ final class TemplateCatalog
 
     private function download(string $id): string
     {
-        $cache = $this->options->get(self::CACHE, []);
+        $cache = $this->options->get(self::CACHE_OPTION, []);
         PackValidator::check(is_array($cache) && ($cache['source'] ?? '') === $this->source(), __('Refresh the catalog before previewing this pack.', 'wconvert'));
         foreach ($cache['packs'] ?? [] as $entry) {
             if ($entry['id'] !== $id) continue;
@@ -122,7 +122,7 @@ final class TemplateCatalog
 
     private function source(): string
     {
-        $value = $this->options->get(self::SOURCE, '');
+        $value = $this->options->get(self::SOURCE_OPTION, '');
         return is_string($value) ? $value : '';
     }
 }

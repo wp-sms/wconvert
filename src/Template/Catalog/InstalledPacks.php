@@ -66,18 +66,18 @@ final class InstalledPacks implements TemplateSource
         $pack['digest'] = hash('sha256', $json);
         $files = glob($this->directory . '/*.json') ?: [];
         $path = $this->directory . '/' . $pack['digest'] . '.json';
-        if (is_file($path)) return $pack;
-        PackValidator::check(count($files) < 128, __('The local pack archive is full. Existing designs remain available.', 'wconvert'));
+        if (is_file($path) && hash_file('sha256', $path) === $pack['digest']) return $pack;
+        PackValidator::check(count($files) < 128 || is_file($path), __('The local pack archive is full. Existing designs remain available.', 'wconvert'));
         foreach ($this->packs() as $installed) {
             if ($installed['id'] !== $pack['id']) continue;
             PackValidator::check(version_compare($pack['version'], $installed['version'], '>'), __('This pack version is already installed or has been replaced. Refresh the catalog.', 'wconvert'));
         }
         PackValidator::check(is_dir($this->directory) || @mkdir($this->directory, 0755, true), __('The template folder could not be created. Check uploads permissions and retry.', 'wconvert'));
-        $temporary = tempnam($this->directory, '.pack-');
+        $temporary = @tempnam($this->directory, '.pack-');
         PackValidator::check($temporary !== false, __('The template pack could not be written.', 'wconvert'));
         try {
-            PackValidator::check(file_put_contents($temporary, $json, LOCK_EX) === strlen($json), __('The template pack could not be written.', 'wconvert'));
-            PackValidator::check(rename($temporary, $path), __('The template pack could not be installed.', 'wconvert'));
+            PackValidator::check(@file_put_contents($temporary, $json, LOCK_EX) === strlen($json), __('The template pack could not be written.', 'wconvert'));
+            PackValidator::check(@rename($temporary, $path), __('The template pack could not be installed.', 'wconvert'));
         } finally {
             if (is_file($temporary)) unlink($temporary);
         }

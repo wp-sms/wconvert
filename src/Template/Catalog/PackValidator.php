@@ -58,6 +58,7 @@ final class PackValidator
         $templates = $pack['templates'] ?? null;
         self::check(is_array($templates) && array_is_list($templates) && count($templates) > 0 && count($templates) <= self::MAX_TEMPLATES, __('This pack has an invalid design list.', 'wconvert'));
         $ids = [];
+        $requiredCapabilities = ['template-tree:1'];
         foreach ($templates as $position => $template) {
             self::check(is_array($template), __('This pack contains an invalid design.', 'wconvert'));
             $this->keys($template, ['id', 'name', 'display_type', 'tier', 'tree', 'tokens']);
@@ -74,7 +75,7 @@ final class PackValidator
             $nodeIds = [];
             $count = 0;
             foreach ($tree['steps'] as $step) {
-                $this->node($step, 0, $nodeIds, $count);
+                $this->node($step, 0, $nodeIds, $count, $requiredCapabilities);
             }
             self::check(!in_array(TemplateForm::issue($template), ['identifier', 'choices'], true), __('This design needs a usable email or phone capture form.', 'wconvert'));
             $acts = ConvertingAct::offeredIn($tree);
@@ -90,13 +91,15 @@ final class PackValidator
             $snapshot = ['tree' => $this->vocabulary->withoutCopy($tree), 'tokens' => $template['tokens'] ?? []];
             self::check(strlen((string) gzencode((string) json_encode($snapshot))) <= DesignBudget::PER_DESIGN, __('This design exceeds the size budget.', 'wconvert'));
         }
+        self::check(array_diff(array_unique($requiredCapabilities), $capabilities) === [], __('This pack does not declare every capability its designs need.', 'wconvert'));
         return $pack;
     }
 
     /** @param mixed $node
      * @param array<array-key, bool> $ids
+     * @param list<string> $requiredCapabilities
      */
-    private function node($node, int $depth, array &$ids, int &$count): void
+    private function node($node, int $depth, array &$ids, int &$count, array &$requiredCapabilities): void
     {
         self::check(is_array($node) && $depth <= 12 && ++$count <= 200, __('This design is too deeply nested or has too many blocks.', 'wconvert'));
         $type = $node['type'] ?? null;
@@ -104,7 +107,7 @@ final class PackValidator
         $definition = $this->manifest['layouts'][$type] ?? $this->manifest['nodes'][$type] ?? null;
         self::check(is_array($definition), __('Update required: this design uses an unknown block.', 'wconvert'));
         $children = isset($definition['children']) ? ($definition['children'] === 'panes' ? ['start', 'end'] : ['children']) : [];
-        $this->keys($node, array_merge(['type', 'id', 'role'], self::strings($definition['content'] ?? []), self::strings($definition['params'] ?? []), $children));
+        $this->keys($node, array_merge($children === [] ? ['type', 'id', 'role'] : ['type'], self::strings($definition['content'] ?? []), self::strings($definition['params'] ?? []), $children));
         if ($children === []) {
             self::check(self::identifier($node['id'] ?? null) && !isset($ids[$node['id']]), __('This design needs unique block identities.', 'wconvert'));
             $ids[$node['id']] = true;
@@ -116,7 +119,7 @@ final class PackValidator
             if (in_array($key, ['type', 'id', 'role'], true)) continue;
             if (in_array($key, $children, true)) {
                 self::check(is_array($value) && array_is_list($value), __('This design has an invalid block list.', 'wconvert'));
-                foreach ($value as $child) $this->node($child, $depth + 1, $ids, $count);
+                foreach ($value as $child) $this->node($child, $depth + 1, $ids, $count, $requiredCapabilities);
             } elseif (in_array($key, ['tokens', 'narrow'], true)) {
                 $this->bag($value);
             } elseif ($key === 'link') {
@@ -124,7 +127,7 @@ final class PackValidator
                 $this->keys($value, ['label']);
                 $this->words($value['label'] ?? null, 200);
             } elseif ($key === 'options') {
-                self::check(is_array($value) && $value !== [] && $this->vocabulary->choiceOptions($value) === $value, __('This design has invalid choice options.', 'wconvert'));
+                self::check(($node['name'] ?? null) === 'interest' && is_array($value) && $value !== [] && $this->vocabulary->choiceOptions($value) === $value, __('This design has invalid choice options.', 'wconvert'));
                 foreach ($value as $option) $this->words($option['label'], 200);
             } elseif (in_array($key, ['href', 'src'], true)) {
                 self::check($value === '', __('Pack links and pictures must be supplied by the site owner.', 'wconvert'));
@@ -141,6 +144,8 @@ final class PackValidator
                 $this->words($value, 2000);
             }
         }
+        if ($type === 'followup' || ($type === 'code' && ($node['copy'] ?? false) === true)) $requiredCapabilities[] = 'success-actions:1';
+        if ($type === 'field' && ($node['name'] ?? null) === 'interest') $requiredCapabilities[] = 'enquiry-choice:1';
         if ($type === 'field') {
             self::check(isset($node['name']) && is_string($node['label'] ?? null) && trim($node['label']) !== '', __('This design has an unlabelled field.', 'wconvert'));
         }

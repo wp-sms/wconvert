@@ -1,5 +1,6 @@
 import { beforeEach, expect, it, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { StrictMode } from 'react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { CatalogStatus, PackPreview } from '../../resources/admin/src/templates/catalog';
 
@@ -61,4 +62,18 @@ it('keeps successful installation visible if reloading the design index fails', 
   await user.click(await screen.findByRole('button', { name: 'Install pack' }));
   await screen.findByText('Index unavailable'); await screen.findByText('Installed on this site');
   expect(screen.queryByRole('button', { name: 'Install pack' })).not.toBeInTheDocument();
+});
+
+
+it('disables retry during the initial request and ignores an obsolete StrictMode response', async () => {
+  let first!: (value: CatalogStatus) => void;
+  let second!: (value: CatalogStatus) => void;
+  api.catalogStatus.mockReturnValueOnce(new Promise<CatalogStatus>((resolve) => { first = resolve; }))
+    .mockReturnValueOnce(new Promise<CatalogStatus>((resolve) => { second = resolve; }));
+  render(<StrictMode><TemplatePacks displayType="inline" onInstalled={vi.fn()} onInspect={vi.fn()} /></StrictMode>);
+  expect(screen.getByRole('button', { name: 'Loading packs…' })).toBeDisabled();
+  await act(async () => { second(installed); });
+  await screen.findByRole('button', { name: 'Preview installed pack' });
+  await act(async () => { first(initial); });
+  expect(screen.getByRole('button', { name: 'Preview installed pack' })).toBeInTheDocument();
 });
