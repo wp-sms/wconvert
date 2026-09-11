@@ -209,6 +209,7 @@ export function nodeFor(
   type: string,
   at: Spot,
   act: ConvertingAct,
+  capture?: string,
 ): TemplateNode | null {
   if (whyRefused(tree, type, at, act) !== null) {
     return null;
@@ -230,9 +231,9 @@ export function nodeFor(
   }
 
   if (type === 'field') {
-    const captures = freeCapture(tree);
+    const captures = capture ?? freeCapture(tree);
 
-    if (captures === null) {
+    if (captures === null || !FIELDS.includes(captures) || capturesTaken(tree).includes(captures)) {
       return null;
     }
 

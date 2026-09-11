@@ -1243,6 +1243,7 @@ describe('whole-draft Undo and Redo', () => {
     expect(builder.saveOptin).toHaveBeenCalledTimes(1);
     expect(publishing.publishOptin).toHaveBeenCalledTimes(1);
     await userEvent.click(screen.getByRole('button', { name: 'Optin details' }));
+    await userEvent.click(screen.getByText('About draft history'));
     expect(await screen.findByText(/They do not change the published version or shared destination settings/)).toBeVisible();
   });
 });
@@ -1299,7 +1300,7 @@ describe('changing templates in the draft', () => {
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
     await userEvent.click(screen.getByRole('button', { name: 'Redo draft edit' }));
     expect(screen.getByText(ALTERNATE.name)).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: /Choose a colour for Background/ }));
+    await userEvent.click(screen.getByRole('button', { name: /Choose a color for Background/ }));
     await userEvent.clear(screen.getByLabelText('Background value'));
     await userEvent.type(screen.getByLabelText('Background value'), '#123456');
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));

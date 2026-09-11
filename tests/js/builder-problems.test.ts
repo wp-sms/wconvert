@@ -179,7 +179,7 @@ describe('words a design switch would throw away', () => {
   });
 });
 
-describe('colours a visitor cannot read', () => {
+describe('colors a visitor cannot read', () => {
   it('names the pair that fails, and only the ones that do', () => {
     const problems = said(withTokens({ muted: '#d4d4d8' }));
 

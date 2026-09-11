@@ -143,7 +143,7 @@ final class TemplateLabels
              * merchant is going to point at it.
              */
             /* translators: a layout — a box with its own background colour, holding other blocks. */
-            'panel' => __('Coloured box', 'wconvert'),
+            'panel' => __('Colored box', 'wconvert'),
             /*
              * **Named for the picture and not for the spread**, which is the
              * same call `panel` made one line up: a merchant is going to point
@@ -222,7 +222,7 @@ final class TemplateLabels
              * colour, and everything inside it inherits.
              */
             /* translators: what the Coloured box layout does. */
-            'panel' => __('A box with its own colours, holding other blocks.', 'wconvert'),
+            'panel' => __('A box with its own colors, holding other blocks.', 'wconvert'),
             /*
              * **The note has to say what makes it different from a Coloured
              * box**, for the reason the line above has to say what makes that

@@ -655,7 +655,7 @@
     ]
   },
   "token_groups": {
-    "colour": [
+    "color": [
       "bg",
       "fg",
       "muted",
@@ -689,7 +689,8 @@
     ]
   },
   "token_controls": {
-    "bg-image": "image"
+    "bg-image": "image",
+    "shadow": "shadow"
   },
   "field_options": {
     "max_items": 12,

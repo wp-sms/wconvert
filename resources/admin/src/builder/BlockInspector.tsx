@@ -236,6 +236,13 @@ function contentBody({
             settings: slot.settings.filter((setting) => !STYLE_PARAMS.includes(setting.param)),
           }}
           labels={labels}
+          onSentence={(value, typing) => {
+            let tree = template.tree;
+            for (const key of ['text', 'emphasis', 'link'] as const) {
+              if (slot.keys.includes(key)) tree = withValue(tree, slot.path, key, value[key]);
+            }
+            onChange({ ...template, tree }, typing ? typingKey(slot.path, 'sentence') : undefined);
+          }}
           onValue={(key, value) =>
             onChange(
               { ...template, tree: withValue(template.tree, slot.path, key, value) },

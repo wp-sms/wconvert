@@ -89,7 +89,7 @@ const LABELS = {
     row: 'Row',
     split: 'Side by side',
     grid: 'Equal columns',
-    panel: 'Coloured box',
+    panel: 'Colored box',
     media: 'Picture box',
   },
   // The menu shows what a layout DOES, because *Row* and *Side by side* are two
@@ -99,7 +99,7 @@ const LABELS = {
     row: 'Blocks along one line.',
     split: 'Two panes, each holding its own blocks.',
     grid: 'Three across, one per line on a phone.',
-    panel: 'A box with its own colours, holding other blocks.',
+    panel: 'A box with its own colors, holding other blocks.',
     media: 'A picture, with the first block at its top and the last at its bottom.',
   },
   layoutParams: { 'split.ratio': 'How the space is divided' },
@@ -635,7 +635,7 @@ describe('duplicating a block', () => {
     );
     await userEvent.click(screen.getByRole('menuitem', { name: /Duplicate/ }));
 
-    expect(screen.getByRole('status', { name: 'Layer changes' })).toHaveTextContent('no name of its own');
+    expect(screen.getByRole('status', { name: 'Layer changes' })).toHaveTextContent(/Fine print.*copied\./);
     // The original still fills `fine_print`; the copy has no Role, so it is
     // listed by its kind — which is exactly what the sentence above warned.
     expect(rowNames().filter((name) => name === 'Fine print')).toHaveLength(1);
@@ -689,7 +689,7 @@ describe('adding a block', () => {
       'Row',
       'Side by side',
       'Equal columns',
-      'Coloured box',
+      'Colored box',
     ]) {
       expect(
         await screen.findByRole('menuitem', { name: new RegExp(`^${kind}\\b`) }),
@@ -1134,7 +1134,7 @@ describe('the verdict', () => {
 
     // The stub names no tokens, so `nameOf` falls back to the raw key — which
     // is what a build whose vocabulary is ahead of its translations shows too.
-    await userEvent.click(screen.getByRole('button', { name: /Choose a colour for muted/ }));
+    await userEvent.click(screen.getByRole('button', { name: /Choose a color for muted/ }));
     await userEvent.clear(screen.getByLabelText('muted value'));
     await userEvent.type(screen.getByLabelText('muted value'), '#f4f4f5');
 
@@ -1385,6 +1385,7 @@ describe('what a row shows about itself', () => {
     );
     await userEvent.click(screen.getByRole('menuitem', { name: 'Add a block after this' }));
     await userEvent.click(screen.getByRole('menuitem', { name: 'Field' }));
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Name' }));
 
     /*
       `freeCapture` hands out the first kind nothing has claimed, in the
@@ -1911,5 +1912,32 @@ describe('the icon picker', () => {
     const group = screen.getByRole('group', { name: 'Heading rank' });
 
     expect(group.querySelectorAll('.wconvert-choice__glyph')).toHaveLength(0);
+  });
+});
+
+
+describe('the visible Add element picker', () => {
+  it('adds before the selected block and Undo restores the previous order', async () => {
+    await structure();
+    await userEvent.click(within(row('Headline')).getByRole('button', { name: /^Headline Get/ }));
+    await userEvent.click(screen.getByRole('button', { name: 'Add element' }));
+    await userEvent.selectOptions(screen.getByLabelText('Insert position'), '1');
+    await userEvent.type(screen.getByLabelText('Find an element'), 'Image');
+    await userEvent.click(screen.getByRole('button', { name: 'Image' }));
+    expect(rowNames().slice(0, 3)).toEqual(['The form', 'Image', 'Headline']);
+    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
+    expect(rowNames().slice(0, 2)).toEqual(['The form', 'Headline']);
+  });
+
+  it('lets the merchant choose the field to add and disables a duplicate capture', async () => {
+    await structure();
+    await userEvent.click(screen.getByRole('button', { name: 'Add element' }));
+    await userEvent.type(screen.getByLabelText('Find an element'), 'Email');
+    expect(screen.getByRole('button', { name: /Email address Already on this form/ })).toBeDisabled();
+    await userEvent.clear(screen.getByLabelText('Find an element'));
+    await userEvent.type(screen.getByLabelText('Find an element'), 'Phone');
+    await userEvent.click(screen.getByRole('button', { name: 'Phone number' }));
+    expect(screen.getByRole('textbox', { name: 'Field label' })).toHaveValue('Phone number');
+    expect(rowNames()).toContain('Phone number');
   });
 });

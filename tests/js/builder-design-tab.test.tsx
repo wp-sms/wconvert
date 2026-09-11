@@ -215,14 +215,14 @@ describe('the look', () => {
   it('keeps every token the manifest declares, once', () => {
     look();
 
-    // A colour is a picker rather than a text box, and it is not behind
+    // A color is a picker rather than a text box, and it is not behind
     // anything: no disclosure has to be opened first.
-    expect(screen.getByRole('button', { name: /Choose a colour for Background/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Choose a color for Background/ })).toBeInTheDocument();
     // The stub names only two tokens, so the rest fall back to their raw key —
     // which is what `nameOf` does on a real install missing a label too.
     expect(screen.getByRole('button', { name: 'font' })).toBeInTheDocument();
     // Once, and not once per group.
-    expect(screen.getAllByRole('button', { name: /Choose a colour for Background/ })).toHaveLength(1);
+    expect(screen.getAllByRole('button', { name: /Choose a color for Background/ })).toHaveLength(1);
   });
 });
 
@@ -677,12 +677,12 @@ describe('the size slider', () => {
  * ============================================================================
  * A COLOUR CONTROL MUST NOT BE OFFERED OVER A VALUE IT WOULD DESTROY.
  * ============================================================================
- * `isColour` was asked about the FALLBACK, so a merchant who typed
+ * `isColor` was asked about the FALLBACK, so a merchant who typed
  * `var(--brand)` into `accent` kept a hex picker sitting over it — one drag
  * from overwriting a working reference with `#3f8ea3`. It branches on what is
  * actually stored now, the same way the length side already did.
  */
-describe('a colour the panel cannot parse', () => {
+describe('a color the panel cannot parse', () => {
   it('keeps the text box rather than offering a picker that would clobber it', () => {
     render(
       <Panel
@@ -694,7 +694,7 @@ describe('a colour the panel cannot parse', () => {
       />,
     );
 
-    expect(screen.queryByRole('button', { name: /Choose a colour for Button$/ })).toBeNull();
+    expect(screen.queryByRole('button', { name: /Choose a color for Button$/ })).toBeNull();
     expect(screen.getByLabelText('Button')).toHaveValue('var(--brand)');
   });
 });

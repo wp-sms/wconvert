@@ -3910,7 +3910,7 @@
  * absent until the value differs from the design's, so a cell with nothing
  * changed is the swatch at full width.
  */
-.wconvert-palette > .wconvert-token--colour {
+.wconvert-palette > .wconvert-token--color {
   display: flex;
   align-items: center;
   gap: 0.25rem;
@@ -3918,7 +3918,7 @@
 }
 
 /* Outside the grid — the translucent one, at full width under it. */
-.wconvert-token--colour {
+.wconvert-token--color {
   display: flex;
   align-items: center;
   gap: 0.25rem;
@@ -4005,13 +4005,13 @@
   line-height: var(--text-label--line-height);
 }
 
-.wconvert-picker {
+.wconvert-color-picker {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
 }
 
-.wconvert-picker .react-colorful {
+.wconvert-color-picker .react-colorful {
   inline-size: 100%;
 }
 
@@ -4023,7 +4023,7 @@
  * as plain text where a field should be. Found in a browser, which is the only
  * place this class of fault is visible at all (see THE PORTAL ROOTS above).
  */
-.wconvert-picker input[type="text"] {
+.wconvert-color-picker input[type="text"] {
   inline-size: 100%;
   block-size: var(--control-height-xs);
   margin: 0;
@@ -4036,13 +4036,13 @@
   font-size: var(--text-micro);
 }
 
-.wconvert-picker input[type="text"]:focus {
+.wconvert-color-picker input[type="text"]:focus {
   border-color: var(--ring);
   box-shadow: 0 0 0 1px var(--ring);
   outline: none;
 }
 
-.wconvert-picker label {
+.wconvert-color-picker label {
   display: grid;
   gap: 0.25rem;
   color: var(--muted-foreground);

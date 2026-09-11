@@ -1,5 +1,5 @@
 import vocabulary from '../../../templates/manifest.json';
-import { isBareNumber, isColour, isFontStack, measuresOf } from './themes';
+import { isBareNumber, isColor, isFontStack, measuresOf } from './themes';
 import type { TemplateNode, TemplateTree, Tokens } from '@renderer/types';
 
 /**
@@ -338,7 +338,7 @@ export const CHOICES = vocabulary.choices as Readonly<Record<string, readonly st
  * That is ADR 0010's *"a token added to the manifest appears in the editor with
  * no change to this bundle"*, kept literally.
  */
-export const TOKEN_GROUPS = ['colour', 'type', 'space', 'other'] as const;
+export const TOKEN_GROUPS = ['color', 'type', 'space', 'other'] as const;
 
 export type TokenGroupId = (typeof TOKEN_GROUPS)[number];
 
@@ -358,8 +358,8 @@ export function groupOf(token: TokenDeclaration): TokenGroupId {
   const declared = Object.entries(vocabulary.token_groups).find(([, names]) => (names as readonly string[]).includes(token.name));
   if (declared !== undefined) return declared[0] as TokenGroupId;
 
-  if (isColour(token.fallback)) {
-    return 'colour';
+  if (isColor(token.fallback)) {
+    return 'color';
   }
 
   // A font stack, or a bare number — the two typographic shapes. A weight and

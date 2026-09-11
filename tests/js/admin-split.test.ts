@@ -184,7 +184,7 @@ describe('the lazy boundary', () => {
    * because a package is where a static import is least visible: it arrives at
    * the top of one editor and costs every screen in the admin.
    */
-  it('keeps the colour picker off them', () => {
+  it('keeps the color picker off them', () => {
     expect([...graph.packages]).not.toContain('react-colorful');
   });
 

@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
-import { Lock } from 'lucide-react';
+import { ArrowUpRight, Clock3, Lock, MapPin, Repeat2, Users } from 'lucide-react';
 import { Badge } from '../../components/ui/badge';
 import { renderingFor, tierName } from '../../goals/availability';
 import { ConfirmDialog } from '../../shell/ConfirmDialog';
@@ -70,6 +70,7 @@ export function StartingPoints({ bundles, onApply, describe }: StartingPointsPro
       <ul className="wconvert-starters__list">
         {bundles.map((bundle) => {
           const rendering = renderingFor(bundle.availability, 'settings_list');
+          const Icon = bundle.triggers !== undefined ? Clock3 : bundle.targeting !== undefined ? MapPin : bundle.frequency !== undefined ? Repeat2 : Users;
 
           /*
             ==================================================================
@@ -91,6 +92,7 @@ export function StartingPoints({ bundles, onApply, describe }: StartingPointsPro
                   returnFocusTo.current = event.currentTarget;
                   setPending(bundle);
                 }}>
+                  <span className="wconvert-starter__icon" aria-hidden="true"><Icon /></span>
                   <span className="wconvert-starter__head">
                     <span className="wconvert-starter__name text-body font-semibold">{bundle.label}</span>
                   {/*
@@ -106,6 +108,7 @@ export function StartingPoints({ bundles, onApply, describe }: StartingPointsPro
                   <span className="wconvert-starter__what text-note text-muted-foreground">
                     {bundle.description}
                   </span>
+                  <span className="wconvert-starter__action">{__('Review starting point', 'wconvert')}<ArrowUpRight aria-hidden="true" /></span>
                 </button>
               </li>
             );
@@ -126,7 +129,8 @@ export function StartingPoints({ bundles, onApply, describe }: StartingPointsPro
           return (
             <li key={bundle.id}>
               <div className="wconvert-starter wconvert-starter--absent">
-                <span className="wconvert-starter__head">
+                <span className="wconvert-starter__icon" aria-hidden="true"><Icon /></span>
+                  <span className="wconvert-starter__head">
                   <span className="wconvert-starter__name text-body font-semibold">{bundle.label}</span>
                   {rendering === 'upsell' ? (
                     <Badge variant="secondary">

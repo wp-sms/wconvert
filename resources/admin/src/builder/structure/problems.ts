@@ -456,7 +456,7 @@ function whatCannotBeRead(template: Template): Problem[] {
  */
 const SAID: Readonly<Record<string, () => string>> = {
   'fg/bg': () =>
-    __('The text colour is too close to the background to be readable. Change one of them.', 'wconvert'),
+    __('The text color is too close to the background to be readable. Change one of them.', 'wconvert'),
   'muted/bg': () => __('The quiet text is too close to the background to be readable.', 'wconvert'),
   'accent-fg/accent': () =>
     __('The button’s label is too close to the button to be readable.', 'wconvert'),

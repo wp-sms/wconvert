@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { ArrowDown, ArrowUp, Blocks, Copy, MoreHorizontal, Plus, Trash2 } from 'lucide-react';
 import { Button } from '../components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,13 +19,13 @@ import { BlockInspector } from './BlockInspector';
 import { BlockTree } from './BlockTree';
 import { useBlockDrag } from './useBlockDrag';
 import { nameOfBlock, sentenceFor, type Control } from './BlockRow';
-import { additionsIn, nodeFor, type ConvertingAct } from './structure/catalogue';
+import { additionsIn, nodeFor, type ConvertingAct, type Addition } from './structure/catalogue';
 import { whyDuplicationIsRefused, whyRemovalIsRefused } from './structure/guards';
 import {
   countAt,
+  capturesTaken,
   nodeAt,
   nodesOf,
-  rolesLostBy,
   spotOf,
   withDuplicated,
   withInserted,
@@ -33,7 +34,7 @@ import {
   type Block,
   type Spot,
 } from './structure/tree';
-import { LEAVES, childKeysOf, type Path, type WidthBag } from './panel';
+import { FIELDS, LEAVES, childKeysOf, type Path, type WidthBag } from './panel';
 import { nameOf, type TemplateLabels } from '../templates/api';
 import type { Template, TemplateTree } from '@renderer/types';
 
@@ -99,6 +100,8 @@ export function StructureView({
   }, [focus]);
 
   const blocks = useMemo(() => nodesOf(template.tree), [template.tree]);
+  const insertionBlock = blocks.find(block => block.path.join('.') === selected?.join('.'))
+    ?? blocks.find(block => block.level === 1 && block.path[0] === (step ?? 0));
 
   const write = (tree: TemplateTree, path: Path, control: number, sentence: string) => {
     onChange({ ...template, tree });
@@ -171,26 +174,16 @@ export function StructureView({
       return;
     }
 
-    const lost = rolesLostBy(template.tree, block.path);
-
     write(
       withDuplicated(template.tree, block.path),
       [...spot.parent, spot.key, spot.index + 1],
       0,
-      lost === 0
-        ? sprintf(__('%s copied.', 'wconvert'), sentenceFor(block, labels))
-        : sprintf(
-            __(
-              '%s copied. The copy has no name of its own, so it is listed on the Content tab by its kind and clicking it in the preview will not jump to it.',
-              'wconvert',
-            ),
-            sentenceFor(block, labels),
-          ),
+      sprintf(__('%s copied.', 'wconvert'), sentenceFor(block, labels)),
     );
   };
 
-  const add = (at: Spot, type: string) => {
-    const bare = nodeFor(template.tree, type, at, act);
+  const add = (at: Spot, type: string, capture?: string) => {
+    const bare = nodeFor(template.tree, type, at, act, capture);
 
     if (bare === null) {
       return;
@@ -205,7 +198,7 @@ export function StructureView({
           } as typeof bare)
         : bare;
 
-    const kind = LEAVES[type] === undefined ? nameOf(labels.layouts, type) : nameOf(labels.nodes, type);
+    const kind = capture ? nameOf(labels.fields, capture) : LEAVES[type] === undefined ? nameOf(labels.layouts, type) : nameOf(labels.nodes, type);
 
     write(
       withInserted(template.tree, at, node),
@@ -241,18 +234,13 @@ export function StructureView({
         {said}
       </p>
 
-      {said !== null && (
-        <p aria-hidden="true" className="wconvert-said">
-          {said}
-        </p>
-      )}
-
       <div className="wconvert-panes" data-layers={showLayers ? 'true' : 'false'}>
         {showLayers && (
           <div className="wconvert-pane wconvert-pane--layers">
             <div className="wconvert-pane__stick">
               <div className="wconvert-pane__head">
                 <span className="wconvert-pane__name">{__('Layers', 'wconvert')}</span>
+                {insertionBlock && <AddElementPicker key={insertionBlock.path.join('.')} block={insertionBlock} tree={template.tree} act={act} labels={labels} onAdd={add} />}
               </div>
               <div className="wconvert-pane__body">
                 <BlockTree
@@ -337,7 +325,7 @@ function RowAction({
   tree: TemplateTree;
   act: ConvertingAct;
   onMove: (block: Block, by: number, control: number) => void;
-  onAdd: (at: Spot, type: string) => void;
+  onAdd: (at: Spot, type: string, capture?: string) => void;
   onDuplicate: (block: Block) => void;
   onRemove: (block: Block) => void;
 }) {
@@ -395,35 +383,7 @@ function RowAction({
           </>
         )}
 
-        {childKeysOf(block.type).map((key) => (
-          <AddMenu
-            key={key}
-            tree={tree}
-            act={act}
-            labels={labels}
-            at={{ parent: block.path, key, index: countAt(tree, block.path, key) }}
-            label={
-              childKeysOf(block.type).length > 1
-                ? sprintf(
-                    __('Add to the %s', 'wconvert'),
-                    key === 'start' ? __('first pane', 'wconvert') : __('second pane', 'wconvert'),
-                  )
-                : __('Add a block inside', 'wconvert')
-            }
-            onAdd={onAdd}
-          />
-        ))}
-
-        {block.level > 1 && (
-          <AddMenu
-            tree={tree}
-            act={act}
-            labels={labels}
-            at={nextTo(block)}
-            label={__('Add a block after this', 'wconvert')}
-            onAdd={onAdd}
-          />
-        )}
+        <InsertionMenus block={block} tree={tree} act={act} labels={labels} onAdd={onAdd} />
 
         {block.level > 1 && (
           <>
@@ -443,6 +403,75 @@ function RowAction({
       </DropdownMenuContent>
     </DropdownMenu>
   );
+}
+
+function AddElementPicker({ block, tree, act, labels, onAdd }: {
+  block: Block; tree: TemplateTree; act: ConvertingAct; labels: TemplateLabels;
+  onAdd: (at: Spot, type: string, capture?: string) => void;
+}) {
+  const id = useId();
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const [position, setPosition] = useState('0');
+  const added = useRef(false);
+  const places: { label: string; at: Spot }[] = [];
+  const spot = spotOf(block.path);
+  if (spot) places.push(
+    { label: sprintf(__('After %s', 'wconvert'), nameOfBlock(block, labels)), at: { ...spot, index: spot.index + 1 } },
+    { label: sprintf(__('Before %s', 'wconvert'), nameOfBlock(block, labels)), at: spot },
+  );
+  const keys = childKeysOf(block.type);
+  keys.forEach(key => {
+    const name = keys.length > 1 ? key === 'start' ? __('first pane', 'wconvert') : __('second pane', 'wconvert') : nameOfBlock(block, labels);
+    places.push(
+      { label: sprintf(__('At the beginning of %s', 'wconvert'), name), at: { parent: block.path, key, index: 0 } },
+      { label: sprintf(__('At the end of %s', 'wconvert'), name), at: { parent: block.path, key, index: countAt(tree, block.path, key) } },
+    );
+  });
+  const at = (places[Number(position)] ?? places[0])?.at;
+  const choices = at ? additionsIn(tree, at, act).flatMap<Addition & { capture?: string; label: string; note: string }>(addition => addition.type === 'field'
+    ? FIELDS.map(capture => ({ ...addition, capture, label: nameOf(labels.fields, capture), refused: addition.refused ?? (capturesTaken(tree).includes(capture) ? __('Already on this form', 'wconvert') : null), note: '' }))
+    : [{ ...addition, capture: undefined, label: nameOf(addition.leaf ? labels.nodes : labels.layouts, addition.type), note: addition.leaf ? '' : nameOf(labels.layoutNotes, addition.type) }]) : [];
+  const shown = choices.filter(choice => `${choice.label} ${choice.note}`.toLowerCase().includes(search.toLowerCase()));
+  return <Popover open={open} onOpenChange={next => { setOpen(next); if (next) { setSearch(''); added.current = false; } }}>
+    <PopoverTrigger asChild><Button variant="outline" size="xs"><Plus aria-hidden="true" />{__('Add element', 'wconvert')}</Button></PopoverTrigger>
+    <PopoverContent side="right" align="start" collisionPadding={12} className="wconvert-add-picker" onCloseAutoFocus={event => { if (added.current) event.preventDefault(); }}>
+      <strong>{__('Add element', 'wconvert')}</strong>
+      <label htmlFor={`${id}-position`}>{__('Insert position', 'wconvert')}</label>
+      <select id={`${id}-position`} value={position} onChange={e => setPosition(e.target.value)}>{places.map((place, index) => <option key={index} value={index}>{place.label}</option>)}</select>
+      <label htmlFor={`${id}-search`} className="sr-only">{__('Find an element', 'wconvert')}</label>
+      <input id={`${id}-search`} type="search" placeholder={__('Find an element…', 'wconvert')} value={search} onChange={e => setSearch(e.target.value)} />
+      <div className="wconvert-add-picker__list">
+        {shown.map(choice => <button type="button" key={choice.capture ?? choice.type} disabled={!!choice.refused} onClick={() => {
+          if (!at) return;
+          added.current = true; setOpen(false); onAdd(at, choice.type, choice.capture);
+        }}><span>{choice.label}</span>{(choice.refused || choice.note) && <small>{choice.refused || choice.note}</small>}</button>)}
+        {shown.length === 0 && <p role="status">{__('No matching elements.', 'wconvert')}</p>}
+      </div>
+    </PopoverContent>
+  </Popover>;
+}
+
+function InsertionMenus({ block, tree, act, labels, onAdd }: {
+  block: Block; tree: TemplateTree; act: ConvertingAct; labels: TemplateLabels;
+  onAdd: (at: Spot, type: string, capture?: string) => void;
+}) {
+  const spot = spotOf(block.path);
+  return <>
+    {spot && <>
+      <AddMenu tree={tree} act={act} labels={labels} at={spot} label={__('Add a block before this', 'wconvert')} onAdd={onAdd} />
+      <AddMenu tree={tree} act={act} labels={labels} at={{ ...spot, index: spot.index + 1 }} label={__('Add a block after this', 'wconvert')} onAdd={onAdd} />
+    </>}
+    {childKeysOf(block.type).map(key => <DropdownMenuSub key={key}>
+      <DropdownMenuSubTrigger><Plus aria-hidden="true" />{childKeysOf(block.type).length > 1
+        ? sprintf(__('Add to the %s', 'wconvert'), key === 'start' ? __('first pane', 'wconvert') : __('second pane', 'wconvert'))
+        : __('Add a block inside', 'wconvert')}</DropdownMenuSubTrigger>
+      <DropdownMenuSubContent>
+        <AddMenu tree={tree} act={act} labels={labels} at={{ parent: block.path, key, index: 0 }} label={__('At the beginning', 'wconvert')} onAdd={onAdd} />
+        <AddMenu tree={tree} act={act} labels={labels} at={{ parent: block.path, key, index: countAt(tree, block.path, key) }} label={__('At the end', 'wconvert')} onAdd={onAdd} />
+      </DropdownMenuSubContent>
+    </DropdownMenuSub>)}
+  </>;
 }
 
 function Refusable({
@@ -490,7 +519,7 @@ function AddMenu({
   labels: TemplateLabels;
   at: Spot;
   label: string;
-  onAdd: (at: Spot, type: string) => void;
+  onAdd: (at: Spot, type: string, capture?: string) => void;
 }) {
   return (
     <DropdownMenuSub>
@@ -499,8 +528,12 @@ function AddMenu({
         {label}
       </DropdownMenuSubTrigger>
 
-      <DropdownMenuSubContent className="max-w-sm">
-        {additionsIn(tree, at, act).map((addition) => (
+      <DropdownMenuSubContent className="wconvert-add-elements">
+        {additionsIn(tree, at, act).map((addition) => addition.type === 'field' && addition.refused === null ? (
+          <DropdownMenuSub key="field"><DropdownMenuSubTrigger>{nameOf(labels.nodes, 'field')}</DropdownMenuSubTrigger>
+            <DropdownMenuSubContent>{FIELDS.map(capture => <Refusable key={capture} reason={capturesTaken(tree).includes(capture) ? __('Already on this form', 'wconvert') : null} onSelect={() => onAdd(at, 'field', capture)}>{nameOf(labels.fields, capture)}</Refusable>)}</DropdownMenuSubContent>
+          </DropdownMenuSub>
+        ) : (
           <Refusable
             key={addition.type}
             reason={addition.refused}
@@ -513,12 +546,4 @@ function AddMenu({
       </DropdownMenuSubContent>
     </DropdownMenuSub>
   );
-}
-
-function nextTo(block: Block): Spot {
-  const spot = spotOf(block.path);
-
-  return spot === null
-    ? { parent: block.path, key: 'children', index: 0 }
-    : { ...spot, index: spot.index + 1 };
 }

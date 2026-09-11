@@ -154,9 +154,19 @@ export function BlockTree({
       return;
     }
 
+    setCollapsed(current => current.filter(path => !keyFor(focusOn.path).startsWith(path + '.')));
     setAt({ path: keyFor(focusOn.path), control: focusOn.control });
     setTaking(true);
   }, [focusOn]);
+
+  const selectedKey = selected === null ? '' : keyFor(selected);
+  useEffect(() => {
+    if (!selectedKey) return;
+    setCollapsed(current => {
+      const next = current.filter(path => !selectedKey.startsWith(path + '.'));
+      return next.length === current.length ? current : next;
+    });
+  }, [selectedKey]);
 
   const goTo = (row: number, control: number) => {
     const block = rows[row];

@@ -163,7 +163,7 @@ final class TemplateFacetsTest extends TestCase
         ]]], [])['has_image']);
     }
 
-    public function testAnUnusedBackgroundTokenOrColourWashIsNotAPicture(): void
+    public function testAnUnusedBackgroundTokenOrColorWashIsNotAPicture(): void
     {
         foreach (['none', 'linear-gradient(#fff,#000)', ''] as $background) {
             $this->assertFalse(TemplateFacets::of(['steps' => [[

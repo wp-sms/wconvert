@@ -282,10 +282,10 @@ export function isApplied(preset: ThemePreset, tokens: Tokens): boolean {
  * being edited — the same argument `TOKENS` in `panel.ts` makes for the panel
  * drawing one field per manifest entry.
  */
-export function isColour(value: string): boolean {
+export function isColor(value: string): boolean {
   // A hex, or the one other notation the vocabulary uses — which is exactly
   // what {@see isTranslucent} tests for, so it is tested there and not twice.
-  return /^#[0-9a-f]{3,8}$/i.test(value.trim()) || isTranslucent(value);
+  return /^#(?:[0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(value.trim()) || isTranslucent(value);
 }
 
 /**
@@ -302,7 +302,7 @@ export function isTranslucent(value: string): boolean {
 /**
  * Does this value name a **font stack**?
  *
- * Read off the value, like {@link isColour} and {@link measuresOf}, and for the
+ * Read off the value, like {@link isColor} and {@link measuresOf}, and for the
  * same reason: a token added to `resources/templates/manifest.json` gets the
  * right control and lands in the right group with nothing here edited.
  *
@@ -432,7 +432,7 @@ export interface Measure {
  *
  * So the slider appears only where the stored value is something a slider can
  * say. Anything else keeps the text box it always had — the same shape
- * {@link isColour} already uses to decide picker versus not-picker, read off the
+ * {@link isColor} already uses to decide picker versus not-picker, read off the
  * value rather than off a list of token names spelled here, so a token added to
  * `resources/templates/manifest.json` gets the right control with nothing in
  * this file edited.

@@ -76,6 +76,8 @@ floor is 6.2. Where it is absent a row falls back to the next family in its
 stack and the control still works. That call prints the **site's** faces, or
 none; it fetches nothing.
 
+> Extended by [ADR 0077](0077-editor-controls-make-placement-and-formatting-explicit.md): the site-font picker adds search and a capability/version-aware route to the WordPress Font Library for installing locally hosted Google Fonts. WConvert still loads no face of its own.
+
 ## The control changes shape, and that is rule 5 rather than a new treatment
 
 `font` stops being a `ChoiceField`. Chips are the house treatment for one-of-N

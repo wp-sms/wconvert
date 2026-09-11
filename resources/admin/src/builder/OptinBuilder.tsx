@@ -836,16 +836,15 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange }: O
           </span>
       </footer>
       <Dialog open={details} onOpenChange={setDetails}>
-        <DialogContent>
+        <DialogContent className="wconvert-optin-details">
           <DialogHeader>
             <DialogTitle>{__('Optin details', 'wconvert')}</DialogTitle>
             <DialogDescription>
-              {__('Goal, performance and design tools for this Optin.', 'wconvert')}
+              {name || __('Untitled Optin', 'wconvert')}
             </DialogDescription>
           </DialogHeader>
-          <p className="text-note text-muted-foreground">
-            {__('Undo and Redo cover this session’s draft edits: name, design, display rules and destination selections. They do not change the published version or shared destination settings. Saving a new goal starts a new Undo history.', 'wconvert')}
-          </p>
+          <div className="wconvert-details-status"><span>{publishedAt ? __('Published', 'wconvert') : __('Draft', 'wconvert')}</span><span>{dirty ? __('Unsaved changes', 'wconvert') : unpublishedChanges ? __('Unpublished changes', 'wconvert') : __('All edits saved', 'wconvert')}</span></div>
+          <div className="wconvert-details-section"><h3>{__('Goal', 'wconvert')}</h3>
           <div className="mt-1 flex min-h-[1lh] flex-wrap items-center gap-x-2 text-note text-muted-foreground">
             <span>{goalSaid(goalEntry, goal ?? '')}</span>
 
@@ -865,8 +864,9 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange }: O
                 </Button>
               )}
           </div>
+          </div>
           {(numbers !== null || (publishedAt !== null && stats.status === 'loading')) && (
-            <div className="mt-4 max-w-xl">
+            <div className="wconvert-details-section"><h3>{__('Performance', 'wconvert')}</h3>
               {numbers !== null ? (
                 <>
                   <StatRow>
@@ -907,6 +907,12 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange }: O
               )}
             </div>
           )}
+          {numbers === null && publishedAt === null && <div className="wconvert-details-section"><h3>{__('Performance', 'wconvert')}</h3><p>{__('Publish this Optin to start collecting impressions and conversions.', 'wconvert')}</p></div>}
+          <details className="wconvert-details-history"><summary>{__('About draft history', 'wconvert')}</summary>
+          <p className="text-note text-muted-foreground">
+            {__('Undo and Redo cover this session’s draft edits: name, design, display rules and destination selections. They do not change the published version or shared destination settings. Saving a new goal starts a new Undo history.', 'wconvert')}
+          </p>
+          </details>
           {entry && adminSettings()?.dev === true && (
             <details>
               <summary>{__('Developer tools', 'wconvert')}</summary>

@@ -670,7 +670,7 @@ describe('narrowing the library', () => {
    * so a chip says it is pressed with `aria-pressed` rather than with a variant
    * — a variant meaning "selected" is a second place for that decision to live.
    */
-  it('says a chip is pressed as a state rather than as a colour', async () => {
+  it('says a chip is pressed as a state rather than as a color', async () => {
     picker(LIBRARY);
 
     await userEvent.click(screen.getByRole('button', { name: 'More filters' }));
