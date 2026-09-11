@@ -15,7 +15,10 @@ return [
             __('An essay to keep', 'wconvert'),
             __('Every Sunday', 'wconvert'),
             __('One essay on books, places and the things we nearly miss, every Sunday.', 'wconvert'),
-            __('The best bookshops leave a little room for getting lost.', 'wconvert'),
+            [
+                'text' => __('The best bookshops leave a little room for getting lost.', 'wconvert'),
+                'italic' => true,
+            ],
         ],
         'headline' => __('One good essay.
 A slower Sunday.', 'wconvert'),
