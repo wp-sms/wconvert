@@ -40,6 +40,11 @@ final class FlagshipCollectionTest extends TestCase
                 $nodes = $draft['config']['template']['tree']['steps'];
                 while ($nodes !== []) {
                     $node = array_pop($nodes);
+                    foreach (['text', 'label', 'placeholder', 'emphasis', 'italic'] as $textKey) {
+                        if (isset($node[$textKey])) {
+                            $this->assertIsString($node[$textKey], $id . ': ' . $textKey . ' must carry words, not a formatting flag');
+                        }
+                    }
                     $role = $node['role'] ?? null;
                     if (in_array($role, $vocabulary->authoredRoles(), true)) {
                         $this->assertEmpty($node['text'] ?? '', $id . ': merchant-owned ' . $role);

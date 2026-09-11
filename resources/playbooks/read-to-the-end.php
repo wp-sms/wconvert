@@ -16,8 +16,9 @@ return [
             __('Every Sunday', 'wconvert'),
             __('One essay on books, places and the things we nearly miss, every Sunday.', 'wconvert'),
             [
-                'text' => __('The best bookshops leave a little room for getting lost.', 'wconvert'),
-                'italic' => true,
+                /* translators: %i: the italic excerpt from the newsletter. */
+                'text' => __('%i', 'wconvert'),
+                'italic' => __('The best bookshops leave a little room for getting lost.', 'wconvert'),
             ],
         ],
         'headline' => __('One good essay.
