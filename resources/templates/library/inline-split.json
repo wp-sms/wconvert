@@ -90,13 +90,13 @@
             "type": "heading",
             "id": "n7",
             "role": "success_headline",
-            "text": "Check your inbox"
+            "text": "Request received"
           },
           {
             "type": "text",
             "id": "n8",
             "role": "success_body",
-            "text": "The guide is on its way to you now."
+            "text": "Thank you. We have received your request for the guide."
           }
         ]
       }

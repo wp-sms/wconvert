@@ -83,9 +83,25 @@ all, so it is missing from the gallery entirely.
 - **Exactly one converting act.** One `button`, with `action` either `submit`
   or `link`. Two is refused, none is refused.
 - **The step count follows from the act.** `submit` → **2 steps** (the second
-  is the terminal success state). `link` → **1 step**, because the click
+  is the terminal capture acknowledgement). `link` → **1 step**, because the click
   navigates the visitor away and an interstitial is worse than the navigation
   it delays (ADR 0025).
+
+**Success wording describes capture, not delivery.** Use *Request received* or
+thank the visitor for the specific request. A form response does not prove
+provider subscription, confirmation or inbox delivery, so never use *You are
+subscribed* or *Your code is on its way* as library success copy. *Here is the
+code* is appropriate only when a `code` node actually displays it. The merchant
+still configures the offer and any delivery route. See `GUIDELINES.md` §1.5 and
+ADR 0073. Library-copy changes affect examples and new drafts; do not rewrite
+saved merchant copy.
+
+**Author a label as well as an example for every field.** Field-only rows keep
+their labels. Only a compact field-and-button row with non-empty examples may
+visually hide its direct field labels on wide containers, and those labels
+return at 24rem and below. The renderer supplies a fallback for missing labels
+and an asterisk for required fields. Do not duplicate the asterisk or rely on
+the fallback instead of clear words. Phone examples include a country code.
 
 **A design's act is no longer coupled to any Goal.** ADR 0059 deleted every
 design↔Goal pairing: a Template offering exactly one converting act **is** the

@@ -78,13 +78,13 @@
             "id": "n6",
             "role": "success_headline",
             "level": 2,
-            "text": "You are on the list"
+            "text": "Thank you"
           },
           {
             "type": "text",
             "id": "n7",
             "role": "success_body",
-            "text": "Friday is the next one."
+            "text": "We have received your details."
           }
         ]
       }

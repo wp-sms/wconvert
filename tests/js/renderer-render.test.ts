@@ -199,8 +199,32 @@ describe('the leaf vocabulary', () => {
     expect(input?.name).toBe('email');
     expect(input?.placeholder).toBe('you@example.com');
     expect(input?.required).toBe(true);
-    expect(element.querySelector('label')?.textContent).toBe('Email');
+    expect(element.querySelector('label')?.textContent).toBe('Email *');
     expect(element.querySelector('label')?.htmlFor).toBe(input?.id);
+  });
+
+  it('keeps every capture kind autofillable and gives an old blank label an accessible fallback', () => {
+    const cases = [
+      { name: 'email', type: 'email', autocomplete: 'email', inputMode: 'email', label: 'Email address' },
+      { name: 'name', type: 'text', autocomplete: 'name', inputMode: 'text', label: 'Name' },
+      { name: 'phone', type: 'tel', autocomplete: 'tel', inputMode: 'tel', label: 'Phone number' },
+    ] as const;
+
+    for (const expected of cases) {
+      const element = leaf({ type: 'field', name: expected.name, label: '   ', required: true });
+      const input = element.querySelector<HTMLInputElement>('input');
+      const label = element.querySelector('label');
+
+      expect(input?.type).toBe(expected.type);
+      expect(input?.autocomplete).toBe(expected.autocomplete);
+      expect(input?.inputMode).toBe(expected.inputMode);
+      expect(input?.required).toBe(true);
+      expect(label?.textContent).toBe(`${expected.label} *`);
+      expect(label?.htmlFor).toBe(input?.id);
+      expect(input?.labels).toHaveLength(1);
+      expect(input).toHaveAccessibleName(expected.label);
+      expect(label?.querySelector('[aria-hidden="true"]')).toHaveTextContent('*');
+    }
   });
 
   it('renders a submit button as a submit button', () => {

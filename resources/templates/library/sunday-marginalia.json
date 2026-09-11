@@ -213,8 +213,8 @@
             "type": "text",
             "id": "n27",
             "role": "success_body",
-            "text": "The next letter will arrive at %b on Sunday. Until then, keep a little time for yourself.",
-            "emphasis": "your inbox"
+            "text": "We have received your request for %b. Keep a little time for yourself.",
+            "emphasis": "the Sunday letter"
           },
           {
             "type": "divider",
@@ -242,14 +242,14 @@
             "id": "n32",
             "size": "xl",
             "role": "success_body",
-            "text": "See you on Sunday,\nClara"
+            "text": "Thanks for the interest,\nClara"
           },
           {
             "type": "text",
             "id": "n33",
             "size": "s",
             "role": "fine_print",
-            "text": "The letter arrives on Sunday. Unsubscribe at any time."
+            "text": "A letter every fortnight. Unsubscribe at any time."
           }
         ]
       }

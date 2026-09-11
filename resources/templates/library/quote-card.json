@@ -108,13 +108,13 @@
             "type": "heading",
             "id": "n10",
             "role": "success_headline",
-            "text": "On its way"
+            "text": "Request received"
           },
           {
             "type": "text",
             "id": "n11",
             "role": "success_body",
-            "text": "Check your inbox in a minute or two."
+            "text": "Thank you. We have received your interest in the offer."
           }
         ]
       }

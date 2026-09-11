@@ -34,8 +34,8 @@ return [
             'text' => __('Unsubscribe in one click, any time. See our %s.', 'wconvert'),
             'link' => ['label' => __('Privacy Policy', 'wconvert')],
         ],
-        'success_headline' => __('You are on the list', 'wconvert'),
-        'success_body' => __('Thursday is the next one. Nothing else until then.', 'wconvert'),
+        'success_headline' => __('Thanks for reading', 'wconvert'),
+        'success_body' => __('We have received your request for the weekly round-up.', 'wconvert'),
     ],
     'rules' => [
         ['type' => 'page_load'],

@@ -80,13 +80,13 @@
             "id": "n7",
             "level": 2,
             "role": "success_headline",
-            "text": "Your code is on its way"
+            "text": "Request received"
           },
           {
             "type": "text",
             "id": "n8",
             "role": "success_body",
-            "text": "Check your inbox — it should land in a minute or two."
+            "text": "Thank you for requesting the welcome offer."
           }
         ]
       }

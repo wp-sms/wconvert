@@ -97,13 +97,13 @@
             "type": "heading",
             "id": "n8",
             "role": "success_headline",
-            "text": "We will let you know"
+            "text": "Request received"
           },
           {
             "type": "text",
             "id": "n9",
             "role": "success_body",
-            "text": "One email, the morning it ships."
+            "text": "Thank you. We have received your interest in the next release."
           }
         ]
       }

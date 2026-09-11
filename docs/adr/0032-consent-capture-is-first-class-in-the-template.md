@@ -34,9 +34,13 @@ captures Leads whose consent was explicitly *refused*, which is worse than never
 asking — the row then asserts a consent that the visitor declined on the same
 screen.
 
-The capture endpoint is public, so client-side validation is decoration: the
-REST handler rejects a submission whose Optin declares a `consent` node and whose
-payload lacks it.
+The capture endpoint is public, so client-side validation cannot authorise a
+capture: the REST handler rejects a submission whose Optin declares a `consent`
+node and whose payload lacks it. **Completed by
+[ADR 0073](0073-capture-acknowledgement-is-not-provider-confirmation.md):** native
+validation is useful visitor feedback, with an inline message and focus on the
+first invalid field or checkbox. Server refusals use the same correction path,
+preserving entered values. Neither replaces the endpoint's enforcement.
 
 *Completed by [#24](https://github.com/navidkashani/wconvert/issues/24) on the
 two questions building it raised.*

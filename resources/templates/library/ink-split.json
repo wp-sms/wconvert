@@ -94,12 +94,12 @@
             "tokens": { "pad": "2.5rem 2rem", "gap": "0.5rem", "align": "center" },
             "children": [
               { "type": "icon", "id": "n8", "name": "check" },
-              { "type": "heading", "id": "n9", "role": "success_headline", "size": "xl", "text": "You are in" },
+              { "type": "heading", "id": "n9", "role": "success_headline", "size": "xl", "text": "Thanks for the interest" },
               {
                 "type": "text",
                 "id": "n10",
                 "role": "success_body",
-                "text": "Friday’s list lands in your inbox before anyone else sees it."
+                "text": "We have received your request for first access."
               }
             ]
           }

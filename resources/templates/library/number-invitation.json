@@ -225,7 +225,7 @@
                     "type": "badge",
                     "id": "n23",
                     "role": "badge",
-                    "text": "You are on the list"
+                    "text": "Request received"
                   },
                   {
                     "type": "heading",
@@ -237,8 +237,8 @@
                     "type": "text",
                     "id": "n25",
                     "role": "success_body",
-                    "text": "Your next note will arrive at %b on Monday morning.",
-                    "emphasis": "your inbox"
+                    "text": "We have received your request for %b. Thanks for making a little room.",
+                    "emphasis": "the Monday note"
                   },
                   {
                     "type": "stack",

@@ -38,7 +38,7 @@ return [
     'name' => __('When they have read it all', 'wconvert'),
     'goal' => 'grow_email_list',
     'template_id' => 'split-hero',
-    'notes' => __('Waits until a reader has reached the bottom of the page, so it never interrupts anyone mid-sentence. Somebody who read to the end is the warmest audience on your site, which is why this one can afford to ask for something in return.', 'wconvert'),
+    'notes' => __('Waits until a reader has reached the bottom of the page before offering a first-order discount. Create the code and configure the connected service to send it before publishing.', 'wconvert'),
     'copy' => [
         'headline' => __('Liked this? There is more.', 'wconvert'),
         'body' => __('Join the list and take 10% off your first order while you are here.', 'wconvert'),
@@ -50,8 +50,8 @@ return [
             'text' => __('One email a week at most. See our %s.', 'wconvert'),
             'link' => ['label' => __('Privacy Policy', 'wconvert')],
         ],
-        'success_headline' => __('Check your inbox', 'wconvert'),
-        'success_body' => __('Your code is on its way. It works on your first order.', 'wconvert'),
+        'success_headline' => __('Thank you', 'wconvert'),
+        'success_body' => __('We have received your request for the first-order offer.', 'wconvert'),
     ],
     'rules' => [
         ['type' => 'scroll_depth', 'percent' => 90],

@@ -77,7 +77,11 @@ export function SlotFields({
   return (
     <>
       {slot.keys.map((key) => {
-        const label = nameOf(labels.keys, key);
+        const label = slot.type === 'field' && key === 'label'
+          ? __('Field label', 'wconvert')
+          : slot.type === 'field' && key === 'placeholder'
+            ? __('Example inside the field', 'wconvert')
+            : nameOf(labels.keys, key);
         const held = typeof slot.values[key] === 'string' ? (slot.values[key] as string) : '';
 
         if (key === 'link') {
@@ -117,6 +121,12 @@ export function SlotFields({
           </label>
         );
       })}
+
+      {slot.type === 'field' && (
+        <p className="description">
+          {__('Example text disappears when visitors type. Use the label to say what to enter. A blank label uses the field’s default name.', 'wconvert')}
+        </p>
+      )}
 
       {/*
         ======================================================================
@@ -177,6 +187,14 @@ export function SlotFields({
         saying where the deadline lives.
       */}
       {slot.type === 'countdown' && <Countdown endsAt={endsAt} onSetEndDate={onSetEndDate} />}
+
+      {slot.type === 'field' && slot.captures === 'phone' && (
+        <p className="description">{__('Phone numbers need a country code, for example +44 7700 900000. Include one in your example.', 'wconvert')}</p>
+      )}
+
+      {(slot.role === 'success_headline' || slot.role === 'success_body') && (
+        <p className="description">{__('This appears after the form is submitted. Thank visitors for their request; your connected service handles emails and subscription confirmation.', 'wconvert')}</p>
+      )}
 
       {/*
         **Under the fields, not over them.** The thing a merchant opened this

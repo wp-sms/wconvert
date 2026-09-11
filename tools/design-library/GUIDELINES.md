@@ -64,15 +64,27 @@ Competitor teardowns put this exact failure on the avoid list:
 ### 1.5 The success step is a screen
 
 A submit-metered design has two steps and **the second one is a real thing a
-real visitor looks at**. It has to say what happens next — *check your inbox*,
-*here is the code* — and it has to look like it belongs to the first step.
+real visitor looks at**. It acknowledges the captured request and has to look
+like it belongs to the first step. Write *Request received* or *Thank you for
+requesting the guide*. The form's completion does not prove that a connected
+service has subscribed the visitor, confirmed their address or delivered an
+email. Do not write *You are subscribed*, *Your code is on its way*, or promise
+an inbox-arrival time. See [ADR 0073](../../docs/adr/0073-capture-acknowledgement-is-not-provider-confirmation.md).
 
 The commonest defect in the library is a success step that is two lines of
 unstyled text under a heading, which is why the contact sheet gives every step
 its own cell.
 
 Where the payout is a discount code, it goes in a `code` node. There is nowhere
-else for it that a visitor can read off a phone.
+else for it that a visitor can read off a phone. *Here is the code* is appropriate
+when the step actually displays one; the merchant still has to create a valid
+code. A guide or emailed offer needs its delivery destination configured, and
+the Playbook's setup notes should say so. A success screen is not evidence that
+this setup has been completed.
+
+Library examples teach the wording for new drafts. Updating them does not
+rewrite saved merchant copy or published snapshots; the editor explains the
+acknowledgement boundary when merchants edit their success text.
 
 ### 1.6 320px is the design width
 
@@ -172,10 +184,15 @@ Pick a `border` clearly lighter than the ground or the input is invisible — a
 bar asking for an address with nothing that looks like a box to type in. Aim
 for 2:1 against the ground; it is a boundary, not text, so AA does not apply.
 
-**A `row` hides its fields' labels, so write the placeholder.** Stacking a
-label above an input doubles a bar's height and puts a second competing line of
-text beside the offer. The label is still there for a screen reader — but a
-sighted visitor reads the placeholder, so it has to say what the field is.
+**Write both a field label and a useful example.** Field-only rows keep visible
+labels. In a compact row with a direct button, direct fields with a non-empty
+placeholder can have their labels visually hidden above 24rem of container
+width; the labels remain accessible. Fields without examples keep their labels,
+and all of these compact labels become visible at 24rem and below. Check both
+sizes. A missing authored label gets a field-kind fallback, but that fallback
+is not a reason to leave the design's wording unfinished. Examples disappear
+while typing; include the country code in a phone example. Required fields
+receive their asterisk from the renderer, so do not author a second one.
 
 **A three-up label is two or three words.** Three benefits across a 32rem panel
 is ~9rem each; anything longer wraps to two lines and the icon wraps with it.

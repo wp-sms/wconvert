@@ -915,10 +915,10 @@ function image(node: ImageNode): HTMLElement | null {
  * What each field kind captures: the input type that gets the right keyboard,
  * and the autofill token that lets a browser fill it.
  */
-const FIELD_KINDS: Readonly<Record<string, { type: string; autocomplete: AutoFill }>> = {
-  email: { type: 'email', autocomplete: 'email' },
-  phone: { type: 'tel', autocomplete: 'tel' },
-  name: { type: 'text', autocomplete: 'name' },
+const FIELD_KINDS: Readonly<Record<string, { type: string; autocomplete: AutoFill; label: string }>> = {
+  email: { type: 'email', autocomplete: 'email', label: 'Email address' },
+  phone: { type: 'tel', autocomplete: 'tel', label: 'Phone number' },
+  name: { type: 'text', autocomplete: 'name', label: 'Name' },
 };
 
 /**
@@ -951,13 +951,28 @@ function field(node: FieldNode): HTMLElement | null {
   input.className = 'wc-input';
   input.type = kind.type;
   input.name = name;
-  input.placeholder = node.placeholder ?? '';
+  input.placeholder = node.placeholder?.trim() ? node.placeholder : '';
   input.required = node.required === true;
   input.autocomplete = kind.autocomplete;
+  input.inputMode = kind.type;
+
+  if (name !== 'name') {
+    input.setAttribute('autocapitalize', 'none');
+    input.spellcheck = false;
+  }
 
   label.className = 'wc-label';
   label.htmlFor = input.id;
-  label.textContent = node.label ?? '';
+  label.textContent = node.label?.trim() ? node.label : kind.label;
+
+  if (input.required) {
+    const required = document.createElement('span');
+
+    // The native required attribute already announces this to assistive tech.
+    required.setAttribute('aria-hidden', 'true');
+    required.textContent = ' *';
+    label.appendChild(required);
+  }
 
   wrapper.className = 'wc-field';
   wrapper.append(label, input);

@@ -96,7 +96,7 @@
             "type": "text",
             "id": "n10",
             "role": "success_body",
-            "text": "Enter it at the checkout. We have emailed it to you as well."
+            "text": "We have received your details. Enter this code at checkout."
           }
         ]
       }

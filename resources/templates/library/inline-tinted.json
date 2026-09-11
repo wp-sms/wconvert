@@ -102,12 +102,12 @@
           "gap": "0.5rem"
         },
         "children": [
-          { "type": "heading", "id": "n8", "role": "success_headline", "size": "xl", "text": "Sunday it is" },
+          { "type": "heading", "id": "n8", "role": "success_headline", "size": "xl", "text": "Thank you" },
           {
             "type": "text",
             "id": "n9",
             "role": "success_body",
-            "text": "The first table arrives this weekend."
+            "text": "We have received your request for a place at the Sunday table."
           }
         ]
       }

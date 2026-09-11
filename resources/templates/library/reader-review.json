@@ -218,7 +218,7 @@
                     "type": "badge",
                     "id": "n21",
                     "role": "badge",
-                    "text": "Welcome to the growing room"
+                    "text": "Thank you for the interest"
                   },
                   {
                     "type": "heading",
@@ -230,8 +230,8 @@
                     "type": "text",
                     "id": "n23",
                     "role": "success_body",
-                    "text": "Your first seasonal note is on its way to %b. Start small; one happy plant is enough.",
-                    "emphasis": "your inbox"
+                    "text": "We have received your request for %b. Start small; one happy plant is enough.",
+                    "emphasis": "the seasonal note"
                   }
                 ]
               },

@@ -94,13 +94,13 @@
             "type": "heading",
             "id": "n8",
             "role": "success_headline",
-            "text": "We will be in touch"
+            "text": "Thanks for the interest"
           },
           {
             "type": "text",
             "id": "n9",
             "role": "success_body",
-            "text": "You will hear from us the moment it lands."
+            "text": "We have received your request for updates."
           }
         ]
       }

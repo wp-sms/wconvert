@@ -919,7 +919,7 @@ describe('the inspector', () => {
     await structure();
     await select('Email address');
 
-    const label = inspector('Email address').getByLabelText('Label');
+    const label = inspector('Email address').getByLabelText('Field label');
 
     await userEvent.clear(label);
     await userEvent.type(label, 'Where do we send it?');
@@ -930,9 +930,9 @@ describe('the inspector', () => {
     expect(screen.getByRole('status', { name: 'Layer changes' })).toHaveTextContent('Changed to Phone number');
     // The Slot Roles derived from the kind moved with it, so the row renamed
     // itself — and the merchant's own label came along.
-    expect(inspector('Phone number').getByLabelText('Label')).toHaveValue('Where do we send it?');
+    expect(inspector('Phone number').getByLabelText('Field label')).toHaveValue('Where do we send it?');
     // The placeholder was the design's, so it became the new kind's.
-    expect(inspector('Phone number').getByLabelText('Placeholder')).toHaveValue('+44 7700 900000');
+    expect(inspector('Phone number').getByLabelText('Example inside the field')).toHaveValue('+44 7700 900000');
   });
 
   /**
@@ -1393,8 +1393,8 @@ describe('what a row shows about itself', () => {
       ships, which is the same pair the ⇄ control writes when a field CHANGES
       kind. Neither is empty, which is the whole point.
     */
-    expect((screen.getByRole('textbox', { name: 'Label' }) as HTMLInputElement).value).toBe('Name');
-    expect((screen.getByRole('textbox', { name: 'Placeholder' }) as HTMLInputElement).value).toBe(
+    expect((screen.getByRole('textbox', { name: 'Field label' }) as HTMLInputElement).value).toBe('Name');
+    expect((screen.getByRole('textbox', { name: 'Example inside the field' }) as HTMLInputElement).value).toBe(
       'Your name',
     );
   });

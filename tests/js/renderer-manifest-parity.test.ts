@@ -799,7 +799,7 @@ describe('the narrow bag', () => {
   });
 
   it('remaps every declared token, so none of them is stranded at narrow', () => {
-    const rule = /@container wc \(max-width:[^)]+\)\{[^{]+\{([^}]*)\}/.exec(CSS)?.[1] ?? '';
+    const rule = /@container wc \(max-width:[^)]+\)\{[^{]*\[data-narrow\][^{]*\{([^}]*)\}/.exec(CSS)?.[1] ?? '';
 
     for (const token of Object.keys(manifest.tokens)) {
       expect(rule, token).toContain(`--wc-${token}:var(--wc-n-${token})!important`);
@@ -813,7 +813,7 @@ describe('the narrow bag', () => {
    * override.
    */
   it('states the remap with enough force to beat the inline bag it overrides', () => {
-    const rule = /@container wc \(max-width:[^)]+\)\{[^{]+\{([^}]*)\}/.exec(CSS)?.[1] ?? '';
+    const rule = /@container wc \(max-width:[^)]+\)\{[^{]*\[data-narrow\][^{]*\{([^}]*)\}/.exec(CSS)?.[1] ?? '';
 
     expect([...rule.matchAll(/!important/g)]).toHaveLength(Object.keys(manifest.tokens).length);
   });

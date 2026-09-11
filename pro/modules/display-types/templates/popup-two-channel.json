@@ -98,13 +98,13 @@
             "type": "heading",
             "id": "n9",
             "role": "success_headline",
-            "text": "You are on both lists"
+            "text": "Thank you"
           },
           {
             "type": "text",
             "id": "n10",
             "role": "success_body",
-            "text": "Monday by email, and a text when something lands."
+            "text": "We have received your request for email and text updates."
           }
         ]
       }

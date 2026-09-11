@@ -137,7 +137,7 @@
                 "id": "n11",
                 "size": "s",
                 "role": "fine_print",
-                "text": "One restock email for this mug. No newsletter.\nCancel from your confirmation email."
+                "text": "A restock request for this mug.\nNo payment or reservation."
               }
             ]
           }
@@ -209,7 +209,7 @@
                 "type": "badge",
                 "id": "n24",
                 "role": "badge",
-                "text": "You are on the list"
+                "text": "Request received"
               },
               {
                 "type": "heading",
@@ -221,8 +221,8 @@
                 "type": "text",
                 "id": "n26",
                 "role": "success_body",
-                "text": "We will let %b know when this mug is available. There is no payment and no reservation.",
-                "emphasis": "your inbox"
+                "text": "We have received your request for a %b. There is no payment and no reservation.",
+                "emphasis": "restock alert"
               },
               {
                 "type": "text",
@@ -236,7 +236,7 @@
                 "id": "n28",
                 "size": "s",
                 "role": "fine_print",
-                "text": "One restock email. Cancel using the link in your confirmation."
+                "text": "Your request is for this mug only."
               }
             ]
           }

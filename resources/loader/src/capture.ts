@@ -8,13 +8,13 @@
  * already prevented the navigation a handler-less form would perform. Asking
  * the question a second time here would be a second answer to keep in step.
  *
- * **Nothing here validates.** The capture endpoint is public, so a client-side
- * check is decoration: an honest browser enforces `required` and a ticked
+ * **Canonicalisation stays on the server.** The capture endpoint is public,
+ * so a client-side check cannot authorise capture: a browser enforces `required` and a ticked
  * checkbox, and the endpoint cannot tell an honest browser from `curl`
  * (ADR 0032). Canonicalisation is the server's for the same reason — it is
  * what makes grouping the lead log honest, so it cannot live where the client
- * can skip it (ADR 0021). What this does is send what was typed and render
- * what came back.
+ * can skip it (ADR 0021). Native browser validation messages and server
+ * refusals appear beside the field while its entered value stays in place.
  */
 
 /** The one element a refusal draws, and the hook the stylesheet styles it by. */
@@ -29,10 +29,11 @@ const ERROR_ID = 'wc-capture-error';
  * translatable — the loader is a raw IIFE with no `wp.i18n` runtime, and
  * adding one would put a second script on the page for a handful of strings
  * (ADR 0004). This case is the exception because there was no response to
- * carry a sentence: the request never arrived. Same reasoning as the close
- * button's label, and the same English.
+ * carry a usable sentence: the response was missing or malformed. It says
+ * nothing about whether the server saved the Lead. Same reasoning as the
+ * close button's label, and the same English.
  */
-const NO_RESPONSE = 'Something went wrong. Please try again.';
+const NO_RESPONSE = 'We couldn’t confirm your submission. Please try again.';
 
 export interface CaptureOptions {
   readonly optinId: string;
@@ -54,6 +55,32 @@ interface RefusalBody {
 
 export function bindCapture(root: HTMLElement, options: CaptureOptions): void {
   let inFlight = false;
+
+  // Native constraints still prevent submission. Use the browser's translated
+  // wording, and focus only the first invalid field in a validation pass.
+  root.addEventListener('invalid', (event) => {
+    const input = event.target;
+
+    if (!(input instanceof HTMLInputElement)) return;
+
+    event.preventDefault();
+
+    // Chrome can drain microtasks between invalid events. Read native
+    // validity in DOM order instead of relying on a timing-based pass guard.
+    const first = [...root.querySelectorAll<HTMLInputElement>('input')]
+      .find((candidate) => candidate.willValidate && !candidate.validity.valid);
+    if (input !== first) return;
+
+    refuse(root, input.validationMessage, input.name);
+  }, true);
+
+  root.addEventListener('input', (event) => {
+    const input = event.target;
+
+    if (input instanceof HTMLInputElement && input.getAttribute('aria-describedby')?.split(/\s+/).includes(ERROR_ID)) {
+      clear(root);
+    }
+  });
 
   root.addEventListener('submit', (event) => {
     // The container already prevented the default, and prevents it whether or
@@ -77,10 +104,14 @@ export function bindCapture(root: HTMLElement, options: CaptureOptions): void {
     }
 
     inFlight = true;
+    clear(root);
+    const payload = body(root, options.optinId);
+    const release = pending(root);
 
-    void send(options.endpoint, body(root, options.optinId))
+    void send(options.endpoint, payload)
       .then((refusal) => {
         inFlight = false;
+        release();
 
         if (refusal === null) {
           clear(root);
@@ -90,12 +121,11 @@ export function bindCapture(root: HTMLElement, options: CaptureOptions): void {
         }
 
         refuse(root, text(refusal.message) ?? NO_RESPONSE, text(refusal.data?.field));
-      })
-      .catch(() => {
-        // A capture that fell over in transit is not a capture. The visitor
-        // pressed a button, so something has to happen on screen — and they
-        // must be able to press it again.
+      }, () => {
+        // A lost response cannot tell us whether the server saved the Lead.
+        // Keep the form and its values, explain the uncertainty, and allow retry.
         inFlight = false;
+        release();
         refuse(root, NO_RESPONSE, null);
       });
   });
@@ -109,17 +139,50 @@ export function bindCapture(root: HTMLElement, options: CaptureOptions): void {
  * says so.
  */
 async function send(endpoint: string, payload: string): Promise<RefusalBody | null> {
-  const response = await fetch(endpoint, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: payload,
-  });
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15000);
 
-  if (response.ok) {
-    return null;
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: payload,
+      signal: controller.signal,
+    });
+    const result: unknown = await response.json().catch(() => null);
+
+    if (typeof result !== 'object' || result === null || Array.isArray(result)) return {};
+    if (response.ok) return 'id' in result && text(result.id) !== null ? null : {};
+
+    return result as RefusalBody;
+  } finally {
+    clearTimeout(timeout);
   }
+}
 
-  return await response.json().catch((): RefusalBody => ({}));
+/** Keep submitted values steady and make waiting visible; restore on failure. */
+function pending(root: HTMLElement): () => void {
+  const buttons = [...root.querySelectorAll<HTMLButtonElement>('button[type="submit"]')].filter((button) => !button.disabled);
+  const fields = [...root.querySelectorAll<HTMLInputElement>('input.wc-input')].filter((input) => !input.readOnly);
+  const checkboxes = [...root.querySelectorAll<HTMLInputElement>('input.wc-checkbox')].filter((input) => !input.disabled);
+
+  root.setAttribute('aria-busy', 'true');
+  for (const button of buttons) {
+    button.disabled = true;
+    button.setAttribute('aria-busy', 'true');
+  }
+  for (const input of fields) input.readOnly = true;
+  for (const input of checkboxes) input.disabled = true;
+
+  return () => {
+    root.removeAttribute('aria-busy');
+    for (const button of buttons) {
+      button.disabled = false;
+      button.removeAttribute('aria-busy');
+    }
+    for (const input of fields) input.readOnly = false;
+    for (const input of checkboxes) input.disabled = false;
+  };
 }
 
 /**
@@ -167,29 +230,34 @@ function refuse(root: HTMLElement, message: string, field: string | null): void 
   // just did, and it has to interrupt whatever a screen reader was saying.
   error.setAttribute('role', 'alert');
   error.textContent = message;
-  root.appendChild(error);
 
   const input = field === null ? null : root.querySelector<HTMLInputElement>(`[name="${CSS.escape(field)}"]`);
+  const container = input?.closest('.wc-field,.wc-consent');
+
+  (container ?? root).appendChild(error);
 
   if (input === null) {
     return;
   }
 
   input.setAttribute('aria-invalid', 'true');
-  input.setAttribute('aria-describedby', error.id);
+  input.setAttribute('aria-describedby', [input.getAttribute('aria-describedby'), error.id].filter(Boolean).join(' '));
   input.focus();
 }
 
 function clear(root: HTMLElement): void {
   root.querySelector(`.${CAPTURE_ERROR_CLASS}`)?.remove();
 
-  for (const marked of root.querySelectorAll('[aria-invalid]')) {
+  for (const marked of root.querySelectorAll(`[aria-describedby~="${ERROR_ID}"]`)) {
     marked.removeAttribute('aria-invalid');
-    marked.removeAttribute('aria-describedby');
+    const descriptions = marked.getAttribute('aria-describedby')!.split(/\s+/).filter((id) => id !== ERROR_ID).join(' ');
+
+    if (descriptions) marked.setAttribute('aria-describedby', descriptions);
+    else marked.removeAttribute('aria-describedby');
   }
 }
 
 /** A string the server sent, or null where it sent something else. */
 function text(value: unknown): string | null {
-  return typeof value === 'string' && value !== '' ? value : null;
+  return typeof value === 'string' && value.trim() !== '' ? value : null;
 }

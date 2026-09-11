@@ -101,12 +101,12 @@
       {
         "type": "stack",
         "children": [
-          { "type": "heading", "id": "n14", "role": "success_headline", "size": "xl", "text": "Confirmed" },
+          { "type": "heading", "id": "n14", "role": "success_headline", "size": "xl", "text": "Request received" },
           {
             "type": "text",
             "id": "n15",
             "role": "success_body",
-            "text": "The next letter goes out on Friday morning. Look for it then."
+            "text": "Thank you for asking to receive the letter."
           }
         ]
       }

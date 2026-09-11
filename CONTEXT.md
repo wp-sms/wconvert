@@ -23,6 +23,11 @@ owns the Contact — WSMS's own subscription form, or the ESP's audience setting
 Not every [[Conversion]] is a Lead. An Optin whose success is a click-through
 captures no form, so it produces a Conversion and no Lead.
 
+A submit design's success copy acknowledges the captured request. It must not
+claim that a Contact is subscribed or confirmed, or that a message or resource
+was delivered. Shipped examples follow that rule; existing merchant copy is
+not bulk rewritten. See [ADR 0073](docs/adr/0073-capture-acknowledgement-is-not-provider-confirmation.md).
+
 **Leads are never deduplicated.** One person submitting two forms produces two
 Leads, because they did two things. That two Leads are one person is a question
 answered when the lead log is *read* — a grouping over the identifier the Leads
@@ -1003,10 +1008,12 @@ A Destination failing is **invisible to the visitor**. That is what "fallible
 without the capture failing" means followed through: the [[Lead]] is already
 written and the push is queued and retried. That confirms the capture, not a
 Contact's subscription status, which belongs to the receiving system. There
-is no delivery-error state in a [[Template]] and there will not be one. The only
-thing such a state could report is the local write failing, which is an outage
-rather than a step in anyone's journey
-([ADR 0044](docs/adr/0044-there-is-no-visitor-facing-error-state.md)). Failure is
+is no delivery-error state in a [[Template]] and there will not be one. Field
+refusals and capture failures use inline feedback in the existing form. A
+timeout or malformed response reports an unconfirmed submission and preserves
+entered values, because it cannot prove that no local write occurred
+([ADR 0044](docs/adr/0044-there-is-no-visitor-facing-error-state.md),
+[ADR 0073](docs/adr/0073-capture-acknowledgement-is-not-provider-confirmation.md)). Failure is
 visible to the *merchant*, on Destination health and in the failure ring, which
 is where it can be acted on.
 

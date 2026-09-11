@@ -546,7 +546,7 @@ export const SHADOW_CSS = [
   `.wc-label{font-size:.8125em;font-weight:500;color:var(--wc-muted,#6b7280)}`,
   /*
    * ==========================================================================
-   * A LABEL INSIDE A ROW IS READ, NOT SEEN.
+   * A compact field-and-button row can use its placeholder as the visible cue.
    * ==========================================================================
    * `.wc-field` stacks its label above its input, which is right in a column
    * and wrong in a `row`: a floating bar is one strip of page furniture, and
@@ -554,12 +554,12 @@ export const SHADOW_CSS = [
    * competing line of text next to the offer. Every bar in the library looked
    * like a form that had fallen into a strip.
    *
-   * **Hidden from the eye and not from the accessibility tree.** The label
-   * still names its input for a screen reader and still takes the click; the
-   * placeholder is what a sighted visitor reads, which is what this genre does
-   * in a horizontal form and only there.
+   * Grouped fields retain their labels. So does a compact field with no
+   * placeholder, and every narrow form where the controls wrap into a column.
+   * The compact desktop label remains in the accessibility tree.
    */
-  `.wc-row>.wc-field>.wc-label{position:absolute;inline-size:1px;block-size:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}`,
+  `.wc-row:has(>.wc-button)>.wc-field:has(>input:not([placeholder=""]))>.wc-label{position:absolute;inline-size:1px;block-size:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}`,
+  `@container wc (max-width:24rem){.wc-row:has(>.wc-button)>.wc-field:has(>input:not([placeholder=""]))>.wc-label{position:static;inline-size:auto;block-size:auto;overflow:visible;clip-path:none;white-space:normal}.wc-row:has(>.wc-field)>.wc-button{align-self:flex-end}}`,
   /*
    * ==========================================================================
    * AN INSET RING RATHER THAN A BORDER, AND IT IS NOT A STYLISTIC PREFERENCE.
@@ -618,16 +618,21 @@ export const SHADOW_CSS = [
    * `var()` still animates.
    */
   `.wc-button:hover{opacity:.88}`,
+  `.wc-button[aria-busy=true]{position:relative;cursor:wait;opacity:.7}`,
+  `.wc-button[aria-busy=true]::after{content:"";position:absolute;inset-inline-end:.25em;inset-block-start:calc(50% - .375em);inline-size:.75em;block-size:.75em;border:2px solid currentColor;border-inline-end-color:transparent;border-radius:50%;animation:wc-sending .8s linear infinite}`,
+  `@keyframes wc-sending{to{transform:rotate(360deg)}}`,
+  `@media (prefers-reduced-motion:reduce){.wc-button[aria-busy=true]::after{animation:none}}`,
 
-  `.wc-consent{display:flex;align-items:start;gap:.5rem;text-align:start}`,
-  `.wc-consent-text{font-size:.8125em;color:var(--wc-muted,#6b7280)}`,
+  `.wc-consent{display:flex;flex-wrap:wrap;align-items:start;gap:.5rem;text-align:start}`,
+  `.wc-consent-text{flex:1;min-inline-size:0;font-size:.8125em;color:var(--wc-muted,#6b7280)}`,
+  `.wc-consent>.wc-error{flex-basis:100%}`,
   `.wc-checkbox{margin-block-start:.25em;accent-color:var(--wc-accent,#2563eb)}`,
 
   // A refused capture, drawn by the loader rather than by the vocabulary — for
   // the same reason the close button is: a template must not be able to omit
   // the way out, and it must not be able to make the reason its form was
   // refused invisible. So the colour is a literal and not a token.
-  `.wc-error{margin:0;color:#b91c1c;font-size:.875em;font-weight:600}`,
+  `.wc-error{margin:0;color:#991b1b;background:#fef2f2;border-radius:.25rem;padding:.375rem .5rem;font-size:.875em;font-weight:600;text-align:start}`,
   // Follows the ring above. `border-color` styled a border this no longer
   // draws, so the invalid state was silently invisible the moment the field
   // changed shape — which is the one state that must not be.

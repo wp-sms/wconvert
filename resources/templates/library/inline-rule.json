@@ -72,12 +72,12 @@
         "edges": "block-start",
         "tokens": { "border": "#7c2d12", "pad": "1.75rem 0 0", "gap": "0.5rem" },
         "children": [
-          { "type": "heading", "id": "n7", "role": "success_headline", "size": "xl", "text": "You are subscribed" },
+          { "type": "heading", "id": "n7", "role": "success_headline", "size": "xl", "text": "Request received" },
           {
             "type": "text",
             "id": "n8",
             "role": "success_body",
-            "text": "The next piece lands on Friday. Nothing else will."
+            "text": "Thank you for asking to hear more from us."
           }
         ]
       }

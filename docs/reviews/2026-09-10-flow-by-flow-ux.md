@@ -14,6 +14,12 @@ its completed local verification is recorded below, and
 Phase 4 simplifies creation and display settings under
 [ADR 0072](../adr/0072-setup-choices-state-their-effect-and-scope.md), with completed
 local and WordPress verification below. Current-head CI is recorded on the PR.
+Phase 5 steps 1–2 are implemented under
+[ADR 0073](../adr/0073-capture-acknowledgement-is-not-provider-confirmation.md):
+truthful capture acknowledgement and clearer existing-field feedback. Completed
+checks, WordPress findings and test fixture cleanup are recorded below. These
+two steps are complete; the broader qualification and internal-format review
+remains future work.
 Other proposals remain separate work. This review claims no tested provider delivery.
 
 ## What a successful experience means
@@ -585,3 +591,74 @@ appearance guidance was visible without selecting an element; Goal correction
 stated its whole-draft save and was closed without saving. No browser console
 errors were recorded. Temporary viewport overrides were reset, and the existing
 Editor UX check draft was left open on Display rules without changes.
+
+## Phase 5 steps 1–2 implementation and verification
+
+Success copy in **39 templates and 9 Playbooks** now acknowledges the visitor's request,
+without claiming provider subscription, confirmation or delivery. Offer setup
+notes and the success-text inspector explain that boundary. Library examples
+and new drafts receive the revised wording; saved merchant copy and published
+snapshots are not bulk rewritten.
+
+The existing email, phone and name fields gain clearer inspector labels,
+fallback field names, required markers and input guidance. Fallback names use
+the renderer's existing English chrome; authored labels retain their wording
+and can be translated. Field-only rows keep
+visible labels, and compact field-and-button labels return on narrow
+containers. Native and server validation messages appear with the relevant
+field, preserving values. Pending submission locks the submitted values and
+shows busy state; a bounded request restores controls on refusal or an unknown
+result. Malformed successful responses must not advance to the success screen.
+No new field type, JSON schema, storage or provider-status synchronisation is
+part of this slice.
+
+### Completed checks and browser findings
+
+The PHP suite passes **1,788 tests / 7,796 assertions**, and PHPStan is clean.
+All admin, block, loader and inspector builds pass. All **55 templates** pass
+library verification, and the source check passes. The loader budget check
+passes for every tier: Free 10,267, Basic 11,064, Pro 12,021 and Elite 12,205
+bytes gzipped, below the 12,288-byte limit.
+
+The final focused frontend run passes **53 tests**, including a regression
+reproduced before its fix for Chrome's native invalid-event ordering and focus
+on the first invalid field. The final full frontend run passes **2,167 tests
+across 88 files**. Final TypeScript and ESLint checks also pass. Pending controls,
+timeout recovery and malformed-response
+handling were checked in automated tests, not by simulating those failures in
+the live browser.
+
+Real WordPress checks in Chrome used page `22` and the dedicated Optin
+`01M27CV94KQ81TMCJFMBN9WAMZ`, targeted only at that page and bound to no
+Destinations. A blank submit focused **Your name**, the first invalid field,
+and displayed its native validation message inline. An invalid email and a
+server refusal of the phone number preserved all entered values and checked
+consent. One corrected local submission advanced to copy acknowledging receipt
+of the request. No Destination send or provider delivery was involved.
+An independent blank-submit check against the final built assets confirmed
+that **Your name** remained focused with its inline required message visible.
+
+At **390 × 844**, labels and required markers remained visible, fields stacked,
+and there was no horizontal overflow. Existing saved merchant copy was
+intentionally not bulk rewritten.
+
+### Cleanup and remaining scope
+
+Before cleanup, Lead `01M27D2JDR15E9N6YN9BC30DVR` was checked for **Sam Test**,
+`wconvert-fields-20260911@example.test`, canonical phone `+447700900000`, and
+the exact submitted consent text. That Lead and page `22` were removed. The
+disposable Optin was soft-deleted at `2026-09-11 05:06:05`. In accordance with
+the existing statistics contract, its historical counters remain: **4
+impressions and 1 conversion** on `2026-09-11`.
+
+Full-row hashes for the original Optins, including previously deleted rows,
+match the baseline. The Destination option hash also matches. The final state
+has **6 visible Optins: 1 published and 5 drafts**, **0 Leads**, and **0
+`wconvert_push_lead` actions**. This run changed no Destination, provider or
+email configuration and sent no email.
+
+**Phase 5 steps 1–2 are complete.** The broader qualification and dependable
+internal-format review remains future work; this record does not mark all of
+Phase 5 complete. The separate `2026-09-11-lead-journey-qa.md` remains unchanged:
+it describes an earlier, distinct run and is not evidence for these subsequent
+changes.

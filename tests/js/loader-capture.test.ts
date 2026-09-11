@@ -15,7 +15,7 @@ import type { Template } from '@renderer/types';
 const OPTIN = '01JQ0000000000000000000001';
 const ENDPOINT = 'https://example.test/wp-json/wconvert/v1/capture';
 
-const template = (consent = false): Template => ({
+const template = (options: { consent?: boolean; phone?: boolean } = {}): Template => ({
   tree: {
     steps: [
       {
@@ -24,7 +24,8 @@ const template = (consent = false): Template => ({
           { type: 'heading', role: 'headline', text: 'Join the list' },
           { type: 'field', name: 'email', label: 'Email', required: true },
           { type: 'field', name: 'name', label: 'Name' },
-          ...(consent
+          ...(options.phone ? [{ type: 'field' as const, name: 'phone' as const, label: 'Phone' }] : []),
+          ...(options.consent
             ? [{ type: 'consent' as const, role: 'consent_text' as const, text: 'I agree.' }]
             : []),
           { type: 'button', role: 'cta_label', label: 'Go', action: 'submit' as const },
@@ -41,8 +42,8 @@ const template = (consent = false): Template => ({
  * is prevented by the container, and capture binds on top of it rather than
  * re-deriving a form of its own.
  */
-const form = (options: { consent?: boolean; endpoint?: string | null } = {}) => {
-  const design = template(options.consent ?? false);
+const form = (options: { consent?: boolean; phone?: boolean; endpoint?: string | null } = {}) => {
+  const design = template(options);
   const root = render(design.tree, design.tokens);
   const captured = { count: 0 };
 
@@ -79,6 +80,13 @@ const respondWith = (status: number, body: unknown) =>
     json: () => Promise.resolve(body),
   } as Response);
 
+const malformedResponse = (status: number) =>
+  Promise.resolve({
+    ok: status >= 200 && status < 300,
+    status,
+    json: () => Promise.reject(new SyntaxError('invalid JSON')),
+  } as Response);
+
 let fetchMock: ReturnType<typeof vi.fn>;
 
 beforeEach(() => {
@@ -88,10 +96,22 @@ beforeEach(() => {
 
 afterEach(() => {
   document.body.innerHTML = '';
+  vi.useRealTimers();
   vi.unstubAllGlobals();
 });
 
 const bodyOf = (call: number = 0) => JSON.parse(String(fetchMock.mock.calls[call]?.[1]?.body));
+
+const inputOf = (root: HTMLElement, name: string) => root.querySelector<HTMLInputElement>(`input[name="${name}"]`)!;
+
+const submitButtonOf = (root: HTMLElement) => root.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+
+const expectTypedValues = (root: HTMLElement) => {
+  expect(inputOf(root, 'email').value).toBe('sarah@example.com');
+  expect(inputOf(root, 'name').value).toBe('Sarah');
+  expect(inputOf(root, 'phone').value).toBe('+447700900000');
+  expect(inputOf(root, 'consent').checked).toBe(true);
+};
 
 describe('a submission that lands', () => {
   it('posts what the visitor typed to the capture endpoint', async () => {
@@ -169,6 +189,45 @@ describe('consent', () => {
   });
 });
 
+describe('native browser validation', () => {
+  it('keeps the first invalid field focused when Chrome drains microtasks between invalid events', async () => {
+    const { root } = form({ consent: true, phone: true });
+    const email = inputOf(root, 'email');
+    inputOf(root, 'phone').required = true;
+
+    // A trusted browser validation pass can checkpoint after each listener.
+    // requestSubmit() inside JSDOM's JS call stack does not reproduce that.
+    for (const input of root.querySelectorAll('input:invalid')) {
+      const event = new Event('invalid', { cancelable: true });
+      input.dispatchEvent(event);
+      expect(event.defaultPrevented).toBe(true);
+      await Promise.resolve();
+    }
+
+    expect(document.activeElement).toBe(email);
+    expect(root.querySelector(`.${CAPTURE_ERROR_CLASS}`)?.parentElement).toBe(email.closest('.wc-field'));
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('does not post an invalid form and reports the first invalid field', () => {
+    const { root, captured } = form({ consent: true, phone: true });
+    const email = inputOf(root, 'email');
+    inputOf(root, 'phone').required = true;
+
+    (root as HTMLFormElement).requestSubmit();
+
+    const error = root.querySelector(`.${CAPTURE_ERROR_CLASS}`);
+
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(captured.count).toBe(0);
+    expect(document.activeElement).toBe(email);
+    expect(error).toHaveTextContent(email.validationMessage);
+    expect(error?.parentElement).toBe(email.closest('.wc-field'));
+    expect(email).toHaveAttribute('aria-invalid', 'true');
+    expect(email.getAttribute('aria-describedby')).toContain(error?.id);
+  });
+});
+
 describe('a submission that is refused', () => {
   const refuse = (field: string | null, message: string) =>
     fetchMock.mockImplementation(() =>
@@ -192,9 +251,65 @@ describe('a submission that is refused', () => {
     const input = root.querySelector<HTMLInputElement>('input[name="email"]')!;
 
     expect(error?.textContent).toBe('Please enter a valid email address.');
+    expect(error?.parentElement).toBe(input.closest('.wc-field'));
     expect(input.getAttribute('aria-invalid')).toBe('true');
     expect(input.getAttribute('aria-describedby')).toBe(error?.id);
     expect(captured.count).toBe(0);
+  });
+
+  it('places a consent refusal inside the consent control', async () => {
+    const { root } = form({ consent: true });
+
+    refuse('consent', 'Please tick the box.');
+    fill(root, { email: 'sarah@example.com' });
+    root.querySelector<HTMLInputElement>('input[name="consent"]')!.checked = true;
+    await submit(root);
+
+    const input = inputOf(root, 'consent');
+    const error = root.querySelector(`.${CAPTURE_ERROR_CLASS}`);
+
+    expect(error).toHaveTextContent('Please tick the box.');
+    expect(error?.parentElement).toBe(input.closest('.wc-consent'));
+    expect(input).toHaveAttribute('aria-invalid', 'true');
+    expect(input.getAttribute('aria-describedby')).toContain(error?.id);
+  });
+
+  it('preserves all entered values and unrelated descriptions after a field refusal', async () => {
+    const { root } = form({ consent: true, phone: true });
+
+    inputOf(root, 'email').setAttribute('aria-describedby', 'merchant-hint');
+    refuse('phone', 'Please enter a valid phone number.');
+    fill(root, { email: 'sarah@example.com', name: 'Sarah', phone: '+447700900000' });
+    inputOf(root, 'consent').checked = true;
+    await submit(root);
+
+    const phone = inputOf(root, 'phone');
+    const error = root.querySelector(`.${CAPTURE_ERROR_CLASS}`);
+
+    expectTypedValues(root);
+    expect(phone.getAttribute('aria-describedby')).toContain(error?.id);
+    expect(inputOf(root, 'email')).toHaveAttribute('aria-describedby', 'merchant-hint');
+    expect(root.querySelector(`.${CAPTURE_ERROR_CLASS}`)).toBeTruthy();
+    expect(submitButtonOf(root)).not.toBeDisabled();
+    expect(phone).not.toHaveAttribute('readonly');
+    expect(root).not.toHaveAttribute('aria-busy');
+  });
+
+  it('clears its own field error on edit while preserving unrelated descriptions', async () => {
+    const { root } = form();
+    const email = inputOf(root, 'email');
+
+    email.setAttribute('aria-describedby', 'merchant-hint');
+    refuse('email', 'Fix the address.');
+    fill(root, { email: 'nope' });
+    await submit(root);
+
+    email.value = 'sarah@example.com';
+    email.dispatchEvent(new Event('input', { bubbles: true }));
+
+    expect(root.querySelector(`.${CAPTURE_ERROR_CLASS}`)).toBeNull();
+    expect(email).not.toHaveAttribute('aria-invalid');
+    expect(email).toHaveAttribute('aria-describedby', 'merchant-hint');
   });
 
   it('shows a refusal that blames no single input, with nothing marked', async () => {
@@ -234,14 +349,56 @@ describe('a submission that is refused', () => {
    * one for it.
    */
   it('says so when the request never arrives', async () => {
-    const { root, captured } = form();
+    const { root, captured } = form({ consent: true, phone: true });
 
     fetchMock.mockImplementation(() => Promise.reject(new Error('offline')));
-    fill(root, { email: 'sarah@example.com' });
+    fill(root, { email: 'sarah@example.com', name: 'Sarah', phone: '+447700900000' });
+    inputOf(root, 'consent').checked = true;
     await submit(root);
 
     expect(root.querySelector(`.${CAPTURE_ERROR_CLASS}`)?.textContent).not.toBe('');
     expect(captured.count).toBe(0);
+    expectTypedValues(root);
+  });
+
+  it('times out a stalled request and restores the form controls', async () => {
+    vi.useFakeTimers();
+
+    try {
+      const { root, captured } = form({ consent: true, phone: true });
+      const button = submitButtonOf(root);
+      const signal = inputOf(root, 'email');
+
+      fetchMock.mockImplementation((_url: string, init: RequestInit) =>
+        new Promise<Response>((_resolve, reject) => {
+          init.signal?.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError')), { once: true });
+        }),
+      );
+      fill(root, { email: 'sarah@example.com', name: 'Sarah', phone: '+447700900000' });
+      inputOf(root, 'consent').checked = true;
+
+      root.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(button).toBeDisabled();
+      expect(signal).toHaveAttribute('readonly');
+      expect(inputOf(root, 'consent')).toBeDisabled();
+      expect(root).toHaveAttribute('aria-busy', 'true');
+
+      await vi.advanceTimersByTimeAsync(15_000);
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(root.querySelector(`.${CAPTURE_ERROR_CLASS}`)).toHaveTextContent('We couldn’t confirm your submission. Please try again.');
+      expect(button).not.toBeDisabled();
+      expect(signal).not.toHaveAttribute('readonly');
+      expect(inputOf(root, 'consent')).not.toBeDisabled();
+      expect(root).not.toHaveAttribute('aria-busy');
+      expectTypedValues(root);
+      expect(captured.count).toBe(0);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('says so when the page carries no endpoint to post to', async () => {
@@ -254,6 +411,36 @@ describe('a submission that is refused', () => {
     expect(fetchMock).not.toHaveBeenCalled();
     expect(root.querySelector(`.${CAPTURE_ERROR_CLASS}`)?.textContent).not.toBe('');
     expect(captured.count).toBe(0);
+  });
+});
+
+describe('the capture response contract', () => {
+  it.each([
+    ['201 without a lead id', 201, {}],
+    ['201 with a null body', 201, null],
+    ['201 with an array body', 201, []],
+    ['204 with no body', 204, null],
+    ['422 with a null body', 422, null],
+  ] as const)('does not advance on %s', async (_label, status, responseBody) => {
+    const { root, captured } = form();
+
+    fetchMock.mockImplementation(() => respondWith(status, responseBody));
+    fill(root, { email: 'sarah@example.com' });
+    await submit(root);
+
+    expect(captured.count).toBe(0);
+    expect(root.querySelector(`.${CAPTURE_ERROR_CLASS}`)).toBeTruthy();
+  });
+
+  it('does not advance when a successful response is not JSON', async () => {
+    const { root, captured } = form();
+
+    fetchMock.mockImplementation(() => malformedResponse(201));
+    fill(root, { email: 'sarah@example.com' });
+    await submit(root);
+
+    expect(captured.count).toBe(0);
+    expect(root.querySelector(`.${CAPTURE_ERROR_CLASS}`)).toBeTruthy();
   });
 });
 
@@ -275,13 +462,17 @@ describe('a visitor pressing the button twice', () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
 
-    settle({ ok: true, status: 201, json: () => Promise.resolve({}) } as Response);
+    settle({ ok: true, status: 201, json: () => Promise.resolve({ id: '01JQ00000000000000000000LEAD' }) } as Response);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(submitButtonOf(root)).not.toBeDisabled();
+    expect(inputOf(root, 'email')).not.toHaveAttribute('readonly');
   });
 
-  it('lets them try again once a refusal has come back', async () => {
-    const { root } = form();
+  it('clears the refusal and lets them try again successfully', async () => {
+    const { root, captured } = form();
 
-    fetchMock.mockImplementation(() =>
+    fetchMock.mockImplementationOnce(() =>
       respondWith(422, { code: 'wconvert_x', message: 'Fix it.', data: { status: 422, field: 'email' } }),
     );
     fill(root, { email: 'nope' });
@@ -291,5 +482,8 @@ describe('a visitor pressing the button twice', () => {
     await submit(root);
 
     expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(root.querySelector(`.${CAPTURE_ERROR_CLASS}`)).toBeNull();
+    expect(inputOf(root, 'email')).not.toHaveAttribute('aria-invalid');
+    expect(captured.count).toBe(1);
   });
 });

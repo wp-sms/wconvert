@@ -190,7 +190,12 @@ final class CaptureController implements RestController
                 ? __('Please include your country code, like +12025551234.', 'wconvert')
                 : __('Please enter a valid email address.', 'wconvert'),
             RefusalCode::ConsentRequired => __('Please tick the box to continue.', 'wconvert'),
-            RefusalCode::FieldRequired => __('Please fill this in.', 'wconvert'),
+            RefusalCode::FieldRequired => match ($refusal->field) {
+                'email' => __('Please enter your email address.', 'wconvert'),
+                'phone' => __('Please enter your phone number, including the country code.', 'wconvert'),
+                'name' => __('Please enter your name.', 'wconvert'),
+                default => __('Please fill in this field.', 'wconvert'),
+            },
             RefusalCode::NoIdentifier => __('Please enter an email address or a phone number.', 'wconvert'),
             RefusalCode::NothingToCapture => __('This form is not accepting submissions.', 'wconvert'),
         };

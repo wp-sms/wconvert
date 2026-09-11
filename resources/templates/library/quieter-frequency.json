@@ -210,8 +210,8 @@
                 "type": "text",
                 "id": "n24",
                 "role": "success_body",
-                "text": "Your first letter lands this Sunday at %b. No need to keep a tab open.",
-                "emphasis": "your inbox"
+                "text": "We have received your request for %b. No need to keep a tab open.",
+                "emphasis": "the Sunday letter"
               }
             ]
           },

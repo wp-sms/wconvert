@@ -131,6 +131,14 @@ style whether or not anyone meant it to be. `tools/design-library/GUIDELINES.md`
 - **The reward is specific.** Not *exclusive offers*, not *great content*.
 - **The button says what happens.** *Send my code*, *Get the guide*, *Back to
   my basket* — never *Submit*.
+- **Success acknowledges the request.** *Request received* and *Thank you for
+  requesting the guide* describe a captured Lead. Do not promise subscription,
+  confirmation, a completed send or an inbox-arrival time; those depend on the
+  receiving service. A code actually shown in the success step may be described
+  as being here. Keep delivery setup prerequisites in `notes` (ADR 0073).
+- **Labels name the detail; examples help enter it.** Supply both through the
+  field's Slot Roles. A phone example includes the country code. Required
+  markers come from the renderer, not a second authored asterisk.
 - **Urgency is real or it is absent.** No invented stock counts, no
   unverifiable social proof.
 - **The `notes` field earns its place.** It is the one sentence explaining why
@@ -149,6 +157,12 @@ site-local. Where a design needs one, say so in `notes`:
 
 That is the same shape as the privacy link and the cart URL: the plugin
 resolves what it can and asks the merchant for what only they know.
+
+For a guide or emailed offer, name the remaining setup in plain words:
+*Configure a delivery destination and add the guide before publishing.* Do not
+imply that selecting the Playbook already does this. Updating shipped copy
+changes the examples and future drafts, never the saved copy in existing
+Optins. The success-text inspector explains this boundary for merchant edits.
 
 ## Before opening a PR
 

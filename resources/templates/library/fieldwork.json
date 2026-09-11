@@ -114,7 +114,7 @@
                 "id": "n8",
                 "role": "fine_print",
                 "size": "s",
-                "text": "We will email your code \u2014 no newsletter unless you choose it.\nFirst order only. Excludes gift cards."
+                "text": "Your code is shown after you submit.\nFirst order only. Excludes gift cards."
               }
             ]
           }
@@ -175,7 +175,7 @@
                 "type": "text",
                 "id": "n13",
                 "role": "success_body",
-                "text": "Take %b your first order. Your code is here, and a copy is on its way to your inbox.",
+                "text": "We have received your details. Take %b your first order with the code below.",
                 "emphasis": "10% off"
               },
               {

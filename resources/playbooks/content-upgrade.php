@@ -30,15 +30,15 @@ return [
     'name' => __('The download for this article', 'wconvert'),
     'goal' => 'deliver_lead_magnet',
     'template_id' => 'inline-split',
-    'notes' => __('A resource that belongs to one article, offered inside it — the checklist for this guide rather than a general ebook. That is what makes it convert: the reader is already interested in exactly this. Place the block partway through the post, and narrow the targeting to the posts the resource actually fits.', 'wconvert'),
+    'notes' => __('A resource that belongs to one article, offered inside it. Place the block partway through the post and target the posts the resource fits. Configure a delivery destination and add the checklist before publishing.', 'wconvert'),
     'copy' => [
         'headline' => __('Take the checklist with you', 'wconvert'),
         'body' => __('Everything on this page as a one-page PDF you can work through.', 'wconvert'),
         'email_label' => __('Email address', 'wconvert'),
         'email_placeholder' => __('you@example.com', 'wconvert'),
         'cta_label' => __('Email me the checklist', 'wconvert'),
-        'success_headline' => __('On its way', 'wconvert'),
-        'success_body' => __('Check your inbox. It should land in a minute or two.', 'wconvert'),
+        'success_headline' => __('Request received', 'wconvert'),
+        'success_body' => __('Thank you. We have received your request for the checklist.', 'wconvert'),
     ],
     'rules' => [
         ['type' => 'page_load'],
