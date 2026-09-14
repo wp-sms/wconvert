@@ -658,10 +658,13 @@ describe('the tree’s override count', () => {
 
     // Two at full width and one more at narrow, which is also the payload's
     // shape.
-    expect(boxes[0]).toHaveTextContent('Styles: 2 desktop · 1 mobile');
-    expect((boxes[0] as HTMLElement).querySelector('[title]')).toBeNull();
+    expect(boxes[0]).toHaveTextContent('2+1');
+    expect(
+      within(boxes[0] as HTMLElement).getByTitle(/sets 2 thing/),
+      'the count carries its own sentence, because a bare number is a number',
+    ).toBeInTheDocument();
     // And a box that sets nothing draws no chip at all, rather than a zero.
-    expect(within(boxes[1] as HTMLElement).queryByText(/Styles:/)).toBeNull();
+    expect(within(boxes[1] as HTMLElement).queryByTitle(/sets \d/)).toBeNull();
   });
 });
 

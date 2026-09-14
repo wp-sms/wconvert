@@ -259,32 +259,119 @@ export function BlockRow({
                 </span>
               )}
 
-              {/* Status labels explain themselves without interrupting row browsing on hover. */}
+              {/*
+                ================================================================
+                TWO CHIPS, AND NEITHER IS DECORATION.
+                ================================================================
+                **counted** marks the one block this Optin's numbers depend on.
+                It is said once in the status line and then forgotten, and
+                deleting it leaves an Optin that renders, publishes and reports
+                zero forever (ADR 0020) — a list of blocks that does not point
+                at it is a list missing its most important row.
+
+                **words will be lost** is the sharp version of a limit that is
+                otherwise invisible until the fourth template. Slot Roles are a
+                closed list of thirteen, unique across the tree, so there is
+                exactly one fillable body slot — and a block that got none has
+                no seam for its words to travel on. The merchant can type a
+                second paragraph, switch design, and find it gone.
+              */}
+              {/*
+                **`counted` alone is a word with no referent.** It is the only
+                chip in the admin naming a concept the merchant has not met — a
+                merchant reading it asks *"counted where? by what?"* — so the
+                sentence travels with it: as a `title` for a pointer and in the
+                accessibility tree for everyone else. The chip stays two
+                syllables because it is on every row of a list that is read by
+                scanning.
+              */}
               {isConvertingAct(block) && (
-                <span className="wconvert-block__chip wconvert-block__chip--counted">
-                  {__('Counts conversions', 'wconvert')}
+                <span
+                  className="wconvert-block__chip wconvert-block__chip--counted"
+                  title={__('This Optin’s conversions are counted on this block.', 'wconvert')}
+                >
+                  {__('counted', 'wconvert')}
                   <span className="sr-only">
                     {' '}
                     {__('— this Optin’s conversions are counted on this block.', 'wconvert')}
                   </span>
                 </span>
               )}
-              {(block.sets > 0 || block.setsNarrow > 0) && (
-                <span className="wconvert-block__chip wconvert-block__chip--sets">
-                  {sprintf(
-                    /* translators: 1: desktop style setting count. 2: mobile override count. */
-                    __('Styles: %1$d desktop · %2$d mobile', 'wconvert'),
-                    block.sets,
-                    block.setsNarrow,
-                  )}
+              {/*
+                **The same treatment `counted` gets, and it was missing for the
+                same reason it was needed.** *words will be lost* names a
+                mechanism a merchant has never met — Slot Roles are the seam
+                copy travels on and nothing on this screen says the word — so
+                four syllables on a row read as a warning with no subject. The
+                chip stays four words because it is on every row of a list read
+                by scanning; the sentence travels beside it, as a `title` for a
+                pointer and in the accessibility tree for everyone else.
+              */}
+              {/*
+                ================================================================
+                A RESTYLED BOX LOOKS EXACTLY LIKE AN UNTOUCHED ONE OTHERWISE.
+                ================================================================
+                A bag applies to a box and everything inside it (ADR 0062), and
+                nothing about a row said which boxes carried one — so after
+                restyling a design box by box, finding the nine tokens set on
+                the second panel meant selecting every panel and reading the
+                reset buttons.
+
+                **A count and not a dot**, because the number is the fact a
+                merchant acts on: *nine* says this box is where the design's
+                look actually lives, and *one* says somebody nudged a padding.
+                `9+2` is nine at full width and two more at narrow (ADR 0064),
+                which is also the payload's shape.
+              */}
+              {block.sets > 0 && (
+                <span
+                  className="wconvert-block__chip wconvert-block__chip--sets"
+                  title={
+                    block.setsNarrow > 0
+                      ? sprintf(
+                          /* translators: 1: how many style settings this block carries. 2: how many more it carries for narrow widths. */
+                          __(
+                            'This block sets %1$d thing(s) about how it and everything inside it looks, and %2$d more when the design is narrow.',
+                            'wconvert',
+                          ),
+                          block.sets,
+                          block.setsNarrow,
+                        )
+                      : sprintf(
+                          /* translators: %d: how many style settings this block carries. */
+                          __(
+                            'This block sets %d thing(s) about how it and everything inside it looks.',
+                            'wconvert',
+                          ),
+                          block.sets,
+                        )
+                  }
+                >
+                  {block.setsNarrow > 0
+                    ? sprintf(
+                        /* translators: 1: a count of style settings. 2: a count of extra settings for narrow widths. Kept as digits because it is on every row of a scanned list. */
+                        __('%1$d+%2$d', 'wconvert'),
+                        block.sets,
+                        block.setsNarrow,
+                      )
+                    : String(block.sets)}
                 </span>
               )}
               {losesWordsOnSwitch(block) && (
-                <span className="wconvert-block__chip wconvert-block__chip--warn">
-                  {__('Text stays in this design', 'wconvert')}
+                <span
+                  className="wconvert-block__chip wconvert-block__chip--warn"
+                  title={__(
+                    'This block has no Slot Role, so what you type in it is dropped when you switch design.',
+                    'wconvert',
+                  )}
+                >
+                  {__('words will be lost', 'wconvert')}
                   <span className="sr-only">
                     {' '}
-                    {__('— this text will not carry over when you choose another design.', 'wconvert')}
+                    {__(
+                      '— this block has no Slot Role, so what you type in it is dropped when you switch design.',
+                      'wconvert',
+                    )}
                   </span>
                 </span>
               )}

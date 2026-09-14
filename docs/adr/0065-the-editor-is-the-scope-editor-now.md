@@ -174,13 +174,6 @@ because the number is the fact a merchant acts on: *nine* says this box is where
 the design's look lives and *one* says somebody nudged a padding. `9+2` is nine
 at full width and two more at narrow, which is also the payload's shape.
 
-Amended 14 September 2026: Layers status badges no longer show native hover
-messages. The style count now names desktop and mobile explicitly instead of
-`9+2`; conversion and text-transfer badges use self-explanatory wording. Their
-accessible descriptions remain available. This removes repeated hover
-interruptions without hiding warnings. See the
-[follow-up review](../reviews/content-transfer-style-controls-2026-09-14.md).
-
 ## The look, measured rather than eyeballed
 
 Everything above is behaviour. This is the pass over density and type against
