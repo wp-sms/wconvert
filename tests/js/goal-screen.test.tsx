@@ -15,6 +15,8 @@ import { ruleTypes } from './support/rule-types';
  * the Goal.** Browsing reads only. Customize creates a draft and opens the editor directly.
  */
 const goals = vi.hoisted(() => ({ listGoals: vi.fn(), listPlaybooks: vi.fn(), prefill: vi.fn() }));
+const catalog = vi.hoisted(() => ({ catalogStatus: vi.fn(), previewPack: vi.fn(), installPack: vi.fn(), refreshCatalog: vi.fn() }));
+vi.mock('../../resources/admin/src/templates/catalog', () => catalog);
 const optins = vi.hoisted(() => ({ createOptin: vi.fn() }));
 const rules = vi.hoisted(() => ({ getRules: vi.fn() }));
 
@@ -388,4 +390,41 @@ describe('a goal then a draft', () => {
     expect(await screen.findByText('Inside the page')).toBeInTheDocument();
     expect(screen.getByText('Add its block or shortcode to the page where it should appear.')).toBeInTheDocument();
   });
+});
+
+
+it('filters installed starting points by collection and creates only the chosen prepared draft', async () => {
+  const downloaded = { ...PLAYBOOK, id: 'pack-hash-welcome', collection: { id: 'store', name: 'Store collection', version: '1.1.0' } };
+  goals.listPlaybooks.mockResolvedValue([PLAYBOOK, downloaded]);
+  render(<GoalScreen onCreated={vi.fn()} />);
+  await pickGoal();
+  await screen.findByText('Store collection', { selector: 'option' });
+  await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Collection' }), 'store');
+  expect(screen.getAllByRole('button', { name: 'Customize this starting point' })).toHaveLength(1);
+  expect(goals.prefill).not.toHaveBeenCalled();
+  expect(optins.createOptin).not.toHaveBeenCalled();
+  await customize();
+  await waitFor(() => expect(goals.prefill).toHaveBeenCalledWith(GOALS[0].id, downloaded.id));
+  expect(optins.createOptin).toHaveBeenCalledWith(DRAFT.name, DRAFT.goal, DRAFT.config);
+});
+
+it('installs a pack from creation, then returns to its starting points without creating a draft', async () => {
+  const pack = { id: 'store', name: 'Store collection', description: 'Store starts', version: '1.1.0', installed_version: null, state: 'available' };
+  const status = { configured: true, source: 'https://example.org/catalog', checked_at: null, packs: [pack] };
+  catalog.catalogStatus.mockResolvedValue(status);
+  catalog.previewPack.mockResolvedValue({ id: 'store', name: pack.name, version: pack.version, digest: 'abc', templates: [{ ...PLAYBOOK.template, id: 'pack-design', name: 'Welcome design', display_type: 'popup' }], starting_points: [{ id: 'pack-start', name: 'Welcome discount', goal: GOALS[0].id, goal_label: GOALS[0].label, template_id: 'pack-design' }] });
+  catalog.installPack.mockResolvedValue({ ...status, packs: [{ ...pack, installed_version: '1.1.0', state: 'installed' }] });
+  goals.listPlaybooks.mockResolvedValueOnce([PLAYBOOK]).mockResolvedValue([{ ...PLAYBOOK, id: 'pack-start', collection: { id: 'store', name: pack.name, version: pack.version } }]);
+  render(<GoalScreen onCreated={vi.fn()} />);
+  await pickGoal();
+  await userEvent.click(await screen.findByRole('button', { name: 'Browse template packs' }));
+  await userEvent.click(await screen.findByRole('button', { name: 'Preview Store collection' }));
+  await userEvent.click(await screen.findByRole('button', { name: 'Install pack' }));
+  await userEvent.click(await screen.findByRole('button', { name: 'Choose a starting point' }));
+  await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+  expect(screen.getByRole('combobox', { name: 'Collection' })).toHaveValue('store');
+  expect(screen.getByRole('combobox', { name: 'Collection' })).toHaveFocus();
+  await screen.findByRole('button', { name: 'Customize this starting point' });
+  expect(optins.createOptin).not.toHaveBeenCalled();
+  expect(goals.prefill).not.toHaveBeenCalled();
 });

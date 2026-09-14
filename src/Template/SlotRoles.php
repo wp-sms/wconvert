@@ -242,7 +242,7 @@ final class SlotRoles
      * @param array<string, mixed> $node
      * @return array<string, list<string>>
      */
-    private static function bindingsOf(array $node, TemplateVocabulary $vocabulary): array
+    public static function bindingsOf(array $node, TemplateVocabulary $vocabulary): array
     {
         $type = is_string($node['type'] ?? null) ? $node['type'] : '';
         $keys = $vocabulary->copyKeysOf($type);

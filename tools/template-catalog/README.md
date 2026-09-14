@@ -19,13 +19,15 @@ These are ten existing Free designs, packaged unchanged. They remain bundled;
 installing a collection adds separate versioned copies, not new compositions.
 The membership is intentionally smaller than the twelve flagship Playbooks:
 cart behaviour belongs to a campaign setup, and Photo offer contains embedded
-artwork that the placeholder-only installer refuses. Packs contain designs and
-sample copy, not campaign targeting, destinations or fulfilment configuration.
+artwork that the placeholder-only installer refuses. The 1.1.0 packs also include
+ten reviewed campaign starting points with wording, portable display rules and
+setup notes. Real codes, schedules, destination bindings and fulfilment remain
+the merchant's settings.
 
 ## Build and release
 
 `collections.json` is the membership/version/compatibility definition. Each
-source fingerprint pins the reviewed JSON bytes; the design itself stays in
+source fingerprint pins the reviewed design JSON or bundled Playbook PHP bytes; the design itself stays in
 `resources/templates/library/`. The builder refuses a changed source, duplicate
 membership, incompatible pack or replacement of an existing release file with
 different bytes. It also enforces the catalog's 20-collection limit and unique
@@ -58,10 +60,15 @@ and offline previews still work. The builder never deletes previous packages.
 
 ## Use and verify
 
-Open a draft, choose **Change template → Template packs → Check catalog**.
-Preview a collection, inspect designs/screens at desktop or 320px, then install.
-**Preview and use this design** returns to the existing keep/sample-content
-preview. It respects the draft's display format and existing compatibility rules.
+For a new campaign, choose a goal, then **Browse template packs**. Preview and
+install a collection, choose its starting points, then **Customize this starting
+point** to create a draft. The collection filter distinguishes installed starts
+from those included with WConvert. Previewing/installing never creates a draft.
+
+For a design change, open a draft and choose **Change template → Template packs
+→ Check for packs**. Preview a collection, inspect designs/screens at desktop or
+320px, then install. **Continue with this design** opens the keep/sample-content
+review. It respects the draft's display format and existing compatibility rules.
 Before publishing, replace sample copy, codes, destinations and resource URLs,
 and configure real consent, schedules and delivery where required.
 
@@ -87,3 +94,10 @@ unchanged.
 Installed JSON lives in uploads/wconvert-template-packs. Back it up with the
 site. The archive is capped at 128 files; refresh never deletes old baselines.
 No media or remotely supplied code is installed.
+
+Campaign-start contract: optional `playbooks` (1–12 entries) requires
+`campaign-starts:1`. Each entry has `id`, `name`, `goal`, same-pack `template_id`,
+`copy`, `rules`, and optional `targeting`, `destination_hint`, `notes`. See
+[ADR 0083](../../docs/adr/0083-installed-packs-supply-campaign-starting-points.md)
+for supported rule values and the strict import boundary. Old design-only
+packages remain valid; changing a Playbook requires a new package version.

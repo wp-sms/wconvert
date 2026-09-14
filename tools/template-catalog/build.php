@@ -64,6 +64,19 @@ try {
         $pack = ['schema' => 1, 'id' => $collection['id'], 'version' => $collection['version'],
             'name' => $collection['name'], 'description' => $collection['description'],
             'requires' => $collection['requires'], 'assets' => [], 'templates' => $templates];
+        if (isset($collection['playbooks'])) {
+            $pack['playbooks'] = [];
+            foreach ($collection['playbooks'] as $id => $digest) {
+                if (!PackValidator::identifier($id)) throw new RuntimeException('Invalid starting point: ' . $id);
+                $file = $root . '/resources/playbooks/' . $id . '.php';
+                if (!is_readable($file) || !hash_equals($digest, hash_file('sha256', $file))) {
+                    throw new RuntimeException('Reviewed starting point changed: ' . $id . '. Review it, update its fingerprint and bump the collection version.');
+                }
+                $entry = require $file; // Bundled authoring source only; downloads remain JSON.
+                if (!is_array($entry) || ($entry['id'] ?? null) !== $id) throw new RuntimeException('Starting-point filename and identity differ: ' . $id);
+                $pack['playbooks'][] = $entry;
+            }
+        }
         $json = encode($pack);
         $validator->decode($json); // The shipping installer is the compatibility gate.
         if (isset($packIds[$pack['id']])) throw new RuntimeException('Repeated collection: ' . $pack['id']);

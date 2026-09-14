@@ -53,6 +53,25 @@ final class InstalledPacks implements TemplateSource
         return $entries;
     }
 
+    /** Only the newest installed release offers new campaign starts.
+     * @return list<array<string, mixed>>
+     */
+    public function playbooks(): array
+    {
+        $seen = []; $entries = [];
+        foreach ($this->packs() as $pack) {
+            if (isset($seen[$pack['id']])) continue;
+            $seen[$pack['id']] = true;
+            foreach ($pack['playbooks'] ?? [] as $entry) {
+                $entry['id'] = self::designId($pack, $entry['id']);
+                $entry['template_id'] = self::designId($pack, $entry['template_id']);
+                $entry['collection'] = ['id' => $pack['id'], 'name' => $pack['name'], 'version' => $pack['version']];
+                $entries[] = $entry;
+            }
+        }
+        return $entries;
+    }
+
     /** @param array<string, mixed> $pack */
     public static function designId(array $pack, string $id): string
     {

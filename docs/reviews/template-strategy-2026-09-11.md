@@ -13,8 +13,10 @@ describe the earlier audits. **The flagship collection is merged in PR #152.** T
 installation slice is implemented under ADR 0082: explicit browse/preview/install,
 strict compatibility/import checks and offline copies. PR #153 is merged; the
 [first three curated packs](curated-template-collections-2026-09-14.md) package
-ten existing designs for local use. Production catalog hosting,
-downloaded Playbooks, paid fetching and media installation remain subsequent work.
+ten existing designs for local use (merged in PR #154). Downloaded Playbooks are
+now implemented under [ADR 0083](../adr/0083-installed-packs-supply-campaign-starting-points.md),
+with verification in [the campaign-start report](catalog-campaign-starts-2026-09-14.md).
+Production catalog hosting, paid fetching and media installation remain subsequent work.
 
 **Agreed direction**
 

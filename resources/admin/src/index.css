@@ -6220,3 +6220,9 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
   .wconvert-pack-detail__next { flex-direction: column; align-items: stretch; gap: 0.625rem; }
   .wconvert-pack-detail__footer { padding: 0.75rem; }
 }
+
+.wconvert-pack-detail__starts { margin-block-end: 0.625rem; font-size: var(--text-note); }
+.wconvert-pack-detail__starts summary { cursor: pointer; color: var(--foreground); }
+.wconvert-pack-detail__starts[open] { max-block-size: 9rem; overflow-y: auto; }
+.wconvert-pack-detail__starts ul { padding-inline-start: 1.25rem; margin-block: 0.5rem; }
+.wconvert-pack-detail__starts p { margin: 0; color: var(--muted-foreground); }

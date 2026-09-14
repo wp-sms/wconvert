@@ -24,8 +24,9 @@ sample reused Reading slip, Callback notes and A useful little guide. The
 now package ten existing reviewed designs into three collections. Source JSON
 fingerprints pin the review; the build validates packages and preserves existing
 release files. Old installed samples remain usable. Goal-first creation and
-Playbook copy/rules remain bundled. Downloaded Playbooks, paid fetch entitlement and media installation are
-subsequent slices; unsupported packs explain their limitation.
+Playbook copy/rules remain bundled. Downloaded Playbooks now join the existing creation flow under
+[ADR 0083](0083-installed-packs-supply-campaign-starting-points.md). Paid fetch
+entitlement and media installation remain subsequent slices; unsupported packs explain their limitation.
 
 ## Download and validation
 

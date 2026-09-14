@@ -834,8 +834,10 @@ configured catalog. The first format supports Free popup/inline designs with
 placeholders. It supplies no renderer code or site-local destinations. Installed
 versions remain local and retain source baselines; updates affect the library
 for future choices, never existing Optin snapshots. Browsing and installation
-live in the design picker; Playbooks and their Goal-first creation flow remain
-separate. See [ADR 0082](docs/adr/0082-template-packs-install-as-validated-local-data.md).
+live in the design picker and the Goal-first creation flow. Packs may also carry
+validated Playbooks: their wording and rules enter the existing Prefill path;
+installing one creates no Optin. See [ADR 0082](docs/adr/0082-template-packs-install-as-validated-local-data.md)
+and [ADR 0083](docs/adr/0083-installed-packs-supply-campaign-starting-points.md).
 
 ### Starting point
 

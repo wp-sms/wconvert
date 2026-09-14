@@ -102,6 +102,7 @@ export interface PlaybookEntry {
   notes: string;
   /** Optional editorial recommendation; never a Goal or design restriction. */
   recommendation?: string;
+  collection?: { id: string; name: string; version: string };
   /**
    * **The design this Playbook would prefill, with its words already in it.**
    *

@@ -21,6 +21,7 @@ export interface PackPreview {
   version: string;
   digest: string;
   templates: TemplateEntry[];
+  starting_points?: { id: string; name: string; goal: string; goal_label: string; template_id: string }[];
 }
 const path = '/wconvert/v1/template-catalog';
 export const catalogStatus = () => apiFetch<CatalogStatus>({ path });
