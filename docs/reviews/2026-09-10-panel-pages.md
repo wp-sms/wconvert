@@ -45,9 +45,16 @@ were cancelled and the stored value verified. No schema or field type changed.
 
 ## Next product check
 
-Walk one representative offer through choosing a design, changing its copy,
+Completed in subsequent work: the [lead journey](2026-09-11-lead-journey-qa.md)
+verified actual capture, queued MailPoet acceptance and local mail transport;
+the [library review](template-library-curation-2026-09-11.md) checked newsletter,
+coupon, resource and callback visitor flows. External inbox receipt, physical
+devices and complete accessibility certification were not established. The
+[audit closeout](audit-closeout-2026-09-14.md) separates those limits from open work.
+
+The original next-check brief was: walk one representative offer through choosing a design, changing its copy,
 choosing where it appears, collecting a test Lead and confirming delivery in a
 named receiving service. This requires a designated test recipient before the
 send. Broader Browse designs comparison, field capabilities, template fidelity
-and manifest improvements remain separate work described in the merchant
-journey review; this panel pass does not claim to complete them.
+and manifest improvements were excluded from this historical panel pass; their
+subsequent completion is recorded in the audit closeout above.

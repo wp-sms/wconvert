@@ -20,7 +20,8 @@ contract rejects. Cart setup is not represented as a downloadable design feature
 The original installer sample stops appearing in a freshly built index, but its
 existing installed copy and source baselines remain available. Bundled designs
 remain available too; installing a collection adds independent versioned copies.
-This release packages designs, not the associated Playbook targeting/setup.
+This initial 1.0.0 release packaged designs only. The subsequent 1.1.0 packs
+also supply ten Playbooks and their setup under ADR 0083 / PR #155.
 
 ## Verification
 
@@ -54,10 +55,11 @@ PHPStan pass; the generated package bytes are unchanged by these build fixes.
 
 ## Next
 
-Review and merge the collection build, then upload its generated static JSON to
-the chosen HTTPS catalog host when available. Keep the local source meanwhile.
-Paid packs, media installation and downloadable campaign setups remain separate
-slices. Add new compositions only when a useful gap is identified.
+The collection build is merged in PR #154 and downloadable campaign setups
+in PR #155. Keep the local source as requested. Production hosting, paid packs
+and media installation remain deferred; they are not needed to finish the local
+installation flow. Add new compositions only when a useful gap is identified.
+See the [audit closeout](audit-closeout-2026-09-14.md) for current priorities.
 
 ## Pack-panel scrolling follow-up
 

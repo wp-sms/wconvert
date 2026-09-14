@@ -14,6 +14,8 @@ contained them ([ADR 0014](docs/adr/0014-pro-replaces-the-loader.md),
 
 Read [`CONTEXT.md`](CONTEXT.md) before using any domain term.
 
+Planned follow-ups and deferred work: [Product todo list](docs/TODO.md).
+
 ## The free/Pro boundary
 
 The dependency runs one way and only one way:

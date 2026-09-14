@@ -2,7 +2,10 @@
 
 The layer foundation is worth keeping. It already has structural guards, direct selection, keyboard navigation, sibling dragging, duplication and draft Undo. The weaknesses were discoverability, placement clarity and the control surfaces carried over from the earlier editor. This pass improves those surfaces without turning the Optin editor into a page builder.
 
-> Current follow-up: [compact menus, Starting points and italic](editor-followup-2026-09-11.md) refines the initial implementation below.
+> Current status: [compact menus, Starting points and italic](editor-followup-2026-09-11.md),
+> ADR 0080's image focus/split swapping, and PR #156's
+> [picture transfer and style controls](content-transfer-style-controls-2026-09-14.md)
+> complete the subsequent editor passes. See the [audit closeout](audit-closeout-2026-09-14.md).
 
 ## Findings and changes
 
@@ -30,7 +33,8 @@ The layer foundation is worth keeping. It already has structural guards, direct 
 - Arrow keys, Home/End, row action buttons and Alt+Up/Down remain the keyboard routes. Dragging is an additional sibling reorder route.
 - Selection, insertion, deletion, duplication and ordering continue to use the existing tree and whole-draft history. No new stored identifiers or layout model were added.
 
-The largest remaining capability gap is moving an existing element between containers. That should be a deliberate **Move to…** target picker first, then a matching drag destination. It needs cycle prevention, destination validation, empty-container targets, focus restoration and an undoable transaction. Arbitrary nested dragging without those rules would make the editor less predictable.
+Moving an existing element between containers remains an optional capability,
+explicitly deferred by the user. If later justified, it should use a deliberate **Move to…** target picker first, then a matching drag destination. It needs cycle prevention, destination validation, empty-container targets, focus restoration and an undoable transaction. Arbitrary nested dragging without those rules would make the editor less predictable.
 
 Other worthwhile follow-ups are multi-selection for repetitive actions, a compact layer-search mode for very large templates, and visual per-device visibility indicators. These are additional features, not required to repair insertion and the current controls.
 
@@ -38,13 +42,13 @@ Other worthwhile follow-ups are multi-selection for repetitive actions, a compac
 
 | Control | Audit and direction |
 | --- | --- |
-| Length, spacing and size | Keep the existing numeric amount + explicit unit + slider where its scale fits. Custom expressions remain an escape. Three/four-value spacing could later gain a linked-sides control. |
+| Length, spacing and size | Keep the existing numeric amount + explicit unit + slider where its scale fits. Custom expressions remain an escape. Completed in PR #156: one-to-four-value padding has linked/individual sides; expressions remain in Custom CSS. |
 | Choice controls | Keep small sets as labeled choices and longer lists searchable. Shadow samples now make their effect visible before selection. |
-| Images and backgrounds | Keep the existing media-library route and current asset feedback. A focal-point control would help image-heavy layouts, but needs an explicit renderer parameter. |
+| Images and backgrounds | Keep the existing media-library route and current asset feedback. Completed under ADR 0080: nine-position/custom Picture focus and independent mobile focus use the existing `image-position` token. |
 | Icons | Existing visual glyph choices are suitable for the small vocabulary. Add search/categories only if that vocabulary grows. |
 | Capture fields | Choose Email, Name, Phone number or Interest explicitly at insertion. Labels, required state and interest options remain in the selected field inspector. |
 | Countdown | Keep its deadline linked to the Optin schedule, with the existing route to that setting; adding a second deadline would create conflicting sources. |
-| Inheritance and phone overrides | Preserve reset-to-inherited behavior and the existing phone scope. A clearer summary of which values are overridden is a useful follow-up. |
+| Inheritance and phone overrides | Preserve reset-to-inherited behavior and the existing phone scope. Completed in PR #156: local mobile overrides are listed, differing values are marked on desktop, and scoped reset preserves desktop/descendant settings. |
 
 ## Google Fonts
 
@@ -58,8 +62,8 @@ Sources: [WordPress Font Library](https://wordpress.org/documentation/article/th
 
 | Option | Fit for this product |
 | --- | --- |
-| Selection toolbar over the existing sentence | Implemented. Small, predictable, no new renderer format; supports the one bold phrase and one link already declared. |
-| Inline WYSIWYG using a rich-text engine | A possible next step if multiple independent links/emphasis ranges, italic or lists are needed. Requires a structured run model, renderer/normalizer changes and paste/history handling. |
+| Selection toolbar over the existing sentence | Implemented. Small, predictable, no new renderer format; supports one phrase each for Bold, Italic and Link, plus Clear formatting. |
+| Inline WYSIWYG using a rich-text engine | A possible next step if multiple independent links/emphasis ranges or lists are needed. A richer engine would require a structured run model, renderer/normalizer changes and paste/history handling. Italic and Clear formatting already work in the existing sentence model. |
 | Full document editor | Too broad for short Optin copy and the existing constrained template model. |
 
 The implemented editor is a textarea plus a formatting preview, not direct canvas typing. It intentionally makes the present capabilities easier to use. Repeated legacy placeholders retain their explicit fields to avoid loss of structure. Headings use their own text and typography controls.

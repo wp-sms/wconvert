@@ -276,8 +276,10 @@ session and published version. They do not promise anonymous-visitor visibility.
 Phase 3 adds addressable editor URLs and preserves the originating report or
 capture filters. Dirty/busy navigation is guarded, including when an open editor
 is narrowed below its working width. Phase 4 clarifies schedule timezone and
-ended-status labels. A visual draft/live comparison, richer provider checks and
-Goal-specific promised-outcome checks remain follow-ups.
+ended-status labels. Provider requirements and shared-usage checks were then
+completed in Phase 5. A visual draft/live comparison and context-aware offer
+setup reminders remain proposals; they must not assume every local-only capture
+is incomplete. See the [audit closeout](audit-closeout-2026-09-14.md).
 
 Sources: [list actions](../../resources/admin/src/optins/OptinList.tsx),
 [snapshot publishing](../../src/Optin/OptinRepository.php),
@@ -332,8 +334,8 @@ with the published-binding and last-success scope stated explicitly. It can
 replay already successful sends and is not restricted to the skipped count.
 Terminal failures name the Destination and link to that route and the exact
 capture; removed references have explicit missing states. The ring remains
-bounded diagnostics, not a complete per-Lead delivery ledger. Showing Optin
-usage before shared settings are changed remains a useful follow-up.
+bounded diagnostics, not a complete per-Lead delivery ledger. Phase 5 completed
+shared-setting usage: saved and live Optins appear before editing the route.
 
 **Testing asks:** “Who receives this test, and what does it prove?”
 **Delivered in Phase 3:** Send a test opens a form showing the saved named route,
@@ -378,7 +380,8 @@ tree just to determine which filters apply.
 
 Today [CaptureForm](../../src/Lead/CaptureForm.php) validates the published form
 and requires an email or phone identifier; [CanonicalFields](../../src/Destination/CanonicalFields.php)
-forwards only email, phone and name. A new input is incomplete until renderer,
+now also forwards the stable `interest` answer (ADR 0076). That later slice
+completed the choice-field path described here. A further new input is incomplete until renderer,
 server validation, log/export, test push and supported adapters agree on it.
 Use the existing fields JSON where appropriate; propose any table/column change
 separately for explicit sign-off. Keep authoring metadata out of visitor payloads.
@@ -497,12 +500,12 @@ deleted; the original six visible Optins and their publication states remained.
 No test capture, provider send, re-push or page placement was performed. Browser
 viewport overrides were reset after the responsive checks.
 
-Provider-owned required capture/settings metadata is still deferred. This phase
-cannot prove that a form's fields meet every adapter's requirements, that an
-audience or file is correctly configured, or that a successful promotion produces
-a delivered message. The next handoff slice should establish that metadata and
-then verify one deliberate capture against a named provider and recipient before
-extending the capture-field format.
+Provider-owned required capture/settings metadata was deferred at this phase
+and subsequently completed in [Phase 5](#phase-5-remainder--editor-qualification-and-destination-contracts)
+under ADR 0074. That later section and the lead-journey report record the
+implemented requirements and deliberate provider verification. The Phase 2
+checks alone did not establish adapter compatibility or delivery; even current
+publish checks do not prove an audience/file is correct or a message arrives.
 
 ## Phase 3 delivered implementation
 

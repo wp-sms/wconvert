@@ -5,8 +5,10 @@ The preview-width repair and corrections to outdated authoring instructions are
 implemented in this review. A subsequent pass implements the four reading-page
 improvements described in [ADR 0068](../adr/0068-reading-pages-put-results-and-routes-before-occasional-settings.md): Optin search
 and filters, reports with daily charts, readable capture details, compact route
-settings and saved-state disclosures. Other recommendations below remain
-proposed.
+settings and saved-state disclosures. Subsequent Phases 1–5, template curation
+and PR #156 implement most recommendations below. Treat the findings as the
+September 10 baseline; the [audit closeout](audit-closeout-2026-09-14.md) records
+current completion and the remaining proposals.
 The domain docs also clarify that a stored capture does not establish a
 Contact's subscription status; this preserves the existing ownership boundary.
 
@@ -46,8 +48,9 @@ The [domain model](../../CONTEXT.md) makes the boundaries concrete:
 - A design offers one converting act. Existing click-through offers remain part
   of the product even though they do not create Leads.
 - Saving and publishing remain separate snapshots. The requested warning and
-  Undo for template switching are sufficient for now; choosing how to merge
-  sample and merchant content stays deferred.
+  Undo for template switching were the initial boundary. Keep my content and
+  Use sample content are now implemented under ADR 0075, with picture matching
+  and pre-Apply notices under ADR 0084. Arbitrary content merging is not implied.
 
 The plumber example is therefore an optional lead-qualification use case, not
 a decision to build enquiry management or add another Goal.
@@ -67,9 +70,10 @@ a decision to build enquiry management or add another Goal.
 | Destination management | Every destination opens as a full settings form, with test, re-push and removal actions. Health is present. | Start with compact route summaries: name, target, health, where used. Expand settings on demand. Surface recovery when there is a failure and keep testing distinct from saving configuration. |
 | Analytics | “Nothing is live yet” appears alongside four impressions, while the list shows a published Optin. | Diagnose this inconsistency. The guidance reads a first-publish milestone; absence of that historical record is insufficient evidence that nothing is published. Do not repair it by inventing a date. |
 
-The Analytics observation is not yet a diagnosed defect with an established root
-cause. It may depend on how this development site's existing data was created.
-It still demonstrates a state the guidance should handle honestly.
+This historical Analytics observation is addressed by the later reading-page
+pass: milestone guidance now uses impression/conversion evidence and does not
+invent a first-publication date. See `tests/js/milestones.test.tsx`, including
+partial milestone history. It is no longer an outstanding audit defect.
 
 Other copy to review: incomplete “See our.” text when no policy link is
 available, sample claims such as a reader count, and the welcome-discount
@@ -94,22 +98,24 @@ Ask only for details the receiving workflow uses. This follows the
 [GOV.UK question guidance](https://design-system.service.gov.uk/patterns/question-pages/)
 and its guidance on [field errors](https://design-system.service.gov.uk/components/error-message/).
 
-A possible next addition is one short qualification choice. For example:
+The proposed short qualification choice is now implemented as `interest`
+under ADR 0076 and verified through MailPoet in the lead-journey report.
+The original recommendation was one short qualification choice. For example:
 “Interested in: installation / repair.” That is useful when the selected
 destination can receive it. A short message is another candidate, but it should
 be a bounded capture field whose text is handed off, not the start of a reply
 inbox inside WConvert. Neither addition needs to be mandatory on other forms.
 
-The current contract is intentionally small:
+The contract remains intentionally small. Updated inventory after ADR 0076:
 
-- The [manifest](../../resources/templates/manifest.json) offers email, phone
-  and name. The renderer supplies their HTML type and autocomplete attributes.
+- The [manifest](../../resources/templates/manifest.json) offers email, phone,
+  name and the bounded `interest` choice. Renderer behavior follows each kind.
 - [CaptureForm](../../src/Lead/CaptureForm.php) validates against the published
   design and requires at least an email or phone identifier.
-- Other scalar values can fit the existing `Lead.fields` JSON, but
-  [CanonicalFields](../../src/Destination/CanonicalFields.php) currently forwards
-  only email, phone and name. Merely adding an editor control would not deliver
-  a new field.
+- [CanonicalFields](../../src/Destination/CanonicalFields.php) exposes email,
+  phone, name and the stable interest value. Provider requirements describe which
+  details a route supports. Merely adding an editor control would not deliver
+  a further field.
 
 Before shipping another visitor field, carry one example through editor,
 preview, server validation, local Lead serialization, log/export, test send and
@@ -161,7 +167,11 @@ instructions had fallen behind the implementation: they still said there was
 no canvas, token bags were layout-only, and the narrow breakpoint was 360px.
 Those statements are corrected in this change to match ADRs 0064 and 0067.
 
-## Recommended implementation order
+## Original recommended implementation order
+
+The four steps below have delivered implementations and recorded QA. See the
+[audit closeout](audit-closeout-2026-09-14.md) for remaining limits; these steps
+must not be treated as a fresh backlog.
 
 **First: choose and connect with confidence.** Improve Browse designs with a
 large detail preview, understandable search and field summaries. Make destination
