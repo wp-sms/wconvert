@@ -19,7 +19,7 @@ final class PackValidator
 {
     public const MAX_BYTES = 262144;
     public const MAX_TEMPLATES = 12;
-    public const CAPABILITIES = ['template-tree:1', 'success-actions:1', 'enquiry-choice:1'];
+    public const CAPABILITIES = ['template-tree:1', 'success-actions:1', 'enquiry-choice:1', 'campaign-starts:1'];
 
     /** @param array<string, mixed> $manifest */
     public function __construct(private readonly array $manifest, private readonly TemplateVocabulary $vocabulary)
@@ -37,7 +37,7 @@ final class PackValidator
         self::check(strlen($json) <= self::MAX_BYTES, __('This pack is too large.', 'wconvert'));
         $pack = json_decode($json, true, 48);
         self::check(is_array($pack), __('This pack is not valid JSON.', 'wconvert'));
-        $this->keys($pack, ['schema', 'id', 'version', 'name', 'description', 'requires', 'assets', 'templates']);
+        $this->keys($pack, ['schema', 'id', 'version', 'name', 'description', 'requires', 'assets', 'templates', 'playbooks']);
         self::check(($pack['schema'] ?? null) === 1, __('Update required: this pack uses a newer format.', 'wconvert'));
         self::check(self::identifier($pack['id'] ?? null) && self::version($pack['version'] ?? null), __('This pack has an invalid identity.', 'wconvert'));
         $this->words($pack['name'] ?? null, 120);
@@ -90,6 +90,18 @@ final class PackValidator
             $pack['templates'][$position] = array_values($library->all())[0];
             $snapshot = ['tree' => $this->vocabulary->withoutCopy($tree), 'tokens' => $template['tokens'] ?? []];
             self::check(strlen((string) gzencode((string) json_encode($snapshot))) <= DesignBudget::PER_DESIGN, __('This design exceeds the size budget.', 'wconvert'));
+        }
+        if (array_key_exists('playbooks', $pack)) {
+            $requiredCapabilities[] = 'campaign-starts:1';
+            (new PackPlaybooks($this->vocabulary))->validate($pack);
+            // Copy must obey the same inert, placeholder-only import contract
+            // as design content, including after Slot Role binding.
+            foreach ($pack['playbooks'] as $playbook) {
+                $template = array_values(array_filter($pack['templates'], static fn (array $entry): bool => $entry['id'] === $playbook['template_id']))[0];
+                $tree = \WConvert\Template\SlotRoles::bind($template['tree'], $playbook['copy'], $this->vocabulary);
+                $nodeIds = []; $count = 0;
+                foreach ($tree['steps'] as $step) $this->node($step, 0, $nodeIds, $count, $requiredCapabilities);
+            }
         }
         self::check(array_diff(array_unique($requiredCapabilities), $capabilities) === [], __('This pack does not declare every capability its designs need.', 'wconvert'));
         return $pack;
@@ -168,7 +180,7 @@ final class PackValidator
     }
 
     /** @param mixed $value */
-    private function words($value, int $max): void
+    public static function words($value, int $max): void
     {
         self::check(is_string($value) && strlen($value) <= $max && !preg_match('/[<>\x00-\x08\x0b\x0c\x0e-\x1f]/', $value), __('This pack contains invalid text.', 'wconvert'));
     }
@@ -176,7 +188,7 @@ final class PackValidator
     /** @param array<mixed> $data
      * @param list<string> $allowed
      */
-    private function keys(array $data, array $allowed): void
+    public static function keys(array $data, array $allowed): void
     {
         self::check(array_diff(array_keys($data), $allowed) === [], __('Update required: this pack contains unsupported properties.', 'wconvert'));
     }

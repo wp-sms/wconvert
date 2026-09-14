@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { ArrowLeft, Sparkles } from 'lucide-react';
+import { Badge } from '../components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../components/ui/dialog';
+import { TemplatePacks } from '../templates/TemplatePacks';
 import { Button } from '../components/ui/button';
 import { ChoiceGrid, ChoiceSkeleton } from '../shell/ChoiceGrid';
 import { GallerySkeleton } from '../builder/Gallery';
@@ -30,6 +33,8 @@ export interface GoalScreenProps {
 export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScreenProps) {
   const editorFits = useBuilderViewport();
   const [goals, setGoals] = useState<Loadable<GoalEntry[]>>(LOADING);
+  const [packsOpen, setPacksOpen] = useState(false);
+  const [collectionId, setCollectionId] = useState('all');
   const [goal, setGoal] = useState<GoalEntry | null>(null);
   const [playbooks, setPlaybooks] = useState<Loadable<PlaybookEntry[]>>(LOADING);
   const [vocabulary, setVocabulary] = useState<Loadable<RuleVocabulary>>(LOADING);
@@ -91,6 +96,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
     if (busy.current) return;
     operation.current += 1;
     setGoal(chosen);
+    setCollectionId('all');
     setPlaybooks(LOADING);
     setError(null);
     setCreateUnconfirmed(false);
@@ -144,12 +150,35 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
     </Region>;
   }
 
-  const entries = playbooks.status === 'ready' ? playbooks.data : [];
+  const allEntries = playbooks.status === 'ready' ? playbooks.data : [];
+  const collections = new Map(allEntries.flatMap((entry) => entry.collection ? [[entry.collection.id, entry.collection.name] as const] : []));
+  const entries = allEntries.filter((entry) => collectionId === 'all' || (collectionId === 'bundled' ? !entry.collection : entry.collection?.id === collectionId));
   const singleStartingPoint = entries.length === 1;
   return <Region>
     <RegionHeader title={__('Choose a starting point', 'wconvert')}
       description={sprintf(__('For “%s”. Choose the offer and setup that fit, then make it yours in the editor.', 'wconvert'), goal.label)}
       trailing={<Step at={2} />} />
+    <RegionBody className="flex flex-wrap items-center justify-between gap-3">
+      <label className="flex items-center gap-2 text-note">{__('Collection', 'wconvert')}
+        <select value={collectionId} disabled={starting !== null} onChange={(event) => setCollectionId(event.target.value)}>
+          <option value="all">{__('All starting points', 'wconvert')}</option>
+          <option value="bundled">{__('Included with WConvert', 'wconvert')}</option>
+          {[...collections].map(([id, name]) => <option key={id} value={id}>{name}</option>)}
+          {collectionId !== 'all' && collectionId !== 'bundled' && !collections.has(collectionId) && <option value={collectionId}>{__('Selected pack', 'wconvert')}</option>}
+        </select>
+      </label>
+      <Button variant="outline" disabled={starting !== null} onClick={() => setPacksOpen(true)}>{__('Browse template packs', 'wconvert')}</Button>
+    </RegionBody>
+    <Dialog open={packsOpen} onOpenChange={setPacksOpen}>
+      <DialogContent className="wconvert-picker gap-0 overflow-hidden p-0 sm:max-w-[80rem]">
+        <DialogHeader className="wconvert-picker__header"><DialogTitle>{__('Template packs', 'wconvert')}</DialogTitle>
+          <DialogDescription className="sr-only">{__('Install collections of designs and campaign starting points.', 'wconvert')}</DialogDescription>
+        </DialogHeader>
+        <TemplatePacks displayType="" goal={goal.id}
+          onInstalled={async () => { setPlaybooksRetry((value) => value + 1); }}
+          onChooseStartingPoints={(id) => { setCollectionId(id); setPacksOpen(false); }} />
+      </DialogContent>
+    </Dialog>
     {!editorFits && <RegionBody><p className="m-0 text-note text-muted-foreground">
       {__('You can save a draft here. Open it on a wider screen to customize the design and publish.', 'wconvert')}
     </p></RegionBody>}
@@ -175,6 +204,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
           featured={singleStartingPoint}
           absent={playbook.template === undefined ? <p>{__('This design is not available on this site. Choose a design after opening the draft.', 'wconvert')}</p> : undefined}
           action={(describedBy) => <div className="flex w-full flex-col items-start gap-3">
+            {playbook.collection && <Badge variant="outline">{playbook.collection.name}</Badge>}
             {playbook.recommendation ? <p className="text-xs font-medium text-foreground">{playbook.recommendation}</p> : null}
             <StartingPointFacts playbook={playbook} goal={goal} vocabulary={vocabulary.status === 'ready' ? vocabulary.data : null} />
             {playbook.notes && <details className="text-note text-muted-foreground"><summary>{__('About this starting point', 'wconvert')}</summary><p className="mb-0">{playbook.notes}</p></details>}

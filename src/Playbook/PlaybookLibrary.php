@@ -33,10 +33,9 @@ defined('ABSPATH') || exit;
  * (ADR 0013). A Playbook is nothing but words and `wp i18n make-pot` cannot
  * see a JSON string, so a JSON bundled registry ships an English-only library;
  * remote entries stay JSON because remote PHP is Guideline 8 remote code
- * execution with no argument available. **The remote fetch is designed and not
- * built in v1** — a decoded remote entry is an array, so it enters through
- * {@see self::fromEntries()} exactly as a bundled one does, and what is
- * missing is the transport rather than a second normaliser.
+ * execution with no argument available. Installed JSON packs supply additional
+ * entries through {@see self::fromEntries()} after strict catalog validation
+ * (ADR 0083); the runtime reads local archives, never remote PHP.
  *
  * **The library carries no Availability of its own.** A Playbook serves one
  * Goal and the gallery is only ever reached *through* a Goal the merchant was
@@ -71,12 +70,15 @@ final class PlaybookLibrary
      * `__()`, so `wp i18n make-pot` can see them — which is the whole reason
      * bundled entries are PHP rather than the JSON a Template ships as
      * (ADR 0013).
+     *
+     * @param iterable<array<string, mixed>> $additional Validated installed entries.
      */
     public static function fromDirectory(
         TemplateLibrary $templates,
         TemplateVocabulary $vocabulary,
         RuleVocabulary $rules,
-        string $pluginDir = WCONVERT_DIR
+        string $pluginDir = WCONVERT_DIR,
+        iterable $additional = []
     ): self {
         $files = glob(rtrim($pluginDir, '/') . '/' . self::PATH . '/*.php');
         $entries = [];
@@ -89,6 +91,8 @@ final class PlaybookLibrary
                 $entries[] = $entry;
             }
         }
+
+        foreach ($additional as $entry) $entries[] = $entry;
 
         return self::fromEntries($entries, $templates, $vocabulary, $rules);
     }
@@ -174,7 +178,7 @@ final class PlaybookLibrary
      *
      * @param array<string, mixed> $entry
      */
-    private static function refuse(
+    public static function refuse(
         array $entry,
         TemplateLibrary $templates,
         TemplateVocabulary $vocabulary,
@@ -402,6 +406,7 @@ final class PlaybookLibrary
             is_array($entry['targeting'] ?? null) ? $entry['targeting'] : [],
             is_array($entry['destination_hint'] ?? null) ? $entry['destination_hint'] : [],
             is_string($entry['notes'] ?? null) ? $entry['notes'] : '',
+            is_array($entry['collection'] ?? null) ? $entry['collection'] : null,
         );
     }
 }

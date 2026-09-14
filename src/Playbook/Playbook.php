@@ -35,6 +35,7 @@ final class Playbook
      * @param array<string, mixed> $copy Slot Role => the words, as ADR 0013 shapes them.
      * @param list<array<string, mixed>> $rules The flat Trigger/Condition list, in the author's order.
      * @param array<string, mixed> $targeting
+     * @param array<string, string>|null $collection Installed source, for choosing between starts.
      * @param array<string, mixed> $destinationHint Destination TYPES and the Lead fields wanted — never ids.
      */
     public function __construct(
@@ -48,6 +49,7 @@ final class Playbook
         public readonly array $targeting = [],
         public readonly array $destinationHint = [],
         public readonly string $notes = '',
+        public readonly ?array $collection = null,
     ) {
     }
 
@@ -74,6 +76,7 @@ final class Playbook
             'targeting' => $this->targeting,
             'destination_hint' => $this->destinationHint,
             'notes' => $this->notes,
+            ...($this->collection === null ? [] : ['collection' => $this->collection]),
         ];
     }
 }

@@ -87,6 +87,19 @@ final class CuratedCollectionsTest extends TestCase
                 $installedDraft = $library->snapshotInto(['template_id' => $template['id'], 'template' => $template]);
                 $this->assertSame($originalDraft['template'], $installedDraft['template'], 'Editor preparation matches the reviewed bundled design.');
             }
+            $this->assertCount(count($raw['playbooks']), $preview['starting_points']);
+            $rules = \WConvert\Rules\RuleVocabulary::fromManifest();
+            $starts = \WConvert\Playbook\PlaybookLibrary::fromEntries($installed->playbooks(), $library, $vocabulary, $rules);
+            $prefill = new \WConvert\Playbook\Prefill($starts, $library, $vocabulary, \WConvert\Tests\Unit\Support\InstalledRules::withPro());
+            $bundledStarts = \WConvert\Playbook\PlaybookLibrary::fromDirectory($bundled, $vocabulary, $rules);
+            $bundledPrefill = new \WConvert\Playbook\Prefill($bundledStarts, $bundled, $vocabulary, \WConvert\Tests\Unit\Support\InstalledRules::withPro());
+            foreach ($raw['playbooks'] as $position => $start) {
+                $draft = $prefill->fromPlaybook($preview['starting_points'][$position]['id']);
+                $original = $bundledPrefill->fromPlaybook($start['id']);
+                $this->assertSame($original['config']['template'], $draft['config']['template'], 'Starting-point wording survives the real prefill.');
+                $this->assertSame($original['config']['rules'], $draft['config']['rules']);
+                $this->assertSame($original['config']['targeting'] ?? [], $draft['config']['targeting'] ?? []);
+            }
             $previews[$entry['id']] = $preview;
         }
         $this->assertCount(10, $seen);
@@ -101,7 +114,7 @@ final class CuratedCollectionsTest extends TestCase
 
     public function testAConflictingReleaseDoesNotReplaceFilesOrIndex(): void
     {
-        $path = $this->directory . '/publisher-collection-1.0.0.json';
+        $path = $this->directory . '/publisher-collection-1.1.0.json';
         file_put_contents($path, 'previous release');
         file_put_contents($this->directory . '/index.json', 'previous index');
         [$code, $message] = $this->build();
@@ -109,7 +122,7 @@ final class CuratedCollectionsTest extends TestCase
         $this->assertStringContainsString('Refusing to replace', $message);
         $this->assertSame('previous release', file_get_contents($path));
         $this->assertSame('previous index', file_get_contents($this->directory . '/index.json'));
-        $this->assertFileDoesNotExist($this->directory . '/store-collection-1.0.0.json', 'All releases are checked before any output changes.');
+        $this->assertFileDoesNotExist($this->directory . '/store-collection-1.1.0.json', 'All releases are checked before any output changes.');
     }
 
     public function testUnusableCatalogDefinitionsFailBeforeWriting(): void

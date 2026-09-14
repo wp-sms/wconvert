@@ -102,7 +102,13 @@ final class TemplateCatalog
             $template['id'] = InstalledPacks::designId($pack, $template['id']);
             $templates[] = $template;
         }
-        return ['id' => $pack['id'], 'name' => $pack['name'], 'version' => $pack['version'], 'digest' => $pack['digest'], 'templates' => $templates];
+        $starts = [];
+        foreach ($pack['playbooks'] ?? [] as $entry) {
+            $starts[] = ['id' => InstalledPacks::designId($pack, $entry['id']), 'name' => $entry['name'],
+                'goal' => $entry['goal'], 'goal_label' => \WConvert\Goal\Goal::from($entry['goal'])->label(),
+                'template_id' => InstalledPacks::designId($pack, $entry['template_id'])];
+        }
+        return ['id' => $pack['id'], 'name' => $pack['name'], 'version' => $pack['version'], 'digest' => $pack['digest'], 'templates' => $templates, 'starting_points' => $starts];
     }
 
     private function download(string $id): string

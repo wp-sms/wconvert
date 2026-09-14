@@ -10,10 +10,12 @@ import { catalogStatus, refreshCatalog, previewPack, installPack, type CatalogPa
 
 type Work = 'loading' | 'checking' | 'previewing' | 'installing' | 'opening';
 
-export function TemplatePacks({ displayType, onInstalled, onInspect }: {
+export function TemplatePacks({ displayType, onInstalled, onInspect, goal, onChooseStartingPoints }: {
   displayType: string;
   onInstalled: () => Promise<void>;
-  onInspect: (id: string) => void;
+  onInspect?: (id: string) => void;
+  goal?: string;
+  onChooseStartingPoints?: (packId: string) => void;
 }) {
   const [status, setStatus] = useState<CatalogStatus | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -70,11 +72,12 @@ export function TemplatePacks({ displayType, onInstalled, onInspect }: {
   if (preview) {
     const current = status?.packs.find((pack) => pack.id === preview.id);
     return <TemplatePackDetail key={`${preview.id}:${preview.version}`} pack={preview} displayType={displayType}
+      goal={goal} onChooseStartingPoints={onChooseStartingPoints}
       installedVersion={current?.installed_version ?? null} busy={busy} installing={work === 'installing'} error={error}
       onBack={() => { returnFocus.current = preview.id; setPreview(null); setError(null); }} onInstall={install}
       onContinue={(id) => { void run('opening', async () => {
         await onInstalled();
-        if (alive.current) onInspect(id);
+        if (alive.current) onInspect?.(id);
       }); }} />;
   }
   const installed = status?.packs.filter((pack) => pack.installed_version !== null) ?? [];

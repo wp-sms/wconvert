@@ -357,7 +357,9 @@ final class CoreServiceProvider implements ServiceProvider
             static fn (ServiceContainer $c): PlaybookLibrary => PlaybookLibrary::fromDirectory(
                 $c->resolve(TemplateLibrary::class),
                 $c->resolve(TemplateVocabulary::class),
-                $c->resolve(RuleVocabulary::class)
+                $c->resolve(RuleVocabulary::class),
+                WCONVERT_DIR,
+                $c->resolve(InstalledPacks::class)->playbooks()
             )
         );
 
