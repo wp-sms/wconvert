@@ -18,6 +18,19 @@ function encode(array $value): string
     return json_encode($value, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR) . "\n";
 }
 
+function writeAtomic(string $path, string $json): void
+{
+    $temporary = tempnam(dirname($path), '.catalog-');
+    if ($temporary === false) throw new RuntimeException('Could not stage ' . basename($path));
+    try {
+        if (file_put_contents($temporary, $json, LOCK_EX) !== strlen($json) || !chmod($temporary, 0644) || !rename($temporary, $path)) {
+            throw new RuntimeException('Could not write ' . basename($path));
+        }
+    } finally {
+        if (is_file($temporary)) unlink($temporary);
+    }
+}
+
 try {
     $base = rtrim($argv[1] ?? 'http://wconvert.local/wp-content/plugins/wconvert/tools/template-catalog/out', '/');
     $output = $argv[2] ?? __DIR__ . '/out';
@@ -27,10 +40,14 @@ try {
         throw new RuntimeException('Supply an HTTP(S) directory URL without credentials, query or fragment.');
     }
     $collections = json_decode(file_get_contents(__DIR__ . '/collections.json'), true, 512, JSON_THROW_ON_ERROR);
+    if (!is_array($collections) || !array_is_list($collections) || count($collections) > 20) {
+        throw new RuntimeException('A catalog must list at most 20 collections.');
+    }
     $validator = PackValidator::shipping();
     $files = [];
     $index = ['schema' => 1, 'packs' => []];
     $selected = [];
+    $packIds = [];
     foreach ($collections as $collection) {
         $templates = [];
         foreach ($collection['templates'] as $id => $digest) {
@@ -49,8 +66,9 @@ try {
             'requires' => $collection['requires'], 'assets' => [], 'templates' => $templates];
         $json = encode($pack);
         $validator->decode($json); // The shipping installer is the compatibility gate.
+        if (isset($packIds[$pack['id']])) throw new RuntimeException('Repeated collection: ' . $pack['id']);
+        $packIds[$pack['id']] = true;
         $filename = $pack['id'] . '-' . $pack['version'] . '.json';
-        if (isset($files[$filename])) throw new RuntimeException('Repeated collection: ' . $pack['id']);
         $files[$filename] = $json;
         $index['packs'][] = ['id' => $pack['id'], 'version' => $pack['version'], 'name' => $pack['name'],
             'description' => $pack['description'], 'url' => $base . '/' . $filename, 'sha256' => hash('sha256', $json)];
@@ -66,19 +84,10 @@ try {
     foreach ($files as $filename => $json) {
         $path = $output . '/' . $filename;
         if (is_file($path)) continue;
-        if (file_put_contents($path, $json, LOCK_EX) !== strlen($json)) throw new RuntimeException('Could not write ' . $filename);
+        writeAtomic($path, $json);
     }
     // Readers only see the new index after every referenced pack is in place.
-    $temporary = tempnam($output, '.index-');
-    if ($temporary === false) throw new RuntimeException('Could not stage the catalog index.');
-    try {
-        $json = encode($index);
-        if (file_put_contents($temporary, $json, LOCK_EX) !== strlen($json) || !rename($temporary, $output . '/index.json')) {
-            throw new RuntimeException('Could not write the catalog index.');
-        }
-    } finally {
-        if (is_file($temporary)) unlink($temporary);
-    }
+    writeAtomic($output . '/index.json', encode($index));
     echo 'Built ' . count($files) . ' collections / ' . count($selected) . ' unchanged designs in ' . $output . ".\n";
 } catch (Throwable $error) {
     fwrite(STDERR, $error->getMessage() . "\n");

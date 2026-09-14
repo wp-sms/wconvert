@@ -28,8 +28,10 @@ sample copy, not campaign targeting, destinations or fulfilment configuration.
 source fingerprint pins the reviewed JSON bytes; the design itself stays in
 `resources/templates/library/`. The builder refuses a changed source, duplicate
 membership, incompatible pack or replacement of an existing release file with
-different bytes. It validates every pack with the shipping installer before
-writing, and replaces the index only after all packages are available.
+different bytes. It also enforces the catalog's 20-collection limit and unique
+collection IDs. It validates every pack with the shipping installer before
+writing. Packages and index use temporary files and atomic renames; the index
+is replaced only after all packages are available.
 
 The first argument is the serving directory URL; the optional second is the
 output directory. For a future hosted release, build into a staging directory:

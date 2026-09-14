@@ -46,6 +46,12 @@ Full local results: 1,863 PHP tests / 8,812 assertions, 2,314 JavaScript tests
 across 95 files, PHPStan, all 50 bundled template registrations and the source
 contract passed. GitHub Actions remains subject to the account billing block.
 
+Two Luna Extra High reviews identified missing index-limit/unique-ID guards and
+partial-file recovery in the build tool. These are addressed: definitions are
+checked before output, and both packages and index are atomically renamed from
+temporary files. The final three focused release tests / 88 assertions and
+PHPStan pass; the generated package bytes are unchanged by these build fixes.
+
 ## Next
 
 Review and merge the collection build, then upload its generated static JSON to

@@ -31,9 +31,9 @@ final class CuratedCollectionsTest extends TestCase
     }
 
     /** @return array{int, string} */
-    private function build(): array
+    private function build(?string $script = null): array
     {
-        exec(escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg(WCONVERT_DIR . 'tools/template-catalog/build.php')
+        exec(escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($script ?? WCONVERT_DIR . 'tools/template-catalog/build.php')
             . ' https://catalog.example/collections ' . escapeshellarg($this->directory) . ' 2>&1', $output, $code);
         return [$code, implode("\n", $output)];
     }
@@ -110,5 +110,37 @@ final class CuratedCollectionsTest extends TestCase
         $this->assertSame('previous release', file_get_contents($path));
         $this->assertSame('previous index', file_get_contents($this->directory . '/index.json'));
         $this->assertFileDoesNotExist($this->directory . '/store-collection-1.0.0.json', 'All releases are checked before any output changes.');
+    }
+
+    public function testUnusableCatalogDefinitionsFailBeforeWriting(): void
+    {
+        // A disposable tool checkout allows bad definitions without changing
+        // the actual collection manifest or any bundled design.
+        $fixture = $this->directory . '/fixture';
+        $tool = $fixture . '/tools/template-catalog';
+        mkdir($tool, 0755, true);
+        foreach (['src', 'vendor', 'resources'] as $directory) symlink(WCONVERT_DIR . $directory, $fixture . '/' . $directory);
+        copy(WCONVERT_DIR . 'tools/template-catalog/build.php', $tool . '/build.php');
+        $collections = json_decode((string) file_get_contents(WCONVERT_DIR . 'tools/template-catalog/collections.json'), true);
+        $duplicate = $collections;
+        $duplicate[1]['id'] = $duplicate[0]['id'];
+        $duplicate[1]['version'] = '1.0.1';
+        try {
+            foreach ([
+                'at most 20' => array_fill(0, 21, $collections[0]),
+                'Repeated collection' => $duplicate,
+            ] as $error => $definition) {
+                file_put_contents($tool . '/collections.json', json_encode($definition, JSON_THROW_ON_ERROR));
+                [$code, $message] = $this->build($tool . '/build.php');
+                $this->assertSame(1, $code);
+                $this->assertStringContainsString($error, $message);
+                $this->assertFileDoesNotExist($this->directory . '/index.json');
+            }
+        } finally {
+            unlink($tool . '/collections.json'); unlink($tool . '/build.php');
+            rmdir($tool); rmdir($fixture . '/tools');
+            foreach (['src', 'vendor', 'resources'] as $directory) unlink($fixture . '/' . $directory);
+            rmdir($fixture);
+        }
     }
 }
