@@ -91,6 +91,20 @@ final class PictureTransferTest extends TestCase
         $this->assertSame(2, PictureTransfer::prepare($mine, null, $next)['unverified']);
     }
 
+    public function testPicturesInBothSplitPanesUseTheSharedChildVocabulary(): void
+    {
+        $old = ['tokens' => [], 'tree' => ['steps' => [['type' => 'split',
+            'start' => [['type' => 'media', 'tokens' => ['bg-image' => 'none'], 'children' => []]],
+            'end' => [$this->picture('/sample.jpg')],
+        ]]]];
+        $mine = $old;
+        $mine['tree']['steps'][0]['start'][0]['tokens']['bg-image'] = 'url("/mine.jpg")';
+        $mine['tree']['steps'][0]['end'][0]['src'] = '/other.jpg';
+        $result = PictureTransfer::prepare($mine, $old, $old);
+        $this->assertSame($mine, $result['template']);
+        $this->assertSame(0, $result['unplaced']);
+    }
+
     public function testAFormPictureNeverMovesToSuccess(): void
     {
         $old = $this->template([$this->picture('/a.jpg')]);

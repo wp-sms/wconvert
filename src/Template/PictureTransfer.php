@@ -114,7 +114,7 @@ final class PictureTransfer
     {
         if (($node['type'] ?? '') === 'image') self::addSlot($slots, $ordinals, $node, $path, $screen, 'image');
         if (in_array($node['type'] ?? '', ['panel', 'media'], true)) self::addSlot($slots, $ordinals, $node, $path, $screen, 'background');
-        foreach (['children', 'aside'] as $key) {
+        foreach (TemplateTree::CHILD_KEYS as $key) {
             foreach ($node[$key] ?? [] as $index => $child) self::walk($slots, $ordinals, $child, [...$path, $key, $index], $screen);
         }
     }

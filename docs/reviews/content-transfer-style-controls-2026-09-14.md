@@ -30,4 +30,22 @@ uses the existing normalized snapshot preparation route.
 
 ## Verification
 
-Verification and review results are recorded here before the PR is completed.
+- Full PHP suite: 1,876 tests passed. Local QA then exposed a split traversal
+  omission; the fix uses `TemplateTree::CHILD_KEYS`. All nine picture-transfer
+  tests and PHPStan passed after that correction.
+- Full JavaScript suite: 2,330 tests across 96 files passed. Coverage includes
+  padding shorthand and link/unlink behavior, custom CSS preservation, gradient
+  editing, mobile reset isolation, and stripping notices before Apply.
+- TypeScript, ESLint, PHPStan, all 50 template registrations, the Free/Pro source
+  contract, both admin builds and all four loader budgets passed.
+- Real local WordPress REST retained the test background when switching from
+  Fieldwork to Sunday marginalia, reported an unmatched picture for Inline rule,
+  and saved/read back the prepared candidate as an unpublished draft without
+  transient report metadata. The test used WordPress's existing blank image.
+- One combined browser pass checked gradient direction edits, padding edits,
+  mobile override summaries and reset. Undo restored each change and returned
+  Save draft to its disabled state. Desktop and mobile canvas views were checked.
+- The temporary draft was removed; all six original Optin hashes matched their
+  baseline. No campaign was published and no Lead or delivery was created.
+
+Review results follow once the two bounded passes finish.
