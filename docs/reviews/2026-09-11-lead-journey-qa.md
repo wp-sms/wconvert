@@ -36,7 +36,9 @@ Site: `http://wconvert.local`.
 
 The controlled run used CLI backend APIs: MailPoet `addList`, WConvert `DestinationStore`, `OptinRepository` with the `centred-card` capture template and `page_load` rule, and `wp_insert_post` for the isolated page. It created a dedicated MailPoet list (`id=6`), WConvert MailPoet Destination (`01M27BKSFD3C9GN35TB4QF0T6V`), published disposable Optin (`01M27BKSFG1ZNQC59S7AGPNXDH`), and isolated page (`id=20`, `/wconvert-journey-qa-20260911/`). The visitor submit itself was performed through the normal browser UI (CUA). Baseline immediately before setup was **0 Leads, 0 matching queue actions, 6 Optins**.
 
-The normal visitor page showed the required email field and `Send my code`. One submission with `wconvert-journey-20260911@example.test` changed the terminal UI to **“You are on the list”** / **“Your code is on its way to your inbox.”** **Actionable UX finding:** “Your code is on its way to your inbox” implies delivery even though this WConvert destination only adds a MailPoet subscriber and MailPoet confirmation was still pending. The configured `signup_confirmation=true` left the real subscriber `unconfirmed` with `confirmed_at=null`; this copy should be reviewed in a separate UX change.
+The normal visitor page showed the required email field and `Send my code`. One submission with `wconvert-journey-20260911@example.test` changed the terminal UI to **“You are on the list”** / **“Your code is on its way to your inbox.”** **Actionable UX finding:** “Your code is on its way to your inbox” implies delivery even though this WConvert destination only adds a MailPoet subscriber and MailPoet confirmation was still pending. The configured `signup_confirmation=true` left the real subscriber `unconfirmed` with `confirmed_at=null`; this copy needed a separate UX change. **Closed:** ADR 0073 and subsequent
+library curation replaced bundled confirmation/delivery claims with capture
+acknowledgements. Existing merchant snapshots were deliberately not bulk rewritten.
 
 Evidence after the visitor request:
 

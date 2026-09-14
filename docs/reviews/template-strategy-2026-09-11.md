@@ -19,7 +19,9 @@ with verification in [the campaign-start report](catalog-campaign-starts-2026-09
 Production catalog hosting, paid fetching and media installation remain subsequent work.
 The [content-transfer and style-controls follow-up](content-transfer-style-controls-2026-09-14.md)
 addresses background photo preservation, linked padding, gradients and mobile
-override summaries. Cross-container movement remains deliberately deferred.
+override summaries; it is merged in PR #156. Cross-container movement remains
+deliberately deferred. The [audit closeout](audit-closeout-2026-09-14.md) is the
+current status index for all prior reviews, including remaining verification limits.
 
 **Agreed direction**
 
@@ -76,7 +78,9 @@ Its standalone implementation is not a drop-in template format. WConvert should 
 | Product/variant restock notification | Defer the promise until product binding and a notification provider work together. Reuse the visual composition for supported campaigns meanwhile. |
 | Email first, optional SMS second | Defer until separate capture and consent semantics are designed. The present two screens are form and acknowledgement, not two independent subscriptions. |
 
-WConvert should keep one primary counted conversion. Download, copy-code, close, and continue actions on a success screen should be explicitly non-converting. The current button vocabulary treats buttons as converting actions, so this deserves a small, deliberate model extension rather than a visual workaround.
+WConvert should keep one primary counted conversion. Download, copy-code, close, and continue actions on a success screen should be explicitly non-converting. The initial button vocabulary treated buttons as converting actions. ADR 0080
+subsequently added non-converting resource links and code-copy actions; these
+are implemented and verified, not an open model extension.
 
 **The first twelve flagship designs**
 
@@ -134,7 +138,10 @@ For premium browsing, allow real preview images without distributing premium edi
 
 **The future server**
 
-There is a useful source seam already: `TemplateSource`. Current implementations are bundled templates, locked metadata, and Pro templates; a production download/install source is not implemented. The admin API already separates a lightweight index from batched trees, with a cap of 24 per tree request.
+There is a useful source seam already: `TemplateSource`. Implementations now
+include installed templates alongside bundled, locked and Pro sources. PRs
+#153–155 completed the local catalog/install/Playbook path. A production hosted
+service, paid fetching and media installation remain deferred. The admin API already separates a lightweight index from batched trees, with a cap of 24 per tree request.
 
 Recommended flow: browse cached catalog metadata → inspect a preview and requirements → download a compatible authorized design with its assets → validate and install locally → apply a snapshot to a draft. Published visitor campaigns should render entirely from local data and assets even if the catalog server is unavailable.
 
@@ -155,9 +162,17 @@ WordPress.org rules address external code, disclosure/consent for external commu
 - Compare Centred card, One-line signup, Inline signup, Inline bar, Inline rule, and similar simple entries on a common sheet. Retain meaningful differences in purpose, arrangement, and placement; consolidate superficial duplicates.
 - Redesign or consolidate the two-field floating bar. The authoring guidelines explicitly prefer one compact ask in a bar, and the current `bar-two-field` is a candidate for conversion to a better-fitting format.
 
-These are curation candidates, not final deletions. The next visual review must show all retained entries and all screens together.
+These were initial curation candidates. The subsequent
+[library decision ledger](template-library-curation-2026-09-11.md#decisions-for-every-template)
+records the actual retained/reworked/retired outcomes and all-screen review.
+Do not repeat the initial deletion proposal as new work.
 
-Snapshotting protects an existing campaign from a removed gallery entry. It does not solve every retirement problem: `MerchantsOwn::changedIn()` returns no asset changes when the original entry is unavailable. Preserve the necessary source baseline or replace that comparison before claiming complete content preservation after retirement.
+Snapshotting protects an existing campaign from a removed gallery entry.
+Installed versions retain source baselines. PR #156 moved picture matching into
+`PictureTransfer`; missing baselines are now reported before Apply instead of
+being silently treated as unchanged content. This is handled with an explicit
+limit, not complete recovery: without the original, pictures are unverified and
+not guessed into the new design. Arbitrary recovery remains outside this pass.
 
 **Acceptance and production process**
 
@@ -268,6 +283,7 @@ from both kinds of follow-up action. No external lead or fulfilment service was
 exercised.
 
 The subsequent curation and [twelve-start collection](flagship-starting-points-2026-09-11.md)
-complete the next two collection milestones. The next collection phase is catalog
-installation and compatibility handling. General movement between arbitrary
-containers and colour-alias contrast readings remain separate editor work.
+completed those two collection milestones. Catalog installation, compatibility
+handling and downloaded campaign setups then shipped in PRs #153–155. General
+movement between arbitrary containers remains deferred; color-alias contrast
+readings remain an open editor improvement.

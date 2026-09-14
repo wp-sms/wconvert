@@ -13,9 +13,10 @@ Versioned data, strict import/capability checks, SHA-256 download/preview checks
 immutable local versions, update messages and offline installed previews are
 implemented. Existing campaigns and source baselines are not rewritten.
 
-Only Free popup/inline designs are supported in this first format. Media,
-downloaded Playbooks, paid pack fetch entitlement and production catalog hosting
-remain separate work. This slice intentionally enters through the design picker;
+Free popup/inline designs remain the supported download formats. Downloaded
+Playbooks were subsequently implemented in PR #155 under ADR 0083; see the
+[campaign-start report](catalog-campaign-starts-2026-09-14.md). Media installation,
+paid fetch entitlement and production hosting remain deferred. This slice intentionally enters through the design picker;
 it does not create a second Goal-first creation flow or a separate editor.
 
 ## Verification
