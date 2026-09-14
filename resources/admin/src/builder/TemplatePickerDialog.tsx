@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Button } from '../components/ui/button';
+import { Badge } from '../components/ui/badge';
 import { TemplatePacks } from '../templates/TemplatePacks';
 import { __ } from '@wordpress/i18n';
 import {
@@ -30,16 +31,17 @@ export function TemplatePickerDialog({ open, onOpenChange, onClosed, onCatalogIn
         onCloseAutoFocus={(event) => {
           if (onClosed) { event.preventDefault(); onClosed(); }
         }}>
-        <DialogHeader className="wconvert-picker__header">
-          <DialogTitle>{__('Browse designs', 'wconvert')}</DialogTitle>
-          <DialogDescription>
-            {format} · {__('Preview every screen before applying a design.', 'wconvert')}
-          </DialogDescription>
+        <DialogHeader className="wconvert-picker__header flex-row flex-wrap items-center justify-between gap-x-6 gap-y-3 text-start">
+          <div className="wconvert-picker__identity">
+            <DialogTitle>{__('Browse designs', 'wconvert')}</DialogTitle>
+            <Badge variant="outline">{format}</Badge>
+          </div>
+          <DialogDescription className="sr-only">{__('Preview every screen before applying a design.', 'wconvert')}</DialogDescription>
+          {onCatalogInstalled && <div className="wconvert-segmented inline-flex" role="group" aria-label={__('Library source', 'wconvert')}>
+            <Button variant="ghost" aria-pressed={!packs} onClick={() => setPacks(false)}>{__('Your designs', 'wconvert')}</Button>
+            <Button variant="ghost" aria-pressed={packs} onClick={() => setPacks(true)}>{__('Template packs', 'wconvert')}</Button>
+          </div>}
         </DialogHeader>
-        {onCatalogInstalled && <div className="flex gap-2 border-b px-6 py-2" role="group" aria-label={__('Library source', 'wconvert')}>
-          <Button variant={packs ? "ghost" : "secondary"} aria-pressed={!packs} onClick={() => setPacks(false)}>{__('Your designs', 'wconvert')}</Button>
-          <Button variant={packs ? "secondary" : "ghost"} aria-pressed={packs} onClick={() => setPacks(true)}>{__('Template packs', 'wconvert')}</Button>
-        </div>}
         <div className="wconvert-picker__scroll">
           {packs && onCatalogInstalled ? <TemplatePacks displayType={picker.displayType} onInstalled={onCatalogInstalled}
             onInspect={(id) => { picker.onNear(id); setInspectId(id); setPacks(false); }} /> :

@@ -1,0 +1,61 @@
+[
+  {
+    "id": "store-collection",
+    "version": "1.0.0",
+    "name": "Store collection",
+    "description": "Three offer layouts: Fieldwork, Punched ticket and The summer archive. Add your real code, terms, sale destination and schedule before publishing.",
+    "requires": {
+      "plugin": "0.1.0",
+      "tree": 1,
+      "capabilities": [
+        "template-tree:1",
+        "success-actions:1"
+      ]
+    },
+    "templates": {
+      "fieldwork": "ecb063af6d48143a785910b1973f8ef50ec9737c68f686db8f620cf99ffa7dc9",
+      "punched-ticket": "1d7cb2a8680347d63d3da871bfa8c0850d017245f7f9a3ecbdd56b01be6025a4",
+      "summer-archive": "67a91cddab71598c07027739159a5a6090b6f9aecb7943ab552616e87dc0a4fb"
+    }
+  },
+  {
+    "id": "publisher-collection",
+    "version": "1.0.0",
+    "name": "Publisher collection",
+    "description": "Four layouts for newsletters, article-end signups, guides and reading recommendations. Add your publication details, destinations and resources before publishing.",
+    "requires": {
+      "plugin": "0.1.0",
+      "tree": 1,
+      "capabilities": [
+        "template-tree:1",
+        "success-actions:1"
+      ]
+    },
+    "templates": {
+      "sunday-marginalia": "63d36c4ed052e8b699b8b52f4ff26eeb3a9537b037153da308b1eac532c045e5",
+      "inline-rule": "56dfeb212b680be57ad4658696d54f65f59105931fedc3d573a3e666eef24cca",
+      "useful-guide": "4b613eed60063ba6358a6cbd6ab853dcba1c529ced5b937daf2d0767027cf34d",
+      "reading-slip": "4835d5e4319c0604a4307ae6f723c7191512a0068f7b67404b10097f130a3010"
+    }
+  },
+  {
+    "id": "service-collection",
+    "version": "1.0.0",
+    "name": "Service collection",
+    "description": "Three layouts for callbacks, service enquiries and checklists. Add your topics, response process and resources before publishing.",
+    "requires": {
+      "plugin": "0.1.0",
+      "tree": 1,
+      "capabilities": [
+        "template-tree:1",
+        "success-actions:1",
+        "enquiry-choice:1"
+      ]
+    },
+    "templates": {
+      "callback-notes": "7b62c02197464787642896cc6102c6613fcf0ceac3232ef81fd2e6400ff269bc",
+      "inline-choice": "905b17cada1b364e5c1e5bc68983ddfeee7c85e5cb70b5216ad17fd9620ab089",
+      "launch-checklist": "70265743393d14563c463e330dbbba05c1efb1d2b27437a3942de36141171d8d"
+    }
+  }
+]
