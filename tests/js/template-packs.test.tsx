@@ -1,12 +1,12 @@
 import { beforeEach, expect, it, vi } from 'vitest';
 import { StrictMode } from 'react';
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { CatalogStatus, PackPreview } from '../../resources/admin/src/templates/catalog';
 
 const api = vi.hoisted(() => ({ catalogStatus: vi.fn(), refreshCatalog: vi.fn(), previewPack: vi.fn(), installPack: vi.fn() }));
 vi.mock('../../resources/admin/src/templates/catalog', () => api);
-vi.mock('../../resources/admin/src/builder/Preview', () => ({ Preview: () => <div>Rendered design</div> }));
+vi.mock('../../resources/admin/src/builder/Preview', () => ({ Preview: ({ step }: { step: number }) => <div data-testid="preview" data-step={step}>Rendered design</div> }));
 const { TemplatePacks } = await import('../../resources/admin/src/templates/TemplatePacks');
 const initial: CatalogStatus = { configured: true, source: 'https://catalog.example/index.json', checked_at: null, packs: [] };
 const listed: CatalogStatus = { ...initial, checked_at: '2026-09-11T14:00:00Z', packs: [{ id: 'reading', name: 'Reading pack', description: 'A reading design.', version: '1.0.0', installed_version: null, state: 'available' }] };
@@ -17,50 +17,50 @@ beforeEach(() => { vi.resetAllMocks(); api.catalogStatus.mockResolvedValue(initi
 it('only contacts the service after an explicit check, then previews, installs and returns to the editor picker', async () => {
   const user = userEvent.setup(); const onInstalled = vi.fn().mockResolvedValue(undefined); const onInspect = vi.fn();
   render(<TemplatePacks displayType="inline" onInstalled={onInstalled} onInspect={onInspect} />);
-  await screen.findByRole('button', { name: 'Check catalog' });
+  await screen.findByRole('button', { name: 'Check for packs' });
   expect(api.refreshCatalog).not.toHaveBeenCalled(); expect(api.previewPack).not.toHaveBeenCalled();
-  await user.click(screen.getByRole('button', { name: 'Check catalog' }));
-  await user.click(await screen.findByRole('button', { name: 'Preview pack' }));
+  await user.click(screen.getByRole('button', { name: 'Check for packs' }));
+  await user.click(await screen.findByRole('button', { name: 'Preview Reading pack' }));
   expect(api.previewPack).toHaveBeenCalledWith('reading', false);
   await screen.findByText('Rendered design'); expect(api.installPack).not.toHaveBeenCalled();
   await user.click(screen.getByRole('button', { name: 'Install pack' }));
-  await screen.findByText('Installed on this site'); expect(api.installPack).toHaveBeenCalledWith('reading', 'reviewed-digest');
+  await screen.findByText('Installed'); expect(api.installPack).toHaveBeenCalledWith('reading', 'reviewed-digest');
   expect(onInspect).not.toHaveBeenCalled();
-  await user.click(screen.getByRole('button', { name: 'Preview and use this design' }));
+  await user.click(screen.getByRole('button', { name: 'Continue with this design' }));
   await waitFor(() => expect(onInspect).toHaveBeenCalledWith('pack-hash-reading-slip'));
 });
 
 it('preserves the installed pack when refresh fails and uses its local preview', async () => {
   api.catalogStatus.mockResolvedValue(installed); api.refreshCatalog.mockRejectedValue(new Error('Offline'));
   const user = userEvent.setup(); render(<TemplatePacks displayType="inline" onInstalled={vi.fn()} onInspect={vi.fn()} />);
-  await user.click(await screen.findByRole('button', { name: 'Refresh catalog' }));
+  await user.click(await screen.findByRole('button', { name: 'Check for packs' }));
   await screen.findByRole('alert');
-  await user.click(screen.getByRole('button', { name: 'Preview installed pack' }));
+  await user.click(screen.getByRole('button', { name: 'Explore designs in Reading pack' }));
   expect(api.previewPack).toHaveBeenCalledWith('reading', true);
-  await screen.findByText('Installed on this site');
+  await screen.findByText('Installed');
 });
 
 it('can preview the old installed version while an update is available without trying to install it again', async () => {
   api.catalogStatus.mockResolvedValue({ ...installed, packs: [{ ...installed.packs[0], version: '1.1.0', state: 'update' }] });
   const user = userEvent.setup(); render(<TemplatePacks displayType="inline" onInstalled={vi.fn()} onInspect={vi.fn()} />);
-  await user.click(await screen.findByRole('button', { name: 'Preview installed version' }));
-  await screen.findByText('Installed on this site'); expect(screen.queryByRole('button', { name: 'Install update' })).not.toBeInTheDocument();
+  await user.click(await screen.findByRole('button', { name: 'Explore designs in Reading pack' }));
+  await screen.findByText('Installed'); expect(screen.queryByRole('button', { name: 'Install update' })).not.toBeInTheDocument();
 });
 
 it('does not offer a popup design for an inline draft', async () => {
   api.catalogStatus.mockResolvedValue(installed); api.previewPack.mockResolvedValue({ ...preview, templates: [{ ...preview.templates[0], display_type: 'popup' }] });
   const user = userEvent.setup(); render(<TemplatePacks displayType="inline" onInstalled={vi.fn()} onInspect={vi.fn()} />);
-  await user.click(await screen.findByRole('button', { name: 'Preview installed pack' }));
-  await screen.findByText('This design is for Popup. Open a draft in that format to use it.');
-  expect(screen.queryByRole('button', { name: 'Preview and use this design' })).not.toBeInTheDocument();
+  await user.click(await screen.findByRole('button', { name: 'Explore designs in Reading pack' }));
+  await screen.findByText('Open a draft in Popup format to use this design. Your current draft is Inline.');
+  expect(screen.queryByRole('button', { name: 'Continue with this design' })).not.toBeInTheDocument();
 });
 
 it('keeps successful installation visible if reloading the design index fails', async () => {
   api.catalogStatus.mockResolvedValue(listed);
   const user = userEvent.setup(); render(<TemplatePacks displayType="inline" onInstalled={vi.fn().mockRejectedValue(new Error('Index unavailable'))} onInspect={vi.fn()} />);
-  await user.click(await screen.findByRole('button', { name: 'Preview pack' }));
+  await user.click(await screen.findByRole('button', { name: 'Preview Reading pack' }));
   await user.click(await screen.findByRole('button', { name: 'Install pack' }));
-  await screen.findByText('Index unavailable'); await screen.findByText('Installed on this site');
+  await screen.findByText('Index unavailable'); await screen.findByText('Installed');
   expect(screen.queryByRole('button', { name: 'Install pack' })).not.toBeInTheDocument();
 });
 
@@ -71,9 +71,83 @@ it('disables retry during the initial request and ignores an obsolete StrictMode
   api.catalogStatus.mockReturnValueOnce(new Promise<CatalogStatus>((resolve) => { first = resolve; }))
     .mockReturnValueOnce(new Promise<CatalogStatus>((resolve) => { second = resolve; }));
   render(<StrictMode><TemplatePacks displayType="inline" onInstalled={vi.fn()} onInspect={vi.fn()} /></StrictMode>);
-  expect(screen.getByRole('button', { name: 'Loading packs…' })).toBeDisabled();
+  expect(screen.getByRole('status')).toHaveTextContent('Loading your packs…');
+  expect(screen.queryByRole('button', { name: 'Retry loading packs' })).not.toBeInTheDocument();
   await act(async () => { second(installed); });
-  await screen.findByRole('button', { name: 'Preview installed pack' });
+  await screen.findByRole('button', { name: 'Explore designs in Reading pack' });
   await act(async () => { first(initial); });
-  expect(screen.getByRole('button', { name: 'Preview installed pack' })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Explore designs in Reading pack' })).toBeInTheDocument();
+});
+
+
+it('separates local packs from available packs and offers updates independently', async () => {
+  api.catalogStatus.mockResolvedValue({ ...listed, packs: [
+    { ...installed.packs[0], state: 'update', version: '1.1.0' },
+    { ...listed.packs[0], id: 'new', name: 'New collection' },
+  ] });
+  const user = userEvent.setup();
+  render(<TemplatePacks displayType="inline" onInstalled={vi.fn()} onInspect={vi.fn()} />);
+  const local = await screen.findByRole('region', { name: 'Ready to use' });
+  expect(within(local).getByRole('button', { name: 'Explore designs in Reading pack' })).toBeInTheDocument();
+  expect(within(screen.getByRole('region', { name: 'Available to install' })).getByText('New collection')).toBeInTheDocument();
+  await user.click(within(local).getByRole('button', { name: 'Preview update for Reading pack' }));
+  expect(api.previewPack).toHaveBeenCalledWith('reading', false);
+});
+
+it('starts with a matching design, explains other formats and resets the screen when switching', async () => {
+  api.catalogStatus.mockResolvedValue(installed);
+  api.previewPack.mockResolvedValue({ ...preview, templates: [
+    { ...preview.templates[0], id: 'popup', name: 'Popup design', display_type: 'popup' },
+    { ...preview.templates[0], name: 'Inline design', tree: { steps: [{ type: 'stack', children: [] }, { type: 'stack', children: [] }] } },
+  ] });
+  const user = userEvent.setup();
+  render(<TemplatePacks displayType="inline" onInstalled={vi.fn()} onInspect={vi.fn()} />);
+  await user.click(await screen.findByRole('button', { name: 'Explore designs in Reading pack' }));
+  expect(await screen.findByRole('button', { name: /Inline design/ })).toHaveAttribute('aria-pressed', 'true');
+  await user.click(screen.getByRole('button', { name: 'Success' }));
+  expect(screen.getByTestId('preview')).toHaveAttribute('data-step', '1');
+  await user.click(screen.getByRole('button', { name: /Popup design/ }));
+  expect(screen.getByTestId('preview')).toHaveAttribute('data-step', '0');
+  expect(screen.queryByRole('group', { name: 'Preview screen' })).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: 'Continue with this design' })).not.toBeInTheDocument();
+  expect(screen.getByText(/Open a draft in Popup format/)).toBeInTheDocument();
+});
+
+it('keeps the selected design after installation and clearly continues to content review', async () => {
+  api.catalogStatus.mockResolvedValue(listed);
+  api.previewPack.mockResolvedValue({ ...preview, templates: [preview.templates[0], { ...preview.templates[0], id: 'second', name: 'Second design' }] });
+  const onInspect = vi.fn();
+  const user = userEvent.setup();
+  render(<TemplatePacks displayType="inline" onInstalled={vi.fn()} onInspect={onInspect} />);
+  await user.click(await screen.findByRole('button', { name: 'Preview Reading pack' }));
+  await user.click(await screen.findByRole('button', { name: /Second design/ }));
+  await user.click(screen.getByRole('button', { name: 'Install pack' }));
+  expect(await screen.findByRole('button', { name: /Second design/ })).toHaveAttribute('aria-pressed', 'true');
+  await user.click(await screen.findByRole('button', { name: 'Continue with this design' }));
+  await waitFor(() => expect(onInspect).toHaveBeenCalledWith('second'));
+});
+
+it('returns focus to the same collection without another request', async () => {
+  api.catalogStatus.mockResolvedValue(installed);
+  const user = userEvent.setup();
+  render(<TemplatePacks displayType="inline" onInstalled={vi.fn()} onInspect={vi.fn()} />);
+  await user.click(await screen.findByRole('button', { name: 'Explore designs in Reading pack' }));
+  await user.click(await screen.findByRole('button', { name: 'All packs' }));
+  expect(screen.getByRole('button', { name: 'Explore designs in Reading pack' })).toHaveFocus();
+  expect(api.catalogStatus).toHaveBeenCalledTimes(1);
+  expect(api.previewPack).toHaveBeenCalledTimes(1);
+});
+
+
+it('lets the compact design selector choose another format without applying it', async () => {
+  api.catalogStatus.mockResolvedValue(installed);
+  api.previewPack.mockResolvedValue({ ...preview, templates: [preview.templates[0], { ...preview.templates[0], id: 'popup', name: 'Popup design', display_type: 'popup' }] });
+  const onInspect = vi.fn();
+  const user = userEvent.setup();
+  render(<TemplatePacks displayType="inline" onInstalled={vi.fn()} onInspect={onInspect} />);
+  await user.click(await screen.findByRole('button', { name: 'Explore designs in Reading pack' }));
+  await user.selectOptions(await screen.findByRole('combobox', { name: 'Design in this pack' }), '1');
+  expect(screen.getByRole('heading', { name: 'Popup design' })).toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: 'Continue with this design' })).not.toBeInTheDocument();
+  expect(onInspect).not.toHaveBeenCalled();
 });

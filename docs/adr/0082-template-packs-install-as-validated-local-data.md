@@ -13,6 +13,11 @@ explicit, authenticated administrator requests. The notice explains which
 service is contacted. Installing changes the library; the existing content-choice
 preview and Use this design action change the working draft. No action publishes.
 
+The [pack experience](../reviews/template-pack-experience-2026-09-14.md) groups
+installed and available collections, keeps updates explicit, and presents a
+selected design at desktop/mobile widths. Continue with this design opens the
+existing content-choice review; it does not apply the design.
+
 Version 1 installs Free popup/inline designs with placeholders. The initial local
 sample reused Reading slip, Callback notes and A useful little guide. The
 [first curated collections](../reviews/curated-template-collections-2026-09-14.md)

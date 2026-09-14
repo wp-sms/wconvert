@@ -36,10 +36,10 @@ export function TemplatePickerDialog({ open, onOpenChange, onClosed, onCatalogIn
             {format} · {__('Preview every screen before applying a design.', 'wconvert')}
           </DialogDescription>
         </DialogHeader>
-        {onCatalogInstalled && <div className="flex gap-2 border-b px-6 py-2" role="group" aria-label={__('Library source', 'wconvert')}>
-          <Button variant={packs ? "ghost" : "secondary"} aria-pressed={!packs} onClick={() => setPacks(false)}>{__('Your designs', 'wconvert')}</Button>
-          <Button variant={packs ? "secondary" : "ghost"} aria-pressed={packs} onClick={() => setPacks(true)}>{__('Template packs', 'wconvert')}</Button>
-        </div>}
+        {onCatalogInstalled && <div className="shrink-0 border-b px-6 py-2"><div className="wconvert-segmented inline-flex" role="group" aria-label={__('Library source', 'wconvert')}>
+          <Button variant="ghost" aria-pressed={!packs} onClick={() => setPacks(false)}>{__('Your designs', 'wconvert')}</Button>
+          <Button variant="ghost" aria-pressed={packs} onClick={() => setPacks(true)}>{__('Template packs', 'wconvert')}</Button>
+        </div></div>}
         <div className="wconvert-picker__scroll">
           {packs && onCatalogInstalled ? <TemplatePacks displayType={picker.displayType} onInstalled={onCatalogInstalled}
             onInspect={(id) => { picker.onNear(id); setInspectId(id); setPacks(false); }} /> :

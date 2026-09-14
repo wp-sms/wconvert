@@ -73,3 +73,10 @@ bottom action. This narrow live browser check changed no draft. Pack/picker test
 TypeScript, ESLint and both Free/Pro admin builds passed. JSDOM does not perform
 layout, so a class-name assertion would not test this regression; the recorded
 before/after interaction is the layout verification.
+
+## Pack experience follow-up
+
+The later [pack experience review](template-pack-experience-2026-09-14.md) records
+the redesigned collection list and selected-design preview. It supersedes the
+shared scrolling layout above with separate list scrolling and a detail view
+whose action footer stays visible. Collection contents remain unchanged.
