@@ -112,7 +112,7 @@ export function Dashboard({ query, onQueryChange }: {
         <ul>
           <li>{__('Impressions count times an Optin was seen. For an inline form, this starts when it enters the visitor’s view.', 'wconvert')}</li>
           <li>{__('Conversion rate is visitor actions divided by impressions. The action is a form submission or a button click, depending on the design. A dash means there were no impressions.', 'wconvert')}</li>
-          <li>{__('For a lead magnet, Deliveries counts recorded sends; conversion rate still measures visitor submissions. Delivery totals do not prove inbox arrival.', 'wconvert')}</li>
+          <li>{__('For a lead magnet, the headline counts emails accepted for sending; conversion rate still measures visitor submissions. These send events do not prove inbox arrival.', 'wconvert')}</li>
           <li>{__('Goal totals include deleted Optins. The table lists existing Optins, so its rows may add up to less. Changing an Optin’s Goal moves its historical counts to that Goal.', 'wconvert')}</li>
           <li>{__('Reports use daily counters. Deleting captured leads through retention does not remove those historical counts.', 'wconvert')}</li>
         </ul>
@@ -134,6 +134,7 @@ function GoalRegion({ card, optin, period, query }: {
     <Region>
       <RegionHeader title={optin?.name ?? card.label} level={3} />
       <RegionBody className="flex flex-col gap-5">
+        {card.measurement && <p className="m-0 text-note text-muted-foreground">{card.measurement}</p>}
         {optin && <p className="m-0 text-note text-muted-foreground">{card.label}</p>}
         <StatRow>
           <Stat label={card.headline_label} value={formatCount(numbers.headline)} emphasis />
@@ -146,7 +147,7 @@ function GoalRegion({ card, optin, period, query }: {
         </p>}
         <ActivityChart label={card.headline_label} byDay={numbers.by_day} />
         {!optin && (card.undelivered_conversions ?? 0) > 0 && <div className="wconvert-report-attention">
-          <p>{sprintf(_n('%d more submission than lead-magnet deliveries was recorded in this period.', '%d more submissions than lead-magnet deliveries were recorded in this period.', card.undelivered_conversions ?? 0, 'wconvert'), card.undelivered_conversions ?? 0)}</p>
+          <p>{sprintf(_n('%d more submission than emails accepted for sending was recorded in this period.', '%d more submissions than emails accepted for sending were recorded in this period.', card.undelivered_conversions ?? 0, 'wconvert'), card.undelivered_conversions ?? 0)}</p>
           <p>{__('These totals count events on the day they happen. Check Destinations for forwarding delays or errors.', 'wconvert')}</p>
           <a href={destinationHref()}>{__('Review forwarding', 'wconvert')}</a>
         </div>}

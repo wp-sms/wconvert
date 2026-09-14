@@ -38,7 +38,7 @@ import { DesignSettings } from './DesignSettings';
 import { EditorCanvas, ScreenControls, DeviceControls } from './EditorCanvas';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { canRedo, canUndo, historyOf, redo, remember, undo, type History } from './structure/history';
-import { capturesTaken, nearestTo, samePath } from './structure/tree';
+import { nearestTo, samePath } from './structure/tree';
 import { convertingActOf } from './structure/guards';
 import type { ConvertingAct } from './structure/catalogue';
 import { listGoals, listPlaybooks, type GoalEntry } from '../goals/api';
@@ -69,7 +69,8 @@ import { numbersByOptin, readDashboard, type OptinNumbers } from '../stats/api';
 import { formatCount, formatRate } from '../stats/format';
 import { readDestinations, type DestinationsPayload } from '../destinations/api';
 import { adminSettings } from '../settings';
-import { publishOptin } from '../optins/api';
+import { createOptin, publishOptin } from '../optins/api';
+import { editorHref } from '../nav';
 import type { EditingState } from '../hooks/useAdminNavigation';
 import type { Template, Tokens as TokenBag } from '@renderer/types';
 
@@ -78,6 +79,7 @@ export interface OptinBuilderProps {
   readonly onClose: () => void;
   readonly backLabel?: string;
   readonly onEditingStateChange?: (state: EditingState) => void;
+  readonly onCreated?: (id: string) => void;
 }
 
 type Config = Record<string, unknown>;
@@ -104,11 +106,12 @@ function typesInto(target: EventTarget | null): boolean {
   );
 }
 
-export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange }: OptinBuilderProps) {
+export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onCreated }: OptinBuilderProps) {
   const [name, setName] = useState('');
   const [config, setConfig] = useState<Config | null>(null);
   const [goal, setGoal] = useState<string | null>(null);
   const [publishedAt, setPublishedAt] = useState<string | null>(null);
+  const [canChangeGoal, setCanChangeGoal] = useState(true);
   const [unpublishedChanges, setUnpublishedChanges] = useState(false);
   const [publishing, setPublishing] = useState(false);
 
@@ -216,8 +219,6 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange }: O
   const act: ConvertingAct =
     template === undefined ? 'submit' : (convertingActOf(template.tree)[0] ?? 'submit');
 
-  const captures = template === undefined ? [] : capturesTaken(template.tree);
-
   const overlay = config === null || displayTypeOf(config, templates) !== 'inline';
 
   const { trees, want, failed: failedTrees, retry: retryTree } = useTemplateTrees(getTemplateTrees);
@@ -242,6 +243,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange }: O
         setBaseline(JSON.stringify({ name: optin.name, config: optin.config }));
         setGoal(optin.goal);
         setPublishedAt(optin.published_at);
+        setCanChangeGoal(optin.can_change_goal);
         setUnpublishedChanges(optin.has_unpublished_changes);
         setSuspended(optin.suspended);
         setDeletedAt(optin.deleted_at);
@@ -393,7 +395,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange }: O
         setConfig(optin.config);
         setUnpublishedChanges(optin.has_unpublished_changes);
         // Normalization accepts this edit; it is not another user action.
-        // Changing Goal saves immediately and moves historical reporting, so
+        // Changing an unpublished Goal saves immediately, so
         // that explicit save starts a new local history rather than offering
         // an Undo that would silently need another server write.
         const present = { name: optin.name, config: optin.config };
@@ -404,6 +406,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange }: O
         // the save actually wrote, so a refused correction leaves the band
         // saying what the Optin still holds rather than what was asked for.
         setGoal(optin.goal);
+        setCanChangeGoal(optin.can_change_goal);
         setSaved(true);
         setBaseline(JSON.stringify({ name: optin.name, config: optin.config }));
       });
@@ -425,6 +428,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange }: O
       if (dirty) await persistDraft();
       const accepted = await publishOptin(id);
       setPublishedAt(accepted.published_at);
+      setCanChangeGoal(false);
       setUnpublishedChanges(accepted.has_unpublished_changes);
       setSuspended(accepted.suspended);
       setDeletedAt(accepted.deleted_at);
@@ -647,7 +651,6 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange }: O
             displayType={displayTypeOf(config, templates)}
             bound={bound}
             template={template}
-            growsAList={entryOfGoal?.grows_a_list === true}
             destinations={read(destinations)?.destinations ?? null}
             fieldLabels={gallery.labels.fields}
             onPublish={publish}
@@ -671,6 +674,12 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange }: O
           </Button>
         </div>
       </header>
+      <div className="flex shrink-0 items-center justify-between gap-3 border-b bg-background px-4 py-2 text-note">
+        <span>{goalSaid(goalEntry, goal ?? '')}</span>
+        {goals.status === 'ready' && offerableGoals(goals.data, 'creation_flow', goal ?? '').length > 1 && <Button variant="link" size="sm" disabled={busy} onClick={() => setChangingGoal(true)}>
+          {canChangeGoal ? __('Change goal', 'wconvert') : __('Duplicate for another goal', 'wconvert')}
+        </Button>}
+      </div>
       {error !== null && <PageError message={error} />}
       <div className="wconvert-workspace__body" inert={busy}>
         <TabsContent value="design" forceMount className="wconvert-workspace__design">
@@ -860,11 +869,12 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange }: O
                     setChangingGoal(true);
                   }}
                 >
-                  {__('Change goal', 'wconvert')}
+                  {canChangeGoal ? __('Change goal', 'wconvert') : __('Duplicate for another goal', 'wconvert')}
                 </Button>
               )}
           </div>
           </div>
+          {entryOfGoal?.outcome && <p className="text-note text-muted-foreground">{entryOfGoal.outcome.measurement}</p>}
           {(numbers !== null || (publishedAt !== null && stats.status === 'loading')) && (
             <div className="wconvert-details-section"><h3>{__('Performance', 'wconvert')}</h3>
               {numbers !== null ? (
@@ -872,13 +882,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange }: O
                   <StatRow>
                     <Stat
                       emphasis
-                      label={
-                        entryOfGoal?.headline_kind === 'conversion'
-                          ? act === 'click'
-                            ? __('Click-throughs', 'wconvert')
-                            : __('Submissions', 'wconvert')
-                          : numbers.label
-                      }
+                      label={entryOfGoal?.headline_label ?? numbers.label}
                       value={formatCount(numbers.report.headline)}
                     />
                     <Stat
@@ -946,7 +950,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange }: O
         displayType={displayTypeOf(config, templates)}
         chosen={templateId}
         fit={{
-          needsACapture: entryOfGoal?.needs_a_capture === true,
+          outcome: entryOfGoal?.outcome,
           bound: bound.length > 0,
           sibling: siblingAct,
           act,
@@ -980,8 +984,19 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange }: O
         }}
         goals={goals}
         current={goal ?? ''}
-        captures={captures.length > 0}
-        onChange={(picked) => void save(config ?? {}, picked)}
+        duplicate={!canChangeGoal}
+        onChange={(picked) => {
+          if (canChangeGoal) { void save(config ?? {}, picked); return; }
+          setBusy(true);
+          void createOptin(sprintf(__('%s — copy', 'wconvert'), name), picked, config ?? {})
+            .then((created) => {
+              onEditingStateChange?.({ dirty: false, busy: false });
+              if (onCreated) onCreated(created.id);
+              else window.location.hash = editorHref(created.id);
+            })
+            .catch((cause: unknown) => setError(sprintf(__('The copied draft could not be confirmed. Check the Optins list before trying again. %s', 'wconvert'), messageOf(cause))))
+            .finally(() => setBusy(false));
+        }}
       />
     </Tabs>
   );

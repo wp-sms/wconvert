@@ -121,6 +121,8 @@ template id, rules and selected destination ids. Mobile editing keeps a visible
 reminder that appearance can vary while text and blocks are shared across sizes,
 including when no node is selected. Narrow-token inheritance remains unchanged.
 
+> **Amended by [ADR 0085](0085-goals-have-publish-contracts-and-stable-history.md):** Facts include the metric, measurement limits and publishing requirements. Goal changes after publication use a new copied draft and never restate history.
+
 Goal correction explicitly says **Save draft and change goal**. It saves the
 current name and all draft configuration, restates reporting under the new Goal,
 and starts a new local Undo history only after success. It does not publish the

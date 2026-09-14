@@ -17,6 +17,8 @@ other proposals are not adopted here. Publishing and destination setup are
 subsequently addressed by [ADR 0070](0070-drafts-are-reviewed-and-explicitly-published-from-the-editor.md);
 capture fields and report navigation remain separate work.
 
+> **Amended by [ADR 0085](0085-goals-have-publish-contracts-and-stable-history.md):** The design browser defaults to Goal fit, derived from capabilities, and offers Show all designs.
+
 ## Find designs by what they actually offer
 
 The Optin's Display Type remains the library's fixed scope. Identify that scope

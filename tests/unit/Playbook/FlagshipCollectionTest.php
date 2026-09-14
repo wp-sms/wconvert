@@ -35,6 +35,9 @@ final class FlagshipCollectionTest extends TestCase
                 $designs[] = $playbook->templateId;
                 $draft = $prefill->fromPlaybook($id);
                 $this->assertNotNull($draft, $id);
+                $outcome = \WConvert\Goal\Goal::from($draft['goal'])->outcome();
+                $this->assertSame($outcome->linkRequired ? $outcome->requirement : null,
+                    $outcome->designIssue($draft['config']), $id . ': fits its Goal once the merchant supplies the offer link');
                 $this->assertNotEmpty($playbook->notes);
                 $this->assertNotNull(FlagshipCollection::recommendation($id));
                 $nodes = $draft['config']['template']['tree']['steps'];

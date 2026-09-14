@@ -385,7 +385,9 @@ final class CoreServiceProvider implements ServiceProvider
                 $c->resolve(Degradation::class),
                 $c->resolve(RuleCatalogue::class),
                 $c->resolve(SiteFrequency::class),
-                $c->resolve(MilestoneStore::class)
+                $c->resolve(MilestoneStore::class),
+                $c->resolve(DestinationStore::class),
+                $c->resolve(DestinationRegistry::class)
             )
         );
 

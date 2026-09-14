@@ -33,7 +33,7 @@ const ENTRY: TemplateIndexEntry = {
   id: 'centred-card', name: 'Centred card', display_type: 'popup', tier: 'free', availability: 'ready',
   facets: { act: 'submit', captures: ['email'], shape: 'stack', has_image: false, asks_consent: false },
 };
-const FIT: Fit = { needsACapture: false, bound: false, sibling: null, act: 'submit' };
+const FIT: Fit = { bound: false, sibling: null, act: 'submit' };
 const drawn = () => mounts.at(-1)?.root as HTMLElement;
 
 beforeEach(() => { mounts.length = 0; });

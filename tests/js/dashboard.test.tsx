@@ -212,7 +212,7 @@ describe('the analytics screen', () => {
 
     render(<Dashboard />);
 
-    expect(await screen.findByText('10 more submissions than lead-magnet deliveries were recorded in this period.')).toBeInTheDocument();
+    expect(await screen.findByText('10 more submissions than emails accepted for sending were recorded in this period.')).toBeInTheDocument();
     expect(screen.getByText('These totals count events on the day they happen. Check Destinations for forwarding delays or errors.')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Review forwarding' })).toHaveAttribute('href', '#destinations');
     expect(screen.queryByText(/no delivery yet/i)).toBeNull();
@@ -557,7 +557,7 @@ describe('report drill-down and returning to the displayed period', () => {
     render(<Dashboard query={{ days: 30, optinId }} />);
     await screen.findByRole('heading', { name: 'Newsletter footer' });
     expect(screen.getByText('Deliveries', { selector: 'dt' })).toBeInTheDocument();
-    expect(screen.queryByText(/more submissions than lead-magnet deliveries/)).toBeNull();
+    expect(screen.queryByText(/more submissions than emails accepted for sending/)).toBeNull();
     expect(screen.queryByRole('link', { name: 'Review forwarding' })).toBeNull();
   });
 
@@ -566,7 +566,7 @@ describe('report drill-down and returning to the displayed period', () => {
     await screen.findByRole('heading', { name: 'Grow my email list' });
     await userEvent.click(screen.getByText('How these numbers work'));
     expect(screen.getByText(/Conversion rate is visitor actions divided by impressions.*A dash means there were no impressions\./)).toBeVisible();
-    expect(screen.getByText(/Deliveries counts recorded sends.*Delivery totals do not prove inbox arrival\./)).toBeVisible();
+    expect(screen.getByText(/headline counts emails accepted for sending.*These send events do not prove inbox arrival\./)).toBeVisible();
     expect(screen.getByText(/Goal totals include deleted Optins.*Changing an Optin’s Goal moves its historical counts/)).toBeVisible();
     expect(screen.getByText('Reports use daily counters. Deleting captured leads through retention does not remove those historical counts.')).toBeVisible();
   });

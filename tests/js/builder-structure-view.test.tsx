@@ -1,3 +1,4 @@
+import { CAPTURE_OUTCOME } from './support/outcomes';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { render, screen, within } from '@testing-library/react';
@@ -149,12 +150,13 @@ const LABELS = {
 };
 
 const GOALS = [
-  { id: 'grow_email_list', label: 'Grow my email list', description: '', needs_a_capture: false, grows_a_list: true, headline_kind: 'conversion', tier: 'free', availability: { available: true } },
-  { id: 'promote_offer', label: 'Promote a sale', description: '', needs_a_capture: false, grows_a_list: true, headline_kind: 'conversion', tier: 'free', availability: { available: true } },
+  { id: 'grow_email_list', label: 'Grow my email list', description: '', needs_a_capture: false, grows_a_list: true, outcome: CAPTURE_OUTCOME, headline_kind: 'conversion', tier: 'free', availability: { available: true } },
+  { id: 'promote_offer', label: 'Promote a sale', description: '', needs_a_capture: false, grows_a_list: true, outcome: CAPTURE_OUTCOME, headline_kind: 'conversion', tier: 'free', availability: { available: true } },
 ];
 
 function optin(over: Record<string, unknown> = {}) {
   return {
+    can_change_goal: true,
     id: ID,
     name: 'Welcome discount',
     goal: 'grow_email_list',

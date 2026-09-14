@@ -17,6 +17,8 @@ screen's whole cost:
 - The Design tab held the gallery *and* the fifteen token controls, which is two
   concerns in one region ([ADR 0039](0039-a-screen-is-regions-and-scope-decides-placement.md)).
 
+> **Amended by [ADR 0085](0085-goals-have-publish-contracts-and-stable-history.md):** Templates still have no Goal tags. The picker now suggests fit using existing action/capture facets, with Show all designs.
+
 ## Every facet is derived from the tree. Only `tier` is authored
 
 **This is the decision the rest follows from**, and it is forced by what a

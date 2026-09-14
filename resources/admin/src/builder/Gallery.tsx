@@ -10,75 +10,9 @@ import { nameOf, type TemplateIndexEntry, type TemplateLabelsWithFacets } from '
 import type { ConvertingAct } from './structure/catalogue';
 import type { Template } from '@renderer/types';
 
-/**
- * The grid of designs — the picker's contents, and nothing else.
- *
- * ============================================================================
- * TEMPLATES ARE GOAL-AGNOSTIC, AND THAT IS WHY THE FACETS ARE WHAT THEY ARE.
- * ============================================================================
- * A Template is the design of an Optin **with no words in it** — copy comes
- * from the [[Playbook]] that prefilled it, or from the merchant (CONTEXT.md,
- * Template). With the copy held elsewhere the library is a set of designs per
- * [[Display Type]] rather than a design for every pairing of Display Type and
- * [[Goal]], which is the matrix that boundary exists to collapse.
- *
- * **So there is no Goal filter, and there never will be.** Every facet the
- * toolbar offers is derived from the tree — what it captures, how it is
- * arranged, whether it has a picture — because those are the questions a design
- * with no words in it can actually answer. A Goal chip, or an Industry one,
- * would be asserting a pairing that does not exist (ADR 0043).
- *
- * ============================================================================
- * THE ACT REFUSES NOTHING NOW, AND THAT IS MOST OF THIS FILE'S HISTORY GONE.
- * ============================================================================
- * This greyed out **five of seven popup designs** on an Optin whose Goal
- * counted click-throughs, each saying *"Converts on a form submission. Your
- * goal counts click-throughs."* — naming no goal and offering no way to change
- * one. It was marking a refusal the server really made, and the server made it
- * because a Goal declared a converting act as well as the design did.
- *
- * **It does not any more** (ADR 0059). The act belongs to the design, so under
- * four of the five Goals nothing on a standalone Optin is greyed at all, and
- * the picker is what it always claimed to be: designs for one [[Display
- * Type]], compared on what they look like.
- *
- * ============================================================================
- * WHAT IS STILL MARKED, AND EVERY ONE OF IT IS ABOUT SOMETHING REAL.
- * ============================================================================
- * Four, and the save refuses all four — this is the near side of that net,
- * never a replacement for it (ADR 0026):
- *
- * - **A design that counts nothing.** It renders, publishes and reports zero
- *   forever (ADR 0020), which looks like a working Optin.
- * - **A design that captures nothing, under a Goal read from deliveries.**
- *   There is no address to deliver to.
- * - **A design that captures nothing, on an Optin that binds a
- *   [[Destination]].** There would be no [[Lead]] to send.
- * - **A design converting the other way from an A/B sibling's.** The two rates
- *   would not be comparable (ADR 0045).
- *
- * The reading still comes from the index: `act` and `captures` are facets the
- * server derived at registration, from the same walks the save consults, so
- * the two cannot disagree — and the card does not need its tree to say so.
- *
- * **Marked and not hidden.** A merchant comparing designs and finding one gone
- * has no way to know it existed or why — and the reason is about their own
- * Optin rather than about the install, so it is worth reading.
- *
- * ============================================================================
- * A LOCKED CARD IS A LINK. IT IS NEVER A DISABLED BUTTON.
- * ============================================================================
- * Free ships the CARD for a premium design and never the design: shipping the
- * tree and refusing the save is trialware (issue #7), and rendering a real
- * control `disabled` is what wp.org Guideline 9 fires on. So a locked card
- * carries its facets, a `Pro` badge, and *"See this design"* pointing at a live
- * preview on wconvert.com — an admin-side link to your own site, which
- * Guideline 10 explicitly welcomes.
- *
- * A Pro install sees none of them, and not because of a test here:
- * `availability` resolves on the server, and Pro registering the real design
- * takes the stub's id (ADR 0026, ADR 0043). A paying customer is never shown an
- * advertisement for what they bought.
+/** Design grid. Goal fit is suggested by derived facets, never authored tags.
+ * All designs remain browsable; publication checks the edited Outcome contract.
+ * Bound destinations and A/B siblings still constrain draft replacement.
  */
 
 export interface GalleryProps {
@@ -99,34 +33,9 @@ export interface GalleryProps {
   readonly onRetry?: (id: string) => void;
 }
 
-/**
- * What THIS Optin needs of a design — the whole of what can refuse one, and
- * the whole of what can warn about one.
- *
- * ============================================================================
- * ONE OBJECT RATHER THAN FOUR PROPS THREADED THROUGH THREE COMPONENTS.
- * ============================================================================
- * It replaces the single `act` the picker used to take. That prop was the
- * Optin's [[Goal]] wearing a design's vocabulary — the Goal declared an act,
- * and the gallery refused every design offering the other one — and with the
- * act off the Goal there is no such constraint left. What is left is smaller,
- * plural, and about the OPTIN rather than about its Goal alone, which is
- * exactly the shape one value could not carry.
- *
- * Nothing in here is a filter. Every field marks a card and leaves it on
- * screen, because a merchant comparing designs and finding one gone has no way
- * to know it existed (ADR 0043).
- */
+/** Constraints and publication guidance for this edited Optin. */
 export interface Fit {
-  /**
-   * This Optin's Goal reads its headline from deliveries, so a design with no
-   * field on it has no address to deliver to.
-   *
-   * Resolved on the server and travelling as `needs_a_capture`, never derived
-   * from a Goal id here: this bundle names none, and `GoalParityTest` fails
-   * the day one appears — comments included.
-   */
-  readonly needsACapture: boolean;
+  readonly outcome?: import('../goals/outcome').OutcomeContract;
   /** Whether this Optin binds [[Destination]]s, which need a [[Lead]] to send. */
   readonly bound: boolean;
   /**
@@ -174,10 +83,6 @@ export function refusalFor(entry: TemplateIndexEntry, fit: Fit): string | null {
   }
 
   if (entry.facets.captures.length === 0) {
-    if (fit.needsACapture) {
-      return __('This design captures nothing, and your goal counts deliveries.', 'wconvert');
-    }
-
     if (fit.bound) {
       return __(
         'This design captures nothing, so there would be no leads to send to this Optin’s destinations.',
@@ -226,6 +131,11 @@ export function refusalFor(entry: TemplateIndexEntry, fit: Fit): string | null {
  * cannot be applied. A change in what it counts still permits the switch.
  */
 export function actChangeOf(entry: TemplateIndexEntry, fit: Fit): string | null {
+  if (fit.outcome && (entry.facets.act !== fit.outcome.action || (fit.outcome.capture_any_of.length > 0
+    && !fit.outcome.capture_any_of.some((field) => entry.facets.captures.includes(field))))) {
+    return fit.outcome.requirement;
+  }
+  if (fit.outcome) return null;
   if (entry.availability !== 'ready' || entry.facets.act === null || entry.facets.act === fit.act) {
     return null;
   }

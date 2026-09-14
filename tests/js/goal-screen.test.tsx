@@ -1,3 +1,4 @@
+import { CLICK_OUTCOME } from './support/outcomes';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -37,7 +38,7 @@ const GOALS = [
     label: 'Grow my email list',
     description: 'Capture email addresses.',
     needs_a_capture: false,
-    grows_a_list: false,
+    grows_a_list: false, outcome: CLICK_OUTCOME,
     headline_kind: 'conversion',
     tier: 'free',
     availability: 'ready' as const,
@@ -47,7 +48,7 @@ const GOALS = [
     label: 'Promote a sale or offer',
     description: 'Send visitors to an offer.',
     needs_a_capture: false,
-    grows_a_list: false,
+    grows_a_list: false, outcome: CLICK_OUTCOME,
     headline_kind: 'conversion',
     tier: 'pro',
     availability: 'locked' as const,
@@ -57,7 +58,7 @@ const GOALS = [
     label: 'Bring shoppers back to their cart',
     description: 'Show shoppers the way back.',
     needs_a_capture: false,
-    grows_a_list: false,
+    grows_a_list: false, outcome: CLICK_OUTCOME,
     headline_kind: 'conversion',
     tier: 'pro',
     availability: 'unavailable' as const,
@@ -346,7 +347,7 @@ describe('a goal then a draft', () => {
     expect(await screen.findByText(/click the main button/)).toBeInTheDocument();
     expect(screen.queryByText(/submit the form/)).not.toBeInTheDocument();
     expect(screen.getAllByRole('term').map((term) => term.textContent)).toEqual([
-      'Format', 'Pages', 'Audience', 'When it appears', 'Schedule & frequency',
+      'Counts', 'Visitor action', 'Format', 'Pages', 'Audience', 'When it appears', 'Schedule & frequency',
     ]);
   });
 

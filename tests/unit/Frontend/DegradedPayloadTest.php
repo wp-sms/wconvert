@@ -62,7 +62,7 @@ final class DegradedPayloadTest extends TestCase
      */
     private function publish(array $rules): string
     {
-        $optin = $this->repository->create('Spring sale', 'grow_email_list', ['rules' => $rules, 'template' => OptinDesign::template()]);
+        $optin = $this->repository->create('Spring sale', 'promote_offer', ['rules' => $rules, 'template' => OptinDesign::template()]);
         $this->repository->publish($optin->id);
 
         return $optin->id;

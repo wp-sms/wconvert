@@ -3,6 +3,7 @@ import { resolve } from 'node:path';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
+import { CAPTURE_OUTCOME } from './support/outcomes';
 import type { Template } from '../../resources/renderer/src/types';
 import type {
   TemplateIndex,
@@ -104,7 +105,7 @@ const cardFor = (name: string) => screen.getByText(name).closest('li') as HTMLEl
  * ADR 0059 in one fixture — a Goal declares no converting act, so a design is
  * refused only for something about this particular Optin.
  */
-const ANY: Fit = { needsACapture: false, bound: false, sibling: null, act: 'submit' };
+const ANY: Fit = { bound: false, sibling: null, act: 'submit' };
 
 // =============================================================================
 // THE GRID.
@@ -269,7 +270,7 @@ describe('a design that converts the other way', () => {
    * forbids.
    */
   it('is not said on a card that is refused anyway', () => {
-    grid([ENTRIES[0], CLICKS], undefined, { ...ANY, needsACapture: true });
+    grid([ENTRIES[0], CLICKS], undefined, { ...ANY, bound: true });
 
     expect(within(cardFor('Offer panel')).getByText(/captures nothing/)).toBeInTheDocument();
     expect(within(cardFor('Offer panel')).queryByText(/instead of/)).toBeNull();
@@ -366,8 +367,8 @@ describe('a design that captures nothing', () => {
    * kind is written when a push to the lead-magnet [[Destination]] succeeds,
    * and a design asking the visitor for nothing gives it nothing to push.
    */
-  it('is refused where the goal counts deliveries', () => {
-    grid([ENTRIES[0], CLICKS], undefined, { ...ANY, needsACapture: true });
+  it('is refused where destinations would have no Lead to receive', () => {
+    grid([ENTRIES[0], CLICKS], undefined, { ...ANY, bound: true });
 
     const offer = within(cardFor('Offer panel'));
 
@@ -375,7 +376,7 @@ describe('a design that captures nothing', () => {
       'aria-disabled',
       'true',
     );
-    expect(offer.getByText('This design captures nothing, and your goal counts deliveries.')).toBeInTheDocument();
+    expect(offer.getByText('This design captures nothing, so there would be no leads to send to this Optin’s destinations.')).toBeInTheDocument();
     expect(within(cardFor('Centred card')).getByRole('button', { name: /Use this design/ })).toBeEnabled();
   });
 
@@ -523,7 +524,7 @@ describe('a design this install does not have', () => {
    * sentence about nothing.
    */
   it('carries no sentence about something it cannot be used for', () => {
-    grid([LOCKED], undefined, { needsACapture: true, bound: true, sibling: 'click', act: 'click' });
+    grid([LOCKED], undefined, { bound: true, sibling: 'click', act: 'click' });
 
     expect(screen.queryByText(/captures nothing/)).toBeNull();
     expect(screen.queryByText(/the other arm/)).toBeNull();
@@ -825,6 +826,17 @@ describe('searching the library', () => {
 });
 
 describe('inspecting before applying a design', () => {
+  it('suggests Goal-fitting designs first and lets the merchant show all designs', async () => {
+    render(<TemplatePicker index={{ templates: [ENTRIES[0], CLICKS], labels: LABELS, facets: FACETS }} trees={TREES}
+      displayType="popup" chosen={undefined} fit={{ ...ANY, outcome: CAPTURE_OUTCOME }} busy={false}
+      onChoose={vi.fn()} onNear={vi.fn()} />);
+    expect(shown()).toEqual(['Centred card']);
+    await userEvent.click(screen.getByRole('button', { name: 'Show all designs' }));
+    expect(shown()).toEqual(['Centred card', 'Offer panel']);
+    await userEvent.click(screen.getByRole('button', { name: 'Show designs for my Goal' }));
+    expect(shown()).toEqual(['Centred card']);
+  });
+
   it('preserves the query and filters on Back without changing the draft', async () => {
     const onChoose = vi.fn();
     render(

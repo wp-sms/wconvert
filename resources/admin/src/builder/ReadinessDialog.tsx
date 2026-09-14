@@ -25,6 +25,7 @@ import type { RuleVocabulary } from './api';
 import type { DisplayRulesValue } from './rules/summaries';
 import type { Destination } from '../destinations/api';
 import { goalSaid } from '../goals/said';
+import { outcomeDesignIssue, outcomeHandoffIssue } from '../goals/outcome';
 import type { GoalEntry } from '../goals/api';
 import type { Template } from '@renderer/types';
 
@@ -42,7 +43,6 @@ export interface ReadinessDialogProps {
   readonly displayType: string;
   readonly bound: readonly string[];
   readonly template: Template | undefined;
-  readonly growsAList: boolean;
   readonly destinations: readonly Destination[] | null;
   readonly fieldLabels: Readonly<Record<string, string>>;
   readonly onGoTo: (path: Path) => void;
@@ -70,7 +70,6 @@ export function ReadinessDialog({
   displayType,
   bound,
   template,
-  growsAList,
   destinations,
   fieldLabels,
   onGoTo,
@@ -93,9 +92,15 @@ export function ReadinessDialog({
   const summaries = summarise(rules, vocabulary, overlay, template ? convertingActOf(template.tree)[0] : undefined);
   const hasDesign = template !== undefined && template.tree.steps.length > 0;
   const captures = hasDesign ? capturesTaken(template.tree) : [];
-  const problems = hasDesign ? problemsIn(template, growsAList, rules.schedule.ends_at) : [];
-  const needsCapture = bound.length > 0 || (goal.status === 'ready' && goal.data?.needs_a_capture === true);
+  const problems = hasDesign ? problemsIn(template, rules.schedule.ends_at) : [];
+  const needsCapture = bound.length > 0;
+  const outcome = goal.status === 'ready' ? goal.data?.outcome : undefined;
+  const goalIssue = outcome && hasDesign ? outcomeDesignIssue(outcome, template) : null;
+  const handoffIssue = outcome ? outcomeHandoffIssue(outcome, bound, destinations) : null;
   const blocking: { said: string; fix: () => void }[] = [
+    ...(!outcome ? [{ said: __('Goal requirements could not be checked. Reload before publishing.', 'wconvert'), fix: onGoToDesign }] : []),
+    ...(goalIssue ? [{ said: goalIssue, fix: template && convertingActOf(template.tree)[0] === outcome?.action ? onEditDesign : onGoToDesign }] : []),
+    ...(handoffIssue ? [{ said: handoffIssue, fix: onGoToDestinations }] : []),
     ...(!hasDesign ? [{ said: __('Choose a design before publishing.', 'wconvert'), fix: onGoToDesign }] : []),
     ...problems.filter((problem) => problem.check === 'converts' || problem.blocksPublish).map((problem) => ({
       said: problem.said,
@@ -195,6 +200,9 @@ export function ReadinessDialog({
               </div>
             ) : (
               <>
+                {outcome && <ReviewSection title={__('What this Goal measures', 'wconvert')}>
+                  <p>{outcome.measurement}</p>
+                </ReviewSection>}
                 <ReviewSection
                   title={__('Design', 'wconvert')}
                   action={hasDesign ? __('Preview design', 'wconvert') : __('Choose design', 'wconvert')}

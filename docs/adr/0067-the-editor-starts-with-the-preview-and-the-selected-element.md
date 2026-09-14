@@ -4,6 +4,8 @@ The primary user is a merchant adapting a ready-made Template. The user approved
 the Fieldwork prototype after comparing the existing WordPress editor with the
 reference editor. The production editor adopts that flow.
 
+> **Amended by [ADR 0085](0085-goals-have-publish-contracts-and-stable-history.md):** Goal and precise metric now stay visible below the editor header. Change goal is for unpublished drafts; published Optins offer duplication.
+
 ## Workspace
 
 The builder owns its viewport, while the other admin screens retain Shell.

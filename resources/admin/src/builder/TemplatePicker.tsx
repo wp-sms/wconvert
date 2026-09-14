@@ -9,6 +9,7 @@ import { TemplateDesignDetail, type PrepareDesign } from './TemplateDesignDetail
 import { facetOptions, narrow, toggled, type Chosen } from './facets';
 import { nameOf, type TemplateIndex } from '../templates/api';
 import type { Template } from '@renderer/types';
+import { fitsOutcome } from '../goals/outcome';
 
 /** Reviewed starting points; extension designs retain their index order after these. */
 const RECOMMENDED: Readonly<Record<string, readonly string[]>> = {
@@ -41,6 +42,7 @@ export function TemplatePicker({
   const [chosenFacets, setChosenFacets] = useState<Chosen>({});
   const [query, setQuery] = useState('');
   const [availableOnly, setAvailableOnly] = useState(false);
+  const [goalFitOnly, setGoalFitOnly] = useState(true);
   const [moreOpen, setMoreOpen] = useState(false);
   const [inspectedId, setInspectedId] = useState<string | null>(initialInspectedId ?? null);
   const returnFocus = useRef<HTMLElement | null>(null);
@@ -59,8 +61,9 @@ export function TemplatePicker({
     [index.templates, displayType],
   );
   const available = useMemo(
-    () => availableOnly ? forType.filter((entry) => entry.availability === 'ready') : forType,
-    [forType, availableOnly],
+    () => forType.filter((entry) => (!availableOnly || entry.availability === 'ready')
+      && (!goalFitOnly || !fit.outcome || fitsOutcome(fit.outcome, entry.facets))),
+    [forType, availableOnly, goalFitOnly, fit.outcome],
   );
   const shown = useMemo(
     () => narrow(available, displayType, chosenFacets, query, index.labels),
@@ -78,6 +81,7 @@ export function TemplatePicker({
     setChosenFacets({});
     setQuery('');
     setAvailableOnly(false);
+    setGoalFitOnly(false);
   };
   const toggle = (facet: string, value: string) =>
     setChosenFacets((current) => toggled(current, facet, value));
@@ -97,6 +101,12 @@ export function TemplatePicker({
       {/* Keep this view mounted so Back restores the filters and the scroll position. */}
       <div className="wconvert-design-browser__browse" hidden={inspected !== undefined}>
         <div className="wconvert-picker__controls">
+          {fit.outcome && <div className="flex flex-wrap items-center justify-between gap-2 text-note">
+            <span>{goalFitOnly ? __('Showing designs suited to this Goal.', 'wconvert') : fit.outcome.requirement}</span>
+            <Button variant="link" size="sm" onClick={() => setGoalFitOnly(!goalFitOnly)}>
+              {goalFitOnly ? __('Show all designs', 'wconvert') : __('Show designs for my Goal', 'wconvert')}
+            </Button>
+          </div>}
           <div className="wconvert-picker__search-row">
             <label className="wconvert-picker__search">
               <Search size={17} aria-hidden="true" />

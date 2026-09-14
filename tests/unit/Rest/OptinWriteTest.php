@@ -58,6 +58,49 @@ final class OptinWriteTest extends TestCase
 {
     private const PLUGIN_DIR = __DIR__ . '/../../..';
 
+    public function testAnEmailOnlySmsDraftSavesButCannotBePublished(): void
+    {
+        $draft = $this->create(Goal::GrowSmsList, ['template_id' => 'centred-card']);
+        self::assertIsArray($draft);
+        $request = new WP_REST_Request();
+        $request->set_param('id', $draft['id']);
+        $response = $this->controller->publish($request);
+        self::assertInstanceOf(WP_Error::class, $response);
+        self::assertSame('wconvert_optin_goal_incomplete', $response->get_error_code());
+        self::assertNull($this->optins->find($draft['id'])?->publishedAt);
+    }
+
+    public function testUnpublishingDoesNotAllowAHistoryChangingGoalEdit(): void
+    {
+        $draft = $this->create(Goal::GrowEmailList, ['template_id' => 'centred-card']);
+        self::assertIsArray($draft);
+        $request = new WP_REST_Request();
+        $request->set_param('id', $draft['id']);
+        self::assertNotInstanceOf(WP_Error::class, $this->controller->publish($request));
+        $this->controller->unpublish($request);
+        $request->set_param('goal', Goal::GrowSmsList->value);
+        $response = $this->controller->update($request);
+        self::assertInstanceOf(WP_Error::class, $response);
+        self::assertSame('wconvert_optin_goal_locked', $response->get_error_code());
+        self::assertSame(Goal::GrowEmailList->value, $this->optins->find($draft['id'])?->goal);
+    }
+
+    public function testALeadMagnetNeedsAConfiguredDeliveryRouteBeforePublishing(): void
+    {
+        $draft = $this->create(Goal::DeliverLeadMagnet, ['template_id' => 'centred-card']);
+        self::assertIsArray($draft);
+        $request = new WP_REST_Request();
+        $request->set_param('id', $draft['id']);
+        self::assertInstanceOf(WP_Error::class, $this->controller->publish($request));
+        $destination = $this->destinations->save(null, 'lead_magnet_email', 'Guide', null, []);
+        $config = $draft['config'] + ['destinations' => [$destination->id]];
+        $request->set_param('config', $config);
+        $this->controller->update($request);
+        self::assertInstanceOf(WP_Error::class, $this->controller->publish($request));
+        $this->destinations->save($destination->id, 'lead_magnet_email', 'Guide', null, ['file_url' => 'https://example.org/guide.pdf']);
+        self::assertInstanceOf(\WP_REST_Response::class, $this->controller->publish($request));
+    }
+
     private OptinRepository $optins;
 
     private FakeConnection $db;
@@ -68,6 +111,8 @@ final class OptinWriteTest extends TestCase
 
     /** Shared by the repository and the controller, so both milestones land in one place. */
     private FakeOptionStore $milestones;
+
+    private \WConvert\Destination\DestinationStore $destinations;
 
     protected function setUp(): void
     {
@@ -101,7 +146,11 @@ final class OptinWriteTest extends TestCase
             InstalledRules::withPro($vocabulary),
             new RuleCatalogue($vocabulary, $pro, $site, new RoleRegistry()),
             $this->siteFrequency = new SiteFrequency(new FakeOptionStore()),
-            new MilestoneStore($this->milestones)
+            new MilestoneStore($this->milestones),
+            $this->destinations = new \WConvert\Destination\DestinationStore(new FakeOptionStore()),
+            (new \WConvert\Destination\DestinationRegistry($pro, $site))->register(
+                new \WConvert\Destination\LeadMagnet\LeadMagnetDestinationType(new \WConvert\Tests\Unit\Support\FakeMailer())
+            )
         );
     }
 
@@ -264,12 +313,15 @@ final class OptinWriteTest extends TestCase
      * with no field on it the headline reads zero forever, which is ADR 0020's
      * failure that looks broken while being right.
      */
-    public function testADeliveryGoalIsRefusedADesignThatCapturesNothing(): void
+    public function testADeliveryGoalCanSaveAnIncompleteDesignButCannotPublishIt(): void
     {
-        $refusal = $this->create(Goal::DeliverLeadMagnet, ['template_id' => 'offer-panel']);
-
-        $this->assertInstanceOf(WP_Error::class, $refusal);
-        $this->assertSame('wconvert_optin_captures_nothing', $refusal->get_error_code());
+        $draft = $this->create(Goal::DeliverLeadMagnet, ['template_id' => 'offer-panel']);
+        self::assertIsArray($draft);
+        $request = new WP_REST_Request();
+        $request->set_param('id', $draft['id']);
+        $refusal = $this->controller->publish($request);
+        self::assertInstanceOf(WP_Error::class, $refusal);
+        self::assertSame('wconvert_optin_goal_incomplete', $refusal->get_error_code());
     }
 
     /** And it takes a design that captures, whatever that design captures. */
@@ -292,7 +344,7 @@ final class OptinWriteTest extends TestCase
      * route is scriptable by anyone holding `manage_options`. It matters more
      * now that there IS a control that changes a Goal (ADR 0059).
      */
-    public function testAGoalOnlyPatchIsCheckedAgainstTheStoredDesign(): void
+    public function testAGoalOnlyDraftChangeCanBeSavedBeforeTheDesignIsAdjusted(): void
     {
         $created = $this->create(Goal::PromoteOffer, ['template_id' => 'offer-panel']);
 
@@ -304,8 +356,8 @@ final class OptinWriteTest extends TestCase
 
         $refusal = $this->controller->update($request);
 
-        $this->assertInstanceOf(WP_Error::class, $refusal);
-        $this->assertSame('wconvert_optin_captures_nothing', $refusal->get_error_code());
+        self::assertInstanceOf(\WP_REST_Response::class, $refusal);
+        self::assertSame(Goal::DeliverLeadMagnet->value, $refusal->get_data()['goal']);
     }
 
     /**
@@ -747,7 +799,7 @@ final class OptinWriteTest extends TestCase
 
     public function testSavingAndPublishingReturnTheConfirmedSnapshotState(): void
     {
-        $draft = $this->create(Goal::PromoteOffer, ['template_id' => 'offer-panel']);
+        $draft = $this->create(Goal::PromoteOffer, ['template' => \WConvert\Tests\Unit\Support\OptinDesign::template()]);
         $this->assertIsArray($draft);
         $this->assertFalse($draft['has_unpublished_changes']);
         $request = new WP_REST_Request();

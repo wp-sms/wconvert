@@ -292,6 +292,7 @@ export const getRules = () => apiFetch<RuleVocabulary>({ path: '/wconvert/v1/rul
  * campaign.
  */
 export interface OptinDraft extends OptinState {
+  can_change_goal: boolean;
   id: string;
   name: string;
   goal: string;

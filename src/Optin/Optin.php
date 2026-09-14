@@ -43,13 +43,15 @@ final class Optin
         public readonly ?string $parentId = null,
         /** Raw stored JSON comparison, supplied by reads to match the SQL list projection. */
         private readonly ?bool $snapshotsDiffer = null,
+        /** Computed from the existing Variant rows, not a stored flag. */
+        private readonly bool $hasVariants = false,
     ) {
     }
 
     /**
      * @param array<string, string|null> $row
      */
-    public static function fromRow(array $row): self
+    public static function fromRow(array $row, bool $hasVariants = false): self
     {
         return new self(
             (string) ($row['id'] ?? ''),
@@ -64,6 +66,7 @@ final class Optin
             // claiming to be an arm of a test with no id.
             ($row['parent_id'] ?? '') === '' ? null : (string) $row['parent_id'],
             ($row['config'] ?? null) !== ($row['published_config'] ?? null),
+            $hasVariants,
         );
     }
 
@@ -75,6 +78,12 @@ final class Optin
     public function isDeleted(): bool
     {
         return $this->deletedAt !== null;
+    }
+
+    /** The last published snapshot survives unpublishing. A Variant keeps its family's Goal. */
+    public function canChangeGoal(): bool
+    {
+        return $this->publishedConfig === null && $this->publishedAt === null && $this->parentId === null && !$this->hasVariants;
     }
 
     /** A draft may be incomplete; promotion requires at least one design screen. */
@@ -108,6 +117,7 @@ final class Optin
             'id' => $this->id,
             'name' => $this->name,
             'goal' => $this->goal,
+            'can_change_goal' => $this->canChangeGoal(),
             'config' => $this->config,
             'published_config' => $this->publishedConfig,
             'published_at' => $this->publishedAt,

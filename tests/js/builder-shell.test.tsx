@@ -1,3 +1,4 @@
+import { CAPTURE_OUTCOME } from './support/outcomes';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { render, screen, waitFor, within } from '@testing-library/react';
@@ -182,9 +183,9 @@ const GOAL = {
   label: 'Grow my email list',
   description: 'Capture email addresses and count every submission.',
   needs_a_capture: false,
-  grows_a_list: true,
+  grows_a_list: true, outcome: CAPTURE_OUTCOME,
   headline_kind: 'conversion',
-  headline_label: 'Conversions',
+  headline_label: 'Email submissions',
   tier: 'free',
   availability: 'ready' as const,
 };
@@ -205,6 +206,7 @@ const PLAYBOOK = {
 
 function optin(over: Record<string, unknown> = {}) {
   return {
+    can_change_goal: true,
     id: ID,
     name: 'Welcome discount',
     goal: 'grow_email_list',
@@ -583,7 +585,7 @@ describe('the builder shell', () => {
     open();
     await userEvent.click(await screen.findByRole('button', { name: 'Optin details' }));
 
-    expect(await screen.findByText('Submissions')).toBeInTheDocument();
+    expect((await screen.findAllByText('Email submissions')).length).toBeGreaterThan(0);
     expect(screen.getByText('1,000')).toBeInTheDocument();
     expect(screen.getByText('4.2%')).toBeInTheDocument();
   });
@@ -908,7 +910,7 @@ describe('the summary', () => {
 
     const dialog = await screen.findByRole('dialog');
 
-    expect(within(dialog).getByText('Grow my email list · counts Conversions')).toBeInTheDocument();
+    expect(within(dialog).getByText('Grow my email list · counts Email submissions')).toBeInTheDocument();
     expect(within(dialog).queryByText('Goal', { selector: 'dt' })).toBeNull();
   });
 

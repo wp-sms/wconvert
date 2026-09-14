@@ -92,7 +92,9 @@ final class RecordedOnTheRealPathTest extends TestCase
             InstalledRules::withPro($rules),
             new RuleCatalogue($rules, $pro, $site, new RoleRegistry()),
             new SiteFrequency(new FakeOptionStore()),
-            new MilestoneStore($this->options)
+            new MilestoneStore($this->options),
+            new \WConvert\Destination\DestinationStore(new FakeOptionStore()),
+            new \WConvert\Destination\DestinationRegistry($pro, $site)
         );
     }
 
@@ -351,7 +353,7 @@ final class RecordedOnTheRealPathTest extends TestCase
      * (ADR 0026). The Goal is checked against the design the Optin already
      * holds, so this is red without that fix.
      */
-    public function testAGoalCorrectionTheDesignCannotReportRecordsNothing(): void
+    public function testADraftGoalCorrectionRecordsAnOverrideEvenWhenItsDesignNeedsWork(): void
     {
         $draft = $this->prefill->fromPlaybook('cart-straight-away');
 
@@ -363,7 +365,7 @@ final class RecordedOnTheRealPathTest extends TestCase
         $request->set_param('id', (string) $optin['id']);
         $request->set_param('goal', 'deliver_lead_magnet');
 
-        $this->assertInstanceOf(\WP_Error::class, $this->controller()->update($request));
-        $this->assertNull($this->milestones()->firstEdit());
+        $this->assertInstanceOf(\WP_REST_Response::class, $this->controller()->update($request));
+        $this->assertNotNull($this->milestones()->firstEdit());
     }
 }

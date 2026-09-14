@@ -21,6 +21,16 @@ use WConvert\Tests\Unit\Support\OptinDesign;
 #[CoversClass(PublishedSet::class)]
 final class OptinRepositoryTest extends TestCase
 {
+    public function testAnUnpublishedTestParentCannotChangeItsGoalEither(): void
+    {
+        $parent = $this->repository->create('Draft test', 'grow_email_list', []);
+        $variant = $this->repository->createVariant($parent->id);
+        $this->assertNotNull($variant);
+        $this->assertFalse($this->repository->find($parent->id)?->canChangeGoal());
+        $this->assertNull($this->repository->saveDraft($parent->id, null, 'grow_sms_list', null));
+        $this->assertSame('grow_email_list', $this->repository->find($parent->id)?->goal);
+    }
+
     private FakeConnection $db;
 
     private FakeOptionStore $options;
@@ -47,7 +57,7 @@ final class OptinRepositoryTest extends TestCase
      */
     private function anOptin(array $config = ['targeting' => ['include' => [['type' => 'post', 'value' => 12]]]]): Optin
     {
-        return $this->repository->create('Spring sale', 'grow_email_list', $config + ['template' => OptinDesign::template()]);
+        return $this->repository->create('Spring sale', 'promote_offer', $config + ['template' => OptinDesign::template()]);
     }
 
     public function testPublishPromotesTheDraftAndRebuildsTheSetInOneCall(): void

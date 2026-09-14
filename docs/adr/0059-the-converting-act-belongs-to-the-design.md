@@ -5,6 +5,8 @@ words, and the grouping on Analytics. It no longer declares the converting act.
 Which act an [[Optin]] converts on is read from the design it holds, and from
 nowhere else.
 
+> **Amended by [ADR 0085](0085-goals-have-publish-contracts-and-stable-history.md):** Runtime act detection still belongs to the design. An Outcome contract now checks Goal/action/channel compatibility at publication, while allowing incomplete drafts.
+
 `Goal::convertingAct()` is deleted. Every refusal that existed to keep a Goal
 and a design agreeing about an act is deleted with it.
 

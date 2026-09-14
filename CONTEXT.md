@@ -100,15 +100,11 @@ A `followup` resource link and a code’s optional copy button do not count. The
 resource link belongs on the capture acknowledgement; it opens a configured file
 or page without another conversion. See [ADR 0080](docs/adr/0080-success-actions-do-not-count-again.md).
 
-> **Amended: it said *"its Goal decides which"*, and the Goal was the second
-> answer.** The registration refusal above is what always made the act
-> singular, so a registered design already declared it; a Goal declared it as
-> well, and every act-shaped refusal in the product existed because two sources
-> can disagree. `Goal::convertingAct()` is deleted. A Goal declares the counted
-> **kind** — which is why the Analytics card says *Conversions*, true of either
-> act, while the builder's own strip says *Submissions* or *Click-throughs* off
-> the one design that Optin holds. See
-> [ADR 0059](docs/adr/0059-the-converting-act-belongs-to-the-design.md).
+> Runtime conversion detection still reads the design
+> ([ADR 0059](docs/adr/0059-the-converting-act-belongs-to-the-design.md)).
+> [ADR 0085](docs/adr/0085-goals-have-publish-contracts-and-stable-history.md)
+> adds Goal compatibility at publication and precise labels; it does not add a
+> second runtime conversion detector.
 
 ### Impression
 
@@ -616,67 +612,47 @@ second timer ran does not show.
 
 ### Goal
 
-The outcome an Optin exists to produce, chosen *before* anything else is
-configured, and **kept** on the Optin for its whole life.
+The business outcome an [[Optin]] serves, selected before choosing a [[Playbook]].
+It remains visible in the editor alongside the precise metric WConvert can prove.
+The six Goals stay business-oriented; their counts do not claim subscriber state,
+inbox delivery, bookings, orders or revenue that WConvert does not observe.
 
-A Goal is first-class, not a setup-wizard answer that evaporates: it sets the
-Optin's headline success metric, decides what the analytics screen reports, and
-is the seam where later versions can recommend improvements.
+A Goal can change until first publication. After publication, including after
+unpublishing, it is fixed. **Duplicate for another goal** copies the current draft
+into a new Optin with a separate identity and zero results, leaving the original
+and its history unchanged. Variants also keep their Goal. No new storage is needed:
+the existing published snapshot survives unpublishing.
 
-The closed enum includes **Collect enquiries**, a free standalone outcome beside
-the original five Goals. It counts Conversions, not replies, sales or completed
-work. Like the other captured-details Goals, it advises when a design captures
-nothing, without restricting the design's act or filtering the gallery. Its
-**Request a quote** starting point uses an inline form with required email,
-optional name and an optional service choice; the merchant places the block or
-shortcode and chooses the receiving service (ADR 0076).
+### Outcome contract
 
-Each Goal **declares the metric that counts it** — which [[Conversion]] is the
-one that matters, and whether that Conversion is a [[Lead]] or not. That
-declaration is what makes a Goal more than a filter at creation time.
+A Goal's publish requirements and the meaning of its metric, declared together in
+PHP and exposed to the admin. It checks the actual edited design, not its template
+name or sample copy. The design still owns runtime conversion detection; the
+contract checks compatibility before that design becomes live.
 
-> **It declares the counted KIND and never the converting act.** A Goal used to
-> declare both, and the second was a duplicate: a registered [[Template]] offers
-> exactly one act and the runtime has always read it from the design. What that
-> cost was a wall — five of seven popup designs greyed out under *Promote a sale
-> or offer*, each saying *"your goal counts click-throughs"* without naming
-> which goal, on a screen with no control that changed one. See
-> [ADR 0059](docs/adr/0059-the-converting-act-belongs-to-the-design.md).
->
-> **What a Goal still says about a design is what it CAPTURES, in two
-> strengths.** A Goal read from **deliveries** needs a design that captures
-> something, or there is no address to deliver to — that one refuses the save.
-> A Goal whose product is a captured contact over a design that asks for
-> nothing is merely a likely mistake — the Optin saves, runs, and honestly
-> counts click-throughs, it just will never grow a list — and that one is a
-> sentence in the builder's Summary. Both survive the deletion for one reason:
-> **neither is derivable from a design**, which the converting act was.
+| Goal | Required before publishing | Headline metric |
+| --- | --- | --- |
+| Grow email list | Submit form with required email | Email submissions |
+| Grow SMS list | Submit form with required phone | Phone submissions |
+| Collect enquiries | Submit form collecting email or phone | Enquiries captured |
+| Recover abandoned carts | Click design; cart URL supplied at runtime | Cart return clicks |
+| Promote a sale or offer | Click design with an offer link | Offer clicks |
+| Deliver a lead magnet | Required email plus a selected, available, configured lead-magnet email Destination | Emails accepted for sending |
 
-The declaration is applied when the analytics screen is *read*, never stamped on
-each Conversion as it happens. So correcting a Goal restates the Optin's whole
-history rather than splitting it at the moment of the edit — which is what makes
-"persistent, not frozen" below safe to mean literally.
+Submissions are events, not unique people or confirmed subscriptions. Mail
+acceptance is not inbox arrival or a download; resends can count again. These are
+explicit evidence limits, not additional tracked stages.
 
-"Kept for its whole life" means persistent, not frozen: a Goal never evaporates
-off the Optin, but it can be corrected.
+Incomplete Goal/design pairings may be saved as drafts. The gallery suggests
+fitting designs first using existing action/capture facets, and **Show all designs**
+preserves exploration. Publication checks the final design again. A click design
+still cannot bind Destinations that would have no Lead to receive.
 
-> **And there is a control that corrects it**, in the builder's Optin details
-> ([ADR 0067](docs/adr/0067-the-editor-starts-with-the-preview-and-the-selected-element.md)).
-> It was chosen in a wizard that could not be
-> re-entered, so "corrected" meant a scripted call — which is why the server's
-> own refusal had the words *"or change the Goal"* deleted from it. Correcting
-> one is purely editorial: it moves which card reports the Optin and what its
-> headline number is called, and touches the design not at all.
-> **The editor's action also saves the whole current draft**, including name,
-> design, rules and destinations, without publishing it. Its confirmation names
-> *Save draft and change goal* and explains that success starts a new local
-> Undo/Redo history. A failed save preserves history. Goal remains outside draft
-> Undo ([ADR 0075](docs/adr/0075-draft-history-and-template-content-choices-stay-predictable.md)).
+**Request a consultation** now captures a request rather than redirecting to a
+booking page. Its acknowledgement does not promise an appointment. **Request a
+quote** remains an inline email form with an optional service choice.
 
-> **The test a Goal must pass:** it names an outcome WConvert can *count*.
-> "Grow my email list" is countable. "Increase brand awareness" is not, and a
-> Goal that cannot be counted is decoration — it collapses Goal back into a
-> disposable onboarding answer.
+See [ADR 0085](docs/adr/0085-goals-have-publish-contracts-and-stable-history.md).
 
 ### Template
 
@@ -741,12 +717,10 @@ need review. A new Playbook draft continues to use its own copy, not those sampl
 > **goal-agnostic** — the library is a set of designs per [[Display Type]], not a
 > design for every pairing of Display Type and Goal.
 >
-> **And "goal-agnostic" is now true of the picker as well as of the library.**
-> A design was still refused where its converting act was not the one its Goal
-> counted, which greyed out most of the gallery under two of the five Goals — a
-> Display Type × Goal matrix arriving as disabled buttons rather than as files.
-> The act belongs to the design (ADR 0059), so a design is refused only for
-> something about the particular Optin in front of it.
+> **The library stays goal-agnostic, while the picker suggests fit.**
+> Existing action/capture facets power a default fit filter, with Show all designs.
+> No Goal tags or Display Type × Goal file matrix is introduced. Incompatible
+> drafts stay editable; publication enforces the Outcome contract (ADR 0085).
 
 > **Amended: the library is no longer small, and the boundary is what stops the
 > matrix coming back.** Every facet describes the **design's capabilities**

@@ -1,3 +1,4 @@
+import { CAPTURE_OUTCOME } from './support/outcomes';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { act, render, screen, waitFor, within } from '@testing-library/react';
@@ -16,7 +17,7 @@ const FORM = design('centred-card');
 const LINK = design('offer-panel');
 const GOAL: GoalEntry = {
   id: 'collect-subscribers', label: 'Collect subscribers', description: '',
-  needs_a_capture: false, grows_a_list: true, headline_kind: 'conversion', headline_label: 'Conversions',
+  outcome: CAPTURE_OUTCOME, headline_kind: 'conversion', headline_label: 'Conversions',
   tier: 'free', availability: 'ready',
 };
 
@@ -28,7 +29,7 @@ function props(overrides: Partial<ReadinessDialogProps> = {}): ReadinessDialogPr
     playbook: ready(null), playbookId: '',
     rules: { rules: [], targeting: {}, frequency: {}, schedule: {}, priority: 0 },
     vocabulary: ruleTypes(), displayType: 'popup', bound: [], template: FORM,
-    growsAList: true, destinations: [], fieldLabels: { email: 'Email address', phone: 'Phone number' },
+    destinations: [], fieldLabels: { email: 'Email address', phone: 'Phone number' },
     onGoTo: vi.fn(), onGoToSchedule: vi.fn(), onGoToRules: vi.fn(), onGoToDestinations: vi.fn(),
     onGoToDesign: vi.fn(), onEditDesign: vi.fn(), onPreview: vi.fn(), onPublish: vi.fn().mockResolvedValue(undefined),
     ...overrides,
@@ -68,7 +69,7 @@ describe('reviewing before publishing', () => {
     const template: Template = { tokens: FORM.tokens, tree: { steps: [
       { type: 'stack', children: [{ type: 'heading', role: 'headline', text: 'Hello' }] },
     ] } };
-    const { supplied } = await open({ template, growsAList: false });
+    const { supplied } = await open({ template });
     expect(screen.getByText(/Nothing on this design counts as a conversion/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Publish Optin' })).toBeDisabled();
     await userEvent.click(screen.getByRole('button', { name: 'Publish Optin' }));
@@ -80,10 +81,10 @@ describe('reviewing before publishing', () => {
   });
 
   it.each(['goal', 'destination'])('requires captured fields when the %s needs a lead', async (requirement) => {
-    await open({ template: LINK, growsAList: false,
-      ...(requirement === 'goal' ? { goal: ready({ ...GOAL, needs_a_capture: true }) } : { bound: ['forwarding-route'] }),
+    await open({ template: LINK,
+      ...(requirement === 'goal' ? { goal: ready({ ...GOAL, outcome: CAPTURE_OUTCOME }) } : { bound: ['forwarding-route'] }),
     });
-    expect(screen.getByText(/This Optin needs a form field to collect leads/)).toBeInTheDocument();
+    expect(screen.getByText(requirement === 'goal' ? CAPTURE_OUTCOME.requirement : /This Optin needs a form field to collect leads/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Publish Optin' })).toBeDisabled();
   });
 
@@ -112,11 +113,11 @@ describe('reviewing before publishing', () => {
     expect(supplied.onPublish).not.toHaveBeenCalled();
   });
 
-  it('keeps list-growth advice publishable when the design legitimately tracks clicks', async () => {
+  it('blocks publishing a click-only design under a capture Goal', async () => {
     await open({ template: LINK });
-    expect(screen.getByText(/will never collect any/)).toBeInTheDocument();
-    expect(screen.queryByText('Before you can publish')).toBeNull();
-    expect(screen.getByRole('button', { name: 'Publish Optin' })).toBeEnabled();
+    expect(screen.getByText(CAPTURE_OUTCOME.requirement)).toBeInTheDocument();
+    expect(screen.getByText('Before you can publish')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Publish Optin' })).toBeDisabled();
   });
 
   it('keeps a contrast warning advisory and routes its correction to design', async () => {

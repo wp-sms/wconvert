@@ -1,3 +1,4 @@
+import { CAPTURE_OUTCOME } from './support/outcomes';
 import { useEffect } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, render, screen, waitFor } from '@testing-library/react';
@@ -26,7 +27,7 @@ vi.mock('../../resources/admin/src/builder/deferred', async () => ({
 const { App } = await import('../../resources/admin/src/App');
 const ID = '01JQZK8N3M4P5Q6R7S8T9V0W1X';
 const GOAL = { id: 'grow_email_list', label: 'Grow my email list', description: 'Capture email addresses.',
-  needs_a_capture: false, grows_a_list: true, headline_kind: 'conversion', headline_label: 'Conversions', tier: 'free', availability: 'ready' };
+  needs_a_capture: false, grows_a_list: true, outcome: CAPTURE_OUTCOME, headline_kind: 'conversion', headline_label: 'Conversions', tier: 'free', availability: 'ready' };
 const START = { id: 'welcome', name: 'Welcome', goal: GOAL.id, display_type: 'popup', notes: '', destination_hint: {} };
 const DRAFT = { name: 'Welcome', goal: GOAL.id, config: {} };
 

@@ -58,6 +58,7 @@ export function App() {
         backLabel={route.returnTo.startsWith('#analytics') ? __('Back to Analytics', 'wconvert')
           : route.returnTo.startsWith('#leads') ? __('Back to Leads', 'wconvert') : __('Back to Optins', 'wconvert')}
         onEditingStateChange={navigation.onEditingStateChange}
+        onCreated={(createdId) => navigate(editorHref(createdId, route.returnTo))}
         onNarrowClose={() => navigation.requestNavigation(route.returnTo)}
         onClose={() => navigate(route.returnTo)} />
       <ConfirmDialog open={navigation.pending} onOpenChange={(open) => { if (!open) navigation.stay(); }}
@@ -95,8 +96,8 @@ export function App() {
  * A dialog already open may finish or close without losing its own edits.
  * The visible way out uses the same unsaved-work guard as browser navigation.
  */
-function BuilderScreen({ id, onClose, onNarrowClose, backLabel, onEditingStateChange }: {
-  id: string; onClose: () => void; onNarrowClose: () => void; backLabel: string; onEditingStateChange: (state: EditingState) => void;
+function BuilderScreen({ id, onClose, onNarrowClose, backLabel, onEditingStateChange, onCreated }: {
+  id: string; onClose: () => void; onNarrowClose: () => void; backLabel: string; onEditingStateChange: (state: EditingState) => void; onCreated: (id: string) => void;
 }) {
   const fits = useBuilderViewport();
   const [opened, setOpened] = useState(fits);
@@ -111,7 +112,7 @@ function BuilderScreen({ id, onClose, onNarrowClose, backLabel, onEditingStateCh
       {/* First arrival on a phone still avoids the lazy chunk and reads. Once
           mounted, keep the draft alive if the window narrows or rotates. */}
       {(fits || opened) && <div hidden={!fits} inert={!fits}>
-        <OptinBuilder id={id} onClose={onClose} backLabel={backLabel} onEditingStateChange={onEditingStateChange} />
+        <OptinBuilder id={id} onClose={onClose} backLabel={backLabel} onEditingStateChange={onEditingStateChange} onCreated={onCreated} />
       </div>}
     </>
   );

@@ -110,8 +110,6 @@ function checkName(check: CheckId): string {
   switch (check) {
     case 'converts':
       return __('Counts something', 'wconvert');
-    case 'collects':
-      return __('Collects contacts', 'wconvert');
     case 'captures':
       return __('The form works', 'wconvert');
     case 'countdown':
