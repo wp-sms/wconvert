@@ -91,7 +91,7 @@ final class OptinRepository
     private const NAME_COLUMNS = 'id, name';
 
     /** Everything needed to interpret a count, and nothing else (ADR 0020). */
-    private const INTERPRETATION_COLUMNS = 'id, name, goal, deleted_at';
+    private const INTERPRETATION_COLUMNS = 'id, name, goal, deleted_at, parent_id, published_at, (published_config IS NOT NULL) AS was_published';
 
     /** Which [[Destination]]s an Optin binds — the published config, and the id to key it by. */
     private const BINDING_COLUMNS = 'id, published_config';
@@ -611,12 +611,14 @@ final class OptinRepository
      * **Soft-deleted Optins are included, and that is the point.** Their
      * counts stay in their Goal's totals — a merchant tidying up in March must
      * not watch February's goal total fall — and it is {@see \WConvert\Stats\Dashboard} that
-     * drops their ROW from the per-Optin list. Excluding them here would take
+     * marks their row historical in the per-Optin report. Excluding them here would take
      * the counts away with the row, which is the one direction that cannot be
      * undone. It is the same reason {@see self::names()} includes them, one
      * table over.
      *
-     * **Four short columns and no `LIMIT`.** {@see self::summaries()} caps at
+     * **Short metadata and no `LIMIT`.** Publication history is a scalar
+     * `IS NOT NULL` projection; neither config blob crosses the boundary.
+     * {@see self::summaries()} caps at
      * 500 because a list view past that is a scrolling problem; a cap HERE
      * would silently drop the 501st Optin's counts out of its Goal's total,
      * which is a wrong number rather than a short page. The same argument

@@ -37,9 +37,15 @@ dates. Failed refreshes retain the previous numbers, label the requested period
 and disclose the dates still shown. Editor return links, individual-result links
 and capture links use that accepted payload. Capture links carry actual `from`
 and `to` dates in the site's timezone. A focused report displays the selected
-Optin's numbers and daily series, not its whole Goal's totals. Deleted Optins
-retain Goal history but have no individual row; an unavailable focus offers a
-route back to all results.
+Optin's numbers and daily series, not its whole Goal's totals. **Amended by
+[0089](0089-analytics-starts-with-impact-and-keeps-history-inspectable.md):** deleted Optins retain inspectable historical
+rows, without edit/publication actions; an unavailable focus still offers a
+route back to all results. Analytics uses complete-day comparisons and adds
+impact/family navigation; editor/list report windows continue to include today.
+
+**Amended by [0089](0089-analytics-starts-with-impact-and-keeps-history-inspectable.md):** Analytics now presents resource
+requests and accepted sends as separate numbers, not the gap described below.
+The explanation and Destination investigation route remain.
 
 The delivery gap is **the nonnegative difference between conversions and
 lead-magnet deliveries recorded in the same period**. It is not a count of

@@ -13,18 +13,17 @@ defined('ABSPATH') || exit;
  * A row in `wconvert_stats` carries no `goal`, no `had_email` and no display
  * type; what a count MEANS is read from `wconvert_optins` at report time
  * (ADR 0020). This is that half of the read, given a name because it travels
- * through {@see Dashboard} as a set and the three fields on it always travel
+ * through {@see Dashboard} as a set and the fields on it always travel
  * together.
  *
  * The pattern {@see \WConvert\Optin\PublishedOptin} already sets: one Optin as
  * one consumer needs it, rather than the whole row dragged through a screen
- * that wants three columns of it.
+ * that only needs short reporting metadata, not design JSON.
  *
  * **`deleted` is a fact and not a filter.** A soft-deleted Optin's counts stay
  * in its Goal's totals — a merchant tidying up in March must not watch
- * February's goal total fall — and it is the per-Optin LIST it drops out of.
- * Holding the flag rather than having been excluded on the way in is what lets
- * one read serve both.
+ * February's goal total fall. Its historical row remains inspectable, but no
+ * longer offers edit or publication actions (ADR 0089).
  *
  * @since 0.1.0
  */
@@ -35,6 +34,9 @@ final class InterpretedOptin
         public readonly string $name,
         public readonly Goal $goal,
         public readonly bool $deleted,
+        public readonly bool $wasPublished = false,
+        public readonly bool $published = false,
+        public readonly ?string $parentId = null,
     ) {
     }
 
@@ -64,7 +66,10 @@ final class InterpretedOptin
             (string) ($row['id'] ?? ''),
             (string) ($row['name'] ?? ''),
             $goal,
-            ($row['deleted_at'] ?? null) !== null
+            ($row['deleted_at'] ?? null) !== null,
+            (bool) ($row['was_published'] ?? false),
+            ($row['published_at'] ?? null) !== null,
+            isset($row['parent_id']) ? (string) $row['parent_id'] : null,
         );
     }
 }

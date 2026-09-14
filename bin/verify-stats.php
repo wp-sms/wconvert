@@ -378,7 +378,7 @@ echo "The dashboard\n";
 // Everything above proved the WRITE. These prove the read: that a `BETWEEN`
 // over a DATE column includes both of its ends, that an `UPDATE` to an Optin's
 // `goal` really does restate every day of its history, and that a `deleted_at`
-// stamp keeps the counts while taking the row (ADR 0020).
+// stamp keeps both the counts and an inspectable historical row (ADR 0089).
 //
 // The unit suite proves the same arithmetic against rows it handed itself.
 // What it cannot prove is that the rows arriving from MySQL are those rows.
@@ -486,13 +486,13 @@ $verify->check(
     $afterDelete['headline'] ?? null
 );
 $verify->check(
-    'and the deleted Optin is gone from the list of what is running',
-    [$reported->id],
+    'and the deleted Optin remains inspectable in the report',
+    [$tidied->id, $reported->id],
     array_column($afterDelete['optins'] ?? [], 'id')
 );
 $verify->check(
-    'and the one that is still reports its own numbers',
-    [2],
+    'and each row reports its own numbers once',
+    [2, 2],
     array_column($afterDelete['optins'] ?? [], 'headline')
 );
 
@@ -559,6 +559,12 @@ if ($queryLog) {
         $texts,
         static fn (string $sql): bool => stripos($sql, ' join ') !== false
     )));
+
+    $wpdb->queries = [];
+    $compared = $dashboard->compare(StatRange::completeDays(30, $today));
+    $verify->check('comparison uses three statements, not one per campaign', 3, count($wpdb->queries));
+    $verify->check('comparison ends before the in-progress site day', true, $compared['to'] < $today);
+    $verify->check('the previous window is equally long', $compared['days'], $compared['previous']['days']);
 } else {
     echo "  skip SAVEQUERIES is defined false, so the query log cannot be read\n";
 }

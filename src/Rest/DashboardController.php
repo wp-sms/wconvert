@@ -11,7 +11,7 @@ use WP_REST_Response;
 defined('ABSPATH') || exit;
 
 /**
- * REST for the analytics screen: one read-only route, one window.
+ * REST reporting: one read-only route, optional complete-period comparison.
  *
  * ============================================================================
  * THE CALLER SENDS A NUMBER OF DAYS AND NEVER A DATE.
@@ -20,12 +20,13 @@ defined('ABSPATH') || exit;
  * (ADR 0019). A browser asked for a date would answer with the VISITOR's day:
  * a merchant in Tokyo checking their numbers from a hotel in Los Angeles would
  * be handed yesterday's window and told it was today's, and the numbers would
- * be right about the wrong day. So `days` is the whole of the query, and the
+ * be right about the wrong day. So `days` names the length, and the
  * one end that is a date is {@see StatDay::today()} — read here, on the
  * server, against the site's own `timezone_string`.
  *
  * That also makes the range unspoofable in the direction that matters: the
- * window can only ever end today, so there is no "as at" a caller can move.
+ * server chooses today, or yesterday and its adjacent comparison when
+ * `complete` is enabled. There is no caller-supplied "as at" date (ADR 0089).
  *
  * **Read-only, with no exception**, and for a sharper reason than the [[Lead]]
  * log's. A counter cannot be recomputed — there is no raw data behind it
@@ -49,6 +50,7 @@ final class DashboardController implements RestController
                 'callback' => [$this, 'index'],
                 'permission_callback' => [Routes::class, 'canManage'],
                 'args' => [
+                    'complete' => ['type' => 'boolean', 'default' => false],
                     // A window, in days, ending today. `1` is today alone,
                     // which is what a merchant means by "Today" — a window of
                     // one day rather than a window of none.
@@ -70,6 +72,9 @@ final class DashboardController implements RestController
 
     public function index(WP_REST_Request $request): WP_REST_Response
     {
+        if ($request->get_param('complete')) {
+            return new WP_REST_Response($this->dashboard->compare(StatRange::completeDays((int) $request->get_param('days'), StatDay::today())));
+        }
         return new WP_REST_Response(
             $this->dashboard->read(StatRange::lastDays((int) $request->get_param('days'), StatDay::today()))
         );

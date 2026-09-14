@@ -184,9 +184,9 @@ final class ArmsAreCountedApartTest extends TestCase
             array_column($running['optins'], 'id')
         );
         $this->assertSame(
-            [self::PARENT],
+            [self::ARM_B, self::PARENT],
             array_column($ended['optins'], 'id'),
-            'the arm that lost is not something the merchant is still running'
+            'the retired arm remains inspectable'
         );
     }
 }

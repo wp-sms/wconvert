@@ -34,10 +34,9 @@ final class StatRange
      *
      * `wconvert_stats` carries no secondary index and a date range across every
      * Optin is therefore a scan of it — booked at ~29k rows a year, which is a
-     * read an admin screen can afford on demand (ADR 0019, ADR 0034). A cap
-     * keeps that a statement about one year rather than about however many
-     * years the install has been counting, and it is the reason the scan needs
-     * no index rather than an apology.
+     * read an admin screen can afford on demand (ADR 0019, ADR 0034). The cap
+     * bounds returned rows, not the scan of the unindexed date predicate.
+     * Comparisons read two such windows (ADR 0089).
      */
     public const MAX_DAYS = 366;
 
@@ -66,15 +65,23 @@ final class StatRange
      */
     public static function lastDays(int $days, string $today): self
     {
-        // The ONLY way to build a window, deliberately. A second constructor
-        // taking two explicit dates is the shape the REST route must not
-        // offer — a window that ends anywhere but today is a window whose far
-        // end somebody chose, and the whole reason `days` is the query is that
-        // nobody but the site's own clock gets to choose it (ADR 0034).
+        // The route supplies the site day. Complete and previous windows
+        // derive their boundaries here rather than accepting browser dates.
 
         $days = max(1, min($days, self::MAX_DAYS));
 
         return new self(self::daysBefore($today, $days - 1), $today);
+    }
+
+    /** Analytics comparisons exclude the in-progress site day. */
+    public static function completeDays(int $days, string $today): self
+    {
+        return self::lastDays($days, self::daysBefore($today, 1));
+    }
+
+    public function previous(): self
+    {
+        return self::lastDays($this->days(), self::daysBefore($this->from, 1));
     }
 
     /** How many days the window covers, both ends counted. */

@@ -108,7 +108,7 @@ final class StatRangeTest extends TestCase
             static fn (\ReflectionMethod $method): bool => $method->isStatic()
         ));
 
-        $this->assertSame(['lastDays'], array_map(
+        $this->assertSame(['lastDays', 'completeDays'], array_map(
             static fn (\ReflectionMethod $method): string => $method->getName(),
             $constructors
         ));

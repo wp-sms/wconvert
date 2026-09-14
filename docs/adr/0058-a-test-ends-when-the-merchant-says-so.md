@@ -13,6 +13,14 @@ columns, no secondary index, no `variant_id` — and `wconvert_optins` gained
 nothing: `parent_id` was already there, added by the pre-release audit while
 nothing wrote it.
 
+## Analytics history, added without a round ledger
+
+**Extended by [0089](0089-analytics-starts-with-impact-and-keeps-history-inspectable.md):** Analytics adds a family
+comparison, manual winner action and inspectable retired-arm reports. These
+are counters over selected dates, including past uses of each design, not
+isolated test-round snapshots. No timestamps or winner records are invented;
+the existing winner endpoint and capability checks remain authoritative.
+
 ## The split is even, and there is no ratio to set
 
 Traffic is split **uniformly across the published arms**, drawn once per

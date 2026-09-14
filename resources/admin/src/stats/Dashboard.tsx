@@ -1,257 +1,468 @@
 import { useEffect, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { ArrowLeft, ChartColumn, Megaphone } from 'lucide-react';
+import {
+  ArrowLeft,
+  ArrowUpRight,
+  Download,
+  Mail,
+  MousePointerClick,
+  ChartColumn,
+} from 'lucide-react';
 import { Button } from '../components/ui/button';
-import { DataTable, DataTableActions, DataTableActionsColumn, DataTableBody, DataTableCell, DataTableColumn, DataTableHead, DataTableRow } from '../shell/DataTable';
-import { EmptyState } from '../shell/EmptyState';
 import { PageAction } from '../shell/PageActions';
-import { PageError, Region, RegionBody, RegionErrorState, RegionFooter, RegionHeader } from '../shell/Region';
-import { Skeleton } from '../components/ui/skeleton';
+import { PageError, Region, RegionErrorState } from '../shell/Region';
 import { RegionSkeleton } from '../shell/RegionSkeleton';
-import { Stat, StatRow, StatRowSkeleton } from '../shell/Stat';
-import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
-import { Milestones } from '../milestones/Milestones';
-import { destinationHref, editorHref, leadsHref, reportHref, type ReportQuery } from '../nav';
-import { readDashboard, type DashboardPayload, type GoalReport, type OptinReport } from './api';
-import { formatCount, formatRate } from './format';
-import { ActivityChart } from './ActivityChart';
+import { StatRowSkeleton } from '../shell/Stat';
+import { EmptyState } from '../shell/EmptyState';
+import {
+  LOADING,
+  failed,
+  messageOf,
+  ready,
+  type Loadable,
+} from '../shell/loadable';
+import { reportHref, type ReportQuery } from '../nav';
+import { readDashboard, type DashboardPayload } from './api';
+import { formatCount } from './format';
+import { families, rangeLabel, reportCSV } from './reporting';
+import { CampaignTable, Change, Experiment, GoalDetail } from './ReportDetails';
+import './analytics.css';
 
-const WINDOWS: readonly number[] = [1, 7, 30, 90];
-const periodLabel = (days: number) => days === 1 ? __('Today', 'wconvert')
-  : sprintf(_n('The last %s day', 'The last %s days', days, 'wconvert'), String(days));
+const WINDOWS = [7, 30, 90];
+const periodLabel = (days: number) =>
+  sprintf(
+    _n('Last %s complete day', 'Last %s complete days', days, 'wconvert'),
+    String(days),
+  );
 
-/** The URL records requested filters; every result and cross-link uses the accepted report's dates. */
-export function Dashboard({ query, onQueryChange }: {
-  query?: ReportQuery;
-  onQueryChange?: (query: ReportQuery) => void;
-} = {}) {
+export function Dashboard({
+  query,
+  onQueryChange,
+}: { query?: ReportQuery; onQueryChange?: (query: ReportQuery) => void } = {}) {
   const [localQuery, setLocalQuery] = useState<ReportQuery>({});
   const selection = query ?? localQuery;
-  const change = (next: ReportQuery) => onQueryChange ? onQueryChange(next) : setLocalQuery(next);
+  const change = (next: ReportQuery) =>
+    onQueryChange ? onQueryChange(next) : setLocalQuery(next);
   const days = selection.days ?? null;
   const [report, setReport] = useState<Loadable<DashboardPayload>>(LOADING);
   const [refreshError, setRefreshError] = useState<string | null>(null);
   const [updating, setUpdating] = useState(false);
   const [retry, setRetry] = useState(0);
-
   useEffect(() => {
     let active = true;
     setUpdating(true);
-    readDashboard(days).then((data) => {
-      if (!active) return;
-      setReport(ready(data));
-      setRefreshError(null);
-    }).catch((cause: unknown) => {
-      if (!active) return;
-      setReport((current) => current.status === 'ready' ? current : failed(cause));
-      setRefreshError(messageOf(cause));
-    }).finally(() => { if (active) setUpdating(false); });
-    return () => { active = false; };
-  }, [days, retry]);
-
-  const payload = report.status === 'ready' ? report.data : null;
-  const selectedGoal = payload?.goals.some((card) => card.goal === selection.goal) ? selection.goal : undefined;
-  const periods = days !== null && !WINDOWS.includes(days) ? [...WINDOWS, days].sort((a, b) => a - b) : WINDOWS;
-  const selectedCard = selection.optinId ? payload?.goals.find((card) => card.optins.some((optin) => optin.id === selection.optinId)) : undefined;
-  const selectedOptin = selectedCard?.optins.find((optin) => optin.id === selection.optinId);
-  const cards = selection.optinId ? (selectedCard ? [selectedCard] : []) : payload?.goals.filter((card) => !selectedGoal || card.goal === selectedGoal);
-  const shownQuery = { ...selection, days: payload?.days ?? selection.days };
-
-  return (
-    <div className="flex flex-col gap-5">
-      <PageAction>
-        <label className="ms-auto flex items-center gap-2 text-muted-foreground">
-          {updating || refreshError ? __('Requested period', 'wconvert') : __('Period', 'wconvert')}
-          <select aria-label={__('Report period', 'wconvert')}
-            className="h-(--control-height) rounded-md border border-input bg-card ps-3 pe-9 text-body text-foreground"
-            value={days ?? payload?.days ?? ''}
-            onChange={(event) => change({ ...selection, days: Number(event.target.value) })}>
-            {periods.map((period) => <option key={period} value={period}>{periodLabel(period)}</option>)}
-          </select>
-        </label>
-      </PageAction>
-      {selection.optinId && <a className="inline-flex items-center gap-2 self-start text-note text-primary hover:underline"
-        href={reportHref({ days: payload?.days ?? selection.days, goal: selectedGoal })}>
-        <ArrowLeft aria-hidden="true" className="size-4" />{__('All Campaign results', 'wconvert')}
-      </a>}
-      {!selection.optinId && payload !== null && payload.goals.length > 1 && (
-        <div className="wconvert-panel-filters" role="group" aria-label={__('Filter reports by goal', 'wconvert')}>
-          <button type="button" aria-pressed={!selectedGoal} onClick={() => change({ ...selection, goal: undefined })}>{__('All goals', 'wconvert')}</button>
-          {payload.goals.map((card) => <button type="button" key={card.goal} aria-pressed={selectedGoal === card.goal}
-            onClick={() => change({ ...selection, goal: card.goal })}>{card.label}</button>)}
-        </div>
-      )}
-      {payload !== null && payload.from !== '' && (
-        <div className="flex flex-wrap items-center justify-between gap-2 text-note text-muted-foreground">
-          <span>{sprintf(__('Showing %1$s to %2$s, in your site’s timezone.', 'wconvert'), payload.from, payload.to)}</span>
-          {updating && <span role="status">{__('Updating report…', 'wconvert')}</span>}
-        </div>
-      )}
-      {refreshError !== null && payload !== null && <PageError message={sprintf(__('Could not load the requested period. Showing the previous report and its dates. %s', 'wconvert'), refreshError)} />}
-      {report.status === 'failed' && <Region label={__('Analytics', 'wconvert')}><RegionErrorState message={report.message} /></Region>}
-      {refreshError !== null && <Button variant="outline" className="self-start" onClick={() => setRetry((value) => value + 1)}>{__('Retry loading report', 'wconvert')}</Button>}
-      {report.status === 'loading' && <RegionSkeleton label={__('Analytics', 'wconvert')}>
-        <StatRowSkeleton stats={4} /><Skeleton aria-hidden="true" className="h-36 w-full" />
-      </RegionSkeleton>}
-      {payload !== null && selection.optinId && !selectedOptin && <Region label={__('Campaign report', 'wconvert')}>
-        <EmptyState icon={ChartColumn} title={__('This Campaign is not available in the report', 'wconvert')}
-          action={<Button asChild variant="outline"><a href={reportHref({ days: payload.days })}>{__('View all results', 'wconvert')}</a></Button>}>
-          {__('A deleted Campaign keeps its historical counts in its Goal’s totals, but no longer has an individual report.', 'wconvert')}
-        </EmptyState>
-      </Region>}
-      {payload !== null && !selection.optinId && payload.goals.length === 0 && <Region label={__('Analytics', 'wconvert')}>
-        <EmptyState icon={ChartColumn} title={__('Nothing to report yet', 'wconvert')}
-          action={<Button asChild variant="outline"><a href="#optins">{__('Go to Campaigns', 'wconvert')}</a></Button>}>
-          {__('Publish a campaign and its numbers appear here.', 'wconvert')}
-        </EmptyState>
-      </Region>}
-      {payload && cards?.map((card) => <GoalRegion key={card.goal} card={card} optin={selectedOptin}
-        period={payload} query={shownQuery} />)}
-      {payload !== null && payload.goals.length > 0 && <details className="wconvert-report-help">
-        <summary>{__('How these numbers work', 'wconvert')}</summary>
-        <ul>
-          <li>{__('Impressions count times a campaign was seen. For an inline form, this starts when it enters the visitor’s view.', 'wconvert')}</li>
-          <li>{__('Conversion rate is visitor actions divided by impressions. The action is a form submission or a button click, depending on the design. A dash means there were no impressions.', 'wconvert')}</li>
-          <li>{__('For a lead magnet, the headline counts emails accepted for sending; conversion rate still measures visitor submissions. These send events do not prove inbox arrival.', 'wconvert')}</li>
-          <li>{__('Goal totals include deleted Campaigns. The table lists existing Campaigns, so its rows may add up to less. Changing a campaign’s Goal moves its historical counts to that Goal.', 'wconvert')}</li>
-          <li>{__('Reports use daily counters. Deleting captured leads through retention does not remove those historical counts.', 'wconvert')}</li>
-        </ul>
-      </details>}
-      {!selection.optinId && <Milestones />}
-    </div>
-  );
-}
-
-function GoalRegion({ card, optin, period, query }: {
-  card: GoalReport;
-  optin?: OptinReport;
-  period: DashboardPayload;
-  query: ReportQuery;
-}) {
-  const numbers = optin ?? card;
-  const back = reportHref(query);
-  return (
-    <Region>
-      <RegionHeader title={optin?.name ?? card.label} level={3} />
-      <RegionBody className="flex flex-col gap-5">
-        {card.measurement && <p className="m-0 text-note text-muted-foreground">{card.measurement}</p>}
-        {optin && <p className="m-0 text-note text-muted-foreground">{card.label}</p>}
-        <StatRow>
-          <Stat label={card.headline_label} value={formatCount(numbers.headline)} emphasis />
-          <Stat label={__('Impressions', 'wconvert')} value={formatCount(numbers.impressions)} />
-          <Stat label={__('Conversion rate', 'wconvert')} value={formatRate(numbers.conversion_rate)} />
-          <Stat label={__('Dismissals', 'wconvert')} value={formatCount(numbers.dismissals)} />
-        </StatRow>
-        {numbers.impressions === 0 && <p className="m-0 text-note text-muted-foreground">
-          {__('No impressions were recorded in this period. Check the date range and where the Campaign is set to appear.', 'wconvert')}
-        </p>}
-        <ActivityChart label={card.headline_label} byDay={numbers.by_day} />
-        {!optin && (card.undelivered_conversions ?? 0) > 0 && <div className="wconvert-report-attention">
-          <p>{sprintf(_n('%d more submission than emails accepted for sending was recorded in this period.', '%d more submissions than emails accepted for sending were recorded in this period.', card.undelivered_conversions ?? 0, 'wconvert'), card.undelivered_conversions ?? 0)}</p>
-          <p>{__('These totals count events on the day they happen. Check Destinations for forwarding delays or errors.', 'wconvert')}</p>
-          <a href={destinationHref()}>{__('Review forwarding', 'wconvert')}</a>
-        </div>}
-      </RegionBody>
-      {optin ? <RegionFooter>
-        <div className="flex flex-wrap gap-2">
-          <Button asChild variant="outline"><a href={editorHref(optin.id, back)}>{__('Edit this Campaign', 'wconvert')}</a></Button>
-          <Button asChild variant="outline"><a href={leadsHref({ optinId: optin.id, from: period.from, to: period.to })}>{__('View captured leads', 'wconvert')}</a></Button>
-        </div>
-      </RegionFooter> : <details className="wconvert-panel-details border-t border-border">
-        <summary>{sprintf(_n('View %d Campaign', 'View %d Campaigns', card.optins.length, 'wconvert'), card.optins.length)}</summary>
-        <OptinTable card={card} period={period} query={query} />
-      </details>}
-    </Region>
-  );
-}
-
-function OptinTable({ card, period, query }: { card: GoalReport; period: DashboardPayload; query: ReportQuery }) {
-  if (card.optins.length === 0) {
-    return <EmptyState icon={Megaphone} title={__('No existing Campaigns under this Goal', 'wconvert')}>
-      {__('These totals include results from deleted Campaigns.', 'wconvert')}
-    </EmptyState>;
-  }
-  const back = reportHref(query);
-  return (
-    <div className="border-t border-border">
-      <DataTable label={sprintf(__('Campaigns for %s', 'wconvert'), card.label)}>
-        <DataTableHead>
-          <DataTableColumn>{__('Campaign', 'wconvert')}</DataTableColumn>
-          <DataTableColumn numeric>{card.headline_label}</DataTableColumn>
-          <DataTableColumn numeric>{__('Impressions', 'wconvert')}</DataTableColumn>
-          <DataTableColumn numeric>{__('Conversion rate', 'wconvert')}</DataTableColumn>
-          <DataTableColumn>{__('Over time', 'wconvert')}</DataTableColumn>
-          <DataTableActionsColumn>{__('Actions', 'wconvert')}</DataTableActionsColumn>
-        </DataTableHead>
-        <DataTableBody>
-          {card.optins.map((optin) => <DataTableRow key={optin.id}>
-            <DataTableCell label={__('Campaign', 'wconvert')}>
-              <a className="font-medium text-primary hover:underline" href={reportHref({ days: period.days, goal: card.goal, optinId: optin.id })}>{optin.name}</a>
-            </DataTableCell>
-            <DataTableCell label={card.headline_label} numeric>{formatCount(optin.headline)}</DataTableCell>
-            <DataTableCell label={__('Impressions', 'wconvert')} numeric>{formatCount(optin.impressions)}</DataTableCell>
-            <DataTableCell label={__('Conversion rate', 'wconvert')} numeric>{formatRate(optin.conversion_rate)}</DataTableCell>
-            <DataTableCell label={__('Over time', 'wconvert')}><Sparkline label={card.headline_label} byDay={optin.by_day} /></DataTableCell>
-            <DataTableActions>
-              <Button asChild variant="ghost" size="sm"><a aria-label={sprintf(__('Edit %s', 'wconvert'), optin.name)} href={editorHref(optin.id, back)}>{__('Edit', 'wconvert')}</a></Button>
-              <Button asChild variant="ghost" size="sm"><a aria-label={sprintf(__('View captures for %s', 'wconvert'), optin.name)} href={leadsHref({ optinId: optin.id, from: period.from, to: period.to })}>{__('Captures', 'wconvert')}</a></Button>
-            </DataTableActions>
-          </DataTableRow>)}
-        </DataTableBody>
-      </DataTable>
-    </div>
-  );
-}
-
-function Sparkline({ label, byDay }: { label: string; byDay: Record<string, number> }) {
-  const days = Object.entries(byDay);
-
-  if (days.length === 0) {
-    return null;
-  }
-
-  const peak = Math.max(...days.map(([, count]) => count));
-
-  /*
-   * **A series of nothing is not a chart, it is a smudge.** Every day at zero
-   * drew thirty hairlines across the card — which on a fresh install is every
-   * card on the screen, and it reads as a broken rule rather than as "no data".
-   * The number above it already says zero, in the largest type on the region.
-   */
-  if (peak === 0) {
-    return null;
-  }
-
-  const width = 100 / days.length;
-
-  return (
-    <div className="wconvert-sparkline">
-      <svg viewBox="0 0 100 24" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-        {days.map(([day, count], index) => {
-          // A day with nothing on it still gets a hairline, so the series
-          // reads as a run of days rather than as a shorter chart.
-          const height = Math.max(0.5, (count / peak) * 24);
-
-          return (
-            <rect
-              key={day}
-              x={index * width}
-              y={24 - height}
-              width={Math.max(width - 0.4, 0.2)}
-              height={height}
-            />
+    readDashboard(days, true)
+      .then((data) => {
+        if (active) {
+          setReport(ready(data));
+          setRefreshError(null);
+        }
+      })
+      .catch((cause: unknown) => {
+        if (active) {
+          setReport((current) =>
+            current.status === 'ready' ? current : failed(cause),
           );
-        })}
-      </svg>
-      <p className="sr-only">
-        {sprintf(
-          /* translators: 1: what the number counts, e.g. "Submissions". 2: the highest daily figure. 3: a number of days. */
-          __('%1$s per day. Highest day: %2$s, across %3$s days.', 'wconvert'),
-          label,
-          formatCount(peak),
-          String(days.length),
-        )}
-      </p>
+          setRefreshError(messageOf(cause));
+        }
+      })
+      .finally(() => {
+        if (active) setUpdating(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [days, retry]);
+  const payload = report.status === 'ready' ? report.data : null;
+  const accepted = { ...selection, days: payload?.days ?? selection.days };
+  const compare = selection.compare !== false;
+  const periods =
+    days !== null && !WINDOWS.includes(days)
+      ? [...WINDOWS, days].sort((a, b) => a - b)
+      : WINDOWS;
+  const focusedId = selection.optinId ?? selection.experiment;
+  const card = payload?.goals.find((g) =>
+    focusedId
+      ? g.optins.some((o) => o.id === focusedId)
+      : g.goal === selection.goal,
+  );
+  const optin = card?.optins.find((o) => o.id === focusedId);
+  const impact = payload?.impact.find((i) => i.id === selection.impact);
+  const overview = !focusedId && !selection.goal && !selection.impact;
+  const scopedCards = card
+    ? [card]
+    : impact
+      ? (payload?.goals.filter((g) => impact.goals.includes(g.goal)) ?? [])
+      : (payload?.goals ?? []);
+  const previous = compare ? payload?.previous : undefined;
+  const priorCard = previous?.goals.find((g) => g.goal === card?.goal);
+  const exportReport = () => {
+    if (!payload) return;
+    const exportCards =
+      selection.experiment && card && optin
+        ? [
+            {
+              ...card,
+              optins:
+                families(card).find((family) =>
+                  family.arms.some((arm) => arm.id === optin.id),
+                )?.arms ?? [],
+            },
+          ]
+        : scopedCards;
+    const csv = reportCSV(
+      compare ? payload : { ...payload, previous: undefined },
+      exportCards,
+      selection.optinId,
+    );
+    const url = URL.createObjectURL(
+      new Blob([csv], { type: 'text/csv;charset=utf-8' }),
+    );
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `wconvert-${payload.from}-${payload.to}.csv`;
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 0);
+  };
+  return (
+    <div className="wconvert-analytics">
+      <PageAction>
+        <div className="wa-header-actions">
+          <label>
+            <span className="sr-only">
+              {updating || refreshError
+                ? __('Requested period', 'wconvert')
+                : __('Period', 'wconvert')}
+            </span>
+            <select
+              aria-label={__('Report period', 'wconvert')}
+              value={days ?? payload?.days ?? ''}
+              onChange={(e) =>
+                change({ ...selection, days: Number(e.target.value) })
+              }
+            >
+              {periods.map((period) => (
+                <option key={period} value={period}>
+                  {periodLabel(period)}
+                </option>
+              ))}
+            </select>
+          </label>
+          <Button
+            variant="outline"
+            disabled={!payload || updating}
+            onClick={exportReport}
+            title={__(
+              'Exports this report, including campaigns hidden by table search or status filters.',
+              'wconvert',
+            )}
+          >
+            <Download aria-hidden="true" />
+            {__('Export report CSV', 'wconvert')}
+          </Button>
+        </div>
+      </PageAction>
+      {payload && (
+        <DateScope
+          payload={payload}
+          compare={compare}
+          onCompare={(value) => change({ ...selection, compare: value })}
+        />
+      )}
+      {updating && payload && (
+        <p className="wa-muted" role="status">
+          {__('Updating report…', 'wconvert')}
+        </p>
+      )}
+      {refreshError && payload && (
+        <PageError
+          message={sprintf(
+            __(
+              'Could not load the requested period. Showing the previous report and its dates. %s',
+              'wconvert',
+            ),
+            refreshError,
+          )}
+        />
+      )}
+      {report.status === 'failed' && (
+        <Region label={__('Analytics', 'wconvert')}>
+          <RegionErrorState message={report.message} />
+        </Region>
+      )}
+      {refreshError && (
+        <Button variant="outline" onClick={() => setRetry((n) => n + 1)}>
+          {__('Retry loading report', 'wconvert')}
+        </Button>
+      )}
+      {report.status === 'loading' && (
+        <RegionSkeleton label={__('Analytics', 'wconvert')}>
+          <StatRowSkeleton stats={4} />
+        </RegionSkeleton>
+      )}
+      {payload && !overview && (
+        <a
+          className="wa-back"
+          href={reportHref({ days: payload.days, compare: selection.compare })}
+        >
+          <ArrowLeft aria-hidden="true" />
+          {__('Overall impact', 'wconvert')}
+        </a>
+      )}
+      {payload && payload.goals.length === 0 && overview ? (
+        <Region>
+          <EmptyState
+            icon={ChartColumn}
+            title={__(
+              'Your first results start with a live campaign',
+              'wconvert',
+            )}
+            action={
+              <Button asChild>
+                <a href="#optins">{__('Go to Campaigns', 'wconvert')}</a>
+              </Button>
+            }
+          >
+            {__(
+              'Publish a campaign to start seeing its reach and results. Never-published drafts stay on the Campaigns page.',
+              'wconvert',
+            )}
+          </EmptyState>
+        </Region>
+      ) : payload && overview ? (
+        <>
+          <div className="wa-intro">
+            <p className="wa-eyebrow">
+              {__('Your impact at a glance', 'wconvert')}
+            </p>
+            <h2>{__('What WConvert brought to your site', 'wconvert')}</h2>
+            <p className="wa-muted">
+              {__(
+                'See the results, then explore the campaigns behind them.',
+                'wconvert',
+              )}
+            </p>
+          </div>
+          <div className="wa-impact-grid">
+            {payload.impact.map((item, index) => (
+              <a
+                key={item.id}
+                className={`wa-impact ${index === 0 ? 'wa-impact-primary' : ''}`}
+                href={reportHref({
+                  days: payload.days,
+                  impact: item.id,
+                  compare: selection.compare,
+                })}
+              >
+                <span className="wa-impact-label">
+                  {item.label}
+                  <ArrowUpRight aria-hidden="true" />
+                </span>
+                <strong>{formatCount(item.count)}</strong>
+                {previous && (
+                  <Change
+                    current={item.count}
+                    previous={
+                      previous.impact.find((p) => p.id === item.id)?.count
+                    }
+                  />
+                )}
+                <small>{item.note}</small>
+              </a>
+            ))}
+          </div>
+          {payload.impact.find((i) => i.id === 'impressions')?.count === 0 && (
+            <p className="wa-notice">
+              {__(
+                'No appearances recorded in this period. Check when and where your published campaigns are set to appear.',
+                'wconvert',
+              )}
+            </p>
+          )}
+          <div className="wa-section-heading">
+            <h3>{__('Results by goal', 'wconvert')}</h3>
+            <span>
+              {__('Choose a goal to explore its performance', 'wconvert')}
+            </span>
+          </div>
+          <div className="wa-goal-grid">
+            {payload.goals.map((g) => (
+              <a
+                className="wa-goal-card"
+                key={g.goal}
+                href={reportHref({
+                  days: payload.days,
+                  goal: g.goal,
+                  compare: selection.compare,
+                })}
+              >
+                <span className="wa-goal-icon">
+                  {g.action === 'submit' ? (
+                    <Mail aria-hidden="true" />
+                  ) : (
+                    <MousePointerClick aria-hidden="true" />
+                  )}
+                </span>
+                <span>
+                  <b>{g.label}</b>
+                  <span>
+                    <strong>{formatCount(g.conversions)}</strong>{' '}
+                    {g.result_label}
+                  </span>
+                  <small>
+                    {sprintf(
+                      _n(
+                        '%d campaign',
+                        '%d campaigns',
+                        families(g).length,
+                        'wconvert',
+                      ),
+                      families(g).length,
+                    )}{' '}
+                    · {__('History included', 'wconvert')}
+                  </small>
+                </span>
+                <ArrowUpRight className="wa-goal-arrow" aria-hidden="true" />
+              </a>
+            ))}
+          </div>
+          <p className="wa-muted wa-footnote">
+            {__(
+              'Paused and deleted campaigns keep their contribution. Published campaigns may still be limited by their schedule, rules or unavailable dependencies.',
+              'wconvert',
+            )}
+          </p>
+        </>
+      ) : payload && selection.experiment && card && optin ? (
+        <Experiment
+          key={optin.id}
+          card={card}
+          optin={optin}
+          previous={priorCard}
+          payload={payload}
+          query={accepted}
+          disabled={updating}
+          onRefresh={() => setRetry((n) => n + 1)}
+        />
+      ) : payload && card ? (
+        <GoalDetail
+          key={optin?.id ?? card.goal}
+          card={card}
+          optin={optin}
+          previous={priorCard}
+          payload={payload}
+          query={accepted}
+          disabled={updating}
+          onRefresh={() => setRetry((n) => n + 1)}
+        />
+      ) : payload && impact ? (
+        <>
+          <div className="wa-intro">
+            <p className="wa-eyebrow">{__('Overall impact', 'wconvert')}</p>
+            <h2>{impact.label}</h2>
+            <p className="wa-muted">{impact.note}</p>
+          </div>
+          <CampaignTable
+            cards={scopedCards}
+            payload={payload}
+            query={accepted}
+          />
+        </>
+      ) : payload && !overview ? (
+        <Region>
+          <EmptyState
+            icon={ChartColumn}
+            title={__('This report is not available', 'wconvert')}
+          >
+            {__(
+              'Choose Overall impact to see the available goals and campaigns. Never-published drafts have no report.',
+              'wconvert',
+            )}
+          </EmptyState>
+        </Region>
+      ) : null}
+      {payload && payload.goals.length > 0 && (
+        <details className="wa-help">
+          <summary>{__('How these numbers work', 'wconvert')}</summary>
+          <p>
+            {__(
+              'Leads count form submissions, not unique people or confirmed subscribers. Each submission counts once even when sent to multiple destinations; repeat submissions count again. Offer and cart clicks are separate, not purchases or recovered revenue.',
+              'wconvert',
+            )}
+          </p>
+          <p>
+            {__(
+              'Rates use visitor actions divided by campaign appearances, including repeats. A dash means no appearances were recorded. Inline forms count when they enter the visitor’s view.',
+              'wconvert',
+            )}
+          </p>
+          <p>
+            {__(
+              'Pausing or deleting a campaign preserves its historical counters. Goals are fixed after first publication. Lead retention can remove captured records without removing these totals.',
+              'wconvert',
+            )}
+          </p>
+          <p>
+            {__(
+              'Email handoffs are separate send events and can occur on a later day. Resends can count again. Acceptance for sending does not prove inbox arrival or a file download.',
+              'wconvert',
+            )}
+          </p>
+        </details>
+      )}
     </div>
+  );
+}
+
+function DateScope({
+  payload,
+  compare,
+  onCompare,
+}: {
+  payload: DashboardPayload;
+  compare: boolean;
+  onCompare: (value: boolean) => void;
+}) {
+  return (
+    <section
+      className="wa-date-scope"
+      aria-label={__('Report dates', 'wconvert')}
+    >
+      <div>
+        <div className="wa-date-caption">
+          {__('Reporting period', 'wconvert')}
+          <details className="wa-date-help">
+            <summary aria-label={__('About reporting dates', 'wconvert')}>
+              i
+            </summary>
+            <p>
+              {__(
+                'Today is excluded because it is still in progress. Comparisons use the same number of complete days immediately before your selected period.',
+                'wconvert',
+              )}
+            </p>
+          </details>
+        </div>
+        <strong>{rangeLabel(payload.from, payload.to)}</strong>
+      </div>
+      <div className="wa-date-comparison">
+        <label>
+          <span>{__('Compare with previous period', 'wconvert')}</span>
+          <input
+            type="checkbox"
+            role="switch"
+            checked={compare}
+            onChange={(e) => onCompare(e.target.checked)}
+          />
+        </label>
+        <span>
+          {compare && payload.previous
+            ? rangeLabel(payload.previous.from, payload.previous.to)
+            : compare
+              ? __('Comparison unavailable', 'wconvert')
+              : __('Comparison off', 'wconvert')}
+        </span>
+      </div>
+    </section>
   );
 }

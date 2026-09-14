@@ -6,7 +6,7 @@ import apiFetch from '@wordpress/api-fetch';
  * ============================================================================
  * IT ASKS FOR A NUMBER OF DAYS AND NEVER FOR A DATE.
  * ============================================================================
- * The screen says "Today", and that has to mean the MERCHANT's today — the
+ * Calendar boundaries follow the MERCHANT's today — the
  * site's timezone, not the browser's. A date built here would be the day of
  * whoever is sitting at the keyboard: a merchant in Tokyo checking their
  * numbers from a hotel in Los Angeles would be handed yesterday's window and
@@ -19,14 +19,14 @@ import apiFetch from '@wordpress/api-fetch';
  * here.
  *
  * **No [[Goal]] id is spelled in this file, or anywhere in this bundle.** The
- * five live in `src/Goal/Goal.php` as an enum and every word the cards render
+ * Goals live in `src/Goal/Goal.php` as an enum and every word the cards render
  * — the Goal's label, and what its headline number is CALLED — travels in the
  * payload, because `wp i18n make-pot` cannot see a JavaScript string.
  * `tests/unit/Goal/GoalParityTest.php` fails the day one appears here.
  */
 
 /** The numbers a card and an Optin row both carry. */
-interface Numbers {
+export interface Numbers {
   /** The Goal's headline metric — named by `headline_label` on the card. */
   headline: number;
   impressions: number;
@@ -35,6 +35,10 @@ interface Numbers {
   conversion_rate: number | null;
   /** The headline number per day, with every day in the window present. */
   by_day: Record<string, number>;
+  conversions: number;
+  deliveries: number | null;
+  conversion_by_day: Record<string, number>;
+  impression_by_day: Record<string, number>;
 }
 
 /**
@@ -47,6 +51,8 @@ interface Numbers {
 export interface OptinReport extends Numbers {
   id: string;
   name: string;
+  parent_id: string | null;
+  status: 'published' | 'paused' | 'historical';
 }
 
 /**
@@ -63,15 +69,13 @@ export interface OptinReport extends Numbers {
  * `impressions − conversions − dismissals`, and naming it would put two
  * numbers on screen where one is the arithmetic of the other.
  *
- * `undelivered_conversions` is **not** an instance of that rule, which is
- * worth saying because this comment used to claim it was. `conversions` is not a
- * field on this payload at all — the numbers below are `headline`,
- * `impressions`, `dismissals`, `conversion_rate` and `by_day`, and on a
- * lead-magnet card `headline` is *deliveries*. So the subtraction is new
- * information rather than a restatement.
+ * Analytics presents `conversions` and `deliveries` separately. Neither their
+ * difference nor a send event proves a failed delivery or inbox arrival.
  */
 export interface GoalReport extends Numbers {
   goal: string;
+  action: 'submit' | 'click';
+  result_label: string;
   /** The merchant's own words for the Goal, translated in PHP. */
   label: string;
   /** What the headline number is CALLED — two of the five convert on a click. */
@@ -102,15 +106,26 @@ export interface DashboardPayload {
    */
   days: number;
   goals: GoalReport[];
+  impact: Impact[];
+  previous?: DashboardPayload;
+  complete_days?: boolean;
+}
+
+export interface Impact {
+  id: string;
+  label: string;
+  note: string;
+  count: number;
+  goals: string[];
 }
 
 /**
  * `days` omitted asks for the server's own default window, which is the only
  * way this bundle can avoid naming it.
  */
-export const readDashboard = (days: number | null) =>
+export const readDashboard = (days: number | null, complete = false) =>
   apiFetch<DashboardPayload>({
-    path: `/wconvert/v1/dashboard${days === null ? '' : `?days=${encodeURIComponent(String(days))}`}`,
+    path: `/wconvert/v1/dashboard${days === null ? (complete ? '?complete=1' : '') : `?days=${encodeURIComponent(String(days))}${complete ? '&complete=1' : ''}`}`,
   });
 
 /**

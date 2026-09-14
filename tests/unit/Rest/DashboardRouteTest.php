@@ -116,7 +116,7 @@ final class DashboardRouteTest extends TestCase
         /** @var list<array{args: array<string, mixed>}> $handlers */
         $handlers = self::dashboardRoute()['args'];
 
-        $this->assertSame(['days'], array_keys($handlers[0]['args']));
+        $this->assertSame(['complete', 'days'], array_keys($handlers[0]['args']));
     }
 
     /**
