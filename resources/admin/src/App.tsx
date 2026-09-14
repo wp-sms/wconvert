@@ -46,7 +46,7 @@ export function App() {
   const createButton = (
     <Button onClick={() => setCreating(true)}>
       <Plus aria-hidden="true" />
-      {__('Create an Optin', 'wconvert')}
+      {__('Create a campaign', 'wconvert')}
     </Button>
   );
 
@@ -56,14 +56,14 @@ export function App() {
     return <>
       <BuilderScreen key={navigation.hash} id={route.editId}
         backLabel={route.returnTo.startsWith('#analytics') ? __('Back to Analytics', 'wconvert')
-          : route.returnTo.startsWith('#leads') ? __('Back to Leads', 'wconvert') : __('Back to Optins', 'wconvert')}
+          : route.returnTo.startsWith('#leads') ? __('Back to Leads', 'wconvert') : __('Back to Campaigns', 'wconvert')}
         onEditingStateChange={navigation.onEditingStateChange}
         onCreated={(createdId) => navigate(editorHref(createdId, route.returnTo))}
         onNarrowClose={() => navigation.requestNavigation(route.returnTo)}
         onClose={() => navigate(route.returnTo)} />
       <ConfirmDialog open={navigation.pending} onOpenChange={(open) => { if (!open) navigation.stay(); }}
         title={__('Leave without saving?', 'wconvert')}
-        description={__('Your changes to this Optin will be lost.', 'wconvert')}
+        description={__('Your changes to this Campaign will be lost.', 'wconvert')}
         confirmLabel={__('Discard changes', 'wconvert')} cancelLabel={__('Keep editing', 'wconvert')}
         onConfirm={navigation.discard} returnFocusTo={navigation.returnFocusTo} />
     </>;

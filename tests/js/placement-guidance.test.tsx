@@ -33,7 +33,7 @@ describe('placing an inline Optin', () => {
     render(<PlacementGuidance optinId={OPTIN} displayType="inline" published={false} />);
 
     expect(screen.getByText(/Add the/)).toHaveTextContent(`“${metadata.title}”`);
-    expect(screen.getByText(/Publish this Optin first/)).toBeInTheDocument();
+    expect(screen.getByText(/Publish this Campaign first/)).toBeInTheDocument();
     expect(screen.getByRole('textbox', { name: 'Shortcode for other editors' })).toHaveValue(inlineShortcode(OPTIN));
     expect(screen.getByRole('textbox')).toHaveAttribute('readonly');
     expect(screen.queryByRole('link')).toBeNull();
@@ -42,7 +42,7 @@ describe('placing an inline Optin', () => {
 
   it('keeps display conditions explicit after publishing and distinguishes the placement page', () => {
     render(<PlacementGuidance optinId={OPTIN} displayType="inline" published />);
-    expect(screen.queryByText(/Publish this Optin first/)).toBeNull();
+    expect(screen.queryByText(/Publish this Campaign first/)).toBeNull();
     expect(screen.getByText(/display rules, schedule and visitor settings still decide/)).toBeInTheDocument();
     expect(screen.getByText(/also check the page where you placed its block or shortcode/)).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Check your homepage' })).toHaveAttribute('href', 'https://example.org/blog/?wconvert-inspect=1');
@@ -50,7 +50,7 @@ describe('placing an inline Optin', () => {
 
   it('names the exact Optin to select when its name is provided', () => {
     render(<PlacementGuidance optinId={OPTIN} optinName="Friday newsletter" displayType="inline" published />);
-    expect(screen.getByText('Add the “Inline Optin” block and choose “Friday newsletter”.')).toBeInTheDocument();
+    expect(screen.getByText('Add the “Inline Campaign” block and choose “Friday newsletter”.')).toBeInTheDocument();
   });
 
   it('copies the exact shortcode and retains focus on the completed action', async () => {
@@ -119,7 +119,7 @@ describe('checking overlay placement', () => {
   it('does not offer the live-site inspector as a draft preview', () => {
     render(<PlacementGuidance optinId={OPTIN} displayType="popup" published={false} />);
     expect(screen.queryByRole('link')).toBeNull();
-    expect(screen.getByText(/After publishing, this Optin can appear/)).toBeInTheDocument();
+    expect(screen.getByText(/After publishing, this Campaign can appear/)).toBeInTheDocument();
     expect(screen.getByText(/editor preview shows your draft/)).toBeInTheDocument();
   });
 

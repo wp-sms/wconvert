@@ -617,8 +617,8 @@ export function howOftenSummary(
     stoppers.push(act === 'click' ? __('click the main button', 'wconvert') : __('submit the form', 'wconvert'));
   }
 
-  const and = _x('and', 'joins two limits on how often an Optin shows', 'wconvert');
-  const or = _x('or', 'joins two things that stop an Optin showing again', 'wconvert');
+  const and = _x('and', 'joins two limits on how often a campaign shows', 'wconvert');
+  const or = _x('or', 'joins two things that stop a campaign showing again', 'wconvert');
 
   const text =
     caps.length === 0

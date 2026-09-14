@@ -168,8 +168,8 @@ it('explains when installed campaign starts serve a different goal without offer
   const choose = vi.fn();
   render(<TemplatePacks displayType="" goal="selected" onInstalled={vi.fn()} onChooseStartingPoints={choose} />);
   await userEvent.click(await screen.findByRole('button', { name: 'Explore designs in Reading pack' }));
-  await screen.findByText('This pack has no starting points for your selected goal. Its designs remain available in the editor.');
-  expect(screen.queryByRole('button', { name: 'Choose a starting point' })).not.toBeInTheDocument();
+  await screen.findByText('This pack has no campaign setups for your selected goal. Its designs remain available in the editor.');
+  expect(screen.queryByRole('button', { name: 'Choose a campaign setup' })).not.toBeInTheDocument();
   expect(screen.queryByRole('button', { name: 'Continue with this design' })).not.toBeInTheDocument();
   expect(choose).not.toHaveBeenCalled();
 });
@@ -179,7 +179,7 @@ it('explains a goal mismatch before installation while allowing the designs to b
   api.previewPack.mockResolvedValue({ ...preview, starting_points: [{ id: 'start', name: 'Campaign', goal: 'different', goal_label: 'Another goal', template_id: preview.templates[0].id }] });
   render(<TemplatePacks displayType="" goal="selected" onInstalled={vi.fn()} onChooseStartingPoints={vi.fn()} />);
   await userEvent.click(await screen.findByRole('button', { name: 'Preview Reading pack' }));
-  await screen.findByText('This pack has no starting points for your selected goal. Install it to use its designs in the editor.');
+  await screen.findByText('This pack has no campaign setups for your selected goal. Install it to use its designs in the editor.');
   expect(screen.getByRole('button', { name: 'Install pack' })).toBeEnabled();
   expect(api.installPack).not.toHaveBeenCalled();
 });

@@ -15,6 +15,7 @@ export interface OutcomeContract {
   proof_level: string;
   destination_type: string | null;
   link_required: boolean;
+  audience_channel: string | null;
 }
 
 export function outcomeDesignIssue(outcome: OutcomeContract, template: Template | undefined): string | null {
@@ -40,10 +41,17 @@ export function fitsOutcome(outcome: OutcomeContract, facets: { act: string | nu
     || outcome.capture_any_of.some((field) => facets.captures.includes(field)));
 }
 
-export function outcomeHandoffIssue(outcome: OutcomeContract, bound: readonly string[], destinations: readonly Destination[] | null): string | null {
+export function outcomeHandoffIssue(outcome: OutcomeContract, bound: readonly string[], destinations: readonly Destination[] | null, captureMode = 'connected'): string | null {
+  if (outcome.audience_channel && captureMode !== 'local') {
+    const ready = destinations?.some((destination) => bound.includes(destination.id)
+      && destination.availability === 'ready'
+      && destination.requirements?.audience_channels?.includes(outcome.audience_channel as string)
+      && settingsProblems(destination.requirements, destination.settings).length === 0);
+    return ready ? null : __('Choose and configure a service for this channel, or explicitly choose Collect only in WConvert before publishing.', 'wconvert');
+  }
   if (outcome.destination_type === null) return null;
   if (destinations === null) return __('Open Destinations to check the required delivery setup before publishing.', 'wconvert');
-  const ready = destinations.some((destination) => bound.includes(destination.id)
+  const ready = captureMode !== 'local' && destinations.some((destination) => bound.includes(destination.id)
     && destination.type === outcome.destination_type && destination.availability === 'ready'
     && destination.requirements != null
     && settingsProblems(destination.requirements, destination.settings).length === 0);

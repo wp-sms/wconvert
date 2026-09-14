@@ -77,7 +77,7 @@ export function InspectDialog({ open, onOpenChange }: { open: boolean; onOpenCha
           <DialogTitle>{__('Why did nothing show?', 'wconvert')}</DialogTitle>
           <DialogDescription>
             {__(
-              'Open a page on your site and WConvert will explain, for every Optin, exactly where it stopped.',
+              'Open a page on your site and WConvert will explain, for every Campaign, exactly where it stopped.',
               'wconvert',
             )}
           </DialogDescription>

@@ -43,6 +43,13 @@ final class OptinBindingTest extends TestCase
         self::assertSame([$id], OptinBinding::ids(['destinations' => [$id, $id]]));
     }
 
+    public function testCollectOnlyNeverForwardsEvenWithStaleDestinationIds(): void
+    {
+        $id = Ulid::generate();
+        self::assertSame([], OptinBinding::ids(['capture_mode' => 'local', 'destinations' => [$id]]));
+        self::assertFalse(OptinBinding::binds(['capture_mode' => 'local', 'destinations' => [$id]], $id));
+    }
+
     public function testAnOptinWithNoBindingBindsNothing(): void
     {
         self::assertSame([], OptinBinding::ids(null));

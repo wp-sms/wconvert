@@ -40,22 +40,22 @@ export function StartingPoints({ bundles, onApply, describe }: StartingPointsPro
     .some(text => text.toLocaleLowerCase().includes(search.trim().toLocaleLowerCase())));
 
   return <div className="wconvert-starters wconvert-starters--compact">
-    <div><h3>{__('Starting points', 'wconvert')}</h3>
+    <div><h3>{__('Display rule sets', 'wconvert')}</h3>
       <p>{__('Start with a ready-made set of display rules.', 'wconvert')}</p>
     </div>
     <Dialog open={open} onOpenChange={next => {
       setOpen(next);
       if (next) { setSearch(''); setPending(null); returnFocusTo.current = null; }
     }}>
-      <DialogTrigger asChild><Button variant="outline" size="sm"><LayoutGrid aria-hidden="true" />{__('Browse starting points', 'wconvert')}</Button></DialogTrigger>
+      <DialogTrigger asChild><Button variant="outline" size="sm"><LayoutGrid aria-hidden="true" />{__('Browse display rule sets', 'wconvert')}</Button></DialogTrigger>
       <DialogContent className="wconvert-starting-picker sm:max-w-3xl">
         <DialogHeader>
-          <DialogTitle>{__('Choose a starting point', 'wconvert')}</DialogTitle>
+          <DialogTitle>{__('Choose a display rule set', 'wconvert')}</DialogTitle>
           <DialogDescription>{__('Browse ready-made rules, then review what will change before applying.', 'wconvert')}</DialogDescription>
         </DialogHeader>
         <div className="wconvert-starters-body">
           <div hidden={pending !== null}>
-            <label className="wconvert-starters-search">{__('Find a starting point', 'wconvert')}
+            <label className="wconvert-starters-search">{__('Find a display rule set', 'wconvert')}
               <input type="search" value={search} onChange={event => setSearch(event.target.value)} placeholder={__('Search by name or rule…', 'wconvert')} />
             </label>
             <ul className="wconvert-starters__list">
@@ -79,14 +79,14 @@ export function StartingPoints({ bundles, onApply, describe }: StartingPointsPro
                 </li>;
               })}
             </ul>
-            {shown.length === 0 && <p role="status">{__('No matching starting points.', 'wconvert')}</p>}
+            {shown.length === 0 && <p role="status">{__('No matching display rule sets.', 'wconvert')}</p>}
           </div>
           {pending && <div className="wconvert-starters-review">
             <Button variant="ghost" size="sm" onClick={() => setPending(null)}><ArrowLeft aria-hidden="true" />{__('Back to choices', 'wconvert')}</Button>
             <h3 ref={reviewHeading} tabIndex={-1}>{pending.label}</h3>
             <p>{pending.description}</p>
             <div className="wconvert-rule-comparison">
-              <p>{__('Review the settings this starting point will replace.', 'wconvert')}</p>
+              <p>{__('Review the settings this display rule set will replace.', 'wconvert')}</p>
               {describe(pending).map(section => <div key={section.label} className="wconvert-rule-comparison__section">
                 <strong>{section.label}</strong>
                 <span><strong>{__('Current:', 'wconvert')}</strong> {section.before}</span>

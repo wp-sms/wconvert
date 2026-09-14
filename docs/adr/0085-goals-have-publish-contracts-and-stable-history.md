@@ -25,7 +25,7 @@ tags. Existing unrelated structural, binding and A/B compatibility checks remain
 ## Evidence, not implied business results
 
 Use Email submissions, Phone submissions, Enquiries captured, Cart return clicks,
-Offer clicks and Emails accepted for sending. Explain the measured boundary beside
+Link clicks and Emails accepted for sending. Explain the measured boundary beside
 the metric. Submissions are events, not unique subscribers. Clicks are not purchases
 or bookings. Mail-service acceptance is not inbox delivery or a file download;
 resends can count again. No new downstream attribution is inferred or stored.
@@ -52,5 +52,7 @@ they permit history restatement, hide the Goal, or describe advisory-only fit.
 Tests cover channel/requiredness/visibility, delivery setup, draft freedom, blocked
 publication, history locking after unpublish, and the copied-draft editor flow.
 
-Format switching, global terminology changes, downstream subscription/revenue
-tracking and restructuring the research site are separate follow-ups.
+**Completed by [ADR 0086](0086-campaign-setups-explain-handoff-and-format.md):** visible
+format selection, Campaign/Campaign setup wording, task-based names/checklists,
+explicit service versus Collect only, and separate research implementation status.
+Downstream subscription/revenue tracking remains outside this change.

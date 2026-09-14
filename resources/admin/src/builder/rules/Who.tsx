@@ -124,7 +124,7 @@ export function Who({
 
   return (
     <>
-      <Description>{__('Visitors must match all the audience rules below when the Optin is ready to appear.', 'wconvert')}</Description>
+      <Description>{__('Visitors must match all the audience rules below when the Campaign is ready to appear.', 'wconvert')}</Description>
       <RuleRows rows={rows} empty={__('No extra audience restrictions.', 'wconvert')} />
       {/*
         ======================================================================

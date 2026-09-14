@@ -30,6 +30,7 @@ import type { GoalEntry } from '../goals/api';
 import type { Template } from '@renderer/types';
 
 export interface ReadinessDialogProps {
+  readonly captureMode?: string;
   readonly optinId: string;
   readonly optin: OptinState;
   readonly dirty: boolean;
@@ -57,6 +58,7 @@ export interface ReadinessDialogProps {
 }
 
 export function ReadinessDialog({
+  captureMode = 'connected',
   optinId,
   optin,
   dirty,
@@ -96,7 +98,7 @@ export function ReadinessDialog({
   const needsCapture = bound.length > 0;
   const outcome = goal.status === 'ready' ? goal.data?.outcome : undefined;
   const goalIssue = outcome && hasDesign ? outcomeDesignIssue(outcome, template) : null;
-  const handoffIssue = outcome ? outcomeHandoffIssue(outcome, bound, destinations) : null;
+  const handoffIssue = outcome ? outcomeHandoffIssue(outcome, bound, destinations, captureMode) : null;
   const blocking: { said: string; fix: () => void }[] = [
     ...(!outcome ? [{ said: __('Goal requirements could not be checked. Reload before publishing.', 'wconvert'), fix: onGoToDesign }] : []),
     ...(goalIssue ? [{ said: goalIssue, fix: template && convertingActOf(template.tree)[0] === outcome?.action ? onEditDesign : onGoToDesign }] : []),
@@ -107,7 +109,7 @@ export function ReadinessDialog({
       fix: problem.path !== null ? () => onGoTo(problem.path as Path) : onEditDesign,
     })),
     ...(hasDesign && needsCapture && captures.length === 0
-      ? [{ said: __('This Optin needs a form field to collect leads. Choose a design with a form.', 'wconvert'), fix: onGoToDesign }]
+      ? [{ said: __('This Campaign needs a form field to collect leads. Choose a design with a form.', 'wconvert'), fix: onGoToDesign }]
       : []),
   ];
   const warnings = problems.filter((problem) => problem.check !== 'converts' && !problem.blocksPublish);
@@ -279,7 +281,9 @@ export function ReadinessDialog({
                   </p>
                   {(captures.length > 0 || bound.length > 0) && (
                     <p>
-                      {bound.length === 0
+                      {captureMode === 'local'
+                        ? __('Collect only: saved in Leads for export or follow-up. Nothing is forwarded and no subscription messages are sent by this campaign.', 'wconvert')
+                        : bound.length === 0
                         ? __('No forwarding selected. You can export captured leads from Leads.', 'wconvert')
                         : where.said}
                     </p>
@@ -349,7 +353,7 @@ export function ReadinessDialog({
                     ? __('Publishing saves your latest edits first. Save draft keeps them unpublished.', 'wconvert')
                     : isPublished
                       ? __('This replaces the published version with your saved draft.', 'wconvert')
-                      : __('Publishing makes this Optin available to visitors according to its display rules.', 'wconvert')}
+                      : __('Publishing makes this Campaign available to visitors according to its display rules.', 'wconvert')}
               </p>
             )}
             <div className="wconvert-launch-review__buttons">
@@ -364,7 +368,7 @@ export function ReadinessDialog({
                       ? __('Save & publish', 'wconvert')
                       : isPublished
                         ? __('Publish changes', 'wconvert')
-                        : __('Publish Optin', 'wconvert')}
+                        : __('Publish Campaign', 'wconvert')}
                 </Button>
               )}
             </div>

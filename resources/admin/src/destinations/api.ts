@@ -44,6 +44,7 @@ export interface SettingsField {
 }
 
 export interface DestinationRequirements {
+  audience_channels?: readonly string[];
   capture_any_of: readonly string[];
   settings: Readonly<Record<string, { label: string; type: string }>>;
   fields: readonly string[];

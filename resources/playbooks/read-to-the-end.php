@@ -6,7 +6,7 @@ defined('ABSPATH') || exit;
 
 return [
     'id' => 'read-to-the-end',
-    'name' => __('The Sunday letter', 'wconvert'),
+    'name' => __('Newsletter signup while reading', 'wconvert'),
     'goal' => 'grow_email_list',
     'template_id' => 'sunday-marginalia',
     'notes' => __('Offer a weekly editorial letter after a reader reaches 90% of a page. Add your publication name, replace the sample excerpt with your own writing and set a cadence you can keep in every line. Connect your email service, then choose which articles should show the invitation.', 'wconvert'),

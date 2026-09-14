@@ -151,7 +151,7 @@ final class WsmsDestinationType implements DestinationType
 
     public function requirements(): DestinationRequirements
     {
-        return new DestinationRequirements(['email', 'phone'], [], ['email', 'phone', 'name']);
+        return new DestinationRequirements(['email', 'phone'], [], ['email', 'phone', 'name'], audienceChannels: ['email', 'phone']);
     }
 
     public function throughput(): int

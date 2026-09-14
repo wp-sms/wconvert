@@ -137,7 +137,7 @@ final class AdminNotices
         }
 
         $this->add(__(
-            'WConvert has published Optins but its loader script is missing, so none of them can display. Reinstall the plugin to restore it.',
+            'WConvert has published Campaigns but its loader script is missing, so none of them can display. Reinstall the plugin to restore it.',
             'wconvert'
         ));
     }

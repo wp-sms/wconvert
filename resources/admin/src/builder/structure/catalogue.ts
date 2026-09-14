@@ -142,7 +142,7 @@ function whyRefused(
 ): string | null {
   if (type === 'button') {
     return buttonsIn(tree) > 0
-      ? __('This design already has the button that counts. An Optin has exactly one.', 'wconvert')
+      ? __('This design already has the button that counts. A campaign has exactly one.', 'wconvert')
       : null;
   }
 
@@ -156,7 +156,7 @@ function whyRefused(
     if (form === null) {
       return act === 'click'
         ? __(
-            'This Optin converts on a click and captures nothing, so it has no form to add to.',
+            'This Campaign converts on a click and captures nothing, so it has no form to add to.',
             'wconvert',
           )
         : __('Add the button that submits the form first — the form is the step that holds it.', 'wconvert');

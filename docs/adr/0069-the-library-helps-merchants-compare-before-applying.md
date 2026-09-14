@@ -21,9 +21,9 @@ capture fields and report navigation remain separate work.
 
 ## Find designs by what they actually offer
 
-The Optin's Display Type remains the library's fixed scope. Identify that scope
-so the merchant understands which designs are being counted; browsing does not
-change a popup into an inline Optin. Search and relevant filters remain available
+**Amended by [ADR 0086](0086-campaign-setups-explain-handoff-and-format.md):** Format
+is a visible browsing choice. Browsing does not change the draft; applying a prepared
+design updates design identity, tree and display type atomically. Search and relevant filters remain available
 in every nonempty library, regardless of its size.
 
 Search matches design names and localized, derived features: collected fields,

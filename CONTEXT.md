@@ -283,11 +283,10 @@ The unit of work in WConvert: one designed thing, shown to a chosen audience,
 under a set of display rules, serving one [[Goal]], pushing to one or more
 [[Destination]]s.
 
-> **Why not "Campaign":** WSMS already has a `Campaign` — a throttled batch
-> outbound send with an audience resolver, quiet-hours guard, and recurrence.
-> Both plugins share one wp-admin, so one word for two meanings would leak into
-> docs, support tickets, and REST routes. `Campaign` stays batch-send; WConvert
-> uses `Optin`.
+> **UI: Campaign; domain: Optin.** [ADR 0086](docs/adr/0086-campaign-setups-explain-handoff-and-format.md)
+> adopts familiar merchant language while preserving technical identifiers. The
+> WConvert screen describes on-site forms and offers; WSMS campaigns are outbound
+> sends. Qualify the product when discussing both together.
 
 An Optin is never hard-deleted. Its counters reference it by id, so a removed row
 would make every count naming it uninterpretable — which is also why ending an
@@ -459,7 +458,9 @@ is a manufactured time limit under WCAG SC 2.2.1, which is Level A. See
 
 Display Type is **not** the primary axis of the product. Users arrive via a
 [[Goal]], and the type is prefilled by the chosen [[Playbook]] — selectable as
-an override and a filter, never the first question asked.
+an override and a filter, never the first question asked. In the design library,
+browsing a format edits nothing; applying a design updates its identity, tree and
+Display Type atomically, undoable as one draft edit (ADR 0086).
 
 Three of the four are **overlays** — `popup`, `floating_bar`, `slide_in` — which
 compete for the visitor's screen, so at most one is shown per page view.
@@ -632,11 +633,11 @@ contract checks compatibility before that design becomes live.
 
 | Goal | Required before publishing | Headline metric |
 | --- | --- | --- |
-| Grow email list | Submit form with required email | Email submissions |
-| Grow SMS list | Submit form with required phone | Phone submissions |
+| Grow email list | Required email plus a capable service, or explicit Collect only | Email submissions |
+| Grow SMS list | Required phone plus a capable service, or explicit Collect only | Phone submissions |
 | Collect enquiries | Submit form collecting email or phone | Enquiries captured |
 | Recover abandoned carts | Click design; cart URL supplied at runtime | Cart return clicks |
-| Promote a sale or offer | Click design with an offer link | Offer clicks |
+| Promote an offer or content | Click design with an offer/content link | Link clicks |
 | Deliver a lead magnet | Required email plus a selected, available, configured lead-magnet email Destination | Emails accepted for sending |
 
 Submissions are events, not unique people or confirmed subscriptions. Mail
@@ -816,6 +817,9 @@ and [ADR 0083](docs/adr/0083-installed-packs-supply-campaign-starting-points.md)
 
 ### Starting point
 
+Shown as **Display rule sets** in the UI, distinct from full Campaign setups
+(Playbooks), under [ADR 0086](docs/adr/0086-campaign-setups-explain-handoff-and-format.md).
+
 A named set of display rules a merchant can begin from — *"Once they have read a
 while"*, *"Only on blog posts"*, *"Rescue an abandoned cart"* — offered in the
 rules panel and applied after reviewing and confirming the replacement.
@@ -859,6 +863,9 @@ Its [[Availability]] is the least of its rules', so a site with no store is neve
 offered one that would [[Suspend]] the Optin on the spot.
 
 ### Playbook
+
+Shown as **Campaign setup** in the UI (ADR 0086). Task-based names and a derived,
+expandable checklist explain the actual design and remaining setup.
 
 A ready-to-run bundle serving one [[Goal]] — a [[Template]], copy, a
 [[Display Type]], display rules and destination hints, packaged with notes on why
@@ -1044,6 +1051,12 @@ would put a member in the set that satisfies none of the set's invariants.
 
 Destinations are the only way a Lead is pushed out of WConvert **automatically**.
 CSV export is a manual admin action, not a Destination.
+
+`config.capture_mode = local` explicitly selects Collect only and suppresses all
+Destination bindings. List Goals otherwise default to connected mode and require
+an audience service for the right channel at publication. Destination requirements
+declare `audience_channels` separately from captured fields; transactional email
+is not audience subscription. See ADR 0086. No Contact state is added to WConvert.
 
 A Destination is configured once, site-wide, and *includes whatever selects the
 target inside the remote system* — the Mailchimp audience, the WSMS tag. So a

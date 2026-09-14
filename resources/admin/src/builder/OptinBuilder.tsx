@@ -26,6 +26,7 @@ import { LOADING, failed, messageOf, read, ready, type Loadable } from '../shell
 import { TemplatePickerDialog } from './TemplatePickerDialog';
 import { useTemplateTrees } from './TemplatePicker';
 import { DestinationsEditor } from './DestinationsEditor';
+import { CaptureModeChoice } from './CaptureModeChoice';
 import { ReadinessDialog } from './ReadinessDialog';
 import { hintIn, hintSaid } from './destinations';
 import { DisplayRules, type DisplayRulesValue } from './rules/DisplayRules';
@@ -529,7 +530,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
         <PageAction>
           <BackLink onClose={onClose} label={backLabel} />
         </PageAction>
-        <Region label={__('Optin builder', 'wconvert')}>
+        <Region label={__('Campaign builder', 'wconvert')}>
           <RegionErrorState message={fatal} />
         </Region>
       </div>
@@ -583,14 +584,14 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
           type="button"
           variant="ghost"
           size="icon-sm"
-          aria-label={backLabel ?? __('Back to Optins', 'wconvert')}
-          title={backLabel ?? __('Back to Optins', 'wconvert')}
+          aria-label={backLabel ?? __('Back to Campaigns', 'wconvert')}
+          title={backLabel ?? __('Back to Campaigns', 'wconvert')}
           onClick={leave}
         >
           <ArrowLeft aria-hidden="true" />
         </Button>
         <span className="wconvert-workspace__brand">WConvert</span>
-        <h1 className="sr-only">{name || __('Untitled Optin', 'wconvert')}</h1>
+        <h1 className="sr-only">{name || __('Untitled Campaign', 'wconvert')}</h1>
         <label className="sr-only" htmlFor="wconvert-optin-name">
           {__('Name', 'wconvert')}
         </label>
@@ -598,7 +599,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
           id="wconvert-optin-name"
           className="wconvert-workspace__name"
           value={name}
-          placeholder={__('Untitled Optin', 'wconvert')}
+          placeholder={__('Untitled Campaign', 'wconvert')}
           disabled={busy}
           onChange={(event) => {
             coalescing.current = 'name';
@@ -638,6 +639,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
               : __('Save draft', 'wconvert')}
           </Button>
           <ReadinessDialog
+            captureMode={config.capture_mode === 'local' ? 'local' : 'connected'}
             optinId={id}
             optin={{ published_at: publishedAt, deleted_at: deletedAt, suspended, has_unpublished_changes: unpublishedChanges }}
             dirty={dirty}
@@ -667,7 +669,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
             size="icon-sm"
             ref={changeGoal}
             disabled={busy}
-            aria-label={__('Optin details', 'wconvert')}
+            aria-label={__('Campaign details', 'wconvert')}
             onClick={() => setDetails(true)}
           >
             <MoreHorizontal aria-hidden="true" />
@@ -793,6 +795,9 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
         </TabsContent>
         <TabsContent value="destinations" className="wconvert-workspace__secondary">
           <div className="wconvert-workspace__settings">
+            {entryOfGoal?.outcome.audience_channel && <CaptureModeChoice disabled={busy} mode={config.capture_mode === 'local' ? 'local' : 'connected'}
+              onChange={(mode) => edit({ capture_mode: mode, ...(mode === 'local' ? { destinations: [] } : {}) })} />}
+            {entryOfGoal?.outcome.audience_channel && config.capture_mode === 'local' ? <p>{__('Submissions stay in Leads. Export them when you are ready to use another service.', 'wconvert')}</p> :
             <DestinationsEditor
               template={template}
               bound={bound}
@@ -817,8 +822,9 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
                       read(destinations)?.destinations ?? [],
                     )
               }
-              onChange={(next) => edit({ destinations: next })}
+              onChange={(next) => edit({ destinations: next, capture_mode: 'connected' })}
             />
+            }
           </div>
           {previewPane}
         </TabsContent>
@@ -847,9 +853,9 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
       <Dialog open={details} onOpenChange={setDetails}>
         <DialogContent className="wconvert-optin-details">
           <DialogHeader>
-            <DialogTitle>{__('Optin details', 'wconvert')}</DialogTitle>
+            <DialogTitle>{__('Campaign details', 'wconvert')}</DialogTitle>
             <DialogDescription>
-              {name || __('Untitled Optin', 'wconvert')}
+              {name || __('Untitled Campaign', 'wconvert')}
             </DialogDescription>
           </DialogHeader>
           <div className="wconvert-details-status"><span>{publishedAt ? __('Published', 'wconvert') : __('Draft', 'wconvert')}</span><span>{dirty ? __('Unsaved changes', 'wconvert') : unpublishedChanges ? __('Unpublished changes', 'wconvert') : __('All edits saved', 'wconvert')}</span></div>
@@ -911,7 +917,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
               )}
             </div>
           )}
-          {numbers === null && publishedAt === null && <div className="wconvert-details-section"><h3>{__('Performance', 'wconvert')}</h3><p>{__('Publish this Optin to start collecting impressions and conversions.', 'wconvert')}</p></div>}
+          {numbers === null && publishedAt === null && <div className="wconvert-details-section"><h3>{__('Performance', 'wconvert')}</h3><p>{__('Publish this Campaign to start collecting impressions and conversions.', 'wconvert')}</p></div>}
           <details className="wconvert-details-history"><summary>{__('About draft history', 'wconvert')}</summary>
           <p className="text-note text-muted-foreground">
             {__('Undo and Redo cover this session’s draft edits: name, design, display rules and destination selections. They do not change the published version or shared destination settings. Saving a new goal starts a new Undo history.', 'wconvert')}
@@ -930,7 +936,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
         open={leaving}
         onOpenChange={setLeaving}
         title={__('Leave without saving?', 'wconvert')}
-        description={__('Your changes to this Optin will be lost.', 'wconvert')}
+        description={__('Your changes to this Campaign will be lost.', 'wconvert')}
         confirmLabel={__('Discard changes', 'wconvert')}
         cancelLabel={__('Keep editing', 'wconvert')}
         returnFocusTo={back}
@@ -963,7 +969,9 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
         onChoose={(picked, prepared) => {
           if (prepared === undefined) return;
           restoreBrowseFocus.current = true;
-          edit({ template: prepared, template_id: picked });
+          const chosenDesign = gallery.templates.find((design) => design.id === picked);
+          if (!chosenDesign) return;
+          edit({ template: prepared, template_id: picked, display_type: chosenDesign.display_type });
           setSelection(null);
           setStep(0);
           setBrowsing(false);
@@ -994,7 +1002,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
               if (onCreated) onCreated(created.id);
               else window.location.hash = editorHref(created.id);
             })
-            .catch((cause: unknown) => setError(sprintf(__('The copied draft could not be confirmed. Check the Optins list before trying again. %s', 'wconvert'), messageOf(cause))))
+            .catch((cause: unknown) => setError(sprintf(__('The copied draft could not be confirmed. Check the Campaigns list before trying again. %s', 'wconvert'), messageOf(cause))))
             .finally(() => setBusy(false));
         }}
       />

@@ -376,7 +376,7 @@ describe('a design that captures nothing', () => {
       'aria-disabled',
       'true',
     );
-    expect(offer.getByText('This design captures nothing, so there would be no leads to send to this Optin’s destinations.')).toBeInTheDocument();
+    expect(offer.getByText('This design captures nothing, so there would be no leads to send to this Campaign’s destinations.')).toBeInTheDocument();
     expect(within(cardFor('Centred card')).getByRole('button', { name: /Use this design/ })).toBeEnabled();
   });
 

@@ -82,7 +82,7 @@ describe('the four situations this screen has to answer', () => {
     render(<OptinList onEdit={() => undefined} />);
 
     expect(await screen.findByRole('status')).toHaveTextContent('Loading…');
-    expect(screen.queryByText('No Optins yet')).toBeNull();
+    expect(screen.queryByText('No Campaigns yet')).toBeNull();
 
     land([OPTIN]);
 
@@ -99,8 +99,8 @@ describe('the four situations this screen has to answer', () => {
 
     render(<OptinList onEdit={() => undefined} onCreate={() => undefined} />);
 
-    expect(await screen.findByText('No Optins yet')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Create an Optin/ })).toBeInTheDocument();
+    expect(await screen.findByText('No Campaigns yet')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Create a campaign/ })).toBeInTheDocument();
   });
 
   it('renders a first failure as the region’s whole content', async () => {
@@ -393,11 +393,11 @@ describe('an A/B test on the list', () => {
     optins.listOptins.mockResolvedValue(A_TEST);
     render(<OptinList onEdit={() => undefined} />);
     await screen.findByRole('button', { name: OPTIN.name });
-    await userEvent.type(screen.getByRole('searchbox', { name: 'Search Optins' }), '(B)');
+    await userEvent.type(screen.getByRole('searchbox', { name: 'Search Campaigns' }), '(B)');
     expect(screen.getByRole('button', { name: OPTIN.name })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: ARM_B.name })).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Published 0' }));
-    expect(screen.getByText('No Optins match these filters')).toBeInTheDocument();
+    expect(screen.getByText('No Campaigns match these filters')).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Clear filters' }));
     expect(screen.getByRole('searchbox')).toHaveValue('');
     expect(screen.getByRole('button', { name: OPTIN.name })).toBeInTheDocument();

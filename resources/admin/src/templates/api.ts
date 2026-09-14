@@ -36,9 +36,9 @@ export interface TemplateFacets {
    * construction because an entry offering two or none is refused at
    * registration (ADR 0020).
    *
-   * An optional merchant-chosen gallery filter, never preselected from a Goal
-   * (ADR 0069). Goals do not refuse an act; a change still warns about reporting
-   * history, and A/B siblings must agree (ADR 0059). Null on a locked card,
+   * A merchant-chosen gallery filter. Goal fit defaults to the required action
+   * and channel under ADR 0085; Show all remains available. Publication checks
+   * the edited design and A/B siblings must still agree (ADR 0059). Null on a locked card,
    * whose design is not available for inspection or compatibility checks.
    */
   act: 'submit' | 'click' | null;

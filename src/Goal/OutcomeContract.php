@@ -19,6 +19,7 @@ final class OutcomeContract
         public readonly string $proofLevel,
         public readonly ?string $destinationType = null,
         public readonly bool $linkRequired = false,
+        public readonly ?string $audienceChannel = null,
     ) {
     }
 
@@ -68,13 +69,19 @@ final class OutcomeContract
             'proof_level' => $this->proofLevel,
             'destination_type' => $this->destinationType,
             'link_required' => $this->linkRequired,
+            'audience_channel' => $this->audienceChannel,
         ];
     }
 
-    /** @param list<string> $readyTypes Destination types with their required settings completed. */
-    public function handoffIssue(array $readyTypes): ?string
+    /** @param list<string> $readyTypes Destination types with their required settings completed.
+     * @param list<string> $readyChannels Channels supported by selected audience services.
+     */
+    public function handoffIssue(array $readyTypes, string $captureMode = 'connected', array $readyChannels = []): ?string
     {
-        return $this->destinationType !== null && !in_array($this->destinationType, $readyTypes, true)
+        if ($this->audienceChannel !== null && $captureMode !== 'local' && !in_array($this->audienceChannel, $readyChannels, true)) {
+            return __('Choose and configure a service for this channel, or explicitly choose Collect only in WConvert before publishing.', 'wconvert');
+        }
+        return $this->destinationType !== null && ($captureMode === 'local' || !in_array($this->destinationType, $readyTypes, true))
             ? __('Connect a lead magnet email destination and complete its file link before publishing.', 'wconvert')
             : null;
     }

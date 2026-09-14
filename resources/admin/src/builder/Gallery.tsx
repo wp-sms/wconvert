@@ -85,7 +85,7 @@ export function refusalFor(entry: TemplateIndexEntry, fit: Fit): string | null {
   if (entry.facets.captures.length === 0) {
     if (fit.bound) {
       return __(
-        'This design captures nothing, so there would be no leads to send to this Optin’s destinations.',
+        'This design captures nothing, so there would be no leads to send to this Campaign’s destinations.',
         'wconvert',
       );
     }
@@ -142,11 +142,11 @@ export function actChangeOf(entry: TemplateIndexEntry, fit: Fit): string | null 
 
   return entry.facets.act === 'click'
     ? __(
-        'Counts click-throughs instead of submissions — including everything this Optin has already counted.',
+        'Counts click-throughs instead of submissions — including everything this Campaign has already counted.',
         'wconvert',
       )
     : __(
-        'Counts submissions instead of click-throughs — including everything this Optin has already counted.',
+        'Counts submissions instead of click-throughs — including everything this Campaign has already counted.',
         'wconvert',
       );
 }

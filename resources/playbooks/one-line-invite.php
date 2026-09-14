@@ -23,7 +23,7 @@ defined('ABSPATH') || exit;
 
 return [
     'id' => 'one-line-invite',
-    'name' => __('One idea, one field', 'wconvert'),
+    'name' => __('Simple newsletter signup', 'wconvert'),
     'goal' => 'grow_email_list',
     'template_id' => 'bold-ask',
     'notes' => __('The smallest thing that still asks. No discount, no promise beyond the one in the headline — useful when you have nothing to give away and do not want to invent something. Shows once a visitor is most of the way down the page.', 'wconvert'),

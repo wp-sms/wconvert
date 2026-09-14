@@ -6,10 +6,10 @@ defined('ABSPATH') || exit;
 
 return [
     'id' => 'launch-checklist',
-    'name' => __('The pre-launch checklist', 'wconvert'),
+    'name' => __('Offer a website launch checklist', 'wconvert'),
     'goal' => 'deliver_lead_magnet',
     'template_id' => 'launch-checklist',
-    'notes' => __('Offer a 12-point website launch checklist. Replace the brand and sample resource copy, then add the checklist to a lead-magnet email destination. To offer an immediate download too, enable the success-screen link and set its URL. Successful email delivery is counted separately from submission; the download link does not add a conversion.', 'wconvert'),
+    'notes' => __('Offer a 12-point website launch checklist. Replace the brand and sample resource copy, then add the checklist to a lead-magnet email destination. To offer an immediate download too, enable the success-screen link and set its URL. Email acceptance by the site’s mail service is counted separately from submission; inbox arrival is not measured; the download link does not add a conversion.', 'wconvert'),
     'copy' => [
         'headline' => [
             __('12', 'wconvert'),

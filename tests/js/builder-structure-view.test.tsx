@@ -207,7 +207,7 @@ async function structure() {
  */
 async function designLook() {
   render(<OptinBuilder id={ID} onClose={vi.fn()} />);
-  await screen.findByRole('button', { name: 'Change template' });
+  await screen.findByRole('button', { name: 'Change design or format' });
 }
 
 /**
@@ -1057,7 +1057,7 @@ describe('the inspector', () => {
 
     expect(screen.getByRole('region', { name: 'Design canvas' })).toHaveTextContent('After they submit');
 
-    expect(within(screen.getByLabelText('Optin screen')).getByRole('button', { name: 'After they submit' })).toHaveAttribute(
+    expect(within(screen.getByLabelText('Campaign screen')).getByRole('button', { name: 'After they submit' })).toHaveAttribute(
       'aria-pressed',
       'true',
     );
@@ -1145,6 +1145,9 @@ describe('the verdict', () => {
    */
   it('is readable from every tab, including the ones that cannot cause it', async () => {
     await designLook();
+    await userEvent.click(screen.getByRole('tab', { name: 'Destinations' }));
+    await userEvent.click(screen.getByRole('radio', { name: /Collect only in WConvert/ }));
+    await userEvent.click(screen.getByRole('tab', { name: 'Design' }));
 
     // The stub names no tokens, so `nameOf` falls back to the raw key — which
     // is what a build whose vocabulary is ahead of its translations shows too.
@@ -1803,7 +1806,7 @@ describe('a countdown’s inspector', () => {
 
     // Not the exact spelling: `Intl` renders a medium date in the reader's own
     // locale, and pinning "27 Nov 2099" would pin a test runner's locale.
-    expect(screen.getByText(/Counts down to .*2099.* — when this Optin stops running\./)).toBeInTheDocument();
+    expect(screen.getByText(/Counts down to .*2099.* — when this Campaign stops running\./)).toBeInTheDocument();
   });
 
   it('says the clock will be empty where there is no end date', async () => {
@@ -1812,7 +1815,7 @@ describe('a countdown’s inspector', () => {
     await openTheClock();
 
     expect(
-      screen.getByText('This Optin has no end date, so the clock will be empty on the page.'),
+      screen.getByText('This Campaign has no end date, so the clock will be empty on the page.'),
     ).toBeInTheDocument();
   });
 

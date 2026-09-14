@@ -116,7 +116,7 @@ describe('the playbook’s destination hint', () => {
   it('still says what is captured when it can name no type at all', () => {
     const said = hintSaid({ types: ['email_service_provider'], fields: ['email'] }, [], FIELDS, []);
 
-    expect(said).toBe('The playbook this started from captures Email address.');
+    expect(said).toBe('The campaign setup this started from captures Email address.');
   });
 
   /**
@@ -128,7 +128,7 @@ describe('the playbook’s destination hint', () => {
     const said = hintSaid({ types: ['wsms'], fields: [] }, TYPES, FIELDS, []);
 
     expect(said).toBe(
-      'The playbook this started from works well with a destination like WP SMS. Add a destination here.',
+      'The campaign setup this started from works well with a destination like WP SMS. Add a destination here.',
     );
   });
 
@@ -153,7 +153,7 @@ describe('the playbook’s destination hint', () => {
     ]);
 
     // The expectation is met, so only the guidance is left.
-    expect(said).toBe('The playbook this started from captures Email address.');
+    expect(said).toBe('The campaign setup this started from captures Email address.');
   });
 
   /**

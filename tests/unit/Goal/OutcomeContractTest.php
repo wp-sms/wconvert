@@ -7,6 +7,16 @@ use WConvert\Goal\Goal;
 
 final class OutcomeContractTest extends TestCase
 {
+    public function testListCollectionDefaultsToAConnectedServiceButAllowsExplicitLocalCollection(): void
+    {
+        $email = Goal::GrowEmailList->outcome();
+        self::assertNotNull($email->handoffIssue([]));
+        self::assertNull($email->handoffIssue([], 'local'));
+        self::assertNull($email->handoffIssue(['mailpoet'], 'connected', ['email']));
+        self::assertNotNull(Goal::GrowSmsList->outcome()->handoffIssue(['mailpoet'], 'connected', ['email']));
+        self::assertNotNull($email->handoffIssue(['lead_magnet_email'], 'connected', []));
+    }
+
     public function testAnSmsGoalNeedsARequiredPhoneOnTheSubmittingScreen(): void
     {
         $contract = Goal::GrowSmsList->outcome();

@@ -67,7 +67,7 @@ export function HowOften({ frequency, schedule, priority, overlay, act = 'submit
 
     <fieldset className="wconvert-rule-fieldset">
       <legend>{__('Repeat visits', 'wconvert')}</legend>
-      <Description>{__('These limits apply to this Optin in each visitor’s browser. Clearing browsing data resets them.', 'wconvert')}</Description>
+      <Description>{__('These limits apply to this Campaign in each visitor’s browser. Clearing browsing data resets them.', 'wconvert')}</Description>
       <div className="flex flex-col gap-3">
         <label className="wconvert-frequency-switch">
           <input type="checkbox" checked={frequency.stopAfterDismiss !== false} onChange={(event) => setSwitch('stopAfterDismiss', event.target.checked)} />

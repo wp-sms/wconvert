@@ -149,8 +149,8 @@ export type CheckId = (typeof CHECKS)[number];
 export const CHECK_SOURCES: Readonly<Record<CheckId, { at: string; how: string }>> = {
   converts: { at: 'OptinController', how: 'refuseADesignThatCannotConvert() refuses the write' },
   captures: { at: 'render.ts', how: 'the step that holds the submit button IS the form' },
-  countdown: { at: 'ADR 0052', how: 'a countdown counts to the Optin’s own end date and nothing else' },
-  words: { at: 'SlotRoles', how: 'bind() writes a Playbook’s words back only where a Role binds' },
+  countdown: { at: 'ADR 0052', how: 'a countdown counts to the Campaign’s own end date and nothing else' },
+  words: { at: 'SlotRoles', how: 'bind() writes a campaign setup’s words back only where a Role binds' },
   readable: { at: 'ADR 0038', how: 'AA on small text' },
 };
 
@@ -319,7 +319,7 @@ function whatCountsDownToNothing(template: Template, endsAt: string | undefined)
         is left is the fact and what to do about it.
       */
       said: __(
-        'This design shows a countdown, and nothing says when this Optin stops running. Set an end date, or the clock stays empty.',
+        'This design shows a countdown, and nothing says when this Campaign stops running. Set an end date, or the clock stays empty.',
         'wconvert',
       ),
       path: null,

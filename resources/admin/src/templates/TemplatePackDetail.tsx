@@ -106,22 +106,22 @@ export function TemplatePackDetail({ pack, displayType, installedVersion, busy, 
     <footer className="wconvert-pack-detail__footer">
       {error && <div role="alert" className="wconvert-pack-error">{error}</div>}
       {starts.length > 0 && <details className="wconvert-pack-detail__starts">
-        <summary>{sprintf(_n('%d campaign starting point included', '%d campaign starting points included', starts.length, 'wconvert'), starts.length)}</summary>
+        <summary>{sprintf(_n('%d campaign campaign setup included', '%d campaign campaign setups included', starts.length, 'wconvert'), starts.length)}</summary>
         <ul>{starts.map((entry) => <li key={entry.id}><strong>{entry.name}</strong><span> · {entry.goal_label}</span></li>)}</ul>
-        <p>{__('Includes wording and suggested display settings. Choose a starting point when creating a new Optin.', 'wconvert')}</p>
+        <p>{__('Includes wording and suggested display settings. Choose a campaign setup when creating a new Campaign.', 'wconvert')}</p>
       </details>}
       {installed && creating ? <div className="wconvert-pack-detail__next">
         <p className="text-sm text-muted-foreground">{relevantStarts.length > 0
-          ? __('Choose a starting point next to review its wording and suggested settings.', 'wconvert')
-          : __('This pack has no starting points for your selected goal. Its designs remain available in the editor.', 'wconvert')}</p>
-        {relevantStarts.length > 0 && <Button disabled={busy} onClick={() => onChooseStartingPoints(pack.id)}>{__('Choose a starting point', 'wconvert')}<ArrowRight aria-hidden="true" className="rtl:-scale-x-100" /></Button>}
+          ? __('Choose a campaign setup next to review its wording and suggested settings.', 'wconvert')
+          : __('This pack has no campaign setups for your selected goal. Its designs remain available in the editor.', 'wconvert')}</p>
+        {relevantStarts.length > 0 && <Button disabled={busy} onClick={() => onChooseStartingPoints(pack.id)}>{__('Choose a campaign setup', 'wconvert')}<ArrowRight aria-hidden="true" className="rtl:-scale-x-100" /></Button>}
       </div> : <div className="wconvert-pack-detail__next">
         <div>
           {!(installed && compatible) && <p className="font-medium">{installed ? __('This design uses a different format', 'wconvert') : installedVersion ? __('Update this collection', 'wconvert') : __('Add this collection to your library', 'wconvert')}</p>}
           <p className="text-sm text-muted-foreground">{installed ? compatible
             ? __('Next, choose your content and review the design before applying.', 'wconvert')
             : sprintf(__('Open a draft in %1$s format to use this design. Your current draft is %2$s.', 'wconvert'), formatName(template.display_type), formatName(displayType))
-            : creating && relevantStarts.length === 0 ? __('This pack has no starting points for your selected goal. Install it to use its designs in the editor.', 'wconvert')
+            : creating && relevantStarts.length === 0 ? __('This pack has no campaign setups for your selected goal. Install it to use its designs in the editor.', 'wconvert')
               : !creating && matching === 0 ? sprintf(__('This pack has no %s designs. Install it to use in other draft formats.', 'wconvert'), formatName(displayType))
               : sprintf(_n('Adds %d design. Existing drafts stay unchanged.', 'Adds all %d designs. Existing drafts stay unchanged.', count, 'wconvert'), count)}</p>
         </div>

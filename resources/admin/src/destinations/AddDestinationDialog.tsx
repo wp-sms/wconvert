@@ -101,7 +101,7 @@ export function AddDestinationDialog({
           */}
           <DialogDescription>
             {__(
-              'One destination is one route. Add as many as you have audiences, and bind each optin to the one it feeds.',
+              'One destination is one route. Add as many as you have audiences, and bind each campaign to the one it feeds.',
               'wconvert',
             )}
           </DialogDescription>

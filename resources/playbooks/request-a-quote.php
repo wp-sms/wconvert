@@ -16,7 +16,7 @@ return [
     'name' => __('Request a quote', 'wconvert'),
     'goal' => 'collect_enquiries',
     'template_id' => 'inline-choice',
-    'notes' => __('Place the WConvert block or shortcode on your quote page and edit the service choices to match your business. To send the service answer to MailPoet, select a custom text field under Save interest in MailPoet in the destination settings. This applies to new subscribers only; existing subscriber fields stay unchanged. Follow up in your connected service.', 'wconvert'),
+    'notes' => __('Place the WConvert block or shortcode on your quote page and edit the optional service choices. Review requests in Leads and arrange who will reply. If you connect a service, check which answers it receives; forwarding does not send a quote or book an appointment.', 'wconvert'),
     'copy' => [
         'headline' => __('Let us help with your next project', 'wconvert'),
         'body' => __('Leave your email so we can discuss what you need and prepare a quote.', 'wconvert'),

@@ -29,7 +29,7 @@ export function ChangeGoalDialog({ open, onOpenChange, goals, current, duplicate
     <DialogContent className="sm:max-w-2xl">
       {picked === null ? <>
         <DialogHeader>
-          <DialogTitle>{duplicate ? __('Duplicate for another goal', 'wconvert') : __('Change this Optin’s goal', 'wconvert')}</DialogTitle>
+          <DialogTitle>{duplicate ? __('Duplicate for another goal', 'wconvert') : __('Change this Campaign’s goal', 'wconvert')}</DialogTitle>
           <DialogDescription>{duplicate
             ? __('Choose a Goal for a new draft. The original keeps its published version and all its results.', 'wconvert')
             : __('Choose what this draft should achieve. You can adjust its design before publishing to meet the new Goal.', 'wconvert')}</DialogDescription>

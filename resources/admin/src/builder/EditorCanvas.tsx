@@ -18,7 +18,7 @@ export function ScreenControls({
   onChange: (step: number) => void;
 }) {
   return (
-    <div className="wconvert-segmented" aria-label={__('Optin screen', 'wconvert')}>
+    <div className="wconvert-segmented" aria-label={__('Campaign screen', 'wconvert')}>
       {template.tree.steps.map((_, index) => (
         <Button
           key={index}
@@ -191,7 +191,7 @@ export function EditorCanvas({
                   onClick={() =>
                     interactive
                       ? setDismissed(true)
-                      : setMessage(__('Visitors can always close this Optin.', 'wconvert'))
+                      : setMessage(__('Visitors can always close this Campaign.', 'wconvert'))
                   }
                 >
                   <X aria-hidden="true" />

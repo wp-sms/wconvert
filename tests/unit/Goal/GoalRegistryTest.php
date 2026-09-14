@@ -37,7 +37,7 @@ final class GoalRegistryTest extends TestCase
     {
         $this->assertSame('Email submissions', Goal::GrowEmailList->headlineLabel());
         $this->assertSame('Phone submissions', Goal::GrowSmsList->headlineLabel());
-        $this->assertSame('Offer clicks', Goal::PromoteOffer->headlineLabel());
+        $this->assertSame('Link clicks', Goal::PromoteOffer->headlineLabel());
         $this->assertSame('Emails accepted for sending', Goal::DeliverLeadMagnet->headlineLabel());
     }
 

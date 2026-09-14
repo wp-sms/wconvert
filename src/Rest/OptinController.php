@@ -400,7 +400,7 @@ final class OptinController implements RestController
 
         if ($stored !== null && $checked !== null && $checked->value !== $stored->goal && !$stored->canChangeGoal()) {
             return new WP_Error('wconvert_optin_goal_locked',
-                __('This Goal is fixed after first publish or while part of an A/B test. Duplicate this Optin for a different Goal to keep its history unchanged.', 'wconvert'),
+                __('This Goal is fixed after first publish or while part of an A/B test. Duplicate this Campaign for a different Goal to keep its history unchanged.', 'wconvert'),
                 ['status' => 409]);
         }
 
@@ -541,7 +541,7 @@ final class OptinController implements RestController
         if (!$optin->hasDesign()) {
             return new WP_Error(
                 'wconvert_optin_needs_a_design',
-                __('Choose a design before publishing. You can keep saving this Optin as a draft.', 'wconvert'),
+                __('Choose a design before publishing. You can keep saving this Campaign as a draft.', 'wconvert'),
                 ['status' => 400]
             );
         }
@@ -549,26 +549,28 @@ final class OptinController implements RestController
         $issue = \WConvert\Template\TemplateForm::issue($optin->config['template'] ?? null);
         if ($issue !== null) {
             $message = match ($issue) {
-                'choices' => __('Add at least one choice to the interest field before publishing. You can keep saving this Optin as a draft.', 'wconvert'),
-                'followup' => __('Give each resource link a label and address, and place it after the form. You can keep saving this Optin as a draft.', 'wconvert'),
-                default => __('Add an email or phone field before publishing this form. You can keep saving this Optin as a draft.', 'wconvert'),
+                'choices' => __('Add at least one choice to the interest field before publishing. You can keep saving this Campaign as a draft.', 'wconvert'),
+                'followup' => __('Give each resource link a label and address, and place it after the form. You can keep saving this Campaign as a draft.', 'wconvert'),
+                default => __('Add an email or phone field before publishing this form. You can keep saving this Campaign as a draft.', 'wconvert'),
             };
             return new WP_Error('wconvert_optin_form_incomplete', $message, ['status' => 400]);
         }
 
         $outcome = Goal::tryFrom($optin->goal)?->outcome();
         $goalIssue = $outcome?->designIssue($optin->config);
-        if ($goalIssue === null && $outcome?->destinationType !== null) {
+        if ($goalIssue === null && $outcome !== null) {
             $readyTypes = [];
+            $readyChannels = [];
             foreach (OptinBinding::ids($optin->config) as $destinationId) {
                 $destination = $this->destinations->find($destinationId);
                 $type = $destination === null ? null : $this->destinationTypes->find($destination->type);
                 if ($destination !== null && $type !== null && $this->destinationTypes->isDispatchable($destination->type)
                     && $type->requirements()->missingSettings($destination->settings) === []) {
                     $readyTypes[] = $destination->type;
+                    array_push($readyChannels, ...$type->requirements()->audienceChannels);
                 }
             }
-            $goalIssue = $outcome->handoffIssue($readyTypes);
+            $goalIssue = $outcome->handoffIssue($readyTypes, ($optin->config['capture_mode'] ?? null) === 'local' ? 'local' : 'connected', $readyChannels);
         }
         if ($goalIssue !== null) {
             return new WP_Error('wconvert_optin_goal_incomplete', $goalIssue, ['status' => 400]);
@@ -690,6 +692,9 @@ final class OptinController implements RestController
      */
     private function normalizeConfig(array $config, ?string $pickedBefore = null): array
     {
+        if (isset($config['capture_mode'])) {
+            $config['capture_mode'] = $config['capture_mode'] === 'local' ? 'local' : 'connected';
+        }
         if (isset($config['targeting'])) {
             $config['targeting'] = Targeting::fromArray((array) $config['targeting'])->toArray();
         }
@@ -839,8 +844,8 @@ final class OptinController implements RestController
         return new WP_Error(
             'wconvert_optin_invalid_schedule',
             $refused->reason === InvalidSchedule::UNREADABLE
-                ? __('An Optin’s start and end have to be a date and a time.', 'wconvert')
-                : __('An Optin’s schedule has to end after it starts.', 'wconvert'),
+                ? __('A campaign’s start and end have to be a date and a time.', 'wconvert')
+                : __('A campaign’s schedule has to end after it starts.', 'wconvert'),
             ['status' => 400]
         );
     }
@@ -1005,7 +1010,7 @@ final class OptinController implements RestController
         return new WP_Error(
             'wconvert_optin_cannot_convert',
             __(
-                'This design has nothing on it that counts as a conversion, so the Optin would report zero however many people saw it. Add the button back, or pick a design that has one.',
+                'This design has nothing on it that counts as a conversion, so the Campaign would report zero however many people saw it. Add the button back, or pick a design that has one.',
                 'wconvert'
             ),
             ['status' => 400]
@@ -1037,7 +1042,7 @@ final class OptinController implements RestController
         return new WP_Error(
             'wconvert_optin_needs_a_trigger',
             __(
-                'An Optin needs at least one Trigger it can act on. Fill in the one you have, or add “Shows immediately” if it should show straight away.',
+                'A campaign needs at least one Trigger it can act on. Fill in the one you have, or add “Shows immediately” if it should show straight away.',
                 'wconvert'
             ),
             ['status' => 400]
@@ -1046,6 +1051,6 @@ final class OptinController implements RestController
 
     private static function notFound(): WP_Error
     {
-        return new WP_Error('wconvert_optin_not_found', __('No such Optin.', 'wconvert'), ['status' => 404]);
+        return new WP_Error('wconvert_optin_not_found', __('No such Campaign.', 'wconvert'), ['status' => 404]);
     }
 }

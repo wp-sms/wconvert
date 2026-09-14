@@ -132,10 +132,10 @@ export function LeadLog({ query, onQueryChange }: LeadLogProps) {
       {log.status === 'failed' ? <RegionErrorState message={log.message} /> : data === null ? <DataTable><TableSkeleton columns={5} /></DataTable> : rows === 0 ? (
         <EmptyState icon={Inbox} title={applied.query.leadId ? __('Submission not found', 'wconvert') : hasAppliedFilters ? __('No matching submissions', 'wconvert') : __('No submissions yet', 'wconvert')}
           action={hasAppliedFilters ? <Button variant="outline" onClick={() => changeQuery({})}>{__('Clear filters', 'wconvert')}</Button>
-            : <Button asChild variant="outline"><a href="#optins">{__('Go to Optins', 'wconvert')}</a></Button>}>
+            : <Button asChild variant="outline"><a href="#optins">{__('Go to Campaigns', 'wconvert')}</a></Button>}>
           {applied.query.leadId ? __('This ID may no longer be retained, or another filter may exclude it. Captures removed by retention or privacy tools cannot be recovered here.', 'wconvert')
-            : hasAppliedFilters ? __('Check the full email or phone number, date period and selected Optin.', 'wconvert')
-              : __('A row appears the moment a visitor submits a published Optin.', 'wconvert')}
+            : hasAppliedFilters ? __('Check the full email or phone number, date period and selected Campaign.', 'wconvert')
+              : __('A row appears the moment a visitor submits a published Campaign.', 'wconvert')}
         </EmptyState>
       ) : shownGrouped ? <DataTable>
         <DataTableHead><DataTableColumn>{__('Identifier', 'wconvert')}</DataTableColumn><DataTableColumn numeric>{__('Submissions', 'wconvert')}</DataTableColumn><DataTableColumn>{__('Last submitted', 'wconvert')}</DataTableColumn><DataTableColumn>{__('History', 'wconvert')}</DataTableColumn></DataTableHead>
@@ -183,9 +183,9 @@ function HistoryFilters({ query, optins, onApply }: { query: LeadQuery; optins: 
     <div className="flex flex-wrap items-end gap-3">
       <div className="min-w-52 flex-1"><Label htmlFor="wconvert-lead-search">{__('Email, phone or Lead ID', 'wconvert')}</Label>
         <Input id="wconvert-lead-search" type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder={__('e.g. alex@example.com or +44 7911 123456', 'wconvert')} /></div>
-      <div><Label htmlFor="wconvert-lead-optin">{__('Optin', 'wconvert')}</Label><Select value={optinId || ALL_OPTINS} onValueChange={(value) => setOptinId(value === ALL_OPTINS ? '' : value)}>
+      <div><Label htmlFor="wconvert-lead-optin">{__('Campaign', 'wconvert')}</Label><Select value={optinId || ALL_OPTINS} onValueChange={(value) => setOptinId(value === ALL_OPTINS ? '' : value)}>
         <SelectTrigger id="wconvert-lead-optin" className="min-w-44 max-w-64"><SelectValue /></SelectTrigger><SelectContent>
-          <SelectItem value={ALL_OPTINS}>{__('All Optins', 'wconvert')}</SelectItem>
+          <SelectItem value={ALL_OPTINS}>{__('All Campaigns', 'wconvert')}</SelectItem>
           {optinId && !optins.some((optin) => optin.id === optinId) && <SelectItem value={optinId}>{optinId}</SelectItem>}
           {optins.map((optin) => <SelectItem key={optin.id} value={optin.id}>{optin.name || optin.id}</SelectItem>)}
         </SelectContent></Select></div>
@@ -200,7 +200,7 @@ function HistoryFilters({ query, optins, onApply }: { query: LeadQuery; optins: 
 }
 
 function scopeDescription(query: LeadQuery, nameOf: (id: string) => string): string {
-  const parts = [query.optinId ? nameOf(query.optinId) : __('All Optins', 'wconvert'),
+  const parts = [query.optinId ? nameOf(query.optinId) : __('All Campaigns', 'wconvert'),
     query.leadId || query.identifier,
     query.from || query.to ? sprintf(__('%1$s to %2$s', 'wconvert'), query.from || __('the beginning', 'wconvert'), query.to || __('now', 'wconvert')) : __('All dates', 'wconvert')];
   return sprintf(__('Showing: %s', 'wconvert'), parts.filter(Boolean).join(' · '));
@@ -208,10 +208,10 @@ function scopeDescription(query: LeadQuery, nameOf: (id: string) => string): str
 
 function EventTable({ leads, nameOf, returnTo }: { leads: Lead[]; nameOf: (id: string) => string; returnTo: string }) {
   return <DataTable>
-    <DataTableHead><DataTableColumn>{__('Submitted', 'wconvert')}</DataTableColumn><DataTableColumn>{__('Optin', 'wconvert')}</DataTableColumn><DataTableColumn>{__('Email', 'wconvert')}</DataTableColumn><DataTableColumn>{__('Phone', 'wconvert')}</DataTableColumn><DataTableColumn>{__('Captured', 'wconvert')}</DataTableColumn></DataTableHead>
+    <DataTableHead><DataTableColumn>{__('Submitted', 'wconvert')}</DataTableColumn><DataTableColumn>{__('Campaign', 'wconvert')}</DataTableColumn><DataTableColumn>{__('Email', 'wconvert')}</DataTableColumn><DataTableColumn>{__('Phone', 'wconvert')}</DataTableColumn><DataTableColumn>{__('Captured', 'wconvert')}</DataTableColumn></DataTableHead>
     <DataTableBody>{leads.map((lead) => <DataTableRow key={lead.id}>
       <DataTableCell label={__('Submitted', 'wconvert')}><bdi dir="ltr">{lead.created_at}</bdi></DataTableCell>
-      <DataTableCell label={__('Optin', 'wconvert')}><a href={editorHref(lead.optin_id, returnTo)}>{nameOf(lead.optin_id)}</a></DataTableCell>
+      <DataTableCell label={__('Campaign', 'wconvert')}><a href={editorHref(lead.optin_id, returnTo)}>{nameOf(lead.optin_id)}</a></DataTableCell>
       <DataTableCell label={__('Email', 'wconvert')}><bdi dir="ltr">{lead.email ?? '—'}</bdi></DataTableCell>
       <DataTableCell label={__('Phone', 'wconvert')} className="wconvert-lead-phone"><bdi dir="ltr">{lead.phone ?? '—'}</bdi></DataTableCell>
       <DataTableCell label={__('Captured', 'wconvert')}>

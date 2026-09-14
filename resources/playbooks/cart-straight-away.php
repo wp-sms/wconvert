@@ -6,7 +6,7 @@ defined('ABSPATH') || exit;
 
 return [
     'id' => 'cart-straight-away',
-    'name' => __('A quiet return to the cart', 'wconvert'),
+    'name' => __('Inline cart reminder', 'wconvert'),
     'goal' => 'recover_cart',
     'template_id' => 'inline-cta',
     'notes' => __('Place the WConvert block or shortcode where returning shoppers browse. It appears in the page only when the cart has items, with no popup or email capture. Requires WooCommerce and Pro cart rules. The button uses the store cart URL unless you set an override. Check placement and targeting on your shop pages.', 'wconvert'),

@@ -610,7 +610,7 @@ describe('the checks strip', () => {
     */
     expect(within(strip).getAllByText('OptinController')).toHaveLength(1);
     expect(within(strip).getByText('ADR 0052')).toBeInTheDocument();
-    expect(within(strip).getByTitle(/counts to the Optin/)).toBeInTheDocument();
+    expect(within(strip).getByTitle(/counts to the Campaign/)).toBeInTheDocument();
     // Every chip, not only the failing ones: *six checks pass* is legible only
     // if a reader can see what was doing the checking.
     expect(within(strip).getAllByRole('listitem')).toHaveLength(5);

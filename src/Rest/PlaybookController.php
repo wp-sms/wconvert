@@ -168,7 +168,7 @@ final class PlaybookController implements RestController
         $draft = $this->prefill->fromPlaybook($playbookId);
 
         if ($draft === null) {
-            return new WP_Error('wconvert_playbook_not_found', __('No such Playbook.', 'wconvert'), ['status' => 404]);
+            return new WP_Error('wconvert_playbook_not_found', __('No such Campaign setup.', 'wconvert'), ['status' => 404]);
         }
 
         // The Playbook has to serve the Goal that was asked for. A mismatch is
@@ -178,7 +178,7 @@ final class PlaybookController implements RestController
         if ($draft['goal'] !== $goal->value) {
             return new WP_Error(
                 'wconvert_playbook_serves_another_goal',
-                __('That Playbook does not serve that Goal.', 'wconvert'),
+                __('That Campaign setup does not serve that Goal.', 'wconvert'),
                 ['status' => 400]
             );
         }

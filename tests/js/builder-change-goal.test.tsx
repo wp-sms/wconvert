@@ -233,7 +233,7 @@ it('copies current edits to another Goal while leaving a published original unto
 
 /** Open the picker from the band. */
 const changeGoal = async () => {
-  await userEvent.click(await screen.findByRole('button', { name: 'Optin details' }));
+  await userEvent.click(await screen.findByRole('button', { name: 'Campaign details' }));
   await userEvent.click(await screen.findByRole('button', { name: 'Change goal' }));
 };
 
@@ -244,7 +244,7 @@ const changeGoal = async () => {
 describe('the goal in Optin details', () => {
   it('says what this Optin is for, and what its number is called', async () => {
     open();
-    await userEvent.click(await screen.findByRole('button', { name: 'Optin details' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Campaign details' }));
 
     expect(await within(screen.getByRole('dialog')).findByText('Grow my email list · counts Conversions')).toBeInTheDocument();
   });
@@ -259,7 +259,7 @@ describe('the goal in Optin details', () => {
     goals.listGoals.mockReturnValue(new Promise(() => undefined));
 
     open();
-    await userEvent.click(await screen.findByRole('button', { name: 'Optin details' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Campaign details' }));
 
 
 
@@ -279,7 +279,7 @@ describe('the goal in Optin details', () => {
     goals.listGoals.mockRejectedValue(new Error('nope'));
 
     open();
-    await userEvent.click(await screen.findByRole('button', { name: 'Optin details' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Campaign details' }));
 
     expect(await within(screen.getByRole('dialog')).findByText('grow_email_list')).toBeInTheDocument();
   });
@@ -293,7 +293,7 @@ describe('the goal in Optin details', () => {
     goals.listGoals.mockResolvedValue([GOALS[0]]);
 
     open();
-    await userEvent.click(await screen.findByRole('button', { name: 'Optin details' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Campaign details' }));
 
     await within(screen.getByRole('dialog')).findByText('Grow my email list · counts Conversions');
 
@@ -436,7 +436,7 @@ describe('a goal that collects contacts, over a design that asks for nothing', (
     await userEvent.click(await screen.findByRole('button', { name: 'Review & publish' }));
 
     expect(await screen.findByText(CAPTURE_OUTCOME.requirement)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Publish Optin' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeDisabled();
   });
 
   /** And a goal whose product IS the click-through says nothing at all. */
@@ -452,7 +452,7 @@ describe('a goal that collects contacts, over a design that asks for nothing', (
 
     await userEvent.click(await screen.findByRole('button', { name: 'Review & publish' }));
     expect(screen.queryByText(/will never collect any/)).toBeNull();
-    expect(screen.getByRole('button', { name: 'Publish Optin' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeEnabled();
   });
 });
 

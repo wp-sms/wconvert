@@ -40,6 +40,8 @@ final class OptinBinding
      */
     public static function ids(?array $config): array
     {
+        // Collect-only is an explicit promise not to forward future captures.
+        if (($config['capture_mode'] ?? null) === 'local') return [];
         $bound = $config[self::KEY] ?? null;
         $ids = [];
 

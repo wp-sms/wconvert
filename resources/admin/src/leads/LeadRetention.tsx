@@ -154,7 +154,7 @@ export function LeadRetention() {
             {error !== null && confirmDays === null && <RegionError message={error} />}
             <RegionBody className="flex flex-col gap-3">
               <p className="m-0 text-note text-muted-foreground" id={`${id}-scope`}>
-                {__('Applies to leads from every Optin. Copies already sent to destinations or exported are unaffected.', 'wconvert')}
+                {__('Applies to leads from every Campaign. Copies already sent to destinations or exported are unaffected.', 'wconvert')}
               </p>
               <fieldset className="m-0 flex min-w-0 flex-col gap-3 border-0 p-0" disabled={saving} aria-describedby={`${id}-scope`}>
                 <legend className="sr-only">{__('Lead retention', 'wconvert')}</legend>
@@ -240,7 +240,7 @@ export function LeadRetention() {
               )}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {__('Existing and future leads older than this period will be permanently deleted during daily cleanup. Export a CSV first if you need them. This applies to every Optin.', 'wconvert')}
+              {__('Existing and future leads older than this period will be permanently deleted during daily cleanup. Export a CSV first if you need them. This applies to every Campaign.', 'wconvert')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           {error !== null && <p role="alert" className="m-0 text-note text-destructive">{error}</p>}

@@ -126,7 +126,7 @@ function describe(
   stuck: StuckAt,
   milestones: MilestonePayload,
 ): { title: string; reason: string; action: string; href: string } {
-  const optins = { action: __('Go to Optins', 'wconvert'), href: '#optins' };
+  const optins = { action: __('Go to Campaigns', 'wconvert'), href: '#optins' };
   const destinations = { action: __('Go to Destinations', 'wconvert'), href: '#destinations' };
 
 
@@ -135,7 +135,7 @@ function describe(
       return {
         title: __('Nothing is live yet', 'wconvert'),
         reason: __(
-          'An Optin has to be published before it can be shown to anyone or counted here.',
+          'A campaign has to be published before it can be shown to anyone or counted here.',
           'wconvert',
         ),
         ...optins,
@@ -180,7 +180,7 @@ function describe(
         reason: sprintf(
           /* translators: %s: a date, in the site's timezone. */
           __(
-            'First conversion on %s. Every Lead is safe in the lead log; check that a Destination is bound to the Optin that captured it.',
+            'First conversion on %s. Every Lead is safe in the lead log; check that a Destination is bound to the Campaign that captured it.',
             'wconvert',
           ),
           milestones.first_conversion ?? '',
@@ -225,7 +225,7 @@ function WhatWasRecorded({ milestones }: { milestones: MilestonePayload }) {
         thing to show: a Playbook can be uninstalled, and the record outlives
         it.
       */
-      label: __('First change to a starting point', 'wconvert'),
+      label: __('First change to a campaign setup', 'wconvert'),
       value:
         milestones.first_edit === null
           ? notYet

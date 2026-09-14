@@ -78,7 +78,7 @@ describe('explicit lead retention', () => {
     const dialog = await propose('30');
     expect(dialog).toHaveAccessibleName('Automatically delete leads older than 30 days?');
     expect(dialog).toHaveTextContent('Existing and future leads');
-    expect(dialog).toHaveTextContent('This applies to every Optin.');
+    expect(dialog).toHaveTextContent('This applies to every Campaign.');
     expect(within(dialog).getByRole('button', { name: 'Cancel' })).toHaveFocus();
     expect(api.saveRetention).not.toHaveBeenCalled();
     await userEvent.click(within(dialog).getByRole('button', { name: 'Delete after 30 days' }));

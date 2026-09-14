@@ -6,7 +6,7 @@ defined('ABSPATH') || exit;
 
 return [
     'id' => 'sale-announcement',
-    'name' => __('The summer archive sale', 'wconvert'),
+    'name' => __('Announce a sale', 'wconvert'),
     'goal' => 'promote_offer',
     'template_id' => 'summer-archive',
     'notes' => __('A sale poster leading to one collection. Add your brand and set the button to your sale page. Match the 30% offer and exclusions to your prices. Set the actual start and end in Schedule and include the date and time zone in the copy; no deadline is invented for you.', 'wconvert'),

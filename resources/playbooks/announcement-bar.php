@@ -31,7 +31,7 @@ defined('ABSPATH') || exit;
 
 return [
     'id' => 'announcement-bar',
-    'name' => __('A strip across the page', 'wconvert'),
+    'name' => __('Announce an offer', 'wconvert'),
     'goal' => 'promote_offer',
     'template_id' => 'inline-cta',
     'notes' => __('Announces one thing and asks for nothing. Place the block near the top of your pages and set the button to point at the sale, the new range or whatever you are announcing. This Optin is measured by click-throughs, so nobody is added to a list and there is nothing to submit. If you have the floating bar, switch design in the gallery and your words come with you.', 'wconvert'),

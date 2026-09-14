@@ -954,4 +954,3 @@ describe('when it runs', () => {
     expect(screen.getByRole('button', { name: /^Schedule & frequency/ })).toHaveTextContent(/Runs from .*27.*2026/);
   });
 });
-

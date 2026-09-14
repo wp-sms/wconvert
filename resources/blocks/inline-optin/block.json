@@ -2,11 +2,11 @@
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
   "name": "wconvert/inline-optin",
-  "title": "Inline Optin",
+  "title": "Inline Campaign",
   "category": "widgets",
   "icon": "feedback",
-  "description": "Place one of your published inline Optins in the flow of this page.",
-  "keywords": ["optin", "form", "lead", "signup", "wconvert"],
+  "description": "Place one of your published inline campaigns in the flow of this page.",
+  "keywords": ["campaign", "optin", "form", "lead", "signup", "wconvert"],
   "textdomain": "wconvert",
   "attributes": {
     "optinId": {

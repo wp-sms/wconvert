@@ -72,7 +72,7 @@ final class OptinWriteTest extends TestCase
 
     public function testUnpublishingDoesNotAllowAHistoryChangingGoalEdit(): void
     {
-        $draft = $this->create(Goal::GrowEmailList, ['template_id' => 'centred-card']);
+        $draft = $this->create(Goal::GrowEmailList, ['template_id' => 'centred-card', 'capture_mode' => 'local']);
         self::assertIsArray($draft);
         $request = new WP_REST_Request();
         $request->set_param('id', $draft['id']);
@@ -83,6 +83,36 @@ final class OptinWriteTest extends TestCase
         self::assertInstanceOf(WP_Error::class, $response);
         self::assertSame('wconvert_optin_goal_locked', $response->get_error_code());
         self::assertSame(Goal::GrowEmailList->value, $this->optins->find($draft['id'])?->goal);
+    }
+
+    public function testListCollectionRequiresAServiceOrAnExplicitCollectOnlyChoice(): void
+    {
+        $draft = $this->create(Goal::GrowEmailList, ['template_id' => 'centred-card']);
+        self::assertIsArray($draft);
+        $request = new WP_REST_Request();
+        $request->set_param('id', $draft['id']);
+        self::assertInstanceOf(WP_Error::class, $this->controller->publish($request));
+        $request->set_param('config', $draft['config'] + ['capture_mode' => 'local']);
+        $this->controller->update($request);
+        self::assertInstanceOf(\WP_REST_Response::class, $this->controller->publish($request));
+    }
+
+    public function testAConfiguredAudienceServiceSatisfiesEmailButNotPhoneCollection(): void
+    {
+        $destination = $this->destinations->save(null, 'mailpoet', 'Newsletter', null, ['lists' => ['3']]);
+        foreach ([Goal::GrowEmailList, Goal::GrowSmsList] as $goal) {
+            $draft = $this->create($goal, ['template_id' => $goal === Goal::GrowEmailList ? 'centred-card' : 'stacked-signup', 'destinations' => [$destination->id]]);
+            self::assertIsArray($draft);
+            $request = new WP_REST_Request();
+            $request->set_param('id', $draft['id']);
+            $response = $this->controller->publish($request);
+            if ($goal === Goal::GrowEmailList) {
+                self::assertInstanceOf(\WP_REST_Response::class, $response);
+            } else {
+                self::assertInstanceOf(WP_Error::class, $response);
+                self::assertSame('wconvert_optin_goal_incomplete', $response->get_error_code());
+            }
+        }
     }
 
     public function testALeadMagnetNeedsAConfiguredDeliveryRouteBeforePublishing(): void
@@ -125,7 +155,7 @@ final class OptinWriteTest extends TestCase
         // A Pro install with a store, so the cart [[Goal]] is settable and the
         // refusals below are about the DESIGN rather than about availability.
         $pro = new FakeProPresence(Tier::Elite);
-        $site = new FakeSitePresence([SiteDependency::WooCommerce]);
+        $site = new FakeSitePresence([SiteDependency::WooCommerce, SiteDependency::MailPoet]);
 
         $this->milestones = new FakeOptionStore();
 
@@ -150,7 +180,7 @@ final class OptinWriteTest extends TestCase
             $this->destinations = new \WConvert\Destination\DestinationStore(new FakeOptionStore()),
             (new \WConvert\Destination\DestinationRegistry($pro, $site))->register(
                 new \WConvert\Destination\LeadMagnet\LeadMagnetDestinationType(new \WConvert\Tests\Unit\Support\FakeMailer())
-            )
+            )->register(new \WConvert\Destination\MailPoet\MailPoetDestinationType(new \WConvert\Tests\Unit\Support\FakeMailPoetSubscribers()))
         );
     }
 

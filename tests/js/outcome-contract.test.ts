@@ -30,7 +30,7 @@ describe('the Goal contract on the edited draft', () => {
   });
 
   it('requires the selected delivery destination to be available and configured', () => {
-    const outcome = { ...CAPTURE_OUTCOME, destination_type: 'delivery' };
+    const outcome = { ...CAPTURE_OUTCOME, destination_type: 'delivery', audience_channel: null };
     const destination = { id: 'route', type: 'delivery', availability: 'ready', settings: {}, requirements: {
       capture_any_of: ['email'], settings: { file: { label: 'File', type: 'text' } }, fields: ['email'], mapped_fields: {},
     } } as unknown as Destination;
@@ -38,5 +38,15 @@ describe('the Goal contract on the edited draft', () => {
     expect(outcomeHandoffIssue(outcome, ['route'], [destination])).not.toBeNull();
     expect(outcomeHandoffIssue(outcome, ['route'], [{ ...destination, settings: { file: 'https://example.org/guide.pdf' } }])).toBeNull();
     expect(outcomeHandoffIssue(outcome, ['route'], null)).not.toBeNull();
+  });
+
+  it('requires a capable audience service by default, with an explicit collect-only alternative', () => {
+    const route = { id: 'email', type: 'mailpoet', availability: 'ready', settings: {}, requirements: {
+      capture_any_of: ['email'], settings: {}, fields: ['email'], mapped_fields: {}, audience_channels: ['email'],
+    } } as unknown as Destination;
+    expect(outcomeHandoffIssue(CAPTURE_OUTCOME, [], [route])).not.toBeNull();
+    expect(outcomeHandoffIssue(CAPTURE_OUTCOME, [], [route], 'local')).toBeNull();
+    expect(outcomeHandoffIssue(CAPTURE_OUTCOME, ['email'], [route])).toBeNull();
+    expect(outcomeHandoffIssue({ ...CAPTURE_OUTCOME, audience_channel: 'phone' }, ['email'], [route])).not.toBeNull();
   });
 });

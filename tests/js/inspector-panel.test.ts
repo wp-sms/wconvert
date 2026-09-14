@@ -32,7 +32,7 @@ const LABELS: Labels = {
   close: 'Close',
   collapse: 'Collapse',
   expand: 'Expand',
-  nothing: 'No Optins yet.',
+  nothing: 'No Campaigns yet.',
   stopped: {
     blocked: 'Needs consent this visit has not given.',
     showing: 'Showing now.',
