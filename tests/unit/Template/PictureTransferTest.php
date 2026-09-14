@@ -115,4 +115,13 @@ final class PictureTransferTest extends TestCase
         $this->assertSame($next, $result['template']);
         $this->assertSame(1, $result['unplaced']);
     }
+
+    public function testPlainRootIsNotAssumedToBeASuitablePhotoBackdrop(): void
+    {
+        $old = $this->template([]);
+        $mine = $this->template([], ['bg-image' => 'url("/shop.jpg")']);
+        $result = PictureTransfer::prepare($mine, $old, $old);
+        $this->assertSame($old, $result['template']);
+        $this->assertSame(1, $result['unplaced']);
+    }
 }

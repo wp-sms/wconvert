@@ -48,4 +48,28 @@ uses the existing normalized snapshot preparation route.
 - The temporary draft was removed; all six original Optin hashes matched their
   baseline. No campaign was published and no Lead or delivery was created.
 
-Review results follow once the two bounded passes finish.
+## Standards review
+
+Independent Luna Extra High review found a redundant Custom CSS toggle for
+spacing expressions that cannot use side controls. It is now hidden in that
+case, with regression coverage. The split traversal finding was already fixed
+with the shared child-key vocabulary. The optional suggestion to consolidate
+picture preparation and report calculation remains a small internal cleanup;
+both paths currently call the same deterministic matching implementation.
+
+## Specification review
+
+Independent Luna Extra High review found that a mobile value equal to desktop
+was incorrectly marked as different. The indicator now compares the effective
+values, including inherited desktop values; three regression cases cover this.
+The requested verification record is populated above.
+
+The suggestion to treat every plain root as a photo destination was not adopted:
+an empty root does not establish that text will remain readable over a photo.
+The transfer instead reports the missing match before Apply. ADR 0084 now makes
+this suitability rule explicit, and a regression test covers it. Explicit panel
+and media picture slots remain eligible even when empty.
+
+After these review changes, all 93 focused frontend tests and all 10 picture
+transfer tests passed, along with TypeScript and ESLint. Both admin builds were
+rebuilt for the local installation.

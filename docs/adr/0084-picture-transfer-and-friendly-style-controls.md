@@ -16,7 +16,10 @@ same screen only when both sides have the same number of slots.
 A single picture can move between an image and a background slot where the
 match is unambiguous. A background may become a decorative image; an image with
 meaningful alt text cannot become a decorative background silently. Root
-backgrounds can match the main screen, never a success-only picture. Narrow
+backgrounds can match the main screen, never a success-only picture. A target
+root is a destination only when it declares a background layer; an ordinary
+plain design is not assumed to provide a readable photo backdrop. Panel and
+media nodes explicitly provide picture slots even when currently empty. Narrow
 photos retain their own background slot; cross-kind transfer does not guess
 mobile geometry. New design palettes, overlays and layout dimensions remain
 the new design's. A sample narrow photo cannot cover a carried desktop photo.

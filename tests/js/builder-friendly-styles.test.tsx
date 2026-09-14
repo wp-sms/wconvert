@@ -43,6 +43,7 @@ describe('padding and gradients preserve authored values until an explicit edit'
     const changed = vi.fn();
     render(<Control initial="clamp(1rem, 3vw, 2rem)" token="pad" changed={changed} />);
     expect(screen.getByLabelText('Setting custom value')).toHaveValue('clamp(1rem, 3vw, 2rem)');
+    expect(screen.queryByRole('button', { name: 'Custom CSS' })).not.toBeInTheDocument();
     expect(changed).not.toHaveBeenCalled();
   });
 
@@ -74,6 +75,18 @@ describe('padding and gradients preserve authored values until an explicit edit'
     expect(screen.queryByLabelText('Direction (degrees)')).not.toBeInTheDocument();
     expect(changed).not.toHaveBeenCalled();
   });
+});
+
+it.each([
+  [{ pad: '1rem' }, {}, '1rem', false],
+  [{}, { pad: '1rem' }, '1rem', false],
+  [{ pad: '2rem' }, {}, '1rem', true],
+])('marks mobile padding only when its effective value differs (%j, %j, %s)', (local, inherited, mobile, different) => {
+  const template: Template = { tokens: inherited, tree: { steps: [{ type: 'panel', tokens: local, narrow: { pad: mobile }, children: [] }] } };
+  render(<ScopeStyle template={template} labels={labels} path={[0]} width="tokens" copied={null} onCopy={vi.fn()}
+    openToken={null} onOpenToken={vi.fn()} onSelect={vi.fn()} onChange={vi.fn()} />);
+  expect(screen.queryByText('Different on mobile') !== null).toBe(different);
+  expect(screen.getByText('Mobile settings: Padding')).toBeInTheDocument();
 });
 
 it('lists local mobile overrides and resets only the selected element’s narrow bag', async () => {

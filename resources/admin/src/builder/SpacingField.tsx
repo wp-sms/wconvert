@@ -51,7 +51,7 @@ export function SpacingField({ label, shown, fallback, standard, reset, onChange
             }} />
         </div>)}
       </div>}
-    <Button type="button" variant="ghost" size="xs" className="mt-1" disabled={sides === null && custom}
-      onClick={() => setCustom(!custom)}>{custom && sides !== null ? __('Use side controls', 'wconvert') : __('Custom CSS', 'wconvert')}</Button>
+    {sides !== null && <Button type="button" variant="ghost" size="xs" className="mt-1"
+      onClick={() => setCustom(!custom)}>{custom ? __('Use side controls', 'wconvert') : __('Custom CSS', 'wconvert')}</Button>}
   </fieldset>;
 }
