@@ -23,6 +23,7 @@ it('only contacts the service after an explicit check, then previews, installs a
   await user.click(await screen.findByRole('button', { name: 'Preview Reading pack' }));
   expect(api.previewPack).toHaveBeenCalledWith('reading', false);
   await screen.findByText('Rendered design'); expect(api.installPack).not.toHaveBeenCalled();
+  expect(screen.getByTestId('preview').closest('[inert]')).toHaveAttribute('aria-hidden', 'true');
   await user.click(screen.getByRole('button', { name: 'Install pack' }));
   await screen.findByText('Installed'); expect(api.installPack).toHaveBeenCalledWith('reading', 'reviewed-digest');
   expect(onInspect).not.toHaveBeenCalled();
@@ -127,13 +128,21 @@ it('keeps the selected design after installation and clearly continues to conten
   await waitFor(() => expect(onInspect).toHaveBeenCalledWith('second'));
 });
 
-it('returns focus to the same collection without another request', async () => {
+it('returns focus and the original scroll position even if the list moves while the preview loads', async () => {
   api.catalogStatus.mockResolvedValue(installed);
+  let resolvePreview!: (value: PackPreview) => void;
+  api.previewPack.mockReturnValue(new Promise<PackPreview>((resolve) => { resolvePreview = resolve; }));
   const user = userEvent.setup();
   render(<TemplatePacks displayType="inline" onInstalled={vi.fn()} onInspect={vi.fn()} />);
+  await screen.findByRole('button', { name: 'Explore designs in Reading pack' });
+  const list = screen.getByRole('region', { name: 'Template packs' });
+  list.scrollTop = 120;
   await user.click(await screen.findByRole('button', { name: 'Explore designs in Reading pack' }));
+  list.scrollTop = 240;
+  await act(async () => { resolvePreview(preview); });
   await user.click(await screen.findByRole('button', { name: 'All packs' }));
   expect(screen.getByRole('button', { name: 'Explore designs in Reading pack' })).toHaveFocus();
+  expect(screen.getByRole('region', { name: 'Template packs' }).scrollTop).toBe(120);
   expect(api.catalogStatus).toHaveBeenCalledTimes(1);
   expect(api.previewPack).toHaveBeenCalledTimes(1);
 });

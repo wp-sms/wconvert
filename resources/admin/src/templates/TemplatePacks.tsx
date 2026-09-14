@@ -56,8 +56,9 @@ export function TemplatePacks({ displayType, onInstalled, onInspect }: {
     finally { pending.current = false; if (alive.current) setWork(null); }
   };
   const inspect = (pack: CatalogPack, local: boolean) => { void run('previewing', async () => {
+    listPosition.current = list.current?.scrollTop ?? 0;
     const result = await previewPack(pack.id, local);
-    if (alive.current) { listPosition.current = list.current?.scrollTop ?? 0; setPreview(result); }
+    if (alive.current) setPreview(result);
   }); };
   const install = () => { if (preview !== null) void run('installing', async () => {
     const result = await installPack(preview.id, preview.digest);

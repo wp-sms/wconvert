@@ -39,3 +39,27 @@ changes are part of this follow-up.
   selected Punched ticket content-choice review, and closing it left Save draft
   disabled. The temporary viewport override was reset.
 - Original Optins were not saved or published during this UI check.
+
+## Final review
+
+### Standards
+
+The review found a missing inert boundary around the sample preview and scroll
+position captured after the preview request instead of before it. Both are
+corrected. The preview now follows the existing design-detail convention with
+`inert` and `aria-hidden`; sample controls cannot receive input or enter the
+screen-reader navigation. A delayed-response regression covers scroll restoration.
+
+The review also noted duplicated ResizeObserver measurement as a judgement-call
+maintenance smell. This bounded follow-up leaves the existing content-choice
+stage unchanged; a shared stage can be considered when both preview surfaces
+next change together.
+
+### Spec
+
+The single finding was the same missing inert preview boundary, now corrected.
+No missing requirements or scope expansion were identified.
+
+After those corrections, all 81 pack/gallery/detail tests, TypeScript, ESLint and
+both admin builds passed. Live WordPress confirmed the sample wrapper is inert
+and hidden from accessibility navigation, with the draft still unchanged.
