@@ -40,5 +40,10 @@ checked against the pack's placeholder-only template contract.
   All six original Optins remained unchanged. No publication, Leads, external
   delivery, table or column changes.
 
+- One combined browser pass verified goal selection, opening an installed pack,
+  and returning to the collection-filtered chooser. Both Store starts for the
+  email-list goal displayed their real wording and 8/12-second setup summaries.
+  No draft was created during browser verification.
+
 Architecture and supported import values are in ADR 0083. Production catalog
 hosting, paid packs, assets and further new compositions remain outside scope.
