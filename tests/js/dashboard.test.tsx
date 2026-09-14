@@ -238,6 +238,33 @@ describe('impact overview', () => {
 });
 
 describe('Goal and campaign reports', () => {
+  it('keeps every earlier variant in the family after successive child winners', async () => {
+    const historical = [
+      { ...row('winner'), name: 'Current design' },
+      {
+        ...row('earlier', 'historical'),
+        name: 'Previous winner',
+        parent_id: 'winner',
+      },
+      {
+        ...row('oldest', 'historical'),
+        name: 'Earliest design',
+        parent_id: 'earlier',
+      },
+    ];
+    const card = { ...goal(historical), ...numbers(36, 300) };
+    api.readDashboard.mockResolvedValue({ ...payload(), goals: [card] });
+    render(<Dashboard query={{ experiment: 'winner' }} />);
+    expect(
+      await screen.findByRole('heading', { name: 'Earliest design' }),
+    ).toBeInTheDocument();
+    const family = families(card);
+    expect(family).toHaveLength(1);
+    expect(family[0].numbers.conversions).toBe(36);
+    expect(
+      reportCSV(payload(), [{ ...card, optins: family[0].arms }]),
+    ).toContain('Earliest design');
+  });
   it('keeps deleted rows inspectable and does not offer edit or resume', async () => {
     api.readDashboard.mockResolvedValue({
       ...payload(),
@@ -323,9 +350,7 @@ describe('Goal and campaign reports', () => {
     render(<Dashboard query={{ goal: 'grow_email_list', compare: false }} />);
     await screen.findByRole('heading', { name: 'Grow my email list' });
     expect(screen.getByText('—', { selector: 'dd' })).toBeInTheDocument();
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Rate' }),
-    );
+    await userEvent.click(screen.getByRole('button', { name: 'Rate' }));
     await userEvent.click(screen.getByText('View exact daily numbers'));
     const table = screen.getByRole('table', { name: 'Daily performance' });
     expect(within(table).getByText('—')).toBeInTheDocument();

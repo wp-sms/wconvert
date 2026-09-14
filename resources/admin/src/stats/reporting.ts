@@ -5,13 +5,22 @@ export function families(
   card: GoalReport,
 ): Array<{ root: OptinReport; arms: OptinReport[]; numbers: Numbers }> {
   const ids = new Set(card.optins.map((row) => row.id));
+  const children = new Map<string, OptinReport[]>();
+  for (const row of card.optins) {
+    if (row.parent_id === null) continue;
+    const siblings = children.get(row.parent_id) ?? [];
+    siblings.push(row);
+    children.set(row.parent_id, siblings);
+  }
   return card.optins
     .filter((row) => row.parent_id === null || !ids.has(row.parent_id))
     .map((root) => {
-      const arms = [
-        root,
-        ...card.optins.filter((row) => row.parent_id === root.id),
-      ];
+      // Successive child winners leave earlier retired arms nested under
+      // former winners. Traverse the whole family, not only its current arms.
+      const arms = [root];
+      for (let index = 0; index < arms.length; index++) {
+        arms.push(...(children.get(arms[index].id) ?? []));
+      }
       return { root, arms, numbers: addNumbers(arms) };
     });
 }

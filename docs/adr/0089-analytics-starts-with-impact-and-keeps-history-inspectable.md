@@ -5,6 +5,15 @@ compact reporting-period/comparison bar without a visible timezone. This is the
 production implementation, using the existing daily counters and Optin metadata.
 No table, column, index, option, transient or event ledger is added.
 
+This amends the Analytics presentation in
+[0068](0068-reading-pages-put-results-and-routes-before-occasional-settings.md),
+and extends the reporting/history decisions in
+[0019](0019-analytics-stores-daily-counters-not-events.md),
+[0020](0020-conversions-are-interpreted-at-read.md),
+[0034](0034-the-dashboard-joins-in-php.md),
+[0058](0058-a-test-ends-when-the-merchant-says-so.md) and
+[0071](0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md).
+
 ## Compatible impact counts, not a global conversion rate
 
 The overview shows captured Leads (form submissions, not unique people or
@@ -59,6 +68,9 @@ Campaign contribution tables group parent and child arms for presentation.
 Family sums are not added into Goal or impact totals again. Opening a grouped
 row opens its family comparison; an individual arm link opens only that arm.
 Filtering a family keeps its complete contribution and history together.
+Successive child winners can leave retired arms nested beneath former winners.
+Reports collect all descendants, not just direct children; this keeps campaign
+totals, comparison cards, search and family CSV consistent with Goal totals.
 
 ## Merchant actions reuse existing controls
 
