@@ -26,7 +26,7 @@ defined('ABSPATH') || exit;
 
 return [
     'id' => 'cart-on-the-way-out',
-    'name' => __('On the way out', 'wconvert'),
+    'name' => __('Cart reminder on exit', 'wconvert'),
     'goal' => 'recover_cart',
     'template_id' => 'offer-panel',
     'notes' => __('Waits for exit intent before showing a popup to shoppers with items in their cart. Consider the inline cart return for a quieter option. This counts clicks back to the cart, captures no details and adds nobody to a list. Check the mobile fallback and frequency before publishing.', 'wconvert'),

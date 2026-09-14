@@ -45,8 +45,8 @@ export function DestinationSetupDialog({
           </DialogTitle>
           <DialogDescription className="m-0" id={description}>
             {destination !== undefined
-              ? __('These settings are shared across the site. Saving changes this destination for every Optin that uses it, including published Optins.', 'wconvert')
-              : __('Create a destination for this site, then select it for this Optin. Your Optin draft stays open.', 'wconvert')}
+              ? __('These settings are shared across the site. Saving changes this destination for every Campaign that uses it, including published Campaigns.', 'wconvert')
+              : __('Create a destination for this site, then select it for this Campaign. Your Campaign draft stays open.', 'wconvert')}
           </DialogDescription>
         </DialogHeader>
 

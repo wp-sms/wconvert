@@ -3,6 +3,8 @@
 namespace WConvert\Rest;
 
 use WConvert\Destination\OptinBinding;
+use WConvert\Destination\DestinationStore;
+use WConvert\Destination\DestinationRegistry;
 use WConvert\Goal\Goal;
 use WConvert\Goal\GoalRegistry;
 use WConvert\Milestone\FirstEdit;
@@ -59,6 +61,8 @@ final class OptinController implements RestController
         private readonly RuleCatalogue $rules,
         private readonly SiteFrequency $siteFrequency,
         private readonly MilestoneStore $milestones,
+        private readonly DestinationStore $destinations,
+        private readonly DestinationRegistry $destinationTypes,
     ) {
     }
 
@@ -350,7 +354,7 @@ final class OptinController implements RestController
         // {@see OptinRepository::createVariant()} makes an arm by COPYING its
         // parent's config — so an arm is born comparable and only an edit can
         // break it.
-        $refusal = $this->refuseADesignThatCapturesNothing($normalized, $goal)
+        $refusal = $this->refuseUnusableBindings($normalized)
             ?? self::refuseADesignThatCannotConvert($normalized);
 
         if ($refusal !== null) {
@@ -394,6 +398,12 @@ final class OptinController implements RestController
         // answer two questions about the same row.
         $stored = $this->optins->find($id);
 
+        if ($stored !== null && $checked !== null && $checked->value !== $stored->goal && !$stored->canChangeGoal()) {
+            return new WP_Error('wconvert_optin_goal_locked',
+                __('This Goal is fixed after first publish or while part of an A/B test. Duplicate this Campaign for a different Goal to keep its history unchanged.', 'wconvert'),
+                ['status' => 409]);
+        }
+
         // Which Template the copy in `config` was TAKEN FOR, so that repicking
         // one takes a fresh copy while editing anything else leaves the copy
         // the merchant has been editing alone. On an update that is the stored
@@ -425,36 +435,10 @@ final class OptinController implements RestController
             return self::needsATrigger();
         }
 
-        // Against the Goal this Optin will HAVE — the corrected one where the
-        // PATCH carries one, and the stored one where it does not. Reading the
-        // stored Goal is what makes editing a design on an Optin nobody is
-        // re-goaling still answerable.
-        $held = $checked ?? ($stored === null ? null : Goal::tryFrom($stored->goal));
-
-        // ====================================================================
-        // THE DESIGN THIS OPTIN WILL HOLD, WHICH IS NOT ALWAYS THE ONE THAT
-        // ARRIVED — AND THAT IS A HOLE THAT WAS OPEN.
-        // ====================================================================
-        // Both refusals were guarded on `$normalized !== null`, so
-        // `PATCH {"goal": …}` carrying NO `config` wrote any settable Goal
-        // onto any design and any binding with nothing asked at all. It was
-        // unreachable from the admin, which is exactly ADR 0026's point about
-        // the goal screen — *"a screen is not an enforcement mechanism"* — and
-        // this route is scriptable by anyone holding `manage_options`.
-        //
-        // It matters more now than it did, because there IS a control that
-        // changes a Goal (ADR 0059). So the pairing is asked against the
-        // config this Optin will end up with: the one that arrived, or the one
-        // it already has.
-        $design = $normalized ?? ($stored === null ? [] : $stored->config);
-
-        // Asked whenever either half of the pair is being written. A PATCH
-        // carrying only a NAME is editing neither and is not asked — refusing
-        // a rename because of a design somebody saved earlier would be
-        // refusing an edit that cannot make anything worse.
-        if ($held !== null && ($normalized !== null || $checked !== null)) {
-            $refusal = $this->refuseADesignThatCapturesNothing($design, $held);
-
+        // Goal fit is checked at publication, so incomplete drafts stay editable.
+        // Bindings on a design without capture remain unusable under any Goal.
+        if ($normalized !== null) {
+            $refusal = $this->refuseUnusableBindings($normalized);
             if ($refusal !== null) {
                 return $refusal;
             }
@@ -557,7 +541,7 @@ final class OptinController implements RestController
         if (!$optin->hasDesign()) {
             return new WP_Error(
                 'wconvert_optin_needs_a_design',
-                __('Choose a design before publishing. You can keep saving this Optin as a draft.', 'wconvert'),
+                __('Choose a design before publishing. You can keep saving this Campaign as a draft.', 'wconvert'),
                 ['status' => 400]
             );
         }
@@ -565,11 +549,31 @@ final class OptinController implements RestController
         $issue = \WConvert\Template\TemplateForm::issue($optin->config['template'] ?? null);
         if ($issue !== null) {
             $message = match ($issue) {
-                'choices' => __('Add at least one choice to the interest field before publishing. You can keep saving this Optin as a draft.', 'wconvert'),
-                'followup' => __('Give each resource link a label and address, and place it after the form. You can keep saving this Optin as a draft.', 'wconvert'),
-                default => __('Add an email or phone field before publishing this form. You can keep saving this Optin as a draft.', 'wconvert'),
+                'choices' => __('Add at least one choice to the interest field before publishing. You can keep saving this Campaign as a draft.', 'wconvert'),
+                'followup' => __('Give each resource link a label and address, and place it after the form. You can keep saving this Campaign as a draft.', 'wconvert'),
+                default => __('Add an email or phone field before publishing this form. You can keep saving this Campaign as a draft.', 'wconvert'),
             };
             return new WP_Error('wconvert_optin_form_incomplete', $message, ['status' => 400]);
+        }
+
+        $outcome = Goal::tryFrom($optin->goal)?->outcome();
+        $goalIssue = $outcome?->designIssue($optin->config);
+        if ($goalIssue === null && $outcome !== null) {
+            $readyTypes = [];
+            $readyChannels = [];
+            foreach (OptinBinding::ids($optin->config) as $destinationId) {
+                $destination = $this->destinations->find($destinationId);
+                $type = $destination === null ? null : $this->destinationTypes->find($destination->type);
+                if ($destination !== null && $type !== null && $this->destinationTypes->isDispatchable($destination->type)
+                    && $type->requirements()->missingSettings($destination->settings) === []) {
+                    $readyTypes[] = $destination->type;
+                    array_push($readyChannels, ...$type->requirements()->audienceChannels);
+                }
+            }
+            $goalIssue = $outcome->handoffIssue($readyTypes, ($optin->config['capture_mode'] ?? null) === 'local' ? 'local' : 'connected', $readyChannels);
+        }
+        if ($goalIssue !== null) {
+            return new WP_Error('wconvert_optin_goal_incomplete', $goalIssue, ['status' => 400]);
         }
 
         $published = $this->optins->publish($id);
@@ -688,6 +692,9 @@ final class OptinController implements RestController
      */
     private function normalizeConfig(array $config, ?string $pickedBefore = null): array
     {
+        if (isset($config['capture_mode'])) {
+            $config['capture_mode'] = $config['capture_mode'] === 'local' ? 'local' : 'connected';
+        }
         if (isset($config['targeting'])) {
             $config['targeting'] = Targeting::fromArray((array) $config['targeting'])->toArray();
         }
@@ -837,8 +844,8 @@ final class OptinController implements RestController
         return new WP_Error(
             'wconvert_optin_invalid_schedule',
             $refused->reason === InvalidSchedule::UNREADABLE
-                ? __('An Optin’s start and end have to be a date and a time.', 'wconvert')
-                : __('An Optin’s schedule has to end after it starts.', 'wconvert'),
+                ? __('A campaign’s start and end have to be a date and a time.', 'wconvert')
+                : __('A campaign’s schedule has to end after it starts.', 'wconvert'),
             ['status' => 400]
         );
     }
@@ -860,54 +867,11 @@ final class OptinController implements RestController
     }
 
     /**
-     * ========================================================================
-     * WHAT A DESIGN CAPTURES IS WHAT THIS ASKS. IT ASKS NO ACT AT ALL.
-     * ========================================================================
-     * This was `refuseAMetricItCannotReport()`, and it enforced the pairing
-     * *"one Optin has exactly one converting act, and its [[Goal]] decides
-     * which"* — refusing `{goal: 'promote_offer', template_id: 'centred-card'}`
-     * outright. **The Goal no longer decides** (ADR 0059): a registered design
-     * offers exactly one act, {@see TemplateLibrary::refuse()} is what makes
-     * that true, and the loader has always derived the act from the design it
-     * was handed. A Goal that declared one as well was a second source, and
-     * every act-shaped refusal in the product existed only because the two
-     * could disagree.
-     *
-     * So the pairing is gone and the pairing's one REAL consequence stays,
-     * re-keyed onto the thing it was always about — what the design captures:
-     *
-     * 1. **A Goal counting deliveries needs a capturing design.**
-     *    `lead_magnet_delivered` is written when a push to the lead-magnet
-     *    [[Destination]] succeeds, and there is nothing to push unless the
-     *    visitor gave an address. Under a design with no `field` on it the
-     *    headline reads **zero forever** — ADR 0020's failure that looks
-     *    broken while being right.
-     * 2. **A design that captures nothing holds no [[Destination]] ids.**
-     *    ADR 0025 argued this from the click metric and it was never about the
-     *    metric: a bound Destination on an Optin with no form is configuration
-     *    that can never fire, whatever counts it. Refused rather than
-     *    stripped, because stripping writes a decision the merchant did not
-     *    make and leaves them looking for a binding that is silently gone.
-     *
-     * **The Goal is nullable, and rule 2 is why.** *"It captures nothing so it
-     * has nothing to send"* is true under every Goal, including one this
-     * install can no longer resolve — so making the whole method depend on a
-     * Goal would let rule 2 lapse on precisely the rows ADR 0026 keeps
-     * working. That is the same argument
-     * {@see self::refuseADesignThatCannotConvert()} makes one method down.
-     *
-     * **The capture is read with `TemplateFacets`' own walk**, which is what
-     * the gallery's `captures` chips are derived from at registration — so the
-     * card that marks a design refused and the save that refuses it cannot
-     * disagree about what a design asks for.
-     *
-     * **A design offering nothing is not refused here.** A draft mid-creation
-     * has no template yet, and refusing one would block the save that is about
-     * to add it.
-     *
+     * A non-capturing design has nothing to send to bound Destinations.
+     * Goal-specific requirements belong to the publish boundary (ADR 0085).
      * @param array<string, mixed> $config Already normalised.
      */
-    private function refuseADesignThatCapturesNothing(array $config, ?Goal $goal): ?WP_Error
+    private function refuseUnusableBindings(array $config): ?WP_Error
     {
         $tree = $config['template']['tree'] ?? null;
 
@@ -917,29 +881,6 @@ final class OptinController implements RestController
 
         if (TemplateFacets::of($tree, $this->templates->fields())['captures'] !== []) {
             return null;
-        }
-
-        if ($goal !== null && $goal->needsACapture()) {
-            return new WP_Error(
-                'wconvert_optin_captures_nothing',
-                sprintf(
-                    /* translators: %s: the name of the Goal the Optin is filed under. */
-                    __(
-                        // **It names a door that is on the screen**, which is
-                        // what ADR 0042 rule 4 asks and what the sentence this
-                        // replaces could not do: the Design tab is one click
-                        // away and the gallery marks the capturing designs
-                        // before the click. The old wording said "or change
-                        // the Goal" against no such control; there is one now,
-                        // and this still points at the design, because the
-                        // Goal is what the merchant meant.
-                        '“%s” counts deliveries, and this design captures nothing to deliver to. Pick a design with a field on it from the Design tab.',
-                        'wconvert'
-                    ),
-                    $goal->label()
-                ),
-                ['status' => 400]
-            );
         }
 
         if (($config[OptinBinding::KEY] ?? []) !== []) {
@@ -1040,7 +981,7 @@ final class OptinController implements RestController
      * anyone holding `manage_options`, which is the same argument ADR 0026
      * made about the goal screen — *"a screen is not an enforcement
      * mechanism"* — and the reason
-     * {@see self::refuseADesignThatCapturesNothing()} exists two methods up.
+     * {@see self::refuseUnusableBindings()} exists two methods up.
      *
      * **A config with no design is still not refused**, exactly as above: a
      * draft mid-creation has no template yet, and refusing one would block the
@@ -1069,7 +1010,7 @@ final class OptinController implements RestController
         return new WP_Error(
             'wconvert_optin_cannot_convert',
             __(
-                'This design has nothing on it that counts as a conversion, so the Optin would report zero however many people saw it. Add the button back, or pick a design that has one.',
+                'This design has nothing on it that counts as a conversion, so the Campaign would report zero however many people saw it. Add the button back, or pick a design that has one.',
                 'wconvert'
             ),
             ['status' => 400]
@@ -1101,7 +1042,7 @@ final class OptinController implements RestController
         return new WP_Error(
             'wconvert_optin_needs_a_trigger',
             __(
-                'An Optin needs at least one Trigger it can act on. Fill in the one you have, or add “Shows immediately” if it should show straight away.',
+                'A campaign needs at least one Trigger it can act on. Fill in the one you have, or add “Shows immediately” if it should show straight away.',
                 'wconvert'
             ),
             ['status' => 400]
@@ -1110,6 +1051,6 @@ final class OptinController implements RestController
 
     private static function notFound(): WP_Error
     {
-        return new WP_Error('wconvert_optin_not_found', __('No such Optin.', 'wconvert'), ['status' => 404]);
+        return new WP_Error('wconvert_optin_not_found', __('No such Campaign.', 'wconvert'), ['status' => 404]);
     }
 }

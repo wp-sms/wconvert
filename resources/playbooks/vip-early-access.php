@@ -19,7 +19,7 @@ defined('ABSPATH') || exit;
 
 return [
     'id' => 'vip-early-access',
-    'name' => __('First refusal by text', 'wconvert'),
+    'name' => __('Early-access SMS signup', 'wconvert'),
     'goal' => 'grow_sms_list',
     'template_id' => 'inline-phone',
     'notes' => __('Sits in the page instead of over it, so it suits a landing page or a product page better than a popup does. Asks only for a phone number. Configure the SMS service and opt-out handling before publishing. Say what you will send and how often — a phone number is a bigger ask than an address and people know it.', 'wconvert'),

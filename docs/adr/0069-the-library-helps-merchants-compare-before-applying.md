@@ -17,11 +17,13 @@ other proposals are not adopted here. Publishing and destination setup are
 subsequently addressed by [ADR 0070](0070-drafts-are-reviewed-and-explicitly-published-from-the-editor.md);
 capture fields and report navigation remain separate work.
 
+> **Amended by [ADR 0085](0085-goals-have-publish-contracts-and-stable-history.md):** The design browser defaults to Goal fit, derived from capabilities, and offers Show all designs.
+
 ## Find designs by what they actually offer
 
-The Optin's Display Type remains the library's fixed scope. Identify that scope
-so the merchant understands which designs are being counted; browsing does not
-change a popup into an inline Optin. Search and relevant filters remain available
+**Amended by [ADR 0086](0086-campaign-setups-explain-handoff-and-format.md):** Format
+is a visible browsing choice. Browsing does not change the draft; applying a prepared
+design updates design identity, tree and display type atomically. Search and relevant filters remain available
 in every nonempty library, regardless of its size.
 
 Search matches design names and localized, derived features: collected fields,
@@ -29,7 +31,11 @@ layout, imagery and the converting act. It uses the existing index and label
 vocabulary. It introduces no Goal, industry, campaign or season taxonomy, and
 does not fetch every tree just to discover filters.
 
-The primary choices are an optional **Fill in a form / Follow a link** selection,
+**Presentation amended by [ADR 0087](0087-choices-first-details-on-demand.md):**
+search, Goal fit and the Filters button stay visible; the following choices live
+inside an optional filter panel. Active chips and live counts remain visible.
+
+The filter choices are an optional **Fill in a form / Follow a link** selection,
 **Must include** fields, and **With a picture**. Layout and site availability
 are secondary choices. Nothing is preselected from the Goal. This amends the
 act-not-a-filter wording in [0043](0043-the-library-is-indexed-and-its-facets-are-derived.md)

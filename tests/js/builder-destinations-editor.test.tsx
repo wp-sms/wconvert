@@ -318,7 +318,7 @@ describe('setting up shared destinations without leaving the Optin draft', () =>
     // Use the real Settings entry point: selecting a route must not open it.
     await userEvent.click(screen.getByRole('button', { name: 'Settings for Newsletter signups' }));
     const dialog = within(screen.getByRole('dialog'));
-    expect(dialog.getByRole('button', { name: 'Save destination' })).toHaveAccessibleDescription(/every Optin.*including published Optins/);
+    expect(dialog.getByRole('button', { name: 'Save destination' })).toHaveAccessibleDescription(/every Campaign.*including published Campaigns/);
     await userEvent.click(dialog.getByRole('checkbox', { name: 'Product updates' }));
     await userEvent.click(dialog.getByRole('button', { name: 'Save destination' }));
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
@@ -327,7 +327,7 @@ describe('setting up shared destinations without leaving the Optin draft', () =>
       settings: { lists: ['3', '5'], retained_setting: 'keep' },
     });
     expect(screen.getByRole('checkbox', { name: route.label })).toBeChecked();
-    expect(screen.getByRole('status')).toHaveTextContent('Destination updated for every Optin');
+    expect(screen.getByRole('status')).toHaveTextContent('Destination updated for every Campaign');
     expect(onChange).not.toHaveBeenCalled();
     expect(onSaved).toHaveBeenCalledExactlyOnceWith([route]);
   });

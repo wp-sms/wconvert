@@ -93,6 +93,8 @@ see its own inline correction.*
 - **The metric wording from #2 changes.** "Leads with an email" becomes
   *conversions on Optins that capture an email*. The number a merchant sees is
   the same; where it comes from is not.
+> **Amended by [ADR 0085](0085-goals-have-publish-contracts-and-stable-history.md):** Published Goals no longer change or restate history. Duplicate for a different Goal; the read-time join remains.
+
 - **Changing an Optin's Goal restates its entire history.** This will look like a
   bug to someone. It is the decision.
 

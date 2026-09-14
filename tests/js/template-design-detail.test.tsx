@@ -33,7 +33,7 @@ const ENTRY: TemplateIndexEntry = {
   id: 'centred-card', name: 'Centred card', display_type: 'popup', tier: 'free', availability: 'ready',
   facets: { act: 'submit', captures: ['email'], shape: 'stack', has_image: false, asks_consent: false },
 };
-const FIT: Fit = { needsACapture: false, bound: false, sibling: null, act: 'submit' };
+const FIT: Fit = { bound: false, sibling: null, act: 'submit' };
 const drawn = () => mounts.at(-1)?.root as HTMLElement;
 
 beforeEach(() => { mounts.length = 0; });
@@ -58,6 +58,19 @@ describe('inspecting a design before replacing the draft', () => {
     expect(onChoose).not.toHaveBeenCalled();
     await userEvent.click(screen.getByRole('button', { name: 'Use this design' }));
     expect(onChoose).toHaveBeenCalledExactlyOnceWith(ENTRY.id, carried);
+  });
+
+  it('explains a format change beside Apply, including inline placement', () => {
+    const { onChoose } = detail({ entry: { ...ENTRY, display_type: 'inline' }, currentDisplayType: 'popup' });
+    const warning = screen.getByText('Changes this campaign to Inline. Place its block or shortcode on a page before publishing.');
+    expect(warning).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Use this design' })).toHaveAttribute('aria-describedby', expect.stringContaining(warning.id));
+    expect(onChoose).not.toHaveBeenCalled();
+  });
+
+  it('does not repeat a format warning when the format stays the same', () => {
+    detail({ currentDisplayType: 'popup' });
+    expect(screen.queryByText(/Changes this campaign/)).toBeNull();
   });
 
   it('explains unmatched pictures before applying and never stores the transfer report', async () => {

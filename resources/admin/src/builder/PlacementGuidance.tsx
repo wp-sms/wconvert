@@ -40,15 +40,15 @@ export function PlacementGuidance({ optinId, optinName, displayType, published }
 
   return (
     <section className="wconvert-placement" aria-labelledby={`${id}-title`}>
-      <h3 id={`${id}-title`}>{inline ? __('Place this Optin on a page', 'wconvert') : __('Check where it appears', 'wconvert')}</h3>
+      <h3 id={`${id}-title`}>{inline ? __('Place this Campaign on a page', 'wconvert') : __('Check where it appears', 'wconvert')}</h3>
       {inline ? (
         <>
-          {!published && <p>{__('Publish this Optin first so it becomes available in the page editor.', 'wconvert')}</p>}
+          {!published && <p>{__('Publish this Campaign first so it becomes available in the page editor.', 'wconvert')}</p>}
           <ol className="wconvert-placement__steps">
             <li>{__('Edit the page or post where you want the form to appear.', 'wconvert')}</li>
             <li>{optinName
-              ? sprintf(/* translators: %s: the Optin name in the page editor's picker. */ __('Add the “Inline Optin” block and choose “%s”.', 'wconvert'), optinName)
-              : __('Add the “Inline Optin” block and select this Optin by its name.', 'wconvert')}</li>
+              ? sprintf(/* translators: %s: the Optin name in the page editor's picker. */ __('Add the “Inline Campaign” block and choose “%s”.', 'wconvert'), optinName)
+              : __('Add the “Inline Campaign” block and select this Campaign by its name.', 'wconvert')}</li>
             <li>{__('Update the page, then open it on your site to check the placement.', 'wconvert')}</li>
           </ol>
           <Shortcode optinId={optinId} />
@@ -59,7 +59,7 @@ export function PlacementGuidance({ optinId, optinName, displayType, published }
       ) : (
         <p>{published
           ? __('Your published version can appear on pages that match its display rules. Its schedule, triggers and visitor settings still decide when it shows.', 'wconvert')
-          : __('After publishing, this Optin can appear on pages that match its display rules. Its schedule, triggers and visitor settings decide when it shows.', 'wconvert')}</p>
+          : __('After publishing, this Campaign can appear on pages that match its display rules. Its schedule, triggers and visitor settings decide when it shows.', 'wconvert')}</p>
       )}
       {siteCheck !== null && (
         <div className="wconvert-placement__check">

@@ -11,6 +11,7 @@ is not enough if the resulting draft is incomplete.
 
 The twelve flagships are Playbooks, four recommended for each of stores,
 publishers and services. `FlagshipCollection` owns their membership and order.
+The consultation starting point is amended by [ADR 0085](0085-goals-have-publish-contracts-and-stable-history.md): it captures a request instead of linking to a booking page. Goal fit is now a publication requirement; the reusable Template still has no Goal tags.
 The existing Goal-first gallery puts relevant recommendations first and shows
 their audience label. Other bundled and extension Playbooks remain available;
 neither audiences nor Goals restrict a reusable Template. The REST response

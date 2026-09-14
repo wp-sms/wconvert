@@ -165,7 +165,7 @@ export function whyDuplicationIsRefused(tree: TemplateTree, path: Path): string 
   }
 
   if (typesUnder(node).includes('button')) {
-    return __('An Optin counts exactly one conversion, so it has one button.', 'wconvert');
+    return __('A campaign counts exactly one conversion, so it has one button.', 'wconvert');
   }
 
   if (typesUnder(node).includes('field')) {

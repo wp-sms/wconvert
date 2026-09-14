@@ -96,7 +96,7 @@ export function When({ types, entries, replace, remove, add, all }: WhenProps) {
         {idle.has(at) && (
           <p className="wconvert-rule__note text-note">
             {immediate !== undefined
-              ? __('This never runs — the Optin already shows as soon as the page loads.', 'wconvert')
+              ? __('This never runs — the Campaign already shows as soon as the page loads.', 'wconvert')
               : __('This never runs — a trigger of the same kind always fires before it.', 'wconvert')}
           </p>
         )}
@@ -152,14 +152,14 @@ export function When({ types, entries, replace, remove, add, all }: WhenProps) {
       </fieldset>
 
       {immediate === undefined && (
-        <Description className="mb-1">{__('Any one of these can show the Optin, when the page, audience and limits allow.', 'wconvert')}</Description>
+        <Description className="mb-1">{__('Any one of these can show the Campaign, when the page, audience and limits allow.', 'wconvert')}</Description>
       )}
 
       <RuleRows
         rows={rows}
         empty={
           immediate === undefined
-            ? __('Choose an action below so this Optin has a moment to appear.', 'wconvert')
+            ? __('Choose an action below so this Campaign has a moment to appear.', 'wconvert')
             : ''
         }
       />

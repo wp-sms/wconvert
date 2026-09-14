@@ -6,10 +6,10 @@ defined('ABSPATH') || exit;
 
 return [
     'id' => 'guide-download',
-    'name' => __('A useful little guide', 'wconvert'),
+    'name' => __('Email a downloadable guide', 'wconvert'),
     'goal' => 'deliver_lead_magnet',
     'template_id' => 'useful-guide',
-    'notes' => __('Show readers a preview of a seven-step plant-care guide. Replace the subject, cover copy and brand with your own resource, then add the file to a lead-magnet email destination. To offer an immediate download too, enable the success-screen link and set its URL. This goal counts successful email deliveries; the download link is an extra action.', 'wconvert'),
+    'notes' => __('Show readers a preview of a seven-step plant-care guide. Replace the subject, cover copy and brand with your own resource, then add the file to a lead-magnet email destination. To offer an immediate download too, enable the success-screen link and set its URL. This goal counts emails accepted by the site’s mail service, not inbox arrival; the download link is an extra action.', 'wconvert'),
     'copy' => [
         'eyebrow' => [
             __('The plant-care guide', 'wconvert'),

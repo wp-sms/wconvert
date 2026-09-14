@@ -76,7 +76,7 @@ export function Edit({
           together, since the drift they permit is a merchant inserting one
           name and landing on a block headed another.
         */
-        label={__('Inline Optin', 'wconvert')}
+        label={__('Inline Campaign', 'wconvert')}
         instructions={instructionsFor(provided)}
       >
         {/*
@@ -104,7 +104,7 @@ export function Edit({
             {sprintf(
               /* translators: %s: the stored Optin id. */
               __(
-                'This block points at an Optin that is no longer published as an inline Optin (%s). Republish it, or choose another one — until then this block shows nothing on the page.',
+                'This block points at a campaign that is no longer published as an inline Campaign (%s). Republish it, or choose another one — until then this block shows nothing on the page.',
                 'wconvert',
               ),
               chosen,
@@ -115,11 +115,11 @@ export function Edit({
         <SelectControl
           __next40pxDefaultSize
           __nextHasNoMarginBottom
-          label={__('Optin', 'wconvert')}
+          label={__('Campaign', 'wconvert')}
           value={resolved === undefined ? '' : chosen}
           options={[
             {
-              label: optins.length === 0 ? emptyOptionLabel(provided) : __('Choose an Optin…', 'wconvert'),
+              label: optins.length === 0 ? emptyOptionLabel(provided) : __('Choose a campaign…', 'wconvert'),
               value: '',
               disabled: optins.length === 0,
             },
@@ -172,24 +172,24 @@ export function Edit({
 function instructionsFor(provided: InlineOptin[] | null): string {
   if (provided === null) {
     return __(
-      'WConvert could not load your list of Optins on this screen, so this block cannot be changed here. Anything already placed is unaffected and still shows on the page. Reload the editor, and if it persists, check for a plugin that combines or defers admin scripts.',
+      'WConvert could not load your list of Campaigns on this screen, so this block cannot be changed here. Anything already placed is unaffected and still shows on the page. Reload the editor, and if it persists, check for a plugin that combines or defers admin scripts.',
       'wconvert',
     );
   }
 
   if (provided.length === 0) {
     return __(
-      'This site has no published inline Optin yet. Create one in WConvert and publish it, then choose it here.',
+      'This site has no published inline Campaign yet. Create one in WConvert and publish it, then choose it here.',
       'wconvert',
     );
   }
 
-  return __('Choose which of your inline Optins appears at this point in the page.', 'wconvert');
+  return __('Choose which of your inline Campaigns appears at this point in the page.', 'wconvert');
 }
 
 /** The disabled first option, which is the only one there is in two of the three states. */
 function emptyOptionLabel(provided: InlineOptin[] | null): string {
   return provided === null
-    ? __('Optins unavailable', 'wconvert')
-    : __('No published inline Optins', 'wconvert');
+    ? __('Campaigns unavailable', 'wconvert')
+    : __('No published inline Campaigns', 'wconvert');
 }

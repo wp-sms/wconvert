@@ -27,7 +27,7 @@ defined('ABSPATH') || exit;
 
 return [
     'id' => 'content-upgrade',
-    'name' => __('The download for this article', 'wconvert'),
+    'name' => __('Offer an article checklist', 'wconvert'),
     'goal' => 'deliver_lead_magnet',
     'template_id' => 'inline-split',
     'notes' => __('A resource that belongs to one article, offered inside it. Place the block partway through the post and target the posts the resource fits. Configure a delivery destination and add the checklist before publishing.', 'wconvert'),

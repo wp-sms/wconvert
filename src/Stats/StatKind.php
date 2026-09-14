@@ -46,53 +46,21 @@ enum StatKind: string
     case Dismiss = 'dismiss';
 
     /**
-     * The lead magnet went out. It records an act that happens *after* the
-     * Conversion, from a different process, and that can fail on its own —
-     * which is why it is its own kind rather than something derived, and why
-     * `conversions − lead_magnet_delivered` is the delivery failure count with
-     * no second metric behind it (ADR 0008, ADR 0020).
-     *
-     * **PHP writes this one, and only PHP.** It is written by
-     * {@see \WConvert\Destination\LeadMagnet\DeliveryCount} when a queued
-     * push to the lead-magnet email Destination succeeds — once per [[Lead]],
-     * because the job chain reaches `PushOutcome::Success` at most once (#31).
-     * A browser has no way to know a delivery succeeded, so
-     * {@see self::fromBeacon()} refuses the kind outright.
+     * A lead-magnet email push was accepted by the mail service.
+     * Counts send events, not inbox arrivals or unique recipients; resends can
+     * count again. Submissions minus sends is not a failure count (ADR 0085).
+     * Only PHP can record this kind; browser beacons cannot assert it.
      */
     case LeadMagnetDelivered = 'lead_magnet_delivered';
 
-    /**
-     * What a number read from this kind is CALLED, on a card that reports it.
-     *
-     * ========================================================================
-     * THE WORD BELONGS TO THE KIND THE NUMBER IS READ FROM, NOT TO THE GOAL.
-     * ========================================================================
-     * It lived on {@see \WConvert\Goal\Goal::headlineLabel()} and branched
-     * five ways, because a [[Goal]] used to declare the converting act as well
-     * as the counted kind — so *"Submissions"* and *"Click-throughs to the
-     * offer"* were things a Goal could promise. It cannot any more: the act is
-     * the design's, and one Goal's card can hold an Optin that submits beside
-     * one that links away (ADR 0059).
-     *
-     * So the card says **"Conversions"**, which is true of both and is what
-     * `wconvert_stats` already stores — the row reads `kind = conversion`
-     * whether the visitor typed an address or clicked through, so the NUMBER
-     * was never act-specific and only the word was. The precise word survives
-     * where it is still precise: per Optin, in the builder, derived from the
-     * one design that Optin holds.
-     *
-     * All four rather than the two a headline can be read from. A total
-     * function over a closed set of four cannot go stale when a fifth surface
-     * asks for the word for a Dismissal; a `match` answering two of them with
-     * a `default` would be a method that lies about the other two.
-     */
+    /** Generic event labels. Goal headlines add channel-specific meaning (ADR 0085). */
     public function label(): string
     {
         return match ($this) {
             self::Impression => __('Impressions', 'wconvert'),
             self::Conversion => __('Conversions', 'wconvert'),
             self::Dismiss => __('Dismissals', 'wconvert'),
-            self::LeadMagnetDelivered => __('Deliveries', 'wconvert'),
+            self::LeadMagnetDelivered => __('Emails accepted for sending', 'wconvert'),
         };
     }
 

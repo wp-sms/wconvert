@@ -19,7 +19,7 @@ defined('ABSPATH') || exit;
 
 return [
     'id' => 'checklist-download',
-    'name' => __('The named download', 'wconvert'),
+    'name' => __('Download with name and email', 'wconvert'),
     'goal' => 'deliver_lead_magnet',
     'template_id' => 'name-and-email',
     'notes' => __('Asks for a first name as well as an address. Only pick this if you will use the name in the delivery email or follow-ups. Configure a delivery destination and add the guide before publishing.', 'wconvert'),

@@ -108,7 +108,7 @@ export function DestinationsEditor({
     <>
       <Region>
         <RegionHeader title={__('Where these leads go', 'wconvert')} level={3}
-          description={__('Choose destinations for this Optin. Leads are always captured here and can be exported.', 'wconvert')}
+          description={__('Choose destinations for this Campaign. Leads are always captured here and can be exported.', 'wconvert')}
           trailing={<div className="flex flex-wrap items-center gap-2">
             <Button variant="outline" size="sm" disabled={available.status === 'loading'} onClick={onRefresh}>
               <RefreshCw aria-hidden="true" />{__('Refresh', 'wconvert')}
@@ -123,7 +123,7 @@ export function DestinationsEditor({
         {notice !== null && <RegionBody className="border-b border-border"><p role="status" className="m-0 text-note">{notice}</p></RegionBody>}
 
         {available.status === 'loading' ? <RowsSkeleton />
-          : available.status === 'failed' ? <RegionErrorState message={available.message} hint={__('Use Refresh to try again. Your Optin draft stays here.', 'wconvert')} />
+          : available.status === 'failed' ? <RegionErrorState message={available.message} hint={__('Use Refresh to try again. Your Campaign draft stays here.', 'wconvert')} />
           : available.data.length === 0 ? (
             <EmptyState icon={Plug} title={__('No destinations yet', 'wconvert')}>
               {__('Add a destination to send leads to another service or plugin. You can also keep using WConvert on its own.', 'wconvert')}
@@ -182,7 +182,7 @@ export function DestinationsEditor({
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-warning/30 bg-warning/5 p-3">
             <div>
               <p className="m-0 font-medium">{sprintf(_n('%d selected destination has been deleted.', '%d selected destinations have been deleted.', missing.length, 'wconvert'), missing.length)}</p>
-              <Description>{__('Remove these references from this Optin’s draft, then choose another destination if needed.', 'wconvert')}</Description>
+              <Description>{__('Remove these references from this Campaign’s draft, then choose another destination if needed.', 'wconvert')}</Description>
             </div>
             <Button variant="outline" size="sm" onClick={() => onChange(bound.filter((id) => !missing.includes(id)))}>
               {__('Remove missing destinations', 'wconvert')}
@@ -197,8 +197,8 @@ export function DestinationsEditor({
         onSaved={(destinations) => {
           onSaved(destinations);
           setNotice(setup === 'add'
-            ? __('Destination added. Select its checkbox to use it for this Optin.', 'wconvert')
-            : __('Destination updated for every Optin that uses it.', 'wconvert'));
+            ? __('Destination added. Select its checkbox to use it for this Campaign.', 'wconvert')
+            : __('Destination updated for every Campaign that uses it.', 'wconvert'));
         }} />}
     </>
   );

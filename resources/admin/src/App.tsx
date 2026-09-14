@@ -46,7 +46,7 @@ export function App() {
   const createButton = (
     <Button onClick={() => setCreating(true)}>
       <Plus aria-hidden="true" />
-      {__('Create an Optin', 'wconvert')}
+      {__('Create a campaign', 'wconvert')}
     </Button>
   );
 
@@ -56,20 +56,22 @@ export function App() {
     return <>
       <BuilderScreen key={navigation.hash} id={route.editId}
         backLabel={route.returnTo.startsWith('#analytics') ? __('Back to Analytics', 'wconvert')
-          : route.returnTo.startsWith('#leads') ? __('Back to Leads', 'wconvert') : __('Back to Optins', 'wconvert')}
+          : route.returnTo.startsWith('#leads') ? __('Back to Leads', 'wconvert') : __('Back to Campaigns', 'wconvert')}
         onEditingStateChange={navigation.onEditingStateChange}
+        onCreated={(createdId) => navigate(editorHref(createdId, route.returnTo))}
         onNarrowClose={() => navigation.requestNavigation(route.returnTo)}
         onClose={() => navigate(route.returnTo)} />
       <ConfirmDialog open={navigation.pending} onOpenChange={(open) => { if (!open) navigation.stay(); }}
         title={__('Leave without saving?', 'wconvert')}
-        description={__('Your changes to this Optin will be lost.', 'wconvert')}
+        description={__('Your changes to this Campaign will be lost.', 'wconvert')}
         confirmLabel={__('Discard changes', 'wconvert')} cancelLabel={__('Keep editing', 'wconvert')}
         onConfirm={navigation.discard} returnFocusTo={navigation.returnFocusTo} />
     </>;
   }
 
   return (
-    <Shell section={section} actions={section === 'optins' && !creating ? createButton : undefined}>
+    <Shell section={section} hidePageHeading={section === 'optins' && creating}
+      actions={section === 'optins' && !creating ? createButton : undefined}>
       {section === 'optins' && (
         <OptinsSection
           creating={creating}
@@ -95,8 +97,8 @@ export function App() {
  * A dialog already open may finish or close without losing its own edits.
  * The visible way out uses the same unsaved-work guard as browser navigation.
  */
-function BuilderScreen({ id, onClose, onNarrowClose, backLabel, onEditingStateChange }: {
-  id: string; onClose: () => void; onNarrowClose: () => void; backLabel: string; onEditingStateChange: (state: EditingState) => void;
+function BuilderScreen({ id, onClose, onNarrowClose, backLabel, onEditingStateChange, onCreated }: {
+  id: string; onClose: () => void; onNarrowClose: () => void; backLabel: string; onEditingStateChange: (state: EditingState) => void; onCreated: (id: string) => void;
 }) {
   const fits = useBuilderViewport();
   const [opened, setOpened] = useState(fits);
@@ -111,7 +113,7 @@ function BuilderScreen({ id, onClose, onNarrowClose, backLabel, onEditingStateCh
       {/* First arrival on a phone still avoids the lazy chunk and reads. Once
           mounted, keep the draft alive if the window narrows or rotates. */}
       {(fits || opened) && <div hidden={!fits} inert={!fits}>
-        <OptinBuilder id={id} onClose={onClose} backLabel={backLabel} onEditingStateChange={onEditingStateChange} />
+        <OptinBuilder id={id} onClose={onClose} backLabel={backLabel} onEditingStateChange={onEditingStateChange} onCreated={onCreated} />
       </div>}
     </>
   );

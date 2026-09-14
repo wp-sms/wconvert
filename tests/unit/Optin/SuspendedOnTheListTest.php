@@ -68,7 +68,7 @@ final class SuspendedOnTheListTest extends TestCase
      */
     private function draft(array $rules): string
     {
-        return $this->optins->create('Spring sale', 'grow_email_list', ['rules' => $rules, 'template' => OptinDesign::template()])->id;
+        return $this->optins->create('Spring sale', 'promote_offer', ['rules' => $rules, 'template' => OptinDesign::template()])->id;
     }
 
     /**
@@ -132,7 +132,9 @@ final class SuspendedOnTheListTest extends TestCase
             $degradation,
             new RuleCatalogue($vocabulary, $pro, $site, new RoleRegistry()),
             new SiteFrequency(new FakeOptionStore()),
-            new MilestoneStore(new FakeOptionStore())
+            new MilestoneStore(new FakeOptionStore()),
+            new \WConvert\Destination\DestinationStore(new FakeOptionStore()),
+            new \WConvert\Destination\DestinationRegistry($pro, $site)
         );
     }
 

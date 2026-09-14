@@ -64,7 +64,7 @@ final class InspectorBar
             'title' => __('Why no popup?', 'wconvert'),
             'href' => $url,
             'meta' => [
-                'title' => __('Show why each Optin did or did not appear on this page', 'wconvert'),
+                'title' => __('Show why each Campaign did or did not appear on this page', 'wconvert'),
             ],
         ]);
     }

@@ -12,12 +12,14 @@ final class DestinationRequirements
      * @param array<string, array{label: string, type: string}> $settings Required saved values.
      * @param list<string> $fields Canonical values used by this adapter, not a promise to overwrite Contacts.
      * @param array<string, array{setting: string, label: string, scope: string}> $mappedFields
+     * @param list<string> $audienceChannels Channels whose audience this service can receive into, not proof of subscription.
      */
     public function __construct(
         public readonly array $captureAnyOf = [],
         public readonly array $settings = [],
         public readonly array $fields = [],
         public readonly array $mappedFields = [],
+        public readonly array $audienceChannels = [],
     ) {
     }
 
@@ -64,6 +66,6 @@ final class DestinationRequirements
     public function toArray(): array
     {
         return ['capture_any_of' => $this->captureAnyOf, 'settings' => $this->settings,
-            'fields' => $this->fields, 'mapped_fields' => $this->mappedFields];
+            'fields' => $this->fields, 'mapped_fields' => $this->mappedFields, 'audience_channels' => $this->audienceChannels];
     }
 }

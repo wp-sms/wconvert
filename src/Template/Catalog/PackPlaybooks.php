@@ -33,32 +33,32 @@ final class PackPlaybooks
         $rules = RuleVocabulary::fromManifest();
         $seen = [];
         foreach ($entries as $entry) {
-            PackValidator::check(is_array($entry), __('This pack contains an invalid starting point.', 'wconvert'));
+            PackValidator::check(is_array($entry), __('This pack contains an invalid campaign setup.', 'wconvert'));
             PackValidator::keys($entry, ['id', 'name', 'goal', 'template_id', 'copy', 'rules', 'targeting', 'destination_hint', 'notes']);
-            PackValidator::check(PackValidator::identifier($entry['id'] ?? null) && !isset($seen[$entry['id']]), __('This pack repeats or misnames a starting point.', 'wconvert'));
+            PackValidator::check(PackValidator::identifier($entry['id'] ?? null) && !isset($seen[$entry['id']]), __('This pack repeats or misnames a campaign setup.', 'wconvert'));
             $seen[$entry['id']] = true;
             PackValidator::words($entry['name'] ?? null, 120);
             PackValidator::words($entry['notes'] ?? '', 2000);
-            PackValidator::check(is_array($entry['copy'] ?? null), __('This starting point has invalid wording.', 'wconvert'));
+            PackValidator::check(is_array($entry['copy'] ?? null), __('This campaign setup has invalid wording.', 'wconvert'));
             $this->rules($entry['rules'] ?? null, $manifest['triggers'] + $manifest['conditions']);
             $targeting = $entry['targeting'] ?? [];
-            PackValidator::check(is_array($targeting), __('This starting point has invalid targeting.', 'wconvert'));
+            PackValidator::check(is_array($targeting), __('This campaign setup has invalid targeting.', 'wconvert'));
             PackValidator::keys($targeting, ['include', 'exclude', 'logged_in']);
             foreach (['include', 'exclude'] as $axis) {
                 if (array_key_exists($axis, $targeting)) $this->rules($targeting[$axis], array_filter($manifest['targeting'], static fn (array $rule): bool => $rule['kind'] === 'page'));
             }
-            if (array_key_exists('logged_in', $targeting)) PackValidator::check(is_bool($targeting['logged_in']), __('This starting point has invalid audience settings.', 'wconvert'));
+            if (array_key_exists('logged_in', $targeting)) PackValidator::check(is_bool($targeting['logged_in']), __('This campaign setup has invalid audience settings.', 'wconvert'));
             $hint = $entry['destination_hint'] ?? [];
-            PackValidator::check(is_array($hint), __('This starting point has invalid destination hints.', 'wconvert'));
+            PackValidator::check(is_array($hint), __('This campaign setup has invalid destination hints.', 'wconvert'));
             PackValidator::keys($hint, ['types', 'fields']);
             foreach ($hint as $key => $values) {
-                PackValidator::check(is_array($values) && array_is_list($values) && count($values) <= 12, __('This starting point has invalid destination hints.', 'wconvert'));
+                PackValidator::check(is_array($values) && array_is_list($values) && count($values) <= 12, __('This campaign setup has invalid destination hints.', 'wconvert'));
                 foreach ($values as $value) {
                     PackValidator::check(is_string($value) && preg_match('/^[a-z][a-z0-9_]{0,59}$/D', $value) === 1, __('Destination hints must name types, not connections.', 'wconvert'));
-                    if ($key === 'fields') PackValidator::check(in_array($value, $this->vocabulary->fields(), true), __('This starting point names an unknown capture field.', 'wconvert'));
+                    if ($key === 'fields') PackValidator::check(in_array($value, $this->vocabulary->fields(), true), __('This campaign setup names an unknown capture field.', 'wconvert'));
                 }
             }
-            PackValidator::check(PlaybookLibrary::refuse($entry, $templates, $this->vocabulary, $rules) === null, __('This starting point refers to unsupported designs, goals, rules or site-specific content.', 'wconvert'));
+            PackValidator::check(PlaybookLibrary::refuse($entry, $templates, $this->vocabulary, $rules) === null, __('This campaign setup refers to unsupported designs, goals, rules or site-specific content.', 'wconvert'));
             $template = $templates->find($entry['template_id']);
             $bindings = [];
             TemplateTree::rewrittenIn(['template' => $template], function (array $node) use (&$bindings): array {
@@ -67,19 +67,19 @@ final class PackPlaybooks
             });
             foreach ($entry['copy'] as $role => $words) {
                 $items = is_array($words) && array_is_list($words) ? $words : [$words];
-                PackValidator::check(count($items) > 0 && count($items) <= count($bindings[$role]), __('This starting point supplies more wording than its design can use.', 'wconvert'));
+                PackValidator::check(count($items) > 0 && count($items) <= count($bindings[$role]), __('This campaign setup supplies more wording than its design can use.', 'wconvert'));
                 foreach ($items as $at => $item) {
                     $keys = $bindings[$role][$at];
                     if (is_array($item)) {
-                        PackValidator::check($item !== [] && !array_is_list($item), __('This starting point has invalid structured wording.', 'wconvert'));
+                        PackValidator::check($item !== [] && !array_is_list($item), __('This campaign setup has invalid structured wording.', 'wconvert'));
                         PackValidator::keys($item, $keys);
                         foreach ($item as $key => $value) {
                             if ($key === 'link') {
-                                PackValidator::check(is_array($value), __('This starting point has an invalid policy label.', 'wconvert'));
+                                PackValidator::check(is_array($value), __('This campaign setup has an invalid policy label.', 'wconvert'));
                                 PackValidator::keys($value, ['label']);
                                 PackValidator::words($value['label'] ?? null, 200);
                             } elseif ($key === 'options') {
-                                PackValidator::check(is_array($value) && $value !== [] && $this->vocabulary->choiceOptions($value) === $value, __('This starting point has invalid choice options.', 'wconvert'));
+                                PackValidator::check(is_array($value) && $value !== [] && $this->vocabulary->choiceOptions($value) === $value, __('This campaign setup has invalid choice options.', 'wconvert'));
                                 foreach ($value as $option) PackValidator::words($option['label'], 200);
                             } else {
                                 PackValidator::words($value, 2000);
@@ -99,11 +99,11 @@ final class PackPlaybooks
      */
     private function rules($rules, array $definitions): void
     {
-        PackValidator::check(is_array($rules) && array_is_list($rules) && count($rules) <= 20, __('This starting point has an invalid rule list.', 'wconvert'));
+        PackValidator::check(is_array($rules) && array_is_list($rules) && count($rules) <= 20, __('This campaign setup has an invalid rule list.', 'wconvert'));
         foreach ($rules as $rule) {
-            PackValidator::check(is_array($rule) && is_string($rule['type'] ?? null), __('This starting point has an invalid rule.', 'wconvert'));
+            PackValidator::check(is_array($rule) && is_string($rule['type'] ?? null), __('This campaign setup has an invalid rule.', 'wconvert'));
             $definition = $definitions[$rule['type']] ?? null;
-            PackValidator::check(is_array($definition) && $definition['tier'] === 'free', __('This starting point needs rules this pack format does not support.', 'wconvert'));
+            PackValidator::check(is_array($definition) && $definition['tier'] === 'free', __('This campaign setup needs rules this pack format does not support.', 'wconvert'));
             $params = $definition['params'];
             $allowed = ['type'];
             foreach (array_keys($params) as $name) {
@@ -122,7 +122,7 @@ final class PackPlaybooks
                     'device_set' => is_array($value) && array_is_list($value) && $value !== [] && count($value) <= 3 && count(array_filter($value, 'is_string')) === count($value) && array_diff($value, $param['options']) === [],
                     default => false,
                 };
-                PackValidator::check($valid, __('This starting point has an invalid or unsupported rule setting.', 'wconvert'));
+                PackValidator::check($valid, __('This campaign setup has an invalid or unsupported rule setting.', 'wconvert'));
             }
         }
     }

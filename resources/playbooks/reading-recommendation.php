@@ -6,7 +6,7 @@ defined('ABSPATH') || exit;
 
 return [
     'id' => 'reading-recommendation',
-    'name' => __('One more good read', 'wconvert'),
+    'name' => __('Recommend a related article', 'wconvert'),
     'goal' => 'promote_offer',
     'template_id' => 'reading-slip',
     'notes' => __('Place this compact reading slip beside or after a related article. Replace the title and description with a real recommendation and link the button to that article. It asks for no personal details and counts the click through to the reading destination.', 'wconvert'),

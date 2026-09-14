@@ -5,6 +5,11 @@ Every WConvert admin screen is the same five parts in the same order: a
 **regions**, each optionally opening with a **toolbar**. A region is a card with
 its own edge holding **exactly one concern**; two concerns are two regions.
 
+**Creation exception in [ADR 0087](0087-choices-first-details-on-demand.md):** the
+current Goal/setup question is the visible heading. The redundant Campaigns
+heading band is omitted during creation; navigation, Back and an assistive section
+heading remain. Reading screens retain the anatomy above.
+
 And where a control goes is not a question of where it fits. **It is decided by
 what the control acts on**: the screen, a region's data set, one row, or a
 selection. Each of those has exactly one home.

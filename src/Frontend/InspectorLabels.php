@@ -45,7 +45,7 @@ final class InspectorLabels
             'close' => __('Close', 'wconvert'),
             'collapse' => __('Collapse', 'wconvert'),
             'expand' => __('Expand', 'wconvert'),
-            'nothing' => __('This site has no Optins yet.', 'wconvert'),
+            'nothing' => __('This site has no Campaigns yet.', 'wconvert'),
 
             // ================================================================
             // THE FUNNEL. THE FIRST GATE THAT CLOSES IS THE ANSWER.

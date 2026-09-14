@@ -6,7 +6,7 @@ defined('ABSPATH') || exit;
 
 return [
     'id' => 'coupon-ticket',
-    'name' => __('The welcome ticket', 'wconvert'),
+    'name' => __('Reveal a welcome discount', 'wconvert'),
     'goal' => 'grow_email_list',
     'template_id' => 'punched-ticket',
     'notes' => __('A bold first-order offer with a code to copy after submission. Add your brand, create a valid 15% code and enter it on the success screen. Match the restrictions to the offer and connect the monthly shop email in your chosen service. The code is revealed here; no delivery email is implied.', 'wconvert'),

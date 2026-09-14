@@ -17,13 +17,8 @@ defined('ABSPATH') || exit;
  * needed to interpret it is read from `wconvert_optins` at report time, which
  * is never erased and only ever soft-deleted (ADR 0020).
  *
- * **So changing an Optin's Goal restates its entire history.** That is not a
- * side effect of this class — it is the reason it exists rather than a `goal`
- * column existing. Correcting a mis-set Goal makes the Optin's whole history
- * right rather than splitting it permanently in two at the moment of the edit,
- * and since a Goal is freely correctable the frozen alternative means a
- * permanent split every time somebody fixes a typo. It will look like a bug to
- * someone; it is the decision.
+ * A Goal is fixed after first publication (ADR 0085). Another Goal starts a
+ * separate Optin, so this read cannot silently reinterpret published history.
  *
  * **Pure, and it takes rows rather than a repository.** What is here is the
  * arithmetic, which is the half that can be proven without a database — the
@@ -58,11 +53,6 @@ final class GoalReport
 
     /**
      * The same number, per day.
-     *
-     * **Every day is restated**, including the ones counted long before
-     * anybody corrected anything — which is what "restates its entire history"
-     * means literally, as opposed to a series that changes shape halfway
-     * along.
      *
      * A day the rows mention with no count of the headline kind reports **0
      * rather than being absent**, and the lead-magnet Goal is where that

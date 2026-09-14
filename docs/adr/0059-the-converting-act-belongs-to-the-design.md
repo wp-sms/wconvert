@@ -5,6 +5,8 @@ words, and the grouping on Analytics. It no longer declares the converting act.
 Which act an [[Optin]] converts on is read from the design it holds, and from
 nowhere else.
 
+> **Amended by [ADR 0085](0085-goals-have-publish-contracts-and-stable-history.md):** Runtime act detection still belongs to the design. An Outcome contract now checks Goal/action/channel compatibility at publication, while allowing incomplete drafts.
+
 `Goal::convertingAct()` is deleted. Every refusal that existed to keep a Goal
 and a design agreeing about an act is deleted with it.
 
@@ -243,9 +245,10 @@ param edit.
   filing a capture design under the sale Goal is offering a start a merchant can
   legitimately want; refusing it at registration would drop the card with
   nothing in any log.
-- **The Goal is on screen**, ~~as one muted line in the builder's page-header band~~
-  **in Optin details** under [ADR 0067](0067-the-editor-starts-with-the-preview-and-the-selected-element.md),
-  with a *Change goal* control beside it.
+- **The Goal is on screen** as a compact button in the existing editor footer;
+  Campaign details holds its metric and Change/Duplicate control.
+  **Amended by [ADR 0087](0087-choices-first-details-on-demand.md):** no dedicated
+  header band; the compact control keeps Goal access visible without taking a row.
 - **Changing a Goal confirms**, and that is not the usual confirm-everything
   reflex. The structure editor's amendment to
   [ADR 0039](0039-a-screen-is-regions-and-scope-decides-placement.md) says undo

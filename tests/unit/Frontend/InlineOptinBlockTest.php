@@ -74,7 +74,7 @@ final class InlineOptinBlockTest extends TestCase
      */
     private function publishInline(string $name, string $displayType = 'inline'): string
     {
-        $optin = $this->optins->create($name, 'grow_email_list', [
+        $optin = $this->optins->create($name, 'promote_offer', [
             'display_type' => $displayType,
             'template' => OptinDesign::template(),
         ]);

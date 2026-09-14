@@ -1,3 +1,4 @@
+import { CAPTURE_OUTCOME } from './support/outcomes';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { render, screen, within } from '@testing-library/react';
@@ -149,12 +150,13 @@ const LABELS = {
 };
 
 const GOALS = [
-  { id: 'grow_email_list', label: 'Grow my email list', description: '', needs_a_capture: false, grows_a_list: true, headline_kind: 'conversion', tier: 'free', availability: { available: true } },
-  { id: 'promote_offer', label: 'Promote a sale', description: '', needs_a_capture: false, grows_a_list: true, headline_kind: 'conversion', tier: 'free', availability: { available: true } },
+  { id: 'grow_email_list', label: 'Grow my email list', description: '', needs_a_capture: false, grows_a_list: true, outcome: CAPTURE_OUTCOME, headline_kind: 'conversion', tier: 'free', availability: { available: true } },
+  { id: 'promote_offer', label: 'Promote a sale', description: '', needs_a_capture: false, grows_a_list: true, outcome: CAPTURE_OUTCOME, headline_kind: 'conversion', tier: 'free', availability: { available: true } },
 ];
 
 function optin(over: Record<string, unknown> = {}) {
   return {
+    can_change_goal: true,
     id: ID,
     name: 'Welcome discount',
     goal: 'grow_email_list',
@@ -205,7 +207,7 @@ async function structure() {
  */
 async function designLook() {
   render(<OptinBuilder id={ID} onClose={vi.fn()} />);
-  await screen.findByRole('button', { name: 'Change template' });
+  await screen.findByRole('button', { name: 'Change design or format' });
 }
 
 /**
@@ -1055,7 +1057,7 @@ describe('the inspector', () => {
 
     expect(screen.getByRole('region', { name: 'Design canvas' })).toHaveTextContent('After they submit');
 
-    expect(within(screen.getByLabelText('Optin screen')).getByRole('button', { name: 'After they submit' })).toHaveAttribute(
+    expect(within(screen.getByLabelText('Campaign screen')).getByRole('button', { name: 'After they submit' })).toHaveAttribute(
       'aria-pressed',
       'true',
     );
@@ -1143,6 +1145,9 @@ describe('the verdict', () => {
    */
   it('is readable from every tab, including the ones that cannot cause it', async () => {
     await designLook();
+    await userEvent.click(screen.getByRole('tab', { name: 'Destinations' }));
+    await userEvent.click(screen.getByRole('radio', { name: /Collect only in WConvert/ }));
+    await userEvent.click(screen.getByRole('tab', { name: 'Design' }));
 
     // The stub names no tokens, so `nameOf` falls back to the raw key — which
     // is what a build whose vocabulary is ahead of its translations shows too.
@@ -1801,7 +1806,7 @@ describe('a countdown’s inspector', () => {
 
     // Not the exact spelling: `Intl` renders a medium date in the reader's own
     // locale, and pinning "27 Nov 2099" would pin a test runner's locale.
-    expect(screen.getByText(/Counts down to .*2099.* — when this Optin stops running\./)).toBeInTheDocument();
+    expect(screen.getByText(/Counts down to .*2099.* — when this Campaign stops running\./)).toBeInTheDocument();
   });
 
   it('says the clock will be empty where there is no end date', async () => {
@@ -1810,7 +1815,7 @@ describe('a countdown’s inspector', () => {
     await openTheClock();
 
     expect(
-      screen.getByText('This Optin has no end date, so the clock will be empty on the page.'),
+      screen.getByText('This Campaign has no end date, so the clock will be empty on the page.'),
     ).toBeInTheDocument();
   });
 

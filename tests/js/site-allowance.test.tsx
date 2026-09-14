@@ -38,7 +38,7 @@ const OFF = {
   stopAfterConversion: false,
 };
 
-const dismissSwitch = () => screen.getByLabelText(/close any Optin/i);
+const dismissSwitch = () => screen.getByLabelText(/close any Campaign/i);
 const maxField = () => screen.getByLabelText(/at most this many/i);
 
 describe('the site-wide allowance', () => {
@@ -63,7 +63,7 @@ describe('the site-wide allowance', () => {
     await userEvent.click(screen.getByRole('button', { name: /How often anything shows/ }));
 
     expect(await screen.findByRole('status')).toHaveTextContent('Loading…');
-    expect(screen.queryByLabelText(/close any Optin/i)).toBeNull();
+    expect(screen.queryByLabelText(/close any Campaign/i)).toBeNull();
   });
 
   it('renders a failed read as the region’s whole content', async () => {
@@ -74,14 +74,14 @@ describe('the site-wide allowance', () => {
 
     expect(await screen.findByText('The allowance could not be read.')).toBeInTheDocument();
     expect(screen.getByText('Reload the page to try again.')).toBeInTheDocument();
-    expect(screen.queryByLabelText(/close any Optin/i)).toBeNull();
+    expect(screen.queryByLabelText(/close any Campaign/i)).toBeNull();
   });
 
   it('shows a site that has configured nothing as configuring nothing', async () => {
     render(<SiteAllowance />);
     await userEvent.click(screen.getByRole('button', { name: /How often anything shows/ }));
 
-    expect(await screen.findByRole('checkbox', { name: /close any Optin/i })).not.toBeChecked();
+    expect(await screen.findByRole('checkbox', { name: /close any Campaign/i })).not.toBeChecked();
     expect(screen.getByRole('checkbox', { name: /sign up to anything/i })).not.toBeChecked();
     expect(maxField()).toHaveValue(null);
     expect(screen.getByLabelText(/Days to wait/i)).toHaveValue(null);
@@ -103,7 +103,7 @@ describe('the site-wide allowance', () => {
     render(<SiteAllowance />);
     await userEvent.click(screen.getByRole('button', { name: /How often anything shows/ }));
 
-    await userEvent.click(await screen.findByRole('checkbox', { name: /close any Optin/i }));
+    await userEvent.click(await screen.findByRole('checkbox', { name: /close any Campaign/i }));
 
     await waitFor(() =>
       expect(api.saveSiteAllowance).toHaveBeenCalledWith({ ...OFF, stopAfterDismiss: true }),
@@ -170,7 +170,7 @@ describe('the site-wide allowance', () => {
     render(<SiteAllowance />);
     await userEvent.click(screen.getByRole('button', { name: /How often anything shows/ }));
 
-    await userEvent.click(await screen.findByRole('checkbox', { name: /close any Optin/i }));
+    await userEvent.click(await screen.findByRole('checkbox', { name: /close any Campaign/i }));
 
     expect(await screen.findByText(/read-only/i)).toBeInTheDocument();
     expect(dismissSwitch()).toBeEnabled();
@@ -203,7 +203,7 @@ describe('a number and a switch, one after the other', () => {
     await userEvent.click(screen.getByRole('button', { name: /How often anything shows/ }));
 
     await userEvent.type(await screen.findByLabelText(/at most this many/i), '10');
-    await userEvent.click(screen.getByRole('checkbox', { name: /close any Optin/i }));
+    await userEvent.click(screen.getByRole('checkbox', { name: /close any Campaign/i }));
 
     await waitFor(() => expect(api.saveSiteAllowance).toHaveBeenCalledTimes(2));
 

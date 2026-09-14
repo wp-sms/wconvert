@@ -68,7 +68,7 @@ describe('the step that is stuck', () => {
     render(<Milestones />);
 
     expect(await screen.findByText('Nothing is live yet')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Go to Optins' })).toHaveAttribute('href', '#optins');
+    expect(screen.getByRole('link', { name: 'Go to Campaigns' })).toHaveAttribute('href', '#optins');
   });
 
   /**
@@ -157,7 +157,7 @@ describe('the step that is stuck', () => {
 
     await screen.findByText('What WConvert has recorded about this site');
 
-    expect(screen.queryByRole('link', { name: 'Go to Optins' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Go to Campaigns' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Go to Destinations' })).not.toBeInTheDocument();
   });
 

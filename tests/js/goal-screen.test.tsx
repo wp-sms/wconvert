@@ -1,3 +1,4 @@
+import { CLICK_OUTCOME } from './support/outcomes';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -37,7 +38,7 @@ const GOALS = [
     label: 'Grow my email list',
     description: 'Capture email addresses.',
     needs_a_capture: false,
-    grows_a_list: false,
+    grows_a_list: false, outcome: CLICK_OUTCOME,
     headline_kind: 'conversion',
     tier: 'free',
     availability: 'ready' as const,
@@ -47,7 +48,7 @@ const GOALS = [
     label: 'Promote a sale or offer',
     description: 'Send visitors to an offer.',
     needs_a_capture: false,
-    grows_a_list: false,
+    grows_a_list: false, outcome: CLICK_OUTCOME,
     headline_kind: 'conversion',
     tier: 'pro',
     availability: 'locked' as const,
@@ -57,7 +58,7 @@ const GOALS = [
     label: 'Bring shoppers back to their cart',
     description: 'Show shoppers the way back.',
     needs_a_capture: false,
-    grows_a_list: false,
+    grows_a_list: false, outcome: CLICK_OUTCOME,
     headline_kind: 'conversion',
     tier: 'pro',
     availability: 'unavailable' as const,
@@ -132,7 +133,7 @@ beforeEach(() => {
 });
 
 const pickGoal = async () => userEvent.click(await screen.findByRole('button', { name: 'Choose' }));
-const customize = async () => userEvent.click(await screen.findByRole('button', { name: 'Customize this starting point' }));
+const customize = async () => userEvent.click(await screen.findByRole('button', { name: 'Use this setup' }));
 const unloadPrevented = () => {
   const event = new Event('beforeunload', { cancelable: true });
   window.dispatchEvent(event);
@@ -172,7 +173,7 @@ describe('a goal then a draft', () => {
     expect(screen.getByText('Choice 2 of 2')).toBeInTheDocument();
     expect(optins.createOptin).not.toHaveBeenCalled();
     expect(goals.prefill).not.toHaveBeenCalled();
-    expect(screen.getByText('Creates a draft. You publish when it is ready.')).toBeInTheDocument();
+    expect(screen.getByText('Creates a draft. Nothing goes live until you publish.')).toBeInTheDocument();
   });
 
   it('keeps the real design preview and makes the long rationale optional', async () => {
@@ -180,9 +181,17 @@ describe('a goal then a draft', () => {
     await pickGoal();
     await screen.findByText('Welcome discount');
     await waitFor(() => expect(container.querySelectorAll('.wconvert-gallery__card .wconvert-preview')).toHaveLength(1));
-    expect(screen.getByText(PLAYBOOK.notes)).not.toBeVisible();
-    await userEvent.click(screen.getByText('About this starting point'));
+    expect(screen.queryByText(PLAYBOOK.notes)).not.toBeInTheDocument();
+    expect(screen.queryByRole('term')).not.toBeInTheDocument();
+    const details = screen.getByRole('button', { name: 'Setup details for Welcome discount' });
+    await userEvent.click(details);
     expect(screen.getByText(PLAYBOOK.notes)).toBeVisible();
+    expect(screen.getByRole('dialog', { name: 'Welcome discount' })).toBeVisible();
+    expect(screen.getByText('Before publishing:')).toBeVisible();
+    expect(optins.createOptin).not.toHaveBeenCalled();
+    await userEvent.keyboard('{Escape}');
+    await waitFor(() => expect(details).toHaveFocus());
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
   it('shows the server recommendation without adding another choice step', async () => {
@@ -202,7 +211,7 @@ describe('a goal then a draft', () => {
     await waitFor(() => expect(created).toHaveBeenCalledWith('01JQZK8N3M4P5Q6R7S8T9V0W1X'));
     expect(goals.prefill).toHaveBeenCalledWith(GOALS[0].id, PLAYBOOK.id);
     expect(optins.createOptin).toHaveBeenCalledExactlyOnceWith(DRAFT.name, DRAFT.goal, DRAFT.config);
-    expect(screen.queryByRole('button', { name: 'Create this Optin' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Create this Campaign' })).not.toBeInTheDocument();
     expect(screen.queryByText('Step 3 of 3')).not.toBeInTheDocument();
   });
 
@@ -222,7 +231,7 @@ describe('a goal then a draft', () => {
     goals.listPlaybooks.mockResolvedValue([]);
     render(<GoalScreen onCreated={vi.fn()} />);
     await pickGoal();
-    expect(await screen.findByText('No starting points available')).toBeInTheDocument();
+    expect(await screen.findByText('No campaign setups available')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Start with a blank draft' })).toBeEnabled();
   });
 
@@ -231,7 +240,7 @@ describe('a goal then a draft', () => {
     render(<GoalScreen onCreated={vi.fn()} />);
     await pickGoal();
     expect(await screen.findByText(/This design is not available on this site/)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Customize this starting point' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Use this setup' })).toBeEnabled();
   });
 
   it('guards creation paths, Back, and leaving the page throughout prefill and POST', async () => {
@@ -258,15 +267,15 @@ describe('a goal then a draft', () => {
   it('suppresses duplicate same-tick start events', async () => {
     goals.prefill.mockReturnValue(new Promise(() => undefined));
     render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
-    const button = await screen.findByRole('button', { name: 'Customize this starting point' });
+    const button = await screen.findByRole('button', { name: 'Use this setup' });
     act(() => { fireEvent.click(button); fireEvent.click(button); });
     expect(goals.prefill).toHaveBeenCalledTimes(1);
   });
 
   it('retries a failed prefill without claiming an Optin was created', async () => {
-    goals.prefill.mockRejectedValueOnce(new Error('Starting point unavailable.'));
+    goals.prefill.mockRejectedValueOnce(new Error('Campaign setup unavailable.'));
     render(<GoalScreen onCreated={vi.fn()} />); await pickGoal(); await customize();
-    await screen.findByText('Starting point unavailable.');
+    await screen.findByText('Campaign setup unavailable.');
     expect(optins.createOptin).not.toHaveBeenCalled();
     expect(screen.queryByText(/Draft creation could not be confirmed/)).not.toBeInTheDocument();
     await customize();
@@ -279,7 +288,7 @@ describe('a goal then a draft', () => {
     render(<GoalScreen onCreated={created} onCheckOptins={check} />); await pickGoal(); await customize();
     await screen.findByText(/Draft creation could not be confirmed/);
     expect(unloadPrevented()).toBe(false);
-    await userEvent.click(screen.getByRole('button', { name: 'Check Optins' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Check Campaigns' }));
     expect(check).toHaveBeenCalledOnce();
     expect(optins.createOptin).toHaveBeenCalledTimes(1);
     expect(created).not.toHaveBeenCalled();
@@ -319,10 +328,10 @@ describe('a goal then a draft', () => {
   });
 
   it('retries a failed starting-point read on the same selected Goal', async () => {
-    goals.listPlaybooks.mockRejectedValueOnce(new Error('Starting points unavailable.'));
+    goals.listPlaybooks.mockRejectedValueOnce(new Error('Campaign setups unavailable.'));
     render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
-    await screen.findByText('Starting points unavailable.');
-    await userEvent.click(screen.getByRole('button', { name: 'Retry loading starting points' }));
+    await screen.findByText('Campaign setups unavailable.');
+    await userEvent.click(screen.getByRole('button', { name: 'Retry loading campaign setups' }));
     await screen.findByText('Welcome discount');
     expect(goals.listPlaybooks).toHaveBeenLastCalledWith(GOALS[0].id);
   });
@@ -343,10 +352,11 @@ describe('a goal then a draft', () => {
       setup: { ...PLAYBOOK.setup, targeting: { logged_in: false }, frequency: { cooldownDays: 2 } },
     }]);
     render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
+    await userEvent.click(await screen.findByRole('button', { name: 'Setup details for Welcome discount' }));
     expect(await screen.findByText(/click the main button/)).toBeInTheDocument();
     expect(screen.queryByText(/submit the form/)).not.toBeInTheDocument();
     expect(screen.getAllByRole('term').map((term) => term.textContent)).toEqual([
-      'Format', 'Pages', 'Audience', 'When it appears', 'Schedule & frequency',
+      'Counts', 'Visitor action', 'Format', 'Pages', 'Audience', 'When it appears', 'Schedule & frequency',
     ]);
   });
 
@@ -362,6 +372,7 @@ describe('a goal then a draft', () => {
       targeting: { include: [{ type: 'singular', value: 'post' }], exclude: [{ type: 'url', value: '/private/*' }] },
     } }]);
     render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
+    await userEvent.click(await screen.findByRole('button', { name: 'Setup details for Welcome discount' }));
     expect(await screen.findByText('Any single item of a type: Blog posts, except A URL path: /private/*')).toBeInTheDocument();
     expect(screen.queryByText(/Matches 1 page rule/)).not.toBeInTheDocument();
   });
@@ -371,6 +382,7 @@ describe('a goal then a draft', () => {
       targeting: { include: [{ type: 'post', value: '42' }] },
     } }]);
     render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
+    await userEvent.click(await screen.findByRole('button', { name: 'Setup details for Welcome discount' }));
     expect(await screen.findByText('Matches 1 page rule')).toBeInTheDocument();
     expect(screen.queryByText(/42/)).not.toBeInTheDocument();
   });
@@ -379,7 +391,7 @@ describe('a goal then a draft', () => {
     rules.getRules.mockRejectedValueOnce(new Error('Rules unavailable.'));
     render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
     await screen.findByText(/Setup details could not be loaded/);
-    expect(screen.getByRole('button', { name: 'Customize this starting point' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Use this setup' })).toBeEnabled();
     await userEvent.click(screen.getByRole('button', { name: 'Retry setup details' }));
     expect(await screen.findByText(/time_on_page 8/)).toBeInTheDocument();
   });
@@ -388,6 +400,8 @@ describe('a goal then a draft', () => {
     goals.listPlaybooks.mockResolvedValue([{ ...PLAYBOOK, display_type: 'inline', setup: { ...PLAYBOOK.setup, display_type: 'inline' } }]);
     render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
     expect(await screen.findByText('Inside the page')).toBeInTheDocument();
+    await userEvent.click(await screen.findByRole('button', { name: 'Setup details for Welcome discount' }));
+    expect(screen.getByText('At its block or shortcode, when page and visitor rules allow it.')).toBeInTheDocument();
     expect(screen.getByText('Add its block or shortcode to the page where it should appear.')).toBeInTheDocument();
   });
 });
@@ -400,7 +414,7 @@ it('filters installed starting points by collection and creates only the chosen 
   await pickGoal();
   await screen.findByText('Store collection', { selector: 'option' });
   await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Collection' }), 'store');
-  expect(screen.getAllByRole('button', { name: 'Customize this starting point' })).toHaveLength(1);
+  expect(screen.getAllByRole('button', { name: 'Use this setup' })).toHaveLength(1);
   expect(goals.prefill).not.toHaveBeenCalled();
   expect(optins.createOptin).not.toHaveBeenCalled();
   await customize();
@@ -420,11 +434,11 @@ it('installs a pack from creation, then returns to its starting points without c
   await userEvent.click(await screen.findByRole('button', { name: 'Browse template packs' }));
   await userEvent.click(await screen.findByRole('button', { name: 'Preview Store collection' }));
   await userEvent.click(await screen.findByRole('button', { name: 'Install pack' }));
-  await userEvent.click(await screen.findByRole('button', { name: 'Choose a starting point' }));
+  await userEvent.click(await screen.findByRole('button', { name: 'Choose a campaign setup' }));
   await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
   expect(screen.getByRole('combobox', { name: 'Collection' })).toHaveValue('store');
   expect(screen.getByRole('combobox', { name: 'Collection' })).toHaveFocus();
-  await screen.findByRole('button', { name: 'Customize this starting point' });
+  await screen.findByRole('button', { name: 'Use this setup' });
   expect(optins.createOptin).not.toHaveBeenCalled();
   expect(goals.prefill).not.toHaveBeenCalled();
 });

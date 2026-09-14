@@ -42,6 +42,8 @@ site-wide settings or published visitor behavior.
 
 ## Saving a new Goal starts a new history
 
+> **Amended by [ADR 0085](0085-goals-have-publish-contracts-and-stable-history.md):** Goal correction only changes an unpublished Optin. After first publication, Duplicate for another goal copies current edits into a new Optin without altering the original or its results.
+
 Goal correction still saves immediately: **Save draft and change goal** saves the
 name and complete current configuration alongside the Goal column. It restates
 existing reporting under that Goal and does not publish. The confirmation now

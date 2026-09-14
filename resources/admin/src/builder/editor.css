@@ -576,6 +576,14 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
 #wconvert-admin .wconvert-workspace__footer button {
   font-size: var(--text-label);
 }
+#wconvert-admin .wconvert-workspace__footer .wconvert-workspace__goal {
+  height: auto;
+  min-height: 28px;
+  max-width: 50%;
+  padding: 2px 6px;
+  white-space: normal;
+  text-align: start;
+}
 @media (max-width: 1350px) {
   #wconvert-admin .wconvert-workspace__brand {
     display: none;

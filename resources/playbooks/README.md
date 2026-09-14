@@ -14,8 +14,7 @@ words in the new design before Apply
 ([ADR 0075](../../docs/adr/0075-draft-history-and-template-content-choices-stay-predictable.md)).
 
 Remote entries are JSON and untranslated, because remote PHP is Guideline 8
-remote code execution with no argument available. **The fetch is designed and
-not built in v1**: a decoded remote entry is an array, so it enters through
+remote code execution with no argument available. Reviewed JSON packs can supply campaign setups under ADR 0083: a decoded remote entry is an array, so it enters through
 `PlaybookLibrary::fromEntries()` exactly as a bundled one does.
 
 ## What an entry may say
@@ -46,11 +45,12 @@ lives — there is no runtime check behind it.
   ([ADR 0061](../../docs/adr/0061-the-vocabulary-widens-by-what-the-library-cannot-draw.md),
   [ADR 0062](../../docs/adr/0062-a-token-bag-is-scoped-to-the-box-that-carries-it.md)).
 
-There is **no check that the default Template's converting act matches the
-Goal**, and there used not to be a Goal-side act to match it against.
-[ADR 0059](../../docs/adr/0059-the-converting-act-belongs-to-the-design.md)
-deleted every design↔Goal coupling: a Template offering exactly one converting
-act **is** the declaration, enforced at its own registration by
-`TemplateLibrary::refuse()`. This README asserted the old check for three
-commits after it was removed. A third party filing a capture design under the
-sale Goal is offering a start a merchant can legitimately want.
+Registration validates vocabulary and copy bindings; publication additionally
+checks the actual edited design against its Goal under ADR 0085. An incompatible
+setup can remain a draft but cannot publish until it satisfies the contract.
+
+Under ADR 0086, the UI calls these Campaign setups and names the task directly.
+The checklist derives from actual design and Goal capabilities. List setups default
+to a capable service or require explicit Collect only. Visitor copy must match the
+merchant's actual follow-up. Updated collection sources need reviewed fingerprints
+and a new pack version; no saved merchant copy is rewritten.

@@ -143,7 +143,7 @@ export function SiteAllowance() {
       attention={allowance.status === 'failed' || error !== null}
     >
       <Description className="px-4 pt-4">
-        {__('These limits apply to every Optin, in addition to its own display rules.', 'wconvert')}
+        {__('These limits apply to every Campaign, in addition to its own display rules.', 'wconvert')}
       </Description>
 
       {/*
@@ -188,7 +188,7 @@ export function SiteAllowance() {
                   disabled={current === null}
                   onChange={(event) => commit(onScreen({ stopAfterDismiss: event.target.checked }))}
                 />{' '}
-                {__('Once they close any Optin, show them nothing else', 'wconvert')}
+                {__('Once they close any Campaign, show them nothing else', 'wconvert')}
               </label>
 
               <label className="wconvert-allowance__switch text-body">

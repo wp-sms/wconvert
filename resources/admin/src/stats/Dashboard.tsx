@@ -72,7 +72,7 @@ export function Dashboard({ query, onQueryChange }: {
       </PageAction>
       {selection.optinId && <a className="inline-flex items-center gap-2 self-start text-note text-primary hover:underline"
         href={reportHref({ days: payload?.days ?? selection.days, goal: selectedGoal })}>
-        <ArrowLeft aria-hidden="true" className="size-4" />{__('All Optin results', 'wconvert')}
+        <ArrowLeft aria-hidden="true" className="size-4" />{__('All Campaign results', 'wconvert')}
       </a>}
       {!selection.optinId && payload !== null && payload.goals.length > 1 && (
         <div className="wconvert-panel-filters" role="group" aria-label={__('Filter reports by goal', 'wconvert')}>
@@ -93,16 +93,16 @@ export function Dashboard({ query, onQueryChange }: {
       {report.status === 'loading' && <RegionSkeleton label={__('Analytics', 'wconvert')}>
         <StatRowSkeleton stats={4} /><Skeleton aria-hidden="true" className="h-36 w-full" />
       </RegionSkeleton>}
-      {payload !== null && selection.optinId && !selectedOptin && <Region label={__('Optin report', 'wconvert')}>
-        <EmptyState icon={ChartColumn} title={__('This Optin is not available in the report', 'wconvert')}
+      {payload !== null && selection.optinId && !selectedOptin && <Region label={__('Campaign report', 'wconvert')}>
+        <EmptyState icon={ChartColumn} title={__('This Campaign is not available in the report', 'wconvert')}
           action={<Button asChild variant="outline"><a href={reportHref({ days: payload.days })}>{__('View all results', 'wconvert')}</a></Button>}>
-          {__('A deleted Optin keeps its historical counts in its Goal’s totals, but no longer has an individual report.', 'wconvert')}
+          {__('A deleted Campaign keeps its historical counts in its Goal’s totals, but no longer has an individual report.', 'wconvert')}
         </EmptyState>
       </Region>}
       {payload !== null && !selection.optinId && payload.goals.length === 0 && <Region label={__('Analytics', 'wconvert')}>
         <EmptyState icon={ChartColumn} title={__('Nothing to report yet', 'wconvert')}
-          action={<Button asChild variant="outline"><a href="#optins">{__('Go to Optins', 'wconvert')}</a></Button>}>
-          {__('Publish an Optin and its numbers appear here.', 'wconvert')}
+          action={<Button asChild variant="outline"><a href="#optins">{__('Go to Campaigns', 'wconvert')}</a></Button>}>
+          {__('Publish a campaign and its numbers appear here.', 'wconvert')}
         </EmptyState>
       </Region>}
       {payload && cards?.map((card) => <GoalRegion key={card.goal} card={card} optin={selectedOptin}
@@ -110,10 +110,10 @@ export function Dashboard({ query, onQueryChange }: {
       {payload !== null && payload.goals.length > 0 && <details className="wconvert-report-help">
         <summary>{__('How these numbers work', 'wconvert')}</summary>
         <ul>
-          <li>{__('Impressions count times an Optin was seen. For an inline form, this starts when it enters the visitor’s view.', 'wconvert')}</li>
+          <li>{__('Impressions count times a campaign was seen. For an inline form, this starts when it enters the visitor’s view.', 'wconvert')}</li>
           <li>{__('Conversion rate is visitor actions divided by impressions. The action is a form submission or a button click, depending on the design. A dash means there were no impressions.', 'wconvert')}</li>
-          <li>{__('For a lead magnet, Deliveries counts recorded sends; conversion rate still measures visitor submissions. Delivery totals do not prove inbox arrival.', 'wconvert')}</li>
-          <li>{__('Goal totals include deleted Optins. The table lists existing Optins, so its rows may add up to less. Changing an Optin’s Goal moves its historical counts to that Goal.', 'wconvert')}</li>
+          <li>{__('For a lead magnet, the headline counts emails accepted for sending; conversion rate still measures visitor submissions. These send events do not prove inbox arrival.', 'wconvert')}</li>
+          <li>{__('Goal totals include deleted Campaigns. The table lists existing Campaigns, so its rows may add up to less. Changing a campaign’s Goal moves its historical counts to that Goal.', 'wconvert')}</li>
           <li>{__('Reports use daily counters. Deleting captured leads through retention does not remove those historical counts.', 'wconvert')}</li>
         </ul>
       </details>}
@@ -134,6 +134,7 @@ function GoalRegion({ card, optin, period, query }: {
     <Region>
       <RegionHeader title={optin?.name ?? card.label} level={3} />
       <RegionBody className="flex flex-col gap-5">
+        {card.measurement && <p className="m-0 text-note text-muted-foreground">{card.measurement}</p>}
         {optin && <p className="m-0 text-note text-muted-foreground">{card.label}</p>}
         <StatRow>
           <Stat label={card.headline_label} value={formatCount(numbers.headline)} emphasis />
@@ -142,22 +143,22 @@ function GoalRegion({ card, optin, period, query }: {
           <Stat label={__('Dismissals', 'wconvert')} value={formatCount(numbers.dismissals)} />
         </StatRow>
         {numbers.impressions === 0 && <p className="m-0 text-note text-muted-foreground">
-          {__('No impressions were recorded in this period. Check the date range and where the Optin is set to appear.', 'wconvert')}
+          {__('No impressions were recorded in this period. Check the date range and where the Campaign is set to appear.', 'wconvert')}
         </p>}
         <ActivityChart label={card.headline_label} byDay={numbers.by_day} />
         {!optin && (card.undelivered_conversions ?? 0) > 0 && <div className="wconvert-report-attention">
-          <p>{sprintf(_n('%d more submission than lead-magnet deliveries was recorded in this period.', '%d more submissions than lead-magnet deliveries were recorded in this period.', card.undelivered_conversions ?? 0, 'wconvert'), card.undelivered_conversions ?? 0)}</p>
+          <p>{sprintf(_n('%d more submission than emails accepted for sending was recorded in this period.', '%d more submissions than emails accepted for sending were recorded in this period.', card.undelivered_conversions ?? 0, 'wconvert'), card.undelivered_conversions ?? 0)}</p>
           <p>{__('These totals count events on the day they happen. Check Destinations for forwarding delays or errors.', 'wconvert')}</p>
           <a href={destinationHref()}>{__('Review forwarding', 'wconvert')}</a>
         </div>}
       </RegionBody>
       {optin ? <RegionFooter>
         <div className="flex flex-wrap gap-2">
-          <Button asChild variant="outline"><a href={editorHref(optin.id, back)}>{__('Edit this Optin', 'wconvert')}</a></Button>
+          <Button asChild variant="outline"><a href={editorHref(optin.id, back)}>{__('Edit this Campaign', 'wconvert')}</a></Button>
           <Button asChild variant="outline"><a href={leadsHref({ optinId: optin.id, from: period.from, to: period.to })}>{__('View captured leads', 'wconvert')}</a></Button>
         </div>
       </RegionFooter> : <details className="wconvert-panel-details border-t border-border">
-        <summary>{sprintf(_n('View %d Optin', 'View %d Optins', card.optins.length, 'wconvert'), card.optins.length)}</summary>
+        <summary>{sprintf(_n('View %d Campaign', 'View %d Campaigns', card.optins.length, 'wconvert'), card.optins.length)}</summary>
         <OptinTable card={card} period={period} query={query} />
       </details>}
     </Region>
@@ -166,16 +167,16 @@ function GoalRegion({ card, optin, period, query }: {
 
 function OptinTable({ card, period, query }: { card: GoalReport; period: DashboardPayload; query: ReportQuery }) {
   if (card.optins.length === 0) {
-    return <EmptyState icon={Megaphone} title={__('No existing Optins under this Goal', 'wconvert')}>
-      {__('These totals include results from deleted Optins.', 'wconvert')}
+    return <EmptyState icon={Megaphone} title={__('No existing Campaigns under this Goal', 'wconvert')}>
+      {__('These totals include results from deleted Campaigns.', 'wconvert')}
     </EmptyState>;
   }
   const back = reportHref(query);
   return (
     <div className="border-t border-border">
-      <DataTable label={sprintf(__('Optins for %s', 'wconvert'), card.label)}>
+      <DataTable label={sprintf(__('Campaigns for %s', 'wconvert'), card.label)}>
         <DataTableHead>
-          <DataTableColumn>{__('Optin', 'wconvert')}</DataTableColumn>
+          <DataTableColumn>{__('Campaign', 'wconvert')}</DataTableColumn>
           <DataTableColumn numeric>{card.headline_label}</DataTableColumn>
           <DataTableColumn numeric>{__('Impressions', 'wconvert')}</DataTableColumn>
           <DataTableColumn numeric>{__('Conversion rate', 'wconvert')}</DataTableColumn>
@@ -184,7 +185,7 @@ function OptinTable({ card, period, query }: { card: GoalReport; period: Dashboa
         </DataTableHead>
         <DataTableBody>
           {card.optins.map((optin) => <DataTableRow key={optin.id}>
-            <DataTableCell label={__('Optin', 'wconvert')}>
+            <DataTableCell label={__('Campaign', 'wconvert')}>
               <a className="font-medium text-primary hover:underline" href={reportHref({ days: period.days, goal: card.goal, optinId: optin.id })}>{optin.name}</a>
             </DataTableCell>
             <DataTableCell label={card.headline_label} numeric>{formatCount(optin.headline)}</DataTableCell>

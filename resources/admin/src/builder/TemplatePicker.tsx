@@ -9,6 +9,7 @@ import { TemplateDesignDetail, type PrepareDesign } from './TemplateDesignDetail
 import { facetOptions, narrow, toggled, type Chosen } from './facets';
 import { nameOf, type TemplateIndex } from '../templates/api';
 import type { Template } from '@renderer/types';
+import { fitsOutcome } from '../goals/outcome';
 
 /** Reviewed starting points; extension designs retain their index order after these. */
 const RECOMMENDED: Readonly<Record<string, readonly string[]>> = {
@@ -22,6 +23,7 @@ export interface TemplatePickerProps {
   readonly index: TemplateIndex;
   readonly trees: ReadonlyMap<string, Template>;
   readonly displayType: string;
+  readonly currentDisplayType?: string;
   readonly chosen: string | undefined;
   readonly fit: Fit;
   readonly busy: boolean;
@@ -36,11 +38,12 @@ export interface TemplatePickerProps {
 
 /** Browse by what the design does, inspect it, then apply it to the draft. */
 export function TemplatePicker({
-  index, trees, displayType, chosen, fit, busy, onChoose, onPrepare, onNear, failed, onRetry, active = true, initialInspectedId,
+  index, trees, displayType, currentDisplayType, chosen, fit, busy, onChoose, onPrepare, onNear, failed, onRetry, active = true, initialInspectedId,
 }: TemplatePickerProps) {
   const [chosenFacets, setChosenFacets] = useState<Chosen>({});
   const [query, setQuery] = useState('');
   const [availableOnly, setAvailableOnly] = useState(false);
+  const [goalFitOnly, setGoalFitOnly] = useState(true);
   const [moreOpen, setMoreOpen] = useState(false);
   const [inspectedId, setInspectedId] = useState<string | null>(initialInspectedId ?? null);
   const returnFocus = useRef<HTMLElement | null>(null);
@@ -59,8 +62,9 @@ export function TemplatePicker({
     [index.templates, displayType],
   );
   const available = useMemo(
-    () => availableOnly ? forType.filter((entry) => entry.availability === 'ready') : forType,
-    [forType, availableOnly],
+    () => forType.filter((entry) => (!availableOnly || entry.availability === 'ready')
+      && (!goalFitOnly || !fit.outcome || fitsOutcome(fit.outcome, entry.facets))),
+    [forType, availableOnly, goalFitOnly, fit.outcome],
   );
   const shown = useMemo(
     () => narrow(available, displayType, chosenFacets, query, index.labels),
@@ -78,6 +82,7 @@ export function TemplatePicker({
     setChosenFacets({});
     setQuery('');
     setAvailableOnly(false);
+    setGoalFitOnly(false);
   };
   const toggle = (facet: string, value: string) =>
     setChosenFacets((current) => toggled(current, facet, value));
@@ -102,9 +107,21 @@ export function TemplatePicker({
               <Search size={17} aria-hidden="true" />
               <span className="sr-only">{__('Search designs', 'wconvert')}</span>
               <Input type="search" className="ps-9" value={query}
-                placeholder={__('Search names or features, e.g. email or picture', 'wconvert')}
+                placeholder={__('Search designs', 'wconvert')}
                 onChange={(event) => setQuery(event.target.value)} />
             </label>
+            {fit.outcome && <select className="wconvert-picker__select" aria-label={__('Design fit', 'wconvert')}
+              value={goalFitOnly ? 'goal' : 'all'} onChange={(event) => setGoalFitOnly(event.target.value === 'goal')}>
+              <option value="goal">{__('For this goal', 'wconvert')}</option>
+              <option value="all">{__('All designs', 'wconvert')}</option>
+            </select>}
+            <Button variant="outline" size="sm" className="wconvert-picker__more"
+              aria-expanded={moreOpen} aria-controls={filterId} onClick={() => setMoreOpen(!moreOpen)}>
+              <SlidersHorizontal size={15} aria-hidden="true" />
+              {__('Filters', 'wconvert')}
+            </Button>
+          </div>
+          <div id={filterId} className="wconvert-picker__extra" hidden={!moreOpen}>
             <div role="group" aria-label={__('What visitors do', 'wconvert')} className="wconvert-segmented">
               {[
                 ['', __('All designs', 'wconvert')],
@@ -118,30 +135,21 @@ export function TemplatePicker({
                   </Button>
                 ))}
             </div>
-          </div>
-          <div className="wconvert-picker__filter-row">
-            <FacetStrip facet="captures" title={__('Must include', 'wconvert')}
-              options={options('captures', index.facets.captures ?? [])}
-              labels={index.labels} chosen={chosenFacets.captures ?? []}
-              onToggle={(value) => toggle('captures', value)} />
-            {options('has_image', ['true']).map(({ count }) => (
-              <Button key="picture" variant="outline" size="sm" className="wconvert-picker__filter"
-                aria-pressed={chosenFacets.has_image?.includes('true') === true}
-                disabled={count === 0 && !chosenFacets.has_image?.includes('true')}
-                onClick={() => toggle('has_image', 'true')}>
-                {__('With a picture', 'wconvert')}
-                <span aria-hidden="true" className="wconvert-picker__option-count">{count}</span>
-              </Button>
-            ))}
-            {(secondaryFacets.length > 0 || hasLocked) && (
-              <Button variant="ghost" size="sm" className="wconvert-picker__more"
-                aria-expanded={moreOpen} aria-controls={filterId} onClick={() => setMoreOpen(!moreOpen)}>
-                <SlidersHorizontal size={15} aria-hidden="true" />
-                {__('More filters', 'wconvert')}
-              </Button>
-            )}
-          </div>
-          <div id={filterId} className="wconvert-picker__extra" hidden={!moreOpen}>
+            <div className="wconvert-picker__filter-row">
+              <FacetStrip facet="captures" title={__('Must include', 'wconvert')}
+                options={options('captures', index.facets.captures ?? [])}
+                labels={index.labels} chosen={chosenFacets.captures ?? []}
+                onToggle={(value) => toggle('captures', value)} />
+              {options('has_image', ['true']).map(({ count }) => (
+                <Button key="picture" variant="outline" size="sm" className="wconvert-picker__filter"
+                  aria-pressed={chosenFacets.has_image?.includes('true') === true}
+                  disabled={count === 0 && !chosenFacets.has_image?.includes('true')}
+                  onClick={() => toggle('has_image', 'true')}>
+                  {__('With a picture', 'wconvert')}
+                  <span aria-hidden="true" className="wconvert-picker__option-count">{count}</span>
+                </Button>
+              ))}
+            </div>
             {secondaryFacets.map(([facet, values]) => (
               <FacetStrip key={facet} facet={facet}
                 title={facet === 'shape' ? __('Layout', 'wconvert') : nameOf(index.labels.facets, facet)}
@@ -183,7 +191,7 @@ export function TemplatePicker({
                 </button>}
                 <Button variant="link" size="sm" onClick={clear}>{__('Clear filters', 'wconvert')}</Button>
               </div>
-            ) : <span className="wconvert-picker__hint">{__('Recommended designs first. Preview to check every screen.', 'wconvert')}</span>}
+            ) : null}
           </div>
         </div>
         <div className="wconvert-picker__body">
@@ -205,6 +213,7 @@ export function TemplatePicker({
       </div>
       {inspected !== undefined && (
         <TemplateDesignDetail key={inspected.id} entry={inspected} template={trees.get(inspected.id)}
+          currentDisplayType={currentDisplayType}
           labels={index.labels} current={inspected.id === chosen} active={active} fit={fit} busy={busy}
           loadError={failed?.has(inspected.id)} onRetry={onRetry ? () => onRetry(inspected.id) : undefined}
           onChoose={onChoose} onPrepare={onPrepare} onBack={() => {

@@ -15,11 +15,11 @@ import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loada
 import { createOptin } from '../optins/api';
 import { GoalCard, offerableGoals } from './GoalCard';
 import { listGoals, listPlaybooks, prefill, type GoalEntry, type PlaybookEntry } from './api';
-import { StartingPointFacts } from './StartingPointFacts';
+import { StartingPointFacts, StartingPointSummary } from './StartingPointFacts';
 import { useBuilderViewport } from '../hooks/useBuilderViewport';
 
 /**
- * Goal first, then a starting point. Browsing only reads; Customize explicitly
+ * Goal first, then a starting point. Browsing only reads; Use this setup explicitly
  * creates a draft and opens the editor. The editor owns review and publishing.
  * Every read belongs to the current step, so an abandoned response cannot
  * replace a later choice or start a draft after this flow was closed.
@@ -34,6 +34,8 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
   const editorFits = useBuilderViewport();
   const [goals, setGoals] = useState<Loadable<GoalEntry[]>>(LOADING);
   const [packsOpen, setPacksOpen] = useState(false);
+  const [inspected, setInspected] = useState<PlaybookEntry | null>(null);
+  const detailTrigger = useRef<HTMLButtonElement | null>(null);
   const [collectionId, setCollectionId] = useState('all');
   const packTrigger = useRef<HTMLButtonElement>(null);
   const collectionPicker = useRef<HTMLSelectElement>(null);
@@ -139,7 +141,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
     const shown = goals.status === 'ready' ? offerableGoals(goals.data, 'creation_flow') : [];
     return <Region>
       <RegionHeader title={__('What do you want to achieve?', 'wconvert')}
-        description={__('Choose a goal, then a starting point. You can customize the design and decide when to publish in the editor.', 'wconvert')}
+        description={__('Choose a goal, then a campaign setup. You can customize the design and decide when to publish in the editor.', 'wconvert')}
         trailing={<Step at={1} />} />
       {goals.status === 'failed' ? <>
         <RegionErrorState message={goals.message} hint={__('Try loading the goals again below.', 'wconvert')} />
@@ -158,18 +160,19 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
   const entries = allEntries.filter((entry) => collectionId === 'all' || (collectionId === 'bundled' ? !entry.collection : entry.collection?.id === collectionId));
   const singleStartingPoint = entries.length === 1;
   return <Region>
-    <RegionHeader title={__('Choose a starting point', 'wconvert')}
-      description={sprintf(__('For “%s”. Choose the offer and setup that fit, then make it yours in the editor.', 'wconvert'), goal.label)}
+    <RegionHeader title={__('Choose a campaign setup', 'wconvert')}
+      description={sprintf(__('For “%s”. Customize it next.', 'wconvert'), goal.label)}
       trailing={<Step at={2} />} />
-    <RegionBody className="flex flex-wrap items-center justify-between gap-3">
+    <RegionBody className="flex flex-wrap items-center justify-between gap-3 pb-0">
       <label className="flex items-center gap-2 text-note">{__('Collection', 'wconvert')}
         <select ref={collectionPicker} value={collectionId} disabled={starting !== null} onChange={(event) => setCollectionId(event.target.value)}>
-          <option value="all">{__('All starting points', 'wconvert')}</option>
+          <option value="all">{__('All campaign setups', 'wconvert')}</option>
           <option value="bundled">{__('Included with WConvert', 'wconvert')}</option>
           {[...collections].map(([id, name]) => <option key={id} value={id}>{name}</option>)}
           {collectionId !== 'all' && collectionId !== 'bundled' && !collections.has(collectionId) && <option value={collectionId}>{__('Selected pack', 'wconvert')}</option>}
         </select>
       </label>
+      <span className="text-note text-muted-foreground">{__('Creates a draft. Nothing goes live until you publish.', 'wconvert')}</span>
       <Button ref={packTrigger} variant="outline" disabled={starting !== null} onClick={() => { choseCollection.current = false; setPacksOpen(true); }}>{__('Browse template packs', 'wconvert')}</Button>
     </RegionBody>
     <Dialog open={packsOpen} onOpenChange={setPacksOpen}>
@@ -178,7 +181,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
         (choseCollection.current ? collectionPicker.current : packTrigger.current)?.focus();
       }}>
         <DialogHeader className="wconvert-picker__header"><DialogTitle>{__('Template packs', 'wconvert')}</DialogTitle>
-          <DialogDescription className="sr-only">{__('Install collections of designs and campaign starting points.', 'wconvert')}</DialogDescription>
+          <DialogDescription className="sr-only">{__('Install collections of designs and campaign setups.', 'wconvert')}</DialogDescription>
         </DialogHeader>
         <TemplatePacks displayType="" goal={goal.id}
           onInstalled={async () => { setPlaybooksRetry((value) => value + 1); }}
@@ -190,38 +193,56 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
     </p></RegionBody>}
     {error !== null && <RegionError message={error} />}
     {createUnconfirmed && <RegionBody><p className="m-0 text-note">
-      {__('Draft creation could not be confirmed. Check your Optins before trying again to avoid creating a second draft.', 'wconvert')}
-      {onCheckOptins && <Button variant="link" size="sm" onClick={onCheckOptins}>{__('Check Optins', 'wconvert')}</Button>}
+      {__('Draft creation could not be confirmed. Check your Campaigns before trying again to avoid creating a second draft.', 'wconvert')}
+      {onCheckOptins && <Button variant="link" size="sm" onClick={onCheckOptins}>{__('Check Campaigns', 'wconvert')}</Button>}
     </p></RegionBody>}
     {starting !== null && <RegionBody><p role="status" className="m-0 text-note">{__('Creating your draft and opening the editor…', 'wconvert')}</p></RegionBody>}
     {playbooks.status === 'failed' ? <>
-      <RegionErrorState message={playbooks.message} hint={__('Try loading the starting points again, or start with a blank draft.', 'wconvert')} />
-      <RegionBody><Button variant="outline" onClick={() => setPlaybooksRetry((value) => value + 1)}>{__('Retry loading starting points', 'wconvert')}</Button></RegionBody>
+      <RegionErrorState message={playbooks.message} hint={__('Try loading the campaign setups again, or start with a blank draft.', 'wconvert')} />
+      <RegionBody><Button variant="outline" onClick={() => setPlaybooksRetry((value) => value + 1)}>{__('Retry loading campaign setups', 'wconvert')}</Button></RegionBody>
     </> : playbooks.status === 'loading' ? <RegionBody><GallerySkeleton cards={2} /></RegionBody>
-      : entries.length === 0 ? <EmptyState icon={Sparkles} title={__('No starting points available', 'wconvert')}>
+      : entries.length === 0 ? <EmptyState icon={Sparkles} title={__('No campaign setups available', 'wconvert')}>
         {__('You can create a blank draft for this goal and choose a design in the editor.', 'wconvert')}
       </EmptyState> : <RegionBody>
         {vocabulary.status === 'failed' && <div className="mb-4 flex flex-wrap items-center gap-2 text-note">
-          <span>{__('Setup details could not be loaded. You can still choose a starting point and review its rules in the editor.', 'wconvert')}</span>
+          <span>{__('Setup details could not be loaded. You can still choose a campaign setup and review its rules in the editor.', 'wconvert')}</span>
           <Button variant="outline" size="sm" onClick={() => setRulesRetry((value) => value + 1)}>{__('Retry setup details', 'wconvert')}</Button>
         </div>}
         <ul className={`wconvert-gallery${singleStartingPoint ? ' wconvert-gallery--single-start' : ''}`}>{entries.map((playbook) => <TemplateCard
           key={playbook.id} id={playbook.id} name={playbook.name} template={playbook.template}
           featured={singleStartingPoint}
           absent={playbook.template === undefined ? <p>{__('This design is not available on this site. Choose a design after opening the draft.', 'wconvert')}</p> : undefined}
-          action={(describedBy) => <div className="flex w-full flex-col items-start gap-3">
+          action={(describedBy) => <div className="flex w-full flex-col items-start gap-2">
             {playbook.collection && <Badge variant="outline">{playbook.collection.name}</Badge>}
-            {playbook.recommendation ? <p className="text-xs font-medium text-foreground">{playbook.recommendation}</p> : null}
-            <StartingPointFacts playbook={playbook} goal={goal} vocabulary={vocabulary.status === 'ready' ? vocabulary.data : null} />
-            {playbook.notes && <details className="text-note text-muted-foreground"><summary>{__('About this starting point', 'wconvert')}</summary><p className="mb-0">{playbook.notes}</p></details>}
-            <div className="flex flex-col items-start gap-1">
-              <Button aria-describedby={`${describedBy} ${playbook.id}-draft-note`} disabled={starting !== null}
+            {playbook.recommendation ? <p className="m-0 text-note font-medium text-foreground">{playbook.recommendation}</p> : null}
+            <StartingPointSummary playbook={playbook} vocabulary={vocabulary.status === 'ready' ? vocabulary.data : null} />
+            <div className="flex flex-wrap items-center gap-2">
+              <Button aria-describedby={describedBy} disabled={starting !== null}
                 className={singleStartingPoint ? 'h-auto min-h-9 max-w-full whitespace-normal text-start' : undefined}
-                onClick={() => { void start(playbook.id); }}>{starting === playbook.id ? __('Creating draft…', 'wconvert') : __('Customize this starting point', 'wconvert')}</Button>
-              <span id={`${playbook.id}-draft-note`} className="text-note text-muted-foreground">{__('Creates a draft. You publish when it is ready.', 'wconvert')}</span>
+                onClick={() => { void start(playbook.id); }}>{starting === playbook.id ? __('Creating draft…', 'wconvert') : __('Use this setup', 'wconvert')}</Button>
+              <Button variant="ghost" size="sm" disabled={starting !== null}
+                aria-label={sprintf(__('Setup details for %s', 'wconvert'), playbook.name)}
+                onClick={(event) => { detailTrigger.current = event.currentTarget; setInspected(playbook); }}>
+                {__('Setup details', 'wconvert')}
+              </Button>
             </div>
           </div>} />)}</ul>
       </RegionBody>}
+    <Dialog open={inspected !== null} onOpenChange={(open) => { if (!open) setInspected(null); }}>
+      <DialogContent className="max-h-[80dvh] overflow-y-auto" onCloseAutoFocus={(event) => {
+        event.preventDefault(); detailTrigger.current?.focus();
+      }}>
+        {inspected && <>
+          <DialogHeader>
+            <DialogTitle>{inspected.name}</DialogTitle>
+            <DialogDescription>{__('Review this setup. You can change it in the editor.', 'wconvert')}</DialogDescription>
+          </DialogHeader>
+          <StartingPointFacts playbook={inspected} goal={goal} vocabulary={vocabulary.status === 'ready' ? vocabulary.data : null} />
+          {inspected.notes && <p className="m-0 text-note text-muted-foreground">{inspected.notes}</p>}
+          <Button variant="outline" onClick={() => setInspected(null)}>{__('Back to setups', 'wconvert')}</Button>
+        </>}
+      </DialogContent>
+    </Dialog>
     <RegionFooter className="flex flex-wrap items-center justify-between gap-3">
       <Button variant="ghost" disabled={starting !== null} onClick={() => {
         if (busy.current) return;

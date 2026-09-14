@@ -72,7 +72,7 @@ describe('the editor canvas', () => {
 
     const { container } = render(<Edit attributes={{ optinId: NEWSLETTER }} setAttributes={vi.fn()} />);
 
-    expect(screen.getByRole('heading', { name: 'Inline Optin' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Inline Campaign' })).toBeInTheDocument();
     expect(container.querySelector('[data-wconvert-optin]')).toBeNull();
     expect(container.querySelector('.wc-close')).toBeNull();
     expect(screen.queryByRole('form')).not.toBeInTheDocument();
@@ -88,7 +88,7 @@ describe('the editor canvas', () => {
 
     expect(
       [...screen.getByRole('combobox').querySelectorAll('option')].map((o) => o.textContent),
-    ).toEqual(['Choose an Optin…', 'Sidebar signup', 'Newsletter footer']);
+    ).toEqual(['Choose a campaign…', 'Sidebar signup', 'Newsletter footer']);
 
     await userEvent.selectOptions(screen.getByRole('combobox'), NEWSLETTER);
 
@@ -103,8 +103,8 @@ describe('the editor canvas', () => {
     theSiteHasPublished([]);
     draw();
 
-    expect(screen.getByRole('combobox')).toHaveDisplayValue('No published inline Optins');
-    expect(screen.getByText(/no published inline Optin yet/i)).toBeInTheDocument();
+    expect(screen.getByRole('combobox')).toHaveDisplayValue('No published inline Campaigns');
+    expect(screen.getByText(/no published inline Campaign yet/i)).toBeInTheDocument();
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 });
@@ -171,9 +171,9 @@ describe('when the list never arrived', () => {
     theSiteHasPublished(undefined);
     draw(NEWSLETTER);
 
-    expect(screen.getByText(/could not load your list of Optins/i)).toBeInTheDocument();
+    expect(screen.getByText(/could not load your list of Campaigns/i)).toBeInTheDocument();
     expect(screen.getByText(/still shows on the page/i)).toBeInTheDocument();
-    expect(screen.getByRole('combobox')).toHaveDisplayValue('Optins unavailable');
+    expect(screen.getByRole('combobox')).toHaveDisplayValue('Campaigns unavailable');
   });
 
   /** Anything that is not the shape this reads is the same non-answer. */
@@ -182,6 +182,6 @@ describe('when the list never arrived', () => {
     draw(NEWSLETTER);
 
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
-    expect(screen.getByText(/could not load your list of Optins/i)).toBeInTheDocument();
+    expect(screen.getByText(/could not load your list of Campaigns/i)).toBeInTheDocument();
   });
 });

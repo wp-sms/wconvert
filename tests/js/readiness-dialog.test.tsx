@@ -1,3 +1,4 @@
+import { CAPTURE_OUTCOME } from './support/outcomes';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { act, render, screen, waitFor, within } from '@testing-library/react';
@@ -16,7 +17,7 @@ const FORM = design('centred-card');
 const LINK = design('offer-panel');
 const GOAL: GoalEntry = {
   id: 'collect-subscribers', label: 'Collect subscribers', description: '',
-  needs_a_capture: false, grows_a_list: true, headline_kind: 'conversion', headline_label: 'Conversions',
+  outcome: CAPTURE_OUTCOME, headline_kind: 'conversion', headline_label: 'Conversions',
   tier: 'free', availability: 'ready',
 };
 
@@ -28,7 +29,7 @@ function props(overrides: Partial<ReadinessDialogProps> = {}): ReadinessDialogPr
     playbook: ready(null), playbookId: '',
     rules: { rules: [], targeting: {}, frequency: {}, schedule: {}, priority: 0 },
     vocabulary: ruleTypes(), displayType: 'popup', bound: [], template: FORM,
-    growsAList: true, destinations: [], fieldLabels: { email: 'Email address', phone: 'Phone number' },
+    destinations: [], captureMode: 'local', fieldLabels: { email: 'Email address', phone: 'Phone number' },
     onGoTo: vi.fn(), onGoToSchedule: vi.fn(), onGoToRules: vi.fn(), onGoToDestinations: vi.fn(),
     onGoToDesign: vi.fn(), onEditDesign: vi.fn(), onPreview: vi.fn(), onPublish: vi.fn().mockResolvedValue(undefined),
     ...overrides,
@@ -45,6 +46,15 @@ async function open(overrides: Partial<ReadinessDialogProps> = {}) {
 afterEach(() => { delete window.wconvertAdmin; });
 
 describe('reviewing before publishing', () => {
+  it('blocks a list campaign until a service is ready or collect-only is explicitly chosen', async () => {
+    const { rerender, supplied } = await open({ captureMode: 'connected' });
+    expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeDisabled();
+    expect(screen.getByText(/Choose and configure a service for this channel/)).toBeVisible();
+    rerender(<ReadinessDialog {...supplied} captureMode="local" />);
+    expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeEnabled();
+    expect(screen.getByText(/Collect only: saved in Leads/)).toBeVisible();
+  });
+
   it('keeps the same trigger for a sound design and one needing attention', () => {
     const supplied = props();
     const { rerender } = render(<ReadinessDialog {...supplied} />);
@@ -56,7 +66,7 @@ describe('reviewing before publishing', () => {
 
   it.each([undefined, { tree: { steps: [] }, tokens: {} } as Template])('blocks a missing or empty design and routes to choosing one', async (template) => {
     const { supplied } = await open({ template });
-    expect(screen.getByRole('button', { name: 'Publish Optin' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeDisabled();
     expect(screen.getByText('Choose a design before publishing.')).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Choose design' }));
     expect(supplied.onGoToDesign).toHaveBeenCalledOnce();
@@ -68,10 +78,10 @@ describe('reviewing before publishing', () => {
     const template: Template = { tokens: FORM.tokens, tree: { steps: [
       { type: 'stack', children: [{ type: 'heading', role: 'headline', text: 'Hello' }] },
     ] } };
-    const { supplied } = await open({ template, growsAList: false });
+    const { supplied } = await open({ template });
     expect(screen.getByText(/Nothing on this design counts as a conversion/)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Publish Optin' })).toBeDisabled();
-    await userEvent.click(screen.getByRole('button', { name: 'Publish Optin' }));
+    expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeDisabled();
+    await userEvent.click(screen.getByRole('button', { name: 'Publish Campaign' }));
     expect(supplied.onPublish).not.toHaveBeenCalled();
     await userEvent.click(screen.getByRole('button', { name: /Nothing on this design counts as a conversion/ }));
     expect(supplied.onEditDesign).toHaveBeenCalledOnce();
@@ -80,11 +90,11 @@ describe('reviewing before publishing', () => {
   });
 
   it.each(['goal', 'destination'])('requires captured fields when the %s needs a lead', async (requirement) => {
-    await open({ template: LINK, growsAList: false,
-      ...(requirement === 'goal' ? { goal: ready({ ...GOAL, needs_a_capture: true }) } : { bound: ['forwarding-route'] }),
+    await open({ template: LINK,
+      ...(requirement === 'goal' ? { goal: ready({ ...GOAL, outcome: CAPTURE_OUTCOME }) } : { bound: ['forwarding-route'] }),
     });
-    expect(screen.getByText(/This Optin needs a form field to collect leads/)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Publish Optin' })).toBeDisabled();
+    expect(screen.getByText(requirement === 'goal' ? CAPTURE_OUTCOME.requirement : /This Campaign needs a form field to collect leads/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeDisabled();
   });
 
   it('blocks an unfinished interest choice and opens the exact field for correction', async () => {
@@ -94,7 +104,7 @@ describe('reviewing before publishing', () => {
       { type: 'button', action: 'submit', label: 'Send' },
     ] }] } };
     const { supplied } = await open({ template });
-    expect(screen.getByRole('button', { name: 'Publish Optin' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeDisabled();
     await userEvent.click(screen.getByRole('button', { name: /Set up the interest choices/ }));
     expect(supplied.onGoTo).toHaveBeenCalledExactlyOnceWith([0, 'children', 1]);
     expect(supplied.onEditDesign).not.toHaveBeenCalled();
@@ -106,22 +116,22 @@ describe('reviewing before publishing', () => {
       { type: 'field', name: 'name' }, { type: 'button', action: 'submit', label: 'Send' },
     ] }] } };
     const { supplied } = await open({ template });
-    expect(screen.getByRole('button', { name: 'Publish Optin' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeDisabled();
     await userEvent.click(screen.getByRole('button', { name: /Add an email or phone field/ }));
     expect(supplied.onEditDesign).toHaveBeenCalledOnce();
     expect(supplied.onPublish).not.toHaveBeenCalled();
   });
 
-  it('keeps list-growth advice publishable when the design legitimately tracks clicks', async () => {
+  it('blocks publishing a click-only design under a capture Goal', async () => {
     await open({ template: LINK });
-    expect(screen.getByText(/will never collect any/)).toBeInTheDocument();
-    expect(screen.queryByText('Before you can publish')).toBeNull();
-    expect(screen.getByRole('button', { name: 'Publish Optin' })).toBeEnabled();
+    expect(screen.getByText(CAPTURE_OUTCOME.requirement)).toBeInTheDocument();
+    expect(screen.getByText('Before you can publish')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeDisabled();
   });
 
   it('keeps a contrast warning advisory and routes its correction to design', async () => {
     const { supplied } = await open({ template: { ...FORM, tokens: { ...FORM.tokens, muted: '#ffffff' } } });
-    expect(screen.getByRole('button', { name: 'Publish Optin' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeEnabled();
     await userEvent.click(screen.getByRole('button', { name: /too close to the background/ }));
     expect(supplied.onGoToDesign).toHaveBeenCalledOnce();
     expect(screen.queryByRole('dialog')).toBeNull();
@@ -130,8 +140,8 @@ describe('reviewing before publishing', () => {
   it('allows saving leads locally with no forwarding route', async () => {
     const { supplied } = await open();
     expect(screen.getByText('New leads are saved in WConvert.')).toBeInTheDocument();
-    expect(screen.getByText('No forwarding selected. You can export captured leads from Leads.')).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Publish Optin' }));
+    expect(screen.getByText(/Collect only: saved in Leads/)).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Publish Campaign' }));
     await waitFor(() => expect(supplied.onPublish).toHaveBeenCalledOnce());
   });
 
@@ -139,7 +149,7 @@ describe('reviewing before publishing', () => {
     await open({ bound: ['forwarding-route'], destinations: null });
     expect(screen.getByText(/Destination details could not be checked/)).toBeInTheDocument();
     expect(screen.getByText(/Publishing does not test delivery/)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Publish Optin' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeEnabled();
   });
 });
 
@@ -162,7 +172,7 @@ describe('publication progress and recovery', () => {
     let finish: () => void = () => undefined;
     const onPublish = vi.fn(() => new Promise<void>((resolve) => { finish = resolve; }));
     const { supplied } = await open({ onPublish });
-    await userEvent.click(screen.getByRole('button', { name: 'Publish Optin' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Publish Campaign' }));
     const dialog = screen.getByRole('dialog');
     expect(within(dialog).getByRole('button', { name: 'Publishing…' })).toBeDisabled();
     expect(within(dialog).getByRole('button', { name: 'Keep editing' })).toBeDisabled();
@@ -182,10 +192,10 @@ describe('publication progress and recovery', () => {
   it('offers inline placement after success and returns focus when Done closes the review', async () => {
     window.wconvertAdmin = { exportUrl: '', homeUrl: 'https://example.org/blog/', inspectParam: 'wconvert-inspect' };
     await open({ displayType: 'inline' });
-    await userEvent.click(screen.getByRole('button', { name: 'Publish Optin' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Publish Campaign' }));
     expect(await screen.findByRole('heading', { name: 'Published version updated' })).toBeInTheDocument();
     expect(screen.getByRole('textbox', { name: 'Shortcode for other editors' })).toHaveValue('[wconvert_optin id="01JQ00000000000000000000AA"]');
-    expect(screen.queryByText(/Publish this Optin first/)).toBeNull();
+    expect(screen.queryByText(/Publish this Campaign first/)).toBeNull();
     expect(screen.getByRole('link', { name: 'Check your homepage' })).toHaveAttribute('href', 'https://example.org/blog/?wconvert-inspect=1');
     await userEvent.click(screen.getByRole('button', { name: 'Done' }));
     expect(screen.queryByRole('dialog')).toBeNull();
@@ -196,7 +206,7 @@ describe('publication progress and recovery', () => {
     await open({ displayType: 'inline', optin: { published_at: '2026-09-10T12:00:00Z', deleted_at: null, suspended: null, has_unpublished_changes: false } });
     expect(screen.getByText('Your saved draft matches the published version.')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Publish changes' })).toBeDisabled();
-    expect(screen.getByRole('heading', { name: 'Place this Optin on a page' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Place this Campaign on a page' })).toBeInTheDocument();
   });
 });
 
@@ -219,7 +229,7 @@ describe('review actions return to the place that can resolve them', () => {
 
   it('opens the actual schedule control for a countdown warning', async () => {
     const { supplied } = await open({ template: design('deadline-panel') });
-    await userEvent.click(screen.getByRole('button', { name: /nothing says when this Optin stops running/ }));
+    await userEvent.click(screen.getByRole('button', { name: /nothing says when this Campaign stops running/ }));
     expect(supplied.onGoToSchedule).toHaveBeenCalledOnce();
     expect(supplied.onGoTo).not.toHaveBeenCalled();
     expect(screen.queryByRole('dialog')).toBeNull();

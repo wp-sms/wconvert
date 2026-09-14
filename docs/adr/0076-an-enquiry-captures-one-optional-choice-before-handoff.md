@@ -12,6 +12,8 @@ field and a starting point that demonstrates it, using existing snapshots and
 the Lead's existing `fields` JSON. There is no table, column, index, stored
 person, delivery ledger or additional analytics dimension.
 
+> **Amended by [ADR 0085](0085-goals-have-publish-contracts-and-stable-history.md):** Enquiry capture is now required at publication, not advisory. Its headline is Enquiries captured, not replies or bookings.
+
 ## The Goal names a captured enquiry, not completed work
 
 `Goal::CollectEnquiries` is the sixth closed enum member. It is free, available

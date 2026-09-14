@@ -23,7 +23,7 @@ defined('ABSPATH') || exit;
 
 return [
     'id' => 'category-promotion',
-    'name' => __('One range, on its own pages', 'wconvert'),
+    'name' => __('Promote a product category', 'wconvert'),
     'goal' => 'promote_offer',
     'template_id' => 'photo-offer',
     'notes' => __('Runs on your shop pages rather than the whole site, so it never lands on a blog post about delivery times. Narrow it further to the category the offer is actually for — the picture is where the range goes. Measured by click-throughs, so nobody is added to a list.', 'wconvert'),

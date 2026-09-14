@@ -42,7 +42,7 @@ describe('capture history', () => {
     log.readLog.mockResolvedValue({ ...SEVEN, submissions: 0, leads: [] });
     render(<LeadLog />);
     expect(await screen.findByText('No submissions yet')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Go to Optins' })).toHaveAttribute('href', '#optins');
+    expect(screen.getByRole('link', { name: 'Go to Campaigns' })).toHaveAttribute('href', '#optins');
   });
 
   it('gives a missing exact capture a retention-aware explanation', async () => {

@@ -1,3 +1,4 @@
+import { CLICK_OUTCOME } from './support/outcomes';
 import { CheckStrip } from '../../resources/admin/src/builder/CheckStrip';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -122,7 +123,7 @@ const GOALS = [
     label: 'Grow my email list',
     description: '',
     needs_a_capture: false,
-    grows_a_list: false,
+    grows_a_list: false, outcome: CLICK_OUTCOME,
     headline_kind: 'conversion',
     tier: 'free',
     availability: { available: true },
@@ -131,6 +132,7 @@ const GOALS = [
 
 function optin(tree: TemplateTree, tokens: Record<string, string>) {
   return {
+    can_change_goal: true,
     id: ID,
     name: 'Welcome discount',
     goal: 'grow_email_list',
@@ -578,7 +580,7 @@ describe('the checks strip', () => {
 
     const strip = await screen.findByRole('list', { name: 'Checks on this design' });
 
-    expect(within(strip).getAllByRole('listitem')).toHaveLength(6);
+    expect(within(strip).getAllByRole('listitem')).toHaveLength(5);
     expect(within(strip).getByText('Readable')).toBeInTheDocument();
     expect(within(strip).getByText('Counts something')).toBeInTheDocument();
   });
@@ -606,13 +608,13 @@ describe('the checks strip', () => {
       across two lines in a monospace register, and it read as debug output
       rather than as *six checks pass*.
     */
-    expect(within(strip).getAllByText('OptinController')).toHaveLength(2);
+    expect(within(strip).getAllByText('OptinController')).toHaveLength(1);
     expect(within(strip).getByText('ADR 0052')).toBeInTheDocument();
-    expect(within(strip).getByTitle(/counts to the Optin/)).toBeInTheDocument();
+    expect(within(strip).getByTitle(/counts to the Campaign/)).toBeInTheDocument();
     // Every chip, not only the failing ones: *six checks pass* is legible only
     // if a reader can see what was doing the checking.
-    expect(within(strip).getAllByRole('listitem')).toHaveLength(6);
-    expect(within(strip).getAllByText(/^(ADR \d+|OptinController|render\.ts|SlotRoles)$/)).toHaveLength(6);
+    expect(within(strip).getAllByRole('listitem')).toHaveLength(5);
+    expect(within(strip).getAllByText(/^(ADR \d+|OptinController|render\.ts|SlotRoles)$/)).toHaveLength(5);
   });
 });
 

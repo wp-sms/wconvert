@@ -13,7 +13,7 @@ defined('ABSPATH') || exit;
 
 return [
     'id' => 'drop-alerts',
-    'name' => __('Drop alerts', 'wconvert'),
+    'name' => __('New-release SMS alerts', 'wconvert'),
     'goal' => 'grow_sms_list',
     'template_id' => 'stacked-signup',
     'notes' => __('Use text updates for time-sensitive news. Say how often you will message, configure the connected service and keep the promise narrow.', 'wconvert'),

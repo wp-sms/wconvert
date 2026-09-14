@@ -53,7 +53,7 @@ export function PayloadMeter({ template }: { template: Template }) {
       */
       title={sprintf(
         /* translators: 1: how many bytes this design costs, gzipped. 2: the per-design budget in bytes. */
-        __('%1$s bytes of %2$s, compressed, on every page this Optin shows on.', 'wconvert'),
+        __('%1$s bytes of %2$s, compressed, on every page this Campaign shows on.', 'wconvert'),
         bytes.toLocaleString(),
         budget.toLocaleString(),
       )}

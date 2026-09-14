@@ -45,7 +45,7 @@ export function DesignSettings({
       </div>
       <Button ref={browseRef} variant="outline" onClick={onBrowse}>
         <LayoutTemplate aria-hidden="true" />
-        {__('Change template', 'wconvert')}
+        {__('Change design or format', 'wconvert')}
       </Button>
       {mobile && (
         <p className="wconvert-scope__narrow">

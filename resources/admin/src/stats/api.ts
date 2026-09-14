@@ -76,6 +76,8 @@ export interface GoalReport extends Numbers {
   label: string;
   /** What the headline number is CALLED — two of the five convert on a click. */
   headline_label: string;
+  measurement?: string;
+  proof_level?: string;
   /**
    * Same-period conversions minus recorded deliveries, clamped at zero;
    * null on Goals that do not count lead-magnet deliveries. This aggregate

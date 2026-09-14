@@ -36,7 +36,7 @@ export function BuilderSkeleton({ onClose, backLabel }: { onClose: () => void; b
         <BackLink onClose={onClose} label={backLabel} />
         <Skeleton aria-hidden="true" className="mt-3 h-9 w-72 max-w-full" />
       </PageAction>
-      <RegionSkeleton label={__('Optin builder', 'wconvert')}>
+      <RegionSkeleton label={__('Campaign builder', 'wconvert')}>
         <Skeleton aria-hidden="true" className="h-4 w-full max-w-md" />
         <Skeleton aria-hidden="true" className="h-48 w-full" />
       </RegionSkeleton>
@@ -91,7 +91,7 @@ export function BackLink({
       <Button ref={ref} variant="ghost" size="sm" className="-ms-3" onClick={onClose} disabled={disabled}>
         {/* Back is the other way in Persian; see {@see GoalScreen}'s footer. */}
         <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />
-        {label ?? __('All Optins', 'wconvert')}
+        {label ?? __('All Campaigns', 'wconvert')}
       </Button>
     </div>
   );

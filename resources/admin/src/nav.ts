@@ -38,7 +38,7 @@ export interface Section {
  * pair reads as a screen somebody forgot to finish.
  */
 export const SECTIONS: readonly Section[] = [
-  { id: 'optins', label: __('Optins', 'wconvert') },
+  { id: 'optins', label: __('Campaigns', 'wconvert') },
   { id: 'analytics', label: __('Analytics', 'wconvert') },
   { id: 'leads', label: __('Leads', 'wconvert') },
   { id: 'destinations', label: __('Destinations', 'wconvert') },

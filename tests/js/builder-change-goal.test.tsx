@@ -1,3 +1,4 @@
+import { CAPTURE_OUTCOME, CLICK_OUTCOME } from './support/outcomes';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { render, screen, waitFor, within } from '@testing-library/react';
@@ -44,6 +45,10 @@ const templates = vi.hoisted(() => ({ listTemplates: vi.fn(), getTemplateTrees: 
 const stats = vi.hoisted(() => ({ readDashboard: vi.fn() }));
 const destinations = vi.hoisted(() => ({ readDestinations: vi.fn() }));
 const goals = vi.hoisted(() => ({ listGoals: vi.fn(), listPlaybooks: vi.fn() }));
+const copies = vi.hoisted(() => ({ createOptin: vi.fn() }));
+vi.mock('../../resources/admin/src/optins/api', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../../resources/admin/src/optins/api')>()), ...copies,
+}));
 
 vi.mock('../../resources/admin/src/builder/api', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../../resources/admin/src/builder/api')>()),
@@ -71,7 +76,7 @@ const ENTRY = JSON.parse(
 
 /** A one-step design that converts on a click and asks the visitor for nothing. */
 const OFFER = JSON.parse(
-  readFileSync(resolve(import.meta.dirname, '../../resources/templates/library/offer-panel.json'), 'utf8'),
+  readFileSync(resolve(import.meta.dirname, '../../resources/templates/library/offer-panel.json'), 'utf8').replace('"action": "link"', '"action": "link", "href": "https://example.org/offer"'),
 ) as TemplateEntry;
 
 const ID = '01JQ00000000000000000000AA';
@@ -89,7 +94,7 @@ const GOALS = [
     label: 'Grow my email list',
     description: 'Capture email addresses.',
     needs_a_capture: false,
-    grows_a_list: true,
+    grows_a_list: true, outcome: CAPTURE_OUTCOME,
     headline_kind: 'conversion',
     headline_label: 'Conversions',
     tier: 'free',
@@ -100,7 +105,7 @@ const GOALS = [
     label: 'Promote a sale or offer',
     description: 'Send visitors to an offer.',
     needs_a_capture: false,
-    grows_a_list: false,
+    grows_a_list: false, outcome: CLICK_OUTCOME,
     headline_kind: 'conversion',
     headline_label: 'Conversions',
     tier: 'free',
@@ -111,7 +116,7 @@ const GOALS = [
     label: 'Deliver a lead magnet',
     description: 'Send a file in exchange for an address.',
     needs_a_capture: true,
-    grows_a_list: true,
+    grows_a_list: true, outcome: CAPTURE_OUTCOME,
     headline_kind: 'lead_magnet_delivered',
     headline_label: 'Deliveries',
     tier: 'free',
@@ -122,7 +127,7 @@ const GOALS = [
     label: 'Bring shoppers back to their cart',
     description: 'Show shoppers the way back.',
     needs_a_capture: false,
-    grows_a_list: false,
+    grows_a_list: false, outcome: CLICK_OUTCOME,
     headline_kind: 'conversion',
     headline_label: 'Conversions',
     tier: 'pro',
@@ -167,6 +172,7 @@ const CARD = {
 
 function optin(over: Record<string, unknown> = {}) {
   return {
+    can_change_goal: true,
     id: ID,
     name: 'Welcome discount',
     goal: 'grow_email_list',
@@ -210,9 +216,25 @@ beforeEach(() => {
 
 const open = () => render(<OptinBuilder id={ID} onClose={vi.fn()} />);
 
+it('copies current edits to another Goal while leaving a published original untouched', async () => {
+  builder.getOptin.mockResolvedValue(optin({ can_change_goal: false, published_at: '2026-09-14 10:00:00' }));
+  copies.createOptin.mockResolvedValue({ id: 'COPIED' });
+  const onCreated = vi.fn();
+  render(<OptinBuilder id={ID} onClose={vi.fn()} onCreated={onCreated} />);
+  await userEvent.type(await screen.findByRole('textbox', { name: 'Name' }), ' revised');
+  await userEvent.click(screen.getByRole('button', { name: 'Campaign details' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Duplicate for another goal' }));
+  await userEvent.click(within(cardFor('Promote a sale or offer')).getByRole('button', { name: 'Use this goal' }));
+  expect(screen.getByText(/results start at zero/)).toBeInTheDocument();
+  await userEvent.click(screen.getByRole('button', { name: 'Create copied draft' }));
+  await waitFor(() => expect(onCreated).toHaveBeenCalledWith('COPIED'));
+  expect(copies.createOptin).toHaveBeenCalledWith('Welcome discount revised — copy', 'promote_offer', expect.objectContaining({ template_id: 'centred-card' }));
+  expect(builder.saveOptin).not.toHaveBeenCalled();
+});
+
 /** Open the picker from the band. */
 const changeGoal = async () => {
-  await userEvent.click(await screen.findByRole('button', { name: 'Optin details' }));
+  await userEvent.click(await screen.findByRole('button', { name: 'Campaign details' }));
   await userEvent.click(await screen.findByRole('button', { name: 'Change goal' }));
 };
 
@@ -223,9 +245,9 @@ const changeGoal = async () => {
 describe('the goal in Optin details', () => {
   it('says what this Optin is for, and what its number is called', async () => {
     open();
-    await userEvent.click(await screen.findByRole('button', { name: 'Optin details' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Campaign details' }));
 
-    expect(await screen.findByText('Grow my email list · counts Conversions')).toBeInTheDocument();
+    expect(await within(screen.getByRole('dialog')).findByText('Grow my email list · counts Conversions')).toBeInTheDocument();
   });
 
   /**
@@ -238,7 +260,7 @@ describe('the goal in Optin details', () => {
     goals.listGoals.mockReturnValue(new Promise(() => undefined));
 
     open();
-    await userEvent.click(await screen.findByRole('button', { name: 'Optin details' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Campaign details' }));
 
 
 
@@ -258,9 +280,9 @@ describe('the goal in Optin details', () => {
     goals.listGoals.mockRejectedValue(new Error('nope'));
 
     open();
-    await userEvent.click(await screen.findByRole('button', { name: 'Optin details' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Campaign details' }));
 
-    expect(await screen.findByText('grow_email_list')).toBeInTheDocument();
+    expect(await within(screen.getByRole('dialog')).findByText('grow_email_list')).toBeInTheDocument();
   });
 
   /**
@@ -272,9 +294,9 @@ describe('the goal in Optin details', () => {
     goals.listGoals.mockResolvedValue([GOALS[0]]);
 
     open();
-    await userEvent.click(await screen.findByRole('button', { name: 'Optin details' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Campaign details' }));
 
-    await screen.findByText('Grow my email list · counts Conversions');
+    await within(screen.getByRole('dialog')).findByText('Grow my email list · counts Conversions');
 
     expect(screen.queryByRole('button', { name: 'Change goal' })).toBeNull();
   });
@@ -362,7 +384,7 @@ describe('the goal picker', () => {
    * click with the tab that fixes it** (ADR 0042 rule 3). It is the whole of
    * what survives of the Goal-versus-design family (ADR 0059).
    */
-  it('refuses a goal counting deliveries where the design captures nothing', async () => {
+  it('allows choosing a draft Goal before adjusting its design', async () => {
     builder.getOptin.mockResolvedValue(
       optin({
         config: { template_id: 'offer-panel', template: { tree: OFFER.tree, tokens: OFFER.tokens } },
@@ -376,16 +398,7 @@ describe('the goal picker', () => {
 
     const refused = delivery.getByRole('button', { name: 'Use this goal' });
 
-    expect(refused).toHaveAttribute('aria-disabled', 'true');
-    expect(delivery.getByText(/Design tab/)).toBeInTheDocument();
-
-    /*
-      **The reason is announced WITH the button**, which is the whole of ADR
-      0042 rule 3 and was not true: the refusal was passed as the card's
-      ordinary `notes`, which carry no id, so `aria-describedby` pointed at the
-      title and a screen reader heard a dimmed button and no reason at all.
-    */
-    expect(refused).toHaveAccessibleDescription(/Design tab/);
+    expect(refused).toBeEnabled();
   });
 
   it('offers it where the design does capture something', async () => {
@@ -412,7 +425,7 @@ describe('a goal that collects contacts, over a design that asks for nothing', (
    * A sentence in the launch review rather than a refusal: the Optin is not broken,
    * it is measuring something other than what the merchant asked for.
    */
-  it('is flagged in the launch review and remains publishable', async () => {
+  it('cannot publish a capture Goal with a click-only design', async () => {
     builder.getOptin.mockResolvedValue(
       optin({
         config: { template_id: 'offer-panel', template: { tree: OFFER.tree, tokens: OFFER.tokens } },
@@ -423,9 +436,8 @@ describe('a goal that collects contacts, over a design that asks for nothing', (
 
     await userEvent.click(await screen.findByRole('button', { name: 'Review & publish' }));
 
-    expect(await screen.findByText(/will never collect any/)).toBeInTheDocument();
-    expect(screen.getByText(/collects contacts/)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Publish Optin' })).toBeEnabled();
+    expect(await screen.findByText(CAPTURE_OUTCOME.requirement)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeDisabled();
   });
 
   /** And a goal whose product IS the click-through says nothing at all. */
@@ -441,7 +453,7 @@ describe('a goal that collects contacts, over a design that asks for nothing', (
 
     await userEvent.click(await screen.findByRole('button', { name: 'Review & publish' }));
     expect(screen.queryByText(/will never collect any/)).toBeNull();
-    expect(screen.getByRole('button', { name: 'Publish Optin' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeEnabled();
   });
 });
 
@@ -463,11 +475,11 @@ describe('confirming the change', () => {
    * — it is a column. That is the exception the structure editor's amendment to
    * ADR 0039 buys for a design switch and cannot buy here.
    */
-  it('says the whole history moves with it, and that Undo cannot reverse the saved change', async () => {
+  it('explains that Goal changes end at first publish and history stays stable', async () => {
     open();
     await pick('Promote a sale or offer');
 
-    expect(await screen.findByText(/whole history moves with it/)).toBeInTheDocument();
+    expect(await screen.findByText(/keep reporting history stable/)).toBeInTheDocument();
     expect(screen.getByText(/Undo cannot reverse this saved change/)).toBeInTheDocument();
   });
 

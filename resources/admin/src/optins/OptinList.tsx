@@ -238,7 +238,7 @@ export function OptinList({
 
   if (list.status === 'failed') {
     return (
-      <Region label={__('Optins', 'wconvert')}>
+      <Region label={__('Campaigns', 'wconvert')}>
         <RegionErrorState
           message={list.message}
         />
@@ -260,17 +260,18 @@ export function OptinList({
   ] as const;
 
   return (
-    <Region label={__('Optins', 'wconvert')} className="wconvert-optin-list">
+    <Region label={__('Campaigns', 'wconvert')} className="wconvert-optin-list">
+      <p className="m-0 mb-4 px-4 pt-4 text-note text-muted-foreground">{__('WConvert campaigns are forms and offers shown on your site. Connected services manage email and SMS sending.', 'wconvert')}</p>
       {error !== null && <RegionError message={error} />}
       {rows.length > 0 && (
         <Toolbar trailing={
           <label className="wconvert-panel-search">
             <Search aria-hidden="true" />
-            <span className="sr-only">{__('Search Optins', 'wconvert')}</span>
-            <Input type="search" value={query} placeholder={__('Search Optins…', 'wconvert')} onChange={(event) => setQuery(event.target.value)} />
+            <span className="sr-only">{__('Search Campaigns', 'wconvert')}</span>
+            <Input type="search" value={query} placeholder={__('Search Campaigns…', 'wconvert')} onChange={(event) => setQuery(event.target.value)} />
           </label>
         }>
-          <div className="wconvert-panel-filters" role="group" aria-label={__('Filter Optins by status', 'wconvert')}>
+          <div className="wconvert-panel-filters" role="group" aria-label={__('Filter Campaigns by status', 'wconvert')}>
             {filters.map((item) => (
               <button type="button" key={item.id} aria-pressed={filter === item.id} onClick={() => setFilter(item.id)}>
                 {item.label}
@@ -284,12 +285,12 @@ export function OptinList({
       {list.status === 'ready' && rows.length === 0 ? (
         <EmptyState
           icon={Megaphone}
-          title={__('No Optins yet', 'wconvert')}
+          title={__('No Campaigns yet', 'wconvert')}
           action={
             onCreate === undefined ? undefined : (
               <Button onClick={onCreate}>
                 <Plus aria-hidden="true" />
-                {__('Create an Optin', 'wconvert')}
+                {__('Create a campaign', 'wconvert')}
               </Button>
             )
           }
@@ -297,7 +298,7 @@ export function OptinList({
           {__('Pick a goal and we’ll start you with a design built for it.', 'wconvert')}
         </EmptyState>
       ) : list.status === 'ready' && visible.length === 0 ? (
-        <EmptyState icon={Search} title={__('No Optins match these filters', 'wconvert')}
+        <EmptyState icon={Search} title={__('No Campaigns match these filters', 'wconvert')}
           action={<Button variant="outline" onClick={() => { setQuery(''); setFilter('all'); }}>{__('Clear filters', 'wconvert')}</Button>}>
           {__('Try another name or choose a different status.', 'wconvert')}
         </EmptyState>
@@ -422,7 +423,7 @@ export function OptinList({
             setConfirming(null);
           }
         }}
-        title={__('Delete this Optin?', 'wconvert')}
+        title={__('Delete this Campaign?', 'wconvert')}
         description={
           confirming === null
             ? ''
@@ -435,7 +436,7 @@ export function OptinList({
                 confirming.name,
               )
         }
-        confirmLabel={__('Delete Optin', 'wconvert')}
+        confirmLabel={__('Delete Campaign', 'wconvert')}
         returnFocusTo={returnFocus}
         onConfirm={() => {
           const optin = confirming;

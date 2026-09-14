@@ -19,8 +19,8 @@ These are ten existing Free designs, packaged unchanged. They remain bundled;
 installing a collection adds separate versioned copies, not new compositions.
 The membership is intentionally smaller than the twelve flagship Playbooks:
 cart behaviour belongs to a campaign setup, and Photo offer contains embedded
-artwork that the placeholder-only installer refuses. The 1.1.0 packs also include
-ten reviewed campaign starting points with wording, portable display rules and
+artwork that the placeholder-only installer refuses. The 1.2.0 packs also include
+ten reviewed campaign campaign setups with wording, portable display rules and
 setup notes. Real codes, schedules, destination bindings and fulfilment remain
 the merchant's settings.
 
@@ -61,11 +61,11 @@ and offline previews still work. The builder never deletes previous packages.
 ## Use and verify
 
 For a new campaign, choose a goal, then **Browse template packs**. Preview and
-install a collection, choose its starting points, then **Customize this starting
-point** to create a draft. The collection filter distinguishes installed starts
+install a collection, choose its starting points, then **Customize this campaign
+setup** to create a draft. The collection filter distinguishes installed starts
 from those included with WConvert. Previewing/installing never creates a draft.
 
-For a design change, open a draft and choose **Change template → Template packs
+For a design change, open a draft and choose **Change design or format → Template packs
 → Check for packs**. Preview a collection, inspect designs/screens at desktop or
 320px, then install. **Continue with this design** opens the keep/sample-content
 review. It respects the draft's display format and existing compatibility rules.

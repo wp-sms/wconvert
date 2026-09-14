@@ -73,7 +73,7 @@ describe('provider-declared destination requirements', () => {
     expect(screen.getByText('Live signup')).toBeInTheDocument();
     expect(screen.getByText('Live only')).toBeInTheDocument();
     expect(screen.getByText('Saved draft only')).toBeInTheDocument();
-    expect(screen.getByText(/Optin Undo cannot reverse/)).toBeInTheDocument();
+    expect(screen.getByText(/Campaign Undo cannot reverse/)).toBeInTheDocument();
     expect(onConfirm).not.toHaveBeenCalled();
     await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Interest field' }), 'cf_7');
     await userEvent.click(screen.getByRole('button', { name: 'Save destination' }));

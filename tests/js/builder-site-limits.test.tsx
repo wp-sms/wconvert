@@ -38,9 +38,9 @@ describe('saved site-wide limits beside an Optin draft', () => {
     expect(screen.queryByText(/At most/)).toBeNull();
     await act(async () => { pending.resolve(SAVED); });
     const note = screen.getByRole('complementary', { name: 'Site-wide limits' });
-    expect(note).toHaveTextContent('Stop after a dismissal · Stop after a conversion · At most 3 impressions · 2 days between Optins');
-    expect(note).toHaveTextContent('An Optin cannot override these limits.');
-    expect(screen.getByRole('link', { name: 'Manage them on the Optins page' })).toHaveAttribute('href', '#optins');
+    expect(note).toHaveTextContent('Stop after a dismissal · Stop after a conversion · At most 3 impressions · 2 days between Campaigns');
+    expect(note).toHaveTextContent('A campaign cannot override these limits.');
+    expect(screen.getByRole('link', { name: 'Manage them on the Campaigns page' })).toHaveAttribute('href', '#optins');
     expect(screen.queryByRole('status')).toBeNull();
     expect(screen.queryByRole('checkbox')).toBeNull();
     expect(screen.queryByRole('spinbutton')).toBeNull();
@@ -48,7 +48,7 @@ describe('saved site-wide limits beside an Optin draft', () => {
 
   it('states the saved absence of site limits without inventing the Optin’s own defaults', async () => {
     render(<SiteLimitsNote />);
-    expect(await screen.findByText('No site-wide limits. Each Optin uses its own display rules.')).toBeInTheDocument();
+    expect(await screen.findByText('No site-wide limits. Each Campaign uses its own display rules.')).toBeInTheDocument();
     expect(screen.queryByText(/Stop after a dismissal/)).toBeNull();
     expect(request).toHaveBeenCalledTimes(1);
   });

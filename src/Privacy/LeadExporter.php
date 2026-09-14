@@ -127,7 +127,7 @@ final class LeadExporter
             // to say which form this came from, and the id says nothing. It
             // survives the Optin being soft-deleted, which is what the soft
             // delete is for (ADR 0002).
-            ['name' => __('Optin', 'wconvert'), 'value' => $names[$lead->optinId] ?? $lead->optinId],
+            ['name' => __('Campaign', 'wconvert'), 'value' => $names[$lead->optinId] ?? $lead->optinId],
         ];
 
         if ($lead->email !== null) {

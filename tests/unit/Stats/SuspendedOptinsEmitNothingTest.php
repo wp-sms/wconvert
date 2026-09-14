@@ -80,7 +80,7 @@ final class SuspendedOptinsEmitNothingTest extends TestCase
      */
     private function publish(array $rules): string
     {
-        $optin = $this->optins->create('Spring sale', 'grow_email_list', ['rules' => $rules, 'template' => OptinDesign::template()]);
+        $optin = $this->optins->create('Spring sale', 'promote_offer', ['rules' => $rules, 'template' => OptinDesign::template()]);
         $this->optins->publish($optin->id);
 
         return $optin->id;

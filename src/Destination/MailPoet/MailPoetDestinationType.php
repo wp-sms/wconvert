@@ -252,6 +252,7 @@ final class MailPoetDestinationType implements DestinationType
                 'label' => __('Interest', 'wconvert'),
                 'scope' => __('New subscribers only; existing subscriber fields stay unchanged.', 'wconvert'),
             ]],
+            ['email'],
         );
     }
 

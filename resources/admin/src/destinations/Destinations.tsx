@@ -728,7 +728,7 @@ function Configured({
                 )}
               </AlertTitle>
               <AlertDescription>
-                <p id={`wconvert-recovery-${destination.id}`}>{__('Re-push replays stored leads from Optins whose published configuration uses this destination, since its last success. It can send an email again.', 'wconvert')}</p>
+                <p id={`wconvert-recovery-${destination.id}`}>{__('Re-push replays stored leads from Campaigns whose published configuration uses this destination, since its last success. It can send an email again.', 'wconvert')}</p>
                 {!runnable && <p>{__('Restore the required plugin or plan before re-pushing.', 'wconvert')}</p>}
                 <div className="mt-3"><Button variant="outline" size="sm" disabled={busy || !runnable}
                   aria-describedby={`wconvert-recovery-${destination.id}`} onClick={() => onRePush(destination)}>
@@ -812,7 +812,7 @@ function Configured({
           <p key={problem} className="m-0 text-note text-warning">{problem}</p>)}
       <RegionBody className="flex flex-col gap-4 border-t border-border">
         <Description id={`wconvert-shared-${destination.id}`}>
-          {__('This destination is shared across the site. Saving changes affects every Optin using it, including published Optins.', 'wconvert')}
+          {__('This destination is shared across the site. Saving changes affects every Campaign using it, including published Campaigns.', 'wconvert')}
         </Description>
         <div className="flex max-w-xl flex-col gap-1.5">
           <Label htmlFor={`wconvert-${destination.id}-label`}>{__('Name', 'wconvert')}</Label>
@@ -823,7 +823,7 @@ function Configured({
             onChange={(event) => setLabel(event.target.value)}
           />
           <Description>
-            {__('Yours to choose. It is what you will pick from on an optin.', 'wconvert')}
+            {__('Yours to choose. It is what you will pick from on a campaign.', 'wconvert')}
           </Description>
         </div>
 

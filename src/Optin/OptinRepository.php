@@ -141,7 +141,8 @@ final class OptinRepository
      */
     public function saveDraft(string $id, ?string $name, ?string $goal, ?array $config): ?Optin
     {
-        if ($this->find($id) === null) {
+        $stored = $this->find($id);
+        if ($stored === null || ($goal !== null && $goal !== $stored->goal && !$stored->canChangeGoal())) {
             return null;
         }
 
@@ -169,7 +170,9 @@ final class OptinRepository
             $id
         );
 
-        return $row === null ? null : Optin::fromRow($row);
+        if ($row === null) return null;
+        $unpublishedParent = ($row['published_config'] ?? null) === null && ($row['parent_id'] ?? null) === null;
+        return Optin::fromRow($row, $unpublishedParent && $this->countArms($id) > 0);
     }
 
     /**
@@ -723,6 +726,10 @@ final class OptinRepository
         // future bulk action must not publish a draft with no design. Saving
         // that incomplete draft remains valid and never changes the live set.
         if (!$optin->hasDesign() || \WConvert\Template\TemplateForm::issue($optin->config['template'] ?? null) !== null) {
+            return null;
+        }
+
+        if (Goal::tryFrom($optin->goal)?->outcome()->designIssue($optin->config) !== null) {
             return null;
         }
 

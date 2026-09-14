@@ -10,10 +10,10 @@ export function allowanceSummary(allowance: Allowance): string {
       allowance.maxImpressions,
     ),
     allowance.cooldownDays === null ? null : sprintf(
-      _n('%d day between Optins', '%d days between Optins', allowance.cooldownDays, 'wconvert'),
+      _n('%d day between Campaigns', '%d days between Campaigns', allowance.cooldownDays, 'wconvert'),
       allowance.cooldownDays,
     ),
   ].filter(Boolean);
 
-  return limits.length ? limits.join(' · ') : __('No site-wide limits. Each Optin uses its own display rules.', 'wconvert');
+  return limits.length ? limits.join(' · ') : __('No site-wide limits. Each Campaign uses its own display rules.', 'wconvert');
 }

@@ -40,7 +40,7 @@ export function Unknown({ entries, remove, all }: UnknownProps) {
   return (
     <div className="wconvert-rules__unknown">
       <h3>{__('Not available on this site', 'wconvert')}</h3>
-      <Description>{__('Still saved with the Optin. Remove one you no longer want.', 'wconvert')}</Description>
+      <Description>{__('Still saved with the Campaign. Remove one you no longer want.', 'wconvert')}</Description>
       <RuleRows rows={rows} empty="" />
     </div>
   );

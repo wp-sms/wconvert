@@ -83,7 +83,7 @@ export function DestinationSettingsForm({
             onChange={(event) => setNamed(event.target.value)}
           />
           <Description>
-            {__('Yours to choose. It is what you will pick from on an optin.', 'wconvert')}
+            {__('Yours to choose. It is what you will pick from on a campaign.', 'wconvert')}
           </Description>
         </div>
 

@@ -23,6 +23,6 @@ export function SiteLimitsNote() {
     {!limits && !error && <p role="status">{__('Checking saved site-wide limits…', 'wconvert')}</p>}
     {error && <><p role="alert">{__('Could not check the site-wide limits.', 'wconvert')} {error}</p>
       <Button size="sm" variant="outline" onClick={() => setRetry((value) => value + 1)}>{__('Retry checking limits', 'wconvert')}</Button></>}
-    <p>{__('An Optin cannot override these limits.', 'wconvert')} <a href="#optins">{__('Manage them on the Optins page', 'wconvert')}</a></p>
+    <p>{__('A campaign cannot override these limits.', 'wconvert')} <a href="#optins">{__('Manage them on the Campaigns page', 'wconvert')}</a></p>
   </aside>;
 }

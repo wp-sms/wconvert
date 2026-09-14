@@ -1,3 +1,4 @@
+import { CAPTURE_OUTCOME } from './support/outcomes';
 import { useEffect } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, render, screen, waitFor } from '@testing-library/react';
@@ -13,7 +14,7 @@ vi.mock('../../resources/admin/src/stats/Dashboard', () => ({ Dashboard: () => <
 vi.mock('../../resources/admin/src/leads/LeadLog', () => ({ LeadLog: () => <p>Capture history</p> }));
 vi.mock('../../resources/admin/src/destinations/Destinations', () => ({ Destinations: () => <p>Destinations</p> }));
 vi.mock('../../resources/admin/src/optins/SiteAllowance', () => ({ SiteAllowance: () => null }));
-vi.mock('../../resources/admin/src/optins/OptinList', () => ({ OptinList: () => <p>Optin index</p> }));
+vi.mock('../../resources/admin/src/optins/OptinList', () => ({ OptinList: () => <p>Campaign index</p> }));
 // Exercise App AND the real lazy wrapper with the real creation component.
 // The destination editor reports unsaved work so creation cleanup cannot erase it.
 vi.mock('../../resources/admin/src/builder/deferred', async () => ({
@@ -26,7 +27,7 @@ vi.mock('../../resources/admin/src/builder/deferred', async () => ({
 const { App } = await import('../../resources/admin/src/App');
 const ID = '01JQZK8N3M4P5Q6R7S8T9V0W1X';
 const GOAL = { id: 'grow_email_list', label: 'Grow my email list', description: 'Capture email addresses.',
-  needs_a_capture: false, grows_a_list: true, headline_kind: 'conversion', headline_label: 'Conversions', tier: 'free', availability: 'ready' };
+  needs_a_capture: false, grows_a_list: true, outcome: CAPTURE_OUTCOME, headline_kind: 'conversion', headline_label: 'Conversions', tier: 'free', availability: 'ready' };
 const START = { id: 'welcome', name: 'Welcome', goal: GOAL.id, display_type: 'popup', notes: '', destination_hint: {} };
 const DRAFT = { name: 'Welcome', goal: GOAL.id, config: {} };
 
@@ -40,26 +41,35 @@ beforeEach(() => {
 afterEach(() => { window.innerWidth = 1024; });
 async function openCreation() {
   render(<App />);
-  await userEvent.click(screen.getByRole('button', { name: 'Create an Optin' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Create a campaign' }));
   await userEvent.click(await screen.findByRole('button', { name: 'Choose' }, { timeout: 5000 }));
-  return screen.findByRole('button', { name: 'Customize this starting point' });
+  return screen.findByRole('button', { name: 'Use this setup' });
 }
 async function requestReports() {
   await act(async () => { window.location.hash = '#analytics'; });
 }
 
 describe('creation and its owning admin page', () => {
+  it('lets the creation prompt replace the redundant page-heading band', async () => {
+    await openCreation();
+    expect(screen.queryByText('What you show visitors, and whether it’s live.')).toBeNull();
+    expect(screen.getByRole('heading', { level: 1, name: 'Campaigns' })).toHaveClass('sr-only');
+    expect(screen.getByRole('heading', { name: 'Choose a campaign setup' })).toBeVisible();
+    await userEvent.click(screen.getByRole('button', { name: 'All Campaigns' }));
+    expect(screen.getByText('What you show visitors, and whether it’s live.')).toBeVisible();
+  });
+
   it('blocks outer Back and hash navigation until both prefill and creation finish', async () => {
     let prefill!: (result: unknown) => void, created!: (result: unknown) => void;
     api.prefill.mockReturnValue(new Promise(resolve => { prefill = resolve; }));
     api.createOptin.mockReturnValue(new Promise(resolve => { created = resolve; }));
     await userEvent.click(await openCreation());
-    expect(screen.getByRole('button', { name: 'All Optins' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'All Campaigns' })).toBeDisabled();
     await requestReports();
     await waitFor(() => expect(window.location.hash).toBe('#optins'));
     expect(screen.queryByText('Report content')).not.toBeInTheDocument();
     await act(async () => prefill(DRAFT));
-    expect(screen.getByRole('button', { name: 'All Optins' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'All Campaigns' })).toBeDisabled();
     await requestReports();
     await waitFor(() => expect(window.location.hash).toBe('#optins'));
     await act(async () => created({ id: ID }));
@@ -71,9 +81,9 @@ describe('creation and its owning admin page', () => {
   it('lets Check Optins leave creation even when already on the Optins hash', async () => {
     api.createOptin.mockRejectedValue(new Error('Connection interrupted.'));
     await userEvent.click(await openCreation());
-    await userEvent.click(await screen.findByRole('button', { name: 'Check Optins' }));
-    expect(screen.getByText('Optin index')).toBeInTheDocument();
-    expect(screen.queryByText('Choose a starting point')).not.toBeInTheDocument();
+    await userEvent.click(await screen.findByRole('button', { name: 'Check Campaigns' }));
+    expect(screen.getByText('Campaign index')).toBeInTheDocument();
+    expect(screen.queryByText('Choose a campaign setup')).not.toBeInTheDocument();
   });
 
   it('does not let creation cleanup erase the newly mounted editor guard', async () => {

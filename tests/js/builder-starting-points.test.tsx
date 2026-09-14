@@ -26,14 +26,14 @@ function setup(bundle = ruleBundle({ label: 'All eligible visitors', targeting: 
   return onChange;
 }
 
-describe('reviewing a display-rule starting point', () => {
+describe('reviewing a display-rule display rule set', () => {
   it('shows page and audience changes for targeting replacement, waits for confirmation and restores cancel focus', async () => {
     const onChange = setup();
     expect(screen.queryByRole('button', { name: /All eligible visitors/ })).toBeNull();
-    await userEvent.click(screen.getByRole('button', { name: 'Browse starting points' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Browse display rule sets' }));
     const trigger = screen.getByRole('button', { name: /All eligible visitors/ });
     await userEvent.click(trigger);
-    const dialog = screen.getByRole('dialog', { name: 'Choose a starting point' });
+    const dialog = screen.getByRole('dialog', { name: 'Choose a display rule set' });
     expect(within(dialog).getByText('Pages')).toBeInTheDocument();
     expect(within(dialog).getByText('Audience')).toBeInTheDocument();
     expect(within(dialog).getByText('URL path: /offers')).toBeInTheDocument();
@@ -52,9 +52,9 @@ describe('reviewing a display-rule starting point', () => {
   it('shows the actual page scope when one page rule replaces a different single rule', async () => {
     const targeting = { include: [{ type: 'singular', value: 'post' }] };
     const onChange = setup(ruleBundle({ label: 'On posts', targeting, triggers: undefined }));
-    await userEvent.click(screen.getByRole('button', { name: 'Browse starting points' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Browse display rule sets' }));
     await userEvent.click(screen.getByRole('button', { name: /On posts/ }));
-    const dialog = screen.getByRole('dialog', { name: 'Choose a starting point' });
+    const dialog = screen.getByRole('dialog', { name: 'Choose a display rule set' });
     expect(within(dialog).getByText('URL path: /offers')).toBeInTheDocument();
     expect(within(dialog).getByText('Individual content: Posts')).toBeInTheDocument();
     expect(within(dialog).queryByText('Matches 1 page rule')).not.toBeInTheDocument();
@@ -69,9 +69,9 @@ describe('reviewing a display-rule starting point', () => {
       ...current,
       targeting: { include: [{ type: 'post', value: 42 }], exclude: [{ type: 'term', value: 31 }] },
     });
-    await userEvent.click(screen.getByRole('button', { name: 'Browse starting points' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Browse display rule sets' }));
     await userEvent.click(screen.getByRole('button', { name: /Public posts/ }));
-    const dialog = screen.getByRole('dialog', { name: 'Choose a starting point' });
+    const dialog = screen.getByRole('dialog', { name: 'Choose a display rule set' });
     expect(within(dialog).getByText('Specific page: #42, except Taxonomy term: #31')).toBeInTheDocument();
     expect(within(dialog).getByText('Individual content: Posts, except URL path: /private/*')).toBeInTheDocument();
     await userEvent.click(within(dialog).getByRole('button', { name: 'Cancel' }));
@@ -80,9 +80,9 @@ describe('reviewing a display-rule starting point', () => {
 
   it('replaces supplied triggers and frequency together while preserving conditions, unknown rules, dates and priority', async () => {
     const onChange = setup(ruleBundle({ label: 'Show immediately', triggers: [{ type: 'page_load' }], frequency: {} }));
-    await userEvent.click(screen.getByRole('button', { name: 'Browse starting points' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Browse display rule sets' }));
     await userEvent.click(screen.getByRole('button', { name: /Show immediately/ }));
-    const dialog = screen.getByRole('dialog', { name: 'Choose a starting point' });
+    const dialog = screen.getByRole('dialog', { name: 'Choose a display rule set' });
     expect(within(dialog).getByText('When it appears')).toBeInTheDocument();
     expect(within(dialog).getByText('Schedule & frequency')).toBeInTheDocument();
     expect(within(dialog).queryByText('Pages')).toBeNull();

@@ -6,7 +6,7 @@ defined('ABSPATH') || exit;
 
 return [
     'id' => 'article-end-newsletter',
-    'name' => __('At the end of the article', 'wconvert'),
+    'name' => __('Newsletter signup after an article', 'wconvert'),
     'goal' => 'grow_email_list',
     'template_id' => 'inline-rule',
     'notes' => __('Place the WConvert block or shortcode at the foot of your posts. This stays in the page and asks only for an email address. Connect your email service and match the Thursday cadence to your publishing schedule before publishing.', 'wconvert'),

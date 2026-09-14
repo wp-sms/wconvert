@@ -3,7 +3,7 @@ import { AA_NORMAL, READABLE_PAIRS, contrastOf, pairKey } from '../contrast';
 import { resolvedToken, type Path } from '../panel';
 import { formStep, losesWordsOnSwitch } from './catalogue';
 import { convertingActOf } from './guards';
-import { capturesTaken, nodesOf, nodeAt } from './tree';
+import { nodesOf, nodeAt } from './tree';
 import { validInterestOptions } from '../InterestOptions';
 import { safeHref } from '@renderer/render';
 import type { FollowupNode, FieldNode } from '@renderer/types';
@@ -35,14 +35,7 @@ import type { Template } from '@renderer/types';
  * make the far side something a merchant never meets rather than to replace it.
  *
  * ============================================================================
- * TWO OF THEM WERE ABOUT THE [[GOAL]]'S ACT, AND BOTH HAVE GONE.
- * ============================================================================
- * They said *"Your goal counts form submissions and this design converts on a
- * click, so saving it will be refused"*, and they were true while a Goal
- * declared an act. It does not (ADR 0059): the act is read off this very
- * template, so a design that disagrees with itself is not a state anything can
- * reach. What replaces them is one Goal-shaped note about what a design
- * CAPTURES, which is the only thing a Goal can still fail a design for.
+ * Goal requirements are checked separately through OutcomeContract (ADR 0085).
  *
  * Two of the rest are not refusals at all: a block that will lose its words and
  * a colour pair below AA both save happily and cost the merchant later. They
@@ -111,7 +104,6 @@ export interface Problem {
  */
 export const CHECKS = [
   'converts',
-  'collects',
   'captures',
   'countdown',
   'words',
@@ -156,10 +148,9 @@ export type CheckId = (typeof CHECKS)[number];
  */
 export const CHECK_SOURCES: Readonly<Record<CheckId, { at: string; how: string }>> = {
   converts: { at: 'OptinController', how: 'refuseADesignThatCannotConvert() refuses the write' },
-  collects: { at: 'OptinController', how: 'refuseADesignThatCapturesNothing() refuses the write' },
   captures: { at: 'render.ts', how: 'the step that holds the submit button IS the form' },
-  countdown: { at: 'ADR 0052', how: 'a countdown counts to the Optin’s own end date and nothing else' },
-  words: { at: 'SlotRoles', how: 'bind() writes a Playbook’s words back only where a Role binds' },
+  countdown: { at: 'ADR 0052', how: 'a countdown counts to the Campaign’s own end date and nothing else' },
+  words: { at: 'SlotRoles', how: 'bind() writes a campaign setup’s words back only where a Role binds' },
   readable: { at: 'ADR 0038', how: 'AA on small text' },
 };
 
@@ -174,20 +165,6 @@ export const CHECK_SOURCES: Readonly<Record<CheckId, { at: string; how: string }
 export function problemsIn(
   template: Template,
   /**
-   * Whether this Optin's [[Goal]]'s product is a captured contact.
-   *
-   * **It replaces the converting act this used to take**, which is the shape
-   * of the whole change: the act is derivable from the `template` argument
-   * beside it and was therefore a second copy of it, while what a Goal
-   * declares is not derivable from a design at all (ADR 0059).
-   *
-   * The looser of the Goal's two capture facts, deliberately. The stricter one
-   * — a Goal whose headline is read from deliveries — is a refusal, said on
-   * the gallery card and enforced at the write; this is the one that is only
-   * ever a sentence.
-   */
-  growsAList: boolean,
-  /**
    * When the Optin stops running, as the merchant typed it — or undefined.
    *
    * Passed in rather than read off the template, because it is not the
@@ -200,7 +177,6 @@ export function problemsIn(
 ): Problem[] {
   return [
     ...whatCannotConvert(template),
-    ...whatCollectsNothing(template, growsAList),
     ...whatCapturesNothing(template),
     ...whatHasIncompleteFields(template),
     ...whatHasIncompleteFollowups(template),
@@ -266,55 +242,6 @@ function whatCannotConvert(template: Template): Problem[] {
       ),
       path: null,
       check: 'converts',
-    },
-  ];
-}
-
-/**
- * A [[Goal]] whose product is a contact, on a design that asks for nothing.
- *
- * ============================================================================
- * THE ONE PROBLEM ADR 0059 CREATED, RATHER THAN INHERITED.
- * ============================================================================
- * Every other entry in this file reports something that was already possible.
- * This one exists because deleting `Goal::convertingAct()` made a new pairing
- * reachable: *"grow my email list"* over a design whose only button links
- * away. That used to be refused outright — the gallery greyed the card and the
- * save rejected it — and it is now allowed.
- *
- * **And allowed is right; silent is not.** The Optin saves, publishes, shows,
- * and honestly counts click-throughs. Nothing is broken. What is wrong is that
- * the merchant asked for a list and will never get one, and no other surface
- * in the product will ever mention it — which is exactly the bar the two
- * non-refusal problems in this file already meet.
- *
- * **A sentence, never a refusal and never a gallery filter.** Pre-pressing a
- * captures chip for a Goal is a Goal facet in a captures chip's clothes, which
- * ADR 0043 forbids; and refusing the save would put back the wall this ticket
- * removed, one predicate over.
- *
- * **It asks whether the design captures ANYTHING, never what.** Email against
- * phone is the merchant's own judgement and nothing enforces it — an SMS list
- * grown from an email capture is still a list they grew.
- *
- * **`path: null`, because the fix is not a block.** It is a design with a
- * field on it, from the Design tab — and adding one to a design that converts
- * on a click is refused by the editor for its own reasons (`catalogue.ts`), so
- * pointing at a block would point at work the merchant cannot do.
- */
-function whatCollectsNothing(template: Template, growsAList: boolean): Problem[] {
-  if (!growsAList || capturesTaken(template.tree).length > 0) {
-    return [];
-  }
-
-  return [
-    {
-      said: __(
-        'This goal collects contacts and this design asks the visitor for nothing, so it will never collect any. Pick a design with a field on it.',
-        'wconvert',
-      ),
-      path: null,
-      check: 'collects',
     },
   ];
 }
@@ -392,7 +319,7 @@ function whatCountsDownToNothing(template: Template, endsAt: string | undefined)
         is left is the fact and what to do about it.
       */
       said: __(
-        'This design shows a countdown, and nothing says when this Optin stops running. Set an end date, or the clock stays empty.',
+        'This design shows a countdown, and nothing says when this Campaign stops running. Set an end date, or the clock stays empty.',
         'wconvert',
       ),
       path: null,

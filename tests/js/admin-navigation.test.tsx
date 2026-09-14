@@ -36,7 +36,7 @@ function Harness() {
         <a href={REPORT}>Report</a>
         <a href={LEADS}>Leads</a>
         <a href="#destinations">Destinations</a>
-        <a href={editorHref('OPTIN1', navigation.hash)}>Edit Optin</a>
+        <a href={editorHref('OPTIN1', navigation.hash)}>Edit Campaign</a>
       </nav>
       <output aria-label="Accepted route">{navigation.hash}</output>
       {navigation.route.editId !== undefined ? (
@@ -78,7 +78,7 @@ async function travel(direction: 'back' | 'forward') {
 }
 
 async function editFromReport() {
-  await userEvent.click(screen.getByRole('link', { name: 'Edit Optin' }));
+  await userEvent.click(screen.getByRole('link', { name: 'Edit Campaign' }));
   await accepted(EDITOR);
 }
 
@@ -103,7 +103,7 @@ describe('admin navigation with an editor draft', () => {
 
   it('preserves lead filters when entering and returning from an editor', async () => {
     start(LEADS);
-    await userEvent.click(screen.getByRole('link', { name: 'Edit Optin' }));
+    await userEvent.click(screen.getByRole('link', { name: 'Edit Campaign' }));
     await accepted(editorHref('OPTIN1', LEADS));
     await userEvent.click(screen.getByRole('button', { name: 'Return to source' }));
     await accepted(LEADS);

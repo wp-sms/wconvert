@@ -114,7 +114,7 @@ final class LeadExporterTest extends TestCase
     {
         $item = $this->exportedItem([]);
 
-        $this->assertSame('Newsletter footer', self::valueOf($item, 'Optin'));
+        $this->assertSame('Newsletter footer', self::valueOf($item, 'Campaign'));
     }
 
     /**
