@@ -13,10 +13,13 @@ explicit, authenticated administrator requests. The notice explains which
 service is contacted. Installing changes the library; the existing content-choice
 preview and Use this design action change the working draft. No action publishes.
 
-Version 1 installs Free popup/inline designs with placeholders. A local sample
-reuses Reading slip, Callback notes and A useful little guide. It is an installer
-fixture, not three new designs. Goal-first creation and Playbook copy/rules remain
-bundled. Downloaded Playbooks, paid fetch entitlement and media installation are
+Version 1 installs Free popup/inline designs with placeholders. The initial local
+sample reused Reading slip, Callback notes and A useful little guide. The
+[first curated collections](../reviews/curated-template-collections-2026-09-14.md)
+now package ten existing reviewed designs into three collections. Source JSON
+fingerprints pin the review; the build validates packages and preserves existing
+release files. Old installed samples remain usable. Goal-first creation and
+Playbook copy/rules remain bundled. Downloaded Playbooks, paid fetch entitlement and media installation are
 subsequent slices; unsupported packs explain their limitation.
 
 ## Download and validation
