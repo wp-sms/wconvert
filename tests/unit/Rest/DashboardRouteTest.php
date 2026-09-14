@@ -20,11 +20,12 @@ use WConvert\Tests\Unit\Support\FakeOptionStore;
  * The analytics route's REGISTRATION, which is where two of its guarantees
  * live and nowhere else.
  *
- * **The caller sends a number of days and never a date.** The screen says
+ * **The caller sends days or a month, never its own current date.** The screen says
  * "Today", and that has to mean the merchant's today (ADR 0019) — a browser
  * asked for a date would answer with the VISITOR's day, and a merchant abroad
  * would be handed yesterday's window and told it was today's. So `days` is the
- * whole of the query, and the absence of a `from` and a `to` is the thing
+ * rolling window; `month` names a calendar month capped by the site's yesterday
+ * (ADR 0090). The absence of a caller-supplied `from` and `to` is the thing
  * being asserted.
  *
  * **And it is read-only.** A counter cannot be recomputed, so a write route
@@ -116,7 +117,28 @@ final class DashboardRouteTest extends TestCase
         /** @var list<array{args: array<string, mixed>}> $handlers */
         $handlers = self::dashboardRoute()['args'];
 
-        $this->assertSame(['complete', 'days'], array_keys($handlers[0]['args']));
+        $this->assertSame(['complete', 'month', 'days'], array_keys($handlers[0]['args']));
+    }
+
+    public function testNamedMonthOverridesRollingDaysAndRejectsFutureMonths(): void
+    {
+        $db = new FakeConnection();
+        $options = new FakeOptionStore();
+        $controller = new DashboardController(new Dashboard(new StatsRepository($db), new OptinRepository(
+            $db, new PublishedSet($options), RuleVocabulary::fromManifest(__DIR__ . '/../../..'), new MilestoneStore($options)
+        )));
+        $request = new \WP_REST_Request();
+        $request->set_param('month', '2024-02');
+        $request->set_param('days', 7);
+        $response = $controller->index($request);
+        self::assertInstanceOf(\WP_REST_Response::class, $response);
+        $report = $response->get_data();
+        self::assertSame(['2024-02', '2024-02-01', '2024-02-29', 29], [$report['month'], $report['from'], $report['to'], $report['days']]);
+        self::assertTrue($report['complete_days']);
+        $request->set_param('month', '9999-01');
+        $error = $controller->index($request);
+        self::assertInstanceOf(\WP_Error::class, $error);
+        self::assertSame(400, $error->get_error_data()['status']);
     }
 
     /**

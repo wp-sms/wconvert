@@ -83,6 +83,8 @@ use WConvert\Rules\RuleCatalogue;
 use WConvert\Rules\RuleVocabulary;
 use WConvert\Rules\SuppliedRules;
 use WConvert\Stats\Dashboard;
+use WConvert\Stats\MonthlyTargets;
+use WConvert\Rest\MonthlyTargetsController;
 use WConvert\Stats\StatsRepository;
 use WConvert\Storage\OptionStore;
 use WConvert\Storage\TransientStore;
@@ -129,6 +131,7 @@ final class CoreServiceProvider implements ServiceProvider
         BeaconController::class,
         LeadController::class,
         DashboardController::class,
+        MonthlyTargetsController::class,
         MilestoneController::class,
         DestinationController::class,
     ];
@@ -593,6 +596,13 @@ final class CoreServiceProvider implements ServiceProvider
                 $c->resolve(Dashboard::class)
             )
         );
+
+        $container->register(MonthlyTargets::class, static fn (ServiceContainer $c): MonthlyTargets => new MonthlyTargets(
+            $c->resolve(OptionStore::class), $c->resolve(Dashboard::class)
+        ));
+        $container->register(MonthlyTargetsController::class, static fn (ServiceContainer $c): MonthlyTargetsController => new MonthlyTargetsController(
+            $c->resolve(MonthlyTargets::class)
+        ));
 
         $container->register(
             RateLimit::class,

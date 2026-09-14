@@ -218,6 +218,7 @@ export function GoalDetail({
           <Button asChild variant="outline">
             <a
               href={reportHref({
+                month: payload.month,
                 days: payload.days,
                 goal: card.goal,
                 experiment: family.root.id,
@@ -352,6 +353,7 @@ export function CampaignTable({
                 <th scope="row">
                   <a
                     href={reportHref({
+                      month: payload.month,
                       days: payload.days,
                       goal: card.goal,
                       ...(arms.length > 1
@@ -385,6 +387,7 @@ export function CampaignTable({
                     <a
                       className="wa-table-compare"
                       href={reportHref({
+                        month: payload.month,
                         days: payload.days,
                         experiment: root.id,
                         compare: query.compare,
@@ -439,19 +442,31 @@ function CampaignActions({
   return (
     <>
       <div className="wa-actions">
-        {card.action === 'submit' && (
-          <Button asChild variant="outline">
-            <a
-              href={leadsHref({
-                optinId: optin.id,
-                from: payload.from,
-                to: payload.to,
-              })}
+        {card.action === 'submit' &&
+          (payload.days === 0 ? (
+            <Button
+              variant="outline"
+              disabled
+              title={__(
+                'Capture history is available after this month has a complete day.',
+                'wconvert',
+              )}
             >
               {__('View captured leads', 'wconvert')}
-            </a>
-          </Button>
-        )}
+            </Button>
+          ) : (
+            <Button asChild variant="outline">
+              <a
+                href={leadsHref({
+                  optinId: optin.id,
+                  from: payload.from,
+                  to: payload.to,
+                })}
+              >
+                {__('View captured leads', 'wconvert')}
+              </a>
+            </Button>
+          ))}
         {optin.status !== 'historical' && (
           <>
             <Button asChild variant="outline">
@@ -589,6 +604,7 @@ export function Experiment({
               <Button asChild variant="outline">
                 <a
                   href={reportHref({
+                    month: payload.month,
                     days: payload.days,
                     goal: card.goal,
                     optinId: arm.id,

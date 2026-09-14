@@ -3,7 +3,9 @@
 The merchant approved the impact-first prototype (variant A), including its
 compact reporting-period/comparison bar without a visible timezone. This is the
 production implementation, using the existing daily counters and Optin metadata.
-No table, column, index, option, transient or event ledger is added.
+No table, column, index, option, transient or event ledger was added here.
+**Extended by [0090](0090-monthly-targets-are-optional-benchmarks.md):** optional
+monthly targets now sit after actual impact, backed by one non-autoloaded option.
 
 This amends the Analytics presentation in
 [0068](0068-reading-pages-put-results-and-routes-before-occasional-settings.md),
@@ -37,6 +39,12 @@ The selected window ends yesterday in the site's calendar. Its comparison is
 the adjacent preceding window of the same length. The server resolves both;
 neither browser dates nor browser timezones choose them. Each window is capped
 at 366 days. List/editor reads omit `complete` and still include today.
+
+**Extended by [0090](0090-monthly-targets-are-optional-benchmarks.md):** stable
+target links may name a calendar month instead of a rolling day count. The
+server still caps it at yesterday. First-day months are explicitly empty;
+drill-down links preserve the accepted month. Targets use a separate current-
+month read, independent of the selected reporting window.
 
 `Dashboard::compare()` reads one short Optin interpretation and two counter
 windows: three statements, no per-Optin queries, no Lead-log dependency, no

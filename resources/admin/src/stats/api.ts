@@ -93,6 +93,8 @@ export interface GoalReport extends Numbers {
 }
 
 export interface DashboardPayload {
+  /** A stable calendar-month scope selected from a monthly target. */
+  month?: string;
   /** The window the server read, resolved against the SITE's timezone. */
   from: string;
   to: string;
@@ -123,9 +125,15 @@ export interface Impact {
  * `days` omitted asks for the server's own default window, which is the only
  * way this bundle can avoid naming it.
  */
-export const readDashboard = (days: number | null, complete = false) =>
+export const readDashboard = (
+  days: number | null,
+  complete = false,
+  month?: string,
+) =>
   apiFetch<DashboardPayload>({
-    path: `/wconvert/v1/dashboard${days === null ? (complete ? '?complete=1' : '') : `?days=${encodeURIComponent(String(days))}${complete ? '&complete=1' : ''}`}`,
+    path: month
+      ? `/wconvert/v1/dashboard?month=${encodeURIComponent(month)}&complete=1`
+      : `/wconvert/v1/dashboard${days === null ? (complete ? '?complete=1' : '') : `?days=${encodeURIComponent(String(days))}${complete ? '&complete=1' : ''}`}`,
   });
 
 /**
@@ -182,7 +190,9 @@ export interface OptinNumbers {
  * spelling of the [[Goal]]'s own interpretation of a [[Conversion]] (ADR 0020).
  * Revisit it when an install's dashboard is slow, not before.
  */
-export const numbersByOptin = (payload: DashboardPayload): Record<string, OptinNumbers> =>
+export const numbersByOptin = (
+  payload: DashboardPayload,
+): Record<string, OptinNumbers> =>
   Object.fromEntries(
     payload.goals.flatMap((card) =>
       card.optins.map((optin) => [

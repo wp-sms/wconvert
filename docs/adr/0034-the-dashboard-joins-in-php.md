@@ -106,6 +106,10 @@ mean two scans; larger installs need measured query-cost review.
   `lastDays()` still serves list/editor reads including today; no route accepts
   caller-chosen date boundaries. Its length travels back on the payload, so the admin bundle
   never spells the default a second time.
+  **Extended by [0090](0090-monthly-targets-are-optional-benchmarks.md):** a
+  named month supports stable target links, still capped by the server's
+  yesterday. Empty first-day months skip counter reads. The independent target
+  endpoint adds its own single-window read; it does not widen this interface.
 - **Nothing that cannot be reached is shipped.** **Amended by
   [0089](0089-analytics-starts-with-impact-and-keeps-history-inspectable.md):** send events now exist. Analytics displays
   requests and accepted sends separately and does not present their difference

@@ -68,7 +68,7 @@ final class Dashboard
      */
     public function read(StatRange $range): array
     {
-        return self::of($range, $this->stats->inRange($range), $this->optins->interpretations());
+        return self::of($range, $range->days() === 0 ? [] : $this->stats->inRange($range), $this->optins->interpretations());
     }
 
     /** Resolve both windows with one interpretation snapshot, without visitor data.
@@ -76,6 +76,7 @@ final class Dashboard
      */
     public function compare(StatRange $range): array
     {
+        if ($range->days() === 0) return $this->read($range) + ['complete_days' => true];
         $optins = $this->optins->interpretations();
         $current = self::of($range, $this->stats->inRange($range), $optins);
         $previous = $range->previous();

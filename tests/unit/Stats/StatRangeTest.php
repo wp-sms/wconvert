@@ -74,7 +74,7 @@ final class StatRangeTest extends TestCase
         $this->assertSame(StatRange::MAX_DAYS, $range->days());
     }
 
-    /** And it cannot be zero or negative days, which is a window of no days at all. */
+    /** Rolling windows cannot be empty; a first-day calendar month can (ADR 0090). */
     public function testAWindowIsNeverEmpty(): void
     {
         $this->assertSame(1, StatRange::lastDays(0, '2026-08-25')->days());
@@ -96,10 +96,9 @@ final class StatRangeTest extends TestCase
     }
 
     /**
-     * **There is one constructor, and it ends today.** A second one taking two
-     * explicit dates is the shape the REST route must not offer: a window that
-     * ends anywhere but the site's own today is a window whose far end
-     * somebody chose (ADR 0034).
+     * Windows derive from a server-provided day, never two browser boundaries.
+     * A named month may now end earlier, but never later than the site's
+     * yesterday (ADR 0090).
      */
     public function testAWindowCanOnlyBeBuiltFromADayAndACount(): void
     {
@@ -108,7 +107,7 @@ final class StatRangeTest extends TestCase
             static fn (\ReflectionMethod $method): bool => $method->isStatic()
         ));
 
-        $this->assertSame(['lastDays', 'completeDays'], array_map(
+        $this->assertSame(['lastDays', 'completeDays', 'calendarMonth'], array_map(
             static fn (\ReflectionMethod $method): string => $method->getName(),
             $constructors
         ));

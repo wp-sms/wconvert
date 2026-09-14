@@ -61,6 +61,8 @@ $wconvertOptions = [
     'wconvert_retention_days',
     // Optin\SiteFrequency::OPTION — the allowance the whole site shares.
     'wconvert_site_frequency',
+    // Stats\MonthlyTargets::OPTION — optional site-owned monthly benchmarks.
+    'wconvert_monthly_targets',
     // Milestone\MilestoneStore::OPTION — the two milestones nothing else can
     // answer: the day this site first published, and the first [[Playbook]]
     // suggestion a merchant overrode. Site-owned facts that never left the

@@ -23,6 +23,19 @@ const api = vi.hoisted(() => ({
 vi.mock('../../resources/admin/src/stats/api', () => ({
   readDashboard: api.readDashboard,
 }));
+vi.mock('../../resources/admin/src/stats/targets-api', () => ({
+  readMonthlyTargets: vi.fn(async () => ({
+    month: '2026-09',
+    from: '2026-09-01',
+    end: '2026-09-30',
+    through: '2026-09-13',
+    previous_month: '2026-08',
+    previous_targets: {},
+    max_target: 100000000,
+    metrics: [],
+  })),
+  saveMonthlyTargets: vi.fn(),
+}));
 vi.mock('../../resources/admin/src/optins/api', () => ({
   publishOptin: api.publishOptin,
   unpublishOptin: api.unpublishOptin,
@@ -121,6 +134,80 @@ beforeEach(() => {
 });
 
 describe('impact overview', () => {
+  it('does not link an empty first-day month to today’s capture history or export', async () => {
+    api.readDashboard.mockResolvedValue({
+      ...payload(),
+      month: '2026-09',
+      from: '2026-09-01',
+      to: '2026-09-01',
+      days: 0,
+      previous: undefined,
+    });
+    render(<Dashboard query={{ month: '2026-09', optinId: 'email' }} />);
+    await screen.findByText('No complete days yet this month');
+    expect(
+      screen.queryByRole('link', { name: 'View captured leads' }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'View captured leads' }),
+    ).toBeDisabled();
+    expect(
+      screen.getByRole('button', { name: 'Export report CSV' }),
+    ).toBeDisabled();
+  });
+  it('keeps a monthly target drilldown on that month through campaign and editor links', async () => {
+    const monthly = {
+      ...payload(),
+      month: '2026-09',
+      from: '2026-09-01',
+      days: 13,
+    };
+    api.readDashboard.mockResolvedValue(monthly);
+    const view = render(
+      <Dashboard query={{ month: '2026-09', impact: 'leads' }} />,
+    );
+    const campaign = await screen.findByRole('link', {
+      name: 'Newsletter footer',
+    });
+    expect(api.readDashboard).toHaveBeenCalledWith(null, true, '2026-09');
+    expect(routeFrom(campaign.getAttribute('href')!).report).toMatchObject({
+      month: '2026-09',
+      optinId: 'email',
+    });
+    expect(screen.getByRole('combobox', { name: 'Report period' })).toHaveValue(
+      'month:2026-09',
+    );
+    const onChange = vi.fn();
+    view.rerender(
+      <Dashboard
+        query={{ month: '2026-09', optinId: 'email' }}
+        onQueryChange={onChange}
+      />,
+    );
+    const edit = routeFrom(
+      (await screen.findByRole('link', { name: 'Edit campaign' })).getAttribute(
+        'href',
+      )!,
+    );
+    expect(routeFrom(edit.returnTo).report.month).toBe('2026-09');
+    expect(
+      routeFrom(
+        screen
+          .getByRole('link', { name: 'Overall impact' })
+          .getAttribute('href')!,
+      ).report.month,
+    ).toBe('2026-09');
+    await userEvent.selectOptions(
+      screen.getByRole('combobox', { name: 'Report period' }),
+      '7',
+    );
+    expect(onChange).toHaveBeenCalledWith({
+      month: undefined,
+      days: 7,
+      optinId: 'email',
+    });
+  });
+
   it('shows compatible impact counts without a global rate or timezone', async () => {
     render(<Dashboard />);
     await screen.findByRole('heading', {
