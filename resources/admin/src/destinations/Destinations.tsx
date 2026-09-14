@@ -137,7 +137,9 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
    * Re-push, Remove and every Add button on the screen for the length of that
    * one request. Same shape, and the same reason, as {@see OptinList}.
    */
-  const [busyId, setBusyId] = useState<string | null>(null);
+  const [busyIds, setBusyIds] = useState<ReadonlySet<string>>(() => new Set());
+  const startOperation = (id: string) => setBusyIds((held) => new Set([...held, id]));
+  const finishOperation = (id: string) => setBusyIds((held) => new Set([...held].filter((pending) => pending !== id)));
   /*
    * Keyed by Destination, not screen-wide. A re-push report is a fact about ONE
    * Destination, and the shipped version rendered it after every row and never
@@ -175,7 +177,7 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
     setDraftStates((held) => ({ ...held, [id]: state }));
   }, []);
   const dirty = adding !== null || Object.values(draftStates).some((state) => state.dirty);
-  useSettingsEditing(dirty, busyId !== null || sending !== null, onEditingStateChange);
+  useSettingsEditing(dirty, busyIds.size > 0 || sending !== null, onEditingStateChange);
 
   const refresh = useCallback(async () => {
     const request = ++fetchRequest.current;
@@ -217,7 +219,7 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
     Object.fromEntries(Object.entries(current).filter(([key]) => key !== id));
 
   const run = async (id: string, action: () => Promise<unknown>) => {
-    setBusyId(id);
+    startOperation(id);
 
     try {
       await action();
@@ -226,7 +228,7 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
     } catch (cause) {
       setErrors((current) => ({ ...current, [id]: messageOf(cause) }));
     } finally {
-      setBusyId(null);
+      finishOperation(id);
     }
   };
 
@@ -273,7 +275,7 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
   // Not `run()`, because a re-push has a RESULT and refreshing would throw it
   // away — the read that follows a save is what clears the reports.
   const replay = (destination: Destination) => {
-    setBusyId(destination.id);
+    startOperation(destination.id);
 
     void (async () => {
       try {
@@ -284,7 +286,7 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
       } catch (cause) {
         setErrors((current) => ({ ...current, [destination.id]: messageOf(cause) }));
       } finally {
-        setBusyId(null);
+        finishOperation(destination.id);
       }
     })();
   };
@@ -298,7 +300,7 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
    * shape as `replay()` above for the same reason.
    */
   const probe = (destination: Destination, ask: (id: string) => Promise<TestReport>) => {
-    setBusyId(destination.id);
+    startOperation(destination.id);
 
     void (async () => {
       try {
@@ -309,7 +311,7 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
       } catch (cause) {
         setErrors((current) => ({ ...current, [destination.id]: messageOf(cause) }));
       } finally {
-        setBusyId(null);
+        finishOperation(destination.id);
       }
     })();
   };
@@ -331,7 +333,7 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
   return (
     <div className="flex flex-col gap-5">
       <PageAction>
-        <Button variant="outline" disabled={refreshing || dirty || busyId !== null} onClick={() => void refresh()}>
+        <Button variant="outline" disabled={refreshing || dirty || busyIds.size > 0} onClick={() => void refresh()}>
           <RefreshCw aria-hidden="true" />{refreshing ? __('Refreshing…', 'wconvert') : __('Refresh', 'wconvert')}
         </Button>
         {mode === 'settings' && <Button disabled={data === null} onClick={() => {
@@ -406,7 +408,7 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
                 report={reports[destination.id] ?? null}
                 test={tests[destination.id] ?? null}
                 error={errors[destination.id] ?? null}
-                busy={busyId === destination.id}
+                busy={busyIds.has(destination.id)}
                 onSave={save}
                 onRemove={(trigger) => {
                   returnFocus.current = trigger;
@@ -430,7 +432,7 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
           <Types
             types={data.types}
             errors={errors}
-            busyId={busyId}
+            busyIds={busyIds}
             onAdd={(type, trigger) => {
               returnFocus.current = trigger;
               setAdding(type);
@@ -450,7 +452,7 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
       <AddDestinationDialog
         type={adding}
         connections={data?.connections ?? []}
-        busy={adding !== null && busyId === adding.id}
+        busy={adding !== null && busyIds.has(adding.id)}
         error={adding === null ? null : (errors[adding.id] ?? null)}
         returnFocusTo={returnFocus}
         onOpenChange={(open) => {
@@ -1019,7 +1021,7 @@ function Configured({
 function Types({
   types,
   errors,
-  busyId,
+  busyIds,
   onAdd,
 }: {
   types: DestinationType[];
@@ -1030,7 +1032,7 @@ function Types({
    */
   errors: Record<string, string>;
   /** The one Destination or type with a request in flight, if any. */
-  busyId: string | null;
+  busyIds: ReadonlySet<string>;
   /** The trigger travels so the dialog can put the caret back on it. */
   onAdd: (type: DestinationType, trigger: HTMLElement | null) => void;
 }) {
@@ -1101,13 +1103,13 @@ function Types({
                     own words that two Mailchimp audiences are two Destinations
                     over one Connection.
 
-                    What is left is `busyId`, which is about this row having a
+                    What is left is `busyIds`, which is about this row having a
                     request in flight and nothing to do with how many exist.
                   */
                   <Button
                     variant="outline"
                     size="sm"
-                    disabled={busyId === type.id}
+                    disabled={busyIds.has(type.id)}
                     onClick={(event) => onAdd(type, event.currentTarget)}
                   >
                     {__('Add', 'wconvert')}

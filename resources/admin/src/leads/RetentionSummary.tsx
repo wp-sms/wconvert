@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
-import { __, _n, sprintf } from "@wordpress/i18n";
-import { readRetention, type Retention } from "./api";
-import { settingsHref } from "../nav";
-import { messageOf } from "../shell/loadable";
+import { useEffect, useState } from 'react';
+import { __, _n, sprintf } from '@wordpress/i18n';
+import { readRetention, type Retention } from './api';
+import { settingsHref } from '../nav';
+import { messageOf } from '../shell/loadable';
 
 /** A saved-policy summary, never a destructive control beside the submission log. */
 export function RetentionSummary() {
@@ -25,20 +25,20 @@ export function RetentionSummary() {
     <p className="m-0 text-note text-muted-foreground">
       {error ??
         (period === null
-          ? __("Loading retention policy…", "wconvert")
+          ? __('Loading retention policy…', 'wconvert')
           : period.days === null
-            ? __("Submissions are kept until you delete them.", "wconvert")
+            ? __('Submissions are kept until you delete them.', 'wconvert')
             : sprintf(
                 _n(
-                  "Submissions are automatically deleted after %d day.",
-                  "Submissions are automatically deleted after %d days.",
+                  'Submissions are automatically deleted after %d day.',
+                  'Submissions are automatically deleted after %d days.',
                   period.days,
-                  "wconvert",
+                  'wconvert',
                 ),
                 period.days,
-              ))}{" "}
-      <a className="underline underline-offset-2" href={settingsHref("data")}>
-        {__("Change retention", "wconvert")}
+              ))}{' '}
+      <a className="underline underline-offset-2" href={settingsHref('data')}>
+        {__('Change retention', 'wconvert')}
       </a>
     </p>
   );

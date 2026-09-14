@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import type { EditingState } from "../hooks/useAdminNavigation";
+import { useEffect } from 'react';
+import type { EditingState } from '../hooks/useAdminNavigation';
 
 export type SettingsEditing = (state: EditingState) => void;
 
@@ -14,12 +14,12 @@ export function useSettingsEditing(
     const beforeUnload = (event: BeforeUnloadEvent) => {
       if (!dirty && !busy) return;
       event.preventDefault();
-      event.returnValue = "";
+      event.returnValue = '';
     };
-    window.addEventListener("beforeunload", beforeUnload);
+    window.addEventListener('beforeunload', beforeUnload);
     return () => {
       report?.({ dirty: false, busy: false });
-      window.removeEventListener("beforeunload", beforeUnload);
+      window.removeEventListener('beforeunload', beforeUnload);
     };
   }, [dirty, busy, report]);
 }

@@ -232,7 +232,7 @@ describe('capture history', () => {
     await userEvent.type(await screen.findByLabelText('Search submissions'), 'repair');
     await userEvent.click(screen.getByRole('button', { name: 'Apply filters' }));
     await waitFor(() => expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ search: 'repair' })));
-    await userEvent.click(screen.getByRole('button', { name: 'Enquiries' }));
+    await userEvent.click(screen.getByRole('radio', { name: 'Enquiries' }));
     await waitFor(() => expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ search: 'repair', purpose: 'enquiries' })));
     expect(log.exportUrl).toHaveBeenLastCalledWith(expect.objectContaining({ search: 'repair', purpose: 'enquiries', snapshot: SNAPSHOT }));
   });

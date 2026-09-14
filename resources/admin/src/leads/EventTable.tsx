@@ -1,13 +1,13 @@
-import { useRef, useState } from "react";
-import { __, sprintf } from "@wordpress/i18n";
-import { Button } from "../components/ui/button";
+import { useRef, useState } from 'react';
+import { __, sprintf } from '@wordpress/i18n';
+import { Button } from '../components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "../components/ui/dialog";
+} from '../components/ui/dialog';
 import {
   DataTable,
   DataTableBody,
@@ -15,9 +15,9 @@ import {
   DataTableColumn,
   DataTableHead,
   DataTableRow,
-} from "../shell/DataTable";
-import { editorHref } from "../nav";
-import type { Lead } from "./api";
+} from '../shell/DataTable';
+import { editorHref } from '../nav';
+import type { Lead } from './api';
 
 /** One compact row per capture; the original answers belong in its detail dialog. */
 export function EventTable({
@@ -35,23 +35,23 @@ export function EventTable({
     <>
       <DataTable>
         <DataTableHead>
-          <DataTableColumn>{__("Submitted by", "wconvert")}</DataTableColumn>
-          <DataTableColumn>{__("Campaign", "wconvert")}</DataTableColumn>
+          <DataTableColumn>{__('Submitted by', 'wconvert')}</DataTableColumn>
+          <DataTableColumn>{__('Campaign', 'wconvert')}</DataTableColumn>
           <DataTableColumn>
-            {__("Captured details", "wconvert")}
+            {__('Captured details', 'wconvert')}
           </DataTableColumn>
-          <DataTableColumn>{__("Submitted", "wconvert")}</DataTableColumn>
-          <DataTableColumn>{__("Details", "wconvert")}</DataTableColumn>
+          <DataTableColumn>{__('Submitted', 'wconvert')}</DataTableColumn>
+          <DataTableColumn>{__('Details', 'wconvert')}</DataTableColumn>
         </DataTableHead>
         <DataTableBody>
           {leads.map((lead) => (
             <DataTableRow key={lead.id}>
-              <DataTableCell label={__("Submitted by", "wconvert")}>
+              <DataTableCell label={__('Submitted by', 'wconvert')}>
                 {lead.fields.name && (
                   <span className="block font-medium">{lead.fields.name}</span>
                 )}
                 <bdi dir="ltr" className="block break-all">
-                  {lead.email ?? lead.phone ?? "—"}
+                  {lead.email ?? lead.phone ?? '—'}
                 </bdi>
                 {lead.email && lead.phone && (
                   <bdi
@@ -62,25 +62,25 @@ export function EventTable({
                   </bdi>
                 )}
               </DataTableCell>
-              <DataTableCell label={__("Campaign", "wconvert")}>
+              <DataTableCell label={__('Campaign', 'wconvert')}>
                 <a href={editorHref(lead.optin_id, returnTo)}>
                   {nameOf(lead.optin_id)}
                 </a>
               </DataTableCell>
-              <DataTableCell label={__("Captured details", "wconvert")}>
+              <DataTableCell label={__('Captured details', 'wconvert')}>
                 <span className="line-clamp-2 max-w-sm break-words text-note text-muted-foreground">
                   {lead.fields.message ||
                     lead.fields.interest_label ||
                     lead.fields.interest ||
-                    __("Contact details captured", "wconvert")}
+                    __('Contact details captured', 'wconvert')}
                 </span>
               </DataTableCell>
-              <DataTableCell label={__("Submitted", "wconvert")}>
+              <DataTableCell label={__('Submitted', 'wconvert')}>
                 <bdi dir="ltr" className="text-note">
                   {lead.created_at}
                 </bdi>
               </DataTableCell>
-              <DataTableCell label={__("Details", "wconvert")}>
+              <DataTableCell label={__('Details', 'wconvert')}>
                 <Button
                   variant="link"
                   size="sm"
@@ -89,7 +89,7 @@ export function EventTable({
                     setSelected(lead);
                   }}
                 >
-                  {__("View captured details", "wconvert")}
+                  {__('View captured details', 'wconvert')}
                 </Button>
               </DataTableCell>
             </DataTableRow>
@@ -110,11 +110,11 @@ export function EventTable({
           }}
         >
           <DialogHeader>
-            <DialogTitle>{__("Submission details", "wconvert")}</DialogTitle>
+            <DialogTitle>{__('Submission details', 'wconvert')}</DialogTitle>
             <DialogDescription>
               {__(
-                "The original capture, not a contact profile or a sending status.",
-                "wconvert",
+                'The original capture, not a contact profile or a sending status.',
+                'wconvert',
               )}
             </DialogDescription>
           </DialogHeader>
@@ -130,13 +130,13 @@ export function EventTable({
               </div>
               <dl className="m-0 flex flex-col gap-4">
                 {[
-                  ["email", selected.email],
-                  ["phone", selected.phone],
+                  ['email', selected.email],
+                  ['phone', selected.phone],
                   ...Object.entries(selected.fields).filter(
                     ([name]) =>
-                      name !== "name" &&
-                      name !== "interest_label" &&
-                      name !== "consent_text",
+                      name !== 'name' &&
+                      name !== 'interest_label' &&
+                      name !== 'consent_text',
                   ),
                 ].map(
                   ([name, value]) =>
@@ -146,13 +146,13 @@ export function EventTable({
                           {fieldLabel(name!)}
                         </dt>
                         <dd className="m-0 break-words whitespace-pre-wrap">
-                          {name === "interest" &&
+                          {name === 'interest' &&
                           selected.fields.interest_label ? (
                             <>
                               {selected.fields.interest_label}
                               <span className="block text-note text-muted-foreground">
                                 {sprintf(
-                                  __("Sent value: %s", "wconvert"),
+                                  __('Sent value: %s', 'wconvert'),
                                   value,
                                 )}
                               </span>
@@ -167,18 +167,18 @@ export function EventTable({
               </dl>
               <details className="rounded-md border border-border p-3">
                 <summary className="cursor-pointer font-medium">
-                  {__("Consent at capture", "wconvert")}
+                  {__('Consent at capture', 'wconvert')}
                 </summary>
                 <p className="mb-0 break-words whitespace-pre-wrap text-note">
                   {selected.fields.consent_text ||
                     __(
-                      "No consent text was recorded with this submission.",
-                      "wconvert",
+                      'No consent text was recorded with this submission.',
+                      'wconvert',
                     )}
                 </p>
               </details>
               <div className="border-t border-border pt-3 text-note text-muted-foreground">
-                <span className="block">{__("Lead ID", "wconvert")}</span>
+                <span className="block">{__('Lead ID', 'wconvert')}</span>
                 <bdi dir="ltr" className="break-all">
                   {selected.id}
                 </bdi>
@@ -193,15 +193,15 @@ export function EventTable({
 
 function fieldLabel(name: string): string {
   switch (name) {
-    case "email":
-      return __("Email", "wconvert");
-    case "phone":
-      return __("Phone", "wconvert");
-    case "message":
-      return __("Message", "wconvert");
-    case "interest":
-      return __("Interest", "wconvert");
+    case 'email':
+      return __('Email', 'wconvert');
+    case 'phone':
+      return __('Phone', 'wconvert');
+    case 'message':
+      return __('Message', 'wconvert');
+    case 'interest':
+      return __('Interest', 'wconvert');
     default:
-      return name.replaceAll("_", " ");
+      return name.replaceAll('_', ' ');
   }
 }

@@ -108,7 +108,10 @@ export function LeadLog({ query, onQueryChange }: LeadLogProps) {
     <Region label={__('Submissions', 'wconvert')}>
       <RegionBody>
         <div role="group" aria-label={__('Submission purpose', 'wconvert')} className="mb-4 flex flex-wrap gap-2">
-          {[{ value: undefined, label: __('All submissions', 'wconvert') }, { value: 'subscribers' as const, label: __('Subscriber collection', 'wconvert') }, { value: 'enquiries' as const, label: __('Enquiries', 'wconvert') }].map(({ value, label }) => <Button key={value ?? 'all'} size="sm" variant={requested.purpose === value ? 'secondary' : 'ghost'} aria-pressed={requested.purpose === value} onClick={() => changeQuery({ ...requested, purpose: value })}>{label}</Button>)}
+          {[{ value: undefined, label: __('All submissions', 'wconvert') }, { value: 'subscribers' as const, label: __('Subscriber collection', 'wconvert') }, { value: 'enquiries' as const, label: __('Enquiries', 'wconvert') }].map(({ value, label }) => <label key={value ?? 'all'} className="cursor-pointer">
+            <input type="radio" className="peer sr-only" name="wconvert-submission-purpose" value={value ?? 'all'} checked={requested.purpose === value} onChange={() => changeQuery({ ...requested, purpose: value })} />
+            <span className="inline-flex min-h-(--control-height-sm) items-center rounded-sm px-3 py-1 font-medium text-muted-foreground hover:bg-muted peer-checked:bg-secondary peer-checked:text-primary peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-ring">{label}</span>
+          </label>)}
         </div>
         <HistoryFilters key={queryKey} query={requested} optins={optins} onApply={changeQuery} />
       </RegionBody>

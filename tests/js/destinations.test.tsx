@@ -613,6 +613,25 @@ describe('the destinations screen', () => {
     expect(within(magnet).getByRole('button', { name: 'Remove' })).not.toBeDisabled();
   });
 
+  it('keeps navigation and the first route busy when a second route finishes first', async () => {
+    api.readDestinations.mockResolvedValue(TWO_DESTINATIONS);
+    let finishFirst!: () => void;
+    api.saveDestination.mockImplementation(({ id }: { id: string }) => id === HEALTHY.id
+      ? new Promise<void>((resolve) => { finishFirst = resolve; }) : Promise.resolve());
+    const editing = vi.fn();
+    render(<Destinations onEditingStateChange={editing} />);
+    for (const button of await screen.findAllByRole('button', { name: 'Settings' })) await userEvent.click(button);
+    const first = within(regionFor(screen.getByRole('heading', { name: 'WP SMS contacts' })));
+    const second = within(regionFor(screen.getByRole('heading', { name: 'Lead magnet email' })));
+    await userEvent.click(first.getByRole('button', { name: 'Save' }));
+    await userEvent.click(second.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(second.getByRole('button', { name: 'Save' })).toBeEnabled());
+    expect(first.getByRole('button', { name: 'Save' })).toBeDisabled();
+    expect(editing).toHaveBeenLastCalledWith(expect.objectContaining({ busy: true }));
+    await act(async () => finishFirst());
+    await waitFor(() => expect(editing).toHaveBeenLastCalledWith(expect.objectContaining({ busy: false })));
+  });
+
   /**
    * **A failure renders in the region that produced it.** The shipped version
    * held one `error` and rendered it in a region of its own above all the

@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
-import { __ } from "@wordpress/i18n";
-import { allowanceSummary } from "./allowanceSummary";
-import { Input } from "../components/ui/input";
-import { Button } from "../components/ui/button";
+import { useEffect, useState } from 'react';
+import { __ } from '@wordpress/i18n';
+import { allowanceSummary } from './allowanceSummary';
+import { Input } from '../components/ui/input';
+import { Button } from '../components/ui/button';
 import {
   Region,
   RegionBody,
@@ -10,34 +10,34 @@ import {
   RegionErrorState,
   RegionFooter,
   RegionHeader,
-} from "../shell/Region";
-import { RegionSkeleton } from "../shell/RegionSkeleton";
+} from '../shell/Region';
+import { RegionSkeleton } from '../shell/RegionSkeleton';
 import {
   LOADING,
   failed,
   messageOf,
   ready,
   type Loadable,
-} from "../shell/loadable";
+} from '../shell/loadable';
 import {
   useSettingsEditing,
   type SettingsEditing,
-} from "../settings-page/useSettingsEditing";
+} from '../settings-page/useSettingsEditing';
 import {
   readSiteAllowance,
   saveSiteAllowance,
   type SiteAllowance as Allowance,
-} from "./api";
+} from './api';
 
-type Draft = Omit<Allowance, "maxImpressions" | "cooldownDays"> & {
+type Draft = Omit<Allowance, 'maxImpressions' | 'cooldownDays'> & {
   maxImpressions: string;
   cooldownDays: string;
 };
 const draftOf = (value: Allowance): Draft => ({
   ...value,
   maxImpressions:
-    value.maxImpressions === null ? "" : String(value.maxImpressions),
-  cooldownDays: value.cooldownDays === null ? "" : String(value.cooldownDays),
+    value.maxImpressions === null ? '' : String(value.maxImpressions),
+  cooldownDays: value.cooldownDays === null ? '' : String(value.cooldownDays),
 });
 
 /** Site-wide vetoes remain off by default. No control writes before Save. */
@@ -48,7 +48,6 @@ export function SiteAllowance({
   const [draft, setDraft] = useState<Draft | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
   const [retry, setRetry] = useState(0);
   useEffect(() => {
     let active = true;
@@ -66,7 +65,7 @@ export function SiteAllowance({
       active = false;
     };
   }, [retry]);
-  const current = allowance.status === "ready" ? allowance.data : null;
+  const current = allowance.status === 'ready' ? allowance.data : null;
   const dirty =
     current !== null &&
     JSON.stringify(draft) !== JSON.stringify(draftOf(current));
@@ -74,21 +73,20 @@ export function SiteAllowance({
   const change = (next: Partial<Draft>) => {
     setDraft((held) => (held === null ? null : { ...held, ...next }));
     setError(null);
-    setSaved(false);
   };
   const save = async () => {
     if (!draft || !dirty || saving) return;
     if (
       [draft.maxImpressions, draft.cooldownDays].some(
         (value) =>
-          value !== "" &&
+          value !== '' &&
           (!Number.isSafeInteger(Number(value)) || Number(value) < 1),
       )
     ) {
       setError(
         __(
-          "Enter a whole number of at least 1, or leave the field empty.",
-          "wconvert",
+          'Enter a whole number of at least 1, or leave the field empty.',
+          'wconvert',
         ),
       );
       return;
@@ -99,24 +97,23 @@ export function SiteAllowance({
       const next = await saveSiteAllowance({
         ...draft,
         maxImpressions:
-          draft.maxImpressions === "" ? null : Number(draft.maxImpressions),
+          draft.maxImpressions === '' ? null : Number(draft.maxImpressions),
         cooldownDays:
-          draft.cooldownDays === "" ? null : Number(draft.cooldownDays),
+          draft.cooldownDays === '' ? null : Number(draft.cooldownDays),
       });
       setAllowance(ready(next));
       setDraft(draftOf(next));
-      setSaved(true);
     } catch (cause) {
       setError(messageOf(cause));
     } finally {
       setSaving(false);
     }
   };
-  if (allowance.status === "loading")
+  if (allowance.status === 'loading')
     return (
-      <RegionSkeleton label={__("Display limits", "wconvert")} lines={4} />
+      <RegionSkeleton label={__('Display limits', 'wconvert')} lines={4} />
     );
-  if (allowance.status === "failed")
+  if (allowance.status === 'failed')
     return (
       <Region>
         <RegionErrorState message={allowance.message} />
@@ -125,7 +122,7 @@ export function SiteAllowance({
             variant="outline"
             onClick={() => setRetry((value) => value + 1)}
           >
-            {__("Retry loading display limits", "wconvert")}
+            {__('Retry loading display limits', 'wconvert')}
           </Button>
         </RegionFooter>
       </Region>
@@ -133,7 +130,7 @@ export function SiteAllowance({
   return (
     <Region>
       <RegionHeader
-        title={__("How often anything shows", "wconvert")}
+        title={__('How often anything shows', 'wconvert')}
         description={allowanceSummary(allowance.data)}
       />
       {error && <RegionError message={error} />}
@@ -146,13 +143,13 @@ export function SiteAllowance({
         <RegionBody>
           <p className="mt-0 text-note text-muted-foreground">
             {__(
-              "These limits apply to every Campaign, in addition to its own display rules.",
-              "wconvert",
+              'These limits apply to every Campaign, in addition to its own display rules.',
+              'wconvert',
             )}
           </p>
           <fieldset disabled={saving} className="m-0 min-w-0 border-0 p-0">
             <legend className="sr-only">
-              {__("Site-wide display limits", "wconvert")}
+              {__('Site-wide display limits', 'wconvert')}
             </legend>
             <div className="wconvert-allowance">
               <label className="wconvert-allowance__switch text-body">
@@ -162,10 +159,10 @@ export function SiteAllowance({
                   onChange={(event) =>
                     change({ stopAfterDismiss: event.target.checked })
                   }
-                />{" "}
+                />{' '}
                 {__(
-                  "Once they close any Campaign, show them nothing else",
-                  "wconvert",
+                  'Once they close any Campaign, show them nothing else',
+                  'wconvert',
                 )}
               </label>
               <label className="wconvert-allowance__switch text-body">
@@ -175,14 +172,14 @@ export function SiteAllowance({
                   onChange={(event) =>
                     change({ stopAfterConversion: event.target.checked })
                   }
-                />{" "}
+                />{' '}
                 {__(
-                  "Once they sign up to anything, show them nothing else",
-                  "wconvert",
+                  'Once they sign up to anything, show them nothing else',
+                  'wconvert',
                 )}
               </label>
               <label htmlFor="wconvert-site-max">
-                {__("Show at most this many in total", "wconvert")}
+                {__('Show at most this many in total', 'wconvert')}
               </label>
               <Input
                 id="wconvert-site-max"
@@ -190,16 +187,16 @@ export function SiteAllowance({
                 type="number"
                 min={1}
                 step={1}
-                value={draft?.maxImpressions ?? ""}
+                value={draft?.maxImpressions ?? ''}
                 onChange={(event) =>
                   change({ maxImpressions: event.target.value })
                 }
               />
               <span className="text-note text-muted-foreground">
-                {__("Empty means no limit.", "wconvert")}
+                {__('Empty means no limit.', 'wconvert')}
               </span>
               <label htmlFor="wconvert-site-cooldown">
-                {__("Days to wait between any two", "wconvert")}
+                {__('Days to wait between any two', 'wconvert')}
               </label>
               <Input
                 id="wconvert-site-cooldown"
@@ -207,13 +204,13 @@ export function SiteAllowance({
                 type="number"
                 min={1}
                 step={1}
-                value={draft?.cooldownDays ?? ""}
+                value={draft?.cooldownDays ?? ''}
                 onChange={(event) =>
                   change({ cooldownDays: event.target.value })
                 }
               />
               <span className="text-note text-muted-foreground">
-                {__("Empty means no wait.", "wconvert")}
+                {__('Empty means no wait.', 'wconvert')}
               </span>
             </div>
           </fieldset>
@@ -221,8 +218,8 @@ export function SiteAllowance({
         <RegionFooter className="flex flex-wrap items-center gap-2">
           <Button type="submit" disabled={!dirty || saving}>
             {saving
-              ? __("Saving…", "wconvert")
-              : __("Save display limits", "wconvert")}
+              ? __('Saving…', 'wconvert')
+              : __('Save display limits', 'wconvert')}
           </Button>
           {dirty && (
             <Button
@@ -232,20 +229,14 @@ export function SiteAllowance({
               onClick={() => {
                 setDraft(draftOf(allowance.data));
                 setError(null);
-                setSaved(false);
               }}
             >
-              {__("Cancel changes", "wconvert")}
+              {__('Cancel changes', 'wconvert')}
             </Button>
           )}
           {dirty && !saving && (
             <span className="text-note">
-              {__("Unsaved changes", "wconvert")}
-            </span>
-          )}
-          {saved && (
-            <span role="status" className="text-note">
-              {__("Display limits saved.", "wconvert")}
+              {__('Unsaved changes', 'wconvert')}
             </span>
           )}
         </RegionFooter>

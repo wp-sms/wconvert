@@ -1,13 +1,13 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { act, render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { SiteAllowance } from "../../resources/admin/src/optins/SiteAllowance";
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { act, render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { SiteAllowance } from '../../resources/admin/src/optins/SiteAllowance';
 
 const api = vi.hoisted(() => ({
   readSiteAllowance: vi.fn(),
   saveSiteAllowance: vi.fn(),
 }));
-vi.mock("../../resources/admin/src/optins/api", () => api);
+vi.mock('../../resources/admin/src/optins/api', () => api);
 const OFF = {
   maxImpressions: null,
   cooldownDays: null,
@@ -16,33 +16,33 @@ const OFF = {
 };
 const maxField = () => screen.getByLabelText(/at most this many/i);
 const save = () =>
-  userEvent.click(screen.getByRole("button", { name: "Save display limits" }));
+  userEvent.click(screen.getByRole('button', { name: 'Save display limits' }));
 
-describe("explicit site-wide allowance drafts", () => {
+describe('explicit site-wide allowance drafts', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     api.readSiteAllowance.mockResolvedValue(OFF);
     api.saveSiteAllowance.mockImplementation(async (next) => next);
   });
-  it("shows a placeholder before reading, not editable defaults", () => {
+  it('shows a placeholder before reading, not editable defaults', () => {
     api.readSiteAllowance.mockReturnValue(new Promise(() => undefined));
     render(<SiteAllowance />);
-    expect(screen.getByRole("status")).toHaveTextContent("Loading…");
+    expect(screen.getByRole('status')).toHaveTextContent('Loading…');
     expect(screen.queryByLabelText(/close any Campaign/i)).toBeNull();
   });
-  it("retries a failed read without writing a setting", async () => {
-    api.readSiteAllowance.mockRejectedValueOnce(new Error("Read unavailable."));
+  it('retries a failed read without writing a setting', async () => {
+    api.readSiteAllowance.mockRejectedValueOnce(new Error('Read unavailable.'));
     render(<SiteAllowance />);
-    await screen.findByText("Read unavailable.");
+    await screen.findByText('Read unavailable.');
     await userEvent.click(
-      screen.getByRole("button", { name: "Retry loading display limits" }),
+      screen.getByRole('button', { name: 'Retry loading display limits' }),
     );
     expect(await screen.findByLabelText(/at most this many/i)).toHaveValue(
       null,
     );
     expect(api.saveSiteAllowance).not.toHaveBeenCalled();
   });
-  it("keeps every default off and explains the shared scope", async () => {
+  it('keeps every default off and explains the shared scope', async () => {
     render(<SiteAllowance />);
     expect(
       await screen.findByLabelText(/close any Campaign/i),
@@ -54,14 +54,14 @@ describe("explicit site-wide allowance drafts", () => {
       screen.getByText(/in addition to its own display rules/i),
     ).toBeVisible();
     expect(
-      screen.getByRole("button", { name: "Save display limits" }),
+      screen.getByRole('button', { name: 'Save display limits' }),
     ).toBeDisabled();
   });
-  it("does not write on typing, blur or a switch; saves the whole answer once", async () => {
+  it('does not write on typing, blur or a switch; saves the whole answer once', async () => {
     render(<SiteAllowance />);
     await userEvent.type(
       await screen.findByLabelText(/at most this many/i),
-      "10",
+      '10',
     );
     await userEvent.click(screen.getByLabelText(/close any Campaign/i));
     expect(api.saveSiteAllowance).not.toHaveBeenCalled();
@@ -71,11 +71,12 @@ describe("explicit site-wide allowance drafts", () => {
       maxImpressions: 10,
       stopAfterDismiss: true,
     });
-    expect(await screen.findByRole("status")).toHaveTextContent(
-      "Display limits saved.",
-    );
+    expect(
+      screen.getByRole('button', { name: 'Save display limits' }),
+    ).toBeDisabled();
+    expect(screen.queryByText('Unsaved changes')).not.toBeInTheDocument();
   });
-  it("treats a cleared number as no limit, only on Save", async () => {
+  it('treats a cleared number as no limit, only on Save', async () => {
     api.readSiteAllowance.mockResolvedValue({ ...OFF, maxImpressions: 4 });
     render(<SiteAllowance />);
     await waitFor(() => expect(maxField()).toHaveValue(4));
@@ -85,46 +86,47 @@ describe("explicit site-wide allowance drafts", () => {
     await save();
     expect(api.saveSiteAllowance).toHaveBeenCalledWith(OFF);
   });
-  it("never saves an invalid count", async () => {
+  it('never saves an invalid count', async () => {
     render(<SiteAllowance />);
     await userEvent.type(
       await screen.findByLabelText(/at most this many/i),
-      "0",
+      '0',
     );
     await save();
     expect(api.saveSiteAllowance).not.toHaveBeenCalled();
   });
-  it("cancel restores numbers and switches without a write", async () => {
+  it('cancel restores numbers and switches without a write', async () => {
     api.readSiteAllowance.mockResolvedValue({ ...OFF, maxImpressions: 4 });
     render(<SiteAllowance />);
     await waitFor(() => expect(maxField()).toHaveValue(4));
     await userEvent.clear(maxField());
-    await userEvent.type(maxField(), "10");
+    await userEvent.type(maxField(), '10');
     await userEvent.click(screen.getByLabelText(/close any Campaign/i));
     await userEvent.click(
-      screen.getByRole("button", { name: "Cancel changes" }),
+      screen.getByRole('button', { name: 'Cancel changes' }),
     );
     expect(maxField()).toHaveValue(4);
     expect(screen.getByLabelText(/close any Campaign/i)).not.toBeChecked();
     expect(api.saveSiteAllowance).not.toHaveBeenCalled();
   });
-  it("keeps the draft after a failed save and supports retry", async () => {
-    api.saveSiteAllowance.mockRejectedValueOnce(new Error("Read-only site."));
+  it('keeps the draft after a failed save and supports retry', async () => {
+    api.saveSiteAllowance.mockRejectedValueOnce(new Error('Read-only site.'));
     render(<SiteAllowance />);
     await userEvent.type(
       await screen.findByLabelText(/at most this many/i),
-      "10",
+      '10',
     );
     await save();
-    await screen.findByText("Read-only site.");
+    await screen.findByText('Read-only site.');
     expect(maxField()).toHaveValue(10);
-    expect(screen.getByText("Unsaved changes")).toBeVisible();
+    expect(screen.getByText('Unsaved changes')).toBeVisible();
     await save();
-    expect(await screen.findByRole("status")).toHaveTextContent(
-      "Display limits saved.",
-    );
+    expect(
+      screen.getByRole('button', { name: 'Save display limits' }),
+    ).toBeDisabled();
+    expect(screen.queryByText('Unsaved changes')).not.toBeInTheDocument();
   });
-  it("locks the pending write against edits and double submission", async () => {
+  it('locks the pending write against edits and double submission', async () => {
     let finish!: (value: unknown) => void;
     api.saveSiteAllowance.mockReturnValue(
       new Promise((resolve) => {
@@ -134,11 +136,11 @@ describe("explicit site-wide allowance drafts", () => {
     render(<SiteAllowance />);
     await userEvent.type(
       await screen.findByLabelText(/at most this many/i),
-      "10",
+      '10',
     );
     await save();
     expect(maxField()).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Saving…" })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Saving…' })).toBeDisabled();
     await act(async () => finish({ ...OFF, maxImpressions: 10 }));
     expect(maxField()).toBeEnabled();
     expect(api.saveSiteAllowance).toHaveBeenCalledTimes(1);
