@@ -62,7 +62,7 @@ export function TemplatePacks({ displayType, onInstalled, onInspect }: {
   const current = selected && status?.packs.find((pack) => pack.id === selected.id);
   const previewIsInstalled = current?.installed_version === preview?.version;
 
-  return <section className="p-5 sm:p-7" aria-label={__('Template packs', 'wconvert')}>
+  return <section className="min-h-0 overflow-y-auto overscroll-contain p-5 sm:p-7" aria-label={__('Template packs', 'wconvert')}>
     {error && <div role="alert" className="mb-4 rounded-md border border-destructive p-3 text-sm">{error}</div>}
     {busy && <p role="status">{__('Loading template pack…', 'wconvert')}</p>}
     {preview && template ? <>

@@ -58,3 +58,18 @@ Review and merge the collection build, then upload its generated static JSON to
 the chosen HTTPS catalog host when available. Keep the local source meanwhile.
 Paid packs, media installation and downloadable campaign setups remain separate
 slices. Add new compositions only when a useful gap is identified.
+
+## Pack-panel scrolling follow-up
+
+The live dialog clipped the second row of packs and ignored wheel scrolling:
+its outer flex layout hides overflow, while the pack section had no scrolling
+container. Give that section a zero minimum height, automatic vertical scrolling
+and contained overscroll. The header/source tabs remain fixed; both the list and
+preview actions use the same scroll area.
+
+The original wheel-scroll reproduction failed before the fix and reached the
+last two pack cards afterward. A long Fieldwork preview also scrolled to its
+bottom action. This narrow live browser check changed no draft. Pack/picker tests,
+TypeScript, ESLint and both Free/Pro admin builds passed. JSDOM does not perform
+layout, so a class-name assertion would not test this regression; the recorded
+before/after interaction is the layout verification.
