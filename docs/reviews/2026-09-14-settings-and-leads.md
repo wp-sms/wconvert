@@ -50,6 +50,12 @@ without saving; destination setup and retention loaded. Leads chips, filters,
 compact rows, captured-detail dialog, consent disclosure and Sending issues
 loaded. No horizontal overflow or product blocker was observed.
 
+Final follow-up confirmed native-radio ArrowRight navigation from All
+submissions to Subscriber collection to Enquiries, with matching route values,
+and the actual WordPress privacy-tool links. The browser was left on Visitor
+experience. Console output was not exposed by the CUA surface; this is a
+visible/render interaction check, not a claim of a clean console trace.
+
 The initial ordinary URL served cached assets; a harmless review query loaded
 the current production bundle. Final links use a fresh query. No settings were
 saved, no providers contacted through test/re-push actions, no campaigns
