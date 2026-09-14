@@ -40,7 +40,7 @@ export function TemplatePickerDialog({ open, onOpenChange, onClosed, onCatalogIn
             <DialogTitle>{__('Browse designs', 'wconvert')}</DialogTitle>
             <label className="flex items-center gap-2 text-note">
               {__('Format', 'wconvert')}
-              <select className="rounded border border-input bg-background px-3 py-2" value={displayType}
+              <select className="wconvert-picker__select" value={displayType}
                 onChange={(event) => { setSelectedFormat(event.target.value); setInspectId(undefined); }}>
                 {Object.entries(formats).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
               </select>
@@ -52,15 +52,10 @@ export function TemplatePickerDialog({ open, onOpenChange, onClosed, onCatalogIn
             <Button variant="ghost" aria-pressed={packs} onClick={() => setPacks(true)}>{__('Template packs', 'wconvert')}</Button>
           </div>}
         </DialogHeader>
-        <p className="m-0 px-6 py-3 text-note text-muted-foreground" role="status">
-          {displayType === 'inline'
-            ? __('Inline campaigns appear where you place their block or shortcode. Applying a design updates its format too; review placement before publishing.', 'wconvert')
-            : __('Applying a design updates its format too. Review display rules before publishing. Browsing does not change your draft.', 'wconvert')}
-        </p>
         <div className="wconvert-picker__scroll">
           {packs && onCatalogInstalled ? <TemplatePacks displayType={displayType} onInstalled={onCatalogInstalled}
             onInspect={(id) => { picker.onNear(id); setInspectId(id); setPacks(false); }} /> :
-            <TemplatePicker key={`${displayType}:${inspectId ?? ''}`} {...picker} displayType={displayType}
+            <TemplatePicker key={`${displayType}:${inspectId ?? ''}`} {...picker} displayType={displayType} currentDisplayType={picker.displayType}
               onChoose={(id, prepared) => { picker.onChoose(id, prepared); setSelectedFormat(null); setInspectId(undefined); }}
               initialInspectedId={inspectId} active={open} />}
         </div>

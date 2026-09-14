@@ -43,13 +43,22 @@ async function openCreation() {
   render(<App />);
   await userEvent.click(screen.getByRole('button', { name: 'Create a campaign' }));
   await userEvent.click(await screen.findByRole('button', { name: 'Choose' }, { timeout: 5000 }));
-  return screen.findByRole('button', { name: 'Customize this campaign setup' });
+  return screen.findByRole('button', { name: 'Use this setup' });
 }
 async function requestReports() {
   await act(async () => { window.location.hash = '#analytics'; });
 }
 
 describe('creation and its owning admin page', () => {
+  it('lets the creation prompt replace the redundant page-heading band', async () => {
+    await openCreation();
+    expect(screen.queryByText('What you show visitors, and whether it’s live.')).toBeNull();
+    expect(screen.getByRole('heading', { level: 1, name: 'Campaigns' })).toHaveClass('sr-only');
+    expect(screen.getByRole('heading', { name: 'Choose a campaign setup' })).toBeVisible();
+    await userEvent.click(screen.getByRole('button', { name: 'All Campaigns' }));
+    expect(screen.getByText('What you show visitors, and whether it’s live.')).toBeVisible();
+  });
+
   it('blocks outer Back and hash navigation until both prefill and creation finish', async () => {
     let prefill!: (result: unknown) => void, created!: (result: unknown) => void;
     api.prefill.mockReturnValue(new Promise(resolve => { prefill = resolve; }));

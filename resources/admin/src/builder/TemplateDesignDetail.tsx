@@ -18,6 +18,7 @@ export interface TemplateDesignDetailProps {
   readonly template?: Template;
   readonly labels: TemplateLabelsWithFacets;
   readonly current: boolean;
+  readonly currentDisplayType?: string;
   readonly active?: boolean;
   readonly fit: Fit;
   readonly busy: boolean;
@@ -33,7 +34,7 @@ const DESKTOP_CONTENT_WIDTH = '64rem';
 
 /** Inspect the exact normalized candidate before replacing the working draft. */
 export function TemplateDesignDetail({
-  entry, template: sample, labels, current, fit, busy, onChoose, onPrepare, onBack, loadError = false, onRetry, active = true,
+  entry, template: sample, labels, current, currentDisplayType, fit, busy, onChoose, onPrepare, onBack, loadError = false, onRetry, active = true,
 }: TemplateDesignDetailProps) {
   const [mode, setMode] = useState<TemplateContentMode>('keep');
   const [attempt, setAttempt] = useState(0);
@@ -117,6 +118,7 @@ export function TemplateDesignDetail({
     isCurrent ? `${id}-current` : null,
     refused !== null ? `${id}-refusal` : null,
     changed !== null ? `${id}-change` : null,
+    currentDisplayType !== undefined && entry.display_type !== currentDisplayType ? `${id}-format` : null,
     template === undefined ? `${id}-load` : null,
     unavailable ? `${id}-unavailable` : null,
   ].filter(Boolean).join(' ');
@@ -218,6 +220,11 @@ export function TemplateDesignDetail({
             </div>
           )}
           <div className="wconvert-design-detail__actions">
+            {currentDisplayType !== undefined && entry.display_type !== currentDisplayType && <p id={`${id}-format`} className="text-note text-warning">
+              {entry.display_type === 'inline'
+                ? __('Changes this campaign to Inline. Place its block or shortcode on a page before publishing.', 'wconvert')
+                : __('Changes this campaign’s format. Review display rules before publishing.', 'wconvert')}
+            </p>}
             <p id={`${id}-replacement`} className="text-note text-muted-foreground">
               {prepares && mode === 'sample'
                 ? __('Replaces the layout and content in your draft with the preview shown here. Undo restores your previous draft.', 'wconvert')

@@ -222,6 +222,7 @@ it('copies current edits to another Goal while leaving a published original unto
   const onCreated = vi.fn();
   render(<OptinBuilder id={ID} onClose={vi.fn()} onCreated={onCreated} />);
   await userEvent.type(await screen.findByRole('textbox', { name: 'Name' }), ' revised');
+  await userEvent.click(screen.getByRole('button', { name: 'Campaign details' }));
   await userEvent.click(screen.getByRole('button', { name: 'Duplicate for another goal' }));
   await userEvent.click(within(cardFor('Promote a sale or offer')).getByRole('button', { name: 'Use this goal' }));
   expect(screen.getByText(/results start at zero/)).toBeInTheDocument();

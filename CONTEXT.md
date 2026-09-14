@@ -865,7 +865,9 @@ offered one that would [[Suspend]] the Optin on the spot.
 ### Playbook
 
 Shown as **Campaign setup** in the UI (ADR 0086). Task-based names and a derived,
-expandable checklist explain the actual design and remaining setup.
+expandable checklist explain the actual design and remaining setup. Cards keep
+only the choice summary; full facts and checklist are in optional **Setup details**
+(ADR 0087).
 
 A ready-to-run bundle serving one [[Goal]] — a [[Template]], copy, a
 [[Display Type]], display rules and destination hints, packaged with notes on why

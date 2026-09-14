@@ -31,7 +31,11 @@ layout, imagery and the converting act. It uses the existing index and label
 vocabulary. It introduces no Goal, industry, campaign or season taxonomy, and
 does not fetch every tree just to discover filters.
 
-The primary choices are an optional **Fill in a form / Follow a link** selection,
+**Presentation amended by [ADR 0087](0087-choices-first-details-on-demand.md):**
+search, Goal fit and the Filters button stay visible; the following choices live
+inside an optional filter panel. Active chips and live counts remain visible.
+
+The filter choices are an optional **Fill in a form / Follow a link** selection,
 **Must include** fields, and **With a picture**. Layout and site availability
 are secondary choices. Nothing is preselected from the Goal. This amends the
 act-not-a-filter wording in [0043](0043-the-library-is-indexed-and-its-facets-are-derived.md)

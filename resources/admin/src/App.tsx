@@ -70,7 +70,8 @@ export function App() {
   }
 
   return (
-    <Shell section={section} actions={section === 'optins' && !creating ? createButton : undefined}>
+    <Shell section={section} hidePageHeading={section === 'optins' && creating}
+      actions={section === 'optins' && !creating ? createButton : undefined}>
       {section === 'optins' && (
         <OptinsSection
           creating={creating}

@@ -59,11 +59,14 @@ export function Shell({
   section,
   actions,
   bareHeader = false,
+  hidePageHeading = false,
   wide = false,
   children,
 }: {
   section?: SectionId;
   actions?: ReactNode;
+  /** A focused flow supplies its own visible prompt; retain the section heading for assistive navigation. */
+  hidePageHeading?: boolean;
   /**
    * Draw the header band with nothing in it but the slot.
    *
@@ -89,7 +92,7 @@ export function Shell({
    * null, which is exactly the two events {@see PageAction} cares about.
    */
   const [target, setTarget] = useState<HTMLElement | null>(null);
-  const banded = section !== undefined || bareHeader;
+  const banded = !hidePageHeading && (section !== undefined || bareHeader);
   const slot = useMemo(() => ({ present: banded, target }), [banded, target]);
 
   return (
@@ -126,7 +129,10 @@ export function Shell({
           </div>
         )}
 
-        <main className="wconvert-panel-main wconvert-measure mx-auto w-full px-4 py-5 sm:px-6">{children}</main>
+        <main className="wconvert-panel-main wconvert-measure mx-auto w-full px-4 py-5 sm:px-6">
+          {hidePageHeading && section && <h1 className="sr-only">{SECTIONS.find((entry) => entry.id === section)?.label}</h1>}
+          {children}
+        </main>
       </div>
     </PageActionSlotProvider>
   );

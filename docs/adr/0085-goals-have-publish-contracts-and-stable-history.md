@@ -21,6 +21,9 @@ The shared contract drives starting-point facts, fit-first browsing, readiness a
 reporting copy. The server checks the final edited tree. Incomplete pairings can
 save as drafts. Show all designs remains available, and Templates acquire no Goal
 tags. Existing unrelated structural, binding and A/B compatibility checks remain.
+**Presentation amended by [ADR 0087](0087-choices-first-details-on-demand.md):**
+the Goal is a compact footer control, with metric detail on demand. Full setup
+facts are optional; All designs is a toolbar choice. Publication checks are unchanged.
 
 ## Evidence, not implied business results
 

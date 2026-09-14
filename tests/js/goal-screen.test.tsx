@@ -133,7 +133,7 @@ beforeEach(() => {
 });
 
 const pickGoal = async () => userEvent.click(await screen.findByRole('button', { name: 'Choose' }));
-const customize = async () => userEvent.click(await screen.findByRole('button', { name: 'Customize this campaign setup' }));
+const customize = async () => userEvent.click(await screen.findByRole('button', { name: 'Use this setup' }));
 const unloadPrevented = () => {
   const event = new Event('beforeunload', { cancelable: true });
   window.dispatchEvent(event);
@@ -173,7 +173,7 @@ describe('a goal then a draft', () => {
     expect(screen.getByText('Choice 2 of 2')).toBeInTheDocument();
     expect(optins.createOptin).not.toHaveBeenCalled();
     expect(goals.prefill).not.toHaveBeenCalled();
-    expect(screen.getByText('Creates a draft. You publish when it is ready.')).toBeInTheDocument();
+    expect(screen.getByText('Creates a draft. Nothing goes live until you publish.')).toBeInTheDocument();
   });
 
   it('keeps the real design preview and makes the long rationale optional', async () => {
@@ -181,9 +181,17 @@ describe('a goal then a draft', () => {
     await pickGoal();
     await screen.findByText('Welcome discount');
     await waitFor(() => expect(container.querySelectorAll('.wconvert-gallery__card .wconvert-preview')).toHaveLength(1));
-    expect(screen.getByText(PLAYBOOK.notes)).not.toBeVisible();
-    await userEvent.click(screen.getByText('About this campaign setup'));
+    expect(screen.queryByText(PLAYBOOK.notes)).not.toBeInTheDocument();
+    expect(screen.queryByRole('term')).not.toBeInTheDocument();
+    const details = screen.getByRole('button', { name: 'Setup details for Welcome discount' });
+    await userEvent.click(details);
     expect(screen.getByText(PLAYBOOK.notes)).toBeVisible();
+    expect(screen.getByRole('dialog', { name: 'Welcome discount' })).toBeVisible();
+    expect(screen.getByText('Before publishing:')).toBeVisible();
+    expect(optins.createOptin).not.toHaveBeenCalled();
+    await userEvent.keyboard('{Escape}');
+    await waitFor(() => expect(details).toHaveFocus());
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
   it('shows the server recommendation without adding another choice step', async () => {
@@ -232,7 +240,7 @@ describe('a goal then a draft', () => {
     render(<GoalScreen onCreated={vi.fn()} />);
     await pickGoal();
     expect(await screen.findByText(/This design is not available on this site/)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Customize this campaign setup' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Use this setup' })).toBeEnabled();
   });
 
   it('guards creation paths, Back, and leaving the page throughout prefill and POST', async () => {
@@ -259,7 +267,7 @@ describe('a goal then a draft', () => {
   it('suppresses duplicate same-tick start events', async () => {
     goals.prefill.mockReturnValue(new Promise(() => undefined));
     render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
-    const button = await screen.findByRole('button', { name: 'Customize this campaign setup' });
+    const button = await screen.findByRole('button', { name: 'Use this setup' });
     act(() => { fireEvent.click(button); fireEvent.click(button); });
     expect(goals.prefill).toHaveBeenCalledTimes(1);
   });
@@ -344,6 +352,7 @@ describe('a goal then a draft', () => {
       setup: { ...PLAYBOOK.setup, targeting: { logged_in: false }, frequency: { cooldownDays: 2 } },
     }]);
     render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
+    await userEvent.click(await screen.findByRole('button', { name: 'Setup details for Welcome discount' }));
     expect(await screen.findByText(/click the main button/)).toBeInTheDocument();
     expect(screen.queryByText(/submit the form/)).not.toBeInTheDocument();
     expect(screen.getAllByRole('term').map((term) => term.textContent)).toEqual([
@@ -363,6 +372,7 @@ describe('a goal then a draft', () => {
       targeting: { include: [{ type: 'singular', value: 'post' }], exclude: [{ type: 'url', value: '/private/*' }] },
     } }]);
     render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
+    await userEvent.click(await screen.findByRole('button', { name: 'Setup details for Welcome discount' }));
     expect(await screen.findByText('Any single item of a type: Blog posts, except A URL path: /private/*')).toBeInTheDocument();
     expect(screen.queryByText(/Matches 1 page rule/)).not.toBeInTheDocument();
   });
@@ -372,6 +382,7 @@ describe('a goal then a draft', () => {
       targeting: { include: [{ type: 'post', value: '42' }] },
     } }]);
     render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
+    await userEvent.click(await screen.findByRole('button', { name: 'Setup details for Welcome discount' }));
     expect(await screen.findByText('Matches 1 page rule')).toBeInTheDocument();
     expect(screen.queryByText(/42/)).not.toBeInTheDocument();
   });
@@ -380,7 +391,7 @@ describe('a goal then a draft', () => {
     rules.getRules.mockRejectedValueOnce(new Error('Rules unavailable.'));
     render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
     await screen.findByText(/Setup details could not be loaded/);
-    expect(screen.getByRole('button', { name: 'Customize this campaign setup' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Use this setup' })).toBeEnabled();
     await userEvent.click(screen.getByRole('button', { name: 'Retry setup details' }));
     expect(await screen.findByText(/time_on_page 8/)).toBeInTheDocument();
   });
@@ -389,6 +400,7 @@ describe('a goal then a draft', () => {
     goals.listPlaybooks.mockResolvedValue([{ ...PLAYBOOK, display_type: 'inline', setup: { ...PLAYBOOK.setup, display_type: 'inline' } }]);
     render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
     expect(await screen.findByText('Inside the page')).toBeInTheDocument();
+    await userEvent.click(await screen.findByRole('button', { name: 'Setup details for Welcome discount' }));
     expect(screen.getByText('At its block or shortcode, when page and visitor rules allow it.')).toBeInTheDocument();
     expect(screen.getByText('Add its block or shortcode to the page where it should appear.')).toBeInTheDocument();
   });
@@ -402,7 +414,7 @@ it('filters installed starting points by collection and creates only the chosen 
   await pickGoal();
   await screen.findByText('Store collection', { selector: 'option' });
   await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Collection' }), 'store');
-  expect(screen.getAllByRole('button', { name: 'Customize this campaign setup' })).toHaveLength(1);
+  expect(screen.getAllByRole('button', { name: 'Use this setup' })).toHaveLength(1);
   expect(goals.prefill).not.toHaveBeenCalled();
   expect(optins.createOptin).not.toHaveBeenCalled();
   await customize();
@@ -426,7 +438,7 @@ it('installs a pack from creation, then returns to its starting points without c
   await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
   expect(screen.getByRole('combobox', { name: 'Collection' })).toHaveValue('store');
   expect(screen.getByRole('combobox', { name: 'Collection' })).toHaveFocus();
-  await screen.findByRole('button', { name: 'Customize this campaign setup' });
+  await screen.findByRole('button', { name: 'Use this setup' });
   expect(optins.createOptin).not.toHaveBeenCalled();
   expect(goals.prefill).not.toHaveBeenCalled();
 });

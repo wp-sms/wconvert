@@ -245,9 +245,10 @@ param edit.
   filing a capture design under the sale Goal is offering a start a merchant can
   legitimately want; refusing it at registration would drop the card with
   nothing in any log.
-- **The Goal is on screen**, ~~as one muted line in the builder's page-header band~~
-  **in Optin details** under [ADR 0067](0067-the-editor-starts-with-the-preview-and-the-selected-element.md),
-  with a *Change goal* control beside it.
+- **The Goal is on screen** as a compact button in the existing editor footer;
+  Campaign details holds its metric and Change/Duplicate control.
+  **Amended by [ADR 0087](0087-choices-first-details-on-demand.md):** no dedicated
+  header band; the compact control keeps Goal access visible without taking a row.
 - **Changing a Goal confirms**, and that is not the usual confirm-everything
   reflex. The structure editor's amendment to
   [ADR 0039](0039-a-screen-is-regions-and-scope-decides-placement.md) says undo

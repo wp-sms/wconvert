@@ -60,6 +60,19 @@ describe('inspecting a design before replacing the draft', () => {
     expect(onChoose).toHaveBeenCalledExactlyOnceWith(ENTRY.id, carried);
   });
 
+  it('explains a format change beside Apply, including inline placement', () => {
+    const { onChoose } = detail({ entry: { ...ENTRY, display_type: 'inline' }, currentDisplayType: 'popup' });
+    const warning = screen.getByText('Changes this campaign to Inline. Place its block or shortcode on a page before publishing.');
+    expect(warning).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Use this design' })).toHaveAttribute('aria-describedby', expect.stringContaining(warning.id));
+    expect(onChoose).not.toHaveBeenCalled();
+  });
+
+  it('does not repeat a format warning when the format stays the same', () => {
+    detail({ currentDisplayType: 'popup' });
+    expect(screen.queryByText(/Changes this campaign/)).toBeNull();
+  });
+
   it('explains unmatched pictures before applying and never stores the transfer report', async () => {
     const onPrepare = vi.fn().mockResolvedValue({ ...TEMPLATE, transfer: { unplaced: 2, unverified: 0 } });
     const { onChoose } = detail({ onPrepare });

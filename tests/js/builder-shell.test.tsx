@@ -901,6 +901,18 @@ describe('the summary', () => {
     expect(screen.queryByText('Started from')).toBeNull();
   });
 
+  it('keeps the goal in the existing footer and its measurement in details', async () => {
+    open();
+    const goal = await screen.findByRole('button', { name: 'Goal: Grow my email list' });
+    expect(goal.closest('footer')).not.toBeNull();
+    expect(screen.queryByText('Grow my email list · counts Email submissions')).toBeNull();
+    await userEvent.click(goal);
+    expect(await screen.findByRole('dialog', { name: 'Campaign details' })).toBeVisible();
+    expect(screen.getByText('Grow my email list · counts Email submissions')).toBeVisible();
+    await userEvent.keyboard('{Escape}');
+    await waitFor(() => expect(goal).toHaveFocus());
+  });
+
   /**
    * **The Goal is the SUBJECT of the dialog, not a row in it.** Every fact in
    * the list is a property of an Optin serving it, and the state is a fact

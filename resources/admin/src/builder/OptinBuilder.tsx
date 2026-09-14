@@ -11,6 +11,7 @@ import {
   MousePointer2,
   Redo2,
   SlidersHorizontal,
+  Target,
   Undo2,
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -142,6 +143,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
     }
   }, [browsing, busy]);
   const [details, setDetails] = useState(false);
+  const detailsTrigger = useRef<HTMLButtonElement | null>(null);
   useEffect(() => {
     document.body.classList.add('wconvert-editing');
     return () => document.body.classList.remove('wconvert-editing');
@@ -670,18 +672,12 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
             ref={changeGoal}
             disabled={busy}
             aria-label={__('Campaign details', 'wconvert')}
-            onClick={() => setDetails(true)}
+            onClick={(event) => { detailsTrigger.current = event.currentTarget; setDetails(true); }}
           >
             <MoreHorizontal aria-hidden="true" />
           </Button>
         </div>
       </header>
-      <div className="flex shrink-0 items-center justify-between gap-3 border-b bg-background px-4 py-2 text-note">
-        <span>{goalSaid(goalEntry, goal ?? '')}</span>
-        {goals.status === 'ready' && offerableGoals(goals.data, 'creation_flow', goal ?? '').length > 1 && <Button variant="link" size="sm" disabled={busy} onClick={() => setChangingGoal(true)}>
-          {canChangeGoal ? __('Change goal', 'wconvert') : __('Duplicate for another goal', 'wconvert')}
-        </Button>}
-      </div>
       {error !== null && <PageError message={error} />}
       <div className="wconvert-workspace__body" inert={busy}>
         <TabsContent value="design" forceMount className="wconvert-workspace__design">
@@ -830,11 +826,15 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
         </TabsContent>
       </div>
       <footer className="wconvert-workspace__footer">
-        <span>
-          {width === 'narrow' && tab === 'design' && !previewing
-            ? __('Editing mobile appearance. Text and blocks are shared across sizes.', 'wconvert')
-            : __('Save draft keeps your edits unpublished', 'wconvert')}
-        </span>{' '}
+        <Button variant="ghost" size="sm" disabled={busy} onClick={(event) => { detailsTrigger.current = event.currentTarget; setDetails(true); }}
+          className="wconvert-workspace__goal">
+          <Target aria-hidden="true" />
+          {entryOfGoal ? sprintf(__('Goal: %s', 'wconvert'), entryOfGoal.label)
+            : goalEntry.status === 'loading' ? __('Goal', 'wconvert') : sprintf(__('Goal: %s', 'wconvert'), goal ?? '')}
+        </Button>
+        {width === 'narrow' && tab === 'design' && !previewing && <span>
+          {__('Editing mobile appearance. Text and blocks are shared across sizes.', 'wconvert')}
+        </span>}
 
           <span className="wconvert-workspace__save-state" role="status">
             {busy
@@ -851,7 +851,10 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
           </span>
       </footer>
       <Dialog open={details} onOpenChange={setDetails}>
-        <DialogContent className="wconvert-optin-details">
+        <DialogContent className="wconvert-optin-details" onCloseAutoFocus={(event) => {
+          event.preventDefault();
+          if (!changingGoal) detailsTrigger.current?.focus();
+        }}>
           <DialogHeader>
             <DialogTitle>{__('Campaign details', 'wconvert')}</DialogTitle>
             <DialogDescription>
