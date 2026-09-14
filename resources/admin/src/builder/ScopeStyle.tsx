@@ -63,6 +63,7 @@ export function ScopeStyle({
   const write = (name: string) => (value: string) =>
     onChange({ ...template, tree: withScopeToken(template.tree, here.path, name, value, width) });
 
+  const mobileOverrides = Object.keys(here.narrow);
   const source = (name: string): TokenSource => sourceOfToken(chain, template.tokens, name, width);
 
   return (
@@ -74,11 +75,13 @@ export function ScopeStyle({
         )}
       </Description>
 
-      {width === 'narrow' && (
-        <p className="wconvert-scope__narrow">
-          {__('Editing mobile appearance. Unchanged values follow desktop.', 'wconvert')}
-        </p>
-      )}
+      <div className="mb-3 rounded-md border bg-muted/40 p-3 text-note">
+        <strong>{width === 'narrow' ? __('Editing mobile appearance. Unchanged values follow desktop.', 'wconvert') : __('Editing desktop', 'wconvert')}</strong>
+        <p className="m-0 mt-1">{mobileOverrides.length === 0
+          ? __('No mobile overrides on this element. It follows the surrounding design.', 'wconvert')
+          : sprintf(__('Mobile settings: %s', 'wconvert'), mobileOverrides.map(token => nameOf(labels.tokens, token)).join(', '))}</p>
+        {width === 'narrow' && mobileOverrides.length > 0 && <Button type="button" variant="ghost" size="xs" className="mt-1" onClick={() => onChange({ ...template, tree: withScopeBag(template.tree, here.path, {}, 'narrow') })}>{__('Reset this element’s mobile overrides', 'wconvert')}</Button>}
+      </div>
 
       <details className="wconvert-style-advanced">
         <summary>{__('Copy or paste styles', 'wconvert')}</summary>
@@ -149,6 +152,7 @@ export function ScopeStyle({
                       onChange={write(token.name)}
                       resetSaid={sprintf(__('Let %s be inherited again', 'wconvert'), label)}
                     />
+                    {width === 'tokens' && Object.hasOwn(here.narrow, token.name) && sourceOfToken(chain, template.tokens, token.name, 'narrow').value !== from.value && <p className="m-0 text-note text-primary">{__('Different on mobile', 'wconvert')}</p>}
                     <SourceNote
                       from={from}
                       token={token.name}

@@ -763,6 +763,8 @@
   },
   "token_controls": {
     "bg-image": "image",
+    "overlay": "gradient",
+    "pad": "spacing",
     "shadow": "shadow",
     "image-position": "position"
   },

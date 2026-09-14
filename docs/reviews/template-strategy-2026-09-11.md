@@ -17,6 +17,9 @@ ten existing designs for local use (merged in PR #154). Downloaded Playbooks are
 now implemented under [ADR 0083](../adr/0083-installed-packs-supply-campaign-starting-points.md),
 with verification in [the campaign-start report](catalog-campaign-starts-2026-09-14.md).
 Production catalog hosting, paid fetching and media installation remain subsequent work.
+The [content-transfer and style-controls follow-up](content-transfer-style-controls-2026-09-14.md)
+addresses background photo preservation, linked padding, gradients and mobile
+override summaries. Cross-container movement remains deliberately deferred.
 
 **Agreed direction**
 

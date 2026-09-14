@@ -300,17 +300,11 @@ final class TemplateLibrary
         // other way: a Role names what a slot SAYS, and tokens are what the
         // design LOOKS like. Picking a new design and keeping the old one's
         // colours is picking neither.
+        $heldTemplate = $config['template'] ?? [];
         $carried = SlotRoles::copyFrom($config['template']['tree'] ?? [], $this->vocabulary);
 
-        // **And two things a merchant supplies that are not words.** An
-        // `image`'s `src`/`alt` and a `button`'s `href` are content, but not
-        // `copy` — so no Role binds to them and nothing carried them, and a
-        // merchant who uploaded a photo and then picked a nicer design watched
-        // it be replaced by that design's stock artwork. {@see MerchantsOwn}
-        // carries what they CHANGED, comparing against the entry their copy was
-        // taken for, and leaves the new design's own asset standing where they
-        // changed nothing — which is ADR 0013's rule rather than an exception
-        // to it.
+        // Button destinations travel beside words. Pictures (including painted
+        // backgrounds) are compared and matched by PictureTransfer below.
         $mine = MerchantsOwn::changedIn(
             $config['template']['tree'] ?? [],
             $pickedBefore === null ? null : ($this->find($pickedBefore)['tree'] ?? null)
@@ -323,6 +317,12 @@ final class TemplateLibrary
             ),
             'tokens' => $entry['tokens'],
         ];
+
+        $config['template'] = PictureTransfer::prepare(
+            $heldTemplate,
+            $pickedBefore === null ? null : $this->find($pickedBefore),
+            $config['template']
+        )['template'];
 
         return $config;
     }

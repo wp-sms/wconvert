@@ -1,5 +1,7 @@
 import { useId, useState, type CSSProperties, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
+import { SpacingField } from './SpacingField';
+import { GradientField, DEFAULT_GRADIENT } from './GradientField';
 import { ColorField } from './ColorField';
 import { ShadowField } from './ShadowField';
 import { Button } from '../components/ui/button';
@@ -523,6 +525,17 @@ export function TokenField({
   );
   const offered = CHOICES[token];
 
+  const control = TOKENS.find(declaration => declaration.name === token)?.control;
+  if (control === 'spacing') return <SpacingField label={label} shown={shown} fallback={fallback} standard={standard} reset={reset} onChange={onChange} />;
+  if ((control === 'gradient' || control === 'image') && /gradient\(/i.test(shown)) {
+    return <div className="grid gap-1"><GradientField label={label} shown={shown} reset={reset} open={open} onOpenChange={onOpenChange} onChange={onChange} />
+      <Button type="button" variant="ghost" size="xs" onClick={() => { onOpenChange(false); onChange(control === 'image' ? 'none' : '#00000000'); }}>{control === 'image' ? __('Use a picture', 'wconvert') : __('Use a solid color', 'wconvert')}</Button></div>;
+  }
+  if (control === 'gradient') return <div className="grid gap-1">
+    <div className="wconvert-token wconvert-token--color"><ColorField label={label} fallback={fallback} value={value} open={open} onOpenChange={onOpenChange} onChange={onChange} />{reset}</div>
+    <Button type="button" variant="ghost" size="xs" onClick={() => { onChange(DEFAULT_GRADIENT); onOpenChange(true); }}>{__('Use a gradient', 'wconvert')}</Button>
+  </div>;
+
   if (TOKENS.find(declaration => declaration.name === token)?.control === 'shadow') {
     return <ShadowField label={label} shown={shown} value={value} fallback={fallback} offered={offered ?? []} labels={labels} token={token} reset={reset} open={open} onOpenChange={onOpenChange} onChange={onChange} />;
   }
@@ -546,7 +559,8 @@ export function TokenField({
   // Image controls are declared in the manifest; gradients on overlays remain editable values.
   if (TOKENS.find(declaration => declaration.name === token)?.control === 'image') {
     return (
-      <ImageField id={field} label={label} value={shown} reset={reset} onChange={onChange} />
+      <div className="grid gap-1"><ImageField id={field} label={label} value={shown} reset={reset} onChange={onChange} />
+        <Button type="button" variant="ghost" size="xs" onClick={() => { onChange(DEFAULT_GRADIENT); onOpenChange(true); }}>{__('Use a gradient', 'wconvert')}</Button></div>
     );
   }
 

@@ -274,7 +274,7 @@ describe('a background picture', () => {
   });
 
   /** The escape hatch: a gradient is not an address, so it is left alone. */
-  it('shows a gradient verbatim rather than pretending it is an address', () => {
+  it('offers a visual gradient without treating it as a picture address', async () => {
     render(
       <Panel
         template={{ ...ENTRY, tokens: { ...ENTRY.tokens, 'bg-image': 'linear-gradient(#fff, #000)' } }}
@@ -284,7 +284,9 @@ describe('a background picture', () => {
       />,
     );
 
-    expect(box()).toHaveValue('linear-gradient(#fff, #000)');
+    await userEvent.click(screen.getByRole('button', { name: 'Edit gradient' }));
+    expect(screen.getByLabelText('Direction (degrees)')).toHaveValue(180);
+    expect(screen.getByLabelText('Color 1 position')).toHaveValue(0);
   });
 });
 
@@ -781,122 +783,32 @@ describe('a shadow', () => {
 });
 
 describe('inner spacing', () => {
-  const sliders = () => screen.getAllByRole('slider', { name: /Inner spacing/ });
-
-  /**
-   * `split-hero` ships `"pad": "0"` and zero is the one length CSS writes
-   * without a unit — so the old parser returned null and every Optin started
-   * from that design inherited a permanent text box.
-   */
-  it('is dragged from a bare zero, in the unit the manifest declares', () => {
-    const changed = vi.fn();
-
-    render(
-      <Panel
-        template={{ ...ENTRY, tokens: { ...ENTRY.tokens, pad: '0' } }}
-        labels={LABELS}
-        design={{ ...ENTRY.tokens, pad: '0' }}
-        onChange={changed}
-        onError={vi.fn()}
-      />,
-    );
-
-    const slider = screen.getByRole('slider', { name: 'Inner spacing' });
-
-    expect(slider).toHaveValue('0');
-    // 1.5rem is the manifest's own, so the range is 0–2 and the unit is rem.
-    expect(slider).toHaveAttribute('max', '2');
-
-    fireEvent.change(slider, { target: { value: '0.125' } });
-
-    expect(changed).toHaveBeenCalledWith(
-      expect.objectContaining({ tokens: expect.objectContaining({ pad: '0.125rem' }) }),
-    );
+  function show(pad: string, changed = vi.fn()) {
+    render(<Panel template={{ ...ENTRY, tokens: { ...ENTRY.tokens, pad } }} labels={LABELS}
+      design={{ ...ENTRY.tokens, pad }} onChange={changed} onError={vi.fn()} />);
+  }
+  it('edits a bare zero in the unit declared by the manifest', async () => {
+    const changed = vi.fn(); show('0', changed);
+    const input = screen.getByRole('spinbutton', { name: 'Inner spacing amount' });
+    await userEvent.clear(input); await userEvent.type(input, '0.125{Enter}');
+    expect(changed).toHaveBeenCalledWith(expect.objectContaining({ tokens: expect.objectContaining({ pad: '0.125rem' }) }));
   });
-
-  /**
-   * Four designs ship a two-value `pad` — the three bars and
-   * `inline-cart-nudge` — and no single slider expresses two axes. `padding:
-   * a b` is block then inline, so the names are logical and never *Left and
-   * right*.
-   */
-  it('draws one slider per axis of a two-value shorthand', () => {
-    render(
-      <Panel
-        template={{ ...ENTRY, tokens: { ...ENTRY.tokens, pad: '1rem 1.25rem' } }}
-        labels={LABELS}
-        design={{ ...ENTRY.tokens, pad: '1rem 1.25rem' }}
-        onChange={vi.fn()}
-        onError={vi.fn()}
-      />,
-    );
-
-    expect(sliders()).toHaveLength(2);
-    expect(screen.getByRole('slider', { name: 'Inner spacing, top and bottom' })).toHaveValue('1');
-    expect(screen.getByRole('slider', { name: 'Inner spacing, sides' })).toHaveValue('1.25');
+  it('expands two values into their four physical sides', () => {
+    show('1rem 1.25rem');
+    expect(screen.getByRole('spinbutton', { name: 'Inner spacing, Top amount' })).toHaveValue(1);
+    expect(screen.getByRole('spinbutton', { name: 'Inner spacing, Left amount' })).toHaveValue(1.25);
   });
-
-  it('writes the whole shorthand back when one axis moves', () => {
-    const changed = vi.fn();
-
-    render(
-      <Panel
-        template={{ ...ENTRY, tokens: { ...ENTRY.tokens, pad: '1rem 1.25rem' } }}
-        labels={LABELS}
-        design={{ ...ENTRY.tokens, pad: '1rem 1.25rem' }}
-        onChange={changed}
-        onError={vi.fn()}
-      />,
-    );
-
-    fireEvent.change(screen.getByRole('slider', { name: 'Inner spacing, sides' }), {
-      target: { value: '1.375' },
-    });
-
-    expect(changed).toHaveBeenCalledWith(
-      expect.objectContaining({ tokens: expect.objectContaining({ pad: '1rem 1.375rem' }) }),
-    );
+  it('changes one side while preserving the other values and units', async () => {
+    const changed = vi.fn(); show('1rem 20px', changed);
+    const input = screen.getByRole('spinbutton', { name: 'Inner spacing, Right amount' });
+    await userEvent.clear(input); await userEvent.type(input, '25{Enter}');
+    expect(changed).toHaveBeenCalledWith(expect.objectContaining({ tokens: expect.objectContaining({ pad: '1rem 25px 1rem 20px' }) }));
   });
-
-  /**
-   * Each axis keeps its own unit and its own scale. Normalising them would be
-   * the panel deciding a design's value was written wrong.
-   */
-  it('keeps two units apart rather than reconciling them', () => {
-    render(
-      <Panel
-        template={{ ...ENTRY, tokens: { ...ENTRY.tokens, pad: '1rem 20px' } }}
-        labels={LABELS}
-        design={{ ...ENTRY.tokens, pad: '1rem 20px' }}
-        onChange={vi.fn()}
-        onError={vi.fn()}
-      />,
-    );
-
-    expect(screen.getByRole('slider', { name: 'Inner spacing, sides' })).toHaveAttribute(
-      'max',
-      '40',
-    );
-    expect(screen.getByRole('slider', { name: 'Inner spacing, top and bottom' })).toHaveAttribute(
-      'max',
-      '3',
-    );
-  });
-
-  /** CSS allows three and four values; the parser stops at two and says so. */
-  it('keeps the text box for a padding with more axes than it reads', () => {
-    render(
-      <Panel
-        template={{ ...ENTRY, tokens: { ...ENTRY.tokens, pad: '1rem 2rem 3rem 4rem' } }}
-        labels={LABELS}
-        design={{ ...ENTRY.tokens, pad: '1rem 2rem 3rem 4rem' }}
-        onChange={vi.fn()}
-        onError={vi.fn()}
-      />,
-    );
-
-    expect(screen.queryAllByRole('slider', { name: /Inner spacing/ })).toHaveLength(0);
-    expect(screen.getByLabelText('Inner spacing')).toHaveValue('1rem 2rem 3rem 4rem');
+  it('offers four explicit values without rewriting their shorthand', () => {
+    const changed = vi.fn(); show('1rem 2rem 3rem 4rem', changed);
+    expect(screen.getByRole('spinbutton', { name: 'Inner spacing, Bottom amount' })).toHaveValue(3);
+    expect(screen.getByRole('spinbutton', { name: 'Inner spacing, Left amount' })).toHaveValue(4);
+    expect(changed).not.toHaveBeenCalled();
   });
 });
 
