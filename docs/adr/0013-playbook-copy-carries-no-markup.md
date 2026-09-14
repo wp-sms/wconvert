@@ -80,6 +80,8 @@ the same move ADR 0010 made on templates, applied one layer up.
 
 > Extended by [ADR 0078](0078-editor-choices-stay-compact-and-scrollable.md): text and consent now carry a structured italic phrase (%i), alongside bold (%b) and links (%s). The renderer still constructs elements and never interprets copy as HTML. Headline behavior is unchanged.
 
+> Extended by [ADR 0084](0084-picture-transfer-and-friendly-style-controls.md): merchant pictures now transfer through PictureTransfer, including painted backgrounds and crop settings. Ambiguous matches are reported before Apply. Playbooks still supply no images.
+
 ## Consequences
 
 - **No bolding a word inside a headline.** This is a real loss and the honest

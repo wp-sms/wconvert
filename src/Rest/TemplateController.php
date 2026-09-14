@@ -6,6 +6,7 @@ use WConvert\Support\Availability;
 use WConvert\Support\ProPresence;
 use WConvert\Support\Tier;
 use WConvert\Template\TemplateLabels;
+use WConvert\Template\PictureTransfer;
 use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
 use WP_REST_Request;
@@ -197,7 +198,14 @@ final class TemplateController implements RestController
             'template' => $this->vocabulary->normalize($request->get_param('template')),
         ], is_string($source) ? $source : null);
 
-        return new WP_REST_Response($config['template']);
+        $transfer = PictureTransfer::prepare(
+            $this->vocabulary->normalize($request->get_param('template')),
+            is_string($source) ? $this->templates->find($source) : null,
+            ['tree' => $entry['tree'], 'tokens' => $entry['tokens']]
+        );
+        return new WP_REST_Response($config['template'] + ['transfer' => [
+            'unplaced' => $transfer['unplaced'], 'unverified' => $transfer['unverified'],
+        ]]);
     }
 
     /**

@@ -692,7 +692,8 @@ the Optin, or from the user. Placeholder text supplies the gallery's examples. T
 **Keep my content** carries the merchant's content by Slot Role and prepares the
 actual candidate before Apply. **Use this design's sample content** explicitly
 copies the selected design's sample words, assets, links and form settings.
-Both use the same normalized snapshot endpoint; Apply uses exactly the reviewed
+Picture transfer includes painted backgrounds and crop settings, with unmatched
+pictures explained before Apply (ADR 0084). Both use the same normalized snapshot endpoint; Apply uses exactly the reviewed
 candidate, changes only the draft, and is undoable. Sample offers and links still
 need review. A new Playbook draft continues to use its own copy, not those samples
 ([ADR 0075](docs/adr/0075-draft-history-and-template-content-choices-stay-predictable.md)).
@@ -934,6 +935,9 @@ things a *merchant* supplies are content without being words — an `image`'s
 carried them across a switch. `MerchantsOwn` carries what the merchant
 **changed**, measured against the entry their copy was taken for, and leaves the
 new design's own asset standing where they changed nothing.
+[ADR 0084](docs/adr/0084-picture-transfer-and-friendly-style-controls.md) extends
+this to background photos and crop settings through `PictureTransfer`;
+`MerchantsOwn` retains button destinations.
 
 A Playbook cannot name anything that only exists on a particular site: no post or
 term ids in its targeting, no [[Destination]] ids, and no privacy-policy link —

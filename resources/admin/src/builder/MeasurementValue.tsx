@@ -8,7 +8,8 @@ import { StyleValueInput } from './StyleValueInput';
 const UNITS = ['px', 'rem', 'em', '%', 'ch', 'vw', 'vh'];
 
 /** Number and unit edit one stored CSS value; changing units never guesses a conversion. */
-export function MeasurementValue({ id, label, rawLabel, value, fallback, standard, onChange }: {
+export function MeasurementValue({ id, label, rawLabel, value, fallback, standard, onChange, allowCustom = true }: {
+  allowCustom?: boolean;
   id?: string;
   label: string;
   rawLabel: string;
@@ -51,7 +52,7 @@ export function MeasurementValue({ id, label, rawLabel, value, fallback, standar
           onChange={(event) => event.target.value === 'custom' ? setCustom(true) : write(index, String(part.amount), event.target.value)}>
           {unit === '' && <option value="">{__('No unit', 'wconvert')}</option>}
           {UNITS.map((option) => <option key={option} value={option}>{option}</option>)}
-          <option value="custom">{__('Custom…', 'wconvert')}</option>
+          {allowCustom && <option value="custom">{__('Custom…', 'wconvert')}</option>}
         </select>
       </div>;
     })}

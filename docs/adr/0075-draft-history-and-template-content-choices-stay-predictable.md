@@ -125,4 +125,6 @@ claim a provider send, live publication or completed CI run.
 
 ## Follow-up
 
+[ADR 0084](0084-picture-transfer-and-friendly-style-controls.md) extends Keep my content to background photos with explicit unmatched-picture notices, and adds linked padding and visual gradient controls over the same token strings.
+
 [ADR 0078](0078-editor-choices-stay-compact-and-scrollable.md) moves measurement CSS entry into an explicit Custom… unit choice and shadow CSS into its Custom choice, removing the repeated disclosure rows while keeping authored values editable.

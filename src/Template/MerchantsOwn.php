@@ -4,72 +4,8 @@ namespace WConvert\Template;
 
 defined('ABSPATH') || exit;
 
-/**
- * What the merchant supplied that is **not words**, carried across a
- * [[Template]] switch.
- *
- * =============================================================================
- * A MERCHANT WHO UPLOADED AN IMAGE AND THEN PICKED A NICER DESIGN LOST IT.
- * =============================================================================
- * Picking a design takes a fresh snapshot and rebinds the merchant's copy by
- * [[Slot Role]] — *"the words survive switching Template"* (CONTEXT.md,
- * Playbook). That is exactly right about words, and it is the whole of what
- * {@see SlotRoles} carries, because a Role names what a slot SAYS.
- *
- * Two of the things a merchant types are not words:
- *
- * - **An `image`'s `src` and `alt`.** `image` declares no `copy` at all, and it
- *   declares none deliberately: *"a template's image slot keeps the template's
- *   own asset or stays empty"* and a [[Playbook]] never supplies one
- *   (ADR 0013). So no Role binds to it, so nothing carried it, so an uploaded
- *   photo was replaced by the next design's stock artwork with no warning.
- * - **A `button`'s `href`.** It is CONTENT rather than a param — a
- *   click-metered CTA's destination is the merchant's to type (ADR 0010) — but
- *   it is not `copy`, so `cta_label` carries the button's words and drops the
- *   place it goes. A cart Optin came out of a design switch pointing nowhere.
- *
- * =============================================================================
- * IT CARRIES WHAT THEY CHANGED, AND ADOPTS THE NEW DESIGN WHERE THEY DID NOT.
- * =============================================================================
- * This is the distinction that makes the fix safe rather than merely
- * sympathetic. `withoutCopy()` strips only the `copy` keys, so an Optin's `src`
- * starts life as a byte-for-byte copy of the entry's own — which means
- * comparing the Optin against **the entry its copy was taken for** says exactly
- * whether a merchant ever touched it.
- *
- * - Different from the old entry's → the merchant's, and it travels.
- * - The same → they never touched it, and the new design's own asset stands.
- *   Carrying it would plant the *previous* template's stock photo into a design
- *   that shipped its own, which is ADR 0013's rule broken by a fix meant to
- *   honour it.
- * - Present where the old entry had no such node at all → theirs by
- *   construction. That is the block a merchant ADDED in the structure editor,
- *   and there is nothing it could be a copy of.
- *
- * **Where the old entry cannot be resolved, nothing is carried.** A create has
- * no prior entry, and an install may no longer ship the one an Optin came from.
- * Neither is a licence to guess: without something to compare against, "the
- * merchant's" and "the previous design's" are indistinguishable, and the
- * failure that costs them more is the one that silently overwrites a design's
- * own artwork.
- *
- * =============================================================================
- * MATCHED BY KIND AND ORDINAL, BECAUSE THERE IS NOTHING ELSE TO MATCH ON.
- * =============================================================================
- * A Role is the seam words travel on and an `image` has none — that is the
- * whole reason this class exists, so it cannot borrow the mechanism. What is
- * left is the merchant's own model: *my image*, *my button*. So the first
- * `image` of the old tree becomes the first `image` of the new one, in tree
- * order through both of a `split`'s panes.
- *
- * It is unambiguous for the case that matters. One Optin has exactly one
- * converting act (CONTEXT.md, Conversion), so there is exactly one `button`;
- * every shipped design carries at most one `image`. Beyond that the ordinal is
- * a defensible generalisation rather than a guarantee, and a design with fewer
- * slots than the last one simply has nowhere to put the extra — arrangement is
- * the new design's, and this adds no nodes.
- *
- * @since 0.1.0
+/** Merchant button destinations carried beside Slot Role copy.
+ * Pictures and their crop settings are handled by PictureTransfer.
  */
 final class MerchantsOwn
 {
@@ -83,7 +19,6 @@ final class MerchantsOwn
      * the same slot twice and the order would decide the winner.
      */
     private const KEYS = [
-        'image' => ['src', 'alt'],
         'button' => ['href'],
     ];
 

@@ -7,11 +7,11 @@ import { Skeleton } from '../components/ui/skeleton';
 import { Preview } from './Preview';
 import { A_DESIGNS_OWN_WIDTH } from '@renderer/css';
 import { actChangeOf, refusalFor, type Fit } from './Gallery';
-import type { TemplateIndexEntry, TemplateLabelsWithFacets } from '../templates/api';
+import type { PreparedTemplate, TemplateIndexEntry, TemplateLabelsWithFacets } from '../templates/api';
 import type { Template } from '@renderer/types';
 
 export type TemplateContentMode = 'keep' | 'sample';
-export type PrepareDesign = (id: string, mode: TemplateContentMode, sample: Template) => Promise<Template>;
+export type PrepareDesign = (id: string, mode: TemplateContentMode, sample: Template) => Promise<PreparedTemplate>;
 
 export interface TemplateDesignDetailProps {
   readonly entry: TemplateIndexEntry;
@@ -41,7 +41,7 @@ export function TemplateDesignDetail({
     sample: Template;
     mode: TemplateContentMode;
     prepare: PrepareDesign;
-    value?: Template;
+    value?: PreparedTemplate;
     error?: string;
   } | null>(null);
   const prepares = onPrepare !== undefined && entry.availability === 'ready';
@@ -211,6 +211,12 @@ export function TemplateDesignDetail({
             <div><dt>{__('Visitor action', 'wconvert')}</dt><dd>{entry.facets.act === 'submit' ? __('Submits a form', 'wconvert') : entry.facets.act === 'click' ? __('Follows a link', 'wconvert') : __('No conversion action', 'wconvert')}</dd></div>
             {entry.facets.asks_consent && <div><dt>{__('Consent', 'wconvert')}</dt><dd>{__('Includes a consent checkbox', 'wconvert')}</dd></div>}
           </dl>
+          {mode === 'keep' && candidate?.value?.transfer !== undefined && (candidate.value.transfer.unplaced > 0 || candidate.value.transfer.unverified > 0) && (
+            <div role="status" className="rounded-md border border-warning p-3 text-note">
+              {candidate.value.transfer.unplaced > 0 && <p className="m-0">{sprintf(__('%d picture(s) have no clear matching place in this design and will not carry over. Check the preview before applying.', 'wconvert'), candidate.value.transfer.unplaced)}</p>}
+              {candidate.value.transfer.unverified > 0 && <p className="m-0">{__('The original design is unavailable, so we cannot identify your picture changes. Re-add your pictures after applying, or keep your current design.', 'wconvert')}</p>}
+            </div>
+          )}
           <div className="wconvert-design-detail__actions">
             <p id={`${id}-replacement`} className="text-note text-muted-foreground">
               {prepares && mode === 'sample'
@@ -221,7 +227,7 @@ export function TemplateDesignDetail({
             {changed !== null && <p id={`${id}-change`} className="text-note text-warning">{changed}</p>}
             {unavailable && <p id={`${id}-unavailable`} className="text-note text-muted-foreground">{__('This design is not installed here.', 'wconvert')}</p>}
             <Button disabled={busy} aria-disabled={cannotApply} aria-describedby={describedBy}
-              onClick={cannotApply || busy ? undefined : () => prepares ? onChoose(entry.id, template) : onChoose(entry.id)}>
+              onClick={cannotApply || busy ? undefined : () => prepares ? onChoose(entry.id, { tree: template.tree, tokens: template.tokens }) : onChoose(entry.id)}>
               {busy ? __('Applying design…', 'wconvert') : isCurrent ? __('Current design', 'wconvert') : __('Use this design', 'wconvert')}
             </Button>
           </div>

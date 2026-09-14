@@ -59,6 +59,8 @@ without changing token names, inheritance or validation semantics.
 Typography is reapplied at styled elements so inherited computed CSS does not
 prevent a local font or text-size token from taking effect.
 
+> Extended by [ADR 0084](0084-picture-transfer-and-friendly-style-controls.md): overlays and background layers now offer visual linear-gradient controls; unsupported syntax stays editable as CSS.
+
 Mobile means the 22rem preview inside the existing 24rem container breakpoint.
 A mobile override wins over the same element's desktop value; clearing it reveals
 that desktop value, then the nearest ancestor. The renderer threads ancestor

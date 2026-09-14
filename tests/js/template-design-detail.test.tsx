@@ -23,7 +23,8 @@ const { TemplateDesignDetail } = await import('../../resources/admin/src/builder
 const { Gallery } = await import('../../resources/admin/src/builder/Gallery');
 
 // Stable editor fixture: its nested row is intentional; library curation can change independently.
-const TEMPLATE = JSON.parse(readFileSync(resolve(import.meta.dirname, '../fixtures/templates/editor-card.json'), 'utf8')) as Template;
+const FIXTURE = JSON.parse(readFileSync(resolve(import.meta.dirname, '../fixtures/templates/editor-card.json'), 'utf8')) as Template;
+const TEMPLATE: Template = { tree: FIXTURE.tree, tokens: FIXTURE.tokens };
 const LABELS = {
   fields: { email: 'Email address', phone: 'Phone number', name: 'Name' },
   facetValues: {}, facets: {},
@@ -57,6 +58,18 @@ describe('inspecting a design before replacing the draft', () => {
     expect(onChoose).not.toHaveBeenCalled();
     await userEvent.click(screen.getByRole('button', { name: 'Use this design' }));
     expect(onChoose).toHaveBeenCalledExactlyOnceWith(ENTRY.id, carried);
+  });
+
+  it('explains unmatched pictures before applying and never stores the transfer report', async () => {
+    const onPrepare = vi.fn().mockResolvedValue({ ...TEMPLATE, transfer: { unplaced: 2, unverified: 0 } });
+    const { onChoose } = detail({ onPrepare });
+    expect(await screen.findByText(/2 picture\(s\) have no clear matching place/)).toBeVisible();
+    expect(onChoose).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole('button', { name: 'Use this design' }));
+    expect(onChoose).toHaveBeenCalledExactlyOnceWith(ENTRY.id, { tree: TEMPLATE.tree, tokens: TEMPLATE.tokens });
+    await userEvent.click(screen.getByRole('radio', { name: /Use this design's sample content/ }));
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Use this design' })).toHaveAttribute('aria-disabled', 'false'));
+    expect(screen.queryByText(/picture\(s\) have no clear/)).not.toBeInTheDocument();
   });
 
   it('ignores a late carry response after choosing samples and applies only the displayed content', async () => {
