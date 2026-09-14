@@ -1637,3 +1637,12 @@ if (!function_exists('is_ssl')) {
 }
 
 defined('YEAR_IN_SECONDS') || define('YEAR_IN_SECONDS', 31536000);
+
+// Pack paths are uploads-local. Standalone tests never use the live site's files.
+if (!function_exists('wp_upload_dir')) {
+    /** @return array{basedir: string, error: false} */
+    function wp_upload_dir(?string $time = null, bool $create_dir = true, bool $refresh_cache = false): array
+    {
+        return ['basedir' => sys_get_temp_dir() . '/wconvert-unit-no-installed-packs', 'error' => false];
+    }
+}

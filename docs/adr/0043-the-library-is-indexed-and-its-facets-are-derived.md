@@ -113,14 +113,20 @@ deliberately withholds trees, so it would have nothing to read.
    different conversation with the review team* (ADR 0015, and
    `goals/availability.ts` already says it about upsell copy).
 3. **Fetched free entries** — `wp_remote_get` against a WConvert-hosted index,
-   transient-cached, degrading to (1) on any failure. **Not built here.** It
+   transient-cached, degrading to (1) on any failure. **Implemented and amended by
+   [ADR 0082](0082-template-packs-install-as-validated-local-data.md):** explicit
+   catalog requests, strict import validation and immutable local versions replace
+   automatic fetching and transient-only storage. The original proposal follows. It
    adds a hosted endpoint, a cache and a `readme.txt` external-service
    disclosure, and the picker is fully useful without it — same seam, separate
    ticket.
 
 A candidate with **no `tree` is the whole discriminator**: it is a design this
 install did not get. Everything else — bundled, fetched, Pro's own — goes
-through `TemplateVocabulary::normalize()` and `refuse()` identically, which is
+through `TemplateVocabulary::normalize()` and `refuse()` identically. **Amended by
+ADR 0082:** fetched data must first pass strict value/shape/media validation;
+normalization alone is insufficient. The original rationale below is structural,
+not a complete remote-data safety claim. This is
 what will make the fetched source deliver **content and never capability**
 structurally rather than by intention.
 
@@ -208,7 +214,9 @@ work to 360px.
   beside **Use this design** explain replacement, carried text that may move or
   leave empty slots, and Undo. There is no second confirmation dialog. The
   sample-import choice remains deferred; the snapshot contract is unchanged.
-- **An optional remote catalogue fetch that fails degrades in silence.** The region is `ready` with
+- **Amended by ADR 0082: explicit catalog requests show local errors and Retry,
+  while installed/bundled library reads stay useful without network access.**
+  The earlier automatic-fetch proposal said: **An optional remote catalogue fetch that fails degrades in silence.** The region is `ready` with
   what it has — bundled designs are always there — and the failure is logged,
   not announced. An error banner on every visit of a picker that is working is
   the sentence ADR 0042 rule 2 forbids. This does not describe the installed

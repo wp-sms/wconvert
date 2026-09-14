@@ -940,6 +940,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange }: O
         open={browsing}
         onOpenChange={setBrowsing}
         onClosed={() => browse.current?.focus()}
+        onCatalogInstalled={async () => { setGallery(await listTemplates()); }}
         index={gallery}
         trees={trees}
         displayType={displayTypeOf(config, templates)}

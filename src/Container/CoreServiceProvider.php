@@ -69,6 +69,13 @@ use WConvert\Rest\RateLimit;
 use WConvert\Rest\RestController;
 use WConvert\Rest\RuleController;
 use WConvert\Rest\TemplateController;
+use WConvert\Rest\TemplateCatalogController;
+use WConvert\Template\Catalog\InstalledPacks;
+use WConvert\Template\Catalog\PackValidator;
+use WConvert\Template\Catalog\TemplateCatalog;
+use WConvert\Template\Catalog\WpCatalogTransport;
+use WConvert\Template\BundledTemplates;
+use WConvert\Template\LockedTemplates;
 use WConvert\Rest\ThemeController;
 use WConvert\Retention\RetentionPeriod;
 use WConvert\Rules\Degradation;
@@ -113,6 +120,7 @@ final class CoreServiceProvider implements ServiceProvider
     public const REST_CONTROLLERS = [
         OptinController::class,
         TemplateController::class,
+        TemplateCatalogController::class,
         RuleController::class,
         ThemeController::class,
         GoalController::class,
@@ -197,12 +205,25 @@ final class CoreServiceProvider implements ServiceProvider
 
         $container->register(
             TemplateLibrary::class,
-            static fn (ServiceContainer $c): TemplateLibrary => TemplateLibrary::fromDirectory(
-                $c->resolve(TemplateVocabulary::class)
+            static fn (ServiceContainer $c): TemplateLibrary => TemplateLibrary::from(
+                $c->resolve(TemplateVocabulary::class),
+                new BundledTemplates(WCONVERT_DIR),
+                new LockedTemplates(WCONVERT_DIR),
+                $c->resolve(InstalledPacks::class)
             )
         );
 
         $container->register(OptionStore::class, static fn (): OptionStore => new WpOptionStore());
+        $container->register(PackValidator::class, static fn (): PackValidator => PackValidator::shipping());
+        $container->register(InstalledPacks::class, static function (ServiceContainer $c): InstalledPacks {
+            $uploads = wp_upload_dir(null, false);
+            return new InstalledPacks($uploads['basedir'] . '/wconvert-template-packs', $c->resolve(PackValidator::class));
+        });
+        $container->register(TemplateCatalog::class, static fn (ServiceContainer $c): TemplateCatalog => new TemplateCatalog(
+            $c->resolve(OptionStore::class), new WpCatalogTransport(), $c->resolve(PackValidator::class), $c->resolve(InstalledPacks::class)
+        ));
+        $container->register(TemplateCatalogController::class, static fn (ServiceContainer $c): TemplateCatalogController => new TemplateCatalogController($c->resolve(TemplateCatalog::class)));
+
         // Beside the option store rather than folded into it: what goes
         // here is a value whose whole meaning is that it expires, which is
         // the opposite of the derived state ADR 0003 refuses to put in a

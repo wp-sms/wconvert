@@ -72,7 +72,9 @@ final class TemplateLibrary
      * Whatever produced a candidate, it is normalised against the vocabulary
      * and then asked {@see self::refuse()}. That is what makes the vocabulary
      * self-testing for the bundled set (ADR 0010) and what makes a *fetched*
-     * set safe by construction rather than by intention: `normalize()` drops
+     * set structurally bounded. Remote value/shape/media validation must happen
+     * first in Catalog\PackValidator (ADR 0082); normalization alone is not a
+     * security boundary: `normalize()` drops
      * every node, token, param and Slot Role outside the manifest, so a remote
      * index can deliver **content and never capability**, which is the
      * constraint issue #7 recorded.
@@ -357,7 +359,7 @@ final class TemplateLibrary
             'facets' => TemplateFacets::of($normalized['tree'], $vocabulary->fields(), $normalized['tokens']),
             'tree' => $normalized['tree'],
             'tokens' => $normalized['tokens'],
-        ];
+        ] + (isset($decoded['catalog_current']) ? ['catalog_current' => $decoded['catalog_current'] === true] : []);
     }
 
     /**

@@ -89,6 +89,7 @@ final class NothingTranslatesAtBootTest extends TestCase
     private const A_ROUTE_PER_CONTROLLER = [
         OptinController::class => '/optins',
         TemplateController::class => '/templates',
+        \WConvert\Rest\TemplateCatalogController::class => '/template-catalog',
         RuleController::class => '/rules',
         ThemeController::class => '/theme',
         GoalController::class => '/goals',

@@ -65,7 +65,9 @@ step is stuck instead of showing you a wall of zeroes, they say nothing about
 any individual visitor, and you can read the lot of them on that screen under
 *What WConvert has recorded about this site*. None of it leaves your site.
 
-WConvert itself contacts nothing on the internet. Every destination this free
+WConvert makes no background catalog or analytics requests. An optional template
+catalog is contacted only when an administrator explicitly checks, previews or
+installs a pack; see Optional template catalog below. Every destination this free
 plugin can send a lead to is already on your site — the lead-magnet email,
 MailPoet, WP SMS — which is why the email-service-provider integrations are in
 WConvert Pro rather than here. What your own mail or newsletter plugin does
@@ -176,3 +178,19 @@ time, and the plugin will say so in the network admin.
 
 = 0.1.0 =
 * First release.
+
+
+== Optional template catalog ==
+
+The bundled library works without an account or external service. If a site
+operator configures a template catalog, administrators can explicitly check it,
+preview a pack and install its designs in the editor. WConvert makes no background
+catalog requests. The pack screen identifies the configured service before use.
+
+These requests retrieve JSON template data. WConvert does not send campaigns,
+leads or licence details; the service receives the web server IP and requested
+URL as part of normal HTTP traffic. Installed designs remain available offline.
+This first version supports free popup/inline designs with placeholders, and
+accepts no downloaded executable code, fonts or media. No production service
+endpoint is configured by default. A deployed service must publish its own terms
+and privacy notice before it is offered as a default catalog.

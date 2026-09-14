@@ -26,6 +26,7 @@ export interface TemplatePickerProps {
   readonly fit: Fit;
   readonly busy: boolean;
   readonly active?: boolean;
+  readonly initialInspectedId?: string;
   readonly onChoose: (id: string, prepared?: Template) => void;
   readonly onPrepare?: PrepareDesign;
   readonly onNear: (id: string) => void;
@@ -35,13 +36,13 @@ export interface TemplatePickerProps {
 
 /** Browse by what the design does, inspect it, then apply it to the draft. */
 export function TemplatePicker({
-  index, trees, displayType, chosen, fit, busy, onChoose, onPrepare, onNear, failed, onRetry, active = true,
+  index, trees, displayType, chosen, fit, busy, onChoose, onPrepare, onNear, failed, onRetry, active = true, initialInspectedId,
 }: TemplatePickerProps) {
   const [chosenFacets, setChosenFacets] = useState<Chosen>({});
   const [query, setQuery] = useState('');
   const [availableOnly, setAvailableOnly] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
-  const [inspectedId, setInspectedId] = useState<string | null>(null);
+  const [inspectedId, setInspectedId] = useState<string | null>(initialInspectedId ?? null);
   const returnFocus = useRef<HTMLElement | null>(null);
   const filterId = useId();
 

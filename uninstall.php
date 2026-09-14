@@ -5,7 +5,7 @@
  * ============================================================================
  * THIS DESTROYS DATA, ON PURPOSE, WITH NO OPT-OUT SETTING.
  * ============================================================================
- * Three tables and nine options, all of them, every time. Uninstalling is not
+ * Three tables, eleven options and the installed pack archive, every time. Uninstalling is not
  * deactivating: `Bootstrap::deactivate()` deliberately touches no data at all,
  * because a merchant switching the plugin off has not asked for their [[Lead]]s
  * to be destroyed (ADR 0018). Deleting the plugin is a separate act, behind
@@ -46,7 +46,7 @@ global $wpdb;
 /*
  * Every option WConvert writes.
  *
- * All nine are `autoload=false` (WpOptionStore hard-codes it), so none of
+ * All eleven are `autoload=false` (WpOptionStore hard-codes it), so none of
  * them is in `alloptions` and each is one row of its own.
  */
 $wconvertOptions = [
@@ -75,10 +75,27 @@ $wconvertOptions = [
     'wconvert_destination_health',
     // Destination\DeliveryFailures::OPTION
     'wconvert_delivery_failures',
+    // Template\Catalog\TemplateCatalog::{CACHE_OPTION,SOURCE_OPTION}
+    'wconvert_template_catalog_cache',
+    'wconvert_template_catalog_url',
 ];
 
 foreach ($wconvertOptions as $wconvertOption) {
     delete_option($wconvertOption);
+}
+
+// The installer creates a flat archive of content-addressed JSON and temporary
+// .pack-* files. Never recurse into directories or follow an archive symlink.
+$wconvertUploads = wp_upload_dir(null, false);
+$wconvertPackDirectory = $wconvertUploads['basedir'] . '/wconvert-template-packs';
+if (is_dir($wconvertPackDirectory) && !is_link($wconvertPackDirectory)) {
+    foreach (scandir($wconvertPackDirectory) ?: [] as $wconvertPackFile) {
+        if (preg_match('/^(?:[a-f0-9]{64}\.json|\.pack-[A-Za-z0-9]+)$/D', $wconvertPackFile) !== 1) continue;
+        $wconvertPackPath = $wconvertPackDirectory . '/' . $wconvertPackFile;
+        if (is_file($wconvertPackPath) || is_link($wconvertPackPath)) @unlink($wconvertPackPath);
+    }
+    // An unrelated file placed here by the site owner is preserved.
+    @rmdir($wconvertPackDirectory);
 }
 
 /*
