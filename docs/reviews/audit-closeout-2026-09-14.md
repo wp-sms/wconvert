@@ -32,6 +32,8 @@ counts, test totals and observations remain dated evidence in their reports.
 | Pack scrolling and preview layout | Implemented: header tabs, status badges, aligned list/preview, independent scroll areas and visible actions. | [Pack experience](template-pack-experience-2026-09-14.md). |
 | Authoring validation and visitor budgets | Existing manifest/normalization diagnostics and loader contracts cover the core proposal. A generated JSON Schema is optional tooling, not a missing runtime contract. | [Template verifier](../../bin/verify-templates.php), [LibraryLintTest](../../tests/unit/Template/LibraryLintTest.php). |
 
+Track these follow-ups in the [product todo list](../TODO.md).
+
 ## Remaining opportunities, in priority order
 
 These are recommendations for subsequent decisions, not approved implementation
