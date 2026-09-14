@@ -191,7 +191,7 @@ function HistoryFilters({ query, optins, onApply }: { query: LeadQuery; optins: 
   }}>
     <div className="flex flex-wrap items-end gap-3">
       <div className="min-w-0 basis-64 flex-1"><Label htmlFor="wconvert-lead-search">{__('Search submissions', 'wconvert')}</Label>
-        <Input id="wconvert-lead-search" type="search" maxLength={200} value={search} onChange={(event) => setSearch(event.target.value)} placeholder={__('Name, email, phone, message or Lead ID', 'wconvert')} /></div>
+        <Input id="wconvert-lead-search" type="search" maxLength={254} value={search} onChange={(event) => setSearch(event.target.value)} placeholder={__('Name, email, phone, message or Lead ID', 'wconvert')} /></div>
       <div><Label htmlFor="wconvert-lead-optin">{__('Campaign', 'wconvert')}</Label><Select value={optinId || ALL_OPTINS} onValueChange={(value) => setOptinId(value === ALL_OPTINS ? '' : value)}>
         <SelectTrigger id="wconvert-lead-optin" className="min-w-44 max-w-64"><SelectValue /></SelectTrigger><SelectContent>
           <SelectItem value={ALL_OPTINS}>{__('All Campaigns', 'wconvert')}</SelectItem>
