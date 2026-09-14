@@ -32,6 +32,9 @@ checked against the pack's placeholder-only template contract.
 - JavaScript: complete suite, 2,322 tests across 95 files passed. New tests cover
   creation from an installed source, collection filtering, the install-to-chooser
   handoff without creation, and refusal of a mismatched-goal action.
+- Final UI follow-ups: all 39 focused creation/pack tests passed, followed by
+  TypeScript, ESLint and both admin builds. Closing the pack browser restores
+  keyboard focus; available packs explain a goal mismatch before installation.
 - TypeScript, ESLint, PHPStan, source contract, all 50 template registrations,
   and Free/Pro admin builds passed. No visitor-renderer changes were made.
 - Real local WordPress REST: downloaded/installed all three 1.1.0 packs, listed

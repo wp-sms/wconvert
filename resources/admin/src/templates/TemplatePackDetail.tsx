@@ -121,7 +121,8 @@ export function TemplatePackDetail({ pack, displayType, installedVersion, busy, 
           <p className="text-sm text-muted-foreground">{installed ? compatible
             ? __('Next, choose your content and review the design before applying.', 'wconvert')
             : sprintf(__('Open a draft in %1$s format to use this design. Your current draft is %2$s.', 'wconvert'), formatName(template.display_type), formatName(displayType))
-            : !creating && matching === 0 ? sprintf(__('This pack has no %s designs. Install it to use in other draft formats.', 'wconvert'), formatName(displayType))
+            : creating && relevantStarts.length === 0 ? __('This pack has no starting points for your selected goal. Install it to use its designs in the editor.', 'wconvert')
+              : !creating && matching === 0 ? sprintf(__('This pack has no %s designs. Install it to use in other draft formats.', 'wconvert'), formatName(displayType))
               : sprintf(_n('Adds %d design. Existing drafts stay unchanged.', 'Adds all %d designs. Existing drafts stay unchanged.', count, 'wconvert'), count)}</p>
         </div>
         {installed ? compatible && <Button disabled={busy} onClick={() => onContinue(template.id)}>

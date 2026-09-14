@@ -423,6 +423,7 @@ it('installs a pack from creation, then returns to its starting points without c
   await userEvent.click(await screen.findByRole('button', { name: 'Choose a starting point' }));
   await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
   expect(screen.getByRole('combobox', { name: 'Collection' })).toHaveValue('store');
+  expect(screen.getByRole('combobox', { name: 'Collection' })).toHaveFocus();
   await screen.findByRole('button', { name: 'Customize this starting point' });
   expect(optins.createOptin).not.toHaveBeenCalled();
   expect(goals.prefill).not.toHaveBeenCalled();

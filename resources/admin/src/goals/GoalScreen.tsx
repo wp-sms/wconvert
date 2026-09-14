@@ -35,6 +35,9 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
   const [goals, setGoals] = useState<Loadable<GoalEntry[]>>(LOADING);
   const [packsOpen, setPacksOpen] = useState(false);
   const [collectionId, setCollectionId] = useState('all');
+  const packTrigger = useRef<HTMLButtonElement>(null);
+  const collectionPicker = useRef<HTMLSelectElement>(null);
+  const choseCollection = useRef(false);
   const [goal, setGoal] = useState<GoalEntry | null>(null);
   const [playbooks, setPlaybooks] = useState<Loadable<PlaybookEntry[]>>(LOADING);
   const [vocabulary, setVocabulary] = useState<Loadable<RuleVocabulary>>(LOADING);
@@ -160,23 +163,26 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
       trailing={<Step at={2} />} />
     <RegionBody className="flex flex-wrap items-center justify-between gap-3">
       <label className="flex items-center gap-2 text-note">{__('Collection', 'wconvert')}
-        <select value={collectionId} disabled={starting !== null} onChange={(event) => setCollectionId(event.target.value)}>
+        <select ref={collectionPicker} value={collectionId} disabled={starting !== null} onChange={(event) => setCollectionId(event.target.value)}>
           <option value="all">{__('All starting points', 'wconvert')}</option>
           <option value="bundled">{__('Included with WConvert', 'wconvert')}</option>
           {[...collections].map(([id, name]) => <option key={id} value={id}>{name}</option>)}
           {collectionId !== 'all' && collectionId !== 'bundled' && !collections.has(collectionId) && <option value={collectionId}>{__('Selected pack', 'wconvert')}</option>}
         </select>
       </label>
-      <Button variant="outline" disabled={starting !== null} onClick={() => setPacksOpen(true)}>{__('Browse template packs', 'wconvert')}</Button>
+      <Button ref={packTrigger} variant="outline" disabled={starting !== null} onClick={() => { choseCollection.current = false; setPacksOpen(true); }}>{__('Browse template packs', 'wconvert')}</Button>
     </RegionBody>
     <Dialog open={packsOpen} onOpenChange={setPacksOpen}>
-      <DialogContent className="wconvert-picker gap-0 overflow-hidden p-0 sm:max-w-[80rem]">
+      <DialogContent className="wconvert-picker gap-0 overflow-hidden p-0 sm:max-w-[80rem]" onCloseAutoFocus={(event) => {
+        event.preventDefault();
+        (choseCollection.current ? collectionPicker.current : packTrigger.current)?.focus();
+      }}>
         <DialogHeader className="wconvert-picker__header"><DialogTitle>{__('Template packs', 'wconvert')}</DialogTitle>
           <DialogDescription className="sr-only">{__('Install collections of designs and campaign starting points.', 'wconvert')}</DialogDescription>
         </DialogHeader>
         <TemplatePacks displayType="" goal={goal.id}
           onInstalled={async () => { setPlaybooksRetry((value) => value + 1); }}
-          onChooseStartingPoints={(id) => { setCollectionId(id); setPacksOpen(false); }} />
+          onChooseStartingPoints={(id) => { choseCollection.current = true; setCollectionId(id); setPacksOpen(false); }} />
       </DialogContent>
     </Dialog>
     {!editorFits && <RegionBody><p className="m-0 text-note text-muted-foreground">
