@@ -57,7 +57,8 @@ months resolve to their complete calendar boundaries; future months are refused.
 Impact, Goal, campaign, variant and editor-return links preserve the accepted
 month. A monthly report's comparison uses the immediately preceding equal number
 of complete days, not necessarily the previous calendar month. On the first
-day comparison is unavailable and CSV export is disabled.
+day comparison is unavailable, CSV export is disabled, and the capture-history
+action is disabled rather than linking an empty period to today's captures.
 
 The overview starts the target read in parallel with its report, not after it.
 This independent endpoint normally adds one metadata read and one bounded

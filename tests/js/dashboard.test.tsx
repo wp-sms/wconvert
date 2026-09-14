@@ -134,6 +134,27 @@ beforeEach(() => {
 });
 
 describe('impact overview', () => {
+  it('does not link an empty first-day month to today’s capture history or export', async () => {
+    api.readDashboard.mockResolvedValue({
+      ...payload(),
+      month: '2026-09',
+      from: '2026-09-01',
+      to: '2026-09-01',
+      days: 0,
+      previous: undefined,
+    });
+    render(<Dashboard query={{ month: '2026-09', optinId: 'email' }} />);
+    await screen.findByText('No complete days yet this month');
+    expect(
+      screen.queryByRole('link', { name: 'View captured leads' }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'View captured leads' }),
+    ).toBeDisabled();
+    expect(
+      screen.getByRole('button', { name: 'Export report CSV' }),
+    ).toBeDisabled();
+  });
   it('keeps a monthly target drilldown on that month through campaign and editor links', async () => {
     const monthly = {
       ...payload(),

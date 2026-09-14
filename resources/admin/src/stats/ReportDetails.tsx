@@ -442,19 +442,31 @@ function CampaignActions({
   return (
     <>
       <div className="wa-actions">
-        {card.action === 'submit' && (
-          <Button asChild variant="outline">
-            <a
-              href={leadsHref({
-                optinId: optin.id,
-                from: payload.from,
-                to: payload.to,
-              })}
+        {card.action === 'submit' &&
+          (payload.days === 0 ? (
+            <Button
+              variant="outline"
+              disabled
+              title={__(
+                'Capture history is available after this month has a complete day.',
+                'wconvert',
+              )}
             >
               {__('View captured leads', 'wconvert')}
-            </a>
-          </Button>
-        )}
+            </Button>
+          ) : (
+            <Button asChild variant="outline">
+              <a
+                href={leadsHref({
+                  optinId: optin.id,
+                  from: payload.from,
+                  to: payload.to,
+                })}
+              >
+                {__('View captured leads', 'wconvert')}
+              </a>
+            </Button>
+          ))}
         {optin.status !== 'historical' && (
           <>
             <Button asChild variant="outline">
