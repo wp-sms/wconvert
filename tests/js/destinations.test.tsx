@@ -232,7 +232,7 @@ describe('the destinations screen', () => {
       ],
     });
 
-    render(<Destinations />);
+    render(<Destinations mode="issues" />);
 
     expect(await screen.findByText('That address does not exist.')).toBeInTheDocument();
     // Health is still clean, and says so, beside a Lead that will never land.
@@ -574,6 +574,7 @@ describe('the destinations screen', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Settings' }));
 
     await userEvent.click(await screen.findByRole('button', { name: /Re-push leads/ }));
+    await userEvent.click(screen.getByRole('button', { name: 'Queue re-push' }));
 
     await waitFor(() => {
       expect(screen.getByText(/per-run limit/)).toBeInTheDocument();
@@ -661,6 +662,7 @@ describe('the destinations screen', () => {
     const wsms = regionFor(await screen.findByRole('heading', { name: 'WP SMS contacts' }));
 
     await userEvent.click(within(wsms).getByRole('button', { name: /Re-push leads/ }));
+    await userEvent.click(screen.getByRole('button', { name: 'Queue re-push' }));
 
     expect(await within(wsms).findByText(/4 Leads queued for re-pushing/)).toBeInTheDocument();
 
@@ -1201,6 +1203,9 @@ describe('destination recovery entry points', () => {
     expect(replay).toHaveAccessibleDescription(/published configuration.*since its last success/);
     expect(api.rePush).not.toHaveBeenCalled();
     await userEvent.click(replay);
+    expect(api.rePush).not.toHaveBeenCalled();
+    expect(await screen.findByRole('alertdialog', { name: 'Re-push stored submissions?' })).toHaveTextContent('published configuration');
+    await userEvent.click(screen.getByRole('button', { name: 'Queue re-push' }));
     expect(api.rePush).toHaveBeenCalledExactlyOnceWith(HEALTHY.id);
     expect(await within(region).findByText(/12 Leads queued/)).toBeVisible();
   });
@@ -1222,7 +1227,7 @@ describe('destination recovery entry points', () => {
     api.readDestinations.mockResolvedValue({ ...TWO_DESTINATIONS, failures: [{
       destination: 'removed-route', lead: '01J0000000BBBBBBBBBBBBBBBB', at: '2026-08-25 12:00:00', error: 'Rejected.',
     }] });
-    render(<Destinations destinationId="removed-route" />);
+    render(<Destinations mode="issues" destinationId="removed-route" />);
     expect(await screen.findByText('This destination is no longer available')).toBeVisible();
     expect(screen.getByText('Removed destination')).toBeVisible();
     expect(screen.getByRole('link', { name: /View capture/ })).toHaveAttribute('href', leadsHref({ leadId: '01J0000000BBBBBBBBBBBBBBBB' }));

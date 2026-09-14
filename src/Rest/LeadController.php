@@ -62,6 +62,8 @@ final class LeadController implements RestController
                     'grouped' => ['type' => 'boolean', 'default' => false],
                     'lead_id' => ['type' => 'string', 'pattern' => '^' . Ulid::PATTERN . '$'],
                     'identifier' => ['type' => 'string', 'maxLength' => 254],
+                    'search' => ['type' => 'string', 'maxLength' => 200],
+                    'purpose' => ['type' => 'string', 'enum' => ['subscribers', 'enquiries']],
                     'group_identifier' => ['type' => 'string', 'maxLength' => 254],
                     'from' => ['type' => 'string', 'maxLength' => 10],
                     'to' => ['type' => 'string', 'maxLength' => 10],

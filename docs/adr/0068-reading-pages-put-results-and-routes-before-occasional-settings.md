@@ -34,13 +34,19 @@ old 639px breakpoint. Values and actions must remain readable at 360px.
   recorded lead-magnet deliveries links to Destinations. It is neither a terminal
   failure count nor a population of Leads awaiting delivery; see the correction
   in [0071](0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md).
-- **Leads:** submissions remain the total, including in the grouped view.
+- **Leads:** **Amended by [0091](0091-shared-settings-and-submission-workflows-have-distinct-homes.md):**
+  compact rows open a detail dialog; purpose/text filters and a separate Sending
+  issues view are added. The following describes the earlier presentation.
+  Submissions remain the total, including in the grouped view.
   Names are readable directly; other captured values open within their row.
   This is an immutable capture log, not a Contact profile or consent-status
   editor. [0071](0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md)
   extends the applied scope to exact identifier/Lead-ID and date filters, bounded
   cursor pages, group-to-event drilldown and all-matches CSV export.
-- **Destinations:** configured routes show their identity, target and health
+- **Destinations:** **Amended by [0091](0091-shared-settings-and-submission-workflows-have-distinct-homes.md):**
+  setup now lives in Settings and operational diagnostics in Leads → Sending
+  issues. The following describes the former standalone screen.
+  Configured routes show their identity, target and health
   first. Add a destination reveals the available types. Settings open within
   the route; hiding them preserves edits, while Cancel restores stored values.
   Failure reports and existing connection and test actions remain available.
@@ -50,7 +56,11 @@ old 639px breakpoint. Values and actions must remain readable at 360px.
   the test recipient explicit before a real push. These changes preserve the
   existing recovery scope and delivery semantics.
 
-Site-wide frequency and Lead retention use a shared settings disclosure. Its
+**Amended by [0091](0091-shared-settings-and-submission-workflows-have-distinct-homes.md):**
+frequency and retention now live in Settings with controls visible. Frequency
+also becomes an explicit Save/Cancel draft. Contextual shortcuts and a saved
+retention summary replace these old disclosures. Previously, site-wide
+frequency and Lead retention used a shared settings disclosure. Its
 closed state reports the saved configuration. Contents stay mounted so folding
 the section cannot discard an edit, and a new error opens it. Existing explicit
 saves and destructive confirmations still apply.

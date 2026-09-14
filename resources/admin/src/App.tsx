@@ -4,7 +4,7 @@ import { Plus } from 'lucide-react';
 import { GoalScreen, OptinBuilder } from './builder/lazy';
 import { LeadLog } from './leads/LeadLog';
 import { OptinList } from './optins/OptinList';
-import { SiteAllowance } from './optins/SiteAllowance';
+import { Settings } from './settings-page/Settings';
 import { Dashboard } from './stats/Dashboard';
 import { Destinations } from './destinations/Destinations';
 import { Button } from './components/ui/button';
@@ -12,7 +12,7 @@ import { BackLink } from './shell/BuilderSkeleton';
 import { Shell } from './shell/Shell';
 import { NarrowScreenNotice } from './shell/NarrowScreenNotice';
 import { useBuilderViewport } from './hooks/useBuilderViewport';
-import { editorHref, leadsHref, reportHref } from './nav';
+import { editorHref, leadsHref, reportHref, settingsHref, sendingIssuesHref } from './nav';
 import { useAdminNavigation, type EditingState } from './hooks/useAdminNavigation';
 import { ConfirmDialog } from './shell/ConfirmDialog';
 
@@ -82,8 +82,19 @@ export function App() {
         />
       )}
       {section === 'analytics' && <Dashboard query={route.report} onQueryChange={(query) => navigate(reportHref(query))} />}
-      {section === 'leads' && <LeadLog query={route.leads} onQueryChange={(query) => navigate(leadsHref(query))} />}
-      {section === 'destinations' && <Destinations destinationId={route.destinationId} />}
+      {section === 'leads' && <div className="flex flex-col gap-5">
+        <nav aria-label={__('Leads views', 'wconvert')} className="flex flex-wrap items-center gap-2">
+          <Button asChild variant={route.leadsView === 'submissions' ? 'secondary' : 'ghost'}><a href={leadsHref(route.leads)} aria-current={route.leadsView === 'submissions' ? 'page' : undefined}>{__('Submissions', 'wconvert')}</a></Button>
+          <Button asChild variant={route.leadsView === 'issues' ? 'secondary' : 'ghost'}><a href={sendingIssuesHref()} aria-current={route.leadsView === 'issues' ? 'page' : undefined}>{__('Sending issues', 'wconvert')}</a></Button>
+          <a className="ms-auto text-note underline underline-offset-2" href={settingsHref('connections')}>{__('Sending setup', 'wconvert')}</a>
+        </nav>
+        {route.leadsView === 'issues' ? <Destinations mode="issues" onEditingStateChange={navigation.onEditingStateChange} /> : <LeadLog query={route.leads} onQueryChange={(query) => navigate(leadsHref(query))} />}
+      </div>}
+      {section === 'settings' && <Settings key={navigation.hash} group={route.settingsGroup} destinationId={route.destinationId} onEditingStateChange={navigation.onEditingStateChange} />}
+      <ConfirmDialog open={navigation.pending} onOpenChange={(open) => { if (!open) navigation.stay(); }}
+        title={__('Leave without saving?', 'wconvert')} description={__('Your unsaved settings changes will be lost.', 'wconvert')}
+        confirmLabel={__('Discard changes', 'wconvert')} cancelLabel={__('Keep editing', 'wconvert')}
+        onConfirm={navigation.discard} returnFocusTo={navigation.returnFocusTo} />
     </Shell>
   );
 }
@@ -164,7 +175,7 @@ function OptinsSection({
   return (
     <div className="flex flex-col gap-5">
       <OptinList onEdit={onEdit} onCreate={onCreate} />
-      <SiteAllowance />
+      <p className="m-0 text-note text-muted-foreground"><a className="underline underline-offset-2" href={settingsHref('experience')}>{__('Site-wide display limits', 'wconvert')}</a></p>
     </div>
   );
 }

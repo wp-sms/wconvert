@@ -6,6 +6,17 @@ vi.mock('@wordpress/api-fetch', () => ({ default: vi.fn().mockResolvedValue({}) 
 afterEach(() => { delete window.wconvertAdmin; vi.clearAllMocks(); });
 
 describe('history request and export scope', () => {
+  it('keeps text search and purpose in both bookmarked reads and exports', async () => {
+    window.wconvertAdmin = { exportUrl: 'https://example.test/export?_wpnonce=nonce' };
+    const filter = { search: 'quote & repair', purpose: 'enquiries' as const };
+    await readLog(filter);
+    const read = new URL(vi.mocked(apiFetch).mock.calls[0][0].path!, 'https://example.test');
+    const csv = new URL(exportUrl(filter)!);
+    for (const url of [read, csv]) {
+      expect(url.searchParams.get('search')).toBe('quote & repair');
+      expect(url.searchParams.get('purpose')).toBe('enquiries');
+    }
+  });
   it('encodes exact phone, date, snapshot and paging on the same read endpoint', async () => {
     await readLog({ optinId: 'OPTIN', identifier: '+447911123456', leadId: 'LEAD', from: '2026-08-01',
       to: '2026-08-31', cursor: 'opaque+cursor=', snapshot: 'SNAPSHOT', grouped: true });

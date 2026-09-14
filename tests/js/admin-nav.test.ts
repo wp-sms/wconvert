@@ -9,6 +9,7 @@ import {
   reportHref,
   routeFrom,
   sectionFrom,
+  settingsHref,
 } from '../../resources/admin/src/nav';
 
 /**
@@ -69,6 +70,12 @@ describe('the section a URL names', () => {
 });
 
 describe('bookmarked admin flows', () => {
+  it('opens shared settings categories and keeps destination investigation links usable', () => {
+    expect(routeFrom(settingsHref('data'))).toMatchObject({ section: 'settings', settingsGroup: 'data' });
+    expect(routeFrom('#settings?group=unknown')).toMatchObject({ section: 'settings', settingsGroup: 'experience' });
+    expect(routeFrom('#destinations?destination=EMAIL1')).toMatchObject({ section: 'settings', settingsGroup: 'connections', destinationId: 'EMAIL1' });
+    expect(destinationHref('EMAIL1')).toBe('#settings?group=connections&destination=EMAIL1');
+  });
   it('reads a bookmarked editor and its return to the filtered report', () => {
     const back = reportHref({ days: 7, goal: 'grow_email_list', optinId: 'OPTIN1' });
     const href = editorHref('OPTIN1', back);
@@ -111,7 +118,7 @@ describe('bookmarked admin flows', () => {
     expect(editorHref('OPTIN1')).toBe('#optins?edit=OPTIN1');
     expect(reportHref()).toBe('#analytics');
     expect(leadsHref()).toBe('#leads');
-    expect(destinationHref()).toBe('#destinations');
+    expect(destinationHref()).toBe('#settings?group=connections');
     expect(sectionFrom('#leads?optin=OPTIN1')).toBe('leads');
     expect(sectionFrom('analytics?days=7')).toBe('analytics');
     expect(routeFrom('#leads?edit=OPTIN1').editId).toBeUndefined();

@@ -25,7 +25,9 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { AddDestinationDialog } from './AddDestinationDialog';
 import { SendTestDialog } from './SendTestDialog';
-import { destinationHref, leadsHref } from '../nav';
+import { destinationHref, leadsHref, sendingIssuesHref } from '../nav';
+import { useSettingsEditing, type SettingsEditing } from '../settings-page/useSettingsEditing';
+import type { EditingState } from '../hooks/useAdminNavigation';
 import { Code } from '../shell/Code';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import {
@@ -109,7 +111,9 @@ import { renderingFor, tierName, tierProductName } from '../goals/availability';
  * and Remove is behind a confirm rather than beside the button that repairs
  * things.
  */
-export function Destinations({ destinationId }: { readonly destinationId?: string } = {}) {
+export function Destinations({ destinationId, mode = 'settings', onEditingStateChange }: {
+  readonly destinationId?: string; mode?: 'settings' | 'issues'; onEditingStateChange?: SettingsEditing;
+} = {}) {
   const [payload, setPayload] = useState<Loadable<DestinationsPayload>>(LOADING);
   /*
    * **The read's own failure, and the only screen-wide one left.** A refresh
@@ -148,6 +152,7 @@ export function Destinations({ destinationId }: { readonly destinationId?: strin
    */
   const [tests, setTests] = useState<Record<string, TestReport>>({});
   const [confirming, setConfirming] = useState<Destination | null>(null);
+  const [replaying, setReplaying] = useState<Destination | null>(null);
   const [sending, setSending] = useState<{ destination: Destination; settingsDirty: boolean } | null>(null);
   /**
    * The type being added, which is also whether the Add dialog is open.
@@ -165,6 +170,12 @@ export function Destinations({ destinationId }: { readonly destinationId?: strin
   const returnFocus = useRef<HTMLElement | null>(null);
   const fetchRequest = useRef(0);
   const [refreshing, setRefreshing] = useState(false);
+  const [draftStates, setDraftStates] = useState<Record<string, EditingState>>({});
+  const reportDraft = useCallback((id: string, state: EditingState) => {
+    setDraftStates((held) => ({ ...held, [id]: state }));
+  }, []);
+  const dirty = adding !== null || Object.values(draftStates).some((state) => state.dirty);
+  useSettingsEditing(dirty, busyId !== null || sending !== null, onEditingStateChange);
 
   const refresh = useCallback(async () => {
     const request = ++fetchRequest.current;
@@ -320,10 +331,10 @@ export function Destinations({ destinationId }: { readonly destinationId?: strin
   return (
     <div className="flex flex-col gap-5">
       <PageAction>
-        <Button variant="outline" disabled={refreshing} onClick={() => void refresh()}>
+        <Button variant="outline" disabled={refreshing || dirty || busyId !== null} onClick={() => void refresh()}>
           <RefreshCw aria-hidden="true" />{refreshing ? __('Refreshing…', 'wconvert') : __('Refresh', 'wconvert')}
         </Button>
-        <Button disabled={data === null} onClick={() => {
+        {mode === 'settings' && <Button disabled={data === null} onClick={() => {
           setShowTypes(true);
           requestAnimationFrame(() => {
             typesRegion.current?.scrollIntoView?.({ block: 'nearest' });
@@ -331,8 +342,10 @@ export function Destinations({ destinationId }: { readonly destinationId?: strin
           });
         }}>
           <Plus aria-hidden="true" />{__('Add a destination', 'wconvert')}
-        </Button>
+        </Button>}
       </PageAction>
+      {mode === 'settings' ? <p className="m-0 text-note text-muted-foreground">{__('Choose where each Campaign sends its leads in the Campaign editor.', 'wconvert')} <a className="underline underline-offset-2" href={sendingIssuesHref()}>{__('Check sending issues', 'wconvert')}</a></p>
+        : <p className="m-0 text-note text-muted-foreground">{__('Known destination problems and recent rejected pushes. This is not a delivery status for every submission.', 'wconvert')}</p>}
       {/*
         **One read draws every region below**, so a refresh that fails is the
         screen's failure rather than any one route's. It was a `RegionError`
@@ -379,10 +392,12 @@ export function Destinations({ destinationId }: { readonly destinationId?: strin
               </EmptyState>
             </Region>
           ) : (
-            data.destinations.map((destination) => (
+            data.destinations.filter((destination) => mode === 'settings' || destination.health.consecutive_failures > 0 || destination.health.skipped_captures > 0 || destination.availability !== 'ready' || data.failures.some((failure) => failure.destination === destination.id)).map((destination) => (
               <Configured
                 key={destination.id}
                 destination={destination}
+                mode={mode}
+                onDraftState={reportDraft}
                 focusRequested={destinationId === destination.id}
                 type={data.types.find((type) => type.id === destination.type)}
                 connections={data.connections.filter(
@@ -397,7 +412,10 @@ export function Destinations({ destinationId }: { readonly destinationId?: strin
                   returnFocus.current = trigger;
                   setConfirming(destination);
                 }}
-                onRePush={replay}
+                onRePush={(target) => {
+                  returnFocus.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+                  setReplaying(target);
+                }}
                 onTestConnection={(target) => probe(target, testConnection)}
                 onTestSend={(target, trigger, settingsDirty) => {
                   returnFocus.current = trigger;
@@ -407,7 +425,8 @@ export function Destinations({ destinationId }: { readonly destinationId?: strin
             ))
           )}
 
-          <div ref={typesRegion} hidden={!showTypes && data.destinations.length > 0}>
+          {mode === 'issues' && data.destinations.length > 0 && data.failures.length === 0 && data.destinations.every((destination) => destination.health.consecutive_failures === 0 && destination.health.skipped_captures === 0 && destination.availability === 'ready') && <Region><EmptyState icon={CircleCheck} title={__('No known sending issues', 'wconvert')}>{__('No current destination outages or recent rejected pushes are recorded. This does not confirm delivery for every submission.', 'wconvert')}</EmptyState></Region>}
+          {mode === 'settings' && <div ref={typesRegion} hidden={!showTypes && data.destinations.length > 0}>
           <Types
             types={data.types}
             errors={errors}
@@ -418,8 +437,8 @@ export function Destinations({ destinationId }: { readonly destinationId?: strin
             }}
           />
 
-          </div>
-          <Failures failures={data.failures} destinations={data.destinations} />
+          </div>}
+          {mode === 'issues' && <Failures failures={data.failures} destinations={data.destinations} />}
         </>
       )}
 
@@ -454,6 +473,15 @@ export function Destinations({ destinationId }: { readonly destinationId?: strin
           setTests((current) => ({ ...current, [sending.destination.id]: report }));
         }} />}
 
+      <ConfirmDialog
+        open={replaying !== null}
+        onOpenChange={(open) => { if (!open) setReplaying(null); }}
+        title={__('Re-push stored submissions?', 'wconvert')}
+        description={replaying === null ? '' : sprintf(__('This queues retained submissions for “%1$s” from Campaigns whose published configuration uses it, since %2$s. With no previous success, all retained matching submissions are included. It is not limited to the visible failures or search results, and can send an email again.', 'wconvert'), replaying.label, replaying.health.last_success_at ?? __('the beginning', 'wconvert'))}
+        confirmLabel={__('Queue re-push', 'wconvert')}
+        returnFocusTo={returnFocus}
+        onConfirm={() => { if (replaying !== null) replay(replaying); setReplaying(null); }}
+      />
       <ConfirmDialog
         open={confirming !== null}
         onOpenChange={(open) => {
@@ -502,6 +530,8 @@ export function Destinations({ destinationId }: { readonly destinationId?: strin
  */
 function Configured({
   destination,
+  mode,
+  onDraftState,
   focusRequested,
   type,
   connections,
@@ -516,6 +546,8 @@ function Configured({
   onTestSend,
 }: {
   destination: Destination;
+  mode: 'settings' | 'issues';
+  onDraftState: (id: string, state: EditingState) => void;
   focusRequested: boolean;
   /**
    * The TYPE this route runs over, or undefined where this build no longer
@@ -592,6 +624,10 @@ function Configured({
   const originalDraft = toDraft(schema, destination.settings);
   const settingsDirty = label !== destination.label || connection !== destination.connection
     || Object.entries(draft).some(([key, value]) => value !== originalDraft[key]);
+  useEffect(() => {
+    onDraftState(destination.id, { dirty: settingsDirty, busy });
+    return () => onDraftState(destination.id, { dirty: false, busy: false });
+  }, [destination.id, settingsDirty, busy, onDraftState]);
   const lands = targetSaid(destination.target);
   const pushed = destination.health.last_success_at;
   /*
@@ -665,7 +701,7 @@ function Configured({
           ) : destination.health.last_success_at === null ? (
             <Badge variant="secondary">{__('Not used yet', 'wconvert')}</Badge>
           ) : (
-            <Badge variant="success">{__('Delivering', 'wconvert')}</Badge>
+            <Badge variant="success">{__('Success recorded', 'wconvert')}</Badge>
           )
         }
       />
@@ -806,7 +842,7 @@ function Configured({
         renameable, and so is a Destination whose type this install cannot see
         and whose schema therefore arrives empty.
       */}
-      <div hidden={!settingsOpen} className="wconvert-route-settings" id={`wconvert-settings-${destination.id}`}>
+      <div hidden={mode !== 'settings' || !settingsOpen} className="wconvert-route-settings" id={`wconvert-settings-${destination.id}`}>
         <DestinationUsageNotice usage={destination.usage} />
         {settingsProblems(type?.requirements, fromDraft(schema, draft), schema).map((problem) =>
           <p key={problem} className="m-0 text-note text-warning">{problem}</p>)}
@@ -905,9 +941,9 @@ function Configured({
       */}
       <RegionFooter className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
         <div className="flex flex-wrap items-center gap-2">
-          <Button ref={settingsTrigger} variant="outline" size="sm" aria-expanded={settingsOpen} aria-controls={`wconvert-settings-${destination.id}`} onClick={() => setSettingsOpen(!settingsOpen)}>
+          {mode === 'settings' ? <Button ref={settingsTrigger} variant="outline" size="sm" aria-expanded={settingsOpen} aria-controls={`wconvert-settings-${destination.id}`} onClick={() => setSettingsOpen(!settingsOpen)}>
             {__('Settings', 'wconvert')}<ChevronDown aria-hidden="true" className={settingsOpen ? 'rotate-180' : ''} />
-          </Button>
+          </Button> : <Button asChild variant="outline" size="sm"><a href={destinationHref(destination.id)}>{__('Fix sending setup', 'wconvert')}</a></Button>}
           {/*
             **Two verbs, and the order is the order a merchant needs them in.**
 
@@ -947,12 +983,12 @@ function Configured({
             <Zap aria-hidden="true" />
             {__('Send a test', 'wconvert')}
           </Button>
-          {(settingsOpen || failing) && destination.health.skipped_captures === 0 && <Button variant="outline" size="sm" disabled={busy || !runnable} onClick={() => onRePush(destination)}>
+          {(mode === 'issues' || settingsOpen || failing) && destination.health.skipped_captures === 0 && <Button variant="outline" size="sm" disabled={busy || !runnable} onClick={() => onRePush(destination)}>
             <RotateCcw aria-hidden="true" />
             {__('Re-push leads since the last success', 'wconvert')}
           </Button>}
         </div>
-        {settingsOpen && <Button
+        {mode === 'settings' && settingsOpen && <Button
           ref={removeTrigger}
           variant="ghost"
           size="sm"

@@ -22,7 +22,8 @@ import type { LeadQuery } from './leads/api';
  * panel layout, gallery chrome"* — and which section a URL names sits on the
  * other side of it: a bookmark, a reload and an unknown hash are behaviour.
  */
-export type SectionId = 'optins' | 'analytics' | 'leads' | 'destinations';
+export type SectionId = 'optins' | 'analytics' | 'leads' | 'settings';
+export type SettingsGroup = 'experience' | 'connections' | 'data';
 
 export interface Section {
   id: SectionId;
@@ -31,17 +32,14 @@ export interface Section {
 
 /**
  * Ordered as a merchant meets them: what exists, how it is doing, what it
- * captured, where that goes.
- *
- * Retention is not a section of its own. It is one question about the lead log
- * — how long the rows on this screen live — and a tab holding a single radio
- * pair reads as a screen somebody forgot to finish.
+ * captured, shared site setup. Settings groups frequency, destinations and
+ * retention; the daily screens retain contextual shortcuts (ADR 0091).
  */
 export const SECTIONS: readonly Section[] = [
   { id: 'optins', label: __('Campaigns', 'wconvert') },
   { id: 'analytics', label: __('Analytics', 'wconvert') },
   { id: 'leads', label: __('Leads', 'wconvert') },
-  { id: 'destinations', label: __('Destinations', 'wconvert') },
+  { id: 'settings', label: __('Settings', 'wconvert') },
 ];
 
 /**
@@ -69,6 +67,8 @@ const IDS: ReadonlySet<string> = new Set(SECTIONS.map((section) => section.id));
  */
 export function sectionFrom(hash: string): SectionId {
   const id = hash.replace(/^#/, '').split('?')[0];
+
+  if (id === 'destinations') return 'settings';
 
   return IDS.has(id) ? (id as SectionId) : DEFAULT_SECTION;
 }
@@ -102,6 +102,8 @@ export interface AdminRoute {
   report: ReportQuery;
   leads: LeadQuery;
   destinationId?: string;
+  settingsGroup: SettingsGroup;
+  leadsView: 'submissions' | 'issues';
 }
 
 function withQuery(
@@ -119,7 +121,7 @@ function returnHref(value: string | null): string {
   if (!value?.startsWith('#') || value.length > 2048) return hashFor('optins');
   const [section, ...query] = value.slice(1).split('?');
   // Returning to another editor can form an endless nested back-link chain.
-  return IDS.has(section) && !new URLSearchParams(query.join('?')).has('edit')
+  return (IDS.has(section) || section === 'destinations') && !new URLSearchParams(query.join('?')).has('edit')
     ? value
     : hashFor('optins');
 }
@@ -141,6 +143,8 @@ export const reportHref = (query: ReportQuery = {}): string =>
   });
 export const leadsHref = (query: LeadQuery = {}): string =>
   withQuery('leads', {
+    search: query.search,
+    purpose: query.purpose,
     optin: query.optinId,
     identifier: query.identifier,
     lead: query.leadId,
@@ -148,7 +152,10 @@ export const leadsHref = (query: LeadQuery = {}): string =>
     to: query.to,
   });
 export const destinationHref = (id?: string): string =>
-  withQuery('destinations', { destination: id });
+  withQuery('settings', { group: 'connections', destination: id });
+export const settingsHref = (group: SettingsGroup = 'experience'): string =>
+  withQuery('settings', { group });
+export const sendingIssuesHref = (): string => withQuery('leads', { view: 'issues' });
 
 export function routeFrom(hash: string): AdminRoute {
   const section = sectionFrom(hash);
@@ -173,6 +180,8 @@ export function routeFrom(hash: string): AdminRoute {
       ...(value('compare') === '0' ? { compare: false } : {}),
     },
     leads: {
+      ...(value('search') ? { search: value('search') } : {}),
+      ...(value('purpose') === 'subscribers' || value('purpose') === 'enquiries' ? { purpose: value('purpose') as LeadQuery['purpose'] } : {}),
       optinId: value('optin'),
       identifier: value('identifier'),
       leadId: value('lead'),
@@ -180,5 +189,8 @@ export function routeFrom(hash: string): AdminRoute {
       to: value('to'),
     },
     destinationId: value('destination'),
+    settingsGroup: hash.replace(/^#/, '').split('?')[0] === 'destinations' || value('group') === 'connections'
+      ? 'connections' : value('group') === 'data' ? 'data' : 'experience',
+    leadsView: value('view') === 'issues' ? 'issues' : 'submissions',
   };
 }

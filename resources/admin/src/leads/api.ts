@@ -45,6 +45,8 @@ export interface LeadLog {
 
 /** Shareable filters. Grouping and paging change the view, not this search scope. */
 export interface LeadQuery {
+  search?: string;
+  purpose?: 'subscribers' | 'enquiries';
   optinId?: string;
   identifier?: string;
   leadId?: string;
@@ -68,6 +70,7 @@ const query = (params: Record<string, string>) => new URLSearchParams(params).to
 
 export const leadParams = (filter: LeadPage): Record<string, string> => Object.fromEntries(
   Object.entries({ optin_id: filter.optinId, identifier: filter.identifier, lead_id: filter.leadId,
+    search: filter.search, purpose: filter.purpose,
     from: filter.from, to: filter.to, cursor: filter.cursor, snapshot: filter.snapshot,
     group_identifier: filter.groupIdentifier }).filter((entry): entry is [string, string] => typeof entry[1] === 'string' && entry[1] !== ''),
 );

@@ -100,7 +100,7 @@ describe('capture history', () => {
   it('applies exact identifier and inclusive dates together only on Apply', async () => {
     render(<LeadLog />);
     await screen.findByText('7 submissions');
-    await userEvent.type(screen.getByLabelText('Email, phone or Lead ID'), ' alex@example.com ');
+    await userEvent.type(screen.getByLabelText('Search submissions'), ' alex@example.com ');
     fireEvent.change(screen.getByLabelText('From'), { target: { value: '2026-08-01' } });
     fireEvent.change(screen.getByLabelText('To'), { target: { value: '2026-08-31' } });
     expect(log.readLog).toHaveBeenCalledTimes(1);
@@ -111,7 +111,7 @@ describe('capture history', () => {
   it('recognizes a pasted Lead ID and preserves existing date scope', async () => {
     const onQueryChange = vi.fn();
     render(<LeadLog query={{ from: '2026-08-01', to: '2026-08-31' }} onQueryChange={onQueryChange} />);
-    await userEvent.type(screen.getByLabelText('Email, phone or Lead ID'), CAPTURE.id.toLowerCase());
+    await userEvent.type(screen.getByLabelText('Search submissions'), CAPTURE.id.toLowerCase());
     await userEvent.click(screen.getByRole('button', { name: 'Apply filters' }));
     expect(onQueryChange).toHaveBeenCalledWith(expect.objectContaining({ leadId: CAPTURE.id, identifier: undefined, from: '2026-08-01', to: '2026-08-31' }));
   });
@@ -119,9 +119,9 @@ describe('capture history', () => {
   it('follows browser-history query changes and resets stale filter inputs', async () => {
     const { rerender } = render(<LeadLog query={{ identifier: 'first@example.com' }} />);
     await screen.findByText('7 submissions');
-    await userEvent.type(screen.getByLabelText('Email, phone or Lead ID'), 'draft');
+    await userEvent.type(screen.getByLabelText('Search submissions'), 'draft');
     rerender(<LeadLog query={{ identifier: 'second@example.com', from: '2026-09-01' }} />);
-    expect(screen.getByLabelText('Email, phone or Lead ID')).toHaveValue('second@example.com');
+    expect(screen.getByLabelText('Search submissions')).toHaveValue('second@example.com');
     expect(screen.getByLabelText('From')).toHaveValue('2026-09-01');
     await waitFor(() => expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ identifier: 'second@example.com' })));
   });
@@ -209,7 +209,7 @@ describe('capture history', () => {
     await userEvent.click(screen.getByLabelText('Group by email or phone'));
     await userEvent.click(await screen.findByRole('button', { name: 'View submissions' }));
     const dialog = await screen.findByRole('dialog', { name: 'Submission history' });
-    expect(await within(dialog).findByText(CAPTURE.id)).toBeInTheDocument();
+    expect(await within(dialog).findByText('sarah@example.com', { selector: 'bdi' })).toBeInTheDocument();
     expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ groupIdentifier: 'sarah@example.com', grouped: false, from: '2026-08-01', snapshot: SNAPSHOT, cursor: undefined }));
     expect(within(dialog).getByRole('link', { name: 'Export these submissions' })).toBeInTheDocument();
     expect(log.exportUrl).toHaveBeenCalledWith(expect.objectContaining({ groupIdentifier: 'sarah@example.com', from: '2026-08-01', snapshot: SNAPSHOT }));
@@ -219,9 +219,21 @@ describe('capture history', () => {
     log.readLog.mockResolvedValue({ ...SEVEN, leads: [{ ...CAPTURE, fields: { name: 'Sarah', consent_text: 'Please email me.', service: 'Repairs' } }] });
     render(<LeadLog />);
     await userEvent.click(await screen.findByText('View captured details'));
+    expect(screen.getByRole('dialog', { name: 'Submission details' })).toBeInTheDocument();
     expect(screen.getByText(CAPTURE.id)).toBeVisible();
+    await userEvent.click(screen.getByText('Consent at capture'));
     expect(screen.getByText('Please email me.')).toBeVisible();
     expect(screen.getByText('Repairs')).toBeVisible();
     expect(document.body.textContent).not.toMatch(/delivered|delivery succeeded/i);
+  });
+
+  it('searches captured names and messages, then narrows to enquiries without losing the search', async () => {
+    render(<LeadLog />);
+    await userEvent.type(await screen.findByLabelText('Search submissions'), 'repair');
+    await userEvent.click(screen.getByRole('button', { name: 'Apply filters' }));
+    await waitFor(() => expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ search: 'repair' })));
+    await userEvent.click(screen.getByRole('button', { name: 'Enquiries' }));
+    await waitFor(() => expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ search: 'repair', purpose: 'enquiries' })));
+    expect(log.exportUrl).toHaveBeenLastCalledWith(expect.objectContaining({ search: 'repair', purpose: 'enquiries', snapshot: SNAPSHOT }));
   });
 });

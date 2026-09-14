@@ -18,6 +18,7 @@ import { RegionBody, RegionError, RegionErrorState, RegionFooter } from '../shel
 import { SettingsDisclosure } from '../shell/SettingsDisclosure';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
 import { readRetention, saveRetention, type Retention } from './api';
+import { useSettingsEditing, type SettingsEditing } from '../settings-page/useSettingsEditing';
 
 interface Draft {
   automatic: boolean;
@@ -30,7 +31,7 @@ const draftOf = (period: Retention): Draft => ({
 });
 
 /** The disclosure describes the saved policy; controls are a separate, explicit draft. */
-export function LeadRetention() {
+export function LeadRetention({ expanded = false, onEditingStateChange }: { expanded?: boolean; onEditingStateChange?: SettingsEditing } = {}) {
   const [retention, setRetention] = useState<Loadable<Retention>>(LOADING);
   const [draft, setDraft] = useState<Draft>({ automatic: false, days: '' });
   const [retry, setRetry] = useState(0);
@@ -68,6 +69,7 @@ export function LeadRetention() {
     draft.automatic !== (period.days !== null)
     || (draft.automatic && draft.days !== String(period.days))
   );
+  useSettingsEditing(dirty, saving, onEditingStateChange);
   const changeDraft = (next: Draft) => {
     setDraft(next);
     setValidation(null);
@@ -120,6 +122,7 @@ export function LeadRetention() {
   return (
     <>
       <SettingsDisclosure
+        expanded={expanded}
         title={__('How long leads are kept', 'wconvert')}
         summary={period === null
           ? __('Lead retention settings', 'wconvert')

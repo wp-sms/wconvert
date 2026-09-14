@@ -62,7 +62,10 @@ retention's independence from historical counters.
 [`LeadQuery`](../../src/Lead/LeadQuery.php) validates exact email/phone or Lead-ID
 search, Optin and date constraints. Email and phone use the capture identifier
 normalizers; dates include both named days in the site's timezone and become
-ULID bounds. Partial-text and free-form field search are not introduced.
+ULID bounds. **Extended by [0091](0091-shared-settings-and-submission-workflows-have-distinct-homes.md):**
+explicit substring search adds captured name/message and email/phone; purpose
+views select list-collection or enquiry Campaigns. All read/export paths share
+these predicates. The earlier exact-only limitation no longer applies.
 
 The first read supplies an upper ULID boundary before the current millisecond.
 Subsequent pages use that snapshot and an opaque cursor containing the boundary
@@ -87,6 +90,11 @@ control after export. No new indexes are added; selective Optin reads and
 filtered grouping retain the query-cost tradeoff in [0033](0033-the-lead-log-reads-without-a-new-index.md).
 
 ## Recovery names its route and its scope
+
+**Extended by [0091](0091-shared-settings-and-submission-workflows-have-distinct-homes.md):**
+diagnostics now live in Leads → Sending issues; configuration links target
+Settings → Connections & destinations. Re-push confirms the scope described
+below before queueing. Settings drafts use the same guarded navigation as editors.
 
 Terminal-failure rows link to the named Destination and the exact captured Lead.
 A removed route or a capture no longer retained is explained without inventing
@@ -122,7 +130,9 @@ exact days before writing; no suggested 90-day policy is committed along the
 way. Selecting keep-forever also needs an explicit save, without a destructive
 confirmation.
 
-The closed disclosure always describes the last saved policy. Failed writes
+**Amended by [0091](0091-shared-settings-and-submission-workflows-have-distinct-homes.md):**
+the focused Data & privacy category shows controls directly; its heading
+describes the saved policy. Failed writes
 retain the draft and error for retry. Cancelling the confirmation keeps the
 draft editable; **Cancel changes** restores the saved policy and its control's
 focus. The deletion confirmation prevents duplicate submission and dismissal

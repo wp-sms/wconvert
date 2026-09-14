@@ -74,7 +74,7 @@ final class LeadExport
 
         try {
             $input = [];
-            foreach (['optin_id', 'identifier', 'lead_id', 'from', 'to', 'snapshot', 'group_identifier'] as $key) {
+            foreach (['optin_id', 'identifier', 'search', 'purpose', 'lead_id', 'from', 'to', 'snapshot', 'group_identifier'] as $key) {
                 if (isset($_GET[$key])) $input[$key] = is_string($_GET[$key]) ? wp_unslash($_GET[$key]) : $_GET[$key];
             }
             $query = LeadQuery::fromInput($input);

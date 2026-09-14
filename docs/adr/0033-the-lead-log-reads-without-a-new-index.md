@@ -91,6 +91,12 @@ this extension does not claim that every combined filter remains index-only.*
 
 ## What this costs
 
+**Extended by [0091](0091-shared-settings-and-submission-workflows-have-distinct-homes.md):**
+explicit substring search of identifiers and captured name/message can scan
+retained fields. It runs on Apply, not on each keystroke; date/Campaign scope
+can narrow it. Purpose filters resolve all matching Campaign IDs once per
+query/export, including historical rows. No new index or index-only guarantee.
+
 **A Lead carrying only an email and a Lead carrying only a phone are two
 groups, even where a human knows they are one person.** The two halves
 partition on `email IS NULL`, so a phone shared with an email-bearing Lead does

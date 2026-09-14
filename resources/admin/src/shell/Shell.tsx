@@ -1,6 +1,6 @@
 import { useMemo, useState, type ReactNode } from 'react';
 import { __ } from '@wordpress/i18n';
-import { ChartColumn, Inbox, Megaphone, Send } from 'lucide-react';
+import { ChartColumn, Inbox, Megaphone, Settings } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { SECTIONS, hashFor, type SectionId } from '../nav';
 import { Description } from './Description';
@@ -304,7 +304,7 @@ const ICONS: Record<SectionId, LucideIcon> = {
   optins: Megaphone,
   analytics: ChartColumn,
   leads: Inbox,
-  destinations: Send,
+  settings: Settings,
 };
 
 /**
@@ -346,7 +346,7 @@ function descriptionFor(section: SectionId): string {
       return __('How each goal is performing.', 'wconvert');
     case 'leads':
       return __('Every form submission, as it was captured.', 'wconvert');
-    case 'destinations':
-      return __('Where captured leads are sent on to.', 'wconvert');
+    case 'settings':
+      return __('Shared settings for this site.', 'wconvert');
   }
 }

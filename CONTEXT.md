@@ -74,6 +74,13 @@ answers do not identify a person, imply marketing consent, or acquire a
 lifecycle. Capture history and CSV show both values; email or phone remains
 necessary for a Lead. See [ADR 0076](docs/adr/0076-an-enquiry-captures-one-optional-choice-before-handoff.md).
 
+The capture-history read also supports explicit literal text search over
+captured name/message and email/phone, and purpose views for list-collection
+and enquiries. Leads shows compact capture rows with detail dialogs; sending
+diagnostics remain separate from per-capture state. Shared site settings live
+under Visitor experience, Connections & destinations, and Data & privacy.
+See [ADR 0091](docs/adr/0091-shared-settings-and-submission-workflows-have-distinct-homes.md).
+
 The capture-history read can locate a complete canonical email/phone or exact
 Lead ID, narrow by Optin and site-calendar dates, and page the matching events.
 Grouping and group drilldown remain views of those events, not Contact profiles.
