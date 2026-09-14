@@ -106,18 +106,16 @@ destination can receive it. A short message is another candidate, but it should
 be a bounded capture field whose text is handed off, not the start of a reply
 inbox inside WConvert. Neither addition needs to be mandatory on other forms.
 
-The contract remains intentionally small. Current status: the manifest and
-canonical forwarding now include `interest`; the three-field inventory below
-records the original audit, not a remaining implementation task:
+The contract remains intentionally small. Updated inventory after ADR 0076:
 
-- The [manifest](../../resources/templates/manifest.json) offers email, phone
-  and name. The renderer supplies their HTML type and autocomplete attributes.
+- The [manifest](../../resources/templates/manifest.json) offers email, phone,
+  name and the bounded `interest` choice. Renderer behavior follows each kind.
 - [CaptureForm](../../src/Lead/CaptureForm.php) validates against the published
   design and requires at least an email or phone identifier.
-- Other scalar values can fit the existing `Lead.fields` JSON, but
-  [CanonicalFields](../../src/Destination/CanonicalFields.php) currently forwards
-  only email, phone and name. Merely adding an editor control would not deliver
-  a new field.
+- [CanonicalFields](../../src/Destination/CanonicalFields.php) exposes email,
+  phone, name and the stable interest value. Provider requirements describe which
+  details a route supports. Merely adding an editor control would not deliver
+  a further field.
 
 Before shipping another visitor field, carry one example through editor,
 preview, server validation, local Lead serialization, log/export, test send and

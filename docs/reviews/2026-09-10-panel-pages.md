@@ -56,5 +56,5 @@ The original next-check brief was: walk one representative offer through choosin
 choosing where it appears, collecting a test Lead and confirming delivery in a
 named receiving service. This requires a designated test recipient before the
 send. Broader Browse designs comparison, field capabilities, template fidelity
-and manifest improvements remain separate work described in the merchant
-journey review; this panel pass does not claim to complete them.
+and manifest improvements were excluded from this historical panel pass; their
+subsequent completion is recorded in the audit closeout above.

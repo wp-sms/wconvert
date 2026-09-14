@@ -109,3 +109,11 @@ instruction. That operational issue is separate from implementation completion.
 - Re-ran the template registration verifier: all 50 designs survive intact.
 - Verified local Markdown file links and a clean documentation diff. Runtime
   suites and browser QA were not repeated for documentation-only changes.
+
+## Merge review
+
+Standards and specification reviews independently identified two stale passages:
+the historical three-field inventory and a completed provider-metadata task
+still phrased as a next step. Both now describe the completed state. The panel
+review's scope note also explicitly identifies its historical boundary. Neither
+review found a material problem with the todo list or its deferred scope.

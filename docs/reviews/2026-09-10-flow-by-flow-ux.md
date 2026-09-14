@@ -501,12 +501,11 @@ No test capture, provider send, re-push or page placement was performed. Browser
 viewport overrides were reset after the responsive checks.
 
 Provider-owned required capture/settings metadata was deferred at this phase
-and subsequently completed in Phase 5 under ADR 0074. This phase
-cannot prove that a form's fields meet every adapter's requirements, that an
-audience or file is correctly configured, or that a successful promotion produces
-a delivered message. The next handoff slice should establish that metadata and
-then verify one deliberate capture against a named provider and recipient before
-extending the capture-field format.
+and subsequently completed in [Phase 5](#phase-5-remainder--editor-qualification-and-destination-contracts)
+under ADR 0074. That later section and the lead-journey report record the
+implemented requirements and deliberate provider verification. The Phase 2
+checks alone did not establish adapter compatibility or delivery; even current
+publish checks do not prove an audience/file is correct or a message arrives.
 
 ## Phase 3 delivered implementation
 
