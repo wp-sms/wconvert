@@ -53,7 +53,12 @@ operation is performed by setup.
 
 Review connects design, placement/timing, local Lead storage and forwarding to
 their editing controls. Missing design/conversion essentials are separated from
-warnings. Local-only capture remains valid. Known missing routes, unavailable
+warnings. **Presentation amended by [0088](0088-handoff-state-and-required-fixes-lead-the-review.md):**
+required fixes lead the recap, while measurement/setup background is optional.
+The destination list shows selection state and any unmet Outcome handoff requirement.
+Local-only capture remains valid where the Goal allows it; audience Goals require
+the explicit choice established in [0086](0086-campaign-setups-explain-handoff-and-format.md).
+Known missing routes, unavailable
 providers and observed health failures are actionable without claiming that
 publication proves delivery. The destination tab also identifies missing accounts.
 

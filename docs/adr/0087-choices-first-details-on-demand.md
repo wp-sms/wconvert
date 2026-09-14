@@ -6,6 +6,9 @@ Accepted 2026-09-14 after the merchant review of the Goal and setup screens.
 
 The creation and design-browsing surfaces must prioritize comparison and action.
 Repeated documentation should not compete with the choices it explains.
+**Extended by [ADR 0088](0088-handoff-state-and-required-fixes-lead-the-review.md)** to
+Destinations and Review & publish: current selection and required fixes lead;
+setup/measurement background is optional, while consequential warnings stay visible.
 
 - Creation keeps section navigation and Back, but omits the redundant Campaigns
   heading band. The current question is its visible heading; the section heading

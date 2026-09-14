@@ -202,9 +202,19 @@ export function ReadinessDialog({
               </div>
             ) : (
               <>
-                {outcome && <ReviewSection title={__('What this Goal measures', 'wconvert')}>
-                  <p>{outcome.measurement}</p>
-                </ReviewSection>}
+                {blocking.length > 0 && (
+                  <ReviewSection title={__('Before you can publish', 'wconvert')}>
+                    <ul className="wconvert-launch-review__notice">
+                      {blocking.map((problem) => (
+                        <li key={problem.said}>
+                          <button className="wconvert-readiness__go" onClick={() => jump(problem.fix)}>
+                            {problem.said}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </ReviewSection>
+                )}
                 <ReviewSection
                   title={__('Design', 'wconvert')}
                   action={hasDesign ? __('Preview design', 'wconvert') : __('Choose design', 'wconvert')}
@@ -222,30 +232,6 @@ export function ReadinessDialog({
                           : __('This design has no fields to collect leads.', 'wconvert')
                       : __('No design selected yet.', 'wconvert')}
                   </p>
-                  {playbookId !== '' && playbook.status !== 'loading' && (
-                    <p className="text-note text-muted-foreground">
-                      {__('Started from', 'wconvert')}: {playbook.status === 'ready' && playbook.data !== null
-                        ? playbook.data
-                        : <Code>{playbookId}</Code>}
-                    </p>
-                  )}
-                  {blocking.length > 0 && (
-                    <div className="wconvert-launch-review__notice">
-                      <strong>{__('Before you can publish', 'wconvert')}</strong>
-                      <ul>
-                        {blocking.map((problem) => (
-                          <li key={problem.said}>
-                            <button
-                              className="wconvert-readiness__go"
-                              onClick={() => jump(problem.fix)}
-                            >
-                              {problem.said}
-                            </button>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
                 </ReviewSection>
                 <ReviewSection title={__('Placement & timing', 'wconvert')}>
                   {!overlay && (
@@ -284,7 +270,9 @@ export function ReadinessDialog({
                       {captureMode === 'local'
                         ? __('Collect only: saved in Leads for export or follow-up. Nothing is forwarded and no subscription messages are sent by this campaign.', 'wconvert')
                         : bound.length === 0
-                        ? __('No forwarding selected. You can export captured leads from Leads.', 'wconvert')
+                        ? handoffIssue
+                          ? __('No destination selected. Finish setup in Destinations.', 'wconvert')
+                          : __('No forwarding selected. Leads stay here for review or export.', 'wconvert')
                         : where.said}
                     </p>
                   )}
@@ -330,6 +318,19 @@ export function ReadinessDialog({
                       ))}
                     </ul>
                   </ReviewSection>
+                )}
+                {(outcome || playbookId !== '') && (
+                  <details className="wconvert-launch-review__section">
+                    <summary>{__('Measurement & setup details', 'wconvert')}</summary>
+                    {outcome && <p>{outcome.measurement}</p>}
+                    {playbookId !== '' && playbook.status !== 'loading' && (
+                      <p className="text-note text-muted-foreground">
+                        {__('Started from', 'wconvert')}: {playbook.status === 'ready' && playbook.data !== null
+                          ? playbook.data
+                          : <Code>{playbookId}</Code>}
+                      </p>
+                    )}
+                  </details>
                 )}
               </>
             )}

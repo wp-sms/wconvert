@@ -37,6 +37,10 @@ lead magnets still need delivery. Changing a draft does not cancel forwarding
 already queued for an earlier capture.
 
 These checks prove configuration, not confirmation, delivery, list growth or revenue.
+**Presentation completed by [ADR 0088](0088-handoff-state-and-required-fixes-lead-the-review.md):**
+mode descriptions are brief, selected-route removal is explained before switching,
+and the list/review explicitly identify incomplete service setup rather than
+describing it as manual export. The collection and publication contracts above remain.
 
 ## Reviewed format choice
 

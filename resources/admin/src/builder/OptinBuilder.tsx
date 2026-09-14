@@ -791,10 +791,11 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
         </TabsContent>
         <TabsContent value="destinations" className="wconvert-workspace__secondary">
           <div className="wconvert-workspace__settings">
-            {entryOfGoal?.outcome.audience_channel && <CaptureModeChoice disabled={busy} mode={config.capture_mode === 'local' ? 'local' : 'connected'}
+            {entryOfGoal?.outcome.audience_channel && <CaptureModeChoice disabled={busy} selectedCount={bound.length} mode={config.capture_mode === 'local' ? 'local' : 'connected'}
               onChange={(mode) => edit({ capture_mode: mode, ...(mode === 'local' ? { destinations: [] } : {}) })} />}
-            {entryOfGoal?.outcome.audience_channel && config.capture_mode === 'local' ? <p>{__('Submissions stay in Leads. Export them when you are ready to use another service.', 'wconvert')}</p> :
+            {entryOfGoal?.outcome.audience_channel && config.capture_mode === 'local' ? null :
             <DestinationsEditor
+              outcome={entryOfGoal?.outcome}
               template={template}
               bound={bound}
               available={
