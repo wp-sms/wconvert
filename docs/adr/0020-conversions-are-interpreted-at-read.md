@@ -42,7 +42,8 @@ is specifically on deriving counts from `wconvert_leads`. It does not touch this
 
 *Amended by [ADR 0034](0034-the-dashboard-joins-in-php.md) on one word: "join"
 here is the interpretation, not a SQL `JOIN`. #28 reads the two tables with
-**two statements and joins them in PHP** — a Goal is tens of rows of fact, and a
+**two statements and joins them in PHP** (three statements when reading both
+comparison windows, as added by [0089](0089-analytics-starts-with-impact-and-keeps-history-inspectable.md)) — a Goal is tens of rows of fact, and a
 `JOIN` would denormalise it onto thousands of counters while costing
 [`Connection`](../../src/Database/Connection.php) a third widening. Everything
 this document argues about WHERE the interpretation comes from is unchanged;
@@ -197,8 +198,10 @@ see its own inline correction.*
   which is this document's frozen-at-write shape arriving through a `config`
   copy instead of through a column. The winning ROW is promoted instead, so
   every row's counters mean exactly one design for the whole of its life.*
-- **Soft-deleted Optins keep their counts in per-Goal totals** and drop out of
-  the per-Optin list. A merchant tidying up in March must not watch February's
+- **Soft-deleted Optins keep their counts in per-Goal totals.** **Amended by
+  [0089](0089-analytics-starts-with-impact-and-keeps-history-inspectable.md):** they now retain an inspectable historical
+  report row, without edit/publication actions. The original list behavior below
+  no longer applies to Analytics. A merchant tidying up in March must not watch February's
   goal total fall.
   *Built by [#28](https://github.com/navidkashani/wconvert/issues/28) as one
   read with two opposite consequences.
@@ -280,7 +283,9 @@ see its own inline correction.*
   > [0071](0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md).**
   > A clamped same-period difference cannot identify pending Leads: today's one
   > queued capture and a delivery from yesterday produce zero, even though that
-  > capture remains queued. The report now names the excess of submissions over
+  > capture remains queued. **Amended by [0089](0089-analytics-starts-with-impact-and-keeps-history-inspectable.md):**
+  > Analytics now shows requests and accepted sends separately, not the gap.
+  > The original 0071 report named the excess of submissions over
   > recorded deliveries in the period and links to Destinations for delays or
   > errors. The formula, stored counters and replay behavior are unchanged.
   > Focused Optin reports do not inherit a whole Goal's gap. Editor/capture links

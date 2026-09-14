@@ -7,6 +7,10 @@ tables with two statements and joins them in PHP.** There is no `JOIN`, there
 is no third widening of [`Connection`](../../src/Database/Connection.php), and
 `wconvert_stats` still ships no secondary index.
 
+**Amended by [0089](0089-analytics-starts-with-impact-and-keeps-history-inspectable.md):** single-window reads remain two
+statements. Analytics comparisons use one interpretation read and two counter
+reads, sharing the same metadata rather than repeating it per window.
+
 ## The signature question came before the query
 
 `Connection::results()` takes **one** table and a `literal-string` with one
@@ -72,14 +76,16 @@ and is a scan.
 
 The scan is affordable because ADR 0019 books the whole table at **~29k rows a
 year**, and [`StatRange::MAX_DAYS`](../../src/Stats/StatRange.php) caps the
-window at one year — so the read is bounded by the size ADR 0019 argued for
-rather than by how long the install has been counting.
+window at one year. **Corrected by [0089](0089-analytics-starts-with-impact-and-keeps-history-inspectable.md):** this bounds
+the returned window, not the scan of the unindexed table. Two comparison windows
+mean two scans; larger installs need measured query-cost review.
 
 ## Consequences
 
 - **`Connection` was not widened, and the count of widenings stays at two.**
   The next one still has the docblock's warning in front of it.
-- **The screen is two statements**, and `bin/verify-stats.php` asserts exactly
+- **A single-window read is two statements** (three for the comparison added
+  by [0089](0089-analytics-starts-with-impact-and-keeps-history-inspectable.md)),  and `bin/verify-stats.php` asserts exactly
   two against a real database — so an N+1 arriving later is caught by number
   rather than by review.
 - **`Dashboard::of()` is pure and takes rows**, the same arrangement
@@ -95,12 +101,16 @@ rather than by how long the install has been counting.
 - **The window is asked for in DAYS and never in dates.** A date parameter is
   how "the merchant's today" quietly becomes the browser's today, which belongs
   to whoever is at the keyboard. The far end is `StatDay::today()`, read on the
-  server, so the window can only ever end on the site's own day — and
-  [`StatRange`](../../src/Stats/StatRange.php) has **one constructor**,
-  `lastDays()`, so a window ending anywhere else is unexpressible rather than
-  merely unused. Its length travels back on the payload, so the admin bundle
+  server. **Amended by [0089](0089-analytics-starts-with-impact-and-keeps-history-inspectable.md):** `completeDays()` derives
+  the window ending yesterday, and `previous()` derives its adjacent comparison.
+  `lastDays()` still serves list/editor reads including today; no route accepts
+  caller-chosen date boundaries. Its length travels back on the payload, so the admin bundle
   never spells the default a second time.
-- **Nothing that cannot be reached is shipped.** `conversions − deliveries` is
+- **Nothing that cannot be reached is shipped.** **Amended by
+  [0089](0089-analytics-starts-with-impact-and-keeps-history-inspectable.md):** send events now exist. Analytics displays
+  requests and accepted sends separately and does not present their difference
+  as a failure population. The following describes the original pre-send build.
+  `conversions − deliveries` is
   the delivery failure count
   [ADR 0020](0020-conversions-are-interpreted-at-read.md) names, and it is
   deliberately absent: nothing writes the delivery kind, so every branch that

@@ -81,6 +81,21 @@ CSV takes all retained matches under the view's upper capture bound, not just
 the visible page. Newer captures require refresh; deletion can still remove
 earlier rows. See [ADR 0071](docs/adr/0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md).
 
+### Analytics impact
+
+Analytics starts with compatible totals: captured submissions, offer clicks,
+cart return clicks and appearances. It never reports a global conversion rate,
+unique people, purchases or recovered revenue. Goal and individual Optin reports
+explain their denominators. Resource requests and accepted email sends remain
+separate. Complete-day comparisons are resolved in the site's calendar; no
+visible timezone label is needed. List/editor windows still include today.
+
+Paused and soft-deleted Optins retain inspectable history; never-published
+drafts without counters are excluded. Parent/variant grouping is presentation,
+not another counted entity. A/B reports cover selected dates across designs'
+past uses, not immutable test rounds. See
+[ADR 0089](docs/adr/0089-analytics-starts-with-impact-and-keeps-history-inspectable.md).
+
 ### Conversion
 
 A visitor doing the thing an [[Optin]] exists to make them do — the countable
@@ -1137,9 +1152,9 @@ button is the other one.
 Recovery remains broad: re-push uses retained Leads from Optins whose published
 configuration binds the Destination, since its last success. It can replay an
 already successful send; a displayed failure row or skipped count is not its
-exact selection. The report's delivery gap is narrower knowledge still: a
-same-period difference of daily conversion/send totals, not a per-Lead pending
-or failure count. Named-route and capture links help investigate those facts
+exact selection. Analytics now presents daily conversion and send totals
+separately, not their same-period difference as a per-Lead pending or failure
+count ([ADR 0089](docs/adr/0089-analytics-starts-with-impact-and-keeps-history-inspectable.md)). Named-route and capture links help investigate those facts
 without creating a delivery ledger ([ADR 0071](docs/adr/0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md)).
 
 ### Connection

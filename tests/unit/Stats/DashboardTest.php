@@ -16,10 +16,9 @@ use WConvert\Stats\StatRange;
  * arrives from a second table and a correction moves a card rather than a
  * number.
  *
- * **Soft-deleted Optins keep their counts and lose their row.** Two
- * assertions, opposite directions, one row — a merchant tidying up in March
- * must not watch February's goal total fall, and the list must still be a list
- * of what they are running.
+ * **Soft-deleted Optins retain counts and an inspectable historical row.**
+ * A merchant tidying up in March must not watch February's Goal total fall
+ * or lose the explanation of where it came from (ADR 0089).
  *
  * **Per-goal cards, never a leaderboard**, and no site-wide conversion rate.
  * The payload's SHAPE is what holds that: an Optin's row lives inside its
@@ -70,6 +69,7 @@ final class DashboardTest extends TestCase
             'name' => 'Newsletter footer',
             'goal' => $goal,
             'deleted_at' => $deletedAt,
+            'was_published' => '1',
         ]];
     }
 
@@ -156,10 +156,10 @@ final class DashboardTest extends TestCase
      * THE SECOND SEAM. One row, two opposite consequences.
      * ========================================================================
      * February's numbers were counted before the merchant tidied up in March,
-     * and they are still February's numbers. What the soft delete takes away
-     * is the ROW — the per-Optin list is a list of what is running (ADR 0020).
+     * and they are still February's numbers. Soft deletion preserves the row
+     * as historical while preventing further publication/edit actions.
      */
-    public function testASoftDeletedOptinKeepsItsCountsAndLosesItsRow(): void
+    public function testASoftDeletedOptinKeepsItsCountsAndHistoricalRow(): void
     {
         $live = Dashboard::of(self::range(), self::counters(), self::optin('grow_email_list'));
         $tidied = Dashboard::of(self::range(), self::counters(), self::optin('grow_email_list', '2026-08-25 09:00:00'));
@@ -172,7 +172,8 @@ final class DashboardTest extends TestCase
         $this->assertSame($before['by_day'], $after['by_day']);
 
         $this->assertSame([self::OPTIN], array_column($before['optins'], 'id'));
-        $this->assertSame([], $after['optins'], 'and the row is gone from the list of what is running');
+        $this->assertSame('historical', $after['optins'][0]['status']);
+        $this->assertSame(self::OPTIN, $after['optins'][0]['id']);
     }
 
     /**
@@ -224,7 +225,8 @@ final class DashboardTest extends TestCase
     {
         $payload = Dashboard::of(self::range(), self::counters(), self::optin('grow_email_list'));
 
-        $this->assertSame(['from', 'to', 'days', 'goals'], array_keys($payload));
+        $this->assertSame(['from', 'to', 'days', 'goals', 'impact'], array_keys($payload));
+        $this->assertArrayNotHasKey('conversion_rate', $payload);
     }
 
     /**

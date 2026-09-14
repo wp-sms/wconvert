@@ -146,7 +146,9 @@ be paid on every beacon for a read one admin takes on demand.*
   [ADR 0020](0020-conversions-are-interpreted-at-read.md) names, is a number
   anybody can set.*
 - **`stat_date` is a `DATE` in the site's timezone**, not UTC. The dashboard is
-  the only consumer and it says "Today", which has to mean the merchant's today.
+  original consumer said "Today", which had to mean the merchant's today.
+  **Extended by [0089](0089-analytics-starts-with-impact-and-keeps-history-inspectable.md):** Analytics comparisons use
+  complete days ending yesterday; list/editor reads still include today.
   A merchant who later changes their site timezone does not retro-fix old rows;
   that seam is preferable to every merchant east of London reading their day
   split across two rows forever.

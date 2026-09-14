@@ -89,6 +89,9 @@ export interface ReportQuery {
   days?: number;
   goal?: string;
   optinId?: string;
+  impact?: string;
+  experiment?: string;
+  compare?: boolean;
 }
 
 export interface AdminRoute {
@@ -118,7 +121,7 @@ function returnHref(value: string | null): string {
 export const editorHref = (id: string, returnTo?: string): string =>
   withQuery('optins', { edit: id, back: returnTo ? returnHref(returnTo) : undefined });
 export const reportHref = (query: ReportQuery = {}): string =>
-  withQuery('analytics', { days: query.days, goal: query.goal, optin: query.optinId });
+  withQuery('analytics', { days: query.days, goal: query.goal, optin: query.optinId, impact: query.impact, experiment: query.experiment, compare: query.compare === false ? '0' : undefined });
 export const leadsHref = (query: LeadQuery = {}): string =>
   withQuery('leads', { optin: query.optinId, identifier: query.identifier, lead: query.leadId, from: query.from, to: query.to });
 export const destinationHref = (id?: string): string => withQuery('destinations', { destination: id });
@@ -136,6 +139,9 @@ export function routeFrom(hash: string): AdminRoute {
       days: Number.isInteger(days) && days >= 1 && days <= 366 ? days : undefined,
       goal: value('goal'),
       optinId: value('optin'),
+      ...(value('impact') ? { impact: value('impact') } : {}),
+      ...(value('experiment') ? { experiment: value('experiment') } : {}),
+      ...(value('compare') === '0' ? { compare: false } : {}),
     },
     leads: { optinId: value('optin'), identifier: value('identifier'), leadId: value('lead'), from: value('from'), to: value('to') },
     destinationId: value('destination'),

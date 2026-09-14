@@ -361,8 +361,8 @@ final class OptinRepositoryTest extends TestCase
 
         $sql = end($this->db->statements) ?: '';
 
-        $this->assertStringContainsString('SELECT id, name, goal, deleted_at FROM %i', $sql);
-        $this->assertStringNotContainsString('config', $sql);
+        $this->assertStringContainsString('SELECT id, name, goal, deleted_at, parent_id, published_at, (published_config IS NOT NULL) AS was_published FROM %i', $sql);
+        $this->assertStringNotContainsString('SELECT *', $sql);
     }
 
     // =========================================================================

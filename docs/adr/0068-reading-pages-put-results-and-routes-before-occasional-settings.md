@@ -21,8 +21,13 @@ old 639px breakpoint. Values and actions must remain readable at 360px.
 - **Optins:** search by name and filter by status. An A/B family stays together
   if any member matches, and filter counts count families. Unmatched filters
   offer Clear filters. The performance footer names the server's period.
-- **Analytics:** results come before setup history. Goal filters preserve the
-  server's registry order and each Goal's own metric. Daily bars use the actual
+- **Analytics:** **Amended by [0089](0089-analytics-starts-with-impact-and-keeps-history-inspectable.md):**
+  an impact-first overview leads to Goal/campaign/variant reports. Complete-day
+  current/previous trend lines replace daily bars; exact tables remain. Captured
+  requests and accepted sends are separate, not a displayed delivery gap. The
+  following describes the earlier presentation. Results came before setup
+  history. Goal filters preserve the server's registry order and each Goal's
+  own metric. Daily bars use the actual
   daily series, with zero-height quiet days and an expandable exact-number
   table. Optin breakdowns are expandable. No site-wide conversion average or
   cross-Goal leaderboard is introduced. A same-period excess of conversions over
@@ -63,8 +68,11 @@ Analytics explicitly identifies the previous report and keeps its actual dates.
 Lead row shape, filter labels and export describe the same applied response.
 Both screens provide retry controls.
 
-Milestones follow the Goal reports. Later evidence can establish that an earlier
-step happened: an impression rules out “nothing is live yet”, and a conversion
+**Amended by [0089](0089-analytics-starts-with-impact-and-keeps-history-inspectable.md):**
+Analytics no longer mixes site-wide milestones into filtered results. The
+underlying milestone records and inference are unchanged. In the earlier
+presentation, milestones followed the Goal reports. Later evidence can establish
+that an earlier step happened: an impression rules out “nothing is live yet”, and a conversion
 rules out “never shown”. Missing milestone dates remain missing; the UI does
 not manufacture dates to fill the sequence.
 

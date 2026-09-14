@@ -28,16 +28,12 @@ defined('ABSPATH') || exit;
  * reporting two numbers where one is the arithmetic of the other
  * (CONTEXT.md, Dismissal).
  *
- * **`conversions − lead_magnet_delivered` is not an instance of that rule**,
- * and this paragraph used to say it was. It is on the payload as of #31, as
- * `undelivered_conversions` on the lead-magnet card and `null` everywhere
- * else — because `conversions` is not a field here at all, so the subtraction
- * is new information rather than a restatement of two numbers already on
- * screen. The check is written out at {@see self::undeliveredConversions()},
- * which is also where the clamp and the null are argued.
+ * Compatible impact counts are computed here: captured submissions, offer
+ * clicks, cart clicks and appearances. Email send events remain separate
+ * from requests. Analytics does not infer a delivery backlog (ADR 0089).
  *
  * ============================================================================
- * TWO READS, AND THE JOIN IS HERE RATHER THAN IN SQL.
+ * TWO TABLES, AND THE JOIN IS HERE RATHER THAN IN SQL.
  * ============================================================================
  * Every number derives from `wconvert_stats` interpreted through
  * `wconvert_optins`, and **nothing joins `wconvert_leads` to produce a count**
@@ -75,6 +71,19 @@ final class Dashboard
         return self::of($range, $this->stats->inRange($range), $this->optins->interpretations());
     }
 
+    /** Resolve both windows with one interpretation snapshot, without visitor data.
+     * @return array<string, mixed>
+     */
+    public function compare(StatRange $range): array
+    {
+        $optins = $this->optins->interpretations();
+        $current = self::of($range, $this->stats->inRange($range), $optins);
+        $previous = $range->previous();
+        $current['previous'] = self::of($previous, $this->stats->inRange($previous), $optins);
+        $current['complete_days'] = true;
+        return $current;
+    }
+
     /**
      * The same screen, as arithmetic.
      *
@@ -83,7 +92,7 @@ final class Dashboard
      * {@see OptinRepository::interpretations()} has no `WHERE` and no `LIMIT`.
      *
      * @param iterable<array<string, mixed>> $statRows  `(optin_id, stat_date, kind, count)`.
-     * @param iterable<array<string, mixed>> $optinRows `(id, name, goal, deleted_at)`.
+     * @param iterable<array<string, mixed>> $optinRows Short reporting metadata, including publication history and parent id.
      * @return array<string, mixed>
      */
     public static function of(StatRange $range, iterable $statRows, iterable $optinRows): array
@@ -94,7 +103,7 @@ final class Dashboard
         $cards = [];
 
         foreach (Goal::cases() as $goal) {
-            $held = array_filter($optins, static fn (InterpretedOptin $o): bool => $o->goal === $goal);
+            $held = array_filter($optins, static fn (InterpretedOptin $o): bool => $o->goal === $goal && ($o->wasPublished || isset($byOptin[$o->id])));
 
             // A Goal no Optin holds has nothing to report.
             if ($held === []) {
@@ -107,7 +116,32 @@ final class Dashboard
         // `days` travels so the screen can say which window is selected
         // without spelling {@see StatRange::DEFAULT_DAYS} a second time in a
         // bundle with nothing asserting the two agree.
-        return ['from' => $range->from, 'to' => $range->to, 'days' => $range->days(), 'goals' => $cards];
+        return ['from' => $range->from, 'to' => $range->to, 'days' => $range->days(), 'goals' => $cards, 'impact' => self::impact($cards)];
+    }
+
+    /** Compatible actions only; send events never inflate captured Leads.
+     * @param list<array<string, mixed>> $cards
+     * @return list<array<string, mixed>>
+     */
+    private static function impact(array $cards): array
+    {
+        $groups = [
+            'leads' => ['label' => __('Leads captured', 'wconvert'), 'note' => __('Form submissions across all capture goals', 'wconvert')],
+            'offers' => ['label' => __('Offer link clicks', 'wconvert'), 'note' => __('Clicks to linked offers or content', 'wconvert')],
+            'carts' => ['label' => __('Cart return clicks', 'wconvert'), 'note' => __('Clicks back to a shopping basket, not orders', 'wconvert')],
+            'impressions' => ['label' => __('Times shown', 'wconvert'), 'note' => __('Campaign appearances, including repeats', 'wconvert')],
+        ];
+        $impact = [];
+        foreach ($groups as $id => $group) $impact[$id] = $group + ['id' => $id, 'count' => 0, 'goals' => []];
+        foreach ($cards as $card) {
+            $goal = Goal::from($card['goal']);
+            $key = $goal->outcome()->action === 'submit' ? 'leads' : ($goal === Goal::RecoverCart ? 'carts' : 'offers');
+            $impact[$key]['count'] += $card['conversions'];
+            $impact[$key]['goals'][] = $card['goal'];
+            $impact['impressions']['count'] += $card['impressions'];
+            $impact['impressions']['goals'][] = $card['goal'];
+        }
+        return array_values($impact);
     }
 
     /**
@@ -129,6 +163,8 @@ final class Dashboard
             'headline_label' => $goal->headlineLabel(),
             'measurement' => $goal->outcome()->measurement,
             'proof_level' => $goal->outcome()->proofLevel,
+            'action' => $goal->outcome()->action,
+            'result_label' => $goal === Goal::DeliverLeadMagnet ? __('Resource requests', 'wconvert') : $goal->headlineLabel(),
             'undelivered_conversions' => self::undeliveredConversions($goal, $rows),
             ...self::numbers($goal, $range, $rows),
             'optins' => self::optinRows($goal, $range, $held, $byOptin),
@@ -136,60 +172,9 @@ final class Dashboard
     }
 
     /**
-     * `conversions − lead_magnet_delivered`, clamped at zero — **or null on
-     * every other Goal.**
-     *
-     * ========================================================================
-     * NULL RATHER THAN ABSENT, BECAUSE THE ADMIN CANNOT BRANCH ON A GOAL.
-     * ========================================================================
-     * `GoalParityTest::testNoGoalIsSpelledInTheAdminBundle` scans every
-     * `.ts`/`.tsx` under `resources/admin/src` and fails on any Goal enum
-     * value, so a card cannot know which Goal it is drawing. A server-nulled
-     * field is therefore the only shape available: the bundle renders the row
-     * where there is a number and omits it where there is not, and never asks
-     * why. It is the same constraint the `note` this replaces was built
-     * around.
-     *
-     * **On the card only, never on an Optin row.** {@see self::numbers()} is
-     * spread into both, and this is one figure for the Goal rather than a
-     * second metric per row — the Optin table has no column for it and could
-     * not head one without spelling the Goal.
-     *
-     * ========================================================================
-     * IT IS NEW INFORMATION, WHICH IS WHY THE OLD OBJECTION DOES NOT HOLD.
-     * ========================================================================
-     * This class used to refuse the figure as *"the same
-     * arithmetic-of-two-numbers-already-shown shape"* as the "left without
-     * converting" count. **That was wrong, and worth checking rather than
-     * repeating.** `conversions` is not a field on this payload at all —
-     * {@see self::numbers()} emits `headline`, `impressions`, `dismissals`,
-     * `conversion_rate` and `by_day`, and on a lead-magnet card `headline` is
-     * *deliveries*. So one operand is the headline and the other is nowhere on
-     * screen. "Left without converting" is `impressions − conversions −
-     * dismissals`, whose three operands are all on the card; this is not that
-     * shape. (`conversions` is loosely recoverable from
-     * `conversion_rate × impressions`, rounded to 4dp and never displayed,
-     * which is not a number on screen either.)
-     *
-     * **The clamp is not defensive padding.** A Conversion at 23:58 and its
-     * delivery at 00:01 land on different `stat_date`s, so on the one-day
-     * window this would print a negative number most mornings without it. It
-     * also absorbs the two replay seams
-     * {@see \WConvert\Destination\LeadMagnet\DeliveryCount} names.
-     *
-     * This is an aggregate difference within the selected daily window,
-     * not a per-Lead pending or failed population. Delayed deliveries and
-     * replayed sends can offset submissions from different captures. The UI
-     * names the period difference and links to Destination health for evidence.
-     * `undelivered_conversions` retains its existing payload key; terminal
-     * failures are separately held by Destination\DeliveryFailures.
-     *
-     * It walks the Goal's slice a second time rather than being handed
-     * {@see self::numbers()}'s totals. Two parameters that must agree — `$rows`
-     * and `totals($rows)` — would be an invariant held by a docblock and by
-     * nothing else, and the caller that got it wrong would report a wrong
-     * number rather than fail. One extra pass over one Goal's rows, on an admin
-     * read taken on demand, is the cheaper of the two.
+     * Same-period event difference, not a per-Lead pending or failed population.
+     * Analytics presents both operands separately instead (ADR 0089).
+     * Delayed or repeated sends can offset unrelated requests in the window.
      *
      * @param list<array<string, mixed>> $rows
      */
@@ -221,7 +206,7 @@ final class Dashboard
      * not act.
      *
      * @param list<array<string, mixed>> $rows
-     * @return array{headline: int, impressions: int, dismissals: int, conversion_rate: float|null, by_day: array<string, int>}
+     * @return array<string, mixed>
      */
     private static function numbers(Goal $goal, StatRange $range, array $rows): array
     {
@@ -231,11 +216,27 @@ final class Dashboard
 
         return [
             'headline' => $totals[$goal->headlineKind()->value] ?? 0,
+            'conversions' => $conversions,
+            'deliveries' => $goal->headlineKind() === StatKind::LeadMagnetDelivered ? ($totals[StatKind::LeadMagnetDelivered->value] ?? 0) : null,
             'impressions' => $impressions,
             'dismissals' => $totals[StatKind::Dismiss->value] ?? 0,
             'conversion_rate' => $impressions === 0 ? null : round($conversions / $impressions, 4),
             'by_day' => self::series($goal, $range, $rows),
+            'conversion_by_day' => self::kindSeries(StatKind::Conversion, $range, $rows),
+            'impression_by_day' => self::kindSeries(StatKind::Impression, $range, $rows),
         ];
+    }
+
+    /** @param list<array<string, mixed>> $rows
+     * @return array<string, int>
+     */
+    private static function kindSeries(StatKind $kind, StatRange $range, array $rows): array
+    {
+        $days = array_fill_keys($range->eachDay(), 0);
+        foreach ($rows as $row) {
+            if (($row['kind'] ?? null) === $kind->value) $days[(string) $row['stat_date']] += (int) $row['count'];
+        }
+        return $days;
     }
 
     /**
@@ -260,12 +261,8 @@ final class Dashboard
     }
 
     /**
-     * The per-Optin list, **soft-deleted Optins absent**.
-     *
-     * The other half of the rule: their counts are already in the card's
-     * totals above, because a merchant tidying up in March must not watch
-     * February's goal total fall (ADR 0020). What they lose is the row, which
-     * is a list of things the merchant is still running.
+     * The per-Optin report includes inspectable historical rows (ADR 0089).
+     * Soft-deleted counts and rows remain; publication actions do not.
      *
      * Each row carries its own daily series, which is what "comparison is
      * offered within an Optin over time" means — otherwise the only way to
@@ -282,18 +279,20 @@ final class Dashboard
      */
     private static function optinRows(Goal $goal, StatRange $range, array $held, array $byOptin): array
     {
-        $live = array_filter($held, static fn (InterpretedOptin $optin): bool => !$optin->deleted);
+        $ordered = $held;
 
         // SORT_STRING, because a ULID is base32 text: under SORT_REGULAR an
         // all-digit one would be compared as a number against its neighbours.
-        krsort($live, SORT_STRING);
+        krsort($ordered, SORT_STRING);
 
         $rows = [];
 
-        foreach ($live as $id => $optin) {
+        foreach ($ordered as $id => $optin) {
             $rows[] = [
                 'id' => $optin->id,
                 'name' => $optin->name,
+                'parent_id' => $optin->parentId,
+                'status' => $optin->deleted ? 'historical' : ($optin->published ? 'published' : 'paused'),
                 ...self::numbers($goal, $range, $byOptin[$id] ?? []),
             ];
         }
