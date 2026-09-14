@@ -50,3 +50,12 @@ checked against the pack's placeholder-only template contract.
 
 Architecture and supported import values are in ADR 0083. Production catalog
 hosting, paid packs, assets and further new compositions remain outside scope.
+
+## Review
+
+- Standards: bounded read-only review of remote Playbook validation, registration
+  and lifecycle against the project guidance and relevant ADRs found no material
+  actionable issues. Runtime verification is recorded above separately.
+- Specification: review identified the missing goal-mismatch explanation before
+  installation. Fixed in 53a6783 with regression coverage; no other concrete
+  specification issues were found.
