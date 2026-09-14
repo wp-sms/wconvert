@@ -46,6 +46,17 @@ async function open(overrides: Partial<ReadinessDialogProps> = {}) {
 afterEach(() => { delete window.wconvertAdmin; });
 
 describe('reviewing before publishing', () => {
+  it('puts required fixes before the recap and keeps measurement guidance optional', async () => {
+    const { supplied } = await open({ captureMode: 'connected' });
+    const required = screen.getByRole('heading', { name: 'Before you can publish' });
+    const recap = screen.getByRole('heading', { name: 'Design' });
+    expect(required.compareDocumentPosition(recap) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(screen.getByText(GOAL.outcome.measurement)).not.toBeVisible();
+    await userEvent.click(screen.getByText('Measurement & setup details'));
+    expect(screen.getByText(GOAL.outcome.measurement)).toBeVisible();
+    expect(supplied.onPublish).not.toHaveBeenCalled();
+  });
+
   it('blocks a list campaign until a service is ready or collect-only is explicitly chosen', async () => {
     const { rerender, supplied } = await open({ captureMode: 'connected' });
     expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeDisabled();
@@ -135,6 +146,13 @@ describe('reviewing before publishing', () => {
     await userEvent.click(screen.getByRole('button', { name: /too close to the background/ }));
     expect(supplied.onGoToDesign).toHaveBeenCalledOnce();
     expect(screen.queryByRole('dialog')).toBeNull();
+  });
+
+  it('describes an unfinished service choice without suggesting local collection was chosen', async () => {
+    await open({ captureMode: 'connected' });
+    expect(screen.getByText('No destination selected. Finish setup in Destinations.')).toBeVisible();
+    expect(screen.queryByText(/You can export captured leads/)).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeDisabled();
   });
 
   it('allows saving leads locally with no forwarding route', async () => {

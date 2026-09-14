@@ -14,6 +14,7 @@ import {
 } from '../shell/Region';
 import { RowsSkeleton } from '../shell/RowsSkeleton';
 import { tierProductName } from '../goals/availability';
+import { outcomeHandoffIssue, type OutcomeContract } from '../goals/outcome';
 import { targetSaid } from '../destinations/settings';
 import type { Loadable } from '../shell/loadable';
 import type { Connection, Destination, DestinationType } from '../destinations/api';
@@ -46,6 +47,7 @@ import type { Template } from '@renderer/types';
  * which one of them is holding a stale answer.
  */
 export interface DestinationsEditorProps {
+  readonly outcome?: OutcomeContract;
   readonly template?: Template;
   readonly bound: readonly string[];
   /**
@@ -96,19 +98,23 @@ export interface DestinationsEditorProps {
 
 /** Choices edit this Optin's draft; setup edits a shared site destination. */
 export function DestinationsEditor({
-  bound, available, types, hint, connections, onChange, onRefresh, onSaved, template,
+  bound, available, types, hint, connections, onChange, onRefresh, onSaved, template, outcome,
 }: DestinationsEditorProps) {
   const [setup, setSetup] = useState<'add' | Destination | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const returnFocus = useRef<HTMLElement | null>(null);
   const missing = available.status === 'ready'
     ? bound.filter((id) => !available.data.some((destination) => destination.id === id)) : [];
+  const handoffIssue = outcome && available.status === 'ready'
+    ? outcomeHandoffIssue(outcome, bound, available.data) : null;
 
   return (
     <>
       <Region>
         <RegionHeader title={__('Where these leads go', 'wconvert')} level={3}
-          description={__('Choose destinations for this Campaign. Leads are always captured here and can be exported.', 'wconvert')}
+          description={bound.length > 0
+            ? sprintf(__('%d selected', 'wconvert'), bound.length)
+            : __('No destinations selected', 'wconvert')}
           trailing={<div className="flex flex-wrap items-center gap-2">
             <Button variant="outline" size="sm" disabled={available.status === 'loading'} onClick={onRefresh}>
               <RefreshCw aria-hidden="true" />{__('Refresh', 'wconvert')}
@@ -121,12 +127,15 @@ export function DestinationsEditor({
           </div>} />
 
         {notice !== null && <RegionBody className="border-b border-border"><p role="status" className="m-0 text-note">{notice}</p></RegionBody>}
+        {handoffIssue && <RegionBody className="border-b border-border"><Description>{handoffIssue}</Description></RegionBody>}
 
         {available.status === 'loading' ? <RowsSkeleton />
           : available.status === 'failed' ? <RegionErrorState message={available.message} hint={__('Use Refresh to try again. Your Campaign draft stays here.', 'wconvert')} />
           : available.data.length === 0 ? (
             <EmptyState icon={Plug} title={__('No destinations yet', 'wconvert')}>
-              {__('Add a destination to send leads to another service or plugin. You can also keep using WConvert on its own.', 'wconvert')}
+              {outcome && !handoffIssue
+                ? __('Leads stay in WConvert. Add a destination only if you want to forward them.', 'wconvert')
+                : __('Add a destination, then select it for this Campaign.', 'wconvert')}
             </EmptyState>
           ) : (
             <RegionBody>
@@ -149,8 +158,10 @@ export function DestinationsEditor({
                           ? [...bound, destination.id] : bound.filter((id) => id !== destination.id))} />
                       <div className="min-w-0">
                         <label htmlFor={control} className="font-medium">{destination.label}</label>
-                        {type !== undefined && <Description as="span" id={`${control}-provider`} className="block">{type.label}</Description>}
-                        {said !== null && <Description as="span" id={`${control}-target`} className="block">{said}</Description>}
+                        <div className="flex flex-wrap gap-x-2">
+                          {type !== undefined && <Description as="span" id={`${control}-provider`}>{type.label}</Description>}
+                          {said !== null && <Description as="span" id={`${control}-target`}>{said}</Description>}
+                        </div>
                         {compatibility.length > 0 && <ul id={`${control}-compatibility`} className="mb-0 mt-2 ps-4 text-note text-warning">
                           {compatibility.map((problem) => <li key={problem}>{problem}</li>)}
                         </ul>}
@@ -190,7 +201,10 @@ export function DestinationsEditor({
           </div>
         </RegionBody>}
 
-        {hint !== null && <RegionFooter><Description>{hint}</Description></RegionFooter>}
+        {hint !== null && <RegionFooter><details className="text-note">
+          <summary className="cursor-pointer">{__('Setup guidance', 'wconvert')}</summary>
+          <Description className="mt-2">{hint}</Description>
+        </details></RegionFooter>}
       </Region>
       {setup !== null && <DestinationSetupDialog destination={setup === 'add' ? undefined : setup}
         types={types} connections={connections} returnFocusTo={returnFocus} onClose={() => setSetup(null)}

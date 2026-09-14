@@ -1,4 +1,5 @@
 import { useState, type ComponentProps } from 'react';
+import { CAPTURE_OUTCOME } from './support/outcomes';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -96,6 +97,34 @@ const rowFor = (name: string): HTMLElement => {
 };
 
 describe('binding an optin to a destination', () => {
+  it('makes a required unfinished handoff explicit without selecting a destination', () => {
+    const onChange = vi.fn();
+    editor(ready([]), [], [], { outcome: CAPTURE_OUTCOME, onChange });
+    expect(screen.getByText('No destinations selected')).toBeVisible();
+    expect(screen.getByText(/Choose and configure a service for this channel/)).toBeVisible();
+    expect(screen.queryByText(/You can also keep using WConvert on its own/)).not.toBeInTheDocument();
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it('counts selections without calling an unavailable route ready', () => {
+    editor(ready([destination({ id: 'a', label: 'Newsletter', availability: 'unavailable' })]), ['a'], [], { outcome: CAPTURE_OUTCOME });
+    expect(screen.getByText('1 selected')).toBeVisible();
+    expect(screen.getByText(/Choose and configure a service for this channel/)).toBeVisible();
+  });
+
+  it('keeps forwarding optional for an enquiry with no handoff requirement', () => {
+    editor(ready([]), [], [], { outcome: { ...CAPTURE_OUTCOME, audience_channel: null } });
+    expect(screen.getByText('Leads stay in WConvert. Add a destination only if you want to forward them.')).toBeVisible();
+    expect(screen.queryByText(/Choose and configure a service/)).not.toBeInTheDocument();
+  });
+
+  it('keeps optional setup guidance out of the initial decision', async () => {
+    editor(ready([]), [], [], { hint: 'Use your existing newsletter audience.' });
+    expect(screen.getByText('Use your existing newsletter audience.')).not.toBeVisible();
+    await userEvent.click(screen.getByText('Setup guidance'));
+    expect(screen.getByText('Use your existing newsletter audience.')).toBeVisible();
+  });
+
   /**
    * **Two routes of one type, told apart by what they are for.** This is the
    * whole reason a Destination carries a name, and the case the admin used to
