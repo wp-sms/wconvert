@@ -43,7 +43,7 @@ export function TemplatePackDetail({ pack, displayType, installedVersion, busy, 
 
   return <section className="wconvert-pack-detail" aria-label={pack.name} aria-busy={busy}>
     <header className="wconvert-pack-detail__header">
-      <Button variant="ghost" size="sm" disabled={busy} onClick={onBack}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('All packs', 'wconvert')}</Button>
+      <div className="wconvert-pack-detail__back"><Button variant="ghost" size="sm" disabled={busy} onClick={onBack}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('All packs', 'wconvert')}</Button></div>
       <div className="wconvert-pack-detail__identity">
         <h2 ref={heading} tabIndex={-1}>{pack.name}</h2>
         <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
@@ -79,19 +79,21 @@ export function TemplatePackDetail({ pack, displayType, installedVersion, busy, 
             })}
           </select>
         </div>
-        <div className="wconvert-pack-detail__preview-heading">
-          <h3>{template.name}</h3><span>{__('Sample content', 'wconvert')}</span>
-        </div>
-        <div className="wconvert-pack-detail__controls">
-          <div className="wconvert-segmented flex" role="group" aria-label={__('Preview width', 'wconvert')}>
-            <Button variant="ghost" size="sm" aria-pressed={!mobile} onClick={() => setMobile(false)}><Monitor aria-hidden="true" />{__('Desktop', 'wconvert')}</Button>
-            <Button variant="ghost" size="sm" aria-pressed={mobile} onClick={() => setMobile(true)}><Smartphone aria-hidden="true" />{__('Mobile · 320px', 'wconvert')}</Button>
+        <div className="wconvert-pack-detail__toolbar">
+          <div className="wconvert-pack-detail__preview-heading">
+            <h3>{template.name}</h3><Badge variant="outline">{__('Sample content', 'wconvert')}</Badge>
           </div>
-          {template.tree.steps.length > 1 && <div className="wconvert-segmented flex" role="group" aria-label={__('Preview screen', 'wconvert')}>
-            {template.tree.steps.map((_, index) => <Button key={index} variant="ghost" size="sm" aria-pressed={step === index} onClick={() => setStep(index)}>
-              {index === 0 ? __('Form', 'wconvert') : __('Success', 'wconvert')}
-            </Button>)}
-          </div>}
+          <div className="wconvert-pack-detail__controls">
+            <div className="wconvert-segmented flex" role="group" aria-label={__('Preview width', 'wconvert')}>
+              <Button variant="ghost" size="sm" aria-pressed={!mobile} onClick={() => setMobile(false)}><Monitor aria-hidden="true" />{__('Desktop', 'wconvert')}</Button>
+              <Button variant="ghost" size="sm" aria-pressed={mobile} onClick={() => setMobile(true)}><Smartphone aria-hidden="true" />{__('Mobile · 320px', 'wconvert')}</Button>
+            </div>
+            {template.tree.steps.length > 1 && <div className="wconvert-segmented flex" role="group" aria-label={__('Preview screen', 'wconvert')}>
+              {template.tree.steps.map((_, index) => <Button key={index} variant="ghost" size="sm" aria-pressed={step === index} onClick={() => setStep(index)}>
+                {index === 0 ? __('Form', 'wconvert') : __('Success', 'wconvert')}
+              </Button>)}
+            </div>}
+          </div>
         </div>
         <PackPreviewStage key={template.id} template={template} step={step} mobile={mobile} />
       </div>
@@ -100,7 +102,7 @@ export function TemplatePackDetail({ pack, displayType, installedVersion, busy, 
       {error && <div role="alert" className="wconvert-pack-error">{error}</div>}
       <div className="wconvert-pack-detail__next">
         <div>
-          <p className="font-medium">{installed ? compatible ? __('Ready for your draft', 'wconvert') : __('This design uses a different format', 'wconvert') : installedVersion ? __('Update this collection', 'wconvert') : __('Add this collection to your library', 'wconvert')}</p>
+          {!(installed && compatible) && <p className="font-medium">{installed ? __('This design uses a different format', 'wconvert') : installedVersion ? __('Update this collection', 'wconvert') : __('Add this collection to your library', 'wconvert')}</p>}
           <p className="text-sm text-muted-foreground">{installed ? compatible
             ? __('Next, choose your content and review the design before applying.', 'wconvert')
             : sprintf(__('Open a draft in %1$s format to use this design. Your current draft is %2$s.', 'wconvert'), formatName(template.display_type), formatName(displayType))

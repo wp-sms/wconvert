@@ -8,7 +8,7 @@ choose and inspect a design before the existing content-choice review.
 
 ## Behaviour
 
-- Separate installed collections (Ready to use) from Available to install.
+- Separate installed collections (Installed) from Available to install.
   Explore designs always opens the installed copy; Preview update is a separate
   action when a newer version exists. Checking and downloading remain explicit.
 - Keep catalog connection details in a disclosure beneath the collections.
@@ -63,3 +63,31 @@ No missing requirements or scope expansion were identified.
 After those corrections, all 81 pack/gallery/detail tests, TypeScript, ESLint and
 both admin builds passed. Live WordPress confirmed the sample wrapper is inert
 and hidden from accessibility navigation, with the draft still unchanged.
+
+
+## Screenshot-led layout refinement
+
+The follow-up removes the standalone library-source row: Your designs and
+Template packs now share the Browse designs title row, with the draft format in
+a compact badge. The accessible dialog description remains available without
+using a visible paragraph. Header utilities override the vendored DialogHeader
+column layout through the component's normal class-merging mechanism.
+
+The collection list uses a green Installed group label, a neutral Available to
+install label, and a pack count, replacing the repeated introduction and group
+description. Amber remains reserved for updates. Pack-card descriptions and
+explicit preview/install actions are preserved.
+
+The pack header and body share one rail-width value. All packs sits above the
+design list; collection identity aligns with the preview column. The selected
+design, sample label and preview controls share a wrapping toolbar. The compatible
+installed footer retains the content-choice explanation and action without a
+second readiness headline.
+
+Validation: 373 pack/gallery/detail/stylesheet tests, TypeScript, ESLint and both
+admin builds passed. A combined WordPress visual check and one follow-up verified
+the layout. At 1512 × 806, the main header is 65px high and the preview stage is
+451px high; the title and tabs share a row, both column edges align, and Fieldwork
+fits in the visible stage. At 820 × 900, the compact selector and footer remain
+visible without horizontal overflow. The temporary viewport override was reset;
+no draft was applied, saved or published.

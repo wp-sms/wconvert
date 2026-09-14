@@ -88,7 +88,7 @@ it('separates local packs from available packs and offers updates independently'
   ] });
   const user = userEvent.setup();
   render(<TemplatePacks displayType="inline" onInstalled={vi.fn()} onInspect={vi.fn()} />);
-  const local = await screen.findByRole('region', { name: 'Ready to use' });
+  const local = await screen.findByRole('region', { name: 'Installed' });
   expect(within(local).getByRole('button', { name: 'Explore designs in Reading pack' })).toBeInTheDocument();
   expect(within(screen.getByRole('region', { name: 'Available to install' })).getByText('New collection')).toBeInTheDocument();
   await user.click(within(local).getByRole('button', { name: 'Preview update for Reading pack' }));

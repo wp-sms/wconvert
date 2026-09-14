@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { ArrowRight, Check, Layers, RefreshCw } from 'lucide-react';
+import { ArrowRight, Layers, RefreshCw } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Skeleton } from '../components/ui/skeleton';
@@ -82,8 +82,7 @@ export function TemplatePacks({ displayType, onInstalled, onInspect }: {
 
   return <section ref={list} className="wconvert-packs" aria-label={__('Template packs', 'wconvert')} aria-busy={busy}>
     <header className="wconvert-packs__header">
-      <div><h2>{__('Template packs', 'wconvert')}</h2>
-        <p>{__('Install a collection once, then choose a design for your draft.', 'wconvert')}</p></div>
+      <h2>{__('Collections', 'wconvert')}</h2>
       {status?.configured && <Button variant="outline" disabled={busy} onClick={() => { void run('checking', async () => {
         const result = await refreshCatalog(); if (alive.current) setStatus(result);
       }); }}><RefreshCw aria-hidden="true" className={work === 'checking' ? 'animate-spin motion-reduce:animate-none' : ''} />
@@ -96,9 +95,9 @@ export function TemplatePacks({ displayType, onInstalled, onInspect }: {
     </div> : <Button variant="outline" onClick={() => { void run('loading', async () => {
       const result = await catalogStatus(); if (alive.current) setStatus(result);
     }); }}>{__('Retry loading packs', 'wconvert')}</Button> : <>
-      {installed.length > 0 && <PackGroup title={__('Ready to use', 'wconvert')} description={__('Installed on this site. Explore the designs and choose one for your draft.', 'wconvert')}
+      {installed.length > 0 && <PackGroup title={__('Installed', 'wconvert')} installed
         packs={installed} busy={busy} onInspect={inspect} />}
-      {available.length > 0 && <PackGroup title={__('Available to install', 'wconvert')} description={__('Preview the designs before adding a collection to your library.', 'wconvert')}
+      {available.length > 0 && <PackGroup title={__('Available to install', 'wconvert')} installed={false}
         packs={available} busy={busy} onInspect={inspect} />}
       {status.packs.length === 0 && <div className="wconvert-packs__empty">
         <Layers size={28} aria-hidden="true" />
@@ -119,20 +118,19 @@ export function TemplatePacks({ displayType, onInstalled, onInspect }: {
   </section>;
 }
 
-function PackGroup({ title, description, packs, busy, onInspect }: {
-  title: string; description: string; packs: CatalogPack[]; busy: boolean;
+function PackGroup({ title, installed: isInstalledGroup, packs, busy, onInspect }: {
+  title: string; installed: boolean; packs: CatalogPack[]; busy: boolean;
   onInspect: (pack: CatalogPack, local: boolean) => void;
 }) {
   return <section className="wconvert-packs__group" aria-label={title}>
-    <div className="wconvert-packs__group-heading"><h3>{title}</h3><span>{sprintf(_n('%d pack', '%d packs', packs.length, 'wconvert'), packs.length)}</span></div>
-    <p className="wconvert-packs__group-description">{description}</p>
+    <div className="wconvert-packs__group-heading"><h3><Badge variant={isInstalledGroup ? 'success' : 'secondary'}>{title}</Badge></h3><span>{sprintf(_n('%d pack', '%d packs', packs.length, 'wconvert'), packs.length)}</span></div>
     <ul className="wconvert-packs__grid">{packs.map((pack) => {
       const installed = pack.installed_version !== null;
       return <li key={pack.id} className="wconvert-pack-card">
         <div className="wconvert-pack-card__heading"><Layers size={20} aria-hidden="true" /><h4>{pack.name}</h4>
           {pack.state === 'update' && <Badge variant="warning">{__('Update available', 'wconvert')}</Badge>}</div>
         <p className="wconvert-pack-card__description">{pack.description}</p>
-        <div className="wconvert-pack-card__footer"><span className="wconvert-pack-card__version">{installed && <Check size={14} aria-hidden="true" />}
+        <div className="wconvert-pack-card__footer"><span className="wconvert-pack-card__version">
           {sprintf(__('Version %s', 'wconvert'), pack.installed_version ?? pack.version)}</span>
           <Button data-pack-id={pack.id} variant="outline" disabled={busy} aria-label={sprintf(installed ? __('Explore designs in %s', 'wconvert') : __('Preview %s', 'wconvert'), pack.name)}
             onClick={() => onInspect(pack, installed)}>{installed ? __('Explore designs', 'wconvert') : __('Preview pack', 'wconvert')}<ArrowRight aria-hidden="true" className="rtl:-scale-x-100" /></Button>
