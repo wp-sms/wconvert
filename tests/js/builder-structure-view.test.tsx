@@ -500,8 +500,8 @@ describe('the row', () => {
   it('marks the block conversions are counted on, and only that one', async () => {
     await structure();
 
-    expect(within(row('Button label')).getByText('counted')).toBeInTheDocument();
-    expect(screen.getAllByText('counted')).toHaveLength(1);
+    expect(within(row('Button label')).getByText('Counts conversions')).toBeInTheDocument();
+    expect(screen.getAllByText('Counts conversions')).toHaveLength(1);
   });
 
   /**
@@ -517,7 +517,7 @@ describe('the row', () => {
   it('warns on a block whose words a design switch would throw away', async () => {
     await structure();
 
-    expect(within(row('Fine print')).queryByText('words will be lost')).toBeNull();
+    expect(within(row('Fine print')).queryByText('Text stays in this design')).toBeNull();
 
     await userEvent.click(
       within(row('Fine print')).getByRole('button', { name: 'Add, copy or delete Fine print' }),
@@ -526,7 +526,7 @@ describe('the row', () => {
 
     // The copy comes back with no Role — Roles are unique tree-wide — so it is
     // exactly the block the warning is about.
-    expect(within(row('Text')).getByText('words will be lost')).toBeInTheDocument();
+    expect(within(row('Text')).getByText('Text stays in this design')).toBeInTheDocument();
   });
 
   /**
@@ -543,7 +543,7 @@ describe('the row', () => {
     await userEvent.click(screen.getByRole('menuitem', { name: 'Add a block after this' }));
     await userEvent.click(await screen.findByRole('menuitem', { name: 'Image' }));
 
-    expect(within(row('Image')).queryByText('words will be lost')).toBeNull();
+    expect(within(row('Image')).queryByText('Text stays in this design')).toBeNull();
   });
 
   /** What a row says under its name: the words, or how much is inside it. */
@@ -1435,12 +1435,14 @@ describe('what a row shows about itself', () => {
    * admin naming a concept the merchant has not met, so the sentence travels
    * with it rather than living in a docblock.
    */
-  it('says what “counted” means, rather than only that a row is counted', async () => {
+  it('explains conversion status without hover popups in the Layers list', async () => {
     await structure();
 
-    const chip = within(row('Button label')).getByText('counted');
+    const chip = within(row('Button label')).getByText('Counts conversions');
 
-    expect(chip).toHaveAttribute('title', expect.stringContaining('conversions are counted'));
+    expect(chip).not.toHaveAttribute('title');
+    expect(chip).toHaveTextContent('conversions are counted on this block');
+    expect(screen.getByRole('treegrid').querySelector('[title]')).toBeNull();
   });
 });
 

@@ -73,3 +73,17 @@ and media picture slots remain eligible even when empty.
 After these review changes, all 93 focused frontend tests and all 10 picture
 transfer tests passed, along with TypeScript and ESLint. Both admin builds were
 rebuilt for the local installation.
+
+## Layers hover follow-up
+
+The user reported excessive list tooltips. The Layers row carried separate native
+hover messages on conversion, style-count and text-transfer badges. These now
+use explicit labels without hover popups: “Counts conversions”, “Text stays in
+this design”, and named desktop/mobile style counts. Screen-reader descriptions
+remain available; mobile-only style settings are also counted. ADR 0065 is
+amended inline.
+
+All 102 structure and scope-style tests passed, including keyboard interactions
+and the absence of row title attributes. TypeScript, ESLint and both admin
+builds passed. Local WordPress responded successfully and served both updated
+builder assets. No browser session or draft mutation was needed for this fix.
