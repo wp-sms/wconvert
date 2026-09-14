@@ -15,7 +15,8 @@ defined('ABSPATH') || exit;
  * (ADR 0019). A browser asked for a date would answer with the VISITOR's day —
  * a merchant in Tokyo checking their numbers from a hotel in Los Angeles would
  * be handed yesterday's window and told it was today's. So the REST route
- * takes a NUMBER OF DAYS and never a date, and the one end that is a day is
+ * takes a NUMBER OF DAYS or a named calendar month (ADR 0090), never a browser
+ * day. The current-day cap is
  * {@see StatDay::today()}, computed on the server against the site's own
  * timezone.
  *
@@ -49,6 +50,7 @@ final class StatRange
     private function __construct(
         public readonly string $from,
         public readonly string $to,
+        private readonly bool $empty = false,
     ) {
     }
 
@@ -79,6 +81,20 @@ final class StatRange
         return self::lastDays($days, self::daysBefore($today, 1));
     }
 
+    /** A named month is stable in bookmarks; the site day still caps its end. */
+    public static function calendarMonth(string $month, string $today): self
+    {
+        if (!preg_match('/^[1-9][0-9]{3}-(0[1-9]|1[0-2])$/D', $month) || $month > substr($today, 0, 7)) {
+            throw new \InvalidArgumentException('Choose a current or earlier calendar month.');
+        }
+        $from = $month . '-01';
+        $end = (new \DateTimeImmutable($from, new \DateTimeZone('UTC')))->format('Y-m-t');
+        $to = min($end, self::daysBefore($today, 1));
+        // An empty first-day report has a valid date anchor, never yesterday's
+        // counts disguised as this month's. days/covers/eachDay carry emptiness.
+        return new self($from, max($from, $to), $to < $from);
+    }
+
     public function previous(): self
     {
         return self::lastDays($this->days(), self::daysBefore($this->from, 1));
@@ -87,6 +103,7 @@ final class StatRange
     /** How many days the window covers, both ends counted. */
     public function days(): int
     {
+        if ($this->empty) return 0;
         $from = new \DateTimeImmutable($this->from, new \DateTimeZone('UTC'));
         $to = new \DateTimeImmutable($this->to, new \DateTimeZone('UTC'));
 
@@ -119,7 +136,7 @@ final class StatRange
     /** Whether a `stat_date` falls inside the window. */
     public function covers(string $day): bool
     {
-        return $day >= $this->from && $day <= $this->to;
+        return !$this->empty && $day >= $this->from && $day <= $this->to;
     }
 
     /**

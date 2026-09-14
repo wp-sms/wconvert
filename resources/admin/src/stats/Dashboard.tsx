@@ -27,6 +27,11 @@ import { formatCount } from './format';
 import { families, rangeLabel, reportCSV } from './reporting';
 import { CampaignTable, Change, Experiment, GoalDetail } from './ReportDetails';
 import './analytics.css';
+import {
+  MonthlyTargets,
+  useMonthlyTargets,
+  monthLabel,
+} from './MonthlyTargets';
 
 const WINDOWS = [7, 30, 90];
 const periodLabel = (days: number) =>
@@ -51,7 +56,10 @@ export function Dashboard({
   useEffect(() => {
     let active = true;
     setUpdating(true);
-    readDashboard(days, true)
+    (selection.month
+      ? readDashboard(days, true, selection.month)
+      : readDashboard(days, true)
+    )
       .then((data) => {
         if (active) {
           setReport(ready(data));
@@ -72,9 +80,13 @@ export function Dashboard({
     return () => {
       active = false;
     };
-  }, [days, retry]);
+  }, [days, selection.month, retry]);
   const payload = report.status === 'ready' ? report.data : null;
-  const accepted = { ...selection, days: payload?.days ?? selection.days };
+  const accepted = {
+    ...selection,
+    days: payload?.days ?? selection.days,
+    month: payload ? payload.month : selection.month,
+  };
   const compare = selection.compare !== false;
   const periods =
     days !== null && !WINDOWS.includes(days)
@@ -89,6 +101,7 @@ export function Dashboard({
   const optin = card?.optins.find((o) => o.id === focusedId);
   const impact = payload?.impact.find((i) => i.id === selection.impact);
   const overview = !focusedId && !selection.goal && !selection.impact;
+  const targets = useMonthlyTargets(overview);
   const scopedCards = card
     ? [card]
     : impact
@@ -136,11 +149,24 @@ export function Dashboard({
             </span>
             <select
               aria-label={__('Report period', 'wconvert')}
-              value={days ?? payload?.days ?? ''}
+              value={
+                selection.month
+                  ? `month:${selection.month}`
+                  : (days ?? payload?.days ?? '')
+              }
               onChange={(e) =>
-                change({ ...selection, days: Number(e.target.value) })
+                change({
+                  ...selection,
+                  month: undefined,
+                  days: Number(e.target.value),
+                })
               }
             >
+              {selection.month && (
+                <option value={`month:${selection.month}`}>
+                  {monthLabel(selection.month)}
+                </option>
+              )}
               {periods.map((period) => (
                 <option key={period} value={period}>
                   {periodLabel(period)}
@@ -150,7 +176,7 @@ export function Dashboard({
           </label>
           <Button
             variant="outline"
-            disabled={!payload || updating}
+            disabled={!payload || updating || payload.days === 0}
             onClick={exportReport}
             title={__(
               'Exports this report, including campaigns hidden by table search or status filters.',
@@ -203,32 +229,39 @@ export function Dashboard({
       {payload && !overview && (
         <a
           className="wa-back"
-          href={reportHref({ days: payload.days, compare: selection.compare })}
+          href={reportHref({
+            month: payload.month,
+            days: payload.days,
+            compare: selection.compare,
+          })}
         >
           <ArrowLeft aria-hidden="true" />
           {__('Overall impact', 'wconvert')}
         </a>
       )}
       {payload && payload.goals.length === 0 && overview ? (
-        <Region>
-          <EmptyState
-            icon={ChartColumn}
-            title={__(
-              'Your first results start with a live campaign',
-              'wconvert',
-            )}
-            action={
-              <Button asChild>
-                <a href="#optins">{__('Go to Campaigns', 'wconvert')}</a>
-              </Button>
-            }
-          >
-            {__(
-              'Publish a campaign to start seeing its reach and results. Never-published drafts stay on the Campaigns page.',
-              'wconvert',
-            )}
-          </EmptyState>
-        </Region>
+        <>
+          <Region>
+            <EmptyState
+              icon={ChartColumn}
+              title={__(
+                'Your first results start with a live campaign',
+                'wconvert',
+              )}
+              action={
+                <Button asChild>
+                  <a href="#optins">{__('Go to Campaigns', 'wconvert')}</a>
+                </Button>
+              }
+            >
+              {__(
+                'Publish a campaign to start seeing its reach and results. Never-published drafts stay on the Campaigns page.',
+                'wconvert',
+              )}
+            </EmptyState>
+          </Region>
+          <MonthlyTargets report={targets} />
+        </>
       ) : payload && overview ? (
         <>
           <div className="wa-intro">
@@ -249,6 +282,7 @@ export function Dashboard({
                 key={item.id}
                 className={`wa-impact ${index === 0 ? 'wa-impact-primary' : ''}`}
                 href={reportHref({
+                  month: payload.month,
                   days: payload.days,
                   impact: item.id,
                   compare: selection.compare,
@@ -279,6 +313,7 @@ export function Dashboard({
               )}
             </p>
           )}
+          <MonthlyTargets report={targets} />
           <div className="wa-section-heading">
             <h3>{__('Results by goal', 'wconvert')}</h3>
             <span>
@@ -291,6 +326,7 @@ export function Dashboard({
                 className="wa-goal-card"
                 key={g.goal}
                 href={reportHref({
+                  month: payload.month,
                   days: payload.days,
                   goal: g.goal,
                   compare: selection.compare,
@@ -443,7 +479,11 @@ function DateScope({
             </p>
           </details>
         </div>
-        <strong>{rangeLabel(payload.from, payload.to)}</strong>
+        <strong>
+          {payload.days === 0
+            ? __('No complete days yet this month', 'wconvert')
+            : rangeLabel(payload.from, payload.to)}
+        </strong>
       </div>
       <div className="wa-date-comparison">
         <label>

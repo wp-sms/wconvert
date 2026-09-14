@@ -96,6 +96,16 @@ not another counted entity. A/B reports cover selected dates across designs'
 past uses, not immutable test rounds. See
 [ADR 0089](docs/adr/0089-analytics-starts-with-impact-and-keeps-history-inspectable.md).
 
+### Monthly target
+
+An optional site-wide count the merchant wants to reach in a calendar month,
+not an Optin's [[Goal]]. Targets follow actual impact and use the same historical
+submission/offer-click/cart-click counts through yesterday. They never pause
+campaigns, reset results, or renew automatically. Saved months remain distinct;
+reusing last month's numbers is an explicit draft edit. Target report links keep
+their calendar month independently of rolling report dates. See
+[ADR 0090](docs/adr/0090-monthly-targets-are-optional-benchmarks.md).
+
 ### Conversion
 
 A visitor doing the thing an [[Optin]] exists to make them do — the countable

@@ -86,6 +86,7 @@ export function hashFor(id: SectionId): string {
 
 /** Read-state links stay inside WordPress's existing admin page. */
 export interface ReportQuery {
+  month?: string;
   days?: number;
   goal?: string;
   optinId?: string;
@@ -103,7 +104,10 @@ export interface AdminRoute {
   destinationId?: string;
 }
 
-function withQuery(section: SectionId, values: Record<string, string | number | undefined>): string {
+function withQuery(
+  section: SectionId,
+  values: Record<string, string | number | undefined>,
+): string {
   const query = new URLSearchParams();
   for (const [key, value] of Object.entries(values)) {
     if (value !== undefined && value !== '') query.set(key, String(value));
@@ -115,16 +119,36 @@ function returnHref(value: string | null): string {
   if (!value?.startsWith('#') || value.length > 2048) return hashFor('optins');
   const [section, ...query] = value.slice(1).split('?');
   // Returning to another editor can form an endless nested back-link chain.
-  return IDS.has(section) && !new URLSearchParams(query.join('?')).has('edit') ? value : hashFor('optins');
+  return IDS.has(section) && !new URLSearchParams(query.join('?')).has('edit')
+    ? value
+    : hashFor('optins');
 }
 
 export const editorHref = (id: string, returnTo?: string): string =>
-  withQuery('optins', { edit: id, back: returnTo ? returnHref(returnTo) : undefined });
+  withQuery('optins', {
+    edit: id,
+    back: returnTo ? returnHref(returnTo) : undefined,
+  });
 export const reportHref = (query: ReportQuery = {}): string =>
-  withQuery('analytics', { days: query.days, goal: query.goal, optin: query.optinId, impact: query.impact, experiment: query.experiment, compare: query.compare === false ? '0' : undefined });
+  withQuery('analytics', {
+    month: query.month,
+    days: query.month ? undefined : query.days,
+    goal: query.goal,
+    optin: query.optinId,
+    impact: query.impact,
+    experiment: query.experiment,
+    compare: query.compare === false ? '0' : undefined,
+  });
 export const leadsHref = (query: LeadQuery = {}): string =>
-  withQuery('leads', { optin: query.optinId, identifier: query.identifier, lead: query.leadId, from: query.from, to: query.to });
-export const destinationHref = (id?: string): string => withQuery('destinations', { destination: id });
+  withQuery('leads', {
+    optin: query.optinId,
+    identifier: query.identifier,
+    lead: query.leadId,
+    from: query.from,
+    to: query.to,
+  });
+export const destinationHref = (id?: string): string =>
+  withQuery('destinations', { destination: id });
 
 export function routeFrom(hash: string): AdminRoute {
   const section = sectionFrom(hash);
@@ -136,14 +160,25 @@ export function routeFrom(hash: string): AdminRoute {
     editId: section === 'optins' ? value('edit') : undefined,
     returnTo: returnHref(params.get('back')),
     report: {
-      days: Number.isInteger(days) && days >= 1 && days <= 366 ? days : undefined,
+      ...(value('month') &&
+      /^[1-9][0-9]{3}-(0[1-9]|1[0-2])$/.test(value('month')!)
+        ? { month: value('month') }
+        : {}),
+      days:
+        Number.isInteger(days) && days >= 1 && days <= 366 ? days : undefined,
       goal: value('goal'),
       optinId: value('optin'),
       ...(value('impact') ? { impact: value('impact') } : {}),
       ...(value('experiment') ? { experiment: value('experiment') } : {}),
       ...(value('compare') === '0' ? { compare: false } : {}),
     },
-    leads: { optinId: value('optin'), identifier: value('identifier'), leadId: value('lead'), from: value('from'), to: value('to') },
+    leads: {
+      optinId: value('optin'),
+      identifier: value('identifier'),
+      leadId: value('lead'),
+      from: value('from'),
+      to: value('to'),
+    },
     destinationId: value('destination'),
   };
 }

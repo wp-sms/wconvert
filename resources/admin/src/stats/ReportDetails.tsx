@@ -218,6 +218,7 @@ export function GoalDetail({
           <Button asChild variant="outline">
             <a
               href={reportHref({
+                month: payload.month,
                 days: payload.days,
                 goal: card.goal,
                 experiment: family.root.id,
@@ -352,6 +353,7 @@ export function CampaignTable({
                 <th scope="row">
                   <a
                     href={reportHref({
+                      month: payload.month,
                       days: payload.days,
                       goal: card.goal,
                       ...(arms.length > 1
@@ -385,6 +387,7 @@ export function CampaignTable({
                     <a
                       className="wa-table-compare"
                       href={reportHref({
+                        month: payload.month,
                         days: payload.days,
                         experiment: root.id,
                         compare: query.compare,
@@ -589,6 +592,7 @@ export function Experiment({
               <Button asChild variant="outline">
                 <a
                   href={reportHref({
+                    month: payload.month,
                     days: payload.days,
                     goal: card.goal,
                     optinId: arm.id,

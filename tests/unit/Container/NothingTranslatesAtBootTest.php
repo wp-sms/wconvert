@@ -18,6 +18,7 @@ use WConvert\Queue\Queue;
 use WConvert\Rest\BeaconController;
 use WConvert\Rest\CaptureController;
 use WConvert\Rest\DashboardController;
+use WConvert\Rest\MonthlyTargetsController;
 use WConvert\Rest\MilestoneController;
 use WConvert\Rest\DestinationController;
 use WConvert\Rest\GoalController;
@@ -98,6 +99,7 @@ final class NothingTranslatesAtBootTest extends TestCase
         BeaconController::class => '/beacon',
         LeadController::class => '/leads',
         DashboardController::class => '/dashboard',
+        MonthlyTargetsController::class => '/monthly-targets',
         MilestoneController::class => '/milestones',
         DestinationController::class => '/destinations',
     ];
