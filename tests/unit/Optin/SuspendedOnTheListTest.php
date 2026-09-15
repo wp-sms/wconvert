@@ -92,7 +92,9 @@ final class SuspendedOnTheListTest extends TestCase
         $id = $this->draft([]);
         $this->optins->delete($id);
         $request->set_param('ids', [$id]);
-        self::assertSame([], $controller->previews($request)->get_data());
+        $response = $controller->previews($request);
+        self::assertInstanceOf(WP_REST_Response::class, $response);
+        self::assertSame([], $response->get_data());
     }
 
     public function testCampaignPreviewsRequireManagementPermission(): void
