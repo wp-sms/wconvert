@@ -1,4 +1,24 @@
 import apiFetch from '@wordpress/api-fetch';
+import type { Template } from '@renderer/types';
+
+export interface CampaignPreview {
+  id: string;
+  template: Template | null;
+  display_type: string;
+}
+
+/** Only visible designs are fetched; the list response remains small. */
+export const readCampaignPreviews = (ids: string[]) => {
+  const query = new URLSearchParams();
+  for (const id of ids) query.append('ids[]', id);
+  return apiFetch<CampaignPreview[]>({ path: `/wconvert/v1/optins/previews?${query}` });
+};
+
+/** Copy the saved draft through the same validated creation route as the editor. */
+export async function duplicateCampaign(id: string, name: string) {
+  const saved = await apiFetch<{ goal: string; config: Record<string, unknown> }>({ path: `/wconvert/v1/optins/${id}` });
+  return createOptin(name, saved.goal, saved.config);
+}
 
 /**
  * The state facts shared by the list and editor, wherever the row came from.

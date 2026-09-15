@@ -148,7 +148,7 @@ export function RegionFooter({ className, children }: { className?: string; chil
  * succeeds, so there is no path where a merchant hides a failure and then
  * reads the stale data underneath it as current.
  */
-export function RegionError({ message }: { message: string }) {
+export function RegionError({ message, action }: { message: string; action?: ReactNode }) {
   return (
     <div className="border-b border-border px-4 py-2.5">
       <Alert variant="destructive" className="border-destructive/30 bg-destructive/5">
@@ -164,6 +164,7 @@ export function RegionError({ message }: { message: string }) {
           belongs.
         */}
         <AlertTitle className="line-clamp-none">{message}</AlertTitle>
+        {action && <AlertDescription>{action}</AlertDescription>}
       </Alert>
     </div>
   );

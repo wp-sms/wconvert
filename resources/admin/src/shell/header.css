@@ -1,0 +1,33 @@
+#wconvert-admin .wc-masthead { min-block-size:56px; display:flex; align-items:center; gap:25px; padding-inline:24px; }
+#wconvert-admin .wc-brand { display:flex; align-items:center; gap:9px; white-space:nowrap; font-size:var(--text-heading); font-weight:650; letter-spacing:-.6px; }
+#wconvert-admin .wc-brand-mark { display:grid; place-items:center; inline-size:32px; block-size:32px; border-radius:var(--radius); background:var(--primary); color:var(--primary-foreground); font-size:var(--text-title); font-style:italic; font-weight:750; letter-spacing:-5px; padding-inline-end:5px; }
+#wconvert-admin .wc-brand-plan { font-size:var(--text-micro); font-weight:600; letter-spacing:.7px; text-transform:uppercase; color:var(--primary); border:1px solid var(--border); border-radius:var(--radius); padding:3px 5px; }
+#wconvert-admin .wc-section-nav { align-self:stretch; }
+#wconvert-admin .wc-section-nav ul { display:flex; align-items:stretch; block-size:100%; gap:20px; margin:0; padding:0; list-style:none; }
+#wconvert-admin .wc-section-nav li { display:flex; }
+#wconvert-admin .wc-section-nav a { display:flex; align-items:center; color:var(--muted-foreground); text-decoration:none; border-block-end:2px solid transparent; font-size:var(--text-body); font-weight:500; }
+#wconvert-admin .wc-section-nav a[aria-current] { color:var(--primary); border-block-end-color:var(--primary); }
+#wconvert-admin .wc-section-nav a:hover { color:var(--primary); }
+#wconvert-admin .wc-header-tools { margin-inline-start:auto; display:flex; align-items:center; gap:8px; }
+#wconvert-admin .wc-explore-pro { color:var(--primary); font-size:var(--text-note); font-weight:600; text-decoration:none; white-space:nowrap; }
+#wconvert-admin .wc-account-link { display:grid; place-items:center; inline-size:32px; block-size:32px; border-radius:50%; border:1px solid var(--border); background:var(--secondary); color:var(--primary); }
+#wconvert-admin .wc-account-link svg { inline-size:16px; block-size:16px; }
+#wconvert-admin .wc-notifications-trigger { position:relative; }
+#wconvert-admin .wc-notification-dot { position:absolute; inset-block-start:4px; inset-inline-end:5px; inline-size:5px; block-size:5px; border-radius:50%; background:var(--warning); }
+.wc-header-popover { max-inline-size:calc(100vw - 32px); }
+.wc-header-popover h2 { margin:0 0 12px; font-size:var(--text-heading); font-weight:600; }
+.wc-header-popover a { display:flex; align-items:center; gap:8px; font-size:var(--text-body); color:var(--primary); padding-block:8px; text-decoration:none; }
+.wc-header-popover a svg { inline-size:14px; block-size:14px; }
+.wc-header-popover p { margin:6px 0; font-size:var(--text-body); color:var(--muted-foreground); }
+.wc-notifications { inline-size:340px; max-block-size:70vh; overflow:auto; }
+.wc-notification + .wc-notification { border-block-start:1px solid var(--border); margin-block-start:12px; padding-block-start:12px; }
+@media(max-width:1000px) {
+#wconvert-admin .wc-masthead { flex-wrap:wrap; padding-block-start:10px; gap:0; }
+#wconvert-admin .wc-section-nav { order:3; flex-basis:100%; min-block-size:40px; margin-block-start:2px; }
+}
+@media(max-width:640px) {
+#wconvert-admin .wc-masthead { padding-inline:16px; }
+#wconvert-admin .wc-header-tools { gap:3px; }
+#wconvert-admin .wc-section-nav ul { justify-content:space-between; gap:10px; }
+}
+#wconvert-admin .wc-masthead :is(button,a):focus-visible { outline:2px solid var(--ring); outline-offset:3px; }

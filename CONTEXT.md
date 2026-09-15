@@ -95,7 +95,7 @@ cart return clicks and appearances. It never reports a global conversion rate,
 unique people, purchases or recovered revenue. Goal and individual Optin reports
 explain their denominators. Resource requests and accepted email sends remain
 separate. Complete-day comparisons are resolved in the site's calendar; no
-visible timezone label is needed. List/editor windows still include today.
+visible timezone label is needed. Campaigns also uses complete days through yesterday; editor windows still include today.
 
 Paused and soft-deleted Optins retain inspectable history; never-published
 drafts without counters are excluded. Parent/variant grouping is presentation,
@@ -314,6 +314,12 @@ existing option/default or prune behavior ([ADR 0071](docs/adr/0071-reports-capt
 The unit of work in WConvert: one designed thing, shown to a chosen audience,
 under a set of display rules, serving one [[Goal]], pushing to one or more
 [[Destination]]s.
+
+Campaigns management shows saved-design previews, list/gallery views, family-aware
+filters and anchored actions. **Live** means a published unsuspended snapshot;
+display rules still determine appearances. **Pause** unpublishes; storage has no
+separate paused state. The compact shared header names the installed tier and
+shows real known issues on request. See [ADR 0092](docs/adr/0092-campaigns-use-a-design-led-workspace-and-compact-masthead.md).
 
 > **UI: Campaign; domain: Optin.** [ADR 0086](docs/adr/0086-campaign-setups-explain-handoff-and-format.md)
 > adopts familiar merchant language while preserving technical identifiers. The

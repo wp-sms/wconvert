@@ -15,7 +15,9 @@ an explicit Publish action in the editor. When edits are unsaved, **Save &
 publish** saves them first; a failed save must never publish the older saved
 draft. A failed promotion keeps the review and its error available for retry.
 
-The Optins list also offers **Publish changes** for a published or suspended
+**Amended by [0092](0092-campaigns-use-a-design-led-workspace-and-compact-masthead.md):** the Campaigns next action is **Review changes**;
+**Publish saved draft** lives in the row menu and confirms before promotion.
+Previously the Optins list offered **Publish changes** for a published or suspended
 Optin with saved changes. A suspended Optin remains published; promotion does
 not claim to resolve its missing dependency. A draft with no design can be
 saved, but publishing it is refused at both REST and repository promotion

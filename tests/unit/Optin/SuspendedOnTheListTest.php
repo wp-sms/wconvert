@@ -63,6 +63,48 @@ final class SuspendedOnTheListTest extends TestCase
         ));
     }
 
+    public function testCampaignPreviewsOnlyExposeRequestedSavedDesigns(): void
+    {
+        $id = $this->draft([]);
+        $this->draft([]);
+        $request = new WP_REST_Request();
+        $request->set_param('ids', [$id]);
+        $response = $this->controllerOn(false, true)->previews($request);
+        self::assertInstanceOf(WP_REST_Response::class, $response);
+        $data = $response->get_data();
+        self::assertCount(1, $data);
+        self::assertSame($id, $data[0]['id']);
+        self::assertIsArray($data[0]['template']);
+        self::assertArrayNotHasKey('config', $data[0]);
+        self::assertArrayNotHasKey('published_config', $data[0]);
+        $request->set_param('ids', array_fill(0, 13, $id));
+        self::assertInstanceOf(\WP_Error::class, $this->controllerOn(false, true)->previews($request));
+    }
+
+    public function testCampaignPreviewsRejectInvalidInputAndExcludeDeletedDesigns(): void
+    {
+        $controller = $this->controllerOn(false, true);
+        $request = new WP_REST_Request();
+        foreach ([null, [], 'invalid', ['invalid'], [27]] as $ids) {
+            $request->set_param('ids', $ids);
+            self::assertInstanceOf(\WP_Error::class, $controller->previews($request));
+        }
+        $id = $this->draft([]);
+        $this->optins->delete($id);
+        $request->set_param('ids', [$id]);
+        $response = $controller->previews($request);
+        self::assertInstanceOf(WP_REST_Response::class, $response);
+        self::assertSame([], $response->get_data());
+    }
+
+    public function testCampaignPreviewsRequireManagementPermission(): void
+    {
+        $this->controllerOn(false, true)->registerRoutes();
+        $routes = array_values(array_filter($GLOBALS['wconvertTestRoutes'], fn ($route) => $route['route'] === '/optins/previews'));
+        self::assertCount(1, $routes);
+        self::assertSame([\WConvert\Rest\Routes::class, 'canManage'], $routes[0]['args']['permission_callback']);
+    }
+
     /**
      * @param list<array<string, mixed>> $rules
      */

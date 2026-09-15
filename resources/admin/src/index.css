@@ -931,7 +931,7 @@
    */
   :is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"])
     :is(.wconvert-page-actions, .wconvert-toolbar, .wconvert-table, .wconvert-footer)
-    :is([data-slot="button"], [data-slot="select-trigger"], [data-slot="input"]) {
+    :is([data-slot="button"], [data-slot="select-trigger"], [data-slot="input"], select, input[type="search"]) {
     /*
      * **The height is a MINIMUM, and the label may wrap.** "Export CSV" is two
      * short words in English and *"Erfassungsdatensätze als CSV-Datei
@@ -6240,3 +6240,26 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-pack-detail__starts[open] { max-block-size: 9rem; overflow-y: auto; }
 .wconvert-pack-detail__starts ul { padding-inline-start: 1.25rem; margin-block: 0.5rem; }
 .wconvert-pack-detail__starts p { margin: 0; color: var(--muted-foreground); }
+
+/* Shared pointer floor: scope controls own density; coarse pointers need room.
+ * Keep this in the same important layer as control scope rules so it wins. */
+@layer utilities {
+  @media (pointer: coarse) {
+    :is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"])
+      :is(.wconvert-page-actions, .wconvert-toolbar, .wconvert-table, .wconvert-footer)
+      :is([data-slot="button"], [data-slot="select-trigger"], [data-slot="input"], select, input[type="search"]),
+    :is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"], [data-slot="popover-content"], [data-slot="dropdown-menu-content"])
+      :is([data-slot="button"], [data-slot="dropdown-menu-item"], [data-slot="select-trigger"], [data-slot="input"], button, input[type="search"], select, label:has(input[type="radio"]), .wc-masthead a) {
+      min-block-size: 2.75rem !important;
+    }
+    #wconvert-admin :is(.wc-account-link, button, .wc-campaign-layout label) {
+      min-inline-size: 2.75rem !important;
+    }
+  }
+}
+
+/* Native controls otherwise keep a full-height line box from wp-admin styling. */
+@layer utilities {
+  #wconvert-admin :is(.wconvert-toolbar, .wconvert-table, .wconvert-footer, .wconvert-page-actions)
+    :is(select, input[type="search"]) { line-height: 1.25 !important; }
+}

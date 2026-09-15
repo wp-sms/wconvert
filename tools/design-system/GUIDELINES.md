@@ -3,10 +3,15 @@
 The durable half of this project. `BRIEF.md` is about one job and will go stale
 when that job ships; this describes how the system works and is meant to last.
 
-Everything here is **generated from the code**, not written alongside it. The
-cards are the shipping components' real markup and the tokens are lifted out of
-`resources/admin/src/index.css`. When the code changes, this is regenerated —
-so if the two ever disagree, the code is right and this is out of date.
+These guidelines are **authored rules**. The accompanying tokens, component
+cards and screen evidence are generated from shipping code. When they disagree,
+review the implementation against the rules and the relevant ADR; code is not
+automatically correct because a screenshot generator captured it.
+
+A prototype establishes hierarchy, workflows and visual direction. Implement it
+with shared tokens and primitives. Change a guideline only for a reusable product
+need, explain the reason in an ADR, and amend superseded rules inline. Do not
+create a screen-specific exception merely to reproduce a prototype measurement.
 
 ---
 
@@ -15,7 +20,9 @@ so if the two ever disagree, the code is right and this is out of date.
 Three bands, and they are the whole page:
 
 1. **Brand band** — white with petrol accents, carries the wordmark and, on a section screen, the
-   four-item nav.
+   four-item nav. Its shared masthead is at least **56px** on desktop and
+   wraps navigation onto a second row on narrow screens. Help, issue notifications,
+   installed-plan identity and the account entry belong here, in shell-owned CSS.
 2. **Title band** — pale, carries the `h1`, one line of description, and the
    page actions. Present on a section screen; absent inside the builder.
 3. **`main`** — the regions.
@@ -34,7 +41,7 @@ A region is a bordered card with an optional header, toolbar and footer. What a
 screen gets is decided by **scope**, not by taste — and scope is also what
 decides how tall its controls are.
 
-## 3. Two control heights, and neither is a prop
+## 3. Control heights follow scope
 
 | Height | For | How it is applied |
 |---|---|---|
@@ -45,7 +52,11 @@ Never pass `size="sm"` to make a toolbar control small. The container decides.
 A rule about the toolbar belongs to the toolbar, not to each control that lands
 in one.
 
-## 4. Six type roles, and every size is one of them
+The builder also has a **1.5rem** `--control-height-xs` for editing furniture
+(ADR 0066). It is not a reading-page density option. On coarse pointers, shared
+controls have a **2.75rem / 44px** floor, including menus and native inputs.
+
+## 4. Eight type roles, six for reading pages
 
 | Role | Size | For |
 |---|---|---|
@@ -55,6 +66,8 @@ in one.
 | `heading` | 16 | a region heading, a card title, a section in an editor |
 | `title` | 24 | the page title, and only that |
 | `figure` | 30 | the one emphasised figure per Goal |
+| `label` | 11 | builder editing furniture only |
+| `meta` | 9 | tracked builder furniture captions only |
 
 Do not reach for a Tailwind size outside this list. Before the roles existed,
 103 of ~115 text elements on the builder were 14px and nine sizes were in use;
@@ -66,7 +79,7 @@ colour.
 - **Petrol `#0f6e79`** is the primary. Cool against WP SMS's warm burnt orange,
   so the two read as related and not the same.
 - **The semantic four are reserved**: `destructive` failure, `success`
-  converted, `warning` paused or nearly-limit, `info` neutral fact. The primary
+  converted, `warning` suspended or nearly-limit, `info` neutral fact. The primary
   is not green precisely so green can mean *converted* on the screen this
   product is sold on.
 - **Two edge tokens, because they are two jobs.** `--border` draws dividers and
@@ -444,3 +457,29 @@ Not gaps. Each was decided:
 - A new primitive arrives via `npx shadcn add` and is edited in place after.
 - Changing a token here changes nothing until it changes in
   `resources/admin/src/index.css`. This project is a mirror, not a source.
+
+
+## 20. Campaign management applies the shared grammar
+
+- The four-column campaign list is a grid variant of `DataTable`. Thumbnails
+  and names open saved-design details; explicit row actions lead to editing.
+  Gallery reuses those rows and semantics. On cards, identity is the heading,
+  status/results retain their labels, and actions form the footer.
+- Use `StatusBadge` everywhere: **Draft**, **Published**, **Suspended** and
+  **Deleted**. Publication is a snapshot state, not proof of current visibility.
+  **Unpublish** returns a campaign to Draft. Saved changes are neutral information.
+- The anchored grouped row menu is a `DropdownMenu`, not a modal. A publishing
+  confirmation uses the primary action; deletion and replacement use destructive
+  actions. A known missing design explains why publication is disabled.
+- Campaigns, results, previews and vocabulary can fail independently. Draw the
+  failed concern with a shared error and Retry. Keep accepted results, dates and
+  links together during loading or failure. Skeletons reserve the upcoming
+  thumbnail and field layout in either view.
+- Busy state belongs to the affected campaign family. Navigation waits for
+  pending writes; unrelated families remain actionable.
+- Tier names come from the shared vocabulary. The header’s temporary `#` account
+  link is an explicit user-approved exception, removed when an account destination
+  is supplied. It is not a general permission for dead links.
+- New stylesheets must join the type/RTL source-contract checks. Verify actual
+  WordPress at desktop and 360px, including keyboard selection, long labels,
+  RTL and effective coarse-pointer target sizes. Source tests cannot prove layout.
