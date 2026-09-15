@@ -6258,12 +6258,6 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
   }
 }
 
-/* Menu links are actions in the same register as their button siblings. */
-@layer utilities {
-  a[data-slot="dropdown-menu-item"] { color: var(--foreground) !important; }
-  a[data-slot="dropdown-menu-item"][data-variant="destructive"] { color: var(--destructive) !important; }
-}
-
 /* Native controls otherwise keep a full-height line box from wp-admin styling. */
 @layer utilities {
   #wconvert-admin :is(.wconvert-toolbar, .wconvert-table, .wconvert-footer, .wconvert-page-actions)
