@@ -63,6 +63,10 @@ import {
   type OptinSummary,
   type OptinStatus,
 } from './api';
+import { DataTable, DataTableHead, DataTableColumn, DataTableBody, DataTableRow, DataTableCell, DataTableActions } from '../shell/DataTable';
+import { RowsSkeleton } from '../shell/RowsSkeleton';
+import { CampaignSkeleton } from './CampaignSkeleton';
+import { StatusBadge } from './StatusBadge';
 import './campaigns.css';
 
 const Design = lazy(() => import('./CampaignDesign'));
@@ -80,14 +84,6 @@ type Decision = {
   row: OptinSummary;
   parent?: OptinSummary;
 };
-const stateLabel = (status: OptinStatus) =>
-  status === 'published'
-    ? __('Live', 'wconvert')
-    : status === 'suspended'
-      ? __('Not showing', 'wconvert')
-      : status === 'deleted'
-        ? __('Deleted', 'wconvert')
-        : __('Draft', 'wconvert');
 const displayLabel = (type?: string) =>
   ({
     popup: __('Popup', 'wconvert'),
@@ -107,6 +103,7 @@ export function OptinList({
   onBusyChange?: (busy: boolean) => void;
 }) {
   const [list, setList] = useState<Loadable<OptinSummary[]>>(LOADING);
+  const [labelsError, setLabelsError] = useState<string | null>(null);
   const [labels, setLabels] = useState<Record<string, string> | null>(null);
   const [report, setReport] = useState<DashboardPayload | null>(null);
   const [reportError, setReportError] = useState<string | null>(null);
@@ -115,6 +112,17 @@ export function OptinList({
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<Set<string>>(new Set());
   const busyRef = useRef(new Set<string>());
+  const mutationErrorsRef = useRef(new Map<string, { message: string; action: () => Promise<unknown>; openCreated: boolean }>());
+  const [mutationErrors, setMutationErrors] = useState(new Map(mutationErrorsRef.current));
+  const createdToOpen = useRef<string | null>(null);
+  const listRequest = useRef(0);
+  useEffect(() => {
+    if (busy.size === 0 && createdToOpen.current) {
+      const id = createdToOpen.current;
+      createdToOpen.current = null;
+      if (mutationErrorsRef.current.size === 0) onEdit(id);
+    }
+  }, [busy, onEdit]);
   const [decision, setDecision] = useState<Decision | null>(null);
   const [inspecting, setInspecting] = useState(false);
   const [selected, setSelected] = useState<OptinSummary | null>(null);
@@ -130,10 +138,14 @@ export function OptinList({
   const returnFocus = useRef<HTMLElement | null>(null);
   const createFocus = useRef<HTMLButtonElement>(null);
   const refresh = useCallback(async () => {
+    const request = ++listRequest.current;
     try {
-      setList(ready(await listOptins()));
+      const data = await listOptins();
+      if (request !== listRequest.current) return;
+      setList(ready(data));
       setError(null);
     } catch (cause) {
+      if (request !== listRequest.current) return;
       setList((previous) => (previous.status === 'ready' ? previous : failed(cause)));
       setError(messageOf(cause));
     }
@@ -143,17 +155,18 @@ export function OptinList({
   }, [refresh]);
   useEffect(() => {
     let active = true;
+    setLabelsError(null);
     void listGoals()
       .then((goals) => {
         if (active) setLabels(Object.fromEntries(goals.map((g) => [g.id, g.label])));
       })
-      .catch(() => {
-        if (active) setLabels({});
+      .catch((cause) => {
+        if (active) setLabelsError(messageOf(cause));
       });
     return () => {
       active = false;
     };
-  }, []);
+  }, [refreshKey]);
   useEffect(() => {
     let active = true;
     setReportLoading(true);
@@ -228,7 +241,9 @@ export function OptinList({
     };
   }, [ids, refreshKey]);
   const run = async (id: string, action: () => Promise<unknown>, openCreated = false) => {
-    if (busyRef.current.size > 0) return;
+    if (busyRef.current.has(id)) return;
+    mutationErrorsRef.current.delete(id);
+    setMutationErrors(new Map(mutationErrorsRef.current));
     busyRef.current.add(id);
     setBusy(new Set(busyRef.current));
     onBusyChange?.(true);
@@ -246,14 +261,16 @@ export function OptinList({
       )
         createdId = result.id;
     } catch (cause) {
-      setError(messageOf(cause));
+      const name = rows.find((row) => row.id === id)?.name ?? id;
+      mutationErrorsRef.current.set(id, { message: `${name}: ${messageOf(cause)}`, action, openCreated });
+      setMutationErrors(new Map(mutationErrorsRef.current));
     } finally {
+      if (createdId) createdToOpen.current = createdId;
       busyRef.current.delete(id);
       setBusy(new Set(busyRef.current));
-      onBusyChange?.(false);
+      onBusyChange?.(busyRef.current.size > 0);
     }
-    // Release the navigation guard before handing ownership to the editor.
-    if (createdId) onEdit(createdId);
+    // The effect opens a created draft after every pending write releases navigation.
   };
   const request = (next: Decision, trigger: HTMLElement | null) => {
     returnFocus.current = trigger;
@@ -264,10 +281,10 @@ export function OptinList({
     setSelected(row);
   };
   const period = report ? { days: report.days } : { days };
-  const reportReady = !reportLoading && !reportError;
+  const reportReady = report !== null;
   const filters = [
     ['all', __('All', 'wconvert')],
-    ['published', __('Live', 'wconvert')],
+    ['published', __('Published', 'wconvert')],
     ['draft', __('Drafts', 'wconvert')],
     ['suspended', __('Needs attention', 'wconvert')],
   ] as const;
@@ -306,7 +323,7 @@ export function OptinList({
           : __('Edit', 'wconvert');
     return (
       <CampaignRow key={row.id} row={row} arm={arm}>
-        <td role="cell" className="wc-campaign-identity">
+        <DataTableCell label={__('Campaign', 'wconvert')} className="wc-campaign-identity">
           <button
             className="wc-preview-button"
             onClick={(e) => openDetails(row, e.currentTarget)}
@@ -321,7 +338,7 @@ export function OptinList({
             <p className="wc-campaign-meta">
               {displayLabel(previews[row.id]?.display_type)}
               {previews[row.id] && labels?.[row.goal] ? ' · ' : ''}
-              {labels === null ? null : (labels[row.goal] ?? <code>{row.goal}</code>)}
+              {labels?.[row.goal] ?? (labelsError ? __('Goal unavailable', 'wconvert') : labels === null ? null : <code>{row.goal}</code>)}
             </p>
             {testing && !arm && (
               <button
@@ -337,7 +354,7 @@ export function OptinList({
                 }
               >
                 {collapsed.has(row.id) ? (
-                  <ChevronRight aria-hidden="true" />
+                  <ChevronRight className="wc-chevron-collapsed" aria-hidden="true" />
                 ) : (
                   <ChevronDown aria-hidden="true" />
                 )}
@@ -346,15 +363,15 @@ export function OptinList({
             )}
             {arm && <span className="wc-campaign-meta">{__('Variant', 'wconvert')}</span>}
           </div>
-        </td>
-        <td role="cell" className="wc-campaign-state">
-          <span className={`wc-campaign-status is-${status}`}>{stateLabel(status)}</span>
+        </DataTableCell>
+        <DataTableCell label={__('Status', 'wconvert')} className="wc-campaign-state">
+          <StatusBadge status={status} />
           {canUnpublish(status) && row.has_unpublished_changes && (
-            <p className="wc-campaign-note is-changed">{__('Unpublished changes', 'wconvert')}</p>
+            <p className="wc-campaign-note">{__('Unpublished changes', 'wconvert')}</p>
           )}
           {status === 'suspended' && <p className="wc-campaign-note">{row.suspended}</p>}
-        </td>
-        <td role="cell" className="wc-campaign-results">
+        </DataTableCell>
+        <DataTableCell label={__('Results', 'wconvert')} numeric className="wc-campaign-results">
           {reportReady && result ? (
             <a
               href={reportHref({ optinId: row.id, ...period })}
@@ -365,20 +382,19 @@ export function OptinList({
             </a>
           ) : (
             <span>
-              {reportLoading
+              {!reportReady && reportLoading
                 ? '—'
-                : reportError
+                : !reportReady && reportError
                   ? __('Unavailable', 'wconvert')
                   : status === 'draft'
                     ? __('No results yet', 'wconvert')
                     : __('No activity', 'wconvert')}
             </span>
           )}
-        </td>
-        <td role="cell" className="wc-campaign-actions">
+        </DataTableCell>
+        <DataTableActions className="wc-campaign-actions">
           <Button
             variant="outline"
-            size="sm"
             disabled={busy.size > 0}
             onClick={(e) =>
               status === 'suspended' ? openDetails(row, e.currentTarget) : onEdit(row.id)
@@ -390,7 +406,9 @@ export function OptinList({
             row={row}
             parent={parent}
             arm={arm}
-            busy={busy.size > 0}
+            busy={busy.has(parent.id)}
+            navigationBusy={busy.size > 0}
+            missingDesign={previews[row.id]?.template === null}
             result={result}
             reportReady={reportReady}
             days={period.days}
@@ -399,7 +417,7 @@ export function OptinList({
             onInspect={() => setInspecting(true)}
             onDuplicate={() =>
               void run(
-                row.id,
+                parent.id,
                 () => duplicateCampaign(row.id, sprintf(__('%s — copy', 'wconvert'), row.name)),
                 true,
               )
@@ -407,7 +425,7 @@ export function OptinList({
             onTest={() => void run(parent.id, () => createVariant(parent.id), true)}
             onDecision={(kind, trigger) => request({ kind, row, parent }, trigger)}
           />
-        </td>
+        </DataTableActions>
       </CampaignRow>
     );
   };
@@ -424,21 +442,16 @@ export function OptinList({
         </Region>
       ) : (
         <>
-          <div className="wc-campaign-filterbar">
+          <div className="wconvert-toolbar wc-campaign-filterbar">
             <div
               className="wc-campaign-filters"
-              role="group"
+              role="radiogroup"
               aria-label={__('Filter Campaigns by status', 'wconvert')}
             >
               {filters.map(([id, label]) => (
-                <button
-                  key={id}
-                  aria-pressed={filter === id}
-                  onClick={() => {
-                    setFilter(id);
-                    setPage(0);
-                  }}
-                >
+                <label key={id}>
+                  <input type="radio" name="campaign-status" value={id} checked={filter === id}
+                    aria-label={label} onChange={() => { setFilter(id); setPage(0); }} />
                   {label}
                   <span>
                     {list.status === 'loading'
@@ -447,7 +460,7 @@ export function OptinList({
                           (c) => id === 'all' || family(c).some((r) => statusOf(r) === id),
                         ).length}
                   </span>
-                </button>
+                </label>
               ))}
             </div>
             <label className="wc-campaign-period">
@@ -462,17 +475,18 @@ export function OptinList({
               </select>
             </label>
           </div>
-          <Region label={__('Campaigns', 'wconvert')} className="wc-campaign-surface">
-            {error && <RegionError message={error} />}
-            {reportError && (
-              <div className="wc-campaign-feedback" role="alert">
-                {__('Results couldn’t load. You can still manage your campaigns.', 'wconvert')}{' '}
-                <button onClick={() => setRefreshKey((n) => n + 1)}>
-                  {__('Retry', 'wconvert')}
-                </button>
-              </div>
-            )}
-            <div className="wc-campaign-toolbar">
+          <Region label={__('Campaigns', 'wconvert')}>
+            {error && <RegionError message={error} action={<Button variant="outline" onClick={() => void refresh()}>{__('Refresh campaigns', 'wconvert')}</Button>} />}
+            {[...mutationErrors].map(([id, failure]) => <RegionError key={id} message={failure.message} action={<Button variant="outline" disabled={busy.has(id) || (failure.openCreated && busy.size > 0)} onClick={() => void run(id, failure.action, failure.openCreated)}>{__('Retry action', 'wconvert')}</Button>} />)}
+            {(reportError || previewError || labelsError) && <RegionError
+              message={[
+                reportError && (report ? __('Results couldn’t refresh. The previous period and results remain below.', 'wconvert') : __('Results couldn’t load.', 'wconvert')),
+                previewError && __('Design previews couldn’t load.', 'wconvert'),
+                labelsError && __('Goal names couldn’t load.', 'wconvert'),
+              ].filter(Boolean).join(' ')}
+              action={<Button variant="outline" onClick={() => setRefreshKey((n) => n + 1)}>{__('Retry', 'wconvert')}</Button>}
+            />}
+            <div className="wconvert-toolbar wc-campaign-toolbar">
               <label className="wc-campaign-search">
                 <Search aria-hidden="true" />
                 <input
@@ -498,32 +512,19 @@ export function OptinList({
                   <option value="newest">{__('Newest first', 'wconvert')}</option>
                   <option value="name">{__('Name A–Z', 'wconvert')}</option>
                 </select>
-                <div className="wc-campaign-layout">
-                  <button
-                    aria-label={__('List view', 'wconvert')}
-                    aria-pressed={layout === 'list'}
-                    onClick={() => setLayout('list')}
-                  >
+                <div className="wc-campaign-layout" role="radiogroup" aria-label={__('Campaign layout', 'wconvert')}>
+                  <label>
+                    <input type="radio" name="campaign-layout" aria-label={__('List view', 'wconvert')} checked={layout === 'list'} onChange={() => setLayout('list')} />
                     <List aria-hidden="true" />
-                  </button>
-                  <button
-                    aria-label={__('Gallery view', 'wconvert')}
-                    aria-pressed={layout === 'gallery'}
-                    onClick={() => setLayout('gallery')}
-                  >
+                  </label>
+                  <label>
+                    <input type="radio" name="campaign-layout" aria-label={__('Gallery view', 'wconvert')} checked={layout === 'gallery'} onChange={() => setLayout('gallery')} />
                     <LayoutGrid aria-hidden="true" />
-                  </button>
+                  </label>
                 </div>
               </div>
             </div>
-            {list.status === 'loading' ? (
-              <div className="wc-campaign-loading" role="status">
-                {__('Loading…', 'wconvert')}
-                {[0, 1, 2, 3].map((n) => (
-                  <div key={n} />
-                ))}
-              </div>
-            ) : rows.length === 0 ? (
+            {list.status === 'ready' && rows.length === 0 ? (
               <EmptyState
                 icon={Megaphone}
                 title={__('Start with one good campaign.', 'wconvert')}
@@ -538,7 +539,7 @@ export function OptinList({
               >
                 {__('Choose what you want to achieve. We’ll help with the design.', 'wconvert')}
               </EmptyState>
-            ) : visible.length === 0 ? (
+            ) : list.status === 'ready' && visible.length === 0 ? (
               <EmptyState
                 icon={Search}
                 title={__('No campaigns found', 'wconvert')}
@@ -558,37 +559,23 @@ export function OptinList({
                 {__('Try another name or clear your filters.', 'wconvert')}
               </EmptyState>
             ) : (
-              <table
-                role="table"
-                aria-label={__('Campaigns', 'wconvert')}
-                className="wc-campaign-table"
-              >
-                <thead role="rowgroup">
-                  <tr role="row">
-                    <th role="columnheader" scope="col">
-                      {__('Campaign', 'wconvert')}
-                    </th>
-                    <th role="columnheader" scope="col">
-                      {__('Status', 'wconvert')}
-                    </th>
-                    <th role="columnheader" scope="col">
-                      {__('Results', 'wconvert')}
-                    </th>
-                    <th role="columnheader" scope="col">
-                      {__('Next action', 'wconvert')}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody role="rowgroup">
+              <DataTable label={__('Campaigns', 'wconvert')} className="wc-campaign-table">
+                <DataTableHead>
+                  <DataTableColumn>{__('Campaign', 'wconvert')}</DataTableColumn>
+                  <DataTableColumn>{__('Status', 'wconvert')}</DataTableColumn>
+                  <DataTableColumn numeric>{__('Results', 'wconvert')}</DataTableColumn>
+                  <DataTableColumn>{__('Next action', 'wconvert')}</DataTableColumn>
+                </DataTableHead>
+                {list.status === 'loading' ? <CampaignSkeleton /> : <DataTableBody>
                   {shown.flatMap((c) => [
                     rowView(c, c, false),
                     ...(!collapsed.has(c.id) ? c.arms.map((arm) => rowView(arm, c, true)) : []),
                   ])}
-                </tbody>
-              </table>
+                </DataTableBody>}
+              </DataTable>
             )}
           </Region>
-          <div className="wc-campaign-footer">
+          <div className="wconvert-footer wc-campaign-footer">
             <span>
               {list.status === 'loading'
                 ? __('Loading campaigns…', 'wconvert')
@@ -617,10 +604,9 @@ export function OptinList({
             </p>
           )}
           {lastPage > 0 && (
-            <div className="wc-campaign-pagination">
+            <div className="wconvert-footer wc-campaign-pagination">
               <Button
-                size="sm"
-                variant="outline"
+                    variant="outline"
                 disabled={currentPage === 0}
                 onClick={() => setPage(currentPage - 1)}
               >
@@ -630,8 +616,7 @@ export function OptinList({
                 {sprintf(__('Page %1$d of %2$d', 'wconvert'), currentPage + 1, lastPage + 1)}
               </span>
               <Button
-                size="sm"
-                variant="outline"
+                    variant="outline"
                 disabled={currentPage === lastPage}
                 onClick={() => setPage(currentPage + 1)}
               >
@@ -666,13 +651,11 @@ export function OptinList({
           {selected && (
             <>
               {preview(selected)}
-              <span className={`wc-campaign-status is-${statusOf(selected)}`}>
-                {stateLabel(statusOf(selected))}
-              </span>
+              <StatusBadge status={statusOf(selected)} />
               {statusOf(selected) === 'published' && selected.has_unpublished_changes && (
                 <p>
                   {__(
-                    'Your previous version is still live. Review the saved draft in the editor before publishing your changes.',
+                    'Your previous version remains published. Review the saved draft in the editor before publishing your changes.',
                     'wconvert',
                   )}
                 </p>
@@ -713,7 +696,7 @@ export function OptinList({
                   {__('Through yesterday. Results include earlier activity.', 'wconvert')}
                 </p>
               )}
-              <Suspense fallback={<p>{__('Loading campaign details…', 'wconvert')}</p>}>
+              <Suspense fallback={<RowsSkeleton rows={4} />}>
                 <Details key={selected.id} id={selected.id} />
               </Suspense>
               <div className="flex flex-wrap gap-2">
@@ -740,6 +723,7 @@ export function OptinList({
       </Dialog>
       <InspectDialog open={inspecting} onOpenChange={setInspecting} />
       <ConfirmDialog
+        variant={decision?.kind === 'publish' ? 'default' : 'destructive'}
         open={decision !== null}
         onOpenChange={(open) => {
           if (!open) setDecision(null);
@@ -748,7 +732,7 @@ export function OptinList({
           decision?.kind === 'delete'
             ? __('Delete this campaign?', 'wconvert')
             : decision?.kind === 'pause'
-              ? __('Pause this campaign?', 'wconvert')
+              ? __('Unpublish this campaign?', 'wconvert')
               : decision?.kind === 'winner'
                 ? __('Use this design?', 'wconvert')
                 : __('Publish the saved draft?', 'wconvert')
@@ -783,7 +767,7 @@ export function OptinList({
           decision?.kind === 'delete'
             ? __('Delete campaign', 'wconvert')
             : decision?.kind === 'pause'
-              ? __('Pause campaign', 'wconvert')
+              ? __('Unpublish campaign', 'wconvert')
               : decision?.kind === 'winner'
                 ? __('Use this design', 'wconvert')
                 : __('Publish saved draft', 'wconvert')
@@ -793,7 +777,7 @@ export function OptinList({
           if (!decision) return;
           const d = decision;
           setDecision(null);
-          void run(d.row.id, () =>
+          void run(d.parent?.id ?? d.row.id, () =>
             d.kind === 'delete'
               ? deleteOptin(d.row.id)
               : d.kind === 'pause'
@@ -818,13 +802,12 @@ function CampaignRow({
   children: React.ReactNode;
 }) {
   return (
-    <tr
-      role="row"
+    <DataTableRow
       className={arm ? 'wc-campaign-row is-arm' : 'wc-campaign-row'}
-      aria-label={row.name}
+      label={row.name}
     >
       {children}
-    </tr>
+    </DataTableRow>
   );
 }
 function CampaignMenu({
@@ -832,6 +815,8 @@ function CampaignMenu({
   parent,
   arm,
   busy,
+  navigationBusy,
+  missingDesign,
   result,
   reportReady,
   days,
@@ -846,6 +831,8 @@ function CampaignMenu({
   parent: OptinSummary;
   arm: boolean;
   busy: boolean;
+  navigationBusy: boolean;
+  missingDesign: boolean;
   result?: RowResult;
   reportReady: boolean;
   days: number;
@@ -893,13 +880,13 @@ function CampaignMenu({
           </DropdownMenuItem>
         )}
         <DropdownMenuSeparator />
-        <DropdownMenuItem onSelect={onDuplicate}>
+        <DropdownMenuItem disabled={navigationBusy} onSelect={onDuplicate}>
           <Copy aria-hidden="true" />
           {__('Duplicate as draft', 'wconvert')}
         </DropdownMenuItem>
         {!arm &&
           (availability === 'ready' ? (
-            <DropdownMenuItem onSelect={onTest}>
+            <DropdownMenuItem disabled={navigationBusy} onSelect={onTest}>
               <Split aria-hidden="true" />
               {parent.arms.length
                 ? __('Add another variant', 'wconvert')
@@ -921,20 +908,21 @@ function CampaignMenu({
         {canUnpublish(status) ? (
           <DropdownMenuItem onSelect={() => onDecision('pause', trigger.current)}>
             <Pause aria-hidden="true" />
-            {__('Pause campaign', 'wconvert')}
+            {__('Unpublish campaign', 'wconvert')}
           </DropdownMenuItem>
         ) : (
-          <DropdownMenuItem onSelect={() => onDecision('publish', trigger.current)}>
+          <DropdownMenuItem disabled={missingDesign} onSelect={() => onDecision('publish', trigger.current)}>
             <Plus aria-hidden="true" />
             {__('Publish saved draft', 'wconvert')}
           </DropdownMenuItem>
         )}
         {canUnpublish(status) && row.has_unpublished_changes && (
-          <DropdownMenuItem onSelect={() => onDecision('publish', trigger.current)}>
+          <DropdownMenuItem disabled={missingDesign} onSelect={() => onDecision('publish', trigger.current)}>
             <Plus aria-hidden="true" />
             {__('Publish saved draft', 'wconvert')}
           </DropdownMenuItem>
         )}
+        {missingDesign && <DropdownMenuLabel className="wc-menu-note">{__('Add a design in the editor before publishing.', 'wconvert')}</DropdownMenuLabel>}
         {parent.arms.length > 0 && (
           <DropdownMenuItem onSelect={() => onDecision('winner', trigger.current)}>
             <Trophy aria-hidden="true" />

@@ -39,12 +39,14 @@ const VOCABULARY = [
   '.wconvert-page-actions',
   '.wconvert-measure',
   '.is-chosen',
+  '.wc-', // Shared masthead vocabulary from shell/header.css.
 ];
 
 /** What is one screen's layout, and is excluded even where it mentions the above. */
 const LAYOUT = ['.wconvert-builder', '.wconvert-gallery', '.wconvert-editor', '.wconvert-themes', '.wconvert-block'];
 
-const source = readFileSync(resolve(PLUGIN, 'resources/admin/src/index.css'), 'utf8');
+const source = ['index.css', 'shell/header.css'].map(file =>
+  readFileSync(resolve(PLUGIN, 'resources/admin/src', file), 'utf8')).join('\n');
 
 /**
  * The file as top-level nodes, each carrying the comment that precedes it.

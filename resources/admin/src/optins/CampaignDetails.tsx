@@ -9,6 +9,8 @@ import { destinationsSaid } from '../builder/destinations';
 import { capturedFields } from '../destinations/requirements';
 import { readDestinations } from '../destinations/api';
 import { Button } from '../components/ui/button';
+import { RegionError } from '../shell/Region';
+import { RowsSkeleton } from '../shell/RowsSkeleton';
 import { messageOf } from '../shell/loadable';
 
 async function readContext(id: string) {
@@ -72,18 +74,8 @@ export default function CampaignDetails({ id }: { id: string }) {
       active = false;
     };
   }, [id, attempt]);
-  if (error)
-    return (
-      <div role="alert">
-        <p>
-          {__('Campaign details couldn’t load.', 'wconvert')} {error}
-        </p>
-        <Button variant="outline" size="sm" onClick={() => setAttempt((n) => n + 1)}>
-          {__('Try again', 'wconvert')}
-        </Button>
-      </div>
-    );
-  if (!context) return <p role="status">{__('Loading campaign details…', 'wconvert')}</p>;
+  if (error) return <RegionError message={`${__('Campaign details couldn’t load.', 'wconvert')} ${error}`} action={<Button variant="outline" onClick={() => setAttempt((n) => n + 1)}>{__('Try again', 'wconvert')}</Button>} />;
+  if (!context) return <RowsSkeleton rows={4} />;
   return (
     <div className="wc-campaign-context">
       <h3>{__('Audience & placement', 'wconvert')}</h3>

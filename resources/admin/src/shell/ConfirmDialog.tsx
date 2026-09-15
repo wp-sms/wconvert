@@ -12,7 +12,9 @@ import {
 } from '../components/ui/alert-dialog';
 
 /**
- * The question asked before something is destroyed.
+ * A consequential decision, destructive by default. Publication passes the
+ * primary variant: changing what visitors can see deserves confirmation,
+ * without implying that publishing destroys a campaign.
  *
  * **Nothing in this admin confirmed anything** until ADR 0039 — no `confirm(`,
  * no dialog, no "are you sure" anywhere in `resources/admin/src/`. That included
@@ -51,6 +53,7 @@ export function ConfirmDialog({
   title,
   description,
   confirmLabel,
+  variant = 'destructive',
   cancelLabel,
   onConfirm,
   returnFocusTo,
@@ -60,6 +63,7 @@ export function ConfirmDialog({
   title: string;
   description: ReactNode;
   confirmLabel: string;
+  variant?: 'default' | 'destructive';
   cancelLabel?: string;
   onConfirm: () => void;
   returnFocusTo?: RefObject<HTMLElement | null>;
@@ -82,7 +86,7 @@ export function ConfirmDialog({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>{cancelLabel ?? __('Cancel', 'wconvert')}</AlertDialogCancel>
-          <AlertDialogAction variant="destructive" onClick={onConfirm}>
+          <AlertDialogAction variant={variant} onClick={onConfirm}>
             {confirmLabel}
           </AlertDialogAction>
         </AlertDialogFooter>

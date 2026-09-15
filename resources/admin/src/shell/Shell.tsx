@@ -4,6 +4,8 @@ import { SECTIONS, hashFor, type SectionId } from '../nav';
 import { adminSettings } from '../settings';
 import { Description } from './Description';
 import { PageActionSlotProvider } from './PageActions';
+import './header.css';
+import { tierName } from '../goals/availability';
 import { HeaderTools } from './HeaderTools';
 
 /** Shared 56px masthead, page heading and aligned content measure (ADR 0092). */
@@ -47,7 +49,7 @@ export function Shell({
               <span className="wc-brand-plan">
                 {tier === 'free'
                   ? __('Free', 'wconvert')
-                  : (adminSettings()?.tiers?.[tier]?.name ?? __('Pro', 'wconvert'))}
+                  : tierName(tier)}
               </span>
             </div>
             {section !== undefined && (

@@ -26,7 +26,7 @@ import { describe, expect, it } from 'vitest';
  * Vitest 4's Browser Mode is what closes the gap properly, in a pull request of
  * its own.
  */
-const CSS = ['index.css', 'builder/editor.css'].map(file => readFileSync(resolve(import.meta.dirname, '../../resources/admin/src', file), 'utf8')).join('\n');
+const CSS = ['index.css', 'builder/editor.css', 'optins/campaigns.css', 'shell/header.css'].map(file => readFileSync(resolve(import.meta.dirname, '../../resources/admin/src', file), 'utf8')).join('\n');
 
 describe('the token row', () => {
   /**

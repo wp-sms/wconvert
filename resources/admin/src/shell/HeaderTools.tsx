@@ -7,6 +7,10 @@ import { readDestinations } from '../destinations/api';
 import { issueCount } from '../destinations/issueCount';
 import { listOptins, type OptinSummary } from '../optins/api';
 import { editorHref, sendingIssuesHref, settingsHref } from '../nav';
+import { tierName } from '../goals/availability';
+import { RegionError } from './Region';
+import { RowsSkeleton } from './RowsSkeleton';
+import { messageOf } from './loadable';
 import { adminSettings } from '../settings';
 
 export function HeaderTools() {
@@ -14,11 +18,11 @@ export function HeaderTools() {
   const [notices, setNotices] = useState<{ campaigns: OptinSummary[]; sending: number } | null>(
     null,
   );
-  const [failed, setFailed] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const load = async () => {
     setLoading(true);
-    setFailed(false);
+    setError(null);
     try {
       const [campaigns, destinations] = await Promise.all([listOptins(), readDestinations()]);
       setNotices({
@@ -27,8 +31,8 @@ export function HeaderTools() {
           .filter((c) => c.published_at !== null && c.deleted_at === null && c.suspended !== null),
         sending: issueCount(destinations),
       });
-    } catch {
-      setFailed(true);
+    } catch (cause) {
+      setError(messageOf(cause));
     } finally {
       setLoading(false);
     }
@@ -43,7 +47,7 @@ export function HeaderTools() {
           target="_blank"
           rel="noreferrer"
         >
-          {__('Explore Pro', 'wconvert')}
+          {sprintf(__('Explore %s', 'wconvert'), tierName('pro'))}
         </a>
       )}
       <Popover>
@@ -79,16 +83,8 @@ export function HeaderTools() {
         </PopoverTrigger>
         <PopoverContent align="end" className="wc-header-popover wc-notifications">
           <h2>{__('Notifications', 'wconvert')}</h2>
-          {loading ? (
-            <p role="status">{__('Checking campaign and sending issues…', 'wconvert')}</p>
-          ) : failed ? (
-            <>
-              <p role="alert">{__('Notifications couldn’t load.', 'wconvert')}</p>
-              <Button variant="outline" size="sm" onClick={() => void load()}>
-                {__('Try again', 'wconvert')}
-              </Button>
-            </>
-          ) : (
+          {error && <RegionError message={sprintf(__('Notifications couldn’t load: %s', 'wconvert'), error)} action={<Button variant="outline" onClick={() => void load()}>{__('Try again', 'wconvert')}</Button>} />}
+          {loading && !notices ? <RowsSkeleton rows={2} /> : (
             notices && (
               <>
                 {count === 0 && <p>{__('No known campaign or sending issues.', 'wconvert')}</p>}

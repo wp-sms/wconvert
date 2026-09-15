@@ -23,7 +23,7 @@ export default function CampaignDesign({ template }: { template: Template }) {
       const width = element.offsetWidth,
         height = element.offsetHeight;
       if (width && height)
-        element.style.transform = `translate(-50%, -50%) scale(${Math.min((container.clientWidth - 12) / width, (container.clientHeight - 12) / height, 1)})`;
+        element.style.transform = `scale(${Math.min((container.clientWidth - 12) / width, (container.clientHeight - 12) / height, 1)})`;
     };
     const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(fit);
     observer?.observe(container);

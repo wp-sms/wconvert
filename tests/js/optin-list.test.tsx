@@ -143,7 +143,7 @@ describe('a row', () => {
 
     const reason = await screen.findByText('Its Goal is no longer available on this site.');
 
-    expect(reason.closest('td')).toHaveTextContent('Not showing');
+    expect(reason.closest('td')).toHaveTextContent('Suspended');
   });
 
   it('names its Goal the way the merchant does', async () => {
@@ -265,7 +265,7 @@ describe('a suspended row', () => {
     render(<OptinList onEdit={() => undefined} />);
 
     await userEvent.click(await screen.findByRole('button', { name: /More actions/ }));
-    expect(await screen.findByRole('menuitem', { name: 'Pause campaign' })).toBeInTheDocument();
+    expect(await screen.findByRole('menuitem', { name: 'Unpublish campaign' })).toBeInTheDocument();
     expect(screen.queryByRole('menuitem', { name: 'Publish saved draft' })).toBeNull();
   });
 
@@ -283,7 +283,7 @@ describe('a suspended row', () => {
 
     render(<OptinList onEdit={() => undefined} />);
 
-    expect(await screen.findByRole('row', { name: OPTIN.name })).toHaveTextContent('Live');
+    expect(await screen.findByRole('row', { name: OPTIN.name })).toHaveTextContent('Published');
     expect(screen.queryByText('Not showing')).toBeNull();
   });
 });
@@ -301,7 +301,7 @@ describe('saved changes awaiting publication', () => {
 
     expect(await screen.findByText('Unpublished changes')).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: /More actions/ }));
-    expect(await screen.findByRole('menuitem', { name: 'Pause campaign' })).toBeInTheDocument();
+    expect(await screen.findByRole('menuitem', { name: 'Unpublish campaign' })).toBeInTheDocument();
     await userEvent.click(screen.getByRole('menuitem', { name: 'Publish saved draft' }));
     expect(optins.publishOptin).not.toHaveBeenCalled();
     await userEvent.click(screen.getByRole('button', { name: 'Publish saved draft' }));
@@ -316,7 +316,7 @@ describe('saved changes awaiting publication', () => {
     render(<OptinList onEdit={() => undefined} />);
 
     await userEvent.click(await screen.findByRole('button', { name: /More actions/ }));
-    expect(await screen.findByRole('menuitem', { name: 'Pause campaign' })).toBeInTheDocument();
+    expect(await screen.findByRole('menuitem', { name: 'Unpublish campaign' })).toBeInTheDocument();
     expect(screen.queryByRole('menuitem', { name: 'Publish saved draft' })).toBeNull();
   });
 });
@@ -408,7 +408,7 @@ describe('an A/B test on the list', () => {
     await userEvent.type(screen.getByRole('searchbox', { name: 'Search Campaigns' }), '(B)');
     expect(screen.getByRole('button', { name: OPTIN.name })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: ARM_B.name })).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Live 0' }));
+    await userEvent.click(screen.getByRole('radio', { name: 'Published' }));
     expect(screen.getByText('No campaigns found')).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Clear filters' }));
     expect(screen.getByRole('searchbox')).toHaveValue('');
@@ -612,8 +612,8 @@ describe('the Campaigns workspace', () => {
     expect(await screen.findByRole('dialog', { name: OPTIN.name })).toBeInTheDocument();
     expect(onEdit).not.toHaveBeenCalled();
     await userEvent.keyboard('{Escape}');
-    await userEvent.click(screen.getByRole('button', { name: 'Gallery view' }));
-    expect(screen.getByRole('button', { name: 'Gallery view' })).toHaveAttribute('aria-pressed', 'true');
+    await userEvent.click(screen.getByRole('radio', { name: 'Gallery view' }));
+    expect(screen.getByRole('radio', { name: 'Gallery view' })).toBeChecked();
     expect(screen.getByRole('row', { name: OPTIN.name })).toBeInTheDocument();
     expect(optins.listOptins).toHaveBeenCalledTimes(1);
   });
@@ -639,7 +639,111 @@ it('does not describe a suspended saved version as live in details', async () =>
   render(<OptinList onEdit={() => undefined} />);
   await userEvent.click(await screen.findByRole('button', { name: OPTIN.name }));
   const detail = await screen.findByRole('dialog', { name: OPTIN.name });
-  expect(within(detail).getByText('Not showing')).toBeInTheDocument();
+  expect(within(detail).getByText('Suspended')).toBeInTheDocument();
   expect(within(detail).queryByText(/previous version is still live/)).toBeNull();
   expect(within(detail).getByText(/Resolve the issue before this campaign can show again/)).toBeInTheDocument();
+});
+
+it('retains accepted results, dates and drill-down links when a new period fails, then retries', async () => {
+  const payload = { days: 30, from: '2026-08-16', to: '2026-09-14', goals: [{ action: 'submit', result_label: 'Submissions', optins: [{ id: OPTIN.id, conversions: 7, impressions: 20, conversion_rate: 0.35 }] }] };
+  stats.readDashboard.mockResolvedValueOnce(payload).mockRejectedValueOnce(new Error('Offline')).mockResolvedValue({ ...payload, days: 7, from: '2026-09-08' });
+  render(<OptinList onEdit={() => undefined} />);
+  const report = await screen.findByRole('link', { name: `View ${OPTIN.name} report` });
+  await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Results period' }), '7');
+  expect(await screen.findByText(/previous period and results remain/)).toBeInTheDocument();
+  expect(report).toHaveTextContent('7Submissions');
+  expect(report).toHaveAttribute('href', expect.stringContaining('days=30'));
+  await userEvent.click(screen.getByRole('button', { name: /More actions/ }));
+  expect(await screen.findByRole('menuitem', { name: 'View submissions' })).toHaveAttribute('href', expect.stringContaining('from=2026-08-16'));
+  await userEvent.keyboard('{Escape}');
+  await userEvent.click(screen.getByRole('button', { name: 'Retry' }));
+  await waitFor(() => expect(report).toHaveAttribute('href', expect.stringContaining('days=7')));
+  expect(screen.queryByRole('alert')).toBeNull();
+});
+
+it('makes preview and vocabulary failures recoverable without presenting missing data as a saved empty design', async () => {
+  optins.readCampaignPreviews.mockRejectedValueOnce(new Error('Offline')).mockResolvedValue([]);
+  goals.listGoals.mockRejectedValueOnce(new Error('Offline')).mockResolvedValue([{ id: OPTIN.goal, label: 'Grow my email list' }]);
+  render(<OptinList onEdit={() => undefined} />);
+  expect(await screen.findByText(/Design previews couldn’t load/)).toHaveTextContent('Goal names couldn’t load');
+  expect(screen.getByText('Goal unavailable')).toBeInTheDocument();
+  expect(screen.queryByText(OPTIN.goal)).toBeNull();
+  await userEvent.click(screen.getByRole('button', { name: 'Retry' }));
+  expect(await screen.findByText('Grow my email list')).toBeInTheDocument();
+  await waitFor(() => expect(screen.queryByRole('alert')).toBeNull());
+});
+
+it('lets keyboard users move between mutually exclusive views and filters', async () => {
+  render(<OptinList onEdit={() => undefined} />);
+  await screen.findByRole('row', { name: OPTIN.name });
+  await userEvent.click(screen.getByRole('radio', { name: 'List view' }));
+  await userEvent.keyboard('{ArrowRight}');
+  expect(screen.getByRole('radio', { name: 'Gallery view' })).toBeChecked();
+  await userEvent.click(screen.getByRole('radio', { name: 'All' }));
+  await userEvent.keyboard('{ArrowRight}');
+  expect(screen.getByRole('radio', { name: 'Published' })).toBeChecked();
+  expect(screen.queryByRole('row', { name: OPTIN.name })).toBeNull();
+});
+
+it('keeps other campaign families actionable while a write is pending', async () => {
+  const other = { ...OPTIN, id: 'other', name: 'Other campaign' };
+  optins.listOptins.mockResolvedValue([OPTIN, other]);
+  let finish!: () => void;
+  optins.publishOptin.mockImplementation((id: string) => id === OPTIN.id ? new Promise<void>((resolve) => { finish = resolve; }) : Promise.resolve());
+  const busy = vi.fn();
+  render(<OptinList onEdit={() => undefined} onBusyChange={busy} />);
+  await userEvent.click(await screen.findByRole('button', { name: `More actions for ${OPTIN.name}` }));
+  await userEvent.click(await screen.findByRole('menuitem', { name: 'Publish saved draft' }));
+  const confirm = screen.getByRole('button', { name: 'Publish saved draft' });
+  expect(confirm).toHaveAttribute('data-variant', 'default');
+  await userEvent.click(confirm);
+  expect(screen.getByRole('button', { name: `More actions for ${OPTIN.name}` })).toBeDisabled();
+  await userEvent.click(screen.getByRole('button', { name: 'More actions for Other campaign' }));
+  await userEvent.click(await screen.findByRole('menuitem', { name: 'Publish saved draft' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Publish saved draft' }));
+  await waitFor(() => expect(optins.publishOptin).toHaveBeenCalledWith(other.id));
+  expect(busy).not.toHaveBeenCalledWith(false);
+  finish();
+  await waitFor(() => expect(busy).toHaveBeenLastCalledWith(false));
+});
+
+it('explains why a known design-less campaign cannot be published', async () => {
+  optins.readCampaignPreviews.mockResolvedValue([{ id: OPTIN.id, template: null, display_type: 'popup' }]);
+  render(<OptinList onEdit={() => undefined} />);
+  await userEvent.click(await screen.findByRole('button', { name: /More actions/ }));
+  expect(await screen.findByRole('menuitem', { name: 'Publish saved draft' })).toHaveAttribute('aria-disabled', 'true');
+  expect(screen.getByText('Add a design in the editor before publishing.')).toBeInTheDocument();
+});
+
+it('keeps a family failure visible when another write succeeds and suppresses automatic editor handoff', async () => {
+  optins.listOptins.mockResolvedValue([OPTIN, { ...OPTIN, id: 'other', name: 'Other campaign' }]);
+  let finish!: (value: { id: string }) => void;
+  optins.duplicateCampaign.mockImplementation(() => new Promise((resolve) => { finish = resolve; }));
+  optins.publishOptin.mockRejectedValue(new Error('Publication refused'));
+  const onEdit = vi.fn();
+  render(<OptinList onEdit={onEdit} />);
+  await userEvent.click(await screen.findByRole('button', { name: `More actions for ${OPTIN.name}` }));
+  await userEvent.click(await screen.findByRole('menuitem', { name: 'Duplicate as draft' }));
+  await userEvent.click(screen.getByRole('button', { name: 'More actions for Other campaign' }));
+  await userEvent.click(await screen.findByRole('menuitem', { name: 'Publish saved draft' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Publish saved draft' }));
+  expect(await screen.findByText('Other campaign: Publication refused')).toBeInTheDocument();
+  finish({ id: 'new-draft' });
+  await waitFor(() => expect(screen.getByRole('button', { name: `More actions for ${OPTIN.name}` })).toBeEnabled());
+  expect(screen.getByText('Other campaign: Publication refused')).toBeInTheDocument();
+  expect(onEdit).not.toHaveBeenCalled();
+});
+
+it('retries a failed list refresh without repeating the successful mutation', async () => {
+  optins.listOptins.mockResolvedValueOnce([OPTIN]).mockRejectedValueOnce(new Error('List offline')).mockResolvedValue([{ ...OPTIN, published_at: '2026-09-15' }]);
+  optins.publishOptin.mockResolvedValue(undefined);
+  render(<OptinList onEdit={() => undefined} />);
+  await userEvent.click(await screen.findByRole('button', { name: /More actions/ }));
+  await userEvent.click(await screen.findByRole('menuitem', { name: 'Publish saved draft' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Publish saved draft' }));
+  expect(await screen.findByText('List offline')).toBeInTheDocument();
+  await userEvent.click(screen.getByRole('button', { name: 'Refresh campaigns' }));
+  await waitFor(() => expect(screen.getByRole('row', { name: OPTIN.name })).toHaveTextContent('Published'));
+  expect(optins.publishOptin).toHaveBeenCalledTimes(1);
+  expect(screen.queryByRole('alert')).toBeNull();
 });

@@ -530,7 +530,8 @@ the selection rather than clearing it.
   for the portal roots beside the z-index rules it already carried. wp-admin's
   toolbar sits at 99999 and is the number they clear.
 - **Extended by [0092](0092-campaigns-use-a-design-led-workspace-and-compact-masthead.md):** Campaigns uses Campaign/Status/Results/Next action
-  with sentence-case headings and Live/Not showing display labels.
+  as a grid variant of `DataTable`, preserving small-caps headings, labelled
+  mobile cards and the shared Published/Suspended status vocabulary.
   **Tables state their register.** Muted header row in the small-caps label
   register; numeric columns right-aligned in tabular numerals; a row is at least
   44px, which is the pointer target size the row actions inside it need; the
@@ -539,8 +540,9 @@ the selection rather than clearing it.
   through the flow — *Publish* → *Published* — so a merchant never has to check
   whether the thing they pressed is the thing that happened. Empty states invite;
   errors say what to do.
-- **Amended for Campaigns by [0092](0092-campaigns-use-a-design-led-workspace-and-compact-masthead.md):** writes are serialized with a temporary
-  navigation guard, released before handing off to the editor. The prior rule was:
+- **Clarified by [0092](0092-campaigns-use-a-design-led-workspace-and-compact-masthead.md):** a pending write guards navigation and its campaign
+  family; it does not freeze mutations on unrelated families. The original
+  Campaigns-wide serialization exception was removed after guideline review.
   **`busy` is per-row, not per-screen.** A slow publish on row 1 must not freeze
   row 8. That is a behaviour change, not a layout one, and it is here because the
   in-row Actions cell is what made it visible.

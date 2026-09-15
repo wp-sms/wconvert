@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { cn } from '../lib/utils';
 
 /**
- * A table that becomes a list of row-cards below 640px, **without stopping
+ * A table that becomes a list of row-cards below 900px, **without stopping
  * being a table** (ADR 0039).
  *
  * The transformation is entirely in `index.css`: one media query turns the
@@ -10,7 +10,7 @@ import { cn } from '../lib/utils';
  * cell as a label-and-value pair off `data-label`. Nothing here changes with the
  * viewport, and no JavaScript measures anything.
  *
- * **640px is the table's own number.** ADR 0038 owns 782 (the builder's floor)
+ * **900px is the table's own number.** ADR 0038 owns 782 (the builder's floor)
  * and 360 (a floor, not a breakpoint), and a table reusing either would make one
  * number mean two things. The two alternatives were refused on what they cost
  * the reader: horizontal scroll makes a lead log something you drag sideways,
@@ -54,8 +54,8 @@ export function DataTableBody({ children }: { children: ReactNode }) {
   return <tbody role="rowgroup">{children}</tbody>;
 }
 
-export function DataTableRow({ children }: { children: ReactNode }) {
-  return <tr role="row">{children}</tr>;
+export function DataTableRow({ children, className, label }: { children: ReactNode; className?: string; label?: string }) {
+  return <tr role="row" className={className} aria-label={label}>{children}</tr>;
 }
 
 /**
@@ -86,7 +86,7 @@ export function DataTableColumn({
  *
  * **`label` is required and is not the same string as the column heading by
  * accident** — it is the same string, passed twice, because the two are read in
- * different places and a cell that loses its label below 640px is a value with
+ * different places and a cell that loses its label below 900px is a value with
  * nothing saying what it is. A screen that finds itself wanting to omit one is a
  * screen with a column it cannot name.
  */
@@ -111,7 +111,7 @@ export function DataTableCell({
 /**
  * The trailing Actions cell — the one place a row's own actions live.
  *
- * It takes no `data-label`: below 640px it becomes the card's footer, under a
+ * It takes no `data-label`: below 900px it becomes the card's footer, under a
  * rule, and a heading reading "Actions" above two buttons is a label for
  * something that is already labelled.
  *
@@ -119,13 +119,13 @@ export function DataTableCell({
  * this cell, which is the rule and not this component's business.
  *
  * The row inside it is laid out from `index.css` rather than by utilities,
- * because its alignment FLIPS below 640px — trailing edge in a table, leading
+ * because its alignment FLIPS below 900px — trailing edge in a table, leading
  * edge in a card, where the actions sit under the card's own rule. A Tailwind
  * `justify-end` is an `!important` declaration a media query cannot take back.
  */
-export function DataTableActions({ children }: { children: ReactNode }) {
+export function DataTableActions({ children, className }: { children: ReactNode; className?: string }) {
   return (
-    <td role="cell" className="wconvert-table__actions">
+    <td role="cell" className={cn('wconvert-table__actions', className)}>
       <div className="wconvert-table__actions-row">{children}</div>
     </td>
   );
