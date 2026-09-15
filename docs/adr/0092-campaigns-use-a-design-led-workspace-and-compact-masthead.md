@@ -38,7 +38,11 @@ No Goal, schema, serving, capture, retention or delivery behavior changes.
 `GET /optins/previews` is management-only and accepts 1–12 valid IDs. It returns
 only ID, saved template and display type for requested non-deleted rows. It is
 a separate bounded read: campaign summaries never carry full configurations.
-Only visible designs are requested. The renderer is dynamically imported and
+Only visible designs are requested. Opening details lazily reads the selected
+campaign, rule vocabulary and destination summaries through existing endpoints
+for Audience & placement and After conversion, with explicit loading/retry.
+The editor's shared summaries provide the wording, and the report period stays
+visible beside detail statistics. The renderer is dynamically imported and
 mounted inline inside an inert, scaled surface, without the loader, tracking
 or submission callbacks. Responsive widths resolve against a stable preview
 canvas. Missing designs show a neutral placeholder rather than an invented one.

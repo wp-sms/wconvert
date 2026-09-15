@@ -86,7 +86,7 @@
 .wc-campaign-menu .wc-menu-heading { font-size:11px; font-weight:400; color:var(--muted-foreground); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .wc-campaign-menu .wc-menu-note { font-size:11px; font-weight:400; white-space:normal; color:var(--muted-foreground); }
 .wc-campaign-detail { max-inline-size:520px; }
-.wc-campaign-detail .wc-campaign-thumbnail { inline-size:100%; block-size:200px; }
+.wc-campaign-detail .wc-campaign-thumbnail { inline-size:100%; block-size:145px; }
 .wc-campaign-detail p { margin:0; font-size:13px; color:var(--muted-foreground); }
 .wc-campaign-detail-stats { display:flex; gap:24px; padding-block:16px; border-block:1px solid var(--border); }
 .wc-campaign-detail-stats > div { flex:1; min-inline-size:0; }
@@ -104,6 +104,8 @@
 #wconvert-admin .wc-campaign-workspace[data-layout=gallery] :is(.wc-campaign-state,.wc-campaign-results) { flex:1; }
 #wconvert-admin .wc-campaign-workspace[data-layout=gallery] .wc-campaign-actions { inline-size:100%; border-block-start:1px solid var(--border); padding-block-start:10px; }
 @layer utilities {
+  .wc-campaign-detail { max-inline-size:520px !important; border-radius:14px !important; }
+  .wc-campaign-detail [data-slot=dialog-title] { font-size:19px !important; }
   #wconvert-admin .wc-campaign-surface { border-radius:10px !important; }
   .wc-campaign-menu .wc-menu-heading { font-size:11px !important; font-weight:400 !important; }
   .wc-campaign-menu .wc-menu-note { font-size:11px !important; font-weight:400 !important; }
@@ -149,3 +151,13 @@
 }
 
 #wconvert-admin .wc-campaign-test-note { margin-block-start:12px; color:var(--muted-foreground); font-size:12px; }
+
+.wc-campaign-detail { max-block-size:calc(100dvh - 64px); overflow-y:auto; }
+.wc-campaign-context h3 { margin:14px 0 8px; font-size:14px; font-weight:600; }
+.wc-campaign-context dl { display:grid; gap:8px; margin:0; }
+.wc-campaign-context dl > div { display:grid; grid-template-columns:120px minmax(0,1fr); gap:12px; font-size:12px; }
+.wc-campaign-context dt { color:var(--muted-foreground); }
+.wc-campaign-context dd { margin:0; overflow-wrap:anywhere; }
+.wc-campaign-context p + p { margin-block-start:6px; }
+.wc-campaign-context-url { overflow-wrap:anywhere; }
+@media(max-width:480px) { .wc-campaign-context dl > div { grid-template-columns:1fr; gap:2px; } }

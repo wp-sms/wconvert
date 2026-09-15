@@ -38,6 +38,8 @@ vi.mock('../../resources/admin/src/optins/api', async (importOriginal) => ({
 }));
 vi.mock('../../resources/admin/src/goals/api', () => goals);
 
+vi.mock('../../resources/admin/src/optins/CampaignDetails', () => ({ default: () => null }));
+
 const { OptinList } = await import('../../resources/admin/src/optins/OptinList');
 
 const OPTIN = {
@@ -629,4 +631,15 @@ describe('the Campaigns workspace', () => {
     expect(onBusyChange.mock.calls).toEqual([[true], [false]]);
     expect(optins.publishOptin).not.toHaveBeenCalled();
   });
+});
+
+
+it('does not describe a suspended saved version as live in details', async () => {
+  optins.listOptins.mockResolvedValue([{ ...OPTIN, published_at: '2026-09-10', suspended: 'WooCommerce is inactive.', has_unpublished_changes: true }]);
+  render(<OptinList onEdit={() => undefined} />);
+  await userEvent.click(await screen.findByRole('button', { name: OPTIN.name }));
+  const detail = await screen.findByRole('dialog', { name: OPTIN.name });
+  expect(within(detail).getByText('Not showing')).toBeInTheDocument();
+  expect(within(detail).queryByText(/previous version is still live/)).toBeNull();
+  expect(within(detail).getByText(/Resolve the issue before this campaign can show again/)).toBeInTheDocument();
 });

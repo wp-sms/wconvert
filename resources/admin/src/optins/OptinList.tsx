@@ -66,6 +66,7 @@ import {
 import './campaigns.css';
 
 const Design = lazy(() => import('./CampaignDesign'));
+const Details = lazy(() => import('./CampaignDetails'));
 const PAGE_SIZE = 12;
 type RowResult = {
   count: number;
@@ -668,7 +669,7 @@ export function OptinList({
               <span className={`wc-campaign-status is-${statusOf(selected)}`}>
                 {stateLabel(statusOf(selected))}
               </span>
-              {canUnpublish(statusOf(selected)) && selected.has_unpublished_changes && (
+              {statusOf(selected) === 'published' && selected.has_unpublished_changes && (
                 <p>
                   {__(
                     'Your previous version is still live. Review the saved draft in the editor before publishing your changes.',
@@ -677,6 +678,19 @@ export function OptinList({
                 </p>
               )}
               {selected.suspended && <p>{selected.suspended}</p>}
+              {statusOf(selected) === 'suspended' && selected.has_unpublished_changes && (
+                <p>
+                  {__(
+                    'The saved draft has unpublished changes. Resolve the issue before this campaign can show again.',
+                    'wconvert',
+                  )}
+                </p>
+              )}
+              <p>
+                {displayLabel(previews[selected.id]?.display_type)}
+                {previews[selected.id] && labels?.[selected.goal] ? ' · ' : ''}
+                {labels?.[selected.goal]}
+              </p>
               {reportReady && numbers[selected.id] && (
                 <div className="wc-campaign-detail-stats">
                   <div>
@@ -693,9 +707,20 @@ export function OptinList({
                   </div>
                 </div>
               )}
+              {reportReady && report && (
+                <p>
+                  {rangeLabel(report.from, report.to)} ·{' '}
+                  {__('Through yesterday. Results include earlier activity.', 'wconvert')}
+                </p>
+              )}
+              <Suspense fallback={<p>{__('Loading campaign details…', 'wconvert')}</p>}>
+                <Details key={selected.id} id={selected.id} />
+              </Suspense>
               <div className="flex flex-wrap gap-2">
                 <Button
+                  disabled={busy.size > 0}
                   onClick={() => {
+                    if (busyRef.current.size > 0) return;
                     const id = selected.id;
                     setSelected(null);
                     onEdit(id);

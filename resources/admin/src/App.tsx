@@ -41,9 +41,17 @@ import { ConfirmDialog } from './shell/ConfirmDialog';
  */
 export function App() {
   const navigation = useAdminNavigation();
-  const { route, navigate } = navigation;
+  const { route, navigate, onEditingStateChange } = navigation;
   const section = route.section;
   const [creating, setCreating] = useState(false);
+  const [campaignBusy, setCampaignBusy] = useState(false);
+  const campaignBusyRef = useRef(false);
+  const onCampaignEditingStateChange = useCallback((state: EditingState) => {
+    campaignBusyRef.current = state.busy;
+    setCampaignBusy(state.busy);
+    onEditingStateChange(state);
+  }, [onEditingStateChange]);
+  const startCreating = () => { if (!campaignBusyRef.current) setCreating(true); };
   const [sendingCount, setSendingCount] = useState<number | null>(null);
   const [sendingRefresh, setSendingRefresh] = useState(0);
   useEffect(() => {
@@ -55,7 +63,7 @@ export function App() {
   }, [section, route.leadsView, sendingRefresh]);
 
   const createButton = (
-    <Button onClick={() => setCreating(true)}>
+    <Button disabled={campaignBusy} onClick={startCreating}>
       <Plus aria-hidden="true" />
       {__('Create campaign', 'wconvert')}
     </Button>
@@ -97,10 +105,10 @@ export function App() {
       {section === 'optins' && (
         <OptinsSection
           creating={creating}
-          onEditingStateChange={navigation.onEditingStateChange}
-          onCreate={() => setCreating(true)}
+          onEditingStateChange={onCampaignEditingStateChange}
+          onCreate={startCreating}
           onCancelCreate={() => setCreating(false)}
-          onEdit={(id) => navigate(editorHref(id, navigation.hash || '#optins'))}
+          onEdit={(id) => navigation.requestNavigation(editorHref(id, navigation.hash || '#optins'))}
         />
       )}
       {section === 'analytics' && <Dashboard query={route.report} onQueryChange={(query) => navigate(reportHref(query))} />}
