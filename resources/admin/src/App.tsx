@@ -82,6 +82,15 @@ export function App() {
 
   return (
     <Shell section={section} hidePageHeading={section === 'optins' && creating}
+      navigation={section === 'leads' ? <nav aria-label={__('Leads views', 'wconvert')} className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-note">
+        {([{ view: 'submissions', label: __('Submissions', 'wconvert'), href: leadsHref(route.leads) },
+          { view: 'issues', label: __('Sending issues', 'wconvert'), href: sendingIssuesHref() }] as const).map(({ view, label, href }) => <a key={view} href={href}
+          aria-current={route.leadsView === view ? 'page' : undefined}
+          className={`inline-flex min-h-8 items-center gap-1.5 border-b-2 py-1 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${route.leadsView === view ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:border-border hover:text-foreground'}`}>
+          {label}{view === 'issues' && sendingCount !== null && sendingCount > 0 && <span className="rounded-full bg-secondary px-2 text-note tabular-nums" title={__('Destinations with known problems, not a count of undelivered submissions.', 'wconvert')}>{sendingCount}</span>}
+        </a>)}
+        <a className="ms-auto inline-flex min-h-8 items-center text-muted-foreground underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring" href={settingsHref('connections')}>{__('Sending setup', 'wconvert')}</a>
+      </nav> : undefined}
       actions={section === 'optins' && !creating ? createButton : undefined}>
       {section === 'optins' && (
         <OptinsSection
@@ -93,14 +102,9 @@ export function App() {
         />
       )}
       {section === 'analytics' && <Dashboard query={route.report} onQueryChange={(query) => navigate(reportHref(query))} />}
-      {section === 'leads' && <div className="flex flex-col gap-5">
-        <nav aria-label={__('Leads views', 'wconvert')} className="flex flex-wrap items-center gap-2">
-          <Button asChild variant={route.leadsView === 'submissions' ? 'secondary' : 'ghost'}><a href={leadsHref(route.leads)} aria-current={route.leadsView === 'submissions' ? 'page' : undefined}>{__('Submissions', 'wconvert')}</a></Button>
-          <Button asChild variant={route.leadsView === 'issues' ? 'secondary' : 'ghost'}><a href={sendingIssuesHref()} aria-current={route.leadsView === 'issues' ? 'page' : undefined}>{__('Sending issues', 'wconvert')}{sendingCount !== null && sendingCount > 0 && <span className="rounded-full bg-secondary px-2 text-note tabular-nums" title={__('Destinations with known problems, not a count of undelivered submissions.', 'wconvert')}>{sendingCount}</span>}</a></Button>
-          <a className="ms-auto text-note underline underline-offset-2" href={settingsHref('connections')}>{__('Sending setup', 'wconvert')}</a>
-        </nav>
+      {section === 'leads' && <>
         {route.leadsView === 'issues' ? <Destinations mode="issues" onIssueCount={setSendingCount} onEditingStateChange={navigation.onEditingStateChange} /> : <LeadLog query={route.leads} onRefresh={() => setSendingRefresh((value) => value + 1)} onQueryChange={(query) => navigate(leadsHref(query))} />}
-      </div>}
+      </>}
       {section === 'settings' && <Settings key={navigation.hash} group={route.settingsGroup} destinationId={route.destinationId} onEditingStateChange={navigation.onEditingStateChange} />}
       <ConfirmDialog open={navigation.pending} onOpenChange={(open) => { if (!open) navigation.stay(); }}
         title={__('Leave without saving?', 'wconvert')} description={__('Your unsaved settings changes will be lost.', 'wconvert')}

@@ -144,3 +144,20 @@ actions and prerequisites, MailPoet setup then Cancel, chooser focus return,
 no Back to Leads in Settings, and count/export help opening and dismissing
 with Escape. Desktop and 390px chooser/Settings layouts had no horizontal
 overflow. No save, send, replay, deletion or lead-detail action was taken.
+
+## 15 September: more room for the Leads table
+
+Moved Submissions/Sending issues navigation into the existing page header,
+replacing the Leads subtitle. Slim underlined links retain the active route,
+issue count and Sending setup shortcut. The separate body navigation band and
+its gap are gone; other sections retain their existing subtitles.
+
+All **2,368 JavaScript tests / 103 files** pass, including a header-placement
+and view-switching regression. Lint, TypeScript, source contract and both admin
+builds pass. Existing bundle-size/test act warnings remain.
+
+Luna verified the fresh build at desktop and 390px: compact header navigation,
+no duplicate subtitle, active-view switching in both directions, and the setup
+shortcut. Mobile client/scroll widths both measured 390px. No data mutations
+or lead-detail actions were taken. No before/after pixel-saving claim is made
+because a matching old-build measurement was not retained.

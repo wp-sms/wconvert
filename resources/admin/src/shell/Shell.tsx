@@ -58,6 +58,7 @@ import { PageActionSlotProvider } from './PageActions';
 export function Shell({
   section,
   actions,
+  navigation,
   bareHeader = false,
   hidePageHeading = false,
   wide = false,
@@ -65,6 +66,8 @@ export function Shell({
 }: {
   section?: SectionId;
   actions?: ReactNode;
+  /** Optional section views replace the descriptive subtitle, not the page actions. */
+  navigation?: ReactNode;
   /** A focused flow supplies its own visible prompt; retain the section heading for assistive navigation. */
   hidePageHeading?: boolean;
   /**
@@ -123,7 +126,7 @@ export function Shell({
               {section === undefined ? (
                 <div ref={setTarget} />
               ) : (
-                <PageHeader section={section} actions={actions} actionSlot={setTarget} />
+                <PageHeader section={section} actions={actions} navigation={navigation} actionSlot={setTarget} />
               )}
             </div>
           </div>
@@ -189,10 +192,12 @@ function Wordmark() {
 function PageHeader({
   section,
   actions,
+  navigation,
   actionSlot,
 }: {
   section: SectionId;
   actions?: ReactNode;
+  navigation?: ReactNode;
   actionSlot: (node: HTMLElement | null) => void;
 }) {
   const entry = SECTIONS.find((candidate) => candidate.id === section);
@@ -206,7 +211,7 @@ function PageHeader({
         {actions}
         <div ref={actionSlot} className="contents" />
       </div>
-      <Description className="mt-1">{descriptionFor(section)}</Description>
+      {navigation ?? <Description className="mt-1">{descriptionFor(section)}</Description>}
     </>
   );
 }

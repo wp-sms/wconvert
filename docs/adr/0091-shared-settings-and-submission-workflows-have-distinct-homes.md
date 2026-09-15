@@ -46,6 +46,11 @@ remain in Analytics.
 
 ## Submissions and operational recovery
 
+Leads view links are compact underlined navigation in the page-heading band,
+replacing its subtitle rather than occupying a separate band above the table.
+Sending setup remains a secondary shortcut, and the issue count/active route
+remain visible. Links wrap on narrow screens without shrinking touch targets.
+
 A compact row shows captured name/identifier, Campaign, answer preview, capture
 time and a detail action. The dialog exposes original answers, stable choice
 value, captured consent and Lead ID. No invented source URL, subscription
