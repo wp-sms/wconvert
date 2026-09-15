@@ -68,6 +68,12 @@ final class OptinController implements RestController
 
     public function registerRoutes(): void
     {
+        register_rest_route(Routes::NAMESPACE, '/optins/previews', [
+            'methods' => 'GET',
+            'callback' => [$this, 'previews'],
+            'permission_callback' => [Routes::class, 'canManage'],
+            'args' => ['ids' => ['required' => true, 'type' => 'array', 'items' => ['type' => 'string'], 'minItems' => 1, 'maxItems' => 12]],
+        ]);
         register_rest_route(Routes::NAMESPACE, '/optins', [
             [
                 'methods' => 'GET',
@@ -163,6 +169,21 @@ final class OptinController implements RestController
                 'permission_callback' => [Routes::class, 'canManage'],
             ],
         ]);
+    }
+
+    /** @return WP_REST_Response|WP_Error */
+    public function previews(WP_REST_Request $request)
+    {
+        $ids = $request->get_param('ids');
+        if (!is_array($ids) || $ids === [] || count($ids) > 12) {
+            return new WP_Error('wconvert_invalid_previews', __('Choose up to twelve campaigns.', 'wconvert'), ['status' => 400]);
+        }
+        foreach ($ids as $id) {
+            if (!is_string($id) || !preg_match('/^' . Ulid::PATTERN . '$/D', $id)) {
+                return new WP_Error('wconvert_invalid_previews', __('Invalid campaign ID.', 'wconvert'), ['status' => 400]);
+            }
+        }
+        return new WP_REST_Response($this->optins->designs(array_values($ids)));
     }
 
     /**

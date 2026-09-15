@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 /**
@@ -19,7 +19,12 @@ const optins = vi.hoisted(() => ({
   deleteOptin: vi.fn(),
   createVariant: vi.fn(),
   declareWinner: vi.fn(),
+  readCampaignPreviews: vi.fn(),
+  duplicateCampaign: vi.fn(),
 }));
+
+const stats = vi.hoisted(() => ({ readDashboard: vi.fn() }));
+vi.mock('../../resources/admin/src/stats/api', () => stats);
 
 const goals = vi.hoisted(() => ({ listGoals: vi.fn() }));
 
@@ -53,6 +58,8 @@ const OPTIN = {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  optins.readCampaignPreviews.mockResolvedValue([]);
+  stats.readDashboard.mockResolvedValue({ days: 30, from: '2026-08-16', to: '2026-09-14', goals: [], impact: [] });
   optins.listOptins.mockResolvedValue([OPTIN]);
   goals.listGoals.mockResolvedValue([
     { id: 'grow_email_list', label: 'Grow my email list', availability: 'ready' },
@@ -82,7 +89,7 @@ describe('the four situations this screen has to answer', () => {
     render(<OptinList onEdit={() => undefined} />);
 
     expect(await screen.findByRole('status')).toHaveTextContent('Loading…');
-    expect(screen.queryByText('No Campaigns yet')).toBeNull();
+    expect(screen.queryByText('Start with one good campaign.')).toBeNull();
 
     land([OPTIN]);
 
@@ -99,8 +106,8 @@ describe('the four situations this screen has to answer', () => {
 
     render(<OptinList onEdit={() => undefined} onCreate={() => undefined} />);
 
-    expect(await screen.findByText('No Campaigns yet')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Create a campaign/ })).toBeInTheDocument();
+    expect(await screen.findByText('Start with one good campaign.')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Create your first campaign/ })).toBeInTheDocument();
   });
 
   it('renders a first failure as the region’s whole content', async () => {
@@ -121,7 +128,7 @@ describe('a row', () => {
    * thing on the screen carrying its most important explanatory sentence.
    * {@see Description} is the role, and it renders at `--text-note`.
    */
-  it('states a suspension reason at the description size, not smaller', async () => {
+  it('states the suspension reason next to its status', async () => {
     optins.listOptins.mockResolvedValue([
       {
         ...OPTIN,
@@ -134,8 +141,7 @@ describe('a row', () => {
 
     const reason = await screen.findByText('Its Goal is no longer available on this site.');
 
-    expect(reason).toHaveClass('text-note');
-    expect(reason).not.toHaveClass('text-xs');
+    expect(reason.closest('td')).toHaveTextContent('Not showing');
   });
 
   it('names its Goal the way the merchant does', async () => {
@@ -256,8 +262,9 @@ describe('a suspended row', () => {
 
     render(<OptinList onEdit={() => undefined} />);
 
-    expect(await screen.findByRole('button', { name: 'Unpublish' })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Publish' })).toBeNull();
+    await userEvent.click(await screen.findByRole('button', { name: /More actions/ }));
+    expect(await screen.findByRole('menuitem', { name: 'Pause campaign' })).toBeInTheDocument();
+    expect(screen.queryByRole('menuitem', { name: 'Publish saved draft' })).toBeNull();
   });
 
   /**
@@ -274,7 +281,8 @@ describe('a suspended row', () => {
 
     render(<OptinList onEdit={() => undefined} />);
 
-    expect((await screen.findAllByText('Published')).some((node) => node.getAttribute('data-slot') === 'badge')).toBe(true);
+    expect(await screen.findByRole('row', { name: OPTIN.name })).toHaveTextContent('Live');
+    expect(screen.queryByText('Not showing')).toBeNull();
   });
 });
 
@@ -289,23 +297,25 @@ describe('saved changes awaiting publication', () => {
 
     render(<OptinList onEdit={() => undefined} />);
 
-    expect(await screen.findByText('Saved changes are not published')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Unpublish' })).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Publish changes' }));
+    expect(await screen.findByText('Unpublished changes')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: /More actions/ }));
+    expect(await screen.findByRole('menuitem', { name: 'Pause campaign' })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Publish saved draft' }));
+    expect(optins.publishOptin).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole('button', { name: 'Publish saved draft' }));
 
     expect(optins.publishOptin).toHaveBeenCalledWith(OPTIN.id);
     expect(optins.unpublishOptin).not.toHaveBeenCalled();
-    expect(await screen.findByRole('button', { name: 'Unpublish' })).toBeEnabled();
-    expect(screen.queryByRole('button', { name: 'Publish changes' })).toBeNull();
-    expect(screen.queryByText('Saved changes are not published')).toBeNull();
+    await waitFor(() => expect(screen.queryByText('Unpublished changes')).toBeNull());
   });
 
   it('offers no update action when the saved and live snapshots match', async () => {
     optins.listOptins.mockResolvedValue([{ ...OPTIN, published_at: '2026-09-10 10:00:00' }]);
     render(<OptinList onEdit={() => undefined} />);
 
-    expect(await screen.findByRole('button', { name: 'Unpublish' })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Publish changes' })).toBeNull();
+    await userEvent.click(await screen.findByRole('button', { name: /More actions/ }));
+    expect(await screen.findByRole('menuitem', { name: 'Pause campaign' })).toBeInTheDocument();
+    expect(screen.queryByRole('menuitem', { name: 'Publish saved draft' })).toBeNull();
   });
 });
 
@@ -331,7 +341,7 @@ describe('the door into the eligibility inspector', () => {
     render(<OptinList onEdit={() => undefined} />);
 
     await userEvent.click(await screen.findByRole('button', { name: /More actions/ }));
-    await userEvent.click(await screen.findByRole('menuitem', { name: 'Why did nothing show?' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Check visibility' }));
 
     const field = await screen.findByLabelText('Page to open');
 
@@ -362,7 +372,7 @@ describe('the door into the eligibility inspector', () => {
     render(<OptinList onEdit={() => undefined} />);
 
     await userEvent.click(await screen.findByRole('button', { name: /More actions/ }));
-    await userEvent.click(await screen.findByRole('menuitem', { name: 'Why did nothing show?' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Check visibility' }));
 
     expect(await screen.findByText(/a cache is serving that page before WordPress runs/)).toBeInTheDocument();
   });
@@ -396,8 +406,8 @@ describe('an A/B test on the list', () => {
     await userEvent.type(screen.getByRole('searchbox', { name: 'Search Campaigns' }), '(B)');
     expect(screen.getByRole('button', { name: OPTIN.name })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: ARM_B.name })).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Published 0' }));
-    expect(screen.getByText('No Campaigns match these filters')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Live 0' }));
+    expect(screen.getByText('No campaigns found')).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Clear filters' }));
     expect(screen.getByRole('searchbox')).toHaveValue('');
     expect(screen.getByRole('button', { name: OPTIN.name })).toBeInTheDocument();
@@ -436,7 +446,7 @@ describe('an A/B test on the list', () => {
 
     render(<OptinList onEdit={() => undefined} />);
 
-    expect(await screen.findAllByText('A/B test')).toHaveLength(1);
+    expect(await screen.findAllByText(/A\/B test · 2 designs/)).toHaveLength(1);
   });
 
   /**
@@ -450,7 +460,7 @@ describe('an A/B test on the list', () => {
 
     render(<OptinList onEdit={() => undefined} />);
 
-    expect(await screen.findByText(/count browsers, not people/)).toBeInTheDocument();
+    expect(await screen.findByText(/A\/B assignments use browser storage, not unique people/)).toBeInTheDocument();
   });
 
   /**
@@ -465,7 +475,7 @@ describe('an A/B test on the list', () => {
 
     await screen.findByText('Welcome discount');
 
-    expect(screen.queryByText(/count browsers, not people/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/A\/B assignments use browser storage, not unique people/)).not.toBeInTheDocument();
   });
 
   /** A merchant is never asked to name the thing they think of as the other one. */
@@ -476,7 +486,7 @@ describe('an A/B test on the list', () => {
     render(<OptinList onEdit={() => undefined} />);
 
     await openTheMenuOn(/More actions/);
-    await userEvent.click(await screen.findByRole('menuitem', { name: 'Test against a variant' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Create A/B test' }));
 
     expect(optins.createVariant).toHaveBeenCalledWith(OPTIN.id);
   });
@@ -525,14 +535,14 @@ describe('an A/B test on the list', () => {
     render(<OptinList onEdit={() => undefined} />);
 
     await openTheMenuOn(/More actions for Welcome discount \(B\)/);
-    await userEvent.click(await screen.findByRole('menuitem', { name: 'Use this one' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Use this design' }));
 
     expect(
-      await screen.findByText(/stops being served — its leads and conversions are kept/),
+      await screen.findByText(/Other designs stop showing; their leads and results are kept/),
     ).toBeInTheDocument();
     expect(optins.declareWinner).not.toHaveBeenCalled();
 
-    await userEvent.click(screen.getByRole('button', { name: 'Use this one' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Use this design' }));
 
     expect(optins.declareWinner).toHaveBeenCalledWith(OPTIN.id, ARM_B.id);
   });
@@ -549,8 +559,8 @@ describe('an A/B test on the list', () => {
     render(<OptinList onEdit={() => undefined} />);
 
     await openTheMenuOn(/More actions for Welcome discount$/);
-    await userEvent.click(await screen.findByRole('menuitem', { name: 'Use this one' }));
-    await userEvent.click(await screen.findByRole('button', { name: 'Use this one' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Use this design' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Use this design' }));
 
     expect(optins.declareWinner).toHaveBeenCalledWith(OPTIN.id, OPTIN.id);
   });
@@ -569,5 +579,54 @@ describe('an A/B test on the list', () => {
     await openTheMenuOn(/More actions for Welcome discount \(B\)/);
 
     expect(screen.queryByRole('menuitem', { name: /variant/ })).not.toBeInTheDocument();
+  });
+});
+
+
+describe('the Campaigns workspace', () => {
+  it('uses conversions and the server result unit, never the delivery headline', async () => {
+    stats.readDashboard.mockResolvedValue({ days: 30, from: '2026-08-16', to: '2026-09-14', goals: [{ action: 'submit', result_label: 'Resource requests', optins: [{ id: OPTIN.id, headline: 3, conversions: 7, impressions: 20, conversion_rate: 0.35 }] }] });
+    render(<OptinList onEdit={() => undefined} />);
+    const row = await screen.findByRole('row', { name: OPTIN.name });
+    expect(await within(row).findByRole('link', { name: `View ${OPTIN.name} report` })).toHaveTextContent('7Resource requests');
+    expect(stats.readDashboard).toHaveBeenCalledWith(30, true);
+    await userEvent.click(within(row).getByRole('button', { name: /More actions/ }));
+    expect(await screen.findByRole('menuitem', { name: 'View submissions' })).toHaveAttribute('href', expect.stringContaining('from=2026-08-16'));
+  });
+
+  it('keeps campaign controls usable when results fail', async () => {
+    stats.readDashboard.mockRejectedValue(new Error('Stats unavailable'));
+    const onEdit = vi.fn();
+    render(<OptinList onEdit={onEdit} />);
+    expect(await screen.findByText(/Results couldn’t load/)).toBeInTheDocument();
+    await userEvent.click(await screen.findByRole('button', { name: 'Continue editing' }));
+    expect(onEdit).toHaveBeenCalledWith(OPTIN.id);
+  });
+
+  it('opens details from the name and uses the same campaigns in gallery view', async () => {
+    const onEdit = vi.fn();
+    render(<OptinList onEdit={onEdit} />);
+    await userEvent.click(await screen.findByRole('button', { name: OPTIN.name }));
+    expect(await screen.findByRole('dialog', { name: OPTIN.name })).toBeInTheDocument();
+    expect(onEdit).not.toHaveBeenCalled();
+    await userEvent.keyboard('{Escape}');
+    await userEvent.click(screen.getByRole('button', { name: 'Gallery view' }));
+    expect(screen.getByRole('button', { name: 'Gallery view' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('row', { name: OPTIN.name })).toBeInTheDocument();
+    expect(optins.listOptins).toHaveBeenCalledTimes(1);
+  });
+
+  it('releases the navigation guard before opening a duplicate', async () => {
+    let guarded = false;
+    const onEdit = vi.fn(() => expect(guarded).toBe(false));
+    const onBusyChange = vi.fn((busy: boolean) => { guarded = busy; });
+    optins.duplicateCampaign.mockResolvedValue({ id: 'copied-id' });
+    render(<OptinList onEdit={onEdit} onBusyChange={onBusyChange} />);
+    await userEvent.click(await screen.findByRole('button', { name: /More actions/ }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Duplicate as draft' }));
+    await waitFor(() => expect(onEdit).toHaveBeenCalledWith('copied-id'));
+    expect(optins.duplicateCampaign).toHaveBeenCalledWith(OPTIN.id, `${OPTIN.name} — copy`);
+    expect(onBusyChange.mock.calls).toEqual([[true], [false]]);
+    expect(optins.publishOptin).not.toHaveBeenCalled();
   });
 });

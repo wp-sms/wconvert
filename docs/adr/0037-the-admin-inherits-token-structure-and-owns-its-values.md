@@ -128,7 +128,8 @@ acquires a `--primary` that fails on the one control nobody screenshotted.
   uppercase, tracked) were **decided**, at the reference editor's own values, and
   the decision is recorded where this ADR implies it should be: the `ROLES` array
   in `admin-stylesheet.test.ts`, which is the one place a role costs a line.
-  They are the Design tab's only; every other screen still floors at `micro`._
+  They were the Design tab's only; **extended by [0092](0092-campaigns-use-a-design-led-workspace-and-compact-masthead.md):** Campaigns
+  now uses an explicit compact 11–13px metadata/control/name scale._
 - **A future WConvert brand does not start from zero.** Whatever a logo and a
   wordmark eventually say, the surface they land on already has a committed
   colour rather than a placeholder to be negotiated then.

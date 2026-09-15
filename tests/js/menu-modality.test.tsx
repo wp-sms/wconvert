@@ -174,7 +174,7 @@ describe("an Optin row's actions", () => {
     await user.click(
       await screen.findByRole('button', { name: 'More actions for Welcome discount' }),
     );
-    await screen.findByRole('menuitem', { name: 'Delete' });
+    await screen.findByRole('menuitem', { name: 'Delete campaign' });
 
     expect(pageIsLocked()).toBe(false);
   });
@@ -192,10 +192,10 @@ describe("an Optin row's actions", () => {
     await user.click(
       await screen.findByRole('button', { name: 'More actions for Welcome discount' }),
     );
-    await screen.findByRole('menuitem', { name: 'Delete' });
+    await screen.findByRole('menuitem', { name: 'Delete campaign' });
 
     await user.keyboard('{Escape}');
-    await waitFor(() => expect(screen.queryByRole('menuitem', { name: 'Delete' })).toBeNull());
+    await waitFor(() => expect(screen.queryByRole('menuitem', { name: 'Delete campaign' })).toBeNull());
 
     expect(pageIsLocked()).toBe(false);
   });

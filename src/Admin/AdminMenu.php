@@ -215,6 +215,7 @@ final class AdminMenu
             // `apiFetch` would read the file into memory and then have to turn
             // it back into a download.
             'exportUrl' => LeadExport::url(),
+            'installedTier' => (new \WConvert\Support\WpProPresence())->installedTier()->value,
             // **Authoring is the settings panel plus a DEV-ONLY export**
             // (ADR 0010). Gated on `WP_DEBUG` rather than on a capability:
             // everyone who reached this screen already has `manage_options`,

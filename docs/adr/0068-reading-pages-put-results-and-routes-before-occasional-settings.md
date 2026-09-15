@@ -18,7 +18,10 @@ old 639px breakpoint. Values and actions must remain readable at 360px.
 
 ## Each page's job
 
-- **Optins:** search by name and filter by status. An A/B family stays together
+- **Optins:** **Extended by [0092](0092-campaigns-use-a-design-led-workspace-and-compact-masthead.md):** design previews, list/gallery views,
+  four columns and anchored action menus implement the approved Campaigns design.
+  The shared masthead is now 56px. Results use complete days through yesterday.
+  The following behavior remains: search by name and filter by status. An A/B family stays together
   if any member matches, and filter counts count families. Unmatched filters
   offer Clear filters. The performance footer names the server's period.
 - **Analytics:** **Amended by [0089](0089-analytics-starts-with-impact-and-keeps-history-inspectable.md):**

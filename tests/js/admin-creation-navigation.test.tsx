@@ -41,7 +41,7 @@ beforeEach(() => {
 afterEach(() => { window.innerWidth = 1024; });
 async function openCreation() {
   render(<App />);
-  await userEvent.click(screen.getByRole('button', { name: 'Create a campaign' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Create campaign' }));
   await userEvent.click(await screen.findByRole('button', { name: 'Choose' }, { timeout: 5000 }));
   return screen.findByRole('button', { name: 'Use this setup' });
 }
@@ -52,11 +52,11 @@ async function requestReports() {
 describe('creation and its owning admin page', () => {
   it('lets the creation prompt replace the redundant page-heading band', async () => {
     await openCreation();
-    expect(screen.queryByText('What you show visitors, and whether it’s live.')).toBeNull();
+    expect(screen.queryByText('Your on-site forms and offers, in one place.')).toBeNull();
     expect(screen.getByRole('heading', { level: 1, name: 'Campaigns' })).toHaveClass('sr-only');
     expect(screen.getByRole('heading', { name: 'Choose a campaign setup' })).toBeVisible();
     await userEvent.click(screen.getByRole('button', { name: 'All Campaigns' }));
-    expect(screen.getByText('What you show visitors, and whether it’s live.')).toBeVisible();
+    expect(screen.getByText('Your on-site forms and offers, in one place.')).toBeVisible();
   });
 
   it('blocks outer Back and hash navigation until both prefill and creation finish', async () => {

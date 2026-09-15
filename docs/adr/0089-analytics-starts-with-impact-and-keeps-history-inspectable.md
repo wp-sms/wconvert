@@ -38,7 +38,8 @@ Analytics requests `complete=true` from the existing read-only dashboard route.
 The selected window ends yesterday in the site's calendar. Its comparison is
 the adjacent preceding window of the same length. The server resolves both;
 neither browser dates nor browser timezones choose them. Each window is capped
-at 366 days. List/editor reads omit `complete` and still include today.
+at 366 days. **Amended by [0092](0092-campaigns-use-a-design-led-workspace-and-compact-masthead.md):** Campaigns now also requests complete
+days and preserves that window in report links. Editor reads still include today.
 
 **Extended by [0090](0090-monthly-targets-are-optional-benchmarks.md):** stable
 target links may name a calendar month instead of a rolling day count. The

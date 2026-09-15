@@ -14,7 +14,7 @@ import { BackLink } from './shell/BuilderSkeleton';
 import { Shell } from './shell/Shell';
 import { NarrowScreenNotice } from './shell/NarrowScreenNotice';
 import { useBuilderViewport } from './hooks/useBuilderViewport';
-import { editorHref, leadsHref, reportHref, settingsHref, sendingIssuesHref } from './nav';
+import { editorHref, leadsHref, reportHref, sendingIssuesHref } from './nav';
 import { useAdminNavigation, type EditingState } from './hooks/useAdminNavigation';
 import { ConfirmDialog } from './shell/ConfirmDialog';
 
@@ -57,7 +57,7 @@ export function App() {
   const createButton = (
     <Button onClick={() => setCreating(true)}>
       <Plus aria-hidden="true" />
-      {__('Create a campaign', 'wconvert')}
+      {__('Create campaign', 'wconvert')}
     </Button>
   );
 
@@ -173,6 +173,7 @@ function OptinsSection({
   onCancelCreate: () => void;
   onEdit: (id: string) => void;
 }) {
+  const onListBusyChange = useCallback((busy: boolean) => onEditingStateChange({ dirty: false, busy }), [onEditingStateChange]);
   if (creating) {
     return <CreationFlow onCancel={onCancelCreate} onEdit={onEdit} onEditingStateChange={onEditingStateChange} />;
   }
@@ -183,16 +184,9 @@ function OptinsSection({
    * button in a band the merchant has already read past is an empty screen
    * with a dead end in it (ADR 0039).
    */
-  /*
-   * Two regions, because this screen holds two objects (ADR 0039). The list is
-   * what exists; the allowance below it is how often a visitor may meet ANY of
-   * them, which is a site-wide decision with no Optin to hang on and therefore
-   * nowhere in the builder to live.
-   */
   return (
     <div className="flex flex-col gap-5">
-      <OptinList onEdit={onEdit} onCreate={onCreate} />
-      <p className="m-0 text-note text-muted-foreground"><a className="underline underline-offset-2" href={settingsHref('experience')}>{__('Site-wide display limits', 'wconvert')}</a></p>
+      <OptinList onEdit={onEdit} onCreate={onCreate} onBusyChange={onListBusyChange} />
     </div>
   );
 }

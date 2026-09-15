@@ -212,6 +212,37 @@ final class OptinRepository
     }
 
     /**
+     * Bounded design read for one visible Campaigns page, never the full list.
+     * @param list<string> $ids
+     * @return list<array<string, mixed>>
+     */
+    public function designs(array $ids): array
+    {
+        $ids = array_slice(array_values(array_unique($ids)), 0, 12);
+        if ($ids === []) {
+            return [];
+        }
+        $rows = $this->db->results(
+            Connection::TABLE_OPTINS,
+            'SELECT id, config, deleted_at FROM %i WHERE deleted_at IS NULL AND id IN (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
+            ...array_pad($ids, 12, '')
+        );
+        $result = [];
+        foreach ($rows as $row) {
+            if (!in_array($row['id'] ?? '', $ids, true) || ($row['deleted_at'] ?? null) !== null) {
+                continue;
+            }
+            $config = json_decode($row['config'] ?? '{}', true);
+            $result[] = [
+                'id' => $row['id'],
+                'template' => is_array($config['template'] ?? null) ? $config['template'] : null,
+                'display_type' => (DisplayType::of($config['display_type'] ?? 'popup') ?? DisplayType::Popup)->value,
+            ];
+        }
+        return $result;
+    }
+
+    /**
      * The arms of every test, grouped by the parent they hang beneath.
      *
      * ========================================================================
