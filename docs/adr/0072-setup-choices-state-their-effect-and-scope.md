@@ -138,7 +138,7 @@ half-open window, `starts_at <= now < ends_at`, is unchanged.
 
 Sources: [OptinBuilder](../../resources/admin/src/builder/OptinBuilder.tsx),
 [Goal correction](../../resources/admin/src/builder/ChangeGoalDialog.tsx),
-[wall-time labels and status](../../resources/admin/src/builder/wallTime.ts),
+[wall-time labels and status](../../resources/admin/src/lib/wallTime.ts),
 [Schedule](../../src/Optin/Schedule.php).
 
 ## Product boundary and verification

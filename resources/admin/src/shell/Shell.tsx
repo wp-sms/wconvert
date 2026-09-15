@@ -1,6 +1,6 @@
 import { useMemo, useState, type ReactNode } from 'react';
 import { __ } from '@wordpress/i18n';
-import { ChartColumn, Inbox, Megaphone, Send } from 'lucide-react';
+import { ChartColumn, Inbox, Megaphone, Settings } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { SECTIONS, hashFor, type SectionId } from '../nav';
 import { Description } from './Description';
@@ -58,6 +58,8 @@ import { PageActionSlotProvider } from './PageActions';
 export function Shell({
   section,
   actions,
+  pageTitle,
+  hideDescription = false,
   bareHeader = false,
   hidePageHeading = false,
   wide = false,
@@ -65,6 +67,9 @@ export function Shell({
 }: {
   section?: SectionId;
   actions?: ReactNode;
+  /** A focused subpage can name its own task without changing the main navigation. */
+  pageTitle?: string;
+  hideDescription?: boolean;
   /** A focused flow supplies its own visible prompt; retain the section heading for assistive navigation. */
   hidePageHeading?: boolean;
   /**
@@ -123,7 +128,7 @@ export function Shell({
               {section === undefined ? (
                 <div ref={setTarget} />
               ) : (
-                <PageHeader section={section} actions={actions} actionSlot={setTarget} />
+                <PageHeader section={section} actions={actions} pageTitle={pageTitle} hideDescription={hideDescription} actionSlot={setTarget} />
               )}
             </div>
           </div>
@@ -180,6 +185,8 @@ function Wordmark() {
  * a region and belongs in that region's toolbar, or that this screen is two
  * screens. Nothing that acts on a row or on a filtered set may appear here,
  * however well it would fit.
+ * ADR 0091 permits one exception: Leads' conditional sending-issue shortcut
+ * replaces permanent diagnostic navigation and appears only for known problems.
  *
  * The slot after `actions` is for a screen that owns its own page-scoped action
  * — Leads' CSV export, whose URL carries the screen's filter
@@ -189,10 +196,14 @@ function Wordmark() {
 function PageHeader({
   section,
   actions,
+  pageTitle,
+  hideDescription,
   actionSlot,
 }: {
   section: SectionId;
   actions?: ReactNode;
+  pageTitle?: string;
+  hideDescription: boolean;
   actionSlot: (node: HTMLElement | null) => void;
 }) {
   const entry = SECTIONS.find((candidate) => candidate.id === section);
@@ -201,12 +212,12 @@ function PageHeader({
     <>
       <div className="wconvert-page-actions flex flex-wrap items-center gap-x-3 gap-y-2">
         <h1 className="m-0 me-auto text-title font-semibold leading-tight tracking-tight text-foreground">
-          {entry?.label}
+          {pageTitle ?? entry?.label}
         </h1>
         {actions}
         <div ref={actionSlot} className="contents" />
       </div>
-      <Description className="mt-1">{descriptionFor(section)}</Description>
+      {!hideDescription && <Description className="mt-1">{descriptionFor(section)}</Description>}
     </>
   );
 }
@@ -304,7 +315,7 @@ const ICONS: Record<SectionId, LucideIcon> = {
   optins: Megaphone,
   analytics: ChartColumn,
   leads: Inbox,
-  destinations: Send,
+  settings: Settings,
 };
 
 /**
@@ -346,7 +357,7 @@ function descriptionFor(section: SectionId): string {
       return __('How each goal is performing.', 'wconvert');
     case 'leads':
       return __('Every form submission, as it was captured.', 'wconvert');
-    case 'destinations':
-      return __('Where captured leads are sent on to.', 'wconvert');
+    case 'settings':
+      return __('Shared setup in one place. Campaign-specific choices stay in the editor.', 'wconvert');
   }
 }

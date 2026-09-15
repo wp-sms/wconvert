@@ -28,6 +28,49 @@ describe('capture history', () => {
     optins.listOptins.mockResolvedValue([OPTIN]);
   });
 
+  it('keeps count and export context in dismissible help rather than a permanent row', async () => {
+    render(<LeadLog />);
+    const help = await screen.findByRole('button', { name: 'About this count and export' });
+    expect(screen.queryByText(/Showing:/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/CSV includes all retained/)).not.toBeInTheDocument();
+    await userEvent.click(help);
+    expect(screen.getByText('Showing: All Campaigns · All dates')).toBeVisible();
+    expect(screen.getByText(/CSV includes all retained/)).toBeVisible();
+    await userEvent.keyboard('{Escape}');
+    expect(screen.queryByText(/Showing:/)).not.toBeInTheDocument();
+    expect(help).toHaveFocus();
+    expect(log.readLog).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps extra filters out of the primary toolbar and shows server-scoped purpose counts', async () => {
+    log.readLog.mockResolvedValue({ ...SEVEN, purpose_counts: { all: 7, subscribers: 5, enquiries: 2 } });
+    render(<LeadLog />);
+    expect(await screen.findByText('sarah@example.com')).toBeInTheDocument();
+    expect(screen.getByLabelText('From')).not.toBeVisible();
+    expect(screen.getByLabelText(/All submissions/)).toHaveAccessibleName('All submissions 7');
+    await userEvent.click(screen.getByRole('button', { name: 'Filters' }));
+    expect(screen.getByLabelText('From')).toBeVisible();
+    await userEvent.selectOptions(screen.getByLabelText('Captured within'), 'custom');
+    expect(screen.getByLabelText('Captured within')).toHaveValue('custom');
+    await userEvent.selectOptions(screen.getByLabelText('Order'), 'oldest');
+    await userEvent.click(screen.getByRole('button', { name: 'Apply filters' }));
+    expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ order: 'oldest' }));
+  });
+
+  it('opens the message first and links to all retained submissions using the same identifier', async () => {
+    const onQueryChange = vi.fn();
+    log.readLog.mockResolvedValue({ ...SEVEN, leads: [{ ...CAPTURE, fields: { name: 'Sarah', message: 'Please help repair my window.' } }] });
+    render(<LeadLog query={{ from: '2026-09-01', purpose: 'enquiries' }} onQueryChange={onQueryChange} />);
+    await userEvent.click(await screen.findByRole('button', { name: 'Open submission from Sarah' }));
+    const details = within(screen.getByRole('dialog'));
+    expect(details.getByRole('heading', { name: 'What they said' })).toBeInTheDocument();
+    expect(details.getByText('Please help repair my window.')).toBeVisible();
+    expect(details.getByRole('link', { name: 'Newsletter footer' })).toHaveAttribute('href', expect.stringContaining('edit=OPTIN1'));
+    await userEvent.click(details.getByRole('button', { name: 'View submissions using this email' }));
+    expect(onQueryChange).toHaveBeenCalledWith({ identifier: 'sarah@example.com' });
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
   it('keeps loading distinct from no captures and then shows the answer', async () => {
     let finish!: (payload: unknown) => void;
     log.readLog.mockReturnValue(new Promise((resolve) => { finish = resolve; }));
@@ -100,7 +143,7 @@ describe('capture history', () => {
   it('applies exact identifier and inclusive dates together only on Apply', async () => {
     render(<LeadLog />);
     await screen.findByText('7 submissions');
-    await userEvent.type(screen.getByLabelText('Email, phone or Lead ID'), ' alex@example.com ');
+    await userEvent.type(screen.getByLabelText('Search submissions'), ' alex@example.com ');
     fireEvent.change(screen.getByLabelText('From'), { target: { value: '2026-08-01' } });
     fireEvent.change(screen.getByLabelText('To'), { target: { value: '2026-08-31' } });
     expect(log.readLog).toHaveBeenCalledTimes(1);
@@ -111,7 +154,7 @@ describe('capture history', () => {
   it('recognizes a pasted Lead ID and preserves existing date scope', async () => {
     const onQueryChange = vi.fn();
     render(<LeadLog query={{ from: '2026-08-01', to: '2026-08-31' }} onQueryChange={onQueryChange} />);
-    await userEvent.type(screen.getByLabelText('Email, phone or Lead ID'), CAPTURE.id.toLowerCase());
+    await userEvent.type(screen.getByLabelText('Search submissions'), CAPTURE.id.toLowerCase());
     await userEvent.click(screen.getByRole('button', { name: 'Apply filters' }));
     expect(onQueryChange).toHaveBeenCalledWith(expect.objectContaining({ leadId: CAPTURE.id, identifier: undefined, from: '2026-08-01', to: '2026-08-31' }));
   });
@@ -119,9 +162,9 @@ describe('capture history', () => {
   it('follows browser-history query changes and resets stale filter inputs', async () => {
     const { rerender } = render(<LeadLog query={{ identifier: 'first@example.com' }} />);
     await screen.findByText('7 submissions');
-    await userEvent.type(screen.getByLabelText('Email, phone or Lead ID'), 'draft');
+    await userEvent.type(screen.getByLabelText('Search submissions'), 'draft');
     rerender(<LeadLog query={{ identifier: 'second@example.com', from: '2026-09-01' }} />);
-    expect(screen.getByLabelText('Email, phone or Lead ID')).toHaveValue('second@example.com');
+    expect(screen.getByLabelText('Search submissions')).toHaveValue('second@example.com');
     expect(screen.getByLabelText('From')).toHaveValue('2026-09-01');
     await waitFor(() => expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ identifier: 'second@example.com' })));
   });
@@ -142,6 +185,10 @@ describe('capture history', () => {
     expect(screen.getByText('sarah@example.com')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Export matching submissions' })).toHaveAttribute('href', expect.stringContaining('sarah@example.com'));
     expect(screen.getByText(/last successful filters/)).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'About this count and export' }));
+    const help = within(screen.getByRole('dialog', { name: 'About this count and export' }));
+    expect(help.getByText(/Showing:.*sarah@example.com/)).toBeVisible();
+    expect(help.queryByText(/alex@example.com/)).not.toBeInTheDocument();
   });
 
   it('does not relabel event columns while grouping is still loading', async () => {
@@ -209,7 +256,7 @@ describe('capture history', () => {
     await userEvent.click(screen.getByLabelText('Group by email or phone'));
     await userEvent.click(await screen.findByRole('button', { name: 'View submissions' }));
     const dialog = await screen.findByRole('dialog', { name: 'Submission history' });
-    expect(await within(dialog).findByText(CAPTURE.id)).toBeInTheDocument();
+    expect(await within(dialog).findByText('sarah@example.com', { selector: 'bdi' })).toBeInTheDocument();
     expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ groupIdentifier: 'sarah@example.com', grouped: false, from: '2026-08-01', snapshot: SNAPSHOT, cursor: undefined }));
     expect(within(dialog).getByRole('link', { name: 'Export these submissions' })).toBeInTheDocument();
     expect(log.exportUrl).toHaveBeenCalledWith(expect.objectContaining({ groupIdentifier: 'sarah@example.com', from: '2026-08-01', snapshot: SNAPSHOT }));
@@ -218,10 +265,22 @@ describe('capture history', () => {
   it('keeps captured fields and Lead ID readable without claiming a delivery status', async () => {
     log.readLog.mockResolvedValue({ ...SEVEN, leads: [{ ...CAPTURE, fields: { name: 'Sarah', consent_text: 'Please email me.', service: 'Repairs' } }] });
     render(<LeadLog />);
-    await userEvent.click(await screen.findByText('View captured details'));
+    await userEvent.click(await screen.findByRole('button', { name: 'Open submission from Sarah' }));
+    expect(screen.getByRole('dialog', { name: 'Submission details' })).toBeInTheDocument();
     expect(screen.getByText(CAPTURE.id)).toBeVisible();
+    await userEvent.click(screen.getByText('Consent at capture'));
     expect(screen.getByText('Please email me.')).toBeVisible();
     expect(screen.getByText('Repairs')).toBeVisible();
     expect(document.body.textContent).not.toMatch(/delivered|delivery succeeded/i);
+  });
+
+  it('searches captured names and messages, then narrows to enquiries without losing the search', async () => {
+    render(<LeadLog />);
+    await userEvent.type(await screen.findByLabelText('Search submissions'), 'repair');
+    await userEvent.click(screen.getByRole('button', { name: 'Apply filters' }));
+    await waitFor(() => expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ search: 'repair' })));
+    await userEvent.click(screen.getByRole('radio', { name: 'Enquiries' }));
+    await waitFor(() => expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ search: 'repair', purpose: 'enquiries' })));
+    expect(log.exportUrl).toHaveBeenLastCalledWith(expect.objectContaining({ search: 'repair', purpose: 'enquiries', snapshot: SNAPSHOT }));
   });
 });

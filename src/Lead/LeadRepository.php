@@ -3,6 +3,7 @@
 namespace WConvert\Lead;
 
 use WConvert\Database\Connection;
+use WConvert\Goal\Goal;
 use WConvert\Support\Ulid;
 
 defined('ABSPATH') || exit;
@@ -31,6 +32,8 @@ defined('ABSPATH') || exit;
  */
 final class LeadRepository
 {
+    /** @var \WeakMap<LeadQuery, array{sql: literal-string, params: list<string>}> */
+    private \WeakMap $scopes;
     /** Everything a Lead is. The log renders captured values, so `fields` comes too. */
     private const FULL_COLUMNS = 'id, optin_id, email, phone, fields, created_at';
 
@@ -76,6 +79,20 @@ final class LeadRepository
     public function __construct(
         private readonly Connection $db,
     ) {
+        $this->scopes = new \WeakMap();
+    }
+
+    /** Resolve purpose once per read/export, without a JOIN, config blobs or a capped Campaign list.
+     * @return array{sql: literal-string, params: list<string>}
+     */
+    private function constraints(LeadQuery $query): array
+    {
+        if ($query->purpose === null) return $query->constraints();
+        if (isset($this->scopes[$query])) return $this->scopes[$query];
+        $rows = $query->purpose === 'enquiries'
+            ? $this->db->results(Connection::TABLE_OPTINS, 'SELECT id FROM %i WHERE goal = %s', Goal::CollectEnquiries->value)
+            : $this->db->results(Connection::TABLE_OPTINS, 'SELECT id FROM %i WHERE goal IN (%s, %s)', Goal::GrowEmailList->value, Goal::GrowSmsList->value);
+        return $this->scopes[$query] = $query->constraints(array_map(static fn (array $row): string => (string) $row['id'], $rows));
     }
 
     /**
@@ -149,7 +166,7 @@ final class LeadRepository
     public function submissions(?string $optinId, ?LeadQuery $query = null): int
     {
         if ($query !== null) {
-            $filter = $query->constraints();
+            $filter = $this->constraints($query);
             $row = $this->db->row(Connection::TABLE_LEADS,
                 'SELECT COUNT(*) AS total FROM %i WHERE ' . $filter['sql'], ...$filter['params']);
             return (int) ($row['total'] ?? 0);
@@ -179,10 +196,10 @@ final class LeadRepository
     public function page(?string $optinId, int $limit, ?LeadQuery $query = null): array
     {
         if ($query !== null) {
-            $filter = $query->constraints();
-            if ($query->before !== null) { $filter['sql'] .= ' AND id < %s'; $filter['params'][] = $query->before; }
+            $filter = $this->constraints($query);
+            if ($query->before !== null) { $filter['sql'] .= $query->order === 'oldest' ? ' AND id > %s' : ' AND id < %s'; $filter['params'][] = $query->before; }
             $rows = $this->db->results(Connection::TABLE_LEADS,
-                'SELECT ' . self::FULL_COLUMNS . ' FROM %i WHERE ' . $filter['sql'] . ' ORDER BY id DESC LIMIT %d',
+                'SELECT ' . self::FULL_COLUMNS . ' FROM %i WHERE ' . $filter['sql'] . ($query->order === 'oldest' ? ' ORDER BY id ASC LIMIT %d' : ' ORDER BY id DESC LIMIT %d'),
                 ...[...$filter['params'], $limit]);
             return array_map(static fn (array $row): Lead => Lead::fromRow($row), $rows);
         }
@@ -210,17 +227,17 @@ final class LeadRepository
     public function groups(?string $optinId, int $limit, ?LeadQuery $query = null): array
     {
         if ($query !== null) {
-            $filter = $query->constraints();
+            $filter = $this->constraints($query);
             // HAVING pages whole groups. A WHERE cursor would split a group's
             // events, repeat it on later pages, and change its submission count.
-            $having = $query->before === null ? '' : ' HAVING MAX(id) < %s';
+            $having = $query->before === null ? '' : ($query->order === 'oldest' ? ' HAVING MAX(id) > %s' : ' HAVING MAX(id) < %s');
             $params = [...$filter['params'], ...($query->before === null ? [] : [$query->before])];
             $rows = $this->db->results(Connection::TABLE_LEADS,
                 'SELECT email AS identifier, COUNT(*) AS submissions, MAX(id) AS latest_id FROM %i WHERE '
                 . $filter['sql'] . ' AND email IS NOT NULL GROUP BY email' . $having . ' UNION ALL '
                 . 'SELECT phone AS identifier, COUNT(*) AS submissions, MAX(id) AS latest_id FROM %i WHERE '
                 . $filter['sql'] . ' AND email IS NULL AND phone IS NOT NULL GROUP BY phone' . $having
-                . ' ORDER BY latest_id DESC LIMIT %d', ...[...$params, ...$params, $limit]);
+                . ($query->order === 'oldest' ? ' ORDER BY latest_id ASC LIMIT %d' : ' ORDER BY latest_id DESC LIMIT %d'), ...[...$params, ...$params, $limit]);
             return array_map(static fn (array $row): LeadGroup => LeadGroup::fromRow($row), $rows);
         }
         $rows = $optinId === null
@@ -269,7 +286,7 @@ final class LeadRepository
     public function since(?string $optinId, string $afterId, int $limit, ?LeadQuery $query = null): array
     {
         if ($query !== null) {
-            $filter = $query->constraints();
+            $filter = $this->constraints($query);
             $rows = $this->db->results(Connection::TABLE_LEADS,
                 'SELECT ' . self::FULL_COLUMNS . ' FROM %i WHERE ' . $filter['sql'] . ' AND id > %s ORDER BY id ASC LIMIT %d',
                 ...[...$filter['params'], $afterId, $limit]);

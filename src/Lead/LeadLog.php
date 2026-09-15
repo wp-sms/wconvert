@@ -15,7 +15,8 @@ defined('ABSPATH') || exit;
  * That is enforced by shape rather than by discipline. The log has exactly one
  * total, and it is read here, before the toggle is even looked at — so there
  * is no wiring in which a group count could reach the headline, and no second
- * number for a screen to mistake for a count of people. **"Unique leads" is
+ * people total. Optional purpose counts partition the same submission scope
+ * for navigation; they do not introduce an identity count. **"Unique leads" is
  * not a number this system can honestly produce**, and the log must not imply
  * that it can.
  *
@@ -35,6 +36,22 @@ final class LeadLog
     public function __construct(
         private readonly LeadRepository $leads,
     ) {
+    }
+
+    /** Purpose chips count submissions in the same scope, never people or visible rows.
+     * @return array{all: int, subscribers: int, enquiries: int}
+     */
+    public function counts(LeadQuery $query, ?int $knownTotal = null): array
+    {
+        $count = function (?string $purpose) use ($query, $knownTotal): int {
+            if ($knownTotal !== null && $query->purpose === $purpose) return $knownTotal;
+            $scope = new LeadQuery(optinId: $query->optinId, identifier: $query->identifier,
+                leadId: $query->leadId, from: $query->from, to: $query->to,
+                snapshot: $query->snapshot, groupIdentifier: $query->groupIdentifier,
+                search: $query->search, purpose: $purpose);
+            return $this->leads->submissions($query->optinId, $scope);
+        };
+        return ['all' => $count(null), 'subscribers' => $count('subscribers'), 'enquiries' => $count('enquiries')];
     }
 
     /**

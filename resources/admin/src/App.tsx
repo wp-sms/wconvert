@@ -1,18 +1,20 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { __ } from '@wordpress/i18n';
-import { Plus } from 'lucide-react';
+import { ArrowLeft, Plus, TriangleAlert } from 'lucide-react';
 import { GoalScreen, OptinBuilder } from './builder/lazy';
 import { LeadLog } from './leads/LeadLog';
 import { OptinList } from './optins/OptinList';
-import { SiteAllowance } from './optins/SiteAllowance';
+import { Settings } from './settings-page/Settings';
 import { Dashboard } from './stats/Dashboard';
 import { Destinations } from './destinations/Destinations';
+import { readDestinations } from './destinations/api';
+import { issueCount } from './destinations/issueCount';
 import { Button } from './components/ui/button';
 import { BackLink } from './shell/BuilderSkeleton';
 import { Shell } from './shell/Shell';
 import { NarrowScreenNotice } from './shell/NarrowScreenNotice';
 import { useBuilderViewport } from './hooks/useBuilderViewport';
-import { editorHref, leadsHref, reportHref } from './nav';
+import { editorHref, leadsHref, reportHref, settingsHref, sendingIssuesHref } from './nav';
 import { useAdminNavigation, type EditingState } from './hooks/useAdminNavigation';
 import { ConfirmDialog } from './shell/ConfirmDialog';
 
@@ -42,6 +44,15 @@ export function App() {
   const { route, navigate } = navigation;
   const section = route.section;
   const [creating, setCreating] = useState(false);
+  const [sendingCount, setSendingCount] = useState<number | null>(null);
+  const [sendingRefresh, setSendingRefresh] = useState(0);
+  useEffect(() => {
+    if (section !== 'leads' || route.leadsView === 'issues') return;
+    let active = true;
+    setSendingCount(null);
+    void readDestinations().then((data) => { if (active) setSendingCount(issueCount(data)); }).catch(() => { if (active) setSendingCount(null); });
+    return () => { active = false; };
+  }, [section, route.leadsView, sendingRefresh]);
 
   const createButton = (
     <Button onClick={() => setCreating(true)}>
@@ -71,7 +82,18 @@ export function App() {
 
   return (
     <Shell section={section} hidePageHeading={section === 'optins' && creating}
-      actions={section === 'optins' && !creating ? createButton : undefined}>
+      hideDescription={section === 'leads'}
+      pageTitle={section === 'leads' && route.leadsView === 'issues' ? __('Sending issues', 'wconvert') : undefined}
+      actions={section === 'optins' && !creating ? createButton : section === 'leads'
+        ? route.leadsView === 'issues'
+          ? <Button asChild variant="outline"><a href={leadsHref(route.leads)}><ArrowLeft aria-hidden="true" />{__('Back to submissions', 'wconvert')}</a></Button>
+          : sendingCount !== null && sendingCount > 0
+            ? <Button asChild variant="outline" className="border-warning/40 text-warning hover:bg-warning/10 hover:text-warning"><a href={sendingIssuesHref()}>
+              <TriangleAlert aria-hidden="true" />{__('Sending issues', 'wconvert')}
+              <span className="rounded-full bg-warning/10 px-2 text-note tabular-nums" title={__('Destinations with known problems, not a count of undelivered submissions.', 'wconvert')}>{sendingCount}</span>
+            </a></Button>
+            : undefined
+        : undefined}>
       {section === 'optins' && (
         <OptinsSection
           creating={creating}
@@ -82,8 +104,14 @@ export function App() {
         />
       )}
       {section === 'analytics' && <Dashboard query={route.report} onQueryChange={(query) => navigate(reportHref(query))} />}
-      {section === 'leads' && <LeadLog query={route.leads} onQueryChange={(query) => navigate(leadsHref(query))} />}
-      {section === 'destinations' && <Destinations destinationId={route.destinationId} />}
+      {section === 'leads' && <>
+        {route.leadsView === 'issues' ? <Destinations mode="issues" onIssueCount={setSendingCount} onEditingStateChange={navigation.onEditingStateChange} /> : <LeadLog query={route.leads} onRefresh={() => setSendingRefresh((value) => value + 1)} onQueryChange={(query) => navigate(leadsHref(query))} />}
+      </>}
+      {section === 'settings' && <Settings key={navigation.hash} group={route.settingsGroup} destinationId={route.destinationId} onEditingStateChange={navigation.onEditingStateChange} />}
+      <ConfirmDialog open={navigation.pending} onOpenChange={(open) => { if (!open) navigation.stay(); }}
+        title={__('Leave without saving?', 'wconvert')} description={__('Your unsaved settings changes will be lost.', 'wconvert')}
+        confirmLabel={__('Discard changes', 'wconvert')} cancelLabel={__('Keep editing', 'wconvert')}
+        onConfirm={navigation.discard} returnFocusTo={navigation.returnFocusTo} />
     </Shell>
   );
 }
@@ -164,7 +192,7 @@ function OptinsSection({
   return (
     <div className="flex flex-col gap-5">
       <OptinList onEdit={onEdit} onCreate={onCreate} />
-      <SiteAllowance />
+      <p className="m-0 text-note text-muted-foreground"><a className="underline underline-offset-2" href={settingsHref('experience')}>{__('Site-wide display limits', 'wconvert')}</a></p>
     </div>
   );
 }

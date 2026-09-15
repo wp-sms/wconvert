@@ -24,6 +24,68 @@ final class LeadHistoryTest extends TestCase
     private const OLDER = '01J0000000BBBBBBBBBBBBBBBB';
     private const OLDEST = '01J0000000AAAAAAAAAAAAAAAA';
 
+    public function testPurposeCountsShareTheAppliedScopeButNotTheSelectedPurposeOrPage(): void
+    {
+        $query = LeadQuery::fromInput(['purpose' => 'enquiries', 'search' => 'repair', 'from' => '2026-09-01', 'snapshot' => self::SNAPSHOT]);
+        $db = new FakeConnection();
+        $db->answers = [[['total' => '12']], [['id' => self::NEWER]], [['total' => '7']], [['id' => self::OLDER]], [['total' => '3']]];
+        $counts = (new LeadLog(new LeadRepository($db)))->counts($query);
+        $this->assertSame(['all' => 12, 'subscribers' => 7, 'enquiries' => 3], $counts);
+        foreach ([$db->reads[0], $db->reads[2], $db->reads[4]] as $read) {
+            $this->assertContains('%repair%', $read['params']);
+            $this->assertContains(self::SNAPSHOT, $read['params']);
+        }
+        $this->assertStringNotContainsString('optin_id IN', $db->reads[0]['sql']);
+    }
+
+    public function testOldestFirstPagesForwardWithoutChangingTheSnapshotOrGroupTotals(): void
+    {
+        $query = LeadQuery::fromInput(['order' => 'oldest', 'snapshot' => self::SNAPSHOT]);
+        $next = LeadQuery::fromInput(['order' => 'oldest', 'cursor' => $query->nextCursor(self::OLDEST)]);
+        $db = new FakeConnection();
+        $db->answers = [[], []];
+        $repo = new LeadRepository($db);
+        $repo->page(null, 50, $next);
+        $repo->groups(null, 50, $next);
+        $this->assertSame(self::SNAPSHOT, $next->snapshot);
+        $this->assertStringContainsString('id > %s ORDER BY id ASC', $db->reads[0]['sql']);
+        $this->assertStringContainsString('HAVING MAX(id) > %s', $db->reads[1]['sql']);
+        $this->assertStringContainsString('ORDER BY latest_id ASC', $db->reads[1]['sql']);
+    }
+
+    public function testTextSearchIsLiteralAndSharedByCountPageAndExport(): void
+    {
+        $query = LeadQuery::fromInput(['search' => '  20%_off  ', 'snapshot' => self::SNAPSHOT]);
+        $filter = $query->constraints();
+        $this->assertSame('20%_off', $query->search);
+        $this->assertStringContainsString('LIKE %s', $filter['sql']);
+        $this->assertSame('%20\\%\\_off%', $filter['params'][0]);
+        $db = new FakeConnection();
+        $db->answers = [[], [], []];
+        $repo = new LeadRepository($db);
+        (new LeadLog($repo))->read(null, false, 50, $query);
+        $repo->since(null, '', 500, $query);
+        foreach ($db->reads as $read) $this->assertStringContainsString($filter['sql'], $read['sql']);
+    }
+
+    public function testPurposeViewsUseAllMatchingCampaignIdsOnceForCountPageAndExport(): void
+    {
+        $query = LeadQuery::fromInput(['purpose' => 'enquiries', 'snapshot' => self::SNAPSHOT]);
+        $db = new FakeConnection();
+        $db->answers = [[['id' => self::NEWER]], [['total' => '2']], [], []];
+        $repo = new LeadRepository($db);
+        (new LeadLog($repo))->read(null, false, 50, $query);
+        $repo->since(null, '', 500, $query);
+        $this->assertSame('wconvert_optins', $db->reads[0]['table']);
+        $this->assertSame(['collect_enquiries'], $db->reads[0]['params']);
+        $this->assertStringNotContainsString('deleted_at', $db->reads[0]['sql']);
+        foreach (array_slice($db->reads, 1) as $read) {
+            $this->assertStringContainsString('optin_id IN (%s)', $read['sql']);
+            $this->assertContains(self::NEWER, $read['params']);
+        }
+        $this->assertCount(4, $db->reads);
+    }
+
     public function testIdentifierSearchIsCanonicalAndExactRatherThanASubstringScan(): void
     {
         $email = LeadQuery::fromInput(['identifier' => ' Sarah@Example.COM ', 'snapshot' => self::SNAPSHOT]);
@@ -66,6 +128,9 @@ final class LeadHistoryTest extends TestCase
     public static function invalidInputs(): iterable
     {
         yield 'incomplete identifier' => [['identifier' => 'Sarah']];
+        yield 'oversized search' => [['search' => str_repeat('a', 201)]];
+        yield 'invalid search type' => [['search' => ['Sarah']]];
+        yield 'invalid purpose' => [['purpose' => 'won']];
         yield 'local phone lacks country code' => [['identifier' => '07911123456']];
         yield 'nonexistent day' => [['from' => '2026-02-29']];
         yield 'date not padded' => [['to' => '2026-9-1']];

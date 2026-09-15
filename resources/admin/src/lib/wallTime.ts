@@ -1,5 +1,5 @@
 /**
- * A stored schedule boundary, read and spelled — **once, for both screens that
+ * A stored wall-clock value, read and spelled — **once, for all screens that
  * show one.**
  *
  * ============================================================================

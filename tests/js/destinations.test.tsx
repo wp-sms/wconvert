@@ -232,7 +232,7 @@ describe('the destinations screen', () => {
       ],
     });
 
-    render(<Destinations />);
+    render(<Destinations mode="issues" />);
 
     expect(await screen.findByText('That address does not exist.')).toBeInTheDocument();
     // Health is still clean, and says so, beside a Lead that will never land.
@@ -253,6 +253,8 @@ describe('the destinations screen', () => {
 
     // The LABEL, never the slug: "Needs wsms on this site" is copy no
     // merchant can act on and no translator can repair from their end.
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Add a destination' })).toBeEnabled());
+    await userEvent.click(screen.getByRole('button', { name: 'Add a destination' }));
     expect(await screen.findByText('Needs WP SMS on this site.')).toBeInTheDocument();
 
     // And the two absent states stay apart. Collapsing them is what shows a
@@ -574,6 +576,7 @@ describe('the destinations screen', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Settings' }));
 
     await userEvent.click(await screen.findByRole('button', { name: /Re-push leads/ }));
+    await userEvent.click(screen.getByRole('button', { name: 'Queue re-push' }));
 
     await waitFor(() => {
       expect(screen.getByText(/per-run limit/)).toBeInTheDocument();
@@ -610,6 +613,25 @@ describe('the destinations screen', () => {
     expect(within(magnet).getByRole('button', { name: 'Save' })).not.toBeDisabled();
     expect(within(magnet).getByRole('button', { name: /Re-push leads/ })).not.toBeDisabled();
     expect(within(magnet).getByRole('button', { name: 'Remove' })).not.toBeDisabled();
+  });
+
+  it('keeps navigation and the first route busy when a second route finishes first', async () => {
+    api.readDestinations.mockResolvedValue(TWO_DESTINATIONS);
+    let finishFirst!: () => void;
+    api.saveDestination.mockImplementation(({ id }: { id: string }) => id === HEALTHY.id
+      ? new Promise<void>((resolve) => { finishFirst = resolve; }) : Promise.resolve());
+    const editing = vi.fn();
+    render(<Destinations onEditingStateChange={editing} />);
+    for (const button of await screen.findAllByRole('button', { name: 'Settings' })) await userEvent.click(button);
+    const first = within(regionFor(screen.getByRole('heading', { name: 'WP SMS contacts' })));
+    const second = within(regionFor(screen.getByRole('heading', { name: 'Lead magnet email' })));
+    await userEvent.click(first.getByRole('button', { name: 'Save' }));
+    await userEvent.click(second.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(second.getByRole('button', { name: 'Save' })).toBeEnabled());
+    expect(first.getByRole('button', { name: 'Save' })).toBeDisabled();
+    expect(editing).toHaveBeenLastCalledWith(expect.objectContaining({ busy: true }));
+    await act(async () => finishFirst());
+    await waitFor(() => expect(editing).toHaveBeenLastCalledWith(expect.objectContaining({ busy: false })));
   });
 
   /**
@@ -661,6 +683,7 @@ describe('the destinations screen', () => {
     const wsms = regionFor(await screen.findByRole('heading', { name: 'WP SMS contacts' }));
 
     await userEvent.click(within(wsms).getByRole('button', { name: /Re-push leads/ }));
+    await userEvent.click(screen.getByRole('button', { name: 'Queue re-push' }));
 
     expect(await within(wsms).findByText(/4 Leads queued for re-pushing/)).toBeInTheDocument();
 
@@ -717,7 +740,12 @@ describe('a destination is a named route', () => {
     await waitFor(() => expect(screen.getByRole('button', { name: 'Add a destination' })).toBeEnabled());
     await userEvent.click(screen.getByRole('button', { name: 'Add a destination' }));
 
-    expect(await screen.findByRole('button', { name: 'Add' })).not.toBeDisabled();
+    expect(await screen.findByRole('button', { name: 'Set up MailPoet' })).not.toBeDisabled();
+    expect(screen.getByRole('dialog', { name: 'Add a destination' })).toBeVisible();
+    expect(api.saveDestination).not.toHaveBeenCalled();
+    await userEvent.keyboard('{Escape}');
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(screen.getByRole('button', { name: 'Add a destination' })).toHaveFocus();
   });
 
   /**
@@ -731,13 +759,15 @@ describe('a destination is a named route', () => {
     await waitFor(() => expect(screen.getByRole('button', { name: 'Add a destination' })).toBeEnabled());
     await userEvent.click(screen.getByRole('button', { name: 'Add a destination' }));
 
-    await userEvent.click(await screen.findByRole('button', { name: 'Add' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Set up MailPoet' }));
 
     const dialog = await screen.findByRole('dialog');
 
     // The name is pre-filled from the type and FOLLOWS the target while the
     // merchant has not typed one of their own.
     expect(within(dialog).getByLabelText('Name')).toHaveValue('MailPoet');
+    expect(within(dialog).getByLabelText('Name')).toHaveFocus();
+    expect(api.saveDestination).not.toHaveBeenCalled();
 
     await userEvent.click(within(dialog).getByLabelText('Offers'));
 
@@ -766,7 +796,7 @@ describe('a destination is a named route', () => {
     await waitFor(() => expect(screen.getByRole('button', { name: 'Add a destination' })).toBeEnabled());
     await userEvent.click(screen.getByRole('button', { name: 'Add a destination' }));
 
-    await userEvent.click(await screen.findByRole('button', { name: 'Add' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Set up MailPoet' }));
 
     const dialog = await screen.findByRole('dialog');
 
@@ -797,7 +827,7 @@ describe('a destination is a named route', () => {
     await waitFor(() => expect(screen.getByRole('button', { name: 'Add a destination' })).toBeEnabled());
     await userEvent.click(screen.getByRole('button', { name: 'Add a destination' }));
 
-    await userEvent.click(await screen.findByRole('button', { name: 'Add' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Set up MailPoet' }));
 
     const dialog = await screen.findByRole('dialog');
 
@@ -1201,6 +1231,9 @@ describe('destination recovery entry points', () => {
     expect(replay).toHaveAccessibleDescription(/published configuration.*since its last success/);
     expect(api.rePush).not.toHaveBeenCalled();
     await userEvent.click(replay);
+    expect(api.rePush).not.toHaveBeenCalled();
+    expect(await screen.findByRole('alertdialog', { name: 'Re-push stored submissions?' })).toHaveTextContent('published configuration');
+    await userEvent.click(screen.getByRole('button', { name: 'Queue re-push' }));
     expect(api.rePush).toHaveBeenCalledExactlyOnceWith(HEALTHY.id);
     expect(await within(region).findByText(/12 Leads queued/)).toBeVisible();
   });
@@ -1222,7 +1255,7 @@ describe('destination recovery entry points', () => {
     api.readDestinations.mockResolvedValue({ ...TWO_DESTINATIONS, failures: [{
       destination: 'removed-route', lead: '01J0000000BBBBBBBBBBBBBBBB', at: '2026-08-25 12:00:00', error: 'Rejected.',
     }] });
-    render(<Destinations destinationId="removed-route" />);
+    render(<Destinations mode="issues" destinationId="removed-route" />);
     expect(await screen.findByText('This destination is no longer available')).toBeVisible();
     expect(screen.getByText('Removed destination')).toBeVisible();
     expect(screen.getByRole('link', { name: /View capture/ })).toHaveAttribute('href', leadsHref({ leadId: '01J0000000BBBBBBBBBBBBBBBB' }));

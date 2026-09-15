@@ -120,6 +120,11 @@ than on the screen.** A third page-scoped action is the signal that one of them
 is really region-scoped, or that the screen is two screens. ACF and Gravity
 Forms both hold to two and both have more surface than this.
 
+*Narrow exception in [ADR 0091](0091-shared-settings-and-submission-workflows-have-distinct-homes.md):
+Leads may show a third, conditional Sending issues shortcut when its health
+read reports problems. This replaces the permanent diagnostic tabs; the normal
+submission workspace still has only Refresh and Export.*
+
 And the rule destructive actions get is its own sentence, because it is the one
 that costs a merchant real data when it is missed: **a destructive action is
 never primary, never adjacent to the safe action it could be mistaken for, and

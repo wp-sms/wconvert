@@ -6,7 +6,7 @@ import { GLYPHS } from '@renderer/render';
 import { Button } from '../components/ui/button';
 import { ParamChoice } from './ParamChoice';
 import { InterestOptions } from './InterestOptions';
-import { readable, hasScheduleEnded } from './wallTime';
+import { readable, hasScheduleEnded } from '../lib/wallTime';
 import { adminSettings } from '../settings';
 import { nameOf, type TemplateLabels } from '../templates/api';
 import type { Slot } from './panel';

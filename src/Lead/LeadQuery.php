@@ -20,6 +20,9 @@ final class LeadQuery
         public readonly string $snapshot = '',
         public readonly ?string $before = null,
         public readonly ?string $groupIdentifier = null,
+        public readonly ?string $search = null,
+        public readonly ?string $purpose = null,
+        public readonly string $order = 'newest',
     ) {
     }
 
@@ -68,8 +71,20 @@ final class LeadQuery
             return $identifier;
         };
 
+        $search = $value('search');
+        $purpose = $value('purpose');
+        $order = $value('order') ?? 'newest';
+        if (!in_array($order, ['newest', 'oldest'], true)) {
+            throw new InvalidArgumentException(__('Choose a valid submission order.', 'wconvert'));
+        }
+        if ($purpose !== null && !in_array($purpose, ['subscribers', 'enquiries'], true)) {
+            throw new InvalidArgumentException(__('Choose a valid submission view.', 'wconvert'));
+        }
+        if ($search !== null && (strlen($search) > 800 || preg_match('/^.{1,200}$/us', $search) !== 1)) {
+            throw new InvalidArgumentException(__('Search must be 200 characters or fewer.', 'wconvert'));
+        }
         return new self($optin, $canonical($value('identifier')), $lead, $from, $to,
-            $snapshot ?? self::snapshotNow(), $before, $canonical($value('group_identifier')));
+            $snapshot ?? self::snapshotNow(), $before, $canonical($value('group_identifier')), $search, $purpose, $order);
     }
 
     /** Exclude the current millisecond too: later captures cannot enter this paging window. */
@@ -83,11 +98,33 @@ final class LeadQuery
         return base64_encode($this->snapshot . ':' . $lastId);
     }
 
-    /** @return array{sql: literal-string, params: list<string>} */
-    public function constraints(): array
+    /**
+     * @param list<string>|null $purposeOptins All matching IDs, including historical Campaigns.
+     * @return array{sql: literal-string, params: list<string>}
+     */
+    public function constraints(?array $purposeOptins = null): array
     {
         $sql = '1 = 1';
         $params = [];
+        if ($this->search !== null) {
+            // Literal substring search is explicit, never run on each keystroke.
+            // JSON values (not keys or consent text) are searched as captured.
+            $sql .= ' AND (LOWER(email) LIKE LOWER(%s) OR phone LIKE %s OR LOWER(JSON_UNQUOTE(JSON_EXTRACT(fields, \'$.name\'))) LIKE LOWER(%s) OR LOWER(JSON_UNQUOTE(JSON_EXTRACT(fields, \'$.message\'))) LIKE LOWER(%s))';
+            $term = '%' . addcslashes($this->search, '_%\\') . '%';
+            $params = [$term, $term, $term, $term];
+        }
+        if ($this->purpose !== null) {
+            if ($purposeOptins === null) throw new \LogicException('Resolve the submission purpose before reading.');
+            if ($purposeOptins === []) $sql .= ' AND 1 = 0';
+            else {
+                $sql .= ' AND optin_id IN (';
+                foreach ($purposeOptins as $index => $id) {
+                    $sql .= $index === 0 ? '%s' : ', %s';
+                    $params[] = $id;
+                }
+                $sql .= ')';
+            }
+        }
         if ($this->optinId !== null) { $sql .= ' AND optin_id = %s'; $params[] = $this->optinId; }
         if ($this->leadId !== null) { $sql .= ' AND id = %s'; $params[] = $this->leadId; }
         if ($this->identifier !== null) {

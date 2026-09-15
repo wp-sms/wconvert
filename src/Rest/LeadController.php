@@ -62,6 +62,10 @@ final class LeadController implements RestController
                     'grouped' => ['type' => 'boolean', 'default' => false],
                     'lead_id' => ['type' => 'string', 'pattern' => '^' . Ulid::PATTERN . '$'],
                     'identifier' => ['type' => 'string', 'maxLength' => 254],
+                    'search' => ['type' => 'string', 'maxLength' => 200],
+                    'purpose' => ['type' => 'string', 'enum' => ['subscribers', 'enquiries']],
+                    'order' => ['type' => 'string', 'enum' => ['newest', 'oldest']],
+                    'include_counts' => ['type' => 'boolean', 'default' => false],
                     'group_identifier' => ['type' => 'string', 'maxLength' => 254],
                     'from' => ['type' => 'string', 'maxLength' => 10],
                     'to' => ['type' => 'string', 'maxLength' => 10],
@@ -105,12 +109,14 @@ final class LeadController implements RestController
             return new WP_Error('wconvert_invalid_lead_query', $invalid->getMessage(), ['status' => 400]);
         }
 
-        return new WP_REST_Response($this->log->read(
+        $payload = $this->log->read(
             $query->optinId,
             (bool) $request->get_param('grouped'),
             (int) ($request->get_param('per_page') ?? self::DEFAULT_PER_PAGE),
             $query
-        ));
+        );
+        if ($request->get_param('include_counts')) $payload['purpose_counts'] = $this->log->counts($query, $payload['submissions']);
+        return new WP_REST_Response($payload);
     }
 
     public function showRetention(): WP_REST_Response

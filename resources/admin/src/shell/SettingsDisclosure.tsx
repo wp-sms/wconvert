@@ -1,12 +1,13 @@
 import { useEffect, useId, useState, type ReactNode } from 'react';
 import { ChevronDown } from 'lucide-react';
-import { Region } from './Region';
+import { Region, RegionHeader } from './Region';
 
 /** Keep occasional settings nearby, with their saved state readable when closed. */
-export function SettingsDisclosure({ title, summary, attention = false, children }: {
+export function SettingsDisclosure({ title, summary, attention = false, expanded = false, children }: {
   title: string;
   summary: string;
   attention?: boolean;
+  expanded?: boolean;
   children: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
@@ -16,6 +17,7 @@ export function SettingsDisclosure({ title, summary, attention = false, children
     if (attention) setOpen(true);
   }, [attention]);
 
+  if (expanded) return <Region><RegionHeader title={title} description={summary} />{children}</Region>;
   return (
     <Region className="wconvert-settings-disclosure">
       <h2 className="m-0">
