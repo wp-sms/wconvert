@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { Download, Inbox, RefreshCw, Search, SlidersHorizontal } from 'lucide-react';
+import { Download, Inbox, Info, RefreshCw, Search, SlidersHorizontal } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
 import { Button } from '../components/ui/button';
 import { Checkbox } from '../components/ui/checkbox';
 import { Input } from '../components/ui/input';
@@ -127,18 +128,21 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
         </div>
         <HistoryFilters key={queryKey} query={requested} optins={optins} onApply={changeQuery} />
       </RegionBody>
-      <Toolbar trailing={data === null ? undefined : <ToolbarCount hint={__('The total counts submissions, never people.', 'wconvert')}>
+      <Toolbar trailing={data === null ? undefined : <div className="flex items-center gap-1"><ToolbarCount hint={__('The total counts submissions, never people.', 'wconvert')}>
         {submissionCount(data.submissions)}
-      </ToolbarCount>}>
+      </ToolbarCount><Popover>
+        <PopoverTrigger asChild><Button variant="ghost" size="icon-sm" aria-label={__('About this count and export', 'wconvert')}><Info aria-hidden="true" /></Button></PopoverTrigger>
+        <PopoverContent align="end" className="max-w-[calc(100vw-2rem)] break-words text-note" aria-label={__('About this count and export', 'wconvert')}>
+          <p className="m-0 font-medium">{scopeDescription(applied.query, nameOf)}</p>
+          <p>{__('The total counts submissions, never people.', 'wconvert')}</p>
+          <p className="mb-0 text-muted-foreground">{__('CSV includes all retained matching submissions captured before this view loaded, across all pages. Grouping does not change the export.', 'wconvert')}</p>
+        </PopoverContent>
+      </Popover></div>}>
         <span className="wconvert-check"><Checkbox id="wconvert-lead-grouped" checked={grouped}
           onCheckedChange={(checked) => setGrouped(checked === true)} />
         <Label htmlFor="wconvert-lead-grouped">{__('Group by email or phone', 'wconvert')}</Label></span>
 
       </Toolbar>
-      {data !== null && <RegionBody className="py-3 text-note text-muted-foreground">
-        <p className="m-0">{scopeDescription(applied.query, nameOf)}</p>
-        <details className="mt-1"><summary className="cursor-pointer">{__('About this count and export', 'wconvert')}</summary><p className="mb-0">{__('CSV includes all retained matching submissions captured before this view loaded, across all pages. Grouping does not change the export.', 'wconvert')}</p></details>
-      </RegionBody>}
       {updating && <RegionBody><p role="status" className="m-0 text-note">{data ? __('Updating submissions…', 'wconvert') : __('Loading submissions…', 'wconvert')}</p></RegionBody>}
       {showingPrevious && <RegionBody><p className="m-0 text-note">{__('The table and export still show the last successful filters until the new results load.', 'wconvert')}</p></RegionBody>}
       {error !== null && data !== null && <RegionError message={error} />}

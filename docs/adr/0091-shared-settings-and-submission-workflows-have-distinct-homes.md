@@ -21,6 +21,12 @@ stored remote accounts from reusable destinations without treating stored
 credentials as a verified connection. Local services explicitly need no remote
 account. Existing provider configuration and test-send safeguards remain intact.
 
+The follow-up polish removes the global “Back to Leads” Settings action;
+task-specific links (export and sending issues) remain. “Add a destination”
+opens a two-step dialog: choose an available service, then name/configure the
+route before saving. Unavailable services explain their prerequisites, distinct
+from tier-locked services. Either step closes back to the stable Add trigger.
+
 Site-wide frequency moves out of Campaigns and retention moves out of Leads;
 contextual shortcuts remain. Leads reads a saved retention summary. Frequency
 edits are one explicit Save/Cancel draft, never blur/toggle writes. Invalid
@@ -46,6 +52,12 @@ value, captured consent and Lead ID. No invented source URL, subscription
 status, sales stage or per-Lead delivery status. Repeated captures remain
 separate events; email-first grouping and drilldown remain available. CSV
 exports all retained matching events, not the visible page or group summaries.
+
+The applied filter scope and count/CSV explanation live in a compact info
+popover beside the submission total, not an extra permanent row. It opens by
+click or keyboard and dismisses with Escape. It describes the last successful
+query, including when a replacement read fails; the stale-results warning
+remains visible independently of help.
 
 Rows include initials when a name was captured, available Campaign Goal labels,
 localized wall-clock dates and an Open action. Details put the captured message

@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import './settings.css';
 import { __ } from '@wordpress/i18n';
-import { ArrowLeft, Eye, Plug, Search, Shield } from 'lucide-react';
+import { Eye, Plug, Search, Shield } from 'lucide-react';
 import { Input } from '../components/ui/input';
-import { PageAction } from '../shell/PageActions';
 import { settingsHref, type SettingsGroup } from '../nav';
 import { SiteAllowance } from '../optins/SiteAllowance';
 import { LeadRetention } from '../leads/LeadRetention';
@@ -48,7 +47,6 @@ export function Settings({
   const matching = categories.filter((category) => search.trim().toLocaleLowerCase().split(/\s+/).every((word) => `${category.label} ${category.description} ${category.terms}`.toLocaleLowerCase().includes(word)));
   return (
     <div className="wconvert-settings grid min-w-0 items-start gap-7 lg:grid-cols-[17rem_minmax(0,1fr)]">
-      <PageAction><a className="inline-flex items-center gap-2 text-note" href="#leads"><ArrowLeft className="size-4" aria-hidden="true" />{__('Back to Leads', 'wconvert')}</a></PageAction>
       <nav
         aria-label={__('Settings categories', 'wconvert')}
         className="rounded-md border border-border bg-card p-3"

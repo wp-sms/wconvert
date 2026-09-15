@@ -170,7 +170,7 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
    */
   const [adding, setAdding] = useState<DestinationType | null>(null);
   const [showTypes, setShowTypes] = useState(false);
-  const typesRegion = useRef<HTMLDivElement>(null);
+  const addTrigger = useRef<HTMLElement | null>(null);
   const returnFocus = useRef<HTMLElement | null>(null);
   const fetchRequest = useRef(0);
   const [refreshing, setRefreshing] = useState(false);
@@ -338,12 +338,9 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
         <Button variant="outline" disabled={refreshing || dirty || busyIds.size > 0} onClick={() => void refresh()}>
           <RefreshCw aria-hidden="true" />{refreshing ? __('Refreshing…', 'wconvert') : __('Refresh', 'wconvert')}
         </Button>
-        {mode === 'settings' && <Button disabled={data === null} onClick={() => {
+        {mode === 'settings' && <Button disabled={data === null} onClick={(event) => {
+          addTrigger.current = event.currentTarget;
           setShowTypes(true);
-          requestAnimationFrame(() => {
-            typesRegion.current?.scrollIntoView?.({ block: 'nearest' });
-            typesRegion.current?.querySelector<HTMLElement>('button')?.focus();
-          });
         }}>
           <Plus aria-hidden="true" />{__('Add a destination', 'wconvert')}
         </Button>}
@@ -390,16 +387,9 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
           {data.destinations.length === 0 ? (
             <Region label={__('Destinations', 'wconvert')}>
               {/*
-                **No action, and the region below is why.** `EmptyState` says
-                an empty state carries the door that fixes it, and this one's
-                door is *Add a destination* — a whole region, on this screen,
-                directly underneath, listing every type the site offers. A
-                button here would be a second door to it, which is the shape
-                ADR 0026 refuses on the Optin list for the same reason.
-
-                The sentence does the other half of the job instead: it says
-                what is still true while there is nothing here, so an empty
-                Destinations screen does not read as leads going nowhere.
+                The page's Add action opens setup. This sentence explains
+                what is still true with no external destination configured:
+                captures remain saved locally.
               */}
               <EmptyState icon={Plug} title={__('Leads are saved in WConvert only', 'wconvert')}>
                 {__(
@@ -443,36 +433,25 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
           )}
 
           {mode === 'issues' && data.destinations.length > 0 && data.failures.length === 0 && data.destinations.every((destination) => destination.health.consecutive_failures === 0 && destination.health.skipped_captures === 0 && destination.availability === 'ready') && <Region><EmptyState icon={CircleCheck} title={__('No known sending issues', 'wconvert')}>{__('No current destination outages or recent rejected pushes are recorded. This does not confirm delivery for every submission.', 'wconvert')}</EmptyState></Region>}
-          {mode === 'settings' && <div ref={typesRegion} hidden={!showTypes && data.destinations.length > 0}>
-          <Types
-            types={data.types}
-            errors={errors}
-            busyIds={busyIds}
-            onAdd={(type, trigger) => {
-              returnFocus.current = trigger;
-              setAdding(type);
-            }}
-          />
-
-          </div>}
           {mode === 'issues' && <Failures failures={data.failures} destinations={data.destinations} />}
         </>
       )}
 
       {/*
-        **One dialog for the screen, not one per type row.** The state that
-        says which type is being added lives above both, so the list of types
-        stays a list of rows with an action each.
+        One dialog holds both steps. Choosing a service never creates a route;
+        only the completed form does, and failed saves preserve that draft.
       */}
       <AddDestinationDialog
         type={adding}
+        choosing={showTypes}
         connections={data?.connections ?? []}
         busy={adding !== null && busyIds.has(adding.id)}
         error={adding === null ? null : (errors[adding.id] ?? null)}
-        returnFocusTo={returnFocus}
+        returnFocusTo={addTrigger}
         onOpenChange={(open) => {
           if (!open) {
             setAdding(null);
+            setShowTypes(false);
           }
         }}
         onConfirm={(draft) => {
@@ -480,7 +459,12 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
             add(adding, draft);
           }
         }}
-      />
+      >
+        <Types types={data?.types ?? []} errors={errors} busyIds={busyIds} onAdd={(type) => {
+          setAdding(type);
+          setShowTypes(false);
+        }} />
+      </AddDestinationDialog>
 
       {sending !== null && <SendTestDialog destination={sending.destination}
         type={data?.types.find((type) => type.id === sending.destination.type)}
@@ -1028,10 +1012,8 @@ function Configured({
  * missing something we can sell them, and rendering that as an upsell is what
  * ADR 0026 exists to stop.
  *
- * **It sits below the configured Destinations**, because it is setup and the
- * screen's subject is health. It reads as a list of rows with an action each,
- * rather than as a bulleted list with a button loose in the middle of a
- * sentence.
+ * The first step of the Add dialog keeps available services and their
+ * requirements together, without making the merchant hunt below saved routes.
  */
 function Types({
   types,
@@ -1048,8 +1030,7 @@ function Types({
   errors: Record<string, string>;
   /** The one Destination or type with a request in flight, if any. */
   busyIds: ReadonlySet<string>;
-  /** The trigger travels so the dialog can put the caret back on it. */
-  onAdd: (type: DestinationType, trigger: HTMLElement | null) => void;
+  onAdd: (type: DestinationType) => void;
 }) {
   return (
     <Region>
@@ -1058,11 +1039,6 @@ function Types({
           <RegionError key={type.id} message={errors[type.id]} />
         ),
       )}
-
-      <RegionHeader
-        title={__('Add a destination', 'wconvert')}
-        description={__('Where else a captured lead can go.', 'wconvert')}
-      />
 
       {types.length === 0 ? (
         /*
@@ -1088,10 +1064,10 @@ function Types({
             return (
               <li
                 key={type.id}
-                className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-border px-4 py-2.5 last:border-b-0"
+                className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4 last:border-b-0"
               >
                 <span className="flex min-w-0 items-center gap-2.5">
-                  <TypeIcon aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
+                  <TypeIcon aria-hidden="true" className="size-5 shrink-0 text-primary" />
                   <span className="font-medium text-foreground">{type.label}</span>
                 </span>
 
@@ -1125,9 +1101,9 @@ function Types({
                     variant="outline"
                     size="sm"
                     disabled={busyIds.has(type.id)}
-                    onClick={(event) => onAdd(type, event.currentTarget)}
+                    onClick={() => onAdd(type)}
                   >
-                    {__('Add', 'wconvert')}
+                    {sprintf(/* translators: %s: service name, e.g. MailPoet. */ __('Set up %s', 'wconvert'), type.label)}
                   </Button>
                 ) : rendering === 'upsell' ? (
                   <span className="text-muted-foreground">

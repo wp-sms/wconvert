@@ -253,6 +253,8 @@ describe('the destinations screen', () => {
 
     // The LABEL, never the slug: "Needs wsms on this site" is copy no
     // merchant can act on and no translator can repair from their end.
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Add a destination' })).toBeEnabled());
+    await userEvent.click(screen.getByRole('button', { name: 'Add a destination' }));
     expect(await screen.findByText('Needs WP SMS on this site.')).toBeInTheDocument();
 
     // And the two absent states stay apart. Collapsing them is what shows a
@@ -738,7 +740,12 @@ describe('a destination is a named route', () => {
     await waitFor(() => expect(screen.getByRole('button', { name: 'Add a destination' })).toBeEnabled());
     await userEvent.click(screen.getByRole('button', { name: 'Add a destination' }));
 
-    expect(await screen.findByRole('button', { name: 'Add' })).not.toBeDisabled();
+    expect(await screen.findByRole('button', { name: 'Set up MailPoet' })).not.toBeDisabled();
+    expect(screen.getByRole('dialog', { name: 'Add a destination' })).toBeVisible();
+    expect(api.saveDestination).not.toHaveBeenCalled();
+    await userEvent.keyboard('{Escape}');
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(screen.getByRole('button', { name: 'Add a destination' })).toHaveFocus();
   });
 
   /**
@@ -752,13 +759,15 @@ describe('a destination is a named route', () => {
     await waitFor(() => expect(screen.getByRole('button', { name: 'Add a destination' })).toBeEnabled());
     await userEvent.click(screen.getByRole('button', { name: 'Add a destination' }));
 
-    await userEvent.click(await screen.findByRole('button', { name: 'Add' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Set up MailPoet' }));
 
     const dialog = await screen.findByRole('dialog');
 
     // The name is pre-filled from the type and FOLLOWS the target while the
     // merchant has not typed one of their own.
     expect(within(dialog).getByLabelText('Name')).toHaveValue('MailPoet');
+    expect(within(dialog).getByLabelText('Name')).toHaveFocus();
+    expect(api.saveDestination).not.toHaveBeenCalled();
 
     await userEvent.click(within(dialog).getByLabelText('Offers'));
 
@@ -787,7 +796,7 @@ describe('a destination is a named route', () => {
     await waitFor(() => expect(screen.getByRole('button', { name: 'Add a destination' })).toBeEnabled());
     await userEvent.click(screen.getByRole('button', { name: 'Add a destination' }));
 
-    await userEvent.click(await screen.findByRole('button', { name: 'Add' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Set up MailPoet' }));
 
     const dialog = await screen.findByRole('dialog');
 
@@ -818,7 +827,7 @@ describe('a destination is a named route', () => {
     await waitFor(() => expect(screen.getByRole('button', { name: 'Add a destination' })).toBeEnabled());
     await userEvent.click(screen.getByRole('button', { name: 'Add a destination' }));
 
-    await userEvent.click(await screen.findByRole('button', { name: 'Add' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Set up MailPoet' }));
 
     const dialog = await screen.findByRole('dialog');
 

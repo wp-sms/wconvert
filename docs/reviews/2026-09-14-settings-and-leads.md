@@ -120,3 +120,27 @@ API, and read it back. The other three frequency values were unchanged. Both
 builds were then rebuilt and the new DOM verified before a strictly read-only
 second browser pass. No leads were created/deleted and no provider test/replay
 actions were taken. The incident was disclosed to the merchant immediately.
+
+## 15 September: destination setup and quieter page chrome
+
+- Add a destination now opens a two-step dialog in place: explicit service
+  selection, then the existing named-route form. No destination is created by
+  opening or selecting a service. Provider prerequisites and tier availability
+  remain distinct. Focus moves to Name and returns to the stable Add trigger
+  on close; failed saves retain the draft.
+- Removed the global Back to Leads Settings action; task-specific export and
+  sending-issue links remain.
+- Replaced the persistent Leads scope/explanation row with an accessible info
+  popover beside the total. Escape closes it and restores focus. Its scope
+  follows the last successful read, not a failed replacement query.
+
+Verification: all **2,367 JavaScript tests / 102 files** pass, including chooser
+focus/no-write and hidden-help/stale-scope regressions. Lint, TypeScript, source
+contract and both Free/Pro admin builds pass. Existing build-size and unrelated
+React test act warnings remain. No PHP or storage behavior changed.
+
+Luna verified the fresh WordPress build: centered chooser, provider-specific
+actions and prerequisites, MailPoet setup then Cancel, chooser focus return,
+no Back to Leads in Settings, and count/export help opening and dismissing
+with Escape. Desktop and 390px chooser/Settings layouts had no horizontal
+overflow. No save, send, replay, deletion or lead-detail action was taken.

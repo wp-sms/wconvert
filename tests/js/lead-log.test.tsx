@@ -28,6 +28,20 @@ describe('capture history', () => {
     optins.listOptins.mockResolvedValue([OPTIN]);
   });
 
+  it('keeps count and export context in dismissible help rather than a permanent row', async () => {
+    render(<LeadLog />);
+    const help = await screen.findByRole('button', { name: 'About this count and export' });
+    expect(screen.queryByText(/Showing:/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/CSV includes all retained/)).not.toBeInTheDocument();
+    await userEvent.click(help);
+    expect(screen.getByText('Showing: All Campaigns · All dates')).toBeVisible();
+    expect(screen.getByText(/CSV includes all retained/)).toBeVisible();
+    await userEvent.keyboard('{Escape}');
+    expect(screen.queryByText(/Showing:/)).not.toBeInTheDocument();
+    expect(help).toHaveFocus();
+    expect(log.readLog).toHaveBeenCalledTimes(1);
+  });
+
   it('keeps extra filters out of the primary toolbar and shows server-scoped purpose counts', async () => {
     log.readLog.mockResolvedValue({ ...SEVEN, purpose_counts: { all: 7, subscribers: 5, enquiries: 2 } });
     render(<LeadLog />);
@@ -171,6 +185,10 @@ describe('capture history', () => {
     expect(screen.getByText('sarah@example.com')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Export matching submissions' })).toHaveAttribute('href', expect.stringContaining('sarah@example.com'));
     expect(screen.getByText(/last successful filters/)).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'About this count and export' }));
+    const help = within(screen.getByRole('dialog', { name: 'About this count and export' }));
+    expect(help.getByText(/Showing:.*sarah@example.com/)).toBeVisible();
+    expect(help.queryByText(/alex@example.com/)).not.toBeInTheDocument();
   });
 
   it('does not relabel event columns while grouping is still loading', async () => {

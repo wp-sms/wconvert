@@ -1,4 +1,4 @@
-import type { RefObject } from 'react';
+import { useEffect, useRef, type ReactNode, type RefObject } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import {
   Dialog,
@@ -38,8 +38,8 @@ import type { Connection, DestinationType } from './api';
  * **Controlled, and `returnFocusTo` rather than a `DialogTrigger`**, for the
  * reason {@see ConfirmDialog} writes out: a triggerless dialog has nothing to
  * restore focus to, and closing one leaves a keyboard merchant on `<body>` at
- * the top of the document. The trigger is one row in a list of types, so the
- * caller names it.
+ * the top of the document. The caller retains the Add button across both
+ * steps, so closing either step returns to the same stable trigger.
  *
  * It stays open on a failed save and closes on one that worked, because the
  * merchant's typed name is in it — dropping the dialog on a 500 would make
@@ -47,6 +47,8 @@ import type { Connection, DestinationType } from './api';
  */
 export function AddDestinationDialog({
   type,
+  choosing = false,
+  children,
   connections,
   busy,
   error,
@@ -54,8 +56,10 @@ export function AddDestinationDialog({
   onOpenChange,
   onConfirm,
 }: {
-  /** The type being added, or null while this is closed. */
+  /** The selected service, or null while choosing or closed. */
   type: DestinationType | null;
+  choosing?: boolean;
+  children?: ReactNode;
   /** Every Connection on the site — this filters to the type's own. */
   connections: readonly Connection[];
   busy: boolean;
@@ -69,10 +73,17 @@ export function AddDestinationDialog({
     settings: Record<string, unknown>;
   }) => void;
 }) {
+  const content = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    // Selecting a service replaces the focused chooser button inside the
+    // same dialog. Move into the new form rather than leaving focus on body.
+    if (type !== null) content.current?.querySelector<HTMLInputElement>('input')?.focus();
+  }, [type]);
   return (
-    <Dialog open={type !== null} onOpenChange={onOpenChange}>
+    <Dialog open={choosing || type !== null} onOpenChange={onOpenChange}>
       <DialogContent
-        className="sm:max-w-xl"
+        ref={content}
+        className="max-h-[85dvh] overflow-y-auto sm:max-w-xl"
         onCloseAutoFocus={(event) => {
           const node = returnFocusTo.current;
 
@@ -83,6 +94,9 @@ export function AddDestinationDialog({
         }}
       >
         <DialogHeader>
+          <p className="m-0 text-note text-muted-foreground">{type === null
+            ? __('Step 1 of 2 · Choose a service', 'wconvert')
+            : __('Step 2 of 2 · Set up destination', 'wconvert')}</p>
           <DialogTitle>
             {type === null
               ? __('Add a destination', 'wconvert')
@@ -100,10 +114,9 @@ export function AddDestinationDialog({
             is the question this whole screen failed to answer.
           */}
           <DialogDescription>
-            {__(
-              'One destination is one route. Add as many as you have audiences, and bind each campaign to the one it feeds.',
-              'wconvert',
-            )}
+            {type === null
+              ? __('Choose a service to send submissions to. Next, you’ll give this destination a name and choose its settings.', 'wconvert')
+              : __('Give this destination a name and choose where submissions should go. You’ll select it in a campaign afterward.', 'wconvert')}
           </DialogDescription>
         </DialogHeader>
 
@@ -113,7 +126,7 @@ export function AddDestinationDialog({
           the dialog anyway; the key is what covers a caller that swaps the
           type without closing.
         */}
-        {type !== null && (
+        {type === null ? children : (
           <DestinationSettingsForm
             key={type.id}
             type={type}

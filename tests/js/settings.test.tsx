@@ -28,7 +28,7 @@ it('finds a settings category by the task without replacing the active form', as
   expect(screen.getByRole('link', { name: /Data & privacy/ })).toBeInTheDocument();
   expect(screen.queryByRole('link', { name: /Visitor experience/ })).not.toBeInTheDocument();
   expect(await screen.findByRole('heading', { name: 'Visitor experience' })).toBeInTheDocument();
-  expect(screen.getByRole('link', { name: /Back to Leads/ })).toHaveAttribute('href', '#leads');
+  expect(screen.queryByRole('link', { name: /Back to Leads/ })).not.toBeInTheDocument();
 });
 
 function SettingsHarness() {
