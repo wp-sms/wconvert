@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { __ } from '@wordpress/i18n';
-import { Plus } from 'lucide-react';
+import { ArrowLeft, Plus, TriangleAlert } from 'lucide-react';
 import { GoalScreen, OptinBuilder } from './builder/lazy';
 import { LeadLog } from './leads/LeadLog';
 import { OptinList } from './optins/OptinList';
@@ -82,16 +82,18 @@ export function App() {
 
   return (
     <Shell section={section} hidePageHeading={section === 'optins' && creating}
-      navigation={section === 'leads' ? <nav aria-label={__('Leads views', 'wconvert')} className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-note">
-        {([{ view: 'submissions', label: __('Submissions', 'wconvert'), href: leadsHref(route.leads) },
-          { view: 'issues', label: __('Sending issues', 'wconvert'), href: sendingIssuesHref() }] as const).map(({ view, label, href }) => <a key={view} href={href}
-          aria-current={route.leadsView === view ? 'page' : undefined}
-          className={`inline-flex min-h-8 items-center gap-1.5 border-b-2 py-1 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${route.leadsView === view ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:border-border hover:text-foreground'}`}>
-          {label}{view === 'issues' && sendingCount !== null && sendingCount > 0 && <span className="rounded-full bg-secondary px-2 text-note tabular-nums" title={__('Destinations with known problems, not a count of undelivered submissions.', 'wconvert')}>{sendingCount}</span>}
-        </a>)}
-        <a className="ms-auto inline-flex min-h-8 items-center text-muted-foreground underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring" href={settingsHref('connections')}>{__('Sending setup', 'wconvert')}</a>
-      </nav> : undefined}
-      actions={section === 'optins' && !creating ? createButton : undefined}>
+      hideDescription={section === 'leads'}
+      pageTitle={section === 'leads' && route.leadsView === 'issues' ? __('Sending issues', 'wconvert') : undefined}
+      actions={section === 'optins' && !creating ? createButton : section === 'leads'
+        ? route.leadsView === 'issues'
+          ? <Button asChild variant="outline"><a href={leadsHref(route.leads)}><ArrowLeft aria-hidden="true" />{__('Back to submissions', 'wconvert')}</a></Button>
+          : sendingCount !== null && sendingCount > 0
+            ? <Button asChild variant="outline" className="border-warning/40 text-warning hover:bg-warning/10 hover:text-warning"><a href={sendingIssuesHref()}>
+              <TriangleAlert aria-hidden="true" />{__('Sending issues', 'wconvert')}
+              <span className="rounded-full bg-warning/10 px-2 text-note tabular-nums" title={__('Destinations with known problems, not a count of undelivered submissions.', 'wconvert')}>{sendingCount}</span>
+            </a></Button>
+            : undefined
+        : undefined}>
       {section === 'optins' && (
         <OptinsSection
           creating={creating}

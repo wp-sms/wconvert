@@ -46,10 +46,18 @@ remain in Analytics.
 
 ## Submissions and operational recovery
 
-Leads view links are compact underlined navigation in the page-heading band,
-replacing its subtitle rather than occupying a separate band above the table.
-Sending setup remains a secondary shortcut, and the issue count/active route
-remain visible. Links wrap on narrow screens without shrinking touch targets.
+Submissions is the default Leads workspace, not one of two peer tabs. No view
+navigation, subtitle or Sending setup shortcut occupies space above the table.
+A compact warning-styled Sending issues button appears beside the page actions
+only when the health read reports affected destinations. Loading/failed reads
+do not invent a count or action. The diagnostic route remains bookmarkable and
+has its own heading and Back to submissions action. Shared setup remains under
+Settings; problem-specific destination links remain in diagnostics.
+
+This conditional diagnostic shortcut is a narrow exception to
+[0039](0039-a-screen-is-regions-and-scope-decides-placement.md)'s two-action
+header cap: it appears only when problems exist, alongside Refresh and Export,
+and replaces persistent navigation rather than adding a new always-visible action.
 
 A compact row shows captured name/identifier, Campaign, answer preview, capture
 time and a detail action. The dialog exposes original answers, stable choice

@@ -147,6 +147,9 @@ overflow. No save, send, replay, deletion or lead-detail action was taken.
 
 ## 15 September: more room for the Leads table
 
+This intermediate compact-tab layout was superseded by the merchant's
+submissions-first clarification below.
+
 Moved Submissions/Sending issues navigation into the existing page header,
 replacing the Leads subtitle. Slim underlined links retain the active route,
 issue count and Sending setup shortcut. The separate body navigation band and
@@ -161,3 +164,28 @@ no duplicate subtitle, active-view switching in both directions, and the setup
 shortcut. Mobile client/scroll widths both measured 390px. No data mutations
 or lead-detail actions were taken. No before/after pixel-saving claim is made
 because a matching old-build measurement was not retained.
+
+## 15 September: submissions first, diagnostics only when needed
+
+Removed the view tabs and Sending setup link entirely. Leads opens directly
+on submissions with no subtitle or extra navigation band. A warning-styled
+Sending issues action appears alongside Refresh/Export only after a successful
+read reports known affected destinations. It is absent for zero, loading and
+failed reads and disappears when a refreshed read reports no problems.
+
+The diagnostic route stays bookmarkable, is titled Sending issues and has a
+Back to submissions action. Destination-specific setup links remain available
+inside diagnostics and shared setup remains in Settings. No new reads, storage,
+provider actions or capture behavior were introduced.
+
+All **2,372 JavaScript tests / 103 files** pass. Coverage includes positive,
+zero, loading, failed and resolved issue reads, destination-count deduplication,
+and direct-link/return navigation. Lint, TypeScript, source contract and both
+Free/Pro admin builds pass; pre-existing bundle-size/test act warnings remain.
+
+Luna verified fresh WordPress at desktop and 390px: no tabs/subtitle/setup
+shortcut, no issue action on the site's healthy state, no horizontal overflow,
+and direct diagnostics with Back to submissions working. The positive-issue
+state was tested in the interaction suite, not fabricated on the local site.
+Browser left on desktop Leads; no settings writes, provider actions or lead
+details were opened.
