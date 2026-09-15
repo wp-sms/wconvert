@@ -1,5 +1,9 @@
 # Settings A + Leads B implementation review
 
+The review below records the initial 14 September implementation, not final
+visual fidelity. The merchant's subsequent comparison exposed missing prototype
+details; the 15 September alignment follow-up is recorded at the end.
+
 Approved direction: compact Leads table/detail dialog; Settings category rail
 and focused forms; no introductory banner. ADR 0091 records scope and amends
 the earlier layout/query decisions. No schema change or CRM lifecycle.
@@ -71,3 +75,48 @@ The user explicitly chose to proceed with local validation after GitHub's
 account billing/spending limit prevented prior CI runs. No billing settings,
 workflows or repository protection were altered. This report does not claim
 hosted CI passed. Merge is a separate user decision.
+
+## 15 September: prototype alignment follow-up
+
+The initial pass preserved the broad information architecture but missed the
+approved prototype's search, form hierarchy, compact filters, row/context
+details and counts. The merchant requested those discrepancies be corrected.
+
+- Settings A: searchable category rail, contextual back/help links, separated
+  fields, readable scope explanations, stable Save/Cancel footer and a review
+  of site-wide display values before Apply. No setup banner.
+- Connections distinguishes stored accounts from destinations and does not
+  claim a stored credential is verified. Local integrations need no remote
+  account; the illustrative Mailchimp reconnection remains out of scope.
+- Leads B: compact filter disclosure, optional inclusive site-day presets,
+  oldest-first keyset paging, server-scoped purpose counts, captured initials,
+  available Goal labels, localized wall-time labels and compact Open actions.
+  Details prioritize an actual message and offer Campaign/identifier links;
+  identifier search clearly leaves current filters without merging contacts.
+- Sending issues badge counts distinct affected destination IDs, not failed
+  submissions. The existing total is reused for the selected purpose and no
+  schema/index/capture behavior changes were introduced.
+
+Verification: full PHP **1,907 tests / 9,205 assertions**, full JS **2,366 tests /
+102 files** passed. Lint, TypeScript, PHPStan (512 MB) and source contract passed.
+Targeted checks were repeated after the final small filter adjustments. Free
+and Pro admin builds passed; existing admin bundle warning remains. The lazy
+editor graph remains protected: shared wall-clock formatting moved to `lib`
+instead of making Leads import editor code.
+
+Real WordPress `/leads?include_counts=1&order=oldest` returned HTTP 200; all-count
+matched the headline and purpose counts fit within it. This read printed no
+capture identifiers or personal data. Luna's fresh-build QA confirmed Settings
+categories/search/fields and Leads filters/presets/order/counts/rows/details at
+desktop and 390 px, with no horizontal overflow. The retained QA capture has
+no message; message-first rendering is covered by an interaction test. No
+clean-console claim is made.
+
+QA incident: the first browser pass loaded the old Pro bundle (only Free had
+been rebuilt). While expecting a review modal, the agent clicked Save and
+accidentally persisted a cap of 3; the prior cap was blank. Work stopped, the
+root read the current value, restored only that cap to null through the REST
+API, and read it back. The other three frequency values were unchanged. Both
+builds were then rebuilt and the new DOM verified before a strictly read-only
+second browser pass. No leads were created/deleted and no provider test/replay
+actions were taken. The incident was disclosed to the merchant immediately.

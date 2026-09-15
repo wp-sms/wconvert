@@ -28,6 +28,35 @@ describe('capture history', () => {
     optins.listOptins.mockResolvedValue([OPTIN]);
   });
 
+  it('keeps extra filters out of the primary toolbar and shows server-scoped purpose counts', async () => {
+    log.readLog.mockResolvedValue({ ...SEVEN, purpose_counts: { all: 7, subscribers: 5, enquiries: 2 } });
+    render(<LeadLog />);
+    expect(await screen.findByText('sarah@example.com')).toBeInTheDocument();
+    expect(screen.getByLabelText('From')).not.toBeVisible();
+    expect(screen.getByLabelText(/All submissions/)).toHaveAccessibleName('All submissions 7');
+    await userEvent.click(screen.getByRole('button', { name: 'Filters' }));
+    expect(screen.getByLabelText('From')).toBeVisible();
+    await userEvent.selectOptions(screen.getByLabelText('Captured within'), 'custom');
+    expect(screen.getByLabelText('Captured within')).toHaveValue('custom');
+    await userEvent.selectOptions(screen.getByLabelText('Order'), 'oldest');
+    await userEvent.click(screen.getByRole('button', { name: 'Apply filters' }));
+    expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ order: 'oldest' }));
+  });
+
+  it('opens the message first and links to all retained submissions using the same identifier', async () => {
+    const onQueryChange = vi.fn();
+    log.readLog.mockResolvedValue({ ...SEVEN, leads: [{ ...CAPTURE, fields: { name: 'Sarah', message: 'Please help repair my window.' } }] });
+    render(<LeadLog query={{ from: '2026-09-01', purpose: 'enquiries' }} onQueryChange={onQueryChange} />);
+    await userEvent.click(await screen.findByRole('button', { name: 'Open submission from Sarah' }));
+    const details = within(screen.getByRole('dialog'));
+    expect(details.getByRole('heading', { name: 'What they said' })).toBeInTheDocument();
+    expect(details.getByText('Please help repair my window.')).toBeVisible();
+    expect(details.getByRole('link', { name: 'Newsletter footer' })).toHaveAttribute('href', expect.stringContaining('edit=OPTIN1'));
+    await userEvent.click(details.getByRole('button', { name: 'View submissions using this email' }));
+    expect(onQueryChange).toHaveBeenCalledWith({ identifier: 'sarah@example.com' });
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
   it('keeps loading distinct from no captures and then shows the answer', async () => {
     let finish!: (payload: unknown) => void;
     log.readLog.mockReturnValue(new Promise((resolve) => { finish = resolve; }));
@@ -218,7 +247,7 @@ describe('capture history', () => {
   it('keeps captured fields and Lead ID readable without claiming a delivery status', async () => {
     log.readLog.mockResolvedValue({ ...SEVEN, leads: [{ ...CAPTURE, fields: { name: 'Sarah', consent_text: 'Please email me.', service: 'Repairs' } }] });
     render(<LeadLog />);
-    await userEvent.click(await screen.findByText('View captured details'));
+    await userEvent.click(await screen.findByRole('button', { name: 'Open submission from Sarah' }));
     expect(screen.getByRole('dialog', { name: 'Submission details' })).toBeInTheDocument();
     expect(screen.getByText(CAPTURE.id)).toBeVisible();
     await userEvent.click(screen.getByText('Consent at capture'));

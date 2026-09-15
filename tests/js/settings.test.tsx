@@ -22,6 +22,15 @@ beforeEach(() => {
   api.saveSiteAllowance.mockImplementation(async (next) => next);
 });
 
+it('finds a settings category by the task without replacing the active form', async () => {
+  render(<Settings group="experience" />);
+  await userEvent.type(screen.getByRole('searchbox', { name: 'Find a setting' }), 'retention');
+  expect(screen.getByRole('link', { name: /Data & privacy/ })).toBeInTheDocument();
+  expect(screen.queryByRole('link', { name: /Visitor experience/ })).not.toBeInTheDocument();
+  expect(await screen.findByRole('heading', { name: 'Visitor experience' })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: /Back to Leads/ })).toHaveAttribute('href', '#leads');
+});
+
 function SettingsHarness() {
   const navigation = useAdminNavigation();
   return (
@@ -44,24 +53,27 @@ function SettingsHarness() {
 it('keeps unsaved settings mounted until category navigation is confirmed', async () => {
   window.history.replaceState({}, '', '#settings?group=experience');
   render(<SettingsHarness />);
-  await userEvent.type(await screen.findByLabelText(/at most this many/i), '3');
+  await userEvent.type(await screen.findByLabelText(/Total campaign appearances/i), '3');
   await userEvent.click(screen.getByRole('link', { name: /Data & privacy/i }));
   expect(await screen.findByRole('dialog')).toBeInTheDocument();
-  expect(screen.getByLabelText(/at most this many/i)).toHaveValue(3);
+  expect(screen.getByLabelText(/Total campaign appearances/i)).toHaveValue(3);
   await userEvent.click(screen.getByRole('button', { name: 'Keep editing' }));
-  expect(screen.getByLabelText(/at most this many/i)).toHaveValue(3);
+  expect(screen.getByLabelText(/Total campaign appearances/i)).toHaveValue(3);
   expect(api.saveSiteAllowance).not.toHaveBeenCalled();
 });
 
 it('keeps site-wide limits as a complete draft until an explicit save', async () => {
   render(<SiteAllowance />);
-  const count = await screen.findByLabelText(/at most this many/i);
+  const count = await screen.findByLabelText(/Total campaign appearances/i);
   await userEvent.type(count, '10');
-  await userEvent.click(screen.getByLabelText(/close any Campaign/i));
+  await userEvent.click(screen.getByLabelText(/after a visitor closes/i));
   expect(api.saveSiteAllowance).not.toHaveBeenCalled();
   await userEvent.click(
     screen.getByRole('button', { name: 'Save display limits' }),
   );
+  expect(api.saveSiteAllowance).not.toHaveBeenCalled();
+  expect(screen.getByRole('alertdialog', { name: 'Review shared changes' })).toBeInTheDocument();
+  await userEvent.click(screen.getByRole('button', { name: 'Apply to all campaigns' }));
   expect(api.saveSiteAllowance).toHaveBeenCalledExactlyOnceWith({
     ...OFF,
     maxImpressions: 10,

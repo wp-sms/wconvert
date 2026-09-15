@@ -347,6 +347,6 @@ function descriptionFor(section: SectionId): string {
     case 'leads':
       return __('Every form submission, as it was captured.', 'wconvert');
     case 'settings':
-      return __('Shared settings for this site.', 'wconvert');
+      return __('Shared setup in one place. Campaign-specific choices stay in the editor.', 'wconvert');
   }
 }

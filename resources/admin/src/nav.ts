@@ -143,6 +143,7 @@ export const reportHref = (query: ReportQuery = {}): string =>
   });
 export const leadsHref = (query: LeadQuery = {}): string =>
   withQuery('leads', {
+    order: query.order,
     search: query.search,
     purpose: query.purpose,
     optin: query.optinId,
@@ -180,6 +181,7 @@ export function routeFrom(hash: string): AdminRoute {
       ...(value('compare') === '0' ? { compare: false } : {}),
     },
     leads: {
+      ...(value('order') === 'oldest' ? { order: 'oldest' as const } : {}),
       ...(value('search') ? { search: value('search') } : {}),
       ...(value('purpose') === 'subscribers' || value('purpose') === 'enquiries' ? { purpose: value('purpose') as LeadQuery['purpose'] } : {}),
       optinId: value('optin'),

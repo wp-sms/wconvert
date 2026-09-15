@@ -30,11 +30,12 @@ export interface LeadGroup {
  * **One total, and it is `submissions`.**
  *
  * The toggle changes what a row is and nothing else. That is a property of the
- * server's payload rather than of this type — see `WConvert\Lead\LeadLog` —
- * and the type is written to match so that a component cannot reach for a
- * second number that is not there.
+ * server's payload rather than of this type — see `WConvert\Lead\LeadLog`.
+ * Optional purpose counts describe the same submission events under each
+ * purpose; neither those counts nor grouping count people.
  */
 export interface LeadLog {
+  purpose_counts?: { all: number; subscribers: number; enquiries: number };
   submissions: number;
   grouped: boolean;
   leads: Lead[];
@@ -45,6 +46,7 @@ export interface LeadLog {
 
 /** Shareable filters. Grouping and paging change the view, not this search scope. */
 export interface LeadQuery {
+  order?: 'oldest';
   search?: string;
   purpose?: 'subscribers' | 'enquiries';
   optinId?: string;
@@ -55,6 +57,7 @@ export interface LeadQuery {
 }
 
 export interface LeadPage extends LeadQuery {
+  includeCounts?: boolean;
   grouped?: boolean;
   cursor?: string;
   snapshot?: string;
@@ -70,7 +73,7 @@ const query = (params: Record<string, string>) => new URLSearchParams(params).to
 
 export const leadParams = (filter: LeadPage): Record<string, string> => Object.fromEntries(
   Object.entries({ optin_id: filter.optinId, identifier: filter.identifier, lead_id: filter.leadId,
-    search: filter.search, purpose: filter.purpose,
+    search: filter.search, purpose: filter.purpose, order: filter.order,
     from: filter.from, to: filter.to, cursor: filter.cursor, snapshot: filter.snapshot,
     group_identifier: filter.groupIdentifier }).filter((entry): entry is [string, string] => typeof entry[1] === 'string' && entry[1] !== ''),
 );
@@ -80,6 +83,7 @@ export const readLog = (filter: LeadPage = {}) =>
     path: `/wconvert/v1/leads?${query({
       ...leadParams(filter),
       grouped: filter.grouped ? '1' : '0',
+      ...(filter.includeCounts ? { include_counts: '1' } : {}),
     })}`,
   });
 

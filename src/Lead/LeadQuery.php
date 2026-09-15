@@ -22,6 +22,7 @@ final class LeadQuery
         public readonly ?string $groupIdentifier = null,
         public readonly ?string $search = null,
         public readonly ?string $purpose = null,
+        public readonly string $order = 'newest',
     ) {
     }
 
@@ -72,6 +73,10 @@ final class LeadQuery
 
         $search = $value('search');
         $purpose = $value('purpose');
+        $order = $value('order') ?? 'newest';
+        if (!in_array($order, ['newest', 'oldest'], true)) {
+            throw new InvalidArgumentException(__('Choose a valid submission order.', 'wconvert'));
+        }
         if ($purpose !== null && !in_array($purpose, ['subscribers', 'enquiries'], true)) {
             throw new InvalidArgumentException(__('Choose a valid submission view.', 'wconvert'));
         }
@@ -79,7 +84,7 @@ final class LeadQuery
             throw new InvalidArgumentException(__('Search must be 200 characters or fewer.', 'wconvert'));
         }
         return new self($optin, $canonical($value('identifier')), $lead, $from, $to,
-            $snapshot ?? self::snapshotNow(), $before, $canonical($value('group_identifier')), $search, $purpose);
+            $snapshot ?? self::snapshotNow(), $before, $canonical($value('group_identifier')), $search, $purpose, $order);
     }
 
     /** Exclude the current millisecond too: later captures cannot enter this paging window. */

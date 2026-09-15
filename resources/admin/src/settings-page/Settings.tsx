@@ -1,5 +1,9 @@
+import { useState } from 'react';
+import './settings.css';
 import { __ } from '@wordpress/i18n';
-import { Eye, Plug, Shield } from 'lucide-react';
+import { ArrowLeft, Eye, Plug, Search, Shield } from 'lucide-react';
+import { Input } from '../components/ui/input';
+import { PageAction } from '../shell/PageActions';
 import { settingsHref, type SettingsGroup } from '../nav';
 import { SiteAllowance } from '../optins/SiteAllowance';
 import { LeadRetention } from '../leads/LeadRetention';
@@ -17,33 +21,40 @@ export function Settings({
   destinationId?: string;
   onEditingStateChange?: SettingsEditing;
 }) {
+  const [search, setSearch] = useState('');
   const categories = [
     {
       id: 'experience',
       label: __('Visitor experience', 'wconvert'),
       description: __('Site-wide display limits', 'wconvert'),
       icon: Eye,
+      terms: __('frequency appearances wait close conversion timing', 'wconvert'),
     },
     {
       id: 'connections',
       label: __('Connections & destinations', 'wconvert'),
       description: __('Accounts and where leads go', 'wconvert'),
       icon: Plug,
+      terms: __('email sending account provider list credentials', 'wconvert'),
     },
     {
       id: 'data',
       label: __('Data & privacy', 'wconvert'),
       description: __('Retention and personal data', 'wconvert'),
       icon: Shield,
+      terms: __('retention delete export erase personal data', 'wconvert'),
     },
   ] as const;
+  const matching = categories.filter((category) => search.trim().toLocaleLowerCase().split(/\s+/).every((word) => `${category.label} ${category.description} ${category.terms}`.toLocaleLowerCase().includes(word)));
   return (
-    <div className="grid min-w-0 items-start gap-5 lg:grid-cols-[15rem_minmax(0,1fr)]">
+    <div className="wconvert-settings grid min-w-0 items-start gap-7 lg:grid-cols-[17rem_minmax(0,1fr)]">
+      <PageAction><a className="inline-flex items-center gap-2 text-note" href="#leads"><ArrowLeft className="size-4" aria-hidden="true" />{__('Back to Leads', 'wconvert')}</a></PageAction>
       <nav
         aria-label={__('Settings categories', 'wconvert')}
-        className="rounded-md border border-border bg-card p-2"
+        className="rounded-md border border-border bg-card p-3"
       >
-        {categories.map(({ id, label, description, icon: Icon }) => (
+        <div className="relative mb-3"><Search className="pointer-events-none absolute start-3 top-3 size-4 text-muted-foreground" aria-hidden="true" /><Input className="ps-9" type="search" aria-label={__('Find a setting', 'wconvert')} placeholder={__('Find a setting…', 'wconvert')} value={search} onChange={(event) => setSearch(event.target.value)} /></div>
+        {matching.map(({ id, label, description, icon: Icon }) => (
           <a
             key={id}
             href={settingsHref(id)}
@@ -59,6 +70,8 @@ export function Settings({
             </span>
           </a>
         ))}
+        {matching.length === 0 && <p role="status" className="px-3 text-note text-muted-foreground">{__('No settings match. Try “retention” or “email”.', 'wconvert')}</p>}
+        <p className="mb-1 mt-5 border-t border-border px-3 pt-4 text-note text-muted-foreground">{__('Need a campaign’s design, timing or audience?', 'wconvert')} <a href="#optins" className="underline">{__('Open that campaign.', 'wconvert')}</a></p>
       </nav>
       <div className="min-w-0">
         {group === 'experience' && (
@@ -128,6 +141,7 @@ export function Settings({
           </div>
         )}
       </div>
+      <footer className="border-t border-border pt-4 text-note text-muted-foreground lg:col-span-2">{__('Settings apply to this WordPress site.', 'wconvert')}</footer>
     </div>
   );
 }

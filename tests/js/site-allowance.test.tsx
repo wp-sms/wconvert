@@ -14,9 +14,12 @@ const OFF = {
   stopAfterDismiss: false,
   stopAfterConversion: false,
 };
-const maxField = () => screen.getByLabelText(/at most this many/i);
-const save = () =>
-  userEvent.click(screen.getByRole('button', { name: 'Save display limits' }));
+const maxField = () => screen.getByLabelText(/Total campaign appearances/i);
+const save = async () => {
+  if (!screen.queryByRole('alertdialog')) await userEvent.click(screen.getByRole('button', { name: 'Save display limits' }));
+  const confirm = screen.queryByRole('button', { name: 'Apply to all campaigns' });
+  if (confirm) await userEvent.click(confirm);
+};
 
 describe('explicit site-wide allowance drafts', () => {
   beforeEach(() => {
@@ -28,7 +31,7 @@ describe('explicit site-wide allowance drafts', () => {
     api.readSiteAllowance.mockReturnValue(new Promise(() => undefined));
     render(<SiteAllowance />);
     expect(screen.getByRole('status')).toHaveTextContent('Loading…');
-    expect(screen.queryByLabelText(/close any Campaign/i)).toBeNull();
+    expect(screen.queryByLabelText(/after a visitor closes/i)).toBeNull();
   });
   it('retries a failed read without writing a setting', async () => {
     api.readSiteAllowance.mockRejectedValueOnce(new Error('Read unavailable.'));
@@ -37,7 +40,7 @@ describe('explicit site-wide allowance drafts', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Retry loading display limits' }),
     );
-    expect(await screen.findByLabelText(/at most this many/i)).toHaveValue(
+    expect(await screen.findByLabelText(/Total campaign appearances/i)).toHaveValue(
       null,
     );
     expect(api.saveSiteAllowance).not.toHaveBeenCalled();
@@ -45,11 +48,11 @@ describe('explicit site-wide allowance drafts', () => {
   it('keeps every default off and explains the shared scope', async () => {
     render(<SiteAllowance />);
     expect(
-      await screen.findByLabelText(/close any Campaign/i),
+      await screen.findByLabelText(/after a visitor closes/i),
     ).not.toBeChecked();
-    expect(screen.getByLabelText(/sign up to anything/i)).not.toBeChecked();
+    expect(screen.getByLabelText(/after a visitor converts/i)).not.toBeChecked();
     expect(maxField()).toHaveValue(null);
-    expect(screen.getByLabelText(/Days to wait/i)).toHaveValue(null);
+    expect(screen.getByLabelText(/Wait between campaigns/i)).toHaveValue(null);
     expect(
       screen.getByText(/in addition to its own display rules/i),
     ).toBeVisible();
@@ -60,10 +63,10 @@ describe('explicit site-wide allowance drafts', () => {
   it('does not write on typing, blur or a switch; saves the whole answer once', async () => {
     render(<SiteAllowance />);
     await userEvent.type(
-      await screen.findByLabelText(/at most this many/i),
+      await screen.findByLabelText(/Total campaign appearances/i),
       '10',
     );
-    await userEvent.click(screen.getByLabelText(/close any Campaign/i));
+    await userEvent.click(screen.getByLabelText(/after a visitor closes/i));
     expect(api.saveSiteAllowance).not.toHaveBeenCalled();
     await save();
     expect(api.saveSiteAllowance).toHaveBeenCalledExactlyOnceWith({
@@ -89,7 +92,7 @@ describe('explicit site-wide allowance drafts', () => {
   it('never saves an invalid count', async () => {
     render(<SiteAllowance />);
     await userEvent.type(
-      await screen.findByLabelText(/at most this many/i),
+      await screen.findByLabelText(/Total campaign appearances/i),
       '0',
     );
     await save();
@@ -101,19 +104,19 @@ describe('explicit site-wide allowance drafts', () => {
     await waitFor(() => expect(maxField()).toHaveValue(4));
     await userEvent.clear(maxField());
     await userEvent.type(maxField(), '10');
-    await userEvent.click(screen.getByLabelText(/close any Campaign/i));
+    await userEvent.click(screen.getByLabelText(/after a visitor closes/i));
     await userEvent.click(
       screen.getByRole('button', { name: 'Cancel changes' }),
     );
     expect(maxField()).toHaveValue(4);
-    expect(screen.getByLabelText(/close any Campaign/i)).not.toBeChecked();
+    expect(screen.getByLabelText(/after a visitor closes/i)).not.toBeChecked();
     expect(api.saveSiteAllowance).not.toHaveBeenCalled();
   });
   it('keeps the draft after a failed save and supports retry', async () => {
     api.saveSiteAllowance.mockRejectedValueOnce(new Error('Read-only site.'));
     render(<SiteAllowance />);
     await userEvent.type(
-      await screen.findByLabelText(/at most this many/i),
+      await screen.findByLabelText(/Total campaign appearances/i),
       '10',
     );
     await save();
@@ -135,7 +138,7 @@ describe('explicit site-wide allowance drafts', () => {
     );
     render(<SiteAllowance />);
     await userEvent.type(
-      await screen.findByLabelText(/at most this many/i),
+      await screen.findByLabelText(/Total campaign appearances/i),
       '10',
     );
     await save();

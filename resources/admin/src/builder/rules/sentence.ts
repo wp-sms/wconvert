@@ -1,9 +1,9 @@
 import { adminSettings } from '../../settings';
 import type { ConvertingAct } from '../structure/catalogue';
-import { hasScheduleEnded } from '../wallTime';
+import { hasScheduleEnded } from '../../lib/wallTime';
 import { __, _n, _x, sprintf } from '@wordpress/i18n';
 import { fromRule } from '../presets';
-import { readable, readableHours } from '../wallTime';
+import { readable, readableHours } from '../../lib/wallTime';
 import { visitorWith, type Entry } from './axis';
 import type { Frequency, Rule, RuleParam, RuleType, Schedule, Targeting } from '../api';
 

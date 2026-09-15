@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { hasScheduleEnded, momentOf, readable } from '../../resources/admin/src/builder/wallTime';
+import { hasScheduleEnded, momentOf, readable } from '../../resources/admin/src/lib/wallTime';
 
 /**
  * ============================================================================

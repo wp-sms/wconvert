@@ -24,6 +24,35 @@ final class LeadHistoryTest extends TestCase
     private const OLDER = '01J0000000BBBBBBBBBBBBBBBB';
     private const OLDEST = '01J0000000AAAAAAAAAAAAAAAA';
 
+    public function testPurposeCountsShareTheAppliedScopeButNotTheSelectedPurposeOrPage(): void
+    {
+        $query = LeadQuery::fromInput(['purpose' => 'enquiries', 'search' => 'repair', 'from' => '2026-09-01', 'snapshot' => self::SNAPSHOT]);
+        $db = new FakeConnection();
+        $db->answers = [[['total' => '12']], [['id' => self::NEWER]], [['total' => '7']], [['id' => self::OLDER]], [['total' => '3']]];
+        $counts = (new LeadLog(new LeadRepository($db)))->counts($query);
+        $this->assertSame(['all' => 12, 'subscribers' => 7, 'enquiries' => 3], $counts);
+        foreach ([$db->reads[0], $db->reads[2], $db->reads[4]] as $read) {
+            $this->assertContains('%repair%', $read['params']);
+            $this->assertContains(self::SNAPSHOT, $read['params']);
+        }
+        $this->assertStringNotContainsString('optin_id IN', $db->reads[0]['sql']);
+    }
+
+    public function testOldestFirstPagesForwardWithoutChangingTheSnapshotOrGroupTotals(): void
+    {
+        $query = LeadQuery::fromInput(['order' => 'oldest', 'snapshot' => self::SNAPSHOT]);
+        $next = LeadQuery::fromInput(['order' => 'oldest', 'cursor' => $query->nextCursor(self::OLDEST)]);
+        $db = new FakeConnection();
+        $db->answers = [[], []];
+        $repo = new LeadRepository($db);
+        $repo->page(null, 50, $next);
+        $repo->groups(null, 50, $next);
+        $this->assertSame(self::SNAPSHOT, $next->snapshot);
+        $this->assertStringContainsString('id > %s ORDER BY id ASC', $db->reads[0]['sql']);
+        $this->assertStringContainsString('HAVING MAX(id) > %s', $db->reads[1]['sql']);
+        $this->assertStringContainsString('ORDER BY latest_id ASC', $db->reads[1]['sql']);
+    }
+
     public function testTextSearchIsLiteralAndSharedByCountPageAndExport(): void
     {
         $query = LeadQuery::fromInput(['search' => '  20%_off  ', 'snapshot' => self::SNAPSHOT]);

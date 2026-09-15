@@ -7,6 +7,8 @@ import { OptinList } from './optins/OptinList';
 import { Settings } from './settings-page/Settings';
 import { Dashboard } from './stats/Dashboard';
 import { Destinations } from './destinations/Destinations';
+import { readDestinations } from './destinations/api';
+import { issueCount } from './destinations/issueCount';
 import { Button } from './components/ui/button';
 import { BackLink } from './shell/BuilderSkeleton';
 import { Shell } from './shell/Shell';
@@ -42,6 +44,15 @@ export function App() {
   const { route, navigate } = navigation;
   const section = route.section;
   const [creating, setCreating] = useState(false);
+  const [sendingCount, setSendingCount] = useState<number | null>(null);
+  const [sendingRefresh, setSendingRefresh] = useState(0);
+  useEffect(() => {
+    if (section !== 'leads' || route.leadsView === 'issues') return;
+    let active = true;
+    setSendingCount(null);
+    void readDestinations().then((data) => { if (active) setSendingCount(issueCount(data)); }).catch(() => { if (active) setSendingCount(null); });
+    return () => { active = false; };
+  }, [section, route.leadsView, sendingRefresh]);
 
   const createButton = (
     <Button onClick={() => setCreating(true)}>
@@ -85,10 +96,10 @@ export function App() {
       {section === 'leads' && <div className="flex flex-col gap-5">
         <nav aria-label={__('Leads views', 'wconvert')} className="flex flex-wrap items-center gap-2">
           <Button asChild variant={route.leadsView === 'submissions' ? 'secondary' : 'ghost'}><a href={leadsHref(route.leads)} aria-current={route.leadsView === 'submissions' ? 'page' : undefined}>{__('Submissions', 'wconvert')}</a></Button>
-          <Button asChild variant={route.leadsView === 'issues' ? 'secondary' : 'ghost'}><a href={sendingIssuesHref()} aria-current={route.leadsView === 'issues' ? 'page' : undefined}>{__('Sending issues', 'wconvert')}</a></Button>
+          <Button asChild variant={route.leadsView === 'issues' ? 'secondary' : 'ghost'}><a href={sendingIssuesHref()} aria-current={route.leadsView === 'issues' ? 'page' : undefined}>{__('Sending issues', 'wconvert')}{sendingCount !== null && sendingCount > 0 && <span className="rounded-full bg-secondary px-2 text-note tabular-nums" title={__('Destinations with known problems, not a count of undelivered submissions.', 'wconvert')}>{sendingCount}</span>}</a></Button>
           <a className="ms-auto text-note underline underline-offset-2" href={settingsHref('connections')}>{__('Sending setup', 'wconvert')}</a>
         </nav>
-        {route.leadsView === 'issues' ? <Destinations mode="issues" onEditingStateChange={navigation.onEditingStateChange} /> : <LeadLog query={route.leads} onQueryChange={(query) => navigate(leadsHref(query))} />}
+        {route.leadsView === 'issues' ? <Destinations mode="issues" onIssueCount={setSendingCount} onEditingStateChange={navigation.onEditingStateChange} /> : <LeadLog query={route.leads} onRefresh={() => setSendingRefresh((value) => value + 1)} onQueryChange={(query) => navigate(leadsHref(query))} />}
       </div>}
       {section === 'settings' && <Settings key={navigation.hash} group={route.settingsGroup} destinationId={route.destinationId} onEditingStateChange={navigation.onEditingStateChange} />}
       <ConfirmDialog open={navigation.pending} onOpenChange={(open) => { if (!open) navigation.stay(); }}

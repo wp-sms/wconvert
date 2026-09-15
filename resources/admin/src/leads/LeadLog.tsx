@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { Download, Inbox, Search } from 'lucide-react';
+import { Download, Inbox, RefreshCw, Search, SlidersHorizontal } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Checkbox } from '../components/ui/checkbox';
 import { Input } from '../components/ui/input';
@@ -19,22 +19,25 @@ import { EventTable } from './EventTable';
 import { RetentionSummary } from './RetentionSummary';
 import { flattened, listOptins, type OptinSummary } from '../optins/api';
 import { leadsHref } from '../nav';
+import { siteToday, shiftDay } from './calendar';
+import { listGoals } from '../goals/api';
 
 const ALL_OPTINS = 'all';
 const EMPTY_QUERY: LeadQuery = {};
-const queryKeyOf = (query: LeadQuery) => JSON.stringify({ optinId: query.optinId || undefined,
+const queryKeyOf = (query: LeadQuery) => JSON.stringify({ order: query.order, optinId: query.optinId || undefined,
   search: query.search || undefined, purpose: query.purpose || undefined,
   identifier: query.identifier || undefined, leadId: query.leadId || undefined,
   from: query.from || undefined, to: query.to || undefined });
 const submissionCount = (count: number) => sprintf(_n('%s submission', '%s submissions', count, 'wconvert'), String(count));
 
 export interface LeadLogProps {
+  onRefresh?: () => void;
   query?: LeadQuery;
   onQueryChange?: (query: LeadQuery) => void;
 }
 
 /** History remains a log of immutable capture events. Grouping never changes its headline count. */
-export function LeadLog({ query, onQueryChange }: LeadLogProps) {
+export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
   const [localQuery, setLocalQuery] = useState<LeadQuery>(EMPTY_QUERY);
   const queryKey = queryKeyOf(query ?? localQuery);
   const requested = useMemo(() => JSON.parse(queryKey) as LeadQuery, [queryKey]);
@@ -44,13 +47,14 @@ export function LeadLog({ query, onQueryChange }: LeadLogProps) {
   const cursor = paging.scope === scope ? paging.cursor : undefined;
   const snapshot = paging.scope === scope ? paging.snapshot : undefined;
   const pageNumber = paging.scope === scope ? paging.previous.length + 1 : 1;
-  const request = useMemo<LeadPage>(() => ({ ...requested, grouped, cursor, snapshot }), [requested, grouped, cursor, snapshot]);
+  const request = useMemo<LeadPage>(() => ({ ...requested, grouped, cursor, snapshot, includeCounts: true }), [requested, grouped, cursor, snapshot]);
   const [log, setLog] = useState<Loadable<LeadLogPayload>>(LOADING);
   const [applied, setApplied] = useState<{ query: LeadPage; page: number }>({ query: {}, page: 1 });
   const [error, setError] = useState<string | null>(null);
   const [updating, setUpdating] = useState(false);
   const [retry, setRetry] = useState(0);
   const [optins, setOptins] = useState<OptinSummary[]>([]);
+  const [goals, setGoals] = useState<Record<string, string>>({});
   const [namesError, setNamesError] = useState<string | null>(null);
   const [namesRetry, setNamesRetry] = useState(0);
   const [selectedGroup, setSelectedGroup] = useState<{ group: LeadGroup; query: LeadPage } | null>(null);
@@ -79,6 +83,13 @@ export function LeadLog({ query, onQueryChange }: LeadLogProps) {
     return () => { active = false; };
   }, [namesRetry]);
 
+  useEffect(() => {
+    let active = true;
+    void listGoals().then((entries) => { if (active) setGoals(Object.fromEntries(entries.map((entry) => [entry.id, entry.label]))); }).catch(() => { /* Missing purpose metadata must never invent a label. */ });
+    return () => { active = false; };
+  }, [namesRetry]);
+  const goalsByOptin = useMemo(() => new Map(optins.map((optin) => [optin.id, goals[optin.goal]])), [optins, goals]);
+  const goalOf = (id: string) => goalsByOptin.get(id);
   const names = useMemo(() => new Map(optins.map((optin) => [optin.id, optin.name])), [optins]);
   const nameOf = (id: string) => names.get(id) || id;
   const changeQuery = (next: LeadQuery) => {
@@ -102,6 +113,7 @@ export function LeadLog({ query, onQueryChange }: LeadLogProps) {
   };
 
   return <div className="flex flex-col gap-5">
+    <PageAction><Button variant="outline" disabled={updating} onClick={() => { setPaging({ scope, previous: [] }); setRetry((value) => value + 1); onRefresh?.(); }}><RefreshCw aria-hidden="true" />{__('Refresh submissions', 'wconvert')}</Button></PageAction>
     {csv !== null && <PageAction><Button asChild variant="outline"><a href={csv}>
       <Download aria-hidden="true" />{__('Export matching submissions', 'wconvert')}
     </a></Button></PageAction>}
@@ -110,7 +122,7 @@ export function LeadLog({ query, onQueryChange }: LeadLogProps) {
         <div role="group" aria-label={__('Submission purpose', 'wconvert')} className="mb-4 flex flex-wrap gap-2">
           {[{ value: undefined, label: __('All submissions', 'wconvert') }, { value: 'subscribers' as const, label: __('Subscriber collection', 'wconvert') }, { value: 'enquiries' as const, label: __('Enquiries', 'wconvert') }].map(({ value, label }) => <label key={value ?? 'all'} className="cursor-pointer">
             <input type="radio" className="peer sr-only" name="wconvert-submission-purpose" value={value ?? 'all'} checked={requested.purpose === value} onChange={() => changeQuery({ ...requested, purpose: value })} />
-            <span className="inline-flex min-h-(--control-height-sm) items-center rounded-sm px-3 py-1 font-medium text-muted-foreground hover:bg-muted peer-checked:bg-secondary peer-checked:text-primary peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-ring">{label}</span>
+            <span className="inline-flex min-h-(--control-height-sm) items-center rounded-sm px-3 py-1 font-medium text-muted-foreground hover:bg-muted peer-checked:bg-secondary peer-checked:text-primary peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-ring">{label}{data?.purpose_counts && <span className="ms-2 rounded-sm bg-muted px-1.5 text-note tabular-nums" title={__('Counts use the applied search, campaign and dates.', 'wconvert')}>{data.purpose_counts[value ?? 'all']}</span>}</span>
           </label>)}
         </div>
         <HistoryFilters key={queryKey} query={requested} optins={optins} onApply={changeQuery} />
@@ -121,13 +133,11 @@ export function LeadLog({ query, onQueryChange }: LeadLogProps) {
         <span className="wconvert-check"><Checkbox id="wconvert-lead-grouped" checked={grouped}
           onCheckedChange={(checked) => setGrouped(checked === true)} />
         <Label htmlFor="wconvert-lead-grouped">{__('Group by email or phone', 'wconvert')}</Label></span>
-        <Button variant="ghost" size="sm" disabled={updating} onClick={() => {
-          setPaging({ scope, previous: [] }); setRetry((value) => value + 1);
-        }}>{__('Refresh submissions', 'wconvert')}</Button>
+
       </Toolbar>
       {data !== null && <RegionBody className="py-3 text-note text-muted-foreground">
         <p className="m-0">{scopeDescription(applied.query, nameOf)}</p>
-        <p className="m-0">{__('CSV includes all retained matching submissions captured before this view loaded, across all pages. Grouping does not change the export.', 'wconvert')}</p>
+        <details className="mt-1"><summary className="cursor-pointer">{__('About this count and export', 'wconvert')}</summary><p className="mb-0">{__('CSV includes all retained matching submissions captured before this view loaded, across all pages. Grouping does not change the export.', 'wconvert')}</p></details>
       </RegionBody>}
       {updating && <RegionBody><p role="status" className="m-0 text-note">{data ? __('Updating submissions…', 'wconvert') : __('Loading submissions…', 'wconvert')}</p></RegionBody>}
       {showingPrevious && <RegionBody><p className="m-0 text-note">{__('The table and export still show the last successful filters until the new results load.', 'wconvert')}</p></RegionBody>}
@@ -153,14 +163,14 @@ export function LeadLog({ query, onQueryChange }: LeadLogProps) {
           <DataTableCell label={__('Last submitted', 'wconvert')}><bdi dir="ltr">{group.latest_at ?? '—'}</bdi></DataTableCell>
           <DataTableCell label={__('History', 'wconvert')}><Button variant="link" size="sm" onClick={() => setSelectedGroup({ group, query: applied.query })}>{__('View submissions', 'wconvert')}</Button></DataTableCell>
         </DataTableRow>)}</DataTableBody>
-      </DataTable> : <EventTable leads={data.leads} nameOf={nameOf} returnTo={leadsHref(applied.query)} />}
+      </DataTable> : <EventTable leads={data.leads} nameOf={nameOf} goalOf={goalOf} returnTo={leadsHref(applied.query)} onRelated={(identifier) => { setGrouped(false); changeQuery({ identifier }); }} />}
       {data !== null && rows > 0 && <RegionFooter>
         <div className="flex w-full flex-wrap items-center justify-between gap-3">
           <span>{sprintf(shownGrouped
             ? _n('Page %1$d · %2$d identifier group shown. Total above counts all matching submissions.', 'Page %1$d · %2$d identifier groups shown. Total above counts all matching submissions.', rows, 'wconvert')
             : _n('Page %1$d · %2$d submission shown.', 'Page %1$d · %2$d submissions shown.', rows, 'wconvert'), applied.page, rows)}</span>
-          <div className="flex gap-2"><Button variant="outline" size="sm" disabled={updating || showingPrevious || applied.page <= 1} onClick={previous}>{__('Newer', 'wconvert')}</Button>
-            <Button variant="outline" size="sm" disabled={updating || showingPrevious || !data.next_cursor} onClick={next}>{__('Older', 'wconvert')}</Button></div>
+          <div className="flex gap-2"><Button variant="outline" size="sm" disabled={updating || showingPrevious || applied.page <= 1} onClick={previous}>{applied.query.order === 'oldest' ? __('Previous', 'wconvert') : __('Newer', 'wconvert')}</Button>
+            <Button variant="outline" size="sm" disabled={updating || showingPrevious || !data.next_cursor} onClick={next}>{applied.query.order === 'oldest' ? __('Next', 'wconvert') : __('Older', 'wconvert')}</Button></div>
         </div>
       </RegionFooter>}
     </Region>
@@ -168,7 +178,7 @@ export function LeadLog({ query, onQueryChange }: LeadLogProps) {
     <Dialog open={selectedGroup !== null} onOpenChange={(open) => { if (!open) setSelectedGroup(null); }}>
       <DialogContent className="max-h-[85dvh] overflow-auto sm:max-w-5xl">
         <DialogHeader><DialogTitle>{__('Submission history', 'wconvert')}</DialogTitle><DialogDescription>{selectedGroup?.group.identifier}</DialogDescription></DialogHeader>
-        {selectedGroup !== null && <GroupEvents key={`${selectedGroup.group.identifier}:${selectedGroup.query.snapshot}`} group={selectedGroup.group} query={selectedGroup.query} nameOf={nameOf} />}
+        {selectedGroup !== null && <GroupEvents key={`${selectedGroup.group.identifier}:${selectedGroup.query.snapshot}`} group={selectedGroup.group} query={selectedGroup.query} nameOf={nameOf} goalOf={goalOf} onRelated={(identifier) => { setSelectedGroup(null); setGrouped(false); changeQuery({ identifier }); }} />}
       </DialogContent>
     </Dialog>
   </div>;
@@ -179,6 +189,10 @@ function HistoryFilters({ query, optins, onApply }: { query: LeadQuery; optins: 
   const [search, setSearch] = useState(query.leadId ?? query.identifier ?? query.search ?? '');
   const [from, setFrom] = useState(query.from ?? '');
   const [to, setTo] = useState(query.to ?? '');
+  const [order, setOrder] = useState(query.order ?? 'newest');
+  const [expanded, setExpanded] = useState(Boolean(query.from || query.to || query.order));
+  const today = siteToday();
+  const [customDates, setCustomDates] = useState(false);
   const [error, setError] = useState<string | null>(null);
   return <form className="flex flex-col gap-3" onSubmit={(event) => {
     event.preventDefault();
@@ -187,7 +201,7 @@ function HistoryFilters({ query, optins, onApply }: { query: LeadQuery; optins: 
     const id = /^[0-9A-HJKMNP-TV-Z]{26}$/i.test(term) ? term.toUpperCase() : undefined;
     const identifier = !id && (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(term) || /^(\+|00)[\d\s()-]+$/.test(term)) ? term : undefined;
     setError(null);
-    onApply({ optinId: optinId || undefined, purpose: query.purpose, identifier, search: term && !id && !identifier ? term : undefined, leadId: id, from: from || undefined, to: to || undefined });
+    onApply({ order: order === 'oldest' ? 'oldest' : undefined, optinId: optinId || undefined, purpose: query.purpose, identifier, search: term && !id && !identifier ? term : undefined, leadId: id, from: from || undefined, to: to || undefined });
   }}>
     <div className="flex flex-wrap items-end gap-3">
       <div className="min-w-0 basis-64 flex-1"><Label htmlFor="wconvert-lead-search">{__('Search submissions', 'wconvert')}</Label>
@@ -198,12 +212,24 @@ function HistoryFilters({ query, optins, onApply }: { query: LeadQuery; optins: 
           {optinId && !optins.some((optin) => optin.id === optinId) && <SelectItem value={optinId}>{optinId}</SelectItem>}
           {optins.map((optin) => <SelectItem key={optin.id} value={optin.id}>{optin.name || optin.id}</SelectItem>)}
         </SelectContent></Select></div>
-      <div><Label htmlFor="wconvert-lead-from">{__('From', 'wconvert')}</Label><Input id="wconvert-lead-from" className="w-40" type="date" value={from} onChange={(event) => setFrom(event.target.value)} /></div>
-      <div><Label htmlFor="wconvert-lead-to">{__('To', 'wconvert')}</Label><Input id="wconvert-lead-to" className="w-40" type="date" value={to} min={from || undefined} onChange={(event) => setTo(event.target.value)} /></div>
+      <Button type="button" variant="outline" aria-expanded={expanded} aria-controls="wconvert-history-filters" onClick={() => setExpanded(!expanded)}><SlidersHorizontal aria-hidden="true" />{__('Filters', 'wconvert')}{(query.from || query.to || query.order) && <span aria-label={__('Active filters', 'wconvert')}> ·</span>}</Button>
       <Button type="submit" variant="outline"><Search aria-hidden="true" />{__('Apply filters', 'wconvert')}</Button>
-      {(search || optinId || from || to || query.purpose) && <Button type="button" variant="link" onClick={() => { setSearch(''); setOptinId(''); setFrom(''); setTo(''); setError(null); onApply({}); }}>{__('Clear filters', 'wconvert')}</Button>}
+      {(search || optinId || from || to || query.purpose || query.order) && <Button type="button" variant="link" onClick={() => { setSearch(''); setOptinId(''); setFrom(''); setTo(''); setOrder('newest'); setCustomDates(false); setError(null); onApply({}); }}>{__('Clear filters', 'wconvert')}</Button>}
     </div>
-    <p className="m-0 text-note text-muted-foreground">{__('Search captured names and messages, or enter a complete email, international phone number or Lead ID for an exact match. Dates include both days.', 'wconvert')}</p>
+    <div id="wconvert-history-filters" hidden={!expanded}>
+      <div className="flex flex-wrap items-end gap-4 rounded-md bg-muted/40 p-4">
+        <div><Label htmlFor="wconvert-lead-period">{__('Captured within', 'wconvert')}</Label>
+          <select id="wconvert-lead-period" className="h-9 rounded-md border border-input bg-card px-3" value={customDates ? 'custom' : !from && !to ? 'all' : today && to === today && from === shiftDay(today, -6) ? '7' : today && to === today && from === shiftDay(today, -29) ? '30' : 'custom'} onChange={(event) => { const value = event.target.value; setCustomDates(value === 'custom'); if (value === 'all') { setFrom(''); setTo(''); } else if (value !== 'custom' && today) { setFrom(shiftDay(today, 1 - Number(value))); setTo(today); } }}>
+            <option value="all">{__('All retained submissions', 'wconvert')}</option><option value="7" disabled={!today}>{__('Last 7 days, including today', 'wconvert')}</option><option value="30" disabled={!today}>{__('Last 30 days, including today', 'wconvert')}</option><option value="custom">{__('Custom dates', 'wconvert')}</option>
+          </select>
+        </div>
+      <div><Label htmlFor="wconvert-lead-from">{__('From', 'wconvert')}</Label><Input id="wconvert-lead-from" className="w-40" type="date" value={from} onChange={(event) => { setFrom(event.target.value); setCustomDates(true); }} /></div>
+      <div><Label htmlFor="wconvert-lead-to">{__('To', 'wconvert')}</Label><Input id="wconvert-lead-to" className="w-40" type="date" value={to} min={from || undefined} onChange={(event) => { setTo(event.target.value); setCustomDates(true); }} /></div>
+
+        <div><Label htmlFor="wconvert-lead-order">{__('Order', 'wconvert')}</Label><select id="wconvert-lead-order" className="h-9 rounded-md border border-input bg-card px-3" value={order} onChange={(event) => setOrder(event.target.value)}><option value="newest">{__('Newest first', 'wconvert')}</option><option value="oldest">{__('Oldest first', 'wconvert')}</option></select></div>
+        <p className="m-0 basis-full text-note text-muted-foreground">{__('Dates include both days. Grouped results are ordered by the latest submission in each group.', 'wconvert')}</p>
+      </div>
+    </div>
     {error && <p role="alert" className="m-0 text-note text-destructive">{error}</p>}
   </form>;
 }
@@ -217,14 +243,14 @@ function scopeDescription(query: LeadQuery, nameOf: (id: string) => string): str
 }
 
 
-function GroupEvents({ group, query, nameOf }: { group: LeadGroup; query: LeadPage; nameOf: (id: string) => string }) {
+function GroupEvents({ group, query, nameOf, goalOf, onRelated }: { group: LeadGroup; query: LeadPage; nameOf: (id: string) => string; goalOf: (id: string) => string | undefined; onRelated: (identifier: string) => void }) {
   const [cursor, setCursor] = useState<string | undefined>();
   const [previous, setPrevious] = useState<(string | undefined)[]>([]);
   const [data, setData] = useState<LeadLogPayload | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [retry, setRetry] = useState(0);
-  const filter = useMemo(() => ({ ...query, groupIdentifier: group.identifier, grouped: false, cursor }), [query, group.identifier, cursor]);
+  const filter = useMemo(() => ({ ...query, includeCounts: false, groupIdentifier: group.identifier, grouped: false, cursor }), [query, group.identifier, cursor]);
   useEffect(() => {
     let active = true;
     setLoading(true);
@@ -240,8 +266,8 @@ function GroupEvents({ group, query, nameOf }: { group: LeadGroup; query: LeadPa
     {loading && <p role="status">{__('Loading submissions…', 'wconvert')}</p>}
     {error && <div><p role="alert">{error}</p><Button variant="outline" onClick={() => setRetry((value) => value + 1)}>{__('Retry', 'wconvert')}</Button></div>}
     {data !== null && data.leads.length === 0 && <p>{__('No retained submissions match this group and these filters.', 'wconvert')}</p>}
-    {data !== null && <EventTable leads={data.leads} nameOf={nameOf} returnTo={leadsHref(query)} />}
-    <div className="flex justify-end gap-2"><Button variant="outline" disabled={loading || error !== null || previous.length === 0} onClick={() => { setCursor(previous[previous.length - 1]); setPrevious(previous.slice(0, -1)); }}>{__('Newer submissions', 'wconvert')}</Button>
-      <Button variant="outline" disabled={loading || error !== null || !data?.next_cursor} onClick={() => { setPrevious([...previous, cursor]); setCursor(data?.next_cursor ?? undefined); }}>{__('Older submissions', 'wconvert')}</Button></div>
+    {data !== null && <EventTable leads={data.leads} nameOf={nameOf} goalOf={goalOf} onRelated={onRelated} returnTo={leadsHref(query)} />}
+    <div className="flex justify-end gap-2"><Button variant="outline" disabled={loading || error !== null || previous.length === 0} onClick={() => { setCursor(previous[previous.length - 1]); setPrevious(previous.slice(0, -1)); }}>{query.order === 'oldest' ? __('Previous submissions', 'wconvert') : __('Newer submissions', 'wconvert')}</Button>
+      <Button variant="outline" disabled={loading || error !== null || !data?.next_cursor} onClick={() => { setPrevious([...previous, cursor]); setCursor(data?.next_cursor ?? undefined); }}>{query.order === 'oldest' ? __('Next submissions', 'wconvert') : __('Older submissions', 'wconvert')}</Button></div>
   </div>;
 }

@@ -123,7 +123,7 @@ export function LeadRetention({ expanded = false, onEditingStateChange }: { expa
     <>
       <SettingsDisclosure
         expanded={expanded}
-        title={__('How long leads are kept', 'wconvert')}
+        title={expanded ? __('Data & privacy', 'wconvert') : __('How long leads are kept', 'wconvert')}
         summary={period === null
           ? __('Lead retention settings', 'wconvert')
           : period.days === null
@@ -156,30 +156,32 @@ export function LeadRetention({ expanded = false, onEditingStateChange }: { expa
           <>
             {error !== null && confirmDays === null && <RegionError message={error} />}
             <RegionBody className="flex flex-col gap-3">
-              <p className="m-0 text-note text-muted-foreground" id={`${id}-scope`}>
+              <p className="m-0 rounded-md border border-border bg-secondary p-4 text-note text-muted-foreground" id={`${id}-scope`}>
                 {__('Applies to leads from every Campaign. Copies already sent to destinations or exported are unaffected.', 'wconvert')}
               </p>
               <fieldset className="m-0 flex min-w-0 flex-col gap-3 border-0 p-0" disabled={saving} aria-describedby={`${id}-scope`}>
-                <legend className="sr-only">{__('Lead retention', 'wconvert')}</legend>
-                <label className="flex items-center gap-2">
+                <legend className="mb-4 pt-5 font-medium">{__('Keep captured submissions', 'wconvert')}</legend>
+                <label className="flex items-start gap-3 rounded-md border border-border p-4">
                   <input
                     ref={foreverRadio}
+                    aria-label={__('Keep them until I delete them', 'wconvert')}
                     type="radio"
                     name={`${id}-policy`}
                     checked={!draft.automatic}
                     onChange={() => changeDraft({ ...draft, automatic: false })}
                   />
-                  {__('Keep them until I delete them', 'wconvert')}
+                  <span><span className="block font-medium">{__('Keep them until I delete them', 'wconvert')}</span><span className="mt-1 block text-note text-muted-foreground">{__('No automatic deletion schedule.', 'wconvert')}</span></span>
                 </label>
-                <label className="flex items-center gap-2">
+                <label className="flex items-start gap-3 rounded-md border border-border p-4">
                   <input
                     ref={automaticRadio}
+                    aria-label={__('Delete them automatically after', 'wconvert')}
                     type="radio"
                     name={`${id}-policy`}
                     checked={draft.automatic}
                     onChange={() => changeDraft({ ...draft, automatic: true })}
                   />
-                  {__('Delete them automatically after', 'wconvert')}
+                  <span><span className="block font-medium">{__('Delete them automatically after', 'wconvert')}</span><span className="mt-1 block text-note text-muted-foreground">{__('Older stored submissions are permanently removed.', 'wconvert')}</span></span>
                 </label>
                 {draft.automatic && (
                   <div className="flex flex-col items-start gap-2 pl-6">
@@ -207,16 +209,16 @@ export function LeadRetention({ expanded = false, onEditingStateChange }: { expa
                 )}
               </fieldset>
             </RegionBody>
-            <RegionFooter className="flex flex-wrap items-center gap-2">
-              <Button ref={saveButton} disabled={saving || !dirty} onClick={saveDraft}>
-                {saving ? __('Saving…', 'wconvert') : __('Save retention', 'wconvert')}
-              </Button>
-              {dirty && (
-                <Button variant="outline" disabled={saving} onClick={cancelChanges}>
+            <RegionFooter className="flex flex-wrap items-center justify-between gap-3">
+              <span className="text-note text-muted-foreground">{dirty ? __('Unsaved changes', 'wconvert') : __('No unsaved changes', 'wconvert')}</span>
+              <div className="flex flex-wrap gap-2">
+                <Button variant="outline" disabled={saving || !dirty} onClick={cancelChanges}>
                   {__('Cancel changes', 'wconvert')}
                 </Button>
-              )}
-              {dirty && !saving && <span className="text-note">{__('Unsaved changes', 'wconvert')}</span>}
+                <Button ref={saveButton} disabled={saving || !dirty} onClick={saveDraft}>
+                  {saving ? __('Saving…', 'wconvert') : __('Save retention', 'wconvert')}
+                </Button>
+              </div>
               {saved && <span role="status" className="text-note">{__('Retention saved.', 'wconvert')}</span>}
             </RegionFooter>
           </>

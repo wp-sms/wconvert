@@ -74,6 +74,7 @@ import {
   toDraft,
 } from './settings';
 import { renderingFor, tierName, tierProductName } from '../goals/availability';
+import { issueCount } from './issueCount';
 
 /**
  * **Where a merchant finds out whether pushing is working.**
@@ -111,8 +112,8 @@ import { renderingFor, tierName, tierProductName } from '../goals/availability';
  * and Remove is behind a confirm rather than beside the button that repairs
  * things.
  */
-export function Destinations({ destinationId, mode = 'settings', onEditingStateChange }: {
-  readonly destinationId?: string; mode?: 'settings' | 'issues'; onEditingStateChange?: SettingsEditing;
+export function Destinations({ destinationId, mode = 'settings', onEditingStateChange, onIssueCount }: {
+  readonly destinationId?: string; mode?: 'settings' | 'issues'; onEditingStateChange?: SettingsEditing; onIssueCount?: (count: number | null) => void;
 } = {}) {
   const [payload, setPayload] = useState<Loadable<DestinationsPayload>>(LOADING);
   /*
@@ -122,6 +123,7 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
    * them rather than inside one. Every failure a BUTTON caused is keyed below.
    */
   const [fetchError, setFetchError] = useState<string | null>(null);
+  useEffect(() => { onIssueCount?.(payload.status === 'ready' && fetchError === null ? issueCount(payload.data) : null); }, [payload, fetchError, onIssueCount]);
   /*
    * **Keyed by what the action ran against, not one string for the screen.**
    * One `error` meant a failed save on the third Destination reported at the
@@ -355,6 +357,19 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
         a band with a bottom border, drawing a rule above nothing.
       */}
       {fetchError !== null && <PageError message={fetchError} />}
+      {mode === 'settings' && data !== null && <>
+        <Region>
+          <RegionHeader title={__('Connected accounts', 'wconvert')} description={__('Accounts hold credentials. Destinations choose where submissions go.', 'wconvert')} />
+          <RegionBody>
+            {data.connections.length === 0 ? <p className="m-0 text-note text-muted-foreground">{__('No remote accounts are configured. Local services such as MailPoet use this WordPress site and do not need a separate account connection.', 'wconvert')}</p>
+              : <ul className="m-0 list-none divide-y divide-border p-0">{data.connections.map((connection) => <li key={connection.id} className="flex flex-wrap items-start justify-between gap-3 py-4">
+                <div><strong className="block">{connection.label}</strong><span className="mt-1 block text-note text-muted-foreground">{data.types.find((type) => type.id === connection.type)?.label ?? connection.type} · {__('Credentials stored; connection not verified by this view.', 'wconvert')}</span></div>
+                <div className="flex flex-col gap-1 text-note">{data.destinations.filter((destination) => destination.connection === connection.id).map((destination) => <a key={destination.id} className="text-primary underline" href={destinationHref(destination.id)}>{destination.label}</a>)}</div>
+              </li>)}</ul>}
+          </RegionBody>
+        </Region>
+        <div><h2 className="mb-1 mt-2 text-heading font-semibold">{__('Destinations', 'wconvert')}</h2><p className="m-0 text-note text-muted-foreground">{__('Reusable places to send submissions. Choose them inside each campaign.', 'wconvert')}</p></div>
+      </>}
       {data !== null && destinationId !== undefined && !data.destinations.some((destination) => destination.id === destinationId) && (
         <Region><RegionHeader title={__('This destination is no longer available', 'wconvert')}
           description={__('It may have been removed. Other configured destinations are listed below.', 'wconvert')} />

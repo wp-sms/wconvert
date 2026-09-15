@@ -13,6 +13,14 @@ addressable categories: Visitor experience, Connections & destinations, Data &
 privacy. No additional overview or banner. The category rail moves above forms
 on narrow screens.
 
+The 15 September fidelity pass completes the approved direction: searchable
+category navigation, contextual Campaign/Leads links, separated explanatory
+field rows and consistent Save/Cancel footers. Display-limit Save first reviews
+the proposed site-wide values; only Apply writes. Connections distinguishes
+stored remote accounts from reusable destinations without treating stored
+credentials as a verified connection. Local services explicitly need no remote
+account. Existing provider configuration and test-send safeguards remain intact.
+
 Site-wide frequency moves out of Campaigns and retention moves out of Leads;
 contextual shortcuts remain. Leads reads a saved retention summary. Frequency
 edits are one explicit Save/Cancel draft, never blur/toggle writes. Invalid
@@ -39,6 +47,12 @@ status, sales stage or per-Lead delivery status. Repeated captures remain
 separate events; email-first grouping and drilldown remain available. CSV
 exports all retained matching events, not the visible page or group summaries.
 
+Rows include initials when a name was captured, available Campaign Goal labels,
+localized wall-clock dates and an Open action. Details put the captured message
+first and link to the Campaign and retained submissions using the same identifier.
+The latter explicitly leaves the current filters; it is an identifier search,
+not a merged Contact or an inferred number of related people.
+
 Purpose views are All submissions, Subscriber collection (email/SMS list Goals
 only), and Enquiries. Resource requests remain in All submissions: requesting
 a resource does not imply marketing subscription. Goal metadata includes
@@ -52,6 +66,18 @@ identifiers and Lead IDs keep their exact paths. Counts, pages, grouping,
 drilldown and CSV share predicates and the capture bound. A failed filter read
 does not relabel previous rows/export. Search/purpose are bookmarkable;
 paging/dialog state is not promised.
+
+Secondary date/order controls are under Filters. Optional 7/30-day presets
+include today on the site's clock; all retained dates remains the default.
+Oldest-first uses forward keyset paging under the same upper capture bound;
+groups sort by latest capture within each group. CSV keeps all matches, not the
+display order. Purpose chips optionally receive server counts over the applied
+search, Campaign and dates, disregarding only purpose and pagination. They reuse
+the existing selected total and compute the other two counts on read, with no
+new storage and no per-keystroke requests. An unsuccessful read never relabels
+previous rows or counts. The Sending issues badge counts distinct affected
+destination IDs, including retained diagnostics for removed routes, never
+undelivered submissions. Unknown reads do not display zero.
 
 Sending issues shows route outages/skips/unavailability and the bounded rejection
 ring, linking to the capture and Settings setup. No known issues does not imply
