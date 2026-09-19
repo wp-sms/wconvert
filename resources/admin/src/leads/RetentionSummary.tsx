@@ -5,14 +5,14 @@ import { settingsHref } from '../nav';
 import { messageOf } from '../shell/loadable';
 
 /** A saved-policy summary, never a destructive control beside the submission log. */
-export function RetentionSummary() {
+export function RetentionSummary({ refreshKey = 0 }: { refreshKey?: number }) {
   const [period, setPeriod] = useState<Retention | null>(null);
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
     let active = true;
     readRetention()
       .then((next) => {
-        if (active) setPeriod(next);
+        if (active) { setPeriod(next); setError(null); }
       })
       .catch((cause: unknown) => {
         if (active) setError(messageOf(cause));
@@ -20,7 +20,7 @@ export function RetentionSummary() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [refreshKey]);
   return (
     <p className="m-0 text-note text-muted-foreground">
       {error ??

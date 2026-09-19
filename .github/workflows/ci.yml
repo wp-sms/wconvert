@@ -140,6 +140,10 @@ jobs:
               - '.github/workflows/php-tests.yml'
               - '.github/workflows/ci.yml'
             js:
+              - 'src/**'
+              - 'tools/visual-tests/**'
+              - 'tools/design-system/seed/**'
+              - 'composer.*'
               - '**.ts'
               - '**.tsx'
               - '**.js'

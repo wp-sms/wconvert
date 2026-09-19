@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { Skeleton } from '../components/ui/skeleton';
 import { Region, RegionBody } from './Region';
 
@@ -51,8 +51,8 @@ export function RegionSkeleton({
       </div>
 
       <RegionBody className="flex flex-col gap-4">
-        <span role="status" className="sr-only">
-          {__('Loading…', 'wconvert')}
+        <span role="status" className="text-note text-muted-foreground">
+          {sprintf(__('Loading %s…', 'wconvert'), label)}
         </span>
 
         {children ??

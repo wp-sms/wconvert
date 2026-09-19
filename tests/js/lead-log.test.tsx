@@ -96,6 +96,18 @@ describe('capture history', () => {
     expect(screen.getByText(/This ID may no longer be retained/)).toBeInTheDocument();
   });
 
+  it('refreshes a failed retention summary with the page retry', async () => {
+    log.readLog.mockRejectedValueOnce(new Error('Submissions unavailable.'));
+    log.readRetention.mockRejectedValueOnce(new Error('Retention unavailable.'));
+    render(<LeadLog />);
+    await screen.findByText('Retention unavailable.');
+    await userEvent.click(await screen.findByRole('button', { name: 'Retry loading submissions' }));
+    expect(await screen.findByText('Submissions are kept until you delete them.')).toBeVisible();
+    expect(screen.queryByText('Retention unavailable.')).not.toBeInTheDocument();
+    expect(log.readRetention).toHaveBeenCalledTimes(2);
+    expect(log.saveRetention).not.toHaveBeenCalled();
+  });
+
   it('can retry the first failed read without reloading the whole page', async () => {
     log.readLog.mockRejectedValueOnce(new Error('History unavailable.'));
     render(<LeadLog />);

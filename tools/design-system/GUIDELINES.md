@@ -322,11 +322,15 @@ save acts on the whole draft. `PageError` is that case, and it is drawn without
 a surface behind it, because a page-scoped error is not a region and must not
 look like one.
 
-**An error names a door that is on this screen** (§8). `RegionErrorState`
-carries *"Reload the page to try again."* by default rather than asking ten call
-sites to remember it — nine spelled the identical string and the tenth spelled
-nothing, which made the creation flow's second step the one screen whose failure
-named no way out of itself.
+**An error names a door that is on this screen** (§8). Pass the retry button
+as `RegionErrorState.action`, beside the error and its explanation. Reload is
+the fallback when no local retry is possible. Keep the previous accepted data
+visible when a refresh fails, with a clear stale-data explanation.
+
+**Loading names the concern.** `RegionSkeleton` displays “Loading [region]…”
+as an accessible status. Placeholders stay static; a pending read must never
+claim that there are no results. Empty campaigns explain the goal → design →
+publish sequence and offer the first action.
 
 **A region's error carries no dismiss control.** It clears when the next fetch
 succeeds, so there is no path where a merchant hides a failure and then reads

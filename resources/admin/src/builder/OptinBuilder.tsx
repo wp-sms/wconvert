@@ -991,6 +991,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
         trees={trees}
         displayType={displayTypeOf(config, templates)}
         chosen={templateId}
+        hasCurrentDesign={template !== undefined}
         fit={{
           outcome: entryOfGoal?.outcome,
           bound: bound.length > 0,

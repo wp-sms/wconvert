@@ -16,11 +16,9 @@ name: Frontend tests
 #                backlog to grandfather, and holding it at zero is the whole
 #                point: a lint backlog is what makes the signal worthless.
 #
-# NOTHING HERE BUILDS A BUNDLE. Vitest runs against source through the
-# `@loader` alias, so `npm run build` is not a prerequisite. `npm run
-# check:loader` — the one build ADR 0029 lets onto a pull request, for the byte
-# budget and the premium-identifier scan — lands with the rule manifest whose
-# identifiers it reads. Nothing is written before its subject.
+# Visual contracts build the admin bundle and run on disposable WordPress.
+# Screenshots and traces are retained for review; geometry/style assertions gate
+# the regressions that jsdom cannot see. No release ZIP is staged here.
 #
 # NO TRIGGERS OF ITS OWN beyond a manual dispatch. See ci.yml.
 # =============================================================================
@@ -75,3 +73,29 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run lint
+
+  visual:
+    name: 'Admin visual contracts'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          coverage: none
+      - run: composer install --no-interaction --no-progress --no-dev
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build:admin
+      - run: npm run test:visual
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: admin-visual-checks
+          path: tools/visual-tests/out/
+          retention-days: 14

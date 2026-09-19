@@ -19,6 +19,7 @@ export interface TemplateDesignDetailProps {
   readonly template?: Template;
   readonly labels: TemplateLabelsWithFacets;
   readonly current: boolean;
+  readonly hasCurrentDesign?: boolean;
   readonly currentDisplayType?: string;
   readonly active?: boolean;
   readonly fit: Fit;
@@ -36,9 +37,9 @@ const DESKTOP_CONTENT_WIDTH = '64rem';
 
 /** Inspect the exact normalized candidate before replacing the working draft. */
 export function TemplateDesignDetail({
-  entry, template: sample, labels, current, currentDisplayType, fit, goalLabel, busy, onChoose, onPrepare, onBack, loadError = false, onRetry, active = true,
+  entry, template: sample, labels, current, currentDisplayType, fit, goalLabel, busy, onChoose, onPrepare, onBack, loadError = false, onRetry, active = true, hasCurrentDesign = true,
 }: TemplateDesignDetailProps) {
-  const [mode, setMode] = useState<TemplateContentMode>('keep');
+  const [mode, setMode] = useState<TemplateContentMode>(hasCurrentDesign ? 'keep' : 'sample');
   const [attempt, setAttempt] = useState(0);
   const [prepared, setPrepared] = useState<{
     sample: Template;
@@ -167,10 +168,10 @@ export function TemplateDesignDetail({
           <legend className="text-sm font-medium">{__('Content for this design', 'wconvert')}</legend>
           <div className="mt-2 grid gap-2 sm:grid-cols-2">
             <label className="grid cursor-pointer grid-cols-[auto_1fr] items-start gap-x-2 rounded-md border p-3 text-sm">
-              <input type="radio" name={`${id}-content`} value="keep" checked={mode === 'keep'}
+              <input type="radio" name={`${id}-content`} value="keep" checked={mode === 'keep'} disabled={!hasCurrentDesign}
                 onChange={() => setMode('keep')} className="row-span-2 mt-1" />
               <strong>{__('Keep my content', 'wconvert')}</strong>
-              <span className="text-note text-muted-foreground">{__('Fit your current words and images into this layout. Some content may move or have no matching place.', 'wconvert')}</span>
+              <span className="text-note text-muted-foreground">{hasCurrentDesign ? __('Fit your current words and images into this layout. Some content may move or have no matching place.', 'wconvert') : __('This draft has no design content yet. Start with sample content and customize it next.', 'wconvert')}</span>
             </label>
             <label className="grid cursor-pointer grid-cols-[auto_1fr] items-start gap-x-2 rounded-md border p-3 text-sm">
               <input type="radio" name={`${id}-content`} value="sample" checked={mode === 'sample'}

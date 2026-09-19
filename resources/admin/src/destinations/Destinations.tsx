@@ -323,9 +323,8 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
       <Region label={__('Destinations', 'wconvert')}>
         <RegionErrorState
           message={payload.message}
-          hint={__('Use Refresh to try again.', 'wconvert')}
+          action={<Button variant="outline" disabled={refreshing} onClick={() => void refresh()}>{__('Refresh', 'wconvert')}</Button>}
         />
-        <RegionFooter><Button variant="outline" disabled={refreshing} onClick={() => void refresh()}>{__('Refresh', 'wconvert')}</Button></RegionFooter>
       </Region>
     );
   }

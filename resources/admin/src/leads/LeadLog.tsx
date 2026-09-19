@@ -162,11 +162,14 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
       {erasureNotice !== null && <RegionBody><p role="status" className="m-0 rounded-md border border-border bg-surface p-3 text-note">{erasureNotice}</p></RegionBody>}
       {error !== null && data !== null && <RegionError message={error} />}
       {namesError !== null && <RegionError message={namesError} />}
-      {(error !== null || namesError !== null) && <RegionBody><Button variant="outline" onClick={() => {
+      {log.status !== 'failed' && (error !== null || namesError !== null) && <RegionBody><Button variant="outline" onClick={() => {
         if (error !== null) setRetry((value) => value + 1);
         if (namesError !== null) setNamesRetry((value) => value + 1);
       }}>{__('Retry loading submissions', 'wconvert')}</Button></RegionBody>}
-      {log.status === 'failed' ? <RegionErrorState message={log.message} /> : data === null ? <DataTable><TableSkeleton columns={5} /></DataTable> : rows === 0 ? (
+      {log.status === 'failed' ? <RegionErrorState message={log.message} action={<Button variant="outline" disabled={updating} onClick={() => {
+        setRetry((value) => value + 1);
+        if (namesError !== null) setNamesRetry((value) => value + 1);
+      }}>{__('Retry loading submissions', 'wconvert')}</Button>} /> : data === null ? <DataTable><TableSkeleton columns={5} /></DataTable> : rows === 0 ? (
         <EmptyState icon={Inbox} title={applied.query.leadId ? __('Submission not found', 'wconvert') : hasAppliedFilters ? __('No matching submissions', 'wconvert') : __('No submissions yet', 'wconvert')}
           action={hasAppliedFilters ? <Button variant="outline" onClick={() => changeQuery({})}>{__('Clear filters', 'wconvert')}</Button>
             : <Button asChild variant="outline"><a href="#optins">{__('Go to Campaigns', 'wconvert')}</a></Button>}>
@@ -193,7 +196,7 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
         </div>
       </RegionFooter>}
     </Region>
-    <RetentionSummary />
+    <RetentionSummary refreshKey={retry} />
       <Dialog open={selectedGroup !== null} onOpenChange={(open) => { if (!open) setSelectedGroup(null); }}>
       <DialogContent className="max-h-[85dvh] overflow-auto sm:max-w-5xl">
         <DialogHeader><DialogTitle>{__('Submission history', 'wconvert')}</DialogTitle><DialogDescription>{selectedGroup?.group.identifier}</DialogDescription></DialogHeader>

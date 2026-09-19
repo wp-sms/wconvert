@@ -214,11 +214,15 @@ export function Dashboard({
       )}
       {report.status === 'failed' && (
         <Region label={__('Analytics', 'wconvert')}>
-          <RegionErrorState message={report.message} />
+          <RegionErrorState message={report.message} action={
+            <Button variant="outline" disabled={updating} onClick={() => setRetry((n) => n + 1)}>
+              {__('Retry loading report', 'wconvert')}
+            </Button>
+          } />
         </Region>
       )}
-      {refreshError && (
-        <Button variant="outline" onClick={() => setRetry((n) => n + 1)}>
+      {refreshError && payload && (
+        <Button variant="outline" disabled={updating} onClick={() => setRetry((n) => n + 1)}>
           {__('Retry loading report', 'wconvert')}
         </Button>
       )}

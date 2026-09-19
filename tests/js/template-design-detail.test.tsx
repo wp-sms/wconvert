@@ -47,6 +47,17 @@ describe('inspecting a design before replacing the draft', () => {
     return { ...view, onChoose, onBack };
   };
 
+  it('starts a blank draft with sample content instead of carrying an empty form', async () => {
+    const onPrepare = vi.fn().mockResolvedValue(TEMPLATE);
+    const { onChoose } = detail({ onPrepare, hasCurrentDesign: false });
+    expect(await screen.findByRole('radio', { name: /Use this design's sample content/ })).toBeChecked();
+    expect(screen.getByRole('radio', { name: /Keep my content/ })).toBeDisabled();
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Use this design' })).toBeEnabled());
+    expect(onPrepare).toHaveBeenCalledExactlyOnceWith(ENTRY.id, 'sample', TEMPLATE);
+    await userEvent.click(screen.getByRole('button', { name: 'Use this design' }));
+    expect(onChoose).toHaveBeenCalledExactlyOnceWith(ENTRY.id, TEMPLATE);
+  });
+
   it('defaults to carried content and applies the exact normalized preview', async () => {
     const carried = JSON.parse(JSON.stringify(TEMPLATE).replace('Get 10% off your first order', 'My own invitation')) as Template;
     const onPrepare = vi.fn().mockResolvedValue(carried);

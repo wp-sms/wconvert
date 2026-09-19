@@ -25,7 +25,9 @@
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc --noEmit",
-    "prototype:editor": "vite --config tools/design-system/editor-prototype/vite.config.mjs"
+    "prototype:editor": "vite --config tools/design-system/editor-prototype/vite.config.mjs",
+    "visual:serve": "node tools/visual-tests/server.mjs",
+    "test:visual": "playwright test -c tools/visual-tests/playwright.config.mjs"
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "^3.0.0",
@@ -45,6 +47,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.20.0",
+    "@playwright/test": "1.63.0",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
@@ -53,6 +56,7 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.4",
+    "@wp-playground/cli": "3.1.54",
     "eslint": "^9.20.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react-hooks": "^5.1.0",

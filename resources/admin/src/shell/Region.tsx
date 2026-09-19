@@ -187,18 +187,20 @@ export function RegionError({ message, action }: { message: string; action?: Rea
  * way out of itself. That is not a decision each caller should be making — an
  * error the merchant can do nothing about is the shape ADR 0042 rule 3 refuses
  * — so the door is the component's and a caller passes one only where it has a
- * better one to offer.
+ * better one to offer. Pass a local retry as `action` so the explanation and
+ * its recovery control stay together instead of asking the user to reload.
  */
-export function RegionErrorState({ message, hint }: { message: string; hint?: string }) {
+export function RegionErrorState({ message, hint, action }: { message: string; hint?: string; action?: ReactNode }) {
   return (
     <RegionBody>
       <Alert variant="destructive" className="border-destructive/30 bg-destructive/5">
         <CircleAlert />
         <AlertTitle className="line-clamp-none">{message}</AlertTitle>
         <AlertDescription>
-          {hint ?? __('Reload the page to try again.', 'wconvert')}
+          {hint ?? (action ? __('Try again. If the problem continues, reload the page.', 'wconvert') : __('Reload the page to try again.', 'wconvert'))}
         </AlertDescription>
       </Alert>
+      {action && <div className="mt-4">{action}</div>}
     </RegionBody>
   );
 }

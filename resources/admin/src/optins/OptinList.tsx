@@ -426,12 +426,11 @@ export function OptinList({
     <div className="wc-campaign-workspace" data-layout={layout}>
       {list.status === 'failed' ? (
         <Region label={__('Campaigns', 'wconvert')}>
-          <RegionErrorState message={list.message} />
-          <div className="p-4">
+          <RegionErrorState message={list.message} action={
             <Button onClick={() => void refresh()} variant="outline">
               {__('Try again', 'wconvert')}
             </Button>
-          </div>
+          } />
         </Region>
       ) : (
         <>
@@ -530,7 +529,7 @@ export function OptinList({
                   )
                 }
               >
-                {__('Choose what you want to achieve. We’ll help with the design.', 'wconvert')}
+                {__('Choose a goal, customize a design, and publish when you’re ready.', 'wconvert')}
               </EmptyState>
             ) : list.status === 'ready' && visible.length === 0 ? (
               <EmptyState

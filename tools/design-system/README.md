@@ -1,5 +1,9 @@
 # The design system, regenerated from `resources/admin/src`
 
+For current automated layout checks and review screenshots, use
+[Admin visual contracts](../visual-tests/README.md). This older generator builds
+design-reference cards and is not the CI regression suite.
+
 This builds the Claude Design project **WConvert Admin** — the token layer, the
 vocabulary CSS, and one preview card per screen per situation. It is a mirror of
 the shipping admin, and everything in it is generated, because a hand-maintained
