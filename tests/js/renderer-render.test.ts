@@ -205,9 +205,9 @@ describe('the leaf vocabulary', () => {
 
   it('keeps every capture kind autofillable and gives an old blank label an accessible fallback', () => {
     const cases = [
-      { name: 'email', type: 'email', autocomplete: 'email', inputMode: 'email', label: 'Email address' },
-      { name: 'name', type: 'text', autocomplete: 'name', inputMode: 'text', label: 'Name' },
-      { name: 'phone', type: 'tel', autocomplete: 'tel', inputMode: 'tel', label: 'Phone number' },
+      { name: 'email', type: 'email', autocomplete: 'email', inputMode: 'email', label: 'Email address', maxLength: 254 },
+      { name: 'name', type: 'text', autocomplete: 'name', inputMode: 'text', label: 'Name', maxLength: 200 },
+      { name: 'phone', type: 'tel', autocomplete: 'tel', inputMode: 'tel', label: 'Phone number', maxLength: 64 },
     ] as const;
 
     for (const expected of cases) {
@@ -219,6 +219,7 @@ describe('the leaf vocabulary', () => {
       expect(input?.autocomplete).toBe(expected.autocomplete);
       expect(input?.inputMode).toBe(expected.inputMode);
       expect(input?.required).toBe(true);
+      expect(input?.maxLength).toBe(expected.maxLength);
       expect(label?.textContent).toBe(`${expected.label} *`);
       expect(label?.htmlFor).toBe(input?.id);
       expect(input?.labels).toHaveLength(1);

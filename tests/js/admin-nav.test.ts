@@ -88,7 +88,7 @@ describe('bookmarked admin flows', () => {
     });
   });
 
-  it('preserves lead identifier, record and date filters through an editor roundtrip', () => {
+  it('keeps opaque and date filters bookmarkable but leaves direct identifiers out', () => {
     const query = {
       optinId: 'OPTIN1',
       identifier: 'sarah+offers@example.com',
@@ -99,9 +99,12 @@ describe('bookmarked admin flows', () => {
     const back = leadsHref(query);
     const editor = routeFrom(editorHref('OPTIN1', back));
 
-    expect(back).toContain('identifier=sarah%2Boffers%40example.com');
+    expect(back).not.toContain('sarah');
     expect(editor.returnTo).toBe(back);
-    expect(routeFrom(editor.returnTo)).toMatchObject({ section: 'leads', leads: query });
+    expect(routeFrom(editor.returnTo)).toMatchObject({
+      section: 'leads',
+      leads: { optinId: 'OPTIN1', leadId: 'LEAD1', from: '2026-09-01', to: '2026-09-10' },
+    });
   });
 
   it('encodes reserved characters as values without allowing them to add route parameters', () => {
@@ -110,7 +113,7 @@ describe('bookmarked admin flows', () => {
 
     expect(routeFrom(editorHref(id)).editId).toBe(id);
     expect(routeFrom(editorHref(id)).returnTo).toBe('#optins');
-    expect(routeFrom(leadsHref({ identifier })).leads).toMatchObject({ identifier, from: undefined });
+    expect(leadsHref({ identifier })).toBe('#leads');
     expect(routeFrom(destinationHref('email&destination=OTHER')).destinationId).toBe('email&destination=OTHER');
   });
 

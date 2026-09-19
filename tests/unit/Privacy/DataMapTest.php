@@ -17,6 +17,11 @@ use WConvert\Tests\Unit\Support\FakeSitePresence;
 #[CoversClass(DataMap::class)]
 final class DataMapTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        $GLOBALS['wconvertTestFilters'] = [];
+    }
+
     public function testAnUnconfiguredSiteStillReportsItsRealStorageBoundaries(): void
     {
         $options = new FakeOptionStore();
@@ -36,8 +41,11 @@ final class DataMapTest extends TestCase
                 'cookie_fallback_days' => 365,
                 'contains_contact_details' => false,
                 'contains_visitor_identifier' => false,
+                'stores_ab_assignment' => false,
+                'cart_recovery' => null,
             ],
             'beacon_rate_limit_seconds' => 60,
+            'capture_rate_limit_seconds' => 600,
         ], $map->summary());
     }
 
@@ -86,5 +94,25 @@ final class DataMapTest extends TestCase
         }
 
         $this->assertStringNotContainsString('SECRET', $encoded);
+    }
+
+    public function testAInstalledModuleCanAddOnlyItsOwnBrowserStorageFacts(): void
+    {
+        add_filter('wconvert_privacy_browser_storage', static function (array $browser): array {
+            $browser['cart_recovery'] = ['key' => 'wconvert_cart'];
+
+            return $browser;
+        });
+
+        $options = new FakeOptionStore();
+        $summary = (new DataMap(
+            new RetentionPeriod($options),
+            new DestinationStore($options),
+            new DestinationRegistry(new FakeProPresence(), new FakeSitePresence())
+        ))->summary();
+
+        $this->assertSame('wconvert_cart', $summary['browser']['cart_recovery']['key']);
+        $this->assertFalse($summary['browser']['cart_recovery']['contains_contact_details']);
+        $this->assertSame('wcv1', $summary['browser']['key']);
     }
 }

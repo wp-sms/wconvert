@@ -78,6 +78,19 @@ final class CartCookieTest extends TestCase
         $this->assertSame('1:9.99', CartCookie::valueFor(1, 9.99));
     }
 
+    public function testItsPrivacyFactNamesOnlyTheTwoValuesTheCookieContains(): void
+    {
+        $browser = CartCookie::privacy(['cart_recovery' => null]);
+
+        $this->assertSame([
+            'key' => CartCookie::NAME,
+            'expires_with_cart_session' => true,
+            'contains_item_count' => true,
+            'contains_cart_total' => true,
+            'contains_contact_details' => false,
+        ], $browser['cart_recovery']);
+    }
+
     /**
      * **Two decimals for every currency**, formatted with explicit separators.
      * The reader is `Number()` in a browser: it wants `"1234.50"` and cannot

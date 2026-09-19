@@ -232,6 +232,16 @@ final class TestADestinationTest extends TestCase
         self::assertSame($message, $this->send($this->destination->id)['message']);
     }
 
+    public function testATestSendKeepsTheReasonButDoesNotEchoItsRecipient(): void
+    {
+        $this->type->answers = [PushResult::terminal('Provider rejected merchant@example.com: invalid subscriber.')];
+
+        $message = $this->send($this->destination->id)['message'];
+
+        self::assertSame('Provider rejected [email]: invalid subscriber.', $message);
+        self::assertStringNotContainsString('merchant@example.com', $message);
+    }
+
     /**
      * **A type this install cannot run is not a failure**, and collapsing that
      * into one would tell a merchant with no WP SMS that their WP SMS

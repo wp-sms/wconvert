@@ -36,8 +36,9 @@ beforeEach(() => {
   privacy.readDataMap.mockResolvedValue({
     retention_days: null,
     destinations: [],
-    browser: { key: 'wcv1', local_storage_expiry_days: null, cookie_fallback: true, cookie_fallback_days: 365, contains_contact_details: false, contains_visitor_identifier: false },
+    browser: { key: 'wcv1', local_storage_expiry_days: null, cookie_fallback: true, cookie_fallback_days: 365, contains_contact_details: false, contains_visitor_identifier: false, stores_ab_assignment: false, cart_recovery: null },
     beacon_rate_limit_seconds: 60,
+    capture_rate_limit_seconds: 600,
   });
   privacy.readPrivacyGuidance.mockResolvedValue({ enabled: true });
   privacy.savePrivacyGuidance.mockImplementation(async (enabled) => ({ enabled }));

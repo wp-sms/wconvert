@@ -63,7 +63,9 @@ final class PolicyText
             '<h3>' . __('Browser storage and campaign statistics', 'wconvert') . '</h3>',
             '<p>' . sprintf(
                 /* translators: %s: the browser storage key used by WConvert. */
-                __('Your browser remembers whether a campaign was shown, dismissed or completed, and which version was assigned during an A/B test. This helps avoid repeatedly showing the same campaign and keeps the assigned version consistent. The record is stored in local storage under the name %s. Local storage has no set expiry and remains until you clear the site data or the browser removes it.', 'wconvert'),
+                $browser['stores_ab_assignment']
+                    ? __('Your browser remembers whether a campaign was shown, dismissed or completed, and which version was assigned during an A/B test. This avoids repeatedly showing the same campaign and keeps the assigned version consistent. The record is stored in local storage under the name %s. It remains until you clear the site data or the browser removes it.', 'wconvert')
+                    : __('Your browser remembers whether a campaign was shown, dismissed or completed. This avoids repeatedly showing the same campaign. The record is stored in local storage under the name %s. It remains until you clear the site data or the browser removes it.', 'wconvert'),
                 '<code>' . esc_html($browser['key']) . '</code>'
             ) . '</p>',
             '<p>' . sprintf(
@@ -71,11 +73,19 @@ final class PolicyText
                 __('If local storage is unavailable, WConvert uses a cookie with the same name for up to %s. This browser record contains no name, email address, phone number or visitor identifier created by WConvert.', 'wconvert'),
                 $this->cookieDuration($browser['cookie_fallback_days'])
             ) . '</p>',
+            ...($browser['cart_recovery'] !== null ? [
+                '<p>' . __('Cart recovery stores the cart item count and total in a browser cookie until the WooCommerce cart session ends. It does not store product or contact details.', 'wconvert') . '</p>',
+            ] : []),
             '<p>' . __('WConvert records total campaign views, dismissals and completions by campaign and day. These totals are not linked to individual visitors.', 'wconvert') . '</p>',
             '<p>' . sprintf(
                 /* translators: %s: the short lifetime of the campaign-counting rate-limit record. */
                 __('To limit repeated counting requests, WConvert temporarily keeps a site-specific one-way hash of the visitor’s IP address for %s. The IP address itself is not saved.', 'wconvert'),
                 $this->shortDuration($summary['beacon_rate_limit_seconds'])
+            ) . '</p>',
+            '<p>' . sprintf(
+                /* translators: %s: the capture rate-limit record lifetime. */
+                __('To slow repeated form submissions, WConvert temporarily keeps a separate site-specific one-way hash of the IP address for each campaign for %s. The IP address itself is not saved.', 'wconvert'),
+                $this->shortDuration($summary['capture_rate_limit_seconds'])
             ) . '</p>',
             '<p>' . __('WConvert does not use form submissions for automated decision-making or to build visitor profiles.', 'wconvert') . '</p>',
             '<h3>' . __('Who receives your information', 'wconvert') . '</h3>',
@@ -179,6 +189,16 @@ final class PolicyText
     {
         if ($seconds === 60) {
             return __('one minute', 'wconvert');
+        }
+
+        if ($seconds % 60 === 0) {
+            $minutes = (int) ($seconds / 60);
+
+            return sprintf(
+                /* translators: %s: a number of minutes. */
+                _n('%s minute', '%s minutes', $minutes, 'wconvert'),
+                number_format_i18n($minutes)
+            );
         }
 
         return sprintf(

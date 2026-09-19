@@ -15,7 +15,10 @@ adds a separate preference for privacy help while authoring new Campaigns.
 
 The Data Map reports only what WConvert can prove: the saved Retention Period,
 configured destination types and declared/mapped fields, browser campaign
-state, and the anonymous-count rate-limit lifetime. It never returns connection
+state, and the anonymous-count and form-protection rate-limit lifetimes. Pro
+modules extend the same map only when this install can actually use them: A/B
+assignment state, and a WooCommerce-session cart-recovery cookie holding count
+and total but no product or contact details. It never returns connection
 credentials or provider settings. A configured destination whose implementation
 is currently unavailable remains visible with unknown fields; missing code does
 not make a configured data flow disappear.
@@ -43,14 +46,17 @@ deletion from systems it does not control. WordPress presents plugin policy
 content as a guide for the site owner to review. Destination copies, CSV files,
 email logs and backups therefore remain an explicit separate checklist.
 
-The guidance accurately distinguishes three storage boundaries:
+The guidance accurately distinguishes these storage boundaries:
 
 - retained Lead fields and consent wording in WConvert;
-- browser-local display/dismissal/conversion/A/B state, with no contact details
-  or WConvert-generated visitor identifier; local storage has no set expiry,
-  while the same-name fallback cookie lasts up to one year; and
+- browser-local display/dismissal/conversion state and, only when supplied, A/B
+  assignment state; local storage has no set expiry, while the same-name
+  fallback cookie lasts up to one year;
+- the optional cart-recovery cookie, when available, holding only cart count
+  and total until the WooCommerce session ends; and
 - a site-specific one-way network-address hash kept for the short anonymous
-  counting rate-limit window, while the raw network address is not stored.
+  counting rate-limit window, plus a separate address-and-Campaign hash kept
+  for the fixed form-protection window, while the raw address is not stored.
 
 ## Settings follows the existing interface grammar
 
@@ -78,5 +84,8 @@ request work rather than creating another compliance dashboard.
 - The guide describes only configured destinations, not every integration that
   could be installed.
 - Unknown destination types remain reviewable without guessing their fields.
+- Safety boundaries such as body/field limits, diagnostic redaction and the
+  generous capture limiter are defaults rather than privacy toggles; disabling
+  them would reintroduce avoidable exposure without simplifying the interface.
 - No new legal conclusion, consent mechanism, request log or downstream erasure
   lifecycle is introduced.

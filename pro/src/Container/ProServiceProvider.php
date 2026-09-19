@@ -236,6 +236,14 @@ final class ProServiceProvider implements ServiceProvider
          */
         $site = $container->resolve(SitePresence::class);
 
+        if (class_exists(AbTestController::class)) {
+            add_filter('wconvert_privacy_browser_storage', static function (array $browser): array {
+                $browser['stores_ab_assignment'] = true;
+
+                return $browser;
+            });
+        }
+
         /*
          * ====================================================================
          * ONE PASS PER RUNG THIS BUILD SUPPLIES, AND THE RUNG IS READ OFF DISK.
@@ -293,6 +301,7 @@ final class ProServiceProvider implements ServiceProvider
         // one ADR 0015 writes as "a premium capability is absent rather than
         // present and guarded".
         if (class_exists(CartCookie::class) && $site->has(SiteDependency::WooCommerce)) {
+            add_filter('wconvert_privacy_browser_storage', [CartCookie::class, 'privacy']);
             $container->resolve(CartCookie::class)->hooks();
         }
 

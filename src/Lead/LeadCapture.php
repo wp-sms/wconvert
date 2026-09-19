@@ -2,6 +2,8 @@
 
 namespace WConvert\Lead;
 
+use WConvert\Support\DiagnosticSanitizer;
+
 defined('ABSPATH') || exit;
 
 /**
@@ -56,7 +58,11 @@ final class LeadCapture
                 'WConvert: a handler of %s threw for Lead %s. The Lead is stored; the dispatch is not. %s',
                 self::CAPTURED,
                 $lead->id,
-                $failure->getMessage()
+                DiagnosticSanitizer::message($failure->getMessage(), [
+                    $lead->email,
+                    $lead->phone,
+                    $lead->fields,
+                ])
             ));
         }
 

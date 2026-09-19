@@ -8,10 +8,12 @@ use WConvert\Lead\LeadCapture;
 use WConvert\Lead\LeadRepository;
 use WConvert\Optin\PublishedSet;
 use WConvert\Rest\CaptureController;
+use WConvert\Rest\CaptureRateLimit;
 use WConvert\Rest\Routes;
 use WConvert\Template\TemplateVocabulary;
 use WConvert\Tests\Unit\Support\FakeConnection;
 use WConvert\Tests\Unit\Support\FakeOptionStore;
+use WConvert\Tests\Unit\Support\FakeTransientStore;
 
 /**
  * The capture route's REGISTRATION, which is where two of this endpoint's
@@ -25,17 +27,21 @@ use WConvert\Tests\Unit\Support\FakeOptionStore;
 #[CoversClass(Routes::class)]
 final class CaptureControllerTest extends TestCase
 {
+    private static function controller(): CaptureController
+    {
+        return new CaptureController(
+            new PublishedSet(new FakeOptionStore()),
+            new LeadCapture(new LeadRepository(new FakeConnection())),
+            TemplateVocabulary::fromManifest(__DIR__ . '/../../..'),
+            new CaptureRateLimit(new FakeTransientStore())
+        );
+    }
+
     protected function setUp(): void
     {
         $GLOBALS['wconvertTestRoutes'] = [];
 
-        $controller = new CaptureController(
-            new PublishedSet(new FakeOptionStore()),
-            new LeadCapture(new LeadRepository(new FakeConnection())),
-            TemplateVocabulary::fromManifest(__DIR__ . '/../../..')
-        );
-
-        $controller->registerRoutes();
+        self::controller()->registerRoutes();
     }
 
     /**
@@ -103,5 +109,17 @@ final class CaptureControllerTest extends TestCase
         $this->assertArrayNotHasKey('consent', $args, 'ADR 0032: consent must reach CaptureForm uncoerced');
         $this->assertArrayNotHasKey('fields', $args);
         $this->assertSame(['optin_id'], array_keys($args));
+    }
+
+    public function testAnOversizedBodyIsRefusedBeforeAnyCampaignLookupOrWrite(): void
+    {
+        $request = new \WP_REST_Request('POST', '/wconvert/v1/capture');
+        $request->set_body(str_repeat('x', CaptureController::MAX_BODY_BYTES + 1));
+
+        $response = self::controller()->capture($request);
+
+        $this->assertInstanceOf(\WP_Error::class, $response);
+        $this->assertSame('wconvert_capture_too_large', $response->get_error_code());
+        $this->assertSame(['status' => 413], $response->get_error_data());
     }
 }

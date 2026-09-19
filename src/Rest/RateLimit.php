@@ -22,15 +22,10 @@ defined('ABSPATH') || exit;
  * the site's own salts, so the key cannot be reversed and cannot be correlated
  * across sites.
  *
- * **This limits the beacon and not the capture endpoint**, deliberately. They
- * are different traffic: a beacon fires on every page view a published Optin
- * matches, while a capture is one act a person performs rarely and cares about
- * a great deal. One shared window would let ordinary beacon volume exhaust a
- * visitor's allowance and refuse the submission they were still on the page to
- * fix — which is the failure ADR 0021 spent a whole ticket removing. The
- * capture endpoint's protection is that it re-reads everything about the form
- * from the server's own published copy and trusts the client for nothing but
- * the values a person typed.
+ * **This bucket is for the beacon only.** Captures are rare, important acts
+ * with a much longer and smaller allowance in {@see CaptureRateLimit}. Keeping
+ * the buckets separate means normal impression traffic can never consume a
+ * visitor's form-submission allowance.
  *
  * **What abuse costs is a wrong number on one merchant's dashboard**, not data
  * loss and not a breach — so this is hardening, not a security boundary, and

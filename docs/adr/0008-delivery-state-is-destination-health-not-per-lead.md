@@ -136,10 +136,12 @@ refuse.*
 - **Queue jobs carry a Lead id and a Destination id, never Lead data.** Personal
   data would otherwise sit in `actionscheduler_actions` for the whole AS
   retention period, outliving any retention policy WConvert sets for itself.
-- **No rate limiter class in v1.** Organic capture cannot approach any vendor's
-  limit; only bulk re-push can. A Destination type declares a sustained
-  jobs-per-minute figure and bulk re-push staggers `QueueInterface::schedule()`
-  accordingly. Immediate dispatch stays immediate.
+- **No Destination-vendor rate limiter class in v1.** Organic capture cannot
+  approach any vendor's limit; only bulk re-push can. A Destination type
+  declares a sustained jobs-per-minute figure and bulk re-push staggers
+  `QueueInterface::schedule()` accordingly. Immediate dispatch stays immediate.
+  The public capture endpoint's separate abuse limiter protects local form
+  intake and does not meter Destination delivery.
 - **The lead-magnet Goal's metric is not read from delivery state.** #2 worded it
   as "Leads where the delivery fired", which has nothing per-Lead left to read
   once health is the whole record. *Resolved by

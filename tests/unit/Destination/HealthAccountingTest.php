@@ -136,6 +136,18 @@ final class HealthAccountingTest extends TestCase
         self::assertSame([], $this->queue->jobs, 'A terminal failure is never retried.');
     }
 
+    public function testStoredFailureKeepsTheReasonWithoutCopyingLeadValues(): void
+    {
+        $this->type->answers = [PushResult::terminal('Provider rejected sarah@example.com for Sarah: invalid subscriber.')];
+
+        $this->push();
+
+        $error = $this->failures->all()[0]['error'];
+        self::assertSame('Provider rejected [email] for [personal data]: invalid subscriber.', $error);
+        self::assertStringNotContainsString('sarah@example.com', $error);
+        self::assertStringNotContainsString('Sarah', $error);
+    }
+
     /**
      * A real outage **does** move health, and goes back on the queue.
      */

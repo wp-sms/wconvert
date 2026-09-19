@@ -242,6 +242,15 @@ final class CaptureFormTest extends TestCase
         $this->assertSame('email', $refusal->field);
     }
 
+    public function testOversizedContactFieldsAreRefusedBeforeTheyCanBeStored(): void
+    {
+        $refusal = self::validate(self::template(), ['fields' => ['email' => str_repeat('a', 250) . '@example.com']]);
+
+        $this->assertInstanceOf(Refusal::class, $refusal);
+        $this->assertSame(RefusalCode::FieldTooLong, $refusal->code);
+        $this->assertSame('email', $refusal->field);
+    }
+
     public function testAnIdentifierThatCannotBeCanonicalisedIsRefusedAgainstItsOwnField(): void
     {
         $template = self::template([['type' => 'field', 'name' => 'phone']]);

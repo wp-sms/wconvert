@@ -49,20 +49,18 @@ final class LeadExport
     }
 
     /**
-     * The URL the admin screen links to, nonce and all.
+     * The action URL the admin's temporary POST form submits to, nonce and all.
      *
-     * It carries no `optin_id`, and the screen appends one when the log is
-     * filtered. That is safe because the nonce is bound to the ACTION rather
-     * than to the query string — and it is why the export needs one URL rather
-     * than one per Optin.
+     * Filters belong in the request body so captured contact details do not
+     * enter browser history, copied links or ordinary server access logs. The
+     * nonce is bound to the ACTION, so one action URL serves every filter set.
      */
     public static function url(): string
     {
         // Composed rather than `wp_nonce_url()`, which is the same URL run
-        // through `esc_html()`. This one is handed to JavaScript as DATA — the
-        // screen appends `optin_id` to it — so an HTML-encoded `&amp;` between
-        // the parameters is not an escape but a corruption: the browser would
-        // send `amp;optin_id` and the export would ignore the filter.
+        // through `esc_html()`. This one is handed to JavaScript as DATA and
+        // used as a form action, so an HTML-encoded `&amp;` would corrupt the
+        // action and nonce parameter names.
         return add_query_arg('_wpnonce', wp_create_nonce(self::ACTION), admin_url('admin-post.php?action=' . self::ACTION));
     }
 
@@ -75,7 +73,7 @@ final class LeadExport
         try {
             $input = [];
             foreach (['optin_id', 'identifier', 'search', 'purpose', 'lead_id', 'from', 'to', 'snapshot', 'group_identifier'] as $key) {
-                if (isset($_GET[$key])) $input[$key] = is_string($_GET[$key]) ? wp_unslash($_GET[$key]) : $_GET[$key];
+                if (isset($_POST[$key])) $input[$key] = is_string($_POST[$key]) ? wp_unslash($_POST[$key]) : $_POST[$key];
             }
             $query = LeadQuery::fromInput($input);
         } catch (InvalidArgumentException $invalid) {

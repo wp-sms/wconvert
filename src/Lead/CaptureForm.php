@@ -29,6 +29,9 @@ final class CaptureForm
     /** What a `field` may capture. Closed, because the capture path canonicalises per kind. */
     private const IDENTITY_KEYS = ['email', 'phone'];
 
+    /** @var array<string, positive-int> */
+    private const MAX_LENGTHS = ['email' => 254, 'phone' => 64, 'name' => 200, 'interest' => 200];
+
     /**
      * @param array<string, array{required: bool, options: list<array{value: string, label: string}>}> $fields
      * @param array<string, mixed>|null $consent The `consent` node, or null where the Optin declares none.
@@ -114,6 +117,10 @@ final class CaptureForm
         // way in (ADR 0010).
         foreach ($this->fields as $name => $definition) {
             $raw = is_scalar($posted[$name] ?? null) ? trim((string) $posted[$name]) : '';
+
+            if (mb_strlen($raw) > (self::MAX_LENGTHS[$name] ?? 2000)) {
+                return new Refusal(RefusalCode::FieldTooLong, $name);
+            }
 
             if ($name === 'interest' && isset($posted[$name]) && !is_string($posted[$name])) {
                 return new Refusal(RefusalCode::ChoiceInvalid, $name);

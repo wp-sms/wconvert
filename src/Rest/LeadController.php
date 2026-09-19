@@ -48,36 +48,18 @@ final class LeadController implements RestController
                 'methods' => 'GET',
                 'callback' => [$this, 'index'],
                 'permission_callback' => [Routes::class, 'canManage'],
-                'args' => [
-                    // A ULID or nothing. An `optin_id` that is not one is a
-                    // filter that would silently match no rows, which reads on
-                    // screen as an empty log rather than as a bad request.
-                    'optin_id' => [
-                        'type' => 'string',
-                        'pattern' => '^' . Ulid::PATTERN . '$',
-                    ],
-                    // The grouping toggle. It changes what a ROW is and
-                    // nothing else — the response's `submissions` is the same
-                    // number either way (ADR 0021).
-                    'grouped' => ['type' => 'boolean', 'default' => false],
-                    'lead_id' => ['type' => 'string', 'pattern' => '^' . Ulid::PATTERN . '$'],
-                    'identifier' => ['type' => 'string', 'maxLength' => 254],
-                    'search' => ['type' => 'string', 'maxLength' => 200],
-                    'purpose' => ['type' => 'string', 'enum' => ['subscribers', 'enquiries']],
-                    'order' => ['type' => 'string', 'enum' => ['newest', 'oldest']],
-                    'include_counts' => ['type' => 'boolean', 'default' => false],
-                    'group_identifier' => ['type' => 'string', 'maxLength' => 254],
-                    'from' => ['type' => 'string', 'maxLength' => 10],
-                    'to' => ['type' => 'string', 'maxLength' => 10],
-                    'cursor' => ['type' => 'string', 'maxLength' => 128],
-                    'snapshot' => ['type' => 'string', 'pattern' => '^' . Ulid::PATTERN . '$'],
-                    'per_page' => [
-                        'type' => 'integer',
-                        'default' => self::DEFAULT_PER_PAGE,
-                        'minimum' => 1,
-                        'maximum' => LeadLog::MAX_ROWS,
-                    ],
-                ],
+                'args' => self::queryArgs(false),
+            ],
+        ]);
+
+        // Contact details and free-text searches travel in a nonce-protected
+        // request body, never in an access-log or browser-history URL.
+        register_rest_route(Routes::NAMESPACE, '/leads/query', [
+            [
+                'methods' => 'POST',
+                'callback' => [$this, 'index'],
+                'permission_callback' => [Routes::class, 'canManage'],
+                'args' => self::queryArgs(true),
             ],
         ]);
 
@@ -113,8 +95,58 @@ final class LeadController implements RestController
         ]);
     }
 
+    /**
+     * @return array<string, array<string, mixed>>
+     */
+    private static function queryArgs(bool $personal): array
+    {
+        $args = [
+            // A ULID or nothing. An `optin_id` that is not one is a filter
+            // that would silently match no rows, which reads as an empty log.
+            'optin_id' => [
+                'type' => 'string',
+                'pattern' => '^' . Ulid::PATTERN . '$',
+            ],
+            'grouped' => ['type' => 'boolean', 'default' => false],
+            'purpose' => ['type' => 'string', 'enum' => ['subscribers', 'enquiries']],
+            'order' => ['type' => 'string', 'enum' => ['newest', 'oldest']],
+            'include_counts' => ['type' => 'boolean', 'default' => false],
+            'from' => ['type' => 'string', 'maxLength' => 10],
+            'to' => ['type' => 'string', 'maxLength' => 10],
+            'cursor' => ['type' => 'string', 'maxLength' => 128],
+            'snapshot' => ['type' => 'string', 'pattern' => '^' . Ulid::PATTERN . '$'],
+            'per_page' => [
+                'type' => 'integer',
+                'default' => self::DEFAULT_PER_PAGE,
+                'minimum' => 1,
+                'maximum' => LeadLog::MAX_ROWS,
+            ],
+        ];
+
+        if ($personal) {
+            $args['lead_id'] = ['type' => 'string', 'pattern' => '^' . Ulid::PATTERN . '$'];
+            $args['identifier'] = ['type' => 'string', 'maxLength' => 254];
+            $args['search'] = ['type' => 'string', 'maxLength' => 200];
+            $args['group_identifier'] = ['type' => 'string', 'maxLength' => 254];
+        }
+
+        return $args;
+    }
+
     public function index(WP_REST_Request $request): WP_REST_Response|WP_Error
     {
+        if ($request->get_method() === 'GET') {
+            foreach (['lead_id', 'identifier', 'search', 'group_identifier'] as $personal) {
+                if ($request->get_param($personal) !== null) {
+                    return new WP_Error(
+                        'wconvert_personal_query_in_url',
+                        __('Search submissions from the WConvert admin screen.', 'wconvert'),
+                        ['status' => 400]
+                    );
+                }
+            }
+        }
+
         try {
             $query = LeadQuery::fromInput($request->get_params());
         } catch (InvalidArgumentException $invalid) {

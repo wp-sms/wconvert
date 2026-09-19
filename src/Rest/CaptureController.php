@@ -42,10 +42,13 @@ defined('ABSPATH') || exit;
  */
 final class CaptureController implements RestController
 {
+    public const MAX_BODY_BYTES = 16384;
+
     public function __construct(
         private readonly PublishedSet $publishedSet,
         private readonly LeadCapture $capture,
         private readonly TemplateVocabulary $vocabulary,
+        private readonly CaptureRateLimit $rateLimit,
     ) {
     }
 
@@ -78,6 +81,14 @@ final class CaptureController implements RestController
      */
     public function capture(WP_REST_Request $request)
     {
+        if (strlen($request->get_body()) > self::MAX_BODY_BYTES) {
+            return new WP_Error(
+                'wconvert_capture_too_large',
+                __('This submission is too large. Please shorten it and try again.', 'wconvert'),
+                ['status' => 413]
+            );
+        }
+
         $optin = PublishedOptin::findInSet(
             $this->publishedSet->all(),
             (string) $request->get_param('optin_id')
@@ -92,6 +103,18 @@ final class CaptureController implements RestController
                 'wconvert_optin_not_published',
                 __('This form is no longer available.', 'wconvert'),
                 ['status' => 404]
+            );
+        }
+
+        // Only the address the web server identifies as the peer. Trusting a
+        // caller-supplied forwarding header would let a bot choose its bucket.
+        $address = (string) wp_unslash($_SERVER['REMOTE_ADDR'] ?? '');
+
+        if (!$this->rateLimit->allows($address, $optin->id, time())) {
+            return new WP_Error(
+                'wconvert_capture_rate_limited',
+                __('Too many submissions were received. Please wait a few minutes and try again.', 'wconvert'),
+                ['status' => 429]
             );
         }
 
@@ -197,6 +220,7 @@ final class CaptureController implements RestController
                 'interest' => __('Please choose an option.', 'wconvert'),
                 default => __('Please fill in this field.', 'wconvert'),
             },
+            RefusalCode::FieldTooLong => __('Please shorten this field and try again.', 'wconvert'),
             RefusalCode::NoIdentifier => __('Please enter an email address or a phone number.', 'wconvert'),
             RefusalCode::ChoiceInvalid => __('Please choose one of the available options.', 'wconvert'),
             RefusalCode::NothingToCapture => __('This form is not accepting submissions.', 'wconvert'),

@@ -3,7 +3,7 @@ import { act, fireEvent, render, screen, waitFor, within } from '@testing-librar
 import userEvent from '@testing-library/user-event';
 import type { LeadPage } from '../../resources/admin/src/leads/api';
 
-const log = vi.hoisted(() => ({ readLog: vi.fn(), readRetention: vi.fn(), saveRetention: vi.fn(), eraseIdentifier: vi.fn(), exportUrl: vi.fn() }));
+const log = vi.hoisted(() => ({ readLog: vi.fn(), readRetention: vi.fn(), saveRetention: vi.fn(), eraseIdentifier: vi.fn(), canExport: vi.fn(), exportLeads: vi.fn() }));
 const optins = vi.hoisted(() => ({ listOptins: vi.fn() }));
 vi.mock('../../resources/admin/src/leads/api', () => log);
 vi.mock('../../resources/admin/src/optins/api', async (importOriginal) => ({
@@ -25,7 +25,8 @@ describe('capture history', () => {
     log.readLog.mockImplementation((query: LeadPage) => Promise.resolve({ ...SEVEN, grouped: query.grouped === true }));
     log.readRetention.mockResolvedValue({ days: null, max_days: 3650 });
     log.eraseIdentifier.mockResolvedValue({ identifier: '+96899123456', removed: 7 });
-    log.exportUrl.mockImplementation((query: LeadPage) => `https://example.test/export?_wpnonce=y&identifier=${query.identifier ?? ''}&snapshot=${query.snapshot ?? ''}`);
+    log.canExport.mockReturnValue(true);
+    log.exportLeads.mockReturnValue(true);
     optins.listOptins.mockResolvedValue([OPTIN]);
   });
 
@@ -68,7 +69,8 @@ describe('capture history', () => {
     expect(details.getByText('Please help repair my window.')).toBeVisible();
     expect(details.getByRole('link', { name: 'Newsletter footer' })).toHaveAttribute('href', expect.stringContaining('edit=OPTIN1'));
     await userEvent.click(details.getByRole('button', { name: 'View submissions using this email' }));
-    expect(onQueryChange).toHaveBeenCalledWith({ identifier: 'sarah@example.com' });
+    expect(onQueryChange).toHaveBeenCalledWith({});
+    await waitFor(() => expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ identifier: 'sarah@example.com' })));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
@@ -162,7 +164,8 @@ describe('capture history', () => {
     });
 
     expect(await within(dialog).findByText(/all 7 retained submissions/)).toBeVisible();
-    expect(within(dialog).getByRole('link', { name: 'Export these submissions before deleting' })).toHaveAttribute('href', expect.stringContaining(`snapshot=${SNAPSHOT}`));
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Export these submissions before deleting' }));
+    expect(log.exportLeads).toHaveBeenCalledWith({ identifier: '+96899123456', snapshot: SNAPSHOT });
     await userEvent.click(within(dialog).getByRole('button', { name: 'Permanently delete' }));
     await waitFor(() => expect(log.eraseIdentifier).toHaveBeenCalledWith('+96899123456'));
     expect(await screen.findByText(/7 submissions were permanently deleted from WConvert/)).toBeInTheDocument();
@@ -200,7 +203,8 @@ describe('capture history', () => {
     render(<LeadLog query={{ from: '2026-08-01', to: '2026-08-31' }} onQueryChange={onQueryChange} />);
     await userEvent.type(screen.getByLabelText('Search submissions'), CAPTURE.id.toLowerCase());
     await userEvent.click(screen.getByRole('button', { name: 'Apply filters' }));
-    expect(onQueryChange).toHaveBeenCalledWith(expect.objectContaining({ leadId: CAPTURE.id, identifier: undefined, from: '2026-08-01', to: '2026-08-31' }));
+    expect(onQueryChange).toHaveBeenCalledWith(expect.objectContaining({ leadId: CAPTURE.id, from: '2026-08-01', to: '2026-08-31' }));
+    expect(onQueryChange.mock.calls.at(-1)?.[0]).not.toHaveProperty('identifier');
   });
 
   it('follows browser-history query changes and resets stale filter inputs', async () => {
@@ -227,7 +231,8 @@ describe('capture history', () => {
     rerender(<LeadLog query={{ identifier: 'alex@example.com' }} />);
     await screen.findByText('Read interrupted.');
     expect(screen.getByText('sarah@example.com')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Export matching submissions' })).toHaveAttribute('href', expect.stringContaining('sarah@example.com'));
+    await userEvent.click(screen.getByRole('button', { name: 'Export matching submissions' }));
+    expect(log.exportLeads).toHaveBeenCalledWith(expect.objectContaining({ identifier: 'sarah@example.com' }));
     expect(screen.getByText(/last successful filters/)).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'About this count and export' }));
     const help = within(screen.getByRole('dialog', { name: 'About this count and export' }));
@@ -255,7 +260,8 @@ describe('capture history', () => {
     expect(await screen.findByText('older@example.com')).toBeInTheDocument();
     expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ cursor: 'next-page', snapshot: SNAPSHOT, from: '2026-08-01' }));
     expect(screen.getByText('Page 2 · 1 submission shown.')).toBeInTheDocument();
-    expect(log.exportUrl).toHaveBeenLastCalledWith(expect.objectContaining({ snapshot: SNAPSHOT, optinId: 'OPTIN1', from: '2026-08-01' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Export matching submissions' }));
+    expect(log.exportLeads).toHaveBeenLastCalledWith(expect.objectContaining({ snapshot: SNAPSHOT, optinId: 'OPTIN1', from: '2026-08-01' }));
     await userEvent.click(screen.getByRole('button', { name: 'Newer' }));
     await screen.findByText('sarah@example.com');
     expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ cursor: undefined, snapshot: SNAPSHOT }));
@@ -302,8 +308,8 @@ describe('capture history', () => {
     const dialog = await screen.findByRole('dialog', { name: 'Submission history' });
     expect(await within(dialog).findByText('sarah@example.com', { selector: 'bdi' })).toBeInTheDocument();
     expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ groupIdentifier: 'sarah@example.com', grouped: false, from: '2026-08-01', snapshot: SNAPSHOT, cursor: undefined }));
-    expect(within(dialog).getByRole('link', { name: 'Export these submissions' })).toBeInTheDocument();
-    expect(log.exportUrl).toHaveBeenCalledWith(expect.objectContaining({ groupIdentifier: 'sarah@example.com', from: '2026-08-01', snapshot: SNAPSHOT }));
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Export these submissions' }));
+    expect(log.exportLeads).toHaveBeenCalledWith(expect.objectContaining({ groupIdentifier: 'sarah@example.com', from: '2026-08-01', snapshot: SNAPSHOT }));
   });
 
   it('keeps captured fields and Lead ID readable without claiming a delivery status', async () => {
@@ -325,6 +331,7 @@ describe('capture history', () => {
     await waitFor(() => expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ search: 'repair' })));
     await userEvent.click(screen.getByRole('radio', { name: 'Enquiries' }));
     await waitFor(() => expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ search: 'repair', purpose: 'enquiries' })));
-    expect(log.exportUrl).toHaveBeenLastCalledWith(expect.objectContaining({ search: 'repair', purpose: 'enquiries', snapshot: SNAPSHOT }));
+    await userEvent.click(screen.getByRole('button', { name: 'Export matching submissions' }));
+    expect(log.exportLeads).toHaveBeenLastCalledWith(expect.objectContaining({ search: 'repair', purpose: 'enquiries', snapshot: SNAPSHOT }));
   });
 });

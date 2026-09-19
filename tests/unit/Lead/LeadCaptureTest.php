@@ -83,7 +83,7 @@ final class LeadCaptureTest extends TestCase
         $db = new FakeConnection();
 
         add_action(LeadCapture::CAPTURED, static function (): void {
-            throw new \RuntimeException('the queue is down');
+            throw new \RuntimeException('the queue rejected sarah@example.com for Sarah');
         });
 
         $log = (string) tempnam(sys_get_temp_dir(), 'wconvert-');
@@ -105,7 +105,9 @@ final class LeadCaptureTest extends TestCase
         // health arrives with #30 the site's error log is the only place
         // WConvert has to put it.
         $this->assertStringContainsString($lead->id, (string) file_get_contents($log));
-        $this->assertStringContainsString('the queue is down', (string) file_get_contents($log));
+        $written = (string) file_get_contents($log);
+        $this->assertStringContainsString('the queue rejected [email] for [personal data]', $written);
+        $this->assertStringNotContainsString('sarah@example.com', $written);
 
         unlink($log);
     }

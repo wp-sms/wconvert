@@ -3,6 +3,7 @@
 namespace WConvert\Destination;
 
 use WConvert\Storage\OptionStore;
+use WConvert\Support\DiagnosticSanitizer;
 
 defined('ABSPATH') || exit;
 
@@ -80,7 +81,7 @@ final class DeliveryFailures
         array_unshift($entries, [
             'destination' => $destinationId,
             'lead' => $leadId,
-            'error' => mb_substr($error, 0, self::ERROR_LENGTH),
+            'error' => mb_substr(DiagnosticSanitizer::message($error), 0, self::ERROR_LENGTH),
             'at' => $at,
         ]);
 

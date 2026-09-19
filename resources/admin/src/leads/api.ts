@@ -74,8 +74,6 @@ export interface ErasureResult {
   removed: number;
 }
 
-const query = (params: Record<string, string>) => new URLSearchParams(params).toString();
-
 export const leadParams = (filter: LeadPage): Record<string, string> => Object.fromEntries(
   Object.entries({ optin_id: filter.optinId, identifier: filter.identifier, lead_id: filter.leadId,
     search: filter.search, purpose: filter.purpose, order: filter.order,
@@ -85,11 +83,13 @@ export const leadParams = (filter: LeadPage): Record<string, string> => Object.f
 
 export const readLog = (filter: LeadPage = {}) =>
   apiFetch<LeadLog>({
-    path: `/wconvert/v1/leads?${query({
+    path: '/wconvert/v1/leads/query',
+    method: 'POST',
+    data: {
       ...leadParams(filter),
       grouped: filter.grouped ? '1' : '0',
       ...(filter.includeCounts ? { include_counts: '1' } : {}),
-    })}`,
+    },
   });
 
 export const readRetention = () => apiFetch<Retention>({ path: '/wconvert/v1/leads/retention' });
@@ -105,21 +105,33 @@ export const eraseIdentifier = (identifier: string) =>
     data: { identifier, confirmed_identifier: identifier },
   });
 
-/**
- * The CSV download, as a URL rather than a fetch.
- *
- * A download is a navigation: the browser needs the `Content-Disposition` the
- * server sends, and `apiFetch` would read the file into memory and then have
- * to turn it back into one. The nonce is bound to the action, so appending a
- * filter here does not invalidate it.
- */
-export const exportUrl = (filter: LeadPage = {}): string | null => {
+export const canExport = (): boolean => adminSettings()?.exportUrl !== undefined;
+
+/** Submit export filters in the request body so contact details never enter browser or server URL logs. */
+export const exportLeads = (filter: LeadPage = {}): boolean => {
   const base = adminSettings()?.exportUrl;
 
   if (base === undefined) {
-    return null;
+    return false;
   }
 
   const params = leadParams({ ...filter, cursor: undefined });
-  return Object.keys(params).length === 0 ? base : `${base}&${query(params)}`;
+  const form = document.createElement('form');
+  form.method = 'post';
+  form.action = base;
+  form.hidden = true;
+
+  for (const [name, value] of Object.entries(params)) {
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = name;
+    input.value = value;
+    form.appendChild(input);
+  }
+
+  document.body.appendChild(form);
+  form.submit();
+  form.remove();
+
+  return true;
 };
