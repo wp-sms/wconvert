@@ -28,6 +28,10 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
+// The editor check intentionally exercises the builder floor and the coarse
+// pointer target rule; visitor cases retain the default desktop context.
+const editorTest = test.extend({ viewport: { width: 782, height: 900 }, hasTouch: true });
+
 async function openFixture(page, scenario, theme = 'classic', rtl = false) {
   const query = new URLSearchParams({ wconvert_inline: scenario, wconvert_theme: theme });
   if (rtl) query.set('rtl', '1');
@@ -197,7 +201,7 @@ test('RTL mobile automatic inline has no horizontal overflow, autofocus jump, or
   expect(state.cls).toBeLessThanOrEqual(0.1);
 });
 
-test('goal-first inline setup enables automatic placement and publishes', async ({ page }, info) => {
+editorTest('goal-first inline setup enables automatic placement and publishes', async ({ page }, info) => {
   await page.goto('/wp-login.php');
   await page.getByLabel('Username or Email Address').fill('admin');
   await page.getByLabel('Password', { exact: true }).fill('password');
@@ -211,39 +215,86 @@ test('goal-first inline setup enables automatic placement and publishes', async 
   await expect(page.getByText('Inline form', { exact: true }).last()).toBeVisible();
   await page.getByRole('button', { name: 'Use this setup', exact: true }).click();
 
-  // The placement authoring now belongs to Display rules. The Design tab keeps
-  // a summary and a route into that disclosure instead of mounting Pro's lazy
-  // control on the design surface.
-  await expect(page.getByRole('tabpanel', { name: 'Design', exact: true })).toBeVisible();
-  await expect(page.getByText('Manual — block or shortcode', { exact: true })).toBeVisible();
-  await page.getByRole('button', { name: 'Change inline placement', exact: true }).click();
-  await expect(page.getByRole('tab', { name: 'Display rules', exact: true })).toHaveAttribute('aria-selected', 'true');
+  // Placement authoring belongs only to Display rules. Design must contain no
+  // placement summary or route, in either the initial manual state or later
+  // automatic state.
+  const design = page.getByRole('tabpanel', { name: 'Design', exact: true });
+  await expect(design).toBeVisible();
+  await expect(design.getByText('Manual — block or shortcode', { exact: true })).toHaveCount(0);
+  await expect(design.getByRole('button', { name: 'Change inline placement', exact: true })).toHaveCount(0);
+
+  const rulesTab = page.getByRole('tab', { name: 'Display rules', exact: true });
+  await rulesTab.click();
+  await expect(rulesTab).toHaveAttribute('aria-selected', 'true');
   const placement = page.getByRole('button', { name: 'Placement Manual — block or shortcode', exact: true });
   await expect(placement).toBeVisible();
+  await expect(placement).toHaveAttribute('aria-expanded', 'false');
+  await placement.click();
   await expect(placement).toHaveAttribute('aria-expanded', 'true');
   await expect(page.getByText('Loading placement settings…', { exact: true })).toBeHidden({ timeout: 30000 });
-  const automatic = page.getByRole('radio', { name: 'Automatic', exact: true });
+  const placementPanel = page.locator('#wconvert-section-placement');
+  const method = placementPanel.getByRole('group', { name: 'Placement method', exact: true });
+  await expect(method).toBeVisible();
+  await expect(placementPanel.getByText('Inline placement', { exact: true })).toHaveCount(0);
+  await expect(placementPanel.getByRole('heading')).toHaveCount(0);
+  await expect(placementPanel.locator('fieldset')).toHaveCount(0);
+  await expect(placementPanel.locator('.wconvert-overlay-placement')).toHaveCount(0);
+  await expect(method).toHaveClass(/wconvert-choice-set/);
+  const manual = method.getByRole('radio', { name: 'Manual — block or shortcode', exact: true });
+  const automatic = method.getByRole('radio', { name: 'Automatic', exact: true });
   await expect(automatic).toBeVisible();
+  const choices = method.locator('label.wconvert-choice');
+  await expect(choices).toHaveCount(2);
+  for (let index = 0; index < 2; index++) {
+    const box = await choices.nth(index).boundingBox();
+    expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
+  }
+
+  // The builder floor must wrap the shared labels without horizontal overflow;
+  // RTL exercises logical padding/flow and the same coarse hit targets.
+  await page.evaluate(() => { document.documentElement.dir = 'rtl'; });
+  const narrow = await page.evaluate(() => {
+    const panel = document.querySelector('#wconvert-section-placement');
+    return panel ? {
+      overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      panelOverflow: panel.scrollWidth - panel.clientWidth,
+      whiteSpace: getComputedStyle(panel.querySelector('.wconvert-choice__label')).whiteSpace,
+    } : null;
+  });
+  expect(narrow).not.toBeNull();
+  expect(narrow.overflow).toBeLessThanOrEqual(1);
+  expect(narrow.panelOverflow).toBeLessThanOrEqual(1);
+  expect(narrow.whiteSpace).toBe('normal');
+  await page.screenshot({ path: info.outputPath('inline-placement-manual-782-rtl.png'), fullPage: true });
+
   // The editor intentionally leaves the radio unchecked until the explicit
   // confirmation button commits automatic placement.
-  await automatic.click();
+  await manual.focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(automatic).toBeFocused();
   const enable = page.getByRole('group', { name: 'Enable automatic placement' });
   await expect(enable).toBeVisible();
   await enable.getByRole('button', { name: 'Enable automatic placement', exact: true }).click();
+  await expect(automatic).toBeChecked();
   await expect(page.getByLabel('Position in content', { exact: true })).toHaveValue('after_content');
   await expect(page.getByLabel('Automatic placement priority', { exact: true })).toHaveValue('0');
-  await page.screenshot({ path: info.outputPath('inline-editor-automatic.png'), fullPage: true });
+  await page.screenshot({ path: info.outputPath('inline-placement-automatic-782-rtl.png'), fullPage: true });
 
-  // Return to Design: the summary is the durable source of truth there, and
-  // the old Design-local Automatic controls must no longer be present.
+  // Return to Design: placement remains entirely absent, including after the
+  // automatic state has been committed.
   await page.getByRole('tab', { name: 'Design', exact: true }).click();
-  await expect(page.getByText('Automatically after content', { exact: true })).toBeVisible();
-  await expect(page.getByRole('tabpanel', { name: 'Design', exact: true }).getByRole('radio', { name: 'Automatic', exact: true })).toHaveCount(0);
+  await expect(design.getByText('Automatically after content', { exact: true })).toHaveCount(0);
+  await expect(design.getByRole('button', { name: 'Change inline placement', exact: true })).toHaveCount(0);
+  await expect(design.getByRole('radio', { name: 'Automatic', exact: true })).toHaveCount(0);
 
-  // Re-enter through Change to prove the placement survives the round trip.
-  await page.getByRole('button', { name: 'Change inline placement', exact: true }).click();
-  await expect(page.getByRole('tab', { name: 'Display rules', exact: true })).toHaveAttribute('aria-selected', 'true');
-  await expect(page.getByRole('button', { name: 'Placement Automatically after content', exact: true })).toBeVisible();
+  // Return to Display rules to prove the placement survives the tab round trip.
+  await rulesTab.click();
+  await expect(rulesTab).toHaveAttribute('aria-selected', 'true');
+  const persistedPlacement = page.getByRole('button', { name: 'Placement Automatically after content', exact: true });
+  await expect(persistedPlacement).toBeVisible();
+  if (await persistedPlacement.getAttribute('aria-expanded') !== 'true') await persistedPlacement.click();
+  await expect(persistedPlacement).toHaveAttribute('aria-expanded', 'true');
+  await expect(page.getByText('Loading placement settings…', { exact: true })).toBeHidden({ timeout: 30000 });
   await expect(page.getByRole('radio', { name: 'Automatic', exact: true })).toBeChecked();
   await expect(page.getByLabel('Position in content', { exact: true })).toHaveValue('after_content');
   await expect(page.getByLabel('Automatic placement priority', { exact: true })).toHaveValue('0');
