@@ -759,6 +759,18 @@ describe('the page-header band', () => {
     expect(header).toContainElement(screen.getByRole('button', { name: 'Undo draft edit' }));
     expect(header).toContainElement(screen.getByRole('button', { name: 'Preview' }));
   });
+
+  it('uses the WConvert mark instead of a visible wordmark', async () => {
+    open();
+    await screen.findByRole('button', { name: 'Save draft' });
+    const header = document.querySelector('.wconvert-workspace__header');
+    const mark = header?.querySelector('.wc-brand-mark');
+
+    expect(mark).toHaveTextContent('w');
+    expect(mark).toHaveAttribute('aria-hidden', 'true');
+    expect(header).toContainElement(screen.getByText('WConvert'));
+    expect(screen.getByText('WConvert')).toHaveClass('sr-only');
+  });
 });
 
 describe('the way out of the builder', () => {

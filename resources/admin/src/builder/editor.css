@@ -38,10 +38,8 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
   border-top: 3px solid var(--primary);
   border-bottom: 1px solid var(--editor-rule);
 }
-#wconvert-admin .wconvert-workspace__brand {
-  font-weight: 700;
-  font-size: var(--text-body);
-  letter-spacing: -0.4px;
+#wconvert-admin .wconvert-workspace__brand-mark {
+  flex: 0 0 32px;
 }
 #wconvert-admin input.wconvert-workspace__name {
   width: 180px;
@@ -585,9 +583,6 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
   text-align: start;
 }
 @media (max-width: 1350px) {
-  #wconvert-admin .wconvert-workspace__brand {
-    display: none;
-  }
   #wconvert-admin input.wconvert-workspace__name {
     width: 150px;
   }
