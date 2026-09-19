@@ -15,8 +15,9 @@ import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loada
 import { createOptin } from '../optins/api';
 import { GoalCard, offerableGoals } from './GoalCard';
 import { listGoals, listPlaybooks, prefill, type GoalEntry, type PlaybookEntry } from './api';
-import { StartingPointFacts, StartingPointSummary } from './StartingPointFacts';
+import { StartingPointFacts, StartingPointSummary, startingPointDisplayType } from './StartingPointFacts';
 import { useBuilderViewport } from '../hooks/useBuilderViewport';
+import { displayTypeLabel, displayTypeOptions } from '../displayTypes';
 
 /**
  * Goal first, then a starting point. Browsing only reads; Use this setup explicitly
@@ -37,6 +38,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
   const [inspected, setInspected] = useState<PlaybookEntry | null>(null);
   const detailTrigger = useRef<HTMLButtonElement | null>(null);
   const [collectionId, setCollectionId] = useState('all');
+  const [formatId, setFormatId] = useState('all');
   const packTrigger = useRef<HTMLButtonElement>(null);
   const collectionPicker = useRef<HTMLSelectElement>(null);
   const choseCollection = useRef(false);
@@ -102,6 +104,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
     operation.current += 1;
     setGoal(chosen);
     setCollectionId('all');
+    setFormatId('all');
     setPlaybooks(LOADING);
     setError(null);
     setCreateUnconfirmed(false);
@@ -157,21 +160,34 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
 
   const allEntries = playbooks.status === 'ready' ? playbooks.data : [];
   const collections = new Map(allEntries.flatMap((entry) => entry.collection ? [[entry.collection.id, entry.collection.name] as const] : []));
-  const entries = allEntries.filter((entry) => collectionId === 'all' || (collectionId === 'bundled' ? !entry.collection : entry.collection?.id === collectionId));
+  const availableFormats = new Set(allEntries.map(startingPointDisplayType));
+  const formatOptions = displayTypeOptions().filter(({ value }) => availableFormats.has(value));
+  const entries = allEntries.filter((entry) =>
+    (collectionId === 'all' || (collectionId === 'bundled' ? !entry.collection : entry.collection?.id === collectionId))
+    && (formatId === 'all' || startingPointDisplayType(entry) === formatId));
   const singleStartingPoint = entries.length === 1;
   return <Region>
     <RegionHeader title={__('Choose a campaign setup', 'wconvert')}
       description={sprintf(__('For “%s”. Customize it next.', 'wconvert'), goal.label)}
       trailing={<Step at={2} />} />
     <RegionBody className="flex flex-wrap items-center justify-between gap-3 pb-0">
-      <label className="flex items-center gap-2 text-note">{__('Collection', 'wconvert')}
-        <select ref={collectionPicker} value={collectionId} disabled={starting !== null} onChange={(event) => setCollectionId(event.target.value)}>
-          <option value="all">{__('All campaign setups', 'wconvert')}</option>
-          <option value="bundled">{__('Included with WConvert', 'wconvert')}</option>
-          {[...collections].map(([id, name]) => <option key={id} value={id}>{name}</option>)}
-          {collectionId !== 'all' && collectionId !== 'bundled' && !collections.has(collectionId) && <option value={collectionId}>{__('Selected pack', 'wconvert')}</option>}
-        </select>
-      </label>
+      <div className="flex flex-wrap items-center gap-3">
+        <label className="flex items-center gap-2 text-note">{__('Collection', 'wconvert')}
+          <select ref={collectionPicker} value={collectionId} disabled={starting !== null} onChange={(event) => setCollectionId(event.target.value)}>
+            <option value="all">{__('All campaign setups', 'wconvert')}</option>
+            <option value="bundled">{__('Included with WConvert', 'wconvert')}</option>
+            {[...collections].map(([id, name]) => <option key={id} value={id}>{name}</option>)}
+            {collectionId !== 'all' && collectionId !== 'bundled' && !collections.has(collectionId) && <option value={collectionId}>{__('Selected pack', 'wconvert')}</option>}
+          </select>
+        </label>
+        <label className="flex items-center gap-2 text-note">{__('Format', 'wconvert')}
+          <select value={formatId} disabled={starting !== null} onChange={(event) => setFormatId(event.target.value)}>
+            <option value="all">{__('All formats', 'wconvert')}</option>
+            {formatOptions.map(({ value, label }) => <option key={value} value={value}>{label}</option>)}
+            {formatId !== 'all' && !availableFormats.has(formatId) && <option value={formatId}>{displayTypeLabel(formatId)}</option>}
+          </select>
+        </label>
+      </div>
       <span className="text-note text-muted-foreground">{__('Creates a draft. Nothing goes live until you publish.', 'wconvert')}</span>
       <Button ref={packTrigger} variant="outline" disabled={starting !== null} onClick={() => { choseCollection.current = false; setPacksOpen(true); }}>{__('Browse template packs', 'wconvert')}</Button>
     </RegionBody>
@@ -185,7 +201,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
         </DialogHeader>
         <TemplatePacks displayType="" goal={goal.id}
           onInstalled={async () => { setPlaybooksRetry((value) => value + 1); }}
-          onChooseStartingPoints={(id) => { choseCollection.current = true; setCollectionId(id); setPacksOpen(false); }} />
+          onChooseStartingPoints={(id) => { choseCollection.current = true; setCollectionId(id); setFormatId('all'); setPacksOpen(false); }} />
       </DialogContent>
     </Dialog>
     {!editorFits && <RegionBody><p className="m-0 text-note text-muted-foreground">
@@ -201,8 +217,11 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
       <RegionErrorState message={playbooks.message} hint={__('Try loading the campaign setups again, or start with a blank draft.', 'wconvert')} />
       <RegionBody><Button variant="outline" onClick={() => setPlaybooksRetry((value) => value + 1)}>{__('Retry loading campaign setups', 'wconvert')}</Button></RegionBody>
     </> : playbooks.status === 'loading' ? <RegionBody><GallerySkeleton cards={2} /></RegionBody>
-      : entries.length === 0 ? <EmptyState icon={Sparkles} title={__('No campaign setups available', 'wconvert')}>
+      : allEntries.length === 0 ? <EmptyState icon={Sparkles} title={__('No campaign setups available', 'wconvert')}>
         {__('You can create a blank draft for this goal and choose a design in the editor.', 'wconvert')}
+      </EmptyState> : entries.length === 0 ? <EmptyState icon={Sparkles} title={__('No campaign setups match', 'wconvert')}
+        action={<Button variant="outline" onClick={() => { setCollectionId('all'); setFormatId('all'); }}>{__('Clear filters', 'wconvert')}</Button>}>
+        {__('Try another format or collection.', 'wconvert')}
       </EmptyState> : <RegionBody>
         {vocabulary.status === 'failed' && <div className="mb-4 flex flex-wrap items-center gap-2 text-note">
           <span>{__('Setup details could not be loaded. You can still choose a campaign setup and review its rules in the editor.', 'wconvert')}</span>
@@ -213,7 +232,10 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
           featured={singleStartingPoint}
           absent={playbook.template === undefined ? <p>{__('This design is not available on this site. Choose a design after opening the draft.', 'wconvert')}</p> : undefined}
           action={(describedBy) => <div className="flex w-full flex-col items-start gap-2">
-            {playbook.collection && <Badge variant="outline">{playbook.collection.name}</Badge>}
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge variant="secondary">{displayTypeLabel(startingPointDisplayType(playbook))}</Badge>
+              {playbook.collection && <Badge variant="outline">{playbook.collection.name}</Badge>}
+            </div>
             {playbook.recommendation ? <p className="m-0 text-note font-medium text-foreground">{playbook.recommendation}</p> : null}
             <StartingPointSummary playbook={playbook} vocabulary={vocabulary.status === 'ready' ? vocabulary.data : null} />
             <div className="flex flex-wrap items-center gap-2">
