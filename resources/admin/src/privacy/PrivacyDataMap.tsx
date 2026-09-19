@@ -3,10 +3,11 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 import { TriangleAlert } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
 import { Badge } from '../components/ui/badge';
+import { Skeleton } from '../components/ui/skeleton';
 import { settingsHref } from '../nav';
 import { Description } from '../shell/Description';
-import { Region, RegionBody, RegionErrorState, RegionHeader } from '../shell/Region';
-import { RegionSkeleton } from '../shell/RegionSkeleton';
+import { RegionBody, RegionErrorState } from '../shell/Region';
+import { SettingsDisclosure } from '../shell/SettingsDisclosure';
 import { failed, LOADING, ready, type Loadable } from '../shell/loadable';
 import { readDataMap, type PrivacyDataMap as DataMap } from './api';
 
@@ -50,6 +51,8 @@ const cookieDurationText = (days: number) => days === 365
 /** A read-only explanation of this install's actual personal-data boundaries. */
 export function PrivacyDataMap() {
   const [state, setState] = useState<Loadable<DataMap>>(LOADING);
+  const title = __('Where visitor data goes', 'wconvert');
+  const summary = __('WConvert, browser storage, connected services, exports and backups.', 'wconvert');
 
   useEffect(() => {
     let active = true;
@@ -60,36 +63,41 @@ export function PrivacyDataMap() {
   }, []);
 
   if (state.status === 'loading') {
-    return <RegionSkeleton label={__('Where visitor data goes', 'wconvert')} lines={5} />;
+    return (
+      <SettingsDisclosure title={title} summary={summary}>
+        <RegionBody className="flex flex-col gap-4">
+          <span role="status" className="sr-only">{__('Loading…', 'wconvert')}</span>
+          {Array.from({ length: 5 }, (_each, line) => (
+            <Skeleton
+              key={line}
+              aria-hidden="true"
+              className={line === 0 ? 'h-4 w-full max-w-md' : 'h-4 w-2/3 max-w-sm'}
+            />
+          ))}
+        </RegionBody>
+      </SettingsDisclosure>
+    );
   }
 
   if (state.status === 'failed') {
     return (
-      <Region>
-        <RegionHeader
-          title={__('Where visitor data goes', 'wconvert')}
-          description={__('See what WConvert saves, what stays in a visitor’s browser and which copies you must manage elsewhere.', 'wconvert')}
-        />
+      <SettingsDisclosure title={title} summary={summary} attention>
         <RegionErrorState message={state.message} />
-      </Region>
+      </SettingsDisclosure>
     );
   }
 
   const data = state.data;
 
   return (
-    <Region>
-      <RegionHeader
-        title={__('Where visitor data goes', 'wconvert')}
-        description={__('See what WConvert saves, what stays in a visitor’s browser and which copies you must manage elsewhere.', 'wconvert')}
-      />
+    <SettingsDisclosure title={title} summary={summary}>
       <RegionBody className="flex flex-col gap-5">
         <section aria-labelledby="wconvert-stored-data">
           <h3 id="wconvert-stored-data" className="m-0 text-body font-medium">
             {__('Saved in WConvert', 'wconvert')}
           </h3>
           <Description className="mt-1">
-            {__('WConvert saves the information a visitor enters in a form. This can include their name, email address, phone number, answers and the consent wording they saw. Each submission also records which Campaign collected it and when. It does not include the page URL, IP address or browser details.', 'wconvert')}
+            {__('Form submissions include answers, consent text, the Campaign, submission time and any name, email or phone entered. They do not include the page URL, IP address or browser details.', 'wconvert')}
           </Description>
           {data.retention_days === null ? (
             <Alert className="mt-3 border-warning/30 bg-warning/5 text-warning">
@@ -109,12 +117,12 @@ export function PrivacyDataMap() {
             {__('Saved in the visitor’s browser', 'wconvert')}
           </h3>
           <Description className="mt-1">
-            {__('A visitor’s browser remembers whether they saw, dismissed or completed a Campaign, and which A/B test version they received. WConvert does not set an expiry for this local-storage record; it stays until the visitor or browser clears it.', 'wconvert')}
+            {__('Browsers remember whether a visitor saw, dismissed or completed a Campaign, plus their A/B test version. This local storage stays until the visitor or browser clears it.', 'wconvert')}
           </Description>
           <Description className="mt-2">
             {sprintf(
               /* translators: %s: the fallback cookie lifetime in days. */
-              __('If local storage is unavailable, a cookie keeps the same information for up to %s. Neither record contains contact details or a WConvert visitor ID.', 'wconvert'),
+              __('If local storage is unavailable, a cookie keeps the same data for up to %s. Neither record contains contact details or a WConvert visitor ID.', 'wconvert'),
               cookieDurationText(data.browser.cookie_fallback_days),
             )}
           </Description>
@@ -125,12 +133,12 @@ export function PrivacyDataMap() {
             {__('Anonymous campaign totals', 'wconvert')}
           </h3>
           <Description className="mt-1">
-            {__('WConvert keeps daily totals of Campaign views, dismissals and completions. These totals are not linked to individual visitors.', 'wconvert')}
+            {__('Daily Campaign totals record views, dismissals and completions, not individual visitors.', 'wconvert')}
           </Description>
           <Description className="mt-2">
             {sprintf(
               /* translators: %s: a short duration such as “one minute”. */
-              __('To avoid counting the same activity repeatedly, WConvert keeps a one-way code made from the visitor’s IP address for %s. The code then expires, and the IP address itself is not saved.', 'wconvert'),
+              __('To prevent duplicate counts, WConvert keeps a one-way code made from the IP address for %s. The code expires; the IP address is not saved.', 'wconvert'),
               rateLimitText(data.beacon_rate_limit_seconds),
             )}
           </Description>
@@ -184,10 +192,10 @@ export function PrivacyDataMap() {
             {__('Copies you must manage separately', 'wconvert')}
           </h3>
           <Description className="mt-1">
-            {__('Deleting a submission from WConvert does not delete copies already sent to other services or saved in CSV exports, email logs or backups. If someone asks you to delete their data, remove those copies from each place too.', 'wconvert')}
+            {__('Deleting from WConvert does not delete copies in connected services, CSV exports, email logs or backups. For a deletion request, remove those copies separately.', 'wconvert')}
           </Description>
         </section>
       </RegionBody>
-    </Region>
+    </SettingsDisclosure>
   );
 }

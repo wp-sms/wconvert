@@ -1,5 +1,5 @@
 import { beforeEach, expect, it, vi } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 
 const privacy = vi.hoisted(() => ({ readDataMap: vi.fn() }));
 vi.mock('../../resources/admin/src/privacy/api', () => privacy);
@@ -33,29 +33,34 @@ beforeEach(() => {
   privacy.readDataMap.mockResolvedValue(MAP);
 });
 
+const disclosure = () => screen.getByRole('button', { name: /Where visitor data goes/ });
+
 it('explains where visitor data goes in direct merchant language', async () => {
   render(<PrivacyDataMap />);
 
+  expect(disclosure()).toHaveAttribute('aria-expanded', 'false');
+  fireEvent.click(disclosure());
   await screen.findByText('Newsletter subscribers');
-  const region = screen.getByRole('heading', { name: 'Where visitor data goes' }).closest('section');
+  expect(disclosure()).toHaveAttribute('aria-expanded', 'true');
+  const region = disclosure().closest('section');
   expect(region).not.toBeNull();
   if (region === null) return;
   expect(within(region).getByRole('heading', { name: 'Saved in WConvert' })).toBeVisible();
-  expect(within(region).getByText(/information a visitor enters in a form/i)).toBeVisible();
-  expect(within(region).getByText(/does not include the page URL, IP address or browser details/i)).toBeVisible();
+  expect(within(region).getByText(/Form submissions include answers, consent text/i)).toBeVisible();
+  expect(within(region).getByText(/do not include the page URL, IP address or browser details/i)).toBeVisible();
   expect(within(region).getByText(/Automatic deletion is off/i)).toBeVisible();
   expect(within(region).getByRole('heading', { name: 'Saved in the visitor’s browser' })).toBeVisible();
-  expect(within(region).getByText(/does not set an expiry/i)).toBeVisible();
+  expect(within(region).getByText(/until the visitor or browser clears it/i)).toBeVisible();
   expect(within(region).getByText(/up to one year/i)).toBeVisible();
   expect(within(region).getByRole('heading', { name: 'Anonymous campaign totals' })).toBeVisible();
-  expect(within(region).getByText(/not linked to individual visitors/i)).toBeVisible();
+  expect(within(region).getByText(/not individual visitors/i)).toBeVisible();
   expect(within(region).getByText(/one minute/i)).toBeVisible();
   expect(within(region).getByRole('heading', { name: 'Sent to other services' })).toBeVisible();
   expect(within(region).getByText('Newsletter subscribers')).toBeVisible();
   expect(within(region).getByText('MailPoet')).toBeVisible();
   expect(within(region).getByText(/Can receive: Email address, Name, Interest answer/i)).toBeVisible();
   expect(within(region).getByRole('heading', { name: 'Copies you must manage separately' })).toBeVisible();
-  expect(within(region).getByText(/remove those copies from each place too/i)).toBeVisible();
+  expect(within(region).getByText(/For a deletion request, remove those copies separately/i)).toBeVisible();
 });
 
 it('shows a shape-matched loading state without claiming the site has no destinations', () => {
@@ -63,6 +68,8 @@ it('shows a shape-matched loading state without claiming the site has no destina
 
   render(<PrivacyDataMap />);
 
+  expect(disclosure()).toHaveAttribute('aria-expanded', 'false');
+  fireEvent.click(disclosure());
   expect(screen.getByRole('status')).toHaveTextContent('Loading');
   expect(screen.queryByText(/No destinations are set up/)).not.toBeInTheDocument();
 });
@@ -72,6 +79,7 @@ it('gives an empty configured-route list a direct way to connections', async () 
 
   render(<PrivacyDataMap />);
 
+  fireEvent.click(disclosure());
   expect(await screen.findByText(/deleted automatically 90 days after they are submitted/i)).toBeVisible();
   expect(screen.queryByText('Kept until you delete them')).not.toBeInTheDocument();
   expect(screen.getByText(/No destinations are set up/)).toBeVisible();
@@ -89,6 +97,7 @@ it('keeps an unavailable configured route visible without guessing its fields', 
 
   render(<PrivacyDataMap />);
 
+  fireEvent.click(disclosure());
   expect(await screen.findByText('Old automation')).toBeVisible();
   expect(screen.getByText(/cannot show which information it receives/i)).toBeVisible();
   expect(screen.queryByText(/Can receive:/)).not.toBeInTheDocument();
@@ -100,5 +109,6 @@ it('keeps a failed read inside the data-flow region and names a recovery', async
   render(<PrivacyDataMap />);
 
   expect(await screen.findByText('Privacy details are unavailable.')).toBeVisible();
+  expect(disclosure()).toHaveAttribute('aria-expanded', 'true');
   expect(screen.getByText('Reload the page to try again.')).toBeVisible();
 });
