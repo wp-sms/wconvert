@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { expect, it } from 'vitest';
 import PlacementSettings from '../../modules/inline-placement/admin/PlacementSettings';
@@ -8,6 +8,14 @@ import { PlacementGuidance } from '@/builder/PlacementGuidance';
 import type { RuleVocabulary } from '@/builder/api';
 
 const vocabulary = { triggers: [{ type: 'page_load' }, { type: 'time_on_page' }], conditions: [], targeting: [], bundles: [] } as unknown as RuleVocabulary;
+
+it('groups the placement choices without repeating the section heading', () => {
+  render(<PlacementSettings config={{}} vocabulary={vocabulary} onChange={() => undefined} />);
+  const choices = screen.getByRole('group', { name: 'Placement method' });
+  expect(within(choices).getByRole('radio', { name: 'Manual — block or shortcode' })).toBeChecked();
+  expect(within(choices).getByRole('radio', { name: 'Automatic' })).not.toBeChecked();
+  expect(screen.queryByText('Inline placement')).toBeNull();
+});
 
 it('makes trigger replacement and post-only defaults explicit, preserves other settings and can return to manual', async () => {
   const user = userEvent.setup();

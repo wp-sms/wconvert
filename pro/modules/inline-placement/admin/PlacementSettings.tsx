@@ -25,11 +25,12 @@ export default function PlacementSettings({ config, vocabulary, onChange }: Inli
     setConfirm(false);
     automaticChoice.current?.focus();
   };
-  return <fieldset className="wconvert-overlay-placement wconvert-inline-placement">
-    <legend>{__('Inline placement', 'wconvert')}</legend>
-    <label><input ref={manualChoice} type="radio" name={id} checked={!placement} onChange={() => { setConfirm(false); onChange({ inline_placement: null }); }} /> {__('Manual — block or shortcode', 'wconvert')}</label>
-    <label><input ref={automaticChoice} type="radio" name={id} checked={!!placement} onChange={() => setConfirm(true)} /> {__('Automatic', 'wconvert')}</label>
-    {confirm && <div role="group" aria-label={__('Enable automatic placement', 'wconvert')}>
+  return <div className="wconvert-inline-placement">
+    <div role="group" aria-label={__('Placement method', 'wconvert')} className="wconvert-choice-set">
+      <label className="wconvert-choice"><input className="sr-only" ref={manualChoice} type="radio" name={id} checked={!placement} onChange={() => { setConfirm(false); onChange({ inline_placement: null }); }} /><span className="wconvert-choice__label">{__('Manual — block or shortcode', 'wconvert')}</span></label>
+      <label className="wconvert-choice"><input className="sr-only" ref={automaticChoice} type="radio" name={id} checked={!!placement} onChange={() => setConfirm(true)} /><span className="wconvert-choice__label">{__('Automatic', 'wconvert')}</span></label>
+    </div>
+    {confirm && <div className="wconvert-inline-placement__confirmation" role="group" aria-label={__('Enable automatic placement', 'wconvert')}>
       <p>{__('Automatic placement starts after content. It uses page load instead of other triggers; audience, schedule and frequency settings stay in place.', 'wconvert')}</p>
       {!targeting.include?.length && <p>{__('Your Pages setting will start with posts only. You can add pages under Display rules.', 'wconvert')}</p>}
       <Button onClick={enable}>{__('Enable automatic placement', 'wconvert')}</Button>
@@ -59,5 +60,5 @@ export default function PlacementSettings({ config, vocabulary, onChange }: Inli
       <p>{__('Works in standard WordPress post and page content. For page builders and custom layouts, use manual placement. Check the published page on mobile too.', 'wconvert')}</p>
       {!compatible && <p role="alert">{__('Automatic placement requires page load as its only trigger. Update When it appears in Display rules, or choose manual placement.', 'wconvert')}</p>}
     </>}
-  </fieldset>;
+  </div>;
 }

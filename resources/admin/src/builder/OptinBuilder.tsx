@@ -795,12 +795,6 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
                             displayType={displayTypeOf(config, templates)}
                             placement={config.placement}
                             onPlacementChange={(placement) => edit({ placement })}
-                            inlineSummary={<div className="text-note">
-                              <span>{inlineSummary}</span>{' '}
-                              <Button variant="link" size="sm" aria-label={__('Change inline placement', 'wconvert')} onClick={goToInlinePlacement}>
-                                {__('Change', 'wconvert')}
-                              </Button>
-                            </div>}
                           />
                         ) : (
                           <ScopeStyle

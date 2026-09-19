@@ -258,24 +258,26 @@ const labelOf = (name: string | RegExp) =>
   within(screen.getByRole('row', { name })).getAllByRole('button')[0];
 
 describe('the builder shell', () => {
-  it('keeps inline placement in Display rules and links there from the Design summary', async () => {
+  it('keeps inline placement only in Display rules and preserves undo', async () => {
     builder.getOptin.mockResolvedValue(optin({ config: {
       ...optin().config, display_type: 'inline', rules: [{ type: 'page_load' }],
       inline_placement: { position: 'after_content' },
     } }));
     open();
     const design = await screen.findByRole('tabpanel', { name: 'Design' });
-    expect(within(design).getByText('Automatically after content')).toBeVisible();
+    expect(within(design).queryByText('Automatically after content')).toBeNull();
+    expect(within(design).queryByRole('button', { name: 'Change inline placement' })).toBeNull();
     expect(within(design).queryByRole('button', { name: 'Use manual placement' })).toBeNull();
-    await userEvent.click(within(design).getByRole('button', { name: 'Change inline placement' }));
+    await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
     const rules = screen.getByRole('tabpanel', { name: 'Display rules' });
+    await userEvent.click(within(rules).getByRole('button', { name: 'Placement Automatically after content' }));
     expect(within(rules).getByRole('button', { name: 'Placement Automatically after content' })).toHaveAttribute('aria-expanded', 'true');
-    await waitFor(() => expect(within(rules).getByRole('button', { name: 'Placement Automatically after content' })).toHaveFocus());
     await userEvent.click(within(rules).getByRole('button', { name: 'Use manual placement' }));
     await userEvent.click(screen.getByRole('tab', { name: 'Design' }));
-    expect(within(screen.getByRole('tabpanel', { name: 'Design' })).getByText('Manual — block or shortcode')).toBeVisible();
+    expect(within(screen.getByRole('tabpanel', { name: 'Design' })).queryByText('Manual — block or shortcode')).toBeNull();
     await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
-    expect(within(screen.getByRole('tabpanel', { name: 'Design' })).getByText('Automatically after content')).toBeVisible();
+    await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
+    expect(screen.getByRole('button', { name: 'Placement Automatically after content' })).toBeVisible();
   });
 
   /**

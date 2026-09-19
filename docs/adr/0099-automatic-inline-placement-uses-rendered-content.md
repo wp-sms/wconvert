@@ -14,8 +14,10 @@ format clears it in the same undoable edit; another inline design preserves it.
 
 Display rules offers a Placement section before page and audience targeting,
 with manual/automatic placement, position, fallback and automatic priority.
-Design retains a read-only placement summary and a Change action that opens
-and focuses this section; publish-review placement links lead there too.
+Design contains neither placement settings nor a placement summary/Change link;
+publish-review placement links open and focus the Display rules section.
+The section supplies its heading once. Manual/automatic uses the shared native
+radio choice treatment, without a second fieldset heading or decorative divider.
 The Pro controls load only when that section is opened, not on Design arrival.
 Enabling is explicit and
 explains replacing triggers with page load. It preserves conditions, frequency,

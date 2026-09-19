@@ -1,4 +1,4 @@
-import type { ReactNode, Ref } from 'react';
+import type { Ref } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { LayoutTemplate } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -24,7 +24,6 @@ export function DesignSettings({
   mobile,
   displayType = 'popup',
   placement,
-  inlineSummary,
   onPlacementChange = () => undefined,
 }: {
   template: Template;
@@ -40,7 +39,6 @@ export function DesignSettings({
   mobile?: boolean;
   displayType?: string;
   placement?: unknown;
-  inlineSummary?: ReactNode;
   onPlacementChange?: (placement: string | null) => void;
 }) {
   const direction = useDirection();
@@ -64,7 +62,6 @@ export function DesignSettings({
         {__('Browse designs and formats', 'wconvert')}
       </Button>
       <PlacementControl displayType={displayType} value={placement} onChange={onPlacementChange} />
-      {displayType === 'inline' && inlineSummary}
       {mobile && (
         <p className="wconvert-scope__narrow">
           {__(
