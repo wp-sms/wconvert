@@ -27,7 +27,9 @@ final class ContentInsertionTest extends TestCase
     {
         $placement = ['position' => 'after_paragraph', 'paragraph' => 1];
         foreach (['<p>Unclosed', '<div><p>Broken</div>', '<!-- broken', '<script>unclosed',
-            '<p>One<div>Group</div></p><p>Two</p>', '<p><p>Nested</p></p><p>Two</p>'] as $html) {
+            '<p>One<div>Group</div></p><p>Two</p>', '<p><p>Nested</p></p><p>Two</p>',
+            '<p>One<li>Item</li></p><p>Two</p>', '<p>One<dt>Term</dt><dd>Definition</dd></p>',
+            '<p>One<listing>Legacy</listing></p>', '<plaintext><p>Not markup</p></plaintext>'] as $html) {
             self::assertSame($html, ContentInsertion::insert($html, 'ANCHOR', $placement));
         }
         $html = '<script>const fake="<p>Fake</p>";</script><div><p>Nested</p></div><p> </p><p>Real<br>paragraph</p><p>Next</p>';

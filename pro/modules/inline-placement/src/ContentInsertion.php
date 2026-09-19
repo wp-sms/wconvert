@@ -62,16 +62,17 @@ final class ContentInsertion
             $tag = strtolower($match[2]);
             $closing = $match[1] === '/';
             $offset = $start + strlen($match[0]);
-            // These start tags implicitly close a paragraph in HTML. A
-            // source-balanced stack is not a rendered boundary in that case.
-            if (!$closing && in_array('p', $stack, true)
-                && in_array($tag, ['address', 'article', 'aside', 'blockquote', 'details', 'div', 'dl',
-                    'fieldset', 'figcaption', 'figure', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5',
-                    'h6', 'header', 'hgroup', 'hr', 'main', 'menu', 'nav', 'ol', 'p', 'pre', 'search',
-                    'section', 'table', 'ul'], true)) {
+            // Only supported phrasing elements may nest in a paragraph.
+            // Balanced source tags alone do not model HTML's implicit closes;
+            // unfamiliar/custom paragraph markup is safer left untouched.
+            if ($tag === 'plaintext' || (!$closing && in_array('p', $stack, true)
+                && !in_array($tag, ['a', 'abbr', 'b', 'bdi', 'bdo', 'br', 'cite', 'code', 'data',
+                    'del', 'dfn', 'em', 'i', 'img', 'ins', 'kbd', 'mark', 'q', 'rp', 'rt', 'ruby',
+                    's', 'samp', 'small', 'span', 'strong', 'sub', 'sup', 'time', 'u', 'var', 'wbr',
+                    'script', 'style', 'textarea', 'title'], true))) {
                 return null;
             }
-            if (!$closing && in_array($tag, ['script', 'style', 'textarea', 'title'], true)) {
+            if (!$closing && in_array($tag, ['script', 'style', 'textarea', 'title', 'iframe', 'noembed', 'noframes', 'noscript', 'xmp'], true)) {
                 if (!preg_match('~</' . $tag . '\s*>~i', $html, $rawEnd, PREG_OFFSET_CAPTURE, $offset)) {
                     return null;
                 }
