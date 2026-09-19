@@ -6,6 +6,7 @@ use WConvert\Destination\DestinationRegistry;
 use WConvert\Destination\DestinationRequirements;
 use WConvert\Destination\DestinationStore;
 use WConvert\Rest\RateLimit;
+use WConvert\Rest\CaptureRateLimit;
 use WConvert\Retention\RetentionPeriod;
 
 defined('ABSPATH') || exit;
@@ -34,8 +35,9 @@ final class DataMap
      * @return array{
      *   retention_days: int|null,
      *   destinations: list<array{id: string, label: string, type: string, type_label: string, fields: list<string>|null}>,
-     *   browser: array{key: string, local_storage_expiry_days: null, cookie_fallback: bool, cookie_fallback_days: int, contains_contact_details: bool, contains_visitor_identifier: bool},
-     *   beacon_rate_limit_seconds: int
+     *   browser: array{key: string, local_storage_expiry_days: null, cookie_fallback: bool, cookie_fallback_days: int, contains_contact_details: bool, contains_visitor_identifier: bool, stores_ab_assignment: bool, cart_recovery: array{key: string, expires_with_cart_session: bool, contains_item_count: bool, contains_cart_total: bool, contains_contact_details: bool}|null},
+     *   beacon_rate_limit_seconds: int,
+     *   capture_rate_limit_seconds: int
      * }
      */
     public function summary(): array
@@ -43,15 +45,52 @@ final class DataMap
         return [
             'retention_days' => $this->retention->days(),
             'destinations' => $this->configuredDestinations(),
-            'browser' => [
-                'key' => 'wcv1',
-                'local_storage_expiry_days' => null,
-                'cookie_fallback' => true,
-                'cookie_fallback_days' => 365,
-                'contains_contact_details' => false,
-                'contains_visitor_identifier' => false,
-            ],
+            'browser' => $this->browserStorage(),
             'beacon_rate_limit_seconds' => RateLimit::WINDOW,
+            'capture_rate_limit_seconds' => CaptureRateLimit::WINDOW,
+        ];
+    }
+
+    /**
+     * @return array{key: string, local_storage_expiry_days: null, cookie_fallback: bool, cookie_fallback_days: int, contains_contact_details: bool, contains_visitor_identifier: bool, stores_ab_assignment: bool, cart_recovery: array{key: string, expires_with_cart_session: bool, contains_item_count: bool, contains_cart_total: bool, contains_contact_details: bool}|null}
+     */
+    private function browserStorage(): array
+    {
+        $browser = [
+            'key' => 'wcv1',
+            'local_storage_expiry_days' => null,
+            'cookie_fallback' => true,
+            'cookie_fallback_days' => 365,
+            'contains_contact_details' => false,
+            'contains_visitor_identifier' => false,
+            'stores_ab_assignment' => false,
+            'cart_recovery' => null,
+        ];
+
+        /**
+         * Premium modules add only storage they actually ship and can use.
+         *
+         * @param array<string, mixed> $browser
+         */
+        $filteredBrowser = apply_filters('wconvert_privacy_browser_storage', $browser);
+        $filteredBrowser = is_array($filteredBrowser) ? $filteredBrowser : [];
+        $cart = $filteredBrowser['cart_recovery'] ?? null;
+
+        return [
+            'key' => 'wcv1',
+            'local_storage_expiry_days' => null,
+            'cookie_fallback' => true,
+            'cookie_fallback_days' => 365,
+            'contains_contact_details' => false,
+            'contains_visitor_identifier' => false,
+            'stores_ab_assignment' => ($filteredBrowser['stores_ab_assignment'] ?? null) === true,
+            'cart_recovery' => is_array($cart) && is_string($cart['key'] ?? null) ? [
+                'key' => $cart['key'],
+                'expires_with_cart_session' => ($cart['expires_with_cart_session'] ?? null) === true,
+                'contains_item_count' => ($cart['contains_item_count'] ?? null) === true,
+                'contains_cart_total' => ($cart['contains_cart_total'] ?? null) === true,
+                'contains_contact_details' => ($cart['contains_contact_details'] ?? null) === true,
+            ] : null,
         ];
     }
 

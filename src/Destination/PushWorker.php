@@ -6,6 +6,7 @@ use WConvert\Destination\LeadMagnet\DeliveryCount;
 use WConvert\Lead\LeadRepository;
 use WConvert\Optin\OptinRepository;
 use WConvert\Queue\Queue;
+use WConvert\Support\DiagnosticSanitizer;
 
 defined('ABSPATH') || exit;
 
@@ -106,7 +107,9 @@ final class PushWorker
             return;
         }
 
-        $this->record($job, $lead->optinId, $destination->type, $type->push(PushSubject::of($lead), new PushContext(
+        $subject = PushSubject::of($lead);
+        $credentials = $this->connections->credentialsFor($destination);
+        $result = $type->push($subject, new PushContext(
             // One name, by primary key. An Optin is never hard-deleted, so
             // this is null only where something removed a row nothing should
             // remove — and an empty `source_ref` would then assert provenance
@@ -114,8 +117,10 @@ final class PushWorker
             // (ADR 0023).
             $this->optins->nameOf($lead->optinId),
             $destination->settings,
-            $this->connections->credentialsFor($destination)
-        )));
+            $credentials
+        ));
+
+        $this->record($job, $lead->optinId, $destination->type, $result, $subject->values, $credentials);
     }
 
     /**
@@ -124,8 +129,18 @@ final class PushWorker
      * {@see DeliveryCount::landed()} — and it needs BOTH: a lead-magnet Optin
      * may be bound to the WSMS push as well, and counting that success as a
      * delivery would report two deliveries per Conversion (#31).
+     *
+     * @param array<string, string> $personal
+     * @param array<string, mixed> $secrets
      */
-    private function record(PushJob $job, string $optinId, string $destinationType, PushResult $result): void
+    private function record(
+        PushJob $job,
+        string $optinId,
+        string $destinationType,
+        PushResult $result,
+        array $personal,
+        array $secrets
+    ): void
     {
         $now = current_time('mysql');
 
@@ -146,7 +161,7 @@ final class PushWorker
             return;
         }
 
-        $error = (string) $result->reason;
+        $error = DiagnosticSanitizer::message((string) $result->reason, $personal, $secrets);
 
         // An outage moves health. A Lead-specific rejection does not — see the
         // class docblock.

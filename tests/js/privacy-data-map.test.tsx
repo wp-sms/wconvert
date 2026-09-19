@@ -24,8 +24,11 @@ const MAP = {
     cookie_fallback_days: 365,
     contains_contact_details: false,
     contains_visitor_identifier: false,
+    stores_ab_assignment: false,
+    cart_recovery: null,
   },
   beacon_rate_limit_seconds: 60,
+  capture_rate_limit_seconds: 600,
 };
 
 beforeEach(() => {
@@ -52,9 +55,10 @@ it('explains where visitor data goes in direct merchant language', async () => {
   expect(within(region).getByRole('heading', { name: 'Saved in the visitor’s browser' })).toBeVisible();
   expect(within(region).getByText(/until the visitor or browser clears it/i)).toBeVisible();
   expect(within(region).getByText(/up to one year/i)).toBeVisible();
-  expect(within(region).getByRole('heading', { name: 'Anonymous campaign totals' })).toBeVisible();
+  expect(within(region).getByRole('heading', { name: 'Campaign totals and form protection' })).toBeVisible();
   expect(within(region).getByText(/not individual visitors/i)).toBeVisible();
   expect(within(region).getByText(/one minute/i)).toBeVisible();
+  expect(within(region).getByText(/each Campaign for 10 minutes/i)).toBeVisible();
   expect(within(region).getByRole('heading', { name: 'Sent to other services' })).toBeVisible();
   expect(within(region).getByText('Newsletter subscribers')).toBeVisible();
   expect(within(region).getByText('MailPoet')).toBeVisible();

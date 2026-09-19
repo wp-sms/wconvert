@@ -904,10 +904,10 @@ function image(node: ImageNode): HTMLElement | null {
  * What each field kind captures: the input type that gets the right keyboard,
  * and the autofill token that lets a browser fill it.
  */
-const FIELD_KINDS: Readonly<Record<string, { type: string; autocomplete: AutoFill; label: string }>> = {
-  email: { type: 'email', autocomplete: 'email', label: 'Email address' },
-  phone: { type: 'tel', autocomplete: 'tel', label: 'Phone number' },
-  name: { type: 'text', autocomplete: 'name', label: 'Name' },
+const FIELD_KINDS: Readonly<Record<string, { type: string; autocomplete: AutoFill; label: string; maxLength?: number }>> = {
+  email: { type: 'email', autocomplete: 'email', label: 'Email address', maxLength: 254 },
+  phone: { type: 'tel', autocomplete: 'tel', label: 'Phone number', maxLength: 64 },
+  name: { type: 'text', autocomplete: 'name', label: 'Name', maxLength: 200 },
   interest: { type: 'select', autocomplete: 'off', label: 'Interested in' },
 };
 
@@ -949,6 +949,7 @@ function field(node: FieldNode): HTMLElement | null {
     }
   } else {
     input.type = kind.type;
+    if (kind.maxLength !== undefined) input.maxLength = kind.maxLength;
     input.placeholder = node.placeholder?.trim() ? node.placeholder : '';
     input.inputMode = kind.type;
     if (name !== 'name') {

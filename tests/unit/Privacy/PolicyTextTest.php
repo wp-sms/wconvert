@@ -41,6 +41,7 @@ final class PolicyTextTest extends TestCase
     protected function setUp(): void
     {
         $GLOBALS['wconvertTestPolicyContent'] = [];
+        $GLOBALS['wconvertTestFilters'] = [];
 
         $options = new FakeOptionStore();
         $this->retention = new RetentionPeriod($options);
@@ -113,9 +114,28 @@ final class PolicyTextTest extends TestCase
         $this->assertStringContainsString('cookie', $text);
         $this->assertStringContainsString('one year', $text);
         $this->assertStringContainsString('one minute', $text);
+        $this->assertStringContainsString('10 minutes', $text);
         $this->assertStringContainsString('one-way hash', $text);
         $this->assertStringContainsString('IP address itself is not saved', $text);
         $this->assertStringContainsString('not linked to individual visitors', $text);
+        $this->assertStringNotContainsString('A/B test', $text);
+        $this->assertStringNotContainsString('Cart recovery stores', $text);
+    }
+
+    public function testOptionalBrowserFeaturesAppearOnlyWhenTheirModulesDeclareThem(): void
+    {
+        add_filter('wconvert_privacy_browser_storage', static function (array $browser): array {
+            $browser['stores_ab_assignment'] = true;
+            $browser['cart_recovery'] = ['key' => 'wconvert_cart'];
+
+            return $browser;
+        });
+
+        $text = $this->policy->content();
+
+        $this->assertStringContainsString('A/B test', $text);
+        $this->assertStringContainsString('Cart recovery stores the cart item count and total', $text);
+        $this->assertStringContainsString('does not store product or contact details', $text);
     }
 
     public function testItDoesNotClaimThatTheSubmissionStoresItsPageAddress(): void

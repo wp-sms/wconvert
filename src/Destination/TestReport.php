@@ -12,11 +12,11 @@ defined('ABSPATH') || exit;
  * ========================================================================
  * ADR 0042: the admin speaks only when it changes what you do next, and a red
  * box saying `500` changes nothing. So the unit this produces is a sentence
- * somebody can act on — and where the provider supplied one of their own, it
- * is **theirs, verbatim**. The WSMS push already stores failure text exactly
- * as WSMS wrote it and the admin renders it through React, which escapes on
- * the way to the DOM; rewriting a helpful provider message into a generic one
- * is the single most common way this feature is made useless.
+ * somebody can act on — and where the provider supplied one of their own, its
+ * actionable explanation remains intact. Before a message reaches an admin
+ * response or stored health record, the boundary removes submitted personal
+ * values, credentials and control characters. Rewriting every useful provider
+ * reason into one generic sentence would make the feature useless.
  *
  * ========================================================================
  * THREE OUTCOMES, NOT A BOOLEAN.

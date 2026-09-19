@@ -88,6 +88,7 @@ final class LeadControllerTest extends TestCase
     public function testTheLogIsOneReadOnlyRouteInWConvertsNamespace(): void
     {
         $this->assertSame(['GET'], self::methodsOn('/leads'));
+        $this->assertSame(['POST'], self::methodsOn('/leads/query'));
         $this->assertSame(Routes::NAMESPACE, self::routes()[0]['namespace']);
     }
 
@@ -100,6 +101,26 @@ final class LeadControllerTest extends TestCase
         foreach (self::methodsOn('/leads') as $method) {
             $this->assertSame('GET', $method, 'ADR 0031: a Lead has exactly one origin, and it is not this');
         }
+    }
+
+    public function testPersonalSearchValuesAreAcceptedOnlyInThePrivatePostBody(): void
+    {
+        /** @var array<string, array<string, mixed>> $getArgs */
+        $getArgs = self::routes()[0]['args'][0]['args'];
+        /** @var array<string, array<string, mixed>> $postArgs */
+        $postArgs = self::routes()[1]['args'][0]['args'];
+
+        foreach (['lead_id', 'identifier', 'search', 'group_identifier'] as $personal) {
+            $this->assertArrayNotHasKey($personal, $getArgs);
+            $this->assertArrayHasKey($personal, $postArgs);
+        }
+
+        $request = new WP_REST_Request('GET', '/wconvert/v1/leads');
+        $request->set_param('identifier', 'sarah@example.com');
+        $response = self::controller()->index($request);
+
+        $this->assertInstanceOf(WP_Error::class, $response);
+        $this->assertSame('wconvert_personal_query_in_url', $response->get_error_code());
     }
 
     public function testExactIdentifierErasureIsASeparateDestructiveRoute(): void

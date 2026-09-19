@@ -75,6 +75,25 @@ final class CartCookie
     public const NAME = 'wconvert_cart';
 
     /**
+     * Add this module's browser record to free's privacy Data Map.
+     *
+     * @param array<string, mixed> $browser
+     * @return array<string, mixed>
+     */
+    public static function privacy(array $browser): array
+    {
+        $browser['cart_recovery'] = [
+            'key' => self::NAME,
+            'expires_with_cart_session' => true,
+            'contains_item_count' => true,
+            'contains_cart_total' => true,
+            'contains_contact_details' => false,
+        ];
+
+        return $browser;
+    }
+
+    /**
      * WooCommerce's own session default, in seconds.
      *
      * Only ever used as the FALLBACK argument to WooCommerce's own filter, so

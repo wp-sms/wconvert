@@ -88,6 +88,13 @@ CSV takes all retained matches under the view's upper capture bound, not just
 the visible page. Newer captures require refresh; deletion can still remove
 earlier rows. See [ADR 0071](docs/adr/0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md).
 
+Captured contact details and free-text searches are temporary admin state.
+Reads and CSV exports send those filters in authenticated POST bodies, not in
+browser/server URLs; refreshing or copying the page therefore does not retain
+them. Campaign, purpose, date and order filters remain bookmarkable, as does an
+opaque Lead ID in the browser fragment for diagnostic links. See
+[ADR 0091](docs/adr/0091-shared-settings-and-submission-workflows-have-distinct-homes.md).
+
 Privacy erasure is exact-identifier-wide, not per submission and not person
 resolution. After verifying a request outside WConvert, a merchant can export
 and permanently delete every retained Lead whose `email` or `phone` column
@@ -100,7 +107,10 @@ and backups remain an explicit merchant follow-up. See
 Data & privacy also presents a read-only Data Map of what this install can
 prove: saved retention, configured Destination types and declared fields,
 browser-local campaign state and its fallback-cookie lifetime, and the short
-anonymous-count rate-limit window.
+anonymous-count and form-protection rate-limit windows. Pro adds only facts for
+modules this install can actually run: A/B assignment state and, with
+WooCommerce cart recovery, a session cookie containing cart count and total but
+no product or contact details.
 The same facts feed WordPress's suggested privacy-policy text; they never expose
 credentials, publish policy wording, choose a legal basis or claim to erase
 external copies. See
@@ -307,6 +317,14 @@ The case against is real — cart recovery is marketing in intent — and it los
 consequence: `marketing` is withheld by default wherever a consent plugin is
 installed, so the purist reading silently kills the cart [[Goal]] across the EU,
 with nothing in any log to say why.
+
+Public form capture has a separate, deliberately generous abuse boundary: 60
+attempts per Campaign and server-observed network address in ten minutes, plus
+a 16 KiB request-body cap and field-length limits. The transient key contains
+only a site HMAC of address and Campaign ID, expires with the fixed window, and
+never stores the raw address. A missing server address fails open so a proxy
+configuration mistake cannot block every real visitor. This is an operational
+security default, not an optional privacy feature.
 
 ### Retention Period
 
@@ -1238,6 +1256,13 @@ entered values, because it cannot prove that no local write occurred
 [ADR 0073](docs/adr/0073-capture-acknowledgement-is-not-provider-confirmation.md)). Failure is
 visible to the *merchant*, on Destination health and in the failure ring, which
 is where it can be acted on.
+
+Those diagnostics preserve the provider, outcome and actionable reason, but
+submitted Lead/test values, saved credentials and control characters are
+removed before a message reaches the admin response, WordPress error log,
+Destination health or the failure ring. A useful statement such as “invalid
+subscriber” remains useful without copying the subscriber's email or an API
+key into operational metadata.
 
 A **test send** pushes an explicitly chosen sample email to the Destination's
 saved route. The merchant sees the recipient and possible external effect

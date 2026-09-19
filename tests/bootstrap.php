@@ -1504,6 +1504,11 @@ if (!class_exists('WP_REST_Request')) {
             $this->body = $body;
         }
 
+        public function get_body(): string
+        {
+            return $this->body;
+        }
+
         /**
          * WordPress decodes the body on demand and returns null where it is
          * not JSON, which is the case the beacon's own parser has to survive.

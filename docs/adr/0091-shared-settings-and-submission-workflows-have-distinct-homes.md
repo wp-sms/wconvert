@@ -106,10 +106,13 @@ matches nothing and never drops its predicate.
 
 Explicit Apply supports literal, case-insensitive substring search of captured
 name/message and email/phone, up to 200 Unicode characters. Full canonical
-identifiers and Lead IDs keep their exact paths. Counts, pages, grouping,
+identifiers and Lead IDs keep their exact query paths. Counts, pages, grouping,
 drilldown and CSV share predicates and the capture bound. A failed filter read
-does not relabel previous rows/export. Search/purpose are bookmarkable;
-paging/dialog state is not promised.
+does not relabel previous rows/export. Purpose and non-personal scope filters
+are bookmarkable; captured identifiers and free text remain temporary screen
+state and travel in authenticated POST bodies. An opaque Lead ID may remain in
+the browser fragment for a diagnostic deep link, but no personal filter enters
+a REST/export URL. Paging/dialog state is not promised.
 
 Secondary date/order controls are under Filters. Optional 7/30-day presets
 include today on the site's clock; all retained dates remains the default.

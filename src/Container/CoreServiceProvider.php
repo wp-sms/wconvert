@@ -60,6 +60,7 @@ use WConvert\Queue\ActionSchedulerQueue;
 use WConvert\Queue\Queue;
 use WConvert\Rest\BeaconController;
 use WConvert\Rest\CaptureController;
+use WConvert\Rest\CaptureRateLimit;
 use WConvert\Rest\DashboardController;
 use WConvert\Rest\DestinationController;
 use WConvert\Rest\GoalController;
@@ -460,7 +461,8 @@ final class CoreServiceProvider implements ServiceProvider
             static fn (ServiceContainer $c): CaptureController => new CaptureController(
                 $c->resolve(PublishedSet::class),
                 $c->resolve(LeadCapture::class),
-                $c->resolve(TemplateVocabulary::class)
+                $c->resolve(TemplateVocabulary::class),
+                $c->resolve(CaptureRateLimit::class)
             )
         );
 
@@ -621,6 +623,11 @@ final class CoreServiceProvider implements ServiceProvider
         $container->register(
             RateLimit::class,
             static fn (ServiceContainer $c): RateLimit => new RateLimit($c->resolve(TransientStore::class))
+        );
+
+        $container->register(
+            CaptureRateLimit::class,
+            static fn (ServiceContainer $c): CaptureRateLimit => new CaptureRateLimit($c->resolve(TransientStore::class))
         );
 
         $container->register(

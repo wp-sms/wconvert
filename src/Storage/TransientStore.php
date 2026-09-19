@@ -15,9 +15,9 @@ defined('ABSPATH') || exit;
  * an uncached page load. What belongs HERE is the opposite kind of value — one
  * whose whole meaning is that it expires, and whose loss costs nothing.
  *
- * There is exactly one such value: the beacon's rate-limit window
- * ({@see \WConvert\Rest\RateLimit}). Losing it lets one visitor's allowance
- * start again, which is the same outcome as waiting a minute.
+ * The values here are short-lived public-endpoint rate-limit windows. Losing
+ * one lets a caller's allowance start again, which is the same outcome as
+ * waiting for that window to expire.
  *
  * The expiry is a REQUIRED argument rather than an optional one. A transient
  * written without one never expires and is an option with a worse name, which

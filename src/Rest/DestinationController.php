@@ -15,6 +15,7 @@ use WConvert\Destination\PushDispatcher;
 use WConvert\Destination\PushOutcome;
 use WConvert\Destination\TestReport;
 use WConvert\Lead\Identifier;
+use WConvert\Support\DiagnosticSanitizer;
 use WConvert\Support\Ulid;
 use WP_Error;
 use WP_REST_Request;
@@ -288,16 +289,15 @@ final class DestinationController implements RestController
             return $this->reported(TestReport::nothingToConnectTo());
         }
 
+        $credentials = $this->connections->credentialsFor($destination);
+
         try {
-            $type->testConnection($this->connections->credentialsFor($destination));
+            $type->testConnection($credentials);
         } catch (\Throwable $refused) {
-            // **The provider's own words**, and the escaping argument is the
-            // one `WpWsmsContacts::call()` makes: this is stored and rendered
-            // through React, which escapes on the way to the DOM, so
-            // esc_html() here would put `&#039;` in front of an operator
-            // instead of an apostrophe.
+            // Keep the provider's actionable wording. `reported()` removes
+            // configured secrets before React renders the answer.
             // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- rendered through React, which escapes; see WpWsmsContacts::call().
-            return $this->reported(TestReport::failed($refused->getMessage()));
+            return $this->reported(TestReport::failed($refused->getMessage()), [], $credentials);
         }
 
         return $this->reported(TestReport::connected($destination->label));
@@ -368,7 +368,7 @@ final class DestinationController implements RestController
             // back null here — and {@see TestReport::of()} already says the
             // shorter *"the test reached X"* for an unnamed target.
             $result->outcome === PushOutcome::Success ? ($this->targetOf($destination) ?? '') : ''
-        ));
+        ), $sample, $this->connections->credentialsFor($destination));
 
     }
 
@@ -420,9 +420,16 @@ final class DestinationController implements RestController
         return ConfiguredTarget::of($schema, $destination->settings);
     }
 
-    private function reported(TestReport $report): WP_REST_Response
+    /**
+     * @param array<mixed> $personal
+     * @param array<mixed> $secrets
+     */
+    private function reported(TestReport $report, array $personal = [], array $secrets = []): WP_REST_Response
     {
-        return new WP_REST_Response($report->toArray());
+        $payload = $report->toArray();
+        $payload['message'] = DiagnosticSanitizer::message($payload['message'], $personal, $secrets);
+
+        return new WP_REST_Response($payload);
     }
 
     private function gone(): WP_Error

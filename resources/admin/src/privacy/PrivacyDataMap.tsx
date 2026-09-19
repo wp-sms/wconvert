@@ -34,6 +34,12 @@ const retentionText = (days: number | null) => days === null
 
 const rateLimitText = (seconds: number) => seconds === 60
   ? __('one minute', 'wconvert')
+  : seconds % 60 === 0
+    ? sprintf(
+      /* translators: %s: number of minutes. */
+      _n('%s minute', '%s minutes', seconds / 60, 'wconvert'),
+      (seconds / 60).toLocaleString(),
+    )
   : sprintf(
     /* translators: %s: number of seconds. */
     _n('%s second', '%s seconds', seconds, 'wconvert'),
@@ -117,7 +123,9 @@ export function PrivacyDataMap() {
             {__('Saved in the visitor’s browser', 'wconvert')}
           </h3>
           <Description className="mt-1">
-            {__('Browsers remember whether a visitor saw, dismissed or completed a Campaign, plus their A/B test version. This local storage stays until the visitor or browser clears it.', 'wconvert')}
+            {data.browser.stores_ab_assignment
+              ? __('Browsers remember whether a visitor saw, dismissed or completed a Campaign, plus their A/B test version. This local storage stays until the visitor or browser clears it.', 'wconvert')
+              : __('Browsers remember whether a visitor saw, dismissed or completed a Campaign. This local storage stays until the visitor or browser clears it.', 'wconvert')}
           </Description>
           <Description className="mt-2">
             {sprintf(
@@ -126,11 +134,14 @@ export function PrivacyDataMap() {
               cookieDurationText(data.browser.cookie_fallback_days),
             )}
           </Description>
+          {data.browser.cart_recovery !== null && <Description className="mt-2">
+            {__('Cart recovery keeps the cart item count and total until the WooCommerce cart session ends. It does not store product or contact details.', 'wconvert')}
+          </Description>}
         </section>
 
-        <section aria-labelledby="wconvert-anonymous-counts" className="border-t border-border pt-5">
-          <h3 id="wconvert-anonymous-counts" className="m-0 text-body font-medium">
-            {__('Anonymous campaign totals', 'wconvert')}
+        <section aria-labelledby="wconvert-activity-protection" className="border-t border-border pt-5">
+          <h3 id="wconvert-activity-protection" className="m-0 text-body font-medium">
+            {__('Campaign totals and form protection', 'wconvert')}
           </h3>
           <Description className="mt-1">
             {__('Daily Campaign totals record views, dismissals and completions, not individual visitors.', 'wconvert')}
@@ -140,6 +151,13 @@ export function PrivacyDataMap() {
               /* translators: %s: a short duration such as “one minute”. */
               __('To prevent duplicate counts, WConvert keeps a one-way code made from the IP address for %s. The code expires; the IP address is not saved.', 'wconvert'),
               rateLimitText(data.beacon_rate_limit_seconds),
+            )}
+          </Description>
+          <Description className="mt-2">
+            {sprintf(
+              /* translators: %s: a short duration such as “10 minutes”. */
+              __('To slow repeated form submissions, WConvert keeps a separate one-way IP code for each Campaign for %s. The IP address is not saved.', 'wconvert'),
+              rateLimitText(data.capture_rate_limit_seconds),
             )}
           </Description>
         </section>

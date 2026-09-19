@@ -19,8 +19,17 @@ export interface PrivacyDataMap {
     cookie_fallback_days: number;
     contains_contact_details: boolean;
     contains_visitor_identifier: boolean;
+    stores_ab_assignment: boolean;
+    cart_recovery: null | {
+      key: string;
+      expires_with_cart_session: boolean;
+      contains_item_count: boolean;
+      contains_cart_total: boolean;
+      contains_contact_details: boolean;
+    };
   };
   beacon_rate_limit_seconds: number;
+  capture_rate_limit_seconds: number;
 }
 
 export interface PrivacyGuidance {

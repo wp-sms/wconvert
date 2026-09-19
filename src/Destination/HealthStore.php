@@ -3,6 +3,7 @@
 namespace WConvert\Destination;
 
 use WConvert\Storage\OptionStore;
+use WConvert\Support\DiagnosticSanitizer;
 
 defined('ABSPATH') || exit;
 
@@ -73,7 +74,7 @@ final class HealthStore
      */
     public function failed(string $destinationId, string $error, string $at): void
     {
-        $this->write($destinationId, $this->of($destinationId)->failed($error, $at));
+        $this->write($destinationId, $this->of($destinationId)->failed(DiagnosticSanitizer::message($error), $at));
     }
 
     /**

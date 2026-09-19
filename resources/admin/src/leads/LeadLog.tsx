@@ -16,7 +16,7 @@ import { Region, RegionBody, RegionError, RegionErrorState, RegionFooter } from 
 import { TableSkeleton } from '../shell/TableSkeleton';
 import { Toolbar, ToolbarCount } from '../shell/Toolbar';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
-import { eraseIdentifier, exportUrl, readLog, type LeadGroup, type LeadLog as LeadLogPayload, type LeadPage, type LeadQuery } from './api';
+import { canExport, eraseIdentifier, exportLeads, readLog, type LeadGroup, type LeadLog as LeadLogPayload, type LeadPage, type LeadQuery } from './api';
 import { EventTable } from './EventTable';
 import { RetentionSummary } from './RetentionSummary';
 import { flattened, listOptins, type OptinSummary } from '../optins/api';
@@ -41,7 +41,8 @@ export interface LeadLogProps {
 /** History remains a log of immutable capture events. Grouping never changes its headline count. */
 export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
   const [localQuery, setLocalQuery] = useState<LeadQuery>(EMPTY_QUERY);
-  const queryKey = queryKeyOf(query ?? localQuery);
+  const [privateQuery, setPrivateQuery] = useState<Pick<LeadQuery, 'search' | 'identifier'>>({});
+  const queryKey = queryKeyOf({ ...(query ?? localQuery), ...privateQuery });
   const requested = useMemo(() => JSON.parse(queryKey) as LeadQuery, [queryKey]);
   const [grouped, setGrouped] = useState(false);
   const scope = `${queryKey}:${grouped}`;
@@ -100,11 +101,13 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
   const names = useMemo(() => new Map(optins.map((optin) => [optin.id, optin.name])), [optins]);
   const nameOf = (id: string) => names.get(id) || id;
   const changeQuery = (next: LeadQuery) => {
-    if (onQueryChange) onQueryChange(next);
-    else setLocalQuery(next);
+    const { search, identifier, ...bookmarkable } = next;
+    setPrivateQuery({ search, identifier });
+    if (onQueryChange) onQueryChange(bookmarkable);
+    else setLocalQuery(bookmarkable);
   };
   const data = log.status === 'ready' ? log.data : null;
-  const csv = data === null ? null : exportUrl(applied.query);
+  const csv = data !== null && canExport();
   const shownGrouped = applied.query.grouped === true;
   const hasAppliedFilters = queryKeyOf(applied.query) !== '{}';
   const rows = data === null ? 0 : shownGrouped ? data.groups.length : data.leads.length;
@@ -112,7 +115,7 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
   const privacyIdentifier = !showingPrevious && data !== null && data.submissions > 0
     ? exactIdentifierScope(applied.query)
     : null;
-  const erasureCsv = erasurePreview === null ? null : exportUrl({ identifier: erasurePreview.identifier, snapshot: erasurePreview.snapshot });
+  const erasureCsv = erasurePreview !== null && canExport();
   const next = () => {
     if (!data?.next_cursor) return;
     setPaging({ scope, cursor: data.next_cursor, snapshot: data.snapshot,
@@ -125,9 +128,9 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
 
   return <div className="flex flex-col gap-5">
     <PageAction><Button variant="outline" disabled={updating} onClick={() => { setPaging({ scope, previous: [] }); setRetry((value) => value + 1); onRefresh?.(); }}><RefreshCw aria-hidden="true" />{__('Refresh submissions', 'wconvert')}</Button></PageAction>
-    {csv !== null && <PageAction><Button asChild variant="outline"><a href={csv}>
+    {csv && <PageAction><Button variant="outline" onClick={() => exportLeads(applied.query)}>
       <Download aria-hidden="true" />{__('Export matching submissions', 'wconvert')}
-    </a></Button></PageAction>}
+    </Button></PageAction>}
     <Region label={__('Submissions', 'wconvert')}>
       <RegionBody>
         <div role="group" aria-label={__('Submission purpose', 'wconvert')} className="mb-4 flex flex-wrap gap-2">
@@ -220,7 +223,9 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <p className="m-0 text-note text-muted-foreground">{__('Only WConvert’s copies are deleted. Handle copies in destinations, email logs, downloaded CSV files and backups separately.', 'wconvert')}</p>
-          {erasureCsv !== null && <a className="text-note underline underline-offset-2" href={erasureCsv}>{__('Export these submissions before deleting', 'wconvert')}</a>}
+          {erasureCsv && <Button variant="link" className="h-auto justify-start p-0 text-note underline underline-offset-2" onClick={() => {
+            if (erasurePreview !== null) exportLeads({ identifier: erasurePreview.identifier, snapshot: erasurePreview.snapshot });
+          }}>{__('Export these submissions before deleting', 'wconvert')}</Button>}
           {erasureError !== null && <p role="alert" className="m-0 text-note text-destructive">{erasureError}</p>}
           <AlertDialogFooter>
             <AlertDialogCancel disabled={erasing}>{__('Cancel', 'wconvert')}</AlertDialogCancel>
@@ -337,10 +342,10 @@ function GroupEvents({ group, query, nameOf, goalOf, onRelated }: { group: LeadG
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
   }, [filter, retry]);
-  const csv = exportUrl(filter);
+  const csv = canExport();
   return <div className="flex flex-col gap-4">
     <p>{submissionCount(data?.submissions ?? group.submissions)}{__(' within the selected filters. These are capture events, not a contact profile.', 'wconvert')}</p>
-    {csv && <Button asChild variant="outline" className="self-start"><a href={csv}><Download aria-hidden="true" />{__('Export these submissions', 'wconvert')}</a></Button>}
+    {csv && <Button variant="outline" className="self-start" onClick={() => exportLeads(filter)}><Download aria-hidden="true" />{__('Export these submissions', 'wconvert')}</Button>}
     {loading && <p role="status">{__('Loading submissions…', 'wconvert')}</p>}
     {error && <div><p role="alert">{error}</p><Button variant="outline" onClick={() => setRetry((value) => value + 1)}>{__('Retry', 'wconvert')}</Button></div>}
     {data !== null && data.leads.length === 0 && <p>{__('No retained submissions match this group and these filters.', 'wconvert')}</p>}

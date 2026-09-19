@@ -24,6 +24,9 @@ enum RefusalCode: string
     /** A field the form declared `required` arrived empty. */
     case FieldRequired = 'wconvert_field_required';
 
+    /** A submitted value is larger than WConvert stores for this field. */
+    case FieldTooLong = 'wconvert_field_too_long';
+
     /** The answer is not an option in the published form. */
     case ChoiceInvalid = 'wconvert_choice_invalid';
 
