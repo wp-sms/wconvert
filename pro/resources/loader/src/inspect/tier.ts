@@ -1,7 +1,8 @@
 import { runInspector } from '@loader/inspect/run';
 import type { PayloadNarrowing } from '@loader/boot';
 import type { LoaderModule } from '@loader/types';
-import { proLoaderFor } from '../compose';
+import { presenter, proLoaderFor } from '../compose';
+import { automaticPlacementState } from '../../../../modules/inline-placement/loader';
 
 /**
  * One tier's eligibility inspector: **the same module set as that tier's
@@ -30,13 +31,14 @@ import { proLoaderFor } from '../compose';
  */
 export function bootProInspector(modules: readonly LoaderModule[], narrow?: PayloadNarrowing) {
   const loader = proLoaderFor(modules);
+  const presentation = { select: presenter.select, placement: automaticPlacementState };
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => runInspector(loader, narrow), {
+    document.addEventListener('DOMContentLoaded', () => runInspector(loader, narrow, presentation), {
       once: true,
     });
   } else {
-    runInspector(loader, narrow);
+    runInspector(loader, narrow, presentation);
   }
 
   return loader;

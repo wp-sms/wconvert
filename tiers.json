@@ -21,22 +21,22 @@
         "slug": "basic",
         "name": "Pro",
         "plugin_name": "WConvert Pro",
-        "description": "Fullscreen campaigns, floating bars and slide-ins, and the designs that come with them.",
-        "modules": ["display-types"]
+        "description": "Fullscreen campaigns, floating bars, slide-ins, automatic inline placement, and the designs that come with them.",
+        "modules": ["display-types", "inline-placement"]
       },
       {
         "slug": "pro",
         "name": "Pro",
         "plugin_name": "WConvert Pro",
         "description": "Adds the premium Triggers, the advanced targeting Conditions, and A/B testing.",
-        "modules": ["display-types", "premium-triggers", "ab-testing"]
+        "modules": ["display-types", "inline-placement", "premium-triggers", "ab-testing"]
       },
       {
         "slug": "elite",
         "name": "Pro",
         "plugin_name": "WConvert Pro",
         "description": "Everything, including cart recovery and the outbound Destinations.",
-        "modules": ["display-types", "premium-triggers", "ab-testing", "cart-recovery"]
+        "modules": ["display-types", "inline-placement", "premium-triggers", "ab-testing", "cart-recovery"]
       }
     ]
   }

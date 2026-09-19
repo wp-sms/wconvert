@@ -90,6 +90,8 @@ final class InspectorLabels
              * draft would leave the likeliest cause unsaid.
              */
             'stopped' => [
+                'automatic_missing' => __('No automatic placement location was generated on this page. Check supported post/page content, paragraph fallback, and page-builder compatibility; use a manual block or shortcode if needed.', 'wconvert'),
+                'automatic_lost' => __('Another eligible automatic Campaign won this page’s inline placement. Check automatic placement priority.', 'wconvert'),
                 'draft' => __('Not published yet, so it shows nowhere.', 'wconvert'),
                 'deleted' => __('Deleted.', 'wconvert'),
                 TargetingExplainer::EXCLUDED => __('This page is in its exclusion list.', 'wconvert'),

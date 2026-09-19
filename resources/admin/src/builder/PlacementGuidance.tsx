@@ -6,12 +6,14 @@ import { Input } from '../components/ui/input';
 import { adminSettings } from '../settings';
 import { useDirection } from '../hooks/useDirection';
 import { physicalPlacementLabel } from './PlacementControl';
+import { inlinePlacementLabel } from '../inlinePlacement';
 
 export interface PlacementGuidanceProps {
   readonly optinId: string;
   readonly optinName?: string;
   readonly displayType: string;
   readonly placement?: unknown;
+  readonly inlinePlacement?: unknown;
   /** A published version exists; this does not assert that it can show on any page. */
   readonly published: boolean;
 }
@@ -35,10 +37,11 @@ export function siteCheckUrl(homeUrl?: string, inspectParam?: string): string | 
 }
 
 /** Placement instructions shared by draft review and the result of publishing. */
-export function PlacementGuidance({ optinId, optinName, displayType, placement, published }: PlacementGuidanceProps) {
+export function PlacementGuidance({ optinId, optinName, displayType, placement, inlinePlacement, published }: PlacementGuidanceProps) {
   const id = useId();
   const direction = useDirection();
   const inline = displayType === 'inline';
+  const automatic = inline ? inlinePlacementLabel(inlinePlacement) : null;
   const position = physicalPlacementLabel(displayType, placement, direction);
   const settings = adminSettings();
   const siteCheck = published ? siteCheckUrl(settings?.homeUrl, settings?.inspectParam) : null;
@@ -46,7 +49,11 @@ export function PlacementGuidance({ optinId, optinName, displayType, placement, 
   return (
     <section className="wconvert-placement" aria-labelledby={`${id}-title`}>
       <h3 id={`${id}-title`}>{inline ? __('Place this Campaign on a page', 'wconvert') : __('Check where it appears', 'wconvert')}</h3>
-      {inline ? (
+      {automatic ? <>
+        <p>{automatic}</p>
+        <p>{__('After publishing, Pro places this Campaign in matching WordPress posts and pages when its display rules allow it. No block or shortcode is needed. A manual embed takes precedence.', 'wconvert')}</p>
+        <p>{__('Check a matching article on your site. Page builders and custom layouts may need manual placement.', 'wconvert')}</p>
+      </> : inline ? (
         <>
           {!published && <p>{__('Publish this Campaign first so it becomes available in the page editor.', 'wconvert')}</p>}
           <ol className="wconvert-placement__steps">
@@ -78,7 +85,7 @@ export function PlacementGuidance({ optinId, optinName, displayType, placement, 
           </Button>
           <p id={`${id}-check-note`} className="text-note text-muted-foreground">
             {__('Opens display checks for the published version in your signed-in session. It does not show draft edits or simulate a signed-out visitor.', 'wconvert')}
-            {inline && <> {__('For an inline form, also check the page where you placed its block or shortcode.', 'wconvert')}</>}
+            {inline && !automatic && <> {__('For an inline form, also check the page where you placed its block or shortcode.', 'wconvert')}</>}
           </p>
         </div>
       )}

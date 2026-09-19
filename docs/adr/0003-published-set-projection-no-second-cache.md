@@ -41,6 +41,11 @@ targeting rule, and inlines the survivors — so a site with 40 Optins does not
 ship 40 rule sets on every page. Everything else (time delay, scroll depth, exit
 intent, device) is evaluated client-side.
 
+*Extended by [ADR 0099](0099-automatic-inline-placement-uses-rendered-content.md):
+automatic inline placement reuses this targeting/degradation result to emit
+hidden content candidates. PHP must not pick the winner: browser eligibility
+and A/B assignment still decide, including on cached pages. No new cache exists.*
+
 **There is deliberately no per-URL cache underneath this.** The full-page cache
 is the cache. A transient keyed by URL would cache something already cached and
 add an invalidation surface that will eventually be wrong. Every WordPress

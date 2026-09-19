@@ -6,6 +6,7 @@ use WConvert\Admin\AdminNotices;
 use WConvert\Container\ServiceContainer;
 use WConvert\Container\ServiceProvider;
 use WConvert\Optin\OptinRepository;
+use WConvert\Optin\PublishedSet;
 use WConvert\Pro\Admin\ProAdminEnqueue;
 use WConvert\Pro\Frontend\ProInspectorEnqueue;
 use WConvert\Pro\Frontend\ProLoaderEnqueue;
@@ -169,6 +170,15 @@ final class ProServiceProvider implements ServiceProvider
 
     public function boot(ServiceContainer $container): void
     {
+        if (class_exists(\WConvert\Pro\Module\InlinePlacement\AutomaticInline::class)) {
+            add_action('init', static function () use ($container): void {
+                (new \WConvert\Pro\Module\InlinePlacement\AutomaticInline(
+                    $container->resolve(PublishedSet::class),
+                    $container->resolve(\WConvert\Rules\Degradation::class),
+                    $container->resolve(\WConvert\Targeting\RoleRegistry::class),
+                ))->hooks();
+            });
+        }
         /*
          * ====================================================================
          * PRO REGISTERS THE PREMIUM RULE TYPES. THAT REGISTRATION IS THE

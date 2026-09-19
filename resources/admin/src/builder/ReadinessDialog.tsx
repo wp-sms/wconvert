@@ -20,6 +20,7 @@ import { capturesTaken, nodeAt, nodesOf } from './structure/tree';
 import { convertingActOf } from './structure/guards';
 import { summarise } from './rules/summaries';
 import { PlacementGuidance } from './PlacementGuidance';
+import { inlinePlacementLabel, usesPageLoadOnly } from '../inlinePlacement';
 import { physicalPlacementLabel, resolvedPlacement } from './PlacementControl';
 import { useDirection } from '../hooks/useDirection';
 import type { Path } from './panel';
@@ -45,6 +46,7 @@ export interface ReadinessDialogProps {
   readonly vocabulary: RuleVocabulary;
   readonly displayType: string;
   readonly placement?: unknown;
+  readonly inlinePlacement?: unknown;
   readonly bound: readonly string[];
   readonly template: Template | undefined;
   readonly destinations: readonly Destination[] | null;
@@ -56,6 +58,7 @@ export interface ReadinessDialogProps {
   readonly onGoToRules: (section: string) => void;
   readonly onGoToDestinations: () => void;
   readonly onGoToDesign: () => void;
+  readonly onGoToPlacement?: () => void;
   readonly onEditDesign: () => void;
   readonly onPreview: () => void;
   /** Saves any unsaved draft before promoting it; rejects without hiding the dialog. */
@@ -76,6 +79,7 @@ export function ReadinessDialog({
   vocabulary,
   displayType,
   placement,
+  inlinePlacement,
   bound,
   template,
   destinations,
@@ -87,6 +91,7 @@ export function ReadinessDialog({
   onGoToRules,
   onGoToDestinations,
   onGoToDesign,
+  onGoToPlacement = onGoToDesign,
   onEditDesign,
   onPreview,
   onPublish,
@@ -114,7 +119,11 @@ export function ReadinessDialog({
   const outcome = goal.status === 'ready' ? goal.data?.outcome : undefined;
   const goalIssue = outcome && hasDesign ? outcomeDesignIssue(outcome, template) : null;
   const handoffIssue = outcome ? outcomeHandoffIssue(outcome, bound, destinations, captureMode) : null;
+  const inlineTriggerIssue = !overlay && inlinePlacement != null && !usesPageLoadOnly(rules.rules, vocabulary);
   const blocking: { said: string; fix: () => void }[] = [
+    ...(!overlay && inlinePlacement != null && inlinePlacementLabel(inlinePlacement) === null
+      ? [{ said: __('Choose a valid inline position and a whole paragraph number from 1 to 100.', 'wconvert'), fix: onGoToPlacement }] : []),
+    ...(inlineTriggerIssue ? [{ said: __('Automatic placement requires page load as its only trigger. Change When it appears or use manual placement.', 'wconvert'), fix: () => onGoToRules('when') }] : []),
     ...(!outcome ? [{ said: __('Goal requirements could not be checked. Reload before publishing.', 'wconvert'), fix: onGoToDesign }] : []),
     ...(goalIssue ? [{ said: goalIssue, fix: template && convertingActOf(template.tree)[0] === outcome?.action ? onEditDesign : onGoToDesign }] : []),
     ...(handoffIssue ? [{ said: handoffIssue, fix: onGoToDestinations }] : []),
@@ -264,7 +273,9 @@ export function ReadinessDialog({
                     </p>
                   )}
                   {!overlay && (
-                    <p>{__('Appears where you place its block or shortcode, when these rules allow it.', 'wconvert')}</p>
+                    <p><button className="wconvert-readiness__go" onClick={() => jump(onGoToPlacement)}>
+                      {inlinePlacementLabel(inlinePlacement) ?? __('Appears where you place its block or shortcode, when these rules allow it.', 'wconvert')}
+                    </button></p>
                   )}
                   <dl className="wconvert-launch-review__rules">
                     {summaries.map((summary) => (
@@ -396,6 +407,7 @@ export function ReadinessDialog({
                 optinId={optinId}
                 displayType={displayType}
                 placement={placement}
+                inlinePlacement={inlinePlacement}
                 published={published || isPublished}
               />
             )}

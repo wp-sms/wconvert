@@ -1,0 +1,6 @@
+{
+  "slug": "inline-placement",
+  "name": "Automatic inline placement",
+  "description": "Place inline campaigns before, after or within article content.",
+  "bundle_marker": "data-wconvert-auto"
+}

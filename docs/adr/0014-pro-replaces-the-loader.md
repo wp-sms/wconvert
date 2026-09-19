@@ -140,6 +140,9 @@ ever sees that queue's output.*
   ***Amended by [ADR 0098](0098-fullscreen-is-a-pro-modal-surface.md): the ceiling
   is 13,500 B.*** The largest build is 13,344 B with fullscreen's accessible
   modal surface. Historical competitor figures are not a current market claim.
+  ***Amended by [ADR 0099](0099-automatic-inline-placement-uses-rendered-content.md):
+  the current ceiling is 14,012 B.*** Automatic inline selection and DOM/manual
+  precedence add about 311 B at Elite; the gate remains hard and flagless.
 - **No public `registerRule` seam**, therefore no partial-registration failure mode
   and no documented extension point that immediately becomes a compatibility
   surface.

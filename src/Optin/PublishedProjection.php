@@ -90,7 +90,7 @@ final class PublishedProjection
      *   `tests/unit/Optin/PublishedProjectionTest.php` the same way the copy
      *   list is.
      */
-    private const SHIPPED = ['template', 'display_type', 'placement', 'frequency', 'priority'];
+    private const SHIPPED = ['template', 'display_type', 'placement', 'inline_placement', 'frequency', 'priority'];
 
     /**
      * The arm this entry is, of the test it belongs to:
