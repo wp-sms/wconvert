@@ -592,7 +592,10 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
         >
           <ArrowLeft aria-hidden="true" />
         </Button>
-        <span className="wconvert-workspace__brand">WConvert</span>
+        <span className="wc-brand-mark wconvert-workspace__brand-mark" aria-hidden="true">
+          w
+        </span>
+        <span className="sr-only">{__('WConvert', 'wconvert')}</span>
         <h1 className="sr-only">{name || __('Untitled Campaign', 'wconvert')}</h1>
         <label className="sr-only" htmlFor="wconvert-optin-name">
           {__('Name', 'wconvert')}
