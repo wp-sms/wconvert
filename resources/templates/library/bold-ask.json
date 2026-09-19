@@ -65,6 +65,16 @@
             "tokens": {
               "text-size": "1.125rem"
             }
+          },
+          {
+            "type": "text",
+            "id": "n8",
+            "role": "fine_print",
+            "text": "Weekly emails. %s",
+            "size": "s",
+            "link": {
+              "label": "Privacy Policy"
+            }
           }
         ]
       },

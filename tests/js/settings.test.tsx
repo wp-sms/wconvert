@@ -15,7 +15,11 @@ const leads = vi.hoisted(() => ({
   saveRetention: vi.fn(),
 }));
 vi.mock('../../resources/admin/src/leads/api', () => leads);
-const privacy = vi.hoisted(() => ({ readDataMap: vi.fn() }));
+const privacy = vi.hoisted(() => ({
+  readDataMap: vi.fn(),
+  readPrivacyGuidance: vi.fn(),
+  savePrivacyGuidance: vi.fn(),
+}));
 vi.mock('../../resources/admin/src/privacy/api', () => privacy);
 const OFF = {
   maxImpressions: null,
@@ -35,6 +39,8 @@ beforeEach(() => {
     browser: { key: 'wcv1', local_storage_expiry_days: null, cookie_fallback: true, cookie_fallback_days: 365, contains_contact_details: false, contains_visitor_identifier: false },
     beacon_rate_limit_seconds: 60,
   });
+  privacy.readPrivacyGuidance.mockResolvedValue({ enabled: true });
+  privacy.savePrivacyGuidance.mockImplementation(async (enabled) => ({ enabled }));
 });
 
 it('finds a settings category by the task without replacing the active form', async () => {
@@ -106,4 +112,19 @@ it('keeps the site-specific data map with retention and personal-data actions', 
   expect(await screen.findByRole('button', { name: /Where visitor data goes/ })).toHaveAttribute('aria-expanded', 'false');
   expect(screen.getByRole('heading', { name: 'Data & privacy' })).toBeInTheDocument();
   expect(screen.getByRole('heading', { name: 'Export and personal data' })).toBeInTheDocument();
+});
+
+it('saves Campaign privacy guidance without disabling core privacy tools', async () => {
+  render(<Settings group="data" />);
+
+  const guidance = await screen.findByLabelText(/Show privacy guidance in the Campaign editor/);
+  expect(guidance).toBeChecked();
+  expect(screen.getByText(/Export, erasure, retention and WordPress Privacy Policy tools stay available/)).toBeInTheDocument();
+
+  await userEvent.click(guidance);
+  expect(privacy.savePrivacyGuidance).not.toHaveBeenCalled();
+  await userEvent.click(screen.getByRole('button', { name: 'Save privacy guidance' }));
+
+  expect(privacy.savePrivacyGuidance).toHaveBeenCalledExactlyOnceWith(false);
+  expect(await screen.findByText('Privacy guidance saved.')).toBeInTheDocument();
 });

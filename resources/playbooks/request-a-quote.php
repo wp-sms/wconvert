@@ -36,12 +36,12 @@ return [
         'cta_label' => __('Request a quote', 'wconvert'),
         'consent_text' => [
             /* translators: %s: the label of a link to the site's privacy policy. */
-            'text' => __('I agree to be contacted about my request. %s', 'wconvert'),
+            'text' => __('Contact me about this request. %s', 'wconvert'),
             'link' => ['label' => __('Privacy Policy', 'wconvert')],
         ],
         'fine_print' => [
             /* translators: %s: the label of a link to the site's privacy policy. */
-            'text' => __('We use these details to respond to your request. %s', 'wconvert'),
+            'text' => __('We’ll use your details to reply. %s', 'wconvert'),
             'link' => ['label' => __('Privacy Policy', 'wconvert')],
         ],
         'success_headline' => __('Request received', 'wconvert'),

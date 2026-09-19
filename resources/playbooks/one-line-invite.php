@@ -3,10 +3,8 @@
 /**
  * "Grow my email list" — the smallest ask in the library.
  *
- * A headline, a field and a button, and deliberately nothing else. The design
- * it names declares no `body` and no `fine_print` [[Slot Role]] at all, so
- * this entry could not pad it out if it wanted to — which is the point rather
- * than a limitation to work around.
+ * A headline, a field, a button and one short policy link. The design remains
+ * deliberately spare; the privacy line is the only supporting copy.
  *
  * It is the third entry under this [[Goal]] and the three do not overlap:
  * `welcome-discount` trades a discount for the address, `exit-capture` catches
@@ -32,6 +30,11 @@ return [
         'email_label' => __('Email address', 'wconvert'),
         'email_placeholder' => __('you@example.com', 'wconvert'),
         'cta_label' => __('Send me the weekly idea', 'wconvert'),
+        'fine_print' => [
+            /* translators: %s: the label of a link to the site's privacy policy. */
+            'text' => __('Weekly emails. Unsubscribe anytime. %s', 'wconvert'),
+            'link' => ['label' => __('Privacy Policy', 'wconvert')],
+        ],
         'success_headline' => __('Request received', 'wconvert'),
         'success_body' => __('Thank you for asking to receive the next issue.', 'wconvert'),
     ],

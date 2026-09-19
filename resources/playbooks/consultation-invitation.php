@@ -18,7 +18,11 @@ return [
         'email_label' => __('Email address', 'wconvert'),
         'email_placeholder' => __('you@example.com', 'wconvert'),
         'cta_label' => __('Request a consultation', 'wconvert'),
-        'fine_print' => __('We use your details to respond to this enquiry. Sending a request does not book an appointment.', 'wconvert'),
+        'fine_print' => [
+            /* translators: %s: the label of a link to the site's privacy policy. */
+            'text' => __('We’ll use your details to reply. No appointment is booked. %s', 'wconvert'),
+            'link' => ['label' => __('Privacy Policy', 'wconvert')],
+        ],
         'consent_text' => __('You may contact me about my consultation request.', 'wconvert'),
         'success_headline' => __('Consultation request received', 'wconvert'),
         'success_body' => __('Thank you for getting in touch. We have received your details and your request for a conversation.', 'wconvert'),

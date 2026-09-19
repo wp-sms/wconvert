@@ -31,7 +31,7 @@ A slower Sunday.', 'wconvert'),
         'email_placeholder' => __('you@example.com', 'wconvert'),
         'consent_text' => [
             /* translators: %s: the label of a link to the site's privacy policy. */
-            'text' => __('Send me the weekly Sunday letter. I can unsubscribe at any time. %s', 'wconvert'),
+            'text' => __('Send me the Sunday letter. %s', 'wconvert'),
             'link' => [
                 'label' => __('Privacy Policy', 'wconvert'),
             ],
@@ -40,14 +40,14 @@ A slower Sunday.', 'wconvert'),
         'fine_print' => [
             [
                 /* translators: %s: the label of a link to the site's privacy policy. */
-                'text' => __('One letter every Sunday. Unsubscribe at any time. %s', 'wconvert'),
+                'text' => __('Sunday emails. Unsubscribe anytime. %s', 'wconvert'),
                 'link' => [
                     'label' => __('Privacy Policy', 'wconvert'),
                 ],
             ],
             [
                 /* translators: %s: the label of a link to the site's privacy policy. */
-                'text' => __('One letter every Sunday. Unsubscribe at any time. %s', 'wconvert'),
+                'text' => __('Sunday emails. Unsubscribe anytime. %s', 'wconvert'),
                 'link' => [
                     'label' => __('Privacy Policy', 'wconvert'),
                 ],

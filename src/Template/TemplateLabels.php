@@ -287,13 +287,13 @@ final class TemplateLabels
             /* translators: whether the coloured box has a rule above it, a border all round, or neither. */
             'panel.edges' => __('Border', 'wconvert'),
             /* translators: the least tall the coloured box may be, so a box holding only a picture does not collapse. */
-            'panel.min' => __('Least height', 'wconvert'),
+            'panel.min' => __('Minimum height', 'wconvert'),
             /* translators: whether two circles are punched out of the box's top corners, like a torn ticket, so the page shows through. */
             'panel.notch' => __('Punched corners', 'wconvert'),
             /* translators: the colours, spacing and type this box sets for itself and everything inside it. */
             'media.tokens' => __('Style for this box', 'wconvert'),
             /* translators: the least tall the picture may be, so it does not collapse to the two lines written on it. */
-            'media.min' => __('Least height', 'wconvert'),
+            'media.min' => __('Minimum height', 'wconvert'),
 
             /*
              * ================================================================
@@ -459,14 +459,14 @@ final class TemplateLabels
             /* translators: a heading's rank inside the Optin — whether it is the main heading or one under it. This is the document outline, not how big it is drawn. */
             'heading.level' => __('Heading rank', 'wconvert'),
             /* translators: how big this heading is drawn, as a step up or down from the design's own heading size. */
-            'heading.size' => __('Heading size', 'wconvert'),
+            'heading.size' => __('Heading scale', 'wconvert'),
             /* translators: how big this paragraph is drawn, as a step up or down from the design's own text size. */
-            'text.size' => __('Text size', 'wconvert'),
+            'text.size' => __('Text scale', 'wconvert'),
             /* translators: how a picture fills the space it is given. */
-            'image.fit' => __('How the picture fills its space', 'wconvert'),
+            'image.fit' => __('Picture fit', 'wconvert'),
             'code.copy' => __('Copy button', 'wconvert'),
             /* translators: whether a visitor must fill a form field in before they can submit. */
-            'field.required' => __('Must they fill this in?', 'wconvert'),
+            'field.required' => __('Required field', 'wconvert'),
             /* translators: how many of the five stars are filled in. */
             'rating.value' => __('How many stars', 'wconvert'),
             /* translators: which of the six pictures an Icon block draws. */
@@ -474,7 +474,7 @@ final class TemplateLabels
             /* translators: whether a picture is a rectangle or a circle. */
             'image.shape' => __('Picture shape', 'wconvert'),
             /* translators: whether a badge sits in the flow of the design or is pinned to its corner. */
-            'badge.place' => __('Where the badge sits', 'wconvert'),
+            'badge.place' => __('Badge position', 'wconvert'),
         ];
     }
 
@@ -740,7 +740,7 @@ final class TemplateLabels
             'leading' => __('Line spacing', 'wconvert'),
             'radius' => __('Corner rounding', 'wconvert'),
             'pad' => __('Inner spacing', 'wconvert'),
-            'gap' => __('Space between slots', 'wconvert'),
+            'gap' => __('Gap', 'wconvert'),
             'width' => __('Width', 'wconvert'),
             'align' => __('Alignment', 'wconvert'),
             /* translators: a picture behind the whole design. The merchant gives its web address. */
@@ -803,8 +803,8 @@ final class TemplateLabels
              * and `end` are LOGICAL — under `fa_IR` a design set to `start` reads
              * from the right. So the English word is the one an English reader
              * needs and the translator resolves it for their own direction; that
-             * is what the comments below are for, and it is why the panel offers
-             * words rather than a mirrored icon it would then have to flip.
+             * is what the comments below are for. The editor’s logical alignment
+             * icons mirror automatically; these words label their tooltips.
              */
             /* translators: a text alignment. This is the LOGICAL start of the line, so it reads “Right” in a right-to-left locale. */
             'align.start' => __('Left', 'wconvert'),

@@ -172,6 +172,12 @@ configured destinations, browser-local state and copies outside WConvert. The
 same current facts inform WConvert's suggested text in WordPress's privacy-policy
 guide; the site owner still reviews and publishes the policy that applies.
 
+Privacy guidance is on by default. It adds a short Privacy Policy notice to new
+Campaign setups and checks it in the editor before publishing. Turn it off in
+**WConvert → Settings → Data & privacy** for simpler future drafts and a simpler
+editor. Existing Campaigns do not change, and export, erasure, retention and
+WordPress privacy tools stay available.
+
 = What happens to my data if I remove the plugin? =
 
 Deactivating changes nothing: everything is still there when you activate it

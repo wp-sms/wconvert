@@ -7,6 +7,7 @@ use PHPUnit\Framework\TestCase;
 use WConvert\Goal\Goal;
 use WConvert\Playbook\PlaybookLibrary;
 use WConvert\Playbook\Prefill;
+use WConvert\Privacy\PrivacyGuidance;
 use WConvert\Rules\RuleVocabulary;
 use WConvert\Template\SlotRoles;
 use WConvert\Template\TemplateLibrary;
@@ -14,6 +15,7 @@ use WConvert\Template\TemplateSource;
 use WConvert\Template\TemplateTree;
 use WConvert\Template\TemplateVocabulary;
 use WConvert\Tests\Unit\Support\InstalledRules;
+use WConvert\Tests\Unit\Support\FakeOptionStore;
 
 /** The enquiry bundle crosses the same copy and snapshot seams as every other starting point. */
 #[CoversClass(Prefill::class)]
@@ -113,9 +115,34 @@ final class EnquiryPrefillTest extends TestCase
         $this->assertSame('Thank you for getting in touch. We have received your quote request.', $copy['success_body']['text']);
         $this->assertSame(['label' => 'Privacy Policy'], $copy['fine_print']['link']);
         $this->assertSame(
-            'We use these details to respond to your request. %s',
+            'We’ll use your details to reply. %s',
             $copy['fine_print']['text']
         );
+    }
+
+    public function testTurningGuidanceOffLeavesAutomaticPrivacyCopyOutOfANewDraft(): void
+    {
+        $playbooks = PlaybookLibrary::fromDirectory(
+            $this->templates,
+            $this->vocabulary,
+            RuleVocabulary::fromManifest(self::PLUGIN_DIR),
+            self::PLUGIN_DIR
+        );
+        $guidance = new PrivacyGuidance(new FakeOptionStore());
+        $guidance->set(false);
+        $draft = (new Prefill(
+            $playbooks,
+            $this->templates,
+            $this->vocabulary,
+            InstalledRules::free(),
+            $guidance
+        ))->fromPlaybook('request-a-quote');
+
+        $this->assertNotNull($draft);
+        $copy = SlotRoles::copyFrom($draft['config']['template']['tree'], $this->vocabulary);
+        $this->assertArrayNotHasKey('consent_text', $copy);
+        $this->assertArrayNotHasKey('fine_print', $copy);
+        $this->assertSame('Let us help with your next project', $copy['headline']);
     }
 
     public function testChoiceOptionsRoundTripAsOneStructuredRoleWithStableValuesAndTranslatedLabels(): void

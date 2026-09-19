@@ -18,14 +18,14 @@ return [
         'cta_label' => __('Send me the weekly round-up', 'wconvert'),
         'consent_text' => [
             /* translators: %s: the label of a link to the site's privacy policy. */
-            'text' => __('Send me the weekly round-up. I can unsubscribe at any time. %s', 'wconvert'),
+            'text' => __('Send me the weekly round-up. %s', 'wconvert'),
             'link' => [
                 'label' => __('Privacy Policy', 'wconvert'),
             ],
         ],
         'fine_print' => [
             /* translators: %s: the label of a link to the site's privacy policy. */
-            'text' => __('Unsubscribe at any time. %s', 'wconvert'),
+            'text' => __('Weekly emails. Unsubscribe anytime. %s', 'wconvert'),
             'link' => [
                 'label' => __('Privacy Policy', 'wconvert'),
             ],

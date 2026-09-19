@@ -42,7 +42,7 @@ about your project.', 'wconvert'),
         ],
         'consent_text' => [
             /* translators: %s: the label of a link to the site's privacy policy. */
-            'text' => __('I agree to a call about my request. %s', 'wconvert'),
+            'text' => __('Call me about this request. %s', 'wconvert'),
             'link' => [
                 'label' => __('Privacy Policy', 'wconvert'),
             ],
@@ -50,12 +50,12 @@ about your project.', 'wconvert'),
         'fine_print' => [
             [
                 /* translators: %s: the label of a link to the site's privacy policy. */
-                'text' => __('We use your number to respond to this request. %s', 'wconvert'),
+                'text' => __('We’ll use your number to reply. %s', 'wconvert'),
                 'link' => [
                     'label' => __('Privacy Policy', 'wconvert'),
                 ],
             ],
-            __('Your number is for responding to this enquiry.', 'wconvert'),
+            __('Your number is only for this reply.', 'wconvert'),
         ],
         'cta_label' => __('Request my callback', 'wconvert'),
         'success_headline' => [

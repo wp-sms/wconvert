@@ -55,6 +55,7 @@ use WConvert\Optin\SiteFrequency;
 use WConvert\Playbook\PlaybookLibrary;
 use WConvert\Playbook\Prefill;
 use WConvert\Privacy\LeadErasure;
+use WConvert\Privacy\PrivacyGuidance;
 use WConvert\Queue\ActionSchedulerQueue;
 use WConvert\Queue\Queue;
 use WConvert\Rest\BeaconController;
@@ -375,7 +376,8 @@ final class CoreServiceProvider implements ServiceProvider
                 $c->resolve(PlaybookLibrary::class),
                 $c->resolve(TemplateLibrary::class),
                 $c->resolve(TemplateVocabulary::class),
-                $c->resolve(Degradation::class)
+                $c->resolve(Degradation::class),
+                $c->resolve(PrivacyGuidance::class)
             )
         );
 
@@ -580,7 +582,8 @@ final class CoreServiceProvider implements ServiceProvider
         $container->register(
             PrivacyController::class,
             static fn (ServiceContainer $c): PrivacyController => new PrivacyController(
-                $c->resolve(\WConvert\Privacy\DataMap::class)
+                $c->resolve(\WConvert\Privacy\DataMap::class),
+                $c->resolve(PrivacyGuidance::class)
             )
         );
 

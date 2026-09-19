@@ -35,14 +35,14 @@ you go live.', 'wconvert'),
         'fine_print' => [
             [
                 /* translators: %s: the label of a link to the site's privacy policy. */
-                'text' => __('One email with the checklist. No marketing subscription. %s', 'wconvert'),
+                'text' => __('One checklist email. No marketing. %s', 'wconvert'),
                 'link' => [
                     'label' => __('Privacy Policy', 'wconvert'),
                 ],
             ],
             [
                 /* translators: %s: the label of a link to the site's privacy policy. */
-                'text' => __('Your details are used for this checklist request. %s', 'wconvert'),
+                'text' => __('We’ll use your details for this request. %s', 'wconvert'),
                 'link' => [
                     'label' => __('Privacy Policy', 'wconvert'),
                 ],

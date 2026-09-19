@@ -33,7 +33,7 @@ return [
         'cta_label' => __('Send me the guide', 'wconvert'),
         'fine_print' => [
             /* translators: %s: the label of a link to the site's privacy policy. */
-            'text' => __('We will send the guide and occasional follow-ups. See our %s.', 'wconvert'),
+            'text' => __('The guide and occasional emails. %s', 'wconvert'),
             'link' => ['label' => __('Privacy Policy', 'wconvert')],
         ],
         'success_headline' => __('Request received', 'wconvert'),

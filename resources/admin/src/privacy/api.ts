@@ -23,6 +23,20 @@ export interface PrivacyDataMap {
   beacon_rate_limit_seconds: number;
 }
 
+export interface PrivacyGuidance {
+  enabled: boolean;
+}
+
 export const readDataMap = () => apiFetch<PrivacyDataMap>({
   path: '/wconvert/v1/privacy/data-map',
+});
+
+export const readPrivacyGuidance = () => apiFetch<PrivacyGuidance>({
+  path: '/wconvert/v1/privacy/guidance',
+});
+
+export const savePrivacyGuidance = (enabled: boolean) => apiFetch<PrivacyGuidance>({
+  path: '/wconvert/v1/privacy/guidance',
+  method: 'POST',
+  data: { enabled },
 });

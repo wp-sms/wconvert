@@ -31,12 +31,12 @@ return [
         'cta_label' => __('Text me first', 'wconvert'),
         'consent_text' => [
             /* translators: %s: the label of a link to the site's privacy policy. */
-            'text' => __('Send me text updates about new releases. %s', 'wconvert'),
+            'text' => __('Text me about new releases. %s', 'wconvert'),
             'link' => ['label' => __('Privacy Policy', 'wconvert')],
         ],
         'fine_print' => [
             /* translators: %s: the label of a link to the site's privacy policy. */
-            'text' => __('About one message a month. Reply STOP to leave. %s', 'wconvert'),
+            'text' => __('Monthly texts. Reply STOP to leave. %s', 'wconvert'),
             'link' => ['label' => __('Privacy Policy', 'wconvert')],
         ],
         'success_headline' => __('Request received', 'wconvert'),

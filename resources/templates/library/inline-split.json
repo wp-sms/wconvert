@@ -77,6 +77,16 @@
                 "tokens": {
                   "text-size": "1.125rem"
                 }
+              },
+              {
+                "type": "text",
+                "id": "n10",
+                "role": "fine_print",
+                "text": "One guide email. %s",
+                "size": "s",
+                "link": {
+                  "label": "Privacy Policy"
+                }
               }
             ]
           }

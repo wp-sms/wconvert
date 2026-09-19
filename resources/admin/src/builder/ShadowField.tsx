@@ -1,5 +1,7 @@
 import { useId, useState, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
+import { CodeXml } from 'lucide-react';
+import { Button } from '../components/ui/button';
 import { ColorField } from './ColorField';
 import { StyleValueInput } from './StyleValueInput';
 import { nameOf, type TemplateLabels } from '../templates/api';
@@ -38,16 +40,15 @@ export function ShadowField({ label, shown, value, fallback, offered, labels, to
   const shadow = parseShadow(shown);
   const edit = (patch: Partial<Shadow>) => shadow && onChange(shadowValue({ ...shadow, ...patch }));
   return <div className="wconvert-token">
-    <span id={id}>{label}</span>
-    <div className="wconvert-token__row">
-      <div className="wconvert-shadow-presets" role="group" aria-labelledby={id}>
-        {offered.map(choice => <label key={choice} className="wconvert-shadow-preset">
-          <input type="radio" className="sr-only" name={id} checked={!custom && shown === choice} onChange={() => { setCustom(false); onChange(choice); }} />
-          <span><span className="wconvert-shadow-sample" aria-hidden="true"><span style={{ boxShadow: choice }} /></span>{nameOf(labels.tokenValues, `${token}.${choice}`)}</span>
-        </label>)}
-        <label className="wconvert-shadow-preset"><input type="radio" className="sr-only" name={id} checked={custom || !offered.includes(shown)} onChange={() => setCustom(true)} onClick={() => setCustom(true)} /><span>{__('Custom', 'wconvert')}</span></label>
-      </div>{reset}
-    </div>
+    <span className="wconvert-field-heading"><label htmlFor={id}>{label}</label><span className="flex items-center gap-1">
+      <Button type="button" variant="ghost" size="icon-xs" aria-label={__('Edit shadow CSS', 'wconvert')} title={__('Edit shadow CSS', 'wconvert')} aria-pressed={custom} onClick={() => setCustom(!custom)}><CodeXml aria-hidden="true" /></Button>{reset}
+    </span></span>
+    <select id={id} value={custom || !offered.includes(shown) ? '__custom' : shown} onChange={event => {
+      setCustom(false); onChange(event.target.value);
+    }}>
+      {offered.map(choice => <option key={choice} value={choice}>{nameOf(labels.tokenValues, `${token}.${choice}`)}</option>)}
+      {(custom || !offered.includes(shown)) && <option value="__custom" disabled>{__('Custom', 'wconvert')}</option>}
+    </select>
     {shadow && <details className="wconvert-shadow-adjust"><summary>{__('Adjust shadow', 'wconvert')}</summary>
       <div className="wconvert-shadow-values">{(['x', 'y', 'blur', 'spread'] as const).map(key => <label key={key}>
         {{ x: __('Horizontal', 'wconvert'), y: __('Vertical', 'wconvert'), blur: __('Blur', 'wconvert'), spread: __('Spread', 'wconvert') }[key]}
@@ -59,8 +60,8 @@ export function ShadowField({ label, shown, value, fallback, offered, labels, to
       <ColorField label={__('Shadow color', 'wconvert')} value={shadow.color} fallback={shadow.color} open={open} onOpenChange={onOpenChange} onChange={color => edit({ color })} />
       <label className="wconvert-shadow-inset"><input type="checkbox" checked={shadow.inset} onChange={e => edit({ inset: e.target.checked })} />{__('Inner shadow', 'wconvert')}</label>
     </details>}
-    {((!shadow && shown !== 'none') || custom) && <div className="wconvert-shadow-css">
-      <StyleValueInput aria-label={sprintf(__('%s value', 'wconvert'), label)} className="wconvert-token__typed" value={value} placeholder={fallback} onCommit={onChange} />
+    {((!shadow && shown !== 'none' && !offered.includes(shown)) || custom) && <div className="wconvert-shadow-css">
+      <StyleValueInput aria-label={sprintf(__('%s value', 'wconvert'), label)} className="wconvert-token__typed" value={value} placeholder={fallback} onFocus={() => setCustom(true)} onCommit={onChange} />
     </div>}
   </div>;
 }

@@ -1,7 +1,7 @@
 [
   {
     "id": "store-collection",
-    "version": "1.2.0",
+    "version": "1.3.0",
     "name": "Store collection",
     "description": "Three offer layouts: Fieldwork, Punched ticket and The summer archive. Add your real code, terms, sale destination and schedule before publishing.",
     "requires": {
@@ -19,14 +19,14 @@
       "summer-archive": "67a91cddab71598c07027739159a5a6090b6f9aecb7943ab552616e87dc0a4fb"
     },
     "playbooks": {
-      "welcome-discount": "f880764dac73e2bb99e39e9a2df0b6909729f2b0b1eaedf53e9d24ceea71a78b",
-      "coupon-ticket": "69dfb5496fc5a750116b0a29331d87697102e061f843ccf0ad1bb0a027040105",
+      "welcome-discount": "aa3f95bd99f7b853cddf2ec7b4d002eeb42712981d8d70ac76ed3ed1376b1f9b",
+      "coupon-ticket": "fb3ff364f807c3d81cb177a6b9270e149442fdcf9e2ed0b253797c10df4b6797",
       "sale-announcement": "fef7e9c67cb594b04cf4eac4697b3ba3072f7fad4fe62ea0b56ee75be5bee974"
     }
   },
   {
     "id": "publisher-collection",
-    "version": "1.2.0",
+    "version": "1.3.0",
     "name": "Publisher collection",
     "description": "Four layouts for newsletters, article-end signups, guides and reading recommendations. Add your publication details, destinations and resources before publishing.",
     "requires": {
@@ -45,15 +45,15 @@
       "reading-slip": "4835d5e4319c0604a4307ae6f723c7191512a0068f7b67404b10097f130a3010"
     },
     "playbooks": {
-      "read-to-the-end": "c0f1f762a199b927f73d31637a486fbb1144c1ceb26465bd62ad0f3ad0f445a1",
-      "article-end-newsletter": "5ddeb7efc527344ce7daf01257e418650bafb7af1a8903888246f071b0ebf1cd",
-      "guide-download": "f9c72fc535a422c302646aac56ab294a4ef5c07420a57ee9fb620a626801f4b3",
+      "read-to-the-end": "0dbbb7ccff5677061c8efc4c977c54a8c5fba5012f0b6dd3e4f2920ddb21a0be",
+      "article-end-newsletter": "05ca17c9abc979851d8198d29aa3dbeae8b51ff6a92601ff043df3b3e091e756",
+      "guide-download": "0159aee4ddd579d501f321cfbb1b3a0a6151ec28f405562822a7ce79424f0d60",
       "reading-recommendation": "9968a9c5fb9d3fafd187d844c08c1472759e7038b26b7f6d25fb540b78bb4bea"
     }
   },
   {
     "id": "service-collection",
-    "version": "1.2.0",
+    "version": "1.3.0",
     "name": "Service collection",
     "description": "Three layouts for callbacks, service enquiries and checklists. Add your topics, response process and resources before publishing.",
     "requires": {
@@ -72,9 +72,9 @@
       "launch-checklist": "70265743393d14563c463e330dbbba05c1efb1d2b27437a3942de36141171d8d"
     },
     "playbooks": {
-      "request-a-callback": "2ed1ffd2c0b78352eec9ef9ba022a5922c3682d26c19b57554aa6c41782bd79d",
-      "request-a-quote": "5b596ebc1b1cf5ea7c061ece6f1a8ac6426832396643704e92c5c81517d83c82",
-      "launch-checklist": "0da534d04d6bea05ed872bf2631b20131e53bbfb94d8bc91e50937bbaa0a9ded"
+      "request-a-callback": "c975d28525e888e7b916312fd717fb46bf40786dcbfc70d0c30ac13adbd3f981",
+      "request-a-quote": "93c6e83b29029d48bb56a6dbdbe8db83950dd6933e27376d1784323e5d009323",
+      "launch-checklist": "2eed6d03bdaef0a26d68a9a37d89273519e39edf0de313e45d8106db278029b0"
     }
   }
 ]

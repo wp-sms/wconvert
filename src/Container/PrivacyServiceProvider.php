@@ -12,6 +12,7 @@ use WConvert\Privacy\LeadErasure;
 use WConvert\Privacy\LeadEraser;
 use WConvert\Privacy\LeadExporter;
 use WConvert\Privacy\PolicyText;
+use WConvert\Privacy\PrivacyGuidance;
 use WConvert\Retention\LeadPruner;
 use WConvert\Retention\RetentionPeriod;
 
@@ -39,6 +40,13 @@ final class PrivacyServiceProvider implements ServiceProvider
 {
     public function register(ServiceContainer $container): void
     {
+        $container->register(
+            PrivacyGuidance::class,
+            static fn (ServiceContainer $c): PrivacyGuidance => new PrivacyGuidance(
+                $c->resolve(\WConvert\Storage\OptionStore::class)
+            )
+        );
+
         $container->register(
             DataMap::class,
             static fn (ServiceContainer $c): DataMap => new DataMap(

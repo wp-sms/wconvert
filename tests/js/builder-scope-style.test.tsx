@@ -417,14 +417,14 @@ describe('the narrow bag, through the width switch', () => {
 
     await style(/Colored box/);
 
-    expect(document.querySelector('.wconvert-scope__from')).toHaveTextContent('Custom');
+    expect(document.querySelector('.wconvert-scope__from [data-set="here"]')).toBeNull();
 
     await narrow();
 
     // `pad` is the one the narrow bag names; `bg` is inherited from the box's
     // own wide bag, which is a different sentence.
     expect(screen.getByText('Mobile override')).toBeInTheDocument();
-    expect(document.querySelector('.wconvert-scope__from')).toHaveTextContent('Custom');
+    expect(document.querySelector('.wconvert-scope__from [data-set="here"]')).toBeNull();
   });
 });
 

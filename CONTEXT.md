@@ -106,6 +106,14 @@ credentials, publish policy wording, choose a legal basis or claim to erase
 external copies. See
 [ADR 0094](docs/adr/0094-privacy-guidance-reports-the-current-data-flow.md).
 
+Privacy Guidance is a site-wide authoring preference, on by default. It adds
+short purpose-specific policy notices to new Campaign setups and checks them in
+the editor's readiness review. Turning it off removes that automatic help only
+from future drafts; existing Campaign snapshots, manual controls, export,
+erasure, retention, Consent Records, the Data Map and WordPress policy tools do
+not change. See
+[ADR 0096](docs/adr/0096-privacy-authoring-help-is-progressive-and-snapshotted.md).
+
 ### Analytics impact
 
 Analytics starts with compatible totals: captured submissions, offer clicks,
@@ -782,6 +790,12 @@ need review. A new Playbook draft continues to use its own copy, not those sampl
 > **Picture focus** uses the `image-position` token on backgrounds and image
 > leaves. It can be overridden in the same `narrow` bag, so a phone crop can
 > focus on a different part of the picture. The default remains centred.
+> The editor offers a nine-dot position picker, precise percentage adjustments,
+> and verbatim custom CSS. Focus appears only where a picture is present; hiding it preserves its value. Image fit and split ratios use visual previews of the
+> existing choices; opening a control never writes a value. Alignment and borders use compact icons; picture shape keeps a preview.
+> Textual choices, including typography, use selects and booleans use checkboxes. The inspector groups
+> picture, heading, body text and effect settings, pairing short measurements
+> where they fit. See [ADR 0078](docs/adr/0078-editor-choices-stay-compact-and-scrollable.md).
 >
 > **A scoped colour may name another colour rather than spell one**, and that
 > is what makes a scope survive a theme. `{"bg": "accent"}` follows whatever

@@ -8,16 +8,17 @@ export function StyleValueInput({ value, onCommit, ...input }: Omit<InputHTMLAtt
 }) {
   const [draft, setDraft] = useState({ source: value, text: value });
   if (draft.source !== value) setDraft({ source: value, text: value });
+  const commit = () => {
+    setDraft({ source: value, text: value });
+    if (draft.text !== value) onCommit(draft.text);
+  };
   return <input {...input} value={draft.text} data-style-value-pending={draft.text !== value ? 'true' : undefined}
     onChange={(event) => setDraft({ source: value, text: event.target.value })}
-    onBlur={() => {
-      setDraft({ source: value, text: value });
-      if (draft.text !== value) onCommit(draft.text);
-    }}
+    onBlur={commit}
     onKeyDown={(event) => {
       if (event.key === 'Enter') {
         event.preventDefault();
-        event.currentTarget.blur();
+        commit();
       } else if (event.key === 'Escape') {
         event.preventDefault();
         event.stopPropagation();

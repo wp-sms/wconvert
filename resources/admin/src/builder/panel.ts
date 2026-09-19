@@ -330,7 +330,7 @@ export function resolvedToken(tokens: Readonly<Record<string, string>>, name: st
 export const CHOICES = vocabulary.choices as Readonly<Record<string, readonly string[]>>;
 
 /**
- * The four groups the Design panel draws, in order.
+ * The sections the Design panel draws, in order.
  *
  * `other` is the trailing one and is the whole point: a token added to the
  * manifest that this bundle recognises nothing about **lands there wearing a
@@ -338,7 +338,7 @@ export const CHOICES = vocabulary.choices as Readonly<Record<string, readonly st
  * That is ADR 0010's *"a token added to the manifest appears in the editor with
  * no change to this bundle"*, kept literally.
  */
-export const TOKEN_GROUPS = ['color', 'type', 'space', 'other'] as const;
+export const TOKEN_GROUPS = ['color', 'type', 'heading', 'space', 'image', 'effects', 'other'] as const;
 
 export type TokenGroupId = (typeof TOKEN_GROUPS)[number];
 
@@ -352,7 +352,7 @@ export type TokenGroupId = (typeof TOKEN_GROUPS)[number];
  * the first drag. But a token that changed GROUP as they typed would jump
  * across the panel mid-edit, so grouping reads the value that does not move.
  *
- * Every arm is a shape rather than a name, so this file names no token.
+ * Declared membership wins; undeclared tokens fall back to their value shape.
  */
 export function groupOf(token: TokenDeclaration): TokenGroupId {
   const declared = Object.entries(vocabulary.token_groups).find(([, names]) => (names as readonly string[]).includes(token.name));
@@ -392,7 +392,11 @@ export function groupsOf(
 ): readonly { readonly id: TokenGroupId; readonly tokens: readonly TokenDeclaration[] }[] {
   return TOKEN_GROUPS.map((id) => ({
     id,
-    tokens: tokens.filter((token) => groupOf(token) === id),
+    tokens: tokens.filter((token) => groupOf(token) === id).sort((a, b) => {
+      const order: readonly string[] = vocabulary.token_groups[id];
+      const position = (name: string) => order.includes(name) ? order.indexOf(name) : order.length;
+      return position(a.name) - position(b.name);
+    }),
   })).filter((group) => group.tokens.length > 0);
 }
 
